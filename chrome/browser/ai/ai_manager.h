@@ -300,16 +300,19 @@ class AIManager : public base::SupportsUserData::Data,
       mojo::PendingRemote<ClientRemoteInterface> client,
       std::unique_ptr<optimization_guide::OnDeviceSession> session);
 
+  // Checks the total initial input size (the input context prefilled via
+  // SetInput() plus the execution input) against the context window before
+  // prefilling the input context.
   template <typename ContextBoundObjectType,
             typename ContextBoundObjectReceiverInterface,
             typename ClientRemoteInterface,
             typename CreateOptionsPtrType>
-  void OnGotExecutionInputSizeInTokens(
+  void OnGotInitialInputSizeInTokens(
       CreateOptionsPtrType options,
       optimization_guide::MultimodalMessage initial_request,
       mojo::Remote<ClientRemoteInterface> client_remote,
       std::unique_ptr<optimization_guide::OnDeviceSession> session,
-      std::optional<uint32_t> result);
+      std::optional<optimization_guide::InputSizeInTokens> initial_input_size);
 
   template <typename ContextBoundObjectType,
             typename ContextBoundObjectReceiverInterface,

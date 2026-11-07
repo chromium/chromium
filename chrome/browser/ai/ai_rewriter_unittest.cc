@@ -116,8 +116,11 @@ blink::mojom::AIRewriterCreateOptionsPtr GetDefaultOptions() {
       /*output_language=*/AILanguageCode::New(""));
 }
 
+// Returns the test feature config. If `prefill_shared_context` is true,
+// `shared_context` is rendered via `input_context_substitutions` (prefilled at
+// session creation) instead of `execute_substitutions`.
 optimization_guide::proto::OnDeviceModelExecutionFeatureConfig
-CreateRewriterConfig() {
+CreateRewriterConfig(bool prefill_shared_context = false) {
   optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config;
   config.set_feature(optimization_guide::proto::ModelExecutionFeature::
                          MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API);
@@ -128,11 +131,18 @@ CreateRewriterConfig() {
   input_config.set_max_execute_tokens(
       blink::mojom::kWritingAssistanceMaxInputTokenSize);
 
-  *input_config.add_execute_substitutions() = FieldSubstitution(
-      "%s", ProtoField({WritingAssistanceApiRequest::kContextFieldNumber}));
-  *input_config.add_execute_substitutions() = FieldSubstitution(
+  const auto shared_context = FieldSubstitution(
       "%s",
       ProtoField({WritingAssistanceApiRequest::kSharedContextFieldNumber}));
+  if (prefill_shared_context) {
+    *input_config.add_input_context_substitutions() = shared_context;
+  } else {
+    // Order `shared_context` first so session creation renders it before
+    // stopping at the per-call fields `ToInitialRequest()` marks pending.
+    *input_config.add_execute_substitutions() = shared_context;
+  }
+  *input_config.add_execute_substitutions() = FieldSubstitution(
+      "%s", ProtoField({WritingAssistanceApiRequest::kContextFieldNumber}));
   *input_config.add_execute_substitutions() = FieldSubstitution(
       "%s", ProtoField({WritingAssistanceApiRequest::kRewriteTextFieldNumber}));
 
@@ -151,8 +161,13 @@ class AIRewriterTest : public AITestUtils::AITestBase {
 
  protected:
   proto::SolutionConfig CreateSolution() override {
+    return CreateSolution(/*prefill_shared_context=*/false);
+  }
+
+  proto::SolutionConfig CreateSolution(bool prefill_shared_context) {
     proto::SolutionConfig solution_config;
-    *solution_config.mutable_feature() = CreateRewriterConfig();
+    *solution_config.mutable_feature() =
+        CreateRewriterConfig(prefill_shared_context);
     return solution_config;
   }
 
@@ -302,6 +317,31 @@ TEST_F(AIRewriterTest, CreateRewriterContextLimitExceededError) {
             blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
   EXPECT_EQ(result.error().quota_error_info->quota,
             blink::mojom::kWritingAssistanceMaxInputTokenSize);
+}
+
+TEST_F(AIRewriterTest, CreateRewriterInputContextLimitExceededError) {
+  // The prefilled shared context alone exceeds the input quota.
+  const uint32_t shared_context_size = std::string(kSharedContextString).size();
+  const uint32_t quota = shared_context_size - 1;
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution(/*prefill_shared_context=*/true);
+    solution_config.mutable_feature()
+        ->mutable_input_config()
+        ->set_max_execute_tokens(quota);
+    return solution_config;
+  }());
+
+  TestCreateRewriterClient create_client;
+  GetAIManagerRemote()->CreateRewriter(
+      create_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
+
+  CreateRewriterResult result = create_client.result().Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().error,
+            blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
+  EXPECT_EQ(result.error().quota_error_info->requested, shared_context_size);
+  EXPECT_EQ(result.error().quota_error_info->quota, quota);
 }
 
 TEST_F(AIRewriterTest, ContextWindowUsesContextLimit) {
@@ -504,6 +544,41 @@ TEST_F(AIRewriterTest, MeasureUsage) {
               std::string(kContextString).size() +
               std::string(kInputString).size();
   EXPECT_EQ(future.Get(), size);
+}
+
+TEST_F(AIRewriterTest, InputContextSubstitutionsCountTowardUsageAndQuota) {
+  // The execution input (rewrite text + context) fits within the quota, but
+  // the total including the prefilled shared context does not.
+  const uint32_t execution_size =
+      std::string(kInputString).size() + std::string(kContextString).size();
+  const uint32_t total_size =
+      execution_size + std::string(kSharedContextString).size();
+  const uint32_t quota = execution_size + 1;
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution(/*prefill_shared_context=*/true);
+    solution_config.mutable_feature()
+        ->mutable_input_config()
+        ->set_max_execute_tokens(quota);
+    return solution_config;
+  }());
+
+  auto rewriter_remote = GetAIRewriterRemote();
+
+  base::test::TestFuture<std::optional<uint32_t>> measure_future;
+  rewriter_remote->MeasureUsage(kInputString, kContextString,
+                                measure_future.GetCallback());
+  EXPECT_EQ(measure_future.Get(), total_size);
+
+  // Rewrite() rejects with the same requested size measureInputUsage()
+  // reports.
+  AITestUtils::TestStreamingResponder responder;
+  rewriter_remote->Rewrite(kInputString, kContextString,
+                           responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+  EXPECT_EQ(responder.quota_error_info().requested, total_size);
+  EXPECT_EQ(responder.quota_error_info().quota, quota);
 }
 
 TEST_F(AIRewriterTest, Priority) {

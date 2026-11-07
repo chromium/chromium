@@ -60,13 +60,11 @@ class AIWriter : public AIContextBoundObject, public blink::mojom::AIWriter {
   void SetPriority(on_device_model::mojom::Priority priority) override;
 
  private:
-  void DidGetExecutionInputSizeForWrite(
+  // Checks the total input size (prefilled input context plus execution input)
+  // against the input quota before executing `request`.
+  void DidGetInputSizeForWrite(
       mojo::RemoteSetElementId responder_id,
       const optimization_guide::proto::WritingAssistanceApiRequest& request,
-      std::optional<uint32_t> result);
-
-  void DidGetExecutionInputSizeInTokensForMeasure(
-      MeasureUsageCallback callback,
       std::optional<uint32_t> result);
 
   void ModelExecutionCallback(

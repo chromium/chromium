@@ -208,8 +208,7 @@ void AISummarizer::Summarize(
     return;
   }
 
-  auto* session = session_wrapper_.session();
-  if (!session) {
+  if (!session_wrapper_.session()) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
         std::move(pending_responder));
     on_device_ai::SendStreamingStatus(
@@ -221,13 +220,13 @@ void AISummarizer::Summarize(
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
   auto request = BuildRequest(input, context);
-  session->GetExecutionInputSizeInTokens(
+  session_wrapper_.GetInputSizeInTokens(
       optimization_guide::MultimodalMessageReadView(request),
-      base::BindOnce(&AISummarizer::DidGetExecutionInputSizeForSummarize,
+      base::BindOnce(&AISummarizer::DidGetInputSizeForSummarize,
                      weak_ptr_factory_.GetWeakPtr(), responder_id, request));
 }
 
-void AISummarizer::DidGetExecutionInputSizeForSummarize(
+void AISummarizer::DidGetInputSizeForSummarize(
     mojo::RemoteSetElementId responder_id,
     const optimization_guide::proto::SummarizeRequest& request,
     std::optional<uint32_t> result) {
@@ -302,17 +301,11 @@ void AISummarizer::ModelExecutionCallback(
 void AISummarizer::MeasureUsage(const std::string& input,
                                 const std::string& context,
                                 MeasureUsageCallback callback) {
-  auto* session = session_wrapper_.session();
-  if (!session) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
-  auto request = BuildRequest(input, context);
-  session->GetExecutionInputSizeInTokens(
+  // GetInputSizeInTokens() runs `callback` with nullopt if the session is gone.
+  const auto request = BuildRequest(input, context);
+  session_wrapper_.GetInputSizeInTokens(
       optimization_guide::MultimodalMessageReadView(request),
-      base::BindOnce(&AISummarizer::DidGetExecutionInputSizeInTokensForMeasure,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      std::move(callback));
 }
 
 void AISummarizer::SetPriority(on_device_model::mojom::Priority priority) {
@@ -320,16 +313,6 @@ void AISummarizer::SetPriority(on_device_model::mojom::Priority priority) {
   if (session) {
     session->SetPriority(priority);
   }
-}
-
-void AISummarizer::DidGetExecutionInputSizeInTokensForMeasure(
-    MeasureUsageCallback callback,
-    std::optional<uint32_t> result) {
-  if (!result.has_value()) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-  std::move(callback).Run(result.value());
 }
 
 optimization_guide::proto::SummarizeRequest AISummarizer::BuildRequest(

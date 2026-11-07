@@ -168,13 +168,13 @@ void AIRewriter::Rewrite(
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
 
-  session_wrapper_.session()->GetExecutionInputSizeInTokens(
+  session_wrapper_.GetInputSizeInTokens(
       optimization_guide::MultimodalMessageReadView(request),
-      base::BindOnce(&AIRewriter::DidGetExecutionInputSizeForRewrite,
+      base::BindOnce(&AIRewriter::DidGetInputSizeForRewrite,
                      weak_ptr_factory_.GetWeakPtr(), responder_id, request));
 }
 
-void AIRewriter::DidGetExecutionInputSizeForRewrite(
+void AIRewriter::DidGetInputSizeForRewrite(
     mojo::RemoteSetElementId responder_id,
     const optimization_guide::proto::WritingAssistanceApiRequest& request,
     std::optional<uint32_t> result) {
@@ -246,17 +246,11 @@ void AIRewriter::ModelExecutionCallback(
 void AIRewriter::MeasureUsage(const std::string& input,
                               const std::string& context,
                               MeasureUsageCallback callback) {
-  auto* session = session_wrapper_.session();
-  if (!session) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
-  auto request = BuildRequest(input, context);
-  session->GetExecutionInputSizeInTokens(
+  // GetInputSizeInTokens() runs `callback` with nullopt if the session is gone.
+  const auto request = BuildRequest(input, context);
+  session_wrapper_.GetInputSizeInTokens(
       optimization_guide::MultimodalMessageReadView(request),
-      base::BindOnce(&AIRewriter::DidGetExecutionInputSizeInTokensForMeasure,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      std::move(callback));
 }
 
 void AIRewriter::SetPriority(on_device_model::mojom::Priority priority) {
@@ -264,16 +258,6 @@ void AIRewriter::SetPriority(on_device_model::mojom::Priority priority) {
   if (session) {
     session->SetPriority(priority);
   }
-}
-
-void AIRewriter::DidGetExecutionInputSizeInTokensForMeasure(
-    MeasureUsageCallback callback,
-    std::optional<uint32_t> result) {
-  if (!result.has_value()) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-  std::move(callback).Run(result.value());
 }
 
 optimization_guide::proto::WritingAssistanceApiRequest AIRewriter::BuildRequest(

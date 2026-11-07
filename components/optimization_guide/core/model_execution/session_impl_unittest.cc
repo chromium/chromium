@@ -1321,6 +1321,47 @@ TEST_F(SessionImplTest, TokenCounts) {
   EXPECT_EQ(response_.output_token_count(), strlen("execute:foo max:1024") + 1);
 }
 
+TEST_F(SessionImplTest, EmptyInputContextHasZeroTokens) {
+  Initialize([]() {
+    proto::SolutionConfig config;
+    *config.mutable_feature() = SimpleComposeConfigForTesting();
+    config.mutable_feature()
+        ->mutable_input_config()
+        ->clear_input_context_substitutions();
+    return config;
+  }());
+  // The fake service reports this size for any non-empty input.
+  broker_.settings().set_size_in_tokens(100);
+  auto session = CreateSession(SessionConfigParams{});
+  ASSERT_TRUE(session);
+
+  auto request = PageUrlRequest("foo");
+  base::test::TestFuture<std::optional<InputSizeInTokens>> size;
+  session->GetInputSizeInTokens(MultimodalMessageReadView(request),
+                                size.GetCallback());
+  ASSERT_TRUE(size.Get().has_value());
+  EXPECT_EQ(size.Get()->input_context, 0u);
+  EXPECT_EQ(size.Get()->execution, 100u);
+  EXPECT_EQ(size.Get()->total(), 100u);
+}
+
+TEST_F(SessionImplTest, InputSizeInTokensCountsContextAndExecution) {
+  Initialize();
+  // The fake service reports this size for any non-empty input.
+  broker_.settings().set_size_in_tokens(100);
+  auto session = CreateSession(SessionConfigParams{});
+  ASSERT_TRUE(session);
+
+  auto request = PageUrlRequest("foo");
+  base::test::TestFuture<std::optional<InputSizeInTokens>> size;
+  session->GetInputSizeInTokens(MultimodalMessageReadView(request),
+                                size.GetCallback());
+  ASSERT_TRUE(size.Get().has_value());
+  EXPECT_EQ(size.Get()->input_context, 100u);
+  EXPECT_EQ(size.Get()->execution, 100u);
+  EXPECT_EQ(size.Get()->total(), 200u);
+}
+
 TEST_F(SessionImplTest, ResponseConstraintOnExecute) {
   Initialize();
   auto session = CreateSession(SessionConfigParams{});

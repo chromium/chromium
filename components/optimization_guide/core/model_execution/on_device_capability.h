@@ -114,6 +114,23 @@ using OptimizationGuideModelExecutionResultStreamingCallback =
 using OptimizationGuideModelSizeInTokenCallback =
     base::OnceCallback<void(std::optional<uint32_t>)>;
 
+// The token sizes of a request's input, counted separately for the input
+// context and the execution input.
+struct InputSizeInTokens {
+  // Tokens in the input context, as formatted by `SetInput()`/`AddContext()`
+  // (rendered from `input_context_substitutions`).
+  uint32_t input_context = 0;
+  // Tokens in the execution input, as formatted by `ExecuteModel()` (rendered
+  // from `execute_substitutions`).
+  uint32_t execution = 0;
+
+  uint32_t total() const { return input_context + execution; }
+};
+
+// The callback for receiving the token sizes of a request's input.
+using OptimizationGuideModelInputSizeInTokensCallback =
+    base::OnceCallback<void(std::optional<InputSizeInTokens>)>;
+
 // The callback for adding a download progress observer to
 // OnDeviceModelDownloadProgressManager.
 using AddDownloadProgressObserverCallback = base::RepeatingCallback<void(
@@ -311,12 +328,13 @@ class OnDeviceSession {
       MultimodalMessageReadView request_metadata,
       OptimizationGuideModelSizeInTokenCallback callback) = 0;
 
-  // Gets the size in tokens used by request_metadata as it would be formatted
-  // by a call to `AddContext()`. The result will be passed back through the
-  // callback.
-  virtual void GetContextSizeInTokens(
+  // Gets the sizes in tokens used by request_metadata as it would be formatted
+  // as input context (by `SetInput()`/`AddContext()`) and as execution input
+  // (by `ExecuteModel()`), counted concurrently. The result, or nullopt on
+  // failure, will be passed back through the callback.
+  virtual void GetInputSizeInTokens(
       MultimodalMessageReadView request_metadata,
-      OptimizationGuideModelSizeInTokenCallback callback) = 0;
+      OptimizationGuideModelInputSizeInTokensCallback callback) = 0;
 
   // Return the sampling params for the current session.
   virtual const SamplingParams GetSamplingParams() const = 0;

@@ -62,13 +62,11 @@ class AIRewriter : public AIContextBoundObject,
   void SetPriority(on_device_model::mojom::Priority priority) override;
 
  private:
-  void DidGetExecutionInputSizeForRewrite(
+  // Checks the total input size (prefilled input context plus execution input)
+  // against the input quota before executing `request`.
+  void DidGetInputSizeForRewrite(
       mojo::RemoteSetElementId responder_id,
       const optimization_guide::proto::WritingAssistanceApiRequest& request,
-      std::optional<uint32_t> result);
-
-  void DidGetExecutionInputSizeInTokensForMeasure(
-      MeasureUsageCallback callback,
       std::optional<uint32_t> result);
 
   void ModelExecutionCallback(

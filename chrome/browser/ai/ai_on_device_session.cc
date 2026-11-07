@@ -4,11 +4,30 @@
 
 #include "chrome/browser/ai/ai_on_device_session.h"
 
+#include "base/functional/bind.h"
+
 AIOnDeviceSession::AIOnDeviceSession(
     std::unique_ptr<optimization_guide::OnDeviceSession> session)
     : session_(std::move(session)) {}
 
 AIOnDeviceSession::~AIOnDeviceSession() = default;
+
+void AIOnDeviceSession::GetInputSizeInTokens(
+    optimization_guide::MultimodalMessageReadView request,
+    optimization_guide::OptimizationGuideModelSizeInTokenCallback callback) {
+  if (!session_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  session_->GetInputSizeInTokens(
+      request,
+      base::BindOnce(
+          [](std::optional<optimization_guide::InputSizeInTokens> size) {
+            return size.has_value() ? std::optional<uint32_t>(size->total())
+                                    : std::nullopt;
+          })
+          .Then(std::move(callback)));
+}
 
 void AIOnDeviceSession::ExecuteModelOrQueue(
     optimization_guide::MultimodalMessage request,

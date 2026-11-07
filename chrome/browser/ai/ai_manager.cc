@@ -1751,10 +1751,10 @@ void AIManager::OnSessionCreated(
 
   if (initial_request.has_value()) {
     auto initial_request_copy = initial_request.value().Clone();
-    session->GetExecutionInputSizeInTokens(
+    session->GetInputSizeInTokens(
         initial_request.value().read(),
         base::BindOnce(
-            &AIManager::OnGotExecutionInputSizeInTokens<
+            &AIManager::OnGotInitialInputSizeInTokens<
                 ContextBoundObjectType, ContextBoundObjectReceiverInterface,
                 ClientRemoteInterface, CreateOptionsPtrType>,
             weak_factory_.GetWeakPtr(), std::move(options),
@@ -1776,24 +1776,29 @@ template <typename ContextBoundObjectType,
           typename ContextBoundObjectReceiverInterface,
           typename ClientRemoteInterface,
           typename CreateOptionsPtrType>
-void AIManager::OnGotExecutionInputSizeInTokens(
+void AIManager::OnGotInitialInputSizeInTokens(
     CreateOptionsPtrType options,
     optimization_guide::MultimodalMessage initial_request,
     mojo::Remote<ClientRemoteInterface> client_remote,
     std::unique_ptr<optimization_guide::OnDeviceSession> session,
-    std::optional<uint32_t> result) {
-  if (!result.has_value()) {
+    std::optional<optimization_guide::InputSizeInTokens> initial_input_size) {
+  if (!initial_input_size.has_value()) {
     on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnableToCalculateTokenSize);
     return;
   }
+  // Both the input context (prefilled via SetInput() below) and any execution
+  // input known now (but sent with each execution later) count toward the
+  // context window.
+  const uint32_t initial_input_tokens = initial_input_size->total();
   const uint32_t context_window = GetInputContextLimit(options, session.get());
-  if (result.value() > context_window) {
+  if (initial_input_tokens > context_window) {
     on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge,
-        blink::mojom::QuotaErrorInfo::New(result.value(), context_window));
+        blink::mojom::QuotaErrorInfo::New(initial_input_tokens,
+                                          context_window));
     return;
   }
 

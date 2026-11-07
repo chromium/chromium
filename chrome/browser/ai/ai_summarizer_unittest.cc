@@ -139,6 +139,13 @@ class AISummarizerTest : public AITestUtils::AITestBase {
 
  protected:
   proto::SolutionConfig CreateSolution() override {
+    return CreateSolution(/*prefill_shared_context=*/false);
+  }
+
+  // Returns the test solution. If `prefill_shared_context` is true,
+  // `shared_context` is rendered via `input_context_substitutions` (prefilled
+  // at session creation) instead of `execute_substitutions`.
+  proto::SolutionConfig CreateSolution(bool prefill_shared_context) {
     proto::OnDeviceModelExecutionFeatureConfig config;
     config.set_feature(proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_SUMMARIZE);
@@ -147,12 +154,19 @@ class AISummarizerTest : public AITestUtils::AITestBase {
     input_config.set_request_base_name(SummarizeRequest().GetTypeName());
     input_config.set_max_execute_tokens(kDefaultInputContextLimit);
 
+    const auto shared_context = FieldSubstitution(
+        "%s", ProtoField({SummarizeRequest::kSharedContextFieldNumber}));
+    if (prefill_shared_context) {
+      *input_config.add_input_context_substitutions() = shared_context;
+    } else {
+      // Order `shared_context` first so session creation renders it before
+      // stopping at the per-call fields `ToInitialRequest()` marks pending.
+      *input_config.add_execute_substitutions() = shared_context;
+    }
     *input_config.add_execute_substitutions() = FieldSubstitution(
         "%s", ProtoField({SummarizeRequest::kArticleFieldNumber}));
     *input_config.add_execute_substitutions() = FieldSubstitution(
         "%s", ProtoField({SummarizeRequest::kContextFieldNumber}));
-    *input_config.add_execute_substitutions() = FieldSubstitution(
-        "%s", ProtoField({SummarizeRequest::kSharedContextFieldNumber}));
 
     auto& output_config = *config.mutable_output_config();
     output_config.set_proto_type(
@@ -386,6 +400,33 @@ TEST_F(AISummarizerTest, CreateSummarizerContextLimitExceededError) {
   EXPECT_EQ(result.error().quota_error_info->quota, kDefaultInputContextLimit);
 }
 
+TEST_F(AISummarizerTest, CreateSummarizerInputContextLimitExceededError) {
+  // The prefilled shared context alone exceeds the input quota.
+  const uint32_t shared_context_size = std::string(kSharedContextString).size();
+  const uint32_t quota = shared_context_size - 1;
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution(/*prefill_shared_context=*/true);
+    solution_config.mutable_feature()
+        ->mutable_input_config()
+        ->set_max_execute_tokens(quota);
+    return solution_config;
+  }());
+
+  TestCreateSummarizerClient create_client;
+  auto options = GetDefaultOptions();
+  options->shared_context = kSharedContextString;
+  GetAIManagerRemote()->CreateSummarizer(
+      create_client.BindNewPipeAndPassRemote(), std::move(options),
+      /*monitor=*/mojo::NullRemote());
+
+  CreateSummarizerResult result = create_client.result().Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().error,
+            blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
+  EXPECT_EQ(result.error().quota_error_info->requested, shared_context_size);
+  EXPECT_EQ(result.error().quota_error_info->quota, quota);
+}
+
 TEST_F(AISummarizerTest, SummarizeDefault) {
   RunSimpleSummarizeTest(blink::mojom::AISummarizerType::kTLDR,
                          blink::mojom::AISummarizerFormat::kPlainText,
@@ -424,14 +465,22 @@ TEST_F(AISummarizerTest, InputLimitExceededError) {
 
   SetSizeInTokens(kDefaultInputContextLimit + 1);
 
+  // The requested size includes any input context prefilled at creation, so
+  // compare against what MeasureUsage() reports rather than the fake size.
+  base::test::TestFuture<std::optional<uint32_t>> measure_future;
+  summarizer_remote->MeasureUsage(kInputString, kContextString,
+                                  measure_future.GetCallback());
+  ASSERT_TRUE(measure_future.Get().has_value());
+  const uint32_t requested = measure_future.Get().value();
+  ASSERT_GT(requested, kDefaultInputContextLimit);
+
   AITestUtils::TestStreamingResponder responder;
   summarizer_remote->Summarize(kInputString, kContextString,
                                responder.BindRemote());
   EXPECT_FALSE(responder.WaitForCompletion());
   EXPECT_EQ(responder.error_status(),
             blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
-  ASSERT_EQ(responder.quota_error_info().requested,
-            kDefaultInputContextLimit + 1);
+  ASSERT_EQ(responder.quota_error_info().requested, requested);
   ASSERT_EQ(responder.quota_error_info().quota, kDefaultInputContextLimit);
 }
 
@@ -475,13 +524,22 @@ TEST_F(AISummarizerTest, CustomInputContextLimit) {
 
   mojo::Remote<blink::mojom::AISummarizer> summarizer_remote(
       std::move(result.value()));
+  // The requested size includes any input context prefilled at creation, so
+  // compare against what MeasureUsage() reports rather than the fake size.
+  base::test::TestFuture<std::optional<uint32_t>> measure_future;
+  summarizer_remote->MeasureUsage(kInputString, kContextString,
+                                  measure_future.GetCallback());
+  ASSERT_TRUE(measure_future.Get().has_value());
+  const uint32_t requested = measure_future.Get().value();
+  ASSERT_GT(requested, kCustomMaxTokens);
+
   AITestUtils::TestStreamingResponder responder;
   summarizer_remote->Summarize(kInputString, kContextString,
                                responder.BindRemote());
   EXPECT_FALSE(responder.WaitForCompletion());
   EXPECT_EQ(responder.error_status(),
             blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
-  ASSERT_EQ(responder.quota_error_info().requested, kCustomMaxTokens + 1);
+  ASSERT_EQ(responder.quota_error_info().requested, requested);
   ASSERT_EQ(responder.quota_error_info().quota, kCustomMaxTokens);
 }
 
@@ -525,6 +583,43 @@ TEST_F(AISummarizerTest, MeasureUsage) {
   EXPECT_EQ(measure_future.Get(), std::string(kInputString).size() +
                                       std::string(kContextString).size() +
                                       std::string(kSharedContextString).size());
+}
+
+TEST_F(AISummarizerTest, InputContextSubstitutionsCountTowardUsageAndQuota) {
+  // The execution input (article + context) fits within the quota, but the
+  // total including the prefilled shared context does not.
+  const uint32_t execution_size =
+      std::string(kInputString).size() + std::string(kContextString).size();
+  const uint32_t total_size =
+      execution_size + std::string(kSharedContextString).size();
+  const uint32_t quota = execution_size + 1;
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution(/*prefill_shared_context=*/true);
+    solution_config.mutable_feature()
+        ->mutable_input_config()
+        ->set_max_execute_tokens(quota);
+    return solution_config;
+  }());
+
+  auto options = GetDefaultOptions();
+  options->shared_context = kSharedContextString;
+  auto summarizer_remote = GetAISummarizerRemote(std::move(options));
+
+  base::test::TestFuture<std::optional<uint32_t>> measure_future;
+  summarizer_remote->MeasureUsage(kInputString, kContextString,
+                                  measure_future.GetCallback());
+  EXPECT_EQ(measure_future.Get(), total_size);
+
+  // Summarize() rejects with the same requested size measureInputUsage()
+  // reports.
+  AITestUtils::TestStreamingResponder responder;
+  summarizer_remote->Summarize(kInputString, kContextString,
+                               responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+  EXPECT_EQ(responder.quota_error_info().requested, total_size);
+  EXPECT_EQ(responder.quota_error_info().quota, quota);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

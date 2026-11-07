@@ -7,7 +7,9 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -62,6 +64,24 @@ void LogSessionTermination(OptimizationGuideLogger* logger,
         << "Terminated on-device session for " << base::ToString(feature)
         << " (Reason: " << reason << ")";
   }
+}
+
+std::optional<InputSizeInTokens> ToInputSize(bool is_input_context,
+                                             std::optional<uint32_t> size) {
+  if (!size) {
+    return std::nullopt;
+  }
+  return is_input_context ? InputSizeInTokens{.input_context = *size}
+                          : InputSizeInTokens{.execution = *size};
+}
+
+std::optional<InputSizeInTokens> MergeInputSizes(
+    std::vector<std::optional<InputSizeInTokens>> parts) {
+  if (!parts[0] || !parts[1]) {
+    return std::nullopt;
+  }
+  return InputSizeInTokens{parts[0]->input_context + parts[1]->input_context,
+                           parts[0]->execution + parts[1]->execution};
 }
 
 }  // namespace
@@ -257,11 +277,19 @@ void SessionImpl::GetExecutionInputSizeInTokens(
                           /*want_input_context=*/false);
 }
 
-void SessionImpl::GetContextSizeInTokens(
+void SessionImpl::GetInputSizeInTokens(
     MultimodalMessageReadView request_metadata,
-    OptimizationGuideModelSizeInTokenCallback callback) {
-  GetSizeInTokensInternal(request_metadata, std::move(callback),
-                          /*want_input_context=*/true);
+    OptimizationGuideModelInputSizeInTokensCallback callback) {
+  // Count both parts concurrently. Each input is constructed synchronously, so
+  // `request_metadata` only needs to outlive this call.
+  auto on_part = base::BarrierCallback<std::optional<InputSizeInTokens>>(
+      2, base::BindOnce(&MergeInputSizes).Then(std::move(callback)));
+  for (bool want_input_context : {true, false}) {
+    GetSizeInTokensInternal(
+        request_metadata,
+        base::BindOnce(&ToInputSize, want_input_context).Then(on_part),
+        want_input_context);
+  }
 }
 
 const proto::Any& SessionImpl::GetOnDeviceFeatureMetadata() const {
@@ -305,6 +333,12 @@ void SessionImpl::GetSizeInTokensInternal(
       request, want_input_context);
   if (!input) {
     std::move(callback).Run(std::nullopt);
+    return;
+  }
+  if (input->input->pieces.empty()) {
+    // Nothing to tokenize (e.g. no `input_context_substitutions` configured),
+    // so skip the round trip to the model.
+    std::move(callback).Run(0);
     return;
   }
   on_device_context_->GetOrCreateSession()->GetSizeInTokens(

@@ -66,9 +66,9 @@ void MockSession::Delegate(OnDeviceSession* impl) {
       .WillByDefault([impl](MultimodalMessageReadView input, auto callback) {
         impl->GetExecutionInputSizeInTokens(input, std::move(callback));
       });
-  ON_CALL(*this, GetContextSizeInTokens)
+  ON_CALL(*this, GetInputSizeInTokens)
       .WillByDefault([impl](MultimodalMessageReadView input, auto callback) {
-        impl->GetContextSizeInTokens(input, std::move(callback));
+        impl->GetInputSizeInTokens(input, std::move(callback));
       });
   ON_CALL(*this, GetSamplingParams).WillByDefault([impl]() {
     return impl->GetSamplingParams();

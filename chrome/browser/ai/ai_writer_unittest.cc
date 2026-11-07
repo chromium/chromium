@@ -115,8 +115,11 @@ blink::mojom::AIWriterCreateOptionsPtr GetDefaultOptions() {
       /*output_language=*/AILanguageCode::New(""));
 }
 
+// Returns the test feature config. If `prefill_shared_context` is true,
+// `shared_context` is rendered via `input_context_substitutions` (prefilled at
+// session creation) instead of `execute_substitutions`.
 optimization_guide::proto::OnDeviceModelExecutionFeatureConfig
-CreateWriterConfig() {
+CreateWriterConfig(bool prefill_shared_context = false) {
   optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config;
   config.set_feature(optimization_guide::proto::ModelExecutionFeature::
                          MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API);
@@ -127,11 +130,18 @@ CreateWriterConfig() {
   input_config.set_max_execute_tokens(
       blink::mojom::kWritingAssistanceMaxInputTokenSize);
 
-  *input_config.add_execute_substitutions() = FieldSubstitution(
-      "%s", ProtoField({WritingAssistanceApiRequest::kContextFieldNumber}));
-  *input_config.add_execute_substitutions() = FieldSubstitution(
+  const auto shared_context = FieldSubstitution(
       "%s",
       ProtoField({WritingAssistanceApiRequest::kSharedContextFieldNumber}));
+  if (prefill_shared_context) {
+    *input_config.add_input_context_substitutions() = shared_context;
+  } else {
+    // Order `shared_context` first so session creation renders it before
+    // stopping at the per-call fields `ToInitialRequest()` marks pending.
+    *input_config.add_execute_substitutions() = shared_context;
+  }
+  *input_config.add_execute_substitutions() = FieldSubstitution(
+      "%s", ProtoField({WritingAssistanceApiRequest::kContextFieldNumber}));
   *input_config.add_execute_substitutions() = FieldSubstitution(
       "%s",
       ProtoField({WritingAssistanceApiRequest::kInstructionsFieldNumber}));
@@ -151,8 +161,13 @@ class AIWriterTest : public AITestUtils::AITestBase {
 
  protected:
   proto::SolutionConfig CreateSolution() override {
+    return CreateSolution(/*prefill_shared_context=*/false);
+  }
+
+  proto::SolutionConfig CreateSolution(bool prefill_shared_context) {
     proto::SolutionConfig solution_config;
-    *solution_config.mutable_feature() = CreateWriterConfig();
+    *solution_config.mutable_feature() =
+        CreateWriterConfig(prefill_shared_context);
     return solution_config;
   }
 
@@ -367,6 +382,31 @@ TEST_F(AIWriterTest, CreateWriterContextLimitExceededError) {
             blink::mojom::kWritingAssistanceMaxInputTokenSize);
 }
 
+TEST_F(AIWriterTest, CreateWriterInputContextLimitExceededError) {
+  // The prefilled shared context alone exceeds the input quota.
+  const uint32_t shared_context_size = std::string(kSharedContextString).size();
+  const uint32_t quota = shared_context_size - 1;
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution(/*prefill_shared_context=*/true);
+    solution_config.mutable_feature()
+        ->mutable_input_config()
+        ->set_max_execute_tokens(quota);
+    return solution_config;
+  }());
+
+  TestCreateWriterClient create_client;
+  GetAIManagerRemote()->CreateWriter(
+      create_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
+
+  CreateWriterResult result = create_client.result().Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().error,
+            blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
+  EXPECT_EQ(result.error().quota_error_info->requested, shared_context_size);
+  EXPECT_EQ(result.error().quota_error_info->quota, quota);
+}
+
 TEST_F(AIWriterTest, ContextWindowUsesContextLimit) {
   TestCreateWriterClient client;
   GetAIManagerRemote()->CreateWriter(client.BindNewPipeAndPassRemote(),
@@ -498,6 +538,39 @@ TEST_F(AIWriterTest, MeasureUsage) {
               std::string(kContextString).size() +
               std::string(kInputString).size();
   EXPECT_EQ(future.Get(), size);
+}
+
+TEST_F(AIWriterTest, InputContextSubstitutionsCountTowardUsageAndQuota) {
+  // The execution input (instructions + context) fits within the quota, but
+  // the total including the prefilled shared context does not.
+  const uint32_t execution_size =
+      std::string(kInputString).size() + std::string(kContextString).size();
+  const uint32_t total_size =
+      execution_size + std::string(kSharedContextString).size();
+  const uint32_t quota = execution_size + 1;
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution(/*prefill_shared_context=*/true);
+    solution_config.mutable_feature()
+        ->mutable_input_config()
+        ->set_max_execute_tokens(quota);
+    return solution_config;
+  }());
+
+  auto writer_remote = GetAIWriterRemote();
+
+  base::test::TestFuture<std::optional<uint32_t>> measure_future;
+  writer_remote->MeasureUsage(kInputString, kContextString,
+                              measure_future.GetCallback());
+  EXPECT_EQ(measure_future.Get(), total_size);
+
+  // Write() rejects with the same requested size measureInputUsage() reports.
+  AITestUtils::TestStreamingResponder responder;
+  writer_remote->Write(kInputString, kContextString, responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+  EXPECT_EQ(responder.quota_error_info().requested, total_size);
+  EXPECT_EQ(responder.quota_error_info().quota, quota);
 }
 
 TEST_F(AIWriterTest, Priority) {

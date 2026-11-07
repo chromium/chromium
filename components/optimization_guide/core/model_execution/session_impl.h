@@ -71,9 +71,9 @@ class SessionImpl : public OnDeviceSession {
   void GetExecutionInputSizeInTokens(
       MultimodalMessageReadView request_metadata,
       OptimizationGuideModelSizeInTokenCallback callback) override;
-  void GetContextSizeInTokens(
+  void GetInputSizeInTokens(
       MultimodalMessageReadView request_metadata,
-      OptimizationGuideModelSizeInTokenCallback callback) override;
+      OptimizationGuideModelInputSizeInTokensCallback callback) override;
   const SamplingParams GetSamplingParams() const override;
   on_device_model::Capabilities GetCapabilities() const override;
   std::unique_ptr<OnDeviceSession> Clone() override;

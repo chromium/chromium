@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_AI_AI_ON_DEVICE_SESSION_H_
 
 #include "base/containers/queue.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -36,6 +37,14 @@ class AIOnDeviceSession {
       on_device_model::mojom::ResponseConstraintPtr constraint = nullptr);
 
   optimization_guide::OnDeviceSession* session() { return session_.get(); }
+
+  // Gets the total number of input tokens that executing `request` uses: the
+  // input context prefilled via SetInput() (rendered from
+  // `input_context_substitutions`) plus the per-execution input (rendered from
+  // `execute_substitutions`). Runs `callback` with nullopt on failure.
+  void GetInputSizeInTokens(
+      optimization_guide::MultimodalMessageReadView request,
+      optimization_guide::OptimizationGuideModelSizeInTokenCallback callback);
 
   uint32_t GetInputContextLimit(uint32_t default_limit) const {
     if (session_ && session_->GetTokenLimits().max_execute_tokens > 0) {

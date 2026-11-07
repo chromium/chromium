@@ -64,13 +64,11 @@ class AISummarizer : public AIContextBoundObject,
  private:
   friend class AITestUtils;
 
-  void DidGetExecutionInputSizeForSummarize(
+  // Checks the total input size (prefilled input context plus execution input)
+  // against the input quota before executing `request`.
+  void DidGetInputSizeForSummarize(
       mojo::RemoteSetElementId responder_id,
       const optimization_guide::proto::SummarizeRequest& request,
-      std::optional<uint32_t> result);
-
-  void DidGetExecutionInputSizeInTokensForMeasure(
-      MeasureUsageCallback callback,
       std::optional<uint32_t> result);
 
   void ModelExecutionCallback(

@@ -158,13 +158,13 @@ void AIWriter::Write(const std::string& input,
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
 
-  session_wrapper_.session()->GetExecutionInputSizeInTokens(
+  session_wrapper_.GetInputSizeInTokens(
       optimization_guide::MultimodalMessageReadView(request),
-      base::BindOnce(&AIWriter::DidGetExecutionInputSizeForWrite,
+      base::BindOnce(&AIWriter::DidGetInputSizeForWrite,
                      weak_ptr_factory_.GetWeakPtr(), responder_id, request));
 }
 
-void AIWriter::DidGetExecutionInputSizeForWrite(
+void AIWriter::DidGetInputSizeForWrite(
     mojo::RemoteSetElementId responder_id,
     const optimization_guide::proto::WritingAssistanceApiRequest& request,
     std::optional<uint32_t> result) {
@@ -236,17 +236,11 @@ void AIWriter::ModelExecutionCallback(
 void AIWriter::MeasureUsage(const std::string& input,
                             const std::string& context,
                             MeasureUsageCallback callback) {
-  auto* session = session_wrapper_.session();
-  if (!session) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
-  auto request = BuildRequest(input, context);
-  session->GetExecutionInputSizeInTokens(
+  // GetInputSizeInTokens() runs `callback` with nullopt if the session is gone.
+  const auto request = BuildRequest(input, context);
+  session_wrapper_.GetInputSizeInTokens(
       optimization_guide::MultimodalMessageReadView(request),
-      base::BindOnce(&AIWriter::DidGetExecutionInputSizeInTokensForMeasure,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      std::move(callback));
 }
 
 void AIWriter::SetPriority(on_device_model::mojom::Priority priority) {
@@ -254,16 +248,6 @@ void AIWriter::SetPriority(on_device_model::mojom::Priority priority) {
   if (session) {
     session->SetPriority(priority);
   }
-}
-
-void AIWriter::DidGetExecutionInputSizeInTokensForMeasure(
-    MeasureUsageCallback callback,
-    std::optional<uint32_t> result) {
-  if (!result.has_value()) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-  std::move(callback).Run(result.value());
 }
 
 optimization_guide::proto::WritingAssistanceApiRequest AIWriter::BuildRequest(

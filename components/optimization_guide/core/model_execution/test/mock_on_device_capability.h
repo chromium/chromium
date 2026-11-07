@@ -99,9 +99,9 @@ class MockSession : public OnDeviceSession {
                OptimizationGuideModelSizeInTokenCallback callback),
               (override));
   MOCK_METHOD(void,
-              GetContextSizeInTokens,
+              GetInputSizeInTokens,
               (MultimodalMessageReadView request_metadata,
-               OptimizationGuideModelSizeInTokenCallback callback),
+               OptimizationGuideModelInputSizeInTokensCallback callback),
               (override));
   MOCK_METHOD(const SamplingParams, GetSamplingParams, (), (const, override));
   MOCK_METHOD(on_device_model::Capabilities,
