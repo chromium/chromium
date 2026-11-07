@@ -75,7 +75,7 @@ class CellularSetupServiceTest : public testing::Test {
     // Execute the callback and retrieve the returned CarrierPortalHandler.
     FakeCarrierPortalHandler* fake_carrier_portal_observer =
         start_activation_invocations.back()->ExecuteCallback();
-    run_loop.RunUntilIdle();
+    run_loop.Run();
 
     EXPECT_TRUE(last_carrier_portal_observer_);
     CarrierPortalHandlerPair observer_pair = std::make_pair(
