@@ -58,7 +58,10 @@ fn create_reader() -> XmlEventReader<Cursor<Vec<u8>>> {
         .ignore_invalid_encoding_declarations(true)
         .ignore_comments(false)
         .ignore_end_of_stream(true)
-        .allow_multiple_root_elements(false);
+        .allow_multiple_root_elements(false)
+        // `StartElement`'s `namespace` isn't used, and computing it is
+        // expensive.
+        .start_element_namespace(false);
     XmlEventReader::new_with_config(cursor, parser_config)
 }
 

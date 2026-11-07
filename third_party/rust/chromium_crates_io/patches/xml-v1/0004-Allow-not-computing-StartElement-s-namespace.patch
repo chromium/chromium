@@ -1,0 +1,68 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Mason Freed <masonf@chromium.org>
+Date: Thu, 5 Nov 2026 03:00:00 +0000
+Subject: [PATCH] Allow not computing StartElement's namespace
+
+Add a `start_element_namespace` option to `ParserConfig`, which defaults
+to true. When it is false, `XmlEvent::StartElement`'s `namespace` is
+always empty, instead of a copy of all namespace mappings in scope,
+which takes several allocations for every element.
+
+Upstream PR (not merged yet): https://github.com/kornelski/xml-rs/pull/99
+---
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/config.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/config.rs
+index 7e383d3affa0d..d0ad0bbfbdd7b 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/config.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/config.rs
+@@ -122,6 +122,11 @@ pub struct ParserConfig {
+ 
+     /// Maximum length of strings reprsenting characters, comments, and processing instructions
+     pub max_data_length: usize,
++
++    /// Whether `XmlEvent::StartElement`'s `namespace` contains all namespace mappings in scope.
++    /// Computing it copies all of these mappings for every element, so it can be turned off
++    /// when it isn't used, in which case it is always empty.
++    pub start_element_namespace: bool,
+ }
+ 
+ impl ParserConfig {
+@@ -160,6 +165,7 @@ impl ParserConfig {
+             max_attribute_length: 1 << 30,
+             max_data_length: 1 << 30,
+             max_name_length: 1 << 18,
++            start_element_namespace: true,
+         }
+     }
+ 
+@@ -291,7 +297,11 @@ gen_setters! { ParserConfig,
+     /// Maximum length of strings reprsenting characters, comments, and processing instructions
+     max_data_length: val usize,
+     /// Allow `<?xml encoding="bogus"?>`
+-    ignore_invalid_encoding_declarations: val bool
++    ignore_invalid_encoding_declarations: val bool,
++    /// Whether `XmlEvent::StartElement`'s `namespace` contains all namespace mappings in scope.
++    /// Default is true. If it isn't used, turning it off saves copying these mappings for
++    /// every element.
++    start_element_namespace: val bool
+ }
+ 
+ #[test]
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
+index 97dfcc73fda8b..c8953cb254226 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
+@@ -819,7 +819,11 @@ impl PullParser {
+         } else {
+             self.est.push(name.clone());
+         }
+-        let namespace = self.nst.squash();
++        let namespace = if self.config.start_element_namespace {
++            self.nst.squash()
++        } else {
++            Namespace::empty()
++        };
+         self.into_state_emit(State::OutsideTag, Ok(XmlEvent::StartElement {
+             name,
+             attributes,
+-- 
+2.55.0.1082.g2b9226bbc0-goog

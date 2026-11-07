@@ -122,6 +122,11 @@ pub struct ParserConfig {
 
     /// Maximum length of strings reprsenting characters, comments, and processing instructions
     pub max_data_length: usize,
+
+    /// Whether `XmlEvent::StartElement`'s `namespace` contains all namespace mappings in scope.
+    /// Computing it copies all of these mappings for every element, so it can be turned off
+    /// when it isn't used, in which case it is always empty.
+    pub start_element_namespace: bool,
 }
 
 impl ParserConfig {
@@ -160,6 +165,7 @@ impl ParserConfig {
             max_attribute_length: 1 << 30,
             max_data_length: 1 << 30,
             max_name_length: 1 << 18,
+            start_element_namespace: true,
         }
     }
 
@@ -291,7 +297,11 @@ gen_setters! { ParserConfig,
     /// Maximum length of strings reprsenting characters, comments, and processing instructions
     max_data_length: val usize,
     /// Allow `<?xml encoding="bogus"?>`
-    ignore_invalid_encoding_declarations: val bool
+    ignore_invalid_encoding_declarations: val bool,
+    /// Whether `XmlEvent::StartElement`'s `namespace` contains all namespace mappings in scope.
+    /// Default is true. If it isn't used, turning it off saves copying these mappings for
+    /// every element.
+    start_element_namespace: val bool
 }
 
 #[test]

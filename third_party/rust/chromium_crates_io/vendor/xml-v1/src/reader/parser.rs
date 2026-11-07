@@ -819,7 +819,11 @@ impl PullParser {
         } else {
             self.est.push(name.clone());
         }
-        let namespace = self.nst.squash();
+        let namespace = if self.config.start_element_namespace {
+            self.nst.squash()
+        } else {
+            Namespace::empty()
+        };
         self.into_state_emit(State::OutsideTag, Ok(XmlEvent::StartElement {
             name,
             attributes,
