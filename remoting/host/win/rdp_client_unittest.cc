@@ -80,6 +80,29 @@ RdpClientModule::~RdpClientModule() {
   ATL::_pAtlModule = nullptr;
 }
 
+// Standard Windows DPI values corresponding to 100%, 125%, 150%, and 200%
+// display scale factors.
+constexpr int kDpi100Percent = 96;
+constexpr int kDpi125Percent = 120;
+constexpr int kDpi150Percent = 144;
+constexpr int kDpi200Percent = 192;
+
+const webrtc::DesktopSize kMinRdpSize(800, 600);
+const webrtc::DesktopSize kVgaLandscape(640, 480);
+const webrtc::DesktopSize kFullHdLandscape(1920, 1080);
+const webrtc::DesktopSize k4kLandscape(3840, 2160);
+const webrtc::DesktopSize k4kPortrait(2160, 3840);
+const webrtc::DesktopSize k5kLandscape(5120, 2880);
+const webrtc::DesktopSize k5kPortrait(2880, 5120);
+
+ScreenResolution MakeResolution(const webrtc::DesktopSize& size, int dpi) {
+  return ScreenResolution(size, webrtc::DesktopVector(dpi, dpi));
+}
+
+ScreenResolution MakeResolution(int width, int height, int dpi) {
+  return MakeResolution(webrtc::DesktopSize(width, height), dpi);
+}
+
 }  // namespace
 
 class RdpClientTest : public testing::Test {
@@ -186,6 +209,113 @@ TEST_F(RdpClientTest, MAYBE_Basic) {
   task_runner_ = nullptr;
 
   run_loop_.Run();
+}
+
+TEST(GetBoundedRdpResolutionTest, WithinBoundsKeepsOriginalDpi) {
+  const ScreenResolution kFullHdAt100 =
+      MakeResolution(kFullHdLandscape, kDpi100Percent);
+  const ScreenResolution kQhdWindowAt150 =
+      MakeResolution(2560, 1372, kDpi150Percent);
+  const ScreenResolution k4kLandscapeAt200 =
+      MakeResolution(k4kLandscape, kDpi200Percent);
+  const ScreenResolution k4kPortraitAt200 =
+      MakeResolution(k4kPortrait, kDpi200Percent);
+
+  EXPECT_EQ(GetBoundedRdpResolution(kFullHdAt100), kFullHdAt100);
+  EXPECT_EQ(GetBoundedRdpResolution(kQhdWindowAt150), kQhdWindowAt150);
+  EXPECT_EQ(GetBoundedRdpResolution(k4kLandscapeAt200), k4kLandscapeAt200);
+  EXPECT_EQ(GetBoundedRdpResolution(k4kPortraitAt200), k4kPortraitAt200);
+}
+
+TEST(GetBoundedRdpResolutionTest, MinimumBoundsAndEvenKeepsDpi) {
+  const ScreenResolution kMinAt100 =
+      MakeResolution(kMinRdpSize, kDpi100Percent);
+  const ScreenResolution kMinAt150 =
+      MakeResolution(kMinRdpSize, kDpi150Percent);
+
+  EXPECT_EQ(GetBoundedRdpResolution(ScreenResolution()), kMinAt100);
+  EXPECT_EQ(GetBoundedRdpResolution(MakeResolution(0, 0, kDpi150Percent)),
+            kMinAt150);
+  EXPECT_EQ(
+      GetBoundedRdpResolution(MakeResolution(kVgaLandscape, kDpi100Percent)),
+      kMinAt100);
+  EXPECT_EQ(
+      GetBoundedRdpResolution(MakeResolution(kVgaLandscape, kDpi150Percent)),
+      kMinAt150);
+  EXPECT_EQ(GetBoundedRdpResolution(MakeResolution(kMinRdpSize, 72)),
+            kMinAt100);
+  EXPECT_EQ(GetBoundedRdpResolution(ScreenResolution(
+                kFullHdLandscape, webrtc::DesktopVector(kDpi150Percent, 0))),
+            MakeResolution(kFullHdLandscape, kDpi150Percent));
+  EXPECT_EQ(GetBoundedRdpResolution(MakeResolution(1921, 1081, kDpi200Percent)),
+            MakeResolution(kFullHdLandscape, kDpi200Percent));
+}
+
+TEST(GetBoundedRdpResolutionTest, ScalesDownLandscapeTo4KAndScalesDpi) {
+  // 16" Retina MacBook window at 2x: 5120x2744 @ 192 -> 3840x2058 @ 144.
+  EXPECT_EQ(GetBoundedRdpResolution(MakeResolution(5120, 2744, kDpi200Percent)),
+            MakeResolution(3840, 2058, kDpi150Percent));
+
+  // 6K Pro Display XDR window at 2x: 6016x3258 @ 192 -> 3840x2080 @ 123.
+  EXPECT_EQ(GetBoundedRdpResolution(MakeResolution(6016, 3258, kDpi200Percent)),
+            MakeResolution(3840, 2080, 123));
+
+  // 5K 16:9 Studio Display at 2x: 5120x2880 @ 192 -> 3840x2160 @ 144.
+  EXPECT_EQ(
+      GetBoundedRdpResolution(MakeResolution(k5kLandscape, kDpi200Percent)),
+      MakeResolution(k4kLandscape, kDpi150Percent));
+
+  // 16:10 UHD+ laptop at 2x: 3840x2400 @ 192 -> 3456x2160 @ 173
+  // (height-limited).
+  EXPECT_EQ(GetBoundedRdpResolution(MakeResolution(3840, 2400, kDpi200Percent)),
+            MakeResolution(3456, 2160, 173));
+
+  // Aspect ratio that rounds to an odd width (3283) aligns to 3282 (even), and
+  // scales DPI proportionally (192 * 2160 / 2500 -> 166).
+  EXPECT_EQ(GetBoundedRdpResolution(MakeResolution(3800, 2500, kDpi200Percent)),
+            MakeResolution(3282, 2160, 166));
+}
+
+TEST(GetBoundedRdpResolutionTest, ScalesDownPortraitTo4KAndScalesDpi) {
+  // 5K 9:16 portrait display at 2x: 2880x5120 @ 192 -> 2160x3840 @ 144.
+  EXPECT_EQ(
+      GetBoundedRdpResolution(MakeResolution(k5kPortrait, kDpi200Percent)),
+      MakeResolution(k4kPortrait, kDpi150Percent));
+
+  // 10:16 portrait UHD+ display at 2x: 2400x3840 @ 192 -> 2160x3456 @ 173.
+  EXPECT_EQ(GetBoundedRdpResolution(MakeResolution(2400, 3840, kDpi200Percent)),
+            MakeResolution(2160, 3456, 173));
+}
+
+TEST(GetBoundedRdpResolutionTest, ClampsScaledDpiToMinimum96) {
+  const ScreenResolution k4kAt100 =
+      MakeResolution(k4kLandscape, kDpi100Percent);
+
+  // 5K at 100% (96 DPI) would scale to 72 DPI, which clamps to 96 DPI.
+  EXPECT_EQ(
+      GetBoundedRdpResolution(MakeResolution(k5kLandscape, kDpi100Percent)),
+      k4kAt100);
+
+  // 5K at 125% (120 DPI) would scale to 90 DPI, which clamps to 96 DPI.
+  EXPECT_EQ(
+      GetBoundedRdpResolution(MakeResolution(k5kLandscape, kDpi125Percent)),
+      k4kAt100);
+}
+
+TEST(GetBoundedRdpResolutionTest, ExtremeAspectRatio) {
+  // Scaling down to 3840 width yields height < 600 (clamped up to 600) and
+  // DPI < 96 (clamped up to 96).
+  EXPECT_EQ(GetBoundedRdpResolution(MakeResolution(10000, 500, kDpi200Percent)),
+            MakeResolution(k4kLandscape.width(), kMinRdpSize.height(),
+                           kDpi100Percent));
+}
+
+TEST(GetBoundedRdpDesktopSizeTest, BoundsDimensionsAndHandlesInvalidInputs) {
+  EXPECT_TRUE(GetBoundedRdpDesktopSize(100, 0).equals(kMinRdpSize));
+  EXPECT_TRUE(GetBoundedRdpDesktopSize(-800, 600).equals(kMinRdpSize));
+  EXPECT_TRUE(
+      GetBoundedRdpDesktopSize(k5kLandscape.width(), k5kLandscape.height())
+          .equals(k4kLandscape));
 }
 
 }  // namespace remoting

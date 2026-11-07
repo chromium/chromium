@@ -277,6 +277,7 @@ source_set("unit_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }
 

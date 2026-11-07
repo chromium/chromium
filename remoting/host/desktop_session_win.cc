@@ -9,7 +9,6 @@
 #include <sddl.h>
 #include <wrl/client.h>
 
-#include <algorithm>
 #include <limits>
 #include <memory>
 #include <string>
@@ -41,11 +40,13 @@
 // MIDL-generated declarations and definitions.
 #include "remoting/host/win/chromoting_lib.h"
 #include "remoting/host/win/host_service.h"
+#include "remoting/host/win/rdp_client.h"
 #include "remoting/host/win/wts_session_process_delegate.h"
 #include "remoting/host/win/wts_terminal_monitor.h"
 #include "remoting/host/win/wts_terminal_observer.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
 #include "remoting/host/worker_process_launcher.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
 using base::win::ScopedHandle;
 
@@ -69,14 +70,6 @@ const char* const kCopiedSwitchNames[] = {switches::kV, switches::kVModule};
 // The default screen dimensions for an RDP session.
 const int kDefaultRdpScreenWidth = 1280;
 const int kDefaultRdpScreenHeight = 768;
-
-// The minimum effective screen dimensions supported by Windows are 800x600.
-const int kMinRdpScreenWidth = 800;
-const int kMinRdpScreenHeight = 600;
-
-// Windows supports dimensions up to 8192x8192.
-const int kMaxRdpScreenWidth = 8192;
-const int kMaxRdpScreenHeight = 8192;
 
 // Default dots per inch used by RDP is 96 DPI.
 const int kDefaultRdpDpi = 96;
@@ -102,12 +95,6 @@ const wchar_t kRdpPortValueName[] = L"PortNumber";
 const wchar_t kDenyTsConnectionsValueName[] = L"fDenyTSConnections";
 const wchar_t kNetworkLevelAuthValueName[] = L"UserAuthentication";
 const wchar_t kSecurityLayerValueName[] = L"SecurityLayer";
-
-webrtc::DesktopSize GetBoundedRdpDesktopSize(int width, int height) {
-  return webrtc::DesktopSize(
-      std::clamp(width, kMinRdpScreenWidth, kMaxRdpScreenWidth),
-      std::clamp(height, kMinRdpScreenHeight, kMaxRdpScreenHeight));
-}
 
 // DesktopSession implementation which attaches to the host's physical console.
 // Receives IPC messages from the desktop process, running in the console
@@ -361,12 +348,11 @@ void RdpSession::SetScreenResolution(const ScreenResolution& resolution) {
     return;
   }
 
-  webrtc::DesktopSize bounded_size = GetBoundedRdpDesktopSize(
-      resolution.dimensions().width(), resolution.dimensions().height());
+  ScreenResolution bounded = GetBoundedRdpResolution(resolution);
 
-  rdp_desktop_session_->ChangeResolution(
-      bounded_size.width(), bounded_size.height(), resolution.dpi().x(),
-      resolution.dpi().y());
+  rdp_desktop_session_->ChangeResolution(bounded.dimensions().width(),
+                                         bounded.dimensions().height(),
+                                         bounded.dpi().x(), bounded.dpi().y());
 }
 
 void RdpSession::InjectSas() {

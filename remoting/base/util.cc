@@ -5,6 +5,7 @@
 #include "remoting/base/util.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <string>
 #include <string_view>
 
@@ -16,6 +17,34 @@ namespace remoting {
 
 int RoundToTwosMultiple(int x) {
   return x & (~1);
+}
+
+webrtc::DesktopSize ScaleSizeToFit(const webrtc::DesktopSize& size,
+                                   const webrtc::DesktopSize& max_size) {
+  if (size.is_empty() || max_size.is_empty()) {
+    return webrtc::DesktopSize();
+  }
+
+  int64_t width = size.width();
+  int64_t height = size.height();
+  int64_t max_width = max_size.width();
+  int64_t max_height = max_size.height();
+
+  if (width <= max_width && height <= max_height) {
+    return size;
+  }
+
+  // Compare scale factors (max_width / width) vs (max_height / height) via
+  // cross-multiplication to avoid floating-point inaccuracy.
+  if (max_width * height <= max_height * width) {
+    int32_t scaled_height =
+        std::max<int64_t>(1, (height * max_width + width / 2) / width);
+    return webrtc::DesktopSize(max_width, scaled_height);
+  }
+
+  int32_t scaled_width =
+      std::max<int64_t>(1, (width * max_height + height / 2) / height);
+  return webrtc::DesktopSize(scaled_width, max_height);
 }
 
 webrtc::DesktopRect AlignRect(const webrtc::DesktopRect& rect) {

@@ -15,9 +15,23 @@ namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
 
+namespace webrtc {
+class DesktopSize;
+}  // namespace webrtc
+
 namespace remoting {
 
 class ScreenResolution;
+
+// Scales `width` and `height` down proportionally to fit within the 4K RDP
+// limit (3840x2160 in landscape or 2160x3840 in portrait), clamps to the
+// minimum supported RDP size (800x600), and aligns to even pixel boundaries.
+webrtc::DesktopSize GetBoundedRdpDesktopSize(int width, int height);
+
+// Bounds `resolution`'s dimensions via `GetBoundedRdpDesktopSize()` and, when
+// dimensions exceed the 4K RDP limit, scales DPI down by the same factor (with
+// a 96-DPI floor) so the effective logical desktop size is preserved.
+ScreenResolution GetBoundedRdpResolution(const ScreenResolution& resolution);
 
 // Establishes a loopback RDP connection to spawn a new Windows session.
 class RdpClient {
