@@ -317,6 +317,10 @@ class TestingWidgetDelegateView : public WidgetDelegateView {
                                        false);
     run_loop_->QuitWhenIdle();
   }
+  void WidgetIsZombie(Widget* widget) override {
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged,
+                                       false);
+  }
   TestingWidgetDelegateView(const TestingWidgetDelegateView&) = delete;
   TestingWidgetDelegateView& operator=(const TestingWidgetDelegateView&) =
       delete;

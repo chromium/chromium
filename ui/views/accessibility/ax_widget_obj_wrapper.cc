@@ -36,7 +36,10 @@ void AXWidgetObjWrapper::GetChildren(
     return;
   }
 
-  out_children->push_back(aura_obj_cache_->GetOrCreate(widget_->GetRootView()));
+  if (AXAuraObjWrapper* root_view =
+          aura_obj_cache_->GetOrCreate(widget_->GetRootView())) {
+    out_children->push_back(root_view);
+  }
 }
 
 void AXWidgetObjWrapper::Serialize(ui::AXNodeData* out_node_data) {

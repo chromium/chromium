@@ -41,6 +41,11 @@ aura::client::FocusClient* GetFocusClient(aura::Window* root_window) {
   return aura::client::GetFocusClient(root_window);
 }
 
+bool IsWidgetValid(Widget* widget) {
+  return widget && !widget->is_destroying() && widget->GetNativeView() &&
+         !widget->GetNativeView()->is_destroying();
+}
+
 }  // namespace
 
 // A class which observes the destruction of the a11y override window. Done here
@@ -89,8 +94,9 @@ View* AXAuraObjCache::GetPopupFocusOverride() {
 }
 
 AXAuraObjWrapper* AXAuraObjCache::GetOrCreate(View* view) {
-  // Avoid problems with transient focus events. https://crbug.com/729449
-  if (!view->GetWidget()) {
+  // Avoid problems with transient focus events or dying widgets.
+  // https://crbug.com/729449
+  if (!view || !IsWidgetValid(view->GetWidget())) {
     return nullptr;
   }
 
@@ -102,8 +108,8 @@ AXAuraObjWrapper* AXAuraObjCache::GetOrCreate(View* view) {
 }
 
 AXAuraObjWrapper* AXAuraObjCache::GetOrCreate(AXVirtualView* virtual_view) {
-  if (!virtual_view->GetOwnerView() ||
-      !virtual_view->GetOwnerView()->GetWidget()) {
+  if (!virtual_view || !virtual_view->GetOwnerView() ||
+      !IsWidgetValid(virtual_view->GetOwnerView()->GetWidget())) {
     return nullptr;
   }
   return CreateInternal<AXVirtualViewWrapper>(virtual_view,
@@ -111,6 +117,9 @@ AXAuraObjWrapper* AXAuraObjCache::GetOrCreate(AXVirtualView* virtual_view) {
 }
 
 AXAuraObjWrapper* AXAuraObjCache::GetOrCreate(Widget* widget) {
+  if (!IsWidgetValid(widget)) {
+    return nullptr;
+  }
   return CreateInternal<AXWidgetObjWrapper>(widget, &widget_to_id_map_);
 }
 
@@ -247,7 +256,7 @@ void AXAuraObjCache::OnFocusedViewChanged() {
 
 void AXAuraObjCache::FireEvent(AXAuraObjWrapper* aura_obj,
                                ax::mojom::Event event_type) {
-  if (delegate_) {
+  if (delegate_ && aura_obj) {
     delegate_->OnEvent(aura_obj, event_type);
   }
 }

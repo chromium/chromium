@@ -68,7 +68,10 @@ void AXViewObjWrapper::GetChildren(
   // TODO(dtseng): Need to handle |Widget| child of |View|.
   for (View* child : view_->children()) {
     if (child->GetVisible()) {
-      out_children->push_back(aura_obj_cache_->GetOrCreate(child));
+      if (AXAuraObjWrapper* child_wrapper =
+              aura_obj_cache_->GetOrCreate(child)) {
+        out_children->push_back(child_wrapper);
+      }
     }
   }
 }
