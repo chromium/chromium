@@ -14,6 +14,7 @@ import android.os.Build;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -281,7 +282,8 @@ public class MediaDrmBridge {
             int securityLevel,
             boolean requiresMediaCrypto,
             long nativeMediaDrmBridge,
-            long nativeMediaDrmStorageBridge)
+            @Nullable JniRawPtr<MediaDrmStorageBridge.NativeMediaDrmStorageBridge>
+                    nativeMediaDrmStorageBridge)
             throws android.media.UnsupportedSchemeException {
         mKeySystemUuid = keySystemUuid;
         mSecurityLevel = securityLevel;
@@ -475,14 +477,15 @@ public class MediaDrmBridge {
      * @param nativeMediaDrmStorageBridge Native C++ object of persistent storage.
      */
     @CalledByNative
-    private static @Nullable MediaDrmBridge create(
+    static @Nullable MediaDrmBridge create(
             byte[] keySystemBytes,
             String securityOrigin,
             int securityLevel,
             String message,
             boolean requiresMediaCrypto,
             long nativeMediaDrmBridge,
-            long nativeMediaDrmStorageBridge) {
+            @Nullable JniRawPtr<MediaDrmStorageBridge.NativeMediaDrmStorageBridge>
+                    nativeMediaDrmStorageBridge) {
         Log.i(
                 TAG,
                 "Create MediaDrmBridge with level %d and origin %s for %s",
@@ -490,69 +493,82 @@ public class MediaDrmBridge {
                 securityOrigin,
                 message);
 
-        MediaDrmBridge mediaDrmBridge;
-        // MediaDrm.isCryptoSchemeSupported reads from disk
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            UUID keySystemUuid = getUuidFromBytes(keySystemBytes);
-            if (keySystemUuid == null || !MediaDrm.isCryptoSchemeSupported(keySystemUuid)) {
+        @Nullable JniRawPtr<MediaDrmStorageBridge.NativeMediaDrmStorageBridge> storagePtrToRelease =
+                nativeMediaDrmStorageBridge;
+        try {
+            MediaDrmBridge mediaDrmBridge;
+            // MediaDrm.isCryptoSchemeSupported reads from disk
+            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                UUID keySystemUuid = getUuidFromBytes(keySystemBytes);
+                if (keySystemUuid == null || !MediaDrm.isCryptoSchemeSupported(keySystemUuid)) {
+                    MediaDrmBridgeJni.get()
+                            .onCreateError(
+                                    nativeMediaDrmBridge,
+                                    MediaDrmCreateError.UNSUPPORTED_DRM_SCHEME);
+                    return null;
+                }
+
+                mediaDrmBridge =
+                        new MediaDrmBridge(
+                                assumeNonNull(keySystemUuid),
+                                securityLevel,
+                                requiresMediaCrypto,
+                                nativeMediaDrmBridge,
+                                nativeMediaDrmStorageBridge);
+            } catch (android.media.UnsupportedSchemeException e) {
+                Log.e(TAG, "Unsupported DRM scheme", e);
                 MediaDrmBridgeJni.get()
                         .onCreateError(
                                 nativeMediaDrmBridge, MediaDrmCreateError.UNSUPPORTED_DRM_SCHEME);
                 return null;
+            } catch (java.lang.IllegalArgumentException e) {
+                Log.e(TAG, "Failed to create MediaDrmBridge", e);
+                MediaDrmBridgeJni.get()
+                        .onCreateError(
+                                nativeMediaDrmBridge,
+                                MediaDrmCreateError.MEDIADRM_ILLEGAL_ARGUMENT);
+                return null;
+            } catch (java.lang.IllegalStateException e) {
+                Log.e(TAG, "Failed to create MediaDrmBridge", e);
+                MediaDrmBridgeJni.get()
+                        .onCreateError(
+                                nativeMediaDrmBridge, MediaDrmCreateError.MEDIADRM_ILLEGAL_STATE);
+                return null;
             }
 
-            mediaDrmBridge =
-                    new MediaDrmBridge(
-                            assumeNonNull(keySystemUuid),
-                            securityLevel,
-                            requiresMediaCrypto,
-                            nativeMediaDrmBridge,
-                            nativeMediaDrmStorageBridge);
-        } catch (android.media.UnsupportedSchemeException e) {
-            Log.e(TAG, "Unsupported DRM scheme", e);
-            MediaDrmBridgeJni.get()
-                    .onCreateError(
-                            nativeMediaDrmBridge, MediaDrmCreateError.UNSUPPORTED_DRM_SCHEME);
-            return null;
-        } catch (java.lang.IllegalArgumentException e) {
-            Log.e(TAG, "Failed to create MediaDrmBridge", e);
-            MediaDrmBridgeJni.get()
-                    .onCreateError(
-                            nativeMediaDrmBridge, MediaDrmCreateError.MEDIADRM_ILLEGAL_ARGUMENT);
-            return null;
-        } catch (java.lang.IllegalStateException e) {
-            Log.e(TAG, "Failed to create MediaDrmBridge", e);
-            MediaDrmBridgeJni.get()
-                    .onCreateError(
-                            nativeMediaDrmBridge, MediaDrmCreateError.MEDIADRM_ILLEGAL_STATE);
-            return null;
-        }
+            if (mediaDrmBridge.isWidevine() && !mediaDrmBridge.setSecurityLevel(securityLevel)) {
+                MediaDrmBridgeJni.get()
+                        .onCreateError(
+                                nativeMediaDrmBridge, MediaDrmCreateError.FAILED_SECURITY_LEVEL);
+                mediaDrmBridge.release();
+                return null;
+            }
 
-        if (mediaDrmBridge.isWidevine() && !mediaDrmBridge.setSecurityLevel(securityLevel)) {
-            MediaDrmBridgeJni.get()
-                    .onCreateError(nativeMediaDrmBridge, MediaDrmCreateError.FAILED_SECURITY_LEVEL);
-            mediaDrmBridge.release();
-            return null;
-        }
+            if (!securityOrigin.isEmpty() && !mediaDrmBridge.setOrigin(securityOrigin)) {
+                MediaDrmBridgeJni.get()
+                        .onCreateError(
+                                nativeMediaDrmBridge, MediaDrmCreateError.FAILED_SECURITY_ORIGIN);
+                mediaDrmBridge.release();
+                return null;
+            }
 
-        if (!securityOrigin.isEmpty() && !mediaDrmBridge.setOrigin(securityOrigin)) {
-            MediaDrmBridgeJni.get()
-                    .onCreateError(
-                            nativeMediaDrmBridge, MediaDrmCreateError.FAILED_SECURITY_ORIGIN);
-            mediaDrmBridge.release();
-            return null;
-        }
+            // When session support is required, we need to create MediaCrypto to
+            // finish the CDM creation process. This may trigger the provisioning
+            // process, in which case MediaCrypto will be created after provision
+            // is finished.
+            if (requiresMediaCrypto && !mediaDrmBridge.createMediaCrypto()) {
+                // No need to call release() or onCreateError() as createMediaCrypto() does if it
+                // fails.
+                return null;
+            }
 
-        // When session support is required, we need to create MediaCrypto to
-        // finish the CDM creation process. This may trigger the provisioning
-        // process, in which case MediaCrypto will be created after provision
-        // is finished.
-        if (requiresMediaCrypto && !mediaDrmBridge.createMediaCrypto()) {
-            // No need to call release() or onCreateError() as createMediaCrypto() does if it fails.
-            return null;
+            storagePtrToRelease = null;
+            return mediaDrmBridge;
+        } finally {
+            if (storagePtrToRelease != null) {
+                storagePtrToRelease.release();
+            }
         }
-
-        return mediaDrmBridge;
     }
 
     @CalledByNative
@@ -744,6 +760,7 @@ public class MediaDrmBridge {
                 Log.e(TAG, "Failed to destroy MediaDrmBridge properly", e);
             }
         }
+        mStorage.release();
     }
 
     /** Release all allocated resources and finish all pending operations. */
@@ -795,6 +812,8 @@ public class MediaDrmBridge {
 
             mMediaDrm = null;
         }
+
+        mStorage.release();
     }
 
     /**
