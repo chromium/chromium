@@ -441,6 +441,17 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   protected onSingleTabRowPointerenter_() {
     this.pointerDownOnTrigger_ = false;
     this.setFocusOutlineVisible_(false);
+    // The pointer is on a sibling row rather than heading for the flyout, so
+    // close the flyout now instead of after CLOSE_MENU_DELAY_MS. Otherwise
+    // #shareTabsTrigger keeps its aria-expanded highlight alongside this row's
+    // hover highlight until the timer fires.
+    this.shouldOpenMenu_ = false;
+    ++this.openMenuRequestId_;
+    this.cancelCloseTimer_();
+    if (this.$.tabMenu.open) {
+      this.$.tabMenu.close();
+      this.$.shareTabsTrigger.blur();
+    }
   }
 
   protected onSingleTabRowPointermove_() {
