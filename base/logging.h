@@ -683,11 +683,17 @@ BASE_EXPORT void RawLog(int level, const char* message);
 // Returns true if logging to file is enabled.
 BASE_EXPORT bool IsLoggingToFileEnabled();
 
-// Returns the default log file path.
-BASE_EXPORT std::wstring GetLogFileFullPath();
-
 // Duplicates the log file handle to send into a child process.
 BASE_EXPORT HANDLE DuplicateLogFileHandle();
+#endif
+
+// Returns the default log file path.
+// This intentionally returns a string rather than base::FilePath, to avoid
+// including base/files/file_path.h from this widely included header.
+#if BUILDFLAG(IS_WIN)
+BASE_EXPORT std::wstring GetLogFileFullPath();
+#elif BUILDFLAG(IS_CHROMEOS)
+BASE_EXPORT std::string GetLogFileFullPath();
 #endif
 
 }  // namespace logging

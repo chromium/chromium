@@ -383,6 +383,25 @@ TEST_F(LoggingTest, DuplicateLogFile) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+TEST_F(LoggingTest, GetLogFileFullPath) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_log_path =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("file.log"));
+
+  LoggingSettings settings;
+  settings.logging_dest = LOG_TO_FILE;
+  settings.log_file_path = file_log_path.value();
+  ASSERT_TRUE(InitLogging(settings));
+
+  EXPECT_EQ(file_log_path.value(), GetLogFileFullPath());
+
+  // Close the log file, so that `temp_dir` can be deleted on Windows.
+  CloseLogFile();
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+
 #if !CHECK_WILL_STREAM() && BUILDFLAG(IS_WIN)
 // Tell clang to not optimize this function or else it will remove the CHECKs.
 [[clang::optnone]] NOINLINE void CheckContainingFunc(int death_location) {
