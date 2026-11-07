@@ -259,6 +259,42 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, RemovePolicyClearsData) {
   policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
 }
 
+TEST_F(MemoryCoordinatorPolicyManagerTest,
+       NoNotificationAfterPrepareForShutdown) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kTestTraits1, kChildId);
+
+  NiceMock<MockPolicy> policy(policy_manager());
+  {
+    MemoryCoordinatorPolicyRegistration reg(policy_manager(), policy);
+
+    EXPECT_CALL(host,
+                UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                    kConsumerId, base::MemoryLimit::FromPercent(50), false})));
+    policy.manager().UpdateConsumers(
+        &policy,
+        {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(50), false}}});
+    Mock::VerifyAndClearExpectations(&host);
+
+    policy_manager().PrepareForShutdown();
+
+    // Removing the policy would normally restore the default limit.
+    EXPECT_CALL(host, UpdateConsumers(_)).Times(0);
+  }
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
 TEST_F(MemoryCoordinatorPolicyManagerTest, ReleaseMemory) {
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId(1);

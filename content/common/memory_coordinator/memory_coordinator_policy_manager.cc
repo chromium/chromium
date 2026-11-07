@@ -214,10 +214,14 @@ void MemoryCoordinatorPolicyManager::RemovePolicy(
         updates.push_back({consumer_id, new_limit, release_memory});
       }
     }
-    if (!updates.empty()) {
+    if (!updates.empty() && !is_shutting_down_) {
       host_state->host->UpdateConsumers(std::move(updates));
     }
   }
+}
+
+void MemoryCoordinatorPolicyManager::PrepareForShutdown() {
+  is_shutting_down_ = true;
 }
 
 MemoryCoordinatorPolicyManager::HostState&
@@ -369,6 +373,7 @@ void MemoryCoordinatorPolicyManager::UpdateConsumersForProcess(
     MemoryCoordinatorPolicy* policy,
     ChildProcessId child_process_id,
     std::vector<MemoryConsumerUpdate> updates) {
+  CHECK(!is_shutting_down_);
   HostState& host_state = GetHostState(child_process_id);
 
   // The `updates` vector is modified in-place, removing entries that do not
@@ -445,6 +450,7 @@ void MemoryCoordinatorPolicyManager::ClearMemoryReleaseSuppression(
 void MemoryCoordinatorPolicyManager::ApplyMemoryReleaseSuppression(
     MemoryCoordinatorPolicy* policy,
     const ConsumerFilter* filter) {
+  CHECK(!is_shutting_down_);
   for (auto const& [child_id, host_state] : hosts_) {
     std::vector<MemoryConsumerUpdate> updates;
     for (auto const& [consumer_id, group_state] : host_state->groups) {
@@ -471,6 +477,7 @@ void MemoryCoordinatorPolicyManager::ApplyMemoryReleaseSuppression(
 void MemoryCoordinatorPolicyManager::ApplyMemoryLimitOverride(
     uint32_t consumer_id,
     base::MemoryLimit memory_limit) {
+  CHECK(!is_shutting_down_);
   for (auto const& [child_id, host_state] : hosts_) {
     auto it = host_state->groups.find(consumer_id);
     if (it != host_state->groups.end()) {
@@ -490,6 +497,7 @@ void MemoryCoordinatorPolicyManager::SetMemoryLimitOverride(
 
 void MemoryCoordinatorPolicyManager::ClearMemoryLimitOverride(
     uint32_t consumer_id) {
+  CHECK(!is_shutting_down_);
   size_t removed = memory_limit_overrides_.erase(consumer_id);
   CHECK_EQ(removed, 1u);
 

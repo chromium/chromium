@@ -80,7 +80,14 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
   void AddPolicy(MemoryCoordinatorPolicy* policy);
 
   // Unregisters a policy with the manager and clears all its associated data.
+  // Consumers are not notified after PrepareForShutdown().
   void RemovePolicy(MemoryCoordinatorPolicy* policy);
+
+  // Called when the owner starts tearing down. Afterwards, removing a policy
+  // updates the bookkeeping but doesn't notify consumers, which may live on
+  // sequences that can no longer run tasks (e.g. after thread pool shutdown).
+  // Requesting any other consumer update afterwards is a CHECK failure.
+  void PrepareForShutdown();
 
   // Returns true if at least one policy is registered with the manager.
   bool HasPolicies() const { return !policies_.empty(); }
@@ -291,6 +298,9 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
 #endif
 
   bool is_notifying_ = false;
+
+  // Set by PrepareForShutdown().
+  bool is_shutting_down_ = false;
   base::flat_set<raw_ptr<MemoryCoordinatorPolicy>> policies_;
 
   absl::flat_hash_map<ChildProcessId, std::unique_ptr<HostState>> hosts_;

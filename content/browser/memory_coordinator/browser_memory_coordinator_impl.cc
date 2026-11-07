@@ -46,6 +46,10 @@ BrowserMemoryCoordinatorImpl::BrowserMemoryCoordinatorImpl() {
 
 BrowserMemoryCoordinatorImpl::~BrowserMemoryCoordinatorImpl() {
   CHECK_EQ(g_instance, this);
+  // The policies are destroyed after this body runs, and removing them would
+  // notify consumers. This runs after the thread pool has shut down, so
+  // consumers can't receive notifications anymore.
+  policy_manager_.PrepareForShutdown();
   g_instance = nullptr;
 }
 
