@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_and_views_toolbar_interactive_uitest_base.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_accessibility_state.h"
@@ -177,11 +178,23 @@ ToolbarAccessibilityTest::WaitForElementNonzeroSize(ui::ElementIdentifier id) {
                DoWaitForLayout())));
 }
 
-ui::InteractionSequence::StepBuilder
+ToolbarAccessibilityTest::MultiStep
 ToolbarAccessibilityTest::MoveMouseToElement(ui::ElementIdentifier id) {
-  return MoveMouseTo(id, base::BindOnce([](ui::TrackedElement* el) {
-                       return el->GetScreenBounds().CenterPoint();
-                     }));
+  return Steps(CheckElement(id,
+                            [](ui::TrackedElement* el) {
+                              if (auto* const webui_el =
+                                      el->AsA<ui::TrackedElementWebUI>()) {
+                                const auto result = FlushWebUIToolbarPipes(
+                                    webui::GetBrowserWindowInterface(
+                                        webui_el->handler()->web_contents()));
+                                EXPECT_TRUE(result);
+                                return static_cast<bool>(result);
+                              }
+                              return true;
+                            }),
+               MoveMouseTo(id, base::BindOnce([](ui::TrackedElement* el) {
+                             return el->GetScreenBounds().CenterPoint();
+                           })));
 }
 
 ToolbarAccessibilityTest::MultiStep

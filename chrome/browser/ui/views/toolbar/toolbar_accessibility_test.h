@@ -63,8 +63,9 @@ class ToolbarAccessibilityTest
   // Waits for element to have a size > 1 pixel.
   [[nodiscard]] MultiStep WaitForElementNonzeroSize(ui::ElementIdentifier id);
 
-  // Shorthand for MoveMouseTo that works for both Views and WebUI elements.
-  [[nodiscard]] StepBuilder MoveMouseToElement(ui::ElementIdentifier id);
+  // Shorthand for MoveMouseTo that works for both Views and WebUI elements,
+  // flushing pending WebUI toolbar state pushes before targeting WebUI.
+  [[nodiscard]] MultiStep MoveMouseToElement(ui::ElementIdentifier id);
 
   // Steps to wait for a context menu and then dismiss it.
   [[nodiscard]] MultiStep DismissContextMenu(ui::ElementIdentifier element_id,
