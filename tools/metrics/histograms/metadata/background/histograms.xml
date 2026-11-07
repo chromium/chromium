@@ -46,18 +46,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BackgroundSync.NetworkObserver.HasPermission" enum="Boolean"
-    expires_after="2024-02-06">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records whether the browser has sufficient permissions to create a
-    BackgroundSyncNetworkObserver object on Android, at the point when it tries
-    to create it. This should never be false, but is being tracked in order to
-    help resolve crbug.com/545473.
-  </summary>
-</histogram>
-
 <histogram name="BackgroundSync.Periodic.Wakeup.DelayTime" units="ms"
     expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>

@@ -21,7 +21,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.net.ConnectionType;
@@ -99,8 +98,6 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
     private void registerObserver(final long nativePtr) {
         ThreadUtils.assertOnUiThread();
         if (!canCreateObserver()) {
-            RecordHistogram.recordBooleanHistogram(
-                    "BackgroundSync.NetworkObserver.HasPermission", false);
             return;
         }
 
@@ -109,8 +106,6 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
             mNotifier =
                     new NetworkChangeNotifierAutoDetect(
                             this, new RegistrationPolicyAlwaysRegister());
-            RecordHistogram.recordBooleanHistogram(
-                    "BackgroundSync.NetworkObserver.HasPermission", true);
         } else {
             // Ensure the cached network state is up-to-date for subsequent observers (when
             // mNotifier is newly constructed above, its constructor already queries the initial
