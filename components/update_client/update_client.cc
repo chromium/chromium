@@ -58,6 +58,9 @@ CrxInstaller::InstallParams::InstallParams(
 CrxUpdateItem::CrxUpdateItem() : state(ComponentState::kNew) {}
 CrxUpdateItem::CrxUpdateItem(const CrxUpdateItem& other) = default;
 CrxUpdateItem& CrxUpdateItem::operator=(const CrxUpdateItem& other) = default;
+CrxUpdateItem::CrxUpdateItem(CrxUpdateItem&& other) noexcept = default;
+CrxUpdateItem& CrxUpdateItem::operator=(CrxUpdateItem&& other) noexcept =
+    default;
 CrxUpdateItem::~CrxUpdateItem() = default;
 
 CrxComponent::CrxComponent() = default;

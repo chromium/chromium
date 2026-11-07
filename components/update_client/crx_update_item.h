@@ -24,6 +24,8 @@ struct CrxUpdateItem {
   CrxUpdateItem();
   CrxUpdateItem(const CrxUpdateItem& other);
   CrxUpdateItem& operator=(const CrxUpdateItem& other);
+  CrxUpdateItem(CrxUpdateItem&& other) noexcept;
+  CrxUpdateItem& operator=(CrxUpdateItem&& other) noexcept;
   ~CrxUpdateItem();
 
   ComponentState state;

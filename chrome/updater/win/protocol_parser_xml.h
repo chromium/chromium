@@ -55,6 +55,9 @@ class ProtocolParserXML final {
   struct App {
     App();
     App(const App& app);
+    App& operator=(const App& app);
+    App(App&& app) noexcept;
+    App& operator=(App&& app) noexcept;
     ~App();
 
     std::string app_id;
@@ -65,6 +68,9 @@ class ProtocolParserXML final {
   struct Results {
     Results();
     Results(const Results& results);
+    Results& operator=(const Results& results);
+    Results(Results&& results) noexcept;
+    Results& operator=(Results&& results) noexcept;
     ~Results();
 
     OfflineManifestSystemRequirements system_requirements;

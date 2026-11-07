@@ -447,6 +447,10 @@ PersistedDataEvent::RegisteredApp::RegisteredApp(const RegisteredApp&) =
     default;
 PersistedDataEvent::RegisteredApp& PersistedDataEvent::RegisteredApp::operator=(
     const RegisteredApp&) = default;
+PersistedDataEvent::RegisteredApp::RegisteredApp(RegisteredApp&&) noexcept =
+    default;
+PersistedDataEvent::RegisteredApp& PersistedDataEvent::RegisteredApp::operator=(
+    RegisteredApp&&) noexcept = default;
 PersistedDataEvent::RegisteredApp::~RegisteredApp() = default;
 
 PersistedDataEvent::PersistedDataEvent() = default;

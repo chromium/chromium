@@ -340,6 +340,8 @@ class PersistedDataEvent : public HistoryEventBuilder<PersistedDataEvent> {
     RegisteredApp();
     RegisteredApp(const RegisteredApp&);
     RegisteredApp& operator=(const RegisteredApp&);
+    RegisteredApp(RegisteredApp&&) noexcept;
+    RegisteredApp& operator=(RegisteredApp&&) noexcept;
     ~RegisteredApp();
     std::string app_id;
     std::string version;
