@@ -230,7 +230,8 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   //
   // `navigation_response_task_runner` is a task runner that may be non-null for
   // navigation requests and can be used to run navigation request blocking
-  // tasks.
+  // tasks. It may also be non-null for a main frame's document subresource
+  // factory, in which case all of the proxy's receivers are bound to it.
   //
   // Returns `true` if the URLLoaderFactory will be proxied; `false` otherwise.
   bool MaybeProxyURLLoaderFactory(

@@ -882,6 +882,28 @@ BASE_FEATURE(kSkipUrlInvalidationForUnchangedSameDocumentReplacement,
 BASE_FEATURE(kStrictHighRankProcessLRU, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// When enabled, UI thread proxies of a main frame document's network
+// subresource URLLoaderFactory (e.g. the extensions WebRequest proxy) bind
+// their receivers to a kHigh priority task queue instead of the UI thread's
+// default task queue, so that starting a subresource request isn't delayed by
+// unrelated default-queue work.
+BASE_FEATURE(kSubresourceLoaderProxyTaskQueue,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// When true, only documents that commit while their WebContents is visible use
+// the kHigh priority task queue.
+BASE_FEATURE_PARAM(bool,
+                   kSubresourceLoaderProxyTaskQueueVisibleOnly,
+                   &kSubresourceLoaderProxyTaskQueue,
+                   true);
+// When true, prerendered main frames also use the kHigh priority task queue
+// (subject to `kSubresourceLoaderProxyTaskQueueVisibleOnly`). False by default
+// so background prerenders do not preempt default-queue UI work for the primary
+// page.
+BASE_FEATURE_PARAM(bool,
+                   kSubresourceLoaderProxyTaskQueueIncludePrerendering,
+                   &kSubresourceLoaderProxyTaskQueue,
+                   false);
+
 // Allows swipe left/right from touchpad change browser navigation.
 // On platforms that don't have this enabled by default, the overscroll gesture
 // is handled at a different level and not through the interpretation of scroll

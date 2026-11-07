@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <initializer_list>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -26,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -53,10 +55,13 @@
 #include "content/common/frame.mojom-test-utils.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/focused_node_details.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
@@ -114,10 +119,12 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/test/test_url_loader_client.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -13055,6 +13062,701 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplTextInputTypeBrowserTest,
   ASSERT_TRUE(ExecJs(web_contents(), "document.activeElement.blur()"));
   EXPECT_TRUE(base::test::RunUntil(
       [&] { return !root_frame_host()->GetFocusedElementTextInputType(); }));
+}
+
+namespace {
+
+// Records whether `WillCreateURLLoaderFactory()` was given a task runner for
+// each frame's network-backed document subresource URLLoaderFactory.
+class SubresourceProxyTaskRunnerRecordingClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  // ContentBrowserClient:
+  void WillCreateURLLoaderFactory(
+      BrowserContext* browser_context,
+      RenderFrameHost* frame,
+      int render_process_id,
+      URLLoaderFactoryType type,
+      const url::Origin& request_initiator,
+      const net::IsolationInfo& isolation_info,
+      std::optional<int64_t> navigation_id,
+      ukm::SourceIdObj ukm_source_id,
+      network::URLLoaderFactoryBuilder& factory_builder,
+      mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
+          header_client,
+      bool* bypass_redirect_checks,
+      bool* disable_secure_dns,
+      network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
+      bool is_for_network_service) override {
+    if (frame && type == URLLoaderFactoryType::kDocumentSubResource &&
+        is_for_network_service) {
+      if (navigation_response_task_runner) {
+        EXPECT_TRUE(
+            navigation_response_task_runner->RunsTasksInCurrentSequence());
+      }
+      has_task_runner_[frame->GetGlobalId()] =
+          !!navigation_response_task_runner;
+      ++factory_creation_count_[frame->GetGlobalId()];
+    }
+    ContentBrowserTestContentBrowserClient::WillCreateURLLoaderFactory(
+        browser_context, frame, render_process_id, type, request_initiator,
+        isolation_info, std::move(navigation_id), ukm_source_id,
+        factory_builder, header_client, bypass_redirect_checks,
+        disable_secure_dns, factory_override,
+        std::move(navigation_response_task_runner), is_for_network_service);
+  }
+
+  std::optional<bool> HasTaskRunner(RenderFrameHost* rfh) const {
+    auto it = has_task_runner_.find(rfh->GetGlobalId());
+    if (it == has_task_runner_.end()) {
+      return std::nullopt;
+    }
+    return it->second;
+  }
+
+  size_t FactoryCreationCount(RenderFrameHost* rfh) const {
+    auto it = factory_creation_count_.find(rfh->GetGlobalId());
+    return it == factory_creation_count_.end() ? 0u : it->second;
+  }
+
+ private:
+  std::map<GlobalRenderFrameHostId, bool> has_task_runner_;
+  std::map<GlobalRenderFrameHostId, size_t> factory_creation_count_;
+};
+
+class RenderFrameHostImplSubresourceLoaderProxyTaskQueueBrowserTest
+    : public RenderFrameHostImplBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  RenderFrameHostImplSubresourceLoaderProxyTaskQueueBrowserTest() {
+    feature_list_.InitWithFeatureState(
+        features::kSubresourceLoaderProxyTaskQueue, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+}  // namespace
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RenderFrameHostImplSubresourceLoaderProxyTaskQueueBrowserTest,
+    testing::Bool());
+
+// With kSubresourceLoaderProxyTaskQueue enabled, the outermost main frame's
+// network subresource URLLoaderFactory is created with a task runner for
+// embedder proxies. Subframes never get one.
+IN_PROC_BROWSER_TEST_P(
+    RenderFrameHostImplSubresourceLoaderProxyTaskQueueBrowserTest,
+    TaskRunnerOnlyForOutermostMainFrame) {
+  SubresourceProxyTaskRunnerRecordingClient client;
+
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a.com(a.com)")));
+  RenderFrameHostImpl* main_frame = root_frame_host();
+  ASSERT_EQ(1u, main_frame->child_count());
+  RenderFrameHostImpl* child_frame =
+      main_frame->child_at(0)->current_frame_host();
+
+  EXPECT_EQ(client.HasTaskRunner(main_frame), std::optional<bool>(GetParam()));
+  EXPECT_EQ(client.HasTaskRunner(child_frame), std::optional<bool>(false));
+}
+
+namespace {
+
+// Parameterized on kSubresourceLoaderProxyTaskQueueVisibleOnly.
+class RenderFrameHostImplSubresourceLoaderProxyTaskQueueVisibilityBrowserTest
+    : public RenderFrameHostImplBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  RenderFrameHostImplSubresourceLoaderProxyTaskQueueVisibilityBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kSubresourceLoaderProxyTaskQueue,
+        {{features::kSubresourceLoaderProxyTaskQueueVisibleOnly.name,
+          GetParam() ? "true" : "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+}  // namespace
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RenderFrameHostImplSubresourceLoaderProxyTaskQueueVisibilityBrowserTest,
+    testing::Bool());
+
+// A main frame document that commits while its WebContents is hidden only gets
+// a task runner for embedder proxies if
+// kSubresourceLoaderProxyTaskQueueVisibleOnly is false.
+IN_PROC_BROWSER_TEST_P(
+    RenderFrameHostImplSubresourceLoaderProxyTaskQueueVisibilityBrowserTest,
+    HiddenWebContents) {
+  SubresourceProxyTaskRunnerRecordingClient client;
+
+  // Create a hidden WebContents detached from the native Shell window so that
+  // native window occlusion recalculations (e.g. on Aura) cannot flip its
+  // visibility back to VISIBLE during navigation.
+  WebContents::CreateParams create_params(web_contents()->GetBrowserContext());
+  create_params.initially_hidden = true;
+  std::unique_ptr<WebContents> hidden_contents =
+      WebContents::Create(create_params);
+  ASSERT_EQ(Visibility::HIDDEN, hidden_contents->GetVisibility());
+  ASSERT_TRUE(
+      NavigateToURL(hidden_contents.get(),
+                    embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  EXPECT_EQ(client.HasTaskRunner(hidden_contents->GetPrimaryMainFrame()),
+            std::optional<bool>(!GetParam()));
+}
+
+namespace {
+
+// Parameterized on `kSubresourceLoaderProxyTaskQueueIncludePrerendering`
+// (`std::nullopt` exercises the default parameter value).
+class RenderFrameHostImplSubresourceLoaderProxyTaskQueuePrerenderBrowserTest
+    : public RenderFrameHostImplBrowserTest,
+      public testing::WithParamInterface<std::optional<bool>> {
+ public:
+  RenderFrameHostImplSubresourceLoaderProxyTaskQueuePrerenderBrowserTest()
+      : prerender_helper_(base::BindLambdaForTesting(
+            [this]() { return shell()->web_contents(); })) {
+    if (GetParam().has_value()) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          features::kSubresourceLoaderProxyTaskQueue,
+          {{features::kSubresourceLoaderProxyTaskQueueIncludePrerendering.name,
+            *GetParam() ? "true" : "false"}});
+    } else {
+      feature_list_.InitAndEnableFeature(
+          features::kSubresourceLoaderProxyTaskQueue);
+    }
+  }
+
+  test::PrerenderTestHelper& prerender_helper() { return prerender_helper_; }
+
+ private:
+  test::PrerenderTestHelper prerender_helper_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+}  // namespace
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RenderFrameHostImplSubresourceLoaderProxyTaskQueuePrerenderBrowserTest,
+    testing::Values(std::nullopt, false, true));
+
+// Even when the hosting WebContents is visible, a prerendered main frame only
+// receives a high-priority task runner for embedder proxies if
+// `kSubresourceLoaderProxyTaskQueueIncludePrerendering` is true (false by
+// default), and keeps the factory created at prerender commit upon activation.
+IN_PROC_BROWSER_TEST_P(
+    RenderFrameHostImplSubresourceLoaderProxyTaskQueuePrerenderBrowserTest,
+    PrerenderedMainFrame) {
+  SubresourceProxyTaskRunnerRecordingClient client;
+
+  ASSERT_EQ(Visibility::VISIBLE, web_contents()->GetVisibility());
+  const GURL initial_url =
+      embedded_test_server()->GetURL("a.com", "/title1.html");
+  const GURL prerender_url =
+      embedded_test_server()->GetURL("a.com", "/title2.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  EXPECT_EQ(client.HasTaskRunner(web_contents()->GetPrimaryMainFrame()),
+            std::optional<bool>(true));
+
+  PrerenderHostId host_id = prerender_helper().AddPrerender(prerender_url);
+  RenderFrameHostImpl* prerender_rfh = static_cast<RenderFrameHostImpl*>(
+      prerender_helper().GetPrerenderedMainFrameHost(host_id));
+  ASSERT_TRUE(prerender_rfh);
+  EXPECT_TRUE(prerender_rfh->IsOutermostMainFrame());
+  EXPECT_TRUE(prerender_rfh->frame_tree()->is_prerendering());
+
+  const bool expect_prerender_task_runner = GetParam().value_or(false);
+  EXPECT_EQ(client.HasTaskRunner(prerender_rfh),
+            std::optional<bool>(expect_prerender_task_runner));
+  const size_t pre_activation_factory_count =
+      client.FactoryCreationCount(prerender_rfh);
+  EXPECT_GT(pre_activation_factory_count, 0u);
+
+  // Activating the prerendered page reuses the subresource URLLoaderFactory
+  // created at prerender commit time without recreating it.
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+  EXPECT_EQ(prerender_rfh, web_contents()->GetPrimaryMainFrame());
+  EXPECT_EQ(pre_activation_factory_count,
+            client.FactoryCreationCount(prerender_rfh));
+  EXPECT_EQ(client.HasTaskRunner(prerender_rfh),
+            std::optional<bool>(expect_prerender_task_runner));
+}
+
+namespace {
+
+// Proxies a frame's subresource URLLoaderFactory on
+// `navigation_response_task_runner` (mirroring
+// extensions::WebRequestProxyingURLLoaderFactory) and records when
+// `CreateLoaderAndStart()` runs relative to navigation commit and default-queue
+// tasks.
+class SubresourceProxyCommitOrderingClient
+    : public ContentBrowserTestContentBrowserClient,
+      public network::mojom::URLLoaderFactory {
+ public:
+  explicit SubresourceProxyCommitOrderingClient(
+      std::vector<std::string>* execution_order,
+      base::RepeatingClosure on_event)
+      : execution_order_(execution_order), on_event_(std::move(on_event)) {}
+
+  // ContentBrowserClient:
+  void WillCreateURLLoaderFactory(
+      BrowserContext* browser_context,
+      RenderFrameHost* frame,
+      int render_process_id,
+      URLLoaderFactoryType type,
+      const url::Origin& request_initiator,
+      const net::IsolationInfo& isolation_info,
+      std::optional<int64_t> navigation_id,
+      ukm::SourceIdObj ukm_source_id,
+      network::URLLoaderFactoryBuilder& factory_builder,
+      mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
+          header_client,
+      bool* bypass_redirect_checks,
+      bool* disable_secure_dns,
+      network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
+      bool is_for_network_service) override {
+    if (frame && type == URLLoaderFactoryType::kDocumentSubResource &&
+        is_for_network_service && intercept_next_subresource_factory_) {
+      intercept_next_subresource_factory_ = false;
+      ASSERT_TRUE(navigation_response_task_runner);
+      frame_id_ = frame->GetGlobalId();
+      proxy_task_runner_ = navigation_response_task_runner;
+      auto [receiver, target_remote] = factory_builder.Append();
+      target_factory_.Bind(std::move(target_remote), proxy_task_runner_);
+      proxy_receivers_.Add(this, std::move(receiver), proxy_task_runner_);
+    }
+    ContentBrowserTestContentBrowserClient::WillCreateURLLoaderFactory(
+        browser_context, frame, render_process_id, type, request_initiator,
+        isolation_info, std::move(navigation_id), ukm_source_id,
+        factory_builder, header_client, bypass_redirect_checks,
+        disable_secure_dns, factory_override,
+        std::move(navigation_response_task_runner), is_for_network_service);
+  }
+
+  // network::mojom::URLLoaderFactory:
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override {
+    if (request.url.path() == "/subresource") {
+      RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(frame_id_);
+      ASSERT_TRUE(rfh);
+      was_frame_active_at_request_start_ = rfh->IsActive();
+      committed_url_at_request_start_ = rfh->GetLastCommittedURL();
+      execution_order_->push_back("CreateLoaderAndStart");
+      on_event_.Run();
+    }
+    target_factory_->CreateLoaderAndStart(std::move(loader), request_id,
+                                          options, request, std::move(client),
+                                          traffic_annotation);
+  }
+
+  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
+      override {
+    proxy_receivers_.Add(this, std::move(receiver), proxy_task_runner_);
+  }
+
+  ShouldAllowSameSiteRenderFrameHostChangeResult
+  ShouldAllowSameSiteRenderFrameHostChange(
+      const RenderFrameHost& rfh) override {
+    if (disallow_same_site_rfh_change_) {
+      return ShouldAllowSameSiteRenderFrameHostChangeResult::kNotAllowed;
+    }
+    return ContentBrowserTestContentBrowserClient::
+        ShouldAllowSameSiteRenderFrameHostChange(rfh);
+  }
+
+  void set_disallow_same_site_rfh_change(bool disallow) {
+    disallow_same_site_rfh_change_ = disallow;
+  }
+
+  void set_intercept_next_subresource_factory(bool intercept) {
+    intercept_next_subresource_factory_ = intercept;
+  }
+
+  bool was_frame_active_at_request_start() const {
+    return was_frame_active_at_request_start_;
+  }
+
+  const GURL& committed_url_at_request_start() const {
+    return committed_url_at_request_start_;
+  }
+
+ private:
+  raw_ptr<std::vector<std::string>> execution_order_;
+  base::RepeatingClosure on_event_;
+  bool disallow_same_site_rfh_change_ = false;
+  bool intercept_next_subresource_factory_ = false;
+  GlobalRenderFrameHostId frame_id_;
+  scoped_refptr<base::SequencedTaskRunner> proxy_task_runner_;
+  mojo::ReceiverSet<network::mojom::URLLoaderFactory> proxy_receivers_;
+  mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
+  bool was_frame_active_at_request_start_ = false;
+  GURL committed_url_at_request_start_;
+};
+
+class ReadyToCommitPauserObserver : public WebContentsObserver {
+ public:
+  ReadyToCommitPauserObserver(WebContents* web_contents,
+                              const GURL& target_url,
+                              std::vector<std::string>* execution_order,
+                              base::RepeatingClosure on_event)
+      : WebContentsObserver(web_contents),
+        target_url_(target_url),
+        execution_order_(execution_order),
+        on_event_(std::move(on_event)) {}
+
+  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
+    if (navigation_handle->GetURL() == target_url_) {
+      navigation_request_ =
+          NavigationRequest::From(navigation_handle)->GetWeakPtr();
+      pauser_ = std::make_unique<CommitNavigationPauser>(
+          static_cast<RenderFrameHostImpl*>(
+              navigation_handle->GetRenderFrameHost()));
+      ready_to_commit_loop_.Quit();
+    }
+  }
+
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
+    if (navigation_handle->GetURL() == target_url_ &&
+        navigation_handle->HasCommitted()) {
+      execution_order_->push_back("DidFinishNavigation");
+      on_event_.Run();
+    }
+  }
+
+  void WaitForCommitAndPause() {
+    ready_to_commit_loop_.Run();
+    ASSERT_TRUE(pauser_);
+    pauser_->WaitForCommitAndPause();
+  }
+
+  void ResumePausedCommit() {
+    ASSERT_TRUE(pauser_);
+    pauser_->ResumePausedCommit();
+  }
+
+  NavigationRequest* navigation_request() const {
+    return navigation_request_.get();
+  }
+
+ private:
+  const GURL target_url_;
+  raw_ptr<std::vector<std::string>> execution_order_;
+  base::RepeatingClosure on_event_;
+  base::RunLoop ready_to_commit_loop_;
+  base::WeakPtr<NavigationRequest> navigation_request_;
+  std::unique_ptr<CommitNavigationPauser> pauser_;
+};
+
+class RenderFrameHostImplSubresourceLoaderProxyCommitOrderingBrowserTest
+    : public RenderFrameHostImplBrowserTest {
+ public:
+  RenderFrameHostImplSubresourceLoaderProxyCommitOrderingBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kSubresourceLoaderProxyTaskQueue);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+void RegisterPageWithSubresourceHandler(net::EmbeddedTestServer& server) {
+  server.RegisterRequestHandler(base::BindLambdaForTesting(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_code(net::HTTP_OK);
+        if (request.relative_url == "/page_with_subresource.html") {
+          response->set_content_type("text/html");
+          response->set_content(R"(
+            <!DOCTYPE html>
+            <script>
+              fetch('/subresource', {method: 'POST'});
+              console.log('subresource_requested');
+            </script>
+          )");
+          return response;
+        }
+        if (request.relative_url == "/subresource") {
+          response->set_content_type("text/plain");
+          response->set_content("ok");
+          return response;
+        }
+        return nullptr;
+      }));
+}
+
+}  // namespace
+
+// Verifies that when `DidCommitNavigation` is still queued on the default UI
+// task queue while the new document issues its first subresource requests,
+// `CreateLoaderAndStart()` on the proxied subresource URLLoaderFactory does not
+// overtake `DidCommitNavigation` / `DidFinishNavigation`, and runs on the
+// high-priority `kSubresourceLoaderProxy` queue immediately after commit ahead
+// of subsequent default-queue tasks.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplSubresourceLoaderProxyCommitOrderingBrowserTest,
+    SubresourceRequestsDoNotOvertakePendingCommit) {
+  net::EmbeddedTestServer subresource_server;
+  RegisterPageWithSubresourceHandler(subresource_server);
+  ASSERT_TRUE(subresource_server.Start());
+
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  const GURL target_url =
+      subresource_server.GetURL("b.com", "/page_with_subresource.html");
+
+  std::vector<std::string> execution_order;
+  base::RunLoop completion_loop;
+  auto on_event = base::BindLambdaForTesting([&]() {
+    if (execution_order.size() == 3u) {
+      completion_loop.Quit();
+    }
+  });
+
+  SubresourceProxyCommitOrderingClient proxy_client(&execution_order, on_event);
+  proxy_client.set_intercept_next_subresource_factory(true);
+
+  ReadyToCommitPauserObserver commit_pauser(web_contents(), target_url,
+                                            &execution_order, on_event);
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern("subresource_requested");
+
+  shell()->LoadURL(target_url);
+
+  // Hold `DidCommitNavigation` on the browser side and wait until the renderer
+  // has committed the document and issued `fetch('/subresource')`.
+  commit_pauser.WaitForCommitAndPause();
+  ASSERT_TRUE(console_observer.Wait());
+  base::RunLoop flush_high_priority_queue;
+  GetUIThreadTaskRunner({BrowserTaskType::kSubresourceLoaderProxy})
+      ->PostTask(FROM_HERE, flush_high_priority_queue.QuitClosure());
+  flush_high_priority_queue.Run();
+
+  // Even though the renderer has already sent `CreateLoaderAndStart` for
+  // `/subresource`, the proxy task runner must keep it deferred while the
+  // navigation commit has not yet been processed on the UI thread.
+  EXPECT_TRUE(execution_order.empty());
+
+  // Queue the held `DidCommitNavigation` on the default UI queue followed by
+  // another default-queue task. Once `DidCommitNavigation` finishes, the
+  // deferred subresource `CreateLoaderAndStart` must be flushed to the
+  // high-priority `kSubresourceLoaderProxy` queue and run ahead of the trailing
+  // default-queue task.
+  auto default_task_runner = GetUIThreadTaskRunner({BrowserTaskType::kDefault});
+  default_task_runner->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                                  commit_pauser.ResumePausedCommit();
+                                }));
+  default_task_runner->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        execution_order.push_back("TrailingDefaultTask");
+        on_event.Run();
+      }));
+  completion_loop.Run();
+
+  EXPECT_THAT(execution_order, testing::ElementsAre("DidFinishNavigation",
+                                                    "CreateLoaderAndStart",
+                                                    "TrailingDefaultTask"));
+  EXPECT_TRUE(proxy_client.was_frame_active_at_request_start());
+  EXPECT_EQ(target_url, proxy_client.committed_url_at_request_start());
+}
+
+// Verifies that creating a subresource URLLoaderFactory for the already
+// committed document (`CreateNetworkServiceDefaultFactory`) while a same-RFH
+// cross-document navigation is in `READY_TO_COMMIT` does not attach that
+// factory to the in-flight navigation's `DeferredSequencedTaskRunner`.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplSubresourceLoaderProxyCommitOrderingBrowserTest,
+    LastCommittedFactoryNotDeferredByPendingSameRfhCommit) {
+  const GURL initial_url =
+      embedded_test_server()->GetURL("a.com", "/title1.html");
+  const GURL target_url =
+      embedded_test_server()->GetURL("a.com", "/title2.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  RenderFrameHostImpl* main_rfh = root_frame_host();
+  main_rfh->DisableProactiveBrowsingInstanceSwapForTesting();
+
+  std::vector<std::string> execution_order;
+  base::RunLoop pre_commit_loop;
+  base::RunLoop finish_commit_loop;
+  auto on_event = base::BindLambdaForTesting([&]() {
+    if (execution_order.size() == 2u) {
+      pre_commit_loop.Quit();
+    } else if (execution_order.size() == 3u) {
+      finish_commit_loop.Quit();
+    }
+  });
+
+  // Disallow same-site RenderFrameHost swaps so `target_url` commits in-place
+  // on `main_rfh` while `initial_url` is still the last committed document.
+  SubresourceProxyCommitOrderingClient proxy_client(&execution_order, on_event);
+  proxy_client.set_disallow_same_site_rfh_change(true);
+  ReadyToCommitPauserObserver commit_pauser(web_contents(), target_url,
+                                            &execution_order, on_event);
+
+  shell()->LoadURL(target_url);
+  commit_pauser.WaitForCommitAndPause();
+  ASSERT_TRUE(main_rfh->HasPendingCommitForCrossDocumentNavigation());
+  ASSERT_NE(nullptr, commit_pauser.navigation_request());
+  ASSERT_EQ(NavigationRequest::READY_TO_COMMIT,
+            commit_pauser.navigation_request()->state());
+  ASSERT_EQ(main_rfh, commit_pauser.navigation_request()->GetRenderFrameHost());
+
+  // While `target_url` is paused in `READY_TO_COMMIT` on `main_rfh`, build a
+  // factory for the currently committed `initial_url` document. It must receive
+  // the direct `kSubresourceLoaderProxy` task runner rather than the pending
+  // navigation's deferred runner, running ahead of a default-queue task before
+  // `target_url` finishes committing.
+  auto proxy_task_runner =
+      GetUIThreadTaskRunner({BrowserTaskType::kSubresourceLoaderProxy});
+  auto default_task_runner = GetUIThreadTaskRunner({BrowserTaskType::kDefault});
+
+  proxy_client.set_intercept_next_subresource_factory(true);
+  mojo::Remote<network::mojom::URLLoaderFactory> last_committed_factory;
+  EXPECT_FALSE(main_rfh->CreateNetworkServiceDefaultFactory(
+      last_committed_factory.BindNewPipeAndPassReceiver(proxy_task_runner)));
+
+  network::ResourceRequest subresource_request;
+  subresource_request.url =
+      embedded_test_server()->GetURL("a.com", "/subresource");
+  subresource_request.request_initiator = main_rfh->GetLastCommittedOrigin();
+  mojo::Remote<network::mojom::URLLoader> loader;
+  network::TestURLLoaderClient loader_client;
+  last_committed_factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(proxy_task_runner), /*request_id=*/1,
+      network::mojom::kURLLoadOptionNone, subresource_request,
+      loader_client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  default_task_runner->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                                  execution_order.push_back("DefaultQueueTask");
+                                  on_event.Run();
+                                }));
+  pre_commit_loop.Run();
+
+  EXPECT_THAT(execution_order,
+              testing::ElementsAre("CreateLoaderAndStart", "DefaultQueueTask"));
+  EXPECT_EQ(initial_url, proxy_client.committed_url_at_request_start());
+
+  commit_pauser.ResumePausedCommit();
+  finish_commit_loop.Run();
+  EXPECT_THAT(execution_order,
+              testing::ElementsAre("CreateLoaderAndStart", "DefaultQueueTask",
+                                   "DidFinishNavigation"));
+}
+
+// Verifies that when two cross-document navigations are concurrently in
+// `READY_TO_COMMIT` on the same `RenderFrameHostImpl` and the earlier one has a
+// later `NavigationStart()`, the second navigation's subresource factory binds
+// to its own `DeferredSequencedTaskRunner` rather than the first navigation's
+// runner (which starts as soon as the first navigation finishes).
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplSubresourceLoaderProxyCommitOrderingBrowserTest,
+    ConcurrentSameRfhCommitsUseOwnDeferredTaskRunner) {
+  net::EmbeddedTestServer subresource_server;
+  RegisterPageWithSubresourceHandler(subresource_server);
+  ASSERT_TRUE(subresource_server.Start());
+
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  RenderFrameHostImpl* main_rfh = root_frame_host();
+  main_rfh->DisableProactiveBrowsingInstanceSwapForTesting();
+
+  const GURL first_url =
+      embedded_test_server()->GetURL("a.com", "/title2.html");
+  const GURL second_url =
+      subresource_server.GetURL("a.com", "/page_with_subresource.html");
+
+  std::vector<std::string> execution_order;
+  base::RunLoop completion_loop;
+  auto on_event = base::BindLambdaForTesting([&]() {
+    if (execution_order.size() == 3u) {
+      completion_loop.Quit();
+    }
+  });
+
+  // Disallow same-site RenderFrameHost swaps so both `first_url` and
+  // `second_url` commit in-place on `main_rfh`.
+  SubresourceProxyCommitOrderingClient proxy_client(&execution_order, on_event);
+  proxy_client.set_disallow_same_site_rfh_change(true);
+
+  // Start `first_url` on `main_rfh` and hold its `DidCommitNavigation` while
+  // advancing its `NavigationStart()` ahead of `second_url`.
+  std::vector<std::string> ignored_first_order;
+  ReadyToCommitPauserObserver first_pauser(
+      web_contents(), first_url, &ignored_first_order, base::DoNothing());
+  shell()->LoadURL(first_url);
+  first_pauser.WaitForCommitAndPause();
+
+  NavigationRequest* first_request = first_pauser.navigation_request();
+  ASSERT_NE(nullptr, first_request);
+  ASSERT_EQ(main_rfh, first_request->GetRenderFrameHost());
+  first_request->UpdateNavigationStartTime(
+      base::TimeTicks::Now() + base::Minutes(1),
+      /*for_legacy=*/false, /*showed_dialog=*/true);
+
+  // Now commit `second_url` on the same `main_rfh` while `first_request` is
+  // still in `READY_TO_COMMIT` with the latest `NavigationStart()`.
+  proxy_client.set_intercept_next_subresource_factory(true);
+  ReadyToCommitPauserObserver second_pauser(web_contents(), second_url,
+                                            &execution_order, on_event);
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern("subresource_requested");
+
+  shell()->LoadURL(second_url);
+  second_pauser.WaitForCommitAndPause();
+  NavigationRequest* second_request = second_pauser.navigation_request();
+  ASSERT_NE(nullptr, second_request);
+  ASSERT_EQ(main_rfh, first_request->GetRenderFrameHost());
+  ASSERT_EQ(main_rfh, second_request->GetRenderFrameHost());
+  ASSERT_EQ(NavigationRequest::READY_TO_COMMIT, first_request->state());
+  ASSERT_EQ(NavigationRequest::READY_TO_COMMIT, second_request->state());
+  ASSERT_GT(first_request->NavigationStart(),
+            second_request->NavigationStart());
+  ASSERT_TRUE(console_observer.Wait());
+
+  // Finishing `first_request` destroys it and starts its deferred task runner,
+  // while `second_url`'s `DidCommitNavigation` is still paused. `second_url`'s
+  // subresource `CreateLoaderAndStart` must remain deferred.
+  first_pauser.ResumePausedCommit();
+  base::RunLoop flush_high_priority_queue;
+  GetUIThreadTaskRunner({BrowserTaskType::kSubresourceLoaderProxy})
+      ->PostTask(FROM_HERE, flush_high_priority_queue.QuitClosure());
+  flush_high_priority_queue.Run();
+  EXPECT_TRUE(execution_order.empty());
+
+  auto default_task_runner = GetUIThreadTaskRunner({BrowserTaskType::kDefault});
+  default_task_runner->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                                  second_pauser.ResumePausedCommit();
+                                }));
+  default_task_runner->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        execution_order.push_back("TrailingDefaultTask");
+        on_event.Run();
+      }));
+  completion_loop.Run();
+
+  EXPECT_THAT(execution_order, testing::ElementsAre("DidFinishNavigation",
+                                                    "CreateLoaderAndStart",
+                                                    "TrailingDefaultTask"));
+  EXPECT_TRUE(proxy_client.was_frame_active_at_request_start());
+  EXPECT_EQ(second_url, proxy_client.committed_url_at_request_start());
 }
 
 }  // namespace content

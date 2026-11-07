@@ -323,8 +323,15 @@ class WebRequestProxyingURLLoaderFactory
     // called at most once. It is added to debug crbug.com/463388771.
     bool has_forwarded_response_ = false;
 
-    // A task runner that should be used for the request when non-null. Non-null
-    // when this was created for a navigation request.
+    // A task runner that should be used for the request's Mojo receivers when
+    // non-null. Non-null for non-CORS-preflight requests created on navigation
+    // factories or on document subresource factories whose creator opted in to
+    // running this proxy off the UI thread's default task queue (see content's
+    // `kSubresourceLoaderProxyTaskQueue`).
+    // TODO(crbug.com/578355574): Rename `navigation_response_task_runner_` (and
+    // `WillCreateURLLoaderFactory`'s `navigation_response_task_runner`
+    // parameter) to reflect that it is also used for `kDocumentSubResource`
+    // proxies.
     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner_;
 
     base::WeakPtrFactory<InProgressRequest> weak_factory_{this};
@@ -420,6 +427,17 @@ class WebRequestProxyingURLLoaderFactory
                      uint64_t profile_request_id);
   void MaybeRemoveProxy();
 
+  // Returns `navigation_response_task_runner_` for receivers that historically
+  // fell back to the UI thread's default task queue (`Clone()`d factory
+  // receivers and per-request `TrustedHeaderClient` receivers): enabled for
+  // `kDocumentSubResource` factories (when `navigation_response_task_runner_`
+  // is populated under `features::kSubresourceLoaderProxyTaskQueue`) and for
+  // `kNavigation` factories when
+  // `extensions_features::kWebRequestProxyNavigationResponseTaskRunner` is
+  // enabled.
+  scoped_refptr<base::SequencedTaskRunner> GetTaskRunnerForSecondaryReceivers()
+      const;
+
   const raw_ptr<content::BrowserContext> browser_context_;
   const int render_process_id_;
   const int frame_routing_id_;
@@ -450,8 +468,21 @@ class WebRequestProxyingURLLoaderFactory
   // Notifies the proxy that the browser context has been shutdown.
   base::CallbackListSubscription shutdown_notifier_subscription_;
 
-  // A task runner that should be used for requests when non-null. Non-null when
-  // this was created for a navigation request.
+  // Task runner used to bind Mojo receivers for this factory and its
+  // `InProgressRequest`s when non-null:
+  // - For `kNavigation` factories, carries the `kNavigationNetworkResponse`
+  //   task runner. Secondary receivers (`Clone()` and per-request
+  //   `TrustedHeaderClient`) also bind to it when
+  //   `extensions_features::kWebRequestProxyNavigationResponseTaskRunner` is
+  //   enabled.
+  // - For `kDocumentSubResource` factories, carries the main frame's
+  //   `kSubresourceLoaderProxy` task runner when
+  //   `features::kSubresourceLoaderProxyTaskQueue` is enabled; all factory and
+  //   per-request receivers (including `Clone()` and `TrustedHeaderClient`)
+  //   bind to it.
+  // TODO(crbug.com/578355574): Rename `navigation_response_task_runner_` (and
+  // `WillCreateURLLoaderFactory`'s `navigation_response_task_runner` parameter)
+  // to reflect that it is also used for `kDocumentSubResource` proxies.
   scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner_;
 
   base::WeakPtrFactory<WebRequestProxyingURLLoaderFactory> weak_factory_{this};

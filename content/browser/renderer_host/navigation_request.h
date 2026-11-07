@@ -102,6 +102,10 @@
 #include "content/browser/android/navigation_handle_proxy.h"
 #endif
 
+namespace base {
+class DeferredSequencedTaskRunner;
+}  // namespace base
+
 namespace blink {
 struct NavigationDownloadPolicy;
 }  // namespace blink
@@ -1332,6 +1336,14 @@ class CONTENT_EXPORT NavigationRequest
       base::WeakPtr<KeepAliveURLLoaderService::FactoryContext> factory_context);
   void SetFetchLaterLoaderFactoryContextForTesting(
       base::WeakPtr<KeepAliveURLLoaderService::FactoryContext> factory_context);
+
+  // Returns a DeferredSequencedTaskRunner backed by the UI thread's
+  // kSubresourceLoaderProxy task queue. Tasks posted to this runner are
+  // deferred until the navigation finishes (after DidFinishNavigation),
+  // ensuring that subresource requests for the new document cannot overtake
+  // DidCommitNavigation on the UI thread.
+  scoped_refptr<base::DeferredSequencedTaskRunner>
+  GetOrCreateSubresourceLoaderProxyTaskRunner();
 
   // Outcome of Content Security Policy Embedded Enforcement (CSPEE).
   // These values are persisted to logs. Entries should not be renumbered and
@@ -3644,6 +3656,13 @@ class CONTENT_EXPORT NavigationRequest
   // setting a real connection to the renderer.
   bool did_set_keep_alive_url_loader_factory_context_for_testing_ = false;
   bool did_set_fetch_later_url_loader_factory_context_for_testing_ = false;
+
+  // Task runner passed to embedder proxies of the committing document's
+  // network-backed subresource URLLoaderFactory. Deferred until the navigation
+  // finishes so that subresource requests from the new document cannot overtake
+  // DidCommitNavigation on the UI thread.
+  scoped_refptr<base::DeferredSequencedTaskRunner>
+      subresource_loader_proxy_task_runner_;
 
   scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_handle_;
 

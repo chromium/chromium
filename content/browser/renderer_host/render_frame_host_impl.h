@@ -3669,19 +3669,23 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Like CreateNetworkServiceDefaultFactoryInternal but also sets up a
   // connection error handler to detect and recover from NetworkService
-  // crashes.
+  // crashes. `committing_navigation_request` is non-null when the factory is
+  // being created for an in-flight navigation commit rather than the already
+  // committed document.
   bool CreateNetworkServiceDefaultFactoryAndObserve(
       network::mojom::URLLoaderFactoryParamsPtr params,
       ukm::SourceIdObj ukm_source_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-          default_factory_receiver);
+          default_factory_receiver,
+      NavigationRequest* committing_navigation_request = nullptr);
 
   // Asks an appropriate `NetworkService` to create a new URLLoaderFactory with
   // the given `params` and binds the factory to the `default_factory_receiver`.
   //
   // The callers typically base the `params` on either 1) the current state of
   // `this` RenderFrameHostImpl (e.g. the origin of the initial empty document,
-  // or the last committed origin) or 2) a pending NavigationRequest.
+  // or the last committed origin) or 2) a pending NavigationRequest
+  // (`committing_navigation_request`).
   //
   // If this returns true, any redirect safety checks should be bypassed in
   // downstream loaders.  (This indicates that a layer above //content has
@@ -3691,7 +3695,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       network::mojom::URLLoaderFactoryParamsPtr params,
       ukm::SourceIdObj ukm_source_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-          default_factory_receiver);
+          default_factory_receiver,
+      NavigationRequest* committing_navigation_request = nullptr);
 
   // Returns true if the ExecuteJavaScript() API can be used on this host.
   // The checks do not apply to ExecuteJavaScriptInIsolatedWorld, nor to

@@ -262,6 +262,13 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
 #if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kStrictHighRankProcessLRU);
 #endif
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSubresourceLoaderProxyTaskQueue);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kSubresourceLoaderProxyTaskQueueVisibleOnly);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kSubresourceLoaderProxyTaskQueueIncludePrerendering);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchpadOverscrollHistoryNavigation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTrustedTypesFromLiteral);
 #if BUILDFLAG(IS_WIN)

@@ -2037,7 +2037,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   //
   // |navigation_response_task_runner| is a task runner that may be used for
   // navigation request blocking tasks. Null when the URLLoaderFactory is not
-  // being created for a navigation request.
+  // being created for a navigation request, except that it may be non-null for
+  // a main frame's kDocumentSubResource factory, in which case proxies may bind
+  // their receivers to it to run ahead of the UI thread's default task queue.
+  // TODO(crbug.com/578355574): Rename |navigation_response_task_runner| now
+  // that it is also used for kDocumentSubResource proxies.
   //
   // |is_for_network_service| is true when the URLLoaderFactory is being
   // created for the network service.

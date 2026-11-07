@@ -40,6 +40,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -2452,6 +2453,9 @@ NavigationRequest::~NavigationRequest() {
 
   if (IsNavigationStarted()) {
     GetDelegate()->DidFinishNavigation(this);
+    if (subresource_loader_proxy_task_runner_) {
+      subresource_loader_proxy_task_runner_->Start();
+    }
     ProcessOriginAgentClusterEndResult();
     if (IsInMainFrame()) {
       MaybeRecordTraceEventsAndHistograms();
@@ -2499,6 +2503,9 @@ NavigationRequest::~NavigationRequest() {
     }
   } else {
     GetDelegate()->DidCancelNavigationBeforeStart(this);
+    if (subresource_loader_proxy_task_runner_) {
+      subresource_loader_proxy_task_runner_->Start();
+    }
   }
 
   if (!navigation_start_to_commit_ended_) {
@@ -3544,6 +3551,10 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
                     common_params_->url.spec(), "Net Error Code",
                     net_error_);  // Navigation StartToCommit
     navigation_start_to_commit_ended_ = true;
+  }
+  if (subresource_loader_proxy_task_runner_) {
+    subresource_loader_proxy_task_runner_->Start();
+    subresource_loader_proxy_task_runner_.reset();
   }
 
   // Reset the state of the NavigationRequest, and the navigation_handle_id.
@@ -10129,6 +10140,16 @@ void NavigationRequest::SetFetchLaterLoaderFactoryContextForTesting(
   did_set_fetch_later_url_loader_factory_context_for_testing_ = true;
   fetch_later_loader_factory_context_ = factory_context;
   CHECK(fetch_later_loader_factory_context_);
+}
+
+scoped_refptr<base::DeferredSequencedTaskRunner>
+NavigationRequest::GetOrCreateSubresourceLoaderProxyTaskRunner() {
+  if (!subresource_loader_proxy_task_runner_) {
+    subresource_loader_proxy_task_runner_ =
+        base::MakeRefCounted<base::DeferredSequencedTaskRunner>(
+            GetUIThreadTaskRunner({BrowserTaskType::kSubresourceLoaderProxy}));
+  }
+  return subresource_loader_proxy_task_runner_;
 }
 
 void NavigationRequest::ReadyToCommitNavigation(bool is_error) {

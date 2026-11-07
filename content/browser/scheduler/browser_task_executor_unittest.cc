@@ -141,6 +141,9 @@ TEST_F(BrowserTaskExecutorTest, BrowserTaskTraitsMapToProperPriorities) {
   EXPECT_EQ(BrowserTaskExecutor::GetQueueType({}), QueueType::kUserBlocking);
   EXPECT_EQ(BrowserTaskExecutor::GetQueueType({BrowserTaskType::kStartup}),
             QueueType::kStartup);
+  EXPECT_EQ(BrowserTaskExecutor::GetQueueType(
+                {BrowserTaskType::kSubresourceLoaderProxy}),
+            QueueType::kSubresourceLoaderProxy);
 }
 
 TEST_F(BrowserTaskExecutorTest, UIThreadTaskRunnerHasSamePriorityAsUIBlocking) {

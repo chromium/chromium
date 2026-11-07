@@ -2,15 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
 #include <optional>
-#include <set>
 #include <string>
+#include <vector>
 
 #include "base/command_line.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/test/bind.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/common/features.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -27,10 +35,13 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -130,19 +141,34 @@ class WebRequestProxyingURLLoaderFactoryFollowRedirectTest
 
   bool DidReachNetwork(const std::string& relative_url) {
     base::AutoLock lock(lock_);
-    return observed_relative_urls_.contains(relative_url);
+    return observed_request_headers_.contains(relative_url);
+  }
+
+  std::optional<std::string> GetObservedHeader(const std::string& relative_url,
+                                               const std::string& header_name) {
+    base::AutoLock lock(lock_);
+    auto req_it = observed_request_headers_.find(relative_url);
+    if (req_it == observed_request_headers_.end()) {
+      return std::nullopt;
+    }
+    auto header_it = req_it->second.find(header_name);
+    if (header_it == req_it->second.end()) {
+      return std::nullopt;
+    }
+    return header_it->second;
   }
 
  private:
   void MonitorRequest(const net::test_server::HttpRequest& request) {
     base::AutoLock lock(lock_);
-    observed_relative_urls_.insert(request.relative_url);
+    observed_request_headers_[request.relative_url] = request.headers;
   }
 
   url::Origin initiator_origin_;
   int32_t next_request_id_ = 1;
   base::Lock lock_;
-  std::set<std::string> observed_relative_urls_ GUARDED_BY(lock_);
+  std::map<std::string, net::test_server::HttpRequest::HeaderMap>
+      observed_request_headers_ GUARDED_BY(lock_);
 };
 
 // Verifies that calls to FollowRedirect() that are unexpected (either in their
@@ -359,6 +385,193 @@ IN_PROC_BROWSER_TEST_F(WebRequestProxyingURLLoaderFactoryFollowRedirectTest,
     // The blocked URL must never have been fetched.
     EXPECT_FALSE(DidReachNetwork("/echo?sample_blocked_destination"));
   }
+}
+
+class WebRequestProxyingURLLoaderFactorySubresourceTaskQueueTest
+    : public WebRequestProxyingURLLoaderFactoryFollowRedirectTest {
+ public:
+  WebRequestProxyingURLLoaderFactorySubresourceTaskQueueTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kSubresourceLoaderProxyTaskQueue);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies that when `kSubresourceLoaderProxyTaskQueue` is enabled, a main
+// frame's proxied subresource URLLoaderFactory binds secondary receivers
+// (`Clone()`d factory receivers and `TrustedHeaderClient` receivers created in
+// `OnLoaderCreated()` for `extraHeaders` listeners) to the high-priority
+// `kSubresourceLoaderProxy` task queue rather than the default UI task queue.
+IN_PROC_BROWSER_TEST_F(
+    WebRequestProxyingURLLoaderFactorySubresourceTaskQueueTest,
+    ClonedFactoryAndHeaderClientUseSubresourceLoaderProxyQueue) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(base::StringPrintf(
+      R"({
+        "name": "ExtraHeaders Extension",
+        "version": "1.0",
+        "manifest_version": 3,
+        "key": "%s",
+        "permissions": ["webRequest", "webRequestBlocking"],
+        "host_permissions": ["<all_urls>"],
+        "background": {"service_worker": "background.js"}
+      })",
+      kAllowlistedExtensionKey));
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+    chrome.webRequest.onBeforeSendHeaders.addListener(
+      function(details) {
+        details.requestHeaders.push({name: "X-Added-By-Extension", value: "1"});
+        return {requestHeaders: details.requestHeaders};
+      },
+      {urls: ["<all_urls>"]},
+      ["blocking", "requestHeaders", "extraHeaders"]
+    );
+    chrome.test.sendMessage("ready");
+  )");
+
+  ExtensionTestMessageListener ready_listener("ready");
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+  ForceProxy();
+
+  auto proxy_task_runner = content::GetUIThreadTaskRunner(
+      {content::BrowserTaskType::kSubresourceLoaderProxy});
+  auto default_task_runner =
+      content::GetUIThreadTaskRunner({content::BrowserTaskType::kDefault});
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory = CreateFrameFactory();
+
+  // 1. Verify that `Clone()` binds the cloned receiver to
+  // `kSubresourceLoaderProxy` (`kHighPriority`) rather than `kDefault`.
+  // After queueing `factory->Clone()` (on `kSubresourceLoaderProxy`), a nested
+  // `cloned_factory->Clone()` + `FlushAsyncForTesting()` will only be bound and
+  // dispatched when `WebRequestProxyingURLLoaderFactory::Clone()` runs. Because
+  // `Clone()` binds the receiver to `kSubresourceLoaderProxy`, the nested clone
+  // and flush complete ahead of a task already queued on `kDefault`.
+  mojo::Remote<network::mojom::URLLoaderFactory> cloned_factory;
+  mojo::Remote<network::mojom::URLLoaderFactory> second_cloned_factory;
+  factory->Clone(cloned_factory.BindNewPipeAndPassReceiver(proxy_task_runner));
+  cloned_factory->Clone(
+      second_cloned_factory.BindNewPipeAndPassReceiver(proxy_task_runner));
+
+  base::RunLoop flush_loop;
+  std::vector<std::string> execution_order;
+  second_cloned_factory.FlushAsyncForTesting(base::BindLambdaForTesting([&]() {
+    execution_order.push_back("cloned_factory_flushed");
+    if (execution_order.size() == 2u) {
+      flush_loop.Quit();
+    }
+  }));
+  default_task_runner->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        execution_order.push_back("default_queue_task");
+        if (execution_order.size() == 2u) {
+          flush_loop.Quit();
+        }
+      }));
+  flush_loop.Run();
+
+  ASSERT_EQ(2u, execution_order.size());
+  EXPECT_EQ("cloned_factory_flushed", execution_order[0]);
+  EXPECT_EQ("default_queue_task", execution_order[1]);
+
+  // 2. Verify that `OnLoaderCreated()` binds `header_client_receiver_` to
+  // `kSubresourceLoaderProxy` (`kHighPriority`) rather than `kDefault`.
+  // Drive `MaybeProxyURLLoaderFactory` with `proxy_task_runner` so the test
+  // holds the `TrustedURLLoaderHeaderClient` remote directly. If
+  // `header_client_receiver_` omitted the task runner in `Bind()`, Mojo would
+  // fall back to `SequencedTaskRunner::GetCurrentDefault()` (`kDefault`) even
+  // though `OnLoaderCreated()` ran on `kSubresourceLoaderProxy`, queueing the
+  // `FlushAsyncForTesting()` message behind `default_queue_task`.
+  {
+    auto* web_request_api =
+        BrowserContextKeyedAPIFactory<WebRequestAPI>::Get(profile());
+    ASSERT_TRUE(web_request_api);
+
+    network::URLLoaderFactoryBuilder factory_builder;
+    mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
+        header_client_pending_remote;
+    content::RenderFrameHost* main_frame =
+        GetActiveWebContents()->GetPrimaryMainFrame();
+    const url::Origin main_frame_origin = main_frame->GetLastCommittedOrigin();
+    ASSERT_TRUE(web_request_api->MaybeProxyURLLoaderFactory(
+        profile(), main_frame, main_frame->GetProcess()->GetDeprecatedID(),
+        content::ContentBrowserClient::URLLoaderFactoryType::
+            kDocumentSubResource,
+        /*navigation_id=*/std::nullopt,
+        ukm::SourceIdObj::FromInt64(main_frame->GetPageUkmSourceId()),
+        factory_builder, &header_client_pending_remote, proxy_task_runner,
+        main_frame_origin));
+    ASSERT_TRUE(header_client_pending_remote.is_valid());
+
+    network::TestURLLoaderFactory terminal_factory;
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> terminal_remote;
+    terminal_factory.Clone(terminal_remote.InitWithNewPipeAndPassReceiver());
+    mojo::Remote<network::mojom::URLLoaderFactory> proxied_factory;
+    std::move(factory_builder)
+        .Finish(proxied_factory.BindNewPipeAndPassReceiver(proxy_task_runner),
+                std::move(terminal_remote));
+    mojo::Remote<network::mojom::TrustedURLLoaderHeaderClient>
+        header_client_factory(std::move(header_client_pending_remote),
+                              proxy_task_runner);
+
+    network::ResourceRequest request;
+    request.url = embedded_test_server()->GetURL("/echo?header_queue_check");
+    request.request_initiator = main_frame_origin;
+    mojo::Remote<network::mojom::URLLoader> test_loader;
+    network::TestURLLoaderClient test_client;
+    proxied_factory->CreateLoaderAndStart(
+        test_loader.BindNewPipeAndPassReceiver(proxy_task_runner),
+        /*request_id=*/777, network::mojom::kURLLoadOptionNone, request,
+        test_client.CreateRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return terminal_factory.NumPending() == 1; }));
+
+    const int32_t network_request_id =
+        terminal_factory.GetPendingRequest(0)->request_id;
+    mojo::Remote<network::mojom::TrustedHeaderClient> header_client;
+    header_client_factory->OnLoaderCreated(
+        network_request_id,
+        header_client.BindNewPipeAndPassReceiver(proxy_task_runner));
+
+    base::RunLoop header_flush_loop;
+    std::vector<std::string> header_execution_order;
+    header_client.FlushAsyncForTesting(base::BindLambdaForTesting([&]() {
+      header_execution_order.push_back("header_client_flushed");
+      if (header_execution_order.size() == 2u) {
+        header_flush_loop.Quit();
+      }
+    }));
+    default_task_runner->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          header_execution_order.push_back("default_queue_task");
+          if (header_execution_order.size() == 2u) {
+            header_flush_loop.Quit();
+          }
+        }));
+    header_flush_loop.Run();
+
+    EXPECT_TRUE(header_client.is_connected());
+    ASSERT_EQ(2u, header_execution_order.size());
+    EXPECT_EQ("header_client_flushed", header_execution_order[0]);
+    EXPECT_EQ("default_queue_task", header_execution_order[1]);
+  }
+
+  // 3. End-to-end verification that a real subresource request through the
+  // cloned factory with an `extraHeaders` listener succeeds and applies the
+  // extension's header modification.
+  network::TestURLLoaderClient client;
+  mojo::Remote<network::mojom::URLLoader> loader;
+  StartRequest(cloned_factory.get(), loader, client,
+               embedded_test_server()->GetURL("/echo"));
+  client.RunUntilComplete();
+  EXPECT_EQ(net::OK, client.completion_status().error_code);
+  EXPECT_EQ("1", GetObservedHeader("/echo", "X-Added-By-Extension"));
 }
 
 }  // namespace extensions

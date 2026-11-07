@@ -47,6 +47,18 @@ enum class BrowserTaskType {
   // task runner. Reach out to navigation-dev@ before adding new usages.
   kBeforeUnloadBrowserResponse,
 
+  // Tasks run by UI thread proxies of a main frame document's subresource
+  // URLLoaderFactory (e.g. the extensions WebRequest proxy), i.e. receiving
+  // `CreateLoaderAndStart()` / `Clone()` from the renderer and the network
+  // service's header client and URLLoaderClient callbacks for those requests.
+  // NOTE: Tasks on this queue can run ahead of IPCs on the UI thread's default
+  // task runner (such as `DidCommitSameDocumentNavigation`). Ordering after
+  // cross-document navigation commits is preserved by wrapping this runner in a
+  // `base::DeferredSequencedTaskRunner` until `DidFinishNavigation` completes
+  // (see `NavigationRequest::GetOrCreateSubresourceLoaderProxyTaskRunner()`).
+  // Reach out to navigation-dev@ before adding new usages.
+  kSubresourceLoaderProxy,
+
   // A subset of tasks that are critical for startup performance. While other
   // tasks may also run during the startup phase, this allows us to apply
   // certain constraints on other task queues until these critical startup tasks

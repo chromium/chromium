@@ -81,6 +81,12 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // For before unload navigation continuation tasks.
     kBeforeUnloadBrowserResponse,
 
+    // For tasks run by UI thread proxies of a main frame document's subresource
+    // URLLoaderFactory. Higher priority than kDefault so that a subresource
+    // request isn't delayed by unrelated default-queue work before it reaches
+    // the network service.
+    kSubresourceLoaderProxy,
+
     // Tasks that are critical for startup performance. Note that tasks in other
     // queues may run during startup too.
     kStartup,

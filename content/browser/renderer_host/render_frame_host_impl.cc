@@ -50,6 +50,7 @@
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -199,6 +200,7 @@
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/active_url_message_filter.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/content_browser_client.h"
@@ -2101,6 +2103,7 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
   static SubresourceLoaderFactoriesConfig ForPendingNavigation(
       NavigationRequest& navigation_request) {
     SubresourceLoaderFactoriesConfig result;
+    result.committing_navigation_request_ = &navigation_request;
     result.origin_ = navigation_request.GetOriginToCommit().value();
     result.client_security_state_ =
         navigation_request.BuildClientSecurityStateForCommittedDocument();
@@ -2274,6 +2277,10 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
     return renderer_accessible_http_cache_write_enabled_;
   }
 
+  NavigationRequest* committing_navigation_request() const {
+    return committing_navigation_request_;
+  }
+
  private:
   // Private constructor - please go through the static For... methods.
   SubresourceLoaderFactoriesConfig() = default;
@@ -2291,6 +2298,9 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
   net::CookieSettingOverrides cookie_setting_overrides_;
   base::UnguessableToken network_restrictions_id_;
   bool renderer_accessible_http_cache_write_enabled_ = false;
+  // Non-null when this configuration describes an in-flight navigation rather
+  // than the last committed document.
+  raw_ptr<NavigationRequest> committing_navigation_request_ = nullptr;
 };
 
 class PendingNavigation {
@@ -3815,7 +3825,8 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactory(
           subresource_loader_factories_config,
           "RFHI::CreateNetworkServiceDefaultFactory"),
       subresource_loader_factories_config.ukm_source_id(),
-      std::move(default_factory_receiver));
+      std::move(default_factory_receiver),
+      subresource_loader_factories_config.committing_navigation_request());
 }
 
 std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
@@ -3930,7 +3941,8 @@ RenderFrameHostImpl::CreateURLLoaderFactoriesForIsolatedWorlds(
     CreateNetworkServiceDefaultFactoryAndObserve(
         std::move(factory_params),
         ukm::kInvalidSourceIdObj, /* isolated from page */
-        factory_remote.InitWithNewPipeAndPassReceiver());
+        factory_remote.InitWithNewPipeAndPassReceiver(),
+        config.committing_navigation_request());
     result[isolated_world_origin] = std::move(factory_remote);
   }
   return result;
@@ -8796,7 +8808,8 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
             subresource_loader_factories_config,
             "RFHI::UpdateSubresourceLoaderFactories"),
         subresource_loader_factories_config.ukm_source_id(),
-        default_factory_remote.InitWithNewPipeAndPassReceiver());
+        default_factory_remote.InitWithNewPipeAndPassReceiver(),
+        subresource_loader_factories_config.committing_navigation_request());
   }
 
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
@@ -10906,7 +10919,8 @@ RenderFrameHostImpl::CreateCrossOriginPrefetchLoaderFactoryBundle() {
   bypass_redirect_checks = CreateNetworkServiceDefaultFactoryAndObserve(
       std::move(factory_params),
       subresource_loader_factories_config.ukm_source_id(),
-      pending_default_factory.InitWithNewPipeAndPassReceiver());
+      pending_default_factory.InitWithNewPipeAndPassReceiver(),
+      subresource_loader_factories_config.committing_navigation_request());
 
   return std::make_unique<blink::PendingURLLoaderFactoryBundle>(
       std::move(pending_default_factory),
@@ -13409,7 +13423,9 @@ void RenderFrameHostImpl::CommitNavigation(
                   subresource_loader_factories_config,
                   "RFHI::CommitNavigation"),
               subresource_loader_factories_config.ukm_source_id(),
-              pending_default_factory.InitWithNewPipeAndPassReceiver());
+              pending_default_factory.InitWithNewPipeAndPassReceiver(),
+              subresource_loader_factories_config
+                  .committing_navigation_request());
       subresource_loader_factories->set_bypass_redirect_checks(
           bypass_redirect_checks);
     }
@@ -13758,13 +13774,15 @@ void RenderFrameHostImpl::FailedNavigation(
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       subresource_loader_factories;
   mojo::PendingRemote<network::mojom::URLLoaderFactory> default_factory_remote;
+  auto subresource_loader_factories_config =
+      SubresourceLoaderFactoriesConfig::ForPendingNavigation(
+          *navigation_request);
   bool bypass_redirect_checks = CreateNetworkServiceDefaultFactoryAndObserve(
       CreateURLLoaderFactoryParamsForMainWorld(
-          SubresourceLoaderFactoriesConfig::ForPendingNavigation(
-              *navigation_request),
-          "RFHI::FailedNavigation"),
+          subresource_loader_factories_config, "RFHI::FailedNavigation"),
       ukm::kInvalidSourceIdObj,
-      default_factory_remote.InitWithNewPipeAndPassReceiver());
+      default_factory_remote.InitWithNewPipeAndPassReceiver(),
+      subresource_loader_factories_config.committing_navigation_request());
   subresource_loader_factories =
       std::make_unique<blink::PendingURLLoaderFactoryBundle>(
           std::move(default_factory_remote),
@@ -14822,9 +14840,11 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryAndObserve(
     network::mojom::URLLoaderFactoryParamsPtr params,
     ukm::SourceIdObj ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-        default_factory_receiver) {
+        default_factory_receiver,
+    NavigationRequest* committing_navigation_request) {
   bool bypass_redirect_checks = CreateNetworkServiceDefaultFactoryInternal(
-      std::move(params), ukm_source_id, std::move(default_factory_receiver));
+      std::move(params), ukm_source_id, std::move(default_factory_receiver),
+      committing_navigation_request);
 
   // Add a disconnect handler when Network Service is running
   // out-of-process.
@@ -14862,11 +14882,57 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryInternal(
     network::mojom::URLLoaderFactoryParamsPtr params,
     ukm::SourceIdObj ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-        default_factory_receiver) {
+        default_factory_receiver,
+    NavigationRequest* committing_navigation_request) {
   CHECK(params->request_initiator_origin_lock.has_value());
   const url::Origin request_initiator =
       params->request_initiator_origin_lock.value();
   const net::IsolationInfo isolation_info = params->isolation_info;
+
+  // Embedder proxies of this factory (e.g. the extensions WebRequest proxy)
+  // run on the UI thread. By default they bind their receivers to the UI
+  // thread's default task queue, where a subresource request can wait behind
+  // unrelated work (e.g. same-document commits) before reaching the network
+  // service. When enabled, give them a higher priority task runner instead.
+  // This is limited to outermost main frames, excludes prerendered FrameTrees
+  // by default (via `kSubresourceLoaderProxyTaskQueueIncludePrerendering`) so
+  // invisible prerenders do not preempt primary-page default-queue work, and is
+  // restricted by default to visible WebContents. Note that the task runner is
+  // chosen when the factory is created (typically when the document commits)
+  // and isn't updated on prerender activation or visibility changes.
+  //
+  // When the factory is created for an in-flight cross-document navigation that
+  // has not yet finished committing on the browser UI thread, wrap the
+  // high-priority task runner in a DeferredSequencedTaskRunner that is started
+  // once DidFinishNavigation completes. This ensures that the new document's
+  // first subresource requests cannot overtake DidCommitNavigation on the UI
+  // thread (which embedders like extensions/ rely on to update per-frame and
+  // per-document state before seeing subresource requests). Note that
+  // same-document navigations (both renderer-initiated such as
+  // history.pushState() and browser-initiated such as fragment or same-document
+  // history navigations) reuse the existing document's factory and still commit
+  // via the default UI queue, so a subresource request issued right after a
+  // same-document navigation commits in the renderer can run ahead of
+  // DidCommitSameDocumentNavigation under UI-thread congestion.
+  // TODO(crbug.com/582987296): Propagate a same-document navigation counter on
+  // subresource requests so proxies can hold requests that are ahead of what
+  // the browser has processed.
+  scoped_refptr<base::SequencedTaskRunner> proxy_task_runner;
+  if (IsOutermostMainFrame() &&
+      base::FeatureList::IsEnabled(
+          features::kSubresourceLoaderProxyTaskQueue) &&
+      (!frame_tree_->is_prerendering() ||
+       features::kSubresourceLoaderProxyTaskQueueIncludePrerendering.Get()) &&
+      (!features::kSubresourceLoaderProxyTaskQueueVisibleOnly.Get() ||
+       delegate()->GetVisibility() == Visibility::VISIBLE)) {
+    if (committing_navigation_request) {
+      proxy_task_runner = committing_navigation_request
+                              ->GetOrCreateSubresourceLoaderProxyTaskRunner();
+    } else {
+      proxy_task_runner =
+          GetUIThreadTaskRunner({BrowserTaskType::kSubresourceLoaderProxy});
+    }
+  }
 
   bool bypass_redirect_checks = false;
   url_loader_factory::CreateAndConnectToPendingReceiver(
@@ -14880,7 +14946,8 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryInternal(
       url_loader_factory::ContentClientParams(
           GetBrowserContext(), this, GetProcess()->GetDeprecatedID(),
           request_initiator, isolation_info, ukm_source_id,
-          &bypass_redirect_checks),
+          &bypass_redirect_checks, /*navigation_id=*/std::nullopt,
+          std::move(proxy_task_runner)),
       devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
           this));
   return bypass_redirect_checks;

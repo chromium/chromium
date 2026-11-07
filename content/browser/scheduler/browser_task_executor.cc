@@ -118,6 +118,9 @@ QueueType BrowserTaskExecutor::GetQueueType(const BrowserTaskTraits& traits) {
       }
       break;
 
+    case BrowserTaskType::kSubresourceLoaderProxy:
+      return QueueType::kSubresourceLoaderProxy;
+
     case BrowserTaskType::kStartup:
       return QueueType::kStartup;
 
