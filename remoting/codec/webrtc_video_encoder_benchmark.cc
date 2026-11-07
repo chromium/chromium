@@ -67,6 +67,11 @@ namespace {
 constexpr int kDefaultFrames = 100;
 constexpr double kDefaultFps = 30.0;
 
+// Matches `kKeepAliveInterval` in `WebrtcVideoEncoderWrapper`: once quality
+// top-off completes (`top_off_active_ == false`), zero-damage frames are
+// dropped until `kKeepAliveInterval` of simulated stream time has elapsed.
+constexpr base::TimeDelta kKeepAliveInterval = base::Seconds(2);
+
 enum class Codec {
   kAv1,
   kVp8,
@@ -136,6 +141,8 @@ struct QualityStats {
 struct RunResults {
   base::TimeTicks start_time;
   base::TimeTicks end_time;
+  size_t frames_captured = 0;
+  size_t frames_dropped = 0;
   int64_t total_pixels = 0;
   int64_t updated_pixels = 0;
   std::vector<FrameMetric> frame_metrics;
@@ -293,6 +300,127 @@ QuantizerStats ComputeQuantizerStats(const std::vector<int>& quantizers) {
   return stats;
 }
 
+// Generates a composite real-world desktop workflow sequence
+// ("desktop_workflow") that transitions through 6 consecutive regimes on a
+// single persistent encoder instance:
+//   1. Idle desktop (desktop_clock, 0..20%): initial keyframe, quality top-off,
+//      and post-top-off idle empty-frame throttling (plus 1 Hz <2.5% clock
+//      ticks when frames / fps > 5, e.g. frames >= 180 at 30 FPS).
+//   2. App launch & vertical scroll (scroll_vertical, 20..45%).
+//   3. Reading pause / simulated top-off (45..55%): repeats the final frame of
+//      phase 2 so DifferFrameGenerator emits an empty updated_region(). While
+//      top_off_active_ is true, EncoderBenchmark passes clear_active_map =
+//      false to simulate WebrtcVideoEncoderWrapper::ExtrapolateFrame() top-off
+//      inputs; once kMinQuantizer is reached, remaining zero-damage frames are
+//      dropped up to kKeepAliveInterval.
+//   4. Window drag / multitasking (moving_window, 55..75%).
+//   5. Burst of full-screen activity (chaos_stress, 75..85%).
+//   6. Clear desktop & return to idle recovery (desktop_clock, 85..100%):
+//      scene switch back to idle desktop, quality top-off, and 1 Hz <2.5%
+//      clock ticks.
+class CompositeWorkflowFrameGenerator : public FrameGenerator {
+ public:
+  CompositeWorkflowFrameGenerator(const BenchmarkConfig& config,
+                                  const webrtc::DesktopSize& size)
+      : config_(config),
+        size_(size),
+        total_frames_(std::max(1, config_.frames)),
+        p1_end_(PhaseEnd(total_frames_, 0, 20)),
+        p2_end_(PhaseEnd(total_frames_, p1_end_, 45)),
+        p3_end_(PhaseEnd(total_frames_, p2_end_, 55)),
+        p4_end_(PhaseEnd(total_frames_, p3_end_, 75)),
+        p5_end_(PhaseEnd(total_frames_, p4_end_, 85)) {}
+
+  bool Initialize() {
+    auto init_sub = [&](const std::string& name, int frames,
+                        std::unique_ptr<HeadlessFrameGenerator>& out) -> bool {
+      if (frames <= 0) {
+        return true;
+      }
+      auto gen = std::make_unique<HeadlessFrameGenerator>(name, size_, frames,
+                                                          config_.fps);
+      if (!config_.chrome_path.empty()) {
+        gen->SetChromePath(config_.chrome_path);
+      }
+      if (!gen->Initialize()) {
+        return false;
+      }
+      out = std::move(gen);
+      return true;
+    };
+
+    const int clock_frames = p1_end_ + (total_frames_ - p5_end_);
+    const int scroll_frames = p2_end_ - p1_end_;
+    const int window_frames = p4_end_ - p3_end_;
+    const int chaos_frames = p5_end_ - p4_end_;
+
+    return init_sub("desktop_clock", clock_frames, clock_gen_) &&
+           init_sub("scroll_vertical", scroll_frames, scroll_gen_) &&
+           init_sub("moving_window", window_frames, window_gen_) &&
+           init_sub("chaos_stress", chaos_frames, chaos_gen_);
+  }
+
+  std::unique_ptr<webrtc::DesktopFrame> GenerateFrame() override {
+    if (frame_index_ >= total_frames_) {
+      return nullptr;
+    }
+
+    int idx = frame_index_++;
+    if (idx < p1_end_) {
+      return clock_gen_->GenerateFrame();
+    }
+    if (idx < p2_end_) {
+      auto frame = scroll_gen_->GenerateFrame();
+      if (frame && idx + 1 == p2_end_ && p3_end_ > p2_end_) {
+        last_scroll_frame_.reset(webrtc::BasicDesktopFrame::CopyOf(*frame));
+      }
+      return frame;
+    }
+    if (idx < p3_end_) {
+      // Static reading pause: return an identical copy of the last scroll frame
+      // so DifferFrameGenerator produces an empty updated_region().
+      if (!last_scroll_frame_) {
+        return nullptr;
+      }
+      if (idx + 1 == p3_end_) {
+        return std::move(last_scroll_frame_);
+      }
+      return base::WrapUnique(
+          webrtc::BasicDesktopFrame::CopyOf(*last_scroll_frame_));
+    }
+    if (idx < p4_end_) {
+      return window_gen_->GenerateFrame();
+    }
+    if (idx < p5_end_) {
+      return chaos_gen_->GenerateFrame();
+    }
+    return clock_gen_->GenerateFrame();
+  }
+
+ private:
+  // Returns the frame index for `percent` of `total_frames`, advancing at least
+  // 1 frame past `prev_end` while never exceeding `total_frames`.
+  static int PhaseEnd(int total_frames, int prev_end, int percent) {
+    return std::min(total_frames,
+                    std::max(prev_end + 1, (total_frames * percent) / 100));
+  }
+
+  BenchmarkConfig config_;
+  webrtc::DesktopSize size_;
+  int total_frames_ = 0;
+  int p1_end_ = 0;
+  int p2_end_ = 0;
+  int p3_end_ = 0;
+  int p4_end_ = 0;
+  int p5_end_ = 0;
+  int frame_index_ = 0;
+  std::unique_ptr<HeadlessFrameGenerator> clock_gen_;
+  std::unique_ptr<HeadlessFrameGenerator> scroll_gen_;
+  std::unique_ptr<HeadlessFrameGenerator> window_gen_;
+  std::unique_ptr<HeadlessFrameGenerator> chaos_gen_;
+  std::unique_ptr<webrtc::DesktopFrame> last_scroll_frame_;
+};
+
 std::vector<std::unique_ptr<webrtc::SharedDesktopFrame>> LoadFrames(
     const BenchmarkConfig& config,
     const std::string& scenario,
@@ -300,6 +428,15 @@ std::vector<std::unique_ptr<webrtc::SharedDesktopFrame>> LoadFrames(
   std::unique_ptr<FrameGenerator> generator;
   if (!config.frame_dir.empty()) {
     generator = std::make_unique<FileFrameGenerator>(config.frame_dir, size);
+  } else if (scenario == "desktop_workflow") {
+    auto workflow =
+        std::make_unique<CompositeWorkflowFrameGenerator>(config, size);
+    if (!workflow->Initialize()) {
+      LOG(ERROR)
+          << "Failed to initialize composite desktop_workflow generator.";
+      return {};
+    }
+    generator = std::move(workflow);
   } else {
     auto headless = std::make_unique<HeadlessFrameGenerator>(
         scenario, size, config.frames, config.fps);
@@ -709,11 +846,14 @@ base::DictValue SummarizeAndPrintResults(const EncoderConfig& encoder_config,
       (run_results.total_pixels > 0)
           ? (run_results.updated_pixels * 100.0) / run_results.total_pixels
           : 0.0;
+  const size_t stream_frames = run_results.frames_captured > 0
+                                   ? run_results.frames_captured
+                                   : frame_metrics.size();
   double achieved_bitrate_kbps =
-      (!frame_metrics.empty() && runtime_params.fps > 0.0)
+      (stream_frames > 0 && runtime_params.fps > 0.0)
           ? (static_cast<double>(all_size_stats.total_bytes) * 8.0 *
              runtime_params.fps) /
-                (frame_metrics.size() * 1000.0)
+                (stream_frames * 1000.0)
           : 0.0;
 
   std::ios old_state(nullptr);
@@ -736,8 +876,11 @@ base::DictValue SummarizeAndPrintResults(const EncoderConfig& encoder_config,
   std::cout << "--------------------------------------------------"
             << std::endl;
   std::cout << "Frames encoded:           " << frame_metrics.size() << " ("
-            << kf_latency.count << " key, " << delta_latency.count << " delta)"
-            << std::endl;
+            << kf_latency.count << " key, " << delta_latency.count << " delta";
+  if (run_results.frames_dropped > 0) {
+    std::cout << ", " << run_results.frames_dropped << " empty dropped";
+  }
+  std::cout << ")" << std::endl;
   std::cout << "Average updated area:     " << updated_area_pct << "%"
             << std::endl;
   std::cout << "Wall-clock time:          " << wall_clock_ms << " ms ("
@@ -825,7 +968,10 @@ base::DictValue SummarizeAndPrintResults(const EncoderConfig& encoder_config,
   result.Set("height", runtime_params.size.height());
   result.Set("target_fps", runtime_params.fps);
 
+  result.Set("frames_captured", static_cast<int>(stream_frames));
   result.Set("frames_encoded", static_cast<int>(frame_metrics.size()));
+  result.Set("empty_frames_dropped",
+             static_cast<int>(run_results.frames_dropped));
   result.Set("keyframes_encoded", static_cast<int>(kf_latency.count));
   result.Set("delta_frames_encoded", static_cast<int>(delta_latency.count));
   result.Set("updated_area_percent", updated_area_pct);
@@ -933,8 +1079,8 @@ class EncoderBenchmark {
         encoder_config_.bitrate_kbps, runtime_params_.size);
     preloaded_frames_ = preloaded_frames;
     next_frame_index_ = 0;
-    frames_encoded_ = 0;
     top_off_active_ = false;
+    last_encoded_frame_index_.reset();
     run_results_ = RunResults();
     run_results_.frame_metrics.reserve(preloaded_frames.size());
 
@@ -942,8 +1088,6 @@ class EncoderBenchmark {
       LOG(ERROR) << "No frames available to encode.";
       return base::DictValue();
     }
-
-    frames_to_encode_ = static_cast<int>(preloaded_frames.size());
 
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
@@ -1055,33 +1199,59 @@ class EncoderBenchmark {
 
   void CaptureNextFrameOnCaptureThread() {
     DCHECK(capture_task_runner_->RunsTasksInCurrentSequence());
-    CHECK_LT(next_frame_index_, preloaded_frames_.size());
+    DCHECK_GT(runtime_params_.fps, 0.0);
 
-    size_t frame_index = next_frame_index_++;
-    std::unique_ptr<webrtc::DesktopFrame> frame =
-        preloaded_frames_[frame_index]->Share();
+    while (next_frame_index_ < preloaded_frames_.size()) {
+      const size_t frame_index = next_frame_index_++;
+      std::unique_ptr<webrtc::DesktopFrame> frame =
+          preloaded_frames_[frame_index]->Share();
 
-    WebrtcVideoEncoder::FrameParams params;
-    params.bitrate_kbps = encoder_config_.bitrate_kbps;
-    params.duration = base::Hertz(runtime_params_.fps);
-    params.fps = static_cast<int>(std::round(runtime_params_.fps));
-    params.key_frame = (frame_index == 0);
-    params.clear_active_map = !top_off_active_;
+      const bool key_frame = (frame_index == 0);
+      const base::TimeDelta time_since_last_encode =
+          last_encoded_frame_index_.has_value()
+              ? base::Seconds(static_cast<double>(frame_index -
+                                                  *last_encoded_frame_index_) /
+                              runtime_params_.fps)
+              : base::TimeDelta::Max();
 
-    // Stats are tracked on capture thread.
-    // Use int64_t to prevent overflow for large dimensions.
-    run_results_.total_pixels += static_cast<int64_t>(frame->size().width()) *
-                                 static_cast<int64_t>(frame->size().height());
-    for (webrtc::DesktopRegion::Iterator r(frame->updated_region());
-         !r.IsAtEnd(); r.Advance()) {
-      run_results_.updated_pixels += static_cast<int64_t>(r.rect().width()) *
-                                     static_cast<int64_t>(r.rect().height());
+      // Stats are tracked across all captured stream frames on the capture
+      // thread. Use int64_t to prevent overflow for large dimensions.
+      run_results_.frames_captured++;
+      run_results_.total_pixels += static_cast<int64_t>(frame->size().width()) *
+                                   static_cast<int64_t>(frame->size().height());
+      for (webrtc::DesktopRegion::Iterator r(frame->updated_region());
+           !r.IsAtEnd(); r.Advance()) {
+        run_results_.updated_pixels += static_cast<int64_t>(r.rect().width()) *
+                                       static_cast<int64_t>(r.rect().height());
+      }
+
+      // Mirror WebrtcVideoEncoderWrapper::Encode(): once quality top-off
+      // completes, drop zero-damage frames up to kKeepAliveInterval so empty
+      // idle frames do not skew delta encode latency and frame-size stats.
+      if (!key_frame && frame->updated_region().is_empty() &&
+          !top_off_active_ && time_since_last_encode < kKeepAliveInterval) {
+        run_results_.frames_dropped++;
+        continue;
+      }
+
+      last_encoded_frame_index_ = frame_index;
+
+      WebrtcVideoEncoder::FrameParams params;
+      params.bitrate_kbps = encoder_config_.bitrate_kbps;
+      params.duration = base::Hertz(runtime_params_.fps);
+      params.fps = static_cast<int>(std::round(runtime_params_.fps));
+      params.key_frame = key_frame;
+      params.clear_active_map = !top_off_active_;
+
+      encode_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&EncoderBenchmark::EncodeFrameOnEncodeThread,
+                         base::Unretained(this), frame_index, std::move(frame),
+                         params));
+      return;
     }
 
-    encode_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&EncoderBenchmark::EncodeFrameOnEncodeThread,
-                                  base::Unretained(this), frame_index,
-                                  std::move(frame), params));
+    main_task_runner_->PostTask(FROM_HERE, quit_closure_);
   }
 
   void EncodeFrameOnEncodeThread(
@@ -1123,6 +1293,7 @@ class EncoderBenchmark {
       top_off_active_ = (frame->quantizer > WebrtcVideoEncoder::kMinQuantizer);
     } else {
       LOG(ERROR) << "Encoder failed to encode frame.";
+      top_off_active_ = false;
     }
     main_task_runner_->PostTask(
         FROM_HERE,
@@ -1132,15 +1303,10 @@ class EncoderBenchmark {
 
   void OnFrameEncodedCompleteOnMainThread() {
     DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-    frames_encoded_++;
-    if (frames_encoded_ >= frames_to_encode_) {
-      quit_closure_.Run();
-    } else {
-      capture_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&EncoderBenchmark::CaptureNextFrameOnCaptureThread,
-                         base::Unretained(this)));
-    }
+    capture_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&EncoderBenchmark::CaptureNextFrameOnCaptureThread,
+                       base::Unretained(this)));
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner_;
@@ -1156,9 +1322,8 @@ class EncoderBenchmark {
   base::raw_span<const std::unique_ptr<webrtc::SharedDesktopFrame>>
       preloaded_frames_;
   size_t next_frame_index_ = 0;
-  int frames_to_encode_ = 0;
-  int frames_encoded_ = 0;
   bool top_off_active_ = false;
+  std::optional<size_t> last_encoded_frame_index_;
   RunResults run_results_;
   base::RepeatingClosure quit_closure_;
 };
@@ -1173,13 +1338,23 @@ Options:
   --output-json=<path>   Write benchmark results to the specified JSON file
   --help                 Print this help message and JSON schema
 
+Supported scenarios ("scenarios" array in JSON config):
+  Single-regime scenarios (all included when specifying "all"):
+    desktop_clock, scroll_vertical, scroll_horizontal, moving_window,
+    busy_developer, low_motion, high_motion, chaos_stress
+  Composite multi-regime workflow scenario:
+    desktop_workflow     6-phase sequence (idle -> scroll -> reading pause ->
+                         window drag -> chaos burst -> idle recovery) on a
+                         single encoder instance; "frames" >= 180 recommended
+                         at 30 FPS so idle phases include 1 Hz clock ticks.
+
 Example JSON configuration:
 {
-  "frames": 100,
+  "frames": 180,
   "fps": 30.0,
   "bitrate_kbps": 5000,
   "sizes": ["1920x1080", "2560x1440", "3840x2160"],
-  "scenarios": ["desktop_clock", "scroll_vertical"],
+  "scenarios": ["desktop_clock", "scroll_vertical", "desktop_workflow"],
   "encoders": [
     {
       "name": "av1_s11_no_am",
