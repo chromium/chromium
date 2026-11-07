@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -50,11 +51,15 @@ class NewTabButtonTest : public ChromeViewsTestBase {
     auto root = actions::ActionItem::Builder().Build();
     root->AddChild(actions::ActionItem::Builder(
                        base::BindRepeating(
-                           [](bool* action_invoked, actions::ActionItem* item,
+                           [](bool* action_invoked,
+                              chrome::ActionInvocationSource* invocation_source,
+                              actions::ActionItem* item,
                               actions::ActionInvocationContext context) {
                              *action_invoked = true;
+                             *invocation_source = context.GetProperty(
+                                 chrome::kActionInvocationSourceKey);
                            },
-                           &new_tab_action_invoked_))
+                           &new_tab_action_invoked_, &invocation_source_))
                        .SetActionId(kActionNewTab)
                        .SetText(u"New Tab")
                        .Build());
@@ -96,6 +101,8 @@ class NewTabButtonTest : public ChromeViewsTestBase {
       mock_browser_window_interface_;
   std::unique_ptr<BrowserActions> browser_actions_;
   bool new_tab_action_invoked_ = false;
+  chrome::ActionInvocationSource invocation_source_ =
+      chrome::ActionInvocationSource::kUnknown;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<NewTabButton> button_ = nullptr;
 };
@@ -129,6 +136,7 @@ TEST_F(NewTabButtonTest, LeftClickButtonCreatesNewTabAndUpdatesInkDrop) {
   button_->OnMouseReleased(release_event);
 
   EXPECT_TRUE(new_tab_action_invoked_);
+  EXPECT_EQ(chrome::ActionInvocationSource::kViewButton, invocation_source_);
   EXPECT_EQ(1, user_action_tester.GetActionCount("NewTab_Button"));
   EXPECT_NE(views::InkDrop::Get(button_)->GetInkDrop()->GetTargetInkDropState(),
             views::InkDropState::ACTION_PENDING);

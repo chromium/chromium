@@ -16,11 +16,14 @@
 #include "base/time/time.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -37,6 +40,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/actions/actions.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -429,4 +433,31 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewUnifiedTest,
                              ui::EF_LEFT_MOUSE_BUTTON);
   views::test::ButtonTestApi(new_tab_button()).NotifyClick(press_event);
   histogram_tester.ExpectTotalCount("TabStrip.TimeToCreateNewTabFromPress", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewUnifiedTest,
+                       RecordsNewTabHistogramBucket) {
+  base::HistogramTester histogram_tester;
+  ASSERT_NE(new_tab_button(), nullptr);
+
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(5, 5),
+                             gfx::Point(5, 5), base::TimeTicks::Now(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  views::test::ButtonTestApi(new_tab_button()).NotifyClick(press_event);
+
+  histogram_tester.ExpectBucketCount("Tab.NewTab", NewTabTypes::kNewTabButton,
+                                     1);
+  histogram_tester.ExpectBucketCount("Tab.NewTab", NewTabTypes::kNewTabCommand,
+                                     0);
+
+  actions::ActionItem* new_tab_action =
+      actions::ActionManager::Get().FindAction(
+          kActionNewTab, BrowserActions::From(browser())->root_action_item());
+  ASSERT_NE(new_tab_action, nullptr);
+  new_tab_action->InvokeAction();
+  histogram_tester.ExpectBucketCount("Tab.NewTab", NewTabTypes::kNewTabButton,
+                                     1);
+  histogram_tester.ExpectBucketCount("Tab.NewTab", NewTabTypes::kNewTabCommand,
+                                     1);
 }
