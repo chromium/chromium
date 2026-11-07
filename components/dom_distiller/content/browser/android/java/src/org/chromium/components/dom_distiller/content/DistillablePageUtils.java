@@ -16,19 +16,10 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
-import java.lang.ref.WeakReference;
-import java.util.HashMap;
-import java.util.Map;
-
 /** Provides access to the native dom_distiller::IsPageDistillable function. */
 @JNINamespace("dom_distiller::android")
 @NullMarked
 public final class DistillablePageUtils {
-    // A map of native observer objects to their Java counterparts allows unlimited scaling in
-    // number of web contents. Another java object owns the PageDistillableDelegate objects.
-    private static final Map<Long, WeakReference<PageDistillableDelegate>> sNativeHelperMap =
-            new HashMap<>();
-
     /** Delegate to receive distillability updates. */
     public interface PageDistillableDelegate {
         /**
@@ -58,42 +49,25 @@ public final class DistillablePageUtils {
      */
     public static void setDelegate(
             WebContents webContents, @Nullable PageDistillableDelegate delegate) {
-        long nativeObserverPtr = DistillablePageUtilsJni.get().setDelegate(webContents, delegate);
-        if (nativeObserverPtr == 0) {
-            return;
-        }
-        sNativeHelperMap.put(nativeObserverPtr, new WeakReference<>(delegate));
-    }
-
-    private static @Nullable PageDistillableDelegate getDelegate(long nativeObserverPtr) {
-        WeakReference<PageDistillableDelegate> delegate = sNativeHelperMap.get(nativeObserverPtr);
-        return delegate == null ? null : delegate.get();
-    }
-
-    @CalledByNative
-    private static void onNativeDestroyed(long nativeObserverPtr) {
-        sNativeHelperMap.remove(nativeObserverPtr);
+        DistillablePageUtilsJni.get().setDelegate(webContents, delegate);
     }
 
     @CalledByNative
     private static void callOnIsPageDistillableUpdate(
-            long nativeObserverPtr,
+            PageDistillableDelegate delegate,
             @JniType("GURL") GURL url,
             boolean isDistillable,
             boolean isLast,
             boolean isLongArticle,
             boolean isMobileOptimized) {
-        PageDistillableDelegate delegate = getDelegate(nativeObserverPtr);
-        if (delegate != null) {
-            delegate.onIsPageDistillableResult(
-                    url, isDistillable, isLast, isLongArticle, isMobileOptimized);
-        }
+        delegate.onIsPageDistillableResult(
+                url, isDistillable, isLast, isLongArticle, isMobileOptimized);
     }
 
     @NativeMethods
     @VisibleForTesting
     public interface Natives {
-        long setDelegate(
+        void setDelegate(
                 @JniType("content::WebContents*") WebContents webContents,
                 @Nullable PageDistillableDelegate delegate);
     }
