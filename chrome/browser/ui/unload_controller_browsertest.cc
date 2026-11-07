@@ -51,7 +51,6 @@
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/slow_download_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/base_window.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/views/view_utils.h"
@@ -115,10 +114,6 @@ class UnloadControllerPreventCloseTest
 
 IN_PROC_BROWSER_TEST_P(UnloadControllerPreventCloseTest,
                        PreventCloseEnforcedByPolicy) {
-  const absl::Cleanup policy_cleanup = [this] {
-    SetPolicies(/*web_app_settings=*/"[]", /*web_app_install_force_list=*/"[]");
-  };
-
   InstallPWA(GURL(kCalculatorAppUrl), ash::kCalculatorAppId);
   SetPoliciesAndWaitUntilInstalled(ash::kCalculatorAppId,
                                    kPreventCloseEnabledForCalculator,
@@ -135,21 +130,8 @@ IN_PROC_BROWSER_TEST_P(UnloadControllerPreventCloseTest,
             unload_controller->GetBrowserClosingStatus());
 }
 
-// Flaky on IS_CHROMEOS. crbug.com/369817361
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable \
-  DISABLED_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable
-#else
-#define MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable \
-  PreventCloseEnforcedByPolicyTabbedAppShallBeClosable
-#endif
-IN_PROC_BROWSER_TEST_P(
-    UnloadControllerPreventCloseTest,
-    MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable) {
-  const absl::Cleanup policy_cleanup = [this] {
-    SetPolicies(/*web_app_settings=*/"[]", /*web_app_install_force_list=*/"[]");
-  };
-
+IN_PROC_BROWSER_TEST_P(UnloadControllerPreventCloseTest,
+                       PreventCloseEnforcedByPolicyTabbedAppShallBeClosable) {
   InstallPWA(GURL(kCalculatorAppUrl), ash::kCalculatorAppId);
   SetPoliciesAndWaitUntilInstalled(ash::kCalculatorAppId,
                                    kPreventCloseEnabledForCalculator,
@@ -195,10 +177,6 @@ IN_PROC_BROWSER_TEST_P(
 // schedules browser deletion.
 IN_PROC_BROWSER_TEST_P(UnloadControllerPreventCloseTest,
                        ForceCloseWindowWithPreventClosePWA) {
-  const absl::Cleanup policy_cleanup = [this] {
-    SetPolicies(/*web_app_settings=*/"[]", /*web_app_install_force_list=*/"[]");
-  };
-
   InstallPWA(GURL(kCalculatorAppUrl), ash::kCalculatorAppId);
   SetPoliciesAndWaitUntilInstalled(ash::kCalculatorAppId,
                                    kPreventCloseEnabledForCalculator,
@@ -230,10 +208,6 @@ IN_PROC_BROWSER_TEST_P(UnloadControllerPreventCloseTest,
 // valid and emits the browser-did-close notification.
 IN_PROC_BROWSER_TEST_P(UnloadControllerPreventCloseTest,
                        SynchronouslyDestroyBrowserWithPreventClosePWA) {
-  const absl::Cleanup policy_cleanup = [this] {
-    SetPolicies(/*web_app_settings=*/"[]", /*web_app_install_force_list=*/"[]");
-  };
-
   InstallPWA(GURL(kCalculatorAppUrl), ash::kCalculatorAppId);
   SetPoliciesAndWaitUntilInstalled(ash::kCalculatorAppId,
                                    kPreventCloseEnabledForCalculator,

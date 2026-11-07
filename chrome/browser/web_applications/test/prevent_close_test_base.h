@@ -7,8 +7,10 @@
 
 #include <string_view>
 
+#include "base/auto_reset.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -32,7 +34,8 @@ class PreventCloseTestBase : public policy::PolicyTest {
 
   // policy::PolicyTest:
   void SetUpInProcessBrowserTestFixture() override;
-  void TearDownInProcessBrowserTestFixture() override;
+  void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
 
   void SetPolicies(std::string_view web_app_settings,
                    std::string_view web_app_install_force_list);
@@ -52,6 +55,12 @@ class PreventCloseTestBase : public policy::PolicyTest {
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Prevent automatic OS-login app launches from racing with explicit test
+  // launches when `kWebAppSettings` configures `run_on_os_login`.
+  base::AutoReset<bool> skip_run_on_os_login_startup_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_PREVENT_CLOSE_TEST_BASE_H_

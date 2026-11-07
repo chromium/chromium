@@ -9,13 +9,16 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -27,7 +30,17 @@
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/web_app_run_on_os_login_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+PreventCloseTestBase::PreventCloseTestBase()
+    : skip_run_on_os_login_startup_(
+          web_app::WebAppRunOnOsLoginManager::SkipStartupForTesting()) {}
+#else
 PreventCloseTestBase::PreventCloseTestBase() = default;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 PreventCloseTestBase::~PreventCloseTestBase() = default;
 
@@ -38,9 +51,17 @@ void PreventCloseTestBase::SetUpInProcessBrowserTestFixture() {
   policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 }
 
-void PreventCloseTestBase::TearDownInProcessBrowserTestFixture() {
-  ClearWebAppSettings();
-  policy::PolicyTest::TearDownInProcessBrowserTestFixture();
+void PreventCloseTestBase::SetUpOnMainThread() {
+  policy::PolicyTest::SetUpOnMainThread();
+  web_app::test::WaitUntilWebAppProviderAndSubsystemsReady(
+      web_app::WebAppProvider::GetForTest(profile()));
+}
+
+void PreventCloseTestBase::TearDownOnMainThread() {
+  if (!GlobalBrowserCollection::GetInstance()->IsEmpty()) {
+    ClearWebAppSettings();
+  }
+  policy::PolicyTest::TearDownOnMainThread();
 }
 
 void PreventCloseTestBase::SetPolicies(

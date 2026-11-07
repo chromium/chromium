@@ -928,8 +928,10 @@ source_set("prevent_close_test_support") {
   deps = [
     ":web_applications",
     ":web_applications_test_support",
+    "//base",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
     "//chrome/test:test_support",
     "//components/policy/core/common:test_support",
     "//components/webapps/common",

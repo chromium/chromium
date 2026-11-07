@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/prevent_close_test_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -109,7 +108,6 @@ class TabStripModelPreventCloseTest : public PreventCloseTestBase,
     observer_.Observe(browser->GetTabStripModel());
   }
 
-  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   base::ScopedObservation<TabStripModel, TabStripModelPreventCloseTest>
       observer_{this};
   base::CallbackListSubscription browser_did_close_subscription_;
@@ -172,20 +170,10 @@ IN_PROC_BROWSER_TEST_F(
 
   tab_strip_model->CloseAllTabs();
   EXPECT_EQ(0, tab_strip_model->count());
-  ClearWebAppSettings();
 }
 
-// TODO(b/321593065): enable this flaky test.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable \
-  DISABLED_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable
-#else
-#define MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable \
-  PreventCloseEnforcedByPolicyTabbedAppShallBeClosable
-#endif
-IN_PROC_BROWSER_TEST_F(
-    TabStripModelPreventCloseTest,
-    MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable) {
+IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
+                       PreventCloseEnforcedByPolicyTabbedAppShallBeClosable) {
   InstallPWA(GURL(kCalculatorAppUrl), ash::kCalculatorAppId);
   SetPoliciesAndWaitUntilInstalled(ash::kCalculatorAppId,
                                    kPreventCloseEnabledForCalculator,
