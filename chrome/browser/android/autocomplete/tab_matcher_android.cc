@@ -22,6 +22,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/jni_zero/default_conversions.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/omnibox/jni_headers/ChromeAutocompleteProviderClient_jni.h"
@@ -131,8 +132,10 @@ std::vector<TabMatcher::TabWrapper> TabMatcherAndroid::GetOpenTabs(
     const AutocompleteInput* input,
     bool unused_exclude_active_tab) const {
   std::vector<TabMatcher::TabWrapper> open_tabs;
-  for (int64_t tab_ptr : GetOpenAndroidTabs(input)) {
-    TabAndroid* open_tab = reinterpret_cast<TabAndroid*>(tab_ptr);
+  for (TabAndroid* open_tab : GetOpenAndroidTabs(input)) {
+    if (!open_tab) {
+      continue;
+    }
     open_tabs.emplace_back(open_tab->GetTitle(), open_tab->GetURL(),
                            open_tab->GetLastShownTimestamp());
   }
@@ -140,7 +143,7 @@ std::vector<TabMatcher::TabWrapper> TabMatcherAndroid::GetOpenTabs(
   return open_tabs;
 }
 
-std::vector<int64_t> TabMatcherAndroid::GetOpenAndroidTabs(
+std::vector<TabAndroid*> TabMatcherAndroid::GetOpenAndroidTabs(
     const AutocompleteInput* input) const {
   using chrome::android::ActivityType;
   static const bool is_desktop = base::android::device_info::is_desktop();
@@ -178,7 +181,7 @@ std::vector<int64_t> TabMatcherAndroid::GetOpenAndroidTabs(
 
   // Short circuit in the event we have no tab models hosting eligible tabs.
   if (tab_models.size() == 0) {
-    return std::vector<int64_t>();
+    return std::vector<TabAndroid*>();
   }
 
   // Create and populate an array of Java TabModels.
@@ -216,8 +219,10 @@ TabMatcher::GURLToTabInfoMap TabMatcherAndroid::GetAllHiddenAndNonCCTTabInfos(
   using chrome::android::ActivityType;
   GURLToTabInfoMap tab_infos;
 
-  for (int64_t ptr : GetOpenAndroidTabs(input)) {
-    TabAndroid* tab = reinterpret_cast<TabAndroid*>(ptr);
+  for (TabAndroid* tab : GetOpenAndroidTabs(input)) {
+    if (!tab) {
+      continue;
+    }
     // Browser did not load the tab yet after Chrome started. To avoid
     // reloading WebContents, we just compare URLs.
     AutocompleteClientTabAndroidUserData::CreateForTabAndroid(tab);
