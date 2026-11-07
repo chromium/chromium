@@ -181,6 +181,17 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Dispatch intent"/>
 </enum>
 
+<enum name="NotificationOperation">
+  <int value="0" label="Click"/>
+  <int value="1" label="Close"/>
+  <int value="2" label="Disable Permission"/>
+  <int value="3" label="Settings"/>
+  <int value="4" label="Report As Safe"/>
+  <int value="5" label="Report Warned As Spam"/>
+  <int value="6" label="Report Unwarned As Spam"/>
+  <int value="7" label="Show Original Notification"/>
+</enum>
+
 <enum name="NotificationPendingJobReason">
   <int value="-2" label="PENDING_JOB_REASON_INVALID_JOB_ID"/>
   <int value="-1" label="PENDING_JOB_REASON_EXECUTING"/>

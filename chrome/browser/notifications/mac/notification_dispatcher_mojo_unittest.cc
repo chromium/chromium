@@ -457,6 +457,10 @@ TEST_F(NotificationDispatcherMojoTest, DidActivateNotification) {
 
   // Handling responses is async, make sure we wait for all tasks to complete.
   task_environment_.RunUntilIdle();
+
+  histograms.ExpectUniqueSample("Notifications.macOS.ActionReceived.Alert",
+                                NotificationOperation::kClick,
+                                /*expected_bucket_count=*/1);
 }
 
 TEST_F(NotificationDispatcherMojoTest, TestUnexpectedDisconnectReconnects) {
@@ -763,6 +767,25 @@ class NotificationDispatcherMojoAppShimTest
   raw_ptr<FakeMacNotificationProviderFactory> app_shim_factory_ = nullptr;
   std::unique_ptr<NotificationDispatcherMojo> app_shim_dispatcher_;
 };
+
+TEST_F(NotificationDispatcherMojoAppShimTest, DidActivateNotification) {
+  base::HistogramTester histograms;
+  EmulateAppShimOkayToTerminate(/*can_terminate=*/true);
+  EXPECT_CALL(app_shim_service(), DisplayNotification);
+  app_shim_dispatcher_->DisplayNotification(
+      NotificationHandler::Type::WEB_PERSISTENT, profile_, CreateNotification(),
+      base::DoNothing());
+
+  task_environment_.RunUntilIdle();
+  app_shim_factory_->handler()->OnNotificationAction(
+      CreateNotificationActionInfo());
+
+  task_environment_.RunUntilIdle();
+
+  histograms.ExpectUniqueSample("Notifications.macOS.ActionReceived.AppShim",
+                                NotificationOperation::kClick,
+                                /*expected_bucket_count=*/1);
+}
 
 TEST_F(NotificationDispatcherMojoAppShimTest, StopsRetryingAfterMaximumDelay) {
   DisplayAppShimNotificationSync();

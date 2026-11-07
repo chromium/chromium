@@ -27156,6 +27156,36 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Notifications.NonPersistent.Clicked">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    Logged when a non-persistent notification is clicked.
+  </description>
+</action>
+
+<action name="Notifications.NonPersistent.ClosedByUser">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    Logged when a non-persistent notification is closed by the user.
+  </description>
+</action>
+
+<action name="Notifications.NonPersistent.ClosedProgrammatically">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    Logged when a non-persistent notification is closed not by the user.
+  </description>
+</action>
+
+<action name="Notifications.NonPersistent.Shown">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>Logged when a non-persistent notification is shown.</description>
+</action>
+
 <action name="Notifications.Persistent.Clicked">
   <owner>peter@chromium.org</owner>
   <description>

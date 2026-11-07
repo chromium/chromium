@@ -50,3 +50,28 @@ TEST_F(NotificationMetricsLoggerTest, PersistentNotificationAction) {
   EXPECT_EQ(1, user_action_tester_.GetActionCount(
                    "Notifications.Persistent.ClickedActionButton"));
 }
+
+TEST_F(NotificationMetricsLoggerTest, NonPersistentNotificationShown) {
+  logger_.LogNonPersistentNotificationShown();
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Notifications.NonPersistent.Shown"));
+}
+
+TEST_F(NotificationMetricsLoggerTest, NonPersistentNotificationClosedByUser) {
+  logger_.LogNonPersistentNotificationClosedByUser();
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Notifications.NonPersistent.ClosedByUser"));
+}
+
+TEST_F(NotificationMetricsLoggerTest,
+       NonPersistentNotificationClosedProgrammatically) {
+  logger_.LogNonPersistentNotificationClosedProgrammatically();
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Notifications.NonPersistent.ClosedProgrammatically"));
+}
+
+TEST_F(NotificationMetricsLoggerTest, NonPersistentNotificationClick) {
+  logger_.LogNonPersistentNotificationClick();
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Notifications.NonPersistent.Clicked"));
+}

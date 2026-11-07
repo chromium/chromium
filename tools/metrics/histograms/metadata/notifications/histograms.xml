@@ -823,6 +823,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.macOS.ActionReceived.{Style}"
+    enum="NotificationOperation" expires_after="2027-05-02">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the operation (e.g. click, close, settings) received for a macOS
+    notification, sliced by the UI style {Style} of the notification. This can
+    be used alongside Notifications.macOS.DisplayNotificationResult.{Style} to
+    compute click-through rates (CTR) across macOS notification styles. Note
+    that Close counts may not be directly comparable across styles due to
+    differences in how NSUserNotificationCenter and UNUserNotificationCenter
+    report notification dismissals and removals.
+  </summary>
+  <token key="Style" variants="MacOSNotificationStyle"/>
+</histogram>
+
 <histogram name="Notifications.macOS.AppShimProcess.UptimeOnDisconnect"
     units="ms" expires_after="2027-05-02">
   <owner>mek@chromium.org</owner>

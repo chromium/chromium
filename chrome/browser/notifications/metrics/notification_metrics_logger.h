@@ -31,6 +31,18 @@ class NotificationMetricsLogger : public KeyedService {
 
   // Logs that a persistent notification has been displayed.
   virtual void LogPersistentNotificationShown();
+
+  // Logs that a non-persistent notification was closed by the user.
+  virtual void LogNonPersistentNotificationClosedByUser();
+
+  // Logs that a non-persistent notification was closed but not by the user.
+  virtual void LogNonPersistentNotificationClosedProgrammatically();
+
+  // Logs that a non-persistent notification was clicked.
+  virtual void LogNonPersistentNotificationClick();
+
+  // Logs that a non-persistent notification has been displayed.
+  virtual void LogNonPersistentNotificationShown();
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_METRICS_NOTIFICATION_METRICS_LOGGER_H_

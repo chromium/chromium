@@ -43,3 +43,24 @@ void NotificationMetricsLogger::
 void NotificationMetricsLogger::LogPersistentNotificationShown() {
   base::RecordAction(base::UserMetricsAction("Notifications.Persistent.Shown"));
 }
+
+void NotificationMetricsLogger::LogNonPersistentNotificationClosedByUser() {
+  base::RecordAction(
+      base::UserMetricsAction("Notifications.NonPersistent.ClosedByUser"));
+}
+
+void NotificationMetricsLogger::
+    LogNonPersistentNotificationClosedProgrammatically() {
+  base::RecordAction(base::UserMetricsAction(
+      "Notifications.NonPersistent.ClosedProgrammatically"));
+}
+
+void NotificationMetricsLogger::LogNonPersistentNotificationClick() {
+  base::RecordAction(
+      base::UserMetricsAction("Notifications.NonPersistent.Clicked"));
+}
+
+void NotificationMetricsLogger::LogNonPersistentNotificationShown() {
+  base::RecordAction(
+      base::UserMetricsAction("Notifications.NonPersistent.Shown"));
+}

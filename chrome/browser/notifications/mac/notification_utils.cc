@@ -9,7 +9,9 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/i18n/number_formatting.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
@@ -23,6 +25,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/notifications/notification_constants.h"
 #include "chrome/common/notifications/notification_operation.h"
+#include "chrome/services/mac_notifications/public/cpp/mac_notification_metrics.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -184,6 +187,12 @@ void ProcessMacNotificationResponse(
   bool is_valid = VerifyMacNotificationData(info);
   if (!is_valid)
     return;
+
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"Notifications.macOS.ActionReceived.",
+           mac_notifications::MacNotificationStyleSuffix(notification_style)}),
+      info->operation);
 
   std::optional<int> actionIndex;
   if (info->button_index != kNotificationInvalidButtonIndex)
