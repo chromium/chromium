@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser_rs.h"
 
 #include "base/auto_reset.h"
+#include "base/memory/safety_checks.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_view_rust.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -298,7 +299,18 @@ void XMLDocumentParserRs::ProcessEvents() {
       if (!pending_src_.empty()) {
         AppendToSource(pending_src_.ReleaseString());
       }
-      xml_ffi::process_next_event(*read_state_);
+      {
+        // Reading an event makes and frees many short-lived allocations in
+        // the Rust parser. Freeing them through the Scheduler-Loop Quarantine,
+        // which holds on to each freed allocation until the end of the task,
+        // is expensive, so this excludes reading events (which also frees the
+        // previous event) from it. This only runs Rust code, and doesn't call
+        // into Blink or script, which only happens in dispatch_event(). In
+        // builds with DCHECKs, read_next_event() verifies this.
+        base::ScopedSafetyChecksExclusion exclusion;
+        xml_ffi::read_next_event(*read_state_);
+      }
+      xml_ffi::dispatch_event(*read_state_);
     }
     if (xml_ffi::saw_error(*read_state_)) {
       rust::String error_message = "";

@@ -11,8 +11,8 @@ use xml::{
     reader::{
         ErrorKind, EventReader as XmlEventReader, ImmutableEntitiesError,
         XmlEvent::{
-            CData, Characters, Comment, Doctype, EndDocument, EndElement, ProcessingInstruction,
-            StartDocument, StartElement, Whitespace,
+            self, CData, Characters, Comment, Doctype, EndDocument, EndElement,
+            ProcessingInstruction, StartDocument, StartElement, Whitespace,
         },
     },
     Encoding, ParserConfig,
@@ -24,7 +24,7 @@ use std::cell::{Cell, RefCell};
 use std::pin::Pin;
 
 // `XmlReadState` is held by `XMLDocumentParserRs` and passed across FFI as a
-// shared `&XmlReadState` reference. While `process_next_event()` is on the
+// shared `&XmlReadState` reference. While `dispatch_event()` is on the
 // stack, synchronous C++ parser callbacks can re-enter `xml_ffi` with the same
 // `read_state_` (for example, `DocType()` calls `add_xhtml_entities()`, and
 // `StartElementNs()` calls `try_get_last_event_position()`). Using interior
@@ -34,6 +34,14 @@ use std::pin::Pin;
 // `last_event_position`.
 struct XmlReadState<'a> {
     event_reader: RefCell<XmlEventReader<Cursor<Vec<u8>>>>,
+    // The result of the last `read_next_event()`, which `dispatch_event()`
+    // passes to the callbacks by reference. It is freed by the next
+    // `read_next_event()`, which `XMLDocumentParserRs::ProcessEvents()` runs
+    // with the PartitionAlloc Scheduler-Loop Quarantine disabled, so that the
+    // event's many small allocations don't go through the quarantine. The
+    // quarantine is only disabled around `read_next_event()`, which only runs
+    // safe Rust code and doesn't call into Blink.
+    event: RefCell<Option<xml::reader::Result<XmlEvent>>>,
     error_details: RefCell<Option<xml::reader::Error>>,
     last_event_position: Cell<Option<TextPosition>>,
     parser_callbacks: RefCell<Pin<&'a mut XmlCallbacks>>,
@@ -58,6 +66,7 @@ fn create_read_state(callbacks: Pin<&mut XmlCallbacks>) -> Box<XmlReadState<'_>>
     let event_reader = create_reader();
     Box::new(XmlReadState {
         event_reader: RefCell::new(event_reader),
+        event: RefCell::new(None),
         error_details: RefCell::new(None),
         last_event_position: Cell::new(None),
         parser_callbacks: RefCell::new(callbacks),
@@ -82,22 +91,39 @@ fn append_to_source(read_state: &XmlReadState, content: &[u8]) {
     buffer.extend_from_slice(content);
 }
 
-struct AttributesIterator {
-    attributes: std::vec::IntoIter<OwnedAttribute>,
+struct AttributesIterator<'a> {
+    attributes: std::slice::Iter<'a, OwnedAttribute>,
 }
 
 struct NamespacesIterator {
     namespaces: std::vec::IntoIter<(String, String)>,
 }
 
-fn process_next_event(read_state: &XmlReadState) {
-    let event_result = {
-        let mut reader = read_state.event_reader.borrow_mut();
-        let result = reader.next();
-        if result.is_ok() {
-            read_state.last_event_position.set(Some(reader.position()));
-        }
-        result
+// Reads the next event into `read_state.event`, after freeing the previous
+// one. This doesn't call into Blink, so the caller can exclude it from the
+// PartitionAlloc Scheduler-Loop Quarantine.
+fn read_next_event(read_state: &XmlReadState) {
+    // Blink is only called through `parser_callbacks` (the attribute and
+    // namespace views only exist inside those calls), which borrows it
+    // mutably. Holding a borrow here makes any such call panic when debug
+    // assertions (DCHECKs) are enabled.
+    #[cfg(debug_assertions)]
+    let _no_callbacks = read_state.parser_callbacks.borrow();
+    let mut event = read_state.event.borrow_mut();
+    *event = None;
+    let mut reader = read_state.event_reader.borrow_mut();
+    let result = reader.next();
+    if result.is_ok() {
+        read_state.last_event_position.set(Some(reader.position()));
+    }
+    *event = Some(result);
+}
+
+// Passes the event read by `read_next_event()` to the parser callbacks.
+fn dispatch_event(read_state: &XmlReadState) {
+    let event = read_state.event.borrow();
+    let Some(event_result) = event.as_ref() else {
+        return;
     };
     match event_result {
         Ok(event) => match event {
@@ -138,7 +164,7 @@ fn process_next_event(read_state: &XmlReadState) {
                     let encoding = xml_declaration_view
                         .and_then(|bytes| {
                             if bytes.windows(8).any(|window| window == b"encoding") {
-                                Some(encoding)
+                                Some(encoding.as_str())
                             } else {
                                 None
                             }
@@ -150,23 +176,19 @@ fn process_next_event(read_state: &XmlReadState) {
                     .parser_callbacks
                     .borrow_mut()
                     .as_mut()
-                    .StartDocument(version, &encoding, standalone);
+                    .StartDocument(version, encoding, standalone);
             }
             ProcessingInstruction { name, data } => {
-                let data = data.unwrap_or_default();
+                let data = data.as_deref().unwrap_or_default();
                 let data = data.trim_start();
-                read_state
-                    .parser_callbacks
-                    .borrow_mut()
-                    .as_mut()
-                    .ProcessingInstruction(&name, data);
+                read_state.parser_callbacks.borrow_mut().as_mut().ProcessingInstruction(name, data);
             }
             StartElement { name, attributes, .. } => {
                 let local_name: &str = &name.local_name;
                 let has_prefix = name.prefix.is_some();
-                let prefix: &str = &name.prefix.unwrap_or_default();
+                let prefix: &str = name.prefix.as_deref().unwrap_or_default();
                 let has_ns = name.namespace.is_some();
-                let ns: &str = &name.namespace.unwrap_or_default();
+                let ns: &str = name.namespace.as_deref().unwrap_or_default();
 
                 // Avoids holding a borrow of `read_state` when calling back
                 // into C++ below. Since this would require cloning, also
@@ -193,7 +215,9 @@ fn process_next_event(read_state: &XmlReadState) {
                         })
                         .unwrap_or_default(),
                 };
-                let mut attributes = AttributesIterator { attributes: attributes.into_iter() };
+                // The attributes are borrowed from `read_state.event`, so they
+                // are freed with it in the next `read_next_event()`.
+                let mut attributes = AttributesIterator { attributes: attributes.iter() };
                 read_state.parser_callbacks.borrow_mut().as_mut().StartElementNs(
                     local_name,
                     has_prefix,
@@ -206,8 +230,8 @@ fn process_next_event(read_state: &XmlReadState) {
             }
             EndElement { name } => {
                 let local_name: &str = &name.local_name;
-                let prefix: &str = &name.prefix.unwrap_or_default();
-                let ns: &str = &name.namespace.unwrap_or_default();
+                let prefix: &str = name.prefix.as_deref().unwrap_or_default();
+                let ns: &str = name.namespace.as_deref().unwrap_or_default();
                 read_state
                     .parser_callbacks
                     .borrow_mut()
@@ -215,20 +239,16 @@ fn process_next_event(read_state: &XmlReadState) {
                     .EndElementNs(local_name, prefix, ns);
             }
             Characters(characters) => {
-                read_state.parser_callbacks.borrow_mut().as_mut().Characters(&characters);
+                read_state.parser_callbacks.borrow_mut().as_mut().Characters(characters);
             }
             Whitespace(whitespace_characters) => {
-                read_state
-                    .parser_callbacks
-                    .borrow_mut()
-                    .as_mut()
-                    .Characters(&whitespace_characters);
+                read_state.parser_callbacks.borrow_mut().as_mut().Characters(whitespace_characters);
             }
             Comment(comment) => {
-                read_state.parser_callbacks.borrow_mut().as_mut().Comment(&comment);
+                read_state.parser_callbacks.borrow_mut().as_mut().Comment(comment);
             }
             CData(data) => {
-                read_state.parser_callbacks.borrow_mut().as_mut().CData(&data);
+                read_state.parser_callbacks.borrow_mut().as_mut().CData(data);
             }
             EndDocument => {
                 read_state.parser_callbacks.borrow_mut().as_mut().EndDocument();
@@ -456,7 +476,7 @@ mod ffi {
 
     extern "Rust" {
         type XmlReadState<'a>;
-        type AttributesIterator;
+        type AttributesIterator<'a>;
         type NamespacesIterator;
 
         /// # Safety
@@ -467,7 +487,8 @@ mod ffi {
             callbacks: Pin<&'a mut XmlCallbacks>,
         ) -> Box<XmlReadState<'a>>;
         fn append_to_source(read_state: &XmlReadState, content: &[u8]);
-        fn process_next_event(read_state: &XmlReadState);
+        fn read_next_event(read_state: &XmlReadState);
+        fn dispatch_event(read_state: &XmlReadState);
         fn try_get_last_event_position(
             read_state: &XmlReadState,
             row: &mut u64,

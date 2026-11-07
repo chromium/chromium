@@ -159,7 +159,7 @@ class CORE_EXPORT XMLDocumentParserRs final : public ScriptableDocumentParser,
 
   bool parser_paused_ = false;
   // Re-entrancy guard for ProcessEvents(). Callbacks invoked from
-  // xml_ffi::process_next_event() can run script (e.g. inline <script> or
+  // xml_ffi::dispatch_event() can run script (e.g. inline <script> or
   // synchronous blur events when flushing leaf text nodes) that feeds more
   // data to Append() or calls Finish(). Re-entering ProcessEvents() while a
   // callback is on the stack would process inner events before the outer
