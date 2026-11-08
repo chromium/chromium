@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_delivery.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_security_gateway.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_source.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion_dropdown_dispatcher.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_target_field_identifier.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_types.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -42,8 +43,9 @@ class FormData;
 
 // Tab-scoped coordinator owned by `AutofillClient`.
 // Starts and stops `OtpSource` instances as OTP fields appear and disappear,
-// maintains per-field `OtpDelivery` state machines, and validates tokens via
-// `OtpSecurityGateway`.
+// maintains per-field `OtpDelivery` state machines, validates tokens via
+// `OtpSecurityGateway`, and dispatches proactive UI triggers via
+// `OtpSuggestionDropdownDispatcher`.
 //
 // While active in a tab, `OtpCoordinator`'s `OtpSecurityGateway` must be the
 // sole caller of the single-flight `AutofillClient::GetOtpPhishGuardDelegate()`.
@@ -53,6 +55,7 @@ class OtpCoordinator : public OtpSource::Observer {
    public:
     virtual BrowserAutofillManager& GetBrowserAutofillManager() const = 0;
     virtual void OnOtpAvailable(const OtpSuggestionData& data) = 0;
+    virtual void TriggerSuggestions(FieldGlobalId field_id) = 0;
   };
 
   // `client` must be non-null and outlive this coordinator.
@@ -77,6 +80,35 @@ class OtpCoordinator : public OtpSource::Observer {
   // called or `this` is destroyed.
   void RegisterObserver(Observer* observer);
   void UnregisterObserver(Observer* observer);
+
+  // Drops active deliveries owned by or hosted in `frame` when `frame`
+  // transitions away from active lifecycle state (e.g. into BFCache or pending
+  // deletion).
+  void OnFrameBecameInactive(LocalFrameToken frame);
+
+  // Updates tracked focus state when focus moves to `(form_id, field_id)` in
+  // `frame`, or to a non-form element when `field_id` is `std::nullopt`.
+  void OnFocusChanged(LocalFrameToken frame,
+                      std::optional<FormGlobalId> form_id,
+                      std::optional<FieldGlobalId> field_id);
+
+  // Updates tab visibility and retries deferred proactive triggers when the tab
+  // becomes visible while the browser window is focused.
+  void OnTabVisibilityChanged(bool is_visible);
+
+  // Updates browser window focus and retries deferred proactive triggers when
+  // the window becomes focused while the tab is visible.
+  void OnWindowFocusChanged(bool is_focused);
+
+  // Records that the user typed in a text field after OTP detection,
+  // suppressing subsequent proactive dropdown triggers for the current session.
+  void OnTextFieldValueChanged();
+
+  // Records that an OTP suggestion with `shown_value` was displayed on `field`
+  // so proactive triggers do not re-open the dropdown for the same token on
+  // that form.
+  void OnOtpSuggestionsShown(FieldGlobalId field,
+                             const std::string& shown_value);
 
   // Marks `filled_value` as consumed across sources and deliveries for
   // `target.origin`, and suppresses re-offering of matching or older tokens on
@@ -110,6 +142,11 @@ class OtpCoordinator : public OtpSource::Observer {
                            OtpTarget target,
                            OtpCandidate candidate,
                            OtpDeliveryPolicy::Decision decision);
+  void TryProactiveTrigger(const OtpTarget& target,
+                           const OtpCandidate& candidate);
+  void RetryDeferredProactiveTriggers();
+  void RecordFormSuggestionsShown(FormGlobalId form_id,
+                                  const OtpTokenIdentity& identity);
   void DropDeliveries(base::FunctionRef<bool(const OtpDelivery&)> pred);
   void StopSourcesIfNoRemainingTargets(const url::Origin& origin);
   bool IsCandidateSuppressedByUsedTokens(const OtpTarget& target,
@@ -127,8 +164,11 @@ class OtpCoordinator : public OtpSource::Observer {
   base::flat_map<SiteFrame, OtpTokenIdentity> in_flight_validations_;
   std::vector<std::unique_ptr<OtpSource>> sources_;
   OtpSecurityGateway security_gateway_;
+  OtpSuggestionDropdownDispatcher suggestion_dropdown_dispatcher_;
   base::ObserverList<Observer> observers_;
 
+  bool is_tab_visible_ = true;
+  bool is_window_focused_ = true;
   // Incremented whenever all active OTP deliveries are cleared so in-flight
   // `OnDeliveryValidated` callbacks from a previous listening session are
   // ignored.

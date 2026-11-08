@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
@@ -153,6 +154,9 @@ class TestFrameObserver : public OtpCoordinator::Observer {
       std::move(on_otp_available_).Run();
     }
   }
+  void TriggerSuggestions(FieldGlobalId field_id) override {
+    triggered_fields_.push_back(field_id);
+  }
 
   void WaitForNotifications(size_t expected_count) {
     while (otp_available_notifications_ < expected_count) {
@@ -166,11 +170,16 @@ class TestFrameObserver : public OtpCoordinator::Observer {
   size_t otp_available_notifications() const {
     return otp_available_notifications_;
   }
+  const std::vector<FieldGlobalId>& triggered_fields() const {
+    return triggered_fields_;
+  }
+  void clear_triggered_fields() { triggered_fields_.clear(); }
 
  private:
   const raw_ref<BrowserAutofillManager> manager_;
   const raw_ref<OtpCoordinator> coordinator_;
   size_t otp_available_notifications_ = 0;
+  std::vector<FieldGlobalId> triggered_fields_;
   base::OnceClosure on_otp_available_;
 };
 
@@ -224,7 +233,8 @@ class OtpCoordinatorTest
 
   std::vector<OtpTarget> AddOtpForm(size_t fields = 1,
                                     GURL url = GURL(kTestUrl),
-                                    bool listen = true) {
+                                    bool listen = true,
+                                    bool user_typed = false) {
     FormDescription form_description = {
         .host_frame = autofill_driver().GetFrameToken(),
         .main_frame_origin = url::Origin::Create(url),
@@ -233,6 +243,7 @@ class OtpCoordinatorTest
       form_description.fields.push_back(
           {.server_type = ONE_TIME_CODE,
            .host_frame = autofill_driver().GetFrameToken(),
+           .value = user_typed ? u"123" : u"",
            .origin = url::Origin::Create(url)});
     }
     FormData form = test::GetFormData(form_description);
@@ -240,6 +251,11 @@ class OtpCoordinatorTest
     auto form_structure = std::make_unique<FormStructure>(form);
     test_api(*form_structure).SetFieldTypes(GetServerTypes(form_description));
     test_api(*form_structure).AssignSections();
+    if (user_typed) {
+      for (size_t i = 0; i < fields; ++i) {
+        form_structure->field(i)->AddFieldModifier(FieldModifier::kUser);
+      }
+    }
     test_api(autofill_manager())
         .AddSeenFormStructure(std::move(form_structure));
 
@@ -316,7 +332,7 @@ TEST_F(OtpCoordinatorTest,
        RenewsSmsSubscriptionAfterErrorAndPreservesTypingState) {
   const std::vector<OtpTarget> targets = AddOtpForm(2);
   EXPECT_EQ(sms_otp_service_->num_subscribers(), 1u);
-  test_api_coordinator().target_field_identifier().OnTextFieldValueChanged();
+  coordinator_->OnTextFieldValueChanged();
   EXPECT_TRUE(test_api_coordinator()
                   .target_field_identifier()
                   .TypedInAnyFieldAfterOtpDetection());
@@ -605,6 +621,165 @@ TEST_F(OtpCoordinatorTest,
   EXPECT_EQ(gmail_service_->num_callbacks(), 0u);
   coordinator_->StartListeningForOtp(site2_after_submit_target);
   EXPECT_EQ(gmail_service_->num_callbacks(), 1u);
+}
+
+TEST_F(OtpCoordinatorTest,
+       ProactiveTriggerTargetsFocusedFieldAndOncePerFormAndCode) {
+  const std::vector<OtpTarget> targets = AddOtpForm(2);
+  const OtpTarget& field0 = targets[0];
+  const OtpTarget& field1 = targets[1];
+
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), field1.form,
+                               field1.field);
+  sms_otp_service_->SimulateOtpArrived(OneTimeToken(
+      OneTimeTokenType::kSmsOtp, "654321", base::TimeTicks::Now()));
+  phish_guard_delegate_->WaitForChecks();
+
+  EXPECT_THAT(coordinator_->GetAvailableTokens(field0), HasValue("654321"));
+  EXPECT_THAT(coordinator_->GetAvailableTokens(field1), HasValue("654321"));
+  EXPECT_THAT(frame_observer_->triggered_fields(), ElementsAre(field1.field));
+
+  // Registering a second 2-field form on the same site when "654321" is already
+  // available notifies `OnOtpAvailable` once and triggers proactively on the
+  // focused field `second_form_targets[1]` (not once per sibling field).
+  EXPECT_EQ(frame_observer_->otp_available_notifications(), 1u);
+  frame_observer_->clear_triggered_fields();
+  const std::vector<OtpTarget> second_form_targets =
+      AddOtpForm(/*fields=*/2, GURL(kTestUrl), /*listen=*/false);
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(),
+                               second_form_targets[1].form,
+                               second_form_targets[1].field);
+  coordinator_->StartListeningForOtp(second_form_targets[0]);
+  coordinator_->StartListeningForOtp(second_form_targets[1]);
+  EXPECT_EQ(frame_observer_->otp_available_notifications(), 2u);
+  EXPECT_THAT(frame_observer_->triggered_fields(),
+              ElementsAre(second_form_targets[1].field));
+}
+
+TEST_F(OtpCoordinatorTest,
+       OnOtpSuggestionsShownSuppressesProactiveTriggerForSameCode) {
+  const std::vector<OtpTarget> targets = AddOtpForm(2);
+  const OtpTarget& field0 = targets[0];
+  const base::Time t0 = base::Time::Now();
+
+  // Focus a non-OTP field so the initial arrival of "654321" is validated and
+  // stored without triggering a proactive popup.
+  FieldGlobalId non_otp_field(autofill_driver().GetFrameToken(),
+                              FieldRendererId(999));
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), field0.form,
+                               non_otp_field);
+  SendGmailOtp("654321", t0);
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(coordinator_->GetAvailableTokens(field0), HasValue("654321"));
+  EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+
+  // Mark `field0` as shown (`OnOtpSuggestionsShown` records across all fields
+  // of `field0.form`), focus `targets[1]`, and resend "654321": no proactive
+  // trigger should fire for the already-shown code on either field.
+  coordinator_->OnOtpSuggestionsShown(field0.field, "000000");
+  coordinator_->OnOtpSuggestionsShown(field0.field, "654321");
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(),
+                               targets[1].form, targets[1].field);
+  SendGmailOtp("654321", t0 + base::Seconds(10));
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+}
+
+TEST_F(OtpCoordinatorTest, SuppressesProactiveTriggerOnNonOtpFocus) {
+  const OtpTarget target = AddOtpForm()[0];
+  const base::Time t0 = base::Time::Now();
+
+  FieldGlobalId non_otp_field(autofill_driver().GetFrameToken(),
+                              FieldRendererId(999));
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), target.form,
+                               non_otp_field);
+  SendGmailOtp("888999", t0 + base::Seconds(10));
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("888999"));
+  EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+
+  const OtpTarget new_target =
+      AddOtpForm(/*fields=*/1, GURL(kTestUrl), /*listen=*/false)[0];
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(),
+                               new_target.form, new_target.field);
+  coordinator_->StartListeningForOtp(new_target);
+  EXPECT_THAT(coordinator_->GetAvailableTokens(new_target), HasValue("888999"));
+  EXPECT_THAT(frame_observer_->triggered_fields(),
+              ElementsAre(new_target.field));
+}
+
+TEST_F(OtpCoordinatorTest, SuppressesProactiveTriggerAfterUserTyping) {
+  const OtpTarget target = AddOtpForm()[0];
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), target.form,
+                               target.field);
+  coordinator_->OnTextFieldValueChanged();
+
+  SendGmailOtp("901234", base::Time::Now());
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("901234"));
+  EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+}
+
+TEST_F(OtpCoordinatorTest,
+       SuppressesProactiveTriggerWhenOtpFieldContainsUserTypedInput) {
+  const OtpTarget typed_target =
+      AddOtpForm(/*fields=*/1, GURL(kTestUrl), /*listen=*/true,
+                 /*user_typed=*/true)[0];
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(),
+                               typed_target.form, typed_target.field);
+
+  SendGmailOtp("956789", base::Time::Now());
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(coordinator_->GetAvailableTokens(typed_target),
+              HasValue("956789"));
+  EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+}
+
+TEST_F(OtpCoordinatorTest,
+       DefersProactiveTriggerUntilTabVisibleAndWindowFocused) {
+  const std::vector<OtpTarget> targets = AddOtpForm(2);
+  const base::Time t0 = base::Time::Now();
+
+  // While hidden and unfocused (even if a non-OTP field had focus while
+  // backgrounded), arriving OTPs are deferred without evaluating live focus
+  // policy prematurely.
+  FieldGlobalId non_otp_field(autofill_driver().GetFrameToken(),
+                              FieldRendererId(999));
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(),
+                               targets[0].form, non_otp_field);
+  coordinator_->OnTabVisibilityChanged(false);
+  coordinator_->OnWindowFocusChanged(false);
+
+  SendGmailOtp("314159", t0 + base::Seconds(10));
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(coordinator_->GetAvailableTokens(targets[0]), HasValue("314159"));
+  EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+
+  // Tab becomes visible while window is still unfocused and focus moves to the
+  // second OTP field `targets[1]`: still deferred.
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(),
+                               targets[1].form, targets[1].field);
+  coordinator_->OnTabVisibilityChanged(true);
+  EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+
+  // Window regains focus: deferred trigger now fires once on the newly focused
+  // field `targets[1]`.
+  coordinator_->OnWindowFocusChanged(true);
+  EXPECT_THAT(frame_observer_->triggered_fields(),
+              ElementsAre(targets[1].field));
+}
+
+TEST_F(OtpCoordinatorTest, OnFrameBecameInactiveDropsDeliveries) {
+  const OtpTarget target = AddOtpForm()[0];
+  sms_otp_service_->SimulateOtpArrived(OneTimeToken(
+      OneTimeTokenType::kSmsOtp, "111111", base::TimeTicks::Now()));
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("111111"));
+
+  autofill_driver().SetIsActive(false);
+  coordinator_->OnFrameBecameInactive(autofill_driver().GetFrameToken());
+  EXPECT_THAT(test_api_coordinator().deliveries(), IsEmpty());
+  EXPECT_THAT(coordinator_->GetAvailableTokens(target), IsEmpty());
 }
 
 }  // namespace

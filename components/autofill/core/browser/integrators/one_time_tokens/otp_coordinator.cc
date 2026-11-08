@@ -89,6 +89,7 @@ void OtpCoordinator::StartListeningForOtp(const OtpTarget& target) {
 
   auto [it, processing_new_target] =
       deliveries_.try_emplace(target.field, target);
+  bool offered_from_peer = false;
   if (processing_new_target) {
     target_field_identifier_.OnOtpFieldsDetected();
     const SiteFrame site_frame = GetSiteFrame(target);
@@ -96,8 +97,15 @@ void OtpCoordinator::StartListeningForOtp(const OtpTarget& target) {
       it->second.BlockOnPhishing();
       return;
     }
+    std::optional<OtpCandidate> peer_candidate;
+    bool peer_in_form_already_has_candidate = false;
+    std::optional<FieldGlobalId> focused_field_in_form;
     for (const OtpTarget& eligible :
          target_field_identifier_.GetEligibleTargets()) {
+      if (eligible.form == target.form &&
+          target_field_identifier_.IsFieldFocused(eligible.field)) {
+        focused_field_in_form = eligible.field;
+      }
       if (GetSiteFrame(eligible) != site_frame) {
         continue;
       }
@@ -105,17 +113,32 @@ void OtpCoordinator::StartListeningForOtp(const OtpTarget& target) {
               GetAvailableCandidate(eligible.field);
           available.has_value() &&
           !IsCandidateSuppressedByUsedTokens(target, *available)) {
-        if (it->second.Offer(*available)) {
-          CHECK_DEREF(FindObserverForFrame(target.form_owner))
-              .OnOtpAvailable(OtpSuggestionData(available->token));
+        if (!peer_candidate.has_value()) {
+          peer_candidate = available;
         }
-        break;
+        if (eligible.form == target.form) {
+          peer_in_form_already_has_candidate = true;
+        }
+      }
+    }
+    if (peer_candidate.has_value() && it->second.Offer(*peer_candidate)) {
+      offered_from_peer = true;
+      if (!peer_in_form_already_has_candidate) {
+        CHECK_DEREF(FindObserverForFrame(target.form_owner))
+            .OnOtpAvailable(OtpSuggestionData(peer_candidate->token));
+      }
+      const bool should_try_proactive =
+          focused_field_in_form.has_value()
+              ? (*focused_field_in_form == target.field)
+              : !peer_in_form_already_has_candidate;
+      if (should_try_proactive) {
+        TryProactiveTrigger(target, *peer_candidate);
       }
     }
   }
 
   for (auto& source : sources_) {
-    if (processing_new_target) {
+    if (processing_new_target && !offered_from_peer) {
       for (OtpCandidate& candidate : source->GetAvailable(target)) {
         OnSourceCandidateAvailable(target, std::move(candidate));
       }
@@ -178,6 +201,50 @@ void OtpCoordinator::UnregisterObserver(Observer* observer) {
   }
 }
 
+void OtpCoordinator::OnFrameBecameInactive(LocalFrameToken frame) {
+  base::EraseIf(phishing_blocked_site_frames_,
+                [&](const SiteFrame& sf) { return sf.second == frame; });
+  target_field_identifier_.OnFrameBecameInactive(frame);
+  DropDeliveries([&](const OtpDelivery& delivery) {
+    return delivery.target().frame == frame ||
+           delivery.target().form_owner == frame;
+  });
+}
+
+void OtpCoordinator::OnFocusChanged(LocalFrameToken frame,
+                                    std::optional<FormGlobalId> form_id,
+                                    std::optional<FieldGlobalId> field_id) {
+  target_field_identifier_.OnFocusChanged(frame, form_id, field_id);
+}
+
+void OtpCoordinator::OnTabVisibilityChanged(bool is_visible) {
+  if (!std::exchange(is_tab_visible_, is_visible) && is_visible &&
+      is_window_focused_) {
+    RetryDeferredProactiveTriggers();
+  }
+}
+
+void OtpCoordinator::OnWindowFocusChanged(bool is_focused) {
+  if (!std::exchange(is_window_focused_, is_focused) && is_focused &&
+      is_tab_visible_) {
+    RetryDeferredProactiveTriggers();
+  }
+}
+
+void OtpCoordinator::OnTextFieldValueChanged() {
+  target_field_identifier_.OnTextFieldValueChanged();
+}
+
+void OtpCoordinator::OnOtpSuggestionsShown(FieldGlobalId field,
+                                           const std::string& shown_value) {
+  const OtpDelivery* delivery = base::FindOrNull(deliveries_, field);
+  if (std::optional<OtpCandidate> candidate = GetAvailableCandidate(field);
+      delivery && candidate.has_value() &&
+      candidate->identity.value == shown_value) {
+    RecordFormSuggestionsShown(delivery->target().form, candidate->identity);
+  }
+}
+
 void OtpCoordinator::OnOtpFilled(const OtpTarget& target,
                                  const std::string& filled_value) {
   CHECK(!filled_value.empty());
@@ -197,6 +264,7 @@ void OtpCoordinator::OnOtpFilled(const OtpTarget& target,
     if (newest.has_value() && newest->value == filled_value) {
       add_identity(*newest);
       delivery.MarkConsumed();
+      suggestion_dropdown_dispatcher_.ClearField(field_id);
     }
   }
 
@@ -338,6 +406,7 @@ void OtpCoordinator::OnDeliveryValidated(uint64_t generation,
     for (auto& [field_id, delivery] : deliveries_) {
       if (GetSiteFrame(delivery.target()) == site_frame) {
         delivery.BlockOnPhishing();
+        suggestion_dropdown_dispatcher_.ClearField(field_id);
       }
     }
     for (auto& source : sources_) {
@@ -352,6 +421,7 @@ void OtpCoordinator::OnDeliveryValidated(uint64_t generation,
   }
 
   base::flat_set<LocalFrameToken> notified_form_owners;
+  std::optional<OtpTarget> proactive_target;
 
   for (const OtpTarget& field_target :
        target_field_identifier_.GetEligibleTargets()) {
@@ -361,11 +431,103 @@ void OtpCoordinator::OnDeliveryValidated(uint64_t generation,
       continue;
     }
     notified_form_owners.insert(field_target.form_owner);
+    if (!proactive_target.has_value() ||
+        target_field_identifier_.IsFieldFocused(field_target.field)) {
+      proactive_target = field_target;
+    }
   }
 
   for (const LocalFrameToken& form_owner : notified_form_owners) {
     CHECK_DEREF(FindObserverForFrame(form_owner))
         .OnOtpAvailable(OtpSuggestionData(candidate.token));
+  }
+
+  if (proactive_target.has_value()) {
+    TryProactiveTrigger(*proactive_target, candidate);
+  }
+}
+
+void OtpCoordinator::TryProactiveTrigger(const OtpTarget& target,
+                                         const OtpCandidate& candidate) {
+  const bool can_show_on_screen_now = is_tab_visible_ && is_window_focused_;
+  if (suggestion_dropdown_dispatcher_.TriggerProactive(
+          target, candidate, can_show_on_screen_now,
+          [this, &candidate](const OtpTarget& t) {
+            if (!security_gateway_
+                     .EvaluateProactiveTrigger(
+                         t, candidate,
+                         OtpSecurityGateway::ProactiveTriggerContext{
+                             .target_field_exists =
+                                 IsTargetActiveAndEligible(t),
+                             // Frame activity is already verified by
+                             // `IsTargetActiveAndEligible(t)` via
+                             // `GetEligibleTargets()`.
+                             .frame_active = true,
+                             .is_otp_field_focused =
+                                 target_field_identifier_.IsFieldFocused(
+                                     t.field),
+                             .has_non_otp_focus_anywhere =
+                                 target_field_identifier_
+                                     .HasNonOtpFocusAnywhere(),
+                             .any_otp_field_has_typed_input =
+                                 target_field_identifier_
+                                     .AnyOtpFieldContainsTypedInput(),
+                             .typed_in_any_field_after_detection =
+                                 target_field_identifier_
+                                     .TypedInAnyFieldAfterOtpDetection(),
+                         })
+                     .allowed) {
+              return false;
+            }
+            const std::optional<OtpTarget> designated_target =
+                target_field_identifier_.GetTarget();
+            if (designated_target.has_value() &&
+                target_field_identifier_.IsFieldFocused(
+                    designated_target->field) &&
+                designated_target->field != t.field) {
+              return false;
+            }
+            LOG_AF(client_->GetCurrentLogManager())
+                << LoggingScope::kOneTimeTokens
+                << "Proactively triggering suggestions via renderer for OTP "
+                   "field.";
+            CHECK_DEREF(FindObserverForFrame(t.form_owner))
+                .TriggerSuggestions(t.field);
+            return true;
+          })) {
+    RecordFormSuggestionsShown(target.form, candidate.identity);
+  }
+}
+
+void OtpCoordinator::RetryDeferredProactiveTriggers() {
+  suggestion_dropdown_dispatcher_.RetryPendingTriggers(
+      [this](const OtpTarget& target) {
+        OtpTarget retry_target = target;
+        if (const std::optional<OtpTarget> designated =
+                target_field_identifier_.GetTarget();
+            designated.has_value() &&
+            GetSiteFrame(*designated) == GetSiteFrame(target) &&
+            (target_field_identifier_.IsFieldFocused(designated->field) ||
+             !IsTargetActiveAndEligible(target))) {
+          retry_target = *designated;
+        }
+        if (std::optional<OtpCandidate> candidate =
+                GetAvailableCandidate(retry_target.field);
+            candidate.has_value() &&
+            !IsCandidateSuppressedByUsedTokens(retry_target, *candidate)) {
+          TryProactiveTrigger(retry_target, *candidate);
+        }
+      });
+}
+
+void OtpCoordinator::RecordFormSuggestionsShown(
+    FormGlobalId form_id,
+    const OtpTokenIdentity& identity) {
+  for (const OtpTarget& target :
+       target_field_identifier_.GetEligibleTargets()) {
+    if (target.form == form_id) {
+      suggestion_dropdown_dispatcher_.RecordShown(target.field, identity);
+    }
   }
 }
 
@@ -377,6 +539,7 @@ void OtpCoordinator::DropDeliveries(
       return false;
     }
     affected_origins.insert(entry.second.target().origin);
+    suggestion_dropdown_dispatcher_.ClearField(entry.first);
     return true;
   });
   for (const url::Origin& origin : affected_origins) {
