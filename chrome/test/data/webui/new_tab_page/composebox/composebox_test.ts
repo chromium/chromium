@@ -1529,6 +1529,9 @@ suite('NewTabPageComposeboxTest', () => {
                   !enabled,
                   !!testProxy.element.shadowRoot.querySelector(
                       'cr-composebox-submit'));
+              assertEquals(
+                  enabled,
+                  testProxy.element.getInputElement().skipEmptyHeightLock);
               if (aimButton) {
                 assertEquals(withX, aimButton.showExitIcon);
               }

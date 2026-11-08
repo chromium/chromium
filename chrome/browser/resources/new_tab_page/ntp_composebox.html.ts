@@ -88,6 +88,7 @@ export function getHtml(this: NtpComposeboxElement) {
             .submitEnabled="${this.submitEnabled}"
             .cancelButtonTitle="${this.computeCancelButtonTitle()}"
             .hideCancel="${this.persistentAimButtonEnabled_}"
+            .skipEmptyHeightLock="${this.persistentAimButtonEnabled_}"
             @input-input="${this.onInputInput}"
             @input-focusin="${this.onInputFocusin}"
             @cancel-click="${this.onCancelClick}"

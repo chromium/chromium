@@ -411,6 +411,165 @@ suite('ComposeboxScrollCaret', () => {
         assertEquals(initialMinHeight, wrapper.style.minHeight);
       });
 
+  // The ResizeObserver dispatches on frame 1 and its lock runs in a rAF on
+  // frame 2, so two frames are not enough to prove the height stayed unlocked.
+  async function waitFrames(count: number): Promise<void> {
+    for (let i = 0; i < count; i++) {
+      await new Promise<void>(
+          resolve => requestAnimationFrame(() => resolve()));
+    }
+  }
+
+  test(
+      'inputWrapper does not lock minHeight while input is empty', async () => {
+        inputElement.skipEmptyHeightLock = true;
+        document.body.style.width = '800px';
+        document.body.style.height = '600px';
+
+        const wrapper = inputElement.shadowRoot.getElementById('inputWrapper')!;
+
+        inputElement.inputPlaceholder = 'line 1';
+        await inputElement.updateComplete;
+        await waitFrames(3);
+        const oneLineHeight = wrapper.clientHeight;
+        assertEquals('', wrapper.style.minHeight);
+
+        inputElement.inputPlaceholder = 'line 1\nline 2\nline 3';
+        await inputElement.updateComplete;
+        await waitFrames(3);
+        assertTrue(wrapper.clientHeight > oneLineHeight);
+        assertEquals('', wrapper.style.minHeight);
+
+        inputElement.inputPlaceholder = 'line 1';
+        await inputElement.updateComplete;
+        await waitFrames(3);
+        assertEquals(oneLineHeight, wrapper.clientHeight);
+        assertEquals('', wrapper.style.minHeight);
+      });
+
+  test('first keystroke locks minHeight to the typed text height', async () => {
+    inputElement.skipEmptyHeightLock = true;
+    document.body.style.width = '800px';
+    document.body.style.height = '600px';
+
+    const wrapper = inputElement.shadowRoot.getElementById('inputWrapper')!;
+    const input =
+        inputElement.shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;
+
+    inputElement.inputPlaceholder = 'line 1';
+    await inputElement.updateComplete;
+    await waitFrames(3);
+    const oneLineHeight = wrapper.clientHeight;
+
+    inputElement.inputPlaceholder = 'line 1\nline 2\nline 3';
+    await inputElement.updateComplete;
+    await waitFrames(3);
+    assertTrue(wrapper.clientHeight > oneLineHeight);
+    assertEquals('', wrapper.style.minHeight);
+
+    input.value = 'a';
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    await inputElement.updateComplete;
+
+    assertEquals(oneLineHeight, wrapper.clientHeight);
+    assertEquals(`${oneLineHeight}px`, wrapper.style.minHeight);
+  });
+
+  test(
+      'inputWrapper minHeight locks on first input and survives partial delete',
+      async () => {
+        inputElement.skipEmptyHeightLock = true;
+        document.body.style.width = '800px';
+        document.body.style.height = '600px';
+
+        const wrapper = inputElement.shadowRoot.getElementById('inputWrapper')!;
+        const input =
+            inputElement.shadowRoot.querySelector<HTMLTextAreaElement>(
+                '#input')!;
+
+        inputElement.inputPlaceholder = 'line 1\nline 2\nline 3';
+        await inputElement.updateComplete;
+        await waitFrames(3);
+        const threeLineHeight = wrapper.clientHeight;
+        assertEquals('', wrapper.style.minHeight);
+
+        input.value = 'line 1\nline 2\nline 3';
+        input.dispatchEvent(new Event('input', {bubbles: true}));
+        await inputElement.updateComplete;
+
+        // The first input locks synchronously, before the ResizeObserver runs.
+        assertEquals(threeLineHeight, wrapper.clientHeight);
+        assertEquals(`${threeLineHeight}px`, wrapper.style.minHeight);
+
+        input.value = 'line 1';
+        input.dispatchEvent(new Event('input', {bubbles: true}));
+        await inputElement.updateComplete;
+        await waitFrames(3);
+
+        assertEquals(threeLineHeight, wrapper.clientHeight);
+        assertEquals(`${threeLineHeight}px`, wrapper.style.minHeight);
+      });
+
+  test('resetHeight then same-height text relocks minHeight', async () => {
+    inputElement.skipEmptyHeightLock = true;
+    document.body.style.width = '800px';
+    document.body.style.height = '600px';
+
+    const wrapper = inputElement.shadowRoot.getElementById('inputWrapper')!;
+    const input =
+        inputElement.shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;
+
+    input.value = 'line 1\nline 2\nline 3';
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    await inputElement.updateComplete;
+    await waitFrames(3);
+    const threeLineHeight = wrapper.clientHeight;
+    assertEquals(`${threeLineHeight}px`, wrapper.style.minHeight);
+
+    inputElement.resetHeight();
+    assertEquals('', wrapper.style.minHeight);
+
+    inputElement.input = 'line a\nline b\nline c';
+    await inputElement.updateComplete;
+    assertEquals(threeLineHeight, wrapper.clientHeight);
+    assertEquals(`${threeLineHeight}px`, wrapper.style.minHeight);
+
+    input.value = 'line 1';
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    await inputElement.updateComplete;
+    await waitFrames(3);
+    assertEquals(threeLineHeight, wrapper.clientHeight);
+    assertEquals(`${threeLineHeight}px`, wrapper.style.minHeight);
+  });
+
+  test(
+      'inputWrapper keeps the placeholder height lock by default', async () => {
+        document.body.style.width = '800px';
+        document.body.style.height = '600px';
+
+        const wrapper = inputElement.shadowRoot.getElementById('inputWrapper')!;
+        assertFalse(inputElement.skipEmptyHeightLock);
+
+        inputElement.inputPlaceholder = 'line 1';
+        await inputElement.updateComplete;
+        await waitFrames(3);
+        const oneLineHeight = wrapper.clientHeight;
+        assertEquals(`${oneLineHeight}px`, wrapper.style.minHeight);
+
+        inputElement.inputPlaceholder = 'line 1\nline 2\nline 3';
+        await inputElement.updateComplete;
+        await waitFrames(3);
+        const threeLineHeight = wrapper.clientHeight;
+        assertTrue(threeLineHeight > oneLineHeight);
+        assertEquals(`${threeLineHeight}px`, wrapper.style.minHeight);
+
+        inputElement.inputPlaceholder = 'line 1';
+        await inputElement.updateComplete;
+        await waitFrames(3);
+        assertEquals(threeLineHeight, wrapper.clientHeight);
+        assertEquals(`${threeLineHeight}px`, wrapper.style.minHeight);
+      });
+
   test('inputWrapper minHeight resets when all text is cleared', async () => {
     document.body.style.width = '800px';
     document.body.style.height = '600px';
