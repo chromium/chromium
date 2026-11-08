@@ -24,6 +24,17 @@
 #include "url/gurl.h"
 
 namespace glic {
+namespace {
+
+// Use Glic string resource IDs that are referenced in Desktop production code
+// (chrome.dll) so they are retained when enable_resource_allowlist_generation
+// is true on official builds.
+constexpr int kFirstTitleId = IDS_GLIC_TASK_WAITING_FOR_CONSENT_TITLE;
+constexpr int kFirstDescriptionId = IDS_GLIC_TASK_WAITING_FOR_CONSENT_SUBTITLE;
+constexpr int kSecondTitleId = IDS_GLIC_ACTIVITY_TITLE_GEMINI;
+constexpr int kSecondDescriptionId = IDS_GLIC_ACTIVITY_WORKING;
+
+}  // namespace
 
 class GlicToastBrowserTest : public InProcessBrowserTest {
  public:
@@ -44,8 +55,8 @@ IN_PROC_BROWSER_TEST_F(GlicToastBrowserTest, ShowWithTitleAndDescription) {
   tabs::TabInterface* tab = GetActiveTabInterface();
   ASSERT_TRUE(tab);
 
-  std::unique_ptr<GlicToast> toast = GlicToast::Show(
-      *tab, IDS_GLIC_CHAT_HIDDEN_TITLE, IDS_GLIC_CHAT_HIDDEN_DESCRIPTION);
+  std::unique_ptr<GlicToast> toast =
+      GlicToast::Show(*tab, kFirstTitleId, kFirstDescriptionId);
   ASSERT_TRUE(toast);
   EXPECT_TRUE(toast->IsShowing());
 
@@ -58,8 +69,8 @@ IN_PROC_BROWSER_TEST_F(GlicToastBrowserTest, ShowWithTitleAndDescription) {
   ASSERT_TRUE(toast_view);
   const std::u16string expected_text = l10n_util::GetStringFUTF16(
       IDS_GLIC_TOAST_TITLE_AND_DESCRIPTION,
-      l10n_util::GetStringUTF16(IDS_GLIC_CHAT_HIDDEN_TITLE),
-      l10n_util::GetStringUTF16(IDS_GLIC_CHAT_HIDDEN_DESCRIPTION));
+      l10n_util::GetStringUTF16(kFirstTitleId),
+      l10n_util::GetStringUTF16(kFirstDescriptionId));
   EXPECT_EQ(toast_view->label_for_testing()->GetText(), expected_text);
 }
 
@@ -67,8 +78,7 @@ IN_PROC_BROWSER_TEST_F(GlicToastBrowserTest, ShowWithTitleOnly) {
   tabs::TabInterface* tab = GetActiveTabInterface();
   ASSERT_TRUE(tab);
 
-  std::unique_ptr<GlicToast> toast =
-      GlicToast::Show(*tab, IDS_GLIC_CHAT_HIDDEN_TITLE);
+  std::unique_ptr<GlicToast> toast = GlicToast::Show(*tab, kFirstTitleId);
   ASSERT_TRUE(toast);
   EXPECT_TRUE(toast->IsShowing());
 
@@ -80,15 +90,15 @@ IN_PROC_BROWSER_TEST_F(GlicToastBrowserTest, ShowWithTitleOnly) {
   toasts::ToastView* const toast_view = controller->GetToastViewForTesting();
   ASSERT_TRUE(toast_view);
   EXPECT_EQ(toast_view->label_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(IDS_GLIC_CHAT_HIDDEN_TITLE));
+            l10n_util::GetStringUTF16(kFirstTitleId));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicToastBrowserTest, DestroyBeforeExpiryIsSafe) {
   tabs::TabInterface* tab = GetActiveTabInterface();
   ASSERT_TRUE(tab);
 
-  std::unique_ptr<GlicToast> toast = GlicToast::Show(
-      *tab, IDS_GLIC_CHAT_HIDDEN_TITLE, IDS_GLIC_CHAT_HIDDEN_DESCRIPTION);
+  std::unique_ptr<GlicToast> toast =
+      GlicToast::Show(*tab, kFirstTitleId, kFirstDescriptionId);
   ASSERT_TRUE(toast);
   EXPECT_TRUE(toast->IsShowing());
 
@@ -120,8 +130,8 @@ IN_PROC_BROWSER_TEST_F(GlicToastBrowserTest, AutoDismissSetsIsShowingFalse) {
   tabs::TabInterface* tab = GetActiveTabInterface();
   ASSERT_TRUE(tab);
 
-  std::unique_ptr<GlicToast> toast = GlicToast::Show(
-      *tab, IDS_GLIC_CHAT_HIDDEN_TITLE, IDS_GLIC_CHAT_HIDDEN_DESCRIPTION);
+  std::unique_ptr<GlicToast> toast =
+      GlicToast::Show(*tab, kFirstTitleId, kFirstDescriptionId);
   ASSERT_TRUE(toast);
   EXPECT_TRUE(toast->IsShowing());
 
@@ -155,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(GlicToastBrowserTest,
   EXPECT_FALSE(background_tab->IsActivated());
 
   std::unique_ptr<GlicToast> toast =
-      GlicToast::Show(*background_tab, IDS_GLIC_CHAT_HIDDEN_TITLE);
+      GlicToast::Show(*background_tab, kFirstTitleId);
   EXPECT_EQ(toast, nullptr);
 
   ToastController* const controller = GetToastController();
@@ -170,8 +180,8 @@ IN_PROC_BROWSER_TEST_F(GlicToastBrowserTest,
 
   base::HistogramTester histogram_tester;
 
-  std::unique_ptr<GlicToast> toast = GlicToast::Show(
-      *tab, IDS_GLIC_CHAT_HIDDEN_TITLE, IDS_GLIC_CHAT_HIDDEN_DESCRIPTION);
+  std::unique_ptr<GlicToast> toast =
+      GlicToast::Show(*tab, kFirstTitleId, kFirstDescriptionId);
   ASSERT_TRUE(toast);
   EXPECT_TRUE(toast->IsShowing());
 
@@ -191,8 +201,7 @@ IN_PROC_BROWSER_TEST_F(GlicToastBrowserTest,
   // one. The first toast should be closed with kPreempted (not
   // kFeatureDismiss), and the new toast should become queued in
   // next_toast_params_.
-  toast = GlicToast::Show(*tab, IDS_GLIC_TASK_PAUSED_TITLE,
-                          IDS_GLIC_TASK_PAUSED_DESCRIPTION);
+  toast = GlicToast::Show(*tab, kSecondTitleId, kSecondDescriptionId);
   ASSERT_TRUE(toast);
   EXPECT_TRUE(toast->IsShowing());
 
@@ -215,8 +224,8 @@ IN_PROC_BROWSER_TEST_F(GlicToastBrowserTest,
   ASSERT_TRUE(toast_view);
   const std::u16string expected_text = l10n_util::GetStringFUTF16(
       IDS_GLIC_TOAST_TITLE_AND_DESCRIPTION,
-      l10n_util::GetStringUTF16(IDS_GLIC_TASK_PAUSED_TITLE),
-      l10n_util::GetStringUTF16(IDS_GLIC_TASK_PAUSED_DESCRIPTION));
+      l10n_util::GetStringUTF16(kSecondTitleId),
+      l10n_util::GetStringUTF16(kSecondDescriptionId));
   EXPECT_EQ(toast_view->label_for_testing()->GetText(), expected_text);
 
   // Clean up the second toast via its auto-dismiss timer.
