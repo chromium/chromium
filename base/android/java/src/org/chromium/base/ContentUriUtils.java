@@ -32,6 +32,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -49,6 +50,28 @@ public abstract class ContentUriUtils {
     private static final String PATH_CREATE_CHILD_DOCUMENT = "create-child-document";
     private static final String PATH_MIME_TYPE = "mime-type";
     private static final String PATH_DISPLAY_NAME = "display-name";
+
+    static class OpenResult {
+        public final @FileError int status;
+        public final @Nullable ParcelFileDescriptor parcelFileDescriptor;
+
+        OpenResult(@FileError int status, @Nullable ParcelFileDescriptor parcelFileDescriptor) {
+            this.status = status;
+            this.parcelFileDescriptor = parcelFileDescriptor;
+        }
+
+        @CalledByNative
+        @JniType("base::File::Error")
+        @FileError
+        int getStatus() {
+            return this.status;
+        }
+
+        @CalledByNative
+        @Nullable ParcelFileDescriptor getParcelFileDescriptor() {
+            return this.parcelFileDescriptor;
+        }
+    }
 
     // Prevent instantiation.
     private ContentUriUtils() {}
@@ -68,6 +91,31 @@ public abstract class ContentUriUtils {
             @JniType("std::string") String uriString, @JniType("std::string") String mode) {
         AssetFileDescriptor afd = getAssetFileDescriptor(uriString, mode);
         return afd != null ? afd.getParcelFileDescriptor() : null;
+    }
+
+    /**
+     * Same as {@link #openContentUri} but reports why the open failed. Modes other than "r" on
+     * MIME-converted virtual documents fail with FILE_ERROR_INVALID_OPERATION rather than silently
+     * returning a read-only descriptor.
+     */
+    @CalledByNative
+    static OpenResult openContentUriWithStatus(
+            @JniType("std::string") String uriString, @JniType("std::string") String mode) {
+        try {
+            AssetFileDescriptor afd = openAssetFileDescriptor(Uri.parse(uriString), mode);
+            if (afd == null) {
+                return new OpenResult(FileError.FILE_ERROR_FAILED, null);
+            }
+            return new OpenResult(FileError.FILE_OK, afd.getParcelFileDescriptor());
+        } catch (SecurityException e) {
+            return new OpenResult(FileError.FILE_ERROR_ACCESS_DENIED, null);
+        } catch (UnsupportedOperationException | IllegalArgumentException e) {
+            return new OpenResult(FileError.FILE_ERROR_INVALID_OPERATION, null);
+        } catch (FileNotFoundException e) {
+            return new OpenResult(FileError.FILE_ERROR_NOT_FOUND, null);
+        } catch (Exception e) {
+            return new OpenResult(FileError.FILE_ERROR_FAILED, null);
+        }
     }
 
     @CalledByNative
@@ -283,29 +331,39 @@ public abstract class ContentUriUtils {
             Log.e(TAG, "Cannot open files with mode 'w'");
             return null;
         }
-
-        ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
-        Uri uri = Uri.parse(uriString);
-
         try {
-            AssetFileDescriptor afd = null;
-            if (isVirtualDocument(uri)) {
-                String[] streamTypes = resolver.getStreamTypes(uri, "*/*");
-                if (streamTypes != null && streamTypes.length > 0) {
-                    afd = resolver.openTypedAssetFileDescriptor(uri, streamTypes[0], null);
-                }
-            } else {
-                afd = resolver.openAssetFileDescriptor(uri, mode);
-            }
-            if (afd != null && afd.getStartOffset() != 0) {
-                StreamUtil.closeQuietly(afd);
-                throw new SecurityException("Cannot open files with non-zero offset type.");
-            }
-            return afd;
+            return openAssetFileDescriptor(Uri.parse(uriString), mode);
         } catch (Exception e) {
             Log.w(TAG, "Cannot open content uri: %s", uriString, e);
         }
         return null;
+    }
+
+    /**
+     * Opens {@code uri} and throws on failure so callers can tell failure causes apart. Returns
+     * null only when the provider returns no descriptor.
+     */
+    private static @Nullable AssetFileDescriptor openAssetFileDescriptor(Uri uri, String mode)
+            throws FileNotFoundException {
+        ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
+        AssetFileDescriptor afd = null;
+        if (isVirtualDocument(uri)) {
+            // openTypedAssetFileDescriptor() ignores the mode and always returns a read handle.
+            if (!"r".equals(mode)) {
+                throw new UnsupportedOperationException("Virtual documents are read-only");
+            }
+            String[] streamTypes = resolver.getStreamTypes(uri, "*/*");
+            if (streamTypes != null && streamTypes.length > 0) {
+                afd = resolver.openTypedAssetFileDescriptor(uri, streamTypes[0], null);
+            }
+        } else {
+            afd = resolver.openAssetFileDescriptor(uri, mode);
+        }
+        if (afd != null && afd.getStartOffset() != 0) {
+            StreamUtil.closeQuietly(afd);
+            throw new SecurityException("Cannot open files with non-zero offset type.");
+        }
+        return afd;
     }
 
     /**

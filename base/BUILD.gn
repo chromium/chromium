@@ -5850,6 +5850,7 @@ if (is_android) {
     ]
     deps = [
       ":base_java",
+      ":file_error_java",
       ":log_java",
       ":stream_util_java",
       ":tasks_java",

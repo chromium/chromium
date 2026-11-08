@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
@@ -15,6 +16,7 @@
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/types/expected.h"
 
 namespace base {
 namespace internal {
@@ -37,6 +39,13 @@ BASE_EXPORT std::optional<std::string> TranslateOpenFlagsToJavaMode(
 base::android::ScopedJavaLocalRef<jobject> OpenContentUri(
     const FilePath& content_uri,
     uint32_t open_flags);
+
+// Opens `content_uri` with a ParcelFileDescriptor mode ("r", "rw", "wt", "rwt"
+// or "wa") and returns the Java ParcelFileDescriptor, which the caller owns.
+// Other modes, including "w", fail with FILE_ERROR_INVALID_OPERATION.
+base::expected<base::android::ScopedJavaLocalRef<jobject>, File::Error>
+OpenContentUriWithExplicitMode(const FilePath& content_uri,
+                               std::string_view mode);
 
 // Returns the platform FD or -1 if `java_parcel_file_descriptor` is invalid.
 int ContentUriGetFd(

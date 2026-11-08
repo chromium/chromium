@@ -78,6 +78,32 @@ ScopedJavaLocalRef<jobject> OpenContentUri(const FilePath& content_uri,
   return Java_ContentUriUtils_openContentUri(env, content_uri.value(), *mode);
 }
 
+base::expected<ScopedJavaLocalRef<jobject>, File::Error>
+OpenContentUriWithExplicitMode(const FilePath& content_uri,
+                               std::string_view mode) {
+  if (mode != "r" && mode != "rw" && mode != "wt" && mode != "rwt" &&
+      mode != "wa") {
+    return base::unexpected(File::FILE_ERROR_INVALID_OPERATION);
+  }
+  JNIEnv* env = android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> result =
+      Java_ContentUriUtils_openContentUriWithStatus(env, content_uri.value(),
+                                                    std::string(mode));
+  if (result.is_null()) {
+    return base::unexpected(File::FILE_ERROR_FAILED);
+  }
+  File::Error error = Java_OpenResult_getStatus(env, result);
+  if (error != File::FILE_OK) {
+    return base::unexpected(error);
+  }
+  ScopedJavaLocalRef<jobject> pfd =
+      Java_OpenResult_getParcelFileDescriptor(env, result);
+  if (pfd.is_null()) {
+    return base::unexpected(File::FILE_ERROR_FAILED);
+  }
+  return pfd;
+}
+
 int ContentUriGetFd(const JavaRef<jobject>& java_parcel_file_descriptor) {
   if (!java_parcel_file_descriptor) {
     return -1;

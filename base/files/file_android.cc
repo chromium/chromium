@@ -4,17 +4,26 @@
 
 #include "base/files/file_android.h"
 
+#include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
+
 #include "base/android/content_uri_utils.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/android/virtual_document_path.h"
 #include "base/check.h"
 #include "base/files/file_util.h"
+#include "base/location.h"
+#include "base/notreached.h"
+#include "base/threading/scoped_blocking_call.h"
+#include "base/types/expected_macros.h"
 
 namespace {
 
 struct OpenContentUriResult {
   int fd;
-  base::android::ScopedJavaGlobalRef<jobject> java_parcel_file_desciptor;
+  base::android::ScopedJavaGlobalRef<jobject> java_parcel_file_descriptor;
 };
 
 base::expected<OpenContentUriResult, base::File::Error> OpenContentUriAndGetFd(
@@ -24,20 +33,123 @@ base::expected<OpenContentUriResult, base::File::Error> OpenContentUriAndGetFd(
 
   OpenContentUriResult result;
 
-  result.java_parcel_file_desciptor =
+  result.java_parcel_file_descriptor =
       base::internal::OpenContentUri(path, flags);
 
   result.fd =
-      base::internal::ContentUriGetFd(result.java_parcel_file_desciptor);
+      base::internal::ContentUriGetFd(result.java_parcel_file_descriptor);
   if (result.fd < 0) {
+    if (result.java_parcel_file_descriptor) {
+      base::internal::ContentUriClose(result.java_parcel_file_descriptor);
+    }
     return base::unexpected(base::File::Error::FILE_ERROR_FAILED);
   }
   return result;
 }
 
+std::string_view AccessModeToJavaMode(base::AndroidDocumentAccessMode access) {
+  using base::AndroidDocumentAccessMode;
+  switch (access) {
+    case AndroidDocumentAccessMode::kRead:
+      return "r";
+    case AndroidDocumentAccessMode::kReadWrite:
+      return "rw";
+    case AndroidDocumentAccessMode::kOverwrite:
+      return "wt";
+    case AndroidDocumentAccessMode::kReadWriteOverwrite:
+      return "rwt";
+    case AndroidDocumentAccessMode::kAppend:
+      return "wa";
+  }
+  NOTREACHED();
+}
+
+base::expected<OpenContentUriResult, base::File::Error>
+OpenContentUriWithModeAndGetFd(const base::FilePath& path,
+                               std::string_view mode) {
+  CHECK(path.IsContentUri());
+
+  ASSIGN_OR_RETURN(base::android::ScopedJavaLocalRef<jobject> pfd,
+                   base::internal::OpenContentUriWithExplicitMode(path, mode));
+
+  int fd = base::internal::ContentUriGetFd(pfd);
+  if (fd < 0) {
+    base::internal::ContentUriClose(pfd);
+    return base::unexpected(base::File::Error::FILE_ERROR_FAILED);
+  }
+  return OpenContentUriResult{fd,
+                              base::android::ScopedJavaGlobalRef<jobject>(pfd)};
+}
+
+std::optional<base::files_internal::VirtualDocumentPath> ParseVirtualPath(
+    const base::FilePath& path) {
+  if (!path.IsVirtualDocumentPath()) {
+    return std::nullopt;
+  }
+  return base::files_internal::VirtualDocumentPath::Parse(path.value());
+}
+
 }  // namespace
 
-namespace base::files_internal {
+namespace base {
+
+File::File(
+    FilePath path,
+    ScopedPlatformFile platform_file,
+    base::android::ScopedJavaGlobalRef<jobject> java_parcel_file_descriptor,
+    bool async)
+    : File(std::move(platform_file), async) {
+  path_ = std::move(path);
+  java_parcel_file_descriptor_ = std::move(java_parcel_file_descriptor);
+}
+
+expected<FilePath, File::Error> ResolveAndroidDocument(
+    const FilePath& virtual_path) {
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+  std::optional<files_internal::VirtualDocumentPath> vp =
+      ParseVirtualPath(virtual_path);
+  if (!vp) {
+    return unexpected(File::FILE_ERROR_INVALID_OPERATION);
+  }
+  ASSIGN_OR_RETURN(files_internal::ResolvedDocument resolved,
+                   vp->ResolveDocument());
+  if (resolved.is_directory) {
+    return unexpected(File::FILE_ERROR_NOT_A_FILE);
+  }
+  return FilePath(std::move(resolved.content_uri));
+}
+
+expected<FilePath, File::Error> CreateAndroidDocument(
+    const FilePath& virtual_path,
+    std::string_view mime_type) {
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+  std::optional<files_internal::VirtualDocumentPath> vp =
+      ParseVirtualPath(virtual_path);
+  if (!vp) {
+    return unexpected(File::FILE_ERROR_INVALID_OPERATION);
+  }
+  ASSIGN_OR_RETURN(std::string content_uri, vp->CreateDocument(mime_type));
+  return FilePath(std::move(content_uri));
+}
+
+File OpenAndroidDocument(const FilePath& content_uri,
+                         AndroidDocumentAccessMode access,
+                         bool async) {
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+  if (!content_uri.IsContentUri()) {
+    return File(File::FILE_ERROR_INVALID_OPERATION);
+  }
+  auto result =
+      OpenContentUriWithModeAndGetFd(content_uri, AccessModeToJavaMode(access));
+  if (!result.has_value()) {
+    return File(result.error());
+  }
+
+  return File(content_uri, ScopedPlatformFile(result->fd),
+              std::move(result->java_parcel_file_descriptor), async);
+}
+
+namespace files_internal {
 
 OpenAndroidFileResult::OpenAndroidFileResult(
     base::FilePath content_uri,
@@ -68,7 +180,7 @@ base::expected<OpenAndroidFileResult, base::File::Error> OpenAndroidFile(
 
     bool created = flags & File::Flags::FLAG_CREATE_ALWAYS;
     if (auto r = OpenContentUriAndGetFd(*cu, flags); r.has_value()) {
-      return OpenAndroidFileResult(*cu, r->fd, r->java_parcel_file_desciptor,
+      return OpenAndroidFileResult(*cu, r->fd, r->java_parcel_file_descriptor,
                                    created);
     } else {
       return base::unexpected(r.error());
@@ -99,10 +211,12 @@ base::expected<OpenAndroidFileResult, base::File::Error> OpenAndroidFile(
 
   if (auto r = OpenContentUriAndGetFd(content_uri, flags); r.has_value()) {
     return OpenAndroidFileResult(content_uri, r->fd,
-                                 r->java_parcel_file_desciptor, created);
+                                 r->java_parcel_file_descriptor, created);
   } else {
     return base::unexpected(r.error());
   }
 }
 
-}  // namespace base::files_internal
+}  // namespace files_internal
+
+}  // namespace base

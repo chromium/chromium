@@ -28,6 +28,14 @@ struct stat;
 
 namespace base {
 
+#if BUILDFLAG(IS_ANDROID)
+class File;
+enum class AndroidDocumentAccessMode;
+BASE_EXPORT File OpenAndroidDocument(const FilePath& content_uri,
+                                     AndroidDocumentAccessMode access,
+                                     bool async);
+#endif
+
 using stat_wrapper_t = struct stat;
 
 // Thin wrapper around an OS-level file.
@@ -451,6 +459,15 @@ class BASE_EXPORT File {
   ScopedPlatformFile file_;
 
 #if BUILDFLAG(IS_ANDROID)
+  friend BASE_EXPORT File OpenAndroidDocument(const FilePath& content_uri,
+                                              AndroidDocumentAccessMode access,
+                                              bool async);
+
+  File(FilePath path,
+       ScopedPlatformFile platform_file,
+       base::android::ScopedJavaGlobalRef<jobject> java_parcel_file_descriptor,
+       bool async);
+
   // Keeps the Java ParcelFileDescriptor alive when `this` wraps a file from an
   // Android content provider (i.e. a content URI). Close() is called on the
   // object when the file is closed.
