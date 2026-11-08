@@ -42,6 +42,7 @@ class WTF_EXPORT AtomicStringTable final {
   // convert the string to save memory if possible.
   String Add(StringImpl*);
   String Add(String&&);
+  String AddStaticLiteral(StringImpl*);
   String Add(base::span<const LChar> chars);
   String Add(base::span<const UChar> chars, AtomicStringUCharEncoding encoding);
   String Add(const StringView& string_view);

@@ -292,12 +292,14 @@ StringImpl* StringImpl::CreateStatic(base::span<const char> string) {
   DCHECK(IsMainThread());
   highest_static_string_length_ =
       std::max(highest_static_string_length_, narrowed_length);
-  StaticStrings().insert(hash, impl);
-  WTF_ANNOTATE_BENIGN_RACE(impl,
+  String added = AtomicStringTable::Instance().AddStaticLiteral(impl);
+  DCHECK(added.Impl()->IsStatic());
+  StaticStrings().insert(hash, added.Impl());
+  WTF_ANNOTATE_BENIGN_RACE(added.Impl(),
                            "Benign race on the reference counter of a static "
                            "string created by StringImpl::createStatic");
 
-  return impl;
+  return added.Impl();
 }
 
 void StringImpl::ReserveStaticStringsCapacityForSize(wtf_size_t size) {
@@ -305,6 +307,7 @@ void StringImpl::ReserveStaticStringsCapacityForSize(wtf_size_t size) {
   DCHECK(g_allow_creation_of_static_strings);
 #endif
   StaticStrings().ReserveCapacityForSize(size);
+  AtomicStringTable::Instance().ReserveCapacity(size);
 }
 
 scoped_refptr<StringImpl> StringImpl::Create(

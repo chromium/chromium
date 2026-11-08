@@ -62,6 +62,14 @@ class WTF_EXPORT String {
 
   // Factories ------------------------------------------------------
 
+  // Compile-time ASCII string literal backed directly by a read-only .rodata
+  // StringImpl with precomputed hash and ASCII flags, requiring zero heap
+  // allocation and zero reference counting.
+  template <StaticStringLiteral Str>
+  [[nodiscard]] static constexpr String FromLiteral() {
+    return String(StaticAsciiLiteral<Str>::Impl(), StaticImplTag{});
+  }
+
   // Returns an uninitialized string. The characters needs to be written
   // into the buffer returned in `data` before the returned string is used.
   // Failure to do this will have unpredictable results.
@@ -109,7 +117,7 @@ class WTF_EXPORT String {
     return String(buffer.Release());
   }
 
-  static String Boolean(bool value) { return String(value ? "true" : "false"); }
+  static String Boolean(bool value);
   // Serialize an integer value.
   [[nodiscard]] static String Number(int value);
   // Serialize an integer value.
@@ -179,6 +187,9 @@ class WTF_EXPORT String {
   // Construct a string referencing an existing StringImpl.
   String(StringImpl* impl) : impl_(impl) {}
   String(scoped_refptr<StringImpl> impl) : impl_(std::move(impl)) {}
+  struct StaticImplTag {};
+  constexpr String(const StringImpl* static_impl, StaticImplTag)
+      : impl_(static_impl, StringImplRef::StaticImplTag{}) {}
 
   // Copying a String is a relatively inexpensive, since the underlying data is
   // immutable and refcounted.
@@ -676,6 +687,10 @@ class WTF_EXPORT String {
     StringImplRef(StringImplRef&&) noexcept = default;
     StringImplRef& operator=(StringImplRef&&) = default;
 
+    struct StaticImplTag {};
+    constexpr StringImplRef(const StringImpl* static_impl, StaticImplTag) {
+      this->ptr_ = const_cast<StringImpl*>(static_impl);
+    }
     constexpr StringImpl* get() const { return this->ptr_; }
     constexpr explicit operator bool() const { return this->ptr_ != nullptr; }
   };
@@ -706,6 +721,10 @@ inline void swap(String& a, String& b) {
 }
 
 // Definitions of string operations
+
+inline String String::Boolean(bool value) {
+  return value ? String::FromLiteral<"true">() : String::FromLiteral<"false">();
+}
 
 template <wtf_size_t kInlineCapacity>
 String::String(const Vector<UChar, kInlineCapacity>& vector)

@@ -328,4 +328,85 @@ TEST(StringImplTest, FoldCaseSharpS) {
   EXPECT_TRUE(String(folded_16bit).contains("word2ss"));
 }
 
+TEST(StringImplTest, StaticAsciiStringImpl) {
+  static constexpr auto kShort = MakeStaticStringImpl("a");
+  static constexpr auto kMedium = MakeStaticStringImpl("div");
+  static constexpr auto kUpper = MakeStaticStringImpl("DIV");
+  static constexpr auto kLong = MakeStaticStringImpl(
+      "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+  static constexpr auto kVeryLong = MakeStaticStringImpl(
+      "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+      "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+
+  const StringImpl* short_impl = kShort.AsStringImpl();
+  EXPECT_TRUE(short_impl->IsStatic());
+  EXPECT_TRUE(short_impl->Is8Bit());
+  EXPECT_FALSE(short_impl->IsAtomic());
+  EXPECT_TRUE(short_impl->HasHash());
+  EXPECT_EQ(short_impl->length(), 1u);
+  EXPECT_TRUE(short_impl->ContainsOnlyAsciiOrEmpty());
+  EXPECT_TRUE(short_impl->ContainsNoAsciiUpper());
+  EXPECT_EQ(short_impl->GetHash(),
+            StringImpl::Create(base::span_from_cstring("a"))->GetHash());
+
+  const StringImpl* medium_impl = kMedium.AsStringImpl();
+  EXPECT_EQ(medium_impl->length(), 3u);
+  EXPECT_TRUE(medium_impl->ContainsOnlyAsciiOrEmpty());
+  EXPECT_TRUE(medium_impl->ContainsNoAsciiUpper());
+  EXPECT_EQ(medium_impl->GetHash(),
+            StringImpl::Create(base::span_from_cstring("div"))->GetHash());
+
+  const StringImpl* upper_impl = kUpper.AsStringImpl();
+  EXPECT_EQ(upper_impl->length(), 3u);
+  EXPECT_TRUE(upper_impl->ContainsOnlyAsciiOrEmpty());
+  EXPECT_FALSE(upper_impl->ContainsNoAsciiUpper());
+  EXPECT_EQ(upper_impl->GetHash(),
+            StringImpl::Create(base::span_from_cstring("DIV"))->GetHash());
+
+  const StringImpl* long_impl = kLong.AsStringImpl();
+  EXPECT_EQ(long_impl->length(), 64u);
+  EXPECT_TRUE(long_impl->ContainsOnlyAsciiOrEmpty());
+  EXPECT_TRUE(long_impl->ContainsNoAsciiUpper());
+  EXPECT_EQ(
+      long_impl->GetHash(),
+      StringImpl::Create(base::span_from_cstring(
+                             "0123456789abcdef0123456789abcdef0123456789abcdef"
+                             "0123456789abcdef"))
+          ->GetHash());
+
+  const StringImpl* very_long_impl = kVeryLong.AsStringImpl();
+  EXPECT_EQ(very_long_impl->length(), 128u);
+  EXPECT_TRUE(very_long_impl->ContainsOnlyAsciiOrEmpty());
+  EXPECT_TRUE(very_long_impl->ContainsNoAsciiUpper());
+  EXPECT_EQ(
+      very_long_impl->GetHash(),
+      StringImpl::Create(base::span_from_cstring(
+                             "0123456789abcdef0123456789abcdef0123456789abcdef"
+                             "0123456789abcdef0123456789abcdef0123456789abcdef"
+                             "0123456789abcdef0123456789abcdef"))
+          ->GetHash());
+
+  // `String::FromLiteral` should reference the same .rodata
+  // StringImpl without heap allocation or refcount changes.
+  const String lit1 = String::FromLiteral<"compile-time-literal">();
+  const String lit2 = String::FromLiteral<"compile-time-literal">();
+  EXPECT_EQ(lit1.Impl(), lit2.Impl());
+  EXPECT_TRUE(lit1.Impl()->IsStatic());
+  EXPECT_EQ(lit1, "compile-time-literal");
+  EXPECT_EQ(String::Boolean(true), "true");
+  EXPECT_EQ(String::Boolean(false), "false");
+
+  const String empty_lit = String::FromLiteral<"">();
+  EXPECT_EQ(empty_lit.Impl(), StringImpl::empty_);
+
+  // Converting an unregistered static String to AtomicString must safely
+  // intern in AtomicStringTable without writing to .rodata (both > 16 and <= 16
+  // chars).
+  AtomicString atom(lit1);
+  EXPECT_EQ(atom, "compile-time-literal");
+  String short_lit = String::FromLiteral<"short-static">();
+  AtomicString short_atom(short_lit);
+  EXPECT_EQ(short_atom, "short-static");
+}
+
 }  // namespace blink

@@ -176,7 +176,16 @@ class WTF_EXPORT StringImpl {
   StringImpl(size_type length, uint32_t hash, StaticStringTag)
       : length_(length),
         hash_and_flags_(hash << kHashShift | LengthToAsciiFlags(length) |
-                        kIs8Bit | kIsStatic) {}
+                        kIs8Bit | kIsStatic | kIsAtomic) {}
+
+  struct StaticStringInRodataTag {};
+  consteval StringImpl(size_type length,
+                       uint32_t hash_and_flags,
+                       StaticStringInRodataTag)
+      : length_(length), hash_and_flags_(hash_and_flags) {}
+
+  template <size_t N>
+  friend struct StaticAsciiStringImpl;
 
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
@@ -266,6 +275,9 @@ class WTF_EXPORT StringImpl {
   }
 
   void SetIsAtomic() {
+    if (IsAtomic()) {
+      return;
+    }
     HashAndFlagsAtomic().fetch_or(kIsAtomic, std::memory_order_release);
   }
 
@@ -559,6 +571,8 @@ class WTF_EXPORT StringImpl {
 
  private:
   friend class AtomicStringTable;
+  template <size_t N>
+  friend struct StaticAsciiStringImpl;
   enum Flags {
     // These two fields are never modified for the lifetime of the StringImpl.
     // It is therefore safe to read them with a relaxed operation.
@@ -714,6 +728,120 @@ class WTF_EXPORT StringImpl {
   uint32_t ref_count_{1};
   const size_type length_;
   uint32_t hash_and_flags_;
+};
+
+// Compile-time layout-compatible StringImpl for 8-bit static strings in
+// read-only .rodata memory. Because StringImpl stores characters inline at
+// `this + 1` with no internal pointers, StaticAsciiStringImpl contains zero
+// pointers, requires zero dynamic relocations, and avoids heap allocation.
+template <size_t N>
+struct alignas(StringImpl) StaticAsciiStringImpl {
+  enum class Mode {
+    // Registered in StaticStrings() and AtomicStringTable via
+    // StringImpl::CreateStatic(); has kIsAtomic pre-set.
+    kStaticAtomic,
+    // Standalone compile-time StringImpl (e.g. for String::FromLiteral); not
+    // pre-registered in AtomicStringTable.
+    kStaticString,
+  };
+
+  StringImpl impl_;
+  std::array<LChar, N ? N : 1> data_{};
+
+  static consteval uint32_t ComputeHashAndFlags(
+      base::span<const char, N + 1> str,
+      Mode mode) {
+    CHECK_EQ(str[N], '\0');
+    if constexpr (N == 0) {
+      return (HashString24(base::span<const uint8_t>())
+              << StringImpl::kHashShift) |
+             StringImpl::kAsciiPropertyCheckDone |
+             StringImpl::kContainsOnlyAscii | StringImpl::kIsLowerAscii |
+             StringImpl::kIs8Bit | StringImpl::kIsStatic;
+    } else {
+      std::array<LChar, N> chars{};
+      bool contains_upper_case = false;
+      for (size_t i = 0; i < N; ++i) {
+        const LChar ch = static_cast<LChar>(str[i]);
+        CHECK_NE(ch, '\0');
+        CHECK_EQ(ch & 0x80, 0);
+        chars[i] = ch;
+        contains_upper_case |= (ch >= 'A' && ch <= 'Z');
+      }
+      const uint32_t hash = HashString24(base::span<const LChar>(chars));
+      return (hash << StringImpl::kHashShift) |
+             StringImpl::kAsciiPropertyCheckDone |
+             StringImpl::kContainsOnlyAscii |
+             (contains_upper_case ? 0 : StringImpl::kIsLowerAscii) |
+             StringImpl::kIs8Bit | StringImpl::kIsStatic |
+             (mode == Mode::kStaticAtomic ? StringImpl::kIsAtomic : 0);
+    }
+  }
+
+  consteval explicit StaticAsciiStringImpl(base::span<const char, N + 1> str,
+                                           Mode mode = Mode::kStaticString)
+      : impl_(static_cast<wtf_size_t>(N),
+              ComputeHashAndFlags(str, mode),
+              StringImpl::StaticStringInRodataTag{}) {
+    static_assert(offsetof(StaticAsciiStringImpl, impl_) == 0);
+    static_assert(offsetof(StaticAsciiStringImpl, data_) == sizeof(StringImpl));
+    static_assert(
+        sizeof(StaticAsciiStringImpl) ==
+        ((sizeof(StringImpl) + (N ? N : 1) + alignof(StringImpl) - 1) &
+         ~(alignof(StringImpl) - 1)));
+    for (size_t i = 0; i < N; ++i) {
+      data_[i] = static_cast<LChar>(str[i]);
+    }
+  }
+
+  consteval explicit StaticAsciiStringImpl(const char (&str)[N + 1],
+                                           Mode mode = Mode::kStaticString)
+      : StaticAsciiStringImpl(base::span(str), mode) {}
+
+  constexpr const StringImpl* AsStringImpl() const { return &impl_; }
+};
+
+template <size_t M>
+consteval auto MakeStaticStringImpl(const char (&str)[M]) {
+  static_assert(M > 1, "Use g_empty_string for empty strings.");
+  return StaticAsciiStringImpl<M - 1>(
+      str, StaticAsciiStringImpl<M - 1>::Mode::kStaticString);
+}
+
+template <size_t N>
+struct StaticStringLiteral {
+  std::array<char, N + 1> chars{};
+  consteval StaticStringLiteral(const char (&str)[N + 1]) {  // NOLINT
+    base::span<const char, N + 1> span(str);
+    for (size_t i = 0; i < N; ++i) {
+      const auto ch = static_cast<LChar>(span[i]);
+      CHECK_NE(ch, '\0');
+      CHECK_EQ(ch & 0x80, 0);
+      chars[i] = span[i];
+    }
+    CHECK_EQ(span[N], '\0');
+  }
+};
+
+template <size_t M>
+StaticStringLiteral(const char (&)[M]) -> StaticStringLiteral<M - 1>;
+
+template <StaticStringLiteral Str>
+struct StaticAsciiLiteral {
+  static constexpr size_t kLength = Str.chars.size() - 1;
+
+  static constexpr const StringImpl* Impl() {
+    if constexpr (kLength == 0) {
+      return &StringImpl::g_global_empty;
+    } else {
+      return kImpl.AsStringImpl();
+    }
+  }
+
+ private:
+  static constexpr StaticAsciiStringImpl<kLength> kImpl{
+      base::span(Str.chars),
+      StaticAsciiStringImpl<kLength>::Mode::kStaticString};
 };
 
 // The maximum length of a 16-bit string such that its StringImpl allocation
