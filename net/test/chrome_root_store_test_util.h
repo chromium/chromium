@@ -17,7 +17,7 @@ class Signer;
 class SignerSet;
 }  // namespace chrome_root_store
 
-namespace net {
+namespace net::test {
 
 // Adds a mirror signer to the `signer_set` proto and sets the specified
 // fields. Other fields will be initialized to defaults that are sufficient for
@@ -43,6 +43,6 @@ chrome_root_store::Signer* AddSignerSetIssuer(
 // signatures with it.
 std::vector<uint8_t> MakeTestMtcCaKey();
 
-}  // namespace net
+}  // namespace net::test
 
 #endif  // NET_TEST_CHROME_ROOT_STORE_TEST_UTIL_H_

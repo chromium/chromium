@@ -166,7 +166,7 @@ TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
   static constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   static constexpr uint8_t kMtcCaPlants05Id[] = {0x09, 0x08, 0x08};
   static constexpr uint8_t kUnknownMtcCaId[] = {0x02, 0x03, 0x04};
-  const std::vector<uint8_t> mtc_ca_key = MakeTestMtcCaKey();
+  const std::vector<uint8_t> mtc_ca_key = test::MakeTestMtcCaKey();
   int64_t crs_version = net::CompiledChromeRootStoreVersion();
   auto [unused_leaf, root] = net::CertBuilder::CreateSimpleChain2();
 
@@ -180,9 +180,9 @@ TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
   ASSERT_TRUE(root_store_data);
 
   chrome_root_store::SignerSet signer_set;
-  AddSignerSetIssuer(signer_set, kMtcCaId, "op1", std::nullopt)
+  test::AddSignerSetIssuer(signer_set, kMtcCaId, "op1", std::nullopt)
       ->set_spec_version(chrome_root_store::SPEC_VERSION_DRAFT07);
-  AddSignerSetIssuer(signer_set, kMtcCaPlants05Id, "op2", std::nullopt)
+  test::AddSignerSetIssuer(signer_set, kMtcCaPlants05Id, "op2", std::nullopt)
       ->set_spec_version(chrome_root_store::SPEC_VERSION_DRAFT05);
   std::optional<ChromeRootStoreSignerSet> parsed_set =
       ChromeRootStoreSignerSet::CreateFromProto(signer_set);

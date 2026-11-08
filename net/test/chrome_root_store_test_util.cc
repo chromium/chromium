@@ -9,7 +9,7 @@
 #include "net/cert/root_store_proto_lite/signer_set.pb.h"
 #include "net/cert/x509_util.h"
 
-namespace net {
+namespace net::test {
 
 namespace {
 
@@ -72,4 +72,4 @@ std::vector<uint8_t> MakeTestMtcCaKey() {
       .ToSubjectPublicKeyInfo();
 }
 
-}  // namespace net
+}  // namespace net::test

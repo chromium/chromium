@@ -527,14 +527,14 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithMerkleTreeCertAnchors) {
     mtc_config.mutable_signer_set()->mutable_timestamp()->set_seconds(
         base::Time::Now().InSecondsFSinceUnixEpoch());
     // Two anchors that will have matching MTC metadata.
-    net::AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
-                            {0x01, 0x02, 0x03}, "op1", std::nullopt);
-    net::AddSignerSetIssuer(*mtc_config.mutable_signer_set(), {0x21, 0x22},
-                            "op2", std::nullopt);
+    net::test::AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
+                                  {0x01, 0x02, 0x03}, "op1", std::nullopt);
+    net::test::AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
+                                  {0x21, 0x22}, "op2", std::nullopt);
 
     // One anchor that doesn't match the MTC metadata.
-    net::AddSignerSetIssuer(*mtc_config.mutable_signer_set(), {0x31, 0x32},
-                            "op3", std::nullopt);
+    net::test::AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
+                                  {0x31, 0x32}, "op3", std::nullopt);
 
     // Feed factory the new Chrome Root Store.
     UpdateChromeRootStore(cv_service_factory_impl,

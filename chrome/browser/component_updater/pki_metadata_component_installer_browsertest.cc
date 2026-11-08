@@ -1350,8 +1350,8 @@ class PKIMetadataComponentChromeRootStoreMtcMetadataTest
       base::span<const uint8_t> log_id,
       std::string_view operator_name,
       std::optional<int32_t> crs_root_id) {
-    chrome_root_store::Signer* issuer =
-        net::AddSignerSetIssuer(signer_set, log_id, operator_name, crs_root_id);
+    chrome_root_store::Signer* issuer = net::test::AddSignerSetIssuer(
+        signer_set, log_id, operator_name, crs_root_id);
     issuer->set_spec_version(chrome_root_store::SPEC_VERSION_DRAFT07);
     issuer->set_realm(realm());
     return issuer;
@@ -2111,8 +2111,8 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     issuer->set_key(
         base::as_string_view(ca_cosigner.key.ToSubjectPublicKeyInfo()));
 
-    auto* mirror = net::AddSignerSetMirror(*mtc_config.mutable_signer_set(),
-                                           kMirrorId, "op2");
+    auto* mirror = net::test::AddSignerSetMirror(
+        *mtc_config.mutable_signer_set(), kMirrorId, "op2");
     mirror->set_realm(realm());
     mirror->set_signature_algorithm(
         chrome_root_store::SIGNATURE_ALGORITHM_ML_DSA44);
@@ -2389,8 +2389,8 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     issuer->set_key(
         base::as_string_view(ca_cosigner.key.ToSubjectPublicKeyInfo()));
 
-    auto* mirror = net::AddSignerSetMirror(*mtc_config.mutable_signer_set(),
-                                           kMirrorId, "op2");
+    auto* mirror = net::test::AddSignerSetMirror(
+        *mtc_config.mutable_signer_set(), kMirrorId, "op2");
     mirror->set_realm(realm());
     mirror->set_signature_algorithm(
         chrome_root_store::SIGNATURE_ALGORITHM_ML_DSA44);
@@ -2636,8 +2636,8 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
   // Finally, install an update with the necessary mirror.
   mtc_config.mutable_signer_set()->mutable_timestamp()->set_seconds(
       base::Time::Now().InSecondsFSinceUnixEpoch());
-  auto* mirror = net::AddSignerSetMirror(*mtc_config.mutable_signer_set(),
-                                         kMirrorId, "op2");
+  auto* mirror = net::test::AddSignerSetMirror(*mtc_config.mutable_signer_set(),
+                                               kMirrorId, "op2");
   mirror->set_realm(realm());
   mirror->set_signature_algorithm(
       chrome_root_store::SIGNATURE_ALGORITHM_ML_DSA44);
