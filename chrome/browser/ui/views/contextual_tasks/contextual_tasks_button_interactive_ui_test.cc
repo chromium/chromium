@@ -1800,9 +1800,11 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksPinningV2ParamInteractiveTest,
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
   const std::u16string expected_open_tooltip = l10n_util::GetStringUTF16(
-      IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP);
+      contextual_tasks::GetContextualTasksPinningStringId(
+          IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP));
   const std::u16string expected_closed_tooltip = l10n_util::GetStringUTF16(
-      IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP);
+      contextual_tasks::GetContextualTasksPinningStringId(
+          IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP));
 
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
@@ -3918,9 +3920,11 @@ IN_PROC_BROWSER_TEST_F(
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
   const std::u16string expected_open_tooltip = l10n_util::GetStringUTF16(
-      IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP);
+      contextual_tasks::GetContextualTasksPinningStringId(
+          IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP));
   const std::u16string expected_closed_tooltip = l10n_util::GetStringUTF16(
-      IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP);
+      contextual_tasks::GetContextualTasksPinningStringId(
+          IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP));
 
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
