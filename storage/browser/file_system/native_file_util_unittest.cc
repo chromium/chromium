@@ -144,6 +144,31 @@ TEST_F(NativeFileUtilTest, EnsureFileExists) {
   EXPECT_EQ(base::File::FILE_OK,
             NativeFileUtil::EnsureFileExists(file_name, &created));
   EXPECT_FALSE(created);
+
+  // Virtual document paths.
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath dir_vp =
+      *base::test::android::GetVirtualDocumentPathFromCacheDirDirectory(
+          temp_dir.GetPath());
+  base::FilePath file_vp = dir_vp.Append("foobar");
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::EnsureFileExists(file_vp, &created));
+  EXPECT_TRUE(created);
+  EXPECT_TRUE(base::PathExists(temp_dir.GetPath().AppendASCII("foobar")));
+
+  ASSERT_TRUE(
+      base::WriteFile(temp_dir.GetPath().AppendASCII("foobar"), "content"));
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::EnsureFileExists(file_vp, &created));
+  EXPECT_FALSE(created);
+  EXPECT_EQ(7, GetSize(temp_dir.GetPath().AppendASCII("foobar")));
+
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_A_FILE,
+            NativeFileUtil::EnsureFileExists(dir_vp, &created));
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            NativeFileUtil::EnsureFileExists(dir_vp.Append("missing/foobar"),
+                                             &created));
 #endif
 }
 

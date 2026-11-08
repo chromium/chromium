@@ -20,6 +20,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
+#include "base/android/virtual_document_path.h"
+#include "base/files/file_android.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -155,6 +157,37 @@ base::File::Error NativeFileUtil::EnsureFileExists(const base::FilePath& path,
   if (!base::DirectoryExists(path.DirName())) {
     // If its parent does not exist, should return NOT_FOUND error.
     return base::File::FILE_ERROR_NOT_FOUND;
+  }
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsVirtualDocumentPath()) {
+    // SAF has no exclusive create by display name. If a concurrent writer takes
+    // the name first, the provider renames our document, and later operations
+    // on `path` reach the other writer's document instead.
+    base::expected<base::FilePath, base::File::Error> existing =
+        base::ResolveAndroidDocument(path);
+    if (existing.has_value()) {
+      if (created) {
+        *created = false;
+      }
+      return base::File::FILE_OK;
+    }
+    if (existing.error() != base::File::FILE_ERROR_NOT_FOUND) {
+      return existing.error();
+    }
+    // Later operations on `path` resolve it by display name, so the provider
+    // must keep the requested name; see kUnknownAndroidDocumentMimeType.
+    base::expected<base::FilePath, base::File::Error> new_document =
+        base::CreateAndroidDocument(path,
+                                    base::kUnknownAndroidDocumentMimeType);
+    if (!new_document.has_value()) {
+      return new_document.error();
+    }
+    if (created) {
+      *created = true;
+    }
+    return base::File::FILE_OK;
   }
 #endif
 
