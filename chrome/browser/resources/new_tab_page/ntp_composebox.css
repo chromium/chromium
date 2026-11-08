@@ -93,10 +93,6 @@ cr-composebox-submit::part(submit) {
   padding-top: 4px;
 }
 
-:host([searchbox-next-enabled]) #composebox {
-  padding-bottom: 10px;
-}
-
 #contextEntrypoint {
   color: var(--color-searchbox-results-foreground);
   inset-inline-start: 0;
@@ -168,6 +164,18 @@ cr-composebox-submit::part(submit) {
   margin-inline: 6px 10px;
 }
 
+:host([persistent-aim-button-enabled_]) #composebox {
+  --cr-composebox-padding-bottom: 4px;
+  /* TODO(crbug.com/581985743): Remove once the shared input no longer adds
+   * a font-dependent gap below the textarea. */
+  min-height: var(--cr-searchbox-height);
+}
+
+:host([persistent-aim-button-enabled_][has-context-row_]) #composebox,
+:host([persistent-aim-button-enabled_][show-dropdown]) #composebox {
+  --cr-composebox-padding-bottom: unset;
+}
+
 #composebox[inert] {
   pointer-events: none;
 }
@@ -183,7 +191,7 @@ cr-composebox-submit::part(submit) {
 }
 
 :host([show-file-carousel]) #carouselContainer,
-:host([submit-enabled]) #carouselContainer,
+:host([submit-enabled]:not([persistent-aim-button-enabled_])) #carouselContainer,
 :host([in-tool-mode]) #carouselContainer,
 #inputContainer:has(.has-tabs) #carouselContainer {
   --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start:
