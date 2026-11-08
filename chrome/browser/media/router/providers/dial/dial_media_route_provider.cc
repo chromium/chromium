@@ -4,6 +4,8 @@
 
 #include "chrome/browser/media/router/providers/dial/dial_media_route_provider.h"
 
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -16,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/media/router/providers/dial/dial_media_route_provider_metrics.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_router/common/media_source.h"
@@ -27,7 +30,7 @@ namespace media_router {
 namespace {
 constexpr char kLoggerComponent[] = "DialMediaRouteProvider";
 
-url::Origin CreateOrigin(const std::string& url) {
+url::Origin CreateOrigin(std::string_view url) {
   return url::Origin::Create(GURL(url));
 }
 
@@ -563,7 +566,11 @@ void DialMediaRouteProvider::StartObservingMediaSinks(
   // Return cached results immediately.
   if (sink_query->media_sources.insert(dial_source).second) {
     auto sinks = media_sink_service_->GetAvailableSinks(app_name);
-    NotifyOnSinksReceived(dial_source.id(), sinks, GetOrigins(app_name));
+    base::optional_ref<const std::vector<url::Origin>> origins =
+        GetOrigins(app_name);
+    NotifyOnSinksReceived(
+        dial_source.id(), sinks,
+        origins.has_value() ? *origins : std::vector<url::Origin>());
   }
 }
 
@@ -641,11 +648,14 @@ void DialMediaRouteProvider::OnAvailableSinksUpdated(
   }
 
   const auto& media_sources = sink_query_it->second->media_sources;
-  std::vector<url::Origin> origins = GetOrigins(app_name);
+  base::optional_ref<const std::vector<url::Origin>> origins =
+      GetOrigins(app_name);
 
   auto sinks = media_sink_service_->GetAvailableSinks(app_name);
   for (const auto& media_source : media_sources) {
-    NotifyOnSinksReceived(media_source.id(), sinks, origins);
+    NotifyOnSinksReceived(
+        media_source.id(), sinks,
+        origins.has_value() ? *origins : std::vector<url::Origin>());
   }
 }
 
@@ -657,10 +667,10 @@ void DialMediaRouteProvider::NotifyOnSinksReceived(
                                  sinks, origins);
 }
 
-std::vector<url::Origin> DialMediaRouteProvider::GetOrigins(
-    const std::string& app_name) {
+base::optional_ref<const std::vector<url::Origin>>
+DialMediaRouteProvider::GetOrigins(std::string_view app_name) {
   static const base::NoDestructor<
-      base::flat_map<std::string, std::vector<url::Origin>>>
+      base::flat_map<std::string_view, std::vector<url::Origin>>>
       origin_allowlist(
           {{"youtube",
             {CreateOrigin("https://music.youtube.com/"),
@@ -687,7 +697,7 @@ std::vector<url::Origin> DialMediaRouteProvider::GetOrigins(
     }
   }
 
-  return std::vector<url::Origin>();
+  return std::nullopt;
 }
 
 DialMediaRouteProvider::MediaSinkQuery::MediaSinkQuery() = default;

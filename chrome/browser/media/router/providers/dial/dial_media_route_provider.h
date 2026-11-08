@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -17,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service_impl.h"
 #include "chrome/browser/media/router/providers/dial/dial_activity_manager.h"
 #include "chrome/browser/media/router/providers/dial/dial_internal_message_util.h"
@@ -167,9 +169,10 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
   void NotifyAllOnRoutesUpdated();
   void NotifyOnRoutesUpdated(const std::vector<MediaRoute>& routes);
 
-  // Returns a list of valid origins for |app_name|. Returns an empty list if
+  // Returns a list of valid origins for |app_name|. Returns `std::nullopt` if
   // all origins are valid.
-  std::vector<url::Origin> GetOrigins(const std::string& app_name);
+  base::optional_ref<const std::vector<url::Origin>> GetOrigins(
+      std::string_view app_name);
 
   // Binds |this| to the Mojo receiver passed into the ctor.
   mojo::Receiver<mojom::MediaRouteProvider> receiver_{this};
@@ -183,9 +186,6 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
   // Map of media sink queries, keyed by app name.
   base::flat_map<std::string, std::unique_ptr<MediaSinkQuery>>
       media_sink_queries_;
-
-  // Set of route queries by MediaSource ID.
-  base::flat_set<MediaSource::Id> media_route_queries_;
 
   // Set of pending DIAL launches by sequence number. The max number of pending
   // launches is capped, and oldest entries (smallest number) will be evicted.
