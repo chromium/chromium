@@ -6,6 +6,7 @@
 
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/dom_distiller/core/android/jni_headers/DistilledPagePrefs_jni.h"
@@ -78,17 +79,16 @@ static int64_t JNI_DistilledPagePrefs_Init(JNIEnv* env,
   return reinterpret_cast<intptr_t>(distilled_page_prefs_android);
 }
 
-void DistilledPagePrefsAndroid::AddObserver(JNIEnv* env, int64_t observer_ptr) {
-  DistilledPagePrefsObserverAndroid* distilled_page_prefs_observer_wrapper =
-      reinterpret_cast<DistilledPagePrefsObserverAndroid*>(observer_ptr);
-  distilled_page_prefs_->AddObserver(distilled_page_prefs_observer_wrapper);
+void DistilledPagePrefsAndroid::AddObserver(
+    JNIEnv* env,
+    DistilledPagePrefsObserverAndroid* observer) {
+  distilled_page_prefs_->AddObserver(observer);
 }
 
-void DistilledPagePrefsAndroid::RemoveObserver(JNIEnv* env,
-                                               int64_t observer_ptr) {
-  DistilledPagePrefsObserverAndroid* distilled_page_prefs_observer_wrapper =
-      reinterpret_cast<DistilledPagePrefsObserverAndroid*>(observer_ptr);
-  distilled_page_prefs_->RemoveObserver(distilled_page_prefs_observer_wrapper);
+void DistilledPagePrefsAndroid::RemoveObserver(
+    JNIEnv* env,
+    DistilledPagePrefsObserverAndroid* observer) {
+  distilled_page_prefs_->RemoveObserver(observer);
 }
 
 DistilledPagePrefsObserverAndroid::DistilledPagePrefsObserverAndroid(
@@ -99,10 +99,6 @@ DistilledPagePrefsObserverAndroid::DistilledPagePrefsObserverAndroid(
 
 DistilledPagePrefsObserverAndroid::~DistilledPagePrefsObserverAndroid() =
     default;
-
-void DistilledPagePrefsObserverAndroid::DestroyObserverAndroid(JNIEnv* env) {
-  delete this;
-}
 
 void DistilledPagePrefsObserverAndroid::OnChangeFontFamily(
     mojom::FontFamily new_font_family) {
@@ -131,12 +127,10 @@ void DistilledPagePrefsObserverAndroid::OnChangeLinksEnabled(bool enabled) {
                                                               enabled);
 }
 
-static int64_t JNI_DistilledPagePrefs_InitObserverAndroid(
-    JNIEnv* env,
-    const JavaRef<jobject>& obj) {
-  DistilledPagePrefsObserverAndroid* observer_android =
-      new DistilledPagePrefsObserverAndroid(env, obj);
-  return reinterpret_cast<intptr_t>(observer_android);
+static jni_zero::JniUniquePtr<DistilledPagePrefsObserverAndroid>
+JNI_DistilledPagePrefs_InitObserverAndroid(JNIEnv* env,
+                                           const JavaRef<jobject>& obj) {
+  return jni_zero::MakeUnique<DistilledPagePrefsObserverAndroid>(env, obj);
 }
 
 }  // namespace android

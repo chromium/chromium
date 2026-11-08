@@ -6,9 +6,14 @@ package org.chromium.components.dom_distiller.core;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.dom_distiller.mojom.FontFamily;
 import org.chromium.dom_distiller.mojom.Theme;
 
@@ -34,10 +39,14 @@ public class DistilledPagePrefs {
         void onChangeLinksEnabled(boolean enabled);
     }
 
+    @JniType("dom_distiller::android::DistilledPagePrefsObserverAndroid")
+    interface NativeDistilledPagePrefsObserverAndroid extends JniTypeToken {}
+
     /** Wrapper for dom_distiller::android::DistilledPagePrefsObserverAndroid. */
     static class DistilledPagePrefsObserverWrapper {
         private final Observer mDistilledPagePrefsObserver;
-        private final long mNativeDistilledPagePrefsObserverAndroidPtr;
+        private @Nullable JniUniquePtr<NativeDistilledPagePrefsObserverAndroid>
+                mNativeDistilledPagePrefsObserverAndroidPtr;
 
         public DistilledPagePrefsObserverWrapper(Observer observer) {
             mNativeDistilledPagePrefsObserverAndroidPtr =
@@ -68,11 +77,14 @@ public class DistilledPagePrefs {
         }
 
         public void destroy() {
-            DistilledPagePrefsJni.get()
-                    .destroyObserverAndroid(mNativeDistilledPagePrefsObserverAndroidPtr);
+            if (mNativeDistilledPagePrefsObserverAndroidPtr != null) {
+                mNativeDistilledPagePrefsObserverAndroidPtr.destroy();
+                mNativeDistilledPagePrefsObserverAndroidPtr = null;
+            }
         }
 
-        public long getNativePtr() {
+        public JniPtr<NativeDistilledPagePrefsObserverAndroid> getNativePtr() {
+            assert mNativeDistilledPagePrefsObserverAndroidPtr != null;
             return mNativeDistilledPagePrefsObserverAndroidPtr;
         }
     }
@@ -173,12 +185,15 @@ public class DistilledPagePrefs {
 
         boolean getLinksEnabled(long nativeDistilledPagePrefsAndroid);
 
-        void addObserver(long nativeDistilledPagePrefsAndroid, long nativeObserverPtr);
+        void addObserver(
+                long nativeDistilledPagePrefsAndroid,
+                JniPtr<NativeDistilledPagePrefsObserverAndroid> nativeObserverPtr);
 
-        void removeObserver(long nativeDistilledPagePrefsAndroid, long nativeObserverPtr);
+        void removeObserver(
+                long nativeDistilledPagePrefsAndroid,
+                JniPtr<NativeDistilledPagePrefsObserverAndroid> nativeObserverPtr);
 
-        long initObserverAndroid(DistilledPagePrefsObserverWrapper self);
-
-        void destroyObserverAndroid(long nativeDistilledPagePrefsObserverAndroid);
+        JniUniquePtr<NativeDistilledPagePrefsObserverAndroid> initObserverAndroid(
+                DistilledPagePrefsObserverWrapper self);
     }
 }

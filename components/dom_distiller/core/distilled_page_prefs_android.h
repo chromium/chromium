@@ -14,6 +14,8 @@
 namespace dom_distiller {
 namespace android {
 
+class DistilledPagePrefsObserverAndroid;
+
 class DistilledPagePrefsAndroid {
  public:
   DistilledPagePrefsAndroid(JNIEnv* env,
@@ -36,8 +38,8 @@ class DistilledPagePrefsAndroid {
   void SetLinksEnabled(JNIEnv* env, bool enabled);
   bool GetLinksEnabled(JNIEnv* env);
 
-  void AddObserver(JNIEnv* env, int64_t obs);
-  void RemoveObserver(JNIEnv* env, int64_t obs);
+  void AddObserver(JNIEnv* env, DistilledPagePrefsObserverAndroid* obs);
+  void RemoveObserver(JNIEnv* env, DistilledPagePrefsObserverAndroid* obs);
 
  private:
   raw_ptr<DistilledPagePrefs> distilled_page_prefs_;
@@ -56,7 +58,6 @@ class DistilledPagePrefsObserverAndroid : public DistilledPagePrefs::Observer {
   void OnChangeFontScaling(float scaling) override;
   void OnChangeLinksEnabled(bool enabled) override;
 
-  virtual void DestroyObserverAndroid(JNIEnv* env);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
