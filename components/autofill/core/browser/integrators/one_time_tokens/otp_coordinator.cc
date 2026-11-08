@@ -147,6 +147,13 @@ void OtpCoordinator::StartListeningForOtp(const OtpTarget& target) {
   }
 }
 
+void OtpCoordinator::StartListeningForEligibleTargets() {
+  for (const OtpTarget& target :
+       target_field_identifier_.GetEligibleTargets()) {
+    StartListeningForOtp(target);
+  }
+}
+
 void OtpCoordinator::StopListeningForForm(
     FormGlobalId form_id,
     const base::flat_set<FieldGlobalId>& except) {

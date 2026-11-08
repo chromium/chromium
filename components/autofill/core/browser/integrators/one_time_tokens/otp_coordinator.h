@@ -67,6 +67,9 @@ class OtpCoordinator : public OtpSource::Observer {
   // Starts or renews listening for OTPs for `target`.
   void StartListeningForOtp(const OtpTarget& target);
 
+  // Starts or renews listening for OTPs across all eligible targets in the tab.
+  void StartListeningForEligibleTargets();
+
   // Drops active OTP deliveries for `form_id` whose fields are not in `except`
   // and stops sources for any origin that has no remaining active targets.
   void StopListeningForForm(FormGlobalId form_id,
