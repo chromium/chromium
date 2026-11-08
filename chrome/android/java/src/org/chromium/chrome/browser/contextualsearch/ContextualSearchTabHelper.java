@@ -466,25 +466,20 @@ public class ContextualSearchTabHelper
             Log.w(TAG, "Not allowed to be active! Checking reasons:");
             Log.w(
                     TAG,
-                    "!isIncognito: "
-                            + !webContents.isIncognito()
-                            + " getFirstRunFlowComplete: "
-                            + FirstRunStatus.getFirstRunFlowComplete()
-                            + "isForcedSigninShowing: "
-                            + ForcedSigninStatusProvider.getForProfile(profile)
-                                    .isForcedSigninShowing()
-                            + " !isContextualSearchDisabled: "
-                            + !ContextualSearchManager.isContextualSearchDisabled(profile)
-                            + " isDefaultSearchEngineGoogle: "
-                            + isDseGoogle
-                            + " !needToCheckForSearchEnginePromo: "
-                            + !LocaleManager.getInstance().needToCheckForSearchEnginePromo()
-                            + " !isRunningInCompatibilityMode: "
-                            + !manager.isRunningInCompatibilityMode()
-                            + " !isShowingErrorPage: "
-                            + !mTab.isShowingErrorPage()
-                            + " isDeviceOnline: "
-                            + isDeviceOnline(manager));
+                    "!isIncognito: %s getFirstRunFlowComplete: %s isForcedSigninShowing: %s"
+                            + " !isContextualSearchDisabled: %s isDefaultSearchEngineGoogle: %s"
+                            + " !needToCheckForSearchEnginePromo: %s"
+                            + " !isRunningInCompatibilityMode: %s !isShowingErrorPage: %s"
+                            + " isDeviceOnline: %s",
+                    !webContents.isIncognito(),
+                    FirstRunStatus.getFirstRunFlowComplete(),
+                    ForcedSigninStatusProvider.getForProfile(profile).isForcedSigninShowing(),
+                    !ContextualSearchManager.isContextualSearchDisabled(profile),
+                    isDseGoogle,
+                    !LocaleManager.getInstance().needToCheckForSearchEnginePromo(),
+                    !manager.isRunningInCompatibilityMode(),
+                    !mTab.isShowingErrorPage(),
+                    isDeviceOnline(manager));
         }
         return isActive;
     }

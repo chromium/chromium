@@ -462,7 +462,7 @@ class ContextualSearchPolicy {
                 prefs.setString(Pref.CONTEXTUAL_SEARCH_ENABLED, CONTEXTUAL_SEARCH_DISABLED);
                 break;
             default:
-                Log.e(TAG, "Unexpected state for ContextualSearchPreference state=" + state);
+                Log.e(TAG, "Unexpected state for ContextualSearchPreference state=%d", state);
                 break;
         }
     }

@@ -48,10 +48,9 @@ class RelatedSearchesList {
             } catch (JSONException e) {
                 Log.w(
                         TAG,
-                        "RelatedSearchesList cannot parse JSON: "
-                                + jsonString
-                                + "\n"
-                                + e.getMessage());
+                        "RelatedSearchesList cannot parse JSON: %s\n%s",
+                        jsonString,
+                        e.getMessage());
             }
         }
         mJsonSuggestions = suggestions;
@@ -75,10 +74,9 @@ class RelatedSearchesList {
                 Log.w(
                         TAG,
                         "RelatedSearchesList cannot find a query with a title at suggestion "
-                                + "index: "
-                                + i
-                                + "\n"
-                                + e.getMessage());
+                                + "index: %d\n%s",
+                        i,
+                        e.getMessage());
             }
         }
         return results;
@@ -101,10 +99,9 @@ class RelatedSearchesList {
         } catch (JSONException e) {
             Log.w(
                     TAG,
-                    "RelatedSearchesList cannot find a searchUrl in suggestion "
-                            + suggestionIndex
-                            + "\n"
-                            + e.getMessage());
+                    "RelatedSearchesList cannot find a searchUrl in suggestion %d\n%s",
+                    suggestionIndex,
+                    e.getMessage());
         }
         return null;
     }
@@ -118,7 +115,7 @@ class RelatedSearchesList {
         try {
             return mJsonSuggestions.getJSONArray(SELECTION_SUGGESTIONS);
         } catch (JSONException e) {
-            Log.w(TAG, "No suggestions found!\n" + e.getMessage());
+            Log.w(TAG, "No suggestions found!\n%s", e.getMessage());
             return null;
         }
     }
