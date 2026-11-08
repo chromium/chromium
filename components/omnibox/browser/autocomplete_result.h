@@ -46,8 +46,10 @@ class AutocompleteResult {
  public:
   typedef ACMatches::const_iterator const_iterator;
   typedef ACMatches::iterator iterator;
-  using MatchDedupComparator = ACMatchKey<std::string,  // URL
-                                          AutocompleteMatchDedupeType>;
+  using MatchDedupComparator =
+      ACMatchKey<std::string,  // URL
+                 AutocompleteMatchDedupeType,
+                 std::string>;  // Suggest template behavior.
 
   // Max number of matches we'll show from the various providers. This limit
   // may be different for zero suggest and non zero suggest. Does not take into

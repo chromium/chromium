@@ -1484,10 +1484,11 @@ void AutocompleteResult::DeduplicateMatches(
     match.ComputeStrippedDestinationURL(input, template_url_service);
   }
 
-  // Group matches by stripped URL and `AutocompleteMatchDedupeType`.
-  std::unordered_map<AutocompleteResult::MatchDedupComparator,
-                     std::vector<ACMatches::iterator>,
-                     ACMatchKeyHash<std::string, AutocompleteMatchDedupeType>>
+  // Group matches by their dedupe key (see `GetMatchComparisonFields()`).
+  std::unordered_map<
+      AutocompleteResult::MatchDedupComparator,
+      std::vector<ACMatches::iterator>,
+      ACMatchKeyHash<std::string, AutocompleteMatchDedupeType, std::string>>
       url_to_matches;
   for (auto i = matches->begin(); i != matches->end(); ++i) {
     url_to_matches[GetMatchComparisonFields(*i)].push_back(i);
@@ -1882,10 +1883,6 @@ AutocompleteResult::GetMatchComparisonFields(const AutocompleteMatch& match) {
     type = AutocompleteMatchDedupeType::kVerbatimProvider;
   } else if (match.type == AutocompleteMatchType::kCalculator) {
     type = AutocompleteMatchDedupeType::kCalculator;
-  } else if (match.IsSearchAimSuggestion() &&
-             omnibox_feature_configs::AiMode::Get()
-                 .do_not_dedupe_aim_suggestions) {
-    type = AutocompleteMatchDedupeType::kAiMode;
   } else if (base::FeatureList::IsEnabled(omnibox::kInlineLocationSignaling) &&
              match.extra_headers.contains(kXGeoHeader)) {
     type = AutocompleteMatchDedupeType::kInlineLocationSignaling;
@@ -1893,7 +1890,16 @@ AutocompleteResult::GetMatchComparisonFields(const AutocompleteMatch& match) {
     type = AutocompleteMatchDedupeType::kNormal;
   }
 
-  return std::make_tuple(match.stripped_destination_url.spec(), type);
+  // The stripped URL drops search parameters like `udm` and never had e.g. a
+  // fusebox action, so matches that do different things on click, e.g. an AI
+  // Mode suggestion and a plain search for the same query, would otherwise
+  // dedupe.
+  std::string suggest_template_behavior_key =
+      omnibox_feature_configs::DedupeBySuggestTemplateBehavior::Get().enabled
+          ? match.GetSuggestTemplateBehaviorKey()
+          : std::string();
+  return std::make_tuple(match.stripped_destination_url.spec(), type,
+                         std::move(suggest_template_behavior_key));
 }
 
 void AutocompleteResult::LimitNumberOfUrlsShown(

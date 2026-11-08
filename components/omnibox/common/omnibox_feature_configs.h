@@ -134,13 +134,6 @@ struct AiMode : Config<AiMode> {
   // side. But disabling this will hide the server echo matches.
   bool allow_ai_mode_matches;
 
-  // Deduping doesn't consider extra query params like `udm=50`.
-  // `google.com/?q=query&udm=50` and `google.com/?q=query` would usually be
-  // deduped. This param makes `udm=50` in the match's suggest template a
-  // differentiating signal in deduping. Does not apply to `udm=50` in normal
-  // URLs. Does not apply to e.g. `udm=49` in the suggest template.
-  bool do_not_dedupe_aim_suggestions = true;
-
   // Navigations that match a site search update the `keyword_search_terms`
   // table in the history DB. E.g. youtube.com/id/x, google.com/?q=x, or
   // google.com/?q=x&udm=50. Determining which site search was used and should
@@ -345,6 +338,23 @@ struct Toolbelt : Config<Toolbelt> {
   // verbatim user input text, instead of any text that might have been selected
   // or inline autocompleted previously.
   bool select_toolbelt_before_opening;
+};
+
+// If enabled, what a match's suggest template says it does on click, e.g. its
+// `udm` or the tool its fusebox action preselects, is part of the dedupe key
+// (see `AutocompleteMatch::GetSuggestTemplateBehaviorKey()`). So e.g. an AI
+// Mode or tool suggestion doesn't dedupe with a plain search for the same
+// query. Kill switch, enabled by default.
+BASE_DECLARE_FEATURE(kOmniboxDedupeBySuggestTemplateBehavior);
+struct DedupeBySuggestTemplateBehavior
+    : Config<DedupeBySuggestTemplateBehavior> {
+  DedupeBySuggestTemplateBehavior();
+  DedupeBySuggestTemplateBehavior(const DedupeBySuggestTemplateBehavior&);
+  DedupeBySuggestTemplateBehavior& operator=(
+      const DedupeBySuggestTemplateBehavior&);
+  ~DedupeBySuggestTemplateBehavior();
+  // Whether `kOmniboxDedupeBySuggestTemplateBehavior` is enabled.
+  bool enabled;
 };
 
 // If enabled, allow document provider requests when all other conditions are

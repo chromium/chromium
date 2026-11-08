@@ -6,7 +6,10 @@
 
 #include <stddef.h>
 
+#include <set>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/protobuf_matchers.h"
@@ -32,7 +35,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
+#include "third_party/omnibox_proto/input_source.pb.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
+#include "third_party/omnibox_proto/searchbox_tutorial.pb.h"
+#include "third_party/omnibox_proto/suggest_inventory.pb.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
@@ -745,6 +753,60 @@ TEST_F(AutocompleteMatchTest, UpgradeMatchWithPropertiesFromSuggestTemplate) {
     EXPECT_THAT(*server_match.suggest_template,
                 base::test::EqualsProto(server_template));
   }
+}
+
+// Only the template fields that change what the click does make up the
+// behavior key.
+TEST_F(AutocompleteMatchTest, GetSuggestTemplateBehaviorKey) {
+  AutocompleteMatch match;
+  EXPECT_EQ(match.GetSuggestTemplateBehaviorKey(), "");
+
+  // Fields that don't change what the click does, and defaults that are set
+  // explicitly, don't count.
+  omnibox::SuggestTemplateInfo& suggest_template =
+      match.suggest_template.emplace();
+  suggest_template.set_type_icon(omnibox::SuggestTemplateInfo::TRENDING);
+  suggest_template.mutable_primary_text()->set_text("foo");
+  (*suggest_template.mutable_default_search_parameters())["gs_ssp"] = "abc";
+  (*suggest_template.mutable_default_search_parameters())["si"] = "def";
+  (*suggest_template.mutable_default_search_parameters())["udm"] = "";
+  suggest_template.add_action_suggestions()->set_action_type(
+      omnibox::SuggestTemplateInfo::TemplateAction::DIRECTIONS);
+  suggest_template.set_entity_id("/m/foo");
+  suggest_template.set_website_uri("https://foo.com");
+  omnibox::SuggestTemplateInfo::FuseboxAction* fusebox_action =
+      suggest_template.mutable_fusebox_action();
+  fusebox_action->set_preferred_inventory(omnibox::SUGGEST_INVENTORY_TRAVEL);
+  fusebox_action->set_searchbox_tutorial(
+      omnibox::SEARCHBOX_TUTORIAL_GLOW_PLUS_BUTTON);
+  fusebox_action->set_preselected_tool(omnibox::TOOL_MODE_UNSPECIFIED);
+  fusebox_action->set_query_action_override(
+      omnibox::SuggestTemplateInfo::FuseboxAction::QUERY_ACTION_DEFAULT);
+  EXPECT_EQ(match.GetSuggestTemplateBehaviorKey(), "");
+
+  // Each field that does gives a different key.
+  std::vector<omnibox::SuggestTemplateInfo> templates(7);
+  (*templates[0].mutable_default_search_parameters())["udm"] = "50";
+  (*templates[1].mutable_default_search_parameters())["udm"] = "49";
+  templates[2].mutable_fusebox_action()->set_preselected_tool(
+      omnibox::TOOL_MODE_IMAGE_GEN);
+  templates[3].mutable_fusebox_action()->set_preselected_model(
+      omnibox::MODEL_MODE_GEMINI_REGULAR);
+  templates[4].mutable_fusebox_action()->set_preselected_input_source(
+      omnibox::INPUT_SOURCE_GALLERY);
+  templates[5].mutable_fusebox_action()->set_query_action_override(
+      omnibox::SuggestTemplateInfo::FuseboxAction::QUERY_ACTION_PASTE);
+  templates[6].mutable_fusebox_action()->set_searchbox_override(
+      omnibox::SuggestTemplateInfo::FuseboxAction::
+          SEARCHBOX_OVERRIDE_COMPOSEBOX);
+  std::set<std::string> keys;
+  for (const omnibox::SuggestTemplateInfo& behavior_template : templates) {
+    match.suggest_template = behavior_template;
+    const std::string key = match.GetSuggestTemplateBehaviorKey();
+    EXPECT_NE(key, "");
+    keys.insert(key);
+  }
+  EXPECT_EQ(keys.size(), templates.size());
 }
 
 TEST_F(AutocompleteMatchTest, MergeScoringSignals) {
