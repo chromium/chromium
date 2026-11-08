@@ -704,10 +704,16 @@ HistoryDatabase::GetBatchRecentVisitsForSignificantURLs(
   statement.BindInt(1, kLowQualityMatchVisitLimit);
   statement.BindInt(2, kLowQualityMatchTypedLimit);
 
+  URLID current_url_id = -1;
+  std::vector<std::pair<base::Time, ui::PageTransition>>* current_visits =
+      nullptr;
   while (statement.Step()) {
     URLID url_id = statement.ColumnInt64(0);
-    auto& visits = result.try_emplace(url_id).first->second;
-    if (static_cast<int>(visits.size()) >= max_visits_per_url) {
+    if (url_id != current_url_id) {
+      current_url_id = url_id;
+      current_visits = &result.try_emplace(url_id).first->second;
+    }
+    if (static_cast<int>(current_visits->size()) >= max_visits_per_url) {
       continue;
     }
     base::Time visit_time = statement.ColumnTime(1);
@@ -716,7 +722,7 @@ HistoryDatabase::GetBatchRecentVisitsForSignificantURLs(
         ui::IsValidPageTransitionType(transition_int)
             ? ui::PageTransitionFromInt(transition_int)
             : ui::PAGE_TRANSITION_LINK;
-    visits.emplace_back(visit_time, transition);
+    current_visits->emplace_back(visit_time, transition);
   }
 
   return result;
