@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/types/optional_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
@@ -31,7 +30,7 @@ class GeometryMapperTransformCacheTest : public testing::Test {
 
   static const GeometryMapperTransformCache::ScreenTransform*
   GetScreenTransform(const TransformPaintPropertyNode& node) {
-    return base::OptionalToPtr(GetTransformCache(node).screen_transform_);
+    return GetTransformCache(node).screen_transform_.Get();
   }
 
   static void Check2dTranslationToRoot(const TransformPaintPropertyNode& node,

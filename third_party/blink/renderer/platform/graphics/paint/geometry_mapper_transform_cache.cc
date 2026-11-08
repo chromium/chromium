@@ -33,7 +33,7 @@ void GeometryMapperTransformCache::Update(
     to_2d_translation_root_ = gfx::Vector2dF();
     root_of_2d_translation_ = &node;
     plane_root_transform_ = nullptr;
-    screen_transform_ = std::nullopt;
+    screen_transform_ = nullptr;
     screen_transform_updated_ = true;
 
     DCHECK(node.ScrollNode());
@@ -118,7 +118,7 @@ void GeometryMapperTransformCache::Update(
   // screen_transform_ will be updated only when needed.
   if (plane_root()->IsRoot()) {
     // We won't need screen_transform_.
-    screen_transform_ = std::nullopt;
+    screen_transform_ = nullptr;
     screen_transform_updated_ = true;
   } else {
     screen_transform_updated_ = false;
@@ -144,7 +144,11 @@ void GeometryMapperTransformCache::UpdateScreenTransform(
   parent_node->UpdateScreenTransform();
   const auto& parent = parent_node->GetTransformCache();
 
-  screen_transform_.emplace(ScreenTransform());
+  if (!screen_transform_) {
+    screen_transform_ = MakeGarbageCollected<ScreenTransform>();
+  } else {
+    screen_transform_->to_screen.MakeIdentity();
+  }
   parent.ApplyToScreen(screen_transform_->to_screen);
   if (node.FlattensInheritedTransform())
     screen_transform_->to_screen.Flatten();
@@ -161,7 +165,7 @@ void GeometryMapperTransformCache::UpdateScreenTransform(
       to_screen_flattened.GetInverse(
           &screen_transform_->projection_from_screen);
 
-  screen_transform_->has_animation |= node.HasActiveTransformAnimation();
+  screen_transform_->has_animation = node.HasActiveTransformAnimation();
 }
 
 }  // namespace blink

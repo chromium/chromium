@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_GEOMETRY_MAPPER_TRANSFORM_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_GEOMETRY_MAPPER_TRANSFORM_CACHE_H_
 
-#include <optional>
-
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -33,6 +31,7 @@ class PLATFORM_EXPORT GeometryMapperTransformCache
   void Trace(Visitor* visitor) const {
     visitor->Trace(root_of_2d_translation_);
     visitor->Trace(plane_root_transform_);
+    visitor->Trace(screen_transform_);
     visitor->Trace(nearest_scroll_translation_);
     visitor->Trace(scroll_translation_state_);
     visitor->Trace(nearest_directly_composited_ancestor_);
@@ -63,10 +62,12 @@ class PLATFORM_EXPORT GeometryMapperTransformCache
   // transform data is really needed.
   const gfx::Transform& to_screen() const {
     DCHECK(screen_transform_updated_);
+    DCHECK(screen_transform_);
     return screen_transform_->to_screen;
   }
   const gfx::Transform& projection_from_screen() const {
     DCHECK(screen_transform_updated_);
+    DCHECK(screen_transform_);
     return screen_transform_->projection_from_screen;
   }
   bool projection_from_screen_is_valid() const {
@@ -236,13 +237,15 @@ class PLATFORM_EXPORT GeometryMapperTransformCache
   };
   Member<PlaneRootTransform> plane_root_transform_;
 
-  struct ScreenTransform {
+  struct ScreenTransform : public GarbageCollected<ScreenTransform> {
     gfx::Transform to_screen;
     gfx::Transform projection_from_screen;
     bool projection_from_screen_is_valid = false;
     bool has_animation = false;
+
+    void Trace(Visitor*) const {}
   };
-  std::optional<ScreenTransform> screen_transform_;
+  Member<ScreenTransform> screen_transform_;
 
   Member<const TransformPaintPropertyNode> nearest_scroll_translation_;
   Member<const TransformPaintPropertyNode> scroll_translation_state_;
