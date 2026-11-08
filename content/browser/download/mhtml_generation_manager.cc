@@ -54,6 +54,12 @@
 #include "base/win/sid.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+#include <fcntl.h>
+
+#include "base/files/file_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 // Callback to notify the UI thread that writing to the MHTML file is complete.
@@ -89,6 +95,27 @@ struct CloseFileResult {
   int64_t file_size;
 };
 
+#if BUILDFLAG(IS_ANDROID)
+// Android document providers offer no truncate-and-append mode ("wa" does not
+// truncate), so the document is opened with kOverwrite ("wt") and O_APPEND is
+// added to the descriptor to keep the append-only property described in
+// CreateMHTMLFile(). FLAG_NO_FOLLOW is not applicable: the descriptor comes
+// from the provider, not from a path walk in this process.
+base::File CreateMHTMLContentUriFile(const base::FilePath& content_uri) {
+  base::File file = base::OpenAndroidDocument(
+      content_uri, base::AndroidDocumentAccessMode::kOverwrite);
+  if (!file.IsValid()) {
+    return file;
+  }
+  int fd = file.GetPlatformFile();
+  int fd_flags = fcntl(fd, F_GETFL);
+  if (fd_flags == -1 || fcntl(fd, F_SETFL, fd_flags | O_APPEND) == -1) {
+    return base::File(base::File::GetLastFileError());
+  }
+  return file;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 base::File CreateMHTMLFile(const base::FilePath& file_path) {
   CHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence(),
         base::NotFatalUntil::M159);
@@ -104,7 +131,13 @@ base::File CreateMHTMLFile(const base::FilePath& file_path) {
   uint32_t file_flags = base::File::FLAG_CREATE_ALWAYS |
                         base::File::FLAG_APPEND | base::File::FLAG_NO_FOLLOW;
 
+#if BUILDFLAG(IS_ANDROID)
+  base::File browser_file = file_path.IsContentUri()
+                                ? CreateMHTMLContentUriFile(file_path)
+                                : base::File(file_path, file_flags);
+#else
   base::File browser_file(file_path, file_flags);
+#endif
   if (!browser_file.IsValid()) {
     DLOG(ERROR) << "Failed to create file to save MHTML at: "
                 << file_path.value();

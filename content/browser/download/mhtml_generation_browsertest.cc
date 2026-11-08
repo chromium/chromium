@@ -50,6 +50,10 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/path_utils.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
@@ -629,6 +633,43 @@ IN_PROC_BROWSER_TEST_F(MHTMLGenerationTest, GenerateMHTML) {
   EXPECT_THAT(info.content(),
               HasSubstr("Content-Transfer-Encoding: quoted-printable"));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Save Page on Android writes to a content URI. The existing document must be
+// truncated even though the descriptor handed to the renderer is append-only.
+IN_PROC_BROWSER_TEST_F(MHTMLGenerationTest, GenerateMHTMLToContentUri) {
+  // The APK's FileProvider only exposes cache/web_bundle/; see
+  // content/shell/android/browsertests_apk/res/xml/file_paths.xml.
+  base::FilePath path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath cache_dir;
+    ASSERT_TRUE(base::android::GetCacheDirectory(&cache_dir));
+    base::FilePath dir = cache_dir.Append(FILE_PATH_LITERAL("web_bundle"));
+    ASSERT_TRUE(base::CreateDirectory(dir));
+    path = dir.Append(FILE_PATH_LITERAL("mhtml_generation_test.mht"));
+    ASSERT_TRUE(base::WriteFile(path, std::string(1 << 20, 'X')));
+  }
+  absl::Cleanup delete_file = [path] {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::DeleteFile(path);
+  };
+  base::FilePath content_uri(
+      "content://org.chromium.content_browsertests_apk.FileProvider/"
+      "web_bundle/mhtml_generation_test.mht");
+
+  GenerateMHTML(content_uri,
+                embedded_test_server()->GetURL("/simple_page.html"));
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::string content;
+  ASSERT_TRUE(base::ReadFileToString(path, &content));
+  EXPECT_THAT(content,
+              HasSubstr("Content-Transfer-Encoding: quoted-printable"));
+  EXPECT_THAT(content, Not(HasSubstr("XXXX")));
+  EXPECT_EQ(static_cast<int64_t>(content.size()), file_size());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 // This Windows only test generates an MHTML file in a path that is explicitly
