@@ -159,10 +159,10 @@ class MockToolbarUIServiceDelegate
               (toolbar_ui_api::mojom::LhsChipIdentifier,
                ui::mojom::DragEventSource),
               (override));
-  MOCK_METHOD(void, OnHomeButtonDropUrl, (const GURL&), (override));
+  MOCK_METHOD(void, OnHomeButtonDropUrl, (), (override));
   MOCK_METHOD(void, OnHomeButtonDropFile, (const gfx::PointF&), (override));
   MOCK_METHOD(void, OnHomeButtonDropText, (const std::string&), (override));
-  MOCK_METHOD(void, OnToolbarDropUrl, (const GURL&), (override));
+  MOCK_METHOD(void, OnToolbarDropUrl, (), (override));
   MOCK_METHOD(void, OnToolbarDropText, (const std::string&), (override));
   MOCK_METHOD(void, OnToolbarDropFile, (const gfx::PointF&), (override));
 

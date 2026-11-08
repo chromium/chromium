@@ -215,21 +215,23 @@ class WebUIToolbarInternalWebView : public views::WebView {
     } else {
       ClearCachedDraggedFile();
     }
-    const bool has_javascript_url =
-        !drop_data.url_infos.empty() &&
-        drop_data.url_infos.front().url.SchemeIs(url::kJavaScriptScheme);
     auto* drag_state =
         webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
             web_contents());
     drag_state->set_drag_originated_from_renderer(did_originate_from_renderer);
-    drag_state->set_drag_has_javascript_url(has_javascript_url);
     drag_state->set_drag_url(
         drop_data.url_infos.empty()
             ? std::nullopt
             : std::make_optional(drop_data.url_infos.front().url));
   }
 
-  void PreHandleDragExit() override { ClearCachedDraggedFile(); }
+  void PreHandleDragExit() override {
+    ClearCachedDraggedFile();
+    // Like the dragged file, the drag state is only valid while the drag is
+    // over the toolbar, so that a later drop does not see stale data.
+    web_contents()->RemoveUserData(
+        webui_toolbar::WebUIToolbarDragState::UserDataKey());
+  }
 
   bool CanDragEnter(content::WebContents* source,
                     const content::DropData& data,
@@ -1572,8 +1574,13 @@ base::TimeTicks WebUIToolbarWebView::GetNavigationStartTicks() const {
   return ui ? ui->navigation_start_ticks() : base::TimeTicks();
 }
 
-void WebUIToolbarWebView::OnHomeButtonDropUrl(const GURL& url) {
-  home_control_.OnHomeButtonDropUrl(url);
+void WebUIToolbarWebView::OnHomeButtonDropUrl() {
+  // Use the drag's URL as captured before `RenderWidgetHost::FilterDropData`,
+  // which is the one the native home button sees.
+  if (std::optional<GURL> url =
+          webui_toolbar::WebUIToolbarDragState::TakeDragUrl(GetWebContents())) {
+    home_control_.OnHomeButtonDropUrl(*url);
+  }
 }
 
 void WebUIToolbarWebView::OnHomeButtonDropFile(
@@ -1590,8 +1597,12 @@ void WebUIToolbarWebView::OnHomeButtonDropText(const std::string& text) {
   drop_navigator_->NavigateToDroppedText(text);
 }
 
-void WebUIToolbarWebView::OnToolbarDropUrl(const GURL& url) {
-  drop_navigator_->NavigateToDroppedUrl(url);
+void WebUIToolbarWebView::OnToolbarDropUrl() {
+  // See `OnHomeButtonDropUrl()`.
+  if (std::optional<GURL> url =
+          webui_toolbar::WebUIToolbarDragState::TakeDragUrl(GetWebContents())) {
+    drop_navigator_->NavigateToDroppedUrl(*url);
+  }
 }
 
 void WebUIToolbarWebView::OnToolbarDropText(const std::string& text) {

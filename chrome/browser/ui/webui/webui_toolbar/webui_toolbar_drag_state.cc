@@ -36,22 +36,6 @@ bool WebUIToolbarDragState::TakeDragOriginatedFromRenderer(
 }
 
 // static
-bool WebUIToolbarDragState::TakeDragHasJavaScriptUrl(
-    content::WebContents* contents) {
-  if (!contents) {
-    return false;
-  }
-  WebUIToolbarDragState* drag_state = FromWebContents(contents);
-  if (!drag_state) {
-    return false;
-  }
-
-  bool val = drag_state->drag_has_javascript_url();
-  drag_state->set_drag_has_javascript_url(false);
-  return val;
-}
-
-// static
 std::optional<GURL> WebUIToolbarDragState::TakeDragUrl(
     content::WebContents* contents) {
   if (!contents) {

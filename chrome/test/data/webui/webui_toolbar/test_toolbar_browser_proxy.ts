@@ -6,7 +6,6 @@ import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/stri
 import type {DragEventSource} from 'chrome://resources/mojo/ui/base/dragdrop/mojom/drag_drop_types.mojom-webui.js';
 import type {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import type {PointF, RectF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
-import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import type {ExtensionActionId} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import {InitialStateReader, INVALID_FOCUS_REQUEST_HANDLE, INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE, INVALID_TOOLBAR_STATE_LISTENER_HANDLE} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
@@ -167,8 +166,8 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
     this.methodCalled('onLhsChipDrag', [identifier, source]);
   }
 
-  onHomeButtonDropUrl(url: Url) {
-    this.methodCalled('onHomeButtonDropUrl', url);
+  onHomeButtonDropUrl() {
+    this.methodCalled('onHomeButtonDropUrl');
   }
 
   onHomeButtonDropFile(dropPosition: PointF) {
@@ -187,8 +186,8 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
     this.methodCalled('onToolbarDropText', text);
   }
 
-  onToolbarDropUrl(url: Url) {
-    this.methodCalled('onToolbarDropUrl', url);
+  onToolbarDropUrl() {
+    this.methodCalled('onToolbarDropUrl');
   }
 
   showAvatarMenu() {

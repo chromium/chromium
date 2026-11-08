@@ -296,10 +296,10 @@ class WebUIToolbarWebView
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
   void OnLhsChipDrag(toolbar_ui_api::mojom::LhsChipIdentifier identifier,
                      ui::mojom::DragEventSource source) override;
-  void OnHomeButtonDropUrl(const GURL& url) override;
+  void OnHomeButtonDropUrl() override;
   void OnHomeButtonDropFile(const gfx::PointF& drop_position) override;
   void OnHomeButtonDropText(const std::string& text) override;
-  void OnToolbarDropUrl(const GURL& url) override;
+  void OnToolbarDropUrl() override;
   void OnToolbarDropText(const std::string& text) override;
   void OnToolbarDropFile(const gfx::PointF& drop_position) override;
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnOmniboxAction(

@@ -199,9 +199,10 @@ interface ToolbarUIService {
   // Called when a drag gesture is detected on an LHS chip.
   OnLhsChipDrag(LhsChipIdentifier identifier, ui.mojom.DragEventSource source);
 
-  // Sets the home page to the currently dragged url, if any, and displays the
-  // home page undo bubble.
-  OnHomeButtonDropUrl(url.mojom.Url url);
+  // Called when a URL (`text/uri-list`) is dropped on the home button. Sets
+  // the home page to the URL the browser captured from the drag, if any, and
+  // displays the home page undo bubble.
+  OnHomeButtonDropUrl();
 
   // Sets the home page to the currently dragged file, if any, and displays the
   // home page undo bubble.
@@ -211,8 +212,9 @@ interface ToolbarUIService {
   // on the home button.
   OnHomeButtonDropText(string text);
 
-  // Navigates the current tab to `url` dropped on the toolbar.
-  OnToolbarDropUrl(url.mojom.Url url);
+  // Called when a URL (`text/uri-list`) is dropped on the toolbar. Navigates
+  // the current tab to the URL the browser captured from the drag, if any.
+  OnToolbarDropUrl();
 
   // Called when plain text (`text/plain` without `text/uri-list`) is dropped
   // on the toolbar. Navigates the current tab to the query URL if `text` is a

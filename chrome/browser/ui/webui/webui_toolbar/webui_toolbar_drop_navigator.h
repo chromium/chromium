@@ -34,10 +34,6 @@ class WebUIToolbarDropNavigator : public content::WebContentsObserver {
   // Helper to retrieve and reset the drag origin state.
   bool GetDragOriginatedFromRendererAndReset();
 
-  // Helper to retrieve and reset whether the unfiltered drag URL had a
-  // `javascript:` scheme.
-  bool GetDragHasJavaScriptUrlAndReset();
-
   // Opens `url` in the current tab on behalf of a drop. Navigations from
   // renderer-originated drags get an opaque initiator origin.
   void OpenDroppedUrl(const GURL& url, bool drag_originated_from_renderer);

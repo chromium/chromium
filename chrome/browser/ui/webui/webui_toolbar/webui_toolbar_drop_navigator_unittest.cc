@@ -116,12 +116,9 @@ TEST_F(WebUIToolbarDropNavigatorTest,
   navigator_->NavigateToDroppedUrl(GURL("chrome://settings"));
 }
 
-TEST_F(WebUIToolbarDropNavigatorTest,
-       NavigateToDroppedUrl_IgnoredWhenUnfilteredDragUrlIsJavaScript) {
-  WebUIToolbarDragState::GetOrCreateForWebContents(web_contents())
-      ->set_drag_has_javascript_url(true);
+TEST_F(WebUIToolbarDropNavigatorTest, NavigateToDroppedUrl_JavaScriptIgnored) {
   EXPECT_CALL(browser_window_interface_, OpenURL(_, _)).Times(0);
-  navigator_->NavigateToDroppedUrl(GURL("about:blank#blocked"));
+  navigator_->NavigateToDroppedUrl(GURL("javascript:alert(1)"));
 }
 
 TEST_F(WebUIToolbarDropNavigatorTest,

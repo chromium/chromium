@@ -30,13 +30,11 @@ WebUIToolbarDropNavigator::WebUIToolbarDropNavigator(
 WebUIToolbarDropNavigator::~WebUIToolbarDropNavigator() = default;
 
 void WebUIToolbarDropNavigator::NavigateToDroppedUrl(const GURL& url) {
-  const bool drag_has_javascript_url = GetDragHasJavaScriptUrlAndReset();
   const bool drag_originated_from_renderer =
       GetDragOriginatedFromRendererAndReset();
 
-  // Disallow javascript: URLs to prevent self-XSS. The unfiltered drag data is
-  // also consulted, since `FilterDropData` may have rewritten the URL.
-  if (url.SchemeIs(url::kJavaScriptScheme) || drag_has_javascript_url) {
+  // Disallow javascript: URLs to prevent self-XSS.
+  if (url.SchemeIs(url::kJavaScriptScheme)) {
     return;
   }
 
@@ -51,10 +49,6 @@ void WebUIToolbarDropNavigator::NavigateToDroppedUrl(const GURL& url) {
 }
 
 void WebUIToolbarDropNavigator::NavigateToDroppedText(const std::string& text) {
-  // Text drops are checked by the scheme of the classified URL below, so the
-  // unfiltered drag URL state is only cleared here so that it does not leak
-  // into a later call.
-  GetDragHasJavaScriptUrlAndReset();
   const bool drag_originated_from_renderer =
       GetDragOriginatedFromRendererAndReset();
 
@@ -89,10 +83,6 @@ void WebUIToolbarDropNavigator::NavigateToDroppedText(const std::string& text) {
 
 bool WebUIToolbarDropNavigator::GetDragOriginatedFromRendererAndReset() {
   return WebUIToolbarDragState::TakeDragOriginatedFromRenderer(web_contents());
-}
-
-bool WebUIToolbarDropNavigator::GetDragHasJavaScriptUrlAndReset() {
-  return WebUIToolbarDragState::TakeDragHasJavaScriptUrl(web_contents());
 }
 
 void WebUIToolbarDropNavigator::OpenDroppedUrl(

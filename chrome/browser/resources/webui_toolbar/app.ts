@@ -981,13 +981,11 @@ export class ToolbarAppElement extends AppElementBase {
       return;
     }
 
-    if (e.dataTransfer.types.includes('text/uri-list')) {
-      // A type can be present with empty data, e.g. setData(type, '').
-      const url =
-          e.dataTransfer.getData('text/uri-list').split('\n')[0]?.trim();
-      if (url) {
-        this.browserProxy_.toolbarUIHandler.onToolbarDropUrl(url);
-      }
+    // A type can be present with empty data, e.g. setData(type, ''). Fall
+    // through to the other types then, like the native toolbar.
+    if (e.dataTransfer.types.includes('text/uri-list') &&
+        e.dataTransfer.getData('text/uri-list')) {
+      this.browserProxy_.toolbarUIHandler.onToolbarDropUrl();
     } else if (e.dataTransfer.types.includes('Files')) {
       this.browserProxy_.toolbarUIHandler.onToolbarDropFile(
           {x: e.clientX, y: e.clientY});

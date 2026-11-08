@@ -25,12 +25,14 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "net/base/filename_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 // Tests for the home button. Also serve as the general PressHandler tests.
 class WebUIHomeControlBrowserTest : public WebUIHomeControlTestBase {};
@@ -313,6 +315,21 @@ IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest,
   SimulateLinkWithTextDrop(link.spec(), DragOrigin::kWebPage);
 
   ExpectHomePageSetTo(link);
+}
+
+// See WebUIToolbarDropBrowserTest.DropLargeLink_FromWebPage.
+IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropLargeLink_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
+  content::RenderFrameHostWrapper rfh(
+      toolbar_web_contents()->GetPrimaryMainFrame());
+  content::RenderProcessHostBadMojoMessageWaiter kill_waiter(rfh->GetProcess());
+
+  SimulateLinkDrop("data:text/plain," + std::string(url::kMaxURLChars, 'a'),
+                   DragOrigin::kWebPage);
+
+  ExpectDropIgnored();
+  EXPECT_TRUE(!rfh.IsDestroyed() && rfh->IsRenderFrameLive())
+      << *kill_waiter.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropUrlText_FromOs) {

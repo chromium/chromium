@@ -304,9 +304,9 @@ void ToolbarUIService::OnLhsChipDrag(
   }
 }
 
-void ToolbarUIService::OnHomeButtonDropUrl(const GURL& url) {
+void ToolbarUIService::OnHomeButtonDropUrl() {
   if (delegate_) {
-    delegate_->OnHomeButtonDropUrl(url);
+    delegate_->OnHomeButtonDropUrl();
   }
 }
 
@@ -322,9 +322,9 @@ void ToolbarUIService::OnHomeButtonDropText(const std::string& text) {
   }
 }
 
-void ToolbarUIService::OnToolbarDropUrl(const GURL& url) {
+void ToolbarUIService::OnToolbarDropUrl() {
   if (delegate_) {
-    delegate_->OnToolbarDropUrl(url);
+    delegate_->OnToolbarDropUrl();
   }
 }
 

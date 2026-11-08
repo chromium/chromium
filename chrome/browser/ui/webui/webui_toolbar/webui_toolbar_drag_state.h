@@ -27,10 +27,6 @@ class WebUIToolbarDragState
   // therefore consult this exactly once per drop.
   static bool TakeDragOriginatedFromRenderer(content::WebContents* contents);
 
-  // Returns whether the unfiltered drag URL captured before `FilterDropData`
-  // had a `javascript:` scheme, and clears the flag.
-  static bool TakeDragHasJavaScriptUrl(content::WebContents* contents);
-
   // Returns the first URL of the drag, as captured before `FilterDropData`,
   // and clears it. Returns nullopt if the drag has no URL.
   static std::optional<GURL> TakeDragUrl(content::WebContents* contents);
@@ -44,9 +40,6 @@ class WebUIToolbarDragState
     drag_originated_from_renderer_ = val;
   }
 
-  bool drag_has_javascript_url() const { return drag_has_javascript_url_; }
-  void set_drag_has_javascript_url(bool val) { drag_has_javascript_url_ = val; }
-
   const std::optional<GURL>& drag_url() const { return drag_url_; }
   void set_drag_url(std::optional<GURL> url) { drag_url_ = std::move(url); }
 
@@ -55,7 +48,6 @@ class WebUIToolbarDragState
   friend class content::WebContentsUserData<WebUIToolbarDragState>;
 
   bool drag_originated_from_renderer_ = false;
-  bool drag_has_javascript_url_ = false;
   std::optional<GURL> drag_url_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

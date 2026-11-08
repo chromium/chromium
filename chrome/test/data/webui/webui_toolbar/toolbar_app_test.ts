@@ -1260,35 +1260,13 @@ suite('ToolbarAppTest', () => {
     dataTransfer.setData('text/plain', 'some text');
     await dropOnToolbar(dataTransfer);
 
+    await browserProxy.toolbarUIHandler.whenCalled('onToolbarDropUrl');
     assertEquals(
-        'https://example.com/',
-        await browserProxy.toolbarUIHandler.whenCalled('onToolbarDropUrl'));
+        0, browserProxy.toolbarUIHandler.getCallCount('onToolbarDropText'));
   });
 
-  // A type can be present with empty data, e.g. a leading newline.
-  test('DropEmptyUrlOnToolbar', async () => {
-    const dataTransfer = new DataTransfer();
-    dataTransfer.setData('text/uri-list', '\nhttps://example.com/');
-    await dropOnToolbar(dataTransfer);
-    await microtasksFinished();
-
-    assertEquals(
-        0, browserProxy.toolbarUIHandler.getCallCount('onToolbarDropUrl'));
-  });
-
-  // `text/uri-list` separates URLs with CRLF.
-  test('DropUrlListWithCrlfOnToolbar', async () => {
-    const dataTransfer = new DataTransfer();
-    dataTransfer.setData(
-        'text/uri-list', 'https://example.com/\r\nhttps://other.com/');
-    await dropOnToolbar(dataTransfer);
-
-    assertEquals(
-        'https://example.com/',
-        await browserProxy.toolbarUIHandler.whenCalled('onToolbarDropUrl'));
-  });
-
-  test('DropUrlListWithCrlfOnHomeButton', async () => {
+  // Dispatches a drop of `dataTransfer` on the home button.
+  async function dropOnHomeButton(dataTransfer: DataTransfer) {
     app = document.createElement('toolbar-app');
     document.body.appendChild(app);
     browserProxy.fireToolbarStateListener([], createMockToolbarState());
@@ -1298,19 +1276,70 @@ suite('ToolbarAppTest', () => {
     assertTrue(!!homeButton);
     const button = homeButton.shadowRoot!.querySelector('#button');
     assertTrue(!!button);
-    const dataTransfer = new DataTransfer();
-    dataTransfer.setData(
-        'text/uri-list', 'https://example.com/\r\nhttps://other.com/');
     button.dispatchEvent(new DragEvent('drop', {
       bubbles: true,
       cancelable: true,
       composed: true,
       dataTransfer,
     }));
+    await microtasksFinished();
+  }
+
+  // The browser uses the first valid URL of the list, which skips empty lines,
+  // so a leading line break does not make the URL empty.
+  test('DropUrlListWithLeadingCrlfOnToolbar', async () => {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/uri-list', '\r\nhttps://example.com/');
+    await dropOnToolbar(dataTransfer);
+    await microtasksFinished();
 
     assertEquals(
-        'https://example.com/',
-        await browserProxy.toolbarUIHandler.whenCalled('onHomeButtonDropUrl'));
+        1, browserProxy.toolbarUIHandler.getCallCount('onToolbarDropUrl'));
+  });
+
+  // A type can be present with empty data, e.g. setData(type, ''). Like native
+  // Views, which ignores a drop's empty URLs, the drop then falls back to its
+  // plain text.
+  test('DropEmptyUrlAndTextOnToolbar', async () => {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/uri-list', '');
+    dataTransfer.setData('text/plain', 'some text');
+    await dropOnToolbar(dataTransfer);
+    await microtasksFinished();
+
+    assertEquals(
+        0, browserProxy.toolbarUIHandler.getCallCount('onToolbarDropUrl'));
+    assertEquals(
+        1, browserProxy.toolbarUIHandler.getCallCount('onToolbarDropText'));
+    assertEquals(
+        'some text',
+        browserProxy.toolbarUIHandler.getArgs('onToolbarDropText')[0]);
+  });
+
+  // See DropUrlListWithLeadingCrlfOnToolbar.
+  test('DropUrlListWithLeadingCrlfOnHomeButton', async () => {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/uri-list', '\r\nhttps://example.com/');
+    await dropOnHomeButton(dataTransfer);
+
+    assertEquals(
+        1, browserProxy.toolbarUIHandler.getCallCount('onHomeButtonDropUrl'));
+  });
+
+  // See DropEmptyUrlAndTextOnToolbar.
+  test('DropEmptyUrlAndTextOnHomeButton', async () => {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/uri-list', '');
+    dataTransfer.setData('text/plain', 'some text');
+    await dropOnHomeButton(dataTransfer);
+
+    assertEquals(
+        0, browserProxy.toolbarUIHandler.getCallCount('onHomeButtonDropUrl'));
+    assertEquals(
+        1, browserProxy.toolbarUIHandler.getCallCount('onHomeButtonDropText'));
+    assertEquals(
+        'some text',
+        browserProxy.toolbarUIHandler.getArgs('onHomeButtonDropText')[0]);
   });
 
   test('DropTextOnToolbar', async () => {

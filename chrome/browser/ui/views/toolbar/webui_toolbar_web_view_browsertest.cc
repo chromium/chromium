@@ -3820,6 +3820,7 @@ class WebUIToolbarDropBrowserTest : public WebUIToolbarWebViewBrowserTest {
   content::WebContents* active_web_contents() {
     return browser()->GetTabStripModel()->GetActiveWebContents();
   }
+  content::WebContents* toolbar_web_contents() { return toolbar_web_contents_; }
 
   // Loads a page that never navigates on its own, and finds a point on the
   // toolbar that is not covered by any control. Must be called before any
@@ -3901,6 +3902,10 @@ class WebUIToolbarDropBrowserTest : public WebUIToolbarWebViewBrowserTest {
                         bool drag_exited_before_drop = false) {
     return drop_simulator_->SimulateFileDrop(path, origin,
                                              drag_exited_before_drop);
+  }
+  bool PerformDrop(const content::DropData& drop_data,
+                   bool drag_exited_before_drop) {
+    return drop_simulator_->PerformDrop(drop_data, drag_exited_before_drop);
   }
 
   // The active tab navigated to `expected`.
@@ -3992,6 +3997,24 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest,
   ExpectNavigatedTo(link);
 }
 
+// A link longer than the URLs that may be sent over Mojo, e.g. a large data:
+// URL, is read by the browser from the drag, rather than getting the toolbar
+// renderer killed for a bad Mojo message. A web page may not open a data: URL
+// this way, so the drop is ignored.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest, DropLargeLink_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  content::RenderFrameHostWrapper rfh(
+      toolbar_web_contents()->GetPrimaryMainFrame());
+  content::RenderProcessHostBadMojoMessageWaiter kill_waiter(rfh->GetProcess());
+
+  SimulateLinkDrop("data:text/plain," + std::string(url::kMaxURLChars, 'a'),
+                   DragOrigin::kWebPage);
+
+  ExpectDropIgnored();
+  EXPECT_TRUE(!rfh.IsDestroyed() && rfh->IsRenderFrameLive())
+      << *kill_waiter.Wait();
+}
+
 IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest, DropUrlText_FromOs) {
   ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
   const GURL url("https://www.example.test/");
@@ -4047,6 +4070,20 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest,
   ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
   ASSERT_TRUE(SimulateFileDrop(file_path, DragOrigin::kOs,
                                /*drag_exited_before_drop=*/true));
+
+  ExpectDropIgnored();
+}
+
+// Like DropFile_FromOs_IgnoredAfterDragExit, leaving the toolbar clears the
+// URL recorded by the drag update, so a link drop that lands afterwards has
+// nothing to open.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest,
+                       DropUrlLink_FromOs_IgnoredAfterDragExit) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  content::DropData drop_data;
+  drop_data.url_infos.emplace_back(GURL("https://www.example.test/"),
+                                   std::u16string());
+  ASSERT_TRUE(PerformDrop(drop_data, /*drag_exited_before_drop=*/true));
 
   ExpectDropIgnored();
 }

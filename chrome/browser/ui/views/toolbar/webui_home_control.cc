@@ -91,15 +91,12 @@ void WebUIHomeControl::ShowSetHomePageBubble(const GURL& undo_url,
 }
 
 void WebUIHomeControl::OnHomeButtonDropUrl(const GURL& url) {
-  const bool drag_has_javascript_url =
-      webui_toolbar::WebUIToolbarDragState::TakeDragHasJavaScriptUrl(
-          delegate_->GetWebContents());
   const bool drag_originated_from_renderer =
       webui_toolbar::WebUIToolbarDragState::TakeDragOriginatedFromRenderer(
           delegate_->GetWebContents());
 
   // Disallow javascript: URLs to prevent self-XSS.
-  if (url.SchemeIs(url::kJavaScriptScheme) || drag_has_javascript_url) {
+  if (url.SchemeIs(url::kJavaScriptScheme)) {
     return;
   }
 
