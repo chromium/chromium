@@ -354,6 +354,13 @@ enum IconResourceIds {
   // Icon: Google Symbols 2:pro_model:wght@200;opsz@24;FILL@0
   // For AIM.
   PTM_TOOL = 109;
+
+  // Icon: Google Symbols:keyboard_arrow_right
+  KEYBOARD_ARROW_RIGHT = 110;
+
+  // Icon: Google Symbols:close
+  // Trailing delete '×' icon (mWeb).
+  CLOSE = 111;
 }
 
 enum IconPositions {
