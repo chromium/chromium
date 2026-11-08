@@ -590,6 +590,21 @@
     <message name="IDS_SETTINGS_RELATED_SERVICES_TITLE" desc="Title of the section allowing the user to access any related google services from the 'Your saved info' page.">
       Related Google services
     </message>
+    <message name="IDS_SETTINGS_YOUR_SAVED_INFO_PASSWORD_MANAGER_SUBLABEL" desc="Sublabel for the Google Password Manager link row on the 'Your saved info' page.">
+      View in Google Password Manager
+    </message>
+    <message name="IDS_SETTINGS_YOUR_SAVED_INFO_PAYMENTS_SUBLABEL" desc="Sublabel for the Payments link row on the 'Your saved info' page.">
+      Credit and debit cards, IBANs, and loyalty cards
+    </message>
+    <message name="IDS_SETTINGS_YOUR_SAVED_INFO_CONTACT_INFO_SUBLABEL" desc="Sublabel for the Contact info link row on the 'Your saved info' page.">
+      Home, work, and more
+    </message>
+    <message name="IDS_SETTINGS_YOUR_SAVED_INFO_IDENTITY_DOCS_SUBLABEL" desc="Sublabel for the Identity docs link row on the 'Your saved info' page.">
+      IDs, passports, and driver’s licenses
+    </message>
+    <message name="IDS_SETTINGS_YOUR_SAVED_INFO_TRAVEL_SUBLABEL" desc="Sublabel for the Travel link row on the 'Your saved info' page.">
+      Flight info, known traveller and redress numbers, vehicles
+    </message>
     <message name="IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX" desc="Shown after 'Google Chrome is trying to ' (or in some languages, 'Google Chrome wants to ') in a dialog message. Text for the dialog box that prompts the user for the biometric authentication before replacing passwords during Import.">
       replace existing passwords
     </message>

@@ -2022,6 +2022,10 @@ IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, AutofillPage) {
   RunTest("settings/autofill_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, AutofillPageV2) {
+  RunTest("settings/autofill_page_v2_test.js", "mocha.run()");
+}
+
 // TODO(crbug.com/545478765): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_AutofillPageIndex DISABLED_AutofillPageIndex

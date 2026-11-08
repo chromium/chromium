@@ -10,26 +10,23 @@
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './account_card.js';
-import './category_reference_card.js';
 import './collapsible_autofill_settings_card.js';
 import '../settings_page/settings_section.js';
 import '../icons.html.js';
-import '../privacy_icons.html.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
 
 // </if>
 
-import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {EntityTypeName} from '../autofill_ai_enums.mojom-webui.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
-import {MetricsBrowserProxyImpl, SuggestionsFromGeminiEntryPoint, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl, SuggestionsFromGeminiEntryPoint, YourSavedInfoDataCategory, YourSavedInfoRelatedService} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
@@ -38,7 +35,6 @@ import type {AutofillManagerProxy, PersonalDataChangedListener} from './autofill
 import {AutofillManagerImpl} from './autofill_manager_proxy.js';
 import {getCss} from './autofill_page_v2.css.js';
 import {getHtml} from './autofill_page_v2.html.js';
-import type {DataCategoryClickEvent, DataChipClickEvent} from './category_reference_card.js';
 import type {EntityDataManagerProxy, EntityInstancesChangedListener} from './entity_data_manager_proxy.js';
 import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 import {PasswordManagerImpl, PasswordManagerPage} from './passwords/password_manager_proxy.js';
@@ -51,44 +47,10 @@ type CreditCardEntry = chrome.autofillPrivate.CreditCardEntry;
 type IbanEntry = chrome.autofillPrivate.IbanEntry;
 type PayOverTimeIssuerEntry = chrome.autofillPrivate.PayOverTimeIssuerEntry;
 type AccountInfo = chrome.autofillPrivate.AccountInfo;
-type EntityType = chrome.autofillPrivate.EntityType;
 type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
 
-/**
- * A complete set of data chips, organized into categories, with presentation
- * order in the UI.
- */
-interface DataTypeHierarchy {
-  passwordManager: DataCategory;
-  payments: DataCategory;
-  contactInfo: DataCategory;
-  identityDocs: DataCategory;
-  travel: DataCategory;
-  shopping: DataCategory;
-}
-
-interface DataCategory {
-  id: YourSavedInfoDataCategory;
-  chips: DataChip[];
-}
-
-/**
- * Represents a single chip for a saved data type, showing a label, icon,
- * and the number of items.
- */
-export interface DataChip {
-  id: YourSavedInfoDataChip;
-  label: string;
-  icon: string;
-  // A value of 0 indicates a loaded count of no items,
-  // while `undefined` indicates a "not yet loaded" state.
-  count?: number;
-  // A function determining whether the chip is available or not
-  isVisibleWhenNoEntitiesOfTypeExists: () => boolean;
-}
-
 const SettingsAutofillPageV2ElementBase =
-    SettingsViewMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
+    SettingsViewMixinLit(WebUiListenerMixinLit(CrLitElement));
 
 export class SettingsAutofillPageV2Element extends
     SettingsAutofillPageV2ElementBase {
@@ -106,14 +68,24 @@ export class SettingsAutofillPageV2Element extends
 
   static override get properties() {
     return {
-      hierarchy_: {type: Object},
+      passwordManagerCount_: {type: Number},
+      paymentsCount_: {type: Number},
+      contactInfoCount_: {type: Number},
+      identityDocsCount_: {type: Number},
+      travelCount_: {type: Number},
+      shoppingCount_: {type: Number},
       isShoppingEnabled_: {type: Boolean},
       showSuggestionsFromGeminiSettings_: {type: Boolean},
       spark_: {type: String},
     };
   }
 
-  protected accessor hierarchy_: DataTypeHierarchy;
+  protected accessor passwordManagerCount_: number|undefined;
+  protected accessor paymentsCount_: number|undefined;
+  protected accessor contactInfoCount_: number|undefined;
+  protected accessor identityDocsCount_: number|undefined;
+  protected accessor travelCount_: number|undefined;
+  protected accessor shoppingCount_: number|undefined;
   protected accessor isShoppingEnabled_: boolean =
       loadTimeData.getBoolean('shoppingIntegrationEnabled');
   protected accessor showSuggestionsFromGeminiSettings_: boolean =
@@ -128,10 +100,10 @@ export class SettingsAutofillPageV2Element extends
       'settings-internal:spark';
   // </if>
 
-  private dataChipIdToChip_: Map<YourSavedInfoDataChip, DataChip> = new Map();
-  private dataChipIdToCategory_: Map<YourSavedInfoDataChip, DataCategory> =
-      new Map();
-  private availableAutofillAiTypes_: Set<EntityTypeName> = new Set();
+  private creditCardCount_?: number;
+  private ibanCount_?: number;
+  private payOverTimeCount_?: number;
+  private loyaltyCardsCount_?: number;
 
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
@@ -145,170 +117,16 @@ export class SettingsAutofillPageV2Element extends
   private onAutofillAiEntitiesChangedListener_: EntityInstancesChangedListener|
       null = null;
 
-  constructor() {
-    super();
-
-    this.hierarchy_ = this.initializeDataTypeHierarchy_();
-    for (const category of Object.values(this.hierarchy_)) {
-      for (const chip of category.chips) {
-        this.dataChipIdToChip_.set(chip.id, chip);
-        this.dataChipIdToCategory_.set(chip.id, category);
-      }
-    }
-  }
-
   override connectedCallback() {
     super.connectedCallback();
-    this.setupDataTypeCounters();
+    this.setupDataTypeCounters_();
   }
 
-  private initializeDataTypeHierarchy_(): DataTypeHierarchy {
-    return {
-      passwordManager: {
-        id: YourSavedInfoDataCategory.PASSWORD_MANAGER,
-        chips: [
-          {
-            id: YourSavedInfoDataChip.PASSWORDS,
-            label: this.i18n('passwordsLabel'),
-            icon: 'cr20:password-manager',
-            isVisibleWhenNoEntitiesOfTypeExists: () => true,
-          },
-          {
-            id: YourSavedInfoDataChip.PASSKEYS,
-            label: this.i18n('passkeysLabel'),
-            icon: 'settings20:passkey',
-            isVisibleWhenNoEntitiesOfTypeExists: () => true,
-          },
-        ],
-      },
-      payments: {
-        id: YourSavedInfoDataCategory.PAYMENTS,
-        chips: [
-          {
-            id: YourSavedInfoDataChip.CREDIT_CARDS,
-            label: this.i18n('creditAndDebitCardTitle'),
-            icon: 'settings20:credit-card',
-            isVisibleWhenNoEntitiesOfTypeExists: () => true,
-          },
-          {
-            id: YourSavedInfoDataChip.IBANS,
-            label: this.i18n('ibanTitle'),
-            icon: 'settings20:iban-custom',
-            isVisibleWhenNoEntitiesOfTypeExists: () =>
-                loadTimeData.getBoolean('showIbansSettings'),
-          },
-          {
-            id: YourSavedInfoDataChip.PAY_OVER_TIME,
-            label: this.i18n('autofillPayOverTimeSettingsLabel'),
-            icon: 'settings20:hourglass',
-            isVisibleWhenNoEntitiesOfTypeExists: () =>
-                loadTimeData.getBoolean('shouldShowPayOverTimeSettings'),
-          },
-          {
-            id: YourSavedInfoDataChip.LOYALTY_CARDS,
-            label: this.i18n('loyaltyCardsTitle'),
-            icon: 'settings20:loyalty-programs',
-            isVisibleWhenNoEntitiesOfTypeExists: () => true,
-          },
-        ],
-      },
-      contactInfo: {
-        id: YourSavedInfoDataCategory.CONTACT_INFO,
-        chips: [
-          {
-            id: YourSavedInfoDataChip.ADDRESSES,
-            label: this.i18n('addresses'),
-            icon: 'settings:mail-filled',
-            isVisibleWhenNoEntitiesOfTypeExists: () => true,
-          },
-        ],
-      },
-      identityDocs: {
-        id: YourSavedInfoDataCategory.IDENTITY_DOCS,
-        chips: [
-          {
-            id: YourSavedInfoDataChip.DRIVERS_LICENSES,
-            label: this.i18n('yourSavedInfoDriverLicenseChip'),
-            icon: 'settings20:id-card',
-            isVisibleWhenNoEntitiesOfTypeExists: () =>
-                this.availableAutofillAiTypes_.has(
-                    EntityTypeName.kDriversLicense),
-          },
-          {
-            id: YourSavedInfoDataChip.NATIONAL_ID_CARDS,
-            label: this.i18n('yourSavedInfoNationalIdsChip'),
-            icon: 'settings20:id-card',
-            isVisibleWhenNoEntitiesOfTypeExists: () =>
-                this.availableAutofillAiTypes_.has(
-                    EntityTypeName.kNationalIdCard),
-          },
-          {
-            id: YourSavedInfoDataChip.PASSPORTS,
-            label: this.i18n('yourSavedInfoPassportChip'),
-            icon: 'settings20:passport',
-            isVisibleWhenNoEntitiesOfTypeExists: () =>
-                this.availableAutofillAiTypes_.has(EntityTypeName.kPassport),
-          },
-        ],
-      },
-      travel: {
-        id: YourSavedInfoDataCategory.TRAVEL,
-        chips: [
-          {
-            id: YourSavedInfoDataChip.FLIGHT_RESERVATIONS,
-            label: this.i18n('yourSavedInfoFlightReservationsChip'),
-            icon: 'settings20:travel',
-            isVisibleWhenNoEntitiesOfTypeExists: () => false,
-          },
-          {
-            id: YourSavedInfoDataChip.TRAVEL_INFO,
-            label: this.i18n('yourSavedInfoTravelInfoChip'),
-            icon: 'privacy20:person-check',
-            isVisibleWhenNoEntitiesOfTypeExists: () =>
-                this.availableAutofillAiTypes_.has(
-                    EntityTypeName.kKnownTravelerNumber) ||
-                this.availableAutofillAiTypes_.has(
-                    EntityTypeName.kRedressNumber),
-          },
-          {
-            id: YourSavedInfoDataChip.VEHICLES,
-            label: this.i18n('yourSavedInfoVehiclesChip'),
-            icon: 'settings20:directions-car',
-            isVisibleWhenNoEntitiesOfTypeExists: () =>
-                this.availableAutofillAiTypes_.has(EntityTypeName.kVehicle),
-          },
-        ],
-      },
-      shopping: {
-        id: YourSavedInfoDataCategory.SHOPPING,
-        chips: [
-          {
-            id: YourSavedInfoDataChip.ORDERS,
-            label: this.i18n('yourSavedInfoOrdersChip'),
-            icon: 'settings20:orders',
-            isVisibleWhenNoEntitiesOfTypeExists: () =>
-                this.availableAutofillAiTypes_.has(EntityTypeName.kOrder),
-          },
-          {
-            id: YourSavedInfoDataChip.SHIPMENTS,
-            label: this.i18n('yourSavedInfoShipmentsChip'),
-            icon: 'settings20:local-shipping',
-            isVisibleWhenNoEntitiesOfTypeExists: () =>
-                this.availableAutofillAiTypes_.has(EntityTypeName.kShipment),
-          },
-        ],
-      },
-    };
-  }
-
-  private setupDataTypeCounters() {
+  private setupDataTypeCounters_() {
     // Password and passkey counts.
     const setPasswordCount =
         (count: {passwordCount: number, passkeyCount: number}) => {
-          this.setChipCount_(
-              YourSavedInfoDataChip.PASSWORDS, count.passwordCount);
-          this.setChipCount_(
-              YourSavedInfoDataChip.PASSKEYS, count.passkeyCount);
+          this.passwordManagerCount_ = count.passwordCount + count.passkeyCount;
         };
     this.addWebUiListener('password-count-changed', setPasswordCount);
     SavedInfoHandlerImpl.getInstance().getPasswordCount().then(
@@ -316,22 +134,23 @@ export class SettingsAutofillPageV2Element extends
 
     // Addresses: Request initial data.
     const setAddressesListener = (addresses: AddressEntry[]) => {
-      this.setChipCount_(YourSavedInfoDataChip.ADDRESSES, addresses.length);
+      this.contactInfoCount_ = addresses.length;
     };
     this.autofillManager_.getAddressList().then(setAddressesListener);
 
     // Payments: Request initial data.
     const setCreditCardsListener = (creditCards: CreditCardEntry[]) => {
-      this.setChipCount_(
-          YourSavedInfoDataChip.CREDIT_CARDS, creditCards.length);
+      this.creditCardCount_ = creditCards.length;
+      this.updatePaymentsCount_();
     };
     const setIbansListener = (ibans: IbanEntry[]) => {
-      this.setChipCount_(YourSavedInfoDataChip.IBANS, ibans.length);
+      this.ibanCount_ = ibans.length;
+      this.updatePaymentsCount_();
     };
     const setPayOverTimeListener =
         (payOverTimeIssuers: PayOverTimeIssuerEntry[]) => {
-          this.setChipCount_(
-              YourSavedInfoDataChip.PAY_OVER_TIME, payOverTimeIssuers.length);
+          this.payOverTimeCount_ = payOverTimeIssuers.length;
+          this.updatePaymentsCount_();
         };
     this.paymentsManager_.getCreditCardList().then(setCreditCardsListener);
     this.paymentsManager_.getIbanList().then(setIbansListener);
@@ -343,81 +162,66 @@ export class SettingsAutofillPageV2Element extends
         (addresses: AddressEntry[], creditCards: CreditCardEntry[],
          ibans: IbanEntry[], payOverTimeIssuers: PayOverTimeIssuerEntry[],
          _accountInfo?: AccountInfo) => {
-          this.setChipCount_(YourSavedInfoDataChip.ADDRESSES, addresses.length);
-          this.setChipCount_(
-              YourSavedInfoDataChip.CREDIT_CARDS, creditCards.length);
-          this.setChipCount_(YourSavedInfoDataChip.IBANS, ibans.length);
-          this.setChipCount_(
-              YourSavedInfoDataChip.PAY_OVER_TIME, payOverTimeIssuers.length);
+          this.contactInfoCount_ = addresses.length;
+          this.creditCardCount_ = creditCards.length;
+          this.ibanCount_ = ibans.length;
+          this.payOverTimeCount_ = payOverTimeIssuers.length;
+          this.updatePaymentsCount_();
         };
+
     this.setPersonalDataListener_ = setPersonalDataListener;
     this.autofillManager_.setPersonalDataManagerListener(
         setPersonalDataListener);
 
     // Autofill AI entities.
     this.onAutofillAiEntitiesChangedListener_ =
-        this.onAutofillAiEntitiesChanged.bind(this);
+        this.onAutofillAiEntitiesChanged_.bind(this);
     this.autofillAiEntityManager_.addEntityInstancesChangedListener(
         this.onAutofillAiEntitiesChangedListener_);
     this.autofillAiEntityManager_.loadEntityInstances().then(
         this.onAutofillAiEntitiesChangedListener_);
 
-    this.autofillAiEntityManager_.getWritableEntityTypes().then(
-        (entityTypes: EntityType[]) => {
-          for (const entityType of entityTypes) {
-            this.availableAutofillAiTypes_.add(entityType.typeName);
-          }
-          this.requestUpdate();
-        });
-
-    if (this.isShoppingEnabled_) {
-      this.availableAutofillAiTypes_.add(EntityTypeName.kOrder);
-      this.availableAutofillAiTypes_.add(EntityTypeName.kShipment);
-    }
-
     // Wallet: Loyalty cards count.
     const setLoyaltyCardsCount = (loyaltyCardsCount?: number) => {
-      this.setChipCount_(
-          YourSavedInfoDataChip.LOYALTY_CARDS, loyaltyCardsCount);
+      this.loyaltyCardsCount_ = loyaltyCardsCount;
+      this.updatePaymentsCount_();
     };
     this.addWebUiListener('loyalty-cards-count-changed', setLoyaltyCardsCount);
     SavedInfoHandlerImpl.getInstance().getLoyaltyCardsCount().then(
         setLoyaltyCardsCount);
   }
 
-  private onAutofillAiEntitiesChanged(entities: EntityInstanceWithLabels[]) {
+  private updatePaymentsCount_() {
+    if (this.creditCardCount_ === undefined && this.ibanCount_ === undefined &&
+        this.payOverTimeCount_ === undefined &&
+        this.loyaltyCardsCount_ === undefined) {
+      this.paymentsCount_ = undefined;
+      return;
+    }
+
+    this.paymentsCount_ = (this.creditCardCount_ ?? 0) +
+        (this.ibanCount_ ?? 0) + (this.payOverTimeCount_ ?? 0) +
+        (this.loyaltyCardsCount_ ?? 0);
+  }
+
+  private onAutofillAiEntitiesChanged_(entities: EntityInstanceWithLabels[]) {
     const entityCounts = new Map<EntityTypeName, number>();
     for (const entity of entities) {
       const newCount = (entityCounts.get(entity.type.typeName) || 0) + 1;
       entityCounts.set(entity.type.typeName, newCount);
     }
-    this.setChipCount_(
-        YourSavedInfoDataChip.PASSPORTS,
-        entityCounts.get(EntityTypeName.kPassport) ?? 0);
-    this.setChipCount_(
-        YourSavedInfoDataChip.DRIVERS_LICENSES,
-        entityCounts.get(EntityTypeName.kDriversLicense) ?? 0);
-    this.setChipCount_(
-        YourSavedInfoDataChip.VEHICLES,
-        entityCounts.get(EntityTypeName.kVehicle) ?? 0);
-    this.setChipCount_(
-        YourSavedInfoDataChip.NATIONAL_ID_CARDS,
-        entityCounts.get(EntityTypeName.kNationalIdCard) ?? 0);
-    this.setChipCount_(
-        YourSavedInfoDataChip.TRAVEL_INFO,
+    this.identityDocsCount_ =
+        (entityCounts.get(EntityTypeName.kPassport) ?? 0) +
+        (entityCounts.get(EntityTypeName.kDriversLicense) ?? 0) +
+        (entityCounts.get(EntityTypeName.kNationalIdCard) ?? 0);
+    this.travelCount_ =
+        (entityCounts.get(EntityTypeName.kFlightReservation) ?? 0) +
         (entityCounts.get(EntityTypeName.kKnownTravelerNumber) ?? 0) +
-            (entityCounts.get(EntityTypeName.kRedressNumber) ?? 0));
-    this.setChipCount_(
-        YourSavedInfoDataChip.FLIGHT_RESERVATIONS,
-        entityCounts.get(EntityTypeName.kFlightReservation) ?? 0);
-    this.setChipCount_(
-        YourSavedInfoDataChip.ORDERS,
-        entityCounts.get(EntityTypeName.kOrder) ?? 0);
-    this.setChipCount_(
-        YourSavedInfoDataChip.SHIPMENTS,
-        entityCounts.get(EntityTypeName.kShipment) ?? 0);
+        (entityCounts.get(EntityTypeName.kRedressNumber) ?? 0) +
+        (entityCounts.get(EntityTypeName.kVehicle) ?? 0);
+    this.shoppingCount_ = (entityCounts.get(EntityTypeName.kOrder) ?? 0) +
+        (entityCounts.get(EntityTypeName.kShipment) ?? 0);
   }
-
   override disconnectedCallback() {
     super.disconnectedCallback();
 
@@ -496,69 +300,44 @@ export class SettingsAutofillPageV2Element extends
     return control;
   }
 
-  private setChipCount_(chipId: YourSavedInfoDataChip, count?: number) {
-    const chip: DataChip = this.dataChipIdToChip_.get(chipId)!;
-    chip.count = count;
-    this.requestUpdate();
+  protected onPasswordManagerClick_() {
+    this.metricsBrowserProxy_.recordYourSavedInfoCategoryClick(
+        YourSavedInfoDataCategory.PASSWORD_MANAGER);
+    PasswordManagerImpl.getInstance().recordPasswordsPageAccessInSettings();
+    PasswordManagerImpl.getInstance().showPasswordManager(
+        PasswordManagerPage.PASSWORDS);
+    SavedInfoHandlerImpl.getInstance().requestDataManagementSurvey(
+        DataManagementSurvey.PASSWORDS, true);
   }
 
-  protected getVisibleChips_(chips: DataChip[]): DataChip[] {
-    return chips
-        .filter(
-            chip => chip.isVisibleWhenNoEntitiesOfTypeExists() || !!chip.count)
-        .map(chip => ({...chip}));
+  protected onPaymentsClick_() {
+    this.metricsBrowserProxy_.recordYourSavedInfoCategoryClick(
+        YourSavedInfoDataCategory.PAYMENTS);
+    Router.getInstance().navigateTo(routes.PAYMENTS);
   }
 
-  private hasVisibleChips_(chips: DataChip[]): boolean {
-    return chips.some(
-        chip => chip.isVisibleWhenNoEntitiesOfTypeExists() || !!chip.count);
+  protected onContactInfoClick_() {
+    this.metricsBrowserProxy_.recordYourSavedInfoCategoryClick(
+        YourSavedInfoDataCategory.CONTACT_INFO);
+    Router.getInstance().navigateTo(routes.CONTACT_INFO);
   }
 
-  protected onDataCategoryClick_(e: DataCategoryClickEvent) {
-    const categoryId: YourSavedInfoDataCategory = e.detail.categoryId;
-    this.metricsBrowserProxy_.recordYourSavedInfoCategoryClick(categoryId);
-    this.navigateToLeafPage_(categoryId);
+  protected onIdentityDocsClick_() {
+    this.metricsBrowserProxy_.recordYourSavedInfoCategoryClick(
+        YourSavedInfoDataCategory.IDENTITY_DOCS);
+    Router.getInstance().navigateTo(routes.IDENTITY_DOCS);
   }
 
-  protected onDataChipClick_(e: DataChipClickEvent) {
-    const chipId: YourSavedInfoDataChip = e.detail.chipId;
-    const category: DataCategory = this.dataChipIdToCategory_.get(chipId)!;
-    this.metricsBrowserProxy_.recordYourSavedInfoDataChipClick(chipId);
-    this.navigateToLeafPage_(category.id);
+  protected onTravelClick_() {
+    this.metricsBrowserProxy_.recordYourSavedInfoCategoryClick(
+        YourSavedInfoDataCategory.TRAVEL);
+    Router.getInstance().navigateTo(routes.TRAVEL);
   }
 
-  /**
-   * Navigate to the settings sub page corresponding to a data category.
-   */
-  private navigateToLeafPage_(categoryId: YourSavedInfoDataCategory) {
-    switch (categoryId) {
-      case YourSavedInfoDataCategory.PASSWORD_MANAGER:
-        PasswordManagerImpl.getInstance().recordPasswordsPageAccessInSettings();
-        PasswordManagerImpl.getInstance().showPasswordManager(
-            PasswordManagerPage.PASSWORDS);
-        SavedInfoHandlerImpl.getInstance().requestDataManagementSurvey(
-            DataManagementSurvey.PASSWORDS, true);
-        break;
-      case YourSavedInfoDataCategory.PAYMENTS:
-        Router.getInstance().navigateTo(routes.PAYMENTS);
-        break;
-      case YourSavedInfoDataCategory.CONTACT_INFO:
-        Router.getInstance().navigateTo(routes.CONTACT_INFO);
-        break;
-      case YourSavedInfoDataCategory.IDENTITY_DOCS:
-        Router.getInstance().navigateTo(routes.IDENTITY_DOCS);
-        break;
-      case YourSavedInfoDataCategory.TRAVEL:
-        Router.getInstance().navigateTo(routes.TRAVEL);
-        break;
-      case YourSavedInfoDataCategory.SHOPPING:
-        Router.getInstance().navigateTo(routes.SHOPPING);
-        break;
-      case YourSavedInfoDataCategory.COUNT:
-        assertNotReached();
-      default:
-        assertNotReachedCase(categoryId);
-    }
+  protected onShoppingClick_() {
+    this.metricsBrowserProxy_.recordYourSavedInfoCategoryClick(
+        YourSavedInfoDataCategory.SHOPPING);
+    Router.getInstance().navigateTo(routes.SHOPPING);
   }
 
   protected onSuggestionsFromGeminiClick_() {
