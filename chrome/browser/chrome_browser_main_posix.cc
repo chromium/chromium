@@ -107,10 +107,12 @@ void ExitHandler::ExitWhenPossibleOnUIThread(int signal) {
         // conservatively assume that the session is ending. On macOS, launchd
         // delivers SIGTERM at logout, shutdown, reboot, or update. If the
         // process still doesn't quit within a bounded time, most systems will
-        // finally send SIGKILL, which we're unable to install a signal handler
-        // for.
-        // TODO(thomasanderson): Try to distinguish if the session is really
-        // ending or not.  Maybe there's a systemd or DBus API to query.
+        // finally send SIGKILL, which can't be handled.
+        //
+        // Treating every SIGTERM as a session end is intentional. A plain
+        // `kill` can't be reliably told apart from a logout or shutdown, and
+        // a graceful Exit() during a real session end risks losing data when
+        // SIGKILL follows. SessionEnding() saves state promptly in both cases.
         chrome::SessionEnding();
         break;
       default:
