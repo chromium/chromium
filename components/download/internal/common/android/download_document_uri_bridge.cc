@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "base/check.h"
 #include "base/files/file.h"
+#include "base/files/file_android.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -66,9 +67,10 @@ base::FilePath DownloadDocumentUriBridge::PublishDownload(
 base::File DownloadDocumentUriBridge::OpenDocumentUri(
     const base::FilePath& document_uri) {
   DCHECK(document_uri.IsContentUri());
-  return base::File(document_uri, base::File::FLAG_OPEN_ALWAYS |
-                                      base::File::FLAG_WRITE |
-                                      base::File::FLAG_READ);
+  // BaseFile reads back already-written bytes to verify a resumed download,
+  // so the handle needs read access and must not truncate.
+  return base::OpenAndroidDocument(document_uri,
+                                   base::AndroidDocumentAccessMode::kReadWrite);
 }
 
 // static
