@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/strings/string_util.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
 namespace ui {
@@ -21,7 +22,8 @@ void WaylandDataOfferBase::EnsureTextMimeTypeIfNeeded() {
   if (std::ranges::any_of(mime_types_, [](const std::string& mime_type) {
         return mime_type == kMimeTypeLinuxString ||
                mime_type == kMimeTypeLinuxText ||
-               mime_type == kMimeTypeUtf8PlainText ||
+               base::EqualsCaseInsensitiveASCII(mime_type,
+                                                kMimeTypeUtf8PlainText) ||
                mime_type == kMimeTypeLinuxUtf8String;
       })) {
     mime_types_.push_back(kMimeTypePlainText);

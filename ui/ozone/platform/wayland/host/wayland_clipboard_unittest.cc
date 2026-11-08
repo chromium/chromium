@@ -401,6 +401,60 @@ TEST_P(WaylandClipboardTest, ReadFromClipboardPrioritizeUtf) {
   EXPECT_EQ("utf8_text", text);
 }
 
+// Regression test for crbug.com/483413443. Ensures UTF-8 mime types take
+// priority over legacy text types when reading text/plain, even when the
+// source offers the legacy types first.
+TEST_P(WaylandClipboardTest, ReadFromClipboardPrioritizeUtfOverOfferOrder) {
+  PostToServerAndWait([buffer = WhichBufferToUse()](
+                          wl::TestWaylandServerThread* server) {
+    auto* data_offer = GetSelectionDevice(server, buffer)->OnDataOffer();
+    data_offer->OnOffer(kMimeTypeLinuxString, ToClipboardData("latin1_text"));
+    data_offer->OnOffer(kMimeTypeLinuxText, ToClipboardData("text_text"));
+    data_offer->OnOffer(kMimeTypePlainText, ToClipboardData("ascii_text"));
+    data_offer->OnOffer(kMimeTypeLinuxUtf8String,
+                        ToClipboardData("utf8_string_text"));
+    data_offer->OnOffer(kMimeTypeUtf8PlainText, ToClipboardData("utf8_text"));
+    GetSelectionDevice(server, buffer)->OnSelection(data_offer);
+  });
+
+  std::string text;
+  base::MockCallback<PlatformClipboard::RequestDataClosure> callback;
+  EXPECT_CALL(callback, Run(_)).WillOnce([&text](PlatformClipboard::Data data) {
+    ASSERT_TRUE(data);
+    text = std::string(base::as_string_view(*data));
+  });
+
+  clipboard_->RequestClipboardData(WhichBufferToUse(), kMimeTypePlainText,
+                                   callback.Get());
+  WaitForClipboardTasks();
+  EXPECT_EQ("utf8_text", text);
+}
+
+// Ensures the charset parameter of text/plain;charset=utf-8 is matched
+// case-insensitively.
+TEST_P(WaylandClipboardTest, ReadFromClipboardUppercaseUtf8Charset) {
+  PostToServerAndWait([buffer = WhichBufferToUse()](
+                          wl::TestWaylandServerThread* server) {
+    auto* data_offer = GetSelectionDevice(server, buffer)->OnDataOffer();
+    data_offer->OnOffer(kMimeTypeLinuxString, ToClipboardData("latin1_text"));
+    data_offer->OnOffer("text/plain;charset=UTF-8",
+                        ToClipboardData("utf8_text"));
+    GetSelectionDevice(server, buffer)->OnSelection(data_offer);
+  });
+
+  std::string text;
+  base::MockCallback<PlatformClipboard::RequestDataClosure> callback;
+  EXPECT_CALL(callback, Run(_)).WillOnce([&text](PlatformClipboard::Data data) {
+    ASSERT_TRUE(data);
+    text = std::string(base::as_string_view(*data));
+  });
+
+  clipboard_->RequestClipboardData(WhichBufferToUse(), kMimeTypePlainText,
+                                   callback.Get());
+  WaitForClipboardTasks();
+  EXPECT_EQ("utf8_text", text);
+}
+
 TEST_P(WaylandClipboardTest, ReadFromClipboardWithoutOffer) {
   // When no data offer is advertised and client requests clipboard data from
   // the server, the response callback should be gracefully called with null

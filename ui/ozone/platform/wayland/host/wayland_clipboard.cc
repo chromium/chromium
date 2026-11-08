@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -36,7 +37,6 @@
 #include "ui/ozone/public/platform_clipboard.h"
 
 #if BUILDFLAG(IS_LINUX)
-#include "base/strings/string_util.h"
 #include "ui/base/clipboard/clipboard_util_linux.h"
 #include "ui/ozone/platform/wayland/host/wayland_exchange_data_provider.h"
 #endif
@@ -204,11 +204,19 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
     if (mime_type != ui::kMimeTypePlainText) {
       return mime_type;
     }
-    // Prioritize unicode for text data.
-    for (const auto& t : GetDevice()->GetAvailableMimeTypes()) {
-      if (t == ui::kMimeTypeUtf8PlainText || t == ui::kMimeTypeLinuxString ||
-          t == ui::kMimeTypeLinuxUtf8String || t == ui::kMimeTypeLinuxText) {
-        return t;
+    // Pick the offered text type with the highest priority, regardless of the
+    // order in which the source offered them. UTF-8 types come first, since
+    // the legacy STRING (ISO-8859-1) and TEXT types may lose characters. MIME
+    // type parameters are case-insensitive (RFC 2045), so e.g.
+    // "text/plain;charset=UTF-8" is matched too.
+    const auto available_types = GetDevice()->GetAvailableMimeTypes();
+    for (const char* preferred :
+         {ui::kMimeTypeUtf8PlainText, ui::kMimeTypeLinuxUtf8String,
+          ui::kMimeTypeLinuxText, ui::kMimeTypeLinuxString}) {
+      for (const auto& t : available_types) {
+        if (base::EqualsCaseInsensitiveASCII(t, preferred)) {
+          return t;
+        }
       }
     }
     return mime_type;
