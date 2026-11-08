@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views_context.h"
@@ -839,6 +840,8 @@ void DocumentPipHost::CreateChildWebContentsHelpers(
   extensions::TabHelper::CreateForWebContents(child_web_contents);
   zoom::ZoomController::CreateForWebContents(child_web_contents);
 #endif
+
+  RecentlyAudibleHelper::CreateForWebContents(child_web_contents);
 
   // Create PageSpecificContentSettings so media grants from the PiP document
   // are recorded on the child and mirrored onto the opener via the PiP

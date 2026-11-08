@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_contents_view.h"
@@ -315,6 +316,19 @@ TEST_F(DocumentPipHostTest, Accessors) {
   EXPECT_TRUE(host->GetProfile());
   EXPECT_EQ(400u, host->GetPipOptions().width);
   EXPECT_EQ(300u, host->GetPipOptions().height);
+}
+
+TEST_F(DocumentPipHostTest, AttachesRecentlyAudibleHelperToChildWebContents) {
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+
+  RecentlyAudibleHelper* audible_helper =
+      RecentlyAudibleHelper::FromWebContents(host->GetChildWebContents());
+  ASSERT_TRUE(audible_helper);
+  EXPECT_FALSE(audible_helper->WasRecentlyAudible());
+
+  audible_helper->SetRecentlyAudibleForTesting();
+  EXPECT_TRUE(audible_helper->WasRecentlyAudible());
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
