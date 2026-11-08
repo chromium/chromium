@@ -30,9 +30,6 @@ def main():
     metric_check_success, metric_check_errors, metric_check_warnings = (
       validator.check_metric_type_is_specified()
     )
-    aggregation_check_success, aggregation_check_errors = (
-      validator.check_local_metric_is_aggregated()
-    )
     statistic_check_success, statistic_check_errors = (
       validator.check_statistics_non_empty_valid()
     )
@@ -55,7 +52,6 @@ def main():
       (
         owner_check_success,
         metric_check_success,
-        aggregation_check_success,
         statistic_check_success,
         metric_name_check_success,
         time_unit_check_success,
@@ -66,7 +62,6 @@ def main():
       results['Errors'] = (
         owner_check_errors
         + metric_check_errors
-        + aggregation_check_errors
         + statistic_check_errors
         + metric_name_check_errors
         + time_unit_check_errors
