@@ -126,7 +126,6 @@ bool AreNewChromeLabsExperimentsAvailable(Profile* profile) {
 
   base::DictValue& new_badge_prefs = update.Get();
 
-  std::vector<std::string> lab_internal_names;
   base::span<const LabInfo> all_labs =
       ChromeLabsModel::GetInstance()->GetLabInfo();
 

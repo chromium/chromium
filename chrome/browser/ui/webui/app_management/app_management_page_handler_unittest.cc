@@ -546,8 +546,7 @@ TEST_P(AppManagementPageHandlerTestBase,
   web_app_info2->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
 
-  std::string app_id2 =
-      web_app::test::InstallWebApp(profile(), std::move(web_app_info2));
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info2));
 
   if (LinkCapturingEnabledByDefault()) {
     EXPECT_TRUE(IsAppPreferred(app_id1));
@@ -693,8 +692,7 @@ TEST_P(AppManagementPageHandlerTestBase,
   web_app_info2->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
 
-  std::string app_id2 =
-      web_app::test::InstallWebApp(profile(), std::move(web_app_info2));
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info2));
 
   // The result should be empty since app_id2 is a shortcut app.
   std::vector<std::string> overlapping_apps =
@@ -741,8 +739,7 @@ TEST_P(AppManagementPageHandlerTestBase, DifferentScopeNoOverlap) {
   web_app_info2->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
 
-  std::string app_id2 =
-      web_app::test::InstallWebApp(profile(), std::move(web_app_info2));
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info2));
 
   // The result should be empty since none of the apps have the same scope.
   std::vector<std::string> overlapping_apps =

@@ -409,8 +409,6 @@ TEST_F(SerialChooserControllerTest, BluetoothPortFilteredButNotAllowed) {
   controller->set_view(&view);
 
   {
-    const std::u16string expected_name = kBluetoothDevice1Name;
-
     base::RunLoop run_loop;
     EXPECT_CALL(view, OnOptionsInitialized).WillOnce([&] {
       // Expect that only the Bluetooth port is not shown as it is not allowed.

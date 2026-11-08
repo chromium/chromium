@@ -105,8 +105,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfReceivingUiHandlerTest,
       web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
   web_app_info->display_mode = blink::mojom::DisplayMode::kBrowser;
 
-  webapps::AppId app_id = web_app::test::InstallWebApp(browser()->GetProfile(),
-                                                       std::move(web_app_info));
+  web_app::test::InstallWebApp(browser()->GetProfile(),
+                               std::move(web_app_info));
 
   SendTabToSelfEntry entry("a", app_url, "PWA site", base::Time(), "device a",
                            "device b", PageContext(), NavigationHistory());

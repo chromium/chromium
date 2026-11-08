@@ -2114,7 +2114,6 @@ TEST_F(
   query_controller.set_fake_interaction_response(fake_interaction_response);
 
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
-  std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
       bitmap, bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
@@ -2700,7 +2699,6 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.set_fake_interaction_response(fake_interaction_response);
 
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
-  std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
       bitmap, bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
@@ -2772,7 +2770,6 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.set_fake_interaction_response(fake_interaction_response);
 
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
-  std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
       bitmap, bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
@@ -2842,7 +2839,6 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.set_fake_objects_response(fake_objects_response);
 
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
-  std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
       bitmap, bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
@@ -2955,7 +2951,6 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.set_fake_objects_response(fake_objects_response);
 
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
-  std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
       bitmap, bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
@@ -3603,7 +3598,6 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.set_fake_objects_response(fake_objects_response);
 
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
-  std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
       bitmap, bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
@@ -3665,7 +3659,6 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.set_fake_objects_response(fake_objects_response);
 
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
-  std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
       bitmap, bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),

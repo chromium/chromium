@@ -1810,14 +1810,10 @@ TEST_F(SiteSettingsHandlerTest, Cookies) {
 
 TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
   // Constants used only in this test.
-  std::string kAllowed =
-      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW);
   std::string kBlocked = content_settings::ContentSettingToString(
       ContentSetting::CONTENT_SETTING_BLOCK);
   std::string kEmbargo =
       SiteSettingSourceToString(site_settings::SiteSettingSource::kEmbargo);
-  std::string kPreference =
-      SiteSettingSourceToString(site_settings::SiteSettingSource::kPreference);
 
   base::ListValue get_recent_permissions_args;
   get_recent_permissions_args.Append(kCallbackId);

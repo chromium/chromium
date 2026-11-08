@@ -166,7 +166,6 @@ std::pair<std::string, bool> GetAvatarIconUrlAndAvatarRingStatus(
     const ui::ColorProvider* color_provider,
     float scale) {
   int avatar_icon_size = avatar_icon_size_dip * scale;
-  std::string icon_url;
   bool has_gradient_ring = false;
   if (GetAvatarAiDecorationForTier(entry->GetAiSubscriptionTier())
           .show_decoration &&

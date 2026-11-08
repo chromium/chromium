@@ -261,8 +261,6 @@ std::string DialogArgsForCertList(
         chrome_browser_server_certificate_database::CertificateMetadata>&
         cert_metadata,
     CertMetadataModificationsCallback modifications_callback) {
-  std::string data;
-
   // Certificate information. The keys in this dictionary's general key
   // correspond to the IDs in the Html page.
   base::DictValue cert_info;

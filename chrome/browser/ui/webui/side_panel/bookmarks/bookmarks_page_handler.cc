@@ -563,8 +563,6 @@ void BookmarksPageHandler::GetIncognitoAvailableCount(
   Profile* profile = browser_window_interface_->GetProfile();
   bookmarks::BookmarkModel* bookmark_model =
       bookmark_merged_surface_->bookmark_model();
-  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
-      bookmarks = {};
   int count = 0;
   for (const int64_t id : node_ids) {
     const bookmarks::BookmarkNode* bookmark =

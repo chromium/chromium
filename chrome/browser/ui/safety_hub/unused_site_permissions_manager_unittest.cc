@@ -215,10 +215,6 @@ TEST_F(UnusedSitePermissionsManagerTest,
                                         revoked_unused_site_type,
                                         base::Value(dict.Clone()));
 
-  ContentSettingsForOneType revoked_permissions_content_settings =
-      hcsm()->GetSettingsForOneType(
-          ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
-
   // Expecting no-op, stored integer values of content settings on disk.
   EXPECT_EQ(permissions_list_int, GetRevokedUnusedPermissions(hcsm())[0]
                                       .setting_value.GetDict()
@@ -229,8 +225,6 @@ TEST_F(UnusedSitePermissionsManagerTest,
   manager()->UpdateIntegerValuesToGroupName();
 
   // Validate content settings are stored in group name strings.
-  revoked_permissions_content_settings =
-      hcsm()->GetSettingsForOneType(revoked_unused_site_type);
   EXPECT_EQ(permissions_list_string, GetRevokedUnusedPermissions(hcsm())[0]
                                          .setting_value.GetDict()
                                          .Find(permissions::kRevokedKey)
@@ -249,9 +243,6 @@ TEST_F(UnusedSitePermissionsManagerTest,
                                         revoked_unused_site_type,
                                         base::Value(dict.Clone()));
 
-  ContentSettingsForOneType revoked_permissions_content_settings =
-      hcsm()->GetSettingsForOneType(revoked_unused_site_type);
-
   // Expecting no-op, stored integer values of content settings on disk.
   EXPECT_EQ(permissions_list_int, GetRevokedUnusedPermissions(hcsm())[0]
                                       .setting_value.GetDict()
@@ -268,8 +259,6 @@ TEST_F(UnusedSitePermissionsManagerTest,
               geolocation_type))
           .Append(UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
               mediastream_type));
-  revoked_permissions_content_settings =
-      hcsm()->GetSettingsForOneType(revoked_unused_site_type);
   EXPECT_EQ(permissions_list_string, GetRevokedUnusedPermissions(hcsm())[0]
                                          .setting_value.GetDict()
                                          .Find(permissions::kRevokedKey)
@@ -289,9 +278,6 @@ TEST_F(UnusedSitePermissionsManagerTest,
                                         revoked_unused_site_type,
                                         base::Value(dict.Clone()));
 
-  ContentSettingsForOneType revoked_permissions_content_settings =
-      hcsm()->GetSettingsForOneType(revoked_unused_site_type);
-
   // Expecting no-op, stored integer values of content settings on disk.
   EXPECT_EQ(permissions_list_int, GetRevokedUnusedPermissions(hcsm())[0]
                                       .setting_value.GetDict()
@@ -307,8 +293,6 @@ TEST_F(UnusedSitePermissionsManagerTest,
           .Append(UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
               geolocation_type))
           .Append(unknown_type);
-  revoked_permissions_content_settings =
-      hcsm()->GetSettingsForOneType(revoked_unused_site_type);
   EXPECT_EQ(permissions_list_string, GetRevokedUnusedPermissions(hcsm())[0]
                                          .setting_value.GetDict()
                                          .Find(permissions::kRevokedKey)

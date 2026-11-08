@@ -1288,8 +1288,7 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, UINavigatesAway) {
 IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, MultiAccountRecovery) {
   base::HistogramTester histogram_tester;
   set_magic_arch_response(kRecoverySuccess);
-  std::vector<AccountInfo> accounts = SetAccountsCookiesAndTokens(
-      {"another@example.com", "primary@example.com"});
+  SetAccountsCookiesAndTokens({"another@example.com", "primary@example.com"});
 
   identity_test_env()->SetPrimaryAccount("primary@example.com",
                                          signin::ConsentLevel::kSignin);
@@ -1318,8 +1317,7 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTestWithEmbeddedRecoveryUrl,
                        RecoverSecurityDomain_Embedded) {
   base::HistogramTester histogram_tester;
   set_magic_arch_response(kRecoverySuccess);
-  std::vector<AccountInfo> accounts = SetAccountsCookiesAndTokens(
-      {"another@example.com", "primary@example.com"});
+  SetAccountsCookiesAndTokens({"another@example.com", "primary@example.com"});
   identity_test_env()->SetPrimaryAccount("primary@example.com",
                                          signin::ConsentLevel::kSignin);
 
@@ -1341,8 +1339,7 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTestWithEmbeddedRecoveryUrl,
 // Make sure the correct authuser index is set when invoking MagicArch for PIN
 // reset.
 IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, MultiAccountPinReset) {
-  std::vector<AccountInfo> accounts = SetAccountsCookiesAndTokens(
-      {"another@example.com", "primary@example.com"});
+  SetAccountsCookiesAndTokens({"another@example.com", "primary@example.com"});
 
   identity_test_env()->SetPrimaryAccount("primary@example.com",
                                          signin::ConsentLevel::kSignin);

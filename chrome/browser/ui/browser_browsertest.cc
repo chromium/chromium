@@ -518,7 +518,6 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoTitleFileUrl) {
   GURL prefix_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTitle1File));
-  std::u16string tab_title;
   std::u16string test_title;
   for (const auto& c : cases) {
     SCOPED_TRACE(c.message);

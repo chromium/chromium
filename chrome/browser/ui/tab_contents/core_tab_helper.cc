@@ -312,8 +312,6 @@ void CoreTabHelper::SearchByImageImpl(
       /*encoded_size_bytes=*/0));
 
   size_t encoded_size_bytes;
-  std::string content_type;
-  std::vector<unsigned char> encoded_image_bytes;
   lens::mojom::ImageFormat image_format;
   image_format =
       EncodeImageIntoSearchArgs(image, encoded_size_bytes, search_args);

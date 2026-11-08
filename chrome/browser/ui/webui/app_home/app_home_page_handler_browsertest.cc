@@ -308,7 +308,7 @@ MATCHER_P(MatchAppId, expected_app_id, "") {
 }
 
 IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, GetApps) {
-  webapps::AppId installed_app_id = InstallTestWebApp();
+  InstallTestWebApp();
 
   std::unique_ptr<TestAppHomePageHandler> page_handler =
       GetAppHomePageHandler();
@@ -323,8 +323,7 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, GetApps) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, ForceInstalledApp) {
-  webapps::AppId installed_app_id =
-      InstallTestWebApp(WebappInstallSource::EXTERNAL_POLICY);
+  InstallTestWebApp(WebappInstallSource::EXTERNAL_POLICY);
 
   std::unique_ptr<TestAppHomePageHandler> page_handler =
       GetAppHomePageHandler();
@@ -341,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, OnWebAppInstalled) {
       GetAppHomePageHandler();
   EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)))
       .Times(testing::AtLeast(1));
-  webapps::AppId installed_app_id = InstallTestWebApp();
+  InstallTestWebApp();
   page_handler->Wait();
 }
 

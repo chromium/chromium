@@ -1343,7 +1343,6 @@ TEST_F(ManagePasswordsUIControllerTest,
 }
 
 TEST_F(ManagePasswordsUIControllerTest, BlocklistedElsewhere) {
-  std::u16string kTestUsername = u"test_username";
   std::vector<PasswordForm> forms;
   forms.push_back(test_local_form());
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
@@ -1559,7 +1558,6 @@ TEST_F(ManagePasswordsUIControllerTest, AutoSigninFirstRun) {
 TEST_F(ManagePasswordsUIControllerTest, AutoSigninFirstRunAfterAutofill) {
   // Setup the managed state first.
   const PasswordForm* test_form_ptr = &test_local_form();
-  const std::u16string kTestUsername = test_form_ptr->username_value;
   std::vector<PasswordForm> forms = {*test_form_ptr};
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnPasswordAutofilled(
@@ -1607,7 +1605,6 @@ TEST_F(ManagePasswordsUIControllerTest, AutofillDuringAutoSignin) {
                              url::Origin::Create(test_local_form().url));
   EXPECT_EQ(password_manager::ui::AUTO_SIGNIN_STATE, controller()->GetState());
   std::vector<PasswordForm> forms;
-  std::u16string kTestUsername = test_local_form().username_value;
   forms.push_back(test_local_form());
   controller()->OnPasswordAutofilled(
       forms, url::Origin::Create(forms.front().url), {});
@@ -1616,7 +1613,6 @@ TEST_F(ManagePasswordsUIControllerTest, AutofillDuringAutoSignin) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, ActiveOnPSLMatched) {
-  std::u16string kTestUsername = u"test_username";
   std::vector<PasswordForm> forms;
   PasswordForm psl_matched_test_form(test_local_form());
   psl_matched_test_form.match_type = affiliations::MatchType::kPSL;

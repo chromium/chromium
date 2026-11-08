@@ -509,7 +509,6 @@ void WallpaperSearchHandler::SetBackgroundToInspirationImage(
 
 void WallpaperSearchHandler::UpdateHistory() {
   const auto& history = wallpaper_search_background_manager_->GetHistory();
-  std::vector<WallpaperSearchResultPtr> thumbnails;
 
   auto barrier = base::BarrierCallback<std::pair<SkBitmap, base::Token>>(
       history.size(), base::BindOnce(&WallpaperSearchHandler::OnHistoryDecoded,

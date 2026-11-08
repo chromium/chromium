@@ -1813,7 +1813,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                                        _, _, _, _, _, _, _, _));
   WaitForPaint();
 
-  std::string text_query = "Apples";
   // State should start in off.
   auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
@@ -9704,7 +9703,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // 3. Add Empty Text Query (Should revert to Image-Only)
   // Issue an empty text search request from the search box.
-  const std::string empty_test_text = std::string();
   GetLensOverlaySidePanelCoordinator()->OnImageQueryWithEmptyText();
   content::TestNavigationObserver empty_observer(
       controller->GetSidePanelWebContentsForTesting());
@@ -9757,7 +9755,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(image_only_query->selected_region_bitmap_.drawsNothing());
 
   // 2. Send the textless image query again
-  const std::string empty_test_text = std::string();
   GetLensOverlaySidePanelCoordinator()->OnImageQueryWithEmptyText();
   content::TestNavigationObserver empty_observer(
       controller->GetSidePanelWebContentsForTesting());

@@ -294,7 +294,7 @@ TEST_F(SecurityKeysBioEnrollmentHandlerTest, TestForcePINChange) {
   ConfigureVirtualAuthenticator();
   handler_->GetDiscoveryFactory()->mutable_state()->force_pin_change = true;
 
-  const std::string callback_id = handler_->SimulateStart();
+  handler_->SimulateStart();
 
   EXPECT_EQ(web_ui_->call_data()[0]->arg1()->GetString(),
             "security-keys-bio-enroll-error");

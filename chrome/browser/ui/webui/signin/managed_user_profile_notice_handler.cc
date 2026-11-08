@@ -538,8 +538,6 @@ base::DictValue ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
   std::string title =
       l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROFILE_WELCOME_TITLE);
   std::string subtitle;
-  std::string email;
-  std::string account_name;
   ProfileAttributesEntry* entry = GetProfileEntry();
 
   switch (type_) {

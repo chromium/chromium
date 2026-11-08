@@ -176,7 +176,6 @@ TEST_F(LensOverlayUrlBuilderTest, AppendTranslateParamsToMap) {
 }
 
 TEST_F(LensOverlayUrlBuilderTest, AppendStickinessSignalForFormula) {
-  std::string query = "(x + 2) / 4 = 4";
   std::string formula = "\\frac{x + 2}{4} = 4";
   std::map<std::string, std::string> params;
 

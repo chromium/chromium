@@ -2306,16 +2306,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
       InstallPWAWithName(profile1, example_url1, app_name1);
   auto example_url2 = GURL("https://www.example_two.com");
   std::string app_name2 = "A Test Web App2";
-  webapps::AppId app_id2 =
-      InstallPWAWithName(profile1, example_url2, app_name2);
+  InstallPWAWithName(profile1, example_url2, app_name2);
   auto example_url3 = GURL("https://www.example_three.com");
   std::string app_name3 = "A Test Web App3";
   webapps::AppId app_id3 =
       InstallPWAWithName(&profile2, example_url3, app_name3);
   auto example_url4 = GURL("https://www.example_four.com");
   std::string app_name4 = "A Test Web App4";
-  webapps::AppId app_id4 =
-      InstallPWAWithName(&profile2, example_url4, app_name4);
+  InstallPWAWithName(&profile2, example_url4, app_name4);
 
   // Launch web apps for the two profiles.
   BrowserWindowInterface* app_browser1 =
@@ -2427,16 +2425,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
       InstallPWAWithName(profile1, example_url1, app_name1);
   auto example_url2 = GURL("https://www.example_two.com");
   std::string app_name2 = "A Test Web App2";
-  webapps::AppId app_id2 =
-      InstallPWAWithName(profile1, example_url2, app_name2);
+  InstallPWAWithName(profile1, example_url2, app_name2);
   auto example_url3 = GURL("https://www.example_three.com");
   std::string app_name3 = "A Test Web App3";
   webapps::AppId app_id3 =
       InstallPWAWithName(&profile2, example_url3, app_name3);
   auto example_url4 = GURL("https://www.example_four.com");
   std::string app_name4 = "A Test Web App4";
-  webapps::AppId app_id4 =
-      InstallPWAWithName(&profile2, example_url4, app_name4);
+  InstallPWAWithName(&profile2, example_url4, app_name4);
 
   // Launch web apps for the two profiles.
   BrowserWindowInterface* app_browser1 =

@@ -372,12 +372,6 @@ IN_PROC_BROWSER_TEST_P(PolicyTestHandlerTest,
       {"level": 1,"scope": 1,"source": 2, "namespace": "chrome",
        "name": "CloudReportingEnabled","value": true}
       ])";
-  const std::string revertAppliedPoliciesButtonDisabledJs =
-      R"(
-        document
-          .querySelector('#revert-applied-policies')
-          .disabled;
-      )";
 
   base::ListValue list_args;
 

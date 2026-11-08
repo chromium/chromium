@@ -144,7 +144,6 @@ void ExclusiveAccessPermissionManager::HandleRequestResult(
   }
   PendingRequests& requests = requests_it->second;
   CHECK_EQ(status.size(), 1u);
-  std::vector<base::OnceClosure> result_callbacks;
   switch (status[0].status) {
     case blink::mojom::PermissionStatus::GRANTED:
       requests.result_callbacks.push_back(std::move(granted_callback));

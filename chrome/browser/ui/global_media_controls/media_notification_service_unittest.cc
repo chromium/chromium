@@ -442,7 +442,7 @@ TEST_F(MediaNotificationServiceCastTest, ShowSupplementalNotifications) {
 TEST_F(MediaNotificationServiceCastTest, HideSupplementalNotifications) {
   NiceMock<global_media_controls::test::MockMediaDialogDelegate>
       dialog_delegate;
-  auto supplemental_notification_id = SimulateSupplementalNotification();
+  SimulateSupplementalNotification();
   // If there is a media session, hide the supplemental notification.
   auto media_session_id =
       SimulatePlayingControllableMediaForWebContents(web_contents());

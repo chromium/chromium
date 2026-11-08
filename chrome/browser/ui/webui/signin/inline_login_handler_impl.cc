@@ -195,7 +195,6 @@ InlineSigninHelper::~InlineSigninHelper() = default;
 void InlineSigninHelper::OnClientOAuthSuccess(const ClientOAuthResult& result) {
   CHECK_EQ(signin::GetSigninReasonForEmbeddedPromoURL(current_url_),
            signin_metrics::Reason::kFetchLstOnly);
-  std::string json_retval;
   base::DictValue args;
   args.Set(credential_provider::kKeyEmail, base::Value(email_));
   args.Set(credential_provider::kKeyPassword, base::Value(password_));
