@@ -42,6 +42,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/files/file_android.h"
+#endif
+
 using content::BrowserThread;
 using std::set;
 
@@ -97,7 +101,17 @@ void WriteToFile(const base::FilePath& path,
 void AppendToFile(const base::FilePath& path, const std::string& content) {
   CHECK(!path.empty(), base::NotFatalUntil::M161);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Save() has already created the document, so no create-if-absent is
+  // needed, and providers cannot honor OPEN_ALWAYS by name.
+  base::File file = path.IsContentUri()
+                        ? base::OpenAndroidDocument(
+                              path, base::AndroidDocumentAccessMode::kAppend)
+                        : base::File(path, base::File::FLAG_OPEN_ALWAYS |
+                                               base::File::FLAG_APPEND);
+#else
   base::File file(path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_APPEND);
+#endif
   if (!file.IsValid()) {
     LOG(ERROR) << "Failed to open file: " << path.value();
     return;
