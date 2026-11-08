@@ -10,10 +10,12 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils_internal.h"
@@ -717,7 +719,15 @@ void COMPONENT_EXPORT(COLOR)
     CompleteDefaultWebNativeRendererColorIdsDefinition(ui::ColorMixer& mixer,
                                                        bool dark_mode,
                                                        bool high_contrast) {
+  // Disabled controls paint `kLightenLayerAlpha` gray under a
+  // `kDisabledFillAlpha` fill so the page background shows through.
+  // SkAlpha values (0-255): 153/255 ~= 60%, 51/255 ~= 20%.
+  constexpr SkAlpha kDisabledFillAlpha = 153;
+  constexpr SkAlpha kLightenLayerAlpha = 51;
+
   if (dark_mode) {
+    const bool translucent_disabled = base::FeatureList::IsEnabled(
+        ::features::kDarkModeTranslucentDisabledControls);
     mixer[kColorWebNativeControlAccent] = {SkColorSetRGB(0x99, 0xC8, 0xFF)};
     mixer[kColorWebNativeControlAccentDisabled] = {
         SkColorSetRGB(0x75, 0x75, 0x75)};
@@ -752,7 +762,9 @@ void COMPONENT_EXPORT(COLOR)
     mixer[kColorWebNativeControlCheckboxBackground] = {
         SkColorSetRGB(0x3B, 0x3B, 0x3B)};
     mixer[kColorWebNativeControlCheckboxBackgroundDisabled] = {
-        SkColorSetRGB(0x3B, 0x3B, 0x3B)};
+        translucent_disabled
+            ? SkColorSetARGB(kDisabledFillAlpha, 0x3B, 0x3B, 0x3B)
+            : SkColorSetRGB(0x3B, 0x3B, 0x3B)};
     mixer[kColorWebNativeControlFill] = {SkColorSetRGB(0x3B, 0x3B, 0x3B)};
     mixer[kColorWebNativeControlFillDisabled] = {
         SkColorSetRGB(0x36, 0x36, 0x36)};
@@ -761,7 +773,9 @@ void COMPONENT_EXPORT(COLOR)
     mixer[kColorWebNativeControlFillPressed] = {
         SkColorSetRGB(0x3B, 0x3B, 0x3B)};
     mixer[kColorWebNativeControlLightenLayer] = {
-        SkColorSetRGB(0x3B, 0x3B, 0x3B)};
+        translucent_disabled
+            ? SkColorSetARGB(kLightenLayerAlpha, 0x3B, 0x3B, 0x3B)
+            : SkColorSetRGB(0x3B, 0x3B, 0x3B)};
     mixer[kColorWebNativeControlProgressValue] = {
         SkColorSetRGB(0x63, 0xAD, 0xE5)};
     mixer[kColorWebNativeControlScrollbarArrowBackgroundDisabled] = {
@@ -835,7 +849,7 @@ void COMPONENT_EXPORT(COLOR)
         SkColorSetRGB(0xF5, 0xF5, 0xF5)};
     mixer[kColorWebNativeControlCheckboxBackground] = {SK_ColorWHITE};
     mixer[kColorWebNativeControlCheckboxBackgroundDisabled] = {
-        SkColorSetA(SK_ColorWHITE, 0x99)};
+        SkColorSetA(SK_ColorWHITE, kDisabledFillAlpha)};
     mixer[kColorWebNativeControlFill] = {SkColorSetRGB(0xEF, 0xEF, 0xEF)};
     mixer[kColorWebNativeControlFillDisabled] = {
         SkColorSetARGB(0x4D, 0xEF, 0xEF, 0xEF)};
@@ -844,7 +858,7 @@ void COMPONENT_EXPORT(COLOR)
     mixer[kColorWebNativeControlFillPressed] = {
         SkColorSetRGB(0xF5, 0xF5, 0xF5)};
     mixer[kColorWebNativeControlLightenLayer] = {
-        SkColorSetARGB(0x33, 0xA9, 0xA9, 0xA9)};
+        SkColorSetARGB(kLightenLayerAlpha, 0xA9, 0xA9, 0xA9)};
     mixer[kColorWebNativeControlProgressValue] = {
         SkColorSetRGB(0x00, 0x75, 0xFF)};
     mixer[kColorWebNativeControlScrollbarArrowBackgroundDisabled] = {

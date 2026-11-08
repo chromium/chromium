@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="light dark">
+<body>
+
+<!-- Disabled controls over non-default colored backgrounds exercise the
+     translucent fill behind kDarkModeTranslucentDisabledControls. -->
+<div style="background-color: blue; padding: 8px;">
+  <ul>
+    <li>Text: <input type="text" value="example text" disabled></li>
+    <li>Number: <input type="number" value="12345" disabled></li>
+    <li>Search: <input type="search" value="example text" disabled></li>
+    <li>TextArea: <textarea disabled>example text</textarea></li>
+    <li>Checkbox: <input type="checkbox" disabled></li>
+    <li>Radio: <input type="radio" disabled></li>
+  </ul>
+</div>
+
+<div style="background-color: #c0ffee; padding: 8px;">
+  <ul>
+    <li>Text: <input type="text" value="example text" disabled></li>
+    <li>Checkbox: <input type="checkbox" disabled></li>
+  </ul>
+</div>
+
+</body>

@@ -4,6 +4,7 @@
 
 #include "ui/native_theme/native_theme_mobile.h"
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
@@ -11,6 +12,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -73,8 +75,13 @@ SkColor NativeThemeMobile::GetControlColor(
     case kCheckboxBackground:
       return dark_mode ? SkColorSetRGB(0x3B, 0x3B, 0x3B) : SK_ColorWHITE;
     case kDisabledCheckboxBackground:
-      return dark_mode ? SkColorSetRGB(0x3B, 0x3B, 0x3B)
-                       : SkColorSetA(SK_ColorWHITE, 0x99);
+      if (!dark_mode) {
+        return SkColorSetA(SK_ColorWHITE, 0x99);
+      }
+      return base::FeatureList::IsEnabled(
+                 ::features::kDarkModeTranslucentDisabledControls)
+                 ? SkColorSetARGB(0x99, 0x3B, 0x3B, 0x3B)
+                 : SkColorSetRGB(0x3B, 0x3B, 0x3B);
     case kFill:
       return dark_mode ? SkColorSetRGB(0x3B, 0x3B, 0x3B)
                        : SkColorSetRGB(0xEF, 0xEF, 0xEF);
@@ -88,8 +95,13 @@ SkColor NativeThemeMobile::GetControlColor(
       return dark_mode ? SkColorSetRGB(0x3B, 0x3B, 0x3B)
                        : SkColorSetRGB(0xF5, 0xF5, 0xF5);
     case kLightenLayer:
-      return dark_mode ? SkColorSetRGB(0x3B, 0x3B, 0x3B)
-                       : SkColorSetARGB(0x33, 0xA9, 0xA9, 0xA9);
+      if (!dark_mode) {
+        return SkColorSetARGB(0x33, 0xA9, 0xA9, 0xA9);
+      }
+      return base::FeatureList::IsEnabled(
+                 ::features::kDarkModeTranslucentDisabledControls)
+                 ? SkColorSetARGB(0x33, 0x3B, 0x3B, 0x3B)
+                 : SkColorSetRGB(0x3B, 0x3B, 0x3B);
     case kProgressValue:
       return dark_mode ? SkColorSetRGB(0x63, 0xAD, 0xE5)
                        : SkColorSetRGB(0x00, 0x75, 0xFF);
