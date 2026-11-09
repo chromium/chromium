@@ -1160,7 +1160,6 @@ TEST_F(BlobReaderTest, RangeError) {
 
 TEST_F(BlobReaderTest, HandleBeforeAsyncCancel) {
   const std::string kUuid("uuid1");
-  const std::string kData("Hello!!!");
   const size_t kDataSize = 8ul;
   std::vector<FileCreationInfo> files;
 

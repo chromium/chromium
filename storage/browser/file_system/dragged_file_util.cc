@@ -86,7 +86,6 @@ base::File::Error DraggedFileUtil::GetFileInfo(
     base::File::Info* file_info,
     base::FilePath* platform_path) {
   DCHECK(file_info);
-  std::string filesystem_id;
   DCHECK(url.is_valid());
   if (url.path().empty()) {
     // The root directory case.

@@ -315,7 +315,6 @@ TEST_F(SandboxFileSystemBackendTest, GetRootPathCreateAndExamine) {
 
 TEST_F(SandboxFileSystemBackendTest,
        GetRootPathCreateAndExamineWithNewBackend) {
-  std::vector<base::FilePath> returned_root_path(std::size(kRootPathTestCases));
   SetUpNewBackend(CreateAllowFileAccessOptions());
 
   base::FilePath root_path1;

@@ -755,8 +755,6 @@ void PopulateDataInBuilder(
 }  // namespace
 
 TEST_F(BlobStorageContextTest, BuildBlobCombinations) {
-  const std::string kId("id");
-
   context_ = std::make_unique<BlobStorageContext>(
       temp_dir_.GetPath(), temp_dir_.GetPath(), file_runner_);
 

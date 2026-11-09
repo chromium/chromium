@@ -68,8 +68,6 @@ class BlobUrlRegistryTestP
 
 TEST_P(BlobUrlRegistryTestP, URLRegistration) {
   const std::string kBlobId1 = "Blob1";
-  const std::string kType = "type1";
-  const std::string kDisposition = "disp1";
   const std::string kBlobId2 = "Blob2";
   const GURL kURL1 = GURL("blob://Blob1");
   const GURL kURL2 = GURL("blob://Blob2");
