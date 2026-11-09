@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #include "components/safe_browsing/core/browser/db/v5_search_hashes_util.h"
@@ -114,7 +115,8 @@ HashRealTimeService::HashRealTimeService(
         get_network_context,
     V5SearchHashesCache* cache,
     OhttpKeyService* ohttp_key_service,
-    WebUIDelegate* webui_delegate)
+    WebUIDelegate* webui_delegate,
+    const std::string& profile_mode_suffix)
     : get_network_context_(std::move(get_network_context)),
       cache_(cache),
       ohttp_key_service_(ohttp_key_service),
@@ -124,7 +126,10 @@ HashRealTimeService::HashRealTimeService(
           kMinBackOffResetDurationInSeconds,
           /*max_backoff_reset_duration_in_seconds=*/
           kMaxBackOffResetDurationInSeconds)),
-      webui_delegate_(webui_delegate) {}
+      webui_delegate_(webui_delegate),
+      profile_mode_suffix_(profile_mode_suffix) {
+  CHECK(!profile_mode_suffix_.empty());
+}
 
 HashRealTimeService::~HashRealTimeService() = default;
 
@@ -190,7 +195,8 @@ void HashRealTimeService::StartLookup(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StartLookupInternal(
       url, std::make_unique<LookupCompleter>(std::move(response_callback),
-                                             std::move(callback_task_runner)));
+                                             std::move(callback_task_runner),
+                                             profile_mode_suffix_));
 }
 
 void HashRealTimeService::StartLookupInternal(
@@ -552,10 +558,11 @@ HashRealTimeService::GetTrafficAnnotationTagForOhttp() const {
 
 HashRealTimeService::LookupCompleter::LookupCompleter(
     HPRTLookupResponseCallback response_callback,
-    scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
+    const std::string& profile_mode_suffix)
     : response_callback_(std::move(response_callback)),
-      response_callback_task_runner_(std::move(response_callback_task_runner)) {
-}
+      response_callback_task_runner_(std::move(response_callback_task_runner)),
+      profile_mode_suffix_(profile_mode_suffix) {}
 
 HashRealTimeService::LookupCompleter::~LookupCompleter() = default;
 
@@ -567,6 +574,10 @@ void HashRealTimeService::LookupCompleter::CompleteLookup(
   is_call_complete_ = true;
   base::UmaHistogramEnumeration("SafeBrowsing.HPRT.OperationOutcome",
                                 operation_outcome);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"SafeBrowsing.HPRT.OperationOutcome.", profile_mode_suffix_}),
+      operation_outcome);
   response_callback_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(response_callback_),
                                 is_lookup_successful, sb_threat_type));

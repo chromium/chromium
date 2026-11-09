@@ -294,7 +294,8 @@ class SafeBrowsingServiceTest : public PlatformTest,
             base::BindRepeating(
                 []() -> network::mojom::NetworkContext* { return nullptr; }),
             v5_cache_.get(), ohttp_key_service_.get(),
-            /*webui_delegate=*/nullptr);
+            /*webui_delegate=*/nullptr,
+            /*profile_mode_suffix=*/"Regular");
     safe_browsing_client_->set_hash_real_time_service(
         hash_real_time_service_.get());
 

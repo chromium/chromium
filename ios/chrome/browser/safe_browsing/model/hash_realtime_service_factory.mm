@@ -43,5 +43,6 @@ HashRealTimeServiceFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
       base::BindRepeating(&GetNetworkContext),
       V5SearchHashesCacheFactory::GetForProfile(profile),
       OhttpKeyServiceFactory::GetForProfile(profile),
-      /*webui_delegate=*/safe_browsing::WebUIIOSInfoSingleton::GetInstance());
+      /*webui_delegate=*/safe_browsing::WebUIIOSInfoSingleton::GetInstance(),
+      profile.IsOffTheRecord() ? "Incognito" : "Regular");
 }

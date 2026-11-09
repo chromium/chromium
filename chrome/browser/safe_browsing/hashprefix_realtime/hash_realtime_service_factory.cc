@@ -57,7 +57,10 @@ HashRealTimeServiceFactory::BuildServiceInstanceForBrowserContext(
                           profile),
       V5SearchHashesCacheFactory::GetForProfile(profile),
       OhttpKeyServiceFactory::GetForProfile(profile),
-      WebUIContentInfoSingleton::GetInstance());
+      WebUIContentInfoSingleton::GetInstance(),
+      profile->IsGuestSession()
+          ? "Guest"
+          : (profile->IsOffTheRecord() ? "Incognito" : "Regular"));
 }
 
 // static

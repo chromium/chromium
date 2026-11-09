@@ -423,7 +423,8 @@ class MockHashRealTimeService : public HashRealTimeService {
             /*get_network_context=*/base::NullCallback(),
             /*cache_manager=*/nullptr,
             /*ohttp_key_service=*/nullptr,
-            /*webui_delegate=*/nullptr) {}
+            /*webui_delegate=*/nullptr,
+            /*profile_mode_suffix=*/"Regular") {}
   base::WeakPtr<MockHashRealTimeService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }

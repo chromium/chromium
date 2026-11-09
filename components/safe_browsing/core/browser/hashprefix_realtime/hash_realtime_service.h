@@ -72,11 +72,15 @@ class HashRealTimeService : public KeyedService {
         int token,
         V5::SearchHashesResponse* response) = 0;
   };
+  // Constructs a HashRealTimeService. |profile_mode_suffix| is a suffix
+  // indicating the profile mode (e.g., "Regular", "Incognito", or "Guest")
+  // for some logs, and must not be empty.
   HashRealTimeService(base::RepeatingCallback<network::mojom::NetworkContext*()>
                           get_network_context,
                       V5SearchHashesCache* cache,
                       OhttpKeyService* ohttp_key_service,
-                      WebUIDelegate* webui_delegate);
+                      WebUIDelegate* webui_delegate,
+                      const std::string& profile_mode_suffix);
 
   HashRealTimeService(const HashRealTimeService&) = delete;
   HashRealTimeService& operator=(const HashRealTimeService&) = delete;
@@ -175,7 +179,8 @@ class HashRealTimeService : public KeyedService {
    public:
     LookupCompleter(
         HPRTLookupResponseCallback response_callback,
-        scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner);
+        scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
+        const std::string& profile_mode_suffix);
     ~LookupCompleter();
 
     // Sends |is_lookup_successful| and |sb_threat_type| back to the lookup
@@ -191,6 +196,9 @@ class HashRealTimeService : public KeyedService {
     HPRTLookupResponseCallback response_callback_;
     // Task runner to be used for |response_callback_|.
     scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner_;
+    // Suffix indicating the profile mode (e.g., "Regular", "Incognito", or
+    // "Guest") for some logs. Must not be empty.
+    const std::string profile_mode_suffix_;
   };
 
   // Helper function for |StartLookup|. Starts the lookup for |url| and calls
@@ -338,6 +346,10 @@ class HashRealTimeService : public KeyedService {
   // chrome://safe-browsing and in unit tests. If non-null, guaranteed to
   // outlive this object by contract.
   raw_ptr<WebUIDelegate> webui_delegate_;
+
+  // Suffix indicating the profile mode (e.g., "Regular", "Incognito", or
+  // "Guest") for some logs. Must not be empty.
+  const std::string profile_mode_suffix_;
 
   base::WeakPtrFactory<HashRealTimeService> weak_factory_{this};
 };

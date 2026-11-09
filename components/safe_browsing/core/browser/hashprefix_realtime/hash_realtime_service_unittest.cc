@@ -224,7 +224,7 @@ class HashRealTimeServiceTest : public PlatformTest {
     }
     service_ = std::make_unique<HashRealTimeService>(
         network_context_callback, cache_ptr, ohttp_key_service_.get(),
-        webui_delegate_.get());
+        webui_delegate_.get(), /*profile_mode_suffix=*/"Regular");
   }
   void SetUp() override {
     PlatformTest::SetUp();
@@ -369,6 +369,10 @@ class HashRealTimeServiceTest : public PlatformTest {
       HashRealTimeService::OperationOutcome expected_operation_outcome) {
     histogram_tester_->ExpectUniqueSample(
         /*name=*/"SafeBrowsing.HPRT.OperationOutcome",
+        /*sample=*/expected_operation_outcome,
+        /*expected_bucket_count=*/1);
+    histogram_tester_->ExpectUniqueSample(
+        /*name=*/"SafeBrowsing.HPRT.OperationOutcome.Regular",
         /*sample=*/expected_operation_outcome,
         /*expected_bucket_count=*/1);
   }

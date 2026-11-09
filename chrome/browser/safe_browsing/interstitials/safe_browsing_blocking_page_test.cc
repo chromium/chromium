@@ -4133,6 +4133,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageHashRealTimeCheckTest,
   histogram_tester.ExpectTotalCount(
       "interstitial.phishing.decision.from_hash_prefix_real_time_check_v5",
       /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("SafeBrowsing.HPRT.OperationOutcome",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.HPRT.OperationOutcome.Regular",
+      /*sample=*/8,  // OperationOutcome::kResultInLocalCache
+      /*expected_bucket_count=*/1);
 }
 IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageHashRealTimeCheckTest,
                        DontShowWarning_PageIsSafe) {
@@ -4222,10 +4228,12 @@ class SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  void RunOffTheRecordLookupTest(BrowserWindowInterface* target_browser,
-                                 bool is_unsafe,
-                                 bool expect_lookup_eligible,
-                                 bool expect_warning_shown) {
+  void RunOffTheRecordLookupTest(
+      BrowserWindowInterface* target_browser,
+      bool is_unsafe,
+      bool expect_lookup_eligible,
+      bool expect_warning_shown,
+      const std::string& expected_profile_mode_suffix) {
     base::HistogramTester histogram_tester;
     SetUpAndNavigateToUrlInBrowser(target_browser, is_unsafe);
     EXPECT_EQ(expect_warning_shown,
@@ -4246,6 +4254,13 @@ class SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest
     histogram_tester.ExpectTotalCount(
         "interstitial.phishing.decision.from_hash_prefix_real_time_check_v5",
         /*expected_count=*/expect_warning_shown ? 1 : 0);
+    histogram_tester.ExpectTotalCount(
+        "SafeBrowsing.HPRT.OperationOutcome",
+        /*expected_count=*/expect_lookup_eligible ? 1 : 0);
+    histogram_tester.ExpectUniqueSample(
+        "SafeBrowsing.HPRT.OperationOutcome." + expected_profile_mode_suffix,
+        /*sample=*/8,  // OperationOutcome::kResultInLocalCache
+        /*expected_bucket_count=*/expect_lookup_eligible ? 1 : 0);
   }
 };
 
@@ -4260,7 +4275,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest,
   ASSERT_TRUE(incognito_browser);
   RunOffTheRecordLookupTest(incognito_browser, /*is_unsafe=*/true,
                             /*expect_lookup_eligible=*/GetParam(),
-                            /*expect_warning_shown=*/GetParam());
+                            /*expect_warning_shown=*/GetParam(),
+                            /*expected_profile_mode_suffix=*/"Incognito");
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest,
@@ -4270,7 +4286,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest,
   ASSERT_TRUE(incognito_browser);
   RunOffTheRecordLookupTest(incognito_browser, /*is_unsafe=*/false,
                             /*expect_lookup_eligible=*/GetParam(),
-                            /*expect_warning_shown=*/false);
+                            /*expect_warning_shown=*/false,
+                            /*expected_profile_mode_suffix=*/"Incognito");
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest,
@@ -4282,7 +4299,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest,
   ASSERT_TRUE(incognito_browser);
   RunOffTheRecordLookupTest(incognito_browser, /*is_unsafe=*/true,
                             /*expect_lookup_eligible=*/GetParam(),
-                            /*expect_warning_shown=*/GetParam());
+                            /*expect_warning_shown=*/GetParam(),
+                            /*expected_profile_mode_suffix=*/"Incognito");
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest,
@@ -4295,7 +4313,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest,
   ASSERT_TRUE(incognito_browser);
   RunOffTheRecordLookupTest(incognito_browser, /*is_unsafe=*/true,
                             /*expect_lookup_eligible=*/GetParam(),
-                            /*expect_warning_shown=*/GetParam());
+                            /*expect_warning_shown=*/GetParam(),
+                            /*expected_profile_mode_suffix=*/"Incognito");
 }
 
 class SafeBrowsingBlockingPageHashRealTimeCheckGuestTest
@@ -4331,7 +4350,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckGuestTest,
   ASSERT_TRUE(guest_browser->GetProfile()->IsOffTheRecord());
   RunOffTheRecordLookupTest(guest_browser, /*is_unsafe=*/true,
                             /*expect_lookup_eligible=*/GetParam(),
-                            /*expect_warning_shown=*/GetParam());
+                            /*expect_warning_shown=*/GetParam(),
+                            /*expected_profile_mode_suffix=*/"Guest");
 }
 
 class SafeBrowsingPrerenderBrowserTest
