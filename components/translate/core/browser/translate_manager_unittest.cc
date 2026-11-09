@@ -1102,6 +1102,47 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_ImagePage) {
 
   EXPECT_FALSE(translate_manager_->CanManuallyTranslate());
   EXPECT_FALSE(translate_manager_->CanManuallyTranslate(true));
+  EXPECT_FALSE(translate_manager_->CanPartiallyTranslate());
+}
+
+TEST_F(TranslateManagerTest, CanPartiallyTranslate_PdfPage) {
+  scoped_feature_list_.InitAndDisableFeature(translate::kEnableTranslatePdf);
+
+  PrepareTranslateManager();
+  manager_->set_application_locale("en");
+
+  network_notifier_.SimulateOnline();
+  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL()))
+      .WillByDefault(Return(true));
+  language::AcceptLanguagesService accept_languages(&prefs_,
+                                                    accept_languages_prefs);
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
+      .WillByDefault(Return(&accept_languages));
+
+  translate_manager_->GetLanguageState()->LanguageDetermined("de", true);
+  driver_.SetPageMimeType(kPdfMimeType);
+
+  // When kEnableTranslatePdf is disabled, full-page manual translation is
+  // disabled on PDFs (regardless of PdfTranslatabilityStatus), while partial
+  // translation remains enabled.
+  for (auto status : {LanguageState::PdfTranslatabilityStatus::kUntranslatable,
+                      LanguageState::PdfTranslatabilityStatus::kTranslatable,
+                      LanguageState::PdfTranslatabilityStatus::kNotChecked}) {
+    translate_manager_->GetLanguageState()->set_pdf_translatability_status(
+        status);
+    EXPECT_FALSE(translate_manager_->CanManuallyTranslate());
+    EXPECT_FALSE(translate_manager_->CanManuallyTranslate(true));
+    EXPECT_TRUE(translate_manager_->CanPartiallyTranslate());
+  }
+
+  // Initiating page-level translation on a PDF when kEnableTranslatePdf is
+  // disabled must not show the translate UI or enable the omnibox icon
+  // (crbug.com/565171599).
+  EXPECT_CALL(mock_translate_client_, ShowTranslateUI(_, _, _, _, _)).Times(0);
+  ExpectHighestPriorityTriggerDecision(
+      TriggerDecision::kDisabledMIMETypeNotSupported);
+  translate_manager_->InitiateTranslation("de");
+  EXPECT_FALSE(translate_manager_->GetLanguageState()->translate_enabled());
 }
 
 TEST_F(TranslateManagerTest, CanManuallyTranslate_PdfTranslatabilityStatus) {

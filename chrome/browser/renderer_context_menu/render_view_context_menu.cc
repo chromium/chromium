@@ -1518,19 +1518,8 @@ void RenderViewContextMenu::InitMenu() {
 #if !BUILDFLAG(IS_CHROMEOS)
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_PARTIAL_TRANSLATE) &&
-      !features::IsMenuSimplificationEnabled() &&
-      search::DefaultSearchProviderIsGoogle(GetProfile()) &&
-      CanTranslate(/*menu_logging=*/false)) {
-    // If the target language isn't supported in partial translation, fall
-    // back to showing the full page translate menu item. Partial translate
-    // uses a different backend that supports a subset of translation
-    // languages, so the current full page target language may not be
-    // supported.
-    if (CanPartiallyTranslateTargetLanguage()) {
-      AppendPartialTranslateItem();
-    } else {
-      AppendTranslateItem();
-    }
+      !features::IsMenuSimplificationEnabled()) {
+    AppendTranslateOrPartialTranslateItem();
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -2959,11 +2948,15 @@ void RenderViewContextMenu::AppendTranslateItem() {
 
 void RenderViewContextMenu::AppendTranslateOrPartialTranslateItem() {
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (search::DefaultSearchProviderIsGoogle(GetProfile()) &&
-      CanTranslate(/*menu_logging=*/false)) {
-    if (CanPartiallyTranslateTargetLanguage()) {
+  if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
+    // If the target language isn't supported in partial translation, fall
+    // back to showing the full page translate menu item. Partial translate
+    // uses a different backend that supports a subset of translation
+    // languages, so the current full page target language may not be
+    // supported.
+    if (CanPartiallyTranslate()) {
       AppendPartialTranslateItem();
-    } else {
+    } else if (CanTranslate(/*menu_logging=*/false)) {
       AppendTranslateItem();
     }
   }
@@ -6223,12 +6216,12 @@ bool RenderViewContextMenu::CanTranslate(bool menu_logging) {
              menu_logging);
 }
 
-bool RenderViewContextMenu::CanPartiallyTranslateTargetLanguage() {
+bool RenderViewContextMenu::CanPartiallyTranslate() {
   ChromeTranslateClient* chrome_translate_client =
       ChromeTranslateClient::FromWebContents(embedder_web_contents_);
   return chrome_translate_client &&
          chrome_translate_client->GetTranslateManager()
-             ->CanPartiallyTranslateTargetLanguage();
+             ->CanPartiallyTranslate();
 }
 
 void RenderViewContextMenu::MaybePrepareForLensQuery() {
