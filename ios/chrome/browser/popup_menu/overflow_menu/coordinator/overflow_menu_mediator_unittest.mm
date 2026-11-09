@@ -1053,8 +1053,10 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityButtonHiddenInIncognitoMode) {
       AuthenticationServiceFactory::GetForProfile(personal_profile_);
   mediator_.model = model_;
 
-  // Check the identity item is not present.
+  // Check the identity item and action are not present.
   EXPECT_FALSE(HasItem(kToolsMenuIdentityId, /*enabled=*/YES));
+  EXPECT_EQ(
+      nil, [mediator_ actionForActionType:overflow_menu::ActionType::Identity]);
 }
 
 // Tests that the identity button is hidden when sign-in is disabled, even when

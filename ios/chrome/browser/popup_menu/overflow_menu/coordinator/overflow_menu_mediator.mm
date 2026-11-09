@@ -891,8 +891,10 @@ void GetPresetNTPBackgroundPreview(
 
   [self logTranslateAvailability];
 
-  self.identityAction = [self newIdentityAction];
-  [self updateIdentityAction];
+  if (!self.incognito) {
+    self.identityAction = [self newIdentityAction];
+    [self updateIdentityAction];
+  }
 
   self.reloadAction =
       [self createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_RELOAD
@@ -1093,10 +1095,12 @@ void GetPresetNTPBackgroundPreview(
                                                : @[]
                  footer:nil];
 
-  self.identityActionsGroup =
-      [[OverflowMenuActionGroup alloc] initWithGroupName:kIdentityGroupName
-                                                 actions:@[]
-                                                  footer:nil];
+  if (!self.incognito) {
+    self.identityActionsGroup =
+        [[OverflowMenuActionGroup alloc] initWithGroupName:kIdentityGroupName
+                                                   actions:@[]
+                                                    footer:nil];
+  }
 
   if (IsOverflowMenuHomeCustomizationEntrypointEnabled()) {
     self.customizationActionsGroup = [[OverflowMenuActionGroup alloc]
