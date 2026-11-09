@@ -80,7 +80,7 @@ class FontSettings {
       builder.Append("=");
       builder.AppendNumber(at(i).Value());
     }
-    return builder.ToString();
+    return builder.ReleaseString();
   }
 
   bool FindPair(uint32_t tag, T* found_pair) const {

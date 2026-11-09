@@ -57,7 +57,7 @@ String FontFamily::ToString() const {
     builder.Append(current->FamilyName());
     current = current->Next();
   }
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 /*static*/ FontFamily::Type FontFamily::InferredTypeFor(

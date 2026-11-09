@@ -88,7 +88,7 @@ String DateTimeStringBuilder::ZeroPadString(const String& string,
   for (wtf_size_t i = string.length(); i < width; ++i)
     zero_padded_string_builder.Append('0');
   zero_padded_string_builder.Append(string);
-  return zero_padded_string_builder.ToString();
+  return zero_padded_string_builder.ReleaseString();
 }
 
 void DateTimeStringBuilder::AppendNumber(int number, size_t width) {
@@ -183,7 +183,7 @@ void DateTimeStringBuilder::VisitLiteral(const String& text) {
 }
 
 String DateTimeStringBuilder::ToString() {
-  return builder_.ToString();
+  return builder_.ReleaseString();
 }
 
 Locale& Locale::DefaultLocale() {
@@ -329,7 +329,7 @@ String Locale::ConvertToLocalizedNumber(const String& input) {
 
   builder.Append(is_negative ? negative_suffix_ : positive_suffix_);
 
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 bool Locale::DetectSignAndGetDigitRange(const String& input,
@@ -443,7 +443,7 @@ String Locale::StripInvalidNumberCharacters(const String& input,
       builder.Append(ch);
     }
   }
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 String Locale::LocalizedDecimalSeparator() {

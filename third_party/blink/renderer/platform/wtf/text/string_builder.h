@@ -279,6 +279,10 @@ class WTF_EXPORT StringBuilder {
   // to the caller, preventing refcount trashing. Prefer it over ToString()
   // if the StringBuilder is going to be destroyed or cleared afterwards.
   String ReleaseString();
+  // ToString() returns a String copy of the contents of the StringBuilder. This
+  // is slightly slower than ReleaseString() because it creates a new String
+  // instance instead of returning the existing one. Use this method only if
+  // `this` is going to be used after the call.
   String ToString();
   AtomicString ToAtomicString();
   String Substring(wtf_size_t start, wtf_size_t length) const;

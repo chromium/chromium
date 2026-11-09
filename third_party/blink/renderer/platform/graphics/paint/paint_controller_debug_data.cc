@@ -111,7 +111,7 @@ String PaintController::DebugDataAsString(
   } else {
     sb.Append("null");
   }
-  return sb.ToString();
+  return sb.ReleaseString();
 }
 
 void PaintController::ShowDebugDataInternal(

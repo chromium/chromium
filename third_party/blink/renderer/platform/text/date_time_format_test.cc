@@ -59,7 +59,7 @@ class DateTimeFormatTest : public testing::Test {
           builder.Append('"');
           builder.Append(string);
           builder.Append('"');
-          return builder.ToString();
+          return builder.ReleaseString();
         }
         default:
           return Format("Token({}, {})", static_cast<int>(field_type), count);

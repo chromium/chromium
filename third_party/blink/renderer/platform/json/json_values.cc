@@ -135,14 +135,14 @@ String JSONValue::ToJSONString() const {
   StringBuilder result;
   result.ReserveCapacity(512);
   WriteJSON(&result);
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String JSONValue::ToPrettyJSONString() const {
   StringBuilder result;
   result.ReserveCapacity(512);
   PrettyWriteJSON(&result);
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 void JSONValue::WriteJSON(StringBuilder* output) const {

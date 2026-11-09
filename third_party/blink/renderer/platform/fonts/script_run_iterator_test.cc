@@ -246,7 +246,7 @@ class MockScriptData : public ScriptData {
         result.Append(static_cast<UChar>(kMockCharMin + code));
       }
     }
-    return result.ToString();
+    return result.ReleaseString();
   }
 
   // We determine properties based on the offset from kMockCharMin:

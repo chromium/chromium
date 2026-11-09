@@ -370,7 +370,7 @@ String ConvertWindowsDateTimeFormat(const String& format) {
     literal_buffer.Clear();
   }
   CommitLiteralToken(literal_buffer, converted);
-  return converted.ToString();
+  return converted.ReleaseString();
 }
 
 }  // namespace

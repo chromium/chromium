@@ -119,7 +119,7 @@ String PropertyTreePrinter::NodesAsTreeString() {
   }
   StringBuilder string_builder;
   BuildTreeString(string_builder, RootNode(), 0);
-  return string_builder.ToString();
+  return string_builder.ReleaseString();
 }
 
 String PropertyTreePrinter::PathAsString(const PaintPropertyNode& last_node) {

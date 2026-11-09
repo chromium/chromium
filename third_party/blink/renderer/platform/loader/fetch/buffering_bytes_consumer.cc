@@ -196,7 +196,7 @@ String BufferingBytesConsumer::DebugName() const {
   builder.Append("BufferingBytesConsumer(");
   builder.Append(bytes_consumer_->DebugName());
   builder.Append(")");
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 void BufferingBytesConsumer::Trace(Visitor* visitor) const {

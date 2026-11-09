@@ -140,7 +140,7 @@ class PodInterval {
     builder.Append(", maxHigh=");
     builder.Append(ValueToString<T>::ToString(MaxHigh()));
     builder.Append(']');
-    return builder.ToString();
+    return builder.ReleaseString();
   }
 #endif
 

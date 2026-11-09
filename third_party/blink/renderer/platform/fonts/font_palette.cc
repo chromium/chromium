@@ -77,7 +77,7 @@ String FontPalette::ToString() const {
       double normalized_percentage = normalized_percentage_ * 100;
       builder.AppendNumber(normalized_percentage);
       builder.Append("%)");
-      return builder.ToString();
+      return builder.ReleaseString();
   }
 }
 

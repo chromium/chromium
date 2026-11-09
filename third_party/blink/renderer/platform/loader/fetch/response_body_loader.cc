@@ -181,7 +181,7 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
     builder.Append("DelegatingBytesConsumer(");
     builder.Append(bytes_consumer_->DebugName());
     builder.Append(")");
-    return builder.ToString();
+    return builder.ReleaseString();
   }
 
   void Abort() {

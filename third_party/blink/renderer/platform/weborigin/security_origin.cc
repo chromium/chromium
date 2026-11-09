@@ -548,7 +548,7 @@ String SecurityOrigin::ToRawString() const {
 
   StringBuilder result;
   BuildRawString(result);
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 void SecurityOrigin::BuildRawString(StringBuilder& builder) const {
@@ -574,7 +574,7 @@ String SecurityOrigin::ToTokenForFastCheck() const {
   // access from two contexts that have the same origin but are
   // in different agent clusters.
   result.Append(agent_cluster_id_.ToString().c_str());
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 scoped_refptr<SecurityOrigin> SecurityOrigin::CreateFromString(

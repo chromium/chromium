@@ -265,7 +265,7 @@ String StringForSkPaintFlags(const SkPaint& paint) {
   StringBuilder flags_string;
   AppendFlagToString(&flags_string, paint.isAntiAlias(), "AntiAlias");
   AppendFlagToString(&flags_string, paint.isDither(), "Dither");
-  return flags_string.ToString();
+  return flags_string.ReleaseString();
 }
 
 String StrokeCapName(SkPaint::Cap cap) {

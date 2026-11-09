@@ -307,7 +307,7 @@ String StringView::EncodeForDebugging() const {
     }
   });
   builder.Append('"');
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 bool EqualStringView(const StringView& a, const StringView& b) {

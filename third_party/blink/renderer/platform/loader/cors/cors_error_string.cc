@@ -77,7 +77,7 @@ String EncodeHint(StringView hint) {
       }
     }
   }
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 }  // namespace
@@ -217,7 +217,7 @@ String GetErrorStringForIssueSummary(const network::CorsErrorStatus& status,
                        ShortAddressSpace(status.resource_address_space),
                        "` address space."});
   }
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 String GetErrorStringForConsoleMessage(const network::CorsErrorStatus& status,
@@ -374,7 +374,7 @@ String GetErrorStringForConsoleMessage(const network::CorsErrorStatus& status,
                        ShortAddressSpace(status.resource_address_space),
                        "` address space."});
   }
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 }  // namespace cors

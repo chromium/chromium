@@ -76,7 +76,7 @@ String BuildIdentifierKeyUncached(CTFontRef ct_font) {
       }
     }
 
-    return result_builder.ToString();
+    return result_builder.ReleaseString();
   }
 }
 

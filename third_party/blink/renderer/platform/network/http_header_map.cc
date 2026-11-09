@@ -74,7 +74,7 @@ String HTTPHeaderMap::GetAsRawString(int status_code,
     builder.Append(it.value);
     builder.Append("\r\n");
   }
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 }  // namespace blink

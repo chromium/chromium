@@ -1047,14 +1047,14 @@ String ColorParamToString(float param,
       result.Append(" * 1%");
     }
     result.Append(")");
-    return result.ToString();
+    return result.ReleaseString();
   }
 
   result.AppendNumber(param, precision);
   if (is_percentage) {
     result.Append('%');
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 }  // namespace
@@ -1122,7 +1122,7 @@ String Color::SerializeLegacyColorAsCSSColor() const {
   }
 
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String Color::SerializeInternal() const {
@@ -1150,7 +1150,7 @@ String Color::SerializeInternal() const {
     alpha_is_none_ ? result.Append("none") : result.AppendNumber(alpha_);
   }
   result.Append(")");
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String Color::SerializeModernHslAndHwb() const {
@@ -1178,7 +1178,7 @@ String Color::SerializeModernHslAndHwb() const {
     alpha_is_none_ ? result.Append("none") : result.AppendNumber(alpha_);
   }
   result.Append(")");
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String Color::SerializeAsCSSColor() const {

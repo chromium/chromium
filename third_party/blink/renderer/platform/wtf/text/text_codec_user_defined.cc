@@ -60,7 +60,7 @@ String TextCodecUserDefined::Decode(base::span<const uint8_t> data,
     result.Append(static_cast<UChar>(c & 0xF7FF));
   }
 
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 template <typename CharType>

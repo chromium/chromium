@@ -478,7 +478,7 @@ String TextCodecIcu::Decode(base::span<const uint8_t> data,
 
 #if !defined(USING_SYSTEM_ICU)
   // Chrome's copy of ICU does not have the issue described below.
-  return result.ToString();
+  return result.ReleaseString();
 #else
   String result_string = result.ToString();
 

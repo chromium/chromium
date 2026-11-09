@@ -402,7 +402,7 @@ String Length::ToString() const {
   if (quirk_)
     builder.Append(", Quirk");
   builder.Append(")");
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 uint32_t Length::GetHash() const {

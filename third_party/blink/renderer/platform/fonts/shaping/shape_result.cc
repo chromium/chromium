@@ -2282,7 +2282,7 @@ void ShapeResult::ToString(StringBuilder* output) const {
 String ShapeResult::ToString() const {
   StringBuilder output;
   ToString(&output);
-  return output.ToString();
+  return output.ReleaseString();
 }
 
 std::ostream& operator<<(std::ostream& ostream,

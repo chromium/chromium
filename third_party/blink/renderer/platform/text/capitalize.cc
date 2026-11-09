@@ -65,7 +65,7 @@ String CapitalizeWithPreviousCodeUnit(const String& string,
       result.Append(UNSAFE_TODO(input[i - 1]));
   }
 
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String CapitalizeWithPreviousCodePoint(const String& string,
@@ -120,7 +120,7 @@ String CapitalizeWithPreviousCodePoint(const String& string,
                   end_of_word - previous_character_length - input_cursor);
   }
 
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 }  // namespace

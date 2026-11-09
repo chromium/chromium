@@ -711,7 +711,7 @@ String Resource::ReasonNotDeletable() const {
       builder.Append(' ');
     builder.Append("in_memory_cache");
   }
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 void Resource::DidAddClient(ResourceClient* client) {

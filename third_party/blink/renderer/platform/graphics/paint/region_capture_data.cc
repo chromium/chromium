@@ -23,7 +23,7 @@ String RegionCaptureData::ToString() const {
     sb.Append("}");
   }
   sb.Append("}");
-  return sb.ToString();
+  return sb.ReleaseString();
 }
 
 }  // namespace blink

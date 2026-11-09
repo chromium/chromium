@@ -608,7 +608,7 @@ class Iso2022JpDecoder : public TextCodecCjk::Decoder {
       result.Append(uchar::kReplacementCharacter);
       if (stop_on_error) {
         lead_ = 0x00;
-        return result.ToString();
+        return result.ReleaseString();
       }
     }
     if (second_prepended_byte_ &&
@@ -619,7 +619,7 @@ class Iso2022JpDecoder : public TextCodecCjk::Decoder {
       result.Append(uchar::kReplacementCharacter);
       if (stop_on_error) {
         lead_ = 0x00;
-        return result.ToString();
+        return result.ReleaseString();
       }
     }
     for (size_t i = 0; i < bytes.size(); ++i) {
@@ -628,7 +628,7 @@ class Iso2022JpDecoder : public TextCodecCjk::Decoder {
         result.Append(uchar::kReplacementCharacter);
         if (stop_on_error) {
           lead_ = 0x00;
-          return result.ToString();
+          return result.ReleaseString();
         }
       }
       if (prepended_byte_ &&
@@ -638,7 +638,7 @@ class Iso2022JpDecoder : public TextCodecCjk::Decoder {
         result.Append(uchar::kReplacementCharacter);
         if (stop_on_error) {
           lead_ = 0x00;
-          return result.ToString();
+          return result.ReleaseString();
         }
       }
       if (second_prepended_byte_ &&
@@ -649,7 +649,7 @@ class Iso2022JpDecoder : public TextCodecCjk::Decoder {
         result.Append(uchar::kReplacementCharacter);
         if (stop_on_error) {
           lead_ = 0x00;
-          return result.ToString();
+          return result.ReleaseString();
         }
       }
     }
@@ -686,7 +686,7 @@ class Iso2022JpDecoder : public TextCodecCjk::Decoder {
       output_ = false;
     }
 
-    return result.ToString();
+    return result.ReleaseString();
   }
 
  protected:
@@ -1154,7 +1154,7 @@ String TextCodecCjk::Decoder::Decode(base::span<const uint8_t> bytes,
     result.Append(uchar::kReplacementCharacter);
     if (stop_on_error) {
       lead_ = 0x00;
-      return result.ToString();
+      return result.ReleaseString();
     }
   }
   for (size_t i = 0; i < bytes.size(); ++i) {
@@ -1163,7 +1163,7 @@ String TextCodecCjk::Decoder::Decode(base::span<const uint8_t> bytes,
       result.Append(uchar::kReplacementCharacter);
       if (stop_on_error) {
         lead_ = 0x00;
-        return result.ToString();
+        return result.ReleaseString();
       }
     }
     if (prepended_byte_ &&
@@ -1173,7 +1173,7 @@ String TextCodecCjk::Decoder::Decode(base::span<const uint8_t> bytes,
       result.Append(uchar::kReplacementCharacter);
       if (stop_on_error) {
         lead_ = 0x00;
-        return result.ToString();
+        return result.ReleaseString();
       }
     }
   }
@@ -1185,7 +1185,7 @@ String TextCodecCjk::Decoder::Decode(base::span<const uint8_t> bytes,
   }
 
   Finalize(flush, result);
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String TextCodecCjk::Decode(base::span<const uint8_t> data,

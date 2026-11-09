@@ -135,7 +135,7 @@ String RuntimeCallStats::ToString() const {
   AddCounterMapStatsToBuilder(builder);
 #endif
 
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 // static

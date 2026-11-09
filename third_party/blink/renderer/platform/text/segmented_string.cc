@@ -175,7 +175,7 @@ String SegmentedString::ToString() const {
     for (auto& substring : substrings_)
       substring.AppendTo(result);
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 void SegmentedString::AdvanceAndCollect(base::span<UChar> characters) {

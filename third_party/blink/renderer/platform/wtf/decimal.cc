@@ -938,7 +938,7 @@ String Decimal::ToString() const {
   if (original_exponent <= 0 && adjusted_exponent >= -6) {
     if (!original_exponent) {
       builder.Append(digits);
-      return builder.ToString();
+      return builder.ReleaseString();
     }
 
     if (adjusted_exponent >= 0) {
@@ -947,7 +947,7 @@ String Decimal::ToString() const {
         if (i == adjusted_exponent)
           builder.Append('.');
       }
-      return builder.ToString();
+      return builder.ReleaseString();
     }
 
     builder.Append("0.");
@@ -971,7 +971,7 @@ String Decimal::ToString() const {
       builder.AppendNumber(adjusted_exponent);
     }
   }
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 Decimal Decimal::Zero(Sign sign) {

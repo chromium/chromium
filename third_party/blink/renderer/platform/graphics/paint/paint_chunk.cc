@@ -103,7 +103,7 @@ static String ToStringImpl(const PaintChunk& c,
     }
   }
   sb.Append(')');
-  return sb.ToString();
+  return sb.ReleaseString();
 }
 
 String PaintChunk::ToString(bool concise) const {

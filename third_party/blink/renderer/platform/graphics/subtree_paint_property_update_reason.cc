@@ -36,7 +36,7 @@ String SubtreePaintPropertyUpdateReasonsToString(unsigned bitmask) {
   if (bitmask & SubtreePaintPropertyUpdateReason::kTransformStyleChanged)
     append("kTransformStyleChanged");
   result.Append(")");
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 }  // namespace blink

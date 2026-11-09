@@ -107,7 +107,7 @@ String BidiParagraph::StringWithDirectionalOverride(const StringView& text,
                                   : uchar::kRightToLeftOverride);
   builder.Append(text);
   builder.Append(uchar::kPopDirectionalFormatting);
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 wtf_size_t BidiParagraph::GetLogicalRun(wtf_size_t start,

@@ -23,7 +23,7 @@ static String RectsAsString(const Vector<T>& rects) {
     sb.Append(")");
   }
   sb.Append("]");
-  return sb.ToString();
+  return sb.ReleaseString();
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -41,7 +41,7 @@ static String XrRegionsAsString(const Vector<CompositorElementId>& xr_regions) {
     sb.Append(")");
   }
   sb.Append("]");
-  return sb.ToString();
+  return sb.ReleaseString();
 }
 #endif
 
@@ -90,7 +90,7 @@ String HitTestData::ToString() const {
   }
 
   sb.Append("}");
-  return sb.ToString();
+  return sb.ReleaseString();
 }
 
 std::ostream& operator<<(std::ostream& os, const HitTestData& data) {

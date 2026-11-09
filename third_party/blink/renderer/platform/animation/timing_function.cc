@@ -196,7 +196,7 @@ String StepsTimingFunction::ToString() const {
     builder.Append(position_string);
   }
   builder.Append(')');
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 void StepsTimingFunction::Range(double* min_value, double* max_value) const {

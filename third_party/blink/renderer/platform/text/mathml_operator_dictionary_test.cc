@@ -147,7 +147,7 @@ bool IsInCategory(const T (&table)[kSize], UChar32 character) {
 String FromUChar32(UChar32 c) {
   StringBuilder input;
   input.Append(c);
-  return input.ToString();
+  return input.ReleaseString();
 }
 
 TEST(MathOperatorDictionaryTest, Infix) {

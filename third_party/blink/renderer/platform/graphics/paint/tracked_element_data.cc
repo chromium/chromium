@@ -26,7 +26,7 @@ String TrackedElementRect::ToString() const {
     sb.Append(parent_frame_token->ToString().c_str());
   }
   sb.Append(" }");
-  return sb.ToString();
+  return sb.ReleaseString();
 }
 
 String TrackedElementRects::ToString() const {
@@ -51,7 +51,7 @@ String TrackedElementRects::ToString() const {
     sb.Append("}");
   }
   sb.Append("}");
-  return sb.ToString();
+  return sb.ReleaseString();
 }
 
 gfx::Rect TrackedElementSubRect::GetEffectiveBounds(
