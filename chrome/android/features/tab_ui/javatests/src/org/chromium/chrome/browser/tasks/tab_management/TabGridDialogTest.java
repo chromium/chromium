@@ -44,6 +44,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.Triggers.noopTo;
 import static org.chromium.base.test.transit.ViewElement.displayingAtLeastOption;
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.R.plurals.bottom_tab_grid_title_placeholder;
@@ -132,7 +133,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations.EnableAnimations;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
@@ -175,6 +175,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.test.transit.SoftKeyboardCondition;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.util.ColorUtils;
@@ -763,10 +764,7 @@ public class TabGridDialogTest {
                                 isDisplayed()))
                 .perform(click());
 
-        BookmarkEditActivity activity = BookmarkTestUtil.waitForEditActivity();
-        activity.finish();
-
-        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
+        finishBookmarkEditActivityAndVerifyTabListEditor(cta);
     }
 
     @Test
@@ -807,21 +805,15 @@ public class TabGridDialogTest {
                                 isDisplayed()))
                 .perform(click());
 
-        BookmarkEditActivity activity = BookmarkTestUtil.waitForEditActivity();
-        activity.finish();
+        finishBookmarkEditActivityAndVerifyTabListEditor(cta);
+    }
 
-        // After finishing the BookmarkEditActivity, the ChromeTabbedActivity needs a moment
-        // to regain window focus. Without waiting, Espresso might try to interact with the UI
-        // before it's ready, leading to a RootViewWithoutFocusException.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            "ChromeTabbedActivity did not regain window focus.",
-                            cta.getWindow().getDecorView().hasWindowFocus(),
-                            Matchers.is(true));
-                });
+    private void finishBookmarkEditActivityAndVerifyTabListEditor(ChromeTabbedActivity cta) {
+        BookmarkTestUtil.waitForEditActivity().finish();
 
-        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
+        // Look in the ChromeTabbedActivity's windows, not the focused one, which may still be
+        // the finishing BookmarkEditActivity.
+        waitForView(TabListEditorLayout.class, cta, withId(R.id.selectable_list));
     }
 
     @Test
@@ -2113,12 +2105,8 @@ public class TabGridDialogTest {
                             // Verify if we can grab focus on the editText or not.
                             assertTrue(v.isFocused());
                         });
-        // Verify if the keyboard shows or not.
-        CriteriaHelper.pollUiThread(
-                () ->
-                        cta.getWindowAndroid()
-                                .getKeyboardDelegate()
-                                .isKeyboardObscuring(cta.getCompositorViewHolderForTesting()));
+        // Verify the soft keyboard shows, unless a hardware keyboard is used instead.
+        noopTo().waitFor(new SoftKeyboardCondition(() -> cta, /* expectShowing= */ true));
     }
 
     private void openDialogToolbarMenuAndVerify(ChromeTabbedActivity cta) {
