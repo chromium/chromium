@@ -96,7 +96,6 @@ chromium-metrics-reviews@google.com.
   <variant name="SharedCacheIndex" summary="SharedCacheIndex"/>
   <variant name="SharedCacheIsolated" summary="SharedCacheIsolated"/>
   <variant name="SharedDictionary" summary="SharedDictionary"/>
-  <variant name="SharedStorage" summary="SharedStorage"/>
   <variant name="Shortcuts" summary="Shortcuts"/>
   <variant name="SQLiteDiagnostics" summary="SQLiteDiagnostics"/>
   <variant name="TabStateStorage" summary="TabStateStorage"/>

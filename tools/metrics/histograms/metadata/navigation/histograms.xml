@@ -930,10 +930,9 @@ chromium-metrics-reviews@google.com.
   <owner>xiaochenzh@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>
   <summary>
-    For navigation requests with FLEDGE or SharedStorage generated urn:uuid,
-    record whether it is rendered in a fenced frame or iframe. Recorded when
-    navigation requests begin (i.e. during
-    NavigationRequest::BeginNavigation()).
+    For navigation requests with browser-mapped urn:uuid, record whether it is
+    rendered in a fenced frame or iframe. Recorded when navigation requests
+    begin (i.e. during NavigationRequest::BeginNavigation()).
   </summary>
 </histogram>
 

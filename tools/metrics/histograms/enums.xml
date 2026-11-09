@@ -25960,7 +25960,7 @@ Called by update_net_error_codes.py.-->
   <int value="24" label="DICTIONARY"/>
   <int value="25" label="SPECULATION_RULES"/>
   <int value="26" label="JSON"/>
-  <int value="27" label="SHAREDSTORAGEWORKLET"/>
+  <int value="27" label="(Obsolete) SHAREDSTORAGEWORKLET"/>
 </enum>
 
 <enum name="ResourceType">

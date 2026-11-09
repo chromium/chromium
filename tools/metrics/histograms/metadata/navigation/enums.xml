@@ -1784,7 +1784,8 @@ chromium-metrics-reviews@google.com.
   </summary>
   <int value="-2066290458" label="search.mojom.EmbeddedSearchConnector"/>
   <int value="-2012727489" label="device.mojom.ScreenOrientation"/>
-  <int value="-1700130222" label="blink.mojom.SharedStorageDocumentService"/>
+  <int value="-1700130222"
+      label="(Obsolete) blink.mojom.SharedStorageDocumentService"/>
   <int value="-1398143678" label="blink.mojom.ClipboardHost (Unexpected)"/>
   <int value="-1354302262" label="blink.mojom.BackForwardCacheControllerHost"/>
   <int value="-1150785480"
