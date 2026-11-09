@@ -18,6 +18,9 @@ enum class OriginFilter {
   kValidTestOriginForTesting,
   kCobalt,
   kGoogleSearch,
+  // Origins for Sync TabContext container decryption. See
+  // //components/sync_tab_context/README.md for details.
+  kSyncTabContext,
 };
 
 // Converts `filter` in the actual list of allowed origins.

@@ -17,6 +17,7 @@ source_set("js_messaging") {
     ":setup_frame_js",
     ":web_view_js_utils",
     "//base",
+    "//components/sync_tab_context:constants",
     "//ios/public/provider/web:cobalt",
     "//ios/web/common:features",
     "//ios/web/js_features/window_error:error_reporting",
