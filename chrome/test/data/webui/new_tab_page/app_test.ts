@@ -4181,14 +4181,21 @@ suite('NewTabPageAppTest', () => {
       // Like new_tab_page.html, so that the LHS and RHS span the window, which
       // position: fixed elements in the RHS rely on.
       document.body.style.margin = '0';
+      // So that LHS width changes apply immediately instead of transitioning.
+      document.documentElement.style.setProperty(
+          '--cr-animations-disabled', '1');
     });
 
     teardown(() => {
       document.body.style.margin = '';
+      document.documentElement.style.removeProperty('--cr-animations-disabled');
     });
 
     async function setThreadsRailEnabled(enabled: boolean) {
-      loadTimeData.overrideValues({enableThreadsRail: enabled});
+      // In hybrid mode, the browser only enables the rail with an
+      // lhsRailConfig, which <cr-threads-rail> reads.
+      loadTimeData.overrideValues(
+          {enableThreadsRail: enabled, lhsRailConfig: {items: []}});
       await recreateApp();
     }
 

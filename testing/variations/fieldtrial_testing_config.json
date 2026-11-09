@@ -12819,6 +12819,32 @@
             ]
         }
     ],
+    "NTPThreadsRail": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "form_factors": [
+                "desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableHybrid_20261106",
+                    "params": {
+                        "NtpThreadsRailHybridParam": "true"
+                    },
+                    "enable_features": [
+                        "NtpThreadsRail"
+                    ]
+                }
+            ]
+        }
+    ],
     "NavigationResponseHeaderOptimization": [
         {
             "platforms": [
