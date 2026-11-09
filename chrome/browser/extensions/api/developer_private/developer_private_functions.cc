@@ -1569,6 +1569,10 @@ DeveloperPrivateGetMatchingExtensionsForSiteFunction::Run() {
   PermissionsManager* permissions_manager =
       PermissionsManager::Get(browser_context());
   for (const auto& extension : enabled_extensions) {
+    if (!ui_util::ShouldDisplayInExtensionSettings(*extension)) {
+      continue;
+    }
+
     std::unique_ptr<const PermissionSet> granted_permissions =
         permissions_manager->GetExtensionGrantedPermissions(*extension);
     const URLPatternSet& extension_withheld_sites =
