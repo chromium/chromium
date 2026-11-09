@@ -3,10 +3,16 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/property_registry.h"
+
+#include <utility>
+
+#include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -45,7 +51,12 @@ class PropertyRegistryTest : public PageTestBase {
       String initial_value = g_null_atom) {
     auto* registration = css_test_helpers::CreatePropertyRegistration(
         name, syntax, MaybeParseInitialValue(syntax, initial_value));
-    Registry().DeclareProperty(AtomicString(name), *registration);
+    declared_properties_->Set(AtomicString(name), registration);
+    PropertyRegistry::RegistrationMap declarations;
+    for (const auto& entry : *declared_properties_) {
+      declarations.Set(entry.key, entry.value);
+    }
+    Registry().UpdateDeclaredProperties(std::move(declarations));
     return registration;
   }
 
@@ -56,6 +67,11 @@ class PropertyRegistryTest : public PageTestBase {
     }
     return vector;
   }
+
+ private:
+  Persistent<GCedHeapHashMap<AtomicString, Member<PropertyRegistration>>>
+      declared_properties_ = MakeGarbageCollected<
+          GCedHeapHashMap<AtomicString, Member<PropertyRegistration>>>();
 };
 
 TEST_F(PropertyRegistryTest, EnsurePropertyRegistry) {
@@ -103,12 +119,103 @@ TEST_F(PropertyRegistryTest, RegisterAndDeclarePropertyNonOverlapping) {
   EXPECT_EQ(registered, Registration("--x"));
 }
 
-TEST_F(PropertyRegistryTest, DeclareTwice) {
+TEST_F(PropertyRegistryTest, DeclareEquivalentTwice) {
   auto* declared1 = DeclareProperty("--x");
   EXPECT_EQ(declared1, Registration("--x"));
 
   auto* declared2 = DeclareProperty("--x");
-  EXPECT_EQ(declared2, Registration("--x"));
+  EXPECT_NE(declared2, Registration("--x"));
+  EXPECT_EQ(declared1, Registration("--x"));
+}
+
+TEST_F(PropertyRegistryTest, UpdateDeclaredProperties) {
+  auto* rule = To<StyleRuleProperty>(
+      css_test_helpers::ParseRule(GetDocument(), R"CSS(@property --x {
+        syntax: "<length>";
+        inherits: false;
+        initial-value: 10dvh;
+      })CSS"));
+  ASSERT_TRUE(rule);
+  PropertyRegistration* original =
+      PropertyRegistration::MaybeCreateForDeclaredProperty(
+          GetDocument(), AtomicString("--x"), *rule);
+  ASSERT_TRUE(original);
+  PropertyRegistry::RegistrationMap original_declarations;
+  original_declarations.Set(AtomicString("--x"), original);
+  Registry().UpdateDeclaredProperties(std::move(original_declarations));
+  Registry().MarkReferenced(AtomicString("--x"));
+  const size_t version = Registry().Version();
+  const InterpolationTypes* interpolation_types =
+      original->GetInterpolationTypes();
+
+  PropertyRegistration* equivalent =
+      PropertyRegistration::MaybeCreateForDeclaredProperty(
+          GetDocument(), AtomicString("--x"), *rule);
+  ASSERT_TRUE(equivalent);
+  PropertyRegistry::RegistrationMap equivalent_declarations;
+  equivalent_declarations.Set(AtomicString("--x"), equivalent);
+  EXPECT_FALSE(
+      Registry().UpdateDeclaredProperties(std::move(equivalent_declarations)));
+  EXPECT_EQ(version, Registry().Version());
+  EXPECT_EQ(original, Registration("--x"));
+  EXPECT_EQ(interpolation_types, Registration("--x")->GetInterpolationTypes());
+  EXPECT_TRUE(Registry().WasReferenced(AtomicString("--x")));
+
+  auto* replacement_rule = To<StyleRuleProperty>(
+      css_test_helpers::ParseRule(GetDocument(), R"CSS(@property --x {
+        syntax: "<length>";
+        inherits: false;
+        initial-value: 10px;
+      })CSS"));
+  ASSERT_TRUE(replacement_rule);
+  ASSERT_TRUE(replacement_rule->GetInitialValue());
+  rule->MutableProperties().SetProperty(CSSPropertyID::kInitialValue,
+                                        *replacement_rule->GetInitialValue());
+  PropertyRegistration* changed =
+      PropertyRegistration::MaybeCreateForDeclaredProperty(
+          GetDocument(), AtomicString("--x"), *rule);
+  ASSERT_TRUE(changed);
+  PropertyRegistry::RegistrationMap changed_declarations;
+  changed_declarations.Set(AtomicString("--x"), changed);
+  EXPECT_TRUE(
+      Registry().UpdateDeclaredProperties(std::move(changed_declarations)));
+  EXPECT_GT(Registry().Version(), version);
+  EXPECT_NE(original, Registration("--x"));
+  EXPECT_EQ("10px", Registration("--x")->Initial()->CssText());
+}
+
+TEST_F(PropertyRegistryTest, DoesNotReuseRegistrationFromDifferentRule) {
+  auto* first_rule =
+      To<StyleRuleProperty>(css_test_helpers::ParseRule(GetDocument(),
+                                                        R"CSS(@property --x {
+        syntax: "<number>";
+        inherits: false;
+        initial-value: 1;
+      })CSS"));
+  auto* first_registration =
+      PropertyRegistration::MaybeCreateForDeclaredProperty(
+          GetDocument(), AtomicString("--x"), *first_rule);
+  ASSERT_TRUE(first_registration);
+  PropertyRegistry::RegistrationMap first_declarations;
+  first_declarations.Set(AtomicString("--x"), first_registration);
+  Registry().UpdateDeclaredProperties(std::move(first_declarations));
+
+  auto* second_rule =
+      To<StyleRuleProperty>(css_test_helpers::ParseRule(GetDocument(),
+                                                        R"CSS(@property --x {
+        syntax: "<number>";
+        inherits: false;
+        initial-value: 1;
+      })CSS"));
+  auto* second_registration =
+      PropertyRegistration::MaybeCreateForDeclaredProperty(
+          GetDocument(), AtomicString("--x"), *second_rule);
+  ASSERT_TRUE(second_registration);
+  PropertyRegistry::RegistrationMap declarations;
+  declarations.Set(AtomicString("--x"), second_registration);
+
+  EXPECT_TRUE(Registry().UpdateDeclaredProperties(std::move(declarations)));
+  EXPECT_EQ(second_registration, Registration("--x"));
 }
 
 TEST_F(PropertyRegistryTest, IsInRegisteredPropertySet) {
@@ -270,19 +377,19 @@ TEST_F(PropertyRegistryTest, Version) {
   EXPECT_EQ(3u, Registry().Version());
 
   DeclareProperty("--c");
-  EXPECT_EQ(4u, Registry().Version());
+  EXPECT_EQ(3u, Registry().Version());
 
   DeclareProperty("--d");
+  EXPECT_EQ(4u, Registry().Version());
+
+  Registry().UpdateDeclaredProperties({});
   EXPECT_EQ(5u, Registry().Version());
 
-  Registry().RemoveDeclaredProperties();
-  EXPECT_EQ(6u, Registry().Version());
-
-  Registry().RemoveDeclaredProperties();
-  EXPECT_EQ(6u, Registry().Version());
+  Registry().UpdateDeclaredProperties({});
+  EXPECT_EQ(5u, Registry().Version());
 }
 
-TEST_F(PropertyRegistryTest, RemoveDeclaredProperties) {
+TEST_F(PropertyRegistryTest, UpdateDeclaredPropertiesRemovesMissingEntries) {
   DeclareProperty("--a");
   DeclareProperty("--b");
   RegisterProperty("--c");
@@ -293,7 +400,7 @@ TEST_F(PropertyRegistryTest, RemoveDeclaredProperties) {
   EXPECT_TRUE(Registration("--c"));
   EXPECT_TRUE(Registration("--d"));
 
-  Registry().RemoveDeclaredProperties();
+  Registry().UpdateDeclaredProperties({});
 
   EXPECT_FALSE(Registration("--a"));
   EXPECT_FALSE(Registration("--b"));
@@ -416,7 +523,7 @@ TEST_F(PropertyRegistryTest, GetViewportUnitFlagsRegistry) {
                 static_cast<unsigned>(ViewportUnitFlag::kDynamic),
             Registry().GetViewportUnitFlags());
 
-  Registry().RemoveDeclaredProperties();
+  Registry().UpdateDeclaredProperties({});
   EXPECT_EQ(static_cast<unsigned>(ViewportUnitFlag::kStatic),
             Registry().GetViewportUnitFlags());
 }

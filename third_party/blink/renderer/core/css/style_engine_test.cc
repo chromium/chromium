@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
@@ -4221,10 +4222,65 @@ TEST_F(StyleEngineTest, AtScopeUseCount) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSAtRuleScope));
 }
 
-TEST_F(StyleEngineTest, RemoveDeclaredPropertiesEmptyRegistry) {
-  EXPECT_FALSE(GetDocument().GetPropertyRegistry());
-  PropertyRegistration::RemoveDeclaredProperties(GetDocument());
-  EXPECT_FALSE(GetDocument().GetPropertyRegistry());
+TEST_F(StyleEngineTest, UnchangedAtPropertyAfterMediaChange) {
+  GetDocument().View()->SetLayoutSizeFixedToFrameSize(false);
+  GetDocument().View()->SetLayoutSize(gfx::Size(800, 600));
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @property --unused {
+        syntax: "<number>";
+        inherits: false;
+        initial-value: 0;
+      }
+      @media (min-width: 1000px) {
+        .does-not-exist { color: red; }
+      }
+    </style>
+    <div><span>Unchanged</span></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  const PropertyRegistry* registry = GetDocument().GetPropertyRegistry();
+  ASSERT_TRUE(registry);
+  const PropertyRegistration* registration =
+      registry->Registration(AtomicString("--unused"));
+  ASSERT_TRUE(registration);
+  const size_t version = registry->Version();
+  const unsigned initial_count = GetStyleEngine().StyleForElementCount();
+
+  GetDocument().View()->SetLayoutSize(gfx::Size(1100, 600));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(registration, registry->Registration(AtomicString("--unused")));
+  EXPECT_EQ(version, registry->Version());
+  EXPECT_EQ(initial_count, GetStyleEngine().StyleForElementCount());
+}
+
+TEST_F(StyleEngineTest, UnchangedUserAtPropertyAfterMediaChange) {
+  GetDocument().View()->SetLayoutSizeFixedToFrameSize(false);
+  GetDocument().View()->SetLayoutSize(gfx::Size(800, 600));
+  InjectSheet("user", WebCssOrigin::kUser, R"CSS(
+    @property --unused {
+      syntax: "<number>";
+      inherits: false;
+      initial-value: 0;
+    }
+    @media (min-width: 1000px) {
+      .does-not-exist { color: red; }
+    }
+  )CSS");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<div><span>Unchanged</span></div>");
+  UpdateAllLifecyclePhases();
+
+  const PropertyRegistry* registry = GetDocument().GetPropertyRegistry();
+  ASSERT_TRUE(registry);
+  const size_t version = registry->Version();
+  const unsigned initial_count = GetStyleEngine().StyleForElementCount();
+
+  GetDocument().View()->SetLayoutSize(gfx::Size(1100, 600));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(version, registry->Version());
+  EXPECT_EQ(initial_count, GetStyleEngine().StyleForElementCount());
 }
 
 TEST_F(StyleEngineTest, AtPropertyInUserOrigin) {

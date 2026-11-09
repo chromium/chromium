@@ -930,7 +930,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       const ActiveStyleSheetVector& user_sheets);
 
   void ClearKeyframeRules();
-  void ClearPropertyRules();
+  void UpdatePropertyRules(const ActiveStyleSheetVector& user_style_sheets,
+                           const ActiveStyleSheetVector& author_style_sheets);
 
   class AtRuleCascadeMap;
 

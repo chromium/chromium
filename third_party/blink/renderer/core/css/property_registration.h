@@ -34,8 +34,6 @@ class CORE_EXPORT PropertyRegistration final
                                const PropertyDefinition*,
                                ExceptionState&);
 
-  static void RemoveDeclaredProperties(Document&);
-
   static const PropertyRegistration* From(const ExecutionContext*,
                                           const AtomicString& property_name);
 

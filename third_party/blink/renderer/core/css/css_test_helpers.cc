@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 
+#include <utility>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_property_definition.h"
@@ -173,8 +175,10 @@ void DeclareProperty(Document& document,
   if (!registration) {
     return;
   }
-  document.EnsurePropertyRegistry().DeclareProperty(AtomicString(name),
-                                                    *registration);
+  PropertyRegistry::RegistrationMap declarations;
+  declarations.Set(AtomicString(name), registration);
+  document.EnsurePropertyRegistry().UpdateDeclaredProperties(
+      std::move(declarations));
   document.GetStyleEngine().PropertyRegistryChanged();
 }
 

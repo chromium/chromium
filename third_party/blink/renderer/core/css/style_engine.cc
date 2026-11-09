@@ -3000,6 +3000,8 @@ class StyleEngine::AtRuleCascadeMap {
     return true;
   }
 
+  PropertyRegistry::RegistrationMap& Registrations() { return registrations_; }
+
  private:
   uint16_t GetLayerOrder(bool is_user_style, const CascadeLayer* layer) {
     if (!layer) {
@@ -3019,6 +3021,7 @@ class StyleEngine::AtRuleCascadeMap {
 
   Document& document_;
   HashMap<AtomicString, Priority> map_;
+  PropertyRegistry::RegistrationMap registrations_;
 };
 
 void StyleEngine::ApplyUserRuleSetChanges(
@@ -3106,15 +3109,13 @@ void StyleEngine::ApplyUserRuleSetChanges(
     MarkCounterStylesNeedUpdate();
   }
 
-  if (changed_rule_flags &
-      (kPropertyRules | kFontPaletteValuesRules | kFontFeatureValuesRules)) {
-    if (changed_rule_flags & kPropertyRules) {
-      ClearPropertyRules();
-      AtRuleCascadeMap cascade_map(GetDocument());
-      AddPropertyRulesFromSheets(cascade_map, new_style_sheets,
-                                 true /* is_user_style */);
-    }
+  if (changed_rule_flags & kPropertyRules) {
+    UpdatePropertyRules(new_style_sheets,
+                        document_style_sheet_collection_->ActiveStyleSheets());
+  }
 
+  if (changed_rule_flags &
+      (kFontPaletteValuesRules | kFontFeatureValuesRules)) {
     if (changed_rule_flags & kFontPaletteValuesRules) {
       font_palette_values_rule_map_.clear();
       AddFontPaletteValuesRulesFromSheets(new_style_sheets);
@@ -3268,12 +3269,7 @@ void StyleEngine::ApplyRuleSetChanges(
     // @property rules are (for now) ignored in shadow trees, per spec.
     // https://drafts.css-houdini.org/css-properties-values-api-1/#at-property-rule
     if (tree_scope.RootNode().IsDocumentNode()) {
-      ClearPropertyRules();
-      AtRuleCascadeMap cascade_map(GetDocument());
-      AddPropertyRulesFromSheets(cascade_map, active_user_style_sheets_,
-                                 true /* is_user_style */);
-      AddPropertyRulesFromSheets(cascade_map, new_style_sheets,
-                                 false /* is_user_style */);
+      UpdatePropertyRules(active_user_style_sheets_, new_style_sheets);
     }
   }
 
@@ -3604,8 +3600,23 @@ void StyleEngine::ClearKeyframeRules() {
   keyframes_rule_map_.clear();
 }
 
-void StyleEngine::ClearPropertyRules() {
-  PropertyRegistration::RemoveDeclaredProperties(GetDocument());
+void StyleEngine::UpdatePropertyRules(
+    const ActiveStyleSheetVector& user_style_sheets,
+    const ActiveStyleSheetVector& author_style_sheets) {
+  AtRuleCascadeMap cascade_map(GetDocument());
+  AddPropertyRulesFromSheets(cascade_map, user_style_sheets,
+                             true /* is_user_style */);
+  AddPropertyRulesFromSheets(cascade_map, author_style_sheets,
+                             false /* is_user_style */);
+
+  if (!GetDocument().GetPropertyRegistry() &&
+      cascade_map.Registrations().empty()) {
+    return;
+  }
+  if (GetDocument().EnsurePropertyRegistry().UpdateDeclaredProperties(
+          std::move(cascade_map.Registrations()))) {
+    PropertyRegistryChanged();
+  }
 }
 
 void StyleEngine::AddPropertyRulesFromSheets(
@@ -3745,8 +3756,7 @@ void StyleEngine::AddPropertyRules(AtRuleCascadeMap& cascade_map,
       continue;
     }
 
-    GetDocument().EnsurePropertyRegistry().DeclareProperty(name, *registration);
-    PropertyRegistryChanged();
+    cascade_map.Registrations().Set(name, registration);
   }
 }
 
