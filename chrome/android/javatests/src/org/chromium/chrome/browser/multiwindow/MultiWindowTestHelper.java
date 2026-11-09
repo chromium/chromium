@@ -124,7 +124,12 @@ public class MultiWindowTestHelper {
                 });
     }
 
-    /** Moves the given activity to the foreground so it can receive user input. */
+    /**
+     * Moves the given activity to the foreground so it can receive user input.
+     *
+     * @deprecated From a Station, use {@code Station#bringWindowToFront()} instead.
+     */
+    @Deprecated
     public static void moveActivityToFront(final Activity activity) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

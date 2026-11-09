@@ -24,7 +24,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
@@ -172,7 +171,7 @@ public class MultiWindowAppMenuTest {
                             tabs2, tabs2.get(0), TabGroupMergeNotificationType.DONT_NOTIFY);
                 });
 
-        MultiWindowTestHelper.moveActivityToFront(page1InFirstWindow.getActivity());
+        page1InFirstWindow.bringWindowToFront();
 
         WebPageStation page2InFirstWindow =
                 page1InFirstWindow.openRegularTabAppMenu().openNewTab().loadAboutBlank();
@@ -237,8 +236,8 @@ public class MultiWindowAppMenuTest {
                                     /* allowDialog= */ false);
                 });
 
-        // 4. Bring Window 1 back to the foreground and wait for ActivityState.RESUMED.
-        MultiWindowTestHelper.moveActivityToFront(page1.getActivity());
+        // 4. Bring Window 1 back to the foreground.
+        page1.bringWindowToFront();
 
         // 5. Open Window 1 app menu and verify tab groups submenu.
         RegularWebPageAppMenuFacility appMenu = page1.openRegularTabAppMenu();
