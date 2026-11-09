@@ -8,8 +8,8 @@ import type {AudioBrowserProxy} from './audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
 import {MovementGranularity, PhraseHighlight, SentenceHighlight, WordHighlight} from './movement.js';
 import type {Highlight} from './movement.js';
-import {getReadAloudModel} from './read_aloud_model_browser_proxy.js';
-import type {ReadAloudModelBrowserProxy} from './read_aloud_model_browser_proxy.js';
+import {getReadAloudModel} from './read_aloud_model.js';
+import type {ReadAloudModel} from './read_aloud_model.js';
 import type {Segment} from './read_aloud_types.js';
 import {getCurrentSpeechRate} from './speech_presentation_rules.js';
 import {VoiceLanguageController} from './voice_language_controller.js';
@@ -23,7 +23,7 @@ export class ReadAloudHighlighter {
   private wordBoundaries_: WordBoundaries = WordBoundaries.getInstance();
   private allowAutoScroll_ = true;
   private voiceLanguageController_ = VoiceLanguageController.getInstance();
-  private readAloudModel_: ReadAloudModelBrowserProxy = getReadAloudModel();
+  private readAloudModel_: ReadAloudModel = getReadAloudModel();
   private audioBrowserProxy_: AudioBrowserProxy =
       AudioBrowserProxyImpl.getInstance();
 

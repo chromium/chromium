@@ -61,8 +61,8 @@ export {getDisplayName, getDisplayNameForLocale, getNormalizedDisplayName, isLan
 export type {LanguageMenuElement} from './read_aloud/language_menu.js';
 export type {LanguageToastElement} from './read_aloud/language_toast.js';
 export {currentReadHighlightClass, Highlight, MovementGranularity, PARENT_OF_HIGHLIGHT_CLASS, PhraseHighlight, previousReadHighlightClass, SentenceHighlight, WordHighlight} from './read_aloud/movement.js';
-export type {ReadAloudModelBrowserProxy} from './read_aloud/read_aloud_model_browser_proxy.js';
-export {getReadAloudModel, setInstance} from './read_aloud/read_aloud_model_browser_proxy.js';
+export type {ReadAloudModel} from './read_aloud/read_aloud_model.js';
+export {getReadAloudModel, setInstance} from './read_aloud/read_aloud_model.js';
 export {ReadAloudModelImpl} from './read_aloud/read_aloud_model_impl.js';
 export {ReadAloudNodeStore} from './read_aloud/read_aloud_node_store.js';
 export type {AncestorNode, Segment} from './read_aloud/read_aloud_types.js';

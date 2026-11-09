@@ -5,9 +5,9 @@
 import {ReadAloudModelImpl} from './read_aloud_model_impl.js';
 import type {ReadAloudNode, Segment} from './read_aloud_types.js';
 
-// Proxy class used to wrap text segmentation calls, so that tests can replace
-// the text segmentation implementation.
-export interface ReadAloudModelBrowserProxy {
+// Model interface used to wrap text segmentation calls, so that tests can
+// replace the text segmentation implementation.
+export interface ReadAloudModel {
   // TODO: crbug.com/440400392- Ensure all methods have documentation once
   // the structure is finalized.
   getHighlightForCurrentSegmentIndex(index: number, phrases: boolean):
@@ -42,12 +42,12 @@ export interface ReadAloudModelBrowserProxy {
   prefetchPhraseBoundaries(): void;
 }
 
-export function getReadAloudModel(): ReadAloudModelBrowserProxy {
+export function getReadAloudModel(): ReadAloudModel {
   return instance || (instance = new ReadAloudModelImpl());
 }
 
-export function setInstance(obj: ReadAloudModelBrowserProxy|null) {
+export function setInstance(obj: ReadAloudModel|null) {
   instance = obj;
 }
 
-let instance: ReadAloudModelBrowserProxy|null = null;
+let instance: ReadAloudModel|null = null;

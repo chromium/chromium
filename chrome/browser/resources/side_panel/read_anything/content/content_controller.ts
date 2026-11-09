@@ -8,7 +8,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
 import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
 import {previousReadHighlightClass} from '../read_aloud/movement.js';
-import {getReadAloudModel} from '../read_aloud/read_aloud_model_browser_proxy.js';
+import {getReadAloudModel} from '../read_aloud/read_aloud_model.js';
 import {ReadAloudNode} from '../read_aloud/read_aloud_types.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
 import {isBlockTrackingEnabled, isDistilledByReadability, LOG_EMPTY_DELAY_MS} from '../shared/common.js';

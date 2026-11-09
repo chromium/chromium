@@ -16,8 +16,8 @@ import {getNextValidNodeFromPosition} from '../shared/tree_traversal.js';
 import type {AudioBrowserProxy} from './audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
 import {ReadAloudHighlighter} from './highlighter.js';
-import {getReadAloudModel} from './read_aloud_model_browser_proxy.js';
-import type {ReadAloudModelBrowserProxy} from './read_aloud_model_browser_proxy.js';
+import {getReadAloudModel} from './read_aloud_model.js';
+import type {ReadAloudModel} from './read_aloud_model.js';
 import {ReadAloudNode} from './read_aloud_types.js';
 import type {Segment} from './read_aloud_types.js';
 import type {SpeechBrowserProxy} from './speech_browser_proxy.js';
@@ -67,7 +67,7 @@ export class SpeechController {
   private highlighter_: ReadAloudHighlighter =
       ReadAloudHighlighter.getInstance();
   private listeners_: SpeechListener[] = [];
-  private readAloudModel_: ReadAloudModelBrowserProxy = getReadAloudModel();
+  private readAloudModel_: ReadAloudModel = getReadAloudModel();
   private engineTimeoutId_: number|null = null;
   private engineRecoveryTimeoutId_: number|null = null;
 

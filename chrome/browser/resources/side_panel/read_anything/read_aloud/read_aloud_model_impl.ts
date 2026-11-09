@@ -8,7 +8,7 @@ import {getReadingModeTextNodes} from '../shared/tree_traversal.js';
 
 import type {AudioBrowserProxy} from './audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
-import type {ReadAloudModelBrowserProxy} from './read_aloud_model_browser_proxy.js';
+import type {ReadAloudModel} from './read_aloud_model.js';
 import type {OffsetByNode, Segment, SegmentedSentence, Sentence} from './read_aloud_types.js';
 import {ReadAloudNode} from './read_aloud_types.js';
 import {TextSegmenter} from './text_segmenter.js';
@@ -24,7 +24,7 @@ const PHRASE_PREFETCH_WINDOW_SIZE = 5;
 
 // Read aloud model implementation that segments the DOM content of the
 // Reading mode panel into sentences, words, and phrases for Read Aloud.
-export class ReadAloudModelImpl implements ReadAloudModelBrowserProxy {
+export class ReadAloudModelImpl implements ReadAloudModel {
   private textSegmenter_: TextSegmenter = TextSegmenter.getInstance();
   private audioBrowserProxy_: AudioBrowserProxy =
       AudioBrowserProxyImpl.getInstance();

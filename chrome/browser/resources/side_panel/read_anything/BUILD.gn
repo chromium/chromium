@@ -76,7 +76,7 @@ build_webui("build") {
     "read_aloud/language_toast.html.ts",
     "read_aloud/language_toast.ts",
     "read_aloud/movement.ts",
-    "read_aloud/read_aloud_model_browser_proxy.ts",
+    "read_aloud/read_aloud_model.ts",
     "read_aloud/read_aloud_model_impl.ts",
     "read_aloud/read_aloud_node_store.ts",
     "read_aloud/read_aloud_types.ts",
