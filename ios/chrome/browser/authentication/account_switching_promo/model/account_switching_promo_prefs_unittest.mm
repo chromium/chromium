@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_prefs.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/task_environment.h"
+#import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -15,6 +18,13 @@
 #import "testing/platform_test.h"
 
 namespace signin {
+
+namespace {
+
+constexpr char kSwitchedAwayHistogram[] =
+    "Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours";
+
+}  // namespace
 
 class AccountSwitchingPromoPrefsTest : public PlatformTest {
  public:
@@ -27,7 +37,8 @@ class AccountSwitchingPromoPrefsTest : public PlatformTest {
   // Returns the `PrefService` of `personal_profile_`.
   PrefService& pref_service() { return *personal_profile_->GetPrefs(); }
 
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   // The personal profile.
@@ -208,4 +219,109 @@ TEST_F(AccountSwitchingPromoPrefsTest, EmptyActiveAccountsDeletesAllState) {
   EXPECT_TRUE(
       CanShowAccountSwitchingPromo(pref_service(), account_a_, account_b_));
 }
+
+// Tests that switching back to the previous account within 24 hours logs
+// `true` exactly once.
+TEST_F(AccountSwitchingPromoPrefsTest, SwitchingBackWithin24HoursLogsTrue) {
+  base::HistogramTester histogram_tester;
+  RecordAccountSwitchingPromoAccepted(pref_service(), account_b_);
+
+  // Calls while the target account is still primary do not record anything.
+  MaybeRecordAccountSwitchingRetention(pref_service(), account_b_);
+  histogram_tester.ExpectTotalCount(kSwitchedAwayHistogram, 0);
+
+  task_environment_.FastForwardBy(base::Hours(12));
+  MaybeRecordAccountSwitchingRetention(pref_service(), account_a_);
+  histogram_tester.ExpectUniqueSample(kSwitchedAwayHistogram, true, 1);
+
+  // The state is cleared once recorded.
+  MaybeRecordAccountSwitchingRetention(pref_service(), account_b_);
+  histogram_tester.ExpectTotalCount(kSwitchedAwayHistogram, 1);
+}
+
+// Tests that switching to a third account within 24 hours logs `true`.
+TEST_F(AccountSwitchingPromoPrefsTest,
+       SwitchingToOtherAccountWithin24HoursLogsTrue) {
+  base::HistogramTester histogram_tester;
+  RecordAccountSwitchingPromoAccepted(pref_service(), account_b_);
+  task_environment_.FastForwardBy(base::Hours(1));
+  MaybeRecordAccountSwitchingRetention(pref_service(), account_c_);
+  histogram_tester.ExpectUniqueSample(kSwitchedAwayHistogram, true, 1);
+}
+
+// Tests that signing out within 24 hours logs `true`.
+TEST_F(AccountSwitchingPromoPrefsTest, SigningOutWithin24HoursLogsTrue) {
+  base::HistogramTester histogram_tester;
+  RecordAccountSwitchingPromoAccepted(pref_service(), account_b_);
+  task_environment_.FastForwardBy(base::Hours(1));
+  MaybeRecordAccountSwitchingRetention(pref_service(), GaiaId());
+  histogram_tester.ExpectUniqueSample(kSwitchedAwayHistogram, true, 1);
+}
+
+// Tests that keeping the target account as primary for 24 hours logs `false`.
+TEST_F(AccountSwitchingPromoPrefsTest, RetainingFor24HoursLogsFalse) {
+  base::HistogramTester histogram_tester;
+  RecordAccountSwitchingPromoAccepted(pref_service(), account_b_);
+
+  // Before 24 hours have elapsed, checking retention records nothing.
+  task_environment_.FastForwardBy(base::Hours(5));
+  MaybeRecordAccountSwitchingRetention(pref_service(), account_b_);
+  histogram_tester.ExpectTotalCount(kSwitchedAwayHistogram, 0);
+
+  task_environment_.FastForwardBy(base::Hours(20));
+  MaybeRecordAccountSwitchingRetention(pref_service(), account_b_);
+  histogram_tester.ExpectUniqueSample(kSwitchedAwayHistogram, false, 1);
+}
+
+// Tests that staying on the target account logs nothing at 24 hours minus 1
+// second, and logs `false` at exactly 24 hours.
+TEST_F(AccountSwitchingPromoPrefsTest, Exact24HoursBoundaryLogsFalse) {
+  base::HistogramTester histogram_tester;
+  RecordAccountSwitchingPromoAccepted(pref_service(), account_b_);
+
+  task_environment_.FastForwardBy(base::Hours(24) - base::Seconds(1));
+  MaybeRecordAccountSwitchingRetention(pref_service(), account_b_);
+  histogram_tester.ExpectTotalCount(kSwitchedAwayHistogram, 0);
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  MaybeRecordAccountSwitchingRetention(pref_service(), account_b_);
+  histogram_tester.ExpectUniqueSample(kSwitchedAwayHistogram, false, 1);
+}
+
+// Tests that switching away after 24 hours have elapsed logs `false` (and
+// clears the pending state) when that switch triggers the first evaluation.
+TEST_F(AccountSwitchingPromoPrefsTest, SwitchingBackAfter24HoursLogsFalse) {
+  base::HistogramTester histogram_tester;
+  RecordAccountSwitchingPromoAccepted(pref_service(), account_b_);
+
+  task_environment_.FastForwardBy(base::Hours(30));
+  MaybeRecordAccountSwitchingRetention(pref_service(), account_a_);
+  histogram_tester.ExpectUniqueSample(kSwitchedAwayHistogram, false, 1);
+
+  MaybeRecordAccountSwitchingRetention(pref_service(), account_a_);
+  histogram_tester.ExpectTotalCount(kSwitchedAwayHistogram, 1);
+}
+
+// Tests that removing the target account from the device clears the pending
+// retention state, so nothing is logged afterwards.
+TEST_F(AccountSwitchingPromoPrefsTest,
+       RemovingTargetAccountDeletesRetentionState) {
+  base::HistogramTester histogram_tester;
+  RecordAccountSwitchingPromoAccepted(pref_service(), account_b_);
+  DeleteAccountSwitchingPromoStateForRemovedAccounts(pref_service(),
+                                                     {account_a_});
+  task_environment_.FastForwardBy(base::Hours(1));
+  MaybeRecordAccountSwitchingRetention(pref_service(), account_a_);
+  histogram_tester.ExpectTotalCount(kSwitchedAwayHistogram, 0);
+}
+
+// Tests that `MaybeRecordAccountSwitchingRetention()` logs nothing when no
+// promo switch was accepted.
+TEST_F(AccountSwitchingPromoPrefsTest, NoMetricLoggedWhenNoSwitchAccepted) {
+  base::HistogramTester histogram_tester;
+  MaybeRecordAccountSwitchingRetention(pref_service(), account_a_);
+  MaybeRecordAccountSwitchingRetention(pref_service(), GaiaId());
+  histogram_tester.ExpectTotalCount(kSwitchedAwayHistogram, 0);
+}
+
 }  // namespace signin

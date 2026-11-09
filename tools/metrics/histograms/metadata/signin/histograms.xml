@@ -879,6 +879,28 @@ to monitor/debug fetching OAuth2 Token issues. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours"
+    enum="Boolean" expires_after="2027-04-01">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Recorded at most once per account switch accepted via the smart account
+    switching startup promo. Evaluated on app startup, scene activation, and
+    changes to the personal profile's primary account. True is recorded when an
+    evaluation within 24 hours of the switch observes that the personal
+    profile's primary account changed away from the switched target account
+    (back to the previous account, to another personal account, or to signed
+    out). Because there is no background timer, False is recorded on the first
+    evaluation after 24 hours have elapsed without a switch being recorded
+    during the window (which may occur much later, once Chrome runs again). On
+    iOS, switching to a managed account switches profiles without changing the
+    personal profile's primary account, so it does not count as switching away.
+    Usually not recorded if the target account is removed from the device before
+    the outcome is evaluated, or if the system clock moves backwards before the
+    acceptance timestamp. iOS only.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AccountTracker.CountOfLoadedAccounts" units="Accounts"
     expires_after="never">
 <!-- expires-never: used to monitor how many accounts are loaded from profile

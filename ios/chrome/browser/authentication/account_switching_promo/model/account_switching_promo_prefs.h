@@ -13,10 +13,10 @@ class PrefService;
 
 namespace signin {
 
-// Dictionary pref storing per-account-pair suppression state for the iOS smart
-// account switching startup promo. Global cooldowns and caps are enforced via
-// Feature Engagement Tracker rules. Note: Although registered as a profile
-// preference (to co-locate with profile prefs such as
+// Dictionary pref storing per-account-pair suppression and 24-hour retention
+// state for the iOS smart account switching startup promo. Global cooldowns and
+// caps are enforced via Feature Engagement Tracker rules. Note: Although
+// registered as a profile preference (to co-locate with profile prefs such as
 // `prefs::kAccountPreviewSwitchingPreference`), this feature is only enabled
 // for personal (non-managed) accounts, which all share the single personal
 // profile on iOS. Consequently, this state is in practice app-wide across all
@@ -46,9 +46,9 @@ void SuppressAccountSwitchingReversePair(PrefService& profile_prefs,
                                          const GaiaId& previous_primary_gaia_id,
                                          const GaiaId& new_primary_gaia_id);
 
-// Deletes any stored per-pair state referencing accounts absent from
-// `active_gaia_ids`. `active_gaia_ids` is expected to be the complete set of
-// accounts currently on the device (as opposed to the accounts of a single
+// Deletes any stored per-pair or retention state referencing accounts absent
+// from `active_gaia_ids`. `active_gaia_ids` is expected to be the complete set
+// of accounts currently on the device (as opposed to the accounts of a single
 // profile), since the pref lives on the personal profile but is effectively
 // app-wide. `profile_prefs` must be the personal profile's `PrefService`.
 void DeleteAccountSwitchingPromoStateForRemovedAccounts(
@@ -63,6 +63,33 @@ void RecordAccountSwitchingPromoExplicitlyDismissed(
     PrefService& profile_prefs,
     const GaiaId& primary_gaia_id,
     const GaiaId& target_gaia_id);
+
+// Must be called after an account switch initiated from the account switching
+// promo to `switched_target_gaia_id` has succeeded. Records the acceptance
+// timestamp and target account to evaluate 24-hour retention later. Reverse
+// pair suppression is recorded separately by `AuthenticationFlow`, which
+// performs the switch. `profile_prefs` must be the personal profile's
+// `PrefService`.
+void RecordAccountSwitchingPromoAccepted(PrefService& profile_prefs,
+                                         const GaiaId& switched_target_gaia_id);
+
+// Evaluates 24-hour retention for an accepted switch, and records the
+// `Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours` metric if a terminal
+// state is reached. Should be called on app startup, scene activation, and on
+// primary account changes. If 24 hours have elapsed without a switch being
+// recorded during the window, logs `false` (assuming the user remained on the
+// target account for the full window prior to any subsequent switch).
+// Otherwise, if the user switched away before 24 hours elapsed, logs `true`. If
+// the system clock moved backwards before `last_accepted_switch_time`, drops
+// the pending state without recording a metric. If the 24-hour window has not
+// elapsed yet and the user is still on the target account, or if no switch is
+// pending, does nothing. If a metric is recorded, clears the accepted switch
+// state. `profile_prefs` must be the personal profile's `PrefService`.
+// `current_primary_gaia_id` is the currently authenticated primary `GaiaId` (or
+// an empty `GaiaId` if signed out).
+void MaybeRecordAccountSwitchingRetention(
+    PrefService& profile_prefs,
+    const GaiaId& current_primary_gaia_id);
 
 }  // namespace signin
 

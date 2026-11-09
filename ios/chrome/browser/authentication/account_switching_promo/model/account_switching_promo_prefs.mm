@@ -4,12 +4,16 @@
 
 #import "ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_prefs.h"
 
+#import <optional>
 #import <string>
 
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/containers/flat_set.h"
+#import "base/json/values_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/not_fatal_until.h"
+#import "base/time/time.h"
 #import "base/values.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
@@ -29,9 +33,15 @@ namespace {
 // (stored on the personal profile only, see its declaration). Global cooldowns
 // and caps are enforced by Feature Engagement Tracker rules in
 // `ios_promo_feature_configuration.cc`, so this preference stores only
-// per-account-pair state:
+// per-account-pair state and 24-hour retention state for an accepted switch:
 //
 // {
+//   // Information about the last accepted switch, removed once retention is
+//   // evaluated.
+//   "accepted_switch_info": {
+//     "last_accepted_switch_time": "<base::Time>",
+//     "switched_target_gaia_id": "<target_gaia_id>"
+//   },
 //   // Per-account-pair state.
 //   "pairs": {
 //     "<primary_gaia_id>": {
@@ -48,6 +58,22 @@ constexpr char kPairsDictKey[] = "pairs";
 constexpr char kPairExplicitDismissalCountKey[] = "explicit_dismissal_count";
 constexpr char kPairSuppressedByReverseSwitchKey[] =
     "suppressed_by_reverse_switch";
+constexpr char kAcceptedSwitchInfoDictKey[] = "accepted_switch_info";
+constexpr char kLastAcceptedSwitchTimeKey[] = "last_accepted_switch_time";
+constexpr char kSwitchedTargetGaiaIdKey[] = "switched_target_gaia_id";
+
+// Maximum number of explicit dismissals for a specific `(primary, target)` pair
+// before suppressing that pair (until one of the accounts is removed from the
+// device).
+constexpr int kMaxPairExplicitDismissals = 2;
+
+// Duration during which retention is measured after accepting a switch.
+constexpr base::TimeDelta kRetentionWindow = base::Hours(24);
+
+// Histogram recording whether the user switched away within 24 hours of
+// accepting the promo.
+constexpr char kSwitchedAwayWithin24HoursHistogram[] =
+    "Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours";
 
 // Checks that `profile_prefs` is the `PrefService` of the personal profile.
 void CheckIsPersonalProfilePrefs(const PrefService& profile_prefs) {
@@ -68,6 +94,8 @@ base::DictValue& EnsurePairDict(base::DictValue& state_dict,
   return *state_dict.EnsureDict(kPairsDictKey)
               ->EnsureDict(primary_gaia_id.ToString())
               ->EnsureDict(target_gaia_id.ToString());
+  // TODO(crbug.com/571565524): Do not enable before a privacy review, because
+  // it stores GaiaID, which is PII.
 }
 
 // Returns true if per-account-pair rules suppress showing the promo for
@@ -101,12 +129,21 @@ bool IsSuppressedByPairRules(const base::DictValue* pairs_dict,
     return true;
   }
 
-  // Maximum number of explicit dismissals for a specific `(primary, target)`
-  // pair before suppressing that pair (until one of the accounts is removed
-  // from the device).
-  static constexpr int kMaxPairExplicitDismissals = 2;
   return pair_dict->FindInt(kPairExplicitDismissalCountKey).value_or(0) >=
          kMaxPairExplicitDismissals;
+}
+
+// Returns true if `accepted_switch_dict` references a switched target account
+// not in `active_gaia_ids`.
+bool WasAcceptedSwitchTargetAccountRemoved(
+    const base::DictValue* accepted_switch_dict,
+    const base::flat_set<GaiaId>& active_gaia_ids) {
+  if (!accepted_switch_dict) {
+    return false;
+  }
+  const std::string* target_gaia =
+      accepted_switch_dict->FindString(kSwitchedTargetGaiaIdKey);
+  return target_gaia && !active_gaia_ids.contains(GaiaId(*target_gaia));
 }
 
 }  // namespace
@@ -153,6 +190,12 @@ void DeleteAccountSwitchingPromoStateForRemovedAccounts(
   CheckIsPersonalProfilePrefs(profile_prefs);
 
   ScopedDictPrefUpdate update(&profile_prefs, kAccountSwitchingPromoStatePref);
+  // Drops the pending retention evaluation if the switched target account was
+  // removed.
+  if (WasAcceptedSwitchTargetAccountRemoved(
+          update->FindDict(kAcceptedSwitchInfoDictKey), active_gaia_ids)) {
+    update->Remove(kAcceptedSwitchInfoDictKey);
+  }
   base::DictValue* pairs_dict = update->FindDict(kPairsDictKey);
   if (!pairs_dict) {
     // No pairs has been registered yet.
@@ -191,6 +234,81 @@ void RecordAccountSwitchingPromoExplicitlyDismissed(
   int pair_dismissals =
       pair_dict.FindInt(kPairExplicitDismissalCountKey).value_or(0);
   pair_dict.Set(kPairExplicitDismissalCountKey, pair_dismissals + 1);
+}
+
+void RecordAccountSwitchingPromoAccepted(
+    PrefService& profile_prefs,
+    const GaiaId& switched_target_gaia_id) {
+  CheckIsPersonalProfilePrefs(profile_prefs);
+  CHECK(!switched_target_gaia_id.empty(), base::NotFatalUntil::M170);
+  if (switched_target_gaia_id.empty()) {
+    return;
+  }
+  // `AuthenticationFlow` updates the primary account before invoking this
+  // function, so `AccountSwitchingPromoSceneAgent`'s
+  // `-primaryAccountDidChange:` has already run
+  // `MaybeRecordAccountSwitchingRetention()` and cleared any prior pending
+  // entry. Overwriting any remaining entry (e.g. in unit tests) is intentional.
+  ScopedDictPrefUpdate update(&profile_prefs, kAccountSwitchingPromoStatePref);
+  base::DictValue* accepted_switch_dict =
+      update->EnsureDict(kAcceptedSwitchInfoDictKey);
+  accepted_switch_dict->Set(kLastAcceptedSwitchTimeKey,
+                            base::TimeToValue(base::Time::Now()));
+  accepted_switch_dict->Set(kSwitchedTargetGaiaIdKey,
+                            switched_target_gaia_id.ToString());
+  // TODO(crbug.com/571565524): Do not enable before a privacy review, because
+  // it stores GaiaID, which is PII.
+}
+
+void MaybeRecordAccountSwitchingRetention(
+    PrefService& profile_prefs,
+    const GaiaId& current_primary_gaia_id) {
+  CheckIsPersonalProfilePrefs(profile_prefs);
+  const base::DictValue* accepted_switch_dict =
+      profile_prefs.GetDict(kAccountSwitchingPromoStatePref)
+          .FindDict(kAcceptedSwitchInfoDictKey);
+  if (!accepted_switch_dict) {
+    // No switch has ever been accepted via the promo.
+    return;
+  }
+
+  std::optional<base::Time> switch_time =
+      base::ValueToTime(accepted_switch_dict->Find(kLastAcceptedSwitchTimeKey));
+  const std::string* target_gaia =
+      accepted_switch_dict->FindString(kSwitchedTargetGaiaIdKey);
+  if (!switch_time.has_value() || !target_gaia || target_gaia->empty()) {
+    // No accepted switch is pending evaluation.
+    return;
+  }
+
+  base::TimeDelta elapsed = base::Time::Now() - *switch_time;
+  if (elapsed.is_negative()) {
+    // The system clock moved backwards after acceptance; drop the pending state
+    // without recording an inaccurate metric.
+    ScopedDictPrefUpdate update(&profile_prefs,
+                                kAccountSwitchingPromoStatePref);
+    update->Remove(kAcceptedSwitchInfoDictKey);
+    return;
+  }
+
+  bool window_elapsed = elapsed >= kRetentionWindow;
+  bool switched_away = current_primary_gaia_id != GaiaId(*target_gaia);
+  if (window_elapsed) {
+    // The 24-hour retention window elapsed. We have not recorded a switch in
+    // the meantime.
+    base::UmaHistogramBoolean(kSwitchedAwayWithin24HoursHistogram, false);
+  } else if (switched_away) {
+    // The user switched away from the target account before 24 hours elapsed.
+    base::UmaHistogramBoolean(kSwitchedAwayWithin24HoursHistogram, true);
+  } else {
+    // The 24-hour window has not elapsed yet and the user is still on the
+    // target account, return early without recording a metric.
+    return;
+  }
+
+  // The metric was recorded, cleanup the prefs.
+  ScopedDictPrefUpdate update(&profile_prefs, kAccountSwitchingPromoStatePref);
+  update->Remove(kAcceptedSwitchInfoDictKey);
 }
 
 }  // namespace signin
