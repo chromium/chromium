@@ -249,6 +249,34 @@ TEST_F(ReportingServiceTest, ForceDiscard) {
   EXPECT_FALSE(client_.uploader()->is_uploading());
 }
 
+TEST_F(ReportingServiceTest, BadRequestDoesNotBackoff) {
+  TestReportingService service(&client_, GetLocalState());
+  service.AddLog(TestLog("log1"));
+  service.AddLog(TestLog("log2"));
+
+  service.EnableReporting();
+  task_environment_.FastForwardBy(
+      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()));
+  EXPECT_TRUE(client_.uploader()->is_uploading());
+
+  // Simulate the server returning a 400 error, which indicates a problem with
+  // the log rather than with the server.
+  client_.uploader()->CompleteUpload(400);
+
+  // Verify that the bad log was discarded, and that the next upload is
+  // scheduled with the normal interval rather than the backoff interval.
+  ASSERT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1U);
+  ASSERT_EQ(task_environment_.NextMainThreadPendingTaskDelay(),
+            MetricsUploadScheduler::GetUnsentLogsInterval());
+  task_environment_.FastForwardBy(
+      MetricsUploadScheduler::GetUnsentLogsInterval());
+  EXPECT_TRUE(client_.uploader()->is_uploading());
+  client_.uploader()->CompleteUpload(200);
+  EXPECT_FALSE(service.HasUnsentLogs());
+  EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 0U);
+  EXPECT_FALSE(client_.uploader()->is_uploading());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(ReportingServiceTest, ResetMetricsUploadBackoffOnForeground) {
   TestReportingService service(&client_, GetLocalState());

@@ -447,15 +447,14 @@ void ReportingService::OnLogUploadComplete(
     }
   }
 
-  // Error 400 indicates a problem with the log, not with the server, so
-  // don't consider that a sign that the server is in trouble. Similarly, if
+  // Back off if the upload failed. Error 400 indicates a problem with the log,
+  // not with the server, so don't back off in that case. Similarly, if
   // |force_discard| is true, do not delay the sending of other logs. For
   // example, if |force_discard| is true because there are no metrics server
-  // URLs included in this build, do not indicate that the "non-existent server"
-  // is in trouble, which would delay the sending of other logs and causing the
-  // accumulation of logs on disk.
-  bool server_is_healthy =
-      upload_succeeded || response_code == 400 || force_discard;
+  // URLs included in this build, do not back off on the "non-existent server",
+  // which would delay the sending of other logs and cause the accumulation of
+  // logs on disk.
+  bool backoff = !upload_succeeded && response_code != 400 && !force_discard;
 
   if (!log_store()->has_unsent_logs()) {
     DVLOG(1) << "Stopping upload_scheduler_.";
@@ -463,12 +462,10 @@ void ReportingService::OnLogUploadComplete(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  // When `server_is_healthy` is false, representing a failure with the upload,
-  // then we will start using the backoff logic in `upload_scheduler_`. Keep
-  // track of if these failures only started happening while in the background.
-  // TODO: crbug.com/420459511: `server_is_healthy` is not accurate anymore,
-  // rename it here and other places.
-  if (!server_is_healthy) {
+  // A failed upload (`backoff` is true) starts the backoff logic in
+  // `upload_scheduler_`. Keep track of whether these failures only started
+  // happening while in the background.
+  if (backoff) {
     if (!failures_started_from_background_.has_value()) {
       failures_started_from_background_ = log_upload_initiated_from_background_;
     }
@@ -481,18 +478,14 @@ void ReportingService::OnLogUploadComplete(
     if (*failures_started_from_background_ && is_in_foreground_ &&
         !base::FeatureList::IsEnabled(
             features::kNoResetMetricsUploadBackoffOnForeground)) {
-      server_is_healthy = true;
+      backoff = false;
     }
   } else {
     failures_started_from_background_ = std::nullopt;
   }
   CHECK(log_upload_initiated_from_background_.has_value());
   log_upload_initiated_from_background_ = std::nullopt;
-#endif  // BUILDFLAG(IS_ANDROID)
 
-  bool backoff = !server_is_healthy;
-
-#if BUILDFLAG(IS_ANDROID)
   // If the Android OS requested the background task to be stopped while an
   // upload was in progress, schedule the next upload (if any) with a backoff,
   // since the device is likely under pressure. The backoff will be reset when
