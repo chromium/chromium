@@ -14,6 +14,7 @@ namespace media {
 
 // Enumerates the various representations of the ordering of audio channels.
 // Logged to UMA, so never reuse a value, always add new/greater ones!
+// LINT.IfChange(ChannelLayout)
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
 // GENERATED_JAVA_PREFIX_TO_STRIP: CHANNEL_
 enum ChannelLayout {
@@ -142,6 +143,7 @@ enum ChannelLayout {
   // Max value, must always equal the largest entry ever logged.
   CHANNEL_LAYOUT_MAX = CHANNEL_LAYOUT_7_1_4
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ChannelLayout)
 
 // The channel order matches the order of the bitmask in the Windows
 // WAVEFORMATEXTENSIBLE format. The value of the enum corresponds to the bit

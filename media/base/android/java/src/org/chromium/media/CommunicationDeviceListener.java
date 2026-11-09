@@ -41,6 +41,7 @@ class CommunicationDeviceListener {
     // Common enum for recording audio device connection status.
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
+    // LINT.IfChange(ConnectionStatus)
     @IntDef({
         ConnectionStatus.DISCONNECTED,
         ConnectionStatus.CONNECTING,
@@ -56,6 +57,8 @@ class CommunicationDeviceListener {
         int DISCONNECTING = 3;
         int MAX_VALUE = DISCONNECTING + 1;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:AudioDeviceConnectionStatus)
 
     // Enabled during initialization if BLUETOOTH permission is granted.
     private boolean mHasBluetoothPermission;

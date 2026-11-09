@@ -61,6 +61,7 @@ enum class VideoCaptureBufferType {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(VideoCaptureError)
 enum class VideoCaptureError {
   kNone = 0,
   kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested =
@@ -217,9 +218,11 @@ enum class VideoCaptureError {
   kVideoCaptureHostDuplicateDeviceId = 152,
   kMaxValue = 152
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:VideoCaptureError)
 
 // WARNING: Do not change the values assigned to the entries. They are used for
 // UMA logging.
+// LINT.IfChange(VideoCaptureFrameDropReason)
 enum class VideoCaptureFrameDropReason {
   kNone = 0,
   kDeviceClientFrameHasInvalidFormat = 1,
@@ -257,6 +260,7 @@ enum class VideoCaptureFrameDropReason {
   kOldCaptureVersion = 34,
   kMaxValue = kOldCaptureVersion
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:VideoCaptureFrameDropReason)
 
 // Assert that the int:frequency mapping is correct.
 static_assert(static_cast<int>(PowerLineFrequency::kDefault) == 0,

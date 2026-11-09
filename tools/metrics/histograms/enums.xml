@@ -467,6 +467,8 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="15" label="Document destruction"/>
 </enum>
 
+<!-- LINT.IfChange(AudioCodec) -->
+
 <enum name="AudioCodec">
   <int value="0" label="kUnknownAudioCodec"/>
   <int value="1" label="kCodecAAC"/>
@@ -493,12 +495,18 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="22" label="kCodecIAMF"/>
 </enum>
 
+<!-- LINT.ThenChange(//media/base/audio_codecs.h:AudioCodec) -->
+
+<!-- LINT.IfChange(AudioCodecProfile) -->
+
 <enum name="AudioCodecProfile">
   <int value="0" label="kUnknown"/>
   <int value="1" label="kXHE_AAC"/>
   <int value="2" label="kIAMF_SIMPLE"/>
   <int value="3" label="kIAMF_BASE"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/base/audio_codecs.h:AudioCodecProfile) -->
 
 <!-- LINT.IfChange(AudioDecoderType) -->
 
@@ -528,6 +536,8 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="2097152" label="Deep Noise Suppression (DNS)"/>
 </enum>
 
+<!-- LINT.IfChange(AudioSampleRate) -->
+
 <enum name="AudioSampleRate">
   <int value="0" label="8 kHz"/>
   <int value="1" label="16 kHz"/>
@@ -544,6 +554,8 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="12" label="384 kHz"/>
   <int value="13" label="768 kHz"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/base/sample_rates.h:AudioSampleRate) -->
 
 <enum name="AutocompleteHtmlFieldMode">
   <int value="0" label="None"/>
@@ -1548,6 +1560,8 @@ media/base/android/media_drm_bridge.h. -->
   <int value="1100013" label="ILLEGAL_STATE"/>
 </enum>
 
+<!-- LINT.IfChange(ChannelLayout) -->
+
 <enum name="ChannelLayout">
   <int value="0" label="CHANNEL_LAYOUT_NONE"/>
   <int value="1" label="CHANNEL_LAYOUT_UNSUPPORTED"/>
@@ -1585,7 +1599,11 @@ media/base/android/media_drm_bridge.h. -->
   <int value="33" label="CHANNEL_LAYOUT_5_1_4_DOWNMIX"/>
   <int value="34" label="CHANNEL_LAYOUT_1_1"/>
   <int value="35" label="CHANNEL_LAYOUT_3_1_BACK"/>
+  <int value="36" label="CHANNEL_LAYOUT_5_1_4"/>
+  <int value="37" label="CHANNEL_LAYOUT_7_1_4"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/base/channel_layout.h:ChannelLayout) -->
 
 <enum name="ChromeOSHiddenUserPodsOfflineLogin">
   <summary>Tracks if offline user login is allowed.</summary>
@@ -3510,6 +3528,8 @@ shown properly on the user-facing crash UI.
   <int value="8" label="MediaKeySession.remove()"/>
 </enum>
 
+<!-- LINT.IfChange(EncoderStatus) -->
+
 <enum name="EncoderStatus">
   <int value="0" label="kOk"/>
   <int value="1" label="kEncoderInitializeNeverCompleted"/>
@@ -3556,11 +3576,17 @@ shown properly on the user-facing crash UI.
   <int value="42" label="kSharedImageResolveFailed"/>
 </enum>
 
+<!-- LINT.ThenChange(//media/base/encoder_status.h:Codes) -->
+
+<!-- LINT.IfChange(EncryptionScheme) -->
+
 <enum name="EncryptionScheme">
   <int value="0" label="kUnencrypted"/>
   <int value="1" label="kCenc"/>
   <int value="2" label="kCbcs"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/base/encryption_scheme.h:EncryptionScheme) -->
 
 <!-- LINT.IfChange(EnhancedCalendarResponseStatus) -->
 
@@ -4784,6 +4810,8 @@ shown properly on the user-facing crash UI.
       label="Last time the survey was attempted to be shown too recent"/>
 </enum>
 
+<!-- LINT.IfChange(HdcpVersion) -->
+
 <enum name="HdcpVersion">
   <int value="0" label="HdcpVersionNone"/>
   <int value="1" label="HdcpVersion1_0"/>
@@ -4796,6 +4824,8 @@ shown properly on the user-facing crash UI.
   <int value="8" label="HdcpVersion2_2"/>
   <int value="9" label="HdcpVersion2_3"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/base/content_decryption_module.h:HdcpVersion) -->
 
 <enum name="HelpAppSearchConceptReadStatus">
   <int value="0" label="Ok"/>
@@ -4819,6 +4849,8 @@ shown properly on the user-facing crash UI.
   <int value="4" label="Ready, other status (not success, not empty index)"/>
 </enum>
 
+<!-- LINT.IfChange(HlsDemuxerStatus) -->
+
 <enum name="HlsDemuxerStatus">
   <int value="0" label="kOk"/>
   <int value="1" label="kNoSegmentData"/>
@@ -4841,6 +4873,8 @@ shown properly on the user-facing crash UI.
   <int value="18" label="kNoDataEverAppended"/>
   <int value="19" label="kInvalidContentScheme"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/filters/hls_demuxer_status.h:Codes) -->
 
 <enum name="HpsTurnOnResult">
   <int value="0" label="Success"/>
@@ -22535,6 +22569,8 @@ from previous Chrome versions.
   <int value="1" label="Widevine"/>
 </enum>
 
+<!-- LINT.IfChange(MediaRendererType) -->
+
 <enum name="MediaRendererType">
   <int value="0" label="kRendererImpl"/>
   <int value="1" label="kMojo"/>
@@ -22549,6 +22585,8 @@ from previous Chrome versions.
   <int value="10" label="kContentEmbedderDefined"/>
   <int value="11" label="kTest"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/base/renderer.h:RendererType) -->
 
 <!-- LINT.IfChange(MediaSessionAction) -->
 
@@ -24447,6 +24485,8 @@ Called by update_net_error_codes.py.-->
   <int value="19" label="Bluetooth HID device name"/>
 </enum>
 
+<!-- LINT.IfChange(PipelineStatus) -->
+
 <enum name="PipelineStatus">
   <int value="0" label="PIPELINE_OK"/>
   <int value="1" label="(Deprecated) PIPELINE_ERROR_URL_NOT_FOUND"/>
@@ -24476,6 +24516,8 @@ Called by update_net_error_codes.py.-->
   <int value="26" label="PIPELINE_ERROR_OUT_OF_MEMORY"/>
   <int value="27" label="DEMUXER_ERROR_PROGRESSIVE_DISABLED"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/base/pipeline_status.h:PipelineStatusCodes) -->
 
 <enum name="PlatformFileError">
   <summary>Errors from base::File::Error</summary>
@@ -27986,6 +28028,8 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Canceled (after writing wakeup count)"/>
 </enum>
 
+<!-- LINT.IfChange(SVCScalabilityMode) -->
+
 <enum name="SVCScalabilityMode">
   <int value="0" label="L1T1"/>
   <int value="1" label="L1T2"/>
@@ -28025,6 +28069,8 @@ Called by update_net_error_codes.py.-->
   <int value="35" label="L3T2h"/>
   <int value="36" label="L3T3h"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/base/svc_scalability_mode.h:SVCScalabilityMode) -->
 
 <enum name="TabForegroundState">
   <int value="0" label="Foreground (app in foreground)"/>
@@ -28686,10 +28732,14 @@ Called by update_net_error_codes.py.-->
   <int value="505" label="505: HTTP Version Not Supported"/>
 </enum>
 
+<!-- LINT.IfChange(VEAInitSuccessRate) -->
+
 <enum name="VEAInitSuccessRate">
   <int value="0" label="kInit"/>
   <int value="1" label="kSuccess"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/gpu/windows/d3d12_video_encode_accelerator.cc:VEAInitSuccessRate) -->
 
 <!-- LINT.IfChange(VideoCodec) -->
 
@@ -28763,6 +28813,8 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//gpu/config/gpu_info.h:VideoCodecProfile, //media/base/video_codecs.h:VideoCodecProfile) -->
 
+<!-- LINT.IfChange(VideoDecoderType) -->
+
 <enum name="VideoDecoderType">
   <int value="0" label="None"/>
   <int value="2" label="FFmpeg Video Decoder"/>
@@ -28778,10 +28830,13 @@ Called by update_net_error_codes.py.-->
   <int value="13" label="Broker Video Decoder"/>
   <int value="14" label="VDA Video Decoder"/>
   <int value="16" label="V4l2 Video Decoder"/>
+  <int value="17" label="Testing Video Decoder"/>
   <int value="18" label="OOP Video Decoder"/>
   <int value="19" label="VideoToolbox Video Decoder"/>
   <int value="20" label="Dav2d Video Decoder"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/base/decoder.h:VideoDecoderType) -->
 
 <enum name="VideoEncoderUseCase">
   <int value="0" label="CastMirroring"/>

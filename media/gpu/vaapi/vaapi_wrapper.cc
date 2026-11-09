@@ -142,6 +142,7 @@ std::pair<base::ScopedFD, bool> LoadDrmFD(const base::FilePath& dev_path) {
 // These values are logged to UMA. Entries should not be renumbered and numeric
 // values should never be reused. Please keep in sync with
 // "VaapiFunctions" in src/tools/metrics/histograms/metadata/media/enums.xml.
+// LINT.IfChange(VaapiFunctions)
 enum class VaapiFunctions {
   kVABeginPicture = 0,
   kVACreateBuffer = 1,
@@ -181,6 +182,7 @@ enum class VaapiFunctions {
   kVADeriveImage = 32,
   kMaxValue = kVADeriveImage,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:VaapiFunctions)
 
 void ReportVaapiErrorToUMA(const std::string& histogram_name,
                            VaapiFunctions value) {

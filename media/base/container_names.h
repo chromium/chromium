@@ -20,6 +20,7 @@ namespace container_names {
 // sync with the enum definition "MediaContainers" in
 // tools/metrics/histograms/histograms.xml.
 //
+// LINT.IfChange(MediaContainerName)
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
 // GENERATED_JAVA_PREFIX_TO_STRIP: CONTAINER_
 enum class MediaContainerName {
@@ -65,6 +66,7 @@ enum class MediaContainerName {
   kContainerSmoothStream,  // SmoothStreaming
   kMaxValue = kContainerSmoothStream,  // Must be last
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MediaContainers)
 
 // Minimum size considered for processing.
 enum { kMinimumContainerSize = 12 };

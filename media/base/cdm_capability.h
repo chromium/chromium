@@ -88,6 +88,7 @@ bool MEDIA_EXPORT operator==(const CdmCapability& lhs,
 // should not be renumbered and numeric values should never be reused. Please
 // keep the consistency with CdmCapabilityQueryStatus in
 // tools/metrics/histograms/metadata/media/enums.xml.
+// LINT.IfChange(CdmCapabilityQueryStatus)
 enum class CdmCapabilityQueryStatus {
   // Capability query succeeded. Used only for reporting the result UMA when one
   // or more capabilities reported.
@@ -121,6 +122,7 @@ enum class CdmCapabilityQueryStatus {
   kPending = 13,
   kMaxValue = kPending,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:CdmCapabilityQueryStatus)
 
 // Returns a string version of the status.
 MEDIA_EXPORT std::string CdmCapabilityQueryStatusToString(

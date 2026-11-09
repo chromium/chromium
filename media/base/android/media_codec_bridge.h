@@ -92,7 +92,7 @@ enum MediaCodecStatus {
 
   MEDIA_CODEC_MAX = MEDIA_CODEC_STORAGE_WRITE,
 };
-// LINT.ThenChange(tools/metrics/histograms/metadata/media/enums.xml:MediaCodecError)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MediaCodecError)
 
 struct MediaCodecResultTraits {
   enum class Codes : StatusCodeType {

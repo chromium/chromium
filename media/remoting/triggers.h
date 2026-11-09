@@ -14,6 +14,7 @@ namespace remoting {
 // used in UMA histograms, and must remain backwards-compatible for all time.
 // However, *do* change START_TRIGGER_MAX to one after the greatest value when
 // adding new ones. Also, don't forget to update histograms.xml!
+// LINT.IfChange(StartTrigger)
 enum StartTrigger {
   UNKNOWN_START_TRIGGER = 0,
 
@@ -38,6 +39,7 @@ enum StartTrigger {
   // Change this to the highest value.
   START_TRIGGER_MAX = 11,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:RemotingStartTrigger)
 
 // Events and conditions that can result in a start failure, or trigger remoting
 // to stop.
@@ -48,6 +50,7 @@ enum StartTrigger {
 // ADDITIONAL NOTE: The values are intentionally out-of-order to maintain a
 // logical grouping. When adding a new value, add one to STOP_TRIGGER_MAX, then
 // update STOP_TRIGGER_MAX. Also, don't forget to update enums.xml!
+// LINT.IfChange(StopTrigger)
 enum StopTrigger {
   UNKNOWN_STOP_TRIGGER = 0,
 
@@ -94,6 +97,7 @@ enum StopTrigger {
   // Change this to the highest value.
   STOP_TRIGGER_MAX = MEDIA_ELEMENT_FROZEN,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:RemotingStopTrigger)
 
 }  // namespace remoting
 }  // namespace media

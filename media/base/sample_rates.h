@@ -11,6 +11,7 @@ namespace media {
 
 // Enumeration used for histogramming sample rates into distinct buckets.
 // Logged to UMA, so never reuse a value, always add new/greater ones!
+// LINT.IfChange(AudioSampleRate)
 enum AudioSampleRate {
   k8000Hz = 0,
   k16000Hz = 1,
@@ -29,6 +30,7 @@ enum AudioSampleRate {
   // Must always equal the largest value ever reported:
   kAudioSampleRateMax = k768000Hz,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:AudioSampleRate)
 
 // Helper method to convert integral values to their respective enum values,
 // returns false for unexpected sample rates.

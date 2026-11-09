@@ -14,6 +14,7 @@ namespace media {
 
 //  These enums are reported to UMA so values should not be renumbered or
 //  reused.
+// LINT.IfChange(CdmLoadResult)
 enum class CdmLoadResult {
   kLoadSuccess,
   kFileMissing,        // The CDM does not exist.
@@ -21,6 +22,7 @@ enum class CdmLoadResult {
   kEntryPointMissing,  // CDM loaded but some required entry point missing.
   kMaxValue = kEntryPointMissing  // Max value for Uma Histogram Enumeration.
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:CdmLoadResult)
 
 // Reports the result of loading CDM library to UMA.
 void ReportLoadResult(const std::string& uma_prefix, CdmLoadResult load_result);

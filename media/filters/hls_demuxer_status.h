@@ -14,6 +14,7 @@ struct HlsDemuxerStatusTraits {
   // WARNING: These values are reported to metrics. Entries should not be
   // renumbered and numeric values should not be reused. When adding new
   // entries, tools/metrics/histograms/enums.xml.
+  // LINT.IfChange(Codes)
   enum class Codes : StatusCodeType {
     kOk = 0,
 
@@ -82,6 +83,7 @@ struct HlsDemuxerStatusTraits {
     // Keep this at the end and equal to the highest value ever used.
     kMaxValue = kInvalidContentScheme,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:HlsDemuxerStatus)
 
   static constexpr StatusGroupType Group() { return "HlsDemuxerStatus"; }
 

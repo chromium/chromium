@@ -13,6 +13,7 @@
 namespace media {
 
 // The encryption mode. The definitions are from ISO/IEC 23001-7:2016.
+// LINT.IfChange(EncryptionScheme)
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
 enum class EncryptionScheme {
   kUnencrypted = 0,
@@ -20,6 +21,7 @@ enum class EncryptionScheme {
   kCbcs,  // 'cbcs' pattern encryption using AES-CBC mode.
   kMaxValue = kCbcs
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:EncryptionScheme)
 
 // For logging use only.
 MEDIA_EXPORT std::string GetEncryptionSchemeName(

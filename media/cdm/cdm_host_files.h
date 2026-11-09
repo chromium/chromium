@@ -41,6 +41,7 @@ class MEDIA_EXPORT CdmHostFiles {
 
   // Status of CDM host verification.
   // Note: Reported to UMA. Do not change the values.
+  // LINT.IfChange(Status)
   enum class Status {
     kNotCalled = 0,
     kSuccess = 1,
@@ -49,6 +50,7 @@ class MEDIA_EXPORT CdmHostFiles {
     kInitVerificationFailed = 4,
     kStatusCount
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:CdmHostVerificationStatus)
 
   // Initializes the verification of CDM files by calling the function exported
   // by the CDM. If unexpected error happens, all files will be closed.

@@ -24,6 +24,7 @@ namespace media {
 // Status states for pipeline.  All codes except PIPELINE_OK indicate errors.
 // Logged to UMA, so never reuse a value, always add new/greater ones!
 // When adding a new one, also update enums.xml.
+// LINT.IfChange(PipelineStatusCodes)
 enum PipelineStatusCodes : StatusCodeType {
   PIPELINE_OK = 0,
   // Deprecated: PIPELINE_ERROR_URL_NOT_FOUND = 1,
@@ -82,6 +83,7 @@ enum PipelineStatusCodes : StatusCodeType {
   // Must be equal to the largest value ever logged.
   PIPELINE_STATUS_MAX = DEMUXER_ERROR_PROGRESSIVE_DISABLED,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PipelineStatus)
 
 struct PipelineStatusTraits {
   using Codes = PipelineStatusCodes;

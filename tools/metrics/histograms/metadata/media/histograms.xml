@@ -112,6 +112,8 @@ chromium-metrics-reviews@google.com.
       summary="Software secure Widevine key system"/>
 </variants>
 
+<!-- LINT.IfChange(MediaFoundationCodecPackage) -->
+
 <variants name="MediaFoundationCodecPackage">
   <variant name="AC4"/>
   <variant name="AV1"/>
@@ -123,6 +125,8 @@ chromium-metrics-reviews@google.com.
   <variant name="HEVC"/>
   <variant name="VP9"/>
 </variants>
+
+<!-- LINT.ThenChange(//media/base/win/media_foundation_package_locator_helper.h:MediaFoundationCodecPackage) -->
 
 <variants name="MediaRebufferingCategories">
   <variant name=".Audio.EME"

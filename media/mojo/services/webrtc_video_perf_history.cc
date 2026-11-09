@@ -39,6 +39,7 @@ constexpr char kSmoothDecisionRatioThresholdParamName[] =
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SmoothVolatility)
 enum class SmoothVolatility {
   kNotSmooth2NotSmooth = 0,
   kSmooth2NotSmooth = 1,
@@ -46,6 +47,7 @@ enum class SmoothVolatility {
   kSmooth2Smooth = 3,
   kMaxValue = kSmooth2Smooth,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:SmoothVolatility)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

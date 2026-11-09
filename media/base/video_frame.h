@@ -81,6 +81,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // memory.
   // Note that VideoFrames of any StorageType can also have Texture backing,
   // with "classical" GPU Driver-only textures identified as STORAGE_OPAQUE.
+  // LINT.IfChange(StorageType)
   enum StorageType {
     STORAGE_UNKNOWN = 0,
     STORAGE_OPAQUE = 1,  // We don't know how VideoFrame's pixels are stored.
@@ -93,6 +94,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     STORAGE_MAPPABLE_SHARED_IMAGE = 6,
     STORAGE_MAX = STORAGE_MAPPABLE_SHARED_IMAGE,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:VideoFrameStorageType)
 
   // CB to be called on the mailbox backing this frame when the frame is
   // destroyed.

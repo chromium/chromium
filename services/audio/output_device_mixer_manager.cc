@@ -34,6 +34,7 @@ std::string NormalizeIfDefault(const std::string& device_id) {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Aligned with AudioOutputDeviceMixerManagerStreamCreation enum.
+// LINT.IfChange(StreamCreation)
 enum class StreamCreation {
   kUnmixable,
   kFallbackToUnmixable,
@@ -41,6 +42,7 @@ enum class StreamCreation {
   kUsingExistingMixer,
   kMaxValue = kUsingExistingMixer,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:AudioOutputDeviceMixerManagerStreamCreation)
 
 }  // namespace
 

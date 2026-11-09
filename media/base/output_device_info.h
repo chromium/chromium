@@ -14,6 +14,7 @@
 namespace media {
 
 // Result of an audio output device switch operation
+// LINT.IfChange(OutputDeviceStatus)
 enum OutputDeviceStatus {
   OUTPUT_DEVICE_STATUS_OK = 0,
   OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND,
@@ -25,6 +26,7 @@ enum OutputDeviceStatus {
   // here.
   OUTPUT_DEVICE_STATUS_MAX = OUTPUT_DEVICE_STATUS_ERROR_INTERNAL
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:OutputDeviceStatus)
 
 using OutputDeviceStatusCB = base::OnceCallback<void(OutputDeviceStatus)>;
 

@@ -91,6 +91,7 @@ constexpr uint32_t kSupportedInputFourccs[] = {
 // These values are logged to UMA. Entries should not be renumbered and numeric
 // values should never be reused. Please keep in sync with
 // "V4l2VideoDecoderFunctions" in src/tools/metrics/histograms/enums.xml.
+// LINT.IfChange(V4l2VideoDecoderFunctions)
 enum class V4l2VideoDecoderFunctions {
   kInitializeBackend = 0,
   kSetupInputFormat = 1,
@@ -101,6 +102,7 @@ enum class V4l2VideoDecoderFunctions {
   kOtherV4l2VideoDecoderFunction = 5,
   kMaxValue = kOtherV4l2VideoDecoderFunction,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:V4l2VideoDecoderFunctions)
 
 constexpr std::array<const char*,
                      static_cast<size_t>(V4l2VideoDecoderFunctions::kMaxValue) +

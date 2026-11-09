@@ -21,6 +21,7 @@ inline constexpr char kVirtualDeviceDisplayNamePrefix[] = "Virtual Chromium ";
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(VideoCaptureApi)
 enum class VideoCaptureApi {
   UNKNOWN = 0,
   LINUX_V4L2_SINGLE_PLANE = 1,
@@ -38,6 +39,7 @@ enum class VideoCaptureApi {
   WEBRTC_LINUX_PIPEWIRE_SINGLE_PLANE = 13,
   kMaxValue = WEBRTC_LINUX_PIPEWIRE_SINGLE_PLANE,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:VideoCaptureApi)
 
 // Represents capture device's support for different controls.
 struct VideoCaptureControlSupport {

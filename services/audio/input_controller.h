@@ -235,6 +235,7 @@ class InputController final {
   // and there are also other histograms such as
   // Media.Audio.InputStartupSuccessMac to cover issues similar
   // to the ones the NO_DATA_CALLBACK was intended for.
+  // LINT.IfChange(CaptureStartupResult)
   enum CaptureStartupResult {
     CAPTURE_STARTUP_OK = 0,
     CAPTURE_STARTUP_CREATE_STREAM_FAILED = 1,
@@ -244,6 +245,7 @@ class InputController final {
     CAPTURE_STARTUP_VOICE_ISOLATION_ERROR = 5,
     CAPTURE_STARTUP_RESULT_MAX = CAPTURE_STARTUP_VOICE_ISOLATION_ERROR,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:AudioCaptureStartupResult)
 
   static void LogCaptureStartupResult(StreamType type,
                                       CaptureStartupResult result);

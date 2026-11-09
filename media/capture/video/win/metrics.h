@@ -49,7 +49,7 @@ enum class MediaFoundationSharedImageDeliveryResult {
   kPoolExhausted = 3,
   kMaxValue = kPoolExhausted,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/media/enums.xml:MediaFoundationSharedImageDeliveryResult)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MediaFoundationSharedImageDeliveryResult)
 
 void LogNumberOfRetriesNeededToWorkAroundMFInvalidRequest(
     MediaFoundationFunctionRequiringRetry function,

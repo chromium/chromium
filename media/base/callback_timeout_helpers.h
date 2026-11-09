@@ -50,12 +50,14 @@ namespace media {
 // Enum class for reporting callback timeout status to UMA.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(CallbackTimeoutStatus)
 enum class CallbackTimeoutStatus {
   kCreate = 0,
   kTimeout = 1,
   kDestructedBeforeTimeout = 2,
   kMaxValue = kDestructedBeforeTimeout,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:CallbackTimeoutStatus)
 
 // Callback time for the timeout handler in `WrapCallbackWithTimeoutHandler`.
 // If `called_on_destruction` is true, the timeout callback was called because

@@ -15,6 +15,7 @@
 
 namespace media {
 
+// LINT.IfChange(AudioCodec)
 enum class AudioCodec {
   // These values are histogrammed over time; do not change their ordinal
   // values.  When deleting a codec replace it with a dummy value; when adding a
@@ -51,7 +52,9 @@ enum class AudioCodec {
   // Must always be equal to the largest entry ever logged.
   kMaxValue = kIAMF,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:AudioCodec)
 
+// LINT.IfChange(AudioCodecProfile)
 enum class AudioCodecProfile {
   // These values are histogrammed over time; do not change their ordinal
   // values.  When deleting a profile replace it with a dummy value; when adding
@@ -63,6 +66,7 @@ enum class AudioCodecProfile {
   kIAMF_BASE = 3,
   kMaxValue = kIAMF_BASE,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:AudioCodecProfile)
 
 std::string MEDIA_EXPORT GetCodecName(AudioCodec codec);
 std::string MEDIA_EXPORT GetProfileName(AudioCodecProfile profile);

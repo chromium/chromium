@@ -17,6 +17,7 @@ namespace media {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Please keep the consistency with
 // VideoEncoderUseCase in tools/metrics/histograms/enums.xml.
+// LINT.IfChange(SVCScalabilityMode)
 enum class SVCScalabilityMode : int {
   kL1T1 = 0,
   kL1T2 = 1,
@@ -58,6 +59,7 @@ enum class SVCScalabilityMode : int {
 
   kMaxValue = kL3T3h,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:SVCScalabilityMode)
 
 enum class SVCInterLayerPredMode : int {
   kOff = 0,      // Inter-layer prediction is disabled.

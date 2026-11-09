@@ -92,12 +92,14 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
 
   // Do not change: used for UMA reporting, matches
   // AudioOutputDeviceMixerMixedPlaybackStatus from enums.xml.
+  // LINT.IfChange(MixingError)
   enum class MixingError {
     kNone = 0,
     kOpenFailed,
     kPlaybackFailed,
     kMaxValue = kPlaybackFailed
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:AudioOutputDeviceMixerMixedPlaybackStatus)
 
   using MixTracks =
       std::set<std::unique_ptr<MixTrack>, base::UniquePtrComparator>;

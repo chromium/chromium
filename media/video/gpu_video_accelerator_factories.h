@@ -58,6 +58,7 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused
+  // LINT.IfChange(OutputFormat)
   enum class OutputFormat {
     UNDEFINED = 0,  // Unset state
     // DEPRECATED: I420 is no longer used and deprecated. Use YV12 instead.
@@ -77,6 +78,7 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
     YV12 = 9,
     kMaxValue = YV12
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:OutputFormat)
 
   enum class Supported {
     kFalse = 0,

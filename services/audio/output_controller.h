@@ -216,12 +216,14 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // Elements in this enum should not be deleted or rearranged; the only
   // permitted operation is to add new elements before kMaxValue and update
   // kMaxValue.
+  // LINT.IfChange(StreamCreationResult)
   enum class StreamCreationResult {
     kOk = 0,
     kCreateFailed = 1,
     kOpenFailed = 2,
     kMaxValue = kOpenFailed,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:AudioOutputStreamCreationResult)
 
   // Used to store various stats about a stream. The lifetime of this object is
   // from play until pause. The underlying physical stream may be changed when

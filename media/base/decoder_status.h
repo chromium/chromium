@@ -19,6 +19,7 @@ struct DecoderStatusTraits {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. Please keep the consistency with
   // DecoderStatus in tools/metrics/histograms/metadata/media/enums.xml.
+  // LINT.IfChange(Codes)
   enum class Codes : StatusCodeType {
     // Shared & General errors
     kOk = 0,
@@ -56,6 +57,7 @@ struct DecoderStatusTraits {
 
     kMaxValue = kElidedEndOfStreamForConfigChange
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:DecoderStatus)
   static constexpr StatusGroupType Group() { return "DecoderStatus"; }
 };
 

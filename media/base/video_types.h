@@ -25,6 +25,7 @@ namespace media {
 //
 // WARNING: Do not add pixel formats with more than 8 bytes per pixel or the
 // total size of the frame can overflow on 32-bit platforms.
+// LINT.IfChange(VideoPixelFormat)
 enum VideoPixelFormat {
   PIXEL_FORMAT_UNKNOWN = 0,  // Unknown or unspecified format value.
   PIXEL_FORMAT_I420 =
@@ -116,6 +117,7 @@ enum VideoPixelFormat {
   PIXEL_FORMAT_MAX =
       PIXEL_FORMAT_Y410,  // Must always be equal to largest entry logged.
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:VideoPixelFormatUnion)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

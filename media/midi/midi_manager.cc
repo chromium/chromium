@@ -22,6 +22,7 @@ using midi::mojom::Result;
 
 // Used to count events for usage histogram. The item order should not be
 // changed, and new items should be just appended.
+// LINT.IfChange(Usage)
 enum class Usage {
   CREATED,
   CREATED_ON_UNSUPPORTED_PLATFORMS,
@@ -33,9 +34,11 @@ enum class Usage {
   ERROR_OBSERVED,
   kMaxValue = ERROR_OBSERVED,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MidiUsage)
 
 // Used to count events for transaction usage histogram. The item order should
 // not be changed, and new items should be just appended.
+// LINT.IfChange(SendReceiveUsage)
 enum class SendReceiveUsage {
   NO_USE,
   SENT,
@@ -43,6 +46,7 @@ enum class SendReceiveUsage {
   SENT_AND_RECEIVED,
   kMaxValue = SENT_AND_RECEIVED,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MidiSendReceiveUsage)
 
 void ReportUsage(Usage usage) {
   base::UmaHistogramEnumeration("Media.Midi.Usage", usage);

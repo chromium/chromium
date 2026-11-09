@@ -43,7 +43,7 @@ class ReferenceSignalProvider {
 
     kMaxValue = STREAM_OPEN_DEVICE_REMOVED_ERROR,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:ReferenceOpenOutcome)
 
   enum class Type {
     kOutputDeviceMixer,

@@ -23,6 +23,7 @@ namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(CodedSizeGuessStatus)
 enum class CodedSizeGuessStatus {
   kNoneCorrect = 0,
   kGuessCorrect = 1,
@@ -32,6 +33,7 @@ enum class CodedSizeGuessStatus {
   kDidntGuessAndMediaFormatNotCorrect = 5,
   kMaxValue = kDidntGuessAndMediaFormatNotCorrect
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:CodedSizeGuessStatus)
 }  // namespace
 
 FrameInfoHelper::FrameInfo::FrameInfo() = default;

@@ -65,11 +65,13 @@ constexpr size_t kMinNumFramesInFlight = 4;
 // kInit: Recorded every time VEA Initialize() is called.
 // kSuccess: Recorded only when VEA initialization completes successfully.
 // Success percentage = (kSuccess count / kInit count) * 100.
+// LINT.IfChange(VEAInitSuccessRate)
 enum class VEAInitSuccessRate {
   kInit = 0,
   kSuccess = 1,
   kMaxValue = kSuccess,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:VEAInitSuccessRate)
 
 constexpr std::string_view kInitSuccessRateHistogramPrefix =
     "Media.VideoEncoder.D3D12VEA.InitSuccessRate.";

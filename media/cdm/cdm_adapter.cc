@@ -160,6 +160,7 @@ void ReportSystemCodeUMA(const std::string& key_system, uint32_t system_code) {
 }
 
 // These are reported to UMA server. Do not renumber or reuse values.
+// LINT.IfChange(OutputProtectionStatus)
 enum OutputProtectionStatus {
   kQueried = 0,
   kNoExternalLink = 1,
@@ -167,6 +168,7 @@ enum OutputProtectionStatus {
   // Note: Only add new values immediately before this line.
   kStatusCount
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MediaOutputProtectionStatus)
 
 void ReportOutputProtectionUMA(OutputProtectionStatus status) {
   UMA_HISTOGRAM_ENUMERATION("Media.EME.OutputProtection", status,

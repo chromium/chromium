@@ -57,6 +57,7 @@ enum class CdmMessageType {
 };
 
 // This enum is reported to UKM. Existing values should NEVER be changed.
+// LINT.IfChange(HdcpVersion)
 enum class HdcpVersion {
   kHdcpVersionNone = 0,
   kHdcpVersion1_0 = 1,
@@ -70,6 +71,7 @@ enum class HdcpVersion {
   kHdcpVersion2_3 = 9,
   kMaxValue = kHdcpVersion2_3
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:HdcpVersion)
 
 // Reasons for CDM session closed.
 enum class CdmSessionClosedReason {

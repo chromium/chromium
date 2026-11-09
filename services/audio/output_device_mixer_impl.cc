@@ -25,6 +25,7 @@ namespace {
 
 // Do not change: used for UMA reporting, matches
 // AudioOutputDeviceMixerStreamStatus from enums.xml.
+// LINT.IfChange(TrackError)
 enum class TrackError {
   kNone = 0,
   kIndependentOpenFailed,
@@ -33,6 +34,7 @@ enum class TrackError {
   kMixedPlaybackFailed,
   kMaxValue = kMixedPlaybackFailed
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:AudioOutputDeviceMixerStreamStatus)
 
 const char* TrackErrorToString(TrackError error) {
   switch (error) {

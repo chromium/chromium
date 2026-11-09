@@ -16,6 +16,7 @@ namespace media {
 
 // CDM creation status.
 // These are reported to UMA server. Do not renumber or reuse values.
+// LINT.IfChange(CreateCdmStatus)
 enum class CreateCdmStatus {
   // Succeeded.
   kSuccess = 0,
@@ -81,6 +82,7 @@ enum class CreateCdmStatus {
 
   kMaxValue = kAndroidUnsupportedMediaCryptoScheme,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:CreateCdmStatus)
 
 // Callback used when CDM is created. |status| tells the detailed reason why CDM
 // can't be created if ContentDecryptionModule is null.

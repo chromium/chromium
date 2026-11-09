@@ -10,6 +10,7 @@ namespace media {
 // Used to log outcomes of device enumerations (audio and video). These values
 // are persisted to logs. Entries should not be renumbered and numeric values
 // should never be reused.
+// LINT.IfChange(DeviceEnumerationOutcome)
 enum class DeviceEnumerationOutcome {
   kSuccessEmptyResult = 0,
   kSuccessNonEmptyResult = 1,
@@ -17,6 +18,7 @@ enum class DeviceEnumerationOutcome {
   kFailureNonEmptyResult = 3,
   kMaxValue = kFailureNonEmptyResult
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:DeviceEnumerationOutcome)
 
 constexpr inline DeviceEnumerationOutcome GetDeviceEnumerationOutcome(
     bool success,

@@ -39,6 +39,7 @@ enum class AudioDecoderType : int {
 
 // List of known VideoDecoder implementations; recorded to UKM, always add new
 // values to the end and do not reorder or delete values from this list.
+// LINT.IfChange(VideoDecoderType)
 enum class VideoDecoderType : int {
   kUnknown = 0,  // Decoder name string is not recognized or n/a.
   // kGpu = 1,      // GpuVideoDecoder (DEPRECATED)
@@ -66,6 +67,7 @@ enum class VideoDecoderType : int {
   // Keep this at the end and equal to the last entry.
   kMaxValue = kDav2d
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:VideoDecoderType)
 
 MEDIA_EXPORT const char* GetDecoderName(AudioDecoderType type);
 MEDIA_EXPORT const char* GetDecoderName(VideoDecoderType type);

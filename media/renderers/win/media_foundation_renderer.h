@@ -49,6 +49,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // Reported to UMA. Do not change existing values.
   // Updates to ErrorReason also requires the changes updated to
   // tools/metrics/histograms/metadata/media/enums.xml.
+  // LINT.IfChange(ErrorReason)
   enum class ErrorReason {
     kUnknown = 0,
     kCdmProxyReceivedInInvalidState = 1,
@@ -71,6 +72,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
     // Add new values here and update `kMaxValue`. Never reuse existing values.
     kMaxValue = kFailedToSetOutputRect,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MediaFoundationRendererErrorReason)
 
   // An enum for recording MediaFoundationRenderer playback detected rendered
   // video frames. Reported to UMA. Do not change existing values. Updates to
@@ -88,7 +90,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
     // Add new values here and update `kMaxValue`. Never reuse existing values.
     kMaxValue = kUnknownByShutdown,
   };
-  // LINT.ThenChange(/tools/metrics/histograms/metadata/media/enums.xml:MediaFoundationRendererRenderedVideoFrameDetectionResult)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MediaFoundationRendererRenderedVideoFrameDetectionResult)
 
   // Report `reason` to UMA.
   static void ReportErrorReason(ErrorReason reason);

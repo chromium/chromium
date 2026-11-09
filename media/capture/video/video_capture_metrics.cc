@@ -15,6 +15,7 @@ namespace {
 
 // These resolutions are ones supported on a test webcam. Names given
 // where possible, from https://en.wikipedia.org/wiki/List_of_common_resolutions
+// LINT.IfChange(VideoResolutionDesignation)
 enum class VideoResolutionDesignation {
   kUnknown = 0,  // Catch-all for resolutions not understood.
   // Video Graphics Array resolutions
@@ -71,6 +72,7 @@ enum class VideoResolutionDesignation {
 
   kMaxValue = k2592x1944,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:VideoResolutionDesignation)
 
 struct FrameSizeCompare {
   // Return true iff lhs < rhs.

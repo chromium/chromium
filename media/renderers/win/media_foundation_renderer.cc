@@ -88,6 +88,7 @@ static constexpr char kSetOutputRectHresultUmaName[] =
     "Media.MediaFoundationRenderer.SetOutputRect.Hresult";
 
 // Reported to UMA. Do NOT change or reuse existing values.
+// LINT.IfChange(GpuOrDisplayCount)
 enum class GpuOrDisplayCount {
   kUnknown = 0,
   kOne = 1,
@@ -95,8 +96,10 @@ enum class GpuOrDisplayCount {
                    // and two or more is enough.
   kMaxValue = kTwoOrMore
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:GpuOrDisplayCount)
 
 // Reported to UMA. Do NOT change or reuse existing values.
+// LINT.IfChange(ActiveGpuInfo)
 enum class ActiveGpuInfo : uint32_t {
   kNone = 0,
   kIntel = kGpuBitmaskIntel,
@@ -121,14 +124,17 @@ enum class ActiveGpuInfo : uint32_t {
   kOtherOther = kOther | (kOther << kMakeGpuNonActive),
   kMaxValue = kOtherOther
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:ActiveGpuInfo)
 
 // Reported to UMA. Do NOT change or reuse existing values.
+// LINT.IfChange(ActiveGpuDisplayInfo)
 enum class ActiveGpuDisplayInfo {
   kUnknown = 0,
   kLikelyBuiltIn = 1,   // Likely built-in display
   kLikelyExternal = 2,  // Likely external display
   kMaxValue = kLikelyExternal
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:ActiveGpuDisplayInfo)
 
 // The |g_video_window_class| atom obtained is used as the |lpClassName|
 // parameter in CreateWindowEx().

@@ -22,6 +22,7 @@ namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(ReactionEffectsGesturesState)
 enum class ReactionEffectsGesturesState {
   kNotSupported = 0,      // Reaction effects not supported
   kDisabled = 1,          // Reaction effects supported, but disabled
@@ -29,9 +30,11 @@ enum class ReactionEffectsGesturesState {
   kGesturesEnabled = 3,   // Reaction effects enabled and triggered by gestures
   kMaxValue = kGesturesEnabled,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:ReactionEffectsGesturesState)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(AVCaptureDeviceClassification)
 enum class AVCaptureDeviceClassification {
   kNonPluginApple = 0,
   kNonPluginThirdPartyTransportBuiltIn = 1,
@@ -43,6 +46,7 @@ enum class AVCaptureDeviceClassification {
   kPluginThirdPartyNonExtension = 7,
   kMaxValue = kPluginThirdPartyNonExtension,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:ImplementationClassification)
 
 bool HasPrefix(NSString* string, NSString* prefix) {
   return [string rangeOfString:prefix

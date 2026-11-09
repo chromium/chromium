@@ -27,7 +27,7 @@ enum class MediaFoundationCodecPackage {
   // Add new values here and update `kMaxValue`. Never reuse existing  values.
   kMaxValue = kEAC3,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/media/histograms.xml:MediaFoundationCodecPackage)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/histograms.xml:MediaFoundationCodecPackage)
 
 // Locate Media Foundation based Codec Pack install paths by using Win32
 // AppModel APIs.

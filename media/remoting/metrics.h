@@ -20,6 +20,7 @@ namespace remoting {
 // incompatibilities.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(RemotingCompatibility)
 enum class RemotingCompatibility {
   kCompatible = 0,
   kNoAudioNorVideo = 1,
@@ -33,10 +34,12 @@ enum class RemotingCompatibility {
 
   kMaxValue = kDurationBelowThreshold,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:RemotingCompatibility)
 
 // The rate of pixels in a video and whether the receiver supports its playback.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(PixelRateSupport)
 enum class PixelRateSupport {
   // Pixels per second is at most the equivalent of 1080p 30fps.
   k2kSupported = 0,
@@ -48,6 +51,7 @@ enum class PixelRateSupport {
 
   kMaxValue = kOver4kNotSupported,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:RemotingVideoPixelRateSupport)
 
 class SessionMetricsRecorder {
  public:
@@ -87,6 +91,7 @@ class SessionMetricsRecorder {
   // histograms, and must remain backwards-compatible for all time. However,
   // *do* change TRACK_CONFIGURATION_MAX to one after the greatest value when
   // adding new ones. Also, don't forget to update histograms.xml!
+  // LINT.IfChange(TrackConfiguration)
   enum TrackConfiguration {
     NEITHER_AUDIO_NOR_VIDEO = 0,
     AUDIO_ONLY = 1,
@@ -95,6 +100,7 @@ class SessionMetricsRecorder {
 
     TRACK_CONFIGURATION_MAX = 3,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:RemotingTrackConfiguration)
 
   // Helper methods to record media configuration at relevant times.
   void RecordAudioConfiguration();

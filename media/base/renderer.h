@@ -24,6 +24,7 @@ class RendererClient;
 // WARNING: These values are reported to metrics. Entries should not be
 // renumbered and numeric values should not be reused. When adding new entries,
 // also update media::mojom::RendererType & tools/metrics/histograms/enums.xml.
+// LINT.IfChange(RendererType)
 enum class RendererType {
   kRendererImpl = 0,  // RendererImplFactory
   kMojo = 1,          // MojoRendererFactory
@@ -39,6 +40,7 @@ enum class RendererType {
   kTest = 11,                    // Renderer implementations used in tests
   kMaxValue = kTest,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:MediaRendererType)
 
 // Get the name of the Renderer for `renderer_type`. The returned name could be
 // the actual Renderer class name or a descriptive name.

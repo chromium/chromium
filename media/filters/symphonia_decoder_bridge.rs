@@ -146,6 +146,7 @@ pub mod ffi {
         channel_mask: u32,
     }
 
+    // LINT.IfChange(SymphoniaInitStatus)
     /// Detailed status code indicating the result of a decoder initialization
     /// attempt.
     /// NOTE: these values are persisted to UMA histograms, and should not be
@@ -177,6 +178,9 @@ pub mod ffi {
         /// Boundary for UMA histograms.
         kMaxValue,
     }
+    // LINT.ThenChange(
+    // //tools/metrics/histograms/metadata/media/enums.xml:SymphoniaInitStatus
+    // )
 
     /// Represents the result of a decoder initialization attempt.
     struct SymphoniaInitResult {
@@ -190,6 +194,7 @@ pub mod ffi {
         decoder: Box<SymphoniaDecoder>,
     }
 
+    // LINT.IfChange(SymphoniaDecodeStatus)
     /// Represents the possible outcomes of a decode operation.
     /// NOTE: these values are persisted to UMA histograms, and should not be
     /// reordered or deleted.
@@ -225,6 +230,9 @@ pub mod ffi {
         /// Boundary for UMA histograms.
         kMaxValue,
     }
+    // LINT.ThenChange(
+    // //tools/metrics/histograms/metadata/media/enums.xml:SymphoniaDecodeStatus
+    // )
 
     /// Represents the result of an attempt to decode an audio packet.
     struct SymphoniaDecodeResult {

@@ -13,6 +13,7 @@ struct MEDIA_EXPORT EncoderStatusTraits {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. Please keep the consistency with
   // EncoderStatus in tools/metrics/histograms/enums.xml.
+  // LINT.IfChange(Codes)
   enum class Codes : StatusCodeType {
     // No failure happens.
     kOk = 0,
@@ -103,6 +104,7 @@ struct MEDIA_EXPORT EncoderStatusTraits {
 
     kMaxValue = kSharedImageResolveFailed,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:EncoderStatus)
 
   static constexpr StatusGroupType Group() { return "EncoderStatus"; }
   static std::string ReadableCodeName(Codes code);

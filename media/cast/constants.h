@@ -71,6 +71,7 @@ enum OperationalStatus {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(CastStreamingFrameDropReason)
 enum class CastStreamingFrameDropReason {
   // The frame was not dropped.
   kNotDropped = 0,
@@ -100,6 +101,7 @@ enum class CastStreamingFrameDropReason {
   // Should stay updated as the maximum enum value above.
   kMaxValue = kDroppedByEncoder
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:CastStreamingFrameDropReason)
 
 }  // namespace cast
 }  // namespace media

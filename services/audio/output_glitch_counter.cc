@@ -21,11 +21,13 @@ namespace {
 // Used to log if any audio glitches have been detected during an audio session.
 // Elements in this enum should not be deleted or rearranged, because they need
 // to stay consistent with the existing histogram data.
+// LINT.IfChange(AudioGlitchResult)
 enum class AudioGlitchResult {
   kNoGlitches = 0,
   kGlitches = 1,
   kMaxValue = kGlitches
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:AudioGlitchResult)
 }  // namespace
 
 OutputGlitchCounter::OutputGlitchCounter(media::AudioLatency::Type latency_tag)
