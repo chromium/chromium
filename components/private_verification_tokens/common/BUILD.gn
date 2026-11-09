@@ -135,6 +135,15 @@ source_set("private_verification_tokens_store_unittest") {
   ]
 }
 
+source_set("private_verification_tokens_features") {
+  sources = [
+    "private_verification_tokens_features.cc",
+    "private_verification_tokens_features.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [ "//net" ]
+}
+
 source_set("private_verification_tokens_parameters") {
   sources = [
     "private_verification_tokens_parameters.cc",
