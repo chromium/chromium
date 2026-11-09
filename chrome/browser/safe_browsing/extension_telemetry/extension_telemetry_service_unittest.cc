@@ -2014,4 +2014,54 @@ TEST_F(ExtensionTelemetryServiceIsolatedModeTest, CanBeEnabledForEnterprise) {
   EXPECT_TRUE(IsExtensionStoreEmpty());
 }
 
+TEST_F(ExtensionTelemetryServiceIsolatedModeTest,
+       DoesNotCollectOffstoreFileData) {
+  SetEnterpriseReportingConfig(
+      /*enabled=*/true, {enterprise_connectors::kExtensionTelemetryEvent});
+  ASSERT_TRUE(IsTelemetryServiceEnabledForEnterprise());
+
+  // With mock time, this also runs the tasks posted to the thread pool.
+  task_environment_.FastForwardBy(
+      telemetry_service_->GetOffstoreFileDataCollectionStartupDelaySeconds());
+
+  // The Isolated Mode profile's prefs are an in-memory overlay of the parent
+  // profile's prefs, so check both.
+  EXPECT_TRUE(isolated_profile_->GetPrefs()
+                  ->GetDict(prefs::kExtensionTelemetryFileData)
+                  .empty());
+  EXPECT_TRUE(prefs()->GetDict(prefs::kExtensionTelemetryFileData).empty());
+}
+
+TEST_F(ExtensionTelemetryServiceIsolatedModeTest,
+       ReportsOffstoreFileDataCollectedByParentProfile) {
+  // Simulate file data collected by the parent profile's service.
+  constexpr char kFileHash[] = "file-hash";
+  constexpr char kManifestContents[] = "manifest-contents";
+  base::DictValue file_data_dict;
+  file_data_dict.Set(
+      kExtensionId[0],
+      base::DictValue()
+          .Set(kFileDataProcessTimestampPref,
+               base::TimeToValue(base::Time::Now()))
+          .Set(kFileDataDictPref, base::DictValue()
+                                      .Set(kJavaScriptFile, kFileHash)
+                                      .Set(kManifestFile, kManifestContents)));
+  prefs()->SetDict(prefs::kExtensionTelemetryFileData,
+                   std::move(file_data_dict));
+
+  SetEnterpriseReportingConfig(
+      /*enabled=*/true, {enterprise_connectors::kExtensionTelemetryEvent});
+  PrimeTelemetryServiceWithSignal();
+
+  std::unique_ptr<TelemetryReport> report = GetTelemetryReportForEnterprise();
+  ASSERT_TRUE(report);
+  ASSERT_EQ(report->reports_size(), 1);
+  const ExtensionInfo& extension_info = report->reports(0).extension();
+  EXPECT_EQ(extension_info.id(), kExtensionId[0]);
+  EXPECT_EQ(extension_info.manifest_json(), kManifestContents);
+  ASSERT_EQ(extension_info.file_infos_size(), 1);
+  EXPECT_EQ(extension_info.file_infos(0).name(), kJavaScriptFile);
+  EXPECT_EQ(extension_info.file_infos(0).hash(), kFileHash);
+}
+
 }  // namespace safe_browsing

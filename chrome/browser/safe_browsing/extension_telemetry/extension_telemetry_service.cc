@@ -1700,6 +1700,12 @@ bool ExtensionTelemetryService::OffstoreExtensionFileDataContext::operator<(
 }
 
 void ExtensionTelemetryService::SetUpOffstoreFileDataCollection() {
+  // Off-The-Record profiles reuse the off-store file data collected by the
+  // parent profile, read from its `kExtensionTelemetryFileData` pref.
+  if (profile_->IsOffTheRecord()) {
+    return;
+  }
+
   // If both is enabled, set up has already been done.
   if (esb_enabled_ && enterprise_enabled_) {
     return;
