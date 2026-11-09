@@ -426,6 +426,16 @@ BASE_DECLARE_FEATURE(kRateLimitProxyConfigPolls);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kRateLimitProxyConfigPollsInterval);
 
+// When enabled, applies strictly validated DNS host-mapping rules (restricted
+// to exact `MAP <source_host> <target_host>` clauses within `google.com`) from
+// `kDnsHostMappingExperimentRules` when constructing a `NetworkContext`'s
+// `HostResolver`, unless `--host-resolver-rules` or `--host-rules` is present
+// on the command line.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kDnsHostMappingExperiment);
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(std::string, kDnsHostMappingExperimentRules);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_

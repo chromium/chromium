@@ -83,6 +83,8 @@ class NET_EXPORT MappedHostResolver : public HostResolver {
   void SetRequestContext(URLRequestContext* request_context) override;
   bool IsHappyEyeballsV3Enabled() const override;
   HostResolverManager* GetManagerForTesting() override;
+  const URLRequestContext* GetContextForTesting() const override;
+  handles::NetworkHandle GetTargetNetworkForTesting() const override;
 
  private:
   std::unique_ptr<HostResolver> impl_;

@@ -331,7 +331,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
     context->set_client_socket_factory(std::move(client_socket_factory));
 
     host_resolver_ = HostResolver::CreateStandaloneNetworkBoundResolver(
-        context->net_log(), bound_network_, manager_options_);
+        context->net_log(), bound_network_, manager_options_,
+        host_mapping_rules_);
 
     if (!quic_context_) {
       set_quic_context(std::make_unique<QuicContext>());
@@ -357,7 +358,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   }
 
   if (host_resolver_) {
-    DCHECK(host_mapping_rules_.empty());
+    DCHECK(bound_network_ != handles::kInvalidNetworkHandle ||
+           host_mapping_rules_.empty());
     DCHECK(!host_resolver_manager_);
     DCHECK(!host_resolver_factory_);
   } else if (host_resolver_manager_) {

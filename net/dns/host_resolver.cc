@@ -555,10 +555,20 @@ HostResolver::CreateStandaloneNetworkBoundResolver(
   if (!is_builtin_resolver_supported) {
     manager_options.insecure_dns_mode = InsecureDnsMode::kDisabled;
   }
-  return std::make_unique<ContextHostResolver>(
-      HostResolverManager::CreateNetworkBoundHostResolverManager(
-          manager_options, target_network, net_log),
-      std::move(resolve_context));
+  std::unique_ptr<HostResolver> resolver =
+      std::make_unique<ContextHostResolver>(
+          HostResolverManager::CreateNetworkBoundHostResolverManager(
+              manager_options, target_network, net_log),
+          std::move(resolve_context));
+
+  if (!host_mapping_rules.empty()) {
+    auto remapped_resolver =
+        std::make_unique<MappedHostResolver>(std::move(resolver));
+    remapped_resolver->SetRulesFromString(host_mapping_rules);
+    resolver = std::move(remapped_resolver);
+  }
+
+  return resolver;
 #else   // !BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
   return nullptr;

@@ -15,9 +15,13 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
+#include "net/dns/dns_test_util.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/host_resolver_source.h"
 #include "net/http/http_auth_challenge_tokenizer.h"
 #include "net/http/http_auth_handler.h"
 #include "net/http/http_auth_handler_factory.h"
@@ -31,6 +35,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_test_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
@@ -328,6 +333,49 @@ TEST_F(URLRequestContextBuilderTest, DefaultHostResolver) {
   EXPECT_EQ(manager.get(), context->host_resolver()->GetManagerForTesting());
 }
 
+TEST_F(URLRequestContextBuilderTest, DefaultHostResolverWithHostMappingRules) {
+  auto manager = std::make_unique<HostResolverManager>(
+      HostResolver::ManagerOptions(), /*system_dns_config_notifier=*/nullptr,
+      /*net_log=*/nullptr);
+  manager->DisableSystemResolverForTesting();
+  DnsConfig dns_config;
+  dns_config.nameservers = {IPEndPoint(IPAddress::IPv4Localhost(), 53)};
+  MockDnsClientRuleList rules;
+  rules.emplace_back("mapped.example.com", dns_protocol::kTypeA,
+                     /*secure=*/false,
+                     MockDnsClientRule::Result(BuildTestDnsAddressResponse(
+                         "mapped.example.com", IPAddress(192, 0, 2, 1))),
+                     /*delay=*/false);
+  auto dns_client =
+      std::make_unique<MockDnsClient>(dns_config, std::move(rules));
+  dns_client->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
+                                 /*additional_types_enabled=*/false);
+  dns_client->set_ignore_system_config_changes(true);
+  manager->SetDnsClientForTesting(std::move(dns_client));
+
+  URLRequestContextBuilder builder;
+  SetUpURLRequestContextBuilder(builder);
+  builder.set_host_resolver_manager(manager.get());
+  builder.set_host_mapping_rules("MAP www.example.com mapped.example.com");
+  std::unique_ptr<URLRequestContext> context = builder.Build();
+
+  EXPECT_EQ(context.get(), context->host_resolver()->GetContextForTesting());
+  EXPECT_EQ(manager.get(), context->host_resolver()->GetManagerForTesting());
+
+  HostResolver::ResolveHostParameters parameters;
+  parameters.dns_query_type = DnsQueryType::A;
+  parameters.source = HostResolverSource::DNS;
+  std::unique_ptr<HostResolver::ResolveHostRequest> request =
+      context->host_resolver()->CreateRequest(
+          HostPortPair("www.example.com", 443), NetworkAnonymizationKey(),
+          handles::kInvalidNetworkHandle, NetLogWithSource(), parameters);
+  TestCompletionCallback callback;
+  int rv = callback.GetResult(request->Start(callback.callback()));
+  EXPECT_THAT(rv, test::IsOk());
+  EXPECT_THAT(request->GetAddressResults().endpoints(),
+              ::testing::ElementsAre(IPEndPoint(IPAddress(192, 0, 2, 1), 443)));
+}
+
 TEST_F(URLRequestContextBuilderTest, CustomHostResolver) {
   std::unique_ptr<HostResolver> resolver =
       HostResolver::CreateStandaloneResolver(nullptr);
@@ -411,6 +459,69 @@ TEST_F(URLRequestContextBuilderTest, BindToNetworkCustomManagerOptions) {
                 ->GetManagerForTesting()
                 ->check_ipv6_on_wifi_for_testing(),
             options.check_ipv6_on_wifi);
+#else   // !BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP() << "BindToNetwork is supported only on Android";
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+TEST_F(URLRequestContextBuilderTest, BindToNetworkWithHostMappingRules) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_MARSHMALLOW) {
+    GTEST_SKIP()
+        << "BindToNetwork is supported starting from Android Marshmallow";
+  }
+
+  constexpr handles::NetworkHandle network = 2;
+  auto scoped_mock_network_change_notifier =
+      std::make_unique<test::ScopedMockNetworkChangeNotifier>();
+  test::MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+
+  builder_.BindToNetwork(network);
+  builder_.set_host_mapping_rules("MAP www.example.com mapped.example.com");
+  std::unique_ptr<URLRequestContext> context = builder_.Build();
+
+  EXPECT_EQ(context->bound_network(), network);
+  EXPECT_EQ(context->host_resolver()->GetContextForTesting(), context.get());
+  EXPECT_EQ(context->host_resolver()->GetTargetNetworkForTesting(), network);
+  EXPECT_EQ(context->host_resolver()
+                ->GetManagerForTesting()
+                ->target_network_for_testing(),
+            network);
+
+  context->host_resolver()
+      ->GetManagerForTesting()
+      ->DisableSystemResolverForTesting();
+  DnsConfig dns_config;
+  dns_config.nameservers = {IPEndPoint(IPAddress::IPv4Localhost(), 53)};
+  MockDnsClientRuleList rules;
+  rules.emplace_back("mapped.example.com", dns_protocol::kTypeA,
+                     /*secure=*/false,
+                     MockDnsClientRule::Result(BuildTestDnsAddressResponse(
+                         "mapped.example.com", IPAddress(192, 0, 2, 2))),
+                     /*delay=*/false);
+  auto dns_client =
+      std::make_unique<MockDnsClient>(dns_config, std::move(rules));
+  dns_client->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
+                                 /*additional_types_enabled=*/false);
+  dns_client->set_ignore_system_config_changes(true);
+  context->host_resolver()->GetManagerForTesting()->SetDnsClientForTesting(
+      std::move(dns_client));
+
+  HostResolver::ResolveHostParameters parameters;
+  parameters.dns_query_type = DnsQueryType::A;
+  parameters.source = HostResolverSource::DNS;
+  std::unique_ptr<HostResolver::ResolveHostRequest> request =
+      context->host_resolver()->CreateRequest(
+          HostPortPair("www.example.com", 443), NetworkAnonymizationKey(),
+          handles::kInvalidNetworkHandle, NetLogWithSource(), parameters);
+  TestCompletionCallback callback;
+  int rv = callback.GetResult(request->Start(callback.callback()));
+  EXPECT_THAT(rv, test::IsOk());
+  EXPECT_THAT(request->GetAddressResults().endpoints(),
+              ::testing::ElementsAre(IPEndPoint(IPAddress(192, 0, 2, 2), 443)));
 #else   // !BUILDFLAG(IS_ANDROID)
   GTEST_SKIP() << "BindToNetwork is supported only on Android";
 #endif  // BUILDFLAG(IS_ANDROID)

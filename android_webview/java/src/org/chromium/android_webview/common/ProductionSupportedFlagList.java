@@ -1566,6 +1566,12 @@ public final class ProductionSupportedFlagList {
                 "When enabled, Profile#preconnect configures the client-side initial RTT on"
                         + " uncached QUIC sessions to reduce the initial handshake Probe Timeout"
                         + " (PTO) delay."),
+        Flag.baseFeature(
+                NetworkServiceFeatures.DNS_HOST_MAPPING_EXPERIMENT,
+                "Enables scoped DNS host-mapping rules from Finch for DNS latency experiments."),
+        Flag.baseFeature(
+                NetFeatures.USE_DNS_HTTPS_SVCB_ADDRESS_HINTS,
+                "Enables using address hints (ipv4hint and ipv6hint) in HTTPS DNS records."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

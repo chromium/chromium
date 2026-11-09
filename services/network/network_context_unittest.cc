@@ -50,6 +50,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -185,6 +186,7 @@
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
@@ -216,6 +218,7 @@
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
+#include "url/url_util.h"
 
 #if BUILDFLAG(ENABLE_REPORTING)
 #include "net/network_error_logging/network_error_logging_service.h"
@@ -841,7 +844,7 @@ TEST_F(NetworkContextTest, DestroyContextWithLiveRequest) {
 }
 
 TEST_F(NetworkContextTest, DisableQuic) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kEnableQuic);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kEnableQuic);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -2772,9 +2775,9 @@ TEST_F(NetworkContextTest, QuicIdleConnectionTimeout) {
 // Make sure that network_session_configurator is hooked up.
 TEST_F(NetworkContextTest, FixedHttpPort) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kTestingFixedHttpPort, "800");
+      ::switches::kTestingFixedHttpPort, "800");
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kTestingFixedHttpsPort, "801");
+      ::switches::kTestingFixedHttpsPort, "801");
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -7712,6 +7715,317 @@ TEST_F(NetworkContextCreateHostResolverTest, WithConfigOverrides) {
 #endif  // BUILDFLAG(IS_IOS)
 
 using NetworkContextActivateDohProbesTest = NetworkContextTest;
+
+// Verifies Finch-driven host mapping rules (`kDnsHostMappingExperiment`) in
+// `NetworkContext::MakeURLRequestContext`, including fail-closed validation and
+// command-line switch precedence.
+class NetworkContextDnsHostMappingExperimentTest : public NetworkContextTest {
+ protected:
+  void SetUpMockDnsClient() {
+    net::DnsConfig base_configuration;
+    base_configuration.nameservers = {CreateExpectedEndPoint("192.0.2.53", 53)};
+
+    net::MockDnsClientRuleList rules;
+    auto add_a_record_rule = [&](const std::string& host,
+                                 std::string_view ip_literal) {
+      net::IPAddress ip;
+      CHECK(ip.AssignFromIPLiteral(ip_literal));
+      rules.emplace_back(host, net::dns_protocol::kTypeA, /*secure=*/false,
+                         net::MockDnsClientRule::Result(
+                             net::BuildTestDnsAddressResponse(host, ip)),
+                         /*delay=*/false);
+    };
+
+    add_a_record_rule("google.com", "142.250.80.0");
+    add_a_record_rule("www.google.com", "142.250.80.1");
+    add_a_record_rule("ttl-exp-600.google.com", "142.250.80.2");
+    add_a_record_rule("images.google.com", "142.250.80.3");
+    add_a_record_rule("num-exp-4.google.com", "142.250.80.4");
+    add_a_record_rule("maps.google.com", "142.250.80.5");
+    add_a_record_rule("cmd-override.example", "192.0.2.99");
+
+    auto mock_dns_client = std::make_unique<net::MockDnsClient>(
+        base_configuration, std::move(rules));
+    mock_dns_client->SetInsecureEnabled(net::InsecureDnsMode::kEnabledBuiltIn,
+                                        /*additional_types_enabled=*/false);
+    mock_dns_client->set_ignore_system_config_changes(true);
+    network_service_->host_resolver_manager()->SetDnsClientForTesting(
+        std::move(mock_dns_client));
+  }
+
+  std::vector<net::IPEndPoint> ResolveHostA(NetworkContext* network_context,
+                                            std::string_view host,
+                                            uint16_t port) {
+    return ResolveHostImpl(network_context,
+                           network::mojom::HostResolverHost::NewHostPortPair(
+                               net::HostPortPair(host, port)));
+  }
+
+  std::vector<net::IPEndPoint> ResolveSchemeHostPortA(
+      NetworkContext* network_context,
+      url::SchemeHostPort scheme_host_port) {
+    return ResolveHostImpl(network_context,
+                           network::mojom::HostResolverHost::NewSchemeHostPort(
+                               std::move(scheme_host_port)));
+  }
+
+ private:
+  std::vector<net::IPEndPoint> ResolveHostImpl(
+      NetworkContext* network_context,
+      network::mojom::HostResolverHostPtr host) {
+    base::RunLoop run_loop;
+    mojom::ResolveHostParametersPtr parameters =
+        mojom::ResolveHostParameters::New();
+    parameters->dns_query_type = net::DnsQueryType::A;
+    parameters->source = net::HostResolverSource::DNS;
+    mojo::PendingRemote<mojom::ResolveHostClient> pending_response_client;
+    TestResolveHostClient response_client(&pending_response_client, &run_loop);
+    network_context->ResolveHost(
+        std::move(host), net::NetworkAnonymizationKey(), std::move(parameters),
+        std::move(pending_response_client));
+    run_loop.Run();
+    EXPECT_EQ(net::OK, response_client.result_error());
+    return response_client.result_addresses().endpoints();
+  }
+};
+
+TEST_F(NetworkContextDnsHostMappingExperimentTest,
+       AppliesValidSingleAndMultipleGoogleRules) {
+  SetUpMockDnsClient();
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kDnsHostMappingExperiment,
+      {{"rules",
+        "MAP google.com ttl-exp-600.google.com, "
+        "MAP www.google.com ttl-exp-600.google.com, "
+        "MAP images.google.com num-exp-4.google.com"}});
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.HostMappingExperiment.RulesApplied", true, 1);
+  // Verify both HostPortPair and SchemeHostPort resolution (including apex
+  // google.com).
+  EXPECT_THAT(ResolveSchemeHostPortA(
+                  network_context.get(),
+                  url::SchemeHostPort(url::kHttpsScheme, "google.com", 443)),
+              ElementsAre(CreateExpectedEndPoint("142.250.80.2", 443)));
+  EXPECT_THAT(
+      ResolveSchemeHostPortA(
+          network_context.get(),
+          url::SchemeHostPort(url::kHttpsScheme, "www.google.com", 443)),
+      ElementsAre(CreateExpectedEndPoint("142.250.80.2", 443)));
+  EXPECT_THAT(ResolveHostA(network_context.get(), "www.google.com", 443),
+              ElementsAre(CreateExpectedEndPoint("142.250.80.2", 443)));
+  EXPECT_THAT(ResolveHostA(network_context.get(), "images.google.com", 443),
+              ElementsAre(CreateExpectedEndPoint("142.250.80.4", 443)));
+  // Unmapped google.com hosts resolve normally without remapping.
+  EXPECT_THAT(
+      ResolveSchemeHostPortA(
+          network_context.get(),
+          url::SchemeHostPort(url::kHttpsScheme, "maps.google.com", 443)),
+      ElementsAre(CreateExpectedEndPoint("142.250.80.5", 443)));
+}
+
+TEST_F(NetworkContextDnsHostMappingExperimentTest,
+       HandlesNonStandardSchemeHostPort) {
+  SetUpMockDnsClient();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kDnsHostMappingExperiment,
+      {{"rules", "MAP www.google.com ttl-exp-600.google.com"}});
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  {
+    // Local non-standard schemes preserve host and port on `SchemeHostPort`
+    // while `GURL::IsStandard()` is false. Both unmapped and mapped
+    // resolutions succeed without hitting `GURL::IsStandard()` assertions.
+    url::ScopedSchemeRegistryForTests scoped_registry;
+    url::AddLocalScheme("localnonstd");
+
+    EXPECT_THAT(
+        ResolveSchemeHostPortA(
+            network_context.get(),
+            url::SchemeHostPort("localnonstd", "maps.google.com", 8080)),
+        ElementsAre(CreateExpectedEndPoint("142.250.80.5", 8080)));
+    EXPECT_THAT(ResolveSchemeHostPortA(
+                    network_context.get(),
+                    url::SchemeHostPort("localnonstd", "www.google.com", 8443)),
+                ElementsAre(CreateExpectedEndPoint("142.250.80.2", 8443)));
+  }
+
+  {
+    // Android WebView non-standard schemes discard host and port (`host() ==
+    // ""`) while keeping `SchemeHostPort::IsValid()` true. `ResolveHost` must
+    // fail cleanly with `ERR_NAME_NOT_RESOLVED` without crashing.
+    url::ScopedSchemeRegistryForTests scoped_registry;
+    url::EnableNonStandardSchemesForAndroidWebView();
+
+    url::SchemeHostPort webview_shp("nonstd", "www.google.com", 8443);
+    ASSERT_TRUE(webview_shp.IsValid());
+    ASSERT_TRUE(webview_shp.host().empty());
+
+    base::RunLoop run_loop;
+    mojom::ResolveHostParametersPtr parameters =
+        mojom::ResolveHostParameters::New();
+    parameters->dns_query_type = net::DnsQueryType::A;
+    parameters->source = net::HostResolverSource::DNS;
+    mojo::PendingRemote<mojom::ResolveHostClient> pending_response_client;
+    TestResolveHostClient response_client(&pending_response_client, &run_loop);
+    network_context->ResolveHost(
+        network::mojom::HostResolverHost::NewSchemeHostPort(
+            std::move(webview_shp)),
+        net::NetworkAnonymizationKey(), std::move(parameters),
+        std::move(pending_response_client));
+    run_loop.Run();
+    EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, response_client.result_error());
+  }
+}
+
+TEST_F(NetworkContextDnsHostMappingExperimentTest,
+       CanonicalizesCaseAndWhitespaceInRules) {
+  SetUpMockDnsClient();
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kDnsHostMappingExperiment,
+      {{"rules", "  map\tWWW.GOOGLE.COM   TTL-EXP-600.GOOGLE.COM  "}});
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.HostMappingExperiment.RulesApplied", true, 1);
+  EXPECT_THAT(ResolveHostA(network_context.get(), "www.google.com", 443),
+              ElementsAre(CreateExpectedEndPoint("142.250.80.2", 443)));
+}
+
+TEST_F(NetworkContextDnsHostMappingExperimentTest,
+       CommandLineHostResolverRulesTakesPrecedence) {
+  SetUpMockDnsClient();
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kDnsHostMappingExperiment,
+      {{"rules", "MAP www.google.com ttl-exp-600.google.com"}});
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kHostResolverRules, "MAP www.google.com cmd-override.example");
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  histogram_tester.ExpectTotalCount(
+      "Net.DNS.HostMappingExperiment.RulesApplied", 0);
+  EXPECT_THAT(ResolveHostA(network_context.get(), "www.google.com", 443),
+              ElementsAre(CreateExpectedEndPoint("192.0.2.99", 443)));
+}
+
+TEST_F(NetworkContextDnsHostMappingExperimentTest,
+       CommandLineHostRulesTakesPrecedence) {
+  SetUpMockDnsClient();
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kDnsHostMappingExperiment,
+      {{"rules", "MAP www.google.com ttl-exp-600.google.com"}});
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kHostRules, "MAP www.google.com cmd-override.example");
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  histogram_tester.ExpectTotalCount(
+      "Net.DNS.HostMappingExperiment.RulesApplied", 0);
+  EXPECT_THAT(ResolveHostA(network_context.get(), "www.google.com", 443),
+              ElementsAre(CreateExpectedEndPoint("192.0.2.99", 443)));
+}
+
+struct InvalidHostMappingExperimentRuleCase {
+  const char* test_name;
+  const char* rules_param;
+};
+
+class NetworkContextDnsHostMappingExperimentInvalidRuleTest
+    : public NetworkContextDnsHostMappingExperimentTest,
+      public ::testing::WithParamInterface<
+          InvalidHostMappingExperimentRuleCase> {};
+
+TEST_P(NetworkContextDnsHostMappingExperimentInvalidRuleTest,
+       RejectsInvalidOrOutOfScopeRuleAndFailsClosed) {
+  const InvalidHostMappingExperimentRuleCase& test_case = GetParam();
+  SetUpMockDnsClient();
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kDnsHostMappingExperiment, {{"rules", test_case.rules_param}});
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.HostMappingExperiment.RulesApplied", false, 1);
+  EXPECT_THAT(ResolveHostA(network_context.get(), "www.google.com", 443),
+              ElementsAre(CreateExpectedEndPoint("142.250.80.1", 443)));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    InvalidHostMappingExperimentRules,
+    NetworkContextDnsHostMappingExperimentInvalidRuleTest,
+    ::testing::Values(
+        InvalidHostMappingExperimentRuleCase{"EmptyRules", ""},
+        InvalidHostMappingExperimentRuleCase{"WhitespaceOnlyRules", "   \t  "},
+        InvalidHostMappingExperimentRuleCase{
+            "TrailingComma", "MAP www.google.com ttl-exp-600.google.com, "},
+        InvalidHostMappingExperimentRuleCase{"CrossDomainTarget",
+                                             "MAP www.google.com evil.example"},
+        InvalidHostMappingExperimentRuleCase{
+            "CrossDomainSource", "MAP www.example.com ttl-exp-600.google.com"},
+        InvalidHostMappingExperimentRuleCase{
+            "GoogleCoUkDomain", "MAP www.google.co.uk ttl-exp-600.google.com"},
+        InvalidHostMappingExperimentRuleCase{
+            "PrivateRegistryGoogleDomain",
+            "MAP foo.withgoogle.com ttl-exp-600.google.com"},
+        InvalidHostMappingExperimentRuleCase{
+            "WildcardSource", "MAP *.google.com ttl-exp-600.google.com"},
+        InvalidHostMappingExperimentRuleCase{
+            "SingleCharPatternSource",
+            "MAP w?w.google.com ttl-exp-600.google.com"},
+        InvalidHostMappingExperimentRuleCase{
+            "ReplacementPort",
+            "MAP www.google.com ttl-exp-600.google.com:8443"},
+        InvalidHostMappingExperimentRuleCase{"Ipv4LiteralTarget",
+                                             "MAP www.google.com 142.250.80.2"},
+        InvalidHostMappingExperimentRuleCase{"BracketedIpv6Target",
+                                             "MAP www.google.com [::1]"},
+        InvalidHostMappingExperimentRuleCase{"NumericIpv4Target",
+                                             "MAP www.google.com 2130706433"},
+        InvalidHostMappingExperimentRuleCase{
+            "TrailingDotTarget", "MAP www.google.com ttl-exp-600.google.com."},
+        InvalidHostMappingExperimentRuleCase{
+            "PercentEncodedTrailingDotSource",
+            "MAP www.google.com%2e ttl-exp-600.google.com"},
+        InvalidHostMappingExperimentRuleCase{
+            "PercentEncodedTrailingDotTarget",
+            "MAP www.google.com ttl-exp-600.google.com%2e"},
+        InvalidHostMappingExperimentRuleCase{"ExcludeClause",
+                                             "EXCLUDE www.google.com"},
+        InvalidHostMappingExperimentRuleCase{"NotFoundTarget",
+                                             "MAP www.google.com ^NOTFOUND"},
+        InvalidHostMappingExperimentRuleCase{
+            "MixedValidAndInvalidClauses",
+            "MAP www.google.com ttl-exp-600.google.com, "
+            "MAP images.google.com evil.example"}),
+    [](const ::testing::TestParamInfo<
+        NetworkContextDnsHostMappingExperimentInvalidRuleTest::ParamType>&
+           info) { return std::string(info.param.test_name); });
 
 TEST_F(NetworkContextActivateDohProbesTest, Basic) {
   auto resolver = std::make_unique<net::MockHostResolver>();

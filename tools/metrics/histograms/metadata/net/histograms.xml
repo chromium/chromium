@@ -3021,6 +3021,19 @@ chromium-metrics-reviews@google.com.
   <token key="HostType" variants="HostType"/>
 </histogram>
 
+<histogram name="Net.DNS.HostMappingExperiment.RulesApplied" enum="Boolean"
+    expires_after="2027-05-06">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Whether the DNS host-mapping rules supplied via the DnsHostMappingExperiment
+    feature parameter passed validation and were applied to the NetworkContext's
+    HostResolver. Recorded once per NetworkContext creation when
+    DnsHostMappingExperiment is enabled and neither --host-resolver-rules nor
+    --host-rules is set on the command line.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.HttpsRecordAddressHints.AddressQueryOutstanding"
     enum="Boolean" expires_after="2027-07-07">
   <owner>bashi@chromium.org</owner>

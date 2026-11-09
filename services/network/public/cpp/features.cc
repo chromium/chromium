@@ -562,4 +562,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kRateLimitProxyConfigPolls,
                    base::Seconds(1));
 
+BASE_FEATURE(kDnsHostMappingExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(std::string,
+                   kDnsHostMappingExperimentRules,
+                   &kDnsHostMappingExperiment,
+                   /*name=*/"rules",
+                   /*default_value=*/"");
+
 }  // namespace network::features

@@ -39,6 +39,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -246,6 +247,70 @@
 namespace network {
 
 namespace {
+
+// Validates and normalizes `rules_str` from `kDnsHostMappingExperimentRules`.
+// Only comma-separated `MAP <source_host> <target_host>` clauses where both
+// hosts canonicalize to compliant, non-IP, non-localhost hostnames within the
+// `google.com` registrable domain (without wildcards, ports, or trailing dots)
+// are accepted. Fails closed (`std::nullopt`) if `rules_str` is empty or if any
+// clause is malformed or out of scope.
+std::optional<std::string> ValidateAndNormalizeExperimentHostMappingRules(
+    std::string_view rules_str) {
+  std::string_view trimmed =
+      base::TrimWhitespaceASCII(rules_str, base::TRIM_ALL);
+  if (trimmed.empty()) {
+    return std::nullopt;
+  }
+
+  auto canonicalize_and_validate_host =
+      [](std::string_view raw_host) -> std::optional<std::string> {
+    if (raw_host.empty() ||
+        raw_host.find_first_of("*?\\:[]") != std::string_view::npos) {
+      return std::nullopt;
+    }
+
+    url::CanonHostInfo host_info;
+    std::string canonical_host = net::CanonicalizeHost(raw_host, &host_info);
+    if (canonical_host.empty() || canonical_host.ends_with('.') ||
+        host_info.IsIPAddress() ||
+        !net::IsCanonicalizedHostCompliant(canonical_host) ||
+        net::registry_controlled_domains::GetDomainAndRegistry(
+            canonical_host,
+            net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES) !=
+            "google.com") {
+      return std::nullopt;
+    }
+
+    return canonical_host;
+  };
+
+  std::vector<std::string> normalized_clauses;
+  for (std::string_view clause : base::SplitStringPiece(
+           trimmed, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
+    if (clause.empty()) {
+      return std::nullopt;
+    }
+    std::vector<std::string_view> tokens = base::SplitStringPiece(
+        clause, " \t", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    if (tokens.size() != 3 ||
+        !base::EqualsCaseInsensitiveASCII(tokens[0], "MAP")) {
+      return std::nullopt;
+    }
+
+    std::optional<std::string> source_host =
+        canonicalize_and_validate_host(tokens[1]);
+    std::optional<std::string> target_host =
+        canonicalize_and_validate_host(tokens[2]);
+    if (!source_host || !target_host) {
+      return std::nullopt;
+    }
+
+    normalized_clauses.push_back(
+        base::StrCat({"MAP ", *source_host, " ", *target_host}));
+  }
+
+  return base::JoinString(normalized_clauses, ", ");
+}
 
 net::CertVerifier* g_cert_verifier_for_testing = nullptr;
 
@@ -3694,6 +3759,24 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
            "hostname.";
     builder.set_host_mapping_rules(
         command_line->GetSwitchValueASCII(switches::kHostRules));
+  } else if (base::FeatureList::IsEnabled(
+                 features::kDnsHostMappingExperiment)) {
+    std::optional<std::string> validated_rules =
+        ValidateAndNormalizeExperimentHostMappingRules(
+            features::kDnsHostMappingExperimentRules.Get());
+    const bool rules_applied = validated_rules.has_value();
+    if (rules_applied) {
+      // Note: MappedHostResolver rewrites the hostname before
+      // ContextHostResolver, so HostCache::Key stores the mapped subdomain
+      // (recording into unsuffixed Net.DNS.HostCache.* rather than
+      // Net.DNS.HostCache.*.GoogleHost, unlike upper-layer .GoogleHost metrics
+      // which inspect the unmapped URL host). Experiments comparing HostCache
+      // or recursive cache behavior should also map the control arm to a
+      // dedicated control subdomain.
+      builder.set_host_mapping_rules(*validated_rules);
+    }
+    base::UmaHistogramBoolean("Net.DNS.HostMappingExperiment.RulesApplied",
+                              rules_applied);
   }
 
 #if BUILDFLAG(IS_WIN)

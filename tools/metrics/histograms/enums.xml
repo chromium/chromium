@@ -12440,6 +12440,7 @@ from previous Chrome versions.
   <int value="-775143624" label="DomStorageSqlite:disabled"/>
   <int value="-774946576" label="PasswordSaveInContextErrorResolution:enabled"/>
   <int value="-774940991" label="CrOSLateBootCrasProcessorWavDump:enabled"/>
+  <int value="-774636084" label="DnsHostMappingExperiment:enabled"/>
   <int value="-774513654" label="ShareSheetCustomActionsPolish:disabled"/>
   <int value="-773238824" label="AutoplayWhitelistSettings:disabled"/>
   <int value="-772806796" label="AutofillUpstreamUpdatedUi:enabled"/>
@@ -13670,6 +13671,7 @@ from previous Chrome versions.
   <int value="-413286115"
       label="DisruptiveNotificationPermissionRevocation:disabled"/>
   <int value="-412736561" label="EnableZeroStateMixedTypesRanker:enabled"/>
+  <int value="-412459268" label="DnsHostMappingExperiment:disabled"/>
   <int value="-411616193" label="TabStripGroupReorderAndroid:enabled"/>
   <int value="-411134435" label="GlicBackgroundActuation:enabled"/>
   <int value="-410906702" label="SPCLocaleValidation:disabled"/>
@@ -16507,6 +16509,7 @@ from previous Chrome versions.
   <int value="434333410" label="DefaultMeetWebApp:disabled"/>
   <int value="434530296"
       label="HappinessTrackingSurveysForDesktopMigration:disabled"/>
+  <int value="435112062" label="UseDnsHttpsSvcbAddressHints:disabled"/>
   <int value="436249288" label="ImeMojoDecoder:disabled"/>
   <int value="436682243" label="TabGroupsAndroid:disabled"/>
   <int value="436923755" label="CCTResizableAlwaysShowNavBarButtons:disabled"/>
@@ -19652,6 +19655,7 @@ from previous Chrome versions.
   <int value="1371344350" label="MediaSessionWebRTC:disabled"/>
   <int value="1371902905" label="MerchantTrust:enabled"/>
   <int value="1371907429" label="enable-wallet-card-import"/>
+  <int value="1372040358" label="UseDnsHttpsSvcbAddressHints:enabled"/>
   <int value="1372680885" label="enable-mtp-write-support"/>
   <int value="1373777956" label="disable-threaded-gpu-rasterization"/>
   <int value="1374350431" label="WebViewEmptyComponentLoaderPolicy:enabled"/>

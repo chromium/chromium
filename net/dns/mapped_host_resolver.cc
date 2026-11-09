@@ -150,4 +150,12 @@ HostResolverManager* MappedHostResolver::GetManagerForTesting() {
   return impl_->GetManagerForTesting();
 }
 
+const URLRequestContext* MappedHostResolver::GetContextForTesting() const {
+  return impl_->GetContextForTesting();  // IN-TEST
+}
+
+handles::NetworkHandle MappedHostResolver::GetTargetNetworkForTesting() const {
+  return impl_->GetTargetNetworkForTesting();  // IN-TEST
+}
+
 }  // namespace net
