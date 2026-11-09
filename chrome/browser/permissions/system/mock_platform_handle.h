@@ -21,6 +21,10 @@ class MockPlatformHandle : public PlatformHandle {
   MOCK_METHOD(bool, CanPrompt, (ContentSettingsType type), (override));
   MOCK_METHOD(bool, IsDenied, (ContentSettingsType type), (override));
   MOCK_METHOD(bool, IsAllowed, (ContentSettingsType type), (override));
+  MOCK_METHOD(bool,
+              HasInitializedPermissionState,
+              (ContentSettingsType type),
+              (const, override));
   MOCK_METHOD(void,
               IsDeniedFresh,
               (ContentSettingsType type,

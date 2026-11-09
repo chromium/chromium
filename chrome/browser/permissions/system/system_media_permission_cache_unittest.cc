@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -99,6 +100,84 @@ TEST_F(SystemMediaPermissionCacheTest, IsDeniedFreshBypassesCache) {
   // Cache is now updated to Allowed (IsDenied == false, IsAllowed == true).
   EXPECT_FALSE(cache.IsDenied(ContentSettingsType::MEDIASTREAM_CAMERA));
   EXPECT_TRUE(cache.IsAllowed(ContentSettingsType::MEDIASTREAM_CAMERA));
+}
+
+TEST_F(SystemMediaPermissionCacheTest, PermissionCacheReadiness) {
+  for (SystemPermission status :
+       {SystemPermission::kAllowed, SystemPermission::kDenied,
+        SystemPermission::kNotDetermined}) {
+    SCOPED_TRACE(static_cast<int>(status));
+    camera_status_ = status;
+    mic_status_ = status;
+    SystemMediaPermissionCache cache(
+        base::BindOnce(&base::ThreadPool::CreateSequencedTaskRunner),
+        base::BindRepeating(&CheckCamera), base::BindRepeating(&CheckMic));
+
+    for (ContentSettingsType type : {ContentSettingsType::MEDIASTREAM_CAMERA,
+                                     ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+                                     ContentSettingsType::MEDIASTREAM_MIC}) {
+      EXPECT_FALSE(cache.IsPermissionCacheInitialized(type));
+    }
+
+    base::RunLoop initial_refresh;
+    cache.RefreshSystemPermissionSettings(initial_refresh.QuitClosure());
+    initial_refresh.Run();
+
+    for (ContentSettingsType type : {ContentSettingsType::MEDIASTREAM_CAMERA,
+                                     ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+                                     ContentSettingsType::MEDIASTREAM_MIC}) {
+      EXPECT_TRUE(cache.IsPermissionCacheInitialized(type));
+    }
+
+    base::RunLoop later_refresh;
+    cache.RefreshSystemPermissionSettings(later_refresh.QuitClosure());
+    EXPECT_TRUE(cache.IsPermissionCacheInitialized(
+        ContentSettingsType::MEDIASTREAM_CAMERA));
+    EXPECT_TRUE(cache.IsPermissionCacheInitialized(
+        ContentSettingsType::MEDIASTREAM_MIC));
+    later_refresh.Run();
+    EXPECT_TRUE(cache.IsPermissionCacheInitialized(
+        ContentSettingsType::MEDIASTREAM_CAMERA));
+    EXPECT_TRUE(cache.IsPermissionCacheInitialized(
+        ContentSettingsType::MEDIASTREAM_MIC));
+  }
+}
+
+TEST_F(SystemMediaPermissionCacheTest,
+       IsDeniedFreshInitializesOnlyQueriedPermission) {
+  camera_status_ = SystemPermission::kNotDetermined;
+  mic_status_ = SystemPermission::kNotDetermined;
+  for (ContentSettingsType type : {ContentSettingsType::MEDIASTREAM_CAMERA,
+                                   ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+                                   ContentSettingsType::MEDIASTREAM_MIC}) {
+    SCOPED_TRACE(static_cast<int>(type));
+    const bool expect_camera_initialized =
+        type == ContentSettingsType::MEDIASTREAM_CAMERA ||
+        type == ContentSettingsType::CAMERA_PAN_TILT_ZOOM;
+    const bool expect_mic_initialized =
+        type == ContentSettingsType::MEDIASTREAM_MIC;
+    SystemMediaPermissionCache cache(
+        base::BindOnce(&base::ThreadPool::CreateSequencedTaskRunner),
+        base::BindRepeating(&CheckCamera), base::BindRepeating(&CheckMic));
+    base::RunLoop run_loop;
+    // IsDeniedFresh() runs its check and populates the queried cache entry
+    // before the refresh posted by AfterStartupTaskUtils populates both
+    // entries.
+    cache.IsDeniedFresh(
+        type, base::BindLambdaForTesting([&](bool) {
+          EXPECT_EQ(cache.IsPermissionCacheInitialized(
+                        ContentSettingsType::MEDIASTREAM_CAMERA),
+                    expect_camera_initialized);
+          EXPECT_EQ(cache.IsPermissionCacheInitialized(
+                        ContentSettingsType::CAMERA_PAN_TILT_ZOOM),
+                    expect_camera_initialized);
+          EXPECT_EQ(cache.IsPermissionCacheInitialized(
+                        ContentSettingsType::MEDIASTREAM_MIC),
+                    expect_mic_initialized);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
 }
 
 }  // namespace system_permission_settings

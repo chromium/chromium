@@ -63,6 +63,18 @@ bool SystemMediaPermissionCache::IsAllowed(ContentSettingsType type) const {
   return IsSystemPermissionAllowed(GetCachedPermission(type));
 }
 
+bool SystemMediaPermissionCache::IsPermissionCacheInitialized(
+    ContentSettingsType type) const {
+  if (type == ContentSettingsType::MEDIASTREAM_CAMERA ||
+      type == ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
+    return camera_status_.has_value();
+  }
+  if (type == ContentSettingsType::MEDIASTREAM_MIC) {
+    return mic_status_.has_value();
+  }
+  NOTREACHED();
+}
+
 void SystemMediaPermissionCache::IsDeniedFresh(
     ContentSettingsType type,
     SystemPermissionDeniedCallback callback) {
@@ -123,10 +135,10 @@ SystemPermission SystemMediaPermissionCache::GetCachedPermission(
     // TODO(crbug.com/565332594): Measure how often camera permission is read
     // before the initial OS check completes, rather than inferring this from
     // kNotDetermined.
-    return camera_status_;
+    return camera_status_.value_or(SystemPermission::kNotDetermined);
   }
   if (type == ContentSettingsType::MEDIASTREAM_MIC) {
-    return mic_status_;
+    return mic_status_.value_or(SystemPermission::kNotDetermined);
   }
   NOTREACHED();
 }

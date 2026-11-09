@@ -25,6 +25,10 @@ class PlatformHandleImpl : public PlatformHandle {
 
   bool IsAllowed(ContentSettingsType type) override { return true; }
 
+  bool HasInitializedPermissionState(ContentSettingsType type) const override {
+    return true;
+  }
+
   void IsDeniedFresh(ContentSettingsType type,
                      SystemPermissionDeniedCallback callback) override {
     std::move(callback).Run(IsDenied(type));

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_SYSTEM_SYSTEM_MEDIA_PERMISSION_CACHE_H_
 #define CHROME_BROWSER_PERMISSIONS_SYSTEM_SYSTEM_MEDIA_PERMISSION_CACHE_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -46,6 +48,8 @@ class SystemMediaPermissionCache : public BrowserCollectionObserver {
   bool IsDenied(ContentSettingsType type) const;
   bool IsAllowed(ContentSettingsType type) const;
 
+  bool IsPermissionCacheInitialized(ContentSettingsType type) const;
+
   // Performs a fresh OS check for `type` on a thread pool worker thread,
   // updates the cached entry, and invokes `callback` with whether it is denied.
   void IsDeniedFresh(ContentSettingsType type,
@@ -82,8 +86,9 @@ class SystemMediaPermissionCache : public BrowserCollectionObserver {
   CheckMediaPermissionCallback check_camera_permission_cb_;
   CheckMediaPermissionCallback check_mic_permission_cb_;
 
-  SystemPermission camera_status_ = SystemPermission::kNotDetermined;
-  SystemPermission mic_status_ = SystemPermission::kNotDetermined;
+  // Unset until the first OS permission check completes.
+  std::optional<SystemPermission> camera_status_;
+  std::optional<SystemPermission> mic_status_;
 
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};

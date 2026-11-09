@@ -52,6 +52,10 @@ class PlatformHandleImpl : public PlatformHandle {
 
   bool IsAllowed(ContentSettingsType type) override { return !IsDenied(type); }
 
+  bool HasInitializedPermissionState(ContentSettingsType type) const override {
+    return true;
+  }
+
   // On ChromeOS checking the privacy hub setting is cheap and therefore can
   // just be called directly from here.
   void IsDeniedFresh(ContentSettingsType type,

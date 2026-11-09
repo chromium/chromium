@@ -94,6 +94,10 @@ bool IsAllowed(ContentSettingsType type) {
   return GetPlatformHandle()->IsAllowed(type);
 }
 
+bool HasInitializedPermissionState(ContentSettingsType type) {
+  return GetPlatformHandle()->HasInitializedPermissionState(type);
+}
+
 // static
 void IsDeniedFresh(ContentSettingsType type,
                    SystemPermissionDeniedCallback callback) {

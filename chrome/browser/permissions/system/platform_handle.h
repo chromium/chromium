@@ -40,6 +40,11 @@ class PlatformHandle {
 
   virtual bool IsAllowed(ContentSettingsType type) = 0;
 
+  // Returns true if the permission state for `type` has been initialized or
+  // when initialization is not required.
+  virtual bool HasInitializedPermissionState(
+      ContentSettingsType type) const = 0;
+
   virtual void IsDeniedFresh(ContentSettingsType type,
                              SystemPermissionDeniedCallback callback) = 0;
 

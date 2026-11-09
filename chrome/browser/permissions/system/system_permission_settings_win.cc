@@ -134,6 +134,17 @@ class PlatformHandleImpl : public PlatformHandle {
     }
   }
 
+  bool HasInitializedPermissionState(ContentSettingsType type) const override {
+    switch (type) {
+      case ContentSettingsType::MEDIASTREAM_CAMERA:
+      case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
+      case ContentSettingsType::MEDIASTREAM_MIC:
+        return media_cache_.IsPermissionCacheInitialized(type);
+      default:
+        return true;
+    }
+  }
+
   void IsDeniedFresh(ContentSettingsType type,
                      SystemPermissionDeniedCallback callback) override {
     if (type == ContentSettingsType::MEDIASTREAM_MIC ||

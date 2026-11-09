@@ -59,6 +59,10 @@ bool IsDenied(ContentSettingsType type);
 // same permission.
 bool IsAllowed(ContentSettingsType type);
 
+// Returns true if the permission state for `type` has been initialized or
+// when initialization is not required.
+bool HasInitializedPermissionState(ContentSettingsType type);
+
 // Checks whether the system blocks access to the specified content type.
 // As opposed to the functions above, this triggers a fresh check from the OS
 // and does not rely on any internal cached value.
