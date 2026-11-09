@@ -4,7 +4,9 @@
 
 #include "content/browser/cross_origin_storage/cross_origin_storage_registry.h"
 
+#include <algorithm>
 #include <array>
+#include <atomic>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -13,19 +15,26 @@
 
 #include "base/containers/span.h"
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "base/threading/platform_thread.h"
+#include "base/threading/simple_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/cross_origin_storage/cross_origin_storage_staging_writer.h"
 #include "content/browser/cross_origin_storage/cross_origin_storage_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "crypto/hash.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/cross_origin_storage/cross_origin_storage.mojom.h"
 #include "url/gurl.h"
@@ -33,6 +42,17 @@
 
 namespace content {
 namespace {
+
+class ClosureSimpleThread : public base::SimpleThread {
+ public:
+  ClosureSimpleThread(const std::string& name, base::OnceClosure task)
+      : base::SimpleThread(name), task_(std::move(task)) {}
+
+  void Run() override { std::move(task_).Run(); }
+
+ private:
+  base::OnceClosure task_;
+};
 
 CrossOriginStorageHash ComputeHashForString(std::string_view payload) {
   auto digest = crypto::hash::Sha256(base::as_byte_span(payload));
@@ -242,6 +262,44 @@ TEST_F(CrossOriginStorageStagingWriterTest, AppendAndFinishMatchesDigest) {
   // Destroying `Result` without calling `ReleasePath()` must automatically
   // delete the staging file.
   EXPECT_FALSE(base::PathExists(staging_path));
+}
+
+TEST_F(CrossOriginStorageStagingWriterTest,
+       MultiChunkAndUnalignedAppendMatchesDigest) {
+  base::FilePath staging_path;
+  CrossOriginStorageStagingWriter writer = CreateWriter(&staging_path);
+
+  // 1. Small initial write (`scratch_buffer_` starts at 17 bytes).
+  const std::string prefix(17, 'p');
+  // 2. Multi-chunk non-64-KiB-aligned write (>128 KiB) so `WriteAtOffset()`
+  //    grows `scratch_buffer_` to 64 KiB and runs multiple streaming-hash
+  //    iterations ending in a partial chunk.
+  std::string body(140 * 1024 + 29, '\0');
+  for (size_t i = 0; i < body.size(); ++i) {
+    body[i] = static_cast<char>('a' + (i % 26));
+  }
+  // 3. Small trailing write after `scratch_buffer_` is already 64 KiB,
+  //    verifying stale bytes in `scratch_buffer_` are neither written nor
+  //    folded into `hasher_`.
+  const std::string suffix = "trailing-tail";
+
+  ASSERT_EQ(writer.Append(base::as_byte_span(prefix)),
+            CrossOriginStorageStatus::kSuccess);
+  ASSERT_EQ(writer.Append(base::as_byte_span(body)),
+            CrossOriginStorageStatus::kSuccess);
+  ASSERT_EQ(writer.Append(base::as_byte_span(suffix)),
+            CrossOriginStorageStatus::kSuccess);
+
+  const std::string expected_payload = prefix + body + suffix;
+  CrossOriginStorageStagingWriter::Result result = writer.Finish();
+  ASSERT_EQ(result.status, CrossOriginStorageStatus::kSuccess);
+  EXPECT_EQ(result.size, static_cast<int64_t>(expected_payload.size()));
+  EXPECT_TRUE(
+      ComputeHashForString(expected_payload).MatchesDigest(result.digest));
+
+  std::string staged_bytes;
+  ASSERT_TRUE(base::ReadFileToString(result.path, &staged_bytes));
+  EXPECT_EQ(staged_bytes, expected_payload);
 }
 
 TEST_F(CrossOriginStorageStagingWriterTest,
@@ -966,6 +1024,130 @@ TEST_F(CrossOriginStorageRegistryTest, AllowedOriginsCapacityCapped) {
   EXPECT_EQ(OpenForRead(first_batch[99], kHash).status,
             CrossOriginStorageStatus::kSuccess);
   EXPECT_EQ(OpenForRead(kExcessOrigin1, kHash).status,
+            CrossOriginStorageStatus::kNotFound);
+}
+
+TEST_F(CrossOriginStorageRegistryTest,
+       WriteStreamCopiesSharedMemoryBeforeHashing) {
+  const url::Origin kOriginA =
+      url::Origin::Create(GURL("https://a.example.com"));
+  const url::Origin kOriginB =
+      url::Origin::Create(GURL("https://b.other.test"));
+
+  // Use an >8 MiB non-64-KiB-aligned payload so that:
+  // 1. Without chunked browser-owned copying, a single `pwrite()` writes the
+  //    entire buffer to the staging file before `hasher_.Update()` scans the
+  //    shared-memory ring buffer.
+  // 2. With chunked copying, the final chunk exercises a partial trailing slice
+  //    (`chunk_len < scratch_buffer_.size()`) after `scratch_buffer_` has grown
+  //    to 64 KiB.
+  constexpr size_t kPayloadSize = 8 * 1024 * 1024 + 137;
+  std::string benign_payload(kPayloadSize, 'A');
+  benign_payload.back() = 'Y';
+  const CrossOriginStorageHash kDeclaredHash =
+      ComputeHashForString(benign_payload);
+
+  base::test::TestFuture<base::SequenceBound<CrossOriginStorageStagingWriter>>
+      create_future;
+  registry()->CreateStagingWriter(kDeclaredHash.algorithm(),
+                                  create_future.GetCallback());
+  base::SequenceBound<CrossOriginStorageStagingWriter> writer =
+      create_future.Take();
+  ASSERT_TRUE(writer);
+
+  base::FilePath staging_dir = browser_context_->GetPath()
+                                   .AppendASCII("CrossOriginStorage")
+                                   .AppendASCII("staging");
+  base::FileEnumerator enumerator(staging_dir, /*recursive=*/false,
+                                  base::FileEnumerator::FILES);
+  base::FilePath staging_path = enumerator.Next();
+  ASSERT_FALSE(staging_path.empty());
+
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(static_cast<uint32_t>(kPayloadSize), producer,
+                                 consumer));
+
+  // Begin a two-phase write to obtain a writable view into the Mojo data-pipe's
+  // `UnsafeSharedMemoryRegion` ring buffer, fill it with 'X' at the tail, and
+  // commit the write while retaining the writable pointer (simulating a
+  // compromised renderer).
+  base::span<uint8_t> shared_ring_buffer;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            producer->BeginWriteData(kPayloadSize, MOJO_WRITE_DATA_FLAG_NONE,
+                                     shared_ring_buffer));
+  ASSERT_GE(shared_ring_buffer.size(), kPayloadSize);
+  base::span<uint8_t> payload_view = shared_ring_buffer.first(kPayloadSize);
+  std::ranges::fill(payload_view, 'A');
+  payload_view.back() = 'X';
+  ASSERT_EQ(MOJO_RESULT_OK, producer->EndWriteData(kPayloadSize));
+
+  // As soon as the staging file on disk reaches `kPayloadSize` (meaning the
+  // disk write of the tail byte has completed), overwrite the last byte of the
+  // shared ring buffer with 'Y' before closing `producer`.
+  std::atomic<bool> stop_mutator{false};
+  std::atomic<bool> reader_opened{false};
+  ClosureSimpleThread mutator(
+      "cos_shm_mutator",
+      base::BindLambdaForTesting([staging_path, payload_view, &stop_mutator,
+                                  &reader_opened,
+                                  producer = std::move(producer)]() mutable {
+        base::ScopedAllowBlockingForTesting allow_blocking;
+        base::File reader(staging_path, base::File::FLAG_OPEN |
+                                            base::File::FLAG_READ |
+                                            base::File::FLAG_WIN_SHARE_DELETE);
+        reader_opened.store(reader.IsValid(), std::memory_order_relaxed);
+        while (reader.IsValid() &&
+               !stop_mutator.load(std::memory_order_relaxed) &&
+               reader.GetLength() < static_cast<int64_t>(kPayloadSize)) {
+          base::PlatformThread::YieldCurrentThread();
+        }
+        payload_view.back() = 'Y';
+        producer.reset();
+      }));
+  mutator.Start();
+
+  base::test::TestFuture<CrossOriginStorageStatus, uint64_t> write_future;
+  writer.AsyncCall(&CrossOriginStorageStagingWriter::WriteStream)
+      .WithArgs(/*offset=*/0, std::move(consumer), /*cancelled=*/nullptr,
+                base::BindPostTaskToCurrentDefault(write_future.GetCallback()));
+  auto [write_status, bytes_written] = write_future.Take();
+  stop_mutator.store(true, std::memory_order_relaxed);
+  mutator.Join();
+  ASSERT_TRUE(reader_opened.load(std::memory_order_relaxed));
+  ASSERT_EQ(write_status, CrossOriginStorageStatus::kSuccess);
+  EXPECT_EQ(bytes_written, kPayloadSize);
+
+  base::test::TestFuture<CrossOriginStorageStagingWriter::Result> finish_future;
+  writer.AsyncCall(&CrossOriginStorageStagingWriter::Finish)
+      .WithArgs(nullptr)
+      .Then(finish_future.GetCallback());
+  CrossOriginStorageStagingWriter::Result write_result = finish_future.Take();
+  ASSERT_EQ(write_result.status, CrossOriginStorageStatus::kSuccess);
+
+  // Because `reader` waited until `staging_path` reached `kPayloadSize` on
+  // disk—which happens inside `file_.WriteAndCheck()` strictly after
+  // `owned_chunk.copy_from()` has snapshotted the final chunk—the staged file
+  // deterministically holds 'X' at the tail, and `Finish()`'s digest must match
+  // those exact on-disk bytes.
+  std::string staged_bytes;
+  ASSERT_TRUE(base::ReadFileToString(write_result.path, &staged_bytes));
+  ASSERT_EQ(staged_bytes.size(), kPayloadSize);
+  EXPECT_EQ(staged_bytes.back(), 'X');
+  auto actual_disk_digest =
+      crypto::hash::Sha256(base::as_byte_span(staged_bytes));
+  EXPECT_EQ(base::span(write_result.digest), base::span(actual_disk_digest));
+
+  // Consequently, `Commit()` under `kDeclaredHash` (`SHA-256` of
+  // `benign_payload` ending in 'Y') must reject with `kDataError` and leave
+  // nothing in the cache.
+  base::test::TestFuture<CrossOriginStorageStatus> commit_future;
+  registry()->Commit(kDeclaredHash, kOriginA,
+                     CrossOriginStorageAccessSpec::AnyOrigin(),
+                     std::move(write_result), commit_future.GetCallback());
+  EXPECT_EQ(commit_future.Get(), CrossOriginStorageStatus::kDataError);
+  EXPECT_EQ(OpenForRead(kOriginB, kDeclaredHash).status,
             CrossOriginStorageStatus::kNotFound);
 }
 

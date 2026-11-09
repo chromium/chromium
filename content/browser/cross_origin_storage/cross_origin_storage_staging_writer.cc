@@ -5,8 +5,8 @@
 #include "content/browser/cross_origin_storage/cross_origin_storage_staging_writer.h"
 
 #include <algorithm>
-#include <limits>
 #include <utility>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -21,7 +21,7 @@ namespace content {
 
 namespace {
 
-constexpr size_t kRehashBufferSize = 64 * 1024;
+constexpr size_t kScratchBufferSize = 64 * 1024;
 
 crypto::hash::HashKind HashKindForAlgorithm(
     blink::mojom::CrossOriginStorageAlgorithm algorithm) {
@@ -146,26 +146,37 @@ CrossOriginStorageStatus CrossOriginStorageStagingWriter::WriteAtOffset(
     needs_rehash_ = true;
   }
 
+  // Copy each chunk once into browser-owned memory (`scratch_buffer_`) before
+  // writing to disk and updating `hasher_`. `data` may alias a Mojo data pipe's
+  // `UnsafeSharedMemoryRegion` ring buffer that the sending process still maps
+  // writable; operating on `owned_chunk` ensures `file_` and `hasher_` observe
+  // identical bytes.
+  const size_t required_scratch_size =
+      std::min(data.size(), kScratchBufferSize);
+  if (scratch_buffer_.size() < required_scratch_size) {
+    scratch_buffer_.resize(required_scratch_size);
+  }
+
   base::span<const uint8_t> remaining(data);
   int64_t write_offset = static_cast<int64_t>(offset);
-  constexpr size_t kMaxWriteChunkSize =
-      static_cast<size_t>(std::numeric_limits<int>::max());
   while (!remaining.empty()) {
-    const size_t chunk_len = std::min(remaining.size(), kMaxWriteChunkSize);
-    base::span<const uint8_t> chunk = remaining.first(chunk_len);
-    if (!file_.WriteAndCheck(write_offset, chunk)) {
+    const size_t chunk_len = std::min(remaining.size(), kScratchBufferSize);
+    base::span<uint8_t> owned_chunk =
+        base::span(scratch_buffer_).first(chunk_len);
+    owned_chunk.copy_from(remaining.first(chunk_len));
+    if (!file_.WriteAndCheck(write_offset, owned_chunk)) {
       DLOG(ERROR) << "Failed to write to COS staging file: " << path_.value();
       status_ = CrossOriginStorageStatus::kOperationFailed;
       DiscardStagingFile();
       return status_;
     }
+    if (!needs_rehash_) {
+      hasher_.Update(owned_chunk);
+    }
     write_offset += static_cast<int64_t>(chunk_len);
     remaining = remaining.subspan(chunk_len);
   }
 
-  if (!needs_rehash_) {
-    hasher_.Update(data);
-  }
   size_ = std::max(size_, end_offset);
   return CrossOriginStorageStatus::kSuccess;
 }
@@ -375,6 +386,7 @@ CrossOriginStorageStagingWriter::Result CrossOriginStorageStagingWriter::Finish(
   }
 
   finished_ = true;
+  scratch_buffer_ = {};
   file_.Close();
   // `finished_ = true` prevents the destructor from deleting the staging file
   // now that ownership transfers to `CrossOriginStorageRegistry::Commit()`.
@@ -389,22 +401,26 @@ bool CrossOriginStorageStagingWriter::RehashFromDisk(
     base::span<uint8_t> out,
     const CancellationFlag* cancelled) {
   crypto::hash::Hasher disk_hasher(HashKindForAlgorithm(algorithm_));
-  std::vector<uint8_t> buffer(kRehashBufferSize);
+  const size_t required_scratch_size =
+      static_cast<size_t>(std::min<int64_t>(size_, kScratchBufferSize));
+  if (scratch_buffer_.size() < required_scratch_size) {
+    scratch_buffer_.resize(required_scratch_size);
+  }
   int64_t offset = 0;
   while (offset < size_) {
     if (cancelled && cancelled->data.load(std::memory_order_relaxed)) {
       return false;
     }
     const size_t to_read = static_cast<size_t>(
-        std::min<int64_t>(size_ - offset, kRehashBufferSize));
+        std::min<int64_t>(size_ - offset, kScratchBufferSize));
     std::optional<size_t> bytes_read =
-        file_.Read(offset, base::span(buffer).first(to_read));
+        file_.Read(offset, base::span(scratch_buffer_).first(to_read));
     if (!bytes_read.has_value() || *bytes_read == 0) {
       DLOG(ERROR) << "Failed to re-read COS staging file for hashing: "
                   << path_.value();
       return false;
     }
-    disk_hasher.Update(base::span(buffer).first(*bytes_read));
+    disk_hasher.Update(base::span(scratch_buffer_).first(*bytes_read));
     offset += static_cast<int64_t>(*bytes_read);
   }
   disk_hasher.Finish(out);
@@ -426,6 +442,7 @@ void CrossOriginStorageStagingWriter::Discard() {
 void CrossOriginStorageStagingWriter::DiscardStagingFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   finished_ = true;
+  scratch_buffer_ = {};
   if (file_.IsValid()) {
     file_.Close();
   }

@@ -148,6 +148,11 @@ class CONTENT_EXPORT CrossOriginStorageStagingWriter {
   CrossOriginStorageStatus status_ = CrossOriginStorageStatus::kSuccess;
   bool finished_ = false;
 
+  // Browser-owned staging buffer used to snapshot each write chunk before
+  // persisting and hashing it, preventing TOCTOU mutations when the input span
+  // aliases writable shared memory (such as a Mojo data pipe ring buffer).
+  std::vector<uint8_t> scratch_buffer_;
+
   mojo::ScopedDataPipeConsumerHandle active_stream_;
   std::unique_ptr<mojo::SimpleWatcher> data_pipe_watcher_;
   WriteStreamCallback active_write_callback_;
