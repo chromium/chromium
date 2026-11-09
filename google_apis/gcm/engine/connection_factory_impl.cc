@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -357,7 +358,10 @@ void ConnectionFactoryImpl::StartConnection(bool ignore_connection_failure) {
 
   network::mojom::ProxyResolvingSocketOptionsPtr options =
       network::mojom::ProxyResolvingSocketOptions::New();
-  options->use_tls = true;
+  options->use_tls = current_endpoint.SchemeIsCryptographic();
+  if (!options->use_tls) {
+    CHECK_IS_TEST();
+  }
   // |current_endpoint| is always a Google URL, so this NetworkAnonymizationKey
   // will be the same for all callers, and will allow pooling all connections to
   // GCM in one socket connection, if an H2 or QUIC proxy is in use.

@@ -99,6 +99,8 @@ static_library("test_support") {
     "engine/fake_connection_factory.h",
     "engine/fake_connection_handler.cc",
     "engine/fake_connection_handler.h",
+    "engine/fake_mcs_server.cc",
+    "engine/fake_mcs_server.h",
     "monitoring/fake_gcm_stats_recorder.cc",
     "monitoring/fake_gcm_stats_recorder.h",
   ]
@@ -110,6 +112,8 @@ static_library("test_support") {
     "//net",
     "//net:test_support",
     "//testing/gtest",
+    "//third_party/protobuf:protobuf_lite",
+    "//url",
   ]
 }
 
@@ -150,6 +154,7 @@ test("gcm_unit_tests") {
     "engine/gcm_store_impl_unittest.cc",
     "engine/gservices_settings_unittest.cc",
     "engine/heartbeat_manager_unittest.cc",
+    "engine/mcs_client_integration_unittest.cc",
     "engine/mcs_client_unittest.cc",
     "engine/registration_request_unittest.cc",
     "engine/unregistration_request_unittest.cc",
@@ -174,5 +179,9 @@ test("gcm_unit_tests") {
   ]
   if (is_android) {
     deps += [ "//net/android:net_java" ]
+  }
+  if (is_fuchsia) {
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/network.shard.test-cml" ]
   }
 }
