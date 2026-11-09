@@ -281,6 +281,7 @@ class WaylandWindow : public PlatformWindow,
     bool is_activated = false;
     bool is_minimized = false;
     bool is_suspended = false;
+    bool is_resizing = false;
     WindowTiledEdges tiled_edges;
 
     // Dumps the values of the states into a string.
@@ -306,6 +307,9 @@ class WaylandWindow : public PlatformWindow,
   // This is used to determine which requests have been fulfilled,
   // and sends the appropriate acks back to the wayland server.
   virtual void OnSequencePoint(int64_t seq) = 0;
+
+  // Called after `root_surface_` commits a frame for `seq`.
+  virtual void OnFrameCommitted(int64_t seq) {}
 
   // Called by shell surfaces to indicate that this window can start submitting
   // frames. Updating state based on configure is handled separately to this.
@@ -537,6 +541,14 @@ class WaylandWindow : public PlatformWindow,
   // become invalid. Clear them so we do not get "wrong configure serial" error.
   void ClearInFlightRequestsSerial();
 
+  // Notifies subclasses after a state request has been applied and assigned its
+  // `viz_seq`, before any immediate sequence-point latching runs.
+  virtual void OnStateRequestApplied(
+      const PlatformWindowDelegate::State& old_state,
+      const PlatformWindowDelegate::State& new_state,
+      int64_t viz_seq,
+      bool from_client) {}
+
   // PendingConfigureState describes the content of a configure sent from the
   // wayland server.
   struct PendingConfigureState {
@@ -608,6 +620,10 @@ class WaylandWindow : public PlatformWindow,
 
     // Whether this request has been applied.
     bool applied = false;
+
+    // True if this request originated from the client rather than a server
+    // configure event.
+    bool from_client = false;
   };
 
   // Latches the given request. This must be called after the frame

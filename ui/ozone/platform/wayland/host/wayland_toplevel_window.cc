@@ -4,7 +4,9 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 
+#include <algorithm>
 #include <string>
+#include <vector>
 
 #include "base/logging.h"
 #include "base/nix/xdg_util.h"
@@ -201,6 +203,8 @@ void WaylandToplevelWindow::Hide() {
   xdg_toplevel_.reset();
   minimize_sync_callback_.reset();
   fullscreen_sync_callback_.reset();
+  last_sent_geometry_size_dip_ = gfx::Size();
+  ClearPendingBoundsSync();
   toplevel_session_.reset();
   appmenu_.reset();
 
@@ -262,6 +266,7 @@ void WaylandToplevelWindow::SetFullscreen(bool fullscreen,
       return;
     }
     if (fullscreen) {
+      ClearPendingBoundsSync();
       xdg_toplevel_->SetFullscreen(
           GetWaylandOutputForDisplayId(target_display_id));
     } else {
@@ -298,6 +303,7 @@ void WaylandToplevelWindow::Maximize() {
     if (applied_state().window_state == PlatformWindowState::kFullScreen) {
       xdg_toplevel_->UnSetFullscreen();
     }
+    ClearPendingBoundsSync();
     xdg_toplevel_->SetMaximized();
   } else {
     SetWindowState(PlatformWindowState::kMaximized);
@@ -312,6 +318,7 @@ void WaylandToplevelWindow::Minimize() {
   }
 
   if (IsSurfaceConfigured()) {
+    ClearPendingBoundsSync();
     if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
       SendSetMinimized();
       pending_minimize_ = true;
@@ -662,21 +669,35 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   const bool is_stale_fullscreen_configure =
       window_state == PlatformWindowState::kFullScreen &&
       !window_states.is_fullscreen;
+  // The compositor may echo the last committed geometry on state-only
+  // configures. Ignore these during a client-initiated resize via
+  // SetBoundsInDIP() (see OnStateRequestApplied() for the sequence).
+  const bool is_stale_bounds_configure =
+      ShouldSetBounds(window_state) &&
+      window_states.tiled_edges == WindowTiledEdges() &&
+      !window_states.is_resizing &&
+      (pending_bounds_viz_seq_.has_value() || bounds_sync_callback_) &&
+      std::ranges::contains(stale_geometry_sizes_dip_,
+                            gfx::Size(width_dip, height_dip));
   if (window_state == PlatformWindowState::kMinimized ||
+      is_stale_bounds_configure ||
       (is_stale_fullscreen_configure &&
        (!window_states.is_maximized || width_dip <= 1 || height_dip <= 1))) {
     // Keep the current (restored) bounds while minimized. Otherwise the bounds
     // shrink to the no-shadow configure size, the throttled renderer keeps that
     // smaller buffer, and on un-minimize it is briefly shown mismatched against
     // the retained window geometry, shifting the content (Wayland-only).
-    // Likewise, keep current bounds on non-maximized or 0x0 configures that
-    // predate set_fullscreen so bounds_dip does not remain empty or shrink to a
-    // pre-fullscreen no-shadow size; stale maximized configures are still acked
-    // and must obey the configured size (crbug.com/576504456).
+    // Likewise, keep current bounds on configures that echo a pre-resize
+    // geometry before a client-initiated resize has committed and synced, and
+    // on non-maximized or 0x0 configures that predate set_fullscreen so
+    // bounds_dip does not remain empty or shrink to a pre-fullscreen no-shadow
+    // size; stale maximized configures are still acked and must obey the
+    // configured size (crbug.com/576504456).
     bounds_dip = GetBoundsInDIP();
     pending_configure_state_.geometry_size_dip =
         applied_state().geometry_size_dip;
   } else if (width_dip > 1 && height_dip > 1) {
+    ClearPendingBoundsSync();
     // The configured size is the exact window geometry size in Wayland DIP.
     const gfx::Size geometry_size_dip(width_dip, height_dip);
     pending_configure_state_.geometry_size_dip = geometry_size_dip;
@@ -762,6 +783,14 @@ void WaylandToplevelWindow::OnSequencePoint(int64_t seq) {
   MaybeApplyLatestStateRequest(/*force=*/false);
 }
 
+void WaylandToplevelWindow::OnFrameCommitted(int64_t seq) {
+  if (pending_bounds_viz_seq_.has_value() &&
+      (seq == -1 || seq >= *pending_bounds_viz_seq_)) {
+    pending_bounds_viz_seq_.reset();
+    SendBoundsSync();
+  }
+}
+
 bool WaylandToplevelWindow::OnInitialize(
     PlatformWindowInitProperties properties,
     PlatformWindowDelegate::State* state) {
@@ -840,6 +869,7 @@ void WaylandToplevelWindow::SetWindowGeometry(
   // `geometry_size_dip` is already in Wayland DIP and excludes the decoration
   // insets, and is never empty.
   const auto insets_dip = delegate()->CalculateInsetsInDIP(state.window_state);
+  last_sent_geometry_size_dip_ = state.geometry_size_dip;
   xdg_toplevel_->SetWindowGeometry(
       gfx::Rect(gfx::Point(insets_dip.left(), insets_dip.top()),
                 state.geometry_size_dip));
@@ -989,6 +1019,9 @@ void WaylandToplevelWindow::TriggerStateChanges(
   if (window_state != PlatformWindowState::kFullScreen) {
     fullscreen_sync_callback_.reset();
   }
+  if (!ShouldSetBounds(window_state)) {
+    ClearPendingBoundsSync();
+  }
   if (xdg_toplevel_) {
     // A client-initiated state is in applied_state() before any request
     // carries it, so check both for the state being left.
@@ -1105,6 +1138,91 @@ void WaylandToplevelWindow::OnFullscreenSyncDone(void* data,
   auto* self = static_cast<WaylandToplevelWindow*>(data);
   CHECK_EQ(self->fullscreen_sync_callback_.get(), callback);
   self->fullscreen_sync_callback_.reset();
+}
+
+void WaylandToplevelWindow::OnStateRequestApplied(
+    const PlatformWindowDelegate::State& old_state,
+    const PlatformWindowDelegate::State& new_state,
+    int64_t viz_seq,
+    bool from_client) {
+  // A client-initiated resize proceeds as follows:
+  // 1. SetBoundsInDIP() requests the new state.
+  // 2. OnStateRequestApplied() (here) records the pre-resize geometries as
+  //    stale and the viz sequence number of the resized frame. This normally
+  //    runs synchronously from SetBoundsInDIP(), but may be deferred while
+  //    too many earlier requests are in flight.
+  // 3. OnSequencePoint() latches the state and sends the new window geometry,
+  //    then the root surface commit for that frame calls OnFrameCommitted().
+  // 4. OnFrameCommitted() calls SendBoundsSync() to send a wl_display.sync.
+  // 5. OnBoundsSyncDone() runs once the compositor has processed the commit
+  //    carrying the new geometry, and clears the stale geometries.
+  // Until then, HandleToplevelConfigure() ignores configures that echo a
+  // stale geometry.
+  if (!from_client || !xdg_toplevel_) {
+    return;
+  }
+  if (!ShouldSetBounds(new_state.window_state) ||
+      new_state.tiled_edges != WindowTiledEdges()) {
+    ClearPendingBoundsSync();
+    return;
+  }
+  const gfx::Size& new_geometry = new_state.geometry_size_dip;
+  std::erase(stale_geometry_sizes_dip_, new_geometry);
+  auto add_stale_geometry = [&](const gfx::Size& size) {
+    if (!size.IsEmpty() && size != new_geometry &&
+        !std::ranges::contains(stale_geometry_sizes_dip_, size)) {
+      stale_geometry_sizes_dip_.push_back(size);
+    }
+  };
+  if (!last_sent_geometry_size_dip_.IsEmpty()) {
+    add_stale_geometry(last_sent_geometry_size_dip_);
+    if (ShouldSetBounds(old_state.window_state) &&
+        old_state.tiled_edges == WindowTiledEdges()) {
+      add_stale_geometry(old_state.geometry_size_dip);
+    }
+  }
+  if (stale_geometry_sizes_dip_.empty()) {
+    ClearPendingBoundsSync();
+  } else {
+    pending_bounds_viz_seq_ =
+        std::max(pending_bounds_viz_seq_.value_or(-1), viz_seq);
+    bounds_sync_callback_.reset();
+  }
+}
+
+void WaylandToplevelWindow::SendBoundsSync() {
+  if (!xdg_toplevel_) {
+    ClearPendingBoundsSync();
+    return;
+  }
+  // Requests are processed in order, so the sync completes only after the
+  // compositor has processed the wl_surface.commit carrying the updated window
+  // geometry.
+  bounds_sync_callback_.reset(connection()->GetSyncCallback());
+  static constexpr wl_callback_listener kBoundsSyncListener = {
+      .done = &OnBoundsSyncDone,
+  };
+  wl_callback_add_listener(bounds_sync_callback_.get(), &kBoundsSyncListener,
+                           this);
+  connection()->Flush();
+}
+
+// static
+void WaylandToplevelWindow::OnBoundsSyncDone(void* data,
+                                             wl_callback* callback,
+                                             uint32_t time) {
+  auto* self = static_cast<WaylandToplevelWindow*>(data);
+  CHECK_EQ(self->bounds_sync_callback_.get(), callback);
+  self->bounds_sync_callback_.reset();
+  if (!self->pending_bounds_viz_seq_.has_value()) {
+    self->stale_geometry_sizes_dip_.clear();
+  }
+}
+
+void WaylandToplevelWindow::ClearPendingBoundsSync() {
+  stale_geometry_sizes_dip_.clear();
+  pending_bounds_viz_seq_.reset();
+  bounds_sync_callback_.reset();
 }
 
 void WaylandToplevelWindow::UpdatePreviouslyMaximized(

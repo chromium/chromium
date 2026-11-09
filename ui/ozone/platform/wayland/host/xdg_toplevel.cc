@@ -246,6 +246,8 @@ void XdgToplevel::OnToplevelConfigure(void* data,
       CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_FULLSCREEN);
   window_states.is_activated =
       CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_ACTIVATED);
+  window_states.is_resizing =
+      CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_RESIZING);
 
   if (xdg_toplevel_get_version(toplevel) >=
       XDG_TOPLEVEL_STATE_SUSPENDED_SINCE_VERSION) {

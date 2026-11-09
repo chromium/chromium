@@ -919,6 +919,9 @@ std::string WaylandWindow::WindowStates::ToString() const {
   if (is_minimized) {
     states += "minimized ";
   }
+  if (is_resizing) {
+    states += "resizing ";
+  }
   if (states.empty()) {
     states = "<default>";
   } else {
@@ -1586,7 +1589,8 @@ void WaylandWindow::RequestState(PlatformWindowDelegate::State state,
                       gfx::Rect(state.bounds_dip.size()), scale)
                       .size();
 
-  StateRequest req{.state = state, .serial = serial};
+  StateRequest req{
+      .state = state, .serial = serial, .from_client = serial == -1};
   if (in_flight_requests_.empty()) {
     in_flight_requests_.push_back(req);
   } else {
@@ -1785,6 +1789,7 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
     return;
   }
   latest.viz_seq = viz_seq;
+  OnStateRequestApplied(old, latest.state, viz_seq, latest.from_client);
 
   if (UseTestConfigForPlatformWindows()) {
     latest_applied_viz_seq_for_testing_ = std::max(

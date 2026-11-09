@@ -5,15 +5,18 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOPLEVEL_WINDOW_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOPLEVEL_WINDOW_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <ostream>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/display/types/native_display_delegate.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/xdg_session.h"
@@ -72,6 +75,7 @@ class WaylandToplevelWindow : public WaylandWindow,
       const WindowStates& window_states) override;
   void HandleSurfaceConfigure(uint32_t serial) override;
   void OnSequencePoint(int64_t seq) override;
+  void OnFrameCommitted(int64_t seq) override;
   bool IsSurfaceConfigured() override;
   void AckConfigure(uint32_t serial) override;
 
@@ -173,6 +177,10 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Calls UpdateWindowShape, set_input_region and set_opaque_region for this
   // toplevel window.
   void UpdateWindowMask() override;
+  void OnStateRequestApplied(const PlatformWindowDelegate::State& old_state,
+                             const PlatformWindowDelegate::State& new_state,
+                             int64_t viz_seq,
+                             bool from_client) override;
 
   void UpdateSystemModal();
 
@@ -204,6 +212,17 @@ class WaylandToplevelWindow : public WaylandWindow,
   static void OnFullscreenSyncDone(void* data,
                                    wl_callback* callback,
                                    uint32_t time);
+
+  // Sends a wl_display.sync after committing a client-resized frame to track
+  // when the compositor has processed the updated window geometry.
+  void SendBoundsSync();
+
+  // wl_callback_listener callback for `bounds_sync_callback_`.
+  static void OnBoundsSyncDone(void* data,
+                               wl_callback* callback,
+                               uint32_t time);
+
+  void ClearPendingBoundsSync();
 
   // We want to remember whether it was previously maximized, for cases like
   // restoring from fullscreen or compositor-initiated tiling, so we can
@@ -264,6 +283,16 @@ class WaylandToplevelWindow : public WaylandWindow,
   // compositor fullscreened the window, so their non-fullscreen state must not
   // be taken to mean that fullscreen was exited.
   wl::Object<wl_callback> fullscreen_sync_callback_;
+
+  // Tracks window geometries sent to the compositor prior to an uncommitted or
+  // un-synced client-initiated resize. Compositors such as Mutter echo the last
+  // committed window geometry on state-only configures (e.g. activation), so
+  // configures carrying one of these sizes before the resized frame commits and
+  // syncs must not overwrite the client-requested bounds.
+  gfx::Size last_sent_geometry_size_dip_;
+  std::vector<gfx::Size> stale_geometry_sizes_dip_;
+  std::optional<int64_t> pending_bounds_viz_seq_;
+  wl::Object<wl_callback> bounds_sync_callback_;
 
   bool is_active_ = false;
   bool is_xdg_active_ = false;

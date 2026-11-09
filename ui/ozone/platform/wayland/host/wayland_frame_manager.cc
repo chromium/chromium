@@ -397,6 +397,7 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
   TRACE_EVENT_BEGIN("wayland", "WaylandFrameManager.PlaybackFrame",
                     perfetto::Track(frame->frame_id));
   root_surface->Commit(true);
+  window_->OnFrameCommitted(frame->seq);
 
   frame->root_config = wl::WaylandOverlayConfig();
   frame->subsurfaces_to_overlays.clear();
