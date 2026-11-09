@@ -52,6 +52,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -576,6 +577,26 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithClientIds) {
                           /*include_user_visits=*/true,
                           /*include_actor_visits=*/true, kClientIds,
                           base::DoNothing());
+}
+
+// Regression test for crbug.com/582436669. Destroying the handler while a
+// QueryHistory reply is still pending on a bound PageHandler pipe must not drop
+// the mojo responder callback while the receiver is still connected.
+TEST_F(BrowsingHistoryHandlerTest, DestroyWithPendingQueryHistoryOnBoundPipe) {
+  mojo::Remote<history::mojom::PageHandler> remote;
+  auto handler = std::make_unique<BrowsingHistoryHandlerWithWebUIForTesting>(
+      remote.BindNewPipeAndPassReceiver(), profile(), web_contents());
+
+  // No action, so OnQueryComplete() never runs and the responder stays stored.
+  EXPECT_CALL(*handler->mock_service(), QueryHistory(_, _)).Times(1);
+
+  remote->QueryHistory("", 150, std::nullopt, std::nullopt,
+                       /*include_user_visits=*/true,
+                       /*include_actor_visits=*/true,
+                       /*client_ids=*/{}, base::DoNothing());
+  remote.FlushForTesting();
+
+  handler.reset();
 }
 
 class BrowsingHistoryHandlerHistorySyncPromoTest

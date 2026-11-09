@@ -426,7 +426,12 @@ BrowsingHistoryHandler::BrowsingHistoryHandler(
       critical_actions::CriticalActionFactory::GetForProfile(profile_));
 }
 
-BrowsingHistoryHandler::~BrowsingHistoryHandler() = default;
+BrowsingHistoryHandler::~BrowsingHistoryHandler() {
+  // Close the receiver before `query_history_callback_` and
+  // `remove_visits_callbacks_` are destroyed. Destroying a pending Mojo
+  // responder while its receiver is still bound DCHECKs.
+  page_handler_.reset();
+}
 
 #if !BUILDFLAG(IS_ANDROID)
 void BrowsingHistoryHandler::SetSidePanelUIEmbedder(
