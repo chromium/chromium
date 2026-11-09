@@ -37,6 +37,7 @@
 #include <tuple>
 
 #include "base/compiler_specific.h"
+#include "base/containers/enum_set.h"
 #include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
@@ -1187,7 +1188,7 @@ CSSMathExpressionNode* MaybeSimplifySumOrProductNode(
   }
 
   // Form the final node.
-  HashSet<CSSPrimitiveValue::UnitType> used_units;
+  base::EnumSet<CSSPrimitiveValue::UnitType> used_units;
   CSSMathExpressionNode* final_node = nullptr;
   for (const auto& child : all_children) {
     if (is_multiply && IsNumericNodeWithDoubleValue(child.node) &&
@@ -1206,9 +1207,10 @@ CSSMathExpressionNode* MaybeSimplifySumOrProductNode(
       CSSPrimitiveValue::UnitType unit_type =
           node->ResolvedUnitTypeForSimplification();
       // Skip already used unit types, as they have been already combined.
-      if (!used_units.insert(unit_type).is_new_entry) {
+      if (used_units.Has(unit_type)) {
         continue;
       }
+      used_units.Put(unit_type);
     }
 
     if (!final_node) {

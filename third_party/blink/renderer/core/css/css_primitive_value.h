@@ -73,6 +73,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   // order.
   enum class UnitType {
     kUnknown,
+    kMinValue = kUnknown,
     kNumber,
     kPercentage,
     // Length units
@@ -162,6 +163,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     // This quirk is specified in the HTML spec but our impl is different.
     // TODO: Remove this. crbug.com/443952
     kQuirkyEms,
+    kMaxValue = kQuirkyEms,
   };
 
   enum LengthUnitType {
