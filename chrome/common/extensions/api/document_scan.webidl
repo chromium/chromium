@@ -260,7 +260,7 @@ dictionary ScannerOption {
   // type of this property must match the data type specified in
   // <code>type</code>.
   (boolean or double or sequence<double> or long or sequence<long> or
-   DOMString)? value;
+   DOMString) value;
 
   // Defines $(ref:OptionConstraint) on the current scanner option.
   OptionConstraint constraint;
@@ -335,12 +335,12 @@ dictionary OpenScannerResponse {
 
   // If <code>result</code> is <code>SUCCESS</code>, a
   // handle to the scanner that can be used for further operations.
-  DOMString? scannerHandle;
+  DOMString scannerHandle;
 
   // If <code>result</code> is <code>SUCCESS</code>,
   // provides a key-value mapping where the key is a device-specific
   // option and the value is an instance of $(ref:ScannerOption).
-  object? options;
+  object options;
 };
 
 // The response from $(ref:getOptionGroups).
@@ -383,7 +383,7 @@ dictionary OptionSetting {
   // options that have <code>autoSettable</code> enabled. The data type
   // supplied for <code>value</code> must match <code>type</code>.
   (boolean or double or sequence<double> or long or sequence<long> or
-   DOMString)? value;
+   DOMString) value;
 };
 
 // The result of setting an individual option.  Each individual option
@@ -414,7 +414,7 @@ dictionary SetOptionsResponse {
   // This property will be set even if some options were not set successfully,
   // but will be unset if retrieving the updated configuration fails (for
   // example, if the scanner is disconnected in the middle of scanning).
-  object? options;
+  object options;
 };
 
 // Specifies options for $(ref:startScan).
@@ -442,7 +442,7 @@ dictionary StartScanResponse {
 
   // If <code>result</code> is <code>SUCCESS</code>, provides a
   // handle that can be used to read scan data or cancel the job.
-  DOMString? job;
+  DOMString job;
 };
 
 // The response from <code>cancelScan()</code>.
@@ -478,12 +478,12 @@ dictionary ReadScanDataResponse {
   // the <em>next</em> chunk of scanned image data. If <code>result</code> is
   // <code>EOF</code>, contains the <em>last</em> chunk of
   // scanned image data.
-  ArrayBuffer? data;
+  ArrayBuffer data;
 
   // If <code>result</code> is <code>SUCCESS</code>, an estimate of
   // how much of the total scan data has been delivered so far, in the range
   // 0 to 100.
-  long? estimatedCompletion;
+  long estimatedCompletion;
 };
 
 // Use the <code>chrome.documentScan</code> API to discover and retrieve

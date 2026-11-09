@@ -678,6 +678,14 @@ class DictionaryMember(TypedProperty):
     if 'returns' in self.properties:
       self.properties['returns']['name'] = name
 
+    # TODO(crbug.com/340297705): Add support for nullable types on dictionary
+    # members.
+    if self.type_node.GetProperty('NULLABLE'):
+      raise SchemaCompilerError(
+        'Nullable types are not currently supported on dictionary members.',
+        self.node,
+      )
+
     if not self.node.GetProperty('REQUIRED'):
       self.properties['optional'] = True
 

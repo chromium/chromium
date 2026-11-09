@@ -894,6 +894,23 @@ class WebIdlSchemaTest(unittest.TestCase):
       'test/web_idl/serializable_function_non_function.idl',
     )
 
+  # Tests that using a nullable type on a dictionary member causes a schema
+  # compiler error to be thrown, as nullable dictionary members are not yet
+  # supported.
+  # TODO(crbug.com/340297705): Update this test once nullable dictionary members
+  # are supported.
+  def testNullableDictionaryMemberError(self):
+    expected_error_regex = (
+      r'.* Key\(invalidNullableMember\): Nullable types are not currently'
+      r' supported on dictionary members\.'
+    )
+    self.assertRaisesRegex(
+      SchemaCompilerError,
+      expected_error_regex,
+      web_idl_schema.Load,
+      'test/web_idl/nullable_dictionary_member.idl',
+    )
+
   # Tests that the nodoc extended attribute used in various places gets the
   # related attribute set to True after processing.
   def testNoDocExtendedAttribute(self):

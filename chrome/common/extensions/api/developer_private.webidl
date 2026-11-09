@@ -126,7 +126,7 @@ dictionary DisableReasons {
   required boolean unsupportedManifestVersion;
   required boolean unsupportedDeveloperExtension;
   required boolean disabledByAnotherExtension;
-  DOMString? disabledByExtensionName;
+  DOMString disabledByExtensionName;
 };
 
 dictionary OptionsPage {

@@ -4,7 +4,7 @@
 
 // Icon specification similar to an ImageResource.
 dictionary Icon {
-  // TODO(crbug.com/40238266) Add `DOMString? label;` for accessibility.
+  // TODO(crbug.com/40238266) Add `DOMString label;` for accessibility.
 
   // URL from which a user agent can fetch image data.
   required DOMString src;
