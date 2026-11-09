@@ -3096,7 +3096,9 @@ void Textfield::OnAfterUserAction() {
   if (controller_) {
     controller_->OnAfterUserAction(this);
   }
-  CHECK(performing_user_action_, base::NotFatalUntil::M163);
+  // TODO(crbug.com/582279332): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(performing_user_action_);
   performing_user_action_ = false;
 }
 
