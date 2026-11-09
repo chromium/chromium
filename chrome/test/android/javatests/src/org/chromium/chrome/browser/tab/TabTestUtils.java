@@ -230,6 +230,23 @@ public class TabTestUtils {
         TabImplJni.setInstanceForTesting(tabImplJni);
     }
 
+    /** Mock {@link TabBrowserControlsConstraintsHelper} JNI for testing. */
+    public static void mockTabBrowserControlsConstraintsHelperJni() {
+        TabBrowserControlsConstraintsHelperJni.setInstanceForTesting(
+                Mockito.mock(TabBrowserControlsConstraintsHelper.Natives.class));
+    }
+
+    /** Sets browser controls offsets on {@link TabBrowserControlsOffsetHelper} for testing. */
+    public static void setBrowserControlsOffsets(
+            Tab tab, int topControlsOffset, int contentOffset) {
+        TabBrowserControlsOffsetHelper.get(tab)
+                .setOffsets(
+                        topControlsOffset,
+                        contentOffset,
+                        /* topControlsMinHeightOffset= */ 0,
+                        /* bottomControlsOffset= */ 0,
+                        /* bottomControlsMinHeightOffset= */ 0);
+    }
 
     /**
      * @param tab {@link Tab} object.
