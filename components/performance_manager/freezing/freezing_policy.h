@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_FREEZING_FREEZING_POLICY_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_FREEZING_FREEZING_POLICY_H_
 
+#include <cstdint>
 #include <deque>
 #include <map>
 #include <memory>
@@ -112,6 +113,11 @@ class FreezingPolicy : public PageNodeObserver,
   // Returns a set of `CannotFreezeReason`s applicable to `freezing_type`.
   static freezing::CannotFreezeReasonSet CannotFreezeReasonsForType(
       FreezingPolicy::FreezingType type);
+
+ protected:
+  // Returns the Windows OS build number, or 0 on non-Windows platforms. Virtual
+  // for testing.
+  virtual uint32_t GetWindowsBuildVersion() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FreezingPolicyBatterySaverTest,
@@ -312,13 +318,20 @@ class FreezingPolicy : public PageNodeObserver,
   // eliminate randomness.
   virtual base::LiveTicks GenerateRandomPeriodicUnfreezePhase() const;
 
+  // Returns true if `total_physical_memory` and the Windows OS build match the
+  // criteria for using the low-RAM enter and exit memory thresholds.
+  bool ShouldUseLowRamThresholds(base::ByteSize total_physical_memory) const;
+
   // Periodically invoked by `memory_check_timer_` to sample available physical
   // memory and update infinite-tab freezing state.
   void CheckAvailableMemory();
 
   // Computes the new `InfiniteTabFreezingStatus` from
-  // `available_memory_percent` (`[0, 100]`) and updates policy state.
-  void UpdateStateFromAvailableMemoryPercent(int available_memory_percent);
+  // `available_memory_percent` (`[0, 100]`) and `total_physical_memory`, and
+  // updates policy state.
+  void UpdateStateFromAvailableMemoryPercent(
+      int available_memory_percent,
+      base::ByteSize total_physical_memory);
 
   // Updates the cached infinite-tab freezing status and reconciles policy
   // state.

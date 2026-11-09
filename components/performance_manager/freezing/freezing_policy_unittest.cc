@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/freezing/freezing_policy.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -17,6 +18,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/test/power_monitor_test.h"
+#include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -67,6 +69,15 @@ class MockFreezingPolicy : public FreezingPolicy {
     return base::LiveTicks();
   }
 
+  uint32_t GetWindowsBuildVersion() const override {
+    return windows_build_version_.value_or(
+        FreezingPolicy::GetWindowsBuildVersion());
+  }
+
+  void SetWindowsBuildVersion(uint32_t windows_build_version) {
+    windows_build_version_ = windows_build_version;
+  }
+
   MOCK_METHOD(void,
               RecordFreezingEligibilityUKMForPage,
               (ukm::SourceId source_id,
@@ -74,6 +85,9 @@ class MockFreezingPolicy : public FreezingPolicy {
                double highest_cpu_without_battery_saver_cannot_freeze,
                CannotFreezeReasonSet cannot_freeze_reasons),
               (override));
+
+ private:
+  std::optional<uint32_t> windows_build_version_;
 };
 
 // Mock version of a Freezer.
@@ -2031,6 +2045,11 @@ class InfiniteTabsFreezingTestBase : public FreezingPolicyTest_BaseWithNoPage {
 
   std::vector<TestNodeWrapper<PageNodeImpl>> pages_;
   std::vector<TestNodeWrapper<FrameNodeImpl>> frames_;
+  // Default to > 8 GiB so existing tests use the non-low-RAM thresholds even on
+  // low-RAM Windows 11 25H2+ bots. Individual tests can stack another
+  // `ScopedAmountOfPhysicalMemoryOverride` to test low-RAM behavior.
+  base::test::ScopedAmountOfPhysicalMemoryOverride physical_memory_override_{
+      base::GiB(16)};
 };
 
 // Tests with only the always-active Infinite Tabs feature enabled.
@@ -2153,6 +2172,54 @@ class InfiniteTabsFreezingOnMemoryPressureInvertedUnfreezeThresholdTest
                 kInfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent
                     .name,
             "15"}}}},
+        {features::kInfiniteTabsFreezing,
+         features::kDisablePeriodicUnfreezeOnCriticalMemoryPressure});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class InfiniteTabsFreezingOnMemoryPressureWithCustomLowRamThresholdsTest
+    : public InfiniteTabsFreezingTestBase {
+ protected:
+  InfiniteTabsFreezingOnMemoryPressureWithCustomLowRamThresholdsTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kInfiniteTabsFreezingOnMemoryPressure,
+          {{features::
+                kInfiniteTabsFreezingOnMemoryPressureLowRamRequireWin1125H2OrLater
+                    .name,
+            "false"},
+           {features::
+                kInfiniteTabsFreezingOnMemoryPressureLowRamEnterAvailableMemoryPercent
+                    .name,
+            "9"},
+           {features::
+                kInfiniteTabsFreezingOnMemoryPressureLowRamExitAvailableMemoryPercent
+                    .name,
+            "13"}}}},
+        {features::kInfiniteTabsFreezing,
+         features::kDisablePeriodicUnfreezeOnCriticalMemoryPressure});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class InfiniteTabsFreezingOnMemoryPressureInvertedLowRamUnfreezeThresholdTest
+    : public InfiniteTabsFreezingTestBase {
+ protected:
+  InfiniteTabsFreezingOnMemoryPressureInvertedLowRamUnfreezeThresholdTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kInfiniteTabsFreezingOnMemoryPressure,
+          {{features::
+                kInfiniteTabsFreezingOnMemoryPressureLowRamEnterAvailableMemoryPercent
+                    .name,
+            "12"},
+           {features::
+                kInfiniteTabsFreezingOnMemoryPressureLowRamExitAvailableMemoryPercent
+                    .name,
+            "8"}}}},
         {features::kInfiniteTabsFreezing,
          features::kDisablePeriodicUnfreezeOnCriticalMemoryPressure});
   }
@@ -2510,6 +2577,188 @@ TEST_F(InfiniteTabsFreezingBothFeaturesTest,
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
   EXPECT_FALSE(policy()->IsPeriodicUnfreezeTimerRunningForTesting(
       page_without_timer.get()));
+  VerifyFreezerExpectations();
+}
+
+TEST_F(InfiniteTabsFreezingOnMemoryPressureTest,
+       UsesLowRamThresholdsOnMatchingRamAndWindowsBuild) {
+  base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+      base::GiB(8));
+  policy()->SetWindowsBuildVersion(26200);
+
+  auto [page, frame] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  ASSERT_FALSE(page->IsVisible());
+
+  const int low_ram_enter =
+      features::
+          kInfiniteTabsFreezingOnMemoryPressureLowRamEnterAvailableMemoryPercent
+              .Get();
+  const int low_ram_exit =
+      features::
+          kInfiniteTabsFreezingOnMemoryPressureLowRamExitAvailableMemoryPercent
+              .Get();
+  const int default_enter =
+      features::kInfiniteTabsFreezingOnMemoryPressureEnterAvailableMemoryPercent
+          .Get();
+  const int default_exit =
+      features::kInfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent
+          .Get();
+  ASSERT_LT(low_ram_enter, default_enter);
+  ASSERT_LT(low_ram_exit, default_exit);
+
+  // Available memory below `default_enter` (10%) but at or above
+  // `low_ram_enter` (8%) does not trigger freezing on a matching 8 GiB
+  // Windows 11 25H2+ device.
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(default_enter - 1);
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(low_ram_enter);
+  VerifyFreezerExpectations();
+  EXPECT_FALSE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+
+  // Dropping below `low_ram_enter` activates freezing.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(low_ram_enter - 1);
+  VerifyFreezerExpectations();
+  EXPECT_TRUE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+
+  // Available memory in `[low_ram_enter, low_ram_exit)` stays frozen.
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(low_ram_exit - 1);
+  VerifyFreezerExpectations();
+  EXPECT_TRUE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+
+  // Reaching `low_ram_exit` (12%) unfreezes pages without waiting for
+  // `default_exit` (15%).
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(low_ram_exit);
+  VerifyFreezerExpectations();
+  EXPECT_FALSE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+}
+
+TEST_F(InfiniteTabsFreezingOnMemoryPressureTest,
+       UsesDefaultThresholdsAboveMaxPhysicalMemory) {
+  base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+      base::GiB(16));
+  policy()->SetWindowsBuildVersion(26200);
+
+  auto [page, frame] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  ASSERT_FALSE(page->IsVisible());
+
+  const int default_enter =
+      features::kInfiniteTabsFreezingOnMemoryPressureEnterAvailableMemoryPercent
+          .Get();
+  const int default_exit =
+      features::kInfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent
+          .Get();
+  const int low_ram_exit =
+      features::
+          kInfiniteTabsFreezingOnMemoryPressureLowRamExitAvailableMemoryPercent
+              .Get();
+
+  // On a 16 GiB device, `default_enter - 1` (9%) activates freezing even though
+  // it is above `low_ram_enter` (8%).
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(default_enter - 1);
+  VerifyFreezerExpectations();
+
+  // Reaching `low_ram_exit` (12%) does not unfreeze on a 16 GiB device.
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(low_ram_exit);
+  VerifyFreezerExpectations();
+
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(default_exit);
+  VerifyFreezerExpectations();
+}
+
+TEST_F(InfiniteTabsFreezingOnMemoryPressureTest,
+       UsesDefaultThresholdsBelowMinWindowsBuild) {
+  base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+      base::GiB(8));
+  policy()->SetWindowsBuildVersion(26100);
+
+  auto [page, frame] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  ASSERT_FALSE(page->IsVisible());
+
+  const int default_enter =
+      features::kInfiniteTabsFreezingOnMemoryPressureEnterAvailableMemoryPercent
+          .Get();
+  const int default_exit =
+      features::kInfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent
+          .Get();
+  const int low_ram_exit =
+      features::
+          kInfiniteTabsFreezingOnMemoryPressureLowRamExitAvailableMemoryPercent
+              .Get();
+
+  // On Windows 11 24H2 (build 26100 < 26200), an 8 GiB device still uses the
+  // default 10% / 15% thresholds.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(default_enter - 1);
+  VerifyFreezerExpectations();
+
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(low_ram_exit);
+  VerifyFreezerExpectations();
+
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(default_exit);
+  VerifyFreezerExpectations();
+}
+
+TEST_F(InfiniteTabsFreezingOnMemoryPressureWithCustomLowRamThresholdsTest,
+       AppliesCustomLowRamThresholdsAcrossAllWindowsBuildsWhenConfigured) {
+  base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+      base::GiB(8));
+  policy()->SetWindowsBuildVersion(19045);
+
+  auto [page, frame] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  ASSERT_FALSE(page->IsVisible());
+
+  // With `LowRamRequireWin1125H2OrLater = false`, `LowRamEnter = 9`, and
+  // `LowRamExit = 13`, an 8 GiB Windows 10 device uses the 9% / 13% thresholds.
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(9);
+  VerifyFreezerExpectations();
+
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(8);
+  VerifyFreezerExpectations();
+
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(12);
+  VerifyFreezerExpectations();
+
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(13);
+  VerifyFreezerExpectations();
+}
+
+TEST_F(InfiniteTabsFreezingOnMemoryPressureInvertedLowRamUnfreezeThresholdTest,
+       ClampsLowRamUnfreezeThresholdToFreezeThreshold) {
+  base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+      base::GiB(8));
+  policy()->SetWindowsBuildVersion(26200);
+
+  auto [page, frame] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  ASSERT_FALSE(page->IsVisible());
+
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(11);
+  VerifyFreezerExpectations();
+
+  // When `LowRamExitAvailableMemoryPercent` (8) is below
+  // `LowRamEnterAvailableMemoryPercent` (12), clamping prevents oscillating
+  // between frozen and unfrozen on consecutive samples in `[8, 12)`.
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(11);
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(8);
+  VerifyFreezerExpectations();
+
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(12);
   VerifyFreezerExpectations();
 }
 

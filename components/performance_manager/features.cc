@@ -284,6 +284,29 @@ BASE_FEATURE_PARAM(
     &kInfiniteTabsFreezingOnMemoryPressure,
     15);
 
+// Starting in Windows 11 25H2 (build 26200) and 26H2 (build 26300) on PCs with
+// 8 GiB of RAM or less, Windows regulates available physical memory around
+// ~10-11% of RAM by keeping compressed pages in RAM rather than batch-flushing
+// them to the pagefile to refill available memory to ~15%. Use lower enter and
+// exit percentage thresholds on matching devices.
+BASE_FEATURE_PARAM(
+    bool,
+    kInfiniteTabsFreezingOnMemoryPressureLowRamRequireWin1125H2OrLater,
+    &kInfiniteTabsFreezingOnMemoryPressure,
+    true);
+
+BASE_FEATURE_PARAM(
+    int,
+    kInfiniteTabsFreezingOnMemoryPressureLowRamEnterAvailableMemoryPercent,
+    &kInfiniteTabsFreezingOnMemoryPressure,
+    8);
+
+BASE_FEATURE_PARAM(
+    int,
+    kInfiniteTabsFreezingOnMemoryPressureLowRamExitAvailableMemoryPercent,
+    &kInfiniteTabsFreezingOnMemoryPressure,
+    12);
+
 BASE_FEATURE(kDisablePeriodicUnfreezeOnCriticalMemoryPressure,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

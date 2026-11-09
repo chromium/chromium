@@ -240,6 +240,29 @@ BASE_DECLARE_FEATURE_PARAM(
     int,
     kInfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent);
 
+// Whether the low-RAM enter and exit thresholds below apply only on Windows 11
+// 25H2 and later (build 26200+). `kInfiniteTabsFreezingOnMemoryPressure` is
+// Windows-only, so when false, the low-RAM thresholds apply on all Windows
+// versions for devices with at most 8 GiB of physical memory.
+BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kInfiniteTabsFreezingOnMemoryPressureLowRamRequireWin1125H2OrLater);
+
+// The available physical memory percentage below which to enter freezing on
+// matching low-RAM devices (at most 8 GiB of physical memory). When
+// `kDisablePeriodicUnfreezeOnCriticalMemoryPressure` is also enabled, configure
+// `critical < enter <= exit` so devices enter periodic unfreezing before
+// suppressing it.
+BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kInfiniteTabsFreezingOnMemoryPressureLowRamEnterAvailableMemoryPercent);
+
+// The available physical memory percentage at or above which to exit freezing
+// on matching low-RAM devices (at most 8 GiB of physical memory).
+BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kInfiniteTabsFreezingOnMemoryPressureLowRamExitAvailableMemoryPercent);
+
 // If enabled, periodic unfreezing of tabs is disabled while the system is under
 // critical memory pressure.
 BASE_DECLARE_FEATURE(kDisablePeriodicUnfreezeOnCriticalMemoryPressure);

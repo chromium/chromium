@@ -19,7 +19,9 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/freezing/cannot_freeze_reason.h"
@@ -38,6 +40,10 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace performance_manager {
 
 namespace {
@@ -47,6 +53,8 @@ using freezing::CannotFreezeReasonSet;
 using resource_attribution::OriginInBrowsingInstanceContext;
 
 constexpr base::TimeDelta kCPUMeasurementInterval = base::Minutes(1);
+constexpr base::ByteSize kLowRamMaxPhysicalMemory = base::GiB(8);
+constexpr uint32_t kWin1125H2BuildVersion = 26200;
 
 bool HasCannotFreezeReasonForType(
     const CannotFreezeReasonSet& cannot_freeze_reasons,
@@ -285,7 +293,8 @@ bool FreezingPolicy::IsPeriodicUnfreezeTimerRunningForTesting(
 
 void FreezingPolicy::UpdateStateFromAvailableMemoryPercentForTesting(
     int available_memory_percent) {
-  UpdateStateFromAvailableMemoryPercent(available_memory_percent);
+  UpdateStateFromAvailableMemoryPercent(
+      available_memory_percent, base::SysInfo::AmountOfTotalPhysicalMemory());
 }
 
 void FreezingPolicy::ToggleFreezingOnBatterySaverMode(bool is_enabled) {
@@ -1460,6 +1469,32 @@ base::LiveTicks FreezingPolicy::GenerateRandomPeriodicUnfreezePhase() const {
                     .InMilliseconds()));
 }
 
+uint32_t FreezingPolicy::GetWindowsBuildVersion() const {
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/466015017): Switch to `base::win::GetVersion() >=
+  // base::win::Version::WIN11_25H2` once `WIN11_25H2` is added to
+  // `base::win::Version`.
+  return base::win::OSInfo::GetInstance()->version_number().build;
+#else
+  return 0;
+#endif
+}
+
+bool FreezingPolicy::ShouldUseLowRamThresholds(
+    base::ByteSize total_physical_memory) const {
+  if (!total_physical_memory.is_positive() ||
+      total_physical_memory > kLowRamMaxPhysicalMemory) {
+    return false;
+  }
+  if (features::
+          kInfiniteTabsFreezingOnMemoryPressureLowRamRequireWin1125H2OrLater
+              .Get() &&
+      GetWindowsBuildVersion() < kWin1125H2BuildVersion) {
+    return false;
+  }
+  return true;
+}
+
 void FreezingPolicy::CheckAvailableMemory() {
 #if BUILDFLAG(IS_WIN)
   base::SystemMemoryInfo info;
@@ -1469,44 +1504,56 @@ void FreezingPolicy::CheckAvailableMemory() {
   }
 
   base::ByteSize total = info.total;
-  base::ByteSize avail = info.avail_phys;
-
-  int available_percent = 0;
-  if (total.is_positive()) {
-    available_percent =
-        static_cast<int>(avail.InBytesF() / total.InBytesF() * 100.0);
+  if (!total.is_positive()) {
+    return;
   }
 
-  UpdateStateFromAvailableMemoryPercent(available_percent);
+  base::ByteSize avail = info.avail_phys;
+  const int available_percent =
+      static_cast<int>(avail.InBytesF() / total.InBytesF() * 100.0);
+
+  UpdateStateFromAvailableMemoryPercent(available_percent, total);
 
 #endif  // BUILDFLAG(IS_WIN)
 }
 
 void FreezingPolicy::UpdateStateFromAvailableMemoryPercent(
-    int available_memory_percent) {
-  const int enter_threshold_percent =
-      features::kInfiniteTabsFreezingOnMemoryPressureEnterAvailableMemoryPercent
-          .Get();
-  const int exit_threshold_percent = std::max(
-      enter_threshold_percent,
-      features::kInfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent
-          .Get());
-  const int critical_threshold_percent =
-      features::kDisablePeriodicUnfreezeOnCriticalMemoryPressurePercent.Get();
-
-  const bool was_active =
-      infinite_tab_freezing_status_ != InfiniteTabFreezingStatus::kInactive;
-  const int active_threshold_percent =
-      was_active ? exit_threshold_percent : enter_threshold_percent;
-
-  const bool is_active =
-      base::FeatureList::IsEnabled(features::kInfiniteTabsFreezing) ||
-      (base::FeatureList::IsEnabled(
-           features::kInfiniteTabsFreezingOnMemoryPressure) &&
-       available_memory_percent < active_threshold_percent);
+    int available_memory_percent,
+    base::ByteSize total_physical_memory) {
+  bool is_active =
+      base::FeatureList::IsEnabled(features::kInfiniteTabsFreezing);
+  if (!is_active && base::FeatureList::IsEnabled(
+                        features::kInfiniteTabsFreezingOnMemoryPressure)) {
+    const bool use_low_ram = ShouldUseLowRamThresholds(total_physical_memory);
+    const int enter_threshold_percent =
+        use_low_ram
+            ? features::
+                  kInfiniteTabsFreezingOnMemoryPressureLowRamEnterAvailableMemoryPercent
+                      .Get()
+            : features::
+                  kInfiniteTabsFreezingOnMemoryPressureEnterAvailableMemoryPercent
+                      .Get();
+    const int raw_exit_threshold_percent =
+        use_low_ram
+            ? features::
+                  kInfiniteTabsFreezingOnMemoryPressureLowRamExitAvailableMemoryPercent
+                      .Get()
+            : features::
+                  kInfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent
+                      .Get();
+    const int exit_threshold_percent =
+        std::max(enter_threshold_percent, raw_exit_threshold_percent);
+    const bool was_active =
+        infinite_tab_freezing_status_ != InfiniteTabFreezingStatus::kInactive;
+    const int active_threshold_percent =
+        was_active ? exit_threshold_percent : enter_threshold_percent;
+    is_active = available_memory_percent < active_threshold_percent;
+  }
 
   InfiniteTabFreezingStatus new_status = InfiniteTabFreezingStatus::kInactive;
   if (is_active) {
+    const int critical_threshold_percent =
+        features::kDisablePeriodicUnfreezeOnCriticalMemoryPressurePercent.Get();
     if (base::FeatureList::IsEnabled(
             features::kDisablePeriodicUnfreezeOnCriticalMemoryPressure) &&
         available_memory_percent < critical_threshold_percent) {
