@@ -201,7 +201,9 @@ void SadTab::RecordFirstPaint() {
 }
 
 void SadTab::PerformAction(SadTab::Action action) {
-  CHECK(recorded_paint_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/582827314): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(recorded_paint_);
   switch (action) {
     case Action::kButton:
       RecordEvent(show_feedback_button_,
