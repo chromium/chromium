@@ -360,6 +360,13 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(
     kViewTransitionsAvoidDuplicateCaptureRenderPass);
 
+// When enabled, cross-document ViewTransition snapshot `kSave` directives
+// invoke their capture callback at `POST_COMMIT` (immediately after
+// `UpdateDrawProperties()` computes element capture rects) and use
+// `ViewTransitionSnapshotState` to finish producing the `kSave` CompositorFrame
+// in parallel with the incoming navigation commit.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kViewTransitionEarlySnapshotRelease);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

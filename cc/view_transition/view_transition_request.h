@@ -103,6 +103,13 @@ class CC_EXPORT ViewTransitionRequest {
     return delay_layer_tree_view_deletion_;
   }
 
+  // Returns true if this request is a `Type::kSave` directive for a
+  // cross-document navigation snapshot (`maybe_cross_frame_sink()` and
+  // `delay_layer_tree_view_deletion()`), and
+  // `features::kViewTransitionEarlySnapshotRelease` is enabled. Same-document
+  // ViewTransitions have `maybe_cross_frame_sink() == false` and return false.
+  bool IsSaveDirectiveForSnapshot() const;
+
  private:
   ViewTransitionRequest(
       Type type,

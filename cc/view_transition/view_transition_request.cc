@@ -11,9 +11,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "cc/base/features.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 
@@ -134,6 +136,13 @@ std::string ViewTransitionRequest::ToString() const {
   str << "[type: " << TypeToString(type_) << " sequence_id: " << sequence_id_
       << "]";
   return str.str();
+}
+
+bool ViewTransitionRequest::IsSaveDirectiveForSnapshot() const {
+  return type_ == Type::kSave && maybe_cross_frame_sink_ &&
+         delay_layer_tree_view_deletion_ &&
+         base::FeatureList::IsEnabled(
+             features::kViewTransitionEarlySnapshotRelease);
 }
 
 }  // namespace cc
