@@ -1330,7 +1330,7 @@ IN_PROC_BROWSER_TEST_P(
 // When `window.open()` is called from a picture-in-picture window, it must lose
 // focus to the newly opened window to prevent multiple popunders from opening
 // when a user types multiple keys in a picture-in-picture window.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBackendTest,
                        WindowOpenLosesFocus) {
   LoadTabAndEnterPictureInPicture(browser());
   auto* web_contents = window_controller()->GetChildWebContents();
