@@ -10,6 +10,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/enrollment_handler.h"
@@ -34,6 +35,7 @@ class ChromeSyncEnrollmentHandler : public EnrollmentHandler {
 
   // EnrollmentHandler:
   void CanEnroll(CanEnrollCallback callback) override;
+  void Enroll(EnrollCallback callback) override;
 
  private:
   // Encapsulates the state for an in-flight `CanEnroll()` request and allows
@@ -51,17 +53,46 @@ class ChromeSyncEnrollmentHandler : public EnrollmentHandler {
     std::vector<CanEnrollCallback> callbacks;
   };
 
+  // Encapsulates the state for an in-flight `Enroll()` operation. Destroying
+  // this cancels any active network request via RAII without invoking
+  // `callback`.
+  struct OngoingEnroll {
+    OngoingEnroll();
+    OngoingEnroll(const OngoingEnroll&) = delete;
+    OngoingEnroll& operator=(const OngoingEnroll&) = delete;
+    OngoingEnroll(OngoingEnroll&&) noexcept;
+    OngoingEnroll& operator=(OngoingEnroll&&) noexcept;
+    ~OngoingEnroll();
+
+    EnrollCallback callback;
+    std::unique_ptr<TrustedVaultConnection::Request> request;
+    bool has_retried_key_rotation = false;
+  };
+
   bool SatisfiesLocalPrerequisites() const;
 
   void OnGaiaPasswordPublicKeyDownloadedForCanEnroll(
       TrustedVaultDownloadPasswordPublicKeyStatus status,
       const std::vector<uint8_t>& public_key);
 
+  void OnGaiaPasswordPublicKeyDownloadedForEnroll(
+      TrustedVaultDownloadPasswordPublicKeyStatus status,
+      const std::vector<uint8_t>& public_key);
+  void OnGaiaPasswordRegisteredForEnroll(TrustedVaultRegistrationStatus status,
+                                         int unused_epoch);
+  void RotateSharedKeyForEnroll(const std::vector<uint8_t>& new_shared_key);
+  void OnKeyRotatedForEnroll(const std::vector<uint8_t>& new_shared_key,
+                             TrustedVaultKeyRotationStatus status,
+                             int new_key_version);
+  void FulfillOngoingEnroll(const std::vector<uint8_t>& new_shared_key,
+                            int new_key_version);
+
   const CoreAccountInfo primary_account_;
   const raw_ref<KeyStorage> storage_;
   const raw_ref<TrustedVaultConnection> connection_;
 
   std::optional<OngoingCanEnroll> ongoing_can_enroll_;
+  std::optional<OngoingEnroll> ongoing_enroll_;
 };
 
 }  // namespace trusted_vault

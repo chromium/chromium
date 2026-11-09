@@ -44,6 +44,9 @@ class StandaloneTrustedVaultBackend
  public:
   using FetchKeysCallback = base::OnceCallback<void(
       const std::vector<std::vector<uint8_t>>& vault_keys)>;
+  using EnrollCallback =
+      base::OnceCallback<void(const std::vector<uint8_t>& new_shared_key,
+                              int new_key_version)>;
 
   class Delegate {
    public:
@@ -184,6 +187,13 @@ class StandaloneTrustedVaultBackend
                  SecurityDomainId security_domain,
                  base::OnceCallback<void(bool)> cb);
 
+  // Enrolls `account_info` into `security_domain`. On success, `cb` is run
+  // with the newly generated shared key and its version. On failure, `cb` is
+  // run with an empty vector and -1.
+  void Enroll(const CoreAccountInfo& account_info,
+              SecurityDomainId security_domain,
+              EnrollCallback cb);
+
   void ClearLocalDataForAccount(const CoreAccountInfo& account_info);
 
   std::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
@@ -253,6 +263,11 @@ class StandaloneTrustedVaultBackend
                                     base::OnceCallback<void(bool)> cb,
                                     TrustedVaultRegistrationStatus status,
                                     int unused_epoch);
+
+  void OnEnrolled(SecurityDomainId security_domain,
+                  EnrollCallback cb,
+                  const std::vector<uint8_t>& new_shared_key,
+                  int new_key_version);
 
   // Invokes |callback| with currently available keys for |gaia_id|.
   void FulfillFetchKeys(

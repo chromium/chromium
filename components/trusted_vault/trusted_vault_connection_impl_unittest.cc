@@ -690,6 +690,36 @@ TEST_P(TrustedVaultConnectionImplTest,
 }
 
 TEST_P(TrustedVaultConnectionImplTest,
+       ShouldSendJoinSecurityDomainsRequestForGaiaPassword) {
+  std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
+  ASSERT_THAT(key_pair, NotNull());
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RegisterAuthenticationFactor(
+          /*account_info=*/CoreAccountInfo(), security_domain(),
+          GetTrustedVaultKeysWithVersions(kTrustedVaultKeys,
+                                          /*last_key_version=*/1234),
+          key_pair->public_key(), GaiaPassword(),
+          TrustedVaultConnection::RegisterAuthenticationFactorCallback());
+  EXPECT_THAT(request, NotNull());
+
+  const network::TestURLLoaderFactory::PendingRequest* pending_request =
+      GetPendingHTTPRequest();
+  ASSERT_THAT(pending_request, NotNull());
+  const network::ResourceRequest& resource_request = pending_request->request;
+  EXPECT_THAT(resource_request.method, Eq("POST"));
+  EXPECT_THAT(resource_request.url, Eq(GetFullJoinSecurityDomainsURLForTesting(
+                                        kTestURL, security_domain())));
+
+  trusted_vault_pb::JoinSecurityDomainsRequest deserialized_body;
+  ASSERT_TRUE(deserialized_body.ParseFromString(
+      network::GetUploadData(resource_request)));
+  EXPECT_THAT(
+      deserialized_body.security_domain_member().member_type(),
+      Eq(trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_GAIA_PASSWORD));
+}
+
+TEST_P(TrustedVaultConnectionImplTest,
        ShouldHandleSuccessfulJoinSecurityDomainsRequest) {
   std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
   ASSERT_THAT(key_pair, NotNull());

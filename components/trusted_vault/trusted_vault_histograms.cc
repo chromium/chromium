@@ -41,6 +41,8 @@ std::string GetTrustedVaultURLFetchReasonSuffix(
       return "DownloadAuthenticationFactorsRegistrationState";
     case TrustedVaultURLFetchReasonForUMA::kRegisterICloudKeychain:
       return "RegisterICloudKeychain";
+    case TrustedVaultURLFetchReasonForUMA::kRegisterGaiaPassword:
+      return "RegisterGaiaPassword";
     case TrustedVaultURLFetchReasonForUMA::kDownloadGaiaPasswordPublicKey:
       return "DownloadGaiaPasswordPublicKey";
     case TrustedVaultURLFetchReasonForUMA::

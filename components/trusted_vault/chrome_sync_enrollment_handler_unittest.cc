@@ -28,8 +28,26 @@ namespace trusted_vault {
 namespace {
 
 using testing::_;
+using testing::ElementsAre;
 using testing::Eq;
+using testing::IsEmpty;
 using testing::NiceMock;
+using testing::SizeIs;
+
+MATCHER_P(MatchTrustedVaultKeyAndVersions, expected, "") {
+  const auto* trusted_vault_keys =
+      std::get_if<std::vector<TrustedVaultKeyAndVersion>>(&arg);
+  if (!trusted_vault_keys) {
+    *result_listener << "does not hold a vector of TrustedVaultKeyAndVersion";
+    return false;
+  }
+  return testing::ExplainMatchResult(expected, *trusted_vault_keys,
+                                     result_listener);
+}
+
+MATCHER_P(PublicKeyWhenExportedEq, expected, "") {
+  return arg.ExportToBytes() == expected;
+}
 
 class ChromeSyncEnrollmentHandlerTest : public testing::Test {
  public:
@@ -48,10 +66,9 @@ class ChromeSyncEnrollmentHandlerTest : public testing::Test {
         account_info_, storage_.get(), connection_.get());
   }
 
-  void StoreConstantKeys() {
+  void StoreConstantKeys(int last_key_version = 1) {
     storage_->SetVaultKeys(account_info_.gaia, SecurityDomainId::kChromeSync,
-                           {GetConstantTrustedVaultKey()},
-                           /*last_key_version=*/1);
+                           {GetConstantTrustedVaultKey()}, last_key_version);
   }
 
   const CoreAccountInfo& account_info() const { return account_info_; }
@@ -220,6 +237,503 @@ TEST_F(ChromeSyncEnrollmentHandlerTest, ShouldAbortCanEnrollOnDestruction) {
   base::MockCallback<ChromeSyncEnrollmentHandler::CanEnrollCallback> cb;
   EXPECT_CALL(cb, Run).Times(0);
   handler()->CanEnroll(cb.Get());
+
+  ResetHandler();
+}
+
+TEST_F(ChromeSyncEnrollmentHandlerTest, ShouldEnroll) {
+  const int kConstantKeyVersion = 5;
+  const int kNewKeyVersion = 6;
+  const std::vector<uint8_t> kValidPublicKey =
+      SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+
+  StoreConstantKeys(kConstantKeyVersion);
+
+  TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+      download_callback;
+  EXPECT_CALL(*connection(),
+              DownloadGaiaPasswordPublicKey(Eq(account_info()), _))
+      .WillOnce(
+          [&](const CoreAccountInfo&,
+              TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+                  callback) {
+            download_callback = std::move(callback);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      register_callback;
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info()), Eq(SecurityDomainId::kChromeSync),
+          MatchTrustedVaultKeyAndVersions(ElementsAre(TrustedVaultKeyAndVersion(
+              GetConstantTrustedVaultKey(), kConstantKeyVersion))),
+          PublicKeyWhenExportedEq(kValidPublicKey),
+          Eq(AuthenticationFactorTypeAndRegistrationParams(GaiaPassword())), _))
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const MemberKeysSource&, const SecureBoxPublicKey&,
+                    AuthenticationFactorTypeAndRegistrationParams,
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                        callback) {
+        register_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  std::vector<uint8_t> rotated_key;
+  TrustedVaultConnection::RotateSharedKeyCallback rotate_callback;
+  EXPECT_CALL(
+      *connection(),
+      RotateSharedKey(Eq(account_info()), Eq(SecurityDomainId::kChromeSync),
+                      Eq(TrustedVaultKeyAndVersion(GetConstantTrustedVaultKey(),
+                                                   kConstantKeyVersion)),
+                      SizeIs(32), _))
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const TrustedVaultKeyAndVersion&,
+                    const std::vector<uint8_t>& new_shared_key,
+                    TrustedVaultConnection::RotateSharedKeyCallback callback) {
+        rotated_key = new_shared_key;
+        rotate_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  base::test::TestFuture<const std::vector<uint8_t>&, int> future;
+  handler()->Enroll(future.GetCallback());
+
+  ASSERT_FALSE(download_callback.is_null());
+  std::move(download_callback)
+      .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess,
+           kValidPublicKey);
+
+  ASSERT_FALSE(register_callback.is_null());
+  std::move(register_callback)
+      .Run(TrustedVaultRegistrationStatus::kSuccess, kConstantKeyVersion);
+
+  ASSERT_FALSE(rotate_callback.is_null());
+  std::move(rotate_callback)
+      .Run(TrustedVaultKeyRotationStatus::kSuccess, kNewKeyVersion);
+
+  EXPECT_EQ(future.Get<0>(), rotated_key);
+  EXPECT_EQ(future.Get<1>(), kNewKeyVersion);
+}
+
+TEST_F(ChromeSyncEnrollmentHandlerTest,
+       ShouldRejectConcurrentEnrollWhileInFlight) {
+  const int kConstantKeyVersion = 5;
+  const int kNewKeyVersion = 6;
+  const std::vector<uint8_t> kValidPublicKey =
+      SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+
+  StoreConstantKeys(kConstantKeyVersion);
+
+  TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+      download_callback;
+  EXPECT_CALL(*connection(),
+              DownloadGaiaPasswordPublicKey(Eq(account_info()), _))
+      .WillOnce(
+          [&](const CoreAccountInfo&,
+              TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+                  callback) {
+            download_callback = std::move(callback);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      register_callback;
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor)
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const MemberKeysSource&, const SecureBoxPublicKey&,
+                    AuthenticationFactorTypeAndRegistrationParams,
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                        callback) {
+        register_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  TrustedVaultConnection::RotateSharedKeyCallback rotate_callback;
+  EXPECT_CALL(*connection(), RotateSharedKey)
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const TrustedVaultKeyAndVersion&,
+                    const std::vector<uint8_t>&,
+                    TrustedVaultConnection::RotateSharedKeyCallback callback) {
+        rotate_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  base::test::TestFuture<const std::vector<uint8_t>&, int> future1;
+  base::test::TestFuture<const std::vector<uint8_t>&, int> future2;
+  handler()->Enroll(future1.GetCallback());
+  handler()->Enroll(future2.GetCallback());
+
+  // The second call should fail immediately without disrupting the first.
+  EXPECT_THAT(future2.Get<0>(), IsEmpty());
+  EXPECT_EQ(future2.Get<1>(), -1);
+
+  ASSERT_FALSE(download_callback.is_null());
+  std::move(download_callback)
+      .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess,
+           kValidPublicKey);
+  ASSERT_FALSE(register_callback.is_null());
+  std::move(register_callback)
+      .Run(TrustedVaultRegistrationStatus::kSuccess, kConstantKeyVersion);
+  ASSERT_FALSE(rotate_callback.is_null());
+  std::move(rotate_callback)
+      .Run(TrustedVaultKeyRotationStatus::kSuccess, kNewKeyVersion);
+
+  EXPECT_THAT(future1.Get<0>(), SizeIs(32));
+  EXPECT_EQ(future1.Get<1>(), kNewKeyVersion);
+}
+
+TEST_F(ChromeSyncEnrollmentHandlerTest,
+       ShouldFailEnrollIfLocalPrerequisitesLostMidFlight) {
+  const int kConstantKeyVersion = 5;
+  const std::vector<uint8_t> kValidPublicKey =
+      SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+
+  StoreConstantKeys(kConstantKeyVersion);
+
+  TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+      download_callback;
+  EXPECT_CALL(*connection(),
+              DownloadGaiaPasswordPublicKey(Eq(account_info()), _))
+      .WillOnce(
+          [&](const CoreAccountInfo&,
+              TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+                  callback) {
+            download_callback = std::move(callback);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+
+  base::test::TestFuture<const std::vector<uint8_t>&, int> future;
+  handler()->Enroll(future.GetCallback());
+  ASSERT_FALSE(download_callback.is_null());
+
+  // Simulate a non-constant key being stored while the download is in flight.
+  storage()->SetVaultKeys(account_info().gaia, SecurityDomainId::kChromeSync,
+                          {{1, 2, 3}}, /*last_key_version=*/2);
+
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
+  std::move(download_callback)
+      .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess,
+           kValidPublicKey);
+
+  EXPECT_THAT(future.Get<0>(), IsEmpty());
+  EXPECT_EQ(future.Get<1>(), -1);
+}
+
+TEST_F(ChromeSyncEnrollmentHandlerTest,
+       ShouldRetryKeyRotationOnMembershipMismatchAndSucceed) {
+  const int kConstantKeyVersion = 5;
+  const int kNewKeyVersion = 6;
+  const std::vector<uint8_t> kValidPublicKey =
+      SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+
+  StoreConstantKeys(kConstantKeyVersion);
+
+  TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+      download_callback;
+  EXPECT_CALL(*connection(),
+              DownloadGaiaPasswordPublicKey(Eq(account_info()), _))
+      .WillOnce(
+          [&](const CoreAccountInfo&,
+              TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+                  callback) {
+            download_callback = std::move(callback);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      register_callback;
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor)
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const MemberKeysSource&, const SecureBoxPublicKey&,
+                    AuthenticationFactorTypeAndRegistrationParams,
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                        callback) {
+        register_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  // First attempt returns kMembershipMismatch; second attempt succeeds.
+  TrustedVaultConnection::RotateSharedKeyCallback rotate_callback1;
+  TrustedVaultConnection::RotateSharedKeyCallback rotate_callback2;
+  EXPECT_CALL(*connection(), RotateSharedKey)
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const TrustedVaultKeyAndVersion&,
+                    const std::vector<uint8_t>&,
+                    TrustedVaultConnection::RotateSharedKeyCallback callback) {
+        rotate_callback1 = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      })
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const TrustedVaultKeyAndVersion&,
+                    const std::vector<uint8_t>&,
+                    TrustedVaultConnection::RotateSharedKeyCallback callback) {
+        rotate_callback2 = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  base::test::TestFuture<const std::vector<uint8_t>&, int> future;
+  handler()->Enroll(future.GetCallback());
+
+  ASSERT_FALSE(download_callback.is_null());
+  std::move(download_callback)
+      .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess,
+           kValidPublicKey);
+
+  ASSERT_FALSE(register_callback.is_null());
+  std::move(register_callback)
+      .Run(TrustedVaultRegistrationStatus::kSuccess, kConstantKeyVersion);
+
+  ASSERT_FALSE(rotate_callback1.is_null());
+  std::move(rotate_callback1)
+      .Run(TrustedVaultKeyRotationStatus::kMembershipMismatch, 0);
+
+  ASSERT_FALSE(rotate_callback2.is_null());
+  std::move(rotate_callback2)
+      .Run(TrustedVaultKeyRotationStatus::kSuccess, kNewKeyVersion);
+
+  EXPECT_THAT(future.Get<0>(), SizeIs(32));
+  EXPECT_EQ(future.Get<1>(), kNewKeyVersion);
+}
+
+TEST_F(ChromeSyncEnrollmentHandlerTest,
+       ShouldFailWhenKeyRotationRetryAlsoFails) {
+  const int kConstantKeyVersion = 5;
+  const std::vector<uint8_t> kValidPublicKey =
+      SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+
+  StoreConstantKeys(kConstantKeyVersion);
+
+  TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+      download_callback;
+  EXPECT_CALL(*connection(),
+              DownloadGaiaPasswordPublicKey(Eq(account_info()), _))
+      .WillOnce(
+          [&](const CoreAccountInfo&,
+              TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+                  callback) {
+            download_callback = std::move(callback);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      register_callback;
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor)
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const MemberKeysSource&, const SecureBoxPublicKey&,
+                    AuthenticationFactorTypeAndRegistrationParams,
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                        callback) {
+        register_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  TrustedVaultConnection::RotateSharedKeyCallback rotate_callback1;
+  TrustedVaultConnection::RotateSharedKeyCallback rotate_callback2;
+  EXPECT_CALL(*connection(), RotateSharedKey)
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const TrustedVaultKeyAndVersion&,
+                    const std::vector<uint8_t>&,
+                    TrustedVaultConnection::RotateSharedKeyCallback callback) {
+        rotate_callback1 = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      })
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const TrustedVaultKeyAndVersion&,
+                    const std::vector<uint8_t>&,
+                    TrustedVaultConnection::RotateSharedKeyCallback callback) {
+        rotate_callback2 = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  base::test::TestFuture<const std::vector<uint8_t>&, int> future;
+  handler()->Enroll(future.GetCallback());
+
+  ASSERT_FALSE(download_callback.is_null());
+  std::move(download_callback)
+      .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess,
+           kValidPublicKey);
+
+  ASSERT_FALSE(register_callback.is_null());
+  std::move(register_callback)
+      .Run(TrustedVaultRegistrationStatus::kSuccess, kConstantKeyVersion);
+
+  ASSERT_FALSE(rotate_callback1.is_null());
+  std::move(rotate_callback1)
+      .Run(TrustedVaultKeyRotationStatus::kMembershipMismatch, 0);
+
+  ASSERT_FALSE(rotate_callback2.is_null());
+  std::move(rotate_callback2)
+      .Run(TrustedVaultKeyRotationStatus::kMembershipMismatch, 0);
+
+  EXPECT_THAT(future.Get<0>(), IsEmpty());
+  EXPECT_EQ(future.Get<1>(), -1);
+}
+
+TEST_F(ChromeSyncEnrollmentHandlerTest, ShouldFailEnrollWhenStepsFail) {
+  const int kConstantKeyVersion = 5;
+  const std::vector<uint8_t> kValidPublicKey =
+      SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+  StoreConstantKeys(kConstantKeyVersion);
+
+  // DownloadGaiaPasswordPublicKey fails.
+  {
+    TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+        download_callback;
+    EXPECT_CALL(*connection(),
+                DownloadGaiaPasswordPublicKey(Eq(account_info()), _))
+        .WillOnce(
+            [&](const CoreAccountInfo&,
+                TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+                    callback) {
+              download_callback = std::move(callback);
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
+
+    base::test::TestFuture<const std::vector<uint8_t>&, int> future;
+    handler()->Enroll(future.GetCallback());
+    ASSERT_FALSE(download_callback.is_null());
+    std::move(download_callback)
+        .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kNetworkError,
+             std::vector<uint8_t>());
+
+    EXPECT_THAT(future.Get<0>(), IsEmpty());
+    EXPECT_EQ(future.Get<1>(), -1);
+  }
+
+  // Invalid public key bytes.
+  {
+    TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+        download_callback;
+    EXPECT_CALL(*connection(),
+                DownloadGaiaPasswordPublicKey(Eq(account_info()), _))
+        .WillOnce(
+            [&](const CoreAccountInfo&,
+                TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+                    callback) {
+              download_callback = std::move(callback);
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
+
+    base::test::TestFuture<const std::vector<uint8_t>&, int> future;
+    handler()->Enroll(future.GetCallback());
+    ASSERT_FALSE(download_callback.is_null());
+    std::move(download_callback)
+        .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess,
+             /*invalid_public_key=*/{1, 2, 3});
+
+    EXPECT_THAT(future.Get<0>(), IsEmpty());
+    EXPECT_EQ(future.Get<1>(), -1);
+  }
+
+  // RegisterAuthenticationFactor fails.
+  {
+    TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+        download_callback;
+    EXPECT_CALL(*connection(),
+                DownloadGaiaPasswordPublicKey(Eq(account_info()), _))
+        .WillOnce(
+            [&](const CoreAccountInfo&,
+                TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+                    callback) {
+              download_callback = std::move(callback);
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
+    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+        register_callback;
+    EXPECT_CALL(*connection(), RegisterAuthenticationFactor)
+        .WillOnce(
+            [&](const CoreAccountInfo&, SecurityDomainId,
+                const MemberKeysSource&, const SecureBoxPublicKey&,
+                AuthenticationFactorTypeAndRegistrationParams,
+                TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                    callback) {
+              register_callback = std::move(callback);
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
+
+    base::test::TestFuture<const std::vector<uint8_t>&, int> future;
+    handler()->Enroll(future.GetCallback());
+    ASSERT_FALSE(download_callback.is_null());
+    std::move(download_callback)
+        .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess,
+             kValidPublicKey);
+    ASSERT_FALSE(register_callback.is_null());
+    std::move(register_callback)
+        .Run(TrustedVaultRegistrationStatus::kNetworkError, 0);
+
+    EXPECT_THAT(future.Get<0>(), IsEmpty());
+    EXPECT_EQ(future.Get<1>(), -1);
+  }
+
+  // RotateSharedKey fails with a non-retryable error.
+  {
+    TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+        download_callback;
+    EXPECT_CALL(*connection(),
+                DownloadGaiaPasswordPublicKey(Eq(account_info()), _))
+        .WillOnce(
+            [&](const CoreAccountInfo&,
+                TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+                    callback) {
+              download_callback = std::move(callback);
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
+    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+        register_callback;
+    EXPECT_CALL(*connection(), RegisterAuthenticationFactor)
+        .WillOnce(
+            [&](const CoreAccountInfo&, SecurityDomainId,
+                const MemberKeysSource&, const SecureBoxPublicKey&,
+                AuthenticationFactorTypeAndRegistrationParams,
+                TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                    callback) {
+              register_callback = std::move(callback);
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
+    TrustedVaultConnection::RotateSharedKeyCallback rotate_callback;
+    EXPECT_CALL(*connection(), RotateSharedKey)
+        .WillOnce(
+            [&](const CoreAccountInfo&, SecurityDomainId,
+                const TrustedVaultKeyAndVersion&, const std::vector<uint8_t>&,
+                TrustedVaultConnection::RotateSharedKeyCallback callback) {
+              rotate_callback = std::move(callback);
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
+
+    base::test::TestFuture<const std::vector<uint8_t>&, int> future;
+    handler()->Enroll(future.GetCallback());
+    ASSERT_FALSE(download_callback.is_null());
+    std::move(download_callback)
+        .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess,
+             kValidPublicKey);
+    ASSERT_FALSE(register_callback.is_null());
+    std::move(register_callback)
+        .Run(TrustedVaultRegistrationStatus::kSuccess, kConstantKeyVersion);
+    ASSERT_FALSE(rotate_callback.is_null());
+    std::move(rotate_callback)
+        .Run(TrustedVaultKeyRotationStatus::kNetworkError, 0);
+
+    EXPECT_THAT(future.Get<0>(), IsEmpty());
+    EXPECT_EQ(future.Get<1>(), -1);
+  }
+}
+
+TEST_F(ChromeSyncEnrollmentHandlerTest, ShouldAbortEnrollOnDestruction) {
+  StoreConstantKeys();
+
+  EXPECT_CALL(*connection(),
+              DownloadGaiaPasswordPublicKey(Eq(account_info()), _))
+      .WillOnce([](const CoreAccountInfo&,
+                   TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+                       callback) {
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  base::MockCallback<ChromeSyncEnrollmentHandler::EnrollCallback> cb;
+  EXPECT_CALL(cb, Run).Times(0);
+  handler()->Enroll(cb.Get());
 
   ResetHandler();
 }

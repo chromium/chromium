@@ -415,6 +415,7 @@ class MockEnrollmentHandler : public EnrollmentHandler {
 
   // EnrollmentHandler:
   MOCK_METHOD(void, CanEnroll, (CanEnrollCallback), (override));
+  MOCK_METHOD(void, Enroll, (EnrollCallback), (override));
 
   base::WeakPtr<MockEnrollmentHandler> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -2103,6 +2104,170 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   base::MockCallback<base::OnceCallback<void(bool)>> cb;
   EXPECT_CALL(cb, Run).Times(0);
   backend()->CanEnroll(kAccountInfo1, SecurityDomainId::kChromeSync, cb.Get());
+
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo2);
+  EXPECT_THAT(handler1, IsNull());
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldCallEnrollmentHandlerInEnroll) {
+  base::test::SingleThreadTaskEnvironment environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
+  const int kConstantKeyVersion = 5;
+  const int kNewKeyVersion = 6;
+  const std::vector<uint8_t> kRotatedKey = {1, 2, 3, 4};
+
+  StoreKeysAndMimicRecoveryFactorRegistration(
+      {GetConstantTrustedVaultKey()}, kConstantKeyVersion, kAccountInfo);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
+  MockEnrollmentHandler* handler =
+      GetEnrollmentHandler(SecurityDomainId::kChromeSync);
+  ASSERT_THAT(handler, NotNull());
+
+  // Start the degraded recoverability scheduler so that
+  // HintDegradedRecoverabilityChanged() records its reason histogram.
+  EXPECT_CALL(*connection(),
+              DownloadIsRecoverabilityDegraded(Eq(kAccountInfo), _, _))
+      .WillOnce(
+          [](const CoreAccountInfo&, SecurityDomainId,
+             TrustedVaultConnection::IsRecoverabilityDegradedCallback cb) {
+            std::move(cb).Run(TrustedVaultRecoverabilityStatus::kDegraded);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+  backend()->GetIsRecoverabilityDegraded(
+      kAccountInfo, SecurityDomainId::kChromeSync, base::DoNothing());
+  environment.FastForwardBy(base::Milliseconds(1));
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*handler, Enroll)
+      .WillOnce(base::test::RunOnceCallback<0>(kRotatedKey, kNewKeyVersion));
+  EXPECT_CALL(*connection(),
+              DownloadIsRecoverabilityDegraded(Eq(kAccountInfo), _, _))
+      .WillOnce(
+          [](const CoreAccountInfo&, SecurityDomainId,
+             TrustedVaultConnection::IsRecoverabilityDegradedCallback cb) {
+            std::move(cb).Run(TrustedVaultRecoverabilityStatus::kNotDegraded);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+  EXPECT_CALL(*delegate(),
+              NotifyVaultKeysChanged(
+                  Eq(SecurityDomainId::kChromeSync),
+                  Eq(std::optional<TrustedVaultUserActionTriggerForUMA>())));
+
+  base::MockCallback<StandaloneTrustedVaultBackend::EnrollCallback> enroll_cb;
+  EXPECT_CALL(enroll_cb, Run(Eq(kRotatedKey), kNewKeyVersion));
+  backend()->Enroll(kAccountInfo, SecurityDomainId::kChromeSync,
+                    enroll_cb.Get());
+  environment.FastForwardBy(base::Milliseconds(1));
+
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.TrustedVaultHintDegradedRecoverabilityChangedReason."
+      "ChromeSync",
+      TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::kEnrolled,
+      /*expected_bucket_count=*/1);
+
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback> fetch_cb;
+  EXPECT_CALL(fetch_cb, Run(ElementsAre(kRotatedKey)));
+  backend()->FetchKeys(kAccountInfo, SecurityDomainId::kChromeSync,
+                       fetch_cb.Get());
+  EXPECT_THAT(
+      storage()->GetVaultKeys(kAccountInfo.gaia, SecurityDomainId::kChromeSync),
+      ElementsAre(GetConstantTrustedVaultKey(), kRotatedKey));
+  EXPECT_EQ(backend()->GetLastKeyVersionForTesting(
+                kAccountInfo.gaia, SecurityDomainId::kChromeSync),
+            kNewKeyVersion);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldFailEnrollWhenPreconditionsNotMetOrHandlerFails) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kTrustedVaultSharedRecoveryFactorsAndEncryption);
+
+  const CoreAccountInfo kPrimaryAccount = MakeAccountInfoWithGaiaId("user1");
+  const CoreAccountInfo kOtherAccount = MakeAccountInfoWithGaiaId("user2");
+  const int kConstantKeyVersion = 5;
+
+  // No primary account set yet.
+  {
+    base::MockCallback<StandaloneTrustedVaultBackend::EnrollCallback> cb;
+    EXPECT_CALL(cb, Run(IsEmpty(), -1));
+    backend()->Enroll(kPrimaryAccount, SecurityDomainId::kChromeSync, cb.Get());
+  }
+
+  StoreKeysAndMimicRecoveryFactorRegistration(
+      {GetConstantTrustedVaultKey()}, kConstantKeyVersion, kPrimaryAccount);
+  SetPrimaryAccountWithUnknownAuthError(kPrimaryAccount);
+  EXPECT_CALL(*delegate(), NotifyVaultKeysChanged).Times(0);
+
+  // Non-primary account.
+  {
+    base::MockCallback<StandaloneTrustedVaultBackend::EnrollCallback> cb;
+    EXPECT_CALL(cb, Run(IsEmpty(), -1));
+    backend()->Enroll(kOtherAccount, SecurityDomainId::kChromeSync, cb.Get());
+  }
+
+  // Unsupported security domain (`kPasskeys`).
+  {
+    base::MockCallback<StandaloneTrustedVaultBackend::EnrollCallback> cb;
+    EXPECT_CALL(cb, Run(IsEmpty(), -1));
+    backend()->Enroll(kPrimaryAccount, SecurityDomainId::kPasskeys, cb.Get());
+  }
+
+  // Persistent auth error present.
+  backend()->SetPrimaryAccount(
+      kPrimaryAccount, StandaloneTrustedVaultBackend::RefreshTokenErrorState::
+                           kPersistentAuthError);
+  {
+    base::MockCallback<StandaloneTrustedVaultBackend::EnrollCallback> cb;
+    EXPECT_CALL(cb, Run(IsEmpty(), -1));
+    backend()->Enroll(kPrimaryAccount, SecurityDomainId::kChromeSync, cb.Get());
+  }
+
+  // Enrollment handler reports failure.
+  SetPrimaryAccountWithUnknownAuthError(kPrimaryAccount);
+  ASSERT_THAT(GetEnrollmentHandler(SecurityDomainId::kChromeSync), NotNull());
+  EXPECT_CALL(*GetEnrollmentHandler(SecurityDomainId::kChromeSync), Enroll)
+      .WillOnce(base::test::RunOnceCallback<0>(std::vector<uint8_t>(), -1));
+  {
+    base::MockCallback<StandaloneTrustedVaultBackend::EnrollCallback> cb;
+    EXPECT_CALL(cb, Run(IsEmpty(), -1));
+    backend()->Enroll(kPrimaryAccount, SecurityDomainId::kChromeSync, cb.Get());
+  }
+  EXPECT_THAT(storage()->GetVaultKeys(kPrimaryAccount.gaia,
+                                      SecurityDomainId::kChromeSync),
+              ElementsAre(GetConstantTrustedVaultKey()));
+  EXPECT_EQ(backend()->GetLastKeyVersionForTesting(
+                kPrimaryAccount.gaia, SecurityDomainId::kChromeSync),
+            kConstantKeyVersion);
+
+  // Connection disabled.
+  ResetBackend(/*connection=*/nullptr);
+  SetPrimaryAccountWithUnknownAuthError(kPrimaryAccount);
+  {
+    base::MockCallback<StandaloneTrustedVaultBackend::EnrollCallback> cb;
+    EXPECT_CALL(cb, Run(IsEmpty(), -1));
+    backend()->Enroll(kPrimaryAccount, SecurityDomainId::kChromeSync, cb.Get());
+  }
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldAbortEnrollOnPrimaryAccountChange) {
+  const CoreAccountInfo kAccountInfo1 = MakeAccountInfoWithGaiaId("user1");
+  const CoreAccountInfo kAccountInfo2 = MakeAccountInfoWithGaiaId("user2");
+
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo1);
+  ASSERT_THAT(GetEnrollmentHandler(SecurityDomainId::kChromeSync), NotNull());
+  base::WeakPtr<MockEnrollmentHandler> handler1 =
+      GetEnrollmentHandler(SecurityDomainId::kChromeSync)->GetWeakPtr();
+
+  EXPECT_CALL(*handler1, Enroll);
+  base::MockCallback<StandaloneTrustedVaultBackend::EnrollCallback> enroll_cb;
+  EXPECT_CALL(enroll_cb, Run).Times(0);
+  backend()->Enroll(kAccountInfo1, SecurityDomainId::kChromeSync,
+                    enroll_cb.Get());
 
   SetPrimaryAccountWithUnknownAuthError(kAccountInfo2);
   EXPECT_THAT(handler1, IsNull());

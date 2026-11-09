@@ -632,6 +632,46 @@ void StandaloneTrustedVaultBackend::CanEnroll(
   std::move(cb).Run(false);
 }
 
+void StandaloneTrustedVaultBackend::Enroll(const CoreAccountInfo& account_info,
+                                           SecurityDomainId security_domain,
+                                           EnrollCallback cb) {
+  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
+  if (primary_account_.has_value() &&
+      primary_account_->gaia == account_info.gaia &&
+      refresh_token_error_state_ !=
+          RefreshTokenErrorState::kPersistentAuthError) {
+    auto it = enrollment_handlers_.find(security_domain);
+    if (it != enrollment_handlers_.end() && it->second) {
+      it->second->Enroll(base::BindOnce(
+          &StandaloneTrustedVaultBackend::OnEnrolled,
+          weak_ptr_factory_.GetWeakPtr(), security_domain, std::move(cb)));
+      return;
+    }
+  }
+  std::move(cb).Run(std::vector<uint8_t>(), -1);
+}
+
+void StandaloneTrustedVaultBackend::OnEnrolled(
+    SecurityDomainId security_domain,
+    EnrollCallback cb,
+    const std::vector<uint8_t>& new_shared_key,
+    int new_key_version) {
+  CHECK(primary_account_.has_value());
+  if (!new_shared_key.empty()) {
+    std::vector<std::vector<uint8_t>> keys =
+        storage_->GetVaultKeys(primary_account_->gaia, security_domain);
+    keys.push_back(new_shared_key);
+    StoreKeys(primary_account_->gaia, security_domain, keys, new_key_version);
+
+    auto it = degraded_recoverability_handlers_.find(security_domain);
+    if (it != degraded_recoverability_handlers_.end()) {
+      it->second->HintDegradedRecoverabilityChanged(
+          TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::kEnrolled);
+    }
+  }
+  std::move(cb).Run(new_shared_key, new_key_version);
+}
+
 void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
   storage_->ClearDataForUser(account_info.gaia);

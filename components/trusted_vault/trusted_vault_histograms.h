@@ -20,7 +20,8 @@ enum class TrustedVaultKeyRotationStatus;
 enum class TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA {
   kRecoveryMethodAdded = 0,
   kPersistentAuthErrorResolved = 1,
-  kMaxValue = kPersistentAuthErrorResolved,
+  kEnrolled = 2,
+  kMaxValue = kEnrolled,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultHintDegradedRecoverabilityChangedReason)
 
@@ -69,6 +70,7 @@ enum class TrustedVaultURLFetchReasonForUMA {
   kDownloadAuthenticationFactorsRegistrationState,
   kRegisterGpmPin,
   kRegisterICloudKeychain,
+  kRegisterGaiaPassword,
   kDownloadGaiaPasswordPublicKey,
   kDownloadRecoveryFactorsForKeyRotation,
   kRotateSharedKey,

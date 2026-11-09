@@ -263,6 +263,7 @@ using LocalPhysicalDevice =
     base::StrongAlias<class LocalPhysicalDeviceTag, std::monostate>;
 using LockScreenKnowledgeFactor =
     base::StrongAlias<class VirtualDeviceTag, std::monostate>;
+using GaiaPassword = base::StrongAlias<class GaiaPasswordTag, std::monostate>;
 using ICloudKeychain =
     base::StrongAlias<class ICloudKeychainTag, std::monostate>;
 // UnspecifiedAuthenticationFactorType carries a type hint for the backend.
@@ -274,7 +275,8 @@ using AuthenticationFactorTypeAndRegistrationParams =
                  LockScreenKnowledgeFactor,
                  UnspecifiedAuthenticationFactorType,
                  GpmPinMetadata,
-                 ICloudKeychain>;
+                 ICloudKeychain,
+                 GaiaPassword>;
 
 struct TrustedVaultKeyAndVersion {
   TrustedVaultKeyAndVersion(const std::vector<uint8_t>& key, int version);

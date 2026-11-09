@@ -102,8 +102,8 @@ TEST_F(StandaloneTrustedVaultFrontendTest,
       observation(&observer);
   observation.Observe(&client);
 
-  // Issue `StoreKeys()`, `FetchKeys()`, and `CanEnroll()` before the backend is
-  // initialized.
+  // Issue `StoreKeys()`, `FetchKeys()`, `CanEnroll()`, and `Enroll()` before
+  // the backend is initialized.
   EXPECT_CALL(observer, OnTrustedVaultKeysChanged).Times(0);
   frontend->StoreKeys(account_info.gaia, SecurityDomainId::kChromeSync, {kKey},
                       /*last_key_version=*/1,
@@ -115,17 +115,21 @@ TEST_F(StandaloneTrustedVaultFrontendTest,
   base::test::TestFuture<bool> can_enroll_future;
   frontend->CanEnroll(account_info, SecurityDomainId::kChromeSync,
                       can_enroll_future.GetCallback());
+  base::test::TestFuture<const std::vector<uint8_t>&, int> enroll_future;
+  frontend->Enroll(account_info, SecurityDomainId::kChromeSync,
+                   enroll_future.GetCallback());
 
   task_environment_.RunUntilIdle();
-  // `FetchKeys()` and `CanEnroll()` must not complete before
+  // `FetchKeys()`, `CanEnroll()`, and `Enroll()` must not complete before
   // `InitializeBackendForTesting()` is called.
   EXPECT_FALSE(fetch_keys_future.IsReady());
   EXPECT_FALSE(can_enroll_future.IsReady());
+  EXPECT_FALSE(enroll_future.IsReady());
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   // Initialize the backend; `ReadDataFromDisk()` and the queued `StoreKeys()`,
-  // `FetchKeys()`, and `CanEnroll()` tasks should now run in FIFO order, and
-  // the queued trigger should be propagated to observers.
+  // `FetchKeys()`, `CanEnroll()`, and `Enroll()` tasks should now run in FIFO
+  // order, and the queued trigger should be propagated to observers.
   EXPECT_CALL(observer,
               OnTrustedVaultKeysChanged(
                   Eq(TrustedVaultUserActionTriggerForUMA::kProfileMenu)));
@@ -133,6 +137,8 @@ TEST_F(StandaloneTrustedVaultFrontendTest,
       std::make_unique<FakeLocalDomainsStorageFileAccess>()));
   EXPECT_THAT(fetch_keys_future.Get(), ElementsAre(kKey));
   EXPECT_FALSE(can_enroll_future.Get());
+  EXPECT_TRUE(enroll_future.Get<0>().empty());
+  EXPECT_EQ(enroll_future.Get<1>(), -1);
 }
 
 TEST_F(StandaloneTrustedVaultFrontendTest,

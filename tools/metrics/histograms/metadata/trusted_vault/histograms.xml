@@ -341,6 +341,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".DownloadRecoveryFactorsForKeyRotation"
         summary="Downloading of recovery factors for key rotation"/>
     <variant name=".RegisterDevice" summary="Local device registration"/>
+    <variant name=".RegisterGaiaPassword" summary="Gaia password registration"/>
     <variant name=".RegisterGooglePasswordManagerPIN"
         summary="Google Password Manager PIN registration"/>
     <variant name=".RegisterICloudKeychain"

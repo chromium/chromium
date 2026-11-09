@@ -108,6 +108,7 @@ chromium-metrics-reviews@google.com.
 <enum name="TrustedVaultHintDegradedRecoverabilityChangedReason">
   <int value="0" label="Recovery method added"/>
   <int value="1" label="Persistent auth error resolved"/>
+  <int value="2" label="Enrolled"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultHintDegradedRecoverabilityChangedReason) -->

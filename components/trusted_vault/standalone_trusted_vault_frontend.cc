@@ -525,6 +525,25 @@ void StandaloneTrustedVaultFrontend::CanEnroll(
                      base::BindPostTaskToCurrentDefault(std::move(cb))));
 }
 
+void StandaloneTrustedVaultFrontend::Enroll(
+    const CoreAccountInfo& account_info,
+    SecurityDomainId security_domain,
+    base::OnceCallback<void(const std::vector<uint8_t>&, int)> cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!backend_) {
+    pending_tasks_.push_back(base::BindOnce(
+        &StandaloneTrustedVaultFrontend::Enroll, base::Unretained(this),
+        account_info, security_domain, std::move(cb)));
+    return;
+  }
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&StandaloneTrustedVaultBackend::Enroll,
+                     base::Unretained(backend_.get()), account_info,
+                     security_domain,
+                     base::BindPostTaskToCurrentDefault(std::move(cb))));
+}
+
 void StandaloneTrustedVaultFrontend::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
