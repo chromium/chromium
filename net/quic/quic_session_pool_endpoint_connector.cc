@@ -147,6 +147,11 @@ QuicSessionPool::EndpointConnector::GetResolvedIpEndpoints() const {
   return job_->GetResolvedIpEndpoints();
 }
 
+const base::flat_set<std::string>*
+QuicSessionPool::EndpointConnector::GetDnsAliases() const {
+  return job_->GetDnsAliases();
+}
+
 void QuicSessionPool::EndpointConnector::OnConnectionFailedOnDefaultNetwork() {
   job_->OnConnectionFailedOnDefaultNetwork();
 }

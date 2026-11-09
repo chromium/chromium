@@ -22376,4 +22376,106 @@ TEST_P(QuicSessionPoolTest,
   socket_data2.ExpectAllWriteDataConsumed();
 }
 
+TEST_P(
+    QuicSessionPoolTest,
+    PostHandshakeSamePeerIpPoolingOmitsDnsAliasesWhenAllEndpointsFlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kPostHandshakeIpPoolingAllEndpoints,
+                             features::kProactiveIpPoolingForInFlightJobs});
+
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+  Initialize();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+
+  const GURL kUrl1(kDefaultUrl);
+  const GURL kUrl2(kServer2Url);
+  const url::SchemeHostPort kOrigin1(kUrl1);
+  const url::SchemeHostPort kOrigin2(kUrl2);
+
+  host_resolver_->rules()->AddIPLiteralRuleWithDnsAliases(
+      kOrigin1.host(), "192.168.0.1",
+      std::vector<std::string>{"alias1.example.org"});
+  host_resolver_->rules()->AddIPLiteralRuleWithDnsAliases(
+      kOrigin2.host(), "192.168.0.1",
+      std::vector<std::string>{"alias2.example.org"});
+
+  scoped_refptr<X509Certificate> cert(
+      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
+  ASSERT_TRUE(cert->VerifyNameMatch(kOrigin1.host()));
+  ASSERT_TRUE(cert->VerifyNameMatch(kOrigin2.host()));
+
+  ProofVerifyDetailsChromium verify_details1;
+  verify_details1.cert_verify_result.verified_cert = cert;
+  verify_details1.cert_verify_result.is_issued_by_known_root = true;
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details1);
+
+  ProofVerifyDetailsChromium verify_details2;
+  verify_details2.cert_verify_result.verified_cert = cert;
+  verify_details2.cert_verify_result.is_issued_by_known_root = true;
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
+
+  MockQuicData socket_data1(version_);
+  socket_data1.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  client_maker_.Reset();
+  MockQuicData socket_data2(version_);
+  socket_data2.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
+  socket_data2.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(2)
+          .AddConnectionCloseFrame(quic::QUIC_CONNECTION_IP_POOLED,
+                                   "An active session exists for the given IP.")
+          .Build());
+  socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder1(this);
+  builder1.destination = kOrigin1;
+  builder1.url = kUrl1;
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
+
+  TestCompletionCallback callback2;
+  RequestBuilder builder2(this);
+  builder2.destination = kOrigin2;
+  builder2.url = kUrl2;
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
+
+  crypto_client_stream_factory_.WaitForStreams(2);
+  ASSERT_EQ(2u, crypto_client_stream_factory_.streams().size());
+
+  crypto_client_stream_factory_.streams()[0]->NotifySessionOneRttKeyAvailable();
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  // Complete `kOrigin2`'s handshake on the same peer IP (`192.168.0.1`). With
+  // `kPostHandshakeIpPoolingAllEndpoints` disabled, `DoConfirmConnection()`
+  // passes `{}` to `HasMatchingIpSession()` so the Finch control arm matches
+  // baseline behavior.
+  crypto_client_stream_factory_.streams()[1]->NotifySessionOneRttKeyAvailable();
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
+  ASSERT_TRUE(stream1);
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
+  ASSERT_TRUE(stream2);
+  EXPECT_TRUE(QuicHttpStreamPeer::GetSessionHandle(stream1.get())
+                  ->SharesSameSession(
+                      *QuicHttpStreamPeer::GetSessionHandle(stream2.get())));
+  EXPECT_THAT(stream1->GetDnsAliases(),
+              testing::ElementsAre("alias1.example.org"));
+  EXPECT_THAT(stream2->GetDnsAliases(), testing::IsEmpty());
+
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
+}
+
 }  // namespace net::test

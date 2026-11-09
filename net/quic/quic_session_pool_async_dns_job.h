@@ -174,6 +174,7 @@ class QuicSessionPool::AsyncDnsJob
 
   // QuicSessionAttempt::Delegate implementation.
   std::vector<IPEndPoint> GetResolvedIpEndpoints() const override;
+  const base::flat_set<std::string>* GetDnsAliases() const override;
 
   // HostResolver::ServiceEndpointRequest::Delegate implementation.
   void OnServiceEndpointsUpdated() override;

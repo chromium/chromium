@@ -1117,6 +1117,10 @@ bool QuicSessionPool::AsyncDnsJob::IsEndpointInFreshList(
 
 std::vector<IPEndPoint> QuicSessionPool::AsyncDnsJob::GetResolvedIpEndpoints()
     const {
+  if (!service_endpoint_request_ ||
+      service_endpoint_request_->IsStaleWhileRefreshing()) {
+    return {};
+  }
   std::vector<IPEndPoint> endpoints;
   for (const UsableEndpoint& usable : GetUsableEndpoints()) {
     for (const IPEndPoint& endpoint : usable.endpoint.ipv6_endpoints) {
@@ -1131,6 +1135,16 @@ std::vector<IPEndPoint> QuicSessionPool::AsyncDnsJob::GetResolvedIpEndpoints()
     }
   }
   return endpoints;
+}
+
+const base::flat_set<std::string>* QuicSessionPool::AsyncDnsJob::GetDnsAliases()
+    const {
+  if (!use_dns_aliases_ || !service_endpoint_request_ ||
+      service_endpoint_request_->IsStaleWhileRefreshing() ||
+      !service_endpoint_request_->EndpointsCryptoReady()) {
+    return nullptr;
+  }
+  return &service_endpoint_request_->GetDnsAliasResults();
 }
 
 std::optional<int>

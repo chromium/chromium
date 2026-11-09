@@ -18,6 +18,7 @@
 #include "net/base/features.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
+#include "net/dns/dns_alias_utility.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/address_utils.h"
@@ -56,6 +57,11 @@ void LogValidConnectionTime(base::TimeTicks start_time) {
 }
 
 }  // namespace
+
+const base::flat_set<std::string>* QuicSessionAttempt::Delegate::GetDnsAliases()
+    const {
+  return nullptr;
+}
 
 QuicSessionAttempt::QuicSessionAttempt(
     Delegate* delegate,
@@ -459,21 +465,35 @@ int QuicSessionAttempt::DoConfirmConnection(int rv) {
   // pooling. If there is an active session for any of the resolved IPs with a
   // matching certificate, use the existing session instead of establishing a
   // new one.
+  const bool pool_all_endpoints = base::FeatureList::IsEnabled(
+      features::kPostHandshakeIpPoolingAllEndpoints);
   std::vector<IPEndPoint> ip_endpoints;
-  base::flat_set<std::string> dns_aliases;
-  if (base::FeatureList::IsEnabled(
-          features::kPostHandshakeIpPoolingAllEndpoints)) {
+  if (pool_all_endpoints) {
     ip_endpoints = delegate_->GetResolvedIpEndpoints();
-    dns_aliases = dns_aliases_;
+  }
+  base::flat_set<std::string> dns_aliases;
+  if (use_dns_aliases_) {
+    if (const base::flat_set<std::string>* refreshed_aliases =
+            delegate_->GetDnsAliases()) {
+      dns_aliases = *refreshed_aliases;
+    } else {
+      dns_aliases = std::move(dns_aliases_);
+    }
   }
   IPEndPoint peer_address =
       ToIPEndPoint(session_->connection()->peer_address());
   if (!std::ranges::contains(ip_endpoints, peer_address)) {
     ip_endpoints.push_back(peer_address);
   }
+  // Only attach `dns_aliases` on post-handshake IP pooling when
+  // `kPostHandshakeIpPoolingAllEndpoints` is enabled, keeping the Finch control
+  // arm identical to baseline behavior.
   if (QuicChromiumClientSession* matching_session =
-          pool()->HasMatchingIpSession(key(), ip_endpoints, dns_aliases,
-                                       use_dns_aliases_)) {
+          pool()->HasMatchingIpSession(
+              key(), ip_endpoints,
+              pool_all_endpoints ? dns_aliases
+                                 : dns_alias_utility::EmptyDnsAliases(),
+              use_dns_aliases_)) {
     QuicSessionPool::LogConnectionIpPooling(true);
     session_->connection()->CloseConnection(
         quic::QUIC_CONNECTION_IP_POOLED,
@@ -484,9 +504,7 @@ int QuicSessionAttempt::DoConfirmConnection(int rv) {
   }
   QuicSessionPool::LogConnectionIpPooling(false);
 
-  pool()->ActivateSession(key(), session_,
-                          use_dns_aliases_ ? std::move(dns_aliases_)
-                                           : base::flat_set<std::string>());
+  pool()->ActivateSession(key(), session_, std::move(dns_aliases));
 
   return OK;
 }

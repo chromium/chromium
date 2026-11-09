@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -109,6 +111,7 @@ class QuicSessionPool::EndpointConnector : public QuicSessionAttempt::Delegate {
   const QuicSessionAliasKey& GetKey() override;
   const NetLogWithSource& GetNetLog() override;
   std::vector<IPEndPoint> GetResolvedIpEndpoints() const override;
+  const base::flat_set<std::string>* GetDnsAliases() const override;
   void OnConnectionFailedOnDefaultNetwork() override;
   void OnQuicSessionCreationComplete(int rv) override;
 

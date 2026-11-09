@@ -65,6 +65,11 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
     // in flight.
     virtual std::vector<IPEndPoint> GetResolvedIpEndpoints() const = 0;
 
+    // Returns the latest resolved DNS aliases for the attempt's destination if
+    // they may have changed since the attempt was constructed, or nullptr to
+    // keep the aliases passed to the constructor.
+    virtual const base::flat_set<std::string>* GetDnsAliases() const;
+
     // Called when the attempt is failed on the default network.
     virtual void OnConnectionFailedOnDefaultNetwork() {}
 
