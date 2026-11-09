@@ -14029,6 +14029,16 @@ void RenderFrameHostImpl::RecordBeforeUnloadUserEditMetrics(
                     kBeforeUnloadShowedDialogWithCrossSiteUserEdit);
       break;
   }
+
+  if (form_edit_scope == PageImpl::UserEditScope::kNoEdit &&
+      user_edit_scope == PageImpl::UserEditScope::kNoEdit) {
+    LogWebFeatureForCurrentPage(
+        blocked_unload
+            ? blink::mojom::WebFeature::
+                  kBeforeUnloadDialogBlockedUnloadWithoutUserOrFormEdit
+            : blink::mojom::WebFeature::
+                  kBeforeUnloadShowedDialogWithoutUserOrFormEdit);
+  }
 }
 
 void RenderFrameHostImpl::ReportBlockingCrossPartitionBlobURL(

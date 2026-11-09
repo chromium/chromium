@@ -9199,6 +9199,16 @@ class RenderFrameHostImplRequireUserEditForBeforeUnloadBrowserTest
   void CheckBeforeUnloadDialogRuns(
       RenderFrameHostImpl* beforeunload_rfh,
       PageImpl::UserEditScope expected_edit_scope) {
+    const PageImpl::UserEditScope expected_form_edit_scope =
+        GetParam() ? expected_edit_scope : PageImpl::UserEditScope::kNoEdit;
+    CheckBeforeUnloadDialogRuns(beforeunload_rfh, expected_form_edit_scope,
+                                expected_edit_scope);
+  }
+
+  void CheckBeforeUnloadDialogRuns(
+      RenderFrameHostImpl* beforeunload_rfh,
+      PageImpl::UserEditScope expected_form_edit_scope,
+      PageImpl::UserEditScope expected_user_edit_scope) {
     browser_client_->Reset();
     PrepContentsForBeforeUnloadTest(web_contents(),
                                     /*trigger_user_activation=*/false);
@@ -9212,12 +9222,10 @@ class RenderFrameHostImplRequireUserEditForBeforeUnloadBrowserTest
     CloseDialogAndProceed();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-    const PageImpl::UserEditScope expected_form_edit_scope =
-        GetParam() ? expected_edit_scope : PageImpl::UserEditScope::kNoEdit;
     const bool expect_form_edit =
         expected_form_edit_scope != PageImpl::UserEditScope::kNoEdit;
     const bool expect_user_edit =
-        expected_edit_scope != PageImpl::UserEditScope::kNoEdit;
+        expected_user_edit_scope != PageImpl::UserEditScope::kNoEdit;
     EXPECT_EQ(
         expect_form_edit,
         IsUseCounted(
@@ -9249,16 +9257,20 @@ class RenderFrameHostImplRequireUserEditForBeforeUnloadBrowserTest
               IsUseCounted(beforeunload_rfh,
                            blink::mojom::WebFeature::
                                kBeforeUnloadShowedDialogWithoutUserEdit));
+    EXPECT_EQ(!expect_form_edit && !expect_user_edit,
+              IsUseCounted(beforeunload_rfh,
+                           blink::mojom::WebFeature::
+                               kBeforeUnloadShowedDialogWithoutUserOrFormEdit));
     EXPECT_EQ(
-        expected_edit_scope == PageImpl::UserEditScope::kSameOrigin,
+        expected_user_edit_scope == PageImpl::UserEditScope::kSameOrigin,
         IsUseCounted(beforeunload_rfh,
                      blink::mojom::WebFeature::
                          kBeforeUnloadShowedDialogWithSameOriginUserEdit));
-    EXPECT_EQ(expected_edit_scope == PageImpl::UserEditScope::kSameSite,
+    EXPECT_EQ(expected_user_edit_scope == PageImpl::UserEditScope::kSameSite,
               IsUseCounted(beforeunload_rfh,
                            blink::mojom::WebFeature::
                                kBeforeUnloadShowedDialogWithSameSiteUserEdit));
-    EXPECT_EQ(expected_edit_scope == PageImpl::UserEditScope::kCrossSite,
+    EXPECT_EQ(expected_user_edit_scope == PageImpl::UserEditScope::kCrossSite,
               IsUseCounted(beforeunload_rfh,
                            blink::mojom::WebFeature::
                                kBeforeUnloadShowedDialogWithCrossSiteUserEdit));
@@ -9286,6 +9298,10 @@ class RenderFrameHostImplRequireUserEditForBeforeUnloadBrowserTest
     EXPECT_FALSE(IsUseCounted(
         beforeunload_rfh, blink::mojom::WebFeature::
                               kBeforeUnloadDialogBlockedUnloadWithoutUserEdit));
+    EXPECT_FALSE(IsUseCounted(
+        beforeunload_rfh,
+        blink::mojom::WebFeature::
+            kBeforeUnloadDialogBlockedUnloadWithoutUserOrFormEdit));
     EXPECT_FALSE(IsUseCounted(
         beforeunload_rfh,
         blink::mojom::WebFeature::
@@ -9346,17 +9362,22 @@ class RenderFrameHostImplRequireUserEditForBeforeUnloadBrowserTest
         IsUseCounted(beforeunload_rfh,
                      blink::mojom::WebFeature::
                          kBeforeUnloadDialogBlockedUnloadWithoutUserEdit));
-    EXPECT_EQ(expected_edit_scope == PageImpl::UserEditScope::kSameOrigin,
+    EXPECT_EQ(!expect_form_edit && !expect_user_edit,
+              IsUseCounted(
+                  beforeunload_rfh,
+                  blink::mojom::WebFeature::
+                      kBeforeUnloadDialogBlockedUnloadWithoutUserOrFormEdit));
+    EXPECT_EQ(expected_user_edit_scope == PageImpl::UserEditScope::kSameOrigin,
               IsUseCounted(
                   beforeunload_rfh,
                   blink::mojom::WebFeature::
                       kBeforeUnloadDialogBlockedUnloadWithSameOriginUserEdit));
     EXPECT_EQ(
-        expected_edit_scope == PageImpl::UserEditScope::kSameSite,
+        expected_user_edit_scope == PageImpl::UserEditScope::kSameSite,
         IsUseCounted(beforeunload_rfh,
                      blink::mojom::WebFeature::
                          kBeforeUnloadDialogBlockedUnloadWithSameSiteUserEdit));
-    EXPECT_EQ(expected_edit_scope == PageImpl::UserEditScope::kCrossSite,
+    EXPECT_EQ(expected_user_edit_scope == PageImpl::UserEditScope::kCrossSite,
               IsUseCounted(
                   beforeunload_rfh,
                   blink::mojom::WebFeature::
@@ -9451,6 +9472,25 @@ IN_PROC_BROWSER_TEST_P(
 
   SimulateEdit(main_rfh);
   CheckBeforeUnloadDialogRuns(main_rfh, PageImpl::UserEditScope::kSameOrigin);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    RenderFrameHostImplRequireUserEditForBeforeUnloadBrowserTest,
+    MainFrameBeforeUnload_FormEditWithoutUserEdit) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* main_rfh = root->current_frame_host();
+
+  InstallBeforeUnloadHandler(root, SHOW_DIALOG, EXECUTE_SCRIPT_NO_USER_GESTURE);
+  NotifyUserActivation(main_rfh);
+  EXPECT_TRUE(main_rfh->HasStickyUserActivation());
+
+  main_rfh->DidHaveFormEdit();
+  CheckBeforeUnloadDialogRuns(
+      main_rfh,
+      /*expected_form_edit_scope=*/PageImpl::UserEditScope::kSameOrigin,
+      /*expected_user_edit_scope=*/PageImpl::UserEditScope::kNoEdit);
 }
 
 IN_PROC_BROWSER_TEST_P(
