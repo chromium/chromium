@@ -510,6 +510,28 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.cc:ModelMode,//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:ModelMode) -->
 
+<!-- LINT.IfChange(OmniboxOutgoingPageDisposal) -->
+
+<enum name="OmniboxOutgoingPageDisposal">
+  <int value="0" label="Stored in Back/Forward Cache">
+    The outgoing document was stored in the Back/Forward Cache and frozen,
+    generating no unload or DOM teardown overhead at commit time.
+  </int>
+  <int value="1" label="Unloaded cross-process">
+    The outgoing document was ineligible for BFCache and was unloaded across
+    processes at commit time (potential candidate for delayed frame unload).
+  </int>
+  <int value="2" label="Unloaded same-process">
+    The outgoing document was ineligible for BFCache and was unloaded within the
+    same renderer process.
+  </int>
+  <int value="3" label="Previous document was initial or empty">
+    The previous document was an initial empty document or about:blank.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/page_load_metrics/observers/omnibox_suggestion_used_page_load_metrics_observer.h:OmniboxOutgoingPageDisposal) -->
+
 <!-- LINT.IfChange(OmniboxPopupResultToContentReadyEarlyExitReason) -->
 
 <enum name="OmniboxPopupResultToContentReadyEarlyExitReason">

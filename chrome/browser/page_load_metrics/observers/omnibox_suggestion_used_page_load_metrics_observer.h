@@ -6,12 +6,30 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_OMNIBOX_SUGGESTION_USED_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
-#include "services/metrics/public/cpp/ukm_source.h"
 #include "ui/base/page_transition_types.h"
 
 class OmniboxSuggestionUsedMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(OmniboxOutgoingPageDisposal)
+  enum class OutgoingPageDisposal {
+    kStoredInBackForwardCache = 0,
+    kUnloadedCrossProcess = 1,
+    kUnloadedSameProcess = 2,
+    kPreviousDocumentWasInitialOrEmpty = 3,
+    kMaxValue = kPreviousDocumentWasInitialOrEmpty,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxOutgoingPageDisposal)
+
+  static constexpr char kSearchOutgoingPageDisposal[] =
+      "Omnibox.SuggestionUsed.Search.OutgoingPageDisposal";
+  static constexpr char kSearchGoogleOutgoingPageDisposal[] =
+      "Omnibox.SuggestionUsed.Search.Google.OutgoingPageDisposal";
+  static constexpr char kURLOutgoingPageDisposal[] =
+      "Omnibox.SuggestionUsed.URL.OutgoingPageDisposal";
+
   OmniboxSuggestionUsedMetricsObserver();
 
   OmniboxSuggestionUsedMetricsObserver(
@@ -22,6 +40,9 @@ class OmniboxSuggestionUsedMetricsObserver
   ~OmniboxSuggestionUsedMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
+  ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
+                        const GURL& currently_committed_url,
+                        bool started_in_foreground) override;
   ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
                                  const GURL& currently_committed_url) override;
   ObservePolicy OnFencedFramesStart(
@@ -53,6 +74,7 @@ class OmniboxSuggestionUsedMetricsObserver
 
   ui::PageTransition transition_type_ = ui::PAGE_TRANSITION_LINK;
   bool lcp2_above_2s_recorded_ = false;
+  bool was_on_initial_or_empty_document_ = false;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_OMNIBOX_SUGGESTION_USED_PAGE_LOAD_METRICS_OBSERVER_H_

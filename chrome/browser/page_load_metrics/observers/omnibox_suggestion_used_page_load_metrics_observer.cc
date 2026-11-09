@@ -4,11 +4,15 @@
 
 #include "chrome/browser/page_load_metrics/observers/omnibox_suggestion_used_page_load_metrics_observer.h"
 
-#include <algorithm>
-
+#include "base/metrics/histogram_functions.h"
+#include "components/google/core/common/google_util.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -45,6 +49,25 @@ OmniboxSuggestionUsedMetricsObserver::~OmniboxSuggestionUsedMetricsObserver() =
     default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+OmniboxSuggestionUsedMetricsObserver::OnStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url,
+    bool started_in_foreground) {
+  // Must be captured during OnStart because commit processing resets the
+  // initial empty document state before OnCommit is reached.
+  // Query the primary main frame's last committed URL directly because
+  // `currently_committed_url` is empty for pages not tracked by PLMO
+  // (such as WebUIs like chrome://new-tab-page or error pages).
+  const GURL& previous_url = navigation_handle->GetWebContents()
+                                 ->GetPrimaryMainFrame()
+                                 ->GetLastCommittedURL();
+  was_on_initial_or_empty_document_ =
+      navigation_handle->IsNavigatingFromInitialEmptyDocument() ||
+      previous_url.is_empty() || previous_url.IsAboutBlank();
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 OmniboxSuggestionUsedMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
@@ -74,9 +97,40 @@ OmniboxSuggestionUsedMetricsObserver::OnCommit(
   if (!ui::PageTransitionIsNewNavigation(transition_type_)) {
     return STOP_OBSERVING;
   }
-  return (transition_type_ & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) != 0
-             ? CONTINUE_OBSERVING
-             : STOP_OBSERVING;
+  if ((transition_type_ & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) == 0) {
+    return STOP_OBSERVING;
+  }
+
+  OutgoingPageDisposal disposal;
+  if (was_on_initial_or_empty_document_) {
+    disposal = OutgoingPageDisposal::kPreviousDocumentWasInitialOrEmpty;
+  } else {
+    content::RenderFrameHost* previous_rfh = content::RenderFrameHost::FromID(
+        navigation_handle->GetPreviousRenderFrameHostId());
+    if (previous_rfh &&
+        previous_rfh->IsInLifecycleState(
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache)) {
+      disposal = OutgoingPageDisposal::kStoredInBackForwardCache;
+    } else if (navigation_handle->IsSameProcess()) {
+      disposal = OutgoingPageDisposal::kUnloadedSameProcess;
+    } else {
+      disposal = OutgoingPageDisposal::kUnloadedCrossProcess;
+    }
+  }
+
+  if (ui::PageTransitionCoreTypeIs(transition_type_,
+                                   ui::PAGE_TRANSITION_GENERATED)) {
+    base::UmaHistogramEnumeration(kSearchOutgoingPageDisposal, disposal);
+    if (google_util::IsGoogleSearchUrl(navigation_handle->GetURL())) {
+      base::UmaHistogramEnumeration(kSearchGoogleOutgoingPageDisposal,
+                                    disposal);
+    }
+  } else if (ui::PageTransitionCoreTypeIs(transition_type_,
+                                          ui::PAGE_TRANSITION_TYPED)) {
+    base::UmaHistogramEnumeration(kURLOutgoingPageDisposal, disposal);
+  }
+
+  return CONTINUE_OBSERVING;
 }
 
 void OmniboxSuggestionUsedMetricsObserver::OnFirstContentfulPaintInPage(

@@ -4875,6 +4875,19 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.SuggestionUsed.Search.Google.OutgoingPageDisposal"
+    enum="OmniboxOutgoingPageDisposal" expires_after="2027-04-18">
+  <owner>tjaneczko@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when an Omnibox search query suggestion navigation commits to a
+    Google Search URL. Records the disposal status of the outgoing main-frame
+    document (whether it was stored in the Back/Forward Cache, was unloaded
+    cross-process, was unloaded same-process, or was an initial empty document).
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.SuggestionUsed.Search.InputToNavigationStart2"
     units="ms" expires_after="2027-03-21">
   <owner>spelchat@chromium.org</owner>
@@ -4926,6 +4939,19 @@ Keep consistent with active providers. Doesn't need to include every provider in
     omnibox. Note that this histogram is most useful for use with Chrometto in
     order to record a high LCP trace as soon as it happens (rather than only
     once the slow page loads gets discarded).
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SuggestionUsed.Search.OutgoingPageDisposal"
+    enum="OmniboxOutgoingPageDisposal" expires_after="2027-04-18">
+  <owner>tjaneczko@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when an Omnibox search query suggestion navigation commits. Records
+    the disposal status of the outgoing main-frame document (whether it was
+    stored in the Back/Forward Cache, was unloaded cross-process, was unloaded
+    same-process, or was an initial empty document).
   </summary>
 </histogram>
 
@@ -4996,6 +5022,19 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     Measures the time from navigation start to largest contentful paint. Only
     recorded for a URL suggestion selected from the omnibox.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SuggestionUsed.URL.OutgoingPageDisposal"
+    enum="OmniboxOutgoingPageDisposal" expires_after="2027-04-18">
+  <owner>tjaneczko@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when an Omnibox URL suggestion navigation commits. Records the
+    disposal status of the outgoing main-frame document (whether it was stored
+    in the Back/Forward Cache, was unloaded cross-process, was unloaded
+    same-process, or was an initial empty document).
   </summary>
 </histogram>
 

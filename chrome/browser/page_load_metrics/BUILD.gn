@@ -232,6 +232,7 @@ source_set("unit_tests") {
     "observers/lcp_critical_path_predictor_page_load_metrics_observer_unittest.cc",
     "observers/loading_predictor_page_load_metrics_observer_unittest.cc",
     "observers/multi_tab_loading_page_load_metrics_observer_unittest.cc",
+    "observers/omnibox_suggestion_used_page_load_metrics_observer_unittest.cc",
     "observers/page_anchors_metrics_observer_unittest.cc",
     "observers/page_load_metrics_observer_test_harness.cc",
     "observers/page_load_metrics_observer_test_harness.h",
