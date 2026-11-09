@@ -62,7 +62,6 @@ source_set("payments") {
       "payments_churned_users_ui_delegate_desktop.h",
       "wallet_reminder_notice_bubble_controller.h",
       "wallet_reminder_notice_page_action_controller.h",
-      "wallet_reminder_notice_ui_delegate_desktop.h",
       "webauthn_dialog.h",
       "webauthn_dialog_controller.h",
       "webauthn_dialog_controller_impl.h",
@@ -171,7 +170,6 @@ source_set("impl") {
       "payments_churned_users_ui_delegate_desktop.cc",
       "wallet_reminder_notice_bubble_controller.cc",
       "wallet_reminder_notice_page_action_controller.cc",
-      "wallet_reminder_notice_ui_delegate_desktop.cc",
       "webauthn_dialog_controller_impl.cc",
       "webauthn_dialog_model.cc",
     ]
@@ -327,6 +325,7 @@ source_set("unit_tests") {
     sources += [
       "android_bnpl_ui_delegate_unittest.cc",
       "android_payments_window_manager_unittest.cc",
+      "chrome_payments_autofill_client_android_unittest.cc",
       "mandatory_reauth_bubble_controller_impl_android_unittest.cc",
       "payments_churned_users_ui_delegate_android_unittest.cc",
       "virtual_card_enroll_bubble_controller_impl_unittest.cc",
@@ -349,6 +348,7 @@ source_set("unit_tests") {
   } else {
     sources += [
       "autofill_dialog_models_unittest.cc",
+      "chrome_payments_autofill_client_desktop_unittest.cc",
       "iban_bubble_controller_impl_unittest.cc",
       "mandatory_reauth_bubble_controller_impl_unittest.cc",
       "offer_notification_bubble_controller_impl_unittest.cc",
@@ -358,7 +358,6 @@ source_set("unit_tests") {
       "save_card_bubble_controller_impl_unittest.cc",
       "wallet_reminder_notice_bubble_controller_unittest.cc",
       "wallet_reminder_notice_page_action_controller_unittest.cc",
-      "wallet_reminder_notice_ui_delegate_desktop_unittest.cc",
     ]
     deps += [
       ":payments",
@@ -392,7 +391,10 @@ source_set("test_support") {
   ]
 
   if (is_android) {
-    sources += [ "android_payments_window_manager_test_api.h" ]
+    sources += [
+      "android_payments_window_manager_test_api.h",
+      "chrome_payments_autofill_client_android_test_api.h",
+    ]
     public_deps += [ "//chrome/browser/ui/android/autofill" ]
   } else {
     sources += [ "desktop_payments_window_manager_test_api.h" ]

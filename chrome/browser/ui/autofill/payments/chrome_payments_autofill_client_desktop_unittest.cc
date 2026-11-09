@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_ui_delegate_desktop.h"
+#include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client_desktop.h"
 
 #include <memory>
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_page_action_controller.h"
 #include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
@@ -21,11 +21,11 @@
 
 namespace autofill::payments {
 
-class WalletReminderNoticeUiDelegateDesktopTest
+class ChromePaymentsAutofillClientDesktopTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  WalletReminderNoticeUiDelegateDesktopTest() = default;
-  ~WalletReminderNoticeUiDelegateDesktopTest() override = default;
+  ChromePaymentsAutofillClientDesktopTest() = default;
+  ~ChromePaymentsAutofillClientDesktopTest() override = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -51,19 +51,23 @@ class WalletReminderNoticeUiDelegateDesktopTest
         std::make_unique<WalletReminderNoticePageActionController>(
             mock_tab_interface_, *mock_page_action_controller_);
 
-    // Inject the Autofill client.
-    client_ = std::make_unique<TestContentAutofillClient>(web_contents());
-    delegate_ =
-        std::make_unique<WalletReminderNoticeUiDelegateDesktop>(client_.get());
+    ChromeAutofillClient::CreateForWebContents(web_contents());
   }
 
   void TearDown() override {
-    delegate_.reset();
-    client_.reset();
     page_action_controller_.reset();
     mock_page_action_controller_.reset();
     bubble_controller_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  ChromeAutofillClient* client() {
+    return ChromeAutofillClient::FromWebContentsForTesting(web_contents());
+  }
+
+  ChromePaymentsAutofillClientDesktop* chrome_payments_client_desktop() {
+    return static_cast<ChromePaymentsAutofillClientDesktop*>(
+        client()->GetPaymentsAutofillClient());
   }
 
   tabs::MockTabInterface& tab_interface() { return mock_tab_interface_; }
@@ -77,12 +81,9 @@ class WalletReminderNoticeUiDelegateDesktopTest
       mock_page_action_controller_;
   std::unique_ptr<WalletReminderNoticePageActionController>
       page_action_controller_;
-
-  std::unique_ptr<TestContentAutofillClient> client_;
-  std::unique_ptr<WalletReminderNoticeUiDelegateDesktop> delegate_;
 };
 
-TEST_F(WalletReminderNoticeUiDelegateDesktopTest, ShowWalletReminderNotice) {
+TEST_F(ChromePaymentsAutofillClientDesktopTest, ShowWalletReminderNotice) {
   LegalMessageLines legal_message_lines = {TestLegalMessageLine("Line 1.")};
 
   auto* bubble_controller =
@@ -92,7 +93,8 @@ TEST_F(WalletReminderNoticeUiDelegateDesktopTest, ShowWalletReminderNotice) {
 
   EXPECT_CALL(*mock_page_action_controller_, Show(kActionWalletReminderNotice));
 
-  delegate_->ShowWalletReminderNotice(legal_message_lines);
+  chrome_payments_client_desktop()->ShowWalletReminderNotice(
+      legal_message_lines);
 
   // Verify that the legal message lines are forwarded to the bubble controller.
   EXPECT_EQ(bubble_controller->GetLegalMessageLines(), legal_message_lines);

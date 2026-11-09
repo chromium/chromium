@@ -83,8 +83,6 @@ source_set("autofill") {
     "snackbar/autofill_snackbar_view_android.h",
     "virtual_card_utils.cc",
     "virtual_card_utils.h",
-    "wallet_reminder_notice_ui_delegate_android.cc",
-    "wallet_reminder_notice_ui_delegate_android.h",
   ]
   deps = [
     "//base",
@@ -157,7 +155,6 @@ source_set("unit_tests") {
     "autofill_vcn_enroll_bottom_sheet_bridge_unittest.cc",
     "email_verification_bottom_sheet_bridge_unittest.cc",
     "save_update_address_profile_flow_manager_unittest.cc",
-    "wallet_reminder_notice_ui_delegate_android_unittest.cc",
   ]
   deps = [
     ":autofill",

@@ -890,18 +890,6 @@ TEST_F(ChromePaymentsAutofillClientTest, GetBnplUiDelegate) {
   EXPECT_EQ(ui_delegate, chrome_payments_client()->GetBnplUiDelegate());
 }
 
-// Test that Wallet Reminder Notice UI delegate is created and returned
-// correctly.
-TEST_F(ChromePaymentsAutofillClientTest, GetWalletReminderNoticeUiDelegate) {
-  payments::WalletReminderNoticeUiDelegate* ui_delegate =
-      chrome_payments_client()->GetWalletReminderNoticeUiDelegate();
-  ASSERT_NE(ui_delegate, nullptr);
-
-  // Test that the same instance is returned on subsequent calls.
-  EXPECT_EQ(ui_delegate,
-            chrome_payments_client()->GetWalletReminderNoticeUiDelegate());
-}
-
 // Test that Wallet Reminder Notice manager is created and returned correctly.
 TEST_F(ChromePaymentsAutofillClientTest, GetWalletReminderNoticeManager) {
   payments::WalletReminderNoticeManager* manager =

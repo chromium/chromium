@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CHROME_PAYMENTS_AUTOFILL_CLIENT_DESKTOP_H_
 
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 
 namespace autofill {
 
@@ -24,6 +25,9 @@ class ChromePaymentsAutofillClientDesktop
   ChromePaymentsAutofillClientDesktop& operator=(
       const ChromePaymentsAutofillClientDesktop&) = delete;
   ~ChromePaymentsAutofillClientDesktop() override;
+
+  // PaymentsAutofillClient:
+  void ShowWalletReminderNotice(LegalMessageLines legal_message_lines) final;
 };
 
 }  // namespace payments

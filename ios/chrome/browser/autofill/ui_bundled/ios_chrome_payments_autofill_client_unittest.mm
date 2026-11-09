@@ -12,6 +12,8 @@
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#import "components/autofill/core/browser/payments/legal_message_line.h"
+#import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #import "components/autofill/core/browser/ui/payments/bubble_show_options.h"
@@ -53,12 +55,26 @@
 
 // Returns whether showSaveCardBottomSheet was called.
 - (BOOL)showSaveCardBottomSheetCalled;
+
+// Returns whether showWalletReminderNoticeOnOriginWebState was called.
+- (BOOL)showWalletReminderNoticeCalled;
+
+// Returns the origin web state provided to
+// showWalletReminderNoticeOnOriginWebState.
+- (web::WebState*)walletReminderNoticeOriginWebState;
+
+// Returns the legal message lines provided to
+// showWalletReminderNoticeOnOriginWebState.
+- (const autofill::LegalMessageLines&)walletReminderNoticeLegalMessageLines;
 @end
 
 @implementation FakeAutofillCommands {
   std::unique_ptr<autofill::VirtualCardEnrollUiModel> _virtualCardEnrollUiModel;
   std::optional<autofill::AutofillErrorDialogContext> _errorContext;
   BOOL _showSaveCardBottomSheet;
+  BOOL _showWalletReminderNoticeCalled;
+  raw_ptr<web::WebState> _walletReminderNoticeOriginWebState;
+  autofill::LegalMessageLines _walletReminderNoticeLegalMessageLines;
 }
 
 - (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)
@@ -73,6 +89,18 @@
 
 - (BOOL)showSaveCardBottomSheetCalled {
   return _showSaveCardBottomSheet;
+}
+
+- (BOOL)showWalletReminderNoticeCalled {
+  return _showWalletReminderNoticeCalled;
+}
+
+- (web::WebState*)walletReminderNoticeOriginWebState {
+  return _walletReminderNoticeOriginWebState;
+}
+
+- (const autofill::LegalMessageLines&)walletReminderNoticeLegalMessageLines {
+  return _walletReminderNoticeLegalMessageLines;
 }
 
 #pragma mark - AutofillCommands
@@ -106,6 +134,9 @@
 - (void)showWalletReminderNoticeOnOriginWebState:(web::WebState*)originWebState
                                legalMessageLines:(autofill::LegalMessageLines)
                                                      legalMessageLines {
+  _showWalletReminderNoticeCalled = YES;
+  _walletReminderNoticeOriginWebState = originWebState;
+  _walletReminderNoticeLegalMessageLines = std::move(legalMessageLines);
 }
 
 - (void)showVirtualCardEnrollmentBottomSheet:
@@ -920,9 +951,15 @@ TEST_F(IOSChromePaymentsAutofillClientTest, IsAutofillPaymentMethodsEnabled) {
   EXPECT_TRUE(payments_client()->IsAutofillPaymentMethodsEnabled());
 }
 
-TEST_F(IOSChromePaymentsAutofillClientTest,
-       GetWalletReminderNoticeUiDelegate_ReturnsNonNull) {
-  EXPECT_NE(payments_client()->GetWalletReminderNoticeUiDelegate(), nullptr);
+TEST_F(IOSChromePaymentsAutofillClientTest, ShowWalletReminderNotice) {
+  LegalMessageLines legal_message_lines = {
+      TestLegalMessageLine("Test Legal Message")};
+  payments_client()->ShowWalletReminderNotice(legal_message_lines);
+  EXPECT_TRUE([autofill_commands() showWalletReminderNoticeCalled]);
+  EXPECT_EQ([autofill_commands() walletReminderNoticeOriginWebState],
+            web_state_.get());
+  EXPECT_EQ([autofill_commands() walletReminderNoticeLegalMessageLines],
+            legal_message_lines);
 }
 
 TEST_F(IOSChromePaymentsAutofillClientTest,

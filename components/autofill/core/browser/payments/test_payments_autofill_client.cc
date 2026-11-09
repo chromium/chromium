@@ -496,11 +496,6 @@ BnplUiDelegate* TestPaymentsAutofillClient::GetBnplUiDelegate() {
   return bnpl_ui_delegate_.get();
 }
 
-WalletReminderNoticeUiDelegate*
-TestPaymentsAutofillClient::GetWalletReminderNoticeUiDelegate() {
-  return wallet_reminder_notice_ui_delegate_.get();
-}
-
 WalletReminderNoticeManager*
 TestPaymentsAutofillClient::GetWalletReminderNoticeManager() {
   if (!wallet_reminder_notice_manager_) {

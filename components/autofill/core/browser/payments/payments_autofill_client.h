@@ -90,7 +90,6 @@ class PaymentsNetworkInterface;
 class PaymentsWindowManager;
 class SaveAndFillManager;
 class WalletReminderNoticeManager;
-class WalletReminderNoticeUiDelegate;
 
 // A payments-specific client interface that handles dependency injection, and
 // its implementations serve as the integration for platform-specific code. One
@@ -826,9 +825,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // UI in the BNPL flow depending on the platform.
   virtual BnplUiDelegate* GetBnplUiDelegate() = 0;
 
-  // Gets the `WalletReminderNoticeUiDelegate` instance associated with the
-  // client. Handles the UI for the Wallet Reminder Notice.
-  virtual WalletReminderNoticeUiDelegate* GetWalletReminderNoticeUiDelegate();
+  // Requests the platform UI layer to show the Wallet Reminder Notice bottom
+  // sheet/dialog displaying `legal_message_lines`.
+  virtual void ShowWalletReminderNotice(LegalMessageLines legal_message_lines);
 
   // Gets the `WalletReminderNoticeManager` instance associated with the
   // client.

@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/autofill/core/browser",
   "-ios/chrome/browser/autofill/model",
   "+ios/chrome/browser/autofill/ui_bundled/util",
   "+ios/chrome/common/ui",

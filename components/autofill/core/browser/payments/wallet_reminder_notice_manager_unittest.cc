@@ -32,7 +32,6 @@
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
-#include "components/autofill/core/browser/ui/payments/wallet_reminder_notice_ui_delegate.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -54,11 +53,10 @@ constexpr char kAppLocale[] = "en-US";
 constexpr int64_t kBillingCustomerNumber = 123456789;
 constexpr char kAcknowledgementToken[] = "test_acknowledgement_token";
 
-class MockWalletReminderNoticeUiDelegate
-    : public WalletReminderNoticeUiDelegate {
+class MockPaymentsAutofillClient : public TestPaymentsAutofillClient {
  public:
-  MockWalletReminderNoticeUiDelegate() = default;
-  ~MockWalletReminderNoticeUiDelegate() override = default;
+  using TestPaymentsAutofillClient::TestPaymentsAutofillClient;
+  ~MockPaymentsAutofillClient() override = default;
 
   MOCK_METHOD(void,
               ShowWalletReminderNotice,
@@ -109,16 +107,17 @@ class WalletReminderNoticeManagerTest : public testing::Test {
         .SetPaymentsCustomerData(std::make_unique<PaymentsCustomerData>(
             base::NumberToString(kBillingCustomerNumber)));
 
+    auto payments_autofill_client =
+        std::make_unique<MockPaymentsAutofillClient>(&autofill_client_);
+    payments_autofill_client_ = payments_autofill_client.get();
+    autofill_client_.set_payments_autofill_client(
+        std::move(payments_autofill_client));
+
     auto payments_network_interface =
         std::make_unique<PaymentsNetworkInterfaceMock>();
     payments_network_interface_ = payments_network_interface.get();
     autofill_client_.GetPaymentsAutofillClient()
         ->set_payments_network_interface(std::move(payments_network_interface));
-
-    auto ui_delegate = std::make_unique<MockWalletReminderNoticeUiDelegate>();
-    ui_delegate_ = ui_delegate.get();
-    autofill_client_.GetPaymentsAutofillClient()
-        ->set_wallet_reminder_notice_ui_delegate(std::move(ui_delegate));
 
     manager_ = std::make_unique<WalletReminderNoticeManager>(&autofill_client_);
   }
@@ -127,8 +126,8 @@ class WalletReminderNoticeManagerTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   TestAutofillClient autofill_client_;
+  raw_ptr<MockPaymentsAutofillClient> payments_autofill_client_;
   raw_ptr<PaymentsNetworkInterfaceMock> payments_network_interface_;
-  raw_ptr<MockWalletReminderNoticeUiDelegate> ui_delegate_;
   std::unique_ptr<WalletReminderNoticeManager> manager_;
 };
 
@@ -260,7 +259,7 @@ TEST_F(WalletReminderNoticeManagerTest, ShowWalletReminderNotice_PublicPass) {
 TEST_F(WalletReminderNoticeManagerTest,
        OnGetWalletReminderNoticeResponse_RpcFailure) {
   base::HistogramTester histogram_tester;
-  EXPECT_CALL(*ui_delegate_, ShowWalletReminderNotice(_)).Times(0);
+  EXPECT_CALL(*payments_autofill_client_, ShowWalletReminderNotice(_)).Times(0);
   EXPECT_CALL(*payments_network_interface_,
               RecordLegalReminderAcknowledgment(_, _))
       .Times(0);
@@ -295,7 +294,7 @@ TEST_F(
     WalletReminderNoticeManagerTest,
     OnGetWalletReminderNoticeResponse_ServerDenotesUserHasBeenShownReminder) {
   base::HistogramTester histogram_tester;
-  EXPECT_CALL(*ui_delegate_, ShowWalletReminderNotice(_)).Times(0);
+  EXPECT_CALL(*payments_autofill_client_, ShowWalletReminderNotice(_)).Times(0);
   EXPECT_CALL(*payments_network_interface_,
               RecordLegalReminderAcknowledgment(_, _))
       .Times(0);
@@ -330,7 +329,7 @@ TEST_F(WalletReminderNoticeManagerTest,
   LegalMessageLines legal_message_lines;
   legal_message_lines.push_back(TestLegalMessageLine("Legal message line"));
 
-  EXPECT_CALL(*ui_delegate_,
+  EXPECT_CALL(*payments_autofill_client_,
               ShowWalletReminderNotice(ElementsAre(Property(
                   &LegalMessageLine::text, Eq(u"Legal message line")))));
   EXPECT_CALL(*payments_network_interface_,
@@ -365,7 +364,7 @@ TEST_F(WalletReminderNoticeManagerTest,
   LegalMessageLines legal_message_lines;
   legal_message_lines.push_back(TestLegalMessageLine("Legal message line"));
 
-  EXPECT_CALL(*ui_delegate_,
+  EXPECT_CALL(*payments_autofill_client_,
               ShowWalletReminderNotice(ElementsAre(
                   Property(&LegalMessageLine::text, u"Legal message line"))));
   EXPECT_CALL(
