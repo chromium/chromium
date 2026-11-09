@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -15,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -49,6 +51,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
+#include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_types.h"
@@ -64,6 +67,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -86,6 +90,7 @@ namespace em = ::enterprise_management;
 
 using ::testing::_;
 using ::testing::DoAll;
+using ::testing::ElementsAre;
 using ::testing::Mock;
 using ::testing::SaveArg;
 
@@ -99,6 +104,34 @@ void SendJobOKNowForBinding(FakeDeviceManagementService* service,
                             const em::DeviceManagementResponse& response) {
   service->SendJobOKNow(&job, response);
 }
+
+// Records user_manager::User::is_managed() every time `provider` publishes
+// policy, to check that the User is updated before the policy becomes visible.
+class UserPolicyStatusAtPublishRecorder
+    : public ConfigurationPolicyProvider::Observer {
+ public:
+  UserPolicyStatusAtPublishRecorder(ConfigurationPolicyProvider* provider,
+                                    const user_manager::User* user)
+      : user_(user) {
+    observation_.Observe(provider);
+  }
+
+  const std::vector<std::optional<bool>>& is_managed_at_publish() const {
+    return is_managed_at_publish_;
+  }
+
+  // ConfigurationPolicyProvider::Observer:
+  void OnUpdatePolicy(ConfigurationPolicyProvider* provider) override {
+    is_managed_at_publish_.push_back(user_->is_managed());
+  }
+
+ private:
+  const raw_ptr<const user_manager::User> user_;
+  std::vector<std::optional<bool>> is_managed_at_publish_;
+  base::ScopedObservation<ConfigurationPolicyProvider,
+                          ConfigurationPolicyProvider::Observer>
+      observation_{this};
+};
 
 }  // namespace
 
@@ -810,6 +843,76 @@ TEST_F(UserCloudPolicyManagerAshTest, SynchronousLoadWithPreloadedStore) {
   InitAndConnectManager();
   EXPECT_TRUE(manager_->core()->service()->IsInitializationComplete());
   EXPECT_TRUE(manager_->policies().Equals(expected_bundle_));
+}
+
+TEST_F(UserCloudPolicyManagerAshTest,
+       UserPolicyStatusSetBeforeCachedPolicyIsPublished) {
+  // A user with policy cached on disk: the store loads asynchronously and the
+  // manager publishes the policy as soon as it has loaded.
+  ASSERT_NO_FATAL_FAILURE(MakeManagerWithEmptyStore(
+      base::TimeDelta(), PolicyEnforcement::kPolicyOptional));
+  const user_manager::User* user = user_manager_->GetActiveUser();
+  ASSERT_FALSE(user->is_managed().value_or(false));
+  UserPolicyStatusAtPublishRecorder recorder(manager_.get(), user);
+
+  store_->set_policy_data_for_testing(
+      std::make_unique<em::PolicyData>(policy_data_));
+  store_->policy_map_ = policy_map_.Clone();
+  EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
+  store_->NotifyStoreLoaded();
+
+  EXPECT_THAT(recorder.is_managed_at_publish(),
+              ElementsAre(std::optional<bool>(true)));
+  EXPECT_EQ(user->is_managed(), std::optional<bool>(true));
+}
+
+TEST_F(UserCloudPolicyManagerAshTest,
+       UserPolicyStatusSetBeforeFetchedPolicyIsPublished) {
+  // First login of a managed user: nothing is cached, so the manager blocks on
+  // the initial fetch. The fetched policy is published from the fetch
+  // completion, after the store load has updated the User; guard that order.
+  ASSERT_NO_FATAL_FAILURE(MakeManagerWithEmptyStore(
+      base::TimeDelta(), PolicyEnforcement::kServerCheckRequired));
+  const user_manager::User* user = user_manager_->GetActiveUser();
+  UserPolicyStatusAtPublishRecorder recorder(manager_.get(), user);
+
+  // The empty load reports the user as unmanaged until policy arrives, and
+  // publishes nothing while the fetch is pending.
+  store_->NotifyStoreLoaded();
+  EXPECT_EQ(user->is_managed(), std::optional<bool>(false));
+  EXPECT_TRUE(recorder.is_managed_at_publish().empty());
+
+  DeviceManagementService::JobForTesting job = IssueOAuthToken(false);
+  ASSERT_TRUE(job.IsActive());
+  // The mock store does not keep what Store() receives, so give it the policy
+  // data the fetched load would carry.
+  store_->set_policy_data_for_testing(
+      std::make_unique<em::PolicyData>(policy_data_));
+  FetchPolicy(base::BindOnce(&SendJobOKNowForBinding,
+                             base::Unretained(&device_management_service_), job,
+                             register_blob_),
+              false);
+
+  EXPECT_THAT(recorder.is_managed_at_publish(),
+              ElementsAre(std::optional<bool>(true)));
+  EXPECT_EQ(user->is_managed(), std::optional<bool>(true));
+}
+
+TEST_F(UserCloudPolicyManagerAshTest,
+       UserPolicyStatusSetBeforeSynchronouslyLoadedPolicyIsPublished) {
+  // Restart after a crash: the store is loaded before the manager exists, and
+  // Init() publishes the policy right away.
+  MakeManagerWithPreloadedStore(base::TimeDelta());
+  const user_manager::User* user = user_manager_->GetActiveUser();
+  ASSERT_FALSE(user->is_managed().value_or(false));
+  UserPolicyStatusAtPublishRecorder recorder(manager_.get(), user);
+
+  EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
+  InitAndConnectManager();
+
+  EXPECT_THAT(recorder.is_managed_at_publish(),
+              ElementsAre(std::optional<bool>(true)));
+  EXPECT_EQ(user->is_managed(), std::optional<bool>(true));
 }
 
 TEST_F(UserCloudPolicyManagerAshTest, TestLifetimeReportingRegular) {
