@@ -612,8 +612,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   PermissionsData::SetDefaultPolicyHostRestrictions(
       util::GetBrowserContextId(profile()), default_blocked_hosts,
       URLPatternSet());
-  EXPECT_TRUE(RunAttachFunction(blob_web_contents,
-                                "Host access is restricted by policy."));
+  EXPECT_TRUE(RunAttachFunction(
+      blob_web_contents,
+      "This page cannot be scripted due to an ExtensionsSettings policy."));
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
@@ -1161,8 +1162,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, TestDefaultPolicyBlockedHosts) {
       util::GetBrowserContextId(profile()), default_blocked_hosts,
       URLPatternSet());
 
-  EXPECT_TRUE(RunAttachFunction(url, "Host access is restricted by policy.",
-                                /*ignore_navigation_errors=*/true));
+  EXPECT_TRUE(RunAttachFunction(
+      url, "This page cannot be scripted due to an ExtensionsSettings policy.",
+      /*ignore_navigation_errors=*/true));
 }
 
 class DebuggerExtensionApiTest : public ExtensionApiTest {
