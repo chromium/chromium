@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <utility>
@@ -17,8 +18,10 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -41,6 +44,23 @@ namespace em = enterprise_management;
 namespace policy {
 
 namespace {
+
+// crbug.com/579054636
+bool IsDomainBlockedFromPolicyCache(const std::string& domain) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Allow custom keys in test runs.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kPolicyVerificationKey)) {
+    CHECK_IS_TEST();
+    return false;
+  }
+
+  return std::ranges::contains(kPolicyCacheBlockedDomains,
+                               base::ToLowerASCII(domain));
+#else
+  return false;
+#endif
+}
 
 const char kMetricPolicyUserVerification[] =
     "Enterprise.PolicyUserVerification";
@@ -638,6 +658,19 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckCachedKey() {
     return VALIDATION_OK;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // crbug.com/579054636
+  for (const std::string& domain :
+       {owning_domain_, ExtractDomainFromPolicy()}) {
+    if (!domain.empty() && IsDomainBlockedFromPolicyCache(domain)) {
+      LOG_POLICY(ERROR, POLICY_FETCHING)
+          << PolicyTypeLogPrefix(policy_type_, settings_entity_id_)
+          << "Blocked domain rejected from policy cache: " << domain;
+      UMA_HISTOGRAM_ENUMERATION(kMetricKeySignatureVerification,
+                                MetricKeySignatureVerification::kFailed);
+      return VALIDATION_BAD_KEY_VERIFICATION_SIGNATURE;
+    }
+  }
 
   if (VerifySignature(new_cached_key_, verification_key_.value(),
                       new_cached_key_signature_,

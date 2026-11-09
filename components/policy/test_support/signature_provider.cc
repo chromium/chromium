@@ -239,10 +239,6 @@ void InitSigningKeys(std::vector<SignatureProvider::SigningKey>* signing_keys) {
 
 }  // namespace
 
-constexpr char SignatureProvider::kTestDomain1[];
-constexpr char SignatureProvider::kTestDomain2[];
-constexpr char SignatureProvider::kTestDomain3[];
-
 SignatureProvider::SigningKey::SigningKey(
     crypto::keypair::PrivateKey private_key,
     const std::map<std::string, std::string>& signatures)

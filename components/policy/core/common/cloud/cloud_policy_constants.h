@@ -7,7 +7,9 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <string>
+#include <string_view>
 
 #include "components/policy/policy_export.h"
 
@@ -229,6 +231,20 @@ enum ThirdPartyIdentityType {
 
 // Domain that demo mode devices are enrolled into: cros-demo-mode.com
 extern const char kDemoModeDomain[];
+
+// Test domains with pre-computed production key signatures.
+inline constexpr char kTestDomain1[] = "example.com";
+inline constexpr char kTestDomain2[] = "chromepolicytest.com";
+inline constexpr char kTestDomain3[] = "managedchrome.com";
+
+// Domains blocked from loading policies from the policy cache in Google-branded
+// builds.
+inline constexpr auto kPolicyCacheBlockedDomains =
+    std::to_array<std::string_view>({
+        kTestDomain1,
+        kTestDomain2,
+        kTestDomain3,
+    });
 
 // Indicate this device's market segment. go/cros-rlz-segments.
 // This enum should be kept in sync with MarketSegment enum in

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/keypair.h"
 
@@ -55,9 +56,9 @@ class SignatureProvider {
   };
 
   // Domains with pre-computed signatures.
-  static constexpr char kTestDomain1[] = "example.com";
-  static constexpr char kTestDomain2[] = "chromepolicytest.com";
-  static constexpr char kTestDomain3[] = "managedchrome.com";
+  static constexpr auto& kTestDomain1 = policy::kTestDomain1;
+  static constexpr auto& kTestDomain2 = policy::kTestDomain2;
+  static constexpr auto& kTestDomain3 = policy::kTestDomain3;
 
   SignatureProvider();
   SignatureProvider(SignatureProvider&& signature_provider);
