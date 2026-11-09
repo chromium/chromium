@@ -23,7 +23,7 @@ namespace {
 // the entries provided in `initial_entries`..
 std::unique_ptr<KeyedService> BuildReadingListModelWithFakeStorage(
     std::vector<scoped_refptr<ReadingListEntry>> initial_entries,
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   auto storage = std::make_unique<FakeReadingListModelStorage>();
   base::WeakPtr<FakeReadingListModelStorage> storage_ptr = storage->AsWeakPtr();
   auto reading_list_model = std::make_unique<ReadingListModelImpl>(

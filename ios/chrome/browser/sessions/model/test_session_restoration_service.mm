@@ -16,7 +16,7 @@
 namespace {
 
 // Build an instance of TestSessionRestorationService.
-std::unique_ptr<KeyedService> BuildInstance(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildInstance(ProfileIOS& profile) {
   return std::make_unique<TestSessionRestorationService>();
 }
 

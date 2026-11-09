@@ -15,7 +15,7 @@
 namespace {
 
 // Returns a new instance of TextClassifierModelServiceFake.
-std::unique_ptr<KeyedService> BuildInstance(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildInstance(ProfileIOS& profile) {
   OptimizationGuideService* opt_guide =
       OptimizationGuideServiceFactory::GetForProfile(profile);
   return std::make_unique<TextClassifierModelServiceFake>(opt_guide);

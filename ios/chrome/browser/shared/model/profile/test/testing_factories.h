@@ -24,7 +24,7 @@ using KeyedServiceTestingFactoryIOSByPtr =
 using KeyedServiceTestingFactoryIOSByRef =
     base::OnceCallback<std::unique_ptr<KeyedService>(ProfileIOS&)>;
 
-using KeyedServiceTestingFactoryIOS = KeyedServiceTestingFactoryIOSByPtr;
+using KeyedServiceTestingFactoryIOS = KeyedServiceTestingFactoryIOSByRef;
 
 // Type of the callbacks that can be registered as a testing factory
 // for a RefcountedKeyedServiceFactoryIOS sub-class.
@@ -37,6 +37,6 @@ using RefcountedKeyedServiceTestingFactoryIOSByRef =
     base::OnceCallback<scoped_refptr<RefcountedKeyedService>(ProfileIOS&)>;
 
 using RefcountedKeyedServiceTestingFactoryIOS =
-    RefcountedKeyedServiceTestingFactoryIOSByPtr;
+    RefcountedKeyedServiceTestingFactoryIOSByRef;
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_TEST_TESTING_FACTORIES_H_

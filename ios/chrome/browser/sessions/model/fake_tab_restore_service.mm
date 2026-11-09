@@ -15,7 +15,7 @@
 namespace {
 
 // Build an instance of FakeTabRestoreService.
-std::unique_ptr<KeyedService> BuildInstance(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildInstance(ProfileIOS& profile) {
   return std::make_unique<FakeTabRestoreService>();
 }
 
