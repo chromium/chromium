@@ -51,8 +51,8 @@ class SANDBOX_EXPORT SyscallSets {
   static bool IsSocketCall(int sysno);
 #endif
 
-#if defined(__x86_64__) || defined(__arm__) || defined(__mips__) || \
-    defined(__aarch64__)
+#if defined(__i386__) || defined(__x86_64__) || defined(__arm__) || \
+    defined(__mips__) || defined(__aarch64__)
   static bool IsNetworkSocketInformation(int sysno);
 #endif
 

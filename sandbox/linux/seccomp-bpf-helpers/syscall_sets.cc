@@ -498,9 +498,11 @@ bool SyscallSets::IsAllowedEpoll(int sysno) {
 
 bool SyscallSets::IsDeniedGetOrModifySocket(int sysno) {
   switch (sysno) {
-#if defined(__x86_64__) || defined(__arm__) || defined(__mips__) || \
-    defined(__aarch64__)
+#if defined(__i386__) || defined(__x86_64__) || defined(__arm__) || \
+    defined(__mips__) || defined(__aarch64__)
+#if defined(__NR_accept)
     case __NR_accept:
+#endif
     case __NR_accept4:
     case __NR_bind:
     case __NR_connect:
@@ -528,7 +530,8 @@ bool SyscallSets::IsSocketCall(int sysno) {
 }
 #endif
 
-#if defined(__x86_64__) || defined(__arm__) || defined(__mips__)
+#if defined(__i386__) || defined(__x86_64__) || defined(__arm__) || \
+    defined(__mips__) || defined(__aarch64__)
 bool SyscallSets::IsNetworkSocketInformation(int sysno) {
   switch (sysno) {
     case __NR_getpeername:
@@ -622,8 +625,8 @@ bool SyscallSets::IsAllowedGeneralIo(int sysno) {
     (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
     case __NR_recv:
 #endif
-#if defined(__x86_64__) || defined(__arm__) || defined(__mips__) || \
-    defined(__aarch64__)
+#if defined(__i386__) || defined(__x86_64__) || defined(__arm__) || \
+    defined(__mips__) || defined(__aarch64__)
     case __NR_recvfrom:  // Could specify source.
     case __NR_recvmsg:   // Could specify source.
 #endif

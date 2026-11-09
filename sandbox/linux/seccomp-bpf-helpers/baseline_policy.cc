@@ -84,7 +84,7 @@ bool IsBaselinePolicyWatched(int sysno) {
          SyscallSets::IsKill(sysno) ||
          SyscallSets::IsMessageQueue(sysno) ||
          SyscallSets::IsMisc(sysno) ||
-#if defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__)
          SyscallSets::IsNetworkSocketInformation(sysno) ||
 #endif
          SyscallSets::IsNuma(sysno) ||
