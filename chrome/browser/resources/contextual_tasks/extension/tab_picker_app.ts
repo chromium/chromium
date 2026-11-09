@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 
 import type {SmartTabSharingState} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import {ExtensionBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
-import {recordEnumerationValue, recordTabPickerTabSelected, SmartTabSharingSurface, TabPickerSurface} from 'chrome://resources/cr_components/composebox/common.js';
+import {recordEnumerationValue, recordSingleTabMenuItemAction, recordTabPickerTabSelected, SingleTabMenuItemAction, SmartTabSharingSurface, TabPickerSurface} from 'chrome://resources/cr_components/composebox/common.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement, ShowAtConfig} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
@@ -71,6 +71,8 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
       smartTabSharingActive: {type: Boolean},
       smartTabSharingVisible: {type: Boolean},
       sharingTabsText_: {type: String},
+      singleTabIndex_: {type: Number},
+      singleTab_: {type: Object},
       useUnbounded: {
         type: Boolean,
         reflect: true,
@@ -94,7 +96,11 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   accessor inputState: InputState|null = null;
 
   protected accessor sharingTabsText_: string = '';
+  protected accessor singleTabIndex_: number = -1;
+  protected accessor singleTab_: TabInfo|null = null;
 
+  private singleTabMenuItemEnabled_: boolean =
+      this.isSingleTabMenuItemEnabled_();
   private resizeObserver_: ResizeObserver|null = null;
   private closeTimer_: number|null = null;
   private frameScreenOffset_: {x: number, y: number}|null = null;
@@ -121,6 +127,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     super.connectedCallback();
     this.setFocusOutlineVisible_(false);
     this.darkMode = this.isDarkModeEnabled_();
+    this.singleTabMenuItemEnabled_ = this.isSingleTabMenuItemEnabled_();
     this.resizeObserver_ = new ResizeObserver(() => {
       try {
         window.requestResize?.();
@@ -179,6 +186,18 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     this.searchboxListenerIds_ = [];
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('tabSuggestions') ||
+        changedProperties.has('recentTabId')) {
+      this.singleTabIndex_ = this.computeSingleTabIndex_();
+      this.singleTab_ = this.singleTabIndex_ === -1 ?
+          null :
+          this.tabSuggestions[this.singleTabIndex_]!;
+    }
+  }
+
   override firstUpdated() {
     this.$.tabMenu.addEventListener(
         'keydown', this.onMenuKeydown_.bind(this), true);
@@ -227,7 +246,9 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
       if (this.$.tabMenu.open) {
         this.$.tabMenu.close();
       }
-    } else if (this.$.tabMenu.open) {
+    } else if (this.$.tabMenu.open || this.singleTabMenuItemEnabled_) {
+      // Also refresh while the single tab menu item is enabled, so it tracks
+      // the current recent tab even when #tabMenu is closed.
       await this.fetchTabSuggestions_();
       if (this.isConnected && !this.hasTabSuggestions_ &&
           !this.smartTabSharingVisible && this.$.tabMenu.open) {
@@ -318,11 +339,6 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   }
 
   protected isUnboundedMenuEnabled_(): boolean {
-    if (loadTimeData.isInitialized() &&
-        loadTimeData.valueExists('contextualTasksUnboundedMenuEnabled') &&
-        !loadTimeData.getBoolean('contextualTasksUnboundedMenuEnabled')) {
-      return false;
-    }
     return this.useUnbounded;
   }
 
@@ -394,12 +410,65 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     return false;
   }
 
+  private isSingleTabMenuItemEnabled_(): boolean {
+    return loadTimeData.isInitialized() &&
+        loadTimeData.valueExists('contextualTasksSingleTabMenuItemEnabled') &&
+        loadTimeData.getBoolean('contextualTasksSingleTabMenuItemEnabled');
+  }
+
+  private computeSingleTabIndex_(): number {
+    if (!this.singleTabMenuItemEnabled_ || this.recentTabId === null) {
+      return -1;
+    }
+    return this.tabSuggestions.findIndex(tab => tab.tabId === this.recentTabId);
+  }
+
+  // Whether to render the single tab menu item. Hidden while Smart Tab Sharing
+  // is active, matching ContextualActionMenuElement.shouldShowSingleTabItem_(),
+  // since attached tabs are not surfaced to the tab picker in that state.
+  protected shouldShowSingleTabItem_(): boolean {
+    return this.singleTab_ !== null && !this.isStsActiveRow_();
+  }
+
   // FocusOutlineManager defaults to visible=true and only listens to keydown
   // and mousedown (not pointerenter/pointermove), while cr-action-menu checks
   // FocusOutlineManager.visible on open and calls .focus() on mouseover.
   // Explicitly sync outline visibility on pointer vs. keyboard interactions.
   private setFocusOutlineVisible_(visible: boolean) {
     FocusOutlineManager.forDocument(document).visible = visible;
+  }
+
+  protected onSingleTabRowPointerenter_() {
+    this.pointerDownOnTrigger_ = false;
+    this.setFocusOutlineVisible_(false);
+  }
+
+  protected onSingleTabRowPointermove_() {
+    this.setFocusOutlineVisible_(false);
+  }
+
+  protected onSingleTabRowPointerdown_() {
+    this.pointerDownOnTrigger_ = true;
+    this.setFocusOutlineVisible_(false);
+  }
+
+  protected onSingleTabRowPointerleave_(e: PointerEvent) {
+    this.pointerDownOnTrigger_ = false;
+    (e.currentTarget as HTMLElement).blur();
+  }
+
+  protected onSingleTabRowFocus_() {
+    if (!this.pointerDownOnTrigger_) {
+      this.setFocusOutlineVisible_(true);
+    }
+  }
+
+  protected onSingleTabRowKeydown_(e: KeyboardEvent) {
+    this.setFocusOutlineVisible_(true);
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.$.shareTabsTrigger.focus();
+    }
   }
 
   protected onShareTabsRowPointerenter_(e: PointerEvent) {
@@ -470,6 +539,15 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
         this.setSmartTabSharingActive_(false);
       }
       return;
+    }
+    if (e.key === 'ArrowUp') {
+      const singleTabItem =
+          this.shadowRoot.querySelector<HTMLElement>('#singleTabItem');
+      if (singleTabItem) {
+        e.preventDefault();
+        singleTabItem.focus();
+        return;
+      }
     }
     if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -578,6 +656,11 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   protected onTabClick_(e: Event) {
     e.stopPropagation();
     const target = e.currentTarget as HTMLElement;
+    const isSingleTabItem = target.id === 'singleTabItem';
+    if (isSingleTabItem) {
+      this.setFocusOutlineVisible_(false);
+      this.pointerDownOnTrigger_ = false;
+    }
     const index = Number(target.dataset['index']);
     const tab = this.tabSuggestions[index];
     if (!tab) {
@@ -593,11 +676,19 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
       this.browserProxy_.deleteTabContext(tab.tabId);
       this.recordUserActionMetric_(
           'ContextualTasks.TabPicker.UserAction.TabDeselected');
+      if (isSingleTabItem) {
+        recordSingleTabMenuItemAction(
+            SingleTabMenuItemAction.CURRENT_TAB_DESELECTED, 'ContextualTasks');
+      }
     } else {
       this.selectedTabs = [tab, ...this.selectedTabs];
       this.browserProxy_.addTabContext(tab.tabId);
       this.recordUserActionMetric_(
           'ContextualTasks.TabPicker.UserAction.TabSelected');
+      if (isSingleTabItem) {
+        recordSingleTabMenuItemAction(
+            SingleTabMenuItemAction.CURRENT_TAB_SELECTED, 'ContextualTasks');
+      }
       const hasActiveTab =
           this.tabSuggestions.some(t => t.showInCurrentTabChip);
       recordTabPickerTabSelected(

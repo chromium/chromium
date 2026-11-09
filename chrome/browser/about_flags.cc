@@ -12451,6 +12451,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksTabBasedSuggestions)},
 
+    {"contextual-tasks-single-tab-menu-item",
+     contextual_tasks::flag_descriptions::kContextualTasksSingleTabMenuItemName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksSingleTabMenuItemDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksSingleTabMenuItem)},
+
     {"contextual-tasks-side-panel-tab-state",
      contextual_tasks::flag_descriptions::kContextualTasksSidePanelTabStateName,
      contextual_tasks::flag_descriptions::

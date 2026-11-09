@@ -63,6 +63,7 @@
           var(--color-menu-background, rgba(44, 46, 54, 1))));
 }
 
+#singleTabItem,
 #shareTabsTrigger {
   --iron-icon-height: 20px;
   --iron-icon-width: 20px;
@@ -86,6 +87,7 @@
   width: 100%;
 }
 
+#singleTabItem > cr-composebox-tab-favicon,
 #shareTabsTrigger > cr-icon:first-child {
   --iron-icon-height: 20px;
   --iron-icon-width: 20px;
@@ -94,28 +96,38 @@
   width: 20px;
 }
 
+#singleTabItem:hover,
 #shareTabsTrigger:hover,
 #shareTabsTrigger[aria-expanded='true'] {
   background-color: var(--tab-picker-hover-background-color);
 }
 
+#singleTabItem:focus,
 #shareTabsTrigger:focus {
   outline: none;
 }
 
+:host-context(.focus-outline-visible) #singleTabItem:focus,
 :host-context(.focus-outline-visible) #shareTabsTrigger:focus {
   background-color: var(--tab-picker-hover-background-color);
   outline: 2px solid var(--cr-focus-outline-color);
   outline-offset: -2px;
 }
 
+#singleTabItem[disabled],
 #shareTabsTrigger[disabled] {
   color: var(--tab-picker-disabled-text-color);
   cursor: default;
 }
 
+#singleTabItem[disabled]:hover,
 #shareTabsTrigger[disabled]:hover {
   background-color: transparent;
+}
+
+#singleTabItem .share-tabs-check {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
 }
 
 composebox-favicon-group {

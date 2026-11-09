@@ -10550,6 +10550,7 @@ from previous Chrome versions.
   <int value="-1340460869" label="ShutdownSupportForKeepalive:enabled"/>
   <int value="-1340055960" label="enable-streamlined-hosted-apps"/>
   <int value="-1339679303" label="UseAdHocSigningForWebAppShims:enabled"/>
+  <int value="-1338984406" label="ContextualTasksSingleTabMenuItem:disabled"/>
   <int value="-1338701593"
       label="OmniboxMostVisitedTilesTitleWrapAround:enabled"/>
   <int value="-1338528179"
@@ -17378,6 +17379,7 @@ from previous Chrome versions.
   <int value="709850261" label="disable-touch-editing"/>
   <int value="710631017" label="AndroidBookmarkBar:disabled"/>
   <int value="710700286" label="ImmersiveFullscreen:disabled"/>
+  <int value="710909336" label="ContextualTasksSingleTabMenuItem:enabled"/>
   <int value="711424932" label="enable-cloud-print-xps"/>
   <int value="711627544" label="ImeSwitchCheckConnectionStatus:enabled"/>
   <int value="712155532" label="GlicUseNonClient:disabled"/>

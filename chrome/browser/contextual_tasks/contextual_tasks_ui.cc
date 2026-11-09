@@ -654,6 +654,8 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
            omnibox::IsTabDeselectionInComposeboxEnabled());
   dict.Set("composeboxContextMenuTooltipsEnabled",
            omnibox::IsContextMenuTooltipsInComposeboxEnabled());
+  dict.Set("contextualTasksSingleTabMenuItemEnabled",
+           contextual_tasks::IsContextualTasksSingleTabMenuItemEnabled());
   dict.Set("enableGhostLoader", contextual_tasks::GetIsGhostLoaderEnabled());
   dict.Set("forceBasicModeIfOpeningThreadHistory",
            contextual_tasks::ShouldForceBasicModeIfOpeningThreadHistory());

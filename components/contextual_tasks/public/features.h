@@ -100,6 +100,10 @@ BASE_DECLARE_FEATURE(kContextualTasksHideMenuOnAiPage);
 // Enables painting dropdown menus outside WebUI boundaries.
 BASE_DECLARE_FEATURE(kContextualTasksUnboundedMenu);
 
+// Enables the single-tab menu item above the "Add tabs" row in the Contextual
+// Tasks context menu and tab picker.
+BASE_DECLARE_FEATURE(kContextualTasksSingleTabMenuItem);
+
 // Enables hiding the close button when in vertical tabs or immersive mode.
 BASE_DECLARE_FEATURE(kContextualTasksHideCloseButtonInVerticalTabs);
 
@@ -701,6 +705,7 @@ extern bool IsContextualTasksSidePanelRearchitectureExpandToFullTabEnabled();
 extern bool IsContextualTasksClobberActiveTabEnabled();
 extern bool IsContextualTasksTabBasedSuggestionsEnabled();
 extern bool IsContextualTasksUnboundedMenuEnabled();
+extern bool IsContextualTasksSingleTabMenuItemEnabled();
 
 inline constexpr char kContextualTasksSearchCapabilitiesHeaderName[] =
     "Chrome-Search-Capabilities-Version";
@@ -770,6 +775,8 @@ extern const char kContextualTasksClobberActiveTabName[];
 extern const char kContextualTasksClobberActiveTabDescription[];
 extern const char kContextualTasksTabBasedSuggestionsName[];
 extern const char kContextualTasksTabBasedSuggestionsDescription[];
+extern const char kContextualTasksSingleTabMenuItemName[];
+extern const char kContextualTasksSingleTabMenuItemDescription[];
 extern const char kContextualTasksSidePanelTabStateName[];
 extern const char kContextualTasksSidePanelTabStateDescription[];
 extern const char kContextualTasksBypassDismissedCapName[];
