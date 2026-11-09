@@ -633,8 +633,11 @@ void PasswordAccessoryControllerImpl::WebContentsDestroyed() {
 
 void PasswordAccessoryControllerImpl::ChangeCurrentOriginSavePasswordsStatus(
     bool saving_enabled) {
+  if (GetWebContents().GetFocusedFrame() == nullptr || !last_focus_info_) {
+    return;
+  }
   const url::Origin origin = GetFocusedFrameOrigin();
-  if (origin.opaque()) {
+  if (origin.opaque() || !last_focus_info_->origin.IsSameOriginWith(origin)) {
     return;
   }
 
