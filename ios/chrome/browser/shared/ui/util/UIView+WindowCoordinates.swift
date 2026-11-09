@@ -45,7 +45,7 @@ extension UIView {
         // Make sure UIView supports window observing.
         Self.cr_supportsWindowObserving = true
         observation = observe(\.window, options: [.initial]) { [weak self] _, _ in
-          guard let self = self else { return }
+          guard let self else { return }
           if Thread.isMainThread {
             MainActor.assumeIsolated {
               self.windowCoordinatesChangeHandler()
@@ -114,8 +114,8 @@ extension UIView {
   /// always has the same window coordinates as the receiver. The mirror view calls the
   /// `onWindowCoordinatesChanged` closure when its bounds change.
   private func addMirrorViewInWindow() {
-    guard let window = window else { fatalError() }
-    if let mirrorViewInWindow = self.mirrorViewInWindow, mirrorViewInWindow.superview == window {
+    guard let window else { fatalError() }
+    if let mirrorViewInWindow, mirrorViewInWindow.superview == window {
       return
     }
 
@@ -147,7 +147,7 @@ extension UIView {
       // entire hierarchy. (It can happen that AutoLayout updates the mirror view before the
       // mirrored view.)
       DispatchQueue.main.async { [weak self] in
-        guard let self = self else { return }
+        guard let self else { return }
         self.cr_onWindowCoordinatesChanged?(self)
       }
     }
