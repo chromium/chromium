@@ -3200,7 +3200,9 @@ void MenuController::MenuChildrenChanged(MenuItemView* item) {
   ScopedDeletionGuard guard(AsWeakPtr());
   CHECK(item, base::NotFatalUntil::M163);
   // Menu shouldn't be updated during drag operation.
-  CHECK(!active_mouse_view_tracker_->view(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/583338733): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!active_mouse_view_tracker_->view());
 
   // If needed, refresh the AX index assignments.
   if (item->GetProperty(kOrderedMenuChildren)) {
