@@ -258,6 +258,7 @@ try_.builder(
         "ci/win-devtools-frontend-rel",
     ],
     gn_args = "ci/win-devtools-frontend-rel",
+    ssd = None,
     contact_team_email = "chrome-devtools@google.com",
     cq_settings = try_.cq_settings(
         includable_only = True,

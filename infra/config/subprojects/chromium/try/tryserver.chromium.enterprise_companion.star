@@ -53,6 +53,7 @@ def enterprise_companion_mac_builder(*, name, **kwargs):
 def enterprise_companion_windows_builder(*, name, **kwargs):
     kwargs.setdefault("cores", 8)
     kwargs.setdefault("os", os.WINDOWS_DEFAULT)
+    kwargs.setdefault("ssd", None)
     return try_.builder(
         name = name,
         contact_team_email = "omaha-client-dev@google.com",

@@ -45,6 +45,7 @@ def updater_mac_builder(*, name, **kwargs):
 def updater_windows_builder(*, name, **kwargs):
     kwargs.setdefault("cores", 8)
     kwargs.setdefault("os", os.WINDOWS_DEFAULT)
+    kwargs.setdefault("ssd", None)
     return try_.builder(name = name, **kwargs)
 
 updater_linux_builder(
