@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager_impl.h"
 
+#import "base/check.h"
 #import "components/handoff/handoff_manager.h"
 #import "components/handoff/pref_names_ios.h"
 #import "components/prefs/pref_service.h"
@@ -60,7 +61,15 @@ void DeviceSharingManagerImpl::ClearActiveUrl(Browser* browser) {
   [handoff_manager_ updateActiveTitle:std::u16string()];
 }
 
+void DeviceSharingManagerImpl::Shutdown() {
+  prefs_change_observer_.Reset();
+  handoff_manager_ = nil;
+  profile_prefs_ = nullptr;
+  active_browser_.reset();
+}
+
 void DeviceSharingManagerImpl::UpdateHandoffManager() {
+  DCHECK(profile_prefs_);
   if (!profile_prefs_->GetBoolean(prefs::kIosHandoffToOtherDevices)) {
     handoff_manager_ = nil;
     return;

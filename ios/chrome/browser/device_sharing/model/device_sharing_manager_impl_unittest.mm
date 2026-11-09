@@ -39,6 +39,10 @@ class DeviceSharingManagerImplTest : public PlatformTest {
     return [sharing_manager_->handoff_manager_ userActivityWebpageURL];
   }
 
+  HandoffManager* handoff_manager() {
+    return sharing_manager_->handoff_manager_;
+  }
+
   const GURL test_url_1_;
   const GURL test_url_2_;
   __strong NSURL* test_nsurl_1_;
@@ -138,5 +142,23 @@ TEST_F(DeviceSharingManagerImplTest, SwitchActiveBrowser) {
 
   // Now clear the URL for the original browser; it should clear.
   sharing_manager_->ClearActiveUrl(browser_.get());
+  EXPECT_NSEQ(ActiveHandoffUrl(), nil);
+}
+
+// Tests that `Shutdown()` resets the pref observer and Handoff manager.
+TEST_F(DeviceSharingManagerImplTest, Shutdown) {
+  sharing_manager_->UpdateActiveUrl(browser_.get(), test_url_1_);
+  EXPECT_NSEQ(ActiveHandoffUrl(), test_nsurl_1_);
+
+  sharing_manager_->Shutdown();
+  EXPECT_NSEQ(handoff_manager(), nil);
+
+  PrefService* prefs = profile_->GetPrefs();
+  prefs->SetBoolean(prefs::kIosHandoffToOtherDevices, false);
+  prefs->SetBoolean(prefs::kIosHandoffToOtherDevices, true);
+  EXPECT_NSEQ(handoff_manager(), nil);
+
+  sharing_manager_->UpdateActiveUrl(browser_.get(), test_url_2_);
+  EXPECT_NSEQ(handoff_manager(), nil);
   EXPECT_NSEQ(ActiveHandoffUrl(), nil);
 }

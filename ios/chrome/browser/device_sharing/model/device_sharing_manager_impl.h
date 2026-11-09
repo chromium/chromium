@@ -34,6 +34,9 @@ class DeviceSharingManagerImpl : public DeviceSharingManager {
                          const std::u16string& title) override;
   void ClearActiveUrl(Browser* browser) override;
 
+  // KeyedService:
+  void Shutdown() override;
+
  private:
   // Allow tests to inspect the handoff manager.
   friend class DeviceSharingManagerImplTest;
