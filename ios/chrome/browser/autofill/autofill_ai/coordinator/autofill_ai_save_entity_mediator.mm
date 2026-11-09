@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/autofill_ai_save_entity_mediator.h"
 
+#import <algorithm>
+
 #import "base/timer/timer.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
@@ -12,7 +14,6 @@
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
-#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 
 // Time duration to wait before auto dismissing the bottomsheet in success
@@ -68,16 +69,10 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
   [self pushDataToConsumer];
 }
 
-- (void)didTapFooterLinkURL:(CrURL*)URL {
-  if (!URL) {
-    return;
-  }
-  for (const GURL& legalMessageURL : _legalMessageURLs) {
-    if (legalMessageURL == URL.gurl) {
-      autofill::LogWalletNoticeFunnelEvent(
-          autofill::AutofillAiWalletNoticeFunnelEvents::kLinkClicked);
-      return;
-    }
+- (void)didTapFooterLinkURL:(const GURL&)url {
+  if (std::ranges::contains(_legalMessageURLs, url)) {
+    autofill::LogWalletNoticeFunnelEvent(
+        autofill::AutofillAiWalletNoticeFunnelEvents::kLinkClicked);
   }
 }
 

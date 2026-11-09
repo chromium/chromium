@@ -219,8 +219,7 @@ TEST_F(AutofillAISaveEntityMediatorTest, PushesWalletUpdateFooter) {
 }
 
 // Tests that `didTapFooterLinkURL:` logs `kLinkClicked` only when the tapped
-// URL belongs to the legal message (comparing `GURL` values across distinct
-// `CrURL` instances).
+// URL belongs to the legal message.
 TEST_F(AutofillAISaveEntityMediatorTest,
        DidTapFooterLinkURL_LogsLinkClickedOnlyForLegalMessageURL) {
   base::HistogramTester histogram_tester;
@@ -253,18 +252,14 @@ TEST_F(AutofillAISaveEntityMediatorTest,
       "Autofill.Ai.WalletNotice.Save.Funnel",
       autofill::AutofillAiWalletNoticeFunnelEvents::kLegalMessageShown, 1);
 
-  // Allocate distinct `CrURL` instances to test `GURL` value equality rather
-  // than pointer identity.
-  CrURL* manage_info_url =
-      [[CrURL alloc] initWithGURL:autofill::GetManageYourInfoURL()];
-  [mediator didTapFooterLinkURL:manage_info_url];
+  // Tapping a non-legal URL does not log `kLinkClicked`.
+  [mediator didTapFooterLinkURL:autofill::GetManageYourInfoURL()];
   histogram_tester.ExpectBucketCount(
       "Autofill.Ai.WalletNotice.Save.Funnel",
       autofill::AutofillAiWalletNoticeFunnelEvents::kLinkClicked, 0);
 
-  CrURL* legal_url =
-      [[CrURL alloc] initWithGURL:GURL("https://www.example.com/legal")];
-  [mediator didTapFooterLinkURL:legal_url];
+  // Tapping a legal message URL logs `kLinkClicked`.
+  [mediator didTapFooterLinkURL:GURL("https://www.example.com/legal")];
   histogram_tester.ExpectBucketCount(
       "Autofill.Ai.WalletNotice.Save.Funnel",
       autofill::AutofillAiWalletNoticeFunnelEvents::kLinkClicked, 1);
