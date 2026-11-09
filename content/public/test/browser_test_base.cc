@@ -150,7 +150,10 @@
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
 
+#include "base/test/run_until.h"
 #include "base/test/test_reg_util_win.h"
+#include "ui/accessibility/platform/ax_platform.h"
+#include "ui/accessibility/platform/ax_platform_node_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
@@ -1040,6 +1043,29 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
   // schedules some tasks which need to be executed before finishing tests.
   // Run these tasks.
   content::RunAllPendingInMessageLoop();
+
+#if BUILDFLAG(IS_WIN)
+  // If UIA was serviced or `AXPlatformNodeWin` ghost nodes remain, disconnect
+  // active UIA providers (gating on these avoids delay-loading
+  // `uiautomationcore.dll` in tests that never used UIA) and pump the UI
+  // message loop until out-of-process COM/UIA references are released.
+  const auto get_ghost_count = [] {
+    return ui::AXPlatformNodeWin::GetCounts().ghost_nodes;
+  };
+  if (auto& ax_platform = ui::AXPlatform::GetInstance();
+      ax_platform.HasServicedUiaClients() || get_ghost_count() > 0u) {
+    ax_platform.DisableActiveUiaProvider();
+  }
+  if (get_ghost_count() > 0u) {
+    base::RepeatingTimer pump_timer;
+    pump_timer.Start(FROM_HERE, TestTimeouts::tiny_timeout(),
+                     base::DoNothing());
+    EXPECT_TRUE(base::test::RunUntil([&] { return get_ghost_count() == 0u; }))
+        << "Timed out waiting for Windows accessibility test teardown; "
+        << get_ghost_count()
+        << " AXPlatformNodeWin COM references are still alive.";
+  }
+#endif
 
   // Update the trace output filename to include the test result.
   tracing::StartupTracingController::SetDefaultBasename(

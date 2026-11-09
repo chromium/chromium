@@ -29,6 +29,11 @@ class AccessibilityObjectLifetimeWinBrowserTest
 
   ~AccessibilityObjectLifetimeWinBrowserTest() override = default;
 
+  void TearDownOnMainThread() override {
+    test_node_.Reset();
+    ContentBrowserTest::TearDownOnMainThread();
+  }
+
  protected:
   RenderWidgetHostViewAura* GetView() {
     return static_cast<RenderWidgetHostViewAura*>(

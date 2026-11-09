@@ -57,37 +57,9 @@
 #include "ui/accessibility/android/accessibility_state.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "base/functional/callback_helpers.h"
-#include "base/test/run_until.h"
-#include "base/timer/timer.h"
-#include "ui/accessibility/platform/ax_platform.h"
-#include "ui/accessibility/platform/ax_platform_node_win.h"
-#endif
-
 namespace content {
 
 namespace {
-
-#if BUILDFLAG(IS_WIN)
-void WaitForNoGhostAXPlatformNodeWin() {
-  const auto get_ghost_count = [] {
-    return ui::AXPlatformNodeWin::GetCounts().ghost_nodes;
-  };
-  if (get_ghost_count() == 0u) {
-    return;
-  }
-
-  // Pump the message loop periodically so `RunUntil` re-evaluates the ghost
-  // count as COM references are released on background UIA threads.
-  base::RepeatingTimer timer;
-  timer.Start(FROM_HERE, base::Milliseconds(10), base::DoNothing());
-  EXPECT_TRUE(base::test::RunUntil([&] { return get_ghost_count() == 0u; }))
-      << "Timed out waiting for Windows accessibility test teardown; "
-      << get_ghost_count()
-      << " AXPlatformNodeWin COM references are still alive.";
-}
-#endif
 
 bool SkipUrlMatch(const std::vector<std::string>& skip_urls,
                   const std::string& url) {
@@ -245,16 +217,6 @@ void DumpAccessibilityTestBase::SetUpOnMainThread() {
   embedded_test_server()->ServeFilesFromDirectory(
       source_dir.Append(kAriaPracticesDir));
   ASSERT_TRUE(embedded_test_server()->Start());
-}
-
-void DumpAccessibilityTestBase::PostRunTestOnMainThread() {
-  ContentBrowserTest::PostRunTestOnMainThread();
-#if BUILDFLAG(IS_WIN)
-  // Let COM/UIA releases finish after windows close and before gtest's
-  // platform-node leak listener.
-  ui::AXPlatform::GetInstance().DisableActiveUiaProvider();
-  WaitForNoGhostAXPlatformNodeWin();
-#endif
 }
 
 void DumpAccessibilityTestBase::SetUp() {
