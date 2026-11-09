@@ -266,6 +266,20 @@ input::-webkit-search-cancel-button {
   visibility: visible;
 }
 
+:is(input, textarea):not(:placeholder-shown) ~ slot[name='placeholder-overlay'] {
+  display: none;
+}
+
+slot[name='placeholder-overlay']::slotted(*) {
+  box-sizing: border-box;
+  inset: 0;
+  opacity: var(--placeholder-opacity);
+  pointer-events: none;
+  position: absolute;
+  user-select: none;
+  z-index: 101;
+}
+
 cr-searchbox-icon {
   height: 100%;
   padding-inline-end: var(--cr-searchbox-icon-right-position, 4px);

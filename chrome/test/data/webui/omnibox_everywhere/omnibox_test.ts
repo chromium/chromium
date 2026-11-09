@@ -1321,8 +1321,9 @@ suite('OmniboxEverywhereOmniboxTest', () => {
           // inputEl.placeholder at the start of FADE_IN). `Animation.finish()`
           // queues the `finish` event for the next animation frame, so await
           // `finish` before advancing the next stage.
+          const animTarget = omnibox.$.input.$.mirrorContainer;
           for (let i = 0; i < 3; i++) {
-            const anim = inputEl.getAnimations()[0];
+            const anim = animTarget.getAnimations()[0];
             assertTrue(!!anim);
             const finished = eventToPromise('finish', anim);
             anim.finish();
@@ -1330,21 +1331,35 @@ suite('OmniboxEverywhereOmniboxTest', () => {
           }
         };
 
+        const lensPlaceholder = omnibox.$.lensPlaceholder;
+
         assertEquals('Ask Google or type a URL', inputEl.placeholder);
+        assertTrue(lensPlaceholder.hidden);
 
         await advanceToNextPlaceholder();
         assertEquals(
             'Ask about your screen with Google Lens', inputEl.placeholder);
+        assertFalse(lensPlaceholder.hidden);
+        assertEquals(
+            'Ask about your screen with Google Lens',
+            lensPlaceholder.textContent.trim());
+        const lensIcon = lensPlaceholder.querySelector<HTMLElement>('span');
+        assertTrue(!!lensIcon);
+        assertEquals('16px', window.getComputedStyle(lensIcon).width);
+        assertEquals('16px', window.getComputedStyle(lensIcon).height);
 
         await advanceToNextPlaceholder();
         assertEquals('Ask about a file or image', inputEl.placeholder);
+        assertTrue(lensPlaceholder.hidden);
 
         await advanceToNextPlaceholder();
         assertEquals('Drag and drop files here', inputEl.placeholder);
+        assertTrue(lensPlaceholder.hidden);
 
         // Wraps back around to the first hint.
         await advanceToNextPlaceholder();
         assertEquals('Ask Google or type a URL', inputEl.placeholder);
+        assertTrue(lensPlaceholder.hidden);
       });
 
   test(
@@ -1352,10 +1367,14 @@ suite('OmniboxEverywhereOmniboxTest', () => {
           'by capability',
       async () => {
         const inputEl = omnibox.$.input.inputElement;
+        const lensPlaceholder = omnibox.$.lensPlaceholder;
+        const getPlaceholderAnimations = (targetInput: HTMLElement = inputEl) =>
+            (targetInput.closest('#mirrorContainer') ?? targetInput)
+                .getAnimations();
         const advanceToNextPlaceholder =
             async (targetInput: HTMLElement = inputEl) => {
           for (let i = 0; i < 3; i++) {
-            const anim = targetInput.getAnimations()[0];
+            const anim = getPlaceholderAnimations(targetInput)[0];
             assertTrue(!!anim);
             const finished = eventToPromise('finish', anim);
             anim.finish();
@@ -1363,35 +1382,89 @@ suite('OmniboxEverywhereOmniboxTest', () => {
           }
         };
 
-        // Advance to the second hint ("Ask about your screen with Google Lens").
+        // Advance to the second hint ("Ask about your screen with Google
+        // Lens").
         await advanceToNextPlaceholder();
         assertEquals(
             'Ask about your screen with Google Lens', inputEl.placeholder);
+        assertFalse(lensPlaceholder.hidden);
 
         // Unfocusing (persistent resting state) stops cycling and resets to the
         // initial placeholder.
         omnibox.isActive = false;
         await microtasksFinished();
-        assertEquals(0, inputEl.getAnimations().length);
+        assertEquals(0, getPlaceholderAnimations().length);
         assertEquals('Ask Google or type a URL', inputEl.placeholder);
+        assertTrue(lensPlaceholder.hidden);
 
         // Refocusing resumes cycling from the first hint.
         omnibox.isActive = true;
         await microtasksFinished();
-        assertEquals(1, inputEl.getAnimations().length);
+        assertEquals(1, getPlaceholderAnimations().length);
         await advanceToNextPlaceholder();
         assertEquals(
             'Ask about your screen with Google Lens', inputEl.placeholder);
+        assertFalse(lensPlaceholder.hidden);
+
+        // Typing a single space (' ') hides the Lens placeholder and stops
+        // cycling even though trimmed `hasUserInput_` remains false.
+        omnibox.$.input.setInput({text: ' ', inline: ''});
+        omnibox.$.input.dispatchEvent(new CustomEvent(
+            'searchbox-input-text-updated',
+            {detail: {value: ' ', isComposing: false}}));
+        await microtasksFinished();
+        assertEquals(0, getPlaceholderAnimations().length);
+        assertTrue(lensPlaceholder.hidden);
+
+        omnibox.setInputText('');
+        await microtasksFinished();
+        assertEquals(1, getPlaceholderAnimations().length);
+        await advanceToNextPlaceholder();
+        assertFalse(lensPlaceholder.hidden);
 
         // Typing stops cycling; clearing restarts from the first hint.
         omnibox.setInputText('cats');
         await microtasksFinished();
-        assertEquals(0, inputEl.getAnimations().length);
+        assertEquals(0, getPlaceholderAnimations().length);
+        assertTrue(lensPlaceholder.hidden);
 
         omnibox.setInputText('');
         await microtasksFinished();
-        assertEquals(1, inputEl.getAnimations().length);
+        assertEquals(1, getPlaceholderAnimations().length);
         assertEquals('Ask Google or type a URL', inputEl.placeholder);
+        assertTrue(lensPlaceholder.hidden);
+
+        // Selecting/previewing an autocomplete match stops cycling and hides
+        // `#lensPlaceholder`.
+        await advanceToNextPlaceholder();
+        assertFalse(lensPlaceholder.hidden);
+        omnibox.selectedMatch = createSearchMatchForTesting({
+          fillIntoEdit: 'https://example.com',
+        });
+        await microtasksFinished();
+        assertEquals(0, getPlaceholderAnimations().length);
+        assertTrue(lensPlaceholder.hidden);
+        omnibox.selectedMatch = null;
+        await microtasksFinished();
+        assertEquals(1, getPlaceholderAnimations().length);
+
+        // Toggling multiLineEnabled rebinds the cycler to the newly rendered
+        // textarea/input after `<cr-searchbox-input>` finishes updating.
+        omnibox.multiLineEnabled = true;
+        await microtasksFinished();
+        await omnibox.$.input.updateComplete;
+        await microtasksFinished();
+        const multiLineInputEl = omnibox.$.input.inputElement;
+        assertEquals(1, getPlaceholderAnimations(multiLineInputEl).length);
+        await advanceToNextPlaceholder(multiLineInputEl);
+        assertEquals(
+            'Ask about your screen with Google Lens',
+            multiLineInputEl.placeholder);
+        assertFalse(lensPlaceholder.hidden);
+        omnibox.multiLineEnabled = false;
+        await microtasksFinished();
+        await omnibox.$.input.updateComplete;
+        await microtasksFinished();
 
         // Disabling Lens search and drag-and-drop omits their respective hints.
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -1423,7 +1496,8 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         await microtasksFinished();
 
         const nonFuseboxInput = nonFuseboxOmnibox.$.input.inputElement;
-        assertEquals(0, nonFuseboxInput.getAnimations().length);
+        assertEquals(0, getPlaceholderAnimations(nonFuseboxInput).length);
+        assertTrue(nonFuseboxOmnibox.$.lensPlaceholder.hidden);
         assertEquals(
             loadTimeData.getString('searchBoxHint'),
             nonFuseboxInput.placeholder);

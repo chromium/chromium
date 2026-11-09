@@ -77,6 +77,7 @@ export function getHtml(this: SearchboxInputElement) {
             @paste="${this.onInputPaste_}"
             @scroll="${this.onInputScroll_}">
       `}
+      <slot name="placeholder-overlay"></slot>
     </div>
     <span id="ellipsisIndicator" aria-hidden="true">...</span>
     <slot name="action-buttons"></slot>

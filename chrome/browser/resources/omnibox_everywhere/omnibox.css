@@ -149,16 +149,26 @@ cr-searchbox-input {
   padding-inline-end: 0;
 }
 
+cr-searchbox-input::part(searchbox-input),
+#lensPlaceholder {
+  padding-inline: 7px;
+}
+
 cr-searchbox-input::part(searchbox-input) {
   align-self: center;
-  padding-inline: 7px;
   padding-top: 2px;
 }
 
 :host([multi-line-enabled])
-    cr-searchbox-input::part(searchbox-input) {
+    cr-searchbox-input::part(searchbox-input),
+:host([multi-line-enabled]) #lensPlaceholder {
   padding-bottom: 10px;
   padding-top: 12px;
+}
+
+:host([multi-line-enabled]) #lensPlaceholder {
+  align-content: start;
+  line-height: 24px;
 }
 
 cr-searchbox-input::part(searchbox-input)::selection {
@@ -187,7 +197,8 @@ cr-searchbox-input::part(searchbox-input)::selection {
       var(--cr-searchbox-icon-width) + var(--cr-compose-button-width));
 }
 
-cr-searchbox-input::part(searchbox-input)::placeholder {
+cr-searchbox-input::part(searchbox-input)::placeholder,
+#lensPlaceholder {
   color: var(--cr-composebox-input-placeholder-color,
       var(--color-composebox-type-ahead));
   font-weight: 400;
@@ -196,6 +207,48 @@ cr-searchbox-input::part(searchbox-input)::placeholder {
 /* cr-searchbox-input hides placeholder on focus by default; override here. */
 cr-searchbox-input::part(searchbox-input):focus::placeholder {
   visibility: visible;
+}
+
+/* Visually hide the native input/textarea placeholder text while the rich Lens
+ * placeholder overlay (with inline Google Lens icon) is displayed. Using
+ * visibility: hidden (matching searchbox_input.css) keeps inputEl.placeholder
+ * in the accessibility tree for screen readers without Forced Colors Mode
+ * overriding color: transparent back to GrayText. */
+cr-searchbox-input:has(#lensPlaceholder:not([hidden]))::part(
+    searchbox-input)::placeholder {
+  visibility: hidden;
+}
+
+#lensPlaceholder:not([hidden]) {
+  align-content: center;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#lensPlaceholder span {
+  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/camera.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 18px 18px;
+  background-color: currentColor;
+  display: inline-block;
+  height: 16px;
+  margin-inline-end: 4px;
+  vertical-align: -3px;
+  width: 16px;
+}
+
+@media (forced-colors: active) {
+  #lensPlaceholder {
+    color: GrayText;
+  }
+
+  #lensPlaceholder span {
+    background-color: GrayText;
+    forced-color-adjust: none;
+  }
 }
 
 :host([is-fusebox-enabled]) {
@@ -298,6 +351,7 @@ cr-composebox-contextual-entrypoint-and-menu,
     cr-searchbox-input::part(searchbox-input),
 :host([is-fusebox-enabled][is-dragging-file])
     cr-searchbox-input::part(icon),
+:host([is-fusebox-enabled][is-dragging-file]) #lensPlaceholder,
 :host([is-fusebox-enabled][is-dragging-file])
     .searchbox-icon-button-container,
 :host([is-fusebox-enabled][is-dragging-file]) .searchbox-icon-button {

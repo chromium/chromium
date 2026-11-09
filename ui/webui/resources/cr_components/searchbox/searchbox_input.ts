@@ -57,6 +57,7 @@ const SearchboxInputElementBase = I18nMixinLit(CrLitElement);
 export interface SearchboxInputElement {
   $: {
     icon: SearchboxIconElement,
+    mirrorContainer: HTMLElement,
     selectionAnnouncement: HTMLElement,
     selectionListbox: HTMLElement,
   };

@@ -1165,4 +1165,35 @@ suite('SearchboxInputTest', () => {
         `input right ${inputRect.right} overlaps button left ${
             buttonRect.left}`);
   });
+
+  test('Hides placeholder-overlay slot when input is non-empty', async () => {
+    input = await createInput({placeholderText: 'Search'});
+    const overlay = document.createElement('div');
+    overlay.slot = 'placeholder-overlay';
+    overlay.textContent = 'Overlay';
+    input.appendChild(overlay);
+    await input.updateComplete;
+    await microtasksFinished();
+
+    const slot = input.shadowRoot.querySelector<HTMLSlotElement>(
+        'slot[name="placeholder-overlay"]');
+    assertTrue(!!slot);
+    assertNotEquals('none', window.getComputedStyle(slot).display);
+
+    // Even a single space makes :placeholder-shown false and hides the slot.
+    input.setInput({text: ' ', inline: ''});
+    await input.updateComplete;
+    assertEquals('none', window.getComputedStyle(slot).display);
+
+    // Match preview also sets input.value and hides the slot.
+    input.setInput(
+        {text: 'https://example.com', inline: '', isMatchPreview: true});
+    await input.updateComplete;
+    assertEquals('none', window.getComputedStyle(slot).display);
+
+    // Clearing the input shows the slot again.
+    input.setInput({text: '', inline: ''});
+    await input.updateComplete;
+    assertNotEquals('none', window.getComputedStyle(slot).display);
+  });
 });

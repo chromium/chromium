@@ -52,6 +52,7 @@ export interface OmniboxEverywhereOmniboxElement {
   $: {
     input: SearchboxInputElement,
     inputWrapper: HTMLElement,
+    lensPlaceholder: HTMLElement,
     matches: SearchboxDropdownElement,
     overflowMenuButton: HTMLButtonElement,
     profileIcon: OmniboxEverywhereProfileIconElement,
@@ -171,11 +172,15 @@ export class OmniboxEverywhereOmniboxElement extends
         attribute: 'is-active',
       },
       isLensHelpBubbleShowing: {type: Boolean},
+      showLensPlaceholder_: {type: Boolean},
     };
   }
 
   accessor isActive: boolean = true;
   accessor isLensHelpBubbleShowing: boolean = false;
+  protected accessor showLensPlaceholder_: boolean = false;
+  private readonly lensPlaceholderText_: string =
+      this.i18n('searchBoxHintLens', '');
   override accessor multiLineEnabled: boolean =
       loadTimeData.getBoolean('searchboxMultiline');
   // Keeps the input on a single line during inline autocomplete when enabled,
@@ -331,10 +336,15 @@ export class OmniboxEverywhereOmniboxElement extends
     } else if (this.dropdownIsVisible || this.hasUserInput_) {
       this.toggleAttribute('has-expanded', true);
     }
+    if (!this.canCyclePlaceholders_()) {
+      this.showLensPlaceholder_ = false;
+    }
   }
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
+    this.$.lensPlaceholder.innerHTML = this.i18nAdvanced(
+        'searchBoxHintLens', {substitutions: ['<span></span>']});
     const lensButton =
         this.shadowRoot?.querySelector<HTMLElement>('#lensSearchButton');
     if (lensButton) {
@@ -352,6 +362,15 @@ export class OmniboxEverywhereOmniboxElement extends
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
+    if (changedProperties.has('multiLineEnabled') ||
+        this.$.input?.isUpdatePending) {
+      this.$.input.updateComplete.then(() => {
+        if (this.isConnected) {
+          this.updatePlaceholderCycler_();
+        }
+      });
+      return;
+    }
     this.updatePlaceholderCycler_();
   }
 
@@ -371,6 +390,7 @@ export class OmniboxEverywhereOmniboxElement extends
   setInputText(text: string) {
     this.$.input.setInputText(text);
     this.hasUserInput_ = !!text.trim();
+    this.updatePlaceholderCycler_();
   }
 
   getDropTarget() {
@@ -519,21 +539,29 @@ export class OmniboxEverywhereOmniboxElement extends
   protected onSearchboxInputEmptyChanged_(e: CustomEvent<{value: boolean}>) {
     // `SearchboxMixin` clears `<cr-searchbox-input>` directly via
     // `getInputElement().setInput({text: '', inline: ''})` on `Escape` and
-    // `focusout` without firing `searchbox-input-text-updated`. Reset
-    // `hasUserInput_` whenever the input becomes empty so the omnibox does not
-    // stay stuck in the 2-line expanded `[has-user-input]` state.
-    if (e.detail.value) {
-      this.hasUserInput_ = false;
-    }
+    // `focusout` (and sets text on Mojo `setInputText`) without firing
+    // `searchbox-input-text-updated`. Synchronize `hasUserInput_` with the
+    // empty state (`!e.detail.value`) so the omnibox and placeholder cycler
+    // stay in sync.
+    this.hasUserInput_ = !e.detail.value;
+    this.updatePlaceholderCycler_();
+  }
+
+  private canCyclePlaceholders_(): boolean {
+    // Stop cycling when an autocomplete match is selected (`!this.selectedMatch`)
+    // so the placeholder overlay does not overlap previewed match text.
+    return !this.placeholderText && this.isFuseboxEnabled && this.isActive &&
+        !this.hasUserInput_ && !this.selectedMatch && !this.inKeywordMode &&
+        !this.inVoiceSearchMode;
   }
 
   private computeCyclingPlaceholderTexts_(): string[] {
-    if (this.placeholderText || !this.isFuseboxEnabled) {
+    if (!this.canCyclePlaceholders_()) {
       return [];
     }
     const texts: string[] = [this.i18n('searchBoxHintAskOrType')];
     if (this.showLensSearchButton_()) {
-      texts.push(this.i18n('searchBoxHintLens'));
+      texts.push(this.lensPlaceholderText_);
     }
     texts.push(this.i18n('searchBoxHintFileOrImage'));
     if (this.canAddFileContext_()) {
@@ -556,15 +584,20 @@ export class OmniboxEverywhereOmniboxElement extends
       return;
     }
 
-    const texts = this.computeCyclingPlaceholderTexts_();
-    const shouldCycle = texts.length > 1 && this.isActive &&
-        !this.hasUserInput_ && !this.inKeywordMode && !this.inVoiceSearchMode;
+    // Also check `!inputEl.value.length` so typing whitespace (e.g. a single
+    // space `' '`, where `hasUserInput_` remains false while native
+    // `:placeholder-shown` becomes false) immediately stops cycling and hides
+    // `#lensPlaceholder`.
+    const texts =
+        !inputEl.value.length ? this.computeCyclingPlaceholderTexts_() : [];
+    const shouldCycle = texts.length > 1;
 
     if (!shouldCycle) {
       if (this.isPlaceholderCycling_) {
         this.placeholderCycler_?.stop();
         this.isPlaceholderCycling_ = false;
       }
+      this.showLensPlaceholder_ = false;
       inputEl.placeholder = this.inKeywordMode ?
           (this.inputKeywordModel?.placeholder || '') :
           this.computePlaceholderText_();
@@ -577,7 +610,13 @@ export class OmniboxEverywhereOmniboxElement extends
       this.placeholderCycler_?.stop();
       this.placeholderCycler_ = new PlaceholderTextCycler(
           inputEl, texts, DEFAULT_PLACEHOLDER_CHANGE_INTERVAL_MS,
-          DEFAULT_PLACEHOLDER_FADE_DURATION_MS);
+          DEFAULT_PLACEHOLDER_FADE_DURATION_MS, {
+            animationTarget: this.$.input.$.mirrorContainer,
+            onPlaceholderChange: (placeholder: string) => {
+              this.showLensPlaceholder_ =
+                  placeholder === this.lensPlaceholderText_;
+            },
+          });
       this.currentCyclerTextsKey_ = textsKey;
       this.currentCyclerInputEl_ = inputEl;
       this.isPlaceholderCycling_ = false;
@@ -593,6 +632,7 @@ export class OmniboxEverywhereOmniboxElement extends
       e: CustomEvent<{value: string, isComposing: boolean}>) {
     this.hasUserInput_ = !!e.detail.value.trim();
     this.onSearchboxInputTextUpdated(e);
+    this.updatePlaceholderCycler_();
   }
 
   protected async onVoiceSearchButtonClick_() {

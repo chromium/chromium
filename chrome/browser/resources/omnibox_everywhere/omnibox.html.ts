@@ -37,6 +37,9 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
           @searchbox-input-files-pasted="${this.onSearchboxInputFilesPasted_}"
           @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
           @input-focus-changed="${this.onInputFocusChanged}">
+        <div id="lensPlaceholder" slot="placeholder-overlay" aria-hidden="true"
+            ?hidden="${!this.showLensPlaceholder_}">
+        </div>
         ${
       this.composeButtonEnabled ? html`
           <cr-searchbox-compose-button id="composeButton" slot="compose-button"
