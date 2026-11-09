@@ -25,10 +25,10 @@ class BASE_EXPORT Version {
   Version();
 
   Version(const Version& other);
-  Version(Version&& other);
+  Version(Version&& other) noexcept;
 
   Version& operator=(const Version& other) = default;
-  Version& operator=(Version&& other) = default;
+  Version& operator=(Version&& other) noexcept = default;
 
   // Initializes from a decimal dotted version number, like "0.1.1".
   // Each component is limited to a uint32_t. Call IsValid() to learn

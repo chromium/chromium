@@ -91,7 +91,7 @@ Version::Version() = default;
 
 Version::Version(const Version& other) = default;
 
-Version::Version(Version&& other) = default;
+Version::Version(Version&& other) noexcept = default;
 
 Version::~Version() = default;
 
