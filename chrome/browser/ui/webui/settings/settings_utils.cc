@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/metrics/critical_user_journeys/features.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -18,7 +19,24 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "components/user_manager/user_manager.h"
+#endif
+
 namespace settings_utils {
+
+bool IsGuest(const Profile* profile) {
+  CHECK(profile);
+#if BUILDFLAG(IS_CHROMEOS)
+  const user_manager::UserManager* user_manager =
+      user_manager::UserManager::Get();
+  CHECK(user_manager);
+  return user_manager->IsLoggedInAsGuest() ||
+         user_manager->IsLoggedInAsManagedGuestSession();
+#else
+  return profile->IsGuestSession();
+#endif
+}
 
 bool FixupAndValidateStartupPage(const std::string& url_string,
                                  GURL* fixed_url) {

@@ -4,10 +4,53 @@
 
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
 
+#include "build/build_config.h"
+#include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/user_manager.h"
+#endif
+
 namespace settings_utils {
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST(SettingsUtilsTest, IsGuest) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  EXPECT_FALSE(IsGuest(&profile));
+
+  auto* user_manager = static_cast<ash::FakeChromeUserManager*>(
+      user_manager::UserManager::Get());
+  user_manager->LoginUser(user_manager->AddGuestUser()->GetAccountId());
+  EXPECT_TRUE(IsGuest(&profile));
+}
+
+TEST(SettingsUtilsTest, IsGuestForManagedGuestSession) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  auto* user_manager = static_cast<ash::FakeChromeUserManager*>(
+      user_manager::UserManager::Get());
+
+  const AccountId account_id = AccountId::FromUserEmail("mgs@example.com");
+  user_manager->AddPublicAccountUser(account_id);
+  user_manager->LoginUser(account_id);
+  EXPECT_TRUE(IsGuest(&profile));
+}
+#else
+TEST(SettingsUtilsTest, IsGuest) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  EXPECT_FALSE(IsGuest(&profile));
+
+  profile.SetGuestSession(true);
+  EXPECT_TRUE(IsGuest(&profile));
+}
+#endif
 
 TEST(SettingsUtilsTest, FixupAndValidateStartupPage) {
   EXPECT_FALSE(FixupAndValidateStartupPage(std::string(), nullptr));
