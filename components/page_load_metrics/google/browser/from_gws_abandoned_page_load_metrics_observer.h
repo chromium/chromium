@@ -75,7 +75,7 @@ class FromGWSAbandonedPageLoadMetricsObserver
   base::TimeTicks second_redirect_request_start_time_;
   base::TimeTicks second_redirect_response_start_time_;
 
-  std::optional<std::set<NavigationMilestone>> last_logged_ukm_milestones_;
+  std::optional<NavigationMilestoneSet> last_logged_ukm_milestones_;
 
   // The value of the URL category (which is configured by
   // `kBeaconLeakageLoggingCategoryPrefix` and defaults to "category") parameter

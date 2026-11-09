@@ -168,7 +168,8 @@ void FromGWSAbandonedPageLoadMetricsObserver::LogTimingInformationMetrics() {
   ukm::builders::Navigation_FromGoogleSearch_TimingInformation builder(
       source_id);
 
-  auto logged_milestones = LogUKMHistogramsForMilestoneMetrics(builder, now);
+  NavigationMilestoneSet logged_milestones =
+      LogUKMHistogramsForMilestoneMetrics(builder, now);
 
   if (!second_redirect_response_start_time_.is_null() &&
       !second_redirect_request_start_time_.is_null()) {
@@ -176,7 +177,7 @@ void FromGWSAbandonedPageLoadMetricsObserver::LogTimingInformationMetrics() {
         .SetSecondRedirectedRequestStartTime(
             (second_redirect_request_start_time_ - navigation_start_time())
                 .InMilliseconds());
-    logged_milestones.insert(NavigationMilestone::kSecondRedirectResponseStart);
+    logged_milestones.Put(NavigationMilestone::kSecondRedirectResponseStart);
   } else {
     builder.SetSecondRedirectResponseReceived(false);
   }
