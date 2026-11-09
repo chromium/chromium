@@ -3271,9 +3271,7 @@ BackingStore::Cursor::CloneIterator(const BackingStore::Cursor* other) {
 
   if (other->iterator_->IsValid()) {
     s = it->Seek(std::string(other->iterator_->Key()));
-    // TODO(crbug.com/363397): CHECK-exclusion Handle this error. Also see
-    // crbug.com/577076521 where it was detected as failing again.
-    DCHECK(it->IsValid());
+    CHECK(it->IsValid());
   }
 
   return it;
