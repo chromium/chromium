@@ -1710,6 +1710,8 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
                 'distance',
                 'next',
                 'prev',
+                # From https://en.cppreference.com/w/cpp/utility/ranges/swap
+                'swap',
                 # Require a word boundary at the end of negative lookahead
                 # assertion, e.g. to ensure that even though `view` is allowed (and
                 # should not match this regex), `views` is still treated as

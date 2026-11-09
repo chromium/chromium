@@ -12,8 +12,10 @@
 #include <iterator>
 #include <ranges>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_tree.h"
 
 namespace base {
@@ -280,6 +282,42 @@ constexpr flat_set<Key, Compare, Container> MakeFlatSet(
   std::ranges::transform(unprojected_elements, std::back_inserter(elements),
                          proj);
   return flat_set<Key, Compare, Container>(std::move(elements), comp);
+}
+
+// Replaces the element at `pos` with `value` in O(1). This is for updating
+// the parts of an element that don't affect its position, e.g. fields the
+// comparator ignores, without the O(size) cost of erase() and insert().
+// `value` must sort strictly after the element before `pos` and strictly
+// before the element after it, which is CHECKed.
+//
+// This only uses `extract()` and `replace()`, which `std::flat_set` has too,
+// so the same implementation works if Chromium switches to
+// `std::flat_set`. While the elements are extracted, only `value`'s move
+// operations and the comparator run. The old element is destroyed after the
+// elements are back in `set`.
+//
+// Example:
+//   auto it = set.find(key);
+//   Entry updated = *it;
+//   updated.payload = 42;
+//   base::ReplaceElement(set, it, std::move(updated));
+template <int&... ExplicitArgumentBarrier,
+          class Key,
+          class Compare,
+          class Container>
+void ReplaceElement(
+    flat_set<Key, Compare, Container>& set,
+    typename flat_set<Key, Compare, Container>::const_iterator pos,
+    std::type_identity_t<Key> value) {
+  CHECK(pos != set.cend());
+  const auto comp = set.value_comp();
+  const auto index = pos - set.cbegin();
+  auto elements = std::move(set).extract();
+  const auto it = elements.begin() + index;
+  std::ranges::swap(*it, value);
+  CHECK(it == elements.begin() || comp(*std::prev(it), *it));
+  CHECK(std::next(it) == elements.end() || comp(*it, *std::next(it)));
+  set.replace(std::move(elements));
 }
 
 }  // namespace base

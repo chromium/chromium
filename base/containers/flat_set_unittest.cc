@@ -7,14 +7,17 @@
 #include <concepts>
 #include <deque>
 #include <functional>
+#include <iterator>
 #include <list>
 #include <ranges>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/gtest_util.h"
 #include "base/test/move_only_int.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,6 +28,7 @@
 // of the tests are in flat_tree_unittest.cc.
 
 using ::testing::ElementsAre;
+using ::testing::Pair;
 
 namespace base {
 
@@ -435,6 +439,43 @@ TEST(FlatSet, AbslHashValue) {
       Set({}),
       Set({"z"}),
   }));
+}
+
+TEST(FlatSet, ReplaceElement) {
+  struct CompareFirst {
+    bool operator()(const std::pair<int, std::string>& lhs,
+                    const std::pair<int, std::string>& rhs) const {
+      return lhs.first < rhs.first;
+    }
+  };
+  flat_set<std::pair<int, std::string>, CompareFirst> set = {
+      {1, "a"}, {3, "b"}, {5, "c"}};
+
+  // Same key, different payload.
+  ReplaceElement(set, std::next(set.begin()), {3, "x"});
+  EXPECT_THAT(set, ElementsAre(Pair(1, "a"), Pair(3, "x"), Pair(5, "c")));
+
+  // The key may change as long as the element stays between its neighbors.
+  ReplaceElement(set, set.begin(), {0, "y"});
+  ReplaceElement(set, std::next(set.begin()), {4, "x"});
+  ReplaceElement(set, std::prev(set.end()), {6, "z"});
+  EXPECT_THAT(set, ElementsAre(Pair(0, "y"), Pair(4, "x"), Pair(6, "z")));
+}
+
+TEST(FlatSet, ReplaceElementMoveOnly) {
+  flat_set<MoveOnlyInt> set;
+  set.insert(MoveOnlyInt(1));
+  set.insert(MoveOnlyInt(3));
+  ReplaceElement(set, set.begin(), MoveOnlyInt(2));
+  EXPECT_EQ(set.begin()->data(), 2);
+}
+
+TEST(FlatSet, ReplaceElementOutOfOrderDeath) {
+  flat_set<int> set = {1, 3, 5};
+  EXPECT_CHECK_DEATH(ReplaceElement(set, std::next(set.begin()), 1));
+  EXPECT_CHECK_DEATH(ReplaceElement(set, std::next(set.begin()), 5));
+  EXPECT_CHECK_DEATH(ReplaceElement(set, set.begin(), 4));
+  EXPECT_CHECK_DEATH(ReplaceElement(set, set.end(), 6));
 }
 
 }  // namespace base

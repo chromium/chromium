@@ -3478,22 +3478,34 @@ class BannedTypeCheckTest(unittest.TestCase):
         input_api = MockInputApi()
         input_api.files = [
             MockFile('some/cpp/problematic/file.cc', ['using namespace std;']),
-            MockFile('third_party/blink/problematic/file.cc',
-                     ['GetInterfaceProvider()']),
+            MockFile(
+                'third_party/blink/problematic/file.cc',
+                ['GetInterfaceProvider()'],
+            ),
             MockFile('some/cpp/ok/file.cc', ['using std::string;']),
-            MockFile('some/cpp/nocheck/file.cc',
-                     ['using namespace std;  // nocheck']),
-            MockFile('some/cpp/comment/file.cc',
-                     ['  // A comment about `using namespace std;`']),
-            MockFile('some/cpp/problematic/file2.cc', [
-                'params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET'
-            ]),
-            MockFile('some/cpp/problematic/file3.cc', [
-                'params.ownership = Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET'
-            ]),
-            MockFile('some/cpp/problematic/file4.cc', [
-                'Browser* browser = chrome::FindBrowserWithTab(web_contents)'
-            ]),
+            MockFile(
+                'some/cpp/nocheck/file.cc', ['using namespace std;  // nocheck']
+            ),
+            MockFile(
+                'some/cpp/comment/file.cc',
+                ['  // A comment about `using namespace std;`'],
+            ),
+            MockFile(
+                'some/cpp/problematic/file2.cc',
+                [
+                    'params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET'
+                ],
+            ),
+            MockFile(
+                'some/cpp/problematic/file3.cc',
+                [
+                    'params.ownership = Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET'
+                ],
+            ),
+            MockFile(
+                'some/cpp/problematic/file4.cc',
+                ['Browser* browser = chrome::FindBrowserWithTab(web_contents)'],
+            ),
             MockFile(
                 'allowed_ranges_usage.cc',
                 [
@@ -3508,14 +3520,17 @@ class BannedTypeCheckTest(unittest.TestCase):
                     'std::ranges::views::reverse(vec);',
                     'std::ranges::views::zip(vec1, vec2);',
                     'std::ranges::views::as_rvalue(vec);',
-                ]),
+                    'std::ranges::swap(a, b);',
+                ],
+            ),
             MockFile(
                 'allowed_views_usage.cc',
                 [
                     'std::views::reverse(vec);',
                     'std::views::zip(vec1, vec2);',
                     'std::views::as_rvalue(vec);',
-                ]),
+                ],
+            ),
             MockFile(
                 'banned_ranges_usage.cc',
                 [
@@ -3525,7 +3540,8 @@ class BannedTypeCheckTest(unittest.TestCase):
                     'std::ranges::views::take(first, count);',
                     'std::ranges::views::transform(vec, fn);',
                     'std::ranges::transform_view tv;',
-                ]),
+                ],
+            ),
             MockFile(
                 'views_usage.cc',
                 [
@@ -3533,27 +3549,41 @@ class BannedTypeCheckTest(unittest.TestCase):
                     'std::views::filter(vec, fn);',
                     'namespace views = std::views;',
                     'using std::views::all;',
-                ]),
-            MockFile('content/desktop_android.cc', [
-                '// some first line',
-                '#if BUILDFLAG(IS_DESKTOP_ANDROID)',
-                '// some third line',
-            ]),
-            MockFile('content/desktop_android_test.cc', [
-                '// some first line',
-                '#if BUILDFLAG(IS_DESKTOP_ANDROID)',
-                '// some third line',
-            ]),
+                ],
+            ),
+            MockFile(
+                'content/desktop_android.cc',
+                [
+                    '// some first line',
+                    '#if BUILDFLAG(IS_DESKTOP_ANDROID)',
+                    '// some third line',
+                ],
+            ),
+            MockFile(
+                'content/desktop_android_test.cc',
+                [
+                    '// some first line',
+                    '#if BUILDFLAG(IS_DESKTOP_ANDROID)',
+                    '// some third line',
+                ],
+            ),
             # New test cases for nlohmann::json::parse
-            MockFile('some/cpp/problematic/json_parse.cc',
-                     ['nlohmann::json::parse(json_string);']),
-            MockFile('some/cpp/problematic/json_parse_no_namespace.cc',
-                     ['json::parse(json_string);']),
-            MockFile('third_party/json/ok/json_parse.cc',
-                     ['nlohmann::json::parse(json_string);']),
+            MockFile(
+                'some/cpp/problematic/json_parse.cc',
+                ['nlohmann::json::parse(json_string);'],
+            ),
+            MockFile(
+                'some/cpp/problematic/json_parse_no_namespace.cc',
+                ['json::parse(json_string);'],
+            ),
+            MockFile(
+                'third_party/json/ok/json_parse.cc',
+                ['nlohmann::json::parse(json_string);'],
+            ),
             MockFile('v8/ok/v8_parse.cc', ['JSON::Parse(json_string);']),
-            MockFile('v8/ok/v8_json_parse.cc',
-                     ['v8::JSON::Parse(json_string);']),
+            MockFile(
+                'v8/ok/v8_json_parse.cc', ['v8::JSON::Parse(json_string);']
+            ),
         ]
 
         results = PRESUBMIT.CheckNoBannedPatterns(input_api, MockOutputApi())
