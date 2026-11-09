@@ -36,8 +36,10 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.LongPressMenuEvent;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.ui.base.TestActivity;
@@ -50,6 +52,7 @@ import org.chromium.ui.widget.UiWidgetFactory;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "w360dp-h800dp-mdpi")
 public class BottomBarLongPressMenuHandlerUnitTest {
+    private static final String EVENT_HISTOGRAM = "Android.BottomBar.LongPressMenu.Event";
     private static final int WINDOW_WIDTH = 360;
     private static final int WINDOW_HEIGHT = 800;
     private static final int BAR_HEIGHT = 56;
@@ -105,6 +108,13 @@ public class BottomBarLongPressMenuHandlerUnitTest {
 
     @Test
     public void testShowMenu_DisplaysCustomizeAppearanceAndNavigatesOnClick() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(EVENT_HISTOGRAM, LongPressMenuEvent.SHOWN)
+                        .expectIntRecord(
+                                EVENT_HISTOGRAM, LongPressMenuEvent.CUSTOMIZE_APPEARANCE_CLICKED)
+                        .build();
+
         assertTrue(mHandler.showMenu());
         assertTrue(mHandler.isShowing());
 
@@ -128,6 +138,7 @@ public class BottomBarLongPressMenuHandlerUnitTest {
         assertFalse(mHandler.isShowing());
         assertNull(mHandler.getPopupWindowForTesting());
         verify(mSettingsNavigation).startSettings(mActivity, SettingsFragment.APPEARANCE);
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -155,10 +166,13 @@ public class BottomBarLongPressMenuHandlerUnitTest {
     @Test
     public void testShowMenu_PopupFailsToShow_ReturnsFalseAndClearsState() {
         AnchoredPopupWindow.setShowHookForTesting(() -> {});
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder().expectNoRecords(EVENT_HISTOGRAM).build();
 
         assertFalse(mHandler.showMenu());
         assertFalse(mHandler.isShowing());
         assertNull(mHandler.getPopupWindowForTesting());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -186,6 +200,8 @@ public class BottomBarLongPressMenuHandlerUnitTest {
 
     @Test
     public void testExternalDismiss_ClearsState() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(EVENT_HISTOGRAM, LongPressMenuEvent.SHOWN);
         assertTrue(mHandler.showMenu());
         AnchoredPopupWindow popupWindow = mHandler.getPopupWindowForTesting();
         assertNotNull(popupWindow);
@@ -196,6 +212,7 @@ public class BottomBarLongPressMenuHandlerUnitTest {
         assertFalse(popupWindow.isShowing());
         assertFalse(mHandler.isShowing());
         assertNull(mHandler.getPopupWindowForTesting());
+        histogramWatcher.assertExpected();
     }
 
     private void layoutDecorView() {

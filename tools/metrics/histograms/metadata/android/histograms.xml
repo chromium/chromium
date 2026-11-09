@@ -1317,6 +1317,20 @@ chromium-metrics-reviews@google.com.
 
 </histogram>
 
+<histogram name="Android.BottomBar.LongPressMenu.Event"
+    enum="AndroidBottomBarLongPressMenuEvent" expires_after="2027-05-26">
+  <owner>polardz@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
+  <summary>
+    Recorded when the menu opened by pressing and holding empty space on the
+    Android Bottom Bar is shown, and when its Customize appearance item is
+    clicked, which opens the Appearance settings. A Shown without a click means
+    the menu closed without selecting Customize appearance (e.g. user dismissal,
+    screen resize, or bottom bar hide/teardown).
+  </summary>
+</histogram>
+
 <histogram name="Android.BottomControlsStacker.NumberOfVisibleLayers"
     units="layers" expires_after="2027-10-01">
   <owner>pnoland@chromium.org</owner>

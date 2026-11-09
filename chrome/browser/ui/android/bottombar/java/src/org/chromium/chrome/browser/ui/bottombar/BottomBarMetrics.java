@@ -155,6 +155,18 @@ public class BottomBarMetrics {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarGlicIneligibilityReason)
 
+    // LINT.IfChange(AndroidBottomBarLongPressMenuEvent)
+    /** Events of the menu shown when long-pressing empty space on the bottom bar. */
+    @IntDef({LongPressMenuEvent.SHOWN, LongPressMenuEvent.CUSTOMIZE_APPEARANCE_CLICKED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface LongPressMenuEvent {
+        int SHOWN = 0;
+        int CUSTOMIZE_APPEARANCE_CLICKED = 1;
+        int COUNT = 2;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarLongPressMenuEvent)
+
     /**
      * Records whether the bottom bar is enabled on an eligible device when bottom controls are
      * initialized.
@@ -280,5 +292,15 @@ public class BottomBarMetrics {
                 "Android.BottomBar.Glic.IneligibilityReason",
                 reason,
                 GlicIneligibilityReason.COUNT);
+    }
+
+    /**
+     * Records an event of the bottom bar long-press menu.
+     *
+     * @param event The event.
+     */
+    public static void recordLongPressMenuEvent(@LongPressMenuEvent int event) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.BottomBar.LongPressMenu.Event", event, LongPressMenuEvent.COUNT);
     }
 }

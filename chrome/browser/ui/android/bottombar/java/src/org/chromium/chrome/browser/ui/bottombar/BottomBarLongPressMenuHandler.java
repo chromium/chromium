@@ -15,6 +15,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.LongPressMenuEvent;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
@@ -64,6 +65,8 @@ class BottomBarLongPressMenuHandler implements Destroyable {
                         buildMenuItems(),
                         (_, _) -> {
                             dismiss();
+                            BottomBarMetrics.recordLongPressMenuEvent(
+                                    LongPressMenuEvent.CUSTOMIZE_APPEARANCE_CLICKED);
                             SettingsNavigationFactory.createSettingsNavigation()
                                     .startSettings(mContext, SettingsFragment.APPEARANCE);
                         });
@@ -106,6 +109,7 @@ class BottomBarLongPressMenuHandler implements Destroyable {
             mPopupWindow = null;
             return false;
         }
+        BottomBarMetrics.recordLongPressMenuEvent(LongPressMenuEvent.SHOWN);
         return true;
     }
 
