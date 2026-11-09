@@ -186,8 +186,12 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
         unpinned_container && available_unpinned_width < min_unpinned_width;
     const bool is_scroll_buttons_pinned =
         tab_strip_view->IsTabScrollButtonsPinned();
-    if (has_unpinned && will_overflow_without_scroll_buttons &&
-        is_scroll_buttons_pinned) {
+    // Do not show scroll buttons when the tab strip is not drawn (e.g., hidden
+    // in app/popup windows or fullscreen). Updating child visibility to true
+    // while an ancestor is hidden can leave descendants focusable despite
+    // invisible ancestors.
+    if (tab_strip_view->IsDrawn() && has_unpinned &&
+        will_overflow_without_scroll_buttons && is_scroll_buttons_pinned) {
       available_unpinned_width = std::max(
           available_unpinned_width - scroll_button_container_preferred_width,
           0);

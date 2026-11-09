@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -49,8 +50,9 @@ class BrowserRootViewBrowserTest : public InProcessBrowserTest {
   }
 
   void PerformMouseWheelOnTabStrip(const gfx::Vector2d& offset) {
-    TabStrip* tabstrip = BrowserView::GetBrowserViewForBrowser(browser())
-                             ->horizontal_tab_strip_for_testing();
+    views::View* tabstrip = BrowserView::GetBrowserViewForBrowser(browser())
+                                ->tab_strip_view()
+                                ->GetTabStripView();
     const gfx::Point tabstrip_center = tabstrip->GetLocalBounds().CenterPoint();
     const gfx::Point location = views::View::ConvertPointToTarget(
         tabstrip, browser_root_view(), tabstrip_center);

@@ -390,11 +390,16 @@ std::optional<BrowserRootView::DropIndex> BaseTabStripRegionView::GetDropIndex(
 
 BrowserRootView::DropTarget* BaseTabStripRegionView::GetDropTarget(
     gfx::Point loc_in_local_coords) {
-  if (tab_strip_view_ && IsTabStripEditable() &&
-      GetLocalBounds().Contains(loc_in_local_coords)) {
-    return this;
+  if (!IsDrawn() || !tab_strip_view_ || !IsTabStripEditable()) {
+    return nullptr;
   }
-  return nullptr;
+
+  // Allow drops over the tab strip or vertically above it (e.g. titlebar).
+  if (orientation_ == TabStripOrientation::kHorizontal) {
+    return loc_in_local_coords.y() < height() ? this : nullptr;
+  }
+
+  return GetLocalBounds().Contains(loc_in_local_coords) ? this : nullptr;
 }
 
 views::View* BaseTabStripRegionView::GetViewForDrop() {
