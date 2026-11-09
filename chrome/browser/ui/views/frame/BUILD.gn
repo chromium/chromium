@@ -2713,6 +2713,7 @@ if (is_linux) {
     ]
     deps = [
       ":browser_frame_view_layout_linux_native",
+      ":browser_view_header",
       "//ui/gfx",
       "//ui/views",
     ]

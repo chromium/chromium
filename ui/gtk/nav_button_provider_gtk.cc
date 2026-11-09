@@ -4,7 +4,9 @@
 
 #include "ui/gtk/nav_button_provider_gtk.h"
 
+#include <algorithm>
 #include <cmath>
+#include <map>
 #include <string_view>
 #include <vector>
 
@@ -506,16 +508,19 @@ void NavButtonProviderGtk::RedrawImages(int top_area_height,
   for (auto type : display_types) {
     CalculateUnscaledButtonSize(frame_type_, type, maximized,
                                 &button_sizes[type], &button_margins[type]);
-    int button_unconstrained_height = button_sizes[type].height() +
-                                      button_margins[type].top() +
-                                      button_margins[type].bottom();
+    // Negative CSS margins must not reduce the vertical space required to fit
+    // the rendered button within `[0, top_area_height]`.
+    int effective_top =
+        std::max(0, header_padding.top() + button_margins[type].top());
+    int effective_bottom =
+        std::max(0, header_padding.bottom() + button_margins[type].bottom());
+    int needed_height =
+        effective_top + button_sizes[type].height() + effective_bottom;
 
-    int needed_height = header_padding.top() + button_unconstrained_height +
-                        header_padding.bottom();
-
-    if (needed_height > top_area_height) {
+    if (needed_height > top_area_height && needed_height > 0) {
       scale =
-          std::min(scale, static_cast<double>(top_area_height) / needed_height);
+          std::min(scale, static_cast<double>(std::max(0, top_area_height)) /
+                              needed_height);
     }
   }
 
@@ -527,24 +532,30 @@ void NavButtonProviderGtk::RedrawImages(int top_area_height,
 
   inter_button_spacing_ = std::round(scale * kHeaderSpacing);
 
+  const int clamped_top_area_height = std::max(0, top_area_height);
   for (auto type : display_types) {
-    double button_height =
-        scale * (button_sizes[type].height() + button_margins[type].top() +
-                 button_margins[type].bottom());
-    double available_height =
-        top_area_height -
-        scale * (header_padding.top() + header_padding.bottom());
-    double scaled_button_offset = (available_height - button_height) / 2;
+    int effective_top =
+        std::max(0, header_padding.top() + button_margins[type].top());
+    int effective_bottom =
+        std::max(0, header_padding.bottom() + button_margins[type].bottom());
+    double button_occupied_height =
+        scale *
+        (effective_top + button_sizes[type].height() + effective_bottom);
+    double scaled_button_offset =
+        (clamped_top_area_height - button_occupied_height) / 2.0;
 
     gfx::Size size = button_sizes[type];
-    size = gfx::Size(std::round(scale * size.width()),
-                     std::round(scale * size.height()));
+    size = gfx::Size(
+        std::max(0, static_cast<int>(std::round(scale * size.width()))),
+        std::clamp(static_cast<int>(std::round(scale * size.height())), 0,
+                   clamped_top_area_height));
     gfx::Insets margin = button_margins[type];
-    margin = gfx::Insets::TLBR(
-        std::round(scale * (header_padding.top() + margin.top()) +
-                   scaled_button_offset),
-        std::round(scale * margin.left()), 0,
-        std::round(scale * margin.right()));
+    int top_margin =
+        std::clamp(static_cast<int>(std::round(scale * effective_top +
+                                               scaled_button_offset)),
+                   0, clamped_top_area_height - size.height());
+    margin = gfx::Insets::TLBR(top_margin, std::round(scale * margin.left()), 0,
+                               std::round(scale * margin.right()));
 
     button_margins_[type] = margin;
 

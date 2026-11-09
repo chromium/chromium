@@ -32,9 +32,22 @@
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_LINUX)
+#include <algorithm>
+#include <cmath>
+
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_factory.h"
 #include "ui/linux/linux_ui_getter.h"
+#include "ui/linux/nav_button_provider.h"
+#include "ui/views/test/views_test_utils.h"
 
 class FakeLinuxUiGetter : public ui::LinuxUiGetter {
  public:
@@ -432,3 +445,258 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
   EXPECT_EQ(opaque_browser_frame_view_->NonClientHitTest(kPoint), HTCLOSE);
 }
 #endif
+
+#if BUILDFLAG(IS_LINUX)
+namespace {
+
+struct TestNavButtonConfig {
+  gfx::Size button_size{24, 48};
+  gfx::Insets button_margin = gfx::Insets::TLBR(5, 2, 0, 2);
+  int redraw_count = 0;
+};
+
+class ConfigurableNavButtonProvider : public ui::NavButtonProvider {
+ public:
+  explicit ConfigurableNavButtonProvider(
+      scoped_refptr<base::RefCountedData<TestNavButtonConfig>> config)
+      : config_(std::move(config)) {}
+  ~ConfigurableNavButtonProvider() override = default;
+
+  void RedrawImages(int top_area_height, bool maximized, bool active) override {
+    ++config_->data.redraw_count;
+    const int clamped_top_area_height = std::max(0, top_area_height);
+    const int effective_top = std::max(0, config_->data.button_margin.top());
+    const int effective_bottom =
+        std::max(0, config_->data.button_margin.bottom());
+    const int needed_height =
+        effective_top + config_->data.button_size.height() + effective_bottom;
+    double scale = 1.0;
+    if (needed_height > clamped_top_area_height && needed_height > 0) {
+      scale = static_cast<double>(clamped_top_area_height) / needed_height;
+    }
+    const gfx::Size scaled_size(
+        std::max(1, static_cast<int>(
+                        std::round(scale * config_->data.button_size.width()))),
+        std::clamp(static_cast<int>(
+                       std::round(scale * config_->data.button_size.height())),
+                   0, clamped_top_area_height));
+    const double occupied_height = scale * needed_height;
+    const double offset = (clamped_top_area_height - occupied_height) / 2.0;
+    const int top_margin =
+        std::clamp(static_cast<int>(std::round(scale * effective_top + offset)),
+                   0, clamped_top_area_height - scaled_size.height());
+
+    SkBitmap bitmap;
+    if (!scaled_size.IsEmpty()) {
+      bitmap.allocN32Pixels(scaled_size.width(), scaled_size.height());
+      bitmap.eraseColor(SK_ColorRED);
+    }
+    image_ = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+    margin_ = gfx::Insets::TLBR(
+        top_margin,
+        static_cast<int>(
+            std::round(scale * config_->data.button_margin.left())),
+        0,
+        static_cast<int>(
+            std::round(scale * config_->data.button_margin.right())));
+  }
+
+  gfx::ImageSkia GetImage(FrameButtonDisplayType type,
+                          ButtonState state) const override {
+    return image_;
+  }
+
+  gfx::Insets GetNavButtonMargin(FrameButtonDisplayType type) const override {
+    return margin_;
+  }
+
+  gfx::Insets GetTopAreaSpacing() const override { return gfx::Insets(); }
+
+  int GetNavButtonHeight(bool maximized) const override {
+    return config_->data.button_size.height() +
+           config_->data.button_margin.height();
+  }
+
+  int GetInterNavButtonSpacing() const override { return 2; }
+
+ private:
+  scoped_refptr<base::RefCountedData<TestNavButtonConfig>> config_;
+  gfx::ImageSkia image_;
+  gfx::Insets margin_;
+};
+
+class TestLinuxUiTheme : public ui::LinuxUiTheme {
+ public:
+  TestLinuxUiTheme(
+      ui::LinuxUiTheme* delegate,
+      scoped_refptr<base::RefCountedData<TestNavButtonConfig>> config)
+      : delegate_(delegate), config_(std::move(config)) {}
+  ~TestLinuxUiTheme() override = default;
+
+  ui::NativeTheme* GetNativeTheme() const override {
+    return delegate_->GetNativeTheme();
+  }
+  bool GetColor(int id, SkColor* color, bool use_custom_frame) const override {
+    return delegate_->GetColor(id, color, use_custom_frame);
+  }
+  bool GetDisplayProperty(int id, int* result) const override {
+    return delegate_->GetDisplayProperty(id, result);
+  }
+  void GetFocusRingColor(SkColor* color) const override {
+    delegate_->GetFocusRingColor(color);
+  }
+  void GetActiveSelectionBgColor(SkColor* color) const override {
+    delegate_->GetActiveSelectionBgColor(color);
+  }
+  void GetActiveSelectionFgColor(SkColor* color) const override {
+    delegate_->GetActiveSelectionFgColor(color);
+  }
+  void GetInactiveSelectionBgColor(SkColor* color) const override {
+    delegate_->GetInactiveSelectionBgColor(color);
+  }
+  void GetInactiveSelectionFgColor(SkColor* color) const override {
+    delegate_->GetInactiveSelectionFgColor(color);
+  }
+  bool PreferDarkTheme() const override { return delegate_->PreferDarkTheme(); }
+  void SetDarkTheme(bool dark) override { delegate_->SetDarkTheme(dark); }
+  void SetColorScheme(std::optional<bool> prefer_dark) override {
+    delegate_->SetColorScheme(prefer_dark);
+  }
+  void SetAccentColor(std::optional<SkColor> accent_color) override {
+    delegate_->SetAccentColor(accent_color);
+  }
+  std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider(
+      ui::FrameType type) override {
+    return std::make_unique<ConfigurableNavButtonProvider>(config_);
+  }
+  ui::WindowFrameProvider* GetWindowFrameProvider(ui::FrameType type,
+                                                  bool solid_frame,
+                                                  bool tiled,
+                                                  bool maximized) override {
+    return delegate_->GetWindowFrameProvider(type, solid_frame, tiled,
+                                             maximized);
+  }
+
+ private:
+  raw_ptr<ui::LinuxUiTheme> delegate_;
+  scoped_refptr<base::RefCountedData<TestNavButtonConfig>> config_;
+};
+
+class CustomThemeLinuxUiGetter : public ui::LinuxUiGetter {
+ public:
+  explicit CustomThemeLinuxUiGetter(ui::LinuxUiTheme* theme) : theme_(theme) {}
+  ~CustomThemeLinuxUiGetter() override = default;
+
+  ui::LinuxUiTheme* GetForWindow(aura::Window* window) override {
+    return theme_;
+  }
+  ui::LinuxUiTheme* GetForProfile(Profile* profile) override { return theme_; }
+
+ private:
+  raw_ptr<ui::LinuxUiTheme> theme_;
+};
+
+using LinuxNativeBrowserFrameViewTest = InProcessBrowserTest;
+
+// Regression test for crbug.com/483769296: native Linux caption buttons sized
+// via `NavButtonProvider::RedrawImages()` must fit within the frame's top area
+// (without stretching `TabStripRegionView` past `TabStrip` or overlapping the
+// content area of popup windows), and `OnThemeChanged()` must invalidate cached
+// button images and update button bounds and tabstrip layout on the next layout
+// pass.
+IN_PROC_BROWSER_TEST_F(LinuxNativeBrowserFrameViewTest,
+                       CaptionButtonsFitTopAreaAndUpdateOnThemeChange) {
+  ui::LinuxUiTheme* default_theme = ui::GetDefaultLinuxUiTheme();
+  if (!default_theme) {
+    GTEST_SKIP() << "Default LinuxUiTheme unavailable";
+  }
+
+  auto config =
+      base::MakeRefCounted<base::RefCountedData<TestNavButtonConfig>>();
+  // Oversized 53px unscaled button (`5 + 48 > 40`): `RedrawImages()` scales it
+  // into the available top area height so `TabStripRegionView` stays at the
+  // preferred `TabStrip` height with no gap above `ToolbarView`.
+  config->data.button_size = gfx::Size(24, 48);
+  config->data.button_margin = gfx::Insets::TLBR(5, 2, 0, 2);
+
+  TestLinuxUiTheme test_theme(default_theme, config);
+  CustomThemeLinuxUiGetter getter(&test_theme);
+  ThemeServiceFactory::GetForProfile(browser()->GetProfile())->UseSystemTheme();
+
+  BrowserWindowInterface* system_browser =
+      CreateBrowser(browser()->GetProfile());
+  BrowserView* view = BrowserView::GetBrowserViewForBrowser(system_browser);
+  BrowserFrameView* frame_view = view->browser_widget()->GetFrameView();
+  views::test::RunScheduledLayout(view->GetWidget()->GetRootView());
+
+  ASSERT_GT(config->data.redraw_count, 0);
+  const int expected_tabstrip_height =
+      view->horizontal_tab_strip_for_testing()->GetPreferredSize().height();
+  const BrowserLayoutParams initial_params =
+      frame_view->GetBrowserLayoutParams();
+  const float initial_exclusion_height =
+      std::max(initial_params.leading_exclusion.content.height(),
+               initial_params.trailing_exclusion.content.height());
+  const float initial_exclusion_width =
+      initial_params.leading_exclusion.content.width() +
+      initial_params.trailing_exclusion.content.width();
+  EXPECT_LE(initial_exclusion_height, expected_tabstrip_height);
+  EXPECT_EQ(view->tab_strip_view()->height(), expected_tabstrip_height);
+  const gfx::Rect toolbar_bounds_in_browser = views::View::ConvertRectToTarget(
+      view->toolbar()->parent(), view, view->toolbar()->bounds());
+  EXPECT_EQ(toolbar_bounds_in_browser.y(),
+            view->tab_strip_view()->bounds().bottom() -
+                GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap));
+
+  // In a popup window, caption buttons live in the non-client titlebar above
+  // `visual_client_area` and must not overlap the content area vertically.
+  BrowserWindowInterface* popup_browser =
+      CreateBrowserForPopup(browser()->GetProfile());
+  BrowserView* popup_view =
+      BrowserView::GetBrowserViewForBrowser(popup_browser);
+  views::test::RunScheduledLayout(popup_view->GetWidget()->GetRootView());
+  const BrowserLayoutParams popup_params =
+      popup_view->browser_widget()->GetFrameView()->GetBrowserLayoutParams();
+  EXPECT_EQ(popup_params.leading_exclusion.content.height(), 0.0f);
+  EXPECT_EQ(popup_params.trailing_exclusion.content.height(), 0.0f);
+  CloseBrowserSynchronously(popup_browser);
+
+  // Simulate a runtime GTK theme change that alters button dimensions without
+  // changing `{top_area_height, maximized, active}`.
+  const int redraws_before_theme_change = config->data.redraw_count;
+  const int tabstrip_width_before = view->tab_strip_view()->width();
+  config->data.button_size = gfx::Size(36, 18);
+  config->data.button_margin = gfx::Insets::TLBR(4, 6, 0, 6);
+
+  view->GetWidget()->ThemeChanged();
+  views::test::RunScheduledLayout(view->GetWidget()->GetRootView());
+
+  const BrowserLayoutParams updated_params =
+      frame_view->GetBrowserLayoutParams();
+  EXPECT_GT(config->data.redraw_count, redraws_before_theme_change);
+  const float updated_exclusion_height =
+      std::max(updated_params.leading_exclusion.content.height(),
+               updated_params.trailing_exclusion.content.height());
+  const float updated_exclusion_width =
+      updated_params.leading_exclusion.content.width() +
+      updated_params.trailing_exclusion.content.width();
+  EXPECT_LT(updated_exclusion_height, initial_exclusion_height);
+  EXPECT_GT(updated_exclusion_width, initial_exclusion_width);
+  EXPECT_LT(view->tab_strip_view()->width(), tabstrip_width_before);
+
+  // Querying `GetMinimumSize()` across fullscreen/maximized transitions before
+  // scheduled layout runs must keep `visual_client_area` aligned with
+  // `BrowserView::bounds()`.
+  view->browser_widget()->SetFullscreen(true);
+  EXPECT_FALSE(view->GetWidget()->GetMinimumSize().IsEmpty());
+  views::test::RunScheduledLayout(view->GetWidget()->GetRootView());
+  view->browser_widget()->SetFullscreen(false);
+  EXPECT_FALSE(view->GetWidget()->GetMinimumSize().IsEmpty());
+  views::test::RunScheduledLayout(view->GetWidget()->GetRootView());
+
+  CloseBrowserSynchronously(system_browser);
+  ui::LinuxUiGetter::set_instance(nullptr);
+}
+
+}  // namespace
+#endif  // BUILDFLAG(IS_LINUX)

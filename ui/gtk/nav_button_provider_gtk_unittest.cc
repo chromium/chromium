@@ -200,6 +200,138 @@ TEST(NavButtonProviderGtkTest, PrefetchDoesNotChangeOutput) {
   }
 }
 
+// Regression test for crbug.com/483769296: GTK themes that combine tall
+// `.titlebutton` minimum heights with negative vertical margins must still
+// scale and position buttons within `[0, top_area_height]`.
+TEST(NavButtonProviderGtkTest, NegativeVerticalMarginsFitWithinTopArea) {
+  constexpr int kTopAreaHeight = 41;
+  const char* const kCssCases[] = {
+      // Negative bottom margin smaller than `min-height`, causing
+      // `min-height + margin-top + margin-bottom <= top_area_height` while the
+      // unscaled button itself (`48px`) exceeds `top_area_height`.
+      "headerbar, headerbar.titlebar {"
+      "  min-height: 0;"
+      "  padding: 0;"
+      "  border: none;"
+      "}"
+      "headerbar button.titlebutton, headerbar button.titlebutton image {"
+      "  min-height: 0;"
+      "  min-width: 0;"
+      "  padding: 0;"
+      "  margin: 0;"
+      "  border: none;"
+      "}"
+      "headerbar button.titlebutton {"
+      "  min-height: 48px;"
+      "  min-width: 48px;"
+      "  margin-top: 2px;"
+      "  margin-bottom: -14px;"
+      "}",
+      // Negative top and bottom margins simultaneously.
+      "headerbar, headerbar.titlebar {"
+      "  min-height: 0;"
+      "  padding: 0;"
+      "  border: none;"
+      "}"
+      "headerbar button.titlebutton, headerbar button.titlebutton image {"
+      "  min-height: 0;"
+      "  min-width: 0;"
+      "  padding: 0;"
+      "  margin: 0;"
+      "  border: none;"
+      "}"
+      "headerbar button.titlebutton {"
+      "  min-height: 50px;"
+      "  min-width: 50px;"
+      "  margin-top: -10px;"
+      "  margin-bottom: -10px;"
+      "}",
+      // Breeze-style padding + border extending clickable area with negative
+      // vertical margins.
+      "headerbar, headerbar.titlebar {"
+      "  min-height: 46px;"
+      "  padding: 0 6px;"
+      "  border: none;"
+      "}"
+      "headerbar button.titlebutton, headerbar button.titlebutton image {"
+      "  min-height: 0;"
+      "  min-width: 0;"
+      "  padding: 0;"
+      "  margin: 0;"
+      "  border: none;"
+      "}"
+      "headerbar button.titlebutton {"
+      "  min-height: 18px;"
+      "  min-width: 18px;"
+      "  padding-top: 14px;"
+      "  padding-bottom: 14px;"
+      "  border-top: 2px solid transparent;"
+      "  margin-top: -8px;"
+      "  margin-bottom: -8px;"
+      "}",
+  };
+
+  for (const char* css : kCssCases) {
+    SCOPED_TRACE(css);
+    base::ScopedClosureRunner remove_css = AddGlobalCssForTesting(css);
+    for (bool maximized : {false, true}) {
+      SCOPED_TRACE(maximized);
+      const ProviderOutput output =
+          RedrawAndCollect(kTopAreaHeight, maximized, /*active=*/true);
+      for (DisplayType type :
+           {DisplayType::kMinimize,
+            maximized ? DisplayType::kRestore : DisplayType::kMaximize,
+            DisplayType::kClose}) {
+        const gfx::Insets& margin = output.margins.at(type);
+        const SkBitmap& bitmap = output.images.at({type, ButtonState::kNormal});
+        EXPECT_GE(margin.top(), 0);
+        EXPECT_GT(bitmap.height(), 0);
+        EXPECT_LE(margin.top() + bitmap.height(), kTopAreaHeight);
+      }
+    }
+  }
+}
+
+// Regression test for crbug.com/483769296: independent `std::round()` on the
+// scaled button height and scaled top margin must not push `margin.top() +
+// height` 1px past `top_area_height` when both land on `.5`.
+TEST(NavButtonProviderGtkTest, RoundingDoesNotExceedTopAreaHeight) {
+  constexpr int kTopAreaHeight = 41;
+  // `header_padding.top() = 7`, `button_margin.top() = 14`, and
+  // `button_size.height() = 21` sum to `needed_height = 42`, so
+  // `scale = 41.0 / 42.0` and both `scale * 21` and `scale * (7 + 14)` equal
+  // `20.5`.
+  constexpr char kCss[] =
+      "headerbar, headerbar.titlebar {"
+      "  min-height: 0;"
+      "  padding: 7px 0 0 0;"
+      "  border: none;"
+      "}"
+      "headerbar button.titlebutton, headerbar button.titlebutton image {"
+      "  min-height: 0;"
+      "  min-width: 0;"
+      "  padding: 0;"
+      "  margin: 0;"
+      "  border: none;"
+      "}"
+      "headerbar button.titlebutton {"
+      "  min-height: 21px;"
+      "  min-width: 21px;"
+      "  margin-top: 14px;"
+      "}";
+  base::ScopedClosureRunner remove_css = AddGlobalCssForTesting(kCss);
+  const ProviderOutput output =
+      RedrawAndCollect(kTopAreaHeight, /*maximized=*/false, /*active=*/true);
+  for (DisplayType type :
+       {DisplayType::kMinimize, DisplayType::kMaximize, DisplayType::kClose}) {
+    const gfx::Insets& margin = output.margins.at(type);
+    const SkBitmap& bitmap = output.images.at({type, ButtonState::kNormal});
+    EXPECT_GE(margin.top(), 0);
+    EXPECT_EQ(bitmap.height(), 21);
+    EXPECT_LE(margin.top() + bitmap.height(), kTopAreaHeight);
+  }
+}
+
 }  // namespace
 
 }  // namespace gtk

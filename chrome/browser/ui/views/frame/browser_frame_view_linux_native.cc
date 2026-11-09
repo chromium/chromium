@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/views/window/frame_background.h"
@@ -49,6 +50,15 @@ BrowserLayoutParams BrowserFrameViewLinuxNative::GetBrowserLayoutParams()
   const_cast<BrowserFrameViewLinuxNative*>(this)
       ->MaybeUpdateCachedFrameButtonImages();
   return BrowserFrameViewLinux::GetBrowserLayoutParams();
+}
+
+void BrowserFrameViewLinuxNative::OnThemeChanged() {
+  cache_ = std::nullopt;
+  BrowserFrameViewLinux::OnThemeChanged();
+  InvalidateLayout();
+  if (GetBrowserView()) {
+    GetBrowserView()->InvalidateLayout();
+  }
 }
 
 float BrowserFrameViewLinuxNative::GetRestoredCornerRadiusDip() const {

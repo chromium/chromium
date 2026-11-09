@@ -205,6 +205,11 @@ GtkIconTheme* GetDefaultIconTheme();
 [[nodiscard]] COMPONENT_EXPORT(GTK) base::ScopedClosureRunner
     PrependIconThemeSearchPathForTesting(const base::FilePath& path);
 
+// Installs `css` as a user-priority global style provider. Returns a closure
+// runner that removes the provider on destruction.
+[[nodiscard]] COMPONENT_EXPORT(GTK) base::ScopedClosureRunner
+    AddGlobalCssForTesting(const std::string& css);
+
 COMPONENT_EXPORT(GTK) void GtkWindowDestroy(GtkWidget* widget);
 
 GtkWidget* GetDummyWindow();

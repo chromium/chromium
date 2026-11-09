@@ -774,6 +774,30 @@ base::ScopedClosureRunner PrependIconThemeSearchPathForTesting(
       theme, search_path, n_elements));
 }
 
+base::ScopedClosureRunner AddGlobalCssForTesting(const std::string& css) {
+  ScopedCssProvider provider = GetCssProvider(css);
+  if (GtkCheckVersion(4)) {
+    gtk_style_context_add_provider_for_display(
+        gdk_display_get_default(), GTK_STYLE_PROVIDER(provider.get()),
+        GTK_STYLE_PROVIDER_PRIORITY_USER);
+    return base::ScopedClosureRunner(base::BindOnce(
+        [](ScopedCssProvider provider) {
+          gtk_style_context_remove_provider_for_display(
+              gdk_display_get_default(), GTK_STYLE_PROVIDER(provider.get()));
+        },
+        std::move(provider)));
+  }
+  gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
+                                            GTK_STYLE_PROVIDER(provider.get()),
+                                            GTK_STYLE_PROVIDER_PRIORITY_USER);
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](ScopedCssProvider provider) {
+        gtk_style_context_remove_provider_for_screen(
+            gdk_screen_get_default(), GTK_STYLE_PROVIDER(provider.get()));
+      },
+      std::move(provider)));
+}
+
 void GtkWindowDestroy(GtkWidget* widget) {
   if (GtkCheckVersion(4)) {
     gtk_window_destroy(GTK_WINDOW(widget));
