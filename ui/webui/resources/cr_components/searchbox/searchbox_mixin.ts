@@ -579,7 +579,11 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           this.getInputElement().inputElement?.selectionStart ?? null;
       const event = e.detail.event ?? null;
 
-      if (this.keywordModeManager_.acceptInputTrigger(
+      // Like the Views omnibox, don't change keyword mode while composing,
+      // which would replace the text under the IME. The text is checked again
+      // once the composition ends.
+      if (!e.detail.isComposing &&
+          this.keywordModeManager_.acceptInputTrigger(
               input, cursorPosition, event)) {
         const isSpaceInMiddle = this.keywordModeManager_.entryMethod ===
             KeywordModeEntryMethod.SPACE_IN_MIDDLE;

@@ -252,6 +252,11 @@ export class KeywordModeManager {
       return event.data !== null && chars.includes(event.data) &&
           event.inputType !== 'insertFromPaste';
     }
+    // The end of an IME composition of just one of `chars`, e.g. a full-width
+    // space.
+    if (event instanceof CompositionEvent) {
+      return chars.includes(event.data);
+    }
     return false;
   }
 

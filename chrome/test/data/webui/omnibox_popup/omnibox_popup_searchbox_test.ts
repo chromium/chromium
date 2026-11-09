@@ -635,6 +635,155 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
   });
 
+  // Composes `composedText` at the end of the input's text, like an IME.
+  function compose(composedText: string) {
+    const input = searchbox.$.input.inputElement;
+    input.dispatchEvent(new CompositionEvent(
+        'compositionstart', {bubbles: true, composed: true}));
+    input.value += composedText;
+    input.dispatchEvent(new InputEvent('input', {
+      inputType: 'insertCompositionText',
+      data: composedText,
+      isComposing: true,
+    }));
+  }
+
+  // Commits the composition of `composedText`, like an IME.
+  function commitComposition(composedText: string) {
+    searchbox.$.input.inputElement.dispatchEvent(new CompositionEvent(
+        'compositionend', {data: composedText, bubbles: true, composed: true}));
+  }
+
+  function undo() {
+    searchbox.$.input.inputElement.dispatchEvent(new InputEvent('beforeinput', {
+      inputType: 'historyUndo',
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+  }
+
+  // Types `text` into the focused, empty input as one edit.
+  async function typeIntoEmptyInput(text: string) {
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: '',
+      isFocused: true,
+    }));
+    await microtasksFinished();
+    const input = searchbox.$.input.inputElement;
+    input.value = text;
+    input.dispatchEvent(new InputEvent('input', {inputType: 'insertText'}));
+    await microtasksFinished();
+  }
+
+  test('RecordsCommittedCompositionAsOneEdit', async () => {
+    await typeIntoEmptyInput('abc');
+    compose('にほん');
+    await microtasksFinished();
+    commitComposition('にほん');
+    await microtasksFinished();
+
+    // Text typed after it is a separate edit.
+    const input = searchbox.$.input.inputElement;
+    input.value = 'abcにほんx';
+    input.dispatchEvent(
+        new InputEvent('input', {inputType: 'insertText', data: 'x'}));
+    await microtasksFinished();
+
+    undo();
+    await microtasksFinished();
+    assertEquals('abcにほん', input.value);
+    undo();
+    await microtasksFinished();
+    assertEquals('abc', input.value);
+  });
+
+  test('RecordsCompositionEndedByLosingFocus', async () => {
+    await typeIntoEmptyInput('abc');
+    compose('にほん');
+    await microtasksFinished();
+    testProxy.handler.reset();
+
+    // E.g. deactivating the window blurs the input, then ends the composition.
+    const input = searchbox.$.input.inputElement;
+    input.dispatchEvent(new FocusEvent('blur'));
+    commitComposition('にほん');
+    await microtasksFinished();
+
+    // The user is no longer typing, so the committed text isn't queried, but
+    // it's still undone as one edit.
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+    undo();
+    await microtasksFinished();
+    assertEquals('abc', input.value);
+  });
+
+  test('RecordsCompositionAfterStateUpdateWhileComposing', async () => {
+    await typeIntoEmptyInput('abc');
+    compose('にほん');
+    await microtasksFinished();
+
+    // E.g. the browser sends the state of the same tab mid-composition.
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: 'abcにほん',
+      selection: {start: 6, end: 6},
+      userInputInProgress: true,
+      isFocused: true,
+    }));
+    await microtasksFinished();
+    commitComposition('にほん');
+    await microtasksFinished();
+
+    // Undo still goes back to the text from before the composition.
+    undo();
+    await microtasksFinished();
+    assertEquals('abc', searchbox.$.input.inputElement.value);
+  });
+
+  test('SendsCaretToOldTabOnTabSwitch', async () => {
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      tabId: 1,
+      text: 'abc',
+      selection: {start: 3, end: 3},
+      userInputInProgress: true,
+      isFocused: true,
+    }));
+    await microtasksFinished();
+    compose('def');
+    await microtasksFinished();
+    testProxy.handler.reset();
+
+    // Switching to tab 2 ends the composition, whose text is already in tab 1's
+    // draft, so only the caret after it needs to be sent.
+    const tab2State = createDefaultOmniboxInputState({
+      sequenceNumber: 2,
+      tabId: 2,
+      text: 'tab 2 draft',
+      userInputInProgress: true,
+      isFocused: true,
+      isTabSwitch: true,
+    });
+    callbackRouter.setInputState(tab2State);
+    await microtasksFinished();
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    const [, tabId, queryText, , cursorPosition] =
+        testProxy.handler.getArgs('queryAutocomplete')[0];
+    assertEquals(1, tabId);
+    assertEquals('abcdef', queryText);
+    assertEquals(6, cursorPosition);
+
+    // After the popup is cleared, the tab it showed is stale, so nothing is
+    // sent to it.
+    callbackRouter.clearPopup();
+    await microtasksFinished();
+    compose('ghi');
+    await microtasksFinished();
+    testProxy.handler.reset();
+    callbackRouter.setInputState({...tab2State, sequenceNumber: 3, tabId: 3});
+    await microtasksFinished();
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+  });
+
   test('DoubleClickingShowsFullUrl', async () => {
     // Focus the input.
     const input = searchbox.$.input.inputElement;

@@ -372,7 +372,8 @@ export class OmniboxPopupSearchboxElement extends
   private lastInputText_: string = '';
   // Stores the selection range prior to the latest edit or selection change
   // event. Paired with `lastInputText_` to determine cursor placement and
-  // selection replacements for `textfieldModel_`.
+  // selection replacements for `textfieldModel_`. Not updated while composing,
+  // so that it's the selection that an IME composition replaced once it ends.
   private lastInputSelection_: SelectionRange = {start: 0, end: 0};
   // True while an undo or redo operation (`undo_()` / `redo_()`) is actively
   // executing. Used to suppress recording spurious history edits when input
@@ -476,9 +477,13 @@ export class OmniboxPopupSearchboxElement extends
     // rather than modifying input value during active composition).
     this.eventTracker_.add(this.$.input, 'compositionstart', () => {
       this.isComposing_ = true;
+      // Record the composition against the text the user sees (see
+      // `recordComposition_()`).
+      this.syncTextfieldModelWithInput_(this.lastInputText_);
     });
     this.eventTracker_.add(this.$.input, 'compositionend', () => {
       this.isComposing_ = false;
+      this.recordComposition_();
       this.onSelectionChanged_();
     });
 
@@ -1433,6 +1438,15 @@ export class OmniboxPopupSearchboxElement extends
     // focused.
     if (this.isComposing_ && state.tabId !== this.tabId_) {
       this.$.input.blur();
+      // The old tab's draft has the composed text, but the caret from before
+      // it. A query for `getTabId()`, i.e. the old tab, just updates that tab's
+      // draft, unless `ClearPopup` made `tabId_` stale.
+      if (this.hasReceivedInitialInputState_ &&
+          !this.isInputCleared_(this.lastInputText_)) {
+        this.queryAutocomplete(
+            this.lastInputText_, /*preventInlineAutocomplete=*/ false,
+            /*isOnFocus=*/ false);
+      }
     }
     this.hasReceivedInitialInputState_ = true;
 
@@ -1943,15 +1957,38 @@ export class OmniboxPopupSearchboxElement extends
     this.updateEditHistoryState_();
   }
 
+  /**
+   * Records the IME composition that just ended in `textfieldModel_` as one
+   * edit, which undo reverts to the text and selection from before it.
+   */
+  private recordComposition_() {
+    // `textfieldModel_` and `lastInputSelection_` aren't updated while
+    // composing, so they normally have the text and the selection that the
+    // composition replaced. The selection can extend past the text into inline
+    // autocompletion.
+    const length = this.textfieldModel_.text.length;
+    const {start, end} = this.lastInputSelection_;
+    this.textfieldModel_.selectRange({
+      start: Math.min(start, end, length),
+      end: Math.min(Math.max(start, end), length),
+    });
+    this.textfieldModel_.replaceAllText(this.lastInputText_);
+    this.lastInputSelection_ = this.textfieldModel_.selection;
+    this.updateEditHistoryState_();
+  }
+
   protected onSearchboxInputTextUpdated_(
-      e: CustomEvent<{value: string, isComposing: boolean}>) {
+      e: CustomEvent<{value: string, isComposing: boolean, event?: Event}>) {
     this.selectAllOnMouseRelease_ = false;
     this.queryZpsOnMouseRelease_ = false;
     this.userInputInProgress_ = true;
     this.hasUserInput_ = !!e.detail.value.trim();
     this.hasDirectUserDomInput_ = true;
 
-    this.updateTextfieldModel_(e.detail.value, e.detail.isComposing);
+    // The end of a composition is recorded by `recordComposition_()`.
+    if (!(e.detail.event instanceof CompositionEvent)) {
+      this.updateTextfieldModel_(e.detail.value, e.detail.isComposing);
+    }
     this.lastInputText_ = e.detail.value;
 
     this.updateAimButtonCollapse_();

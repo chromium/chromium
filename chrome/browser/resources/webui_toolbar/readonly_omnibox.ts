@@ -968,7 +968,14 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     event.stopPropagation();
   }
 
-  protected onSearchboxInputTextUpdated_(): void {
+  protected onSearchboxInputTextUpdated_(e?: CustomEvent<{event?: Event}>):
+      void {
+    // `#textInput` reports its text again once an IME composition ends, but the
+    // text is unchanged, and `updateStateFromTextInput()` would drop the inline
+    // autocompletion, which `#textInput` doesn't show while composing.
+    if (e?.detail.event instanceof CompositionEvent) {
+      return;
+    }
     if (this.updateStateFromTextInput()) {
       this.sendInputToBrowser(/*unelision=*/ false, /*paste=*/ false);
     }

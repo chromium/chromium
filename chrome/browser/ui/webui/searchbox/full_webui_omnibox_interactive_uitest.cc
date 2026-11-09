@@ -600,6 +600,38 @@ class FullWebUIOmniboxInteractiveTestBase
                  InAnyContext(WaitForWebUIInputValue(text)));
   }
 
+  // Like an IME, sets `text` as the composition at the WebUI input's caret,
+  // with the caret after it.
+  auto SetWebUICompositionText(const std::u16string& text) {
+    return InAnyContext(
+        WithElement(kPopupWebView, [text](ui::TrackedElement* el) {
+          const int caret = base::checked_cast<int>(text.length());
+          content::SendImeSetCompositionTextToWidget(
+              GetWidgetHost(el), text, /*ime_text_spans=*/{},
+              gfx::Range::InvalidRange(), /*selection_start=*/caret,
+              /*selection_end=*/caret);
+        }));
+  }
+
+  // Like an IME, replaces the composition in the WebUI input with `text` and
+  // commits it, with the caret after it.
+  auto CommitWebUIComposition(const std::u16string& text) {
+    return InAnyContext(
+        WithElement(kPopupWebView, [text](ui::TrackedElement* el) {
+          content::SendImeCommitTextToWidget(
+              GetWidgetHost(el), text, /*ime_text_spans=*/{},
+              gfx::Range::InvalidRange(), /*relative_cursor_pos=*/0);
+        }));
+  }
+
+  // Returns the widget host of the instrumented WebContents `el`.
+  static content::RenderWidgetHost* GetWidgetHost(ui::TrackedElement* el) {
+    return AsInstrumentedWebContents(el)
+        ->web_contents()
+        ->GetRenderWidgetHostView()
+        ->GetRenderWidgetHost();
+  }
+
   auto PasteWebUIText(const std::string& text) {
     return Steps(InAnyContext(ExecuteJsAt(kPopupWebView, kWebUIInput,
                                           base::StringPrintf(R"(el => {
@@ -1801,16 +1833,6 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // composed text.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        ImeCompositionEndsOnTabSwitch) {
-  // Composes "def" at the WebUI input's caret, like an IME.
-  auto compose = [](ui::TrackedElement* el) {
-    content::SendImeSetCompositionTextToWidget(
-        AsInstrumentedWebContents(el)
-            ->web_contents()
-            ->GetRenderWidgetHostView()
-            ->GetRenderWidgetHost(),
-        u"def", /*ime_text_spans=*/{}, gfx::Range::InvalidRange(),
-        /*selection_start=*/3, /*selection_end=*/3);
-  };
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       InputWebUIText("abc"),
@@ -1820,7 +1842,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
         el.addEventListener(
             'compositionend', e => window.endedCompositions.push(e.data));
       })")),
-      InAnyContext(WithElement(kPopupWebView, compose)),
+      SetWebUICompositionText(u"def"),
       InAnyContext(WaitForWebUIInputValue("abcdef")),
       // Open a New Tab Page. Its omnibox is focused too, so the input stays
       // focused.
@@ -1831,10 +1853,29 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       InAnyContext(CheckJsResultAt(kPopupWebView, kWebUIInput,
                                    "() => window.endedCompositions.join()",
                                    "def")),
-      // Switch back to Tab 1, whose draft has the composed text.
+      // Switch back to Tab 1, whose draft has the composed text, with the caret
+      // after it.
       UninstrumentWebContents(kPopupWebView),
       SwitchTabAndRestorePopup(kTabStripElementId, 1),
-      WaitForWebUIInputValue("abcdef"));
+      WaitForWebUIInputValue("abcdef"), CheckWebUIInputSelection(6, 6));
+}
+
+// Verifies that, like with the Views omnibox, text committed from an IME
+// composition in the WebUI input is handled like typed text: it's inline
+// autocompleted, and it's undone as one edit.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ImeCompositionCommitIsHandledLikeTyping) {
+  AddTypedUrlToHistory(GURL("http://example.com/"));
+  RunTestSequence(OpenNtpAndWaitForPopupReady(kTab1),
+                  SetWebUICompositionText(u"exa"),
+                  InAnyContext(WaitForWebUIInputValue("exa")),
+                  // Committing the composition inline autocompletes it.
+                  CommitWebUIComposition(u"exa"),
+                  InAnyContext(WaitForWebUIInputValue("example.com")),
+                  InAnyContext(CheckWebUIInputSelection(3, 11)),
+                  // Undo removes the committed text.
+                  PressWebUIAcceleratorKey(ui::VKEY_Z),
+                  InAnyContext(WaitForWebUIInputValue("")));
 }
 
 // Verifies that a custom selection range on a steady-state URL is preserved
