@@ -2110,7 +2110,7 @@
             ]
         }
     ],
-    "AutofillEnableExpandIbanRegexPattern": [
+    "AutofillEnableExpandIbanRegexPatternV2": [
         {
             "platforms": [
                 "android",
