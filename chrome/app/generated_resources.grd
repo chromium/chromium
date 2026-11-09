@@ -10364,14 +10364,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </if>
 
       <!--Desktop to iOS Wave 2 Promo Notification Titles-->
-      <if expr="not is_android">
-        <message name="IDS_IOS_DESKTOP_SHOPPING_PROMO_NOTIFICATION_TITLE" desc="The notification title for the iOS desktop Shopping promo.">
-          Reminder: The best of online shopping in your pocket
-        </message>
-        <message name="IDS_IOS_DESKTOP_YOUR_CHROME_PROMO_NOTIFICATION_TITLE" desc="The notification title for the iOS desktop Your Chrome promo.">
-          Reminder: Seamless browsing in your pocket
-        </message>
-      </if>
 
       <!--Accessible name/action strings-->
       <message name="IDS_ACCESSIBLE_INCOGNITO_WINDOW_TITLE_FORMAT" desc="The format for the accessible title of an Incognito window">
@@ -10461,12 +10453,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_SAVED_TAB_GROUP_BUTTON_ROLE_DESCRIPTION" desc="The accessible role description for tab group buttons.">
         Saved Tab Group button
       </message>
-      <message name="IDS_ACCNAME_CHROMELABS_BUTTON" desc="The accessible name for the Chrome Labs experiments button">
-        Experiments
-      </message>
-      <message name="IDS_ACCNAME_LEFT_ALIGNED_SIDE_PANEL_BUTTON" desc="The accessible name for the left aligned side panel toggle button">
-        Left aligned side panel
-      </message>
       <message name="IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_ADDED_BY_ENTERPRISE_POLICY" desc="The text read out by the screen reader when the Chrome Labs experiments button is added to the toolbar by an enterprise policy change.">
         Enterprise policy changed. Experiments button added to toolbar. Click the button to open a dialog to enable experiments.
       </message>
@@ -10481,9 +10467,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_ACCNAME_SEPARATOR" desc="The accessible name for a separator.">
         Separator
-      </message>
-      <message name="IDS_ACCNAME_EXTENSIONS" desc="The accessible name for the Extensions toolbar.">
-        Extensions
       </message>
       <message name="IDS_ACCNAME_NEWTAB" desc="The accessible name for the New Tab (+) button.">
         New Tab
@@ -10561,15 +10544,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_BACK_NAVIGATION_MENU_PROMO_ACCESSIBLE_TEXT" is_accessibility_with_no_ui="true" desc="Accessible text shown on the In-Product Help bubble for the back navigation menu.">
         To go back more than 1 page, click and hold the Back button.
       </message>
-      <message name="IDS_BOOKMARK_PROMO_0" desc="Text shown on promotional UI appearing next to the Bookmarks button, which encourages users to use it.">
-        Bookmark this page to easily find it later
-      </message>
-      <message name="IDS_BOOKMARK_PROMO_1" desc="Text shown on promotional UI appearing next to the Bookmarks button, which encourages users to use it.">
-        You can click the star to bookmark a tab
-      </message>
-      <message name="IDS_BOOKMARK_PROMO_2" desc="Text shown on promotional UI appearing next to the Bookmarks button, which encourages users to use it.">
-        Get back here fast by bookmarking this tab
-      </message>
       <message name="IDS_CHROME_TIP" desc="Accessible name used by a screen reader for the in-product-help or tutorial bubble icon." is_accessibility_with_no_ui="true">
         Chrome tip
       </message>
@@ -10606,38 +10580,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_ZERO_STATE_PROMO_CUSTOM_ACTION_IPH_ACCEPT" desc="Text on the custom action button that opens a new tab to the Chrome Web Store.">
          Discover extensions
       </message>
-      <message name="IDS_GLOBAL_MEDIA_CONTROLS_PROMO" desc="Text shown on promotional UI appearing next to the global media controls toolbar button.">
-        New! Control your music, videos, and more.
-      </message>
-      <message name="IDS_INCOGNITOWINDOW_PROMO_0" desc="Variations option 1. Text shown on promotional UI appearing next to the App Menu button, which encourages users to use it.">
-        You can browse privately using an Incognito window
-      </message>
-      <message name="IDS_INCOGNITOWINDOW_PROMO_1" desc="Variations option 2. Text shown on promotional UI appearing next to the App Menu button, which encourages users to use it.">
-        Use the web without saving your browsing history with an Incognito window
-      </message>
-      <message name="IDS_INCOGNITOWINDOW_PROMO_2" desc="Variations option 3. Text shown on promotional UI appearing next to the App Menu button, which encourages users to use it.">
-        Using a shared computer? Try opening an Incognito window.
-      </message>
-      <message name="IDS_INCOGNITOWINDOW_PROMO_3" desc="Variations option 4. Text shown on promotional UI appearing next to the App Menu button, which encourages users to use it.">
-        To browse privately, click the dots icon menu to open an Incognito window
-      </message>
-      <message name="IDS_NEWTAB_PROMO_0" desc="Variations option 1. Text shown on promotional UI appearing next to the New Tab button, which encourages users to use it.">
-        Open a new tab with one click
-      </message>
-      <message name="IDS_NEWTAB_PROMO_1" desc="Variations option 2. Text shown on promotional UI appearing next to the New Tab button, which encourages users to use it.">
-        You can click here to open a new tab
-      </message>
-      <message name="IDS_NEWTAB_PROMO_2" desc="Variations option 3. Text shown on promotional UI appearing next to the New Tab button, which encourages users to use it.">
-        Open a new tab to browse two sites at once
-      </message>
-      <message name="IDS_POWER_BOOKMARKS_SIDE_PANEL_PROMO" desc="Text shown on promotional UI appearing next to the side panel button, which encourages users to view their bookmarks there.">
-        See all your bookmarks here
-      </message>
       <message name="IDS_POWER_BOOKMARKS_SIDE_PANEL_PROMO_PINNING" desc="Text shown on promotional UI appearing next to the side panel button, which encourages users to view their bookmarks there when Side Panel Pinning is enabled.">
         See all your bookmarks in Bookmarks and Lists
-      </message>
-      <message name="IDS_READING_LIST_DISCOVERY_PROMO" desc="Text shown on promotional UI appearing next to the reading list button">
-        When you're ready, find your reading list here
       </message>
       <message name="IDS_READING_LIST_DISCOVERY_PROMO_PINNING" desc="Text shown on promotional UI appearing next to the reading list button when Side Panel Pinning is enabled">
         When you're ready, find your reading list in Bookmarks and Lists
@@ -10654,20 +10598,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_DESKTOP_PWA_LINK_CAPTURING_SETTINGS" desc="Text shown on app button to open app settings via link capturing.">
         Open App settings
       </message>
-      <message name="IDS_UPDATED_CONNECTION_SECURITY_INDICATORS_PROMO" desc="Text shown on promotional UI appearing next to the new omnibox connection security icon">
-        Your connection is always secure unless Chrome tells you otherwise
-      </message>
-      <message name="IDS_READING_LIST_IN_SIDE_PANEL_PROMO" desc="Text shown on promotional UI appearing next to the side panel button">
-        Your reading list has moved to the new side panel. Try it here.
-      </message>
       <message name="IDS_READING_LIST_IN_SIDE_PANEL_PROMO_PINNING" desc="Text shown on promotional UI appearing next to the side panel button when Side Panel Pinning is enabled">
         Find your reading list and bookmarks in Bookmarks and Lists
-      </message>
-      <message name="IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP" desc="Static tooltip to display on hover over unnamed tab group.">
-        Unnamed group - <ph name="GROUP_CONTENT_STRING">$1<ex>"New Tab" and one other</ex></ph>
-      </message>
-      <message name="IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP" desc="Dynamic tooltip to display on hover over named tab group.">
-        <ph name="GROUP_NAME">$1<ex>New Group</ex></ph> - <ph name="GROUP_CONTENT_STRING">$2<ex>"New Tab" and one other</ex></ph>
       </message>
       <message name="IDS_SHARED_HIGHLIGHTING_PROMO" desc="The title of in-product-help message encouraging users to interact with the highlight">
         To create a highlight like this one, select any text and right-click.
@@ -10876,13 +10808,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Browser Hung Plugin Detector -->
-      <if expr="is_win">
-        <message name="IDS_BROWSER_HANGMONITOR" desc="A plugin on a page has hung">
-  The following plugin is unresponsive: <ph name="PLUGIN_NAME">$1
-  <ex>Shockwave
-  </ex></ph>Would you like to stop it?
-        </message>
-      </if>
       <message name="IDS_BROWSER_HANGMONITOR_RENDERER_TITLE" desc="The title of the 'A page has become unresponsive' dialog. NOTE: If having no explicit # makes the phrasing awkward, feel free to add a # as necessary. [ICU Syntax]">
         {NUM_PAGES, plural,
         =1 {Page Unresponsive}
@@ -10913,20 +10838,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
           other {Exit pages}}
         </message>
       </if>
-      <message name="IDS_BROWSER_HANGMONITOR_PLUGIN_INFOBAR" desc="The text of the infobar notifying the user that a plugin has hung">
-        <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph> isn't responding
-      </message>
-      <message name="IDS_BROWSER_HANGMONITOR_PLUGIN_INFOBAR_KILLBUTTON" desc="The button on the hung plugin infobar (...PLUGIN_INFOBAR above) to terminate the plugin">
-        Stop plugin
-      </message>
 
       <!-- Passwords and Exceptions Dialog -->
-      <message name="IDS_PASSWORDS_AUTO_SIGNIN_TITLE" desc="Title for 'Auto sign-in' checkbox in the password dialog">
-        Auto sign-in
-      </message>
-      <message name="IDS_PASSWORDS_AUTO_SIGNIN_DESCRIPTION" desc="Text under 'Auto sign-in' checkbox">
-        Automatically sign in to websites using stored credentials. When the feature is disabled, you will be asked for confirmation every time before signing in to a website.
-      </message>
       <message name="IDS_PASSWORDS_VIA_FEDERATION" desc="Text for federated credential's value.">
         with <ph name="PROVIDER">$1<ex>facebook.com</ex></ph>
       </message>
@@ -11077,9 +10990,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PASSWORD_MANAGER_IPH_SHARE_PASSWORD_BUTTON_SCREENREADER" desc="Text announced with the in Product Help for Share Password Button in Password Manager.">
           Use Share button at the bottom of the card to share a copy of your password with someone in your family group
         </message>
-        <message name="IDS_PASSWORD_MANAGER_IPH_ACCOUNT_STORAGE_TOGGLE" desc="Body of the in Product Help for account storage toggle in Password Manager.">
-          You can turn off this setting to save your passwords only on this device
-        </message>
         <message name="IDS_PASSWORD_MANAGER_IPH_CREATE_SHORTCUT_TITLE" desc="Body of the in Product Help shown after successfully logging into a website telling user about how to create a shortcut">
           Get to your saved passwords quicker
         </message>
@@ -11112,9 +11022,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PASSWORD_MANAGER_SAVE_BUTTON" desc="Mobile: Button text for the 'Save Password' infobar's 'Remember password' option"  formatter_data="android_java">
           Save
         </message>
-        <message name="IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON" desc="Mobile: Button text for the 'Save Password' infobar's 'Never remember for this site' option">
-          Never
-        </message>
         <message name="IDS_PASSWORD_MANAGER_UPDATE_BUTTON" desc="Label for the 'update' button in the Update Password infobar. This infobar asks if the user wishes to update the saved password for a site to a new password the user has just entered; the button applies the suggested update." formatter_data="android_java">
           Update
         </message>
@@ -11132,9 +11039,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_TRUSTED_VAULT_KEY_RETRIEVAL_REQUIRED_MESSAGE" desc="Message indicating that trusted vault key retrieval is required before passwords can be used.">
           You need to verify it's you before you can access your passwords
-        </message>
-        <message name="IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_TITLE" desc="The title of a list of saved passwords for the currently visible site." translateable="false">
-          Saved passwords for <ph name="domain">$1<ex>example.com</ex></ph>
         </message>
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_ALL_PASSWORDS_LINK" desc="The text of the link in the password sheet that opens the password management section.">
           Manage passwords
@@ -11156,9 +11060,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name ="IDS_PASSWORD_MANAGER_ACCESSORY_USE_DEVICE_PASSKEY" desc="The text of the link in the password sheet that will use a different device’s passkey.">
           Use a passkey on a different device
-        </message>
-        <message name="IDS_PASSWORD_GENERATION_DIALOG_DESCRIPTION_BRANDED" desc="Text for password generation dialog, explaining that the password will be saved in Google Account. Unified Password Manager branded variant.">
-          You won’t need to remember this password. It will be saved to Google Password Manager for <ph name="ACCOUNT">$1<ex>user@gmail.com</ex></ph>.
         </message>
         <message name="IDS_CONFIRM_USERNAME_DIALOG_TITLE" desc="The title of the confirm username dialog." formatter_data="android_java">
           Confirm your username
@@ -11389,17 +11290,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Ok, got it
       </message>
 
-      <!-- Content Settings dialog data -->
-      <message name="IDS_MEDIA_SELECTED_MIC_LABEL" desc="The label of the 'microphone device' select menu">
-        Microphone:
-      </message>
-      <message name="IDS_MEDIA_SELECTED_CAMERA_LABEL" desc="The label of the 'camera device' select menu">
-        Camera:
-      </message>
-      <message name="IDS_MEDIA_MENU_NO_DEVICE_TITLE" desc="The title of the media select menu if there is no microphone or camera available on the machine">
-        None available
-      </message>
-
       <!-- Media controls -->
       <message name="IDS_MEDIA_CONTROLS_TITLE_PLACEHOLDER_INCOGNITO" desc="Text used as the placeholder in the OS' media controls' title when the media is being played in an Incognito session.">
         A site is playing media
@@ -11430,21 +11320,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PROMOTE_AUTHENTICATION_PROMPT" desc="The prompt displayed in the authentication dialog when setting up automatic updates for all users.  The system will add a sentence asking for an administrator's name and password.  Mac-only.">
           <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will set up automatic updates for all users of this computer.
         </message>
-        <message name="IDS_PROMOTE_PREFLIGHT_LAUNCH_ERROR" desc="Status label shown when an administrator user requested automatic updates for all users, but the OS failed to start the pre-flight process.  Mac-only.">
-          Failed to set up automatic updates for all users (preflight launch error: <ph name="ERROR_NUMBER">$1<ex>1</ex></ph>)
-        </message>
-        <message name="IDS_PROMOTE_PREFLIGHT_SCRIPT_ERROR" desc="Status label shown when an administrator user requested automatic updates for all users, but the pre-flight process reported an error.  Mac-only.">
-          Failed to set up automatic updates for all users (preflight execution error: <ph name="ERROR_NUMBER">$1<ex>1</ex></ph>)
-        </message>
       </if>
 
       <!-- About Chrome View -->
       <if expr="is_win or is_macosx">
         <message name="IDS_UPGRADE_ERROR" desc="Status label: Error occurred during upgrade">
           Update failed (error: <ph name="ERROR_NUMBER">$1<ex>1</ex></ph>)
-        </message>
-        <message name="IDS_UPGRADE_ERROR_DETAILS" desc="Status label optionally shown when an error occurred during upgrade. The upgrade daemon may optionally send supplemental error messages; if they're available, we append them after this message in an HTML pre block.">
-          Error details:
         </message>
       </if>
       <if expr="is_win or is_macosx or is_chromeos">
@@ -11543,12 +11424,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_PICTURE_IN_PICTURE_PREVIOUS_TRACK_CONTROL_ACCESSIBLE_TEXT" desc="Accessible text label used for the controls button in the Picture-in-Picture window. The button invokes previous track action.">
         Previous track
       </message>
-      <message name="IDS_PICTURE_IN_PICTURE_PREVIOUS_SLIDE_CONTROL_ACCESSIBLE_TEXT" desc="Accessible text label used for the controls button in the Picture-in-Picture window. The button invokes previous slide action.">
-        Previous slide
-      </message>
-      <message name="IDS_PICTURE_IN_PICTURE_NEXT_SLIDE_CONTROL_ACCESSIBLE_TEXT" desc="Accessible text label used for the controls button in the Picture-in-Picture window. The button invokes next slide action.">
-        Next slide
-      </message>
       <message name="IDS_AUTO_PICTURE_IN_PICTURE_DESCRIPTION" desc="Auto Picture-in-Picture description displayed in the permissions prompt UI">
         Enter picture-in-picture automatically, so you can use it on top of other tabs and windows.
       </message>
@@ -11632,9 +11507,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_CXMENU_CLOSEALLTABS" desc="The label of the 'Close All Tabs' Tab context menu item.">
           Close all tabs
         </message>
-        <message name="IDS_TAB_CXMENU_FOCUS_THIS_TAB" desc="The label of the 'Focus this tab' Tab context menu item.">
-          Focus this tab
-        </message>
         <message name="IDS_TAB_CXMENU_PIN_TAB" desc="The label of the tab context menu item for pinning one or more tabs.">
           Pin
         </message>
@@ -11708,12 +11580,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_CXMENU_MOVETOANOTHERNEWWINDOW" desc="The label for the Tab context item to move items to a new window from the 'Move tabs to another window' submenu.">
           New window
         </message>
-        <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="The text for the context menu item to compare selected tabs." translateable="false">
-          Compare tabs
-        </message>
-        <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_COMPARISON_TABLE" desc="The label for the tab context menu item to add the current tab to a new comparison table">
-          Add tab to new comparison table
-        </message>
         <message name="IDS_TAB_CXMENU_AI_MODE_SHARE" desc="The label of the tab context menu submenu for sharing the selected tab or tabs with AI Mode. [ICU Syntax]" translateable="false">
           {NUM_TABS, plural,
             =1 {Share tab with AI Mode}
@@ -11770,9 +11636,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_TAB_CXMENU_CLOSEALLTABS" desc="In Title Case: The label of the 'Close All Tabs' Tab context menu item.">
           Close All Tabs
-        </message>
-        <message name="IDS_TAB_CXMENU_FOCUS_THIS_TAB" desc="In Title Case: The label of the 'Focus This Tab' Tab context menu item.">
-          Focus This Tab
         </message>
         <message name="IDS_TAB_CXMENU_PIN_TAB" desc="In Title Case: The label of the tab context menu item for pinning one or more tabs.">
           Pin
@@ -11846,12 +11709,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_TAB_CXMENU_MOVETOANOTHERNEWWINDOW" desc="In Title Case: The label for the Tab context item to move items to a new window from the 'Move tabs to another window' submenu.">
           New Window
-        </message>
-        <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="In Title Case: The text for the context menu item to compare selected tabs." translateable="false">
-          Compare Tabs
-        </message>
-        <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_COMPARISON_TABLE" desc="In Title Case: The label for the tab context menu item to add the current tab to a new comparison table">
-          Add Tab to New Comparison Table
         </message>
         <message name="IDS_TAB_CXMENU_AI_MODE_SHARE" desc="In Title Case: The label of the tab context menu submenu for sharing the selected tab or tabs with AI Mode. [ICU Syntax]" translateable="false">
           {NUM_TABS, plural,
@@ -12024,9 +11881,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_SEARCH_CLOSE_TAB" desc="Label of the close tab button in the tab list item.">
         Close Tab
       </message>
-      <message name="IDS_TAB_SEARCH_SUBMIT_FEEDBACK" desc="Label of the submit feedback button.">
-        Submit Feedback
-      </message>
       <message name="IDS_TAB_SEARCH_A11Y_TAB_CLOSED" desc="A11y message after user clicks on the close tab button in the list item.">
         Tab Closed
       </message>
@@ -12071,9 +11925,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
       <message name="IDS_TAB_SEARCH_RECENTLY_CLOSED" desc="The label on the tab search list section corresponding to recently closed entries.">
         Recently Closed
-      </message>
-      <message name="IDS_TAB_SEARCH_RECENTLY_CLOSED_TABS" desc="The label on the tab search list section corresponding to recently closed tabs.">
-        Recently Closed Tabs
       </message>
       <message name="IDS_TAB_SEARCH_ONE_TAB" desc="Singular form of a message indicating the presence of a single tab.">
         <ph name="NUM">$1<ex>1</ex></ph> Tab
@@ -12132,9 +11983,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_SAVED_TAB_GROUP_TABS_COUNT" desc="Title of unnamed saved tab group in Everything menu. [ICU_Syntax]">
           {NUM_TABS, plural, =1 {1 tab} other {# tabs}}
         </message>
-        <message name="IDS_GROUP_UNGROUPED_TABS" desc="The label of item in system context menu to create a new tab group and put all ungrouped tabs in it.">
-          Group all tabs
-        </message>
         <message name="IDS_NEW_TAB_IN_GROUP" desc="The label of a context menu item for adding a new tab into an existing group.">
           New tab in <ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>
         </message>
@@ -12154,9 +12002,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <if expr="use_titlecase">
         <message name="IDS_SAVED_TAB_GROUP_TABS_COUNT" desc="In Title Case: Title of unnamed saved tab group in Everything menu. [ICU_Syntax]">
           {NUM_TABS, plural, =1 {1 Tab} other {# Tabs}}
-        </message>
-        <message name="IDS_GROUP_UNGROUPED_TABS" desc="The label of item in system context menu to create a new tab group and put all ungrouped tabs in it.">
-          Group All Tabs
         </message>
         <message name="IDS_NEW_TAB_IN_GROUP" desc="The label of a context menu item for adding a new tab into a group.">
           New Tab in <ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>
@@ -12363,9 +12208,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP" desc="The label of the tab group header context menu item for closing all tabs in the current group.">
         Close group
       </message>
-      <message name="IDS_TAB_GROUP_HEADER_CXMENU_HIDE_GROUP" desc="The label of the tab group header context menu item for hiding a saved group into the bookmarks bar.">
-        Hide group
-      </message>
       <message name="IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP" desc="The label of the tab group header context menu item for deleting all tabs in the current group.">
         Delete group
       </message>
@@ -12381,22 +12223,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP" desc="The label of the saved tab group button context menu item to unpin a gruop">
         Unpin group from bookmarks bar
       </message>
-      <if expr="not use_titlecase">
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_CONVERT_GROUP_TO_BOOKMARK_FOLDER" desc="The label of the tab group header context menu item for moving the entire group to a new window.">
-          Convert group to bookmark folder
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_SEND_FEEDBACK" desc="The label of the tab group header context menu item for sending feedback for tab groups.">
-          Send feedback
-        </message>
-      </if>
-      <if expr="use_titlecase">
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_CONVERT_GROUP_TO_BOOKMARK_FOLDER" desc="The label of the tab group header context menu item for moving the entire group to a new window.">
-          Convert Group to Bookmark Folder
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_SEND_FEEDBACK" desc="In Title Case: The label of the tab group header context menu item for sending feedback for tab groups.">
-          Send Feedback
-        </message>
-      </if>
       <message name="IDS_TAB_GROUP_HEADER_BUBBLE_TITLE_PLACEHOLDER" desc="The placeholder text to display within the input field of the tab group editor bubble for naming a tab group.">
         Name this group
       </message>
@@ -12438,9 +12264,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             <message name ="IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_TITLE" desc="The title of the remove member dialog.">
               Remove <ph name="MEMBER_FULL_NAME">$1<ex>John Doe</ex></ph>?
             </message>
-            <message name ="IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_CONFIRM" desc="The confirmation button for the remove member dialog.">
-              Remove
-            </message>
           <!-- DataSharing Owner Remove Member Dialog -->
 
           <!-- Data Sharing Owner Delete Group -->
@@ -12453,14 +12276,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           <!-- /Data Sharing Owner Delete Group -->
 
           <!-- Data Sharing Preview Dialog -->
-            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE" desc="The title for the dialog that shows a preview of a tab group.">
-              Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>
-              {NUM_OTHER_MEMBERS, plural,
-                =0 {Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>}
-                =1 {Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # Other}
-                other {Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # Others}
-              }
-            </message>
             <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_ZERO" desc="The title for the dialog that shows a preview of a tab group with 0 other member.">
               Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>
             </message>
@@ -12475,9 +12290,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             </message>
             <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_DETAILS_TITLE" desc="The title for the details page of the dialog that shows a preview of a tab group.">
               Tab Group Details
-            </message>
-            <message name="IDS_DATA_SHARING_LINK_FAILED_TITLE" desc="The title for the link failed dialog.">
-              This Link Doesn’t Work
             </message>
           <!-- /Data Sharing Preview Dialog -->
 
@@ -12519,12 +12331,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             </message>
             <message name="IDS_DATA_SHARING_SOMETHING_WRONG" desc="The title of the generic failure dialog.">
               Something Went Wrong
-            </message>
-            <message name="IDS_DATA_SHARING_ORGANIZATION_DISALLOW_SIGN_IN" desc="The title of the organization disallowing signin dialog.">
-              Your Organization Doesn't Allow You to Sign in
-            </message>
-            <message name="IDS_DATA_SHARING_ORGANIZATION_LIMIT_SAVE" desc="The title of the organization limiting saving to account dialog.">
-              Your Organization Limits What You Can Save
             </message>
             <message name="IDS_DATA_SHARING_SIGNED_OUT" desc="The title of the dialog that prompts users to allow Chrome sign in.">
               You’re Signed out
@@ -12590,9 +12396,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             <message name ="IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_TITLE" desc="The title of the remove member dialog.">
               Remove <ph name="MEMBER_FULL_NAME">$1<ex>John Doe</ex></ph>?
             </message>
-            <message name ="IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_CONFIRM" desc="The confirmation button for the remove member dialog.">
-              Remove
-            </message>
           <!-- DataSharing Owner Remove Member Dialog -->
 
           <!-- Data Sharing Owner Delete Group -->
@@ -12605,14 +12408,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           <!-- /Data Sharing Owner Delete Group -->
 
           <!-- Data Sharing Preview Dialog -->
-            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE" desc="The title for the dialog that shows a preview of a tab group.">
-
-              {NUM_OTHER_MEMBERS, plural,
-                =0 {Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>}
-                =1 {Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # other}
-                other {Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # others}
-              }
-            </message>
             <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_ZERO" desc="The title for the dialog that shows a preview of a tab group with 0 other member.">
               Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>
             </message>
@@ -12627,9 +12422,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             </message>
             <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_DETAILS_TITLE" desc="The title for the details page of the dialog that shows a preview of a tab group.">
               Tab group details
-            </message>
-            <message name="IDS_DATA_SHARING_LINK_FAILED_TITLE" desc="The title for the link failed dialog.">
-              This link doesn’t work
             </message>
           <!-- /Data Sharing Preview Dialog -->
 
@@ -12671,12 +12463,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             </message>
             <message name="IDS_DATA_SHARING_SOMETHING_WRONG" desc="The title of the generic failure dialog.">
               Something went wrong
-            </message>
-            <message name="IDS_DATA_SHARING_ORGANIZATION_DISALLOW_SIGN_IN" desc="The title of the organization disallowing signin dialog.">
-              Your organization doesn't allow you to sign in
-            </message>
-            <message name="IDS_DATA_SHARING_ORGANIZATION_LIMIT_SAVE" desc="The title of the organization limiting saving to account dialog.">
-              Your organization limits what you can save
             </message>
             <message name="IDS_DATA_SHARING_SIGNED_OUT" desc="The title of the dialog that prompts users to allow Chrome sign in.">
               You’re signed out
@@ -12759,9 +12545,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_DETAILS_TABS_IN_GROUP" desc="The title for the tabs in group section in the preview details for a group.">
           Tabs in group
-        </message>
-        <message name="IDS_DATA_SHARING_LINK_FAILED_BODY" desc="The body for the link failed dialog.">
-          Contact the sender to ask for a new link
         </message>
         <message name ="IDS_DATA_SHARING_JOIN_GROUP_JOIN_AS" desc="A sublabel showing which profile the shared group is being joined as.">
           Join as <ph name="OWNER_FULL_NAME">$1<ex>John Doe</ex></ph>
@@ -12852,12 +12635,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_DATA_SHARING_JOIN_WARNING" desc="The warning at the top of join dialog.">
           Make sure you trust the person that sent this invitation
-        </message>
-        <message name="IDS_DATA_SHARING_ORGANIZATION_DISALLOW_SIGN_IN_BODY" desc="The body text of the organization disallowing signin dialog.">
-          To share or join tab groups, you must be able to sign in to Chrome
-        </message>
-        <message name="IDS_DATA_SHARING_ORGANIZATION_LIMIT_SAVE_BODY" desc="The body text of the organization limiting saving to account dialog.">
-          When your organization limits saving to your Google Account, you can’t share or join tab groups
         </message>
         <message name="IDS_DATA_SHARING_SIGNED_OUT_BODY" desc="The body text of the dialog that prompts users to allow Chrome sign in.">
           To share, join, and collaborate in tab groups, open settings and turn on Allow Chrome sign-in
@@ -13098,11 +12875,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <ph name="EXTENSION_NAME">$1<ex>My OpenVPN App</ex></ph> wants permanent access to a certificate to authenticate itself on your behalf.
       </message>
 
-      <!-- Misc strings for SSL UI -->
-      <message name="IDS_UNSAFE_FRAME_MESSAGE" desc="The text displayed in the content that is subsituted to an unsafe frame.">
-        This frame was blocked because it contains some insecure content.
-      </message>
-
       <!-- SSL client authentication certificate selection dialog -->
       <message name="IDS_CLIENT_CERT_DIALOG_TITLE" desc="The title of the dialog that prompts for a certificate when doing SSL client authentication.">
         Select a certificate
@@ -13149,17 +12921,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
 
       <!-- Mac First-run dialog messages -->
-      <if expr="is_macosx">
-        <message name="IDS_FIRSTRUN_DLG_MAC_COMPLETE_INSTALLATION_LABEL" desc="Label at top of Dialog noting what's going to happen">
-          <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is ready to complete your installation
-        </message>
-        <message name="IDS_FIRSTRUN_DLG_MAC_OPTIONS_SEND_USAGE_STATS_LABEL" desc="Label for checkbox to ask whether to send usage stats to Google">
-          Help make <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> better by automatically sending usage statistics and crash reports to Google
-        </message>
-        <message name="IDS_FIRSTRUN_DLG_MAC_START_CHROME_BUTTON" desc="Button to Start Google Chrome">
-          Start <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
-        </message>
-      </if>
 
       <!-- Sad Tab Strings -->
       <message name="IDS_CRASHED_TAB_FEEDBACK_MESSAGE" desc="The text to auto-populate the feedback page with. The triple single quotes are needed to preserve the line break.">
@@ -13506,9 +13267,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_IMAGE" desc="The label for the Create QR Code for this Image context menu item.">
           Create QR Code for this image
         </message>
-        <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_LINK" desc="The label for the Create QR Code for this Link context menu item.">
-          Create QR Code for this link
-        </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_PAGE" desc="The label for the Create QR Code for this Page context menu item.">
@@ -13516,9 +13274,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_IMAGE" desc="The label for the Create QR Code for this Image context menu item.">
           Create QR Code for this Image
-        </message>
-        <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_LINK" desc="The label for the Create QR Code for this Link context menu item.">
-          Create QR Code for this Link
         </message>
       </if>
       <if expr="not is_android">
@@ -13563,9 +13318,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
 
       <!-- Sharing Hub feature strings. -->
-      <message name="IDS_SHARING_HUB_TITLE" desc="The title for the Sharing Hub feature.">
-        Share
-      </message>
       <message name="IDS_SHARING_HUB_TOOLTIP" desc="Tooltip for the Sharing Hub feature omnibox icon.">
         Share this page
       </message>
@@ -13580,9 +13332,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
       <message name="IDS_SHARING_HUB_MEDIA_ROUTER_LABEL" desc="The text label for the media router button in the Sharing Hub dialog and app menu.">
         Cast...
-      </message>
-      <message name="IDS_SHARING_HUB_SHARE_LABEL" desc="The Label for the Third Party Targets in the Sharing Hub dialog.">
-        Share link to
       </message>
 
       <!-- Desktop Screenshots feature within the share hub; desktop-only. -->
@@ -13619,86 +13368,16 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_SHARING_REMOTE_COPY_NOTIFICATION_DESCRIPTION" desc="Second line of text displayed in a Remote Copy notification.">
         Press <ph name="MODIFIER_KEY_DESCRIPTION">$1<ex>Ctrl+V</ex></ph> to paste
       </message>
-      <if expr="not use_titlecase">
-        <message name="IDS_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES" desc="The label of item for click to call in context menu when multiple devices are available.">
-          Call from your device
-        </message>
-        <message name="IDS_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE" desc="The label of item for click to call in context menu for showing device name when one device is available.">
-          Call from <ph name="DEVICE_NAME">$1<ex>Jimmy's Pixel</ex></ph>
-        </message>
-      </if>
-
-      <if expr="use_titlecase">
-        <message name="IDS_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES" desc="In Title Case: The label of item for click to call in context menu when multiple devices are available.">
-          Call from Your Device
-        </message>
-        <message name="IDS_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE" desc="In Title Case: The label of item for click to call in context menu when single device is available.">
-          Call from <ph name="DEVICE_NAME">$1<ex>Jimmy's Pixel</ex></ph>
-        </message>
-      </if>
 
 
       <!-- Collected cookies window -->
-      <message name="IDS_COLLECTED_COOKIES_DIALOG_TITLE" desc="The title of the collect cookies dialog">
-        Cookies in use
-      </message>
-      <message name="IDS_COLLECTED_COOKIES_ALLOWED_COOKIES_LABEL" desc="The label used to describe the cookies that were allowed">
-        The following cookies were set when you viewed this page
-      </message>
-      <message name="IDS_COLLECTED_COOKIES_BLOCKED_COOKIES_LABEL" desc="The label used to describe the cookies that were blocked">
-        The following cookies were blocked
-      </message>
-      <message name="IDS_COLLECTED_COOKIES_BLOCKED_THIRD_PARTY_BLOCKING_ENABLED" desc="The label used to describe the cookies that were blocked include a note that third-party cookies were blocked without exception.">
-        The following cookies were blocked (third-party cookies are being blocked without exception)
-      </message>
-      <message name="IDS_COLLECTED_COOKIES_ALLOW_BUTTON" desc="A button that lets the use create a content settings exception to allow certain domains.">
-        Allow
-      </message>
       <if expr="use_titlecase">
-        <message name="IDS_COLLECTED_COOKIES_SESSION_ONLY_BUTTON" desc="Text of the button used to clear cookies from a specified domain when the browser exits.">
-          Clear On Exit
-        </message>
       </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_COLLECTED_COOKIES_SESSION_ONLY_BUTTON" desc="Text of the button used to clear cookies from a specified domain when the browser exits.">
-          Clear on exit
-        </message>
-      </if>
-      <message name="IDS_COLLECTED_COOKIES_BLOCK_BUTTON" desc="Text of the button used to block cookies from a specified domain.">
-        Block
-      </message>
-      <message name="IDS_COLLECTED_COOKIES_ALLOW_RULE_CREATED" desc="A notification that is displayed when a content exception to allow cookies was created.">
-        Cookies from <ph name="DOMAIN">$1<ex>example.com</ex></ph> allowed
-      </message>
-      <message name="IDS_COLLECTED_COOKIES_BLOCK_RULE_CREATED" desc="A notification that is displayed when a content exception to block cookies was created.">
-        Cookies from <ph name="DOMAIN">$1<ex>example.com</ex></ph> blocked
-      </message>
-      <message name="IDS_COLLECTED_COOKIES_SESSION_RULE_CREATED" desc="A notification that is displayed when a content exception to allow cookies for session only was created.">
-        Cookies from <ph name="DOMAIN">$1<ex>example.com</ex></ph> will be cleared on exit
-      </message>
-      <message name="IDS_COLLECTED_COOKIES_ALLOWED_COOKIES_TAB_LABEL" desc="The label in a tabbed pane that holds the UI controls for the cookies allowed while loading the page.">
-        Allowed
-      </message>
-      <message name="IDS_COLLECTED_COOKIES_BLOCKED_COOKIES_TAB_LABEL" desc="The label in a tabbed pane that holds the UI controls for the cookies blocked while loading the page.">
-        Blocked
-      </message>
-      <message name="IDS_COLLECTED_COOKIES_ALLOWED_AUX_TEXT" desc="The text used to label a cookie which has been marked as allowed.">
-        Allowed
-      </message>
-      <message name="IDS_COLLECTED_COOKIES_BLOCKED_AUX_TEXT" desc="The text used to label a cookie which has been marked as blocked.">
-        Blocked
-      </message>
-      <message name="IDS_COLLECTED_COOKIES_CLEAR_ON_EXIT_AUX_TEXT" desc="The text used to label a cookie which has been marked to be cleared on exit.">
-        Cleared on Exit
-      </message>
       <message name="IDS_COLLECTED_COOKIES_INFOBAR_MESSAGE" desc="The string shown in the infobar after the user has changed the allowed/blocked state of a cookie, reminding them to reload the page in order for the new cookies to take effect.">
         Reload this page to apply your updated settings on this site
       </message>
       <message name="IDS_COLLECTED_COOKIES_INFOBAR_BUTTON" desc="The string used in the infobar button allowing the user to reload the page directly from the infobar.">
         Reload
-      </message>
-      <message name="IDS_COLLECTED_COOKIES_PARTITIONED_COOKIE" desc="The string used to identify cookies which have been partitioned based on the current site, and so are not available for use on different sites.">
-        Partitioned
       </message>
 
       <!-- Page specific site data dialog (redesign of Collected cookies window) -->
@@ -13825,37 +13504,8 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Undo
       </message>
       <!-- Enterprise sign-in profile linking -->
-      <message name="IDS_ENTERPRISE_SIGNIN_CANCEL" desc="Text of the button to cancel sign-in">
-        Cancel
-      </message>
 
       <!-- Enterprise sign-in profile linking -->
-      <if expr="use_titlecase">
-        <message name="IDS_ENTERPRISE_SIGNIN_CREATE_NEW_PROFILE" desc="Text of the button to create a new profile after enterprise account sign-in">
-          Create a New Profile
-        </message>
-        <message name="IDS_ENTERPRISE_SIGNIN_CREATE_NEW_WORK_PROFILE" desc="Text of the button to create a new work profile after enterprise account sign-in">
-          Add Work Profile
-        </message>
-        <message name="IDS_ENTERPRISE_SIGNIN_CONTINUE" desc="Text of the button to link the current profile with the signed-in enterprise account">
-          Link Data
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_ENTERPRISE_SIGNIN_CREATE_NEW_PROFILE" desc="Text of the button to create a new profile after enterprise account sign-in">
-          Create a new profile
-        </message>
-        <message name="IDS_ENTERPRISE_SIGNIN_CREATE_NEW_WORK_PROFILE" desc="Text of the button to create a new work profile after enterprise account sign-in">
-          Add work profile
-        </message>
-        <message name="IDS_ENTERPRISE_SIGNIN_CONTINUE" desc="Text of the button to link the current profile with the signed-in enterprise account">
-          Link data
-        </message>
-      </if>
-
-      <message name="IDS_ENTERPRISE_SIGNIN_ALERT" desc="The text of the prompt to create a new profile after signing in to an enterprise account">
-        This account is managed by <ph name="DOMAIN">$1<ex>example.com</ex></ph>
-      </message>
 
       <!-- Clear profile dialog-->
       <message name="IDS_PROFILE_WILL_BE_DELETED_DIALOG_TITLE" desc="The title of the dialog shown when the user is syncing with an enterprise account and when this account is no longer allowed as the primary account.">
@@ -13906,72 +13556,8 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
       </if>
 
-      <!-- Cookies tree model -->
-      <message name="IDS_COOKIES_COOKIE_EXPIRES_SESSION" desc="The Cookie Expires field value for a session cookie">
-        When the browsing session ends
-      </message>
-      <message name="IDS_COOKIES_COOKIE_SENDFOR_ANY" desc="Send Cookie for any kind of connection">
-        Any kind of connection
-      </message>
-      <message name="IDS_COOKIES_COOKIE_SENDFOR_SECURE" desc="Send Cookie for any kind of connection">
-        Secure connections only
-      </message>
-      <message name="IDS_COOKIES_COOKIE_SENDFOR_SAME_SITE" desc="Send Cookie for any same-site connection">
-        Same-site connections only
-      </message>
-      <message name="IDS_COOKIES_COOKIE_SENDFOR_SECURE_SAME_SITE" desc="Send Cookie for secure, same-site connections">
-        Secure same-site connections only
-      </message>
-      <message name="IDS_COOKIES_COOKIE_ACCESSIBLE_TO_SCRIPT_YES" desc="Accessible to Script">
-        Yes
-      </message>
-      <message name="IDS_COOKIES_COOKIE_ACCESSIBLE_TO_SCRIPT_NO" desc="Accessible to Script">
-        No (HttpOnly)
-      </message>
-      <message name="IDS_COOKIES_COOKIES" desc="Label for folder under which a list of cookies appear">
-        Cookies
-      </message>
-      <message name="IDS_COOKIES_WEB_DATABASES" desc="Label for the folder under which a list of web databases (name of an HTML standard) are displayed">
-        Web databases
-      </message>
-      <message name="IDS_COOKIES_LOCAL_STORAGE" desc="Label for local storage (name of an HTML standard)">
-        Local storage
-      </message>
-      <message name="IDS_COOKIES_SESSION_STORAGE" desc="Label for session storage (name of an HTML standard)">
-        Session storage
-      </message>
-      <message name="IDS_COOKIES_INDEXED_DBS" desc="Label for Indexed Databases (name of an HTML standard)">
-        Indexed databases
-      </message>
-      <message name="IDS_COOKIES_FILE_SYSTEMS" desc="Label for the folder under which a list of file systems (name of an HTML standard) are displayed">
-        File systems
-      </message>
-      <message name="IDS_COOKIES_FILE_SYSTEM_USAGE_NONE" desc="Value displayed when no file system of a particular type exists.">
-        None
-      </message>
-      <message name="IDS_COOKIES_SERVICE_WORKER" desc="The text shown when there is data for Service Workers within an origin (name of a Web standard) in the Cookies table">
-        Service Workers
-      </message>
-      <message name="IDS_COOKIES_SERVICE_WORKERS" desc="Label for Service Workers (name of an HTML standard)">
-        Service Workers
-      </message>
-      <message name="IDS_COOKIES_SHARED_WORKERS" desc="Label for Shared Workers (name of an HTML standard)">
-        Shared Workers
-      </message>
-      <message name="IDS_COOKIES_CACHE_STORAGE" desc="The text shown when there is Cache Storage (name of a Web standard) in the Cookies table">
-        Cache Storage
-      </message>
-
       <!-- Strings used for non-Android builds -->
       <if expr="not is_android">
-        <message name="IDS_APP_DEFAULT_PAGE_NAME"
-                 desc="Default name for the first 'Apps' page on the New Tab Page.">
-          Apps
-        </message>
-        <message name="IDS_APP_LAUNCHER_TAB_TITLE"
-                 desc="Default name for stand alone web page to serve as an App launcher when the new tab doesn't show apps.">
-          Apps
-        </message>
         <message name="IDS_NEW_TAB_GUEST_SESSION_HEADING"
               desc="Heading used when a person enters Guest Session">
           You're browsing as a Guest
@@ -13996,13 +13582,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             desc="Accessibility label for a link labeled 'Learn more' that links to a help article about enterprise enrolled devices.">
           Learn more about enterprise enrolled devices
         </message>
-        <message name="IDS_NEW_TAB_TILE_GRID_ACCESSIBLE_DESCRIPTION"
-                 desc="Help message for screenreader users, spoken when navigating to a tile grid for the first time.">
-          Use left and right arrow keys to navigate.
-        </message>
-        <message name="IDS_NEW_TAB_APP_INSTALL_HINT_LABEL" desc="Text for the plus icon on the NTP that links to the web store.">
-          Add more apps
-        </message>
         <message name="IDS_NEW_TAB_MOST_VISITED"
                  desc="The name for the 'Most Visited' navigation control on the New Tab Page.">
           Most visited
@@ -14017,22 +13596,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_NEW_TAB_ATTRIBUTION_INTRO"
                desc="Leading sentence above a custom logo that the theme artist has provided">
         Theme created by
-      </message>
-      <message name="IDS_NEW_TAB_THUMBNAIL_REMOVED_NOTIFICATION"
-               desc="Notification text shown when a thumbnail has been removed from the most visited section.">
-        Thumbnail removed.
-      </message>
-      <message name="IDS_NEW_TAB_REMOVE_THUMBNAIL_TOOLTIP"
-         desc="Tooltip text for the button that removes/denylists the thumbnail. Once removed the thumbnail will not show up on the new tab page again.">
-        Don't show on this page
-      </message>
-      <message name="IDS_NEW_TAB_PAGE_SWITCHER_CHANGE_TITLE"
-         desc="Title for accessibility of the 'page-switcher-start' or 'page-switcher-end' button when switching from one type (determined based on title) of card to another">
-        Go to <ph name="PAGE_TITLE">$1<ex>Apps</ex></ph>
-      </message>
-      <message name="IDS_NEW_TAB_PAGE_SWITCHER_SAME_TITLE"
-         desc="Title for accessibility of the 'page-switcher-start' or 'page-switcher-end' button when switching between pages which have the same title">
-        More <ph name="PAGE_TITLE">$1<ex>Apps</ex></ph>
       </message>
       <message name="IDS_NEW_TAB_VOICE_AUDIO_ERROR"
         desc="Used to indicate that there was an error starting the microphone to record speech input.">
@@ -14090,14 +13653,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         desc="Used to indicate that the speech recognition service is waiting for user permission to use the microphone.">
         Waiting...
       </message>
-      <message name="IDS_NEW_TAB_VOICE_SEARCH_CLOSED"
-        desc="Message announced to screen reader users that the voice search overlay is closed.">
-        Voice search closed
-      </message>
-      <message name="IDS_FUSEBOX_VOICE_SEARCH_TRANSCRIBING"
-        desc="Text shown as needed while the speech recognition service is transcribing the user's voice input.">
-        Transcribing...
-      </message>
       <message name="IDS_FUSEBOX_VOICE_SEARCH_STOP_TITLE"
         desc="Accessibility text shown for the stop button's title.">
         Stop
@@ -14112,37 +13667,13 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
                  desc="Text for the context menu item that takes the user to the app in Web Store. (In sentence case.)">
           View in Web Store
         </message>
-        <message name="IDS_NEW_TAB_APP_CREATE_SHORTCUT"
-                 desc="Text for the context menu item that creates an app shortcut. (In sentence case.)">
-          Create shortcuts...
-        </message>
-        <message name="IDS_NEW_TAB_APP_INSTALL_LOCALLY"
-                 desc="Text for the context menu item that locally installs an app or shortcut. (In sentence case.)">
-          Install on this device
-        </message>
         <message name="IDS_APP_CONTEXT_MENU_SHOW_INFO"
                  desc="Text for the context menu item that shows the application information. (In sentence case.)">
           App info
         </message>
-        <message name="IDS_APP_CONTEXT_MENU_OPEN_PINNED"
-                 desc="Text for the button that opens the app in a pinned tab. (In sentence case.)">
-          Open as pinned tab
-        </message>
-        <message name="IDS_APP_CONTEXT_MENU_OPEN_REGULAR"
-                 desc="Text for the button that opens the app in a regular tab. (In sentence case.)">
-          Open as regular tab
-        </message>
         <message name="IDS_APP_CONTEXT_MENU_OPEN_WINDOW"
                  desc="Text for the button that opens the app in an app window. (In sentence case.)">
           Open as window
-        </message>
-        <message name="IDS_APP_CONTEXT_MENU_OPEN_FULLSCREEN"
-                 desc="Text for the button that opens the app full screen. (In sentence case.)">
-          Open full screen
-        </message>
-        <message name="IDS_APP_CONTEXT_MENU_OPEN_MAXIMIZED"
-                 desc="Text for the button that opens the app maximized. (In sentence case.)">
-          Open maximized
         </message>
         <message name="IDS_APP_CONTEXT_MENU_OPEN_TAB"
                  desc="Text for the button that opens the app in a tab. (In sentence case.)">
@@ -14153,23 +13684,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
                    desc="Text for the button that activates Android App. (In sentence case.)">
             Open
           </message>
-          <message name="IDS_APP_CONTEXT_MENU_INSTALL_ARC"
-                   desc="Text for the button that installs the Android app. (In sentence case.)">
-            Install
-          </message>
-          <message name="IDS_APP_TERMINAL_LINUX"
-                   desc="Text for the menu item to open Linux in a tab in Terminal system app">
-            Linux
-          </message>
-          <message name="IDS_APP_TERMINAL_SSH"
-                   desc="Text for the menu item to open an SSH tab in Terminal system app">
-            SSH
-          </message>
         </if>
-        <message name="IDS_APP_CONTEXT_MENU_RUN_ON_OS_LOGIN"
-                 desc="Text for the button that toggles open app automatically at OS Login. (In sentence case.)">
-          Start app when you sign in
-        </message>
       </if>
 
       <if expr="use_titlecase">
@@ -14181,45 +13696,13 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
                  desc="Text for the context menu item that takes the user to the app in Web Store. (In title case.)">
           View in Web Store
         </message>
-        <if expr="is_macosx">
-          <message name="IDS_NEW_TAB_APP_CREATE_SHORTCUT"
-                   desc="Text for the context menu item that creates an app shortcut. (In title case.)">
-            Create Shortcut
-          </message>
-        </if>
-        <if expr="not is_macosx">
-          <message name="IDS_NEW_TAB_APP_CREATE_SHORTCUT"
-                   desc="Text for the context menu item that creates an app shortcut. (In title case.)">
-            Create Shortcuts...
-          </message>
-        </if>
-        <message name="IDS_NEW_TAB_APP_INSTALL_LOCALLY"
-                 desc="Text for the context menu item that locally installs an app or shortcut. (In title case.)">
-          Install on this Device
-        </message>
         <message name="IDS_APP_CONTEXT_MENU_SHOW_INFO"
                  desc="Text for the context menu item that shows the application information. (In title case.)">
           App Info
         </message>
-        <message name="IDS_APP_CONTEXT_MENU_OPEN_PINNED"
-                 desc="Text for the button that opens the app in a pinned tab. (In title case.)">
-          Open as Pinned Tab
-        </message>
-        <message name="IDS_APP_CONTEXT_MENU_OPEN_REGULAR"
-                 desc="Text for the button that opens the app in a regular tab. (In title case.)">
-          Open as Regular Tab
-        </message>
         <message name="IDS_APP_CONTEXT_MENU_OPEN_WINDOW"
                  desc="Text for the button that opens the app in an app window. (In title case.)">
           Open as Window
-        </message>
-        <message name="IDS_APP_CONTEXT_MENU_OPEN_FULLSCREEN"
-                 desc="Text for the button that opens the app full screen. (In title case.)">
-          Open Full Screen
-        </message>
-        <message name="IDS_APP_CONTEXT_MENU_OPEN_MAXIMIZED"
-                 desc="Text for the button that opens the app maximized. (In title case.)">
-          Open Maximized
         </message>
         <message name="IDS_APP_CONTEXT_MENU_OPEN_TAB"
                  desc="Text for the button that opens the app in a tab. (In title case.)">
@@ -14230,23 +13713,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
                    desc="Text for the button that activates Android App. (In title case.)">
             Open
           </message>
-          <message name="IDS_APP_CONTEXT_MENU_INSTALL_ARC"
-                   desc="Text for the button that installs the Android app. (In title case.)">
-            Install
-          </message>
-          <message name="IDS_APP_TERMINAL_SPLIT_HORIZONTAL"
-                   desc="Text for the menu item to create a horizontal split in terminal app">
-            Split Horizontal
-          </message>
-          <message name="IDS_APP_TERMINAL_SPLIT_VERTICAL"
-                   desc="Text for the menu item to create a vertical split in terminal app">
-            Split Vertical
-          </message>
         </if>
-        <message name="IDS_APP_CONTEXT_MENU_RUN_ON_OS_LOGIN"
-                 desc="Text for the button that toggles open app automatically at OS Login. (In title case.)">
-          Start App When You Sign In
-        </message>
       </if>
 
       <message name="IDS_APPS_PAGE_DEPRECATED_APP_TITLE" desc="Title text for deprecated apps in the apps page.">
@@ -14501,16 +13968,6 @@ This can include information about installed software, files, your browser, the 
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TITLE_SIGNIN_REMINDER" desc="This string is the headline of a reminder message, which is intended to help users understand that they have been signed in to Chrome. The user previously signed in to a Google service (like Gmail or Maps), and saw the Chrome Signin Bubble intercept; when asked whether the user wanted to sign in to Chrome as well, the user selected yes. After a period of time, this reminder message appears at the top right of Chrome (pointing at the Profile Menu) to remind the user that they made this choice a while ago. This headline string comes before the 'You’re signed in to Chrome. You’ve got your passwords and more from your Google Account.' string. We are focusing on the benefit that user enjoys, now that they're signed in to Chrome. The tone should be welcoming.">
           Welcome back, <ph name="PROFILE_NAME">$1<ex>Elisa</ex></ph>
         </message>
-        <if expr="use_titlecase">
-          <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_OK_BUTTON" desc="This button appears on a confirmation message, which is intended to help users understand that they have been signed in to Chrome. The user previously signed in to a Google service (like Gmail or Maps), and saw the Chrome Signin Bubble intercept; when asked whether the user wanted to sign in to Chrome as well, the user selected yes. Now, this confirmation appears at the top right of Chrome (pointing at the Profile Menu) to confirm that their choice was effective. This button string comes after the 'Welcome, Elisa' and 'When you sign in on this device, you get your passwords and more from your Google Account' strings. Users click 'Got it' to convey that they saw the message and want to hide the message.">
-            Got It
-          </message>
-        </if>
-        <if expr="not use_titlecase">
-          <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_OK_BUTTON" desc="This button appears on a confirmation message, which is intended to help users understand that they have been signed in to Chrome. The user previously signed in to a Google service (like Gmail or Maps), and saw the Chrome Signin Bubble intercept; when asked whether the user wanted to sign in to Chrome as well, the user selected yes. Now, this confirmation appears at the top right of Chrome (pointing at the Profile Menu) to confirm that their choice was effective. This button string comes after the 'Welcome, Elisa' and 'When you sign in on this device, you get your passwords and more from your Google Account' strings. Users click 'Got it' to convey that they saw the message and want to hide the message.">
-            Got it
-          </message>
-        </if>
 
         <!-- Chrome Signout Confirmation Prompt -->
         <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_TITLE"  desc="This is the title of an error message dialog that appears when the user opens the Chrome Profile Menu and chooses 'Sign out of Chrome'. The error message appears when the user has saved some data (like a password or payment method) to Chrome, but Chrome wasn't able to save the data to the user's Google Account due to a sign-in error; but, the data has been saved locally to Chrome. This title is before the 'Chrome needs to verify it’s you before some data can be saved in your Google Account and used on all your devices. If you sign out, this data will stay on this device.' string. The tone should be cautionary.">
@@ -14519,21 +13976,6 @@ This can include information about installed software, files, your browser, the 
         <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_DELETE_AND_SIGNOUT_BUTTON" desc="This string is found on a button that lets the user sign out of Chrome when the user taps it. It is on an error message dialog that appears when the user opens the Chrome Profile Menu and chooses 'Sign out of Chrome'. The error message appears when the user has saved some data (like a password or payment method) to Chrome, but Chrome wasn't able to save the data to the user's Google Account due to a network error; but, the data has been saved locally to Chrome. This text is a verb and is short for the longer phrase 'Delete data and sign out of Chrome anyway.'">
           Delete and sign out
         </message>
-
-        <message name="IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_TEXT_LINK" desc="Text of the link to open cookie settings, when closing the last browser window.">
-          go to settings
-        </message>
-
-        <if expr="use_titlecase">
-          <message name="IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_CLOSE" desc="Text of the button to confirm browser close after cookie setting change in behavior.">
-            Close Window
-          </message>
-        </if>
-        <if expr="not use_titlecase">
-          <message name="IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_CLOSE" desc="Text of the button to confirm browser close after cookie setting change in behavior.">
-            Close window
-          </message>
-        </if>
       </if>
 
       <message name="IDS_SYNC_PASSPHRASE_DIALOG_FOOTER_LINK" desc="Highlighted link in the dialog footer of the passphrase dialog.">
@@ -14616,11 +14058,6 @@ This can include information about installed software, files, your browser, the 
       <message name="IDS_EXTERNAL_PROTOCOL_CHECKBOX_PER_ORIGIN_TEXT" desc="The External Protocol Dialog is shown when a navigation is started from a webpage, such as https://google.com, to a URL where the protocol indicates that a different software application on the machine should be opened, external to the browser. For example, 'skype:' may indicate that the Skype application be opened. This string describes a checkbox that allows the user to opt out of seeing this confirmation dialog in the future from pages with the same origin as the current page, when trying to launch the same protocol currently being launched">
         Always allow <ph name="ORIGIN">$1<ex>https://google.com</ex></ph> to open links of this type in the associated app
       </message>
-      <if expr="is_chromeos">
-        <message name="IDS_EXTERNAL_PROTOCOL_CLOSE_BUTTON_TEXT" desc="Button in External Protocol Dialog that closes the dialog">
-          Close
-        </message>
-      </if>
 
       <!-- Strings used in local directory listings -->
       <message name="IDS_DIRECTORY_LISTING_HEADER" desc="When viewing a local directory, this is the title of the page.">
@@ -14684,9 +14121,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Failed To Create Data Directory
       </message>
 
-      <message name="IDS_RECENT_TABS_MENU" desc="The title of the Recent Tabs menu in the wrench menu.">
-        Recent tabs
-      </message>
       <message name="IDS_RECENT_TABS_NO_DEVICE_TABS" desc="The label in the Recent Tabs menu in the wrench menu when there's no tabs from other devices.">
         No tabs from other devices
       </message>
@@ -14806,16 +14240,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
 
       <!-- Upgrade recovery bubble -->
-      <if expr="use_titlecase">
-        <message name="IDS_DECLINE_RECOVERY" desc="In Title Case: Text for the button the user clicks to decline recovery request.">
-          No, Thanks
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_DECLINE_RECOVERY" desc="Text for the button the user clicks to decline recovery request.">
-          No, thanks
-        </message>
-      </if>
 
       <!-- Sync strings -->
 
@@ -14910,14 +14334,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
       <!-- Sync options dialog strings -->
       <message name="IDS_SYNC_EMPTY_STRING" desc="Empty string, exist only to make code generic. No translation required." translateable="false"></message>
-      <if expr="not is_chromeos">
-        <message name="IDS_SYNC_OVERVIEW" desc="The message that appears in the options dialog when sync has not been set up by the user.">
-          Sign in to get your bookmarks, history, passwords and other settings on all your devices. You'll also automatically be signed in to your Google services.
-        </message>
-      </if>
-      <message name="IDS_SYNC_START_SYNC_BUTTON_LABEL" desc="The label that appears on the sync button in the options dialog when sync has not been set up by the user.">
-        Sign in to <ph name="PRODUCT_NAME">$1<ex>Chrome</ex></ph>
-      </message>
       <message name="IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY" desc="The message that appears in the settings page indicating that user is signed in, but sync is disabled by enterprise policy.">
         Sync is disabled by your administrator.
       </message>
@@ -14937,9 +14353,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT" desc="Message shown on the personal options page when there is an unrecoverable error in ChromeOS as well as for managed accounts.">
         Sync isn't working. Try signing out and back in again.
-      </message>
-      <message name="IDS_SYNC_STATUS_NEEDS_PASSWORD" desc="Message indicating user must re-enter their sync password.">
-        Enter your passphrase to sync your data
       </message>
       <message name="IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON" desc="Button indicating user must re-enter their sync password.">
         Enter passphrase
@@ -15000,16 +14413,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Your account sign-in details are out of date. Please sign out and sign in again.
         </message>
       </if>
-      <message name="IDS_SYNC_ADVANCED_OPTIONS" desc="The text in the link that brings up the sync configure screen in the new tab page new data type notification.">
-        Advanced settings
-      </message>
-
-      <if expr="is_chromeos">
-        <!-- Spinner dialog for waiting sync backend to start up -->
-        <message name="IDS_SYNC_SETUP_SPINNER_TITLE" desc="The title of the sync setup dialog showing spinner.">
-          Please wait...
-        </message>
-      </if>
 
       <!-- Encryption tab of the configure sync dialog -->
       <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM" desc="Text of the radio that when selected enables full encryption.">
@@ -15052,12 +14455,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
             Translation to <ph name="language">$1<ex>French</ex></ph> complete
         </message>
         <if expr="not use_titlecase">
-          <message name="IDS_TRANSLATE_BUBBLE_ADVANCED_BUTTON" desc="Text to show for the translate bubble button to jump to the advanced panel.">
-            Options
-          </message>
-          <message name="IDS_TRANSLATE_BUBBLE_ADVANCED_MENU_BUTTON" desc="Text to show for the translate bubble menu button to jump to the advanced panel, specifically to change which languages are translated between.">
-            Change languages
-          </message>
           <message name="IDS_TRANSLATE_BUBBLE_CHANGE_TARGET_LANGUAGE" desc="Text for the menu item that lets the user open a dialog to choose another target language for translation, from a list of available languages.">
             Choose another language
           </message>
@@ -15073,9 +14470,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
           <message name="IDS_TRANSLATE_BUBBLE_ACCEPT" desc="Text to show for the translate bubble button to accept translation.">
             Translate
           </message>
-          <message name="IDS_TRANSLATE_BUBBLE_DENY" desc="Text to show for the translate bubble menu item to deny translation.">
-            No thanks
-          </message>
           <message name="IDS_TRANSLATE_BUBBLE_ALWAYS_TRANSLATE_LANG" desc="Text to show for the translate bubble menu item to always translate the specified language">
             Always translate <ph name="language">$1<ex>French</ex></ph>
           </message>
@@ -15088,9 +14482,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
           <message name="IDS_TRANSLATE_BUBBLE_TRANSLATING" desc="Text to show for the translate bubble label when page is currently being translated by servers">
             Translating...
           </message>
-          <message name="IDS_TRANSLATE_BUBBLE_REVERT" desc="Text to show for the translate bubble button to revert translation of translated page">
-            Show original
-          </message>
           <message name="IDS_TRANSLATE_BUBBLE_TRY_AGAIN" desc="Text to show for the translate bubble button to try to translate the page again">
             Try again
           </message>
@@ -15099,12 +14490,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
           </message>
           <message name="IDS_TRANSLATE_BUBBLE_OPTIONS_MENU_BUTTON" desc="Text to show for the translate bubble 'Options' menu button">
             Translate options
-          </message>
-          <message name="IDS_TRANSLATE_BUBBLE_PAGE_LANGUAGE" desc="Text to show for the translate bubble label next to the combobox of the page language">
-            Page language:
-          </message>
-          <message name="IDS_TRANSLATE_BUBBLE_TRANSLATION_LANGUAGE" desc="Text to show for the translate bubble label next to the combobox of the target language for Translate">
-            Translation language:
           </message>
           <message name="IDS_TRANSLATE_BUBBLE_ADVANCED_TARGET" desc="Text to show as the title in the advanced source language view for TAB UI">
             Language to translate into
@@ -15120,12 +14505,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
           </message>
         </if>
         <if expr="use_titlecase">
-          <message name="IDS_TRANSLATE_BUBBLE_ADVANCED_BUTTON" desc="In Title Case: Text to show for the translate bubble button to jump to the advanced panel.">
-            Options
-          </message>
-          <message name="IDS_TRANSLATE_BUBBLE_ADVANCED_MENU_BUTTON" desc="In Title Case: Text to show for the translate bubble menu item to jump to the advanced panel, specifically to change which languages are translated between.">
-            Change Languages...
-          </message>
           <message name="IDS_TRANSLATE_BUBBLE_CHANGE_TARGET_LANGUAGE" desc="In Title Case: Text to show for the translate bubble menu item which invokes the target language menu.">
             Choose Another Language...
           </message>
@@ -15141,9 +14520,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
           <message name="IDS_TRANSLATE_BUBBLE_ACCEPT" desc="In Title Case: Text to show for the translate bubble button to accept translation.">
             Translate
           </message>
-          <message name="IDS_TRANSLATE_BUBBLE_DENY" desc="In Title Case: Text to show for the translate bubble button to deny translation.">
-            No Thanks
-          </message>
           <message name="IDS_TRANSLATE_BUBBLE_ALWAYS_TRANSLATE_LANG" desc="In Title Case: Text to show for the translate bubble menu item to always translate the specified language">
             Always Translate <ph name="language">$1<ex>French</ex></ph>
           </message>
@@ -15156,9 +14532,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
           <message name="IDS_TRANSLATE_BUBBLE_TRANSLATING" desc="In Title Case: Text to show for the translate bubble label when page is currently being translated by servers">
             Translating...
           </message>
-          <message name="IDS_TRANSLATE_BUBBLE_REVERT" desc="In Title Case: Text to show for the translate bubble button to revert translation of translated page">
-            Show Original
-          </message>
           <message name="IDS_TRANSLATE_BUBBLE_TRY_AGAIN" desc="In Title Case: Text to show for the translate bubble button to try to translate the page again">
             Try Again
           </message>
@@ -15167,12 +14540,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
           </message>
           <message name="IDS_TRANSLATE_BUBBLE_OPTIONS_MENU_BUTTON" desc="In Title Case: Text to show for the translate bubble 'Options' button">
             Translate Options
-          </message>
-          <message name="IDS_TRANSLATE_BUBBLE_PAGE_LANGUAGE" desc="In Title Case: Text to show for the translate bubble label next to the combobox of the page language">
-            Page Language:
-          </message>
-          <message name="IDS_TRANSLATE_BUBBLE_TRANSLATION_LANGUAGE" desc="In Title Case: Text to show for the translate bubble label next to the combobox of the target language for Translate">
-            Translation Language:
           </message>
           <message name="IDS_TRANSLATE_BUBBLE_ADVANCED_TARGET" desc="In Title Case: Text to show as the title in the advanced source language view for TAB UI">
             Language to Translate into
@@ -15262,12 +14629,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <if expr="is_android">
         <message name="IDS_NOTIFICATION_BUTTON_MANAGE" desc="Text of a button shown on notification permission requests, that opens the Chrome notifications settings page. This allows users to edit notification settings when a site asks them to allow notifications.">
           Manage
-        </message>
-        <message name="IDS_NOTIFICATION_QUIET_PERMISSION_MINI_INFOBAR_DETAILS_LINK" desc="Blue text on a notification infobar that when clicked expands the infobar to show more details.">
-          Details
-        </message>
-        <message name="IDS_NOTIFICATION_QUIET_PERMISSION_MINI_INFOBAR_MESSAGE" desc="Text on an infobar that informs the user that notifications are blocked, in a very short form. [CHAR_LIMIT=20]">
-          Notifications blocked.
         </message>
         <message name="IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_TITLE" desc="Title of an infobar that informs the user that notifications are blocked. [CHAR_LIMIT=32]">
           Notifications blocked
@@ -15947,19 +15308,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
 
       <!-- Protected media identifier permission infobar -->
-      <message name="IDS_MANAGE_PASSWORDS_CONFIRM_GENERATED_TEXT" desc="A message that the browser shows after saving a password it has autogenerated for the user. This message appears in a bubble and contains a link to all the user's saved autogenerated passwords. The link text is a separate string in the translation console and appears here as placeholder text.">
-        View and manage saved passwords in your <ph name="SAVED_PASSWORDS_STORE">$1<ex>Google Account</ex></ph>
-      </message>
       <message name="IDS_PASSWORDS_WEB_LINK" translateable="false">
         https://passwords.google.com
-      </message>
-      <if expr="is_android">
-        <message name="IDS_MANAGE_PASSWORDS_CONFIRM_GENERATED_TEXT_INFOBAR" desc="A message that the browser shows after saving a password it has autogenerated for the user. This message appears in an infobar and contains a link to all the user's saved autogenerated passwords. The link text is a separate string in the translation console and appears here as placeholder text.">
-          Password saved. View and manage saved passwords in your <ph name="SAVED_PASSWORDS_STORE">$1<ex>Google Account</ex></ph>.
-        </message>
-      </if>
-      <message name="IDS_MANAGE_PASSWORDS_LINK" desc="The text for a link to the user's saved passwords. This is inserted into an infobar or a bubble that the browser shows to the user. The infobar and the bubble use a separate string in the translation console that has a placeholder for this link title.">
-        Google Account
       </message>
       <message name="IDS_MANAGE_PASSWORDS_TITLE" desc="The title text that is used in the manage passwords bubble when a password is autofilled or after a user has stored a password.">
         Saved passwords for this site
@@ -16032,10 +15382,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
       <!-- Extra Mac UI Strings -->
       <if expr="is_macosx">
-        <message name="IDS_PLEASE_RELAUNCH_BROWSER" desc="Title of the alert when Chrome needs to be relaunched for a change/update to take effect.">
-          Please Relaunch <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
-        </message>
-
         <!-- Install from disk image -->
         <message name="IDS_INSTALL_FROM_DMG_TITLE" desc="Title of the dialog asking whether to install from the disk image.  Mac-only.">
           Do you want to install <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>?
@@ -16273,12 +15619,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </if>
 
       <!-- App List. -->
-      <if expr="is_chromeos">
-        <message name="IDS_APP_CONTEXT_MENU_LAUNCH_APP_SHORTCUT"
-                   desc="Text for an option shown in a context menu to launch a shortcut in its host app. Example: 'Open Fortnite - GeForce Now'">
-            Open <ph name="SHORTCUT_NAME">$1<ex>Fortnite</ex></ph> - <ph name="APP_NAME">$2<ex>GeForce Now</ex></ph>
-        </message>
-      </if>
 
       <!-- Translated apps strings -->
       <message name="IDS_CHROME_SHORTCUT_DESCRIPTION" desc="Description for the Chrome app shortcut in the app launcher.">
@@ -16373,11 +15713,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DESKTOP_MEDIA_PICKER_RESELECT_WINDOW" desc="Text for a button appearing on the window picker dialog which is displayed when there is a secondary, system-level picker in which the user must select the content to share. Clicking this button will re-open the picker to allow the user to choose a new window to share." >
         Choose a different window
       </message>
-      <if expr="toolkit_views">
-        <message name="IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_THIS_TAB" desc="Text for one of the dialog-tabs on the media picker dialog. This dialog-tab controls sharing the current tab.">
-          This Tab
-        </message>
-      </if>
       <message name="IDS_DESKTOP_MEDIA_PICKER_EMPTY_PREVIEW" desc="Text shown instead of a preview image of a tab when the user hasn't yet selected a tab to screenshare." >
         Select a tab to share
       </message>
@@ -16956,15 +16291,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_RE_SCAN_TOOLTIP" desc="Tooltip for the button that lets the user start a new scan for Bluetooth devices.">
         Re-scan Bluetooth devices
       </message>
-      <message name="IDS_DEVICE_CHOOSER_GET_HELP_LINK_WITH_SCANNING_STATUS" desc="This text is shown at the bottom of the chooser popup with a link to 'Get help'.">
-        Get help<ph name="SCANNING_STATUS">$1<ex> while scanning for devices...</ex></ph>
-      </message>
-      <message name="IDS_DEVICE_CHOOSER_GET_HELP_LINK_WITH_RE_SCAN_LINK" desc="This text is shown at the bottom of the chooser popup with links to 'Get help' and 're-scan'.">
-        <ph name="GET_HELP_LINK">$1<ex>Get help</ex></ph> or <ph name="RE_SCAN_LINK">$2<ex>re-scan</ex></ph>
-      </message>
-      <message name="IDS_DEVICE_CHOOSER_PAIRED_STATUS_TEXT" desc="The label that is used to inform the user that the device is paired.">
-        Paired
-      </message>
       <message name="IDS_DEVICE_CHOOSER_DEVICE_NAME_AND_PAIRED_STATUS_TEXT" desc="Text of the device name and paired status.">
         <ph name="DEVICE_NAME">$1<ex>device name</ex></ph> - Paired
       </message>
@@ -17111,37 +16437,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </if>
 
     <!-- Font Access chooser -->
-    <if expr="not is_android">
-      <message name="IDS_FONT_ACCESS_CHOOSER_PROMPT_ORIGIN" desc="The label that is used to introduce Local Font Access chooser details to the user in a popup when it is from a website.">
-        <ph name="Origin">$1<ex>www.google.com</ex></ph> wants to use local fonts
-      </message>
-      <message name="IDS_FONT_ACCESS_CHOOSER_NO_FONTS_FOUND_PROMPT" desc="The label shown to the user to inform them that no fonts were found matching the requirements that the application provided.">
-        No matching font found.
-      </message>
-      <message name="IDS_FONT_ACCESS_CHOOSER_IMPORT_BUTTON_TEXT" desc="Label on the button that closes the Local Font Access chooser popup and returns the selected fonts.">
-        Import
-      </message>
-      <message name="IDS_FONT_ACCESS_CHOOSER_CANCEL_BUTTON_TEXT" desc="Label on the button that closes the chooser popup without selecting an option.">
-        Cancel
-      </message>
-      <message name="IDS_FONT_ACCESS_CHOOSER_SELECT_ALL_CHECKBOX_TEXT" desc="Label for the checkbox that allows the selection of all fonts.">
-        Select all fonts
-      </message>
-      <message name="IDS_FONT_ACCESS_CHOOSER_LOADING_LABEL" desc="Text on label that the browser is loading the list of available fonts.">
-        Loading fonts...
-      </message>
-      <message name="IDS_FONT_ACCESS_CHOOSER_LOADING_LABEL_TOOLTIP" desc="Tooltip for the label that the browser is loading the list of available fonts.">
-        Loading fonts...
-      </message>
-    </if>
-
-    <!-- Chrome IME API activated bubble. -->
-    <message name="IDS_IME_API_ACTIVATED_WARNING" desc="The Warning info when an IME extension is trying to activate.">
-      <ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph> extension may collect all the text you type, including personal data like passwords and credit card numbers. Do you want to use this extension?
-    </message>
-    <message name="IDS_IME_API_NEVER_SHOW" desc="Checkbox that controls whether this bubble will be shown every time.">
-      Never show this again.
-    </message>
 
     <!-- Ad Blocking UI strings. -->
     <message name="IDS_BLOCKED_ADS_PROMPT_TOOLTIP" desc="Explanation that Chrome blocked ads on this site. To be shown as a tooltip on the Ads blocked desktop bubble">
@@ -17152,9 +16447,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UTILITY_PROCESS_UTILITY_WIN_NAME" desc="The name of the utility process used to handle Windows utility operations.">
         Windows Utilities
       </message>
-      <message name="IDS_UTILITY_PROCESS_QUARANTINE_SERVICE_NAME" desc="The name of the utility process used to handle file quarantine.">
-        Quarantine Service
-    </message>
     </if>
 
     <!-- Framebust / Blocked Redirection intervention message -->
@@ -17182,14 +16474,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </if>
 
     <!-- Consistent omnibox geolocation -->
-    <if expr="is_android">
-        <message name="IDS_SEARCH_GEOLOCATION_DISCLOSURE_INFOBAR_TEXT" desc="Text to put in the infobar disclosing the default search engine's usage of location. The message contains a link to a settings page. The link text is a separate string in the translation console and appears here as a placeholder text.">
-          <ph name="SEARCH_ENGINE_NAME">$1<ex>Google</ex></ph> uses your location to give you local content. You can change this in <ph name="SETTINGS_LINK">$2<ex>Settings</ex></ph>.
-        </message>
-        <message name="IDS_SEARCH_GEOLOCATION_DISCLOSURE_INFOBAR_SETTINGS_LINK_TEXT" desc="Text to put in the link to the Settings page in the search geolocation disclosure UI.">
-          Settings
-        </message>
-    </if>
 
     <!-- Automation infobar -->
     <message name="IDS_CONTROLLED_BY_AUTOMATION" desc="Message shown when the browser session is being controlled by an automated test.">
@@ -17209,13 +16493,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
     <!-- Security Key permission -->
-    <if expr="is_android">
-      <message name="IDS_SECURITY_KEY_ATTESTATION_INFOBAR_QUESTION" desc="An infobar prompt shown to a user when a website wants to see information that identifies the user's Security Key, such as make and model number. The 'make' of a device is the brand name of the manufacturer, e.g. Yubikey is a make of Security Key. The 'model' of a device is the specific product, e.g. Yubikey Neo is a model of Security Key.">
-        <ph name="URL">
-          $1<ex>maps.google.com</ex>
-        </ph> wants to see the make and model of your Security Key
-      </message>
-    </if>
 
     <!-- Download open confirmation dialog -->
     <message name="IDS_DOWNLOAD_OPEN_CONFIRMATION_DIALOG_TITLE" desc="Title of the dialog prompt shown to users when an extension is trying to open a downloaded file.">
@@ -18052,9 +17329,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_INCOGNITO_PROFILE_MENU_TITLE" desc="The title of the Incognito version of profile menu.">
       Incognito
     </message>
-    <message name="IDS_INCOGNITO_PROFILE_MENU_CLOSE_BUTTON" desc="The text of the button offering to close all Incognito windows.">
-      Exit Incognito
-    </message>
 
     <!-- Incognito Delete Browsing Data dialog bubble. -->
     <message name="IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_PRIMARY_TEXT" desc ="The primary text of the delete browsing data dialog which is shown in Incognito when users invokes a delete browsing data action in Incognito. The text describes how Incognito users can delete the browsing data by closing all Incognito windows.">
@@ -18114,9 +17388,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
     <!-- Deep scanning dialog strings -->
-    <message name="IDS_DEEP_SCANNING_DIALOG_TITLE" desc="Title shown in tab modal dialog while performing a deep scan of data to see if it complies with enterprise policies">
-      Scanning
-    </message>
     <message name="IDS_DEEP_SCANNING_DIALOG_UPLOAD_PENDING_MESSAGE" desc="Message shown in tab modal dialog while performing a deep scan of uploaded data to see if it complies with enterprise policies">
       {NUM_FILES, plural,
         =0 {Checking this data with your organization's security policies...}
@@ -18152,9 +17423,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
     <message name="IDS_DEEP_SCANNING_DIALOG_PRINT_WARNING_MESSAGE" desc="Message shown in tab modal dialog after performing a deep scan of a printed document when it doesn't comply with enterprise security policies">
         This document or your device doesn’t meet some of your organization’s security policies. Check with your admin on what needs to be fixed.
-    </message>
-    <message name="IDS_DEEP_SCANNING_DIALOG_TIMEOUT_MESSAGE" desc="Message shown in tab modal dialog after a deep scan times out.">
-      Something went wrong. Scanning could not be completed. Please try again.
     </message>
     <message name="IDS_DEEP_SCANNING_DIALOG_PROCEED_BUTTON" desc="Text shown in the proceed button of a tab modal dialog after performing a deep scan of data to ignore the obtained warning and proceed with the upload.">
       Continue anyway
@@ -18468,21 +17736,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Select an area
     </message>
     <!-- ChromeLabs Thumbnail Tab Strip -->
-    <message name="IDS_THUMBNAIL_TAB_STRIP_EXPERIMENT_NAME" desc="Name for Thumbnail Tab Strip experiment">
-      Thumbnail tab strip for tablet mode
-    </message>
-    <message name="IDS_THUMBNAIL_TAB_STRIP_EXPERIMENT_DESCRIPTION" desc="Description for Thumbnail Tab Strip experiment">
-      In tablet mode, tap on the tab counter toolbar button to open the new tab strip that shows thumbnails of each tab.
-    </message>
-
-    <if expr="is_cfm">
-      <message name="IDS_CFM_NETWORK_SETTINGS_TITLE" desc="Title for CFM Network Settings dialog">
-        Network Settings
-      </message>
-      <message name="IDS_CFM_NETWORK_SETTINGS_AVAILABLE_NETWORKS" desc="Subheader displayed above list of discovered and available WiFi networks">
-        Available WiFi networks
-      </message>
-    </if>
 
     <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_DESCRIPTION" desc="Description of notification prompting the user to enable Enhanced Safe Browsing after they have enabled account-level protections.">
       Enhanced Safe Browsing does more to protect you against dangerous websites, downloads, and extensions
@@ -18525,9 +17778,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
     <message name="IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT" desc="Text to prompt a user to choose an account to sign in to an identity provider with.">
       Choose an account to continue
-    </message>
-    <message name="IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT_BUTTON" desc="Title of the button that lets the user look at all account options. Used when we want to highlight a single returning account in the UI.">
-      Choose an account
     </message>
     <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_NAME" desc="A user's name, to be used in a list of items shared with a website">
       name
@@ -18668,9 +17918,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_VERIFY_SHEET_TITLE_AUTO_REAUTHN" desc="Header for auto re-authentication sheet. Sheet is shown to notify the user that they are re-authenticating into a website using an account from an identity provider.">
       Signing you in…
     </message>
-    <message name="IDS_AUTO_REAUTHN_OPTOUT_CHECKBOX" desc="Allows users to opt out of FedCM auto re-authentication by unchecking the checkbox" translateable="false">
-      Automatically sign me in to this website
-    </message>
     <message name="IDS_FILTERED_ACCOUNT_MESSAGE" desc="Message shown to the user when the account they are trying to sign in with has been filtered out by one of the filters passed by the RP.">
       You can't sign in using this account
     </message>
@@ -18741,9 +17988,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_MEMORY_SAVER_CHIP_ACCNAME" desc="Tooltip text for a page action chip that highlights that the Memory Saver setting is enabled">
         Tab active again
       </message>
-      <message name="IDS_MEMORY_SAVER_CHIP_WITH_SAVINGS_ACCNAME" desc="Accessible label for the memory savings shown on the Memory Saver dialog to provide context to the raw number.">
-        Memory savings summary, <ph name="MEMORY_VALUE">$1<ex>175MB</ex></ph> freed up
-      </message>
       <if expr="use_titlecase">
         <message name="IDS_MEMORY_SAVER_CHIP_SAVINGS_LABEL" desc="In Title Case: Label for a page action chip that highlights the savings from Memory Saver mode">
           <ph name="MEMORY_SAVINGS">$1<ex>300 MB</ex></ph> Freed Up
@@ -18771,16 +18015,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <if expr="not use_titlecase">
         <message name="IDS_MEMORY_SAVER_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST" desc="Label for a button on a dialog that adds the current active site to the exclusion list when clicked">
           Exclude site
-        </message>
-      </if>
-      <if expr="use_titlecase">
-        <message name="IDS_MEMORY_SAVER_DIALOG_SAVINGS_LABEL" desc="In Title Case: Label below a chart showing the memory savings from Memory Saver mode.">
-          Memory Saved
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_MEMORY_SAVER_DIALOG_SAVINGS_LABEL" desc="Label below a chart showing the memory savings from Memory Saver mode.">
-          Memory saved
         </message>
       </if>
       <if expr="use_titlecase">
@@ -19038,15 +18272,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_COPIED_TO_CLIPBOARD_TOAST_BODY" desc="Text on a toast notification that is shown when an item has been copied to clipboard.">
         Copied to clipboard
       </message>
-      <message name="IDS_SPLIT_VIEW_CREATED_TOAST_BODY" desc="Text on a toast notification that is shown when a split view is created.">
-        Split view created
-      </message>
-      <message name="IDS_SPLIT_VIEW_SEPARATE_VIEWS_ACTION_BUTTON" desc="Text for the action button on a split view toast notification to separate the views in the split view.">
-        Separate views
-      </message>
-      <message name="IDS_SPLIT_VIEW_UNDO_SPLIT_ACTION_BUTTON" desc="Text for the action button on a split view toast notification to undo creating the split view.">
-        Undo
-      </message>
       <message name="IDS_TAB_STRIP_SWITCH_DELAYED_TO_HORIZONTAL_TOAST_BODY" desc="Text on a toast notification shown when the tab strip mode switch to horizontal is delayed because the browser is in immersive fullscreen.">
         Exit full screen to show tabs horizontally
       </message>
@@ -19083,18 +18308,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
     </if>
 
-    <if expr="is_android">
-      <message name="IDS_FAST_CHECKOUT_A11Y_ADDRESS_FORM_FILLED" desc="Accessibility string announced when an address form was filled.">
-        <ph name="ADDRESS_LABEL">$1<ex>Work</ex></ph> address form filled.
-      </message>
-      <message name="IDS_FAST_CHECKOUT_A11Y_CREDIT_CARD_FORM_FILLED" desc="Accessibility string announced when a credit card form was filled.">
-        <ph name="CARD_IDENTIFIER">$1<ex>Visa 1111</ex></ph> filled.
-      </message>
-      <message name="IDS_FAST_CHECKOUT_A11Y_EMAIL_FILLED" desc="Accessibility string announced when an email field was filled.">
-        Email filled.
-      </message>
-    </if>
-
     <!-- Omnibox Everywhere Screenshot Menu -->
     <message name="IDS_OMNIBOX_EVERYWHERE_SHARE_SCREENSHOT" desc="Title of the screenshot sharing menu option.">
       Share a screenshot
@@ -19122,26 +18335,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE" desc="Overflow menu item text of profile button">
       Profile
     </message>
-    <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS" desc="Overflow menu item text of download button">
-      Downloads
-    </message>
-    <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_EXTENSIONS" desc="Overflow menu item text of extensions button">
-      Extensions
-    </message>
     <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD" desc="Overflow menu item text of forward button">
       Forward
     </message>
     <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_HOME" desc="Text of overflow menu item of home button" meaning="'home' as in an internet location, a 'home page'">
       Home
     </message>
-    <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_LABS" desc="Text of overflow menu item of labs button">
-      Labs
-    </message>
     <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS" desc="Text of overflow menu item of media controls">
       Media controls
-    </message>
-    <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_SIDE_PANEL" desc="Text of overflow menu item of side panel button">
-      Open side panel
     </message>
     <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_VIEW" desc="Text of overflow menu item of split tabs button">
       Split View
@@ -19340,27 +18541,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
     </if>
 
-    <!-- Common WebUI elements. -->
-    <message name="IDS_THUMBS_DOWN" desc="Accessibility label for a thumbs down icon that a user can click to provide negative feedback about a feature.">
-      Thumbs down submits feedback that you dislike this.
-    </message>
-    <message name="IDS_THUMBS_UP" desc="Accessibility label for a thumbs up icon that a user can click to provide positive feedback about a feature.">
-      Thumbs up submits feedback that you like this.
-    </message>
-    <message name="IDS_EXPERIMENTAL_FEATURE_DISCLAIMER" desc="Text used for experimental features.">
-      This is an experimental AI feature.
-    </message>
-
     <!-- Safety Hub elements. -->
     <!-- TODO(crbug.com/324562205): Make strings translateable once finalized. -->
     <if expr="is_android">
         <message name="IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MENU_NOTIFICATION" desc="Summary for the Safe Browsing module of Safety Check in the Magic Stack. Shown when Safe Browsing is turned off by the user.">
           Get protection against dangerous sites
-        </message>
-        <message name="IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION" desc="Summary for the notification review Safety Check module on the Magic Stack. Shown when Safety Check has identified several sites that sent lots of notifications.">
-          {NUM_SITES, plural,
-          =1 {Found 1 site with lots of notifications}
-          other {Found {NUM_SITES} sites with lots of notifications}}
         </message>
         <message name="IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_MENU_NOTIFICATION" desc="Title for the permissions review Safety Check module on the Magic Stack. Shown when Safety Check has identified several sites that send abusive notifications.">
           {NUM_SITES, plural,
@@ -19514,9 +18699,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_PDF_GLIC_SUMMARIZE_IPH_TITLE" desc="Title of the In Product Help bubble shown for the button to summarize PDF.">
         Summarize with Gemini
-      </message>
-      <message name="IDS_PDF_GLIC_SUMMARIZE_IPH_GOT_IT" desc="Label on a button inside In Product Help Bubble that acknowledges it and dismisses the bubble.">
-        Got it
       </message>
     </if>
 
