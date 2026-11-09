@@ -72,6 +72,26 @@ suite('OrganizerListSectionItemTest', () => {
         crUrlListItem.itemAriaDescription);
   });
 
+  test(
+      'uses custom ariaLabel and ariaDescription overrides when provided',
+      async () => {
+        listItem.item = {
+          title: ['YouTube', 'Google Search'],
+          ariaLabel: ['Split view', 'YouTube', 'Google Search'],
+          description: [
+            {text: 'youtube.com', matchable: true},
+            {text: '5 mins ago', matchable: false},
+          ],
+          ariaDescription: ['5 mins ago'],
+        };
+        await microtasksFinished();
+
+        const crUrlListItem = listItem.$.crUrlListItem;
+        assertEquals(
+            'Split view, YouTube, Google Search', crUrlListItem.itemAriaLabel);
+        assertEquals('5 mins ago', crUrlListItem.itemAriaDescription);
+      });
+
   test('hides description element when description is absent', async () => {
     listItem.item = {
       title: TEST_TITLE_PARTS,

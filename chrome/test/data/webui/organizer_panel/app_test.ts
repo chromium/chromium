@@ -33,9 +33,11 @@ suite('OrganizerPanelAppTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     metrics = fakeMetricsPrivate();
     loadTimeData.resetForTesting({
+      audioMuted: 'Audio muted',
       clearSearch: 'Clear search',
       close: 'Close',
-      closeTab: 'Close tab',
+      closeSplitView: 'Close split view: $1, $2',
+      closeTab: 'Close $1',
       collapse: 'Collapse',
       createTabGroup: 'Create tab group',
       currentlyPlaying: 'Currently playing',
@@ -46,13 +48,19 @@ suite('OrganizerPanelAppTest', () => {
       isUserSignedIn: true,
       noRecentlyClosedTabs: 'No recently closed tabs',
       noResults: 'No results',
+      openTabGroup: 'Open tab group',
       options: 'Options',
       recentlyClosed: 'Recently closed',
       recentlyVisited: 'Recently visited',
+      savedTabGroup: 'Saved tab group',
       searchTabs: 'Search Tabs',
+      sectionOptions: 'Options for $1',
       shortcutText: 'Ctrl+Shift+A',
       signInOnPhone: 'Sign in on your phone',
+      splitView: 'Split view',
+      tabGroup: 'Tab group',
       tabGroupMoreOptions: 'More options',
+      tabGroupMoreOptionsWithTitle: 'More options for $1',
       tabGroups: 'Tab groups',
       tabsOnOtherDevices: 'Tabs on other devices',
     });

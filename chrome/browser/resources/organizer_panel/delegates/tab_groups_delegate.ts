@@ -157,10 +157,19 @@ export class TabGroupsDelegate implements
 
   private tabGroupToSectionItem_(group: TabGroup):
       OrganizerListSectionItem<TabGroup> {
+    const hasTitle = Boolean(group.title.trim());
+    const stateText = group.isOpen ? loadTimeData.getString('openTabGroup') :
+                                     loadTimeData.getString('savedTabGroup');
     return {
       title: [group.title],
+      ariaLabel: hasTitle ? undefined : [stateText],
       description: group.lastActiveElapsedText ?
           [{text: group.lastActiveElapsedText, matchable: false}] :
+          undefined,
+      ariaDescription: hasTitle ?
+          (group.lastActiveElapsedText ?
+               [stateText, group.lastActiveElapsedText] :
+               [stateText]) :
           undefined,
       prefixIcon: {
         element: html`<tab-group-dot .color="${group.color}"
@@ -169,7 +178,9 @@ export class TabGroupsDelegate implements
       },
       hoveredActionButton: {
         icon: 'cr:more-vert',
-        ariaLabel: loadTimeData.getString('tabGroupMoreOptions'),
+        ariaLabel: hasTitle ? loadTimeData.getStringF(
+                                  'tabGroupMoreOptionsWithTitle', group.title) :
+                              loadTimeData.getString('tabGroupMoreOptions'),
         tooltip: loadTimeData.getString('options'),
       },
       data: group,

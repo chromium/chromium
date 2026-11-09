@@ -59,8 +59,15 @@ export interface OrganizerListSectionItem<T> {
   // Title (main line) of the item.
   title: string[];
 
+  // Optional: Override accessible label parts (defaults to |title|).
+  ariaLabel?: string[];
+
   // Description (secondary line) of the item.
   description?: OrganizerListSectionItemDescriptionPart[];
+
+  // Optional: Override accessible description parts (defaults to |description|
+  // text).
+  ariaDescription?: string[];
 
   // Optional: Terms that should match on search, but shouldn't be shown in the
   // UI.
@@ -208,13 +215,13 @@ export class OrganizerListSectionItemElement extends
   }
 
   protected getAriaLabel_(): string {
-    return this.listFormatter_.format(this.item.title);
+    return this.listFormatter_.format(this.item.ariaLabel ?? this.item.title);
   }
 
   protected getAriaDescription_(): string {
-    return this.item.description ?
-        this.listFormatter_.format(this.item.description.map(d => d.text)) :
-        '';
+    const parts =
+        this.item.ariaDescription ?? this.item.description?.map(d => d.text);
+    return parts && parts.length > 0 ? this.listFormatter_.format(parts) : '';
   }
 
   protected hasDescription_(): boolean {

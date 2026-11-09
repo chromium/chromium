@@ -16,10 +16,11 @@ export function getHtml(this: OrganizerListSectionHeaderElement) {
   <span id="headerTitle">${this.title}</span>
 </cr-expand-button>
 <cr-icon-button id="menuButton" iron-icon="cr:more-vert"
-    aria-label="$i18n{options}" title="$i18n{options}"
+    aria-label="${this.getMenuAriaLabel_()}" title="$i18n{options}"
     @click="${this.onMenuButtonClick_}" @keydown="${this.onMenuButtonKeydown_}">
 </cr-icon-button>
 <cr-action-menu id="menu" auto-close-on-focusout
+    accessibility-label="${this.getMenuAriaLabel_()}"
     @open-changed="${this.onMenuOpenChanged_}">
   <button id="showSomeButton" class="dropdown-item" role="menuitemradio"
       aria-checked="${!this.showAll}" @click="${this.onShowSomeClick_}">

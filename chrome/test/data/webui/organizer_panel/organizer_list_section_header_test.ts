@@ -26,10 +26,19 @@ suite('OrganizerListSectionHeaderTest', () => {
     await microtasksFinished();
   });
 
-  test('has options tooltip and aria-label on menu button', () => {
+  test('has options tooltip and aria-label on menu button', async () => {
     const menuButton = header.$.menuButton;
     assertEquals('Options', menuButton.title);
     assertEquals('Options', menuButton.getAttribute('aria-label'));
+    assertEquals('Options', header.$.menu.$.wrapper.getAttribute('aria-label'));
+
+    header.title = 'Open Tabs';
+    await microtasksFinished();
+    assertEquals(
+        'Options for Open Tabs', menuButton.getAttribute('aria-label'));
+    assertEquals(
+        'Options for Open Tabs',
+        header.$.menu.$.wrapper.getAttribute('aria-label'));
   });
 
   test('has expand/collapse tooltip on expand button', async () => {

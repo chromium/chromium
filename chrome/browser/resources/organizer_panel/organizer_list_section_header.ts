@@ -15,6 +15,7 @@ import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {MouseHoverableMixinLit} from '//resources/cr_elements/mouse_hoverable_mixin_lit.js';
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {isRTL} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -129,6 +130,11 @@ export class OrganizerListSectionHeaderElement extends
 
   isMenuButtonVisible(): boolean {
     return this.expanded && !this.disabled;
+  }
+
+  protected getMenuAriaLabel_(): string {
+    return this.title ? loadTimeData.getStringF('sectionOptions', this.title) :
+                        loadTimeData.getString('options');
   }
 
   protected onExpandButtonKeydown_(e: KeyboardEvent) {

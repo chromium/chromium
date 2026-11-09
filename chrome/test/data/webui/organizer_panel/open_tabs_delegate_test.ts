@@ -158,10 +158,12 @@ suite('OpenTabsDelegateTest', () => {
 
   setup(() => {
     loadTimeData.resetForTesting({
-      recentlyVisited: 'Recently visited',
-      closeTab: 'Close tab',
+      audioMuted: 'Audio muted',
+      closeSplitView: 'Close split view: $1, $2',
+      closeTab: 'Close $1',
       currentlyPlaying: 'Currently playing',
       oneTab: '1 tab',
+      recentlyVisited: 'Recently visited',
       splitView: 'Split view',
       tabCount: '$1 tabs',
     });
@@ -198,7 +200,8 @@ suite('OpenTabsDelegateTest', () => {
     assertDeepEquals(['www.youtube.com'], items[0]!.extraSearchTerms);
     assertEquals(youtubeTab.url, items[0]!.prefixIcon?.url);
     assertEquals('cr:close', items[0]!.hoveredActionButton?.icon);
-    assertEquals('Close tab', items[0]!.hoveredActionButton?.ariaLabel);
+    assertEquals(
+        `Close ${youtubeTab.title}`, items[0]!.hoveredActionButton?.ariaLabel);
     assertDeepEquals(
         {type: OpenTabsItemType.TAB, tab: youtubeTab}, items[0]!.data);
 
@@ -239,7 +242,7 @@ suite('OpenTabsDelegateTest', () => {
     assertEquals(AUDIO_ICON, items[0]!.trailingIcon);
     assertTrue(!!items[0]!.alwaysShow);
     assertDeepEquals(
-        [{text: 'Currently playing', matchable: false}], items[0]!.description);
+        [{text: 'Audio muted', matchable: false}], items[0]!.description);
     assertDeepEquals([musicTab.title], items[1]!.title);
     assertEquals(AUDIO_ICON, items[1]!.trailingIcon);
     assertTrue(!!items[1]!.alwaysShow);
@@ -568,12 +571,20 @@ suite('OpenTabsDelegateTest', () => {
 
         const item = items[0]!;
         assertDeepEquals([loadTimeData.getString('splitView')], item.title);
+        assertDeepEquals(
+            [
+              loadTimeData.getString('splitView'),
+              SPLIT_TAB_1_TITLE,
+              SPLIT_TAB_2_TITLE,
+            ],
+            item.ariaLabel);
         assertEquals(3, item.description?.length);
         assertDeepEquals(
             {text: splitTab1ElapsedText, matchable: false},
             item.description?.[0]);
         assertDeepEquals({text: SPLIT_TAB_1_TITLE}, item.description?.[1]);
         assertDeepEquals({text: SPLIT_TAB_2_TITLE}, item.description?.[2]);
+        assertDeepEquals([splitTab1ElapsedText], item.ariaDescription);
         assertDeepEquals(
             ['docs.google.com', 'sheets.google.com'], item.extraSearchTerms);
         assertEquals(2, item.prefixIcon?.stackedFavicons?.urls?.length);
@@ -682,7 +693,9 @@ suite('OpenTabsDelegateTest', () => {
         const items = await delegate.getItems();
         assertEquals(1, items.length);
         assertEquals('cr:close', items[0]!.hoveredActionButton?.icon);
-        assertEquals('Close tab', items[0]!.hoveredActionButton?.ariaLabel);
+        assertEquals(
+            `Close split view: ${SPLIT_TAB_1_TITLE}, ${SPLIT_TAB_2_TITLE}`,
+            items[0]!.hoveredActionButton?.ariaLabel);
 
         delegate.onItemActionButtonClicked(items[0]!);
 
@@ -845,4 +858,24 @@ suite('OpenTabsDelegateTest', () => {
     assertEquals('2 tabs', items[1]!.description?.[1]!.text);
     assertEquals('2 tabs', items[2]!.description?.[1]!.text);
   });
+
+  test(
+      'prefers audioMuted over currentlyPlaying when both alerts are set',
+      async () => {
+        const mutedAndPlayingTab = createTab({
+          tabId: 50,
+          title: 'Muted Playing Tab',
+          url: 'https://www.example.com',
+          alertStates:
+              [TabAlertState.kAudioPlaying, TabAlertState.kAudioMuting],
+        });
+        mockPageHandler.setResultFor('getProfileData', Promise.resolve({
+          profileData: createProfileData([mutedAndPlayingTab]),
+        }));
+
+        const items = await delegate.getItems();
+        assertEquals(1, items.length);
+        assertDeepEquals(
+            [{text: 'Audio muted', matchable: false}], items[0]!.description);
+      });
 });

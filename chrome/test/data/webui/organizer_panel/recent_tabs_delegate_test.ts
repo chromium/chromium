@@ -117,6 +117,7 @@ suite('RecentTabsDelegateTest', () => {
       oneTab: '1 tab',
       splitView: 'Split view',
       tabCount: '$1 tabs',
+      tabGroup: 'Tab group',
     });
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);
     const {instance, remote} =
@@ -458,8 +459,10 @@ suite('RecentTabsDelegateTest', () => {
 
         const items = await delegate.getItems();
         assertEquals(1, items.length);
+        assertDeepEquals(['Tab group', 'Reading List'], items[0]!.ariaLabel);
         assertDeepEquals(
             {text: '5m ago', matchable: false}, items[0]!.description?.[0]);
+        assertDeepEquals(['1 tab', '5m ago'], items[0]!.ariaDescription);
 
         delegate.onItemClick(items[0]!);
 
@@ -509,11 +512,15 @@ suite('RecentTabsDelegateTest', () => {
 
         const item = items[0]!;
         assertDeepEquals([loadTimeData.getString('splitView')], item.title);
+        assertDeepEquals(
+            [loadTimeData.getString('splitView'), 'Docs', 'Sheets'],
+            item.ariaLabel);
         assertEquals(3, item.description?.length);
         assertDeepEquals(
             {text: '3m ago', matchable: false}, item.description?.[0]);
         assertDeepEquals({text: 'Docs'}, item.description?.[1]);
         assertDeepEquals({text: 'Sheets'}, item.description?.[2]);
+        assertDeepEquals(['3m ago'], item.ariaDescription);
         assertDeepEquals(
             ['docs.google.com', 'sheets.google.com'], item.extraSearchTerms);
         assertDeepEquals(
@@ -768,4 +775,34 @@ suite('RecentTabsDelegateTest', () => {
         const arg = mockPageHandler.getArgs('openRecentlyClosedEntry')[0];
         assertEquals(splitView.sessionId, arg);
       });
+
+  test('uses tab count fallback for whitespace tab group titles', async () => {
+    const whitespaceGroup: RecentlyClosedTabGroup =
+        createRecentlyClosedTabGroup({
+          sessionId: 61,
+          id: {high: 0n, low: 61n},
+          title: '   ',
+          tabCount: 3,
+          lastActiveTime: {internalValue: 500n},
+          lastActiveElapsedText: '4m ago',
+        });
+
+    mockPageHandler.setResultFor('getProfileData', Promise.resolve({
+      profileData: {
+        windows: [],
+        recentlyClosedTabs: [],
+        recentlyClosedTabGroups: [whitespaceGroup],
+        recentlyClosedSplitViews: [],
+        recentlyClosedSectionExpanded: false,
+        tabGroups: [],
+      },
+    }));
+
+    const items = await delegate.getItems();
+    assertEquals(1, items.length);
+
+    assertDeepEquals(['3 tabs'], items[0]!.title);
+    assertDeepEquals(['Tab group', '3 tabs'], items[0]!.ariaLabel);
+    assertDeepEquals(['4m ago'], items[0]!.ariaDescription);
+  });
 });

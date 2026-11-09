@@ -55,8 +55,11 @@ suite('TabGroupsDelegateTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.resetForTesting({
       createTabGroup: 'Create tab group',
+      openTabGroup: 'Open tab group',
       options: 'Options',
+      savedTabGroup: 'Saved tab group',
       tabGroupMoreOptions: 'More options',
+      tabGroupMoreOptionsWithTitle: 'More options for $1',
       tabGroups: 'Tab groups',
     });
     mockHandler = TestMock.fromClass(TabGroupsOrganizerPageHandlerRemote);
@@ -89,19 +92,27 @@ suite('TabGroupsDelegateTest', () => {
     const items = await delegate.getItems();
     assertEquals(3, items.length);
     assertEquals('Sample Group 1', items[0]!.title[0]);
+    assertEquals(undefined, items[0]!.ariaLabel);
     assertDeepEquals(
         [{text: '10m ago', matchable: false}], items[0]!.description);
+    assertDeepEquals(['Open tab group', '10m ago'], items[0]!.ariaDescription);
     assertEquals('Sample Group 2', items[1]!.title[0]);
+    assertEquals(undefined, items[1]!.ariaLabel);
     assertDeepEquals(
         [{text: '1h ago', matchable: false}], items[1]!.description);
+    assertDeepEquals(['Saved tab group', '1h ago'], items[1]!.ariaDescription);
     assertEquals('Sample Group 3', items[2]!.title[0]);
+    assertEquals(undefined, items[2]!.ariaLabel);
     assertEquals(undefined, items[2]!.description);
+    assertDeepEquals(['Open tab group'], items[2]!.ariaDescription);
     assertEquals(undefined, items[0]!.size);
     assertEquals(1, mockHandler.getCallCount('getTabGroups'));
 
     assertTrue(!!items[0]!.hoveredActionButton);
     assertEquals('cr:more-vert', items[0]!.hoveredActionButton.icon);
-    assertEquals('More options', items[0]!.hoveredActionButton.ariaLabel);
+    assertEquals(
+        'More options for Sample Group 1',
+        items[0]!.hoveredActionButton.ariaLabel);
     assertEquals('Options', items[0]!.hoveredActionButton.tooltip);
 
     const container = document.createElement('div');
@@ -265,5 +276,39 @@ suite('TabGroupsDelegateTest', () => {
         item.click();
         assertEquals(1, mockHandler.getCallCount('createNewTabGroup'));
         assertEquals(1, mockOrganizerPanelHandler.getCallCount('closePanel'));
+      });
+
+  test(
+      'uses fallback accessibility labels for untitled tab groups',
+      async () => {
+        mockHandler.setResultFor('getTabGroups', Promise.resolve({
+          tabGroups: [
+            {
+              id: 'open-untitled',
+              color: Color.kBlue,
+              title: '',
+              isOpen: true,
+              lastActiveElapsedText: '5m ago',
+            },
+            {
+              id: 'saved-untitled',
+              color: Color.kRed,
+              title: '   ',
+              isOpen: false,
+              lastActiveElapsedText: '',
+            },
+          ],
+        }));
+
+        const items = await delegate.getItems();
+        assertEquals(2, items.length);
+
+        assertDeepEquals(['Open tab group'], items[0]!.ariaLabel);
+        assertEquals(undefined, items[0]!.ariaDescription);
+        assertEquals('More options', items[0]!.hoveredActionButton?.ariaLabel);
+
+        assertDeepEquals(['Saved tab group'], items[1]!.ariaLabel);
+        assertEquals(undefined, items[1]!.ariaDescription);
+        assertEquals('More options', items[1]!.hoveredActionButton?.ariaLabel);
       });
 });

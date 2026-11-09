@@ -195,12 +195,21 @@ export class RecentTabsDelegate implements
         matchable: false,
       });
     }
+    const ariaDescription = splitView.lastActiveElapsedText ?
+        [splitView.lastActiveElapsedText] :
+        [];
     description.push(
         {text: splitView.tabTitles[0]!}, {text: splitView.tabTitles[1]!});
 
     return {
       title: [loadTimeData.getString('splitView')],
+      ariaLabel: [
+        loadTimeData.getString('splitView'),
+        splitView.tabTitles[0]!,
+        splitView.tabTitles[1]!,
+      ],
       description,
+      ariaDescription,
       extraSearchTerms: splitView.tabUrls.map(url => getHostnameOrUrl(url)),
       prefixIcon: getSplitViewPrefixIcon(
           [splitView.tabUrls[0]!, splitView.tabUrls[1]!], splitView.layout),
@@ -210,12 +219,23 @@ export class RecentTabsDelegate implements
 
   private tabGroupToSectionItem_(tabGroup: RecentlyClosedTabGroup):
       OrganizerListSectionItem<RecentlyClosedItem> {
-    const title = tabGroup.title || getTabCountText(tabGroup.tabCount);
+    const tabCountText = getTabCountText(tabGroup.tabCount);
+    const hasTitle = Boolean(tabGroup.title.trim());
+    const title = hasTitle ? tabGroup.title : tabCountText;
+    const ariaDescription: string[] = [];
+    if (hasTitle) {
+      ariaDescription.push(tabCountText);
+    }
+    if (tabGroup.lastActiveElapsedText) {
+      ariaDescription.push(tabGroup.lastActiveElapsedText);
+    }
     return {
       title: [title],
+      ariaLabel: [loadTimeData.getString('tabGroup'), title],
       description: tabGroup.lastActiveElapsedText ?
           [{text: tabGroup.lastActiveElapsedText, matchable: false}] :
           [],
+      ariaDescription,
       data: tabGroup,
     };
   }

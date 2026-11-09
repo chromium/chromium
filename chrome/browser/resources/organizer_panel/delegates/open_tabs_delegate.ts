@@ -54,10 +54,26 @@ function getMostRecentTab(item: OpenTabsItem): Tab {
       item.tabs[0];
 }
 
+function tabIsAudioPlaying(tab: Tab): boolean {
+  return tab.alertStates.includes(TabAlertState.kAudioPlaying);
+}
+
+function tabIsAudioMuting(tab: Tab): boolean {
+  return tab.alertStates.includes(TabAlertState.kAudioMuting);
+}
+
 function tabHasAudioAlert(tab: Tab): boolean {
-  return tab.alertStates.some(
-      alertState => alertState === TabAlertState.kAudioPlaying ||
-          alertState === TabAlertState.kAudioMuting);
+  return tabIsAudioPlaying(tab) || tabIsAudioMuting(tab);
+}
+
+function isAudioPlaying(item: OpenTabsItem): boolean {
+  return isSplitTab(item) ? item.tabs.some(tabIsAudioPlaying) :
+                            tabIsAudioPlaying(item.tab);
+}
+
+function isAudioMuting(item: OpenTabsItem): boolean {
+  return isSplitTab(item) ? item.tabs.some(tabIsAudioMuting) :
+                            tabIsAudioMuting(item.tab);
 }
 
 function hasAudioAlert(item: OpenTabsItem): boolean {
@@ -285,24 +301,37 @@ export class OpenTabsDelegate implements
   private toSectionItem_(item: OpenTabsItem):
       OrganizerListSectionItem<OpenTabsItem> {
     let title: string[];
+    let ariaLabel: string[]|undefined;
+    let closeAriaLabel: string;
     let extraSearchTerms: string[];
     let prefixIcon: OrganizerListSectionItemIcon;
 
     if (isSplitTab(item)) {
       title = [loadTimeData.getString('splitView')];
+      ariaLabel = [
+        loadTimeData.getString('splitView'),
+        item.tabs[0].title,
+        item.tabs[1].title,
+      ];
+      closeAriaLabel = loadTimeData.getStringF(
+          'closeSplitView', item.tabs[0].title, item.tabs[1].title);
       extraSearchTerms = item.tabs.map(tab => getHostnameOrUrl(tab.url));
       prefixIcon = getSplitViewPrefixIcon(
           [item.tabs[0].url, item.tabs[1].url], item.tabs[0].splitLayout);
     } else {
       title = [item.tab.title];
+      closeAriaLabel = loadTimeData.getStringF('closeTab', item.tab.title);
       extraSearchTerms = [getHostnameOrUrl(item.tab.url)];
       prefixIcon = {url: item.tab.url};
     }
 
     const description: OrganizerListSectionItemDescriptionPart[] = [];
-    const statusText = hasAudioAlert(item) ?
-        loadTimeData.getString('currentlyPlaying') :
-        getMostRecentTab(item).lastActiveElapsedText;
+    let statusText = getMostRecentTab(item).lastActiveElapsedText;
+    if (isAudioMuting(item)) {
+      statusText = loadTimeData.getString('audioMuted');
+    } else if (isAudioPlaying(item)) {
+      statusText = loadTimeData.getString('currentlyPlaying');
+    }
     if (statusText) {
       description.push({text: statusText, matchable: false});
     }
@@ -316,6 +345,8 @@ export class OpenTabsDelegate implements
       });
     }
 
+    const ariaDescription =
+        isSplitTab(item) ? description.map(part => part.text) : undefined;
     if (isSplitTab(item)) {
       description.push({text: item.tabs[0].title}, {text: item.tabs[1].title});
     }
@@ -323,14 +354,16 @@ export class OpenTabsDelegate implements
     const hasAudio = hasAudioAlert(item);
     return {
       title,
+      ariaLabel,
       description,
+      ariaDescription,
       extraSearchTerms,
       prefixIcon,
       trailingIcon: hasAudio ? AUDIO_ICON : undefined,
       alwaysShow: hasAudio,
       hoveredActionButton: {
         icon: 'cr:close',
-        ariaLabel: loadTimeData.getString('closeTab'),
+        ariaLabel: closeAriaLabel,
       },
       data: item,
     };
