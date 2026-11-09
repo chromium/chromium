@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.incognito;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Activity;
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityManager.RecentTaskInfo;
@@ -27,6 +25,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.base.SplitCompatIntentService;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
@@ -71,13 +70,13 @@ public class IncognitoNotificationServiceImpl extends SplitCompatIntentService.I
                     }
                     IncognitoNotificationManager.dismissIncognitoNotification();
 
-                    if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
-                        if (ProfileManager.getLastUsedRegularProfile().hasPrimaryOtrProfile()) {
-                            ProfileManager.destroyWhenAppropriate(
-                                    assumeNonNull(
-                                            ProfileManager.getLastUsedRegularProfile()
-                                                    .getPrimaryOtrProfile(
-                                                            /* createIfNeeded= */ false)));
+                    if (BrowserStartupController.getInstance().isFullBrowserStarted()
+                            && !IncognitoTabHostUtils.isIncognitoTabModelActive()) {
+                        Profile otrProfile =
+                                ProfileManager.getLastUsedRegularProfile()
+                                        .getPrimaryOtrProfile(/* createIfNeeded= */ false);
+                        if (otrProfile != null && !otrProfile.shutdownStarted()) {
+                            ProfileManager.destroyWhenAppropriate(otrProfile);
                         }
                     }
                 });

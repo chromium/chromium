@@ -167,14 +167,27 @@ public class IncognitoStartupUnitTest {
     }
 
     @Test
-    public void testNoTabbedTasksInRecents_destroysProfile() {
+    public void testNoTabbedTasksInRecents_noIncognitoHosts_destroysProfile() {
         setRecentTabbedTasks();
-        registerHost(/* hasIncognitoTabs= */ true, /* isActiveModel= */ true);
+        registerHost(/* hasIncognitoTabs= */ false, /* isActiveModel= */ false);
 
         onResumeWithNative();
 
         verify(mProfileManagerJni).destroyWhenAppropriate(mOtrProfile);
         verify(mCookiesFetcher, never()).restoreCookies(any());
+    }
+
+    @Test
+    public void testNoTabbedTasksInRecents_activeIncognitoHost_doesNotDestroyProfile() {
+        // E.g. an Incognito window removed its task via finishAndRemoveTask() when its last tab
+        // closed, and is still finishing onStop()/onDestroy() when another Activity resumes.
+        setRecentTabbedTasks();
+        registerHost(/* hasIncognitoTabs= */ false, /* isActiveModel= */ true);
+
+        onResumeWithNative();
+
+        verify(mProfileManagerJni, never()).destroyWhenAppropriate(any());
+        verify(mCookiesFetcher).restoreCookies(any());
     }
 
     @Test
