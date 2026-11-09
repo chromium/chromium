@@ -25,6 +25,7 @@
 #include "components/affiliations/core/browser/affiliation_fetch_throttler.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_factory_impl.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_interface.h"
+#include "components/affiliations/core/browser/affiliation_service_impl.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/facet_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -409,11 +410,15 @@ bool AffiliationBackend::OnCanSendNetworkRequest() {
   // TODO(crbug.com/40858918): There is no need to request psl extension every
   // time, find a better way of caching it.
   ReportStatistics(requested_facet_uris.size());
+  const bool fetch_change_password_url =
+      base::FeatureList::IsEnabled(kFetchChangePasswordUrl);
   fetcher_manager_->Fetch(requested_facet_uris,
                           {.branding_info = true,
-                           .change_password_info = base::FeatureList::IsEnabled(
-                               kFetchChangePasswordUrl),
-                           .psl_extension_list = true},
+                           .change_password_info = fetch_change_password_url,
+                           .psl_extension_list = true,
+                           .fetch_patterns = fetch_change_password_url &&
+                                             base::FeatureList::IsEnabled(
+                                                 kFetchChangePasswordPatterns)},
                           base::BindOnce(&AffiliationBackend::OnFetchFinished,
                                          weak_ptr_factory_.GetWeakPtr()));
   return true;

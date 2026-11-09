@@ -766,4 +766,64 @@ TEST_F(AffiliationDatabaseTest, GetGroupWithChangePwdUrl) {
   }
 }
 
+TEST_F(AffiliationDatabaseTest, GetGroupWithPatternedChangePwdUrl) {
+  Facet patterned_facet(FacetURI::FromCanonicalSpec(kTestFacetURI1));
+  patterned_facet.change_password_patterns = {
+      {"^https://alpha\\.example\\.com/.*",
+       GURL("https://alpha.example.com/change-password")},
+      {"^https://alpha\\.example\\.com/admin/.*",
+       GURL("https://alpha.example.com/admin/change-password")}};
+
+  GroupedFacets group_to_store;
+  group_to_store.facets = {
+      patterned_facet,
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3)),
+  };
+
+  std::vector<AffiliatedFacetsWithUpdateTime> removed;
+  db().StoreAndRemoveConflicting(TestEquivalenceClass1(), group_to_store,
+                                 &removed);
+
+  GroupedFacets expected_group;
+  expected_group.facets = {
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI1), FacetBrandingInfo(),
+            GURL("https://alpha.example.com/change-password")),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3)),
+  };
+
+  for (const auto& facet : expected_group.facets) {
+    EXPECT_EQ(db().GetGroup(facet.uri), expected_group);
+  }
+}
+
+TEST_F(AffiliationDatabaseTest,
+       GetAffiliationForFacetWithPatternedChangePwdUrl) {
+  Facet patterned_facet(FacetURI::FromCanonicalSpec(kTestFacetURI1));
+  patterned_facet.change_password_patterns = {
+      {"^https://alpha\\.example\\.com/.*",
+       GURL("https://alpha.example.com/change-password")}};
+
+  AffiliatedFacetsWithUpdateTime affiliation;
+  affiliation.last_update_time =
+      base::Time() + base::Microseconds(kTestTimeUs1);
+  affiliation.facets = {
+      patterned_facet,
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2)),
+  };
+  std::vector<AffiliatedFacetsWithUpdateTime> removed;
+  db().StoreAndRemoveConflicting(affiliation, GroupedFacets(), &removed);
+
+  AffiliatedFacetsWithUpdateTime result;
+  ASSERT_TRUE(db().GetAffiliationsAndBrandingForFacetURI(
+      FacetURI::FromCanonicalSpec(kTestFacetURI1), &result));
+  EXPECT_THAT(result.facets,
+              testing::UnorderedElementsAre(
+                  Facet(FacetURI::FromCanonicalSpec(kTestFacetURI1),
+                        FacetBrandingInfo(),
+                        GURL("https://alpha.example.com/change-password")),
+                  Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2))));
+}
+
 }  // namespace affiliations

@@ -137,6 +137,22 @@ bool EnsureCurrentVersion(sql::Database* db,
   }
 }
 
+// Persists the first pattern's URL without its regex to avoid a database
+// schema change. The cached URL is only checked for validity (such as holding
+// back page-load autofill when password change may be offered), while actual
+// password change flows re-fetch and match patterns live against the full URL.
+// For path- or subdomain-restricted patterns, this intentionally accepts
+// false-positive autofill holdbacks on non-matching URLs in the same group.
+const GURL& GetChangePasswordUrl(const Facet& facet) {
+  if (!facet.change_password_url.is_empty()) {
+    return facet.change_password_url;
+  }
+  if (!facet.change_password_patterns.empty()) {
+    return facet.change_password_patterns.front().change_password_url;
+  }
+  return GURL::EmptyGURL();
+}
+
 }  // namespace
 
 AffiliationDatabase::AffiliationDatabase() = default;
@@ -423,7 +439,7 @@ AffiliationDatabase::StoreAffiliationResult AffiliationDatabase::Store(
     statement_child.BindString(
         2, facet.branding_info.icon_url.possibly_invalid_spec());
     statement_child.BindString(
-        3, facet.change_password_url.possibly_invalid_spec());
+        3, GetChangePasswordUrl(facet).possibly_invalid_spec());
     statement_child.BindInt64(4, eq_class_id);
     if (!statement_child.Run()) {
       return StoreAffiliationResult::kFailedToAddAffiliation;
@@ -434,7 +450,7 @@ AffiliationDatabase::StoreAffiliationResult AffiliationDatabase::Store(
     statement_groups.BindString(0, facet.uri.canonical_spec());
     statement_groups.BindString(1, facet.main_domain);
     statement_groups.BindString(
-        2, facet.change_password_url.possibly_invalid_spec());
+        2, GetChangePasswordUrl(facet).possibly_invalid_spec());
     statement_groups.BindInt64(3, eq_class_id);
     if (!statement_groups.Run()) {
       return StoreAffiliationResult::kFailedToAddGroup;

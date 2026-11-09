@@ -16,17 +16,18 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/clock.h"
-#include "base/test/run_until.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/affiliations/core/browser/affiliation_database.h"
 #include "components/affiliations/core/browser/affiliation_fetch_throttler.h"
 #include "components/affiliations/core/browser/affiliation_fetch_throttler_delegate.h"
+#include "components/affiliations/core/browser/affiliation_service_impl.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/facet_manager.h"
 #include "components/affiliations/core/browser/fake_affiliation_api.h"
@@ -844,12 +845,39 @@ TEST_F(AffiliationBackendTest, ChangePasswordUrlsArerequested) {
   backend()->Prefetch(facet, base::Time::Max());
   backend_task_runner()->RunUntilIdle();
 
-  EXPECT_EQ(base::FeatureList::IsEnabled(kFetchChangePasswordUrl),
-            fake_affiliation_api()
-                ->GetNextAffiliationFetcher()
-                ->GetRequestInfo()
-                .change_password_info);
+  const AffiliationFetcherInterface::RequestInfo& request_info =
+      fake_affiliation_api()->GetNextAffiliationFetcher()->GetRequestInfo();
+  const bool expected_fetch_url =
+      base::FeatureList::IsEnabled(kFetchChangePasswordUrl);
+  EXPECT_EQ(expected_fetch_url, request_info.change_password_info);
+  EXPECT_EQ(expected_fetch_url &&
+                base::FeatureList::IsEnabled(kFetchChangePasswordPatterns),
+            request_info.fetch_patterns);
   fake_affiliation_api()->ServeNextRequest();
+}
+
+TEST_F(AffiliationBackendTest, PatternedChangePasswordUrlPersistedInGroup) {
+  FacetURI main_facet_uri =
+      FacetURI::FromCanonicalSpec("https://patterned.example.com");
+  Facet main_facet(main_facet_uri);
+  main_facet.change_password_patterns = {
+      {"^https://patterned\\.example\\.com/.*",
+       GURL("https://patterned.example.com/settings/password")}};
+
+  fake_affiliation_api()->AddTestEquivalenceClass({Facet(main_facet_uri)});
+  GroupedFacets group;
+  group.facets = {main_facet};
+  fake_affiliation_api()->AddTestGrouping(group);
+
+  backend()->Prefetch(main_facet_uri, base::Time::Max());
+  ASSERT_TRUE(SendFetchOverNetwork());
+
+  GroupedFacets expected_group;
+  expected_group.facets = {
+      Facet(main_facet_uri, FacetBrandingInfo(),
+            GURL("https://patterned.example.com/settings/password"))};
+  EXPECT_THAT(backend()->GetGroupingInfo({main_facet_uri}),
+              testing::ElementsAre(expected_group));
 }
 
 }  // namespace affiliations
