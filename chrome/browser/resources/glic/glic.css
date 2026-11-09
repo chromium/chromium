@@ -234,30 +234,106 @@ webview {
   display: none;
 }
 
+/* GEiC relaunch prompt. */
+#relaunchRequiredPanel {
+  /* Google Sans Flex only applies where the OS has it installed; Glic doesn't
+   * load web fonts. */
+  --relaunch-font: 'Google Sans Flex', Roboto, sans-serif;
+  /* The button color; the glow fades out from it. */
+  --relaunch-accent: #9dd2ff;
+  --relaunch-glow-inner: color-mix(in srgb, var(--relaunch-accent) 55%,
+      transparent);
+  --relaunch-glow-outer: rgba(220, 241, 255, 0.45);
+  --relaunch-card-background: var(--cr-fallback-color-surface);
+  --relaunch-card-border: rgba(0, 0, 0, 0.08);
+  --relaunch-card-shadow: rgba(0, 0, 0, 0.04);
+  --relaunch-button-text: #000;
+}
+
+@media (prefers-color-scheme: dark) {
+  #relaunchRequiredPanel {
+    --relaunch-accent: #1f3b9b;
+    --relaunch-glow-inner: color-mix(in srgb, var(--relaunch-accent) 75%,
+        transparent);
+    --relaunch-glow-outer: rgba(25, 41, 103, 0.6);
+    --relaunch-card-background: #1c1c1c;
+    --relaunch-card-border: rgba(255, 255, 255, 0.12);
+    --relaunch-card-shadow: rgba(0, 0, 0, 0.28);
+    --relaunch-button-text: #e0e0e0;
+  }
+}
+
+#relaunchRequiredPanel .container {
+  isolation: isolate;
+  position: relative;
+}
+
+/* Soft blue glow along the bottom of the panel, behind the card. */
+#relaunchRequiredPanel .container::before {
+  background: radial-gradient(ellipse 110% 45% at 50% 100%,
+      var(--relaunch-glow-inner), var(--relaunch-glow-outer) 50%,
+      transparent 100%);
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+}
+
+/* The 16px side padding plus the 352px max card width make up the mock's
+ * 384px side panel. */
+#relaunchRequiredPanel .notice {
+  background-color: transparent;
+  padding: 0 16px;
+}
+
 #relaunchRequiredPanel .relaunch-card {
   align-items: center;
-  background-color: var(--cr-fallback-color-surface1);
-  border-radius: 16px;
+  background-color: var(--relaunch-card-background);
+  border: 1px solid var(--relaunch-card-border);
+  border-radius: 24px;
+  box-shadow: 0 0 20px var(--relaunch-card-shadow);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  max-width: 356px;
-  padding: 24px;
+  max-width: 352px;
+  padding: 20px;
   width: 100%;
 }
 
 #relaunchRequiredPanel .spark-icon {
   height: 32px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   width: 32px;
 }
 
+#relaunchRequiredPanel .headline {
+  font-family: var(--relaunch-font);
+  font-size: 20px;
+  font-weight: 420;
+  line-height: 26px;
+  margin: 0 0 12px;
+}
+
 #relaunchRequiredPanel .relaunch-body {
-  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 #relaunchRequiredPanel .notice-message {
-  color: var(--cr-fallback-color-on-surface-variant);
+  font-family: var(--relaunch-font);
+  line-height: 17px;
+  margin: 0;
+}
+
+#relaunchRequiredPanel #relaunchButton {
+  background-color: var(--relaunch-accent);
+  border: none;
+  color: var(--relaunch-button-text);
+  font-family: var(--relaunch-font);
+  font-weight: 400;
 }
 
 .dialog p {
