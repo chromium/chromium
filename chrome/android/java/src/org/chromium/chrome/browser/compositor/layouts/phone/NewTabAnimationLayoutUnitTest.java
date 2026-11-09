@@ -15,7 +15,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -38,6 +40,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -47,6 +50,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -89,10 +93,10 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.TransitiveTopInsetProvider;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeSupplier;
 import org.chromium.url.GURL;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 /** Unit tests for {@link NewTabAnimationLayout}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -162,11 +166,14 @@ public class NewTabAnimationLayoutUnitTest {
             ObservableSuppliers.createNonNull(false);
     private final TransitiveTopInsetProvider mTransitiveTopInsetProvider =
             new TransitiveTopInsetProvider();
+    private final SettableMonotonicObservableSupplier<EdgeToEdgeController>
+            mEdgeToEdgeControllerSupplier = ObservableSuppliers.createMonotonic();
     private final SettableNonNullObservableSupplier<Float>
             mNtpSearchBoxTransitionPercentageSupplier = ObservableSuppliers.createNonNull(0f);
     private final FakeBrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate =
             new FakeBrowserStateBrowserControlsVisibilityDelegate(
                     ObservableSuppliers.alwaysFalse());
+    private Activity mActivity;
     private NewTabAnimationLayout mNewTabAnimationLayout;
     private FrameLayout mContentContainer;
     private FrameLayout mAnimationHostView;
@@ -218,6 +225,8 @@ public class NewTabAnimationLayoutUnitTest {
         when(mToolbarManager.getNtpSearchBoxTransitionPercentageSupplier())
                 .thenReturn(mNtpSearchBoxTransitionPercentageSupplier);
         mTransitiveTopInsetProvider.set(mTopInsetProvider);
+        when(mEdgeToEdgeController.getSystemTopInsetPx()).thenReturn(100);
+        mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController);
         mScrimVisibilitySupplier.set(false);
         doAnswer(
                         invocation -> {
@@ -241,6 +250,7 @@ public class NewTabAnimationLayoutUnitTest {
     }
 
     public void onActivity(Activity activity) {
+        mActivity = activity;
         mContentContainer = new FrameLayout(activity);
         mAnimationHostView = new FrameLayout(activity);
         mCompositorViewHolder = new CompositorViewHolder(activity, /* attrs= */ null);
@@ -273,12 +283,10 @@ public class NewTabAnimationLayoutUnitTest {
                                 mToolbarManager,
                                 mBrowserControlsManager,
                                 mScrimVisibilitySupplier,
-                                mTransitiveTopInsetProvider));
+                                mTransitiveTopInsetProvider,
+                                mEdgeToEdgeControllerSupplier));
         mNewTabAnimationLayout.setTabModelSelector(mTabModelSelector);
         mNewTabAnimationLayout.setTabContentManager(mTabContentManager);
-        Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier = () -> mEdgeToEdgeController;
-        when(mToolbarManager.getEdgeToEdgeControllerSupplier())
-                .thenReturn(edgeToEdgeControllerSupplier);
         mNewTabAnimationLayout.onFinishNativeInitialization();
         mNewTabAnimationLayout.setRunOnNextLayoutImmediatelyForTesting(true);
     }
@@ -795,6 +803,250 @@ public class NewTabAnimationLayoutUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         assertThat(mBrowserVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTopInsetObserverRegistrationAndDestroy() {
+        createUnspiedLayout();
+        verify(mTopInsetProvider, never()).addObserver(any());
+        ArgumentCaptor<EdgeToEdgeSupplier.ChangeObserver> captor =
+                ArgumentCaptor.forClass(EdgeToEdgeSupplier.ChangeObserver.class);
+        verify(mEdgeToEdgeController).registerObserver(captor.capture());
+        assertTrue(mEdgeToEdgeControllerSupplier.hasObservers());
+
+        EdgeToEdgeController newController = mock(EdgeToEdgeController.class);
+        when(newController.getSystemTopInsetPx()).thenReturn(120);
+        mEdgeToEdgeControllerSupplier.set(newController);
+
+        verify(mEdgeToEdgeController).unregisterObserver(captor.getValue());
+        verify(newController).registerObserver(captor.getValue());
+        verify(newController).getSystemTopInsetPx();
+
+        mNewTabAnimationLayout.destroy();
+
+        verify(newController).unregisterObserver(captor.getValue());
+        assertFalse(mEdgeToEdgeControllerSupplier.hasObservers());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTopInsetObserverRegistrationAndDestroy_refactorDisabled() {
+        verify(mEdgeToEdgeController, never()).registerObserver(any());
+        assertFalse(mEdgeToEdgeControllerSupplier.hasObservers());
+        ArgumentCaptor<TopInsetProvider.Observer> captor =
+                ArgumentCaptor.forClass(TopInsetProvider.Observer.class);
+        verify(mTopInsetProvider).addObserver(captor.capture());
+
+        mNewTabAnimationLayout.destroy();
+
+        verify(mTopInsetProvider).removeObserver(captor.getValue());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testOnTabCreated_tabCreatedInForeground_dynamicTopInsetUpdate() {
+        NewTabAnimationLayout layout = createUnspiedLayout();
+        when(mNewTab.isNativePage()).thenReturn(true);
+        when(mNewTab.getNativePage()).thenReturn(mNtp);
+        when(mNtp.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        when(mBrowserControlsManager.getContentOffset()).thenReturn(50);
+
+        notifyTopInsetChange(/* newInset= */ 64, /* isDrawingToEdge= */ false);
+
+        layout.onTabCreated(
+                FAKE_TIME,
+                NEW_TAB_ID,
+                /* index= */ 1,
+                CURRENT_TAB_ID,
+                /* newIsIncognito= */ false,
+                /* background= */ false,
+                /* originX= */ 0f,
+                /* originY= */ 0f);
+        layout.updateSceneLayer(null, null, null, null, mBrowserControlsManager);
+
+        LayoutTab layoutTab = layout.getLayoutTabsToRender()[0];
+        assertEquals(
+                "Updated top inset (64) should be added to content offset (50).",
+                114,
+                layoutTab.get(LayoutTab.CONTENT_OFFSET_Y),
+                MathUtils.EPSILON);
+
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        notifyTopInsetChange(/* newInset= */ 0, /* isDrawingToEdge= */ false);
+
+        layout.onTabCreated(
+                FAKE_TIME,
+                NEW_TAB_ID,
+                /* index= */ 1,
+                CURRENT_TAB_ID,
+                /* newIsIncognito= */ false,
+                /* background= */ false,
+                /* originX= */ 0f,
+                /* originY= */ 0f);
+        layout.updateSceneLayer(null, null, null, null, mBrowserControlsManager);
+
+        layoutTab = layout.getLayoutTabsToRender()[0];
+        assertEquals(
+                "Zero top inset should leave content offset unchanged.",
+                50,
+                layoutTab.get(LayoutTab.CONTENT_OFFSET_Y),
+                MathUtils.EPSILON);
+
+        RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testOnTabCreated_tabCreatedInForeground_e2eToNonE2eAdjustsFinalRectBottom() {
+        setToolbarPosition(/* onTop= */ true);
+        NewTabAnimationLayout layout = createUnspiedLayout();
+
+        // Setup old tab as customized E2E NTP.
+        when(mCurrentTab.getUrl()).thenReturn(new GURL("chrome://newtab"));
+        when(mCurrentTab.isIncognitoBranded()).thenReturn(false);
+        when(mCurrentTab.isNativePage()).thenReturn(true);
+        when(mCurrentTab.getNativePage()).thenReturn(mNtp);
+        when(mNtp.supportsEdgeToEdgeOnTop()).thenReturn(true);
+
+        // Setup new tab as a regular non-E2E web page.
+        when(mNewTab.getUrl()).thenReturn(new GURL("https://google.com"));
+        when(mNewTab.isIncognitoBranded()).thenReturn(false);
+        when(mNewTab.isNativePage()).thenReturn(false);
+
+        // Even when not actively drawing/consuming top edge, updated raw systemTopInset (80) must
+        // be retained for E2E -> non-E2E rect calculations.
+        notifyTopInsetChange(/* newInset= */ 80, /* isDrawingToEdge= */ false);
+
+        mCompositorViewHolder.layout(0, 0, 1080, 1920);
+
+        layout.onTabCreated(
+                FAKE_TIME,
+                NEW_TAB_ID,
+                /* index= */ 1,
+                CURRENT_TAB_ID,
+                /* newIsIncognito= */ false,
+                /* background= */ false,
+                /* originX= */ 0f,
+                /* originY= */ 0f);
+
+        NewForegroundTabAnimationHostView hostView =
+                findChildView(NewForegroundTabAnimationHostView.class);
+        assertNotNull(hostView);
+
+        Rect initialRect = hostView.getInitialRectForTesting();
+        assertEquals(-1, initialRect.top);
+        // finalRect starts as (-1, -1, 1080, 1920); E2E -> non-E2E subtracts mSystemTopInset (80)
+        // from finalRect.bottom -> (-1, -1, 1080, 1840), giving height = 1841 and initialHeight =
+        // Math.round(1841 * 0.2f) = 368 (vs 364 for initial 100, or 384 if unadjusted).
+        assertEquals(368, initialRect.height());
+        assertEquals(367, initialRect.bottom);
+
+        RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testOnTabCreated_noTopInsetProviderOrController_noAdjustmentUntilSupplied() {
+        TransitiveTopInsetProvider lateTopInsetProvider = new TransitiveTopInsetProvider();
+        SettableMonotonicObservableSupplier<EdgeToEdgeController> lateControllerSupplier =
+                ObservableSuppliers.createMonotonic();
+        NewTabAnimationLayout layout =
+                createUnspiedLayout(lateTopInsetProvider, lateControllerSupplier);
+
+        when(mNewTab.isNativePage()).thenReturn(true);
+        when(mNewTab.getNativePage()).thenReturn(mNtp);
+        when(mNtp.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        when(mBrowserControlsManager.getContentOffset()).thenReturn(50);
+
+        layout.onTabCreated(
+                FAKE_TIME,
+                NEW_TAB_ID,
+                /* index= */ 1,
+                CURRENT_TAB_ID,
+                /* newIsIncognito= */ false,
+                /* background= */ false,
+                /* originX= */ 0f,
+                /* originY= */ 0f);
+        layout.updateSceneLayer(null, null, null, null, mBrowserControlsManager);
+
+        LayoutTab layoutTab = layout.getLayoutTabsToRender()[0];
+        assertEquals(
+                "No top padding should be applied before provider/controller is available.",
+                50,
+                layoutTab.get(LayoutTab.CONTENT_OFFSET_Y),
+                MathUtils.EPSILON);
+
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Supply the controller asynchronously and verify initial top inset syncs.
+        lateControllerSupplier.set(mEdgeToEdgeController);
+
+        layout.onTabCreated(
+                FAKE_TIME,
+                NEW_TAB_ID,
+                /* index= */ 1,
+                CURRENT_TAB_ID,
+                /* newIsIncognito= */ false,
+                /* background= */ false,
+                /* originX= */ 0f,
+                /* originY= */ 0f);
+        layout.updateSceneLayer(null, null, null, null, mBrowserControlsManager);
+
+        layoutTab = layout.getLayoutTabsToRender()[0];
+        assertEquals(
+                "Initial system top inset (100) should sync once supplier/provider is populated.",
+                150,
+                layoutTab.get(LayoutTab.CONTENT_OFFSET_Y),
+                MathUtils.EPSILON);
+
+        RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    // Constructor-registered observer lambdas capture the pre-spy() instance, so dynamic observer
+    // updates would mutate the original instance rather than the Mockito.spy shallow copy created
+    // in onActivity(). Tests that dynamically update top-inset/controller observers need an
+    // unspied layout.
+    private NewTabAnimationLayout createUnspiedLayout() {
+        return createUnspiedLayout(mTransitiveTopInsetProvider, mEdgeToEdgeControllerSupplier);
+    }
+
+    private NewTabAnimationLayout createUnspiedLayout(
+            TopInsetProvider topInsetProvider,
+            SettableMonotonicObservableSupplier<EdgeToEdgeController> controllerSupplier) {
+        mNewTabAnimationLayout.destroy();
+        clearInvocations(mTopInsetProvider, mEdgeToEdgeController);
+        mNewTabAnimationLayout =
+                new NewTabAnimationLayout(
+                        mActivity,
+                        mUpdateHost,
+                        mRenderHost,
+                        mLayoutStateProvider,
+                        mContentContainer,
+                        mCompositorViewHolder,
+                        mAnimationHostView,
+                        mToolbarManager,
+                        mBrowserControlsManager,
+                        mScrimVisibilitySupplier,
+                        topInsetProvider,
+                        controllerSupplier);
+        mNewTabAnimationLayout.setTabModelSelector(mTabModelSelector);
+        mNewTabAnimationLayout.setTabContentManager(mTabContentManager);
+        mNewTabAnimationLayout.onFinishNativeInitialization();
+        mNewTabAnimationLayout.setRunOnNextLayoutImmediatelyForTesting(true);
+        return mNewTabAnimationLayout;
+    }
+
+    private void notifyTopInsetChange(int newInset, boolean isDrawingToEdge) {
+        ArgumentCaptor<EdgeToEdgeSupplier.ChangeObserver> captor =
+                ArgumentCaptor.forClass(EdgeToEdgeSupplier.ChangeObserver.class);
+        verify(mEdgeToEdgeController).registerObserver(captor.capture());
+        when(mEdgeToEdgeController.getSystemTopInsetPx()).thenReturn(newInset);
+        captor.getValue()
+                .onToEdgeChange(
+                        /* bottomInset= */ 0, isDrawingToEdge, /* isPageOptInToEdge= */ false);
     }
 
     private <T extends View> T findChildView(Class<T> clazz) {

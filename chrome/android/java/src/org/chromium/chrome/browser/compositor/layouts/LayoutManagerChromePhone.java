@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
@@ -39,6 +40,7 @@ import java.util.function.Supplier;
 public class LayoutManagerChromePhone extends LayoutManagerChrome {
     private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolderSupplier;
     private final TopInsetProvider mTopInsetProvider;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final NonNullObservableSupplier<Boolean> mScrimVisibilitySupplier;
     private final ToolbarManager mToolbarManager;
     private final ViewGroup mContentView;
@@ -61,6 +63,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      * @param toolbarManager The {@link ToolbarManager} instance.
      * @param scrimVisibilitySupplier Supplier for the Scrim visibility.
      * @param topInsetProvider The {@link TopInsetProvider} instance.
+     * @param edgeToEdgeControllerSupplier Supplier of the {@link EdgeToEdgeController}.
      */
     public LayoutManagerChromePhone(
             LayoutManagerHost host,
@@ -74,7 +77,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             ViewGroup contentView,
             ToolbarManager toolbarManager,
             NonNullObservableSupplier<Boolean> scrimVisibilitySupplier,
-            TopInsetProvider topInsetProvider) {
+            TopInsetProvider topInsetProvider,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         super(
                 host,
                 contentContainer,
@@ -88,6 +92,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
         mToolbarManager = toolbarManager;
         mScrimVisibilitySupplier = scrimVisibilitySupplier;
         mTopInsetProvider = topInsetProvider;
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
     }
 
     @Override
@@ -120,7 +125,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                         mToolbarManager,
                         getBrowserControlsManager(),
                         mScrimVisibilitySupplier,
-                        mTopInsetProvider);
+                        mTopInsetProvider,
+                        mEdgeToEdgeControllerSupplier);
 
         super.init(
                 selector,

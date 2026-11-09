@@ -1208,7 +1208,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     getContentView().findViewById(R.id.coordinator),
                     toolbarManager,
                     mRootUiCoordinator.getScrimManager().getScrimVisibilitySupplier(),
-                    mTransitiveTopInsetProvider);
+                    mTransitiveTopInsetProvider,
+                    mEdgeToEdgeControllerSupplier);
         }
     }
 

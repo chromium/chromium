@@ -236,7 +236,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                         mContentView,
                         mToolbarManager,
                         mScrimVisibilitySupplier,
-                        new NoOpTopInsetProvider());
+                        new NoOpTopInsetProvider(),
+                        ObservableSuppliers.alwaysNull());
 
         tabContentManagerSupplier.set(mTabContentManager);
         mManager = mManagerPhone;
