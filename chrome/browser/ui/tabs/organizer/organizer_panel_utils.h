@@ -7,24 +7,17 @@
 
 #include "base/feature.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 
 namespace organizer_panel {
 
 BASE_DECLARE_FEATURE(kOrganizerPanel);
 BASE_DECLARE_FEATURE(kOrganizerPanelForeignTabs);
 
-BASE_DECLARE_FEATURE_PARAM(bool, kOrganizerPanelUseSegmentationControl);
-
 // Returns whether the Organizer Panel feature is enabled.
 bool IsOrganizerPanelFeatureEnabled();
 
 // Returns whether the Organizer Panel Foreign Tabs feature is enabled.
 bool IsOrganizerPanelForeignTabsEnabled();
-
-// Returns whether the segmentation control should be used for the organizer
-// panel.
-bool IsOrganizerPanelSegmentationControlEnabled();
 
 }  // namespace organizer_panel
 

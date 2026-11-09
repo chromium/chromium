@@ -16,11 +16,9 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
-#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_segmented_control.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -66,30 +64,14 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
                                       ? views::LayoutOrientation::kVertical
                                       : views::LayoutOrientation::kHorizontal);
 
-  if (organizer_panel::IsOrganizerPanelFeatureEnabled()) {
-    if (organizer_panel::IsOrganizerPanelSegmentationControlEnabled()) {
-      segmented_control_ = AddChildView(
-          std::make_unique<VerticalTabStripSegmentedControl>(browser_));
-      segmented_control_->SetVisible(false);
-    }
-
+  if (organizer_panel::IsOrganizerPanelFeatureEnabled() && state_controller_) {
     auto invalidate_layout = base::BindRepeating(
         &VerticalTabStripTopContainer::InvalidateLayout, base::Unretained(this),
         /*avoid_propagate_during_layout=*/false);
 
-    if (browser_ && browser_->GetProfile()) {
-      pref_registrar_.Init(browser_->GetProfile()->GetPrefs());
-      pref_registrar_.Add(prefs::kTabSearchPinnedToTabstrip, invalidate_layout);
-    }
-
-    if (state_controller_) {
-      expand_on_hover_subscription_ =
-          state_controller_->RegisterOnExpandOnHoverEnabledChanged(
-              base::IgnoreArgs<bool>(invalidate_layout));
-      mode_changed_subscription_ = state_controller_->RegisterOnModeChanged(
-          base::IgnoreArgs<tabs::VerticalTabStripStateController*>(
-              invalidate_layout));
-    }
+    expand_on_hover_subscription_ =
+        state_controller_->RegisterOnExpandOnHoverEnabledChanged(
+            base::IgnoreArgs<bool>(invalidate_layout));
   }
 }
 
@@ -154,29 +136,20 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
   const bool keep_horizontal_layout =
       (is_collapsed || is_collapsing) && is_expand_on_hover &&
       organizer_panel::IsOrganizerPanelFeatureEnabled();
-  const bool show_segmented_control =
-      ShouldShowSegmentedControl(available_width);
-  const int trailing_control_width =
-      GetTrailingControlPreferredSize(show_segmented_control).width();
+  const int combo_button_width = GetComboButtonPreferredSize().width();
 
   // Once the available width is below the collapse snap width, we update the
   // orientation in order to have smooth transition during animation.
   if (!keep_horizontal_layout &&
-      (trailing_control_width >= available_width ||
+      (combo_button_width >= available_width ||
        available_width < tabs::kVerticalTabStripCollapseSnapWidth ||
        is_collapsed)) {
     combo_button_orientation_ = views::LayoutOrientation::kVertical;
     int current_y = 0;
 
-    if (segmented_control_) {
-      layout.child_layouts.emplace_back(segmented_control_.get(),
-                                        /*visible=*/false);
-    }
-
     if (collapse_button_) {
       const gfx::Size pref_size = collapse_button_->GetPreferredSize();
-      const int baseline_height =
-          GetBaselineMinHeight(/*show_segmented_control=*/false);
+      const int baseline_height = GetBaselineMinHeight();
       current_y = std::max(0, (baseline_height - pref_size.height()) / 2);
 
       // Because the collapsed state is set at the end of the transition, we
@@ -251,7 +224,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     // on one line or not.
     combo_button_orientation_ = views::LayoutOrientation::kHorizontal;
 
-    const int baseline_height = GetBaselineMinHeight(show_segmented_control);
+    const int baseline_height = GetBaselineMinHeight();
     host_size.SetToMax(gfx::Size(0, baseline_height));
 
     // If there is not enough space for the buttons on a single line with
@@ -309,46 +282,28 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
         keep_horizontal_layout
             ? std::max(host_size.width(), expected_uncollapsed_width)
             : host_size.width();
-    int right_alignment = layout_width;
 
-    bool wrap_during_animation =
-        !keep_horizontal_layout && caption_button_width_ != 0 &&
-        available_width < GetPreferredWidth(show_segmented_control);
+    bool wrap_during_animation = !keep_horizontal_layout &&
+                                 caption_button_width_ != 0 &&
+                                 available_width < GetPreferredWidth();
 
-    const bool hide_trailing_control =
+    const bool hide_combo_button =
         keep_horizontal_layout &&
         (is_collapsing || (is_collapsed && available_width <= collapsed_width));
 
-    if (segmented_control_) {
-      const bool visible = !hide_trailing_control && show_segmented_control;
-      gfx::Rect bounds;
-      if (visible) {
-        const gfx::Size pref_size = segmented_control_->GetPreferredSize();
-        right_alignment -= pref_size.width();
-        bounds =
-            gfx::Rect(wrap_during_animation ? 0 : right_alignment,
-                      wrap_during_animation
-                          ? current_y
-                          : std::max(0, y_baseline - pref_size.height() / 2),
-                      pref_size.width(), pref_size.height());
-      }
-      layout.child_layouts.emplace_back(segmented_control_.get(), visible,
-                                        bounds);
-    }
     if (combo_button_) {
-      const bool visible = !hide_trailing_control && !show_segmented_control;
+      const bool visible = !hide_combo_button;
       gfx::Rect bounds;
       if (visible) {
         const gfx::Size pref_size =
             combo_button_->GetPreferredSizeForOrientation(
                 combo_button_orientation_);
-        right_alignment -= pref_size.width();
-        bounds =
-            gfx::Rect(wrap_during_animation ? 0 : right_alignment,
-                      wrap_during_animation
-                          ? current_y
-                          : std::max(0, y_baseline - pref_size.height() / 2),
-                      pref_size.width(), pref_size.height());
+        bounds = gfx::Rect(
+            wrap_during_animation ? 0 : layout_width - pref_size.width(),
+            wrap_during_animation
+                ? current_y
+                : std::max(0, y_baseline - pref_size.height() / 2),
+            pref_size.width(), pref_size.height());
       }
       layout.child_layouts.emplace_back(combo_button_.get(), visible, bounds);
     }
@@ -380,18 +335,8 @@ TabStripComboButton* VerticalTabStripTopContainer::GetComboButton() {
   return combo_button_.get();
 }
 
-VerticalTabStripSegmentedControl*
-VerticalTabStripTopContainer::GetSegmentedControl() {
-  return segmented_control_.get();
-}
-
 bool VerticalTabStripTopContainer::IsPositionInWindowCaption(
     const gfx::Point& point) {
-  if (segmented_control_ && segmented_control_->GetVisible() &&
-      IsHitInView(segmented_control_, point)) {
-    return false;
-  }
-
   if (combo_button_ && combo_button_->GetVisible() &&
       IsHitInView(combo_button_, point)) {
     return false;
@@ -505,53 +450,14 @@ void VerticalTabStripTopContainer::SetIsExitingExpandOnHoverForLayout(
 bool VerticalTabStripTopContainer::WillWrapDueToOverflow(
     int available_width) const {
   return caption_button_width_ > 0 &&
-         GetPreferredWidth(ShouldShowSegmentedControl(available_width)) +
-                 caption_button_width_ >=
-             available_width;
+         GetPreferredWidth() + caption_button_width_ >= available_width;
 }
 
 void VerticalTabStripTopContainer::OnCollapseButtonContextMenuClosed() {
   expand_on_hover_lock_.reset();
 }
 
-bool VerticalTabStripTopContainer::ShouldShowSegmentedControl(
-    int available_width) const {
-  if (!segmented_control_ || !state_controller_ ||
-      !state_controller_->ShouldDisplayVerticalTabs()) {
-    return false;
-  }
-  if (!browser_ || !browser_->GetProfile() ||
-      !browser_->GetProfile()->GetPrefs()->GetBoolean(
-          prefs::kTabSearchPinnedToTabstrip)) {
-    return false;
-  }
-
-  const auto collapse_state = state_controller_->GetCollapseState();
-  if (collapse_state == tabs::VerticalTabStripCollapseState::kCollapsed) {
-    return state_controller_->IsExpandOnHoverEnabled();
-  }
-  if (collapse_state == tabs::VerticalTabStripCollapseState::kCollapsing &&
-      !state_controller_->IsExpandOnHoverEnabled()) {
-    return false;
-  }
-
-  const int horizontal_padding =
-      GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
-  const int effective_tab_strip_width =
-      collapse_state == tabs::VerticalTabStripCollapseState::kCollapsing
-          ? std::max(available_width + 2 * horizontal_padding,
-                     state_controller_->GetUncollapsedWidth())
-          : available_width + 2 * horizontal_padding;
-  return effective_tab_strip_width >
-         organizer_panel::kOrganizerPanelMinWidth -
-             organizer_panel::kOrganizerPanelMinOverlap;
-}
-
-gfx::Size VerticalTabStripTopContainer::GetTrailingControlPreferredSize(
-    bool show_segmented_control) const {
-  if (show_segmented_control && segmented_control_) {
-    return segmented_control_->GetPreferredSize();
-  }
+gfx::Size VerticalTabStripTopContainer::GetComboButtonPreferredSize() const {
   if (combo_button_) {
     return combo_button_->GetPreferredSizeForOrientation(
         views::LayoutOrientation::kHorizontal);
@@ -559,10 +465,8 @@ gfx::Size VerticalTabStripTopContainer::GetTrailingControlPreferredSize(
   return gfx::Size();
 }
 
-int VerticalTabStripTopContainer::GetPreferredWidth(
-    bool show_segmented_control) const {
-  int total_width =
-      GetTrailingControlPreferredSize(show_segmented_control).width();
+int VerticalTabStripTopContainer::GetPreferredWidth() const {
+  int total_width = GetComboButtonPreferredSize().width();
   if (collapse_button_) {
     total_width +=
         collapse_button_->GetPreferredSize().width() +
@@ -571,10 +475,8 @@ int VerticalTabStripTopContainer::GetPreferredWidth(
   return total_width;
 }
 
-int VerticalTabStripTopContainer::GetBaselineMinHeight(
-    bool show_segmented_control) const {
-  int min_height =
-      GetTrailingControlPreferredSize(show_segmented_control).height();
+int VerticalTabStripTopContainer::GetBaselineMinHeight() const {
+  int min_height = GetComboButtonPreferredSize().height();
   if (collapse_button_) {
     min_height =
         std::max(min_height, collapse_button_->GetPreferredSize().height());

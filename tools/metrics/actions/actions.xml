@@ -42708,24 +42708,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="VerticalTabStripSegmentedControl.TabSearch.Pinned">
-  <owner>agale@google.com</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>
-    Recorded when the user pins the Tab Search button to the tabstrip from the
-    vertical tab strip segmented control context menu.
-  </description>
-</action>
-
-<action name="VerticalTabStripSegmentedControl.TabSearch.Unpinned">
-  <owner>agale@google.com</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>
-    Recorded when the user unpins the Tab Search button from the tabstrip from
-    the vertical tab strip segmented control context menu.
-  </description>
-</action>
-
 <action name="VideoPlayer.CastVideoError">
   <owner>yoshiki@chromium.org</owner>
   <description>

@@ -113,16 +113,8 @@ std::vector<base::CallbackListSubscription> SubscribeToAnimations(
 
 class OrganizerPanelUiTest : public InteractiveBrowserTest {
  public:
-  explicit OrganizerPanelUiTest(bool use_segmentation_control = false) {
-    if (use_segmentation_control) {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          organizer_panel::kOrganizerPanel,
-          {{organizer_panel::kOrganizerPanelUseSegmentationControl.name,
-            "true"}});
-    } else {
-      scoped_feature_list_.InitAndEnableFeature(
-          organizer_panel::kOrganizerPanel);
-    }
+  OrganizerPanelUiTest() {
+    scoped_feature_list_.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
   }
 
   void SetUpOnMainThread() override {
@@ -245,14 +237,7 @@ class OrganizerPanelUiTest : public InteractiveBrowserTest {
   auto CloseOrganizerPanel() {
     auto steps =
         Steps(EnsurePresent(kOrganizerPanelElementId),
-              If(
-                  []() {
-                    return organizer_panel::
-                        IsOrganizerPanelSegmentationControlEnabled();
-                  },
-                  Then(PressButton(kVerticalTabStripTabStripButtonElementId)),
-                  Else(PressButton(kTabSearchButtonElementId))),
-              WaitForPanelClose());
+              PressButton(kTabSearchButtonElementId), WaitForPanelClose());
     AddDescriptionPrefix(steps, "CloseOrganizerPanel()");
     return steps;
   }
@@ -472,24 +457,6 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, OpenClosePanelVerticalTabs) {
           kWebContentsId, kAppQuery,
           "el => el.shadowRoot.querySelector('#closeButton') === null", true),
       CloseOrganizerPanel(), CheckControllerState(false));
-}
-
-class OrganizerPanelSegmentationControlUiTest : public OrganizerPanelUiTest {
- public:
-  OrganizerPanelSegmentationControlUiTest()
-      : OrganizerPanelUiTest(/*use_segmentation_control=*/true) {}
-};
-
-IN_PROC_BROWSER_TEST_F(OrganizerPanelSegmentationControlUiTest,
-                       OpenClosePanelVerticalTabs) {
-  RunTestSequence(
-      SetVerticalTabsEnabled(true), CheckControllerState(false),
-      OpenOrganizerPanel(), CheckControllerState(true),
-      ExpectPanelLocation(OrganizerPanelLocation::kVerticalTabStrip),
-      CheckPanelVisuals(tabs::VerticalTabStripStateController::From(browser())
-                            ->GetUncollapsedWidth(),
-                        /*should_have_rounded_corners=*/false),
-      WaitForPanelLoad(), CloseOrganizerPanel(), CheckControllerState(false));
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,

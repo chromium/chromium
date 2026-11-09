@@ -573,17 +573,6 @@ const FeatureEntry::FeatureVariation
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-const FeatureEntry::FeatureParam kOrganizerPanelWithSegmentationControl[] = {
-    {"OrganizerPanelUseSegmentationControl", "true"}};
-const FeatureEntry::FeatureParam kOrganizerPanelWithoutSegmentationControl[] = {
-    {"OrganizerPanelUseSegmentationControl", "false"}};
-
-const FeatureEntry::FeatureVariation kOrganizerPanelVariations[] = {
-    {"with segmentation control", kOrganizerPanelWithSegmentationControl,
-     nullptr},
-    {"without segmentation control", kOrganizerPanelWithoutSegmentationControl,
-     nullptr}};
-
 const FeatureEntry::FeatureParam kContextHubTopicsFishfoodFeedback[] = {
     {"fishfood_feedback", "true"}};
 
@@ -12646,9 +12635,7 @@ const FeatureEntry kFeatureEntries[] = {
     BUILDFLAG(IS_CHROMEOS)
     {"organizer-panel", flag_descriptions::kOrganizerPanelName,
      flag_descriptions::kOrganizerPanelDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(organizer_panel::kOrganizerPanel,
-                                    kOrganizerPanelVariations,
-                                    "OrganizerPanel")},
+     FEATURE_VALUE_TYPE(organizer_panel::kOrganizerPanel)},
     {"organizer-panel-foreign-tabs",
      flag_descriptions::kOrganizerPanelForeignTabsName,
      flag_descriptions::kOrganizerPanelForeignTabsDescription, kOsDesktop,

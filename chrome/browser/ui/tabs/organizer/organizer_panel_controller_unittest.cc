@@ -442,36 +442,3 @@ TEST_P(OrganizerPanelControllerConfigurationTest, PanelMoved) {
                   TogglePanel(), SetAnimationValue(1.0),
                   ExpectPanel(!StartInVerticalTabStrip()));
 }
-
-TEST(OrganizerPanelUtilsTest, SegmentationControlFeatureParam) {
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(organizer_panel::kOrganizerPanel);
-    EXPECT_FALSE(organizer_panel::IsOrganizerPanelFeatureEnabled());
-    EXPECT_FALSE(organizer_panel::IsOrganizerPanelSegmentationControlEnabled());
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
-    EXPECT_TRUE(organizer_panel::IsOrganizerPanelFeatureEnabled());
-    EXPECT_FALSE(organizer_panel::IsOrganizerPanelSegmentationControlEnabled());
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        organizer_panel::kOrganizerPanel,
-        {{organizer_panel::kOrganizerPanelUseSegmentationControl.name,
-          "false"}});
-    EXPECT_TRUE(organizer_panel::IsOrganizerPanelFeatureEnabled());
-    EXPECT_FALSE(organizer_panel::IsOrganizerPanelSegmentationControlEnabled());
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        organizer_panel::kOrganizerPanel,
-        {{organizer_panel::kOrganizerPanelUseSegmentationControl.name,
-          "true"}});
-    EXPECT_TRUE(organizer_panel::IsOrganizerPanelFeatureEnabled());
-    EXPECT_TRUE(organizer_panel::IsOrganizerPanelSegmentationControlEnabled());
-  }
-}
