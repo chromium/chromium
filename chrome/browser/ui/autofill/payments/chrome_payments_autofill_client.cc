@@ -312,7 +312,9 @@ void ChromePaymentsAutofillClient::ShowSaveCreditCardLocally(
     SaveCreditCardOptions options,
     LocalSaveCardPromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
-  CHECK(options.show_prompt, base::NotFatalUntil::M162);
+  // TODO(crbug.com/579239755): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(options.show_prompt);
   AutofillSaveCardUiInfo ui_info =
       AutofillSaveCardUiInfo::CreateForLocalSave(options, card);
   auto save_card_delegate = std::make_unique<AutofillSaveCardDelegateAndroid>(
