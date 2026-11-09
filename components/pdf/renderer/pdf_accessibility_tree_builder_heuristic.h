@@ -37,6 +37,12 @@ namespace pdf {
 class PdfAccessibilityTreeBuilder;
 struct ListMarkerKind;
 
+// An ordered list marker.
+struct OrderedMarker {
+  // The marker's position in its list, not its text, e.g. 2 for "2.".
+  int value = 0;
+};
+
 // One nesting level of the list being built: the top-level list, or a sublist
 // inside an item of the level above. A level stays active, accepting new items,
 // until a marker outdents past it or a non-list block ends the list.
@@ -59,9 +65,9 @@ struct ListLevel {
   // Character counts of this level's ended items, excluding markers and
   // nested lists.
   std::vector<size_t> item_char_counts;
-  // The value of the most recent item if this is an ordered list; unset for an
+  // The most recent item's marker if this is an ordered list; unset for an
   // unordered list.
-  std::optional<int> last_ordered_value;
+  std::optional<OrderedMarker> last_ordered_marker;
   // Deepest level count reached under this list, including itself. Only
   // tracked on the top-level list.
   size_t max_nesting_depth = 1;
