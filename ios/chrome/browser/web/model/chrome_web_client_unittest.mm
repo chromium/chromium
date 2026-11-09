@@ -37,6 +37,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "components/universal_optout/features.h"
 #import "components/universal_optout/prefs.h"
 #import "ios/chrome/browser/cobrowse/model/aim_cobrowse_java_script_feature.h"
@@ -55,6 +56,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
+#import "ios/chrome/browser/sync/model/tab_context_decryption_token_java_script_feature.h"
 #import "ios/chrome/browser/web/model/error_page_util.h"
 #import "ios/chrome/browser/web_extension/model/extension_service.h"
 #import "ios/chrome/browser/web_extension/model/extension_service_factory.h"
@@ -1044,4 +1046,25 @@ API_AVAILABLE(ios(18.4)) {
   EXPECT_NE(nullptr, service->GetExtensionController());
   EXPECT_EQ(service->GetExtensionController(),
             web_client.GetExtensionController(profile_with_service.get()));
+}
+
+// Tests that `GetJavaScriptFeatures` includes or excludes
+// `TabContextDecryptionTokenJavaScriptFeature` based on
+// `syncer::kSyncEncryptedTabContext`.
+TEST_F(ChromeWebClientTest, GetJavaScriptFeatures_TabContextDecryptionToken) {
+  ChromeWebClient web_client;
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(syncer::kSyncEncryptedTabContext);
+    auto features = web_client.GetJavaScriptFeatures(profile());
+    EXPECT_TRUE(std::ranges::contains(
+        features, TabContextDecryptionTokenJavaScriptFeature::GetInstance()));
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(syncer::kSyncEncryptedTabContext);
+    auto features = web_client.GetJavaScriptFeatures(profile());
+    EXPECT_FALSE(std::ranges::contains(
+        features, TabContextDecryptionTokenJavaScriptFeature::GetInstance()));
+  }
 }
