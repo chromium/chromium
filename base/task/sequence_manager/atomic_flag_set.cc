@@ -38,6 +38,19 @@ AtomicFlagSet::AtomicFlag::AtomicFlag(AtomicFlag&& other)
   other.group_ = nullptr;
 }
 
+AtomicFlagSet::AtomicFlag& AtomicFlagSet::AtomicFlag::operator=(
+    AtomicFlag&& other) {
+  if (this != &other) {
+    ReleaseAtomicFlag();
+    outer_ = other.outer_;
+    group_ = other.group_;
+    flag_bit_ = other.flag_bit_;
+    other.outer_ = nullptr;
+    other.group_ = nullptr;
+  }
+  return *this;
+}
+
 void AtomicFlagSet::AtomicFlag::SetActive(bool active) {
   DCHECK(group_);
   if (active) {

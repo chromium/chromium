@@ -182,6 +182,12 @@ class BASE_EXPORT SequenceManagerImpl
   // thread this class was created on.
   internal::TaskQueueImpl* currently_executing_task_queue() const;
 
+  // Registers `task_queue` with `active_queues` and the `TaskQueueSelector`.
+  // Called for queues created by `CreateTaskQueueImpl()` and for queues created
+  // by `TaskQueue::CreateUnbound()` once they are bound to this
+  // SequenceManager.
+  void RegisterTaskQueueImpl(internal::TaskQueueImpl* task_queue);
+
   // Unregisters a TaskQueue previously created by |NewTaskQueue()|.
   // No tasks will run on this queue after this call.
   void UnregisterTaskQueueImpl(

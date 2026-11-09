@@ -4261,10 +4261,11 @@ TEST_P(SequenceManagerTest, TaskQueueTaskRunnerDetach) {
       nullptr, nullptr, TaskQueue::Spec(QueueName::TEST_TQ));
   scoped_refptr<SingleThreadTaskRunner> task_runner2 =
       queue2->CreateTaskRunner(0);
-  EXPECT_FALSE(task_runner2->PostTask(FROM_HERE, BindOnce(&NopTask)));
+  EXPECT_TRUE(task_runner2->PostTask(FROM_HERE, BindOnce(&NopTask)));
 
   // Tidy up.
   queue2->UnregisterTaskQueue();
+  EXPECT_FALSE(task_runner2->PostTask(FROM_HERE, BindOnce(&NopTask)));
 }
 
 TEST_P(SequenceManagerTest, DestructorPostChainDuringShutdown) {
@@ -6170,6 +6171,272 @@ TEST(SequenceManagerTest, GetBestEffortTaskQueues) {
 
   EXPECT_EQ(fixture.sequence_manager()->GetBestEffortTaskQueues(),
             std::vector<TaskQueue*>({background_queue.get()}));
+}
+
+TEST(UnboundTaskQueueTest, FifoOrderAndRunsTasksInCurrentSequence) {
+  FixtureWithMockMessagePump fixture;
+  auto existing_queue = fixture.sequence_manager()->CreateTaskQueue(
+      TaskQueue::Spec(QueueName::TEST_TQ));
+
+  TaskQueue::Handle unbound_queue;
+  std::vector<int> order;
+
+  Thread creator("CreatorThread");
+  ASSERT_TRUE(creator.Start());
+  WaitableEvent created;
+  creator.task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        unbound_queue =
+            TaskQueue::CreateUnbound(TaskQueue::Spec(QueueName::TEST_TQ));
+        EXPECT_FALSE(unbound_queue->task_runner()->BelongsToCurrentThread());
+        EXPECT_FALSE(
+            unbound_queue->task_runner()->RunsTasksInCurrentSequence());
+        unbound_queue->task_runner()->PostTask(
+            FROM_HERE, BindLambdaForTesting([&] { order.push_back(1); }));
+        unbound_queue->task_runner()->PostTask(
+            FROM_HERE, BindLambdaForTesting([&] { order.push_back(2); }));
+        created.Signal();
+      }));
+  created.Wait();
+
+  EXPECT_FALSE(unbound_queue->task_runner()->BelongsToCurrentThread());
+  EXPECT_FALSE(unbound_queue->task_runner()->RunsTasksInCurrentSequence());
+
+  // Post a task to `existing_queue` (same default priority) before binding
+  // `unbound_queue`; waiting unbound tasks get enqueue orders at bind time,
+  // so `existing_queue`'s task runs first, followed by 1, 2, 3 in FIFO order.
+  existing_queue->task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] { order.push_back(0); }));
+
+  unbound_queue.BindToCurrentThread();
+  EXPECT_TRUE(unbound_queue->task_runner()->BelongsToCurrentThread());
+  EXPECT_TRUE(unbound_queue->task_runner()->RunsTasksInCurrentSequence());
+
+  creator.task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        EXPECT_FALSE(unbound_queue->task_runner()->BelongsToCurrentThread());
+        EXPECT_FALSE(
+            unbound_queue->task_runner()->RunsTasksInCurrentSequence());
+      }));
+  creator.Stop();
+
+  unbound_queue->task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] { order.push_back(3); }));
+  unbound_queue->task_runner()->PostDelayedTask(
+      FROM_HERE, BindLambdaForTesting([&] { order.push_back(4); }),
+      Milliseconds(50));
+
+  fixture.FastForwardBy(Milliseconds(49));
+  EXPECT_THAT(order, ElementsAre(0, 1, 2, 3));
+
+  fixture.FastForwardBy(Milliseconds(1));
+  EXPECT_THAT(order, ElementsAre(0, 1, 2, 3, 4));
+}
+
+TEST(UnboundTaskQueueTest, ConcurrentPostsBeforeAndDuringBind) {
+  Thread target_thread("TargetThread");
+  ASSERT_TRUE(target_thread.Start());
+
+  TaskQueue::Handle unbound_queue =
+      TaskQueue::CreateUnbound(TaskQueue::Spec(QueueName::TEST_TQ));
+  scoped_refptr<SingleThreadTaskRunner> runner = unbound_queue->task_runner();
+
+  constexpr int kNumPosters = 4;
+  constexpr int kTasksPerPoster = 200;
+  std::array<std::vector<int>, kNumPosters> per_poster_seen;
+  std::atomic<int> total_ran{0};
+
+  WaitableEvent start_posting(WaitableEvent::ResetPolicy::MANUAL);
+  std::vector<std::unique_ptr<Thread>> posters;
+  for (int p = 0; p < kNumPosters; ++p) {
+    auto poster = std::make_unique<Thread>(StringPrintf("Poster%d", p));
+    ASSERT_TRUE(poster->Start());
+    poster->task_runner()->PostTask(
+        FROM_HERE, BindLambdaForTesting([&, p] {
+          start_posting.Wait();
+          for (int i = 0; i < kTasksPerPoster; ++i) {
+            runner->PostTask(FROM_HERE, BindLambdaForTesting([&, p, i] {
+                               per_poster_seen[p].push_back(i);
+                               total_ran.fetch_add(1,
+                                                   std::memory_order_relaxed);
+                             }));
+          }
+        }));
+    posters.push_back(std::move(poster));
+  }
+
+  // Unleash concurrent posters and simultaneously bind on `target_thread`.
+  start_posting.Signal();
+  target_thread.task_runner()->PostTask(FROM_HERE, BindLambdaForTesting([&] {
+                                          unbound_queue.BindToCurrentThread();
+                                        }));
+
+  for (auto& poster : posters) {
+    poster->Stop();
+  }
+
+  WaitableEvent drained;
+  runner->PostTask(FROM_HERE,
+                   BindOnce(&WaitableEvent::Signal, Unretained(&drained)));
+  drained.Wait();
+
+  EXPECT_EQ(total_ran.load(std::memory_order_relaxed),
+            kNumPosters * kTasksPerPoster);
+  for (int p = 0; p < kNumPosters; ++p) {
+    ASSERT_EQ(static_cast<int>(per_poster_seen[p].size()), kTasksPerPoster);
+    for (int i = 0; i < kTasksPerPoster; ++i) {
+      EXPECT_EQ(per_poster_seen[p][i], i);
+    }
+  }
+
+  WaitableEvent reset_done;
+  target_thread.task_runner()->PostTask(FROM_HERE, BindLambdaForTesting([&] {
+                                          unbound_queue.reset();
+                                          reset_done.Signal();
+                                        }));
+  reset_done.Wait();
+}
+
+TEST_F(SequenceManagerRunOrPostTaskTest,
+       BindUnboundQueueWhileIdlePreservesOrder) {
+  SimulateInsideRunLoop();
+
+  TaskQueue::Handle unbound_queue =
+      TaskQueue::CreateUnbound(TaskQueue::Spec(QueueName::TEST_TQ));
+  scoped_refptr<SingleThreadTaskRunner> runner = unbound_queue->task_runner();
+
+  std::vector<int> order;
+  runner->PostTask(FROM_HERE,
+                   BindLambdaForTesting([&] { order.push_back(1); }));
+
+  // Even when the SequenceManager is idle and allows synchronous execution,
+  // `RunOrPostTask()` on an unbound queue must queue the task rather than run
+  // it synchronously.
+  other_thread_task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        EXPECT_TRUE(runner->RunOrPostTask(
+            subtle::RunOrPostTaskPassKeyForTesting(), FROM_HERE,
+            BindLambdaForTesting([&] { order.push_back(2); })));
+      }));
+  FlushOtherThread();
+  EXPECT_TRUE(order.empty());
+
+  // Binding a non-empty queue while the SequenceManager is idle notifies
+  // `WorkTracker` of pending reload work, so a subsequent `RunOrPostTask()`
+  // before the queue is reloaded must also queue behind tasks 1 and 2 rather
+  // than running synchronously ahead of them.
+  unbound_queue.BindToCurrentThread();
+
+  other_thread_task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        EXPECT_TRUE(runner->RunOrPostTask(
+            subtle::RunOrPostTaskPassKeyForTesting(), FROM_HERE,
+            BindLambdaForTesting([&] { order.push_back(3); })));
+      }));
+  FlushOtherThread();
+  EXPECT_TRUE(order.empty());
+
+  while (order.size() < 3u) {
+    sequence_manager()->OnBeginWork();
+    LazyNow lazy_now(DefaultTickClock::GetInstance());
+    if (auto task = sequence_manager()->SelectNextTask(lazy_now)) {
+      std::move(task->task.task).Run();
+      sequence_manager()->DidRunTask(lazy_now);
+    } else {
+      sequence_manager()->OnIdle();
+    }
+  }
+  EXPECT_THAT(order, ElementsAre(1, 2, 3));
+
+  // Once the bound queue is drained and the SequenceManager transitions back to
+  // idle, `RunOrPostTask()` on the bound queue runs synchronously.
+  LazyNow lazy_now(DefaultTickClock::GetInstance());
+  ASSERT_FALSE(sequence_manager()->GetPendingWakeUp(&lazy_now));
+  sequence_manager()->OnIdle();
+
+  other_thread_task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        EXPECT_TRUE(runner->RunOrPostTask(
+            subtle::RunOrPostTaskPassKeyForTesting(), FROM_HERE,
+            BindLambdaForTesting([&] { order.push_back(4); })));
+      }));
+  FlushOtherThread();
+  EXPECT_THAT(order, ElementsAre(1, 2, 3, 4));
+}
+
+// Verify that a task running synchronously via `RunOrPostTask()` on a queue
+// created with `TaskQueue::CreateUnbound()` runs in sequence with all other
+// queues of the same SequenceManager, e.g. it can cancel a delayed task posted
+// to the default queue.
+TEST_F(SequenceManagerRunOrPostTaskTest,
+       CancelDelayedTaskAcrossBoundUnboundAndDefaultQueue) {
+  TaskQueue::Handle unbound_queue =
+      TaskQueue::CreateUnbound(TaskQueue::Spec(QueueName::TEST_TQ));
+  unbound_queue.BindToCurrentThread();
+
+  SimulateInsideRunLoop();
+
+  DelayedTaskHandle default_queue_handle =
+      task_runner()->PostCancelableDelayedTask(
+          subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE, DoNothing(),
+          Seconds(10));
+
+  bool did_run_unbound_sync = false;
+  other_thread_task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        bool ran_sync = false;
+        EXPECT_TRUE(unbound_queue->task_runner()->RunOrPostTask(
+            subtle::RunOrPostTaskPassKeyForTesting(), FROM_HERE,
+            BindLambdaForTesting([&] {
+              default_queue_handle.CancelTask();
+              EXPECT_TRUE(queue()->IsEmpty());
+              ran_sync = true;
+            })));
+        did_run_unbound_sync = ran_sync;
+      }));
+  FlushOtherThread();
+  EXPECT_TRUE(did_run_unbound_sync);
+}
+
+TEST(UnboundTaskQueueTest, DropHandleBeforeBindOnAnotherThread) {
+  TaskQueue::Handle unbound_queue;
+  int ran_count = 0;
+  int destroyed_count = 0;
+
+  Thread creator("CreatorThread");
+  Thread destroyer("DestroyerThread");
+  ASSERT_TRUE(creator.Start());
+  ASSERT_TRUE(destroyer.Start());
+
+  auto make_tracked_task = [&] {
+    ScopedClosureRunner on_destroy(
+        BindLambdaForTesting([&] { ++destroyed_count; }));
+    return BindOnce([](int* ran, ScopedClosureRunner) { ++(*ran); }, &ran_count,
+                    std::move(on_destroy));
+  };
+
+  WaitableEvent created;
+  creator.task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        unbound_queue =
+            TaskQueue::CreateUnbound(TaskQueue::Spec(QueueName::TEST_TQ));
+        unbound_queue->task_runner()->PostTask(FROM_HERE, make_tracked_task());
+        unbound_queue->task_runner()->PostTask(FROM_HERE, make_tracked_task());
+        created.Signal();
+      }));
+  created.Wait();
+
+  scoped_refptr<SingleThreadTaskRunner> runner = unbound_queue->task_runner();
+  WaitableEvent destroyed;
+  destroyer.task_runner()->PostTask(FROM_HERE, BindLambdaForTesting([&] {
+                                      unbound_queue.reset();
+                                      destroyed.Signal();
+                                    }));
+  destroyed.Wait();
+
+  EXPECT_EQ(ran_count, 0);
+  EXPECT_EQ(destroyed_count, 2);
+  EXPECT_FALSE(runner->PostTask(FROM_HERE, DoNothing()));
 }
 
 }  // namespace base::sequence_manager::internal

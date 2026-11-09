@@ -116,9 +116,19 @@ class BASE_EXPORT TaskQueue {
     TaskQueue* get() const;
     TaskQueue* operator->() const;
 
+    // Binds an unbound `TaskQueue` (created via `TaskQueue::CreateUnbound()`)
+    // to the current thread's `SequenceManager` (which must have a
+    // `MessagePump`). Must be called at most once, on the owning thread of the
+    // target `SequenceManager`. Tasks posted while unbound preserve FIFO order
+    // within this queue and receive `SequenceManager` enqueue orders at bind
+    // time (sorting after tasks posted earlier to other queues of the same
+    // priority).
+    void BindToCurrentThread();
+
     explicit operator bool() const { return !!task_queue_; }
 
    private:
+    friend class TaskQueue;
     friend class internal::SequenceManagerImpl;
     explicit Handle(std::unique_ptr<internal::TaskQueueImpl> task_queue);
 
@@ -279,6 +289,25 @@ class BASE_EXPORT TaskQueue {
   TaskQueue(const TaskQueue&) = delete;
   TaskQueue& operator=(const TaskQueue&) = delete;
   virtual ~TaskQueue() = default;
+
+  // Creates an unbound `TaskQueue` not yet bound to any `SequenceManager` or
+  // thread. Can be called from any thread, and its `task_runner()` immediately
+  // accepts posted immediate tasks, holding them in the queue's incoming queue
+  // until `TaskQueue::Handle::BindToCurrentThread()` is called on the target
+  // `SequenceManager`'s thread. Delayed tasks may only be posted after
+  // `BindToCurrentThread()` (posting a delayed task before bind `CHECK`s).
+  //
+  // Owning-thread `TaskQueue` methods must not be called before
+  // `BindToCurrentThread()` (most will crash on the null `SequenceManager`;
+  // `CreateQueueEnabledVoter()` `DCHECK`s). While unbound,
+  // `task_runner()->RunsTasksInCurrentSequence()` and
+  // `BelongsToCurrentThread()` return false on all threads, queue times for
+  // immediate tasks are sampled from the default clock (`TimeTicks::Now()`),
+  // and `toplevel.flow` trace events for tasks posted before
+  // `BindToCurrentThread()` do not link across bind. If the returned `Handle`
+  // is reset or destroyed before `BindToCurrentThread()`, the queue and any
+  // queued tasks are destroyed on the calling thread.
+  static Handle CreateUnbound(const Spec& spec);
 
   // Returns an interface that allows the caller to vote on whether or not this
   // TaskQueue is enabled. The TaskQueue will be enabled if there are no voters

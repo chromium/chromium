@@ -320,9 +320,7 @@ SequenceManagerImpl::CreateTaskQueueImpl(const TaskQueue::Spec& spec) {
           spec.non_waking ? main_thread_only().non_waking_wake_up_queue.get()
                           : main_thread_only().wake_up_queue.get(),
           spec);
-  main_thread_only().active_queues.insert(task_queue.get());
-  main_thread_only().selector.AddQueue(
-      task_queue.get(), settings().priority_settings.default_priority());
+  RegisterTaskQueueImpl(task_queue.get());
   return task_queue;
 }
 
@@ -336,6 +334,14 @@ bool SequenceManagerImpl::GetAddQueueTimeToTasks() {
 
 void SequenceManagerImpl::SetObserver(Observer* observer) {
   main_thread_only().observer = observer;
+}
+
+void SequenceManagerImpl::RegisterTaskQueueImpl(
+    internal::TaskQueueImpl* task_queue) {
+  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+  main_thread_only().active_queues.insert(task_queue);
+  main_thread_only().selector.AddQueue(
+      task_queue, settings().priority_settings.default_priority());
 }
 
 void SequenceManagerImpl::UnregisterTaskQueueImpl(

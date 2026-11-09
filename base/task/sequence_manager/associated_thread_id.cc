@@ -13,13 +13,29 @@ AssociatedThreadId::AssociatedThreadId() = default;
 AssociatedThreadId::~AssociatedThreadId() = default;
 
 void AssociatedThreadId::BindToCurrentThread() {
+  BindToCurrentThreadImpl(base::internal::SequenceToken::GetForCurrentThread());
+}
+
+void AssociatedThreadId::BindToCurrentThread(
+    scoped_refptr<AssociatedThreadId> delegate) {
+  CHECK(delegate);
+  CHECK(!delegate_);
+  DCHECK(delegate->IsBoundToCurrentThread());
+  delegate_ = std::move(delegate);
+  in_sequence_owner_.store(delegate_->in_sequence_owner(),
+                           std::memory_order_release);
+  BindToCurrentThreadImpl(delegate_->GetBoundSequenceToken());
+}
+
+void AssociatedThreadId::BindToCurrentThreadImpl(
+    base::internal::SequenceToken sequence_token) {
 #if DCHECK_IS_ON()
   const auto prev_thread_ref =
       bound_thread_ref_.load(std::memory_order_relaxed);
   DCHECK(prev_thread_ref.is_null() ||
          prev_thread_ref == PlatformThread::CurrentRef());
 #endif
-  sequence_token_ = base::internal::SequenceToken::GetForCurrentThread();
+  sequence_token_ = sequence_token;
   bound_thread_ref_.store(PlatformThread::CurrentRef(),
                           std::memory_order_release);
 
@@ -35,7 +51,8 @@ bool AssociatedThreadId::IsBoundToCurrentThread() const {
   const PlatformThreadRef bound_thread_ref =
       bound_thread_ref_.load(std::memory_order_relaxed);
   const PlatformThreadRef in_sequence_thread_ref =
-      in_sequence_thread_ref_.load(std::memory_order_relaxed);
+      in_sequence_owner()->in_sequence_thread_ref_.load(
+          std::memory_order_relaxed);
   const PlatformThreadRef current_thread_ref = PlatformThread::CurrentRef();
 
   if (!in_sequence_thread_ref.is_null()) {
@@ -49,7 +66,8 @@ bool AssociatedThreadId::IsBoundToCurrentThread() const {
 
 void AssociatedThreadId::AssertInSequenceWithCurrentThread() const {
   const PlatformThreadRef in_sequence_thread_ref =
-      in_sequence_thread_ref_.load(std::memory_order_relaxed);
+      in_sequence_owner()->in_sequence_thread_ref_.load(
+          std::memory_order_relaxed);
 
   if (!in_sequence_thread_ref.is_null()) {
     CHECK_EQ(in_sequence_thread_ref, PlatformThread::CurrentRef());
@@ -70,15 +88,17 @@ void AssociatedThreadId::AssertInSequenceWithCurrentThread() const {
 
 void AssociatedThreadId::StartInSequenceWithCurrentThread() {
   PlatformThreadRef expected = PlatformThreadRef();
-  bool succeeded = in_sequence_thread_ref_.compare_exchange_strong(
-      expected, PlatformThread::CurrentRef(), std::memory_order_relaxed);
+  bool succeeded =
+      in_sequence_owner()->in_sequence_thread_ref_.compare_exchange_strong(
+          expected, PlatformThread::CurrentRef(), std::memory_order_relaxed);
   CHECK(succeeded);
 }
 
 void AssociatedThreadId::StopInSequenceWithCurrentThread() {
   PlatformThreadRef expected = PlatformThread::CurrentRef();
-  bool succeeded = in_sequence_thread_ref_.compare_exchange_strong(
-      expected, PlatformThreadRef(), std::memory_order_relaxed);
+  bool succeeded =
+      in_sequence_owner()->in_sequence_thread_ref_.compare_exchange_strong(
+          expected, PlatformThreadRef(), std::memory_order_relaxed);
   CHECK(succeeded);
 }
 

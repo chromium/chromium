@@ -113,21 +113,41 @@ TaskQueue* TaskQueue::Handle::operator->() const {
   return task_queue_.get();
 }
 
+void TaskQueue::Handle::BindToCurrentThread() {
+  CHECK(task_queue_);
+  task_queue_->BindToCurrentThread();
+  sequence_manager_ = task_queue_->GetSequenceManagerWeakPtr();
+}
+
 void TaskQueue::Handle::reset() {
   if (!task_queue_) {
     return;
   }
+  std::unique_ptr<internal::TaskQueueImpl> task_queue = std::move(task_queue_);
   // Sequence manager already unregistered the task queue.
-  if (task_queue_->IsUnregistered()) {
-    task_queue_.reset();
+  if (task_queue->IsUnregistered()) {
+    return;
+  }
+  // A bound queue's Handle must be reset on the SequenceManager's thread,
+  // which is where `sequence_manager_` is read and checked. For unbound
+  // queues, `reset()` only null-checks `TaskQueueImpl::sequence_manager_` via
+  // `was_bound()` and never touches `sequence_manager_` (binding and resetting
+  // the same queue concurrently is a contract violation).
+  if (!task_queue->was_bound()) {
+    task_queue->UnregisterTaskQueue();
     return;
   }
   CHECK(sequence_manager_);
-  sequence_manager_->UnregisterTaskQueueImpl(std::move(task_queue_));
+  sequence_manager_->UnregisterTaskQueueImpl(std::move(task_queue));
 }
 
 TaskQueue::Handle::Handle(TaskQueue::Handle&& other) = default;
 
 TaskQueue::Handle& TaskQueue::Handle::operator=(TaskQueue::Handle&&) = default;
+
+TaskQueue::Handle TaskQueue::CreateUnbound(const TaskQueue::Spec& spec) {
+  return TaskQueue::Handle(std::make_unique<internal::TaskQueueImpl>(
+      /*sequence_manager=*/nullptr, /*wake_up_queue=*/nullptr, spec));
+}
 
 }  // namespace base::sequence_manager

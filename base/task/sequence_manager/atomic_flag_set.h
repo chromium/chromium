@@ -44,7 +44,9 @@ class BASE_EXPORT AtomicFlagSet {
     ~AtomicFlag();
 
     AtomicFlag(const AtomicFlag&) = delete;
+    AtomicFlag& operator=(const AtomicFlag&) = delete;
     AtomicFlag(AtomicFlag&& other);
+    AtomicFlag& operator=(AtomicFlag&& other);
 
     // Can be called on any thread. Marks whether the flag is active or not,
     // which controls whether RunActiveCallbacks() will fire the associated

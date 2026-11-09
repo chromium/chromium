@@ -52,6 +52,17 @@ class BASE_EXPORT AssociatedThreadId
   // Can only be called once.
   void BindToCurrentThread();
 
+  // Same as above, but additionally makes this object share its "in sequence"
+  // state (see `StartInSequenceWithCurrentThread()`) and bound `SequenceToken`
+  // with `delegate`, which must already be bound to the current thread. This
+  // is used to bind a TaskQueue created without a SequenceManager to the
+  // current thread's SequenceManager, such that a task running synchronously
+  // on another thread via `RunOrPostTask()` on any queue of the
+  // SequenceManager is in sequence with all of its queues.
+  //
+  // Can only be called once.
+  void BindToCurrentThread(scoped_refptr<AssociatedThreadId> delegate);
+
   // Checks whether this object has already been bound to a thread.
   //
   // This method guarantees a happens-before ordering with
@@ -99,9 +110,24 @@ class BASE_EXPORT AssociatedThreadId
   friend class base::RefCountedThreadSafe<AssociatedThreadId>;
   ~AssociatedThreadId();
 
+  void BindToCurrentThreadImpl(base::internal::SequenceToken sequence_token);
+
+  // Returns the object whose `in_sequence_thread_ref_` tracks whether another
+  // thread runs in sequence with the bound thread: `this`, or the delegate
+  // passed to `BindToCurrentThread()`.
+  AssociatedThreadId* in_sequence_owner() const {
+    return in_sequence_owner_.load(std::memory_order_acquire);
+  }
+
   std::atomic<PlatformThreadRef> bound_thread_ref_;
   std::atomic<PlatformThreadRef> in_sequence_thread_ref_;
   base::internal::SequenceToken sequence_token_;
+
+  // Keeps the delegate passed to `BindToCurrentThread()` alive. Set once,
+  // before the release-store to `in_sequence_owner_`, and never read from
+  // other threads except through `in_sequence_owner_`.
+  scoped_refptr<AssociatedThreadId> delegate_;
+  std::atomic<AssociatedThreadId*> in_sequence_owner_{this};
 };
 
 }  // namespace internal
