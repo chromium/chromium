@@ -621,6 +621,9 @@ BASE_FEATURE(kIPHMostVisitedTilesCustomizationPinFeature,
 BASE_FEATURE(kIPHNewTabPageThemeCustomizationFeature,
              "IPH_NewTabPageThemeCustomization",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHNewTabPageThemeCustomizationMagicStackFeature,
+             "IPH_NewTabPageThemeCustomizationMagicStack",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPageInfoFeature,
              "IPH_PageInfo",
              base::FEATURE_DISABLED_BY_DEFAULT);

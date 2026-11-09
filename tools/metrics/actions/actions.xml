@@ -760,6 +760,9 @@ should be able to be added at any place in this file.
       summary="For NewTabPageHomeButton feature. (obsolete)"/>
   <variant name="_NewTabPageThemeCustomization"
       summary="In product help for NewTabPage theme customization feature."/>
+  <variant name="_NewTabPageThemeCustomizationMagicStack"
+      summary="For NewTabPage theme customization promo card in the Magic
+               Stack."/>
   <variant name="_NewTabTip" summary="For NewTabTip feature."/>
   <variant name="_NotificationPermissionPromo"
       summary="For the OS notification permission prompt on Android."/>

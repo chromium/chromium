@@ -1554,6 +1554,37 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         /*storage=*/k10YearsInDays));
     return config;
   }
+  if (kIPHNewTabPageThemeCustomizationMagicStackFeature.name == feature->name) {
+    // A config that allows the NTP theme customization promo Magic Stack card
+    // to be shown:
+    // * Up to 10 times over the user's lifetime (matching the Segmentation
+    //   Platform's kSingleEphemeralCardMaxImpressions limit for this card).
+    // * Without per-session IPH rate or blocking restrictions, as card ranking
+    //   and session frequency are managed by the Magic Stack and Segmentation
+    //   Platform.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    config.session_rate = kNoRestrictions;
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config.blocked_by.type = BlockedBy::Type::NONE;
+    config.blocking.type = Blocking::Type::NONE;
+    config.trigger =
+        EventConfig("ntp_theme_customization_magic_stack_triggered",
+                    Comparator(LESS_THAN, 10),
+                    /*window=*/k10YearsInDays,
+                    /*storage=*/k10YearsInDays);
+    // Whether the user has already customized their NTP theme
+    // (`has_customized_ntp_background`) or interacted with the promo card
+    // (`kNtpThemePromoInteractedPref`) is tracked and enforced directly by the
+    // Segmentation Platform in `NtpThemePromo::ComputeCardResult`, so the FET
+    // `used` precondition is always satisfied (`kAlwaysTrue` with window 0).
+    config.used =
+        EventConfig("ntp_theme_customization_magic_stack_used", kAlwaysTrue,
+                    /*window=*/0, /*storage=*/k10YearsInDays);
+
+    return config;
+  }
   if (kIPHPageSummaryWebMenuFeature.name == feature->name) {
     // A config that allows the web page summary menu item IPH to be shown:
     // * Once per day. 3 times max in 90 days

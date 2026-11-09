@@ -584,6 +584,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_NewTabPageThemeCustomization"
       summary="informing user of customizing new tab page theme via NTP
                customization option in the App menu"/>
+  <variant name="IPH_NewTabPageThemeCustomizationMagicStack"
+      summary="customizing new tab page theme via the promo card in the Magic
+               Stack"/>
   <variant name="IPH_NewTabTip" summary="new tab tip"/>
   <variant name="IPH_NotificationPermissionPromo"
       summary="OS notification permission prompt on Android"/>
