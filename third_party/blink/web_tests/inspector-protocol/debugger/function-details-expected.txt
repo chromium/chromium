@@ -1,7 +1,6 @@
-Tests that Debugger.getFunctionDetails command returns correct location. Bug 71808
+Tests that Runtime.getProperties returns accurate [[FunctionLocation]], [[IsGenerator]], and function name properties. Bug 71808
 
-
-Running: testGetFirstLineFunctionDetails
+Running test: testGetFirstLineFunctionDetails
 firstLineFunction type = function
 Function details: 
 lineNumber: 11
@@ -9,7 +8,7 @@ columnNumber: 34
 scriptId is valid: true
 functionName: firstLineFunction
 
-Running: testGetNonFirstLineFunctionDetails
+Running test: testGetNonFirstLineFunctionDetails
 notFirstLineFunction type = function
 Function details: 
 lineNumber: 16
@@ -17,7 +16,7 @@ columnNumber: 37
 scriptId is valid: true
 functionName: notFirstLineFunction
 
-Running: testGetDetailsOfFunctionWithInferredName
+Running test: testGetDetailsOfFunctionWithInferredName
 obj.m type = function
 Function details: 
 lineNumber: 22
@@ -25,7 +24,7 @@ columnNumber: 23
 scriptId is valid: true
 functionName: m
 
-Running: testGetDetailsOfFunctionWithDisplayName
+Running test: testGetDetailsOfFunctionWithDisplayName
 functionWithDisplayName type = function
 Function details: 
 lineNumber: 25
@@ -33,7 +32,7 @@ columnNumber: 40
 scriptId is valid: true
 functionName: user-friendly name
 
-Running: testGetDetailsOfFunctionWithDisplayNameGetter
+Running test: testGetDetailsOfFunctionWithDisplayNameGetter
 functionWithDisplayNameGetter type = function
 Function details: 
 lineNumber: 28
@@ -41,7 +40,7 @@ columnNumber: 46
 scriptId is valid: true
 functionName: functionWithDisplayNameGetter
 
-Running: testSmallClosure
+Running test: testSmallClosure
 smallClosure type = function
 Function details: 
 lineNumber: 31
@@ -49,7 +48,7 @@ columnNumber: 57
 scriptId is valid: true
 functionName: 
 
-Running: testBigClosure
+Running test: testBigClosure
 bigClosure type = function
 Function details: 
 lineNumber: 44
@@ -57,7 +56,7 @@ columnNumber: 35
 scriptId is valid: true
 functionName: 
 
-Running: testGenFunction
+Running test: testGenFunction
 gen type = function
 Function details: 
 lineNumber: 51

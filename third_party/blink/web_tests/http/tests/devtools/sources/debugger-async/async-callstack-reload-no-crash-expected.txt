@@ -1,7 +1,0 @@
-Tests that page reload with async stacks turned on does not crash. Bug 441223.
-
-Set timer for test function.
-Reloading the page...
-Page reloaded.
-PASS: Reloaded successfully.
-

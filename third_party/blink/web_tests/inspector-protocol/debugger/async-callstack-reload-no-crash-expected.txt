@@ -1,0 +1,7 @@
+Tests that Page.reload while paused with Debugger.setAsyncCallStackDepth enabled does not crash. Bug 441223.
+Set timer for test function.
+Reloading the page...
+Page reloaded.
+Evaluated after reload: 1
+PASS: Reloaded successfully.
+

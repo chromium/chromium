@@ -1,0 +1,13 @@
+Tests that DOMDebugger does not crash or pause on DOM breakpoints when editing DOM nodes via DOM.removeNode, DOM.setAttributesAsText, and DOM.setAttributeValue. Chromium bug 249655
+
+Running test: testRemoveNode
+Testing NodeRemoved DOM breakpoint.
+DOMDebugger.setDOMBreakpoint: OK
+DOM.removeNode: OK
+
+Running test: testModifyAttribute
+Testing AttributeModified DOM breakpoint.
+DOMDebugger.setDOMBreakpoint: OK
+DOM.setAttributesAsText: OK
+DOM.setAttributeValue: OK
+

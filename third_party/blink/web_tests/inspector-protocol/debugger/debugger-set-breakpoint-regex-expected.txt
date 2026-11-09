@@ -1,15 +1,17 @@
-Tests Debugger.setBreakpointByUrl with isRegex set to true.
+Tests Debugger.setBreakpointByUrl with urlRegex.
 
-
-Running: testSetNoneOfURLAndRegex
+Running test: testSetNoneOfURLAndRegex
 Either url or urlRegex or scriptHash must be specified.
 
-Running: testSetBothURLAndRegex
+Running test: testSetBothURLAndRegex
 Either url or urlRegex or scriptHash must be specified.
 
-Running: testSetByRegex
+Running test: testSetByRegex
 Set timer for test function.
 Script execution paused.
+Hit breakpoints: [
+    [0] : br:2:11:0:debugger-set-breakpoint.*
+]
 Call stack:
     0) testFunction (debugger-set-breakpoint-regex.js:14)
 Script execution resumed.
