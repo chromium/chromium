@@ -2716,6 +2716,11 @@ inline LayoutStateScenePassKey PassKey() {
   // Stop the password settings.
   [self stopPasswordSettingsCoordinator];
 
+  // If the remote actor credential bottom sheet is active, stop it. Gemini is
+  // intentionally not notified: this path is reached when the sheet itself
+  // requests to open a URL or when the presented UI is torn down externally.
+  [self stopRemoteActorCredentialBottomSheetCoordinator];
+
   // If the guided tour is active, stop it.
   [self hideGuidedTour];
 

@@ -645,4 +645,57 @@ TEST_F(SceneCoordinatorTest,
   [mock_application stopMocking];
 }
 
+// Tests that closing presented views stops an active
+// `RemoteActorCredentialBottomSheetCoordinator` without opening the Gemini
+// callback URL.
+TEST_F(SceneCoordinatorTest, ClosePresentedViewsStopsRemoteActorSheet) {
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  ScopedKeyWindow scoped_key_window;
+  scoped_key_window.Get().rootViewController = base_view_controller_;
+  ASSERT_NE(base_view_controller_.view.window, nil);
+
+  id mock_application = OCMClassMock([UIApplication class]);
+  OCMStub([mock_application sharedApplication]).andReturn(mock_application);
+
+  id partial_scene_coordinator = OCMPartialMock(coordinator_);
+  OCMStub([partial_scene_coordinator activeViewController])
+      .andReturn(base_view_controller_);
+
+  __block RemoteActorCredentialBottomSheetCoordinator* started_coordinator =
+      nil;
+  auto start_swizzler = std::make_unique<ScopedBlockSwizzler>(
+      [RemoteActorCredentialBottomSheetCoordinator class], @selector(start),
+      ^(RemoteActorCredentialBottomSheetCoordinator* self_coordinator) {
+        started_coordinator = self_coordinator;
+      });
+
+  remote_actor::proto::RemoteActorPasswordUploadRequest request;
+  request.set_task_id("task-789");
+  request.set_gaia_id("gaia-id");
+  request.set_domain("https://example.com");
+
+  [(id<SceneCommands>)coordinator_
+      showRemoteActorCredentialBottomSheetWithRequest:request];
+  ASSERT_NE(started_coordinator, nil);
+  EXPECT_EQ([coordinator_
+                valueForKey:@"_remoteActorCredentialBottomSheetCoordinator"],
+            started_coordinator);
+
+  // `OpenGeminiCallbackURL()` notifies Gemini via `UIApplication` `openURL:`,
+  // so rejecting it ensures no callback is sent when the sheet is torn down.
+  OCMReject([mock_application openURL:[OCMArg any]
+                              options:[OCMArg any]
+                    completionHandler:[OCMArg any]]);
+
+  [(id<SceneCommands>)coordinator_ closePresentedViews];
+
+  EXPECT_EQ([coordinator_
+                valueForKey:@"_remoteActorCredentialBottomSheetCoordinator"],
+            nil);
+  EXPECT_OCMOCK_VERIFY(mock_application);
+
+  [partial_scene_coordinator stopMocking];
+  [mock_application stopMocking];
+}
+
 }  // namespace

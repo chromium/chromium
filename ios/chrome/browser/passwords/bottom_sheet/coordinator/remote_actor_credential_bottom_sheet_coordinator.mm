@@ -22,6 +22,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/web/public/web_state.h"
@@ -110,6 +112,8 @@
   _viewController =
       [[RemoteActorCredentialBottomSheetViewController alloc] init];
   _viewController.mutator = _mediator;
+  _viewController.sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   _mediator.consumer = _viewController;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
@@ -118,6 +122,7 @@
 
 - (void)stop {
   _viewController.mutator = nil;
+  _viewController.sceneHandler = nil;
   _mediator.consumer = nil;
   [_viewController.presentingViewController dismissViewControllerAnimated:YES
                                                                completion:nil];
