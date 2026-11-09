@@ -297,12 +297,6 @@ extern __typeof (FcFontSort) FcFontSort __attribute((alias("IA__FcFontSort"))) F
 # undef FcFontSetSortDestroy
 extern __typeof (FcFontSetSortDestroy) FcFontSetSortDestroy __attribute((alias("IA__FcFontSetSortDestroy"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 #endif /* __fcmatch__ */
-#ifdef __fcindex__
-# undef FcIndexerQueryAll
-extern __typeof (FcIndexerQueryAll) FcIndexerQueryAll __attribute((alias("IA__FcIndexerQueryAll"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
-# undef FcIndexerQuery
-extern __typeof (FcIndexerQuery) FcIndexerQuery __attribute((alias("IA__FcIndexerQuery"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
-#endif /* __fcindex__ */
 #ifdef __fcmatrix__
 # undef FcMatrixCopy
 extern __typeof (FcMatrixCopy) FcMatrixCopy __attribute((alias("IA__FcMatrixCopy"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;

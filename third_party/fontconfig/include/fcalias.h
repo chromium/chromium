@@ -264,10 +264,6 @@ extern __typeof (FcFontSort) IA__FcFontSort FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcFontSort IA__FcFontSort
 extern __typeof (FcFontSetSortDestroy) IA__FcFontSetSortDestroy FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcFontSetSortDestroy IA__FcFontSetSortDestroy
-extern __typeof (FcIndexerQueryAll) IA__FcIndexerQueryAll FC_ATTRIBUTE_VISIBILITY_HIDDEN;
-#define FcIndexerQueryAll IA__FcIndexerQueryAll
-extern __typeof (FcIndexerQuery) IA__FcIndexerQuery FC_ATTRIBUTE_VISIBILITY_HIDDEN;
-#define FcIndexerQuery IA__FcIndexerQuery
 extern __typeof (FcMatrixCopy) IA__FcMatrixCopy FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcMatrixCopy IA__FcMatrixCopy
 extern __typeof (FcMatrixEqual) IA__FcMatrixEqual FC_ATTRIBUTE_VISIBILITY_HIDDEN;

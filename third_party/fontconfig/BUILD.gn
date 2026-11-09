@@ -113,7 +113,6 @@ if (use_bundled_fontconfig) {
       "src/src/fcfs.c",
       "src/src/fcgenericalias.c",
       "src/src/fchash.c",
-      "src/src/fcindex.c",
       "src/src/fcinit.c",
       "src/src/fcint.h",
       "src/src/fclang.c",
