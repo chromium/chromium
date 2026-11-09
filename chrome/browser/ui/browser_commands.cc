@@ -130,7 +130,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
@@ -540,14 +540,9 @@ void MoveTabsToWindowImpl(BrowserWindowInterface* source,
 
 BrowserWindowInterface* CreateNewBrowser(BrowserWindowInterface* browser,
                                          bool user_gesture) {
-  base::TimeTicks now = base::TimeTicks::Now();
-  auto params = BrowserWindowCreateParams(browser->GetProfile(), user_gesture);
-  BrowserWindowInterface* new_browser = CreateBrowserWindow(std::move(params));
-  if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
-    manager->SetWindowCreationInfo(
-        waap::NewWindowCreationSource::kMoveTabsToNewWindow, now);
-  }
-  return new_browser;
+  return waap::CreateBrowserWindowAndRecordCreationSource(
+      BrowserWindowCreateParams(browser->GetProfile(), user_gesture),
+      waap::NewWindowCreationSource::kMoveTabsToNewWindow);
 }
 
 tabs::TabInterface* GetMruTab(BrowserWindowInterface* browser) {
@@ -980,12 +975,9 @@ BrowserWindowInterface* OpenEmptyWindow(Profile* profile,
                                    true);
   params.should_trigger_session_restore = should_trigger_session_restore;
 
-  base::TimeTicks now = base::TimeTicks::Now();
-  BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
-  if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
-    manager->SetWindowCreationInfo(
-        waap::NewWindowCreationSource::kNewEmptyWindow, now);
-  }
+  BrowserWindowInterface* browser =
+      waap::CreateBrowserWindowAndRecordCreationSource(
+          std::move(params), waap::NewWindowCreationSource::kNewEmptyWindow);
 
   // Startup tabs could be created during browser creation. Add an empty tab
   // only if no tabs are created.

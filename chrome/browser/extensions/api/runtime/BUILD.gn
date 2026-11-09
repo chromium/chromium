@@ -34,10 +34,7 @@ source_set("runtime") {
   ]
 
   if (!is_android) {
-    deps += [
-      "//chrome/browser/ui/waap:waap_utils",
-      "//chrome/browser/ui/waap:window_metrics_manager",
-    ]
+    deps += [ "//chrome/browser/ui/waap:window_creation" ]
   }
 
   if (is_chromeos) {

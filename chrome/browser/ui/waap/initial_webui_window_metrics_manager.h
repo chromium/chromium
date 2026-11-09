@@ -52,9 +52,12 @@ class InitialWebUIWindowMetricsManager {
   // `ReloadButton`) in this window.
   InitialWebUIMetricsDispatcher& GetMetricsDispatcher();
 
-  // Sets the window creation info. This should be called immediately after the
-  // `Browser` object is created, with `creation_time` sampled prior to calling
-  // `CreateBrowserWindow()` so synchronous window construction is included.
+  // Sets the window creation info. Prefer
+  // `waap::CreateBrowserWindowAndRecordCreationSource()` when creating a window
+  // synchronously via `CreateBrowserWindow()`. If calling this directly, call
+  // it immediately after the `Browser` object is created, with `creation_time`
+  // sampled prior to calling `CreateBrowserWindow()` so synchronous window
+  // construction is included.
   void SetWindowCreationInfo(waap::NewWindowCreationSource source,
                              base::TimeTicks creation_time);
 

@@ -29,8 +29,7 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
-#include "chrome/browser/ui/waap/waap_utils.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/navigation_handle_user_data_forwarder.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
@@ -132,14 +131,9 @@ content::RenderFrameHost* GetOpener(const NavigateParams& nav_params) {
 
 BrowserWindowInterface* CreateNormalBrowserWindow(Profile* profile,
                                                   bool user_gesture) {
-  base::TimeTicks now = base::TimeTicks::Now();
-  BrowserWindowInterface* browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(profile, user_gesture));
-  if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
-    manager->SetWindowCreationInfo(waap::NewWindowCreationSource::kNavigation,
-                                   now);
-  }
-  return browser;
+  return waap::CreateBrowserWindowAndRecordCreationSource(
+      BrowserWindowCreateParams(profile, user_gesture),
+      waap::NewWindowCreationSource::kNavigation);
 }
 
 BrowserWindowInterface* CreateWebAppWindowFromNavigationParams(

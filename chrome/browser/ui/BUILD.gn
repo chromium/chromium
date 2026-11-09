@@ -515,8 +515,7 @@ if (!is_android) {
       ":browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:create_browser_window",
-      "//chrome/browser/ui/waap:waap_utils",
-      "//chrome/browser/ui/waap:window_metrics_manager",
+      "//chrome/browser/ui/waap:window_creation",
     ]
   }
 
@@ -920,7 +919,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/contextual_tasks",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/tabs/organizer",
-      "//chrome/browser/ui/waap:window_metrics_manager",
+      "//chrome/browser/ui/waap:window_creation",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications:launch_utils",
       "//chrome/browser/ui/webui",

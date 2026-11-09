@@ -80,7 +80,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/omnibox",
     "//chrome/browser/ui/views/tabs:tab",
     "//chrome/browser/ui/views/tabs:tab_strip",
-    "//chrome/browser/ui/waap:window_metrics_manager",
+    "//chrome/browser/ui/waap:window_creation",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/web_applications:launch_utils",
     "//chrome/browser/ui/window_feature_controller",

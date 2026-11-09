@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/waap/initial_webui_profile_service_factory.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_prerenderer.h"
@@ -675,12 +676,12 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   // Create a new browser window without actively showing/painting it yet.
   BrowserWindowCreateParams params(browser()->GetProfile(),
                                    /*from_user_gesture=*/true);
-  BrowserWindowInterface* new_browser = CreateBrowserWindow(std::move(params));
+  BrowserWindowInterface* new_browser =
+      waap::CreateBrowserWindowAndRecordCreationSource(
+          std::move(params), waap::NewWindowCreationSource::kNewEmptyWindow);
 
   if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
     manager->SkipStartupForTesting();
-    manager->SetWindowCreationInfo(
-        waap::NewWindowCreationSource::kNewEmptyWindow, base::TimeTicks::Now());
 
     base::TimeTicks t1 = base::TimeTicks::Now();
     manager->OnBrowserWindowFirstPresentation(t1);
@@ -1077,12 +1078,12 @@ IN_PROC_BROWSER_TEST_F(InitialWebUISurfaceSyncBrowserTest,
   // Create a new window.
   BrowserWindowCreateParams params(browser()->GetProfile(),
                                    /*from_user_gesture=*/true);
-  BrowserWindowInterface* new_browser = CreateBrowserWindow(std::move(params));
+  BrowserWindowInterface* new_browser =
+      waap::CreateBrowserWindowAndRecordCreationSource(
+          std::move(params), waap::NewWindowCreationSource::kNewEmptyWindow);
 
   if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
     manager->SkipStartupForTesting();
-    manager->SetWindowCreationInfo(
-        waap::NewWindowCreationSource::kNewEmptyWindow, base::TimeTicks::Now());
   }
 
   AddBlankTabAndShow(new_browser);
@@ -1118,12 +1119,12 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIMinimizedWindowBrowserTest,
   BrowserWindowCreateParams params(browser()->GetProfile(),
                                    /*from_user_gesture=*/true);
   params.initial_show_state = ui::mojom::WindowShowState::kMinimized;
-  BrowserWindowInterface* new_browser = CreateBrowserWindow(std::move(params));
+  BrowserWindowInterface* new_browser =
+      waap::CreateBrowserWindowAndRecordCreationSource(
+          std::move(params), waap::NewWindowCreationSource::kNewEmptyWindow);
 
   if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
     manager->SkipStartupForTesting();
-    manager->SetWindowCreationInfo(
-        waap::NewWindowCreationSource::kNewEmptyWindow, base::TimeTicks::Now());
   }
 
   // Show the window which should be shown minimized, and verify it.

@@ -66,6 +66,19 @@ source_set("manager") {
   ]
 }
 
+source_set("window_creation") {
+  public = [ "window_creation.h" ]
+  sources = [ "window_creation.cc" ]
+  public_deps = [
+    ":waap_utils",
+    "//chrome/browser/ui/browser_window:create_browser_window",
+  ]
+  deps = [
+    ":window_metrics_manager",
+    "//base",
+  ]
+}
+
 source_set("window_metrics_manager") {
   sources = [
     "initial_webui_metrics_dispatcher.cc",
@@ -119,11 +132,15 @@ source_set("waap_utils") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "initial_webui_browsertest.cc" ]
+  sources = [
+    "initial_webui_browsertest.cc",
+    "window_creation_browsertest.cc",
+  ]
   deps = [
     ":manager",
     ":waap",
     ":waap_utils",
+    ":window_creation",
     ":window_metrics_manager",
     "//base",
     "//base/test:test_support",

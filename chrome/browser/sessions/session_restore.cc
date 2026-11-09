@@ -84,7 +84,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
@@ -584,12 +584,9 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
       std::vector<RestoredTab>& restored_tabs) {
     BrowserWindowInterface* browser = nullptr;
     if (!created_tabbed_browser && always_create_tabbed_browser_) {
-      base::TimeTicks now = base::TimeTicks::Now();
-      browser = CreateBrowserWindow(BrowserWindowCreateParams(profile_, false));
-      if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
-        manager->SetWindowCreationInfo(
-            waap::NewWindowCreationSource::kSessionRestoreFallback, now);
-      }
+      browser = waap::CreateBrowserWindowAndRecordCreationSource(
+          BrowserWindowCreateParams(profile_, false),
+          waap::NewWindowCreationSource::kSessionRestoreFallback);
       if (startup_tabs_.empty() ||
           (startup_tabs_.size() == 1 && whats_new::IsEnabled() &&
            startup_tabs_[0].url == whats_new::GetWebUIStartupURL())) {
@@ -1424,14 +1421,9 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
       }
     }
 
-    base::TimeTicks now = base::TimeTicks::Now();
     BrowserWindowInterface* browser_window =
-        CreateBrowserWindow(std::move(params));
-    if (auto* manager =
-            InitialWebUIWindowMetricsManager::From(browser_window)) {
-      manager->SetWindowCreationInfo(
-          waap::NewWindowCreationSource::kSessionRestore, now);
-    }
+        waap::CreateBrowserWindowAndRecordCreationSource(
+            std::move(params), waap::NewWindowCreationSource::kSessionRestore);
     g_is_any_session_restored = true;
     return browser_window;
   }

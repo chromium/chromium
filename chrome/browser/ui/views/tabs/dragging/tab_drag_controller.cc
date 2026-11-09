@@ -48,7 +48,7 @@
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_target.h"
 #include "chrome/browser/ui/views/tabs/dragging/window_finder.h"
-#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
@@ -3019,13 +3019,10 @@ BrowserWindowInterface* TabDragController::CreateBrowserForDrag(
   // the previous window.
   create_params.user_title = std::string();
 
-  base::TimeTicks now = base::TimeTicks::Now();
   BrowserWindowInterface* browser =
-      CreateBrowserWindow(std::move(create_params));
-  if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
-    manager->SetWindowCreationInfo(
-        waap::NewWindowCreationSource::kDragToNewWindow, now);
-  }
+      waap::CreateBrowserWindowAndRecordCreationSource(
+          std::move(create_params),
+          waap::NewWindowCreationSource::kDragToNewWindow);
   is_dragging_new_browser_ = true;
   BrowserView::GetBrowserViewForBrowser(browser)
       ->GetWidget()

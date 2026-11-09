@@ -45,8 +45,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
-#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
-#include "chrome/browser/ui/waap/waap_utils.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/navigation_capturing_process.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
@@ -159,13 +158,8 @@ BrowserWindowInterface* CreateNormalBrowserForNavigation(
   }
   BrowserWindowCreateParams params(profile, user_gesture);
   params.should_trigger_session_restore = should_trigger_session_restore;
-  base::TimeTicks now = base::TimeTicks::Now();
-  BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
-  if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
-    manager->SetWindowCreationInfo(waap::NewWindowCreationSource::kNavigation,
-                                   now);
-  }
-  return browser;
+  return waap::CreateBrowserWindowAndRecordCreationSource(
+      std::move(params), waap::NewWindowCreationSource::kNavigation);
 }
 
 // Finds an existing Browser compatible with |profile|, making a new one if no

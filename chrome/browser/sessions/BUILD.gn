@@ -159,7 +159,7 @@ source_set("impl") {
       "//chrome/browser/ui/startup",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs/saved_tab_groups",
-      "//chrome/browser/ui/waap:window_metrics_manager",
+      "//chrome/browser/ui/waap:window_creation",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/webui/tab_strip_internals",
       "//chrome/browser/ui/webui/tab_strip_internals:impl",

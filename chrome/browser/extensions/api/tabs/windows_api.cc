@@ -53,8 +53,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_init_state.h"
-#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
-#include "chrome/browser/ui/waap/waap_utils.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -703,13 +702,9 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  const base::TimeTicks now = base::TimeTicks::Now();
   BrowserWindowInterface* new_window =
-      CreateBrowserWindow(std::move(create_params));
-  if (auto* manager = InitialWebUIWindowMetricsManager::From(new_window)) {
-    manager->SetWindowCreationInfo(waap::NewWindowCreationSource::kExtension,
-                                   now);
-  }
+      waap::CreateBrowserWindowAndRecordCreationSource(
+          std::move(create_params), waap::NewWindowCreationSource::kExtension);
   ExtensionFunction::ResponseValue response =
       OnBrowserWindowCreated(new_window);
   return RespondNow(std::move(response));

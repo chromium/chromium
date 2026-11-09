@@ -37,8 +37,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/unload_controller.h"
-#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
-#include "chrome/browser/ui/waap/waap_utils.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #endif
 
 namespace extensions {
@@ -57,14 +56,11 @@ BrowserWindowInterface* CreateAndShowBrowser(Profile* profile,
   BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
                                    *profile, user_gesture);
 
-  const base::TimeTicks now = base::TimeTicks::Now();
-  BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
+  BrowserWindowInterface* browser =
+      waap::CreateBrowserWindowAndRecordCreationSource(
+          std::move(params), waap::NewWindowCreationSource::kExtension);
   if (!browser) {
     return nullptr;
-  }
-  if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
-    manager->SetWindowCreationInfo(waap::NewWindowCreationSource::kExtension,
-                                   now);
   }
 
   base::WeakPtr<BrowserWindowInterface> weak_browser = browser->GetWeakPtr();
