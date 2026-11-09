@@ -16751,6 +16751,7 @@
         {
             "platforms": [
                 "chromeos",
+                "ios",
                 "linux",
                 "mac",
                 "windows"
