@@ -165,6 +165,18 @@ const base::FeatureParam<bool> kCsdImageEmbeddingMatchWithIntelligentScan{
     &kClientSideDetectionImageEmbeddingMatch,
     "CsdImageEmbeddingMatchWithIntelligentScan", /*default_value=*/true};
 
+BASE_FEATURE(kClientSideDetectionKeyboardLockUniformPageDelay,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<int> kCsdKeyboardLockUniformPageDelayDurationMs{
+    &kClientSideDetectionKeyboardLockUniformPageDelay, "DelayDurationMs",
+    /*default_value=*/500};
+constexpr base::FeatureParam<int> kCsdKeyboardLockUniformPageMaxRetries{
+    &kClientSideDetectionKeyboardLockUniformPageDelay, "MaxRetries",
+    /*default_value=*/3};
+constexpr base::FeatureParam<int> kCsdKeyboardLockUniformPageMaxColorRange{
+    &kClientSideDetectionKeyboardLockUniformPageDelay, "MaxColorRange",
+    /*default_value=*/10};
+
 BASE_FEATURE(kClientSideDetectionKillswitch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClientSideDetectionLocalResourceCheckFix,
@@ -613,6 +625,7 @@ base::ListValue GetFeatureStatusList() {
       &kClientSideDetectionEnabledIos,
       &kClientSideDetectionForcedLlamaRedirectChainKillswitch,
       &kClientSideDetectionImageEmbeddingMatch,
+      &kClientSideDetectionKeyboardLockUniformPageDelay,
       &kClientSideDetectionKillswitch,
       &kClientSideDetectionLocalResourceCheckFix,
       &kClientSideDetectionRedirectChainKillswitch,

@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/common/visual_utils.h"
 
 #include <algorithm>
+#include <array>
 #include <unordered_map>
 #include <vector>
 
@@ -85,6 +86,36 @@ int GetMinHeightForVisualFeatures() {
   return kMinHeightForVisualFeatures;
 }
 
+// Fraction of pixels trimmed from both the minimum and maximum tails of each
+// RGB channel when computing the color range in `IsUniformImage`. A 0.5% tail
+// trim compares the 99.5th and 0.5th percentiles (central 99% of pixels).
+constexpr double kUniformImageOutlierTailRatio = 0.005;
+
+int GetTrimmedChannelRange(const std::array<size_t, 256>& histogram,
+                           size_t tail_trim_count) {
+  size_t low_cumulative = 0;
+  int low_value = 0;
+  for (int value = 0; value < 256; ++value) {
+    low_cumulative += histogram[value];
+    if (low_cumulative > tail_trim_count) {
+      low_value = value;
+      break;
+    }
+  }
+
+  size_t high_cumulative = 0;
+  int high_value = 255;
+  for (int value = 255; value >= 0; --value) {
+    high_cumulative += histogram[value];
+    if (high_cumulative > tail_trim_count) {
+      high_value = value;
+      break;
+    }
+  }
+
+  return std::max(0, high_value - low_value);
+}
+
 }  // namespace
 
 bool GetBlurredImage(const SkBitmap& image,
@@ -139,6 +170,43 @@ bool GetBlurredImage(const SkBitmap& image,
   }
 
   return true;
+}
+
+bool IsUniformImage(const VisualFeatures::BlurredImage& blurred_image,
+                    int max_color_range) {
+  if (blurred_image.width() <= 0 || blurred_image.height() <= 0 ||
+      max_color_range < 0) {
+    return false;
+  }
+  size_t num_pixels = 0;
+  size_t expected_size = 0;
+  if (!base::CheckMul<size_t>(blurred_image.width(), blurred_image.height())
+           .AssignIfValid(&num_pixels) ||
+      !base::CheckMul<size_t>(num_pixels, 3).AssignIfValid(&expected_size)) {
+    return false;
+  }
+  const std::string& data = blurred_image.data();
+  if (data.size() != expected_size || data.empty()) {
+    return false;
+  }
+
+  std::array<size_t, 256> r_histogram = {};
+  std::array<size_t, 256> g_histogram = {};
+  std::array<size_t, 256> b_histogram = {};
+  for (size_t i = 0; i < expected_size; i += 3) {
+    ++r_histogram[static_cast<uint8_t>(data[i])];
+    ++g_histogram[static_cast<uint8_t>(data[i + 1])];
+    ++b_histogram[static_cast<uint8_t>(data[i + 2])];
+  }
+
+  const size_t tail_trim_count =
+      static_cast<size_t>(num_pixels * kUniformImageOutlierTailRatio);
+  return GetTrimmedChannelRange(r_histogram, tail_trim_count) <=
+             max_color_range &&
+         GetTrimmedChannelRange(g_histogram, tail_trim_count) <=
+             max_color_range &&
+         GetTrimmedChannelRange(b_histogram, tail_trim_count) <=
+             max_color_range;
 }
 
 void EncodeScreenshot(const SkBitmap& screenshot,

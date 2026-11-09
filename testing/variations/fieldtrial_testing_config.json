@@ -4667,6 +4667,30 @@
             ]
         }
     ],
+    "ClientSideDetectionKeyboardLockUniformPageDelay": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_500ms",
+                    "params": {
+                        "DelayDurationMs": "500",
+                        "MaxColorRange": "10",
+                        "MaxRetries": "3"
+                    },
+                    "enable_features": [
+                        "ClientSideDetectionKeyboardLockUniformPageDelay"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionRetryLimit": [
         {
             "platforms": [

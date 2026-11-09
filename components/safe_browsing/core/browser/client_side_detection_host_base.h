@@ -522,6 +522,15 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   bool is_classifying() const { return is_classifying_; }
   void set_is_classifying(bool value) { is_classifying_ = value; }
 
+  bool is_checking_uniform_image() const { return is_checking_uniform_image_; }
+  bool is_uniform_image_retry_timer_running() const {
+    return keyboard_lock_uniform_image_retry_timer_.IsRunning();
+  }
+  void set_last_phishing_detector_result(PhishingDetectorResult result) {
+    last_phishing_detector_result_ = result;
+  }
+  void ResetUniformImageRetryState();
+
   ClientSideDetectionType last_request_type() const {
     return last_request_type_;
   }
@@ -545,6 +554,12 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   bool IsModelAvailable() const;
 
   void TriggerSecondForceRequest();
+
+  void TriggerKeyboardLockUniformImageRetry(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip,
+      PhishingDetectorResult result);
 
   // MaybeTriggerCreditCardFormPing is a helper that determines whether
   // a credit card form event should trigger a CSD ping. It takes
@@ -632,6 +647,11 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   // PreClassificationCheck until just prior to the network request being sent.
   bool is_csd_running_ = false;
   bool is_classifying_ = false;
+  bool is_checking_uniform_image_ = false;
+  int keyboard_lock_uniform_image_retry_count_ = 0;
+  PhishingDetectorResult last_phishing_detector_result_ =
+      PhishingDetectorResult::CLASSIFICATION_SUCCESS;
+  base::OneShotTimer keyboard_lock_uniform_image_retry_timer_;
   ClientSideDetectionType last_request_type_ =
       ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
 

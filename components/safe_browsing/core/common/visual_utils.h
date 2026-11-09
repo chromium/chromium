@@ -35,6 +35,14 @@ enum class CanExtractVisualFeaturesResult {
 bool GetBlurredImage(const SkBitmap& image,
                      VisualFeatures::BlurredImage* blurred_image);
 
+// Returns true if `blurred_image` is uniform, defined as the difference between
+// the 99.5th and 0.5th percentile pixel values (ignoring the top and bottom
+// 0.5% of pixels as outliers) in each RGB channel being at most
+// `max_color_range`. Returns false if `blurred_image` has invalid dimensions or
+// empty/mismatched data.
+bool IsUniformImage(const VisualFeatures::BlurredImage& blurred_image,
+                    int max_color_range = 10);
+
 // Generates VisualFeatures::Screenshot for the passed-in `screenshot`.
 void EncodeScreenshot(const SkBitmap& screenshot,
                       VisualFeatures::Screenshot* encoded_screenshot);

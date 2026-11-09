@@ -109,7 +109,18 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
                ClientSideDetectionType request_type,
                std::optional<bool> did_match_high_confidence_allowlist),
               (override));
-  GURL GetCurrentUrl() const override { return current_url(); }
+  GURL GetCurrentUrl() const override {
+    if (current_url_override_.has_value()) {
+      return *current_url_override_;
+    }
+    return current_url();
+  }
+  void set_current_url_override(const GURL& url) {
+    current_url_override_ = url;
+  }
+  void clear_current_url_override() {
+    current_url_override_.reset();
+  }
   MOCK_METHOD(void,
               ClassifyPhishingThroughThresholds,
               (ClientPhishingRequest * verdict),
@@ -196,15 +207,19 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
   using ClientSideDetectionHostBase::GetTierValue;
   using ClientSideDetectionHostBase::HasDonePreclassificationCheckOnSameURL;
   using ClientSideDetectionHostBase::HasForceRequestFromRtUrlLookup;
+  using ClientSideDetectionHostBase::is_checking_uniform_image;
   using ClientSideDetectionHostBase::is_classifying;
   using ClientSideDetectionHostBase::is_csd_running;
+  using ClientSideDetectionHostBase::is_uniform_image_retry_timer_running;
   using ClientSideDetectionHostBase::MaybeSendClientPhishingRequest;
   using ClientSideDetectionHostBase::NewRequestTypeTierHigher;
   using ClientSideDetectionHostBase::OnCreditCardFormVisitCount;
   using ClientSideDetectionHostBase::OnIntelligentScanDone;
   using ClientSideDetectionHostBase::OnTextCopiedToClipboard;
   using ClientSideDetectionHostBase::PhishingDetectionDone;
+  using ClientSideDetectionHostBase::PhishingImageEmbeddingDone;
   using ClientSideDetectionHostBase::SendRequest;
+  using ClientSideDetectionHostBase::current_url;
   using ClientSideDetectionHostBase::set_current_url;
   using ClientSideDetectionHostBase::set_is_classifying;
   using ClientSideDetectionHostBase::set_is_csd_running;
@@ -218,6 +233,7 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
   credit_card_form::ReferringApp referring_app_ =
       credit_card_form::ReferringApp::kNoReferringApp;
   std::optional<double> site_engagement_score_;
+  std::optional<GURL> current_url_override_;
   int preclassification_count_ = 0;
 };
 
@@ -456,6 +472,10 @@ TEST_F(ClientSideDetectionHostBaseTest,
   EXPECT_EQ(request.client_side_detection_type(), TRIGGER_MODELS);
   EXPECT_EQ(request.population().user_population(),
             ChromeUserPopulation::ENHANCED_PROTECTION);
+  EXPECT_THAT(
+      request.population().finch_active_groups(),
+      ::testing::Not(::testing::Contains(::testing::HasSubstr(
+          "ClientSideDetectionKeyboardLockUniformPageDelay"))));
 }
 
 TEST_F(ClientSideDetectionHostBaseTest, PhishingDetectionDoneMetricsAndCache) {
@@ -1558,6 +1578,68 @@ TEST_F(ClientSideDetectionHostBaseTest,
                               /*tab_screenshot=*/"fake_png_bytes");
   EXPECT_EQ(host_->last_intelligent_scan_tab_screenshot_for_testing(),
             "fake_png_bytes");
+}
+
+TEST_F(ClientSideDetectionHostBaseTest,
+       KeyboardLockUniformImageRetry_CancelledOnSameDocumentNavigationUrlChange) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionKeyboardLockUniformPageDelay,
+      {{"DelayDurationMs", "500"}, {"MaxRetries", "3"}});
+
+  host_->set_tick_clock_for_testing(task_environment_.GetMockTickClock());
+
+  GURL initial_url("https://example.com/initial");
+  host_->set_current_url(initial_url);
+
+  base::HistogramTester histograms;
+
+  auto verdict = std::make_unique<ClientPhishingRequest>();
+  verdict->set_url(initial_url.spec());
+  verdict->set_client_side_detection_type(
+      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
+
+  // A 1x1 image with identical bytes across channels is uniform.
+  VisualFeatures visual_features;
+  visual_features.mutable_image()->set_width(1);
+  visual_features.mutable_image()->set_height(1);
+  visual_features.mutable_image()->set_data(std::string(3, '\0'));
+
+  host_->PhishingImageEmbeddingDone(
+      std::move(verdict),
+      /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false,
+      ClientSideDetectionHostBase::ImageEmbeddingResult::kSuccess,
+      /*image_feature_embedding=*/std::nullopt,
+      std::move(visual_features));
+
+  // The retry timer should now be running.
+  EXPECT_TRUE(host_->is_uniform_image_retry_timer_running());
+  EXPECT_TRUE(host_->is_checking_uniform_image());
+  histograms.ExpectUniqueSample(
+      "SBClientPhishing.KeyboardLock.IsInitialImageUniform", true, 1);
+
+  // Simulate a same-document navigation URL change before the timer fires.
+  GURL changed_url("https://example.com/changed");
+  host_->set_current_url_override(changed_url);
+  ASSERT_NE(host_->GetCurrentUrl().GetWithoutRef(),
+            host_->current_url().GetWithoutRef());
+
+  // Fast forward to timer expiration.
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+
+  // The retry timer should no longer be running, and the retry should be
+  // cancelled without hanging.
+  EXPECT_FALSE(host_->is_uniform_image_retry_timer_running());
+  EXPECT_FALSE(host_->is_checking_uniform_image());
+  histograms.ExpectBucketCount(
+      "SBClientPhishing.PhishingImageEmbeddingResult",
+      ClientSideDetectionHostBase::ImageEmbeddingResult::kCancelled, 1);
+  histograms.ExpectBucketCount(
+      "SBClientPhishing.PhishingImageEmbeddingResult.KeyboardLockRequested",
+      ClientSideDetectionHostBase::ImageEmbeddingResult::kCancelled, 1);
+  histograms.ExpectTotalCount(
+      "SBClientPhishing.KeyboardLock.IsFinalImageUniform", 0);
 }
 
 // Unit tests for ExtractClipboardData

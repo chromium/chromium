@@ -481,7 +481,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
             std::forward<TaskEnvironmentTraits>(traits)...),
         is_incognito_(is_incognito) {}
 
-  void InitTestApi(content::RenderFrameHost* rfh) {
+  virtual void InitTestApi(content::RenderFrameHost* rfh) {
     rfh->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
         mojom::PhishingDetector::Name_,
         base::BindRepeating(&FakePhishingDetector::BindReceiver,
@@ -6484,6 +6484,398 @@ TEST_F(ClientSideDetectionHostNewObserversTest, SameURLAtPrimaryPageChanged) {
   // Histogram count should not increase.
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.SameURLAtPrimaryPageChanged", true, 1);
+}
+
+class FakePhishingImageEmbedder : public mojom::PhishingImageEmbedderDetector {
+ public:
+  FakePhishingImageEmbedder() = default;
+  FakePhishingImageEmbedder(const FakePhishingImageEmbedder&) = delete;
+  FakePhishingImageEmbedder& operator=(const FakePhishingImageEmbedder&) =
+      delete;
+  ~FakePhishingImageEmbedder() override = default;
+
+  void BindReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
+    receivers_.Add(
+        this,
+        mojo::PendingAssociatedReceiver<mojom::PhishingImageEmbedderDetector>(
+            std::move(handle)));
+  }
+
+  // mojom::PhishingImageEmbedderDetector
+  void StartImageEmbedding(const GURL& url,
+                           bool can_extract_visual_features,
+                           StartImageEmbeddingCallback callback) override {
+    start_count_++;
+    VisualFeatures visual_features;
+    if (!queued_blurred_images_.empty()) {
+      *visual_features.mutable_image() =
+          std::move(queued_blurred_images_.front());
+      queued_blurred_images_.erase(queued_blurred_images_.begin());
+    } else {
+      *visual_features.mutable_image() = default_blurred_image_;
+    }
+
+    ImageFeatureEmbedding embedding;
+    embedding.add_embedding_value(0.5f);
+    std::move(callback).Run(mojom::PhishingImageEmbeddingResult::kSuccess,
+                            mojo_base::ProtoWrapper(embedding),
+                            mojo_base::ProtoWrapper(visual_features));
+  }
+
+  void EnqueueBlurredImage(VisualFeatures::BlurredImage blurred_image) {
+    queued_blurred_images_.push_back(std::move(blurred_image));
+  }
+
+  void set_default_blurred_image(VisualFeatures::BlurredImage blurred_image) {
+    default_blurred_image_ = std::move(blurred_image);
+  }
+
+  void Reset() {
+    start_count_ = 0;
+    queued_blurred_images_.clear();
+  }
+
+  int start_count() const { return start_count_; }
+
+ private:
+  mojo::AssociatedReceiverSet<mojom::PhishingImageEmbedderDetector> receivers_;
+  int start_count_ = 0;
+  std::vector<VisualFeatures::BlurredImage> queued_blurred_images_;
+  VisualFeatures::BlurredImage default_blurred_image_;
+};
+
+class ClientSideDetectionHostKeyboardLockUniformImageDelayTest
+    : public ClientSideDetectionHostTestBase {
+ public:
+  ClientSideDetectionHostKeyboardLockUniformImageDelayTest()
+      : ClientSideDetectionHostTestBase(
+            /*is_incognito=*/false,
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    feature_list_.InitWithFeatures(
+        {kClientSideDetectionKeyboardLockUniformPageDelay,
+         kClientSideDetectionTierSystem},
+        {});
+  }
+
+  void InitTestApi(content::RenderFrameHost* rfh) override {
+    ClientSideDetectionHostTestBase::InitTestApi(rfh);
+    rfh->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+        mojom::PhishingImageEmbedderDetector::Name_,
+        base::BindRepeating(&FakePhishingImageEmbedder::BindReceiver,
+                            base::Unretained(&fake_phishing_image_embedder_)));
+  }
+
+  void SetUp() override {
+    ClientSideDetectionHostTestBase::SetUp();
+    InitTestApi(web_contents()->GetPrimaryMainFrame());
+    fake_phishing_image_embedder_.set_default_blurred_image(
+        MakeUniformBlurredImage());
+    url_ = GURL("https://example.com");
+    database_manager_->SetAllowlistLookupDetailsForUrl(url_, false);
+    SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+    Mock::VerifyAndClearExpectations(csd_service_.get());
+    Mock::VerifyAndClearExpectations(database_manager_.get());
+    EXPECT_CALL(*csd_service_, IsPrivateIPAddress(_))
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(Return(false));
+    EXPECT_CALL(*csd_service_, AtPhishingReportLimit())
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(Return(false));
+    EXPECT_CALL(*csd_service_, HasImageEmbeddingModel())
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*csd_service_, IsModelMetadataImageEmbeddingVersionMatching())
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*database_manager_.get(), CanCheckUrl(_))
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*database_manager_.get(), CheckCsdAllowlistUrl(_, _))
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(Return(AsyncMatch::NO_MATCH));
+    EXPECT_CALL(*raw_token_fetcher_, Start(_))
+        .Times(testing::AnyNumber())
+        .WillRepeatedly([](SafeBrowsingTokenFetcher::Callback cb) {
+          std::move(cb).Run("access_token");
+        });
+  }
+
+ protected:
+  static VisualFeatures::BlurredImage MakeUniformBlurredImage(uint8_t r = 255,
+                                                              uint8_t g = 255,
+                                                              uint8_t b = 255) {
+    VisualFeatures::BlurredImage blurred;
+    blurred.set_width(4);
+    blurred.set_height(4);
+    std::string data;
+    data.reserve(4 * 4 * 3);
+    for (int i = 0; i < 4 * 4; ++i) {
+      data.push_back(static_cast<char>(r));
+      data.push_back(static_cast<char>(g));
+      data.push_back(static_cast<char>(b));
+    }
+    blurred.set_data(std::move(data));
+    return blurred;
+  }
+
+  static VisualFeatures::BlurredImage MakeNonUniformBlurredImage() {
+    VisualFeatures::BlurredImage blurred;
+    blurred.set_width(4);
+    blurred.set_height(4);
+    std::string data;
+    data.reserve(4 * 4 * 3);
+    for (int i = 0; i < 8; ++i) {
+      data.append("\x00\x00\x00", 3);
+    }
+    for (int i = 0; i < 8; ++i) {
+      data.append("\xff\xff\xff", 3);
+    }
+    blurred.set_data(std::move(data));
+    return blurred;
+  }
+
+  void FlushPhishingImageEmbedderForTesting() {
+    if (csd_host_->phishing_image_embedder_) {
+      csd_host_->phishing_image_embedder_.FlushForTesting();
+    }
+  }
+
+  bool IsUniformImageRetryTimerRunning() const {
+    return csd_host_->is_uniform_image_retry_timer_running();
+  }
+
+  bool IsCheckingUniformImage() const {
+    return csd_host_->is_checking_uniform_image();
+  }
+
+  FakePhishingImageEmbedder fake_phishing_image_embedder_;
+  GURL url_;
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_F(ClientSideDetectionHostKeyboardLockUniformImageDelayTest,
+       NonUniformInitialImageProceedsImmediatelyWithoutRetry) {
+  NavigateAndCommit(url_);
+  task_environment()->RunUntilIdle();
+  fake_phishing_detector_.Reset();
+  fake_phishing_image_embedder_.Reset();
+
+  fake_phishing_image_embedder_.EnqueueBlurredImage(
+      MakeNonUniformBlurredImage());
+
+  std::unique_ptr<ClientPhishingRequest> sent_request;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+      .WillOnce(
+          [&](std::unique_ptr<ClientPhishingRequest> request,
+              ClientSideDetectionService::ClientReportPhishingRequestCallback,
+              const std::string&) { sent_request = std::move(request); });
+
+  csd_host_->KeyboardLockRequested();
+  task_environment()->RunUntilIdle();
+  FlushPhishingImageEmbedderForTesting();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_FALSE(IsUniformImageRetryTimerRunning());
+  EXPECT_FALSE(IsCheckingUniformImage());
+  EXPECT_EQ(fake_phishing_image_embedder_.start_count(), 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.KeyboardLock.IsInitialImageUniform", false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.KeyboardLock.IsFinalImageUniform", false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.KeyboardLock.UniformImageRetryCount", 0, 1);
+
+  ASSERT_NE(sent_request, nullptr);
+  EXPECT_TRUE(sent_request->has_image_feature_embedding());
+  EXPECT_EQ(sent_request->visual_features().image().SerializeAsString(),
+            MakeNonUniformBlurredImage().SerializeAsString());
+  EXPECT_THAT(
+      sent_request->population().finch_active_groups(),
+      testing::Contains(
+          "ClientSideDetectionKeyboardLockUniformPageDelay.Enabled.500"));
+}
+
+TEST_F(ClientSideDetectionHostKeyboardLockUniformImageDelayTest,
+       UniformInitialImageRetriesAndProceedsOnceNonUniform) {
+  NavigateAndCommit(url_);
+  task_environment()->RunUntilIdle();
+  fake_phishing_detector_.Reset();
+  fake_phishing_image_embedder_.Reset();
+
+  // Attempt 0: uniform white image -> schedules retry timer, does not send.
+  fake_phishing_image_embedder_.EnqueueBlurredImage(
+      MakeUniformBlurredImage(255, 255, 255));
+  // Attempt 1 (retry 1): uniform black image -> schedules retry timer.
+  fake_phishing_image_embedder_.EnqueueBlurredImage(
+      MakeUniformBlurredImage(0, 0, 0));
+  // Attempt 2 (retry 2): non-uniform image -> stops retrying and sends ping.
+  fake_phishing_image_embedder_.EnqueueBlurredImage(
+      MakeNonUniformBlurredImage());
+
+  std::unique_ptr<ClientPhishingRequest> sent_request;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+      .WillOnce(
+          [&](std::unique_ptr<ClientPhishingRequest> request,
+              ClientSideDetectionService::ClientReportPhishingRequestCallback,
+              const std::string&) { sent_request = std::move(request); });
+
+  csd_host_->KeyboardLockRequested();
+  task_environment()->RunUntilIdle();
+  FlushPhishingImageEmbedderForTesting();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_TRUE(IsUniformImageRetryTimerRunning());
+  EXPECT_TRUE(IsCheckingUniformImage());
+  EXPECT_EQ(fake_phishing_image_embedder_.start_count(), 1);
+  EXPECT_EQ(sent_request, nullptr);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.KeyboardLock.IsInitialImageUniform", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.KeyboardLock.IsFinalImageUniform", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.KeyboardLock.UniformImageRetryCount", 0);
+
+  // Retry 1 after 500ms: uniform black image -> schedules retry 2.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  FlushPhishingImageEmbedderForTesting();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_TRUE(IsUniformImageRetryTimerRunning());
+  EXPECT_TRUE(IsCheckingUniformImage());
+  EXPECT_EQ(fake_phishing_image_embedder_.start_count(), 2);
+  EXPECT_EQ(sent_request, nullptr);
+
+  // Retry 2 after another 500ms: non-uniform image -> proceeds and sends ping.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  FlushPhishingImageEmbedderForTesting();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_FALSE(IsUniformImageRetryTimerRunning());
+  EXPECT_FALSE(IsCheckingUniformImage());
+  EXPECT_EQ(fake_phishing_image_embedder_.start_count(), 3);
+  ASSERT_NE(sent_request, nullptr);
+  EXPECT_TRUE(sent_request->has_image_feature_embedding());
+  EXPECT_EQ(sent_request->visual_features().image().SerializeAsString(),
+            MakeNonUniformBlurredImage().SerializeAsString());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.KeyboardLock.IsInitialImageUniform", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.KeyboardLock.IsFinalImageUniform", false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.KeyboardLock.UniformImageRetryCount", 2, 1);
+}
+
+TEST_F(ClientSideDetectionHostKeyboardLockUniformImageDelayTest,
+       UniformImageProceedsAfterMaxRetriesReached) {
+  NavigateAndCommit(url_);
+  task_environment()->RunUntilIdle();
+  fake_phishing_detector_.Reset();
+  fake_phishing_image_embedder_.Reset();
+
+  std::unique_ptr<ClientPhishingRequest> sent_request;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+      .WillOnce(
+          [&](std::unique_ptr<ClientPhishingRequest> request,
+              ClientSideDetectionService::ClientReportPhishingRequestCallback,
+              const std::string&) { sent_request = std::move(request); });
+
+  // Default image is uniform white; retries up to MaxRetries (3).
+  csd_host_->KeyboardLockRequested();
+  task_environment()->RunUntilIdle();
+  FlushPhishingImageEmbedderForTesting();
+  task_environment()->RunUntilIdle();
+
+  // Initial check (retry_count = 0) completed and scheduled retry 1.
+  EXPECT_TRUE(IsCheckingUniformImage());
+  EXPECT_TRUE(IsUniformImageRetryTimerRunning());
+  EXPECT_EQ(fake_phishing_image_embedder_.start_count(), 1);
+  EXPECT_EQ(sent_request, nullptr);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.KeyboardLock.IsInitialImageUniform", true, 1);
+
+  // Retry 1 at +0.5s: still uniform, schedules retry 2.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  FlushPhishingImageEmbedderForTesting();
+  task_environment()->RunUntilIdle();
+  EXPECT_TRUE(IsUniformImageRetryTimerRunning());
+  EXPECT_EQ(fake_phishing_image_embedder_.start_count(), 2);
+  EXPECT_EQ(sent_request, nullptr);
+
+  // Retry 2 at +1.0s: still uniform, schedules retry 3.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  FlushPhishingImageEmbedderForTesting();
+  task_environment()->RunUntilIdle();
+  EXPECT_TRUE(IsUniformImageRetryTimerRunning());
+  EXPECT_EQ(fake_phishing_image_embedder_.start_count(), 3);
+  EXPECT_EQ(sent_request, nullptr);
+
+  // Retry 3 (MaxRetries) at +1.5s: stops retrying and sends ping.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  FlushPhishingImageEmbedderForTesting();
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(IsUniformImageRetryTimerRunning());
+  EXPECT_FALSE(IsCheckingUniformImage());
+  EXPECT_EQ(fake_phishing_image_embedder_.start_count(), 4);
+  ASSERT_NE(sent_request, nullptr);
+  EXPECT_TRUE(sent_request->has_image_feature_embedding());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.KeyboardLock.IsInitialImageUniform", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.KeyboardLock.IsFinalImageUniform", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.KeyboardLock.UniformImageRetryCount", 3, 1);
+}
+
+TEST_F(ClientSideDetectionHostKeyboardLockUniformImageDelayTest,
+       NavigationDuringRetryCancelsPendingUniformImageCheck) {
+  NavigateAndCommit(url_);
+  task_environment()->RunUntilIdle();
+  fake_phishing_detector_.Reset();
+  fake_phishing_image_embedder_.Reset();
+
+  csd_host_->KeyboardLockRequested();
+  task_environment()->RunUntilIdle();
+  FlushPhishingImageEmbedderForTesting();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_TRUE(IsUniformImageRetryTimerRunning());
+  EXPECT_TRUE(IsCheckingUniformImage());
+
+  // Cross-document navigation cancels the pending retry timer.
+  GURL next_url("https://other.example.com");
+  database_manager_->SetAllowlistLookupDetailsForUrl(next_url, false);
+  NavigateAndCommit(next_url);
+
+  EXPECT_FALSE(IsUniformImageRetryTimerRunning());
+  EXPECT_FALSE(IsCheckingUniformImage());
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.KeyboardLock.IsFinalImageUniform", 0);
+}
+
+TEST_F(ClientSideDetectionHostKeyboardLockUniformImageDelayTest,
+       LowerPriorityTriggerBlockedDuringUniformImageRetryWindow) {
+  NavigateAndCommit(url_);
+  task_environment()->RunUntilIdle();
+  fake_phishing_detector_.Reset();
+  fake_phishing_image_embedder_.Reset();
+
+  csd_host_->KeyboardLockRequested();
+  task_environment()->RunUntilIdle();
+  FlushPhishingImageEmbedderForTesting();
+  task_environment()->RunUntilIdle();
+
+  // While KEYBOARD_LOCK_REQUESTED (Tier 1) is waiting on the uniform-image
+  // retry timer, a Tier 2 trigger (VIBRATION_API) should be blocked.
+  EXPECT_TRUE(IsCheckingUniformImage());
+  csd_host_->VibrationRequested();
+
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.BlockingRequestType.VibrationApi",
+      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED, 1);
 }
 
 }  // namespace safe_browsing

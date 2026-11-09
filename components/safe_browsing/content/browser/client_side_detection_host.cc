@@ -888,9 +888,10 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
     }
   }
 
-  // If there is a renderer classification going on and the incoming request
-  // type is not higher, do not let that cancel pending classification.
-  if (is_classifying() &&
+  // If there is a renderer classification or uniform-image retry check going on
+  // and the incoming request type is not higher, do not let that cancel pending
+  // classification.
+  if ((is_classifying() || is_uniform_image_retry_timer_running()) &&
       base::FeatureList::IsEnabled(kClientSideDetectionTierSystem) &&
       !NewRequestTypeTierHigher(request_type)) {
     base::UmaHistogramExactLinear(
@@ -906,6 +907,12 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
     }
     return;
   }
+
+  ResetUniformImageRetryState();
+
+  // Prevent any in-flight StartImageEmbedding callback from progressing
+  // due to being interrupted by a higher priority scan.
+  phishing_image_embedder_.reset();
 
   if (!preclassification_started_cb_for_testing_.is_null()) {
     preclassification_started_cb_for_testing_.Run(request_type);
@@ -1155,6 +1162,7 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
   }
 
   set_is_csd_running(true);
+  ResetUniformImageRetryState();
 
   bool intelligent_scan_ongoing = GetIntelligentScanId().has_value();
   base::UmaHistogramBoolean(
@@ -1448,6 +1456,7 @@ void ClientSideDetectionHost::MaybeStartImageEmbedding(
     std::optional<bool> did_match_high_confidence_allowlist,
     bool is_invalid_ip,
     PhishingDetectorResult result) {
+  set_last_phishing_detector_result(result);
   visual_utils::CanExtractVisualFeaturesResult
       can_extract_visual_features_result = DetermineVisualFeaturesExtraction();
 
@@ -1488,11 +1497,14 @@ void ClientSideDetectionHost::MaybeStartImageEmbedding(
           base::BindOnce(&ClientSideDetectionHost::PhishingImageEmbeddingDone,
                          weak_factory_.GetWeakPtr(), std::move(verdict),
                          did_match_high_confidence_allowlist, is_invalid_ip));
+    } else {
+      ResetUniformImageRetryState();
     }
 
     return;
   }
 
+  ResetUniformImageRetryState();
   MaybeStartIntelligentScanForScamDetection(
       std::move(verdict), did_match_high_confidence_allowlist, is_invalid_ip);
 }
