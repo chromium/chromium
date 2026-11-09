@@ -35,7 +35,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "net/http/http_response_headers.h"
@@ -138,14 +137,12 @@ class FeedNetworkTest : public testing::Test {
     feed_network_ = std::make_unique<FeedNetworkImpl>(
         &delegate_, identity_test_env_.identity_manager(), "dummy_api_key",
         shared_url_loader_factory_, &profile_prefs_);
-    SignIn(syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-               ? signin::ConsentLevel::kSignin
-               : signin::ConsentLevel::kSync);
+    SignIn();
   }
 
-  void SignIn(signin::ConsentLevel consent_level) {
-    identity_test_env_.MakePrimaryAccountAvailable(std::string(kEmail),
-                                                   consent_level);
+  void SignIn() {
+    identity_test_env_.MakePrimaryAccountAvailable(
+        std::string(kEmail), signin::ConsentLevel::kSignin);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
 
@@ -322,7 +319,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestSendsValidRequest) {
 TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSignin) {
   // Request should be signed in if account consent level is kSignin.
   identity_env()->ClearPrimaryAccount();
-  SignIn(signin::ConsentLevel::kSignin);
+  SignIn();
   base::test::ScopedFeatureList feature_list;
 
   CallbackReceiver<QueryRequestResult> receiver;

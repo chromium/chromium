@@ -20,7 +20,6 @@
 #include "components/feed/core/v2/api_test/feed_api_test.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -38,10 +37,7 @@ const char* kEmail = "user@example.com";
 class NtpFeedContentFetcherTest : public testing::Test {
  public:
   NtpFeedContentFetcherTest() {
-    identity_test_env_.SetPrimaryAccount(
-        kEmail, syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                    ? signin::ConsentLevel::kSignin
-                    : signin::ConsentLevel::kSync);
+    identity_test_env_.SetPrimaryAccount(kEmail, signin::ConsentLevel::kSignin);
   }
   NtpFeedContentFetcherTest(NtpFeedContentFetcherTest&) = delete;
   NtpFeedContentFetcherTest& operator=(const NtpFeedContentFetcherTest&) =

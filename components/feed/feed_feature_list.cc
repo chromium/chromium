@@ -12,10 +12,6 @@
 #include "build/build_config.h"
 #include "components/country_codes/country_codes.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/sync/base/features.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace feed {
 
 // InterestFeedV2 takes precedence over InterestFeedContentSuggestions.
