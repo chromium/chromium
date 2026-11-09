@@ -6,6 +6,7 @@
 
 #import <utility>
 
+#import "base/feature_list.h"
 #import "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
@@ -29,6 +30,11 @@ std::unique_ptr<KeyedService> BuildOhttpKeyService(ProfileIOS& profile) {
   if (!safe_browsing_service) {
     return nullptr;
   }
+  if (profile.IsOffTheRecord() &&
+      !base::FeatureList::IsEnabled(
+          safe_browsing::kHashPrefixRealTimeLookupsOnIncognitoAndGuest)) {
+    return nullptr;
+  }
   auto url_loader_factory =
       std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
           safe_browsing_service->GetURLLoaderFactory());
@@ -49,10 +55,12 @@ OhttpKeyServiceFactory::GetDefaultFactory() {
 
 // The service is created early to start async key fetch.
 OhttpKeyServiceFactory::OhttpKeyServiceFactory(PassKey key)
-    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
-                                         "OhttpKeyService",
-                                         ServiceCreation::kCreateWithProfile,
-                                         TestingCreation::kNoServiceForTests) {}
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "OhttpKeyService",
+          ProfileSelection::kOwnInstanceInIncognito,
+          ServiceCreation::kCreateWithProfile,
+          TestingCreation::kNoServiceForTests) {}
 
 std::unique_ptr<KeyedService> OhttpKeyServiceFactory::BuildServiceInstanceFor(
     ProfileIOS& profile) const {

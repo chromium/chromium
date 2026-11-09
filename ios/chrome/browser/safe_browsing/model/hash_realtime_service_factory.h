@@ -10,7 +10,7 @@
 #import "services/network/public/mojom/network_context.mojom.h"
 
 // Singleton that owns HashRealTimeService objects, one for each active profile.
-// It returns nullptr for incognito profiles.
+// A separate instance is created for incognito profiles.
 class HashRealTimeServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           HashRealTimeServiceFactory,

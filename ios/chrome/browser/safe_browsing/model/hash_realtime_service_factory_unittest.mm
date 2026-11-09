@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/safe_browsing/model/hash_realtime_service_factory.h"
 
-#import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -21,12 +20,17 @@ class HashRealTimeServiceFactoryTest : public PlatformTest {
   std::unique_ptr<ProfileIOS> profile_;
 };
 
-// Checks that HashRealTimeServiceFactory returns null for an
-// off-the-record profile.
-TEST_F(HashRealTimeServiceFactoryTest, DisabledForIncognitoMode) {
-  // The factory should return null for an off-the-record profile.
-  EXPECT_FALSE(HashRealTimeServiceFactory::GetForProfile(
-      profile_->GetOffTheRecordProfile()));
+// Checks that HashRealTimeServiceFactory returns a distinct non-null instance
+// for an off-the-record profile.
+TEST_F(HashRealTimeServiceFactoryTest, EnabledForIncognitoMode) {
+  safe_browsing::HashRealTimeService* regular_service =
+      HashRealTimeServiceFactory::GetForProfile(profile_.get());
+  EXPECT_TRUE(regular_service);
+  safe_browsing::HashRealTimeService* incognito_service =
+      HashRealTimeServiceFactory::GetForProfile(
+          profile_->GetOffTheRecordProfile());
+  EXPECT_TRUE(incognito_service);
+  EXPECT_NE(regular_service, incognito_service);
 }
 
 // Checks that HashRealTimeServiceFactory returns a non-null instance for a

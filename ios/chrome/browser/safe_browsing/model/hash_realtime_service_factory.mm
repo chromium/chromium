@@ -6,7 +6,6 @@
 
 #import <utility>
 
-#import "base/feature_list.h"
 #import "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #import "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #import "components/safe_browsing/ios/browser/web_ui/web_ui_ios_info_singleton.h"
@@ -25,8 +24,10 @@ network::mojom::NetworkContext* GetNetworkContext() {
 }  // namespace
 
 HashRealTimeServiceFactory::HashRealTimeServiceFactory(PassKey key)
-    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
-                                         "HashRealTimeService") {
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "HashRealTimeService",
+          ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(V5SearchHashesCacheFactory::GetInstance());
   DependsOn(OhttpKeyServiceFactory::GetInstance());
 }
