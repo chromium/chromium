@@ -51,7 +51,7 @@ The below is a list of major libraries. For a complete list, look at
 
 * **Memory**
 
-  [allocator.h] (memory placement macros)
+  [allocator.h] (memory placement macros), [Memory management in Blink](Allocator.md)
 
 * **Functors, binding**
 
@@ -59,7 +59,7 @@ The below is a list of major libraries. For a complete list, look at
 
 * **Threading**
 
-  [threading.h]
+  [threading.h], [Thread programming in Blink](ThreadProgrammingInBlink.md)
 
 * **Miscellaneous**
 

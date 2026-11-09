@@ -173,19 +173,22 @@ we'll add it.
 ***
 
 See also
-[Threading and Tasks in Chrome](../../../../../docs/threading_and_tasks.md) for
+[Threading and Tasks in Chrome](../../../../../docs/threading_and_tasks.md) and
+[Thread Programming in Blink](../wtf/ThreadProgrammingInBlink.md) for
 more details.
 
 ## Binding tasks
 
-Many data structures in Blink are bound to a particular thread (e.g. Strings,
+Many data structures in Blink are bound to a particular thread (e.g. DOM nodes,
 garbage-collected classes, etc), so it’s not safe to pass a pointer to them to
 another thread. To enforce this, `base::Bind*` is banned in Blink and
 `blink::Bind*` and `blink::CrossThreadBind*` are provided as alternatives.
 `blink::Bind*` should be used to post tasks to the same thread and closures
 returned by it DCHECK that they run on the same thread.
-`blink::CrossThreadBind*` applies `CrossThreadCopier` to its arguments and
-creates a deep copy, so the resulting closure can run on a different thread.
+`blink::CrossThreadBind*` validates at compile time that bound arguments are safe
+to pass across threads, allowing the resulting closure to run on a different thread.
+See [Thread Programming in Blink](../wtf/ThreadProgrammingInBlink.md) for rules
+on memory management and cross-thread handles.
 
 
 ## TODO(altimin): Document idle tasks
