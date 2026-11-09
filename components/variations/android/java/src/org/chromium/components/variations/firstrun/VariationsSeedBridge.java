@@ -24,6 +24,8 @@ public class VariationsSeedBridge {
     protected static final String VARIATIONS_FIRST_RUN_SEED_BASE64 = "variations_seed_base64";
     protected static final String VARIATIONS_FIRST_RUN_SEED_SIGNATURE = "variations_seed_signature";
     protected static final String VARIATIONS_FIRST_RUN_SEED_COUNTRY = "variations_seed_country";
+    protected static final String VARIATIONS_FIRST_RUN_SEED_GEO_LEVEL1 =
+            "variations_seed_geo_level1";
     protected static final String VARIATIONS_FIRST_RUN_SEED_DATE = "variations_seed_date_ms";
     protected static final String VARIATIONS_FIRST_RUN_SEED_IS_GZIP_COMPRESSED =
             "variations_seed_is_gzip_compressed";
@@ -38,14 +40,15 @@ public class VariationsSeedBridge {
     }
 
     /**
-     * Stores variations seed data (raw data, seed signature and country code) in SharedPreferences.
-     * CalledByNative attribute is used by unit tests code to set test data.
+     * Stores variations seed data (raw data, seed signature, country code and geo level 1) in
+     * SharedPreferences. CalledByNative attribute is used by unit tests code to set test data.
      */
     @CalledByNative
     public static void setVariationsFirstRunSeed(
             byte @Nullable [] rawSeed,
             @Nullable String signature,
             @Nullable String country,
+            @Nullable String geoLevel1,
             long date,
             boolean isGzipCompressed) {
         ContextUtils.getAppSharedPreferences()
@@ -55,6 +58,7 @@ public class VariationsSeedBridge {
                         Base64.encodeToString(rawSeed, Base64.NO_WRAP))
                 .putString(VARIATIONS_FIRST_RUN_SEED_SIGNATURE, signature)
                 .putString(VARIATIONS_FIRST_RUN_SEED_COUNTRY, country)
+                .putString(VARIATIONS_FIRST_RUN_SEED_GEO_LEVEL1, geoLevel1)
                 .putLong(VARIATIONS_FIRST_RUN_SEED_DATE, date)
                 .putBoolean(VARIATIONS_FIRST_RUN_SEED_IS_GZIP_COMPRESSED, isGzipCompressed)
                 .apply();
@@ -67,6 +71,7 @@ public class VariationsSeedBridge {
                 .remove(VARIATIONS_FIRST_RUN_SEED_BASE64)
                 .remove(VARIATIONS_FIRST_RUN_SEED_SIGNATURE)
                 .remove(VARIATIONS_FIRST_RUN_SEED_COUNTRY)
+                .remove(VARIATIONS_FIRST_RUN_SEED_GEO_LEVEL1)
                 .remove(VARIATIONS_FIRST_RUN_SEED_DATE)
                 .remove(VARIATIONS_FIRST_RUN_SEED_IS_GZIP_COMPRESSED)
                 .apply();
@@ -108,6 +113,11 @@ public class VariationsSeedBridge {
     @CalledByNative
     private static @Nullable String getVariationsFirstRunSeedCountry() {
         return getVariationsFirstRunSeedPref(VARIATIONS_FIRST_RUN_SEED_COUNTRY);
+    }
+
+    @CalledByNative
+    private static @Nullable String getVariationsFirstRunSeedGeoLevel1() {
+        return getVariationsFirstRunSeedPref(VARIATIONS_FIRST_RUN_SEED_GEO_LEVEL1);
     }
 
     @CalledByNative

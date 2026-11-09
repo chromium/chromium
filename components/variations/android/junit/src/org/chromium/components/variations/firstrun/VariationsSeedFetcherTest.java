@@ -86,6 +86,7 @@ public class VariationsSeedFetcherTest {
         when(mConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
         when(mConnection.getHeaderField("X-Seed-Signature")).thenReturn("signature");
         when(mConnection.getHeaderField("X-Country")).thenReturn("Nowhere Land");
+        when(mConnection.getHeaderField("X-Geo-Level-1")).thenReturn("us-ca");
         when(mConnection.getHeaderField("IM")).thenReturn("gzip");
         when(mConnection.getHeaderFieldDate("Date", 0)).thenReturn(12345L);
         when(mConnection.getInputStream())
@@ -107,6 +108,8 @@ public class VariationsSeedFetcherTest {
                 .isEqualTo("signature");
         assertThat(mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_COUNTRY, ""))
                 .isEqualTo("Nowhere Land");
+        assertThat(mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_GEO_LEVEL1, ""))
+                .isEqualTo("us-ca");
         assertEquals(
                 "Seed date should be set to the value from the header",
                 12345L,
@@ -129,6 +132,40 @@ public class VariationsSeedFetcherTest {
                 1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         VariationsSeedFetcher.SEED_FETCH_RESULT_HISTOGRAM));
+    }
+
+    /**
+     * Test method for {@link VariationsSeedFetcher#fetchSeed()} when X-Geo-Level-1 is omitted from
+     * the response headers.
+     */
+    @Test
+    public void testFetchSeed_withoutGeoLevel1Header() throws IOException {
+        when(mConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
+        when(mConnection.getHeaderField("X-Seed-Signature")).thenReturn("signature");
+        when(mConnection.getHeaderField("X-Country")).thenReturn("US");
+        when(mConnection.getHeaderField("IM")).thenReturn("gzip");
+        when(mConnection.getHeaderFieldDate("Date", 0)).thenReturn(12345L);
+        when(mConnection.getInputStream())
+                .thenReturn(new ByteArrayInputStream(ApiCompatibilityUtils.getBytesUtf8("1234")));
+        doReturn(mConnection)
+                .when(mFetcher)
+                .getServerConnection(
+                        VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                                .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID)
+                                .setMilestone(sMilestone)
+                                .setChannel(sChannel)
+                                .setRestrictMode(null)
+                                .build());
+
+        mFetcher.fetchSeed(sRestrict, sMilestone, sChannel);
+
+        assertThat(mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_COUNTRY, ""))
+                .isEqualTo("US");
+        assertThat(
+                        mPrefs.getString(
+                                VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_GEO_LEVEL1,
+                                "non-empty"))
+                .isEmpty();
     }
 
     /**
@@ -297,6 +334,7 @@ public class VariationsSeedFetcherTest {
         SeedInfo curSeedInfo = new SeedInfo();
         curSeedInfo.signature = "";
         curSeedInfo.country = "US";
+        curSeedInfo.geoLevel1 = "us-ca";
         curSeedInfo.isGzipCompressed = false;
         Date lastSeedDate = new Date();
         lastSeedDate.setTime(12345L);
@@ -329,6 +367,7 @@ public class VariationsSeedFetcherTest {
         SeedInfo updatedSeedInfo = seedFetchInfo.seedInfo;
         assertEquals(curSeedInfo.signature, updatedSeedInfo.signature);
         assertEquals(curSeedInfo.country, updatedSeedInfo.country);
+        assertEquals(curSeedInfo.geoLevel1, updatedSeedInfo.geoLevel1);
         assertEquals(curSeedInfo.isGzipCompressed, updatedSeedInfo.isGzipCompressed);
         assertEquals(34567L, updatedSeedInfo.date);
         assertArrayEquals(curSeedInfo.seedData, updatedSeedInfo.seedData);
@@ -412,6 +451,7 @@ public class VariationsSeedFetcherTest {
     public void testDownloadContent_success() throws IOException {
         String mockSignature = "bogus seed signature";
         String mockCountry = "GB";
+        String mockGeoLevel1 = "gb-eng";
         long mockDate = 1234L;
         String base64Delta =
                 "KgooMjRkM2EzN2UwMWJlYjlmMDVmMzIzOGI1MzVmNzA4NWZmZWViODc0MAAqW+4BkgEKH1VN"
@@ -442,6 +482,7 @@ public class VariationsSeedFetcherTest {
         when(mConnection.getHeaderField("IM")).thenReturn("x-bm,gzip");
         when(mConnection.getHeaderField("X-Seed-Signature")).thenReturn(mockSignature);
         when(mConnection.getHeaderField("X-Country")).thenReturn(mockCountry);
+        when(mConnection.getHeaderField("X-Geo-Level-1")).thenReturn(mockGeoLevel1);
         when(mConnection.getHeaderFieldDate("Date", 0)).thenReturn(mockDate);
         when(mConnection.getInputStream())
                 .thenReturn(
@@ -491,6 +532,7 @@ public class VariationsSeedFetcherTest {
         assertTrue(fetchInfo.seedInfo.isGzipCompressed);
         assertEquals(mockSignature, fetchInfo.seedInfo.signature);
         assertEquals(mockCountry, fetchInfo.seedInfo.country);
+        assertEquals(mockGeoLevel1, fetchInfo.seedInfo.geoLevel1);
         assertEquals(mockDate, fetchInfo.seedInfo.date);
     }
 

@@ -35,6 +35,7 @@ COMPONENT_EXPORT(VARIATIONS)
 void SetJavaFirstRunPrefsForTesting(const std::string& seed_data,
                                     const std::string& seed_signature,
                                     const std::string& seed_country,
+                                    const std::string& seed_geo_level1,
                                     int64_t response_date,
                                     bool is_gzip_compressed);
 

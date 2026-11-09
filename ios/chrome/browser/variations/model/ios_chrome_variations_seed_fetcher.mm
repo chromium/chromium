@@ -281,6 +281,7 @@ BASE_FEATURE(kVariationsRestrictDogfood, base::FEATURE_DISABLED_BY_DEFAULT);
   NSString* signature =
       [httpResponse valueForHTTPHeaderField:@"X-Seed-Signature"];
   NSString* country = [httpResponse valueForHTTPHeaderField:@"X-Country"];
+  NSString* geoLevel1 = [httpResponse valueForHTTPHeaderField:@"X-Geo-Level-1"];
   NSString* dateString = [httpResponse valueForHTTPHeaderField:@"Date"];
   base::Time date;
   BOOL dateParsed = base::Time::FromUTCString(
@@ -319,6 +320,7 @@ BASE_FEATURE(kVariationsRestrictDogfood, base::FEATURE_DISABLED_BY_DEFAULT);
     }
     seed->signature = base::SysNSStringToUTF8(signature);
     seed->country = base::SysNSStringToUTF8(country);
+    seed->geo_level1 = base::SysNSStringToUTF8(geoLevel1);
     seed->is_gzip_compressed = YES;
     return seed;
   }

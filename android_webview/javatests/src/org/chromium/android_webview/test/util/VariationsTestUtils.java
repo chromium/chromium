@@ -28,6 +28,7 @@ public class VariationsTestUtils {
     public static boolean seedsEqual(SeedInfo a, SeedInfo b) {
         return strEqual(a.signature, b.signature)
                 && strEqual(a.country, b.country)
+                && strEqual(a.geoLevel1, b.geoLevel1)
                 && (a.date == b.date)
                 && (a.isGzipCompressed == b.isGzipCompressed)
                 && Arrays.equals(a.seedData, b.seedData);

@@ -488,10 +488,12 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
   base::HistogramTester histogram_tester;
   NSString* signature = [NSDate now].description;
   NSString* country = @"US";
+  NSString* geo_level1 = @"us-ca";
   NSDictionary<NSString*, NSString*>* headers = @{
     @"Date" : [NSString stringWithFormat:@"%@", test_date_header_value],
     @"X-Seed-Signature" : signature,
     @"X-Country" : country,
+    @"X-Geo-Level-1" : geo_level1,
     @"IM" : @" gzip"
   };
   id response = OCMClassMock([NSHTTPURLResponse class]);
@@ -519,6 +521,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
   ASSERT_NE(seed, nullptr);
   EXPECT_EQ(seed->signature, base::SysNSStringToUTF8(signature));
   EXPECT_EQ(seed->country, base::SysNSStringToUTF8(country));
+  EXPECT_EQ(seed->geo_level1, base::SysNSStringToUTF8(geo_level1));
   EXPECT_EQ(seed->data, "");
   base::Time::Exploded date_exploded;
   seed->date.UTCExplode(&date_exploded);
@@ -532,4 +535,27 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
                                       1);
   EXPECT_OCMOCK_VERIFY(response);
   EXPECT_OCMOCK_VERIFY(delegate);
+}
+
+// Tests that the seed is still created with an empty geo_level1 string when
+// the X-Geo-Level-1 header is omitted from the HTTP response.
+TEST_F(IOSChromeVariationsSeedFetcherTest,
+       testValidHTTPResponseWithoutGeoLevel1Header) {
+  NSDictionary<NSString*, NSString*>* headers = @{
+    @"Date" : [NSString stringWithFormat:@"%@", test_date_header_value],
+    @"X-Seed-Signature" : @"signature",
+    @"X-Country" : @"US",
+    @"IM" : @"gzip"
+  };
+  id response = OCMClassMock([NSHTTPURLResponse class]);
+  OCMStub([response valueForHTTPHeaderField:[OCMArg any]])
+      .andDo(GetMockMethodWithHeader(headers));
+  IOSChromeVariationsSeedFetcher* fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc] initWithArguments:@[]];
+  std::unique_ptr<variations::SeedResponse> seed =
+      [fetcher seedResponseForHTTPResponse:response data:nil];
+  ASSERT_NE(seed, nullptr);
+  EXPECT_EQ(seed->country, "US");
+  EXPECT_EQ(seed->geo_level1, "");
+  EXPECT_OCMOCK_VERIFY(response);
 }
