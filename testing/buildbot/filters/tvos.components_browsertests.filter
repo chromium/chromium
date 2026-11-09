@@ -22,12 +22,16 @@
 -RendererDataValidationNestedFramesBrowserTest.TransformToRootCoordinatesClampsDisjointBounds
 -RendererDataValidationNestedFramesBrowserTest.TransformToRootCoordinatesClampsOverlappingBounds
 
-# TODO(crbug.com/436306678): DestroySurfaceEmbedChildAfterEmbedderProcessDied
-# kills the embedder's renderer via content::CrashTab(), but
+# TODO(crbug.com/436306678): These tests kill a renderer process, but
 # RenderProcessHost::Shutdown() returns false without doing anything when the
-# renderer runs in process, so every expectation that follows the kill fails.
-# (Refer https://crrev.com/c/8648832)
+# renderer runs in process, so the process never exits and every expectation
+# that follows the kill fails. DestroySurfaceEmbedChildAfterEmbedderProcessDied
+# kills the embedder's renderer via content::CrashTab(), and
+# ReadyOnceRendererIsGone calls Shutdown() directly, then hangs in
+# RenderProcessHostWatcher::Wait().
+# (Refer https://crrev.com/c/8648832 and https://crrev.com/c/8690988)
 -PerformanceManagerBrowserTest.DestroySurfaceEmbedChildAfterEmbedderProcessDied
+-ScriptToolsReadyWaiterBrowserTest.ReadyOnceRendererIsGone
 
 # TODO(crbug.com/516839852): The test has been failing on tvOS since
 # https://crrev.com/c/7253416.
