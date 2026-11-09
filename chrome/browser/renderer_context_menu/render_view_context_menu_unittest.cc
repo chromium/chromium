@@ -2074,12 +2074,7 @@ TEST_F(RenderViewContextMenuPrefsTest, TranslateContextMenuHasIcon) {
   ASSERT_TRUE(model_and_index);
   ui::MenuModel* model = model_and_index->first;
   size_t index = model_and_index->second;
-// Context menu items typically do not have icons on Mac.
-#if BUILDFLAG(IS_MAC)
-  EXPECT_TRUE(model->GetIconAt(index).IsEmpty());
-#else
   EXPECT_FALSE(model->GetIconAt(index).IsEmpty());
-#endif
 }
 
 // Verify that the adding the Lens image search option to the menu
