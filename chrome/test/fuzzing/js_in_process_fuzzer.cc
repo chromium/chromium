@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/in_process_fuzzer.h"
 #include "chrome/test/fuzzing/in_process_fuzzer_buildflags.h"
@@ -112,8 +113,13 @@ JsInProcessFuzzer::JsInProcessFuzzer()
       }) {
   // Use a ScopedFeatureList to enable WebMachineLearningNeuralNetwork,
   // as BrowserTestBase::SetUp() overwrites the command-line argument.
-  scoped_feature_list_.InitAndEnableFeature(
-      webnn::mojom::features::kWebMachineLearningNeuralNetwork);
+  //
+  // TopChromeWebUISharedRenderer moves the top-chrome WebUIs to their own
+  // profile, which fails a CHECK in single-process mode, where every frame
+  // uses the same renderer process.
+  scoped_feature_list_.InitWithFeatures(
+      {webnn::mojom::features::kWebMachineLearningNeuralNetwork},
+      {features::kTopChromeWebUISharedRenderer});
 }
 
 void JsInProcessFuzzer::SetUpOnMainThread() {
