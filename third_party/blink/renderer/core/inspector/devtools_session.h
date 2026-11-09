@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -101,7 +102,9 @@ class CORE_EXPORT DevToolsSession
   void DidStartProvisionalLoad(LocalFrame*);
   void DidFailProvisionalLoad(LocalFrame*);
   void DidCommitLoad(LocalFrame*, DocumentLoader*);
-  void PaintTiming(Document* document, const char* name, double timestamp);
+  void PaintTiming(Document* document,
+                   const char* name,
+                   base::TimeTicks timestamp);
   void DomContentLoadedEventFired(LocalFrame*);
 
   const String& script_to_evaluate_on_load() const {

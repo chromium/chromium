@@ -889,10 +889,8 @@ void PaintTiming::SetFirstPaintPresentation(
   if (first_paint_presentation_for_ukm_.is_null()) {
     first_paint_presentation_for_ukm_ = paint_timing_info.presentation_time;
   }
-  probe::PaintTiming(
-      GetSupplementable(), "firstPaint",
-      relevant_paint_details.first_paint_presentation_.since_origin()
-          .InSecondsF());
+  probe::PaintTiming(GetSupplementable(), "firstPaint",
+                     paint_timing_info.presentation_time);
   NotifyPaintTimingChanged();
 }
 
@@ -907,10 +905,8 @@ void PaintTiming::SetFirstContentfulPaintPresentation(
       paint_timing_info.presentation_time;
   CHECK(first_contentful_paint_presentation_.is_null());
   first_contentful_paint_presentation_ = paint_timing_info.presentation_time;
-  probe::PaintTiming(
-      GetSupplementable(), "firstContentfulPaint",
-      relevant_paint_details.first_contentful_paint_presentation_.since_origin()
-          .InSecondsF());
+  probe::PaintTiming(GetSupplementable(), "firstContentfulPaint",
+                     paint_timing_info.presentation_time);
 
   NotifyPaintTimingChanged();
   fmp_detector_->NotifyFirstContentfulPaint(
@@ -942,10 +938,7 @@ void PaintTiming::SetFirstImagePaintPresentation(base::TimeTicks stamp) {
   PaintDetails& relevant_paint_details = GetRelevantPaintDetails();
   DCHECK(relevant_paint_details.first_image_paint_presentation_.is_null());
   relevant_paint_details.first_image_paint_presentation_ = stamp;
-  probe::PaintTiming(
-      GetSupplementable(), "firstImagePaint",
-      relevant_paint_details.first_image_paint_presentation_.since_origin()
-          .InSecondsF());
+  probe::PaintTiming(GetSupplementable(), "firstImagePaint", stamp);
   NotifyPaintTimingChanged();
 }
 

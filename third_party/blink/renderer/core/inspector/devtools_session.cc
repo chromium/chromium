@@ -372,7 +372,7 @@ void DevToolsSession::DidCommitLoad(LocalFrame* frame, DocumentLoader*) {
 
 void DevToolsSession::PaintTiming(Document* document,
                                   const char* name,
-                                  double timestamp) {
+                                  base::TimeTicks) {
   if (v8_session_ &&
       agent_->inspected_frames_->Root()->GetDocument() == document) {
     v8_session_->triggerPreciseCoverageDeltaUpdate(

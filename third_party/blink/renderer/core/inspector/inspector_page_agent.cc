@@ -1253,10 +1253,10 @@ void InspectorPageAgent::LifecycleEvent(LocalFrame* frame,
 
 void InspectorPageAgent::PaintTiming(Document* document,
                                      const char* name,
-                                     double timestamp) {
+                                     base::TimeTicks timestamp) {
   LocalFrame* frame = document->GetFrame();
   DocumentLoader* loader = frame->Loader().GetDocumentLoader();
-  LifecycleEvent(frame, loader, name, timestamp);
+  LifecycleEvent(frame, loader, name, timestamp.since_origin().InSecondsF());
 }
 
 void InspectorPageAgent::Will(const probe::UpdateLayout&) {}

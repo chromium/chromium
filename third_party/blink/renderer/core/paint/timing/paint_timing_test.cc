@@ -6,6 +6,8 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/tracing/trace_event_analyzer.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -1257,6 +1259,34 @@ TEST_F(PaintTimingTest, ClearPaintTimingOnWindowReuse) {
                     performance_entry_names::kLargestContentfulPaint)
                 .size(),
             1u);
+}
+
+TEST_F(PaintTimingTest, PaintTimingTraceEventPreservesMicrosecondPrecision) {
+  DetachMockClient();
+  base::test::TracingEnvironment tracing_environment;
+  trace_analyzer::Start("loading");
+
+  // 517320488 us is a timestamp where double round-tripping through seconds
+  // ((517320488 / 1e6) * 1e6) truncates to 517320487 us.
+  constexpr int64_t kPresentationUs = 517320488;
+  const base::TimeTicks presentation_time =
+      base::TimeTicks() + base::Microseconds(kPresentationUs);
+
+  SetMainFrameBodyContent("<div>Contentful text</div>");
+  SimulateRendering();
+  GetMockPaintTimingCallbackManager()->OnAnimationFramePresented(
+      presentation_time);
+  GetMockPaintTimingCallbackManager()->InvokeCallbacksForNextAnimationFrame();
+
+  auto analyzer = trace_analyzer::Stop();
+  for (const char* name : {"firstPaint", "firstContentfulPaint",
+                           "largestContentfulPaint::Candidate"}) {
+    SCOPED_TRACE(name);
+    trace_analyzer::TraceEventVector events;
+    analyzer->FindEvents(trace_analyzer::Query::EventNameIs(name), &events);
+    ASSERT_EQ(events.size(), 1u);
+    EXPECT_DOUBLE_EQ(events[0]->timestamp, kPresentationUs);
+  }
 }
 
 }  // namespace blink

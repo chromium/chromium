@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/containers/span_or_size.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/core/animation/compositing/specific_compositing_decision.h"
@@ -136,7 +137,7 @@ class CORE_EXPORT InspectorTraceEvents
   void Will(const probe::CallFunction&);
   void Did(const probe::CallFunction&);
 
-  void PaintTiming(Document*, const char* name, double timestamp);
+  void PaintTiming(Document*, const char* name, base::TimeTicks timestamp);
 
   void FrameStartedLoading(LocalFrame*);
 

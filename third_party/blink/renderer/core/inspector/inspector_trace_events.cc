@@ -56,7 +56,6 @@
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
@@ -281,10 +280,9 @@ void InspectorTraceEvents::Did(const probe::CallFunction& probe) {
 
 void InspectorTraceEvents::PaintTiming(Document* document,
                                        const char* name,
-                                       double timestamp) {
+                                       base::TimeTicks timestamp) {
   TRACE_EVENT_MARK_WITH_TIMESTAMP2("loading,rail,devtools.timeline", name,
-                                   trace_event::ToTraceTimestamp(timestamp),
-                                   "frame",
+                                   timestamp, "frame",
                                    GetFrameIdForTracing(document->GetFrame()),
                                    "data", [&](perfetto::TracedValue context) {
                                      GetNavigationTracingData(

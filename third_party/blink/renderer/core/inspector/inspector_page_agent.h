@@ -34,6 +34,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/ad_tracker/ad_tracker.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -245,7 +246,7 @@ class CORE_EXPORT InspectorPageAgent final
                       DocumentLoader*,
                       const char* name,
                       double timestamp);
-  void PaintTiming(Document*, const char* name, double timestamp);
+  void PaintTiming(Document*, const char* name, base::TimeTicks timestamp);
   void Will(const probe::UpdateLayout&);
   void Did(const probe::UpdateLayout&);
   void Will(const probe::RecalculateStyle&);

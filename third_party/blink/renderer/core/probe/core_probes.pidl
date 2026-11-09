@@ -216,7 +216,7 @@ interface CoreProbes {
   void WillStartDebuggerTask(CoreProbeSink*);
   void DidFinishDebuggerTask(CoreProbeSink*);
   void LifecycleEvent([Keep] LocalFrame*, DocumentLoader*, const char* name, double timestamp);
-  void PaintTiming([Keep] Document*, const char* name, double timestamp);
+  void PaintTiming([Keep] Document*, const char* name, base::TimeTicks timestamp);
   void DidCreateAudioContext(ExecutionContext*);
   void DidCloseAudioContext(ExecutionContext*);
   void DidResumeAudioContext(ExecutionContext*);
