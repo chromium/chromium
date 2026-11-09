@@ -151,7 +151,11 @@
 #include "ui/views/controls/styled_label.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
+#include "chrome/common/chrome_switches.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/user_names.h"
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
@@ -4060,18 +4064,25 @@ class SafeBrowsingBlockingPageHashRealTimeCheckTest
     V5SearchHashesCacheFactory::GetForProfile(profile)
         ->CacheArtificialV5SearchHashesLookupVerdict(url.spec(), is_unsafe);
   }
-  void SetUpAndNavigateToUrl(bool is_unsafe) {
+  void SetUpAndNavigateToUrlInBrowser(BrowserWindowInterface* target_browser,
+                                      bool is_unsafe) {
     GURL url = embedded_test_server()->GetURL("/empty.html");
-    SetUpVerdict(url, browser()->GetProfile(), is_unsafe);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    SetUpVerdict(url, target_browser->GetProfile(), is_unsafe);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(target_browser, url));
     SafeBrowsingBlockingPageTestHelper::MaybeWaitForAsyncChecksToComplete(
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        target_browser->GetTabStripModel()->GetActiveWebContents(),
         factory_.test_safe_browsing_service()->ui_manager().get(),
         /*wait_for_load_stop=*/true);
   }
-  bool IsShowingInterstitial() {
+  void SetUpAndNavigateToUrl(bool is_unsafe) {
+    SetUpAndNavigateToUrlInBrowser(browser(), is_unsafe);
+  }
+  bool IsShowingInterstitialInBrowser(BrowserWindowInterface* target_browser) {
     return ::safe_browsing::IsShowingInterstitial(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        target_browser->GetTabStripModel()->GetActiveWebContents());
+  }
+  bool IsShowingInterstitial() {
+    return IsShowingInterstitialInBrowser(browser());
   }
   std::string GetReportSent() {
     return static_cast<FakeSafeBrowsingUIManager*>(
@@ -4192,6 +4203,135 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageHashRealTimeCheckTest,
       report.client_properties().url_api_type(),
       ClientSafeBrowsingReportRequest_SafeBrowsingUrlApiType_PVER5_NATIVE_REAL_TIME);
   EXPECT_EQ(report.client_properties().is_async_check(), true);
+}
+
+class SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest
+    : public SafeBrowsingBlockingPageHashRealTimeCheckTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  void InitFeatures() override {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        kHashPrefixRealTimeLookups};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+    if (GetParam()) {
+      enabled_features.push_back(kHashPrefixRealTimeLookupsOnIncognitoAndGuest);
+    } else {
+      disabled_features.push_back(
+          kHashPrefixRealTimeLookupsOnIncognitoAndGuest);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void RunOffTheRecordLookupTest(BrowserWindowInterface* target_browser,
+                                 bool is_unsafe,
+                                 bool expect_lookup_eligible,
+                                 bool expect_warning_shown) {
+    base::HistogramTester histogram_tester;
+    SetUpAndNavigateToUrlInBrowser(target_browser, is_unsafe);
+    EXPECT_EQ(expect_warning_shown,
+              IsShowingInterstitialInBrowser(target_browser));
+    histogram_tester.ExpectTotalCount(
+        "SafeBrowsing.BrowserThrottle.TotalDelay2.HashPrefixRealTimeCheck",
+        /*expected_count=*/0);
+    histogram_tester.ExpectTotalCount(
+        "SafeBrowsing.BrowserThrottle.TotalDelay2.HashPrefixDatabaseCheck",
+        /*expected_count=*/1);
+    histogram_tester.ExpectTotalCount(
+        "SafeBrowsing.BrowserThrottle.IsAsyncCheckFasterThanSyncCheck",
+        /*expected_count=*/expect_lookup_eligible ? 1 : 0);
+    histogram_tester.ExpectUniqueSample(
+        "SafeBrowsing.HPRT.Ineligible.OffTheRecord",
+        /*sample=*/!expect_lookup_eligible,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectTotalCount(
+        "interstitial.phishing.decision.from_hash_prefix_real_time_check_v5",
+        /*expected_count=*/expect_warning_shown ? 1 : 0);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest,
+                       Incognito_StandardProtection_UnsafePage) {
+  BrowserWindowInterface* incognito_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  ASSERT_TRUE(incognito_browser);
+  RunOffTheRecordLookupTest(incognito_browser, /*is_unsafe=*/true,
+                            /*expect_lookup_eligible=*/GetParam(),
+                            /*expect_warning_shown=*/GetParam());
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest,
+                       Incognito_StandardProtection_SafePage) {
+  BrowserWindowInterface* incognito_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  ASSERT_TRUE(incognito_browser);
+  RunOffTheRecordLookupTest(incognito_browser, /*is_unsafe=*/false,
+                            /*expect_lookup_eligible=*/GetParam(),
+                            /*expect_warning_shown=*/false);
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest,
+                       Incognito_MbbEnabled_UnsafePage) {
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  BrowserWindowInterface* incognito_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  ASSERT_TRUE(incognito_browser);
+  RunOffTheRecordLookupTest(incognito_browser, /*is_unsafe=*/true,
+                            /*expect_lookup_eligible=*/GetParam(),
+                            /*expect_warning_shown=*/GetParam());
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest,
+                       Incognito_EnhancedProtection_UnsafePage) {
+  safe_browsing::SetSafeBrowsingState(
+      browser()->GetProfile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  BrowserWindowInterface* incognito_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  ASSERT_TRUE(incognito_browser);
+  RunOffTheRecordLookupTest(incognito_browser, /*is_unsafe=*/true,
+                            /*expect_lookup_eligible=*/GetParam(),
+                            /*expect_warning_shown=*/GetParam());
+}
+
+class SafeBrowsingBlockingPageHashRealTimeCheckGuestTest
+    : public SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest {
+#if BUILDFLAG(IS_CHROMEOS)
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitch(ash::switches::kGuestSession);
+    command_line->AppendSwitch(::switches::kIncognito);
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
+    command_line->AppendSwitchASCII(
+        ash::switches::kLoginUser,
+        user_manager::GuestAccountId().GetUserEmail());
+  }
+#endif
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SafeBrowsingBlockingPageHashRealTimeCheckGuestTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckGuestTest,
+                       GuestMode_UnsafePage) {
+#if BUILDFLAG(IS_CHROMEOS)
+  BrowserWindowInterface* guest_browser = browser();
+#else
+  BrowserWindowInterface* guest_browser = CreateGuestBrowser();
+#endif
+  ASSERT_TRUE(guest_browser);
+  ASSERT_TRUE(guest_browser->GetProfile()->IsGuestSession());
+  ASSERT_TRUE(guest_browser->GetProfile()->IsOffTheRecord());
+  RunOffTheRecordLookupTest(guest_browser, /*is_unsafe=*/true,
+                            /*expect_lookup_eligible=*/GetParam(),
+                            /*expect_warning_shown=*/GetParam());
 }
 
 class SafeBrowsingPrerenderBrowserTest
