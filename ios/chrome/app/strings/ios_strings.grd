@@ -844,9 +844,6 @@
       <message name="IDS_IOS_AUTOFILL_AI_REMOVE_UNDO_ACTION" desc="Button text on the snackbar to undo removing an Autofill AI suggestion. [iOS only]">
         Undo
       </message>
-      <message name="IDS_IOS_AUTOFILL_AI_SAVED_LOCALLY_FOOTER" desc="TODO(crbug.com/573949431): Remove once deprecation period ends; replaced by IDS_IOS_AUTOFILL_AI_FOOTER_SAVE_TO_DEVICE. The notice text displayed in the footer when the Autofill AI entity (ex. Passport, Vehicle info etc.) is saved locally. [iOS only]">
-          Your info is saved to your device
-      </message>
       <message name="IDS_IOS_AUTOFILL_AI_SAVED_TO_WALLET_FOOTER" desc="The notice text displayed in the footer when the Autofill AI entity (ex. Passport, Vehicle info etc.) are saved to Google Wallet. [iOS only]">
           Your info is saved to Google Wallet for <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>. You can use it across Google products to fill forms faster.
       </message>
