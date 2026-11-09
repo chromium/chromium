@@ -136,7 +136,7 @@ class ReadAnythingIphControllerTest : public ChromeRenderViewHostTestHarness {
   MockUserEducation& user_ed() { return *user_education_; }
 
   void SetPresentationState(ReadAnythingPresentationState new_state) {
-    controller_->SetPresentationState(new_state);
+    controller_->set_presentation_state(new_state);
   }
 
   void TogglePresentation(bool is_user_initiated) {

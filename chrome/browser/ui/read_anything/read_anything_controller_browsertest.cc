@@ -93,7 +93,6 @@ class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
                std::optional<base::TimeDelta>),
               (override));
   MOCK_METHOD(void, OnDestroyed, (), (override));
-  MOCK_METHOD(void, OnReadingModePresenterChanged, (), (override));
   MOCK_METHOD(void, OnWillClose, (ReadAnythingCloseReason reason), (override));
 };
 
@@ -256,7 +255,7 @@ class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
   void SetPresentationState(
       ReadAnythingController* controller,
       ReadAnythingController::PresentationState new_state) {
-    controller->SetPresentationState(new_state);
+    controller->set_presentation_state(new_state);
   }
 
   bool IsFocusOnMainPage() {
@@ -361,7 +360,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   // Close it
   base::RunLoop run_loop;
   EXPECT_CALL(observer, Activate(false, testing::_, testing::_))
-      .WillOnce([&run_loop]() { run_loop.Quit(); });
+      .WillOnce([&run_loop, controller]() {
+        EXPECT_EQ(controller->GetPresentationState(),
+                  ReadAnythingController::PresentationState::kInactive);
+        run_loop.Quit();
+      });
   CloseImmersiveUI(controller, ReadAnythingCloseReason::kClosedByUser);
   run_loop.Run();
 
@@ -584,24 +587,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   });
 
   tab->Close();
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
-                       SetPresentationState_NotifiesObservers) {
-  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
-  ASSERT_TRUE(tab);
-  auto* controller = ReadAnythingController::From(tab);
-  ASSERT_TRUE(controller);
-  MockReadAnythingLifecycleObserver observer;
-  controller->AddObserver(&observer);
-
-  EXPECT_CALL(observer, OnReadingModePresenterChanged()).Times(1);
-
-  SetPresentationState(controller,
-                       ReadAnythingController::PresentationState::kInSidePanel);
-
-  // Cleanup
-  controller->RemoveObserver(&observer);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,

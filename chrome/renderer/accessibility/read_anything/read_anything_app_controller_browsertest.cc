@@ -157,7 +157,6 @@ class MockReadAnythingUntrustedPageHandler
               OnDistillationStatus,
               (read_anything::mojom::DistillationStatus, int word_count),
               (override));
-  MOCK_METHOD(void, GetPresentationState, (), (override));
   MOCK_METHOD(void, CloseUI, (), (override));
   MOCK_METHOD(void, TogglePinState, (), (override));
   MOCK_METHOD(void, TogglePresentation, (), (override));
@@ -229,7 +228,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
 
     // Set presentation state to opened so distillation is not paused.
-    controller_->OnGetPresentationState(
+    controller_->OnReadingModeShown(
+        read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
         read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
 
     DoInitialDistillation();
@@ -482,7 +482,8 @@ class ReadAnythingAppControllerReadabilityTest
     std::unique_ptr<ui::AXTreeUpdate> snapshot = test::CreateInitialUpdate();
     test::SetUpdateTreeID(snapshot.get(), tree_id_);
     AccessibilityEventReceived({*snapshot});
-    controller().OnGetPresentationState(
+    controller().OnReadingModeShown(
+        read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
         read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
     controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
                                          /*is_pdf=*/false);
@@ -618,7 +619,8 @@ TEST_F(ReadAnythingAppControllerTest,
 
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::
-          kListenToThisPageContextMenu);
+          kListenToThisPageContextMenu,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
 
   int set_play_on_open_called_count = 0;
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
@@ -633,7 +635,8 @@ TEST_F(ReadAnythingAppControllerTest,
       "chrome.readingMode.playOnOpen = () => { playOnOpenCalledCount++; };");
 
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
 
   int play_on_open_called_count = 0;
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(u"playOnOpenCalledCount",
@@ -658,13 +661,15 @@ TEST_F(
   // Duplicate calls with non-listen triggers should preserve playing audio
   // state and not execute setPlayOnOpen.
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_TRUE(read_aloud_model().speech_playing());
   EXPECT_TRUE(read_aloud_model().audio_currently_playing());
   EXPECT_FALSE(model().will_hide());
 
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu);
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_TRUE(read_aloud_model().speech_playing());
   EXPECT_TRUE(read_aloud_model().audio_currently_playing());
   EXPECT_FALSE(model().will_hide());
@@ -678,7 +683,8 @@ TEST_F(
   // and execute setPlayOnOpen each time.
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::
-          kListenToThisPageContextMenu);
+          kListenToThisPageContextMenu,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_TRUE(read_aloud_model().speech_playing());
   EXPECT_TRUE(read_aloud_model().audio_currently_playing());
   EXPECT_FALSE(model().will_hide());
@@ -688,7 +694,8 @@ TEST_F(
 
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::
-          kListenToThisPageContextMenu);
+          kListenToThisPageContextMenu,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_TRUE(read_aloud_model().speech_playing());
   EXPECT_TRUE(read_aloud_model().audio_currently_playing());
   EXPECT_FALSE(model().will_hide());
@@ -718,13 +725,15 @@ TEST_F(
   // Duplicate calls with non-listen triggers should preserve paused audio state
   // and not execute setPlayOnOpen.
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_FALSE(read_aloud_model().speech_playing());
   EXPECT_FALSE(read_aloud_model().audio_currently_playing());
   EXPECT_FALSE(model().will_hide());
 
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu);
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_FALSE(read_aloud_model().speech_playing());
   EXPECT_FALSE(read_aloud_model().audio_currently_playing());
   EXPECT_FALSE(model().will_hide());
@@ -738,7 +747,8 @@ TEST_F(
   // and execute setPlayOnOpen each time.
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::
-          kListenToThisPageContextMenu);
+          kListenToThisPageContextMenu,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_FALSE(read_aloud_model().speech_playing());
   EXPECT_FALSE(read_aloud_model().audio_currently_playing());
   EXPECT_FALSE(model().will_hide());
@@ -748,7 +758,8 @@ TEST_F(
 
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::
-          kListenToThisPageContextMenu);
+          kListenToThisPageContextMenu,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_FALSE(read_aloud_model().speech_playing());
   EXPECT_FALSE(read_aloud_model().audio_currently_playing());
   EXPECT_FALSE(model().will_hide());
@@ -826,7 +837,8 @@ TEST_F(ReadAnythingAppControllerTest,
       "  translationStates.push(chrome.readingMode.translationState);"
       "};");
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
             model().translation_state());
 
@@ -877,7 +889,8 @@ TEST_F(ReadAnythingAppControllerTest,
       "  translationState = chrome.readingMode.translationState;"
       "};");
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   controller().OnTranslationFailed();
   ASSERT_EQ(ReadAnythingAppModel::TranslationState::kFailed,
             model().translation_state());
@@ -897,7 +910,8 @@ TEST_F(ReadAnythingAppControllerTest,
        OnTranslationStateChanged_TranslatedWhileAwaiting_NotifiesOnce) {
   base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
             model().translation_state());
   // Record the state the WebUI reads each time it's notified.
@@ -936,7 +950,8 @@ TEST_F(ReadAnythingAppControllerTest, TranslationState_ExposedToJavaScript) {
             translation_state);
 
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
       u"chrome.readingMode.translationState", &translation_state));
   EXPECT_EQ(static_cast<int>(ReadAnythingAppModel::TranslationState::kAwaiting),

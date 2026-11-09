@@ -225,7 +225,6 @@ class ReadAnythingUntrustedPageHandler :
   bool CheckForPdfContentFrame();
 
   // read_anything::mojom::UntrustedPageHandler:
-  void GetPresentationState() override;
   void OnVoiceChange(const std::string& voice,
                      const std::string& lang) override;
   void OnLanguagePrefChange(const std::string& lang, bool enabled) override;
@@ -281,7 +280,6 @@ class ReadAnythingUntrustedPageHandler :
       bool active,
       ReadAnythingOpenTrigger open_trigger,
       std::optional<base::TimeDelta> completed_session_duration) override;
-  void OnReadingModePresenterChanged() override;
 
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
@@ -407,7 +405,6 @@ class ReadAnythingUntrustedPageHandler :
   void SetUpPdfObserver();
   void CheckIfActiveAXTreeChangedToPdf();
 
-  void OnGetPresentationState();
   ReadAnythingController* GetReadAnythingController();
 
   // Called when reading_mode_hidden_ack_timer_ times out without hearing back

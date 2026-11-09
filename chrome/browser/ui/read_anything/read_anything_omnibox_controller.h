@@ -41,7 +41,6 @@ class ReadAnythingOmniboxController : public tabs::ContentsObservingTabFeature,
       ReadAnythingOpenTrigger open_trigger,
       std::optional<base::TimeDelta> completed_session_duration) override;
   void OnDestroyed() override;
-  void OnReadingModePresenterChanged() override;
   void OnWillClose(ReadAnythingCloseReason reason) override;
 
   void SetDwellTimeForTesting(base::TimeTicks test_time) {
@@ -130,9 +129,11 @@ class ReadAnythingOmniboxController : public tabs::ContentsObservingTabFeature,
   // The current ukm source.
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
-  // The last reason Immersive RM was closed. Used to determine whether to show
-  // the omnibox entrypoint after RM is closed. This needs to be stored because
-  // the ReadingModePresenterChanged callback happens asynchronously.
+  // The reason Reading Mode was last closed. Activate(false) consumes it to
+  // decide whether to show the omnibox entry point again once the session
+  // ends, which can be after the side panel's close animation. Cleared when
+  // Reading Mode is shown again or the page changes, so it can't apply to a
+  // later session or another page.
   std::optional<ReadAnythingCloseReason> last_close_reason_;
 
   // A timer for logging whether the user opened RM after seeing the IPH.

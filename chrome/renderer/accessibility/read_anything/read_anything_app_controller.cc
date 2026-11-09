@@ -1502,8 +1502,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
           "requestPhraseBoundaries")
       .SetMethod<&ReadAnythingAppController::GetValidatedFontName>(
           "getValidatedFontName")
-      .SetMethod<&ReadAnythingAppController::SendGetPresentationStateRequest>(
-          "sendGetPresentationStateRequest")
       .SetMethod<&ReadAnythingAppController::TogglePresentation>(
           "togglePresentation")
       .SetMethod<&ReadAnythingAppController::CloseUI>("close")
@@ -1940,48 +1938,9 @@ std::string ReadAnythingAppController::GetHtmlId(
   return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlId);
 }
 
-void ReadAnythingAppController::SendGetPresentationStateRequest() const {
-  page_handler_->GetPresentationState();
-}
-
-void ReadAnythingAppController::OnGetPresentationState(
+void ReadAnythingAppController::ApplyPresentationState(
     read_anything::mojom::ReadAnythingPresentationState presentation_state) {
-  bool is_immersive_opening =
-      (presentation_state ==
-       read_anything::mojom::ReadAnythingPresentationState::
-           kInImmersiveOverlay) &&
-      (model_.active_presentation_state() !=
-       read_anything::mojom::ReadAnythingPresentationState::
-           kInImmersiveOverlay);
-  bool is_opening =
-      ((presentation_state ==
-        read_anything::mojom::ReadAnythingPresentationState::kInSidePanel) ||
-       (presentation_state ==
-        read_anything::mojom::ReadAnythingPresentationState::
-            kInImmersiveOverlay)) &&
-      !model_.is_active_presentation_state_opened();
-
   model_.set_active_presentation_state(presentation_state);
-
-  // Distillation is active when reading mode is hidden, but reading mode
-  // should only log the distillation status once it has been opened. Ensure
-  // success is logged for Readability if distillation completed successfully
-  // while reading mode was hidden.
-  bool has_distilled_readability_content =
-      model_.is_readability_next_distillation_method() &&
-      !model_.readability_content_html().empty();
-  if (is_opening && !has_logged_distillation_status_ &&
-      has_distilled_readability_content) {
-    RecordDistillationStatus(
-        read_anything::mojom::DistillationStatus::kSuccess);
-  }
-
-  // Now that the presentation state changed which is potentially one of the
-  // factors blocking processing, see if we can unblock processing of the
-  // updates.
-  ProcessPendingUpdatesIfAllowed(
-      /* allow_selection_updates=*/is_immersive_opening);
-
   ExecuteJavaScript("chrome.readingMode.onPresentationStateReceived(" +
                     base::ToString(static_cast<int>(presentation_state)) +
                     ");");
@@ -2713,7 +2672,9 @@ void ReadAnythingAppController::OnTtsEngineInstalled() {
 }
 #endif
 
-void ReadAnythingAppController::OnReadingModeHidden(bool tab_active) {
+void ReadAnythingAppController::OnReadingModeHidden(
+    bool tab_active,
+    read_anything::mojom::ReadAnythingPresentationState presentation_state) {
   page_handler_->AckReadingModeHidden();
   model_.set_will_hide(true);
 
@@ -2735,11 +2696,25 @@ void ReadAnythingAppController::OnReadingModeHidden(bool tab_active) {
   // Since it's known that reading mode was just hidden, ensure that metrics
   // are still logged.
   RecordSessionMetricsIfShownOrRecentlyHidden(/*just_hidden=*/true);
+
+  // Apply the new state last, so that the session metrics above still see the
+  // host that was hidden (e.g. for PageDuration's view mode).
+  ApplyPresentationState(presentation_state);
 }
 
 void ReadAnythingAppController::OnReadingModeShown(
-    read_anything::mojom::ReadAnythingOpenTrigger open_trigger) {
+    read_anything::mojom::ReadAnythingOpenTrigger open_trigger,
+    read_anything::mojom::ReadAnythingPresentationState presentation_state) {
+  ApplyPresentationState(presentation_state);
   model_.set_will_hide(false);
+
+  // Readability's content can be drawn while Reading Mode is hidden (see
+  // UpdateContent()), so record its status now.
+  if (model_.is_readability_next_distillation_method() &&
+      model_.readability_content_drawn()) {
+    RecordDistillationStatus(
+        read_anything::mojom::DistillationStatus::kSuccess);
+  }
 
   // The renderer process continues when reading mode is hidden, so the WebUI
   // still considers its Line Focus session active and will not start a new one
@@ -2764,6 +2739,14 @@ void ReadAnythingAppController::OnReadingModeShown(
     SetTranslationState(ReadAnythingAppModel::TranslationState::kAwaiting);
   }
 
+  // Process the updates that arrived while hidden, after the open trigger
+  // applied (e.g. to wait for a translation before drawing). When opening in
+  // the immersive overlay, a pending selection is processed even if there's
+  // content.
+  ProcessPendingUpdatesIfAllowed(
+      /*allow_selection_updates=*/model_.active_presentation_state() ==
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+
   if (ax_tree_ready_for_current_active_tree_measured_) {
     MaybeLogAXTreeReady();
   }
@@ -2786,6 +2769,11 @@ void ReadAnythingAppController::OnTabWillDetach() {
     ReadingModeWillClose();
   }
   RecordSessionMetricsIfShownOrRecentlyHidden();
+
+  // The browser doesn't send a presentation state when the tab detaches, so
+  // mark Reading Mode inactive after recording the session metrics above.
+  ApplyPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
 }
 
 void ReadAnythingAppController::ReadingModeWillClose() {

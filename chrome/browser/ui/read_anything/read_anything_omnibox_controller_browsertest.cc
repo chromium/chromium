@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -30,6 +32,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/views/animations/side_panel_animations.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
@@ -41,11 +44,30 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/animation_container.h"
+#include "ui/gfx/animation/animation_runner.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "url/url_constants.h"
 
 using read_anything::ReadAnythingEntryPointController;
 using read_anything::mojom::ReadAnythingOpenTrigger;
 using ui_test_utils::NavigateToURL;
+
+namespace {
+
+// Runs animations only when a test advances them with
+// gfx::AnimationContainerTestApi::IncrementTime().
+class ManualAnimationRunner : public gfx::AnimationRunner {
+ public:
+  void Stop() override {}
+
+ protected:
+  void OnStart(base::TimeDelta min_interval, base::TimeDelta elapsed) override {
+  }
+};
+
+}  // namespace
 
 class ReadAnythingOmniboxControllerTestBase
     : public InProcessBrowserTest,
@@ -157,6 +179,23 @@ class ReadAnythingOmniboxControllerTestBase
     ReadAnythingController::From(browser()->GetActiveTabInterface())
         ->OnEntryShown(read_anything_trigger);
   }
+
+  // Animates the side panel only when the test advances the returned test API.
+  gfx::AnimationContainerTestApi UseManualSidePanelAnimations() {
+    // Keep the AutoReset alive for the test so rich animations stay enabled.
+    rich_animations_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+        gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+    auto animation_container = base::MakeRefCounted<gfx::AnimationContainer>();
+    animation_container->SetAnimationRunner(
+        std::make_unique<ManualAnimationRunner>());
+    BrowserAnimationController::From(browser())
+        ->SetAnimationContainerForTesting(SidePanelAnimations::kSidePanel,
+                                          animation_container.get());
+    return gfx::AnimationContainerTestApi(animation_container.get());
+  }
+
+ private:
+  gfx::AnimationTestApi::RenderModeResetter rich_animations_;
 };
 
 class ReadAnythingOmniboxControllerBrowserTest
@@ -752,6 +791,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
                        DeactivateSidePanelByUser_ShowsOmnibox) {
   RegisterPageActionObserver();
+  // The suggestion check that runs after a page loads hides the entry point on
+  // a page that isn't distillable. Let it finish on a distillable page first,
+  // so that it can't race the side panel's close below.
+  NavigateToDistillablePage();
+  WaitForPageActionShowing(true);
   ReadAnythingEntryPointController::ShowUI(
       browser(), ReadAnythingOpenTrigger::kOmniboxChip,
       ReadAnythingEntryPointController::Presentation::kSidePanel);
@@ -765,7 +809,82 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
   ReadAnythingEntryPointController::ToggleUI(
       browser(), ReadAnythingOpenTrigger::kOmniboxChip);
 
-  ExpectPageActionStateImmediate(true);
+  // The entry point shows once the side panel's close animation ends.
+  WaitForPageActionShowing(true);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingOmniboxControllerBrowserTest,
+    DeactivateSidePanelByUser_TabSwitchDuringClose_DoesNotShowOmnibox) {
+  // A side panel closed by the user ends the session when its close animation
+  // ends. Pause the animation so that the tab changes while it closes.
+  gfx::AnimationContainerTestApi side_panel_animations =
+      UseManualSidePanelAnimations();
+  auto* side_panel_ui = SidePanelUI::From(browser());
+  RegisterPageActionObserver();
+  NavigateToDistillablePage();
+  WaitForPageActionShowing(true);
+
+  // Switching tabs during the close animation doesn't show the entry point on
+  // the now inactive tab.
+  ReadAnythingEntryPointController::ShowUI(
+      browser(), ReadAnythingOpenTrigger::kOmniboxChip,
+      ReadAnythingEntryPointController::Presentation::kSidePanel);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  side_panel_animations.IncrementTime(base::Seconds(5));
+  ExpectPageActionStateImmediate(false);
+  ReadAnythingEntryPointController::ToggleUI(
+      browser(), ReadAnythingOpenTrigger::kOmniboxChip);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+  ASSERT_TRUE(side_panel_ui->IsSidePanelShowing());
+  side_panel_animations.IncrementTime(base::Seconds(5));
+  EXPECT_FALSE(side_panel_ui->IsSidePanelShowing());
+  ExpectPageActionStateImmediate(false);
+
+  // Closing finished while Tab 0 was inactive, leaving its side panel entry
+  // active; returning to Tab 0 reopens Reading Mode and keeps the entry point
+  // hidden.
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  ExpectPageActionStateImmediate(false);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingOmniboxControllerBrowserTest,
+    DeactivateSidePanelByUser_NavigateDuringClose_DoesNotShowOmnibox) {
+  // A side panel closed by the user ends the session when its close animation
+  // ends. Pause the animation so that the page changes while it closes.
+  gfx::AnimationContainerTestApi side_panel_animations =
+      UseManualSidePanelAnimations();
+  auto* side_panel_ui = SidePanelUI::From(browser());
+  RegisterPageActionObserver();
+  NavigateToDistillablePage();
+  WaitForPageActionShowing(true);
+
+  // Navigating during the close animation doesn't show the entry point on the
+  // new page.
+  ReadAnythingEntryPointController::ShowUI(
+      browser(), ReadAnythingOpenTrigger::kOmniboxChip,
+      ReadAnythingEntryPointController::Presentation::kSidePanel);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  side_panel_animations.IncrementTime(base::Seconds(5));
+  ReadAnythingEntryPointController::ToggleUI(
+      browser(), ReadAnythingOpenTrigger::kOmniboxChip);
+  ASSERT_TRUE(NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+  ASSERT_TRUE(side_panel_ui->IsSidePanelShowing());
+  side_panel_animations.IncrementTime(base::Seconds(5));
+  EXPECT_FALSE(side_panel_ui->IsSidePanelShowing());
+  ExpectPageActionStateImmediate(false);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,

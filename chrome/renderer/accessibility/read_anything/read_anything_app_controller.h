@@ -170,14 +170,15 @@ class ReadAnythingAppController
   void SetLanguageCode(const std::string& code) override;
   void SetDefaultLanguageCode(const std::string& code) override;
   void ScreenAIServiceReady() override;
-  void OnGetPresentationState(
-      read_anything::mojom::ReadAnythingPresentationState presentation_state)
-      override;
   void OnGetVoicePackInfo(
       read_anything::mojom::VoicePackInfoPtr voice_pack_info) override;
-  void OnReadingModeHidden(bool tab_active) override;
+  void OnReadingModeHidden(bool tab_active,
+                           read_anything::mojom::ReadAnythingPresentationState
+                               presentation_state) override;
   void OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger open_trigger) override;
+      read_anything::mojom::ReadAnythingOpenTrigger open_trigger,
+      read_anything::mojom::ReadAnythingPresentationState presentation_state)
+      override;
   void OnTabWillDetach() override;
   void OnTabMuteStateChange(bool muted) override;
   void UpdateContent(const std::string& title,
@@ -292,8 +293,6 @@ class ReadAnythingAppController
   std::string GetReadabilityContentHtml() const;
   // Serializes accessibility tree anchors into a V8 object for the frontend.
   v8::Local<v8::Value> GetReadabilityAnchors() const;
-  // Returns the presentation through the OnGetPresentationState callback.
-  void SendGetPresentationStateRequest() const;
   // The results of these are sent back via UntrustedPage::OnGetVoicePackInfo.
 
   void SendPinStateRequest();
@@ -511,6 +510,10 @@ class ReadAnythingAppController
   // Helper for forwarding reading mode hide events to the webui so we can
   // perform cleaning operations on it.
   void ReadingModeWillClose();
+
+  // Applies the presentation state that a lifecycle message carries.
+  void ApplyPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState presentation_state);
 
   // Helper method for recording all reading mode per-session metrics. If
   // reading mode is hidden, this will no-op unless overridden with the

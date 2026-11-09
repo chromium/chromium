@@ -323,7 +323,7 @@ SidePanelUI* ReadAnythingController::GetSidePanelUI() {
 // Lazily creates and returns the WebUIContentsWrapper for Reading Mode.
 ReadAnythingContentsWrapper ReadAnythingController::GetOrCreateWebUIWrapper(
     PresentationState web_ui_new_presentation_state) {
-  SetPresentationState(web_ui_new_presentation_state);
+  set_presentation_state(web_ui_new_presentation_state);
   if (should_recreate_web_ui_ || !web_ui_wrapper_) {
     should_recreate_web_ui_ = false;
     has_shown_ui_ = false;
@@ -404,7 +404,7 @@ void ReadAnythingController::TransferWebUiOwnership(
   CHECK(web_ui_wrapper);
   CHECK(!web_ui_wrapper_);
   web_ui_wrapper_ = std::move(web_ui_wrapper);
-  SetPresentationState(PresentationState::kInactive);
+  set_presentation_state(PresentationState::kInactive);
 
   // If the WebUI was never shown, it likely means it was still loading when
   // we closed it. If we reuse this wrapper, we might miss the "ShowUI" signal
@@ -670,14 +670,6 @@ void ReadAnythingController::SavePresentationPreference(
 ReadAnythingController::PresentationState
 ReadAnythingController::GetPresentationState() const {
   return presentation_state_;
-}
-
-void ReadAnythingController::SetPresentationState(PresentationState new_state) {
-  if (presentation_state_ == new_state) {
-    return;
-  }
-  presentation_state_ = new_state;
-  observers_.Notify(&Observer::OnReadingModePresenterChanged);
 }
 
 void ReadAnythingController::PrimaryPageChanged(content::Page& page) {

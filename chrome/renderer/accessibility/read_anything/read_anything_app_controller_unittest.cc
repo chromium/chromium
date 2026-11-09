@@ -165,7 +165,6 @@ class MockReadAnythingUntrustedPageHandler
               OnDistillationStatus,
               (read_anything::mojom::DistillationStatus, int word_count),
               (override));
-  MOCK_METHOD(void, GetPresentationState, (), (override));
   MOCK_METHOD(void, CloseUI, (), (override));
   MOCK_METHOD(void, TogglePinState, (), (override));
   MOCK_METHOD(void, TogglePresentation, (), (override));
@@ -244,6 +243,8 @@ class ReadAnythingAppControllerTest : public testing::Test {
         .Times(testing::AnyNumber());
     EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, testing::_))
         .Times(testing::AnyNumber());
+    EXPECT_CALL(page_handler_, AckReadingModeHidden())
+        .Times(testing::AnyNumber());
 
     // Set distiller for testing.
     auto distiller = std::make_unique<MockAXTreeDistiller>(nullptr);
@@ -254,7 +255,8 @@ class ReadAnythingAppControllerTest : public testing::Test {
     tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
 
     // Set presentation state to opened so distillation is not paused.
-    controller_->OnGetPresentationState(
+    controller_->OnReadingModeShown(
+        read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
         read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
 
     DoInitialDistillation();
@@ -365,6 +367,24 @@ class ReadAnythingAppControllerTest : public testing::Test {
         .Times(testing::AnyNumber());
     EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, testing::_))
         .Times(testing::AnyNumber());
+    EXPECT_CALL(page_handler_, AckReadingModeHidden())
+        .Times(testing::AnyNumber());
+  }
+
+  // Closes Reading Mode, then reopens it in `state`.
+  void CloseAndReopen(
+      read_anything::mojom::ReadAnythingPresentationState state) {
+    // Closing acks the hide. Allow that even in tests that cleared the
+    // expectations on `page_handler_`.
+    EXPECT_CALL(page_handler_, AckReadingModeHidden())
+        .Times(testing::AnyNumber());
+    controller_->OnReadingModeHidden(
+        /*tab_active=*/true,
+        read_anything::mojom::ReadAnythingPresentationState::kInactive);
+    controller_->OnReadingModeShown(
+        read_anything::mojom::ReadAnythingOpenTrigger::
+            kReadAnythingTogglePresentationButton,
+        state);
   }
 
   void SendBatchUpdates() {
@@ -441,7 +461,8 @@ class ReadAnythingAppControllerTest : public testing::Test {
   // Opens reading mode to translate a PDF, and then fails the translation.
   void FailAwaitedTranslation() {
     controller().OnReadingModeShown(
-        read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+        read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+        read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
     controller().OnTranslationFailed();
   }
 
@@ -594,7 +615,8 @@ TEST_F(ReadAnythingAppControllerTest, OnIsAudioCurrentlyPlayingChanged) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_SendsAck) {
-  controller().OnReadingModeHidden(true);
+  controller().OnReadingModeHidden(
+      true, read_anything::mojom::ReadAnythingPresentationState::kInactive);
   EXPECT_CALL(page_handler_, AckReadingModeHidden()).Times(1);
 }
 
@@ -603,16 +625,19 @@ TEST_F(ReadAnythingAppControllerTest,
   read_aloud_model().SetSpeechPlaying(false);
   base::HistogramTester histogram_tester;
 
-  controller().OnReadingModeHidden(true);
+  controller().OnReadingModeHidden(
+      true, read_anything::mojom::ReadAnythingPresentationState::kInactive);
   EXPECT_EQ(0, histogram_tester.GetTotalSum(
                    ReadAloudAppModel::kSpeechStopSourceHistogramName));
 
-  controller().OnReadingModeHidden(true);
+  controller().OnReadingModeHidden(
+      true, read_anything::mojom::ReadAnythingPresentationState::kInactive);
   EXPECT_EQ(0, histogram_tester.GetTotalSum(
                    ReadAloudAppModel::kSpeechStopSourceHistogramName));
 
   read_aloud_model().SetSpeechPlaying(true);
-  controller().OnReadingModeHidden(true);
+  controller().OnReadingModeHidden(
+      true, read_anything::mojom::ReadAnythingPresentationState::kInactive);
   histogram_tester.ExpectUniqueSample(
       ReadAloudAppModel::kSpeechStopSourceHistogramName,
       ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode, 1);
@@ -624,7 +649,8 @@ TEST_F(ReadAnythingAppControllerTest,
   read_aloud_model().SetSpeechPlaying(true);
   base::HistogramTester histogram_tester;
 
-  controller().OnReadingModeHidden(false);
+  controller().OnReadingModeHidden(
+      false, read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
 
   EXPECT_EQ(0, histogram_tester.GetTotalSum(
                    ReadAloudAppModel::kSpeechStopSourceHistogramName));
@@ -634,7 +660,8 @@ TEST_F(ReadAnythingAppControllerTest,
 TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_LogsWordsSeen) {
   base::HistogramTester histogram_tester;
   controller().UpdateWordsSeen(123);
-  controller().OnReadingModeHidden(true);
+  controller().OnReadingModeHidden(
+      true, read_anything::mojom::ReadAnythingPresentationState::kInactive);
 
   histogram_tester.ExpectUniqueSample(
       ReadAnythingAppController::kWordsSeenHistogramName, 123, 1);
@@ -645,7 +672,8 @@ TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeHidden_LogsWordsSeenIfTabNotActive) {
   base::HistogramTester histogram_tester;
   controller().UpdateWordsSeen(123);
-  controller().OnReadingModeHidden(false);
+  controller().OnReadingModeHidden(
+      false, read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
 
   histogram_tester.ExpectUniqueSample(
       ReadAnythingAppController::kWordsSeenHistogramName, 123, 1);
@@ -654,7 +682,8 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_ResetsWordsSeen) {
   controller().UpdateWordsSeen(123);
-  controller().OnReadingModeHidden(true);
+  controller().OnReadingModeHidden(
+      true, read_anything::mojom::ReadAnythingPresentationState::kInactive);
 
   EXPECT_EQ(0, model().words_seen());
   EXPECT_CALL(page_handler_, AckReadingModeHidden());
@@ -663,7 +692,8 @@ TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_ResetsWordsSeen) {
 TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_LogsWordsHeard) {
   base::HistogramTester histogram_tester;
   controller().UpdateWordsHeard(123);
-  controller().OnReadingModeHidden(true);
+  controller().OnReadingModeHidden(
+      true, read_anything::mojom::ReadAnythingPresentationState::kInactive);
 
   histogram_tester.ExpectUniqueSample(
       ReadAnythingAppController::kWordsHeardHistogramName, 123, 1);
@@ -674,7 +704,8 @@ TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeHidden_LogsWordsHeardIfTabNotActive) {
   base::HistogramTester histogram_tester;
   controller().UpdateWordsHeard(123);
-  controller().OnReadingModeHidden(false);
+  controller().OnReadingModeHidden(
+      false, read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
 
   histogram_tester.ExpectUniqueSample(
       ReadAnythingAppController::kWordsHeardHistogramName, 123, 1);
@@ -683,7 +714,8 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_ResetsWordsHeard) {
   controller().UpdateWordsHeard(123);
-  controller().OnReadingModeHidden(true);
+  controller().OnReadingModeHidden(
+      true, read_anything::mojom::ReadAnythingPresentationState::kInactive);
 
   EXPECT_EQ(0, model().words_heard());
   EXPECT_CALL(page_handler_, AckReadingModeHidden());
@@ -707,7 +739,8 @@ TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeHidden_LogsLineFocusSessionWithFlag) {
   base::HistogramTester histogram_tester;
   StartLineFocusSession();
-  controller().OnReadingModeHidden(true);
+  controller().OnReadingModeHidden(
+      true, read_anything::mojom::ReadAnythingPresentationState::kInactive);
 
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.LineFocusSessionLength", 1);
@@ -1250,7 +1283,9 @@ TEST_F(ReadAnythingAppControllerTest,
       "Accessibility.ReadAnything.LineFocusSessionLength", 1);
 
   EXPECT_CALL(page_handler_, AckReadingModeHidden()).Times(1);
-  controller().OnReadingModeHidden(/*tab_active=*/true);
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
 
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.LineFocusSessionLength", 1);
@@ -2924,7 +2959,8 @@ TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeShown_PdfTranslation_AwaitsUntilTranslated) {
   base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
             model().translation_state());
 
@@ -2943,7 +2979,8 @@ TEST_F(ReadAnythingAppControllerTest,
   base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
   controller().OnTranslationStateChanged(/*is_translated=*/true);
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
             model().translation_state());
 }
@@ -2953,7 +2990,8 @@ TEST_F(ReadAnythingAppControllerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(translate::kEnableTranslatePdf);
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
             model().translation_state());
 }
@@ -2962,7 +3000,8 @@ TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeShown_OtherTrigger_DoesNotAwait) {
   base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kReadAnythingContextMenu);
+      read_anything::mojom::ReadAnythingOpenTrigger::kReadAnythingContextMenu,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
             model().translation_state());
 }
@@ -2970,12 +3009,15 @@ TEST_F(ReadAnythingAppControllerTest,
 TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_StopsAwaiting) {
   base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
             model().translation_state());
 
   EXPECT_CALL(page_handler_, AckReadingModeHidden());
-  controller().OnReadingModeHidden(/*tab_active=*/true);
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
   EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
             model().translation_state());
 }
@@ -2984,18 +3026,22 @@ TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeHidden_TabSwitched_KeepsAwaiting) {
   base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
             model().translation_state());
 
   EXPECT_CALL(page_handler_, AckReadingModeHidden());
-  controller().OnReadingModeHidden(/*tab_active=*/false);
+  controller().OnReadingModeHidden(
+      /*tab_active=*/false,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
             model().translation_state());
 
   // Returning to the tab keeps awaiting the pending translation.
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kTabSwitch);
+      read_anything::mojom::ReadAnythingOpenTrigger::kTabSwitch,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
             model().translation_state());
 
@@ -3012,7 +3058,8 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().OnActiveAXTreeIDChanged(ui::AXTreeID::CreateNewAXTreeID(),
                                        kFirstPage, /*is_pdf=*/true);
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
             model().translation_state());
 
@@ -3030,7 +3077,8 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().OnActiveAXTreeIDChanged(ui::AXTreeID::CreateNewAXTreeID(), kPage,
                                        /*is_pdf=*/true);
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
             model().translation_state());
 
@@ -3056,7 +3104,8 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().OnActiveAXTreeIDChanged(first_tree, kFirstPage,
                                        /*is_pdf=*/true);
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
             model().translation_state());
 
@@ -3072,7 +3121,8 @@ TEST_F(ReadAnythingAppControllerTest,
 TEST_F(ReadAnythingAppControllerTest, OnTranslationFailed_StopsAwaiting) {
   base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
             model().translation_state());
 
@@ -3109,9 +3159,12 @@ TEST_F(ReadAnythingAppControllerTest,
        OnTranslationFailed_AfterReadingModeClosed_DoesNotSetFailed) {
   base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_CALL(page_handler_, AckReadingModeHidden());
-  controller().OnReadingModeHidden(/*tab_active=*/true);
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
 
   controller().OnTranslationFailed();
   EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
@@ -3133,7 +3186,8 @@ TEST_F(ReadAnythingAppControllerTest,
   FailAwaitedTranslation();
 
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
             model().translation_state());
 }
@@ -3144,9 +3198,12 @@ TEST_F(ReadAnythingAppControllerTest, TranslationFailed_KeptOnTabSwitch) {
 
   // Switching tabs only hides reading mode.
   EXPECT_CALL(page_handler_, AckReadingModeHidden());
-  controller().OnReadingModeHidden(/*tab_active=*/false);
+  controller().OnReadingModeHidden(
+      /*tab_active=*/false,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kTabSwitch);
+      read_anything::mojom::ReadAnythingOpenTrigger::kTabSwitch,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_EQ(ReadAnythingAppModel::TranslationState::kFailed,
             model().translation_state());
 }
@@ -3157,7 +3214,9 @@ TEST_F(ReadAnythingAppControllerTest,
   FailAwaitedTranslation();
 
   EXPECT_CALL(page_handler_, AckReadingModeHidden());
-  controller().OnReadingModeHidden(/*tab_active=*/true);
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
   EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
             model().translation_state());
 }
@@ -3219,7 +3278,8 @@ TEST_F(ReadAnythingAppControllerTest,
   // distilled content.
   OnAXTreeDistilled(tree_id_, {2});
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
             model().translation_state());
 
@@ -3750,9 +3810,45 @@ TEST_F(ReadAnythingAppControllerTest, Distill_SetsDistillationInProgress) {
 TEST_F(ReadAnythingAppControllerTest,
        ReadingModeHidden_UpdateProcessingPaused) {
   // Hide reading mode
-  controller().OnGetPresentationState(
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
   EXPECT_TRUE(controller().IsUpdateProcessingPaused());
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xTest,
+       OnReadingModeShown_PdfTranslation_AwaitsBeforeProcessingUpdates) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+
+  // An update that needs distilling is queued while Reading Mode is hidden.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.root_id = 1;
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {2, 3, 4, 5};
+  ui::AXNodeData new_node = test::TextNode(/*id=*/5, u"Loaded text");
+  update.nodes = {std::move(root), std::move(new_node)};
+  ui::AXEvent load_complete;
+  load_complete.event_type = ax::mojom::Event::kLoadComplete;
+  controller().AccessibilityEventReceived(tree_id_, {std::move(update)},
+                                          {load_complete});
+  ASSERT_FALSE(model().pending_updates_for_testing().empty());
+
+  // Opening Reading Mode for a PDF translation awaits the translation before
+  // processing the queued update, so its content isn't drawn untranslated.
+  EXPECT_CALL(*distiller_, Distill).WillOnce([&]() {
+    EXPECT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+              model().translation_state());
+  });
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+  Mock::VerifyAndClearExpectations(distiller_);
+  EXPECT_TRUE(model().pending_updates_for_testing().empty());
 }
 
 TEST_F(ReadAnythingAppControllerScreen2xTest,
@@ -3760,7 +3856,7 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(&page_handler_);
   // Set to Immersive.
-  controller().OnGetPresentationState(
+  CloseAndReopen(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   EXPECT_FALSE(controller().IsUpdateProcessingPaused());
 
@@ -3782,9 +3878,7 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
        SidePanelWithGoodDistillation_DoesNotPauseUpdateProcessing) {
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(&page_handler_);
-  // Set to Side Panel.
-  controller().OnGetPresentationState(
-      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+  // Reading Mode is in the side panel (see SetUp()).
   EXPECT_FALSE(controller().IsUpdateProcessingPaused());
 
   // Distillation succeeded
@@ -3806,7 +3900,7 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(&page_handler_);
   // Set to Immersive
-  controller().OnGetPresentationState(
+  CloseAndReopen(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   EXPECT_FALSE(controller().IsUpdateProcessingPaused());
 
@@ -3831,7 +3925,7 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(&page_handler_);
   // Set to Immersive.
-  controller().OnGetPresentationState(
+  CloseAndReopen(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
 
   // Simulate a successful distillation.
@@ -3860,7 +3954,7 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
                       kDistillationInProgress))
       .Times(1);
   ExpectDistill(1);
-  controller().OnGetPresentationState(
+  CloseAndReopen(
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   Mock::VerifyAndClearExpectations(distiller_);
 }
@@ -3870,7 +3964,7 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(&page_handler_);
   // Set to Immersive.
-  controller().OnGetPresentationState(
+  CloseAndReopen(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
 
   // Simulate a successful distillation.
@@ -3916,7 +4010,7 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(&page_handler_);
   // 1. Start in immersive overlay with a good distillation.
-  controller().OnGetPresentationState(
+  CloseAndReopen(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   EXPECT_CALL(page_handler_,
               OnDistillationStateChanged(
@@ -3928,7 +4022,9 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   ASSERT_TRUE(controller().IsUpdateProcessingPaused());
 
   // 2. Close immersive view (switch to kInactive layout).
-  controller().OnGetPresentationState(
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
   ASSERT_TRUE(controller().IsUpdateProcessingPaused());
 
@@ -3954,7 +4050,8 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   EXPECT_TRUE(model().has_pending_selection());
 
   // 4. Reopen immersive view. It should unpause to process the pending updates.
-  controller().OnGetPresentationState(
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
 
   // 5. Verify pending selection is cleared and update processing pauses again.
@@ -3968,7 +4065,7 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(&page_handler_);
   // 1. Start in immersive overlay with a good distillation.
-  controller().OnGetPresentationState(
+  CloseAndReopen(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   EXPECT_CALL(page_handler_,
               OnDistillationStateChanged(
@@ -3985,7 +4082,9 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   EXPECT_EQ(model().unprocessed_selections_from_reading_mode(), 1);
 
   // 3. Close immersive view.
-  controller().OnGetPresentationState(
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
 
   // 4. Send a user-initiated main panel selection change event.
@@ -4010,7 +4109,8 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   controller().AccessibilityEventReceived(tree_id_, {update}, events);
 
   // 5. Reopen immersive view.
-  controller().OnGetPresentationState(
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
 
   // 6. Verify that selections_from_reading_mode_ was reset to 0 by the user
@@ -4024,7 +4124,7 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   Mock::VerifyAndClearExpectations(&page_handler_);
 
   // 1. Set up a PDF in immersive overlay with a completed distillation.
-  controller().OnGetPresentationState(
+  CloseAndReopen(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   EXPECT_CALL(page_handler_,
               OnDistillationStateChanged(
@@ -4049,7 +4149,14 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   // 2. Simulate a stale reading-mode selection count before closing IRM.
   model().increment_selections_from_reading_mode();
   ASSERT_EQ(model().unprocessed_selections_from_reading_mode(), 1);
-  controller().OnGetPresentationState(
+  // Closing it before the distillation status delay ends logs the status.
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
+  EXPECT_CALL(
+      page_handler_,
+      OnDistillationStatus(read_anything::mojom::DistillationStatus::kSuccess,
+                           testing::_));
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
   ASSERT_TRUE(controller().IsUpdateProcessingPaused());
 
@@ -4073,7 +4180,8 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   EXPECT_TRUE(model().has_pending_selection());
 
   // 5. Reopen immersive view and verify the selection is processed.
-  controller().OnGetPresentationState(
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   EXPECT_FALSE(model().has_pending_selection());
   EXPECT_EQ(model().unprocessed_selections_from_reading_mode(), 0);
@@ -4087,7 +4195,7 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
        ImmersiveMode_PdfPendingSelection_SurvivesNonActiveTreeUpdate) {
   // Set up a PDF in immersive overlay with a completed distillation, then
   // close it.
-  controller().OnGetPresentationState(
+  CloseAndReopen(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
                                        /*is_pdf=*/true);
@@ -4097,7 +4205,8 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   OnAXTreeDistilled(tree_id_, {2, 3});
   task_environment_.FastForwardBy(base::Milliseconds(500));
   page_handler_.FlushForTesting();
-  controller().OnGetPresentationState(
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
   ASSERT_TRUE(controller().IsUpdateProcessingPaused());
 
@@ -4125,7 +4234,8 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   EXPECT_TRUE(model().has_pending_selection());
 
   // Reopen immersive view and verify the selection is processed.
-  controller().OnGetPresentationState(
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   EXPECT_FALSE(model().has_pending_selection());
   EXPECT_EQ(controller().StartNodeId(), 2);
@@ -4140,7 +4250,7 @@ TEST_F(
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(&page_handler_);
 
-  controller().OnGetPresentationState(
+  CloseAndReopen(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   EXPECT_CALL(page_handler_,
               OnDistillationStateChanged(
@@ -4212,7 +4322,7 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(&page_handler_);
 
-  controller().OnGetPresentationState(
+  CloseAndReopen(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   EXPECT_CALL(page_handler_,
               OnDistillationStateChanged(
@@ -4259,7 +4369,7 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnAXTreeDistilled_PdfDebouncerRunning_DoesNotSetDistillationState) {
-  controller().OnGetPresentationState(
+  CloseAndReopen(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   EXPECT_CALL(page_handler_,
               OnDistillationStateChanged(
@@ -4282,7 +4392,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnPdfDebounceFinished_UpdatesDistillationState) {
-  controller().OnGetPresentationState(
+  CloseAndReopen(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   EXPECT_CALL(page_handler_,
               OnDistillationStateChanged(
@@ -4316,8 +4426,6 @@ TEST_F(ReadAnythingAppControllerTest,
 TEST_F(
     ReadAnythingAppControllerTest,
     OnAXTreeDistilled_PdfDebouncerRunning_DefersDisplayNodeComputationUntilDebounceFinishes) {
-  controller().OnGetPresentationState(
-      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   SendUpdateWithNodes({test::TextNode(/*id=*/2, u"First page."),
                        test::TextNode(/*id=*/3, u"Second page.")});
 
@@ -4390,7 +4498,8 @@ TEST_F(ReadAnythingAppControllerTest,
 TEST_F(ReadAnythingAppControllerTest,
        OnActiveAXTreeIDChanged_StartsDebouncerIfHidden) {
   // Start in inactive state (hidden).
-  controller().OnGetPresentationState(
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
   EXPECT_TRUE(IsControllerHidden());
   EXPECT_CALL(page_handler_,
@@ -4415,9 +4524,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnPdfDebounceFinished_DoesNotDrawOrUpdateStateIfHidden) {
-  // Start in immersive overlay (not hidden).
-  controller().OnGetPresentationState(
-      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  // Reading Mode is shown (see SetUp()).
   EXPECT_FALSE(IsControllerHidden());
 
   static constexpr ui::AXNodeID kId = 4;
@@ -4438,7 +4545,14 @@ TEST_F(ReadAnythingAppControllerTest,
   Mock::VerifyAndClearExpectations(&page_handler_);
 
   // Deactivate (hide) the controller.
-  controller().OnGetPresentationState(
+  // Closing it while distilling logs the distillation status.
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
+  EXPECT_CALL(
+      page_handler_,
+      OnDistillationStatus(
+          read_anything::mojom::DistillationStatus::kStillRunning, testing::_));
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
   EXPECT_TRUE(IsControllerHidden());
 
@@ -4488,6 +4602,8 @@ class ReadAnythingAppControllerReadabilityTest
         .Times(testing::AnyNumber());
     EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, testing::_))
         .Times(testing::AnyNumber());
+    EXPECT_CALL(page_handler_, AckReadingModeHidden())
+        .Times(testing::AnyNumber());
 
     // Set distiller for testing.
     auto distiller = std::make_unique<MockAXTreeDistiller>(nullptr);
@@ -4499,7 +4615,8 @@ class ReadAnythingAppControllerReadabilityTest
     std::unique_ptr<ui::AXTreeUpdate> snapshot = test::CreateInitialUpdate();
     test::SetUpdateTreeID(snapshot.get(), tree_id_);
     AccessibilityEventReceived({*snapshot});
-    controller().OnGetPresentationState(
+    controller().OnReadingModeShown(
+        read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
         read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
     controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
                                          /*is_pdf=*/false);
@@ -4699,10 +4816,12 @@ TEST_F(
   // 1. Select text outside the article while hidden and open Immersive Mode in
   // selection mode. `Draw()` sets `current_content_distillation_method` to
   // `kScreen2x`, while `next_distillation_method` remains `kReadability`.
-  controller().OnGetPresentationState(
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
   SetMainPageSelection(kSidebarId, 0, kSidebarId, 5);
-  controller().OnGetPresentationState(
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   ASSERT_TRUE(controller().IsInSelectionMode());
   ASSERT_EQ(model().current_content_distillation_method(),
@@ -4713,10 +4832,12 @@ TEST_F(
   // Immersive Mode. Because `next_distillation_method` is still `kReadability`,
   // the selection update is applied via the Readability path and processed on
   // reopen rather than getting stuck queued.
-  controller().OnGetPresentationState(
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
   SetMainPageSelection(kSidebarId, 0, kSidebarId, 0);
-  controller().OnGetPresentationState(
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   EXPECT_FALSE(controller().IsInSelectionMode());
   EXPECT_EQ(model().current_content_distillation_method(),
@@ -4728,7 +4849,8 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   SetUpReadabilityArticlePage();
   MapRenderedReadabilityText();
 
-  controller().OnGetPresentationState(
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
   SetMainPageSelection(kSidebarId, 0, kSidebarId, 5);
 
@@ -4738,7 +4860,8 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   EXPECT_TRUE(model().requires_post_process_selection());
   EXPECT_FALSE(model().has_selection());
 
-  controller().OnGetPresentationState(
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_TRUE(controller().IsInSelectionMode());
   EXPECT_TRUE(model().has_selection());
@@ -4749,7 +4872,8 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   SetUpReadabilityArticlePage();
   MapRenderedReadabilityText();
 
-  controller().OnGetPresentationState(
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
   SetMainPageSelection(kSidebarId, 0, kSidebarId, 5);
 
@@ -4757,7 +4881,8 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   EXPECT_TRUE(model().requires_post_process_selection());
   EXPECT_FALSE(model().has_selection());
 
-  controller().OnGetPresentationState(
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   EXPECT_TRUE(controller().IsInSelectionMode());
   EXPECT_FALSE(model().requires_post_process_selection());
@@ -5441,10 +5566,6 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
 
 TEST_F(ReadAnythingAppControllerScreen2xTest,
        Screen2xDistillationStatus_LogsIfClosedBeforeTimer) {
-  // Set to active (visible)
-  controller().OnGetPresentationState(
-      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
-
   auto const id = ui::AXTreeID::CreateNewAXTreeID();
   const int word_count = 1234;
 
@@ -6003,9 +6124,7 @@ TEST_F(ReadAnythingAppControllerTest,
   const char* histogram_name =
       "Accessibility.ReadAnything.ReadAloud.PlaybackContext";
 
-  // Test Side Panel
-  controller().OnGetPresentationState(
-      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+  // Test Side Panel (see SetUp()).
   controller().OnIsSpeechActiveChanged(true);
   histograms.ExpectUniqueSample(
       histogram_name,
@@ -6013,7 +6132,7 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().OnIsSpeechActiveChanged(false);
 
   // Test Immersive
-  controller().OnGetPresentationState(
+  CloseAndReopen(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   controller().OnIsSpeechActiveChanged(true);
   histograms.ExpectBucketCount(
@@ -6031,11 +6150,38 @@ TEST_F(ReadAnythingAppControllerTest, LogPageDuration_PdfInSidePanel) {
   model().set_page_start_time(base::TimeTicks::Now() - base::Seconds(15));
 
   EXPECT_CALL(page_handler_, AckReadingModeHidden());
-  controller().OnReadingModeHidden(true);
+  controller().OnReadingModeHidden(
+      true, read_anything::mojom::ReadAnythingPresentationState::kInactive);
 
   histograms.ExpectTotalCount(
       "Accessibility.ReadAnything.PageDuration.PdfInSidePanel", 1);
   EXPECT_FALSE(model().page_start_time().has_value());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeHidden_AppliesStateAfterSessionMetrics) {
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  model().SetIsPdf(false);
+  model().set_page_start_time(base::TimeTicks::Now() - base::Seconds(30));
+  base::HistogramTester histograms;
+
+  // Closing the overlay records its page duration before Reading Mode becomes
+  // inactive, so the sample names the overlay.
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.PageDuration.WebPageInFullPage", 1);
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.PageDuration.WebPageInSidePanel", 0);
+  EXPECT_EQ(model().active_presentation_state(),
+            read_anything::mojom::ReadAnythingPresentationState::kInactive);
 }
 
 TEST_F(ReadAnythingAppControllerTest, LogPageDuration_WebPageInFullPage) {
@@ -6051,6 +6197,8 @@ TEST_F(ReadAnythingAppControllerTest, LogPageDuration_WebPageInFullPage) {
   histograms.ExpectTotalCount(
       "Accessibility.ReadAnything.PageDuration.WebPageInFullPage", 1);
   EXPECT_FALSE(model().page_start_time().has_value());
+  EXPECT_EQ(model().active_presentation_state(),
+            read_anything::mojom::ReadAnythingPresentationState::kInactive);
 }
 
 TEST_F(ReadAnythingAppControllerTest, LogPageDuration_NoStartTimeNoLog) {
@@ -6069,7 +6217,8 @@ TEST_F(ReadAnythingAppControllerTest, LogPageDuration_NoStartTimeNoLog) {
 TEST_F(ReadAnythingAppControllerTest,
        Screen2xDistillationStatus_NotLoggedWhenHidden) {
   // Set to inactive (hidden)
-  controller().OnGetPresentationState(
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
 
   auto const id = ui::AXTreeID::CreateNewAXTreeID();
@@ -6086,10 +6235,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        Screen2xDistillationStatus_DoesNotRelogOnReopenWithoutRedistillation) {
-  // 1. Open RM
-  controller().OnGetPresentationState(
-      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
-
+  // 1. Reading Mode is open (see SetUp()).
   auto const id = ui::AXTreeID::CreateNewAXTreeID();
   const int word_count = 1234;
 
@@ -6103,11 +6249,13 @@ TEST_F(ReadAnythingAppControllerTest,
       /*just_hidden=*/false);  // First log happens here
 
   // 2. Close RM
-  controller().OnGetPresentationState(
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
 
   // 3. Reopen RM
-  controller().OnGetPresentationState(
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   RecordScreen2xDistillationStatus(
       /*just_hidden=*/false);  // Nothing should log here
@@ -6146,10 +6294,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        Screen2xDistillationStatus_LogsOnReopenOnNewPage) {
-  // 1. Open RM on first page (Page A)
-  controller().OnGetPresentationState(
-      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
-
+  // 1. Reading Mode is open on the first page (Page A, see SetUp()).
   auto const id1 = ui::AXTreeID::CreateNewAXTreeID();
   const int word_count1 = 100;
 
@@ -6171,7 +6316,8 @@ TEST_F(ReadAnythingAppControllerTest,
   Mock::VerifyAndClearExpectations(distiller_);
 
   // 2. Close RM
-  controller().OnGetPresentationState(
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
 
   // 3. Go to new page (Page B) while RM is closed
@@ -6197,7 +6343,8 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, word_count2))
       .Times(1);
   ExpectDistill(1);
-  controller().OnGetPresentationState(
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   RecordScreen2xDistillationStatus(
       /*just_hidden=*/false);  // Let the reopened status log
@@ -6227,9 +6374,7 @@ TEST_F(ReadAnythingAppControllerTest,
   scoped_feature_list.InitAndEnableFeature(
       features::kReadAnythingWithReadability);
 
-  // 1. Open RM on Page A (visible)
-  controller().OnGetPresentationState(
-      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+  // 1. Reading Mode is open on Page A (see SetUp()).
 
   // Expect success logged once for Page A
   EXPECT_CALL(
@@ -6241,7 +6386,8 @@ TEST_F(ReadAnythingAppControllerTest,
   VerifyAndClearPageHandlerExpectations();
 
   // 2. Close RM (hidden)
-  controller().OnGetPresentationState(
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
 
   // 3. Navigate to Page B (resets logged status)
@@ -6260,7 +6406,8 @@ TEST_F(ReadAnythingAppControllerTest,
       OnDistillationStatus(read_anything::mojom::DistillationStatus::kSuccess,
                            testing::_))
       .Times(1);
-  controller().OnGetPresentationState(
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   VerifyAndClearPageHandlerExpectations();
 
@@ -6272,11 +6419,44 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
+       ReadabilityDistillationStatus_ColdStart_RecordedWhenShown) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kReadAnythingWithReadability);
+
+  // SetUp() shows Reading Mode. Hide it, then simulate a new WebUI that
+  // hasn't received a lifecycle message yet.
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+  model().set_active_presentation_state(
+      read_anything::mojom::ReadAnythingPresentationState::kUndefined);
+
+  // Content drawn while a cold host loads isn't recorded until Reading Mode is
+  // shown, so the browser has the open trigger by then.
+  EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, testing::_))
+      .Times(0);
+  controller().UpdateContent("Title", "Content");
+  VerifyAndClearPageHandlerExpectations();
+
+  EXPECT_CALL(
+      page_handler_,
+      OnDistillationStatus(read_anything::mojom::DistillationStatus::kSuccess,
+                           testing::_))
+      .Times(1);
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip,
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeShown_ResetsWillHideAndAllowsLogSpeechStop) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(page_handler_, AckReadingModeHidden()).Times(1);
-  controller().OnReadingModeHidden(true);
+  controller().OnReadingModeHidden(
+      true, read_anything::mojom::ReadAnythingPresentationState::kInactive);
   EXPECT_TRUE(model().will_hide());
 
   // While hidden/will_hide, LogSpeechStop should be suppressed.
@@ -6287,7 +6467,8 @@ TEST_F(ReadAnythingAppControllerTest,
 
   // When Reading Mode is shown again, will_hide should be reset.
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_FALSE(model().will_hide());
 
   // LogSpeechStop should now log properly.
@@ -6305,17 +6486,20 @@ TEST_F(ReadAnythingAppControllerTest,
   StartLineFocusSession();
 
   EXPECT_CALL(page_handler_, AckReadingModeHidden()).Times(2);
-  controller().OnReadingModeHidden(true);
+  controller().OnReadingModeHidden(
+      true, read_anything::mojom::ReadAnythingPresentationState::kInactive);
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.LineFocusSessionLength", 1);
   ASSERT_FALSE(model().line_focus_session_start_time().has_value());
 
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_TRUE(model().line_focus_session_start_time().has_value());
 
   // The session from the reopened Reading Mode is logged on the next hide.
-  controller().OnReadingModeHidden(true);
+  controller().OnReadingModeHidden(
+      true, read_anything::mojom::ReadAnythingPresentationState::kInactive);
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.LineFocusSessionLength", 2);
 }
@@ -6325,7 +6509,8 @@ TEST_F(ReadAnythingAppControllerTest,
   model().set_line_focus_enabled(false);
 
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
 
   EXPECT_FALSE(model().line_focus_session_start_time().has_value());
 }
@@ -6340,7 +6525,8 @@ TEST_F(ReadAnythingAppControllerTest,
       model().line_focus_session_start_time().value();
 
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
 
   EXPECT_TRUE(model().line_focus_session_start_time().has_value());
   EXPECT_EQ(model().line_focus_session_start_time().value(),
@@ -6360,7 +6546,8 @@ TEST_F(ReadAnythingAppControllerTest,
                    ReadAloudAppModel::kSpeechStopSourceHistogramName));
 
   controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_FALSE(model().will_hide());
 
   LogSpeechStop(

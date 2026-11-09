@@ -100,10 +100,14 @@ void ReadAnythingImmersiveOverlayView::OnCloseImmersive() {
   ReadAnythingContentsWrapper wrapper = CloseUI();
   CHECK(controller_);
   if (wrapper) {
-    controller_->OnEntryHidden();
+    // Return the WebUI before ending the session, as the side panel does, so
+    // Activate(false) observers see kInactive: the page handler sends it with
+    // OnReadingModeHidden(), and the omnibox controller only re-shows its entry
+    // point when no Reading Mode UI is showing.
     controller_->TransferWebUiOwnership(
         std::move(wrapper),
         ReadAnythingController::PresentationState::kInImmersiveOverlay);
+    controller_->OnEntryHidden();
   }
 }
 

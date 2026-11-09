@@ -404,9 +404,6 @@ declare namespace chrome {
     // SidePanelWebUIView::ShowUI
     function shouldShowUi(): boolean;
 
-    // Called by the Read Anything app to request the presentation state.
-    function sendGetPresentationStateRequest(): void;
-
     // Called by the Read Anything app to close the Read Anything UI.
     function close(): void;
 

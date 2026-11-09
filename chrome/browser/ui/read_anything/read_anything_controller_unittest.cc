@@ -123,7 +123,7 @@ class ReadAnythingControllerUnitTest : public ChromeRenderViewHostTestHarness {
     controller_->TogglePresentation(is_user_initiated);
   }
   void SetPresentationState(ReadAnythingPresentationState new_state) {
-    controller_->SetPresentationState(new_state);
+    controller_->set_presentation_state(new_state);
   }
 
   std::unique_ptr<testing::NiceMock<MockBrowserWindowInterface>>

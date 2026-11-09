@@ -282,7 +282,9 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // Toggles between the Immersive Reading Mode UI and the Side Panel UI.
   void TogglePresentation(bool is_user_initiated);
 
-  void SetPresentationState(PresentationState new_state);
+  void set_presentation_state(PresentationState new_state) {
+    presentation_state_ = new_state;
+  }
 
   // Saves the presentation state to the user's preferences.
   void SavePresentationPreference(PresentationState state);

@@ -224,9 +224,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
     // onConnected is not blocked on anything else during WebUI setup.
     this.contentBrowserProxy_.onConnected();
 
-    // Request the presentation state to determine whether we should use the UI
-    // for immersive mode.
-    this.visualBrowserProxy_.sendGetPresentationStateRequest();
     // Push ShowUI() callback to the event queue to allow deferred rendering
     // to take place.
     setTimeout(() => this.visualBrowserProxy_.shouldShowUi(), 0);

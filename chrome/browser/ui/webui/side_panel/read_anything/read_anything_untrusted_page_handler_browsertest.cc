@@ -148,16 +148,16 @@ class MockPage : public read_anything::mojom::UntrustedPage {
   MOCK_METHOD(void, SetLanguageCode, (const std::string&));
   MOCK_METHOD(void, SetDefaultLanguageCode, (const std::string&));
   MOCK_METHOD(void, ScreenAIServiceReady, ());
-  MOCK_METHOD(void, OnReadingModeHidden, (bool tab_active));
+  MOCK_METHOD(
+      void,
+      OnReadingModeHidden,
+      (bool tab_active,
+       read_anything::mojom::ReadAnythingPresentationState presentation_state));
   MOCK_METHOD(void, OnTabWillDetach, ());
   MOCK_METHOD(void, OnTabMuteStateChange, (bool muted));
   MOCK_METHOD(void,
               OnGetVoicePackInfo,
               (read_anything::mojom::VoicePackInfoPtr voice_pack_info));
-  MOCK_METHOD(
-      void,
-      OnGetPresentationState,
-      (read_anything::mojom::ReadAnythingPresentationState presentation_state));
   MOCK_METHOD(void, OnPinStatusReceived, (bool pin_state), (override));
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -176,9 +176,11 @@ class MockPage : public read_anything::mojom::UntrustedPage {
               OnMainFrameSameDocumentNavigation,
               (const GURL& url),
               (override));
-  MOCK_METHOD(void,
-              OnReadingModeShown,
-              (read_anything::mojom::ReadAnythingOpenTrigger open_trigger));
+  MOCK_METHOD(
+      void,
+      OnReadingModeShown,
+      (read_anything::mojom::ReadAnythingOpenTrigger open_trigger,
+       read_anything::mojom::ReadAnythingPresentationState presentation_state));
   MOCK_METHOD(void,
               OnTranslationStateChanged,
               (bool is_translated),
@@ -2323,8 +2325,23 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        Activate_OnCloseReadingMode_NotifiesPage) {
   handler_ = CreateHandler();
+  auto* controller =
+      ReadAnythingController::From(browser()->GetActiveTabInterface());
+  ReadAnythingContentsWrapper web_ui = controller->GetOrCreateWebUIWrapper(
+      ReadAnythingController::PresentationState::kInSidePanel);
+  Activate(true);
+  page_.receiver_.FlushForTesting();
+  // A closing side panel returns the WebUI before the session ends.
+  controller->TransferWebUiOwnership(
+      std::move(web_ui),
+      ReadAnythingController::PresentationState::kInSidePanel);
+
+  EXPECT_CALL(page_,
+              OnReadingModeHidden(
+                  true, ReadAnythingController::PresentationState::kInactive))
+      .Times(1);
   Activate(false);
-  EXPECT_CALL(page_, OnReadingModeHidden(true)).Times(1);
+  page_.receiver_.FlushForTesting();
 }
 
 // TODO(crbug.com/474702670): high failure rates on Mac bots.
@@ -2388,6 +2405,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   // below.
   auto* original_controller =
       ReadAnythingController::From(browser()->GetActiveTabInterface());
+  // The side panel keeps the WebUI while its tab is in the background.
+  ReadAnythingContentsWrapper web_ui =
+      original_controller->GetOrCreateWebUIWrapper(
+          ReadAnythingController::PresentationState::kInSidePanel);
 
   // Open a new tab.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -2395,13 +2416,22 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
+  EXPECT_CALL(
+      page_,
+      OnReadingModeHidden(
+          false, ReadAnythingController::PresentationState::kInSidePanel))
+      .Times(1);
   // Indicate the original tab is now hidden.
   original_controller->OnEntryHidden();
+  page_.receiver_.FlushForTesting();
 
   ASSERT_FALSE(original_controller->tab()->IsActivated());
   ASSERT_NE(original_controller,
             ReadAnythingController::From(browser()->GetActiveTabInterface()));
-  EXPECT_CALL(page_, OnReadingModeHidden(false)).Times(1);
+
+  original_controller->TransferWebUiOwnership(
+      std::move(web_ui),
+      ReadAnythingController::PresentationState::kInSidePanel);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -2495,21 +2525,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
   EXPECT_TRUE(base::test::RunUntil([&]() { return !HasAudio(); }));
   ASSERT_FALSE(HasAudio());
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
-                       GetPresentationState) {
-  base::RunLoop run_loop;
-  handler_ = CreateHandler();
-
-  EXPECT_CALL(
-      page_,
-      OnGetPresentationState(
-          read_anything::mojom::ReadAnythingPresentationState::kUndefined))
-      .WillOnce([&]() { run_loop.Quit(); });
-
-  handler_->GetPresentationState();
-  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -3309,7 +3324,8 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_CALL(page_,
               OnReadingModeShown(read_anything::mojom::ReadAnythingOpenTrigger::
-                                     kListenToThisPageContextMenu))
+                                     kListenToThisPageContextMenu,
+                                 _))
       .Times(1);
 
   SidePanelOpenTrigger trigger =
@@ -3323,15 +3339,25 @@ IN_PROC_BROWSER_TEST_F(
     Activate_OtherTrigger_CallsReadingModeShownWithOtherTrigger) {
   handler_ = CreateHandler();
   page_.receiver_.FlushForTesting();
+  auto* controller =
+      ReadAnythingController::From(browser()->GetActiveTabInterface());
+  // The side panel takes the WebUI before Reading Mode is shown in it.
+  ReadAnythingContentsWrapper web_ui = controller->GetOrCreateWebUIWrapper(
+      ReadAnythingController::PresentationState::kInSidePanel);
 
   EXPECT_CALL(page_,
               OnReadingModeShown(
-                  read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip))
+                  ReadAnythingOpenTrigger::kOmniboxChip,
+                  ReadAnythingController::PresentationState::kInSidePanel))
       .Times(1);
 
   SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
   Activate(true, &trigger);
   page_.receiver_.FlushForTesting();
+
+  controller->TransferWebUiOwnership(
+      std::move(web_ui),
+      ReadAnythingController::PresentationState::kInSidePanel);
 }
 
 IN_PROC_BROWSER_TEST_F(

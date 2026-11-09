@@ -98,7 +98,6 @@ export interface VisualBrowserProxy {
   togglePresentation(): void;
   togglePinState(): void;
   sendPinStateRequest(): void;
-  sendGetPresentationStateRequest(): void;
   close(): void;
 }
 
@@ -380,10 +379,6 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   sendPinStateRequest(): void {
     chrome.readingMode.sendPinStateRequest();
-  }
-
-  sendGetPresentationStateRequest(): void {
-    chrome.readingMode.sendGetPresentationStateRequest();
   }
 
   shouldShowUi(): boolean {

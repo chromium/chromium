@@ -124,7 +124,6 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'togglePresentation',
       'togglePinState',
       'sendPinStateRequest',
-      'sendGetPresentationStateRequest',
       'shouldShowUi',
       'getLastNonDisabledLineFocus',
       'isLineFocusOn',
@@ -460,10 +459,6 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
 
   sendPinStateRequest(): void {
     this.methodCalled('sendPinStateRequest');
-  }
-
-  sendGetPresentationStateRequest(): void {
-    this.methodCalled('sendGetPresentationStateRequest');
   }
 
   shouldShowUi(): boolean {

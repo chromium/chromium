@@ -841,17 +841,6 @@ ReadAnythingUntrustedPageHandler::GetReadAnythingController() {
   return ra_controller;
 }
 
-void ReadAnythingUntrustedPageHandler::OnGetPresentationState() {
-  auto* ra_controller = GetReadAnythingController();
-  CHECK(ra_controller);
-
-  page_->OnGetPresentationState(ra_controller->GetPresentationState());
-}
-
-void ReadAnythingUntrustedPageHandler::GetPresentationState() {
-  OnGetPresentationState();
-}
-
 void ReadAnythingUntrustedPageHandler::OnDistillationStateChanged(
     read_anything::mojom::ReadAnythingDistillationState new_state) {
   // Distillation state transitions to kNotAttempted are only valid during
@@ -1623,11 +1612,9 @@ void ReadAnythingUntrustedPageHandler::Activate(
     }
     page_->OnReadingModeShown(
         static_cast<read_anything::mojom::ReadAnythingOpenTrigger>(
-            open_trigger));
+            open_trigger),
+        read_anything_controller_->GetPresentationState());
     tab_will_detach_ = false;
-    // Signal that reading mode has been re-opened and is no longer hidden if
-    // it was previously marked as hidden.
-    OnGetPresentationState();
     RestoreSettingsFromPrefs();
 
     // The content may have been distilled before Reading Mode was shown, in
@@ -1644,7 +1631,8 @@ void ReadAnythingUntrustedPageHandler::Activate(
             ListenToThisPagePlaybackMetricState::kInactive) {
       RecordListenToThisPagePlaybackMetric(/*successful_playback=*/false);
     }
-    page_->OnReadingModeHidden(tab_->IsActivated());
+    page_->OnReadingModeHidden(
+        tab_->IsActivated(), read_anything_controller_->GetPresentationState());
 
     // When Reading mode is hidden (with immersive flag enabled), we need to
     // verify that the renderer is still responsive. Waiting until the mojo
@@ -1667,10 +1655,6 @@ void ReadAnythingUntrustedPageHandler::OnReadingModeHiddenAckTimeout() {
   ack_timed_out_for_testing_ = true;
   CHECK(read_anything_controller_);
   read_anything_controller_->RecreateWebUIWrapper();
-}
-
-void ReadAnythingUntrustedPageHandler::OnReadingModePresenterChanged() {
-  OnGetPresentationState();
 }
 
 // This is used for same-document navigations (such as fragment navigations) in
