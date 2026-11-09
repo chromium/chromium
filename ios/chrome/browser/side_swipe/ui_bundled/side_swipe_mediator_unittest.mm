@@ -10,7 +10,6 @@
 #import "base/i18n/rtl.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/user_action_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -368,41 +367,6 @@ TEST_F(SideSwipeMediatorTest, WebViewEdgeSwipeRecordsUserActions) {
       ->OnNavigationFinished(&context);
   EXPECT_EQ(1, user_action_tester.GetActionCount("Back"));
   EXPECT_EQ(1, user_action_tester.GetActionCount("MobileEdgeSwipeBack"));
-}
-
-// Tests that edge swipe user actions are not recorded when
-// `kRecordEdgeSwipeMetrics` is disabled.
-TEST_F(SideSwipeMediatorTest, EdgeSwipeDoesNotRecordUserActionsWhenDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kRecordEdgeSwipeMetrics);
-
-  auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
-  static_cast<web::FakeWebState*>(original_web_state_.get())
-      ->SetNavigationManager(std::move(fake_navigation_manager));
-  testing::NiceMock<feature_engagement::test::MockTracker> mock_tracker;
-  side_swipe_mediator_.engagementTracker = &mock_tracker;
-
-  base::UserActionTester user_action_tester;
-
-  [side_swipe_mediator_ navigateInDirection:NavigationDirectionBack];
-  [side_swipe_mediator_ navigateInDirection:NavigationDirectionForward];
-  EXPECT_EQ(1, user_action_tester.GetActionCount("Back"));
-  EXPECT_EQ(0, user_action_tester.GetActionCount("MobileEdgeSwipeBack"));
-  EXPECT_EQ(1, user_action_tester.GetActionCount("Forward"));
-  EXPECT_EQ(0, user_action_tester.GetActionCount("MobileEdgeSwipeForward"));
-
-  web::FakeNavigationContext context;
-  context.SetHasCommitted(true);
-  context.SetPageTransition(ui::PAGE_TRANSITION_FORWARD_BACK);
-  context.SetHasUserGesture(false);
-  context.SetIsSameDocument(false);
-
-  [side_swipe_mediator_
-      webViewEdgeSwipeDidStartInDirection:NavigationDirectionBack];
-  static_cast<web::FakeWebState*>(original_web_state_.get())
-      ->OnNavigationFinished(&context);
-  EXPECT_EQ(1, user_action_tester.GetActionCount("Back"));
-  EXPECT_EQ(0, user_action_tester.GetActionCount("MobileEdgeSwipeBack"));
 }
 
 }  // anonymous namespace

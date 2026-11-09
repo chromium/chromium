@@ -7,11 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/feature_list.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_constants.h"
-
-// Killswitch for recording user actions for back and forward edge swipes.
-BASE_DECLARE_FEATURE(kRecordEdgeSwipeMetrics);
 
 @class SideSwipeSnapshotNavigationView;
 

@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller.h"
 
-#import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
@@ -313,8 +312,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
     shouldBeRequiredToFailByGestureRecognizer:
         (UIGestureRecognizer*)otherGestureRecognizer {
   // Take precedence over a WKWebView side swipe gesture.
-  if (base::FeatureList::IsEnabled(kRecordEdgeSwipeMetrics) &&
-      [otherGestureRecognizer
+  if ([otherGestureRecognizer
           isKindOfClass:[UIScreenEdgePanGestureRecognizer class]]) {
     if ([gestureRecognizer isEqual:_swipeGestureRecognizer]) {
       [otherGestureRecognizer
@@ -512,9 +510,6 @@ const CGFloat kIpadTabSwipeDistance = 100;
 // Handles native WKWebView screen edge pan gestures to track edge-swipe
 // navigation direction.
 - (void)handleScreenEdgePanGesture:(UIScreenEdgePanGestureRecognizer*)gesture {
-  if (!base::FeatureList::IsEnabled(kRecordEdgeSwipeMetrics)) {
-    return;
-  }
   if (gesture.state == UIGestureRecognizerStateBegan) {
     UISwipeGestureRecognizerDirection swipeDirection;
     if (gesture.edges & UIRectEdgeLeft) {
