@@ -769,7 +769,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
                     @Override
                     public void onItemUpdated(TabListItem item, @PayloadType int payload) {
-                        // TODO(crbug.com/562590772): Handle updated items.
+                        onProviderItemUpdated(item, payload);
                     }
 
                     @Override
@@ -2899,6 +2899,36 @@ public class TabListMediator implements TabListNotificationHandler {
         endProviderUpdate();
     }
 
+    /**
+     * Applies an in-place property update for an item updated by the {@link TabListDataProvider}.
+     * The card is not inserted, removed, or moved, so layout updates are not suppressed.
+     *
+     * @param item The item that was updated.
+     * @param payload The {@link PayloadType} describing which aspect of the item changed.
+     */
+    private void onProviderItemUpdated(TabListItem item, @PayloadType int payload) {
+        if (!mTrackingTabs || mCurrentTabModelSupplier.get() == null) return;
+
+        if (item instanceof TabGroupItem groupItem) {
+            Token tabGroupId = groupItem.getTabGroupId();
+            switch (payload) {
+                case PayloadType.TITLE -> updateTabGroupTitle(tabGroupId);
+                case PayloadType.COLOR ->
+                        mTabListLayoutDelegate.didChangeTabGroupColor(
+                                tabGroupId,
+                                getCurrentTabModelChecked()
+                                        .getTabGroupColorWithFallback(tabGroupId));
+                case PayloadType.COLLAPSED ->
+                        updateTabGroupCollapsed(tabGroupId, groupItem.isCollapsed());
+                case PayloadType.TAB_GROUP_ORDER -> updateTabGroupThumbnail(tabGroupId);
+                default -> {}
+            }
+            return;
+        }
+        assert item instanceof TabItem : "Unsupported TabListItem: " + item;
+        // TODO(crbug.com/562590772): Handle TabItem updates.
+    }
+
     /** Suppresses layout updates while applying a batch of provider changes to the model list. */
     private void beginProviderUpdate() {
         assert !mSuppressUpdateLayout;
@@ -3568,6 +3598,31 @@ public class TabListMediator implements TabListNotificationHandler {
         headerModel.set(TabProperties.TITLE, title);
         updateDescriptionString(headerModel);
         updateActionButtonDescriptionString(tab, headerModel);
+    }
+
+    /**
+     * Sets the collapsed flag on the group header card. Child rows are added or removed by separate
+     * provider events.
+     */
+    private void updateTabGroupCollapsed(Token tabGroupId, boolean isCollapsed) {
+        int headerIndex = mModelList.indexFromTabGroupId(tabGroupId);
+        if (headerIndex == TabModel.INVALID_TAB_INDEX) return;
+        PropertyModel model = mModelList.get(headerIndex).model;
+        if (!model.containsKey(TabProperties.IS_COLLAPSED)) return;
+        model.set(TabProperties.IS_COLLAPSED, isCollapsed);
+    }
+
+    /**
+     * Refreshes the group card's thumbnail after its tabs are reordered. Skipped when the group
+     * isn't shown as a single card (e.g. NESTED), where the child card move arrives separately.
+     */
+    private void updateTabGroupThumbnail(Token tabGroupId) {
+        @Nullable Pair<Integer, Tab> indexAndTab =
+                mTabListLayoutDelegate.getIndexAndTabForTabGroupId(tabGroupId);
+        if (indexAndTab == null) return;
+        Tab tab = indexAndTab.second;
+        if (!mTabListLayoutDelegate.isChildTabRepresentedByGroupCard(tab)) return;
+        updateThumbnailFetcher(mModelList.get(indexAndTab.first).model, tab.getId());
     }
 
     /**

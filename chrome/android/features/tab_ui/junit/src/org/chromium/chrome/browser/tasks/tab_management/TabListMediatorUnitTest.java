@@ -196,6 +196,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManage
 import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabGroupItem;
 import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabItem;
 import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataObserver;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataObserver.PayloadType;
 import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataProvider;
 import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListItem;
 import org.chromium.chrome.browser.tasks.tab_management.labels.TabCardLabelData;
@@ -8619,6 +8620,102 @@ public class TabListMediatorUnitTest {
 
         verify(mTab1).removeObserver(mTabObserverCaptor.getValue());
         verify(mTab2, never()).removeObserver(any());
+    }
+
+    @Test
+    public void testDataProvider_OnItemUpdated_Title_UpdatesGroupCardTitle() {
+        TabGroupItem groupItem =
+                setupGroupCardInProviderMediator(
+                        TabListLayoutType.GROUPED, /* isCollapsed= */ true);
+        mTabModel.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
+        assertThat(
+                mModelList.get(1).model.get(TabProperties.TITLE),
+                not(equalTo(CUSTOMIZED_DIALOG_TITLE1)));
+
+        mDataObserver.onItemUpdated(groupItem, PayloadType.TITLE);
+
+        assertThat(
+                mModelList.get(1).model.get(TabProperties.TITLE),
+                equalTo(CUSTOMIZED_DIALOG_TITLE1));
+    }
+
+    @Test
+    public void testDataProvider_OnItemUpdated_Color_UpdatesGroupCardColor() {
+        TabGroupItem groupItem =
+                setupGroupCardInProviderMediator(
+                        TabListLayoutType.GROUPED, /* isCollapsed= */ true);
+        when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID)).thenReturn(TabGroupColorId.BLUE);
+        assertThat(
+                mModelList.get(1).model.get(TabProperties.TAB_GROUP_CARD_COLOR),
+                not(equalTo(TabGroupColorId.BLUE)));
+
+        mDataObserver.onItemUpdated(groupItem, PayloadType.COLOR);
+
+        assertThat(
+                mModelList.get(1).model.get(TabProperties.TAB_GROUP_CARD_COLOR),
+                equalTo(TabGroupColorId.BLUE));
+    }
+
+    @Test
+    public void testDataProvider_OnItemUpdated_Collapsed_UpdatesGroupCardIsCollapsed() {
+        TabGroupItem groupItem =
+                setupGroupCardInProviderMediator(
+                        TabListLayoutType.NESTED, /* isCollapsed= */ false);
+        assertFalse(mModelList.get(1).model.get(TabProperties.IS_COLLAPSED));
+        int sizeBeforeUpdate = mModelList.size();
+
+        mDataObserver.onItemUpdated(
+                groupItem.withCollapsed(/* isCollapsed= */ true), PayloadType.COLLAPSED);
+
+        assertTrue(mModelList.get(1).model.get(TabProperties.IS_COLLAPSED));
+        assertEquals(sizeBeforeUpdate, mModelList.size());
+    }
+
+    @Test
+    public void testDataProvider_OnItemUpdated_TabGroupOrder_RefreshesGroupThumbnail() {
+        TabGroupItem groupItem =
+                setupGroupCardInProviderMediator(
+                        TabListLayoutType.GROUPED, /* isCollapsed= */ true);
+        ThumbnailFetcher oldFetcher = mModelList.get(1).model.get(TabProperties.THUMBNAIL_FETCHER);
+        assertNotNull(oldFetcher);
+
+        mDataObserver.onItemUpdated(groupItem, PayloadType.TAB_GROUP_ORDER);
+
+        ThumbnailFetcher newFetcher = mModelList.get(1).model.get(TabProperties.THUMBNAIL_FETCHER);
+        assertNotNull(newFetcher);
+        assertNotSame(oldFetcher, newFetcher);
+    }
+
+    @Test
+    public void testDataProvider_OnItemUpdated_TabGroupOrder_Nested_KeepsThumbnail() {
+        TabGroupItem groupItem =
+                setupGroupCardInProviderMediator(
+                        TabListLayoutType.NESTED, /* isCollapsed= */ false);
+        PropertyModel groupModel = mModelList.get(1).model;
+        ThumbnailFetcher before = groupModel.get(TabProperties.THUMBNAIL_FETCHER);
+        assertNotNull(before);
+
+        mDataObserver.onItemUpdated(groupItem, PayloadType.TAB_GROUP_ORDER);
+
+        assertSame(before, groupModel.get(TabProperties.THUMBNAIL_FETCHER));
+    }
+
+    @Test
+    public void testDataProvider_OnItemUpdated_TabItem_NoOp() {
+        setUpProviderMediator();
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1, mTab2), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+        mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID), createTabItem(TAB2_ID)));
+        ListItem first = mModelList.get(0);
+        ListItem second = mModelList.get(1);
+
+        mDataObserver.onItemUpdated(
+                createTabItem(TAB1_ID).withSelected(/* isSelected= */ true), PayloadType.SELECTION);
+
+        assertEquals(2, mModelList.size());
+        assertSame(first, mModelList.get(0));
+        assertSame(second, mModelList.get(1));
+        assertTabIds(TAB1_ID, TAB2_ID);
     }
 
     @Test
