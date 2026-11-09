@@ -13,6 +13,10 @@ source_set("search") {
     "settings_search_item.h",
     "settings_search_registry.cc",
     "settings_search_registry.h",
+    "settings_section.cc",
+    "settings_section.h",
+    "settings_sections.cc",
+    "settings_sections.h",
   ]
 
   deps = [ "//chrome/browser/ui:ui_features" ]

@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_UI_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/callback_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -47,6 +50,7 @@ class CustomizeColorSchemeModeHandler;
 namespace settings_search {
 class SettingsSearchHandler;
 class SettingsSearchRegistry;
+class SettingsSection;
 }  // namespace settings_search
 
 namespace settings {
@@ -200,10 +204,12 @@ class SettingsUI
       mojo::PendingReceiver<settings_search::mojom::SettingsSearchHandler>
           handler) override;
 
-  // Declared in this order so that the handler is destroyed before the
-  // registry it searches.
+  // Declared in this order so that the handler and sections are destroyed
+  // before the registry they use.
   std::unique_ptr<settings_search::SettingsSearchRegistry>
       settings_search_registry_;
+  std::vector<std::unique_ptr<settings_search::SettingsSection>>
+      settings_sections_;
   std::unique_ptr<settings_search::SettingsSearchHandler>
       settings_search_handler_;
   mojo::Receiver<settings_search::mojom::SettingsSearchHandlerFactory>
