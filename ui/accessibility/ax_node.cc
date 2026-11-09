@@ -5,9 +5,9 @@
 #include "ui/accessibility/ax_node.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1184,7 +1184,7 @@ const std::u16string& AXNode::GetHypertext() const {
     //
     // Note that the word "hypertext" comes from the IAccessible2 Standard and
     // has nothing to do with HTML.
-    static const base::NoDestructor<std::u16string> embedded_character_str(
+    static constexpr std::u16string_view kEmbeddedObjectCharacterStr(
         AXNode::kEmbeddedObjectCharacterUTF16);
     auto first = UnignoredChildrenCrossingTreeBoundaryBegin();
     for (auto iter = first, end = UnignoredChildrenCrossingTreeBoundaryEnd();
@@ -1201,7 +1201,7 @@ const std::u16string& AXNode::GetHypertext() const {
                 character_offset, static_cast<int>(std::distance(first, iter)));
         DCHECK(inserted) << "An embedded object at " << character_offset
                          << " has already been encountered.";
-        hypertext_.hypertext += *embedded_character_str;
+        hypertext_.hypertext.append(kEmbeddedObjectCharacterStr);
       }
     }
   }
