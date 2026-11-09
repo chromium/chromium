@@ -1,0 +1,8 @@
+# vpython spec for build.py and update.py. The 3pp builder runs build.py from a
+# copy of this directory. Regenerate vpython.toml.uv.lock by running
+# 'vpython3 build.py --help' after changing this file.
+requires-python = '>=3.11,<3.12'
+dependencies = [
+  # Decompresses the data.tar.zst members of Ubuntu .debs.
+  'zstandard==0.16.0',
+]

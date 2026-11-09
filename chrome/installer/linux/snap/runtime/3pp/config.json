@@ -1,0 +1,52 @@
+{
+  "_comment": [
+    "Packages bundled into the snap package and the files kept from them.",
+    "Mirrors the stage-packages/prime sections of snapcraft.yaml parts. After",
+    "editing, run update.py to regenerate runtime.lock.json."
+  ],
+  "suites": ["resolute", "resolute-updates", "resolute-security"],
+  "components": ["main", "restricted", "universe", "multiverse"],
+  "base_snap": "core26",
+  "cleanup": {
+    "_comment": "Emulates the cleanup parts of the snapcraft gnome extension.",
+    "library_snaps": ["gnome-core26-sdk", "gtk-common-themes"],
+    "gpu_list": {
+      "repo": "canonical/gpu-snap",
+      "ref": "main",
+      "path": "lists/mesa-2604.amd64.list"
+    }
+  },
+  "groups": {
+    "chrome": {
+      "packages": [
+        "libnss3",
+        "libpci3",
+        "libsecret-1-0",
+        "opensc-pkcs11"
+      ],
+      "prime": [
+        "-etc/init.d",
+        "-etc/xdg",
+        "-usr/include",
+        "-usr/share/doc",
+        "-usr/share/lintian",
+        "-usr/share/man"
+      ]
+    },
+    "qt6": {
+      "packages": [
+        "libqt6core6t64",
+        "libqt6gui6",
+        "libqt6widgets6",
+        "qt6-wayland"
+      ],
+      "prime": [
+        "-etc",
+        "-usr/bin",
+        "-usr/share/doc",
+        "-usr/share/lintian",
+        "-usr/share/man"
+      ]
+    }
+  }
+}
