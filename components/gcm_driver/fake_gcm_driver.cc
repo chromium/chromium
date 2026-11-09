@@ -30,20 +30,8 @@ void FakeGCMDriver::ValidateRegistration(
       FROM_HERE, base::BindOnce(std::move(callback), true /* is_valid */));
 }
 
-void FakeGCMDriver::AddConnectionObserver(GCMConnectionObserver* observer) {}
-
-void FakeGCMDriver::RemoveConnectionObserver(GCMConnectionObserver* observer) {}
-
 GCMClient* FakeGCMDriver::GetGCMClientForTesting() const {
   return nullptr;
-}
-
-bool FakeGCMDriver::IsStarted() const {
-  return true;
-}
-
-bool FakeGCMDriver::IsConnected() const {
-  return true;
 }
 
 void FakeGCMDriver::GetGCMStatistics(GetGCMStatisticsCallback callback,

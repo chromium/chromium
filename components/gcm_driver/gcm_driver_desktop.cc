@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -29,7 +28,6 @@
 #include "components/gcm_driver/instance_id/instance_id_impl.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "net/base/ip_endpoint.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -64,8 +62,6 @@ class GCMDriverDesktop::IOWorker : public GCMClient::Delegate {
       const GCMClient::SendErrorDetails& send_error_details) override;
   void OnGCMReady() override;
   void OnActivityRecorded() override;
-  void OnConnected(const net::IPEndPoint& ip_endpoint) override;
-  void OnDisconnected() override;
   void OnStoreReset() override;
 
   // Called on IO thread.
@@ -278,17 +274,6 @@ void GCMDriverDesktop::IOWorker::OnActivityRecorded() {
       base::BindOnce(&GCMDriverDesktop::OnActivityRecorded, service_, stats));
 }
 
-void GCMDriverDesktop::IOWorker::OnConnected(
-    const net::IPEndPoint& ip_endpoint) {
-  ui_thread_->PostTask(FROM_HERE, base::BindOnce(&GCMDriverDesktop::OnConnected,
-                                                 service_, ip_endpoint));
-}
-
-void GCMDriverDesktop::IOWorker::OnDisconnected() {
-  ui_thread_->PostTask(
-      FROM_HERE, base::BindOnce(&GCMDriverDesktop::OnDisconnected, service_));
-}
-
 void GCMDriverDesktop::IOWorker::OnStoreReset() {
   ui_thread_->PostTask(
       FROM_HERE, base::BindOnce(&GCMDriverDesktop::OnStoreReset, service_));
@@ -469,7 +454,6 @@ GCMDriverDesktop::GCMDriverDesktop(
     os_crypt_async::OSCryptAsync* os_crypt_async)
     : GCMDriver(store_path, blocking_task_runner),
       gcm_started_(false),
-      connected_(false),
       ui_thread_(ui_thread),
       io_thread_(io_thread) {
   // Create and initialize the GCMClient. Note that this does not initiate the
@@ -574,15 +558,6 @@ void GCMDriverDesktop::RemoveAppHandler(const std::string& app_id) {
     DVLOG(1) << "Removed last app handler, calling GCMDriverDesktop::Stop now.";
     Stop();
   }
-}
-
-void GCMDriverDesktop::AddConnectionObserver(GCMConnectionObserver* observer) {
-  connection_observer_list_.AddObserver(observer);
-}
-
-void GCMDriverDesktop::RemoveConnectionObserver(
-    GCMConnectionObserver* observer) {
-  connection_observer_list_.RemoveObserver(observer);
 }
 
 void GCMDriverDesktop::Stop() {
@@ -696,15 +671,6 @@ void GCMDriverDesktop::RecordDecryptionFailure(
 GCMClient* GCMDriverDesktop::GetGCMClientForTesting() const {
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
   return io_worker_ ? io_worker_->gcm_client_for_testing() : nullptr;
-}
-
-bool GCMDriverDesktop::IsStarted() const {
-  DCHECK(ui_thread_->RunsTasksInCurrentSequence());
-  return gcm_started_;
-}
-
-bool GCMDriverDesktop::IsConnected() const {
-  return connected_;
 }
 
 void GCMDriverDesktop::GetGCMStatistics(GetGCMStatisticsCallback callback,
@@ -1121,36 +1087,6 @@ void GCMDriverDesktop::GCMClientReady() {
   gcm_started_ = true;
 
   delayed_task_controller_->SetReady();
-}
-
-void GCMDriverDesktop::OnConnected(const net::IPEndPoint& ip_endpoint) {
-  DCHECK(ui_thread_->RunsTasksInCurrentSequence());
-
-  connected_ = true;
-
-  // Drop the event if the service has been stopped.
-  if (!gcm_started_) {
-    return;
-  }
-
-  for (GCMConnectionObserver& observer : connection_observer_list_) {
-    observer.OnConnected(ip_endpoint);
-  }
-}
-
-void GCMDriverDesktop::OnDisconnected() {
-  DCHECK(ui_thread_->RunsTasksInCurrentSequence());
-
-  connected_ = false;
-
-  // Drop the event if the service has been stopped.
-  if (!gcm_started_) {
-    return;
-  }
-
-  for (GCMConnectionObserver& observer : connection_observer_list_) {
-    observer.OnDisconnected();
-  }
 }
 
 void GCMDriverDesktop::OnStoreReset() {

@@ -14,14 +14,9 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "components/gcm_driver/gcm_connection_observer.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
 #include "components/sync/test/fake_server.h"
-
-namespace net {
-class IPEndPoint;
-}  // namespace net
 
 namespace instance_id {
 class FakeGCMDriverForInstanceID;
@@ -32,14 +27,8 @@ namespace fake_server {
 // This class is observing changes to the fake server, and sends invalidations
 // to clients upon commits. Sent invalidation follows the same format expected
 // by the sync invalidations framework (i.e. SyncInvalidationsService).
-class FakeServerSyncInvalidationSender : public FakeServer::Observer,
-                                         public gcm::GCMConnectionObserver {
+class FakeServerSyncInvalidationSender : public FakeServer::Observer {
  public:
-  // This has the same value as in
-  // components/sync/invalidations/sync_invalidations_service_impl.cc.
-  static constexpr char kSyncInvalidationsAppId[] =
-      "com.google.chrome.sync.invalidations";
-
   // `fake_server` must not be nullptr, and must outlive this object.
   // Persists undelivered invalidations to `storage_dir` across PRE_ tests.
   FakeServerSyncInvalidationSender(FakeServer* fake_server,
@@ -69,9 +58,6 @@ class FakeServerSyncInvalidationSender : public FakeServer::Observer,
   // FakeServer::Observer implementation.
   void OnWillCommit() override;
   void OnCommit(syncer::DataTypeSet committed_data_types) override;
-
-  // gcm::GCMConnectionObserver implementation.
-  void OnConnected(const net::IPEndPoint& ip_endpoint) override;
 
  private:
   instance_id::FakeGCMDriverForInstanceID* GetFakeGCMDriverByToken(

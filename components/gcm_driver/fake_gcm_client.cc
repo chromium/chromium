@@ -19,7 +19,6 @@
 #include "components/fcm/crypto/fcm_decryption_result.h"
 #include "components/fcm/engine/chrome_build_info.h"
 #include "google_apis/gcm/base/encryptor.h"
-#include "net/base/ip_endpoint.h"
 
 namespace gcm {
 
@@ -116,7 +115,6 @@ void FakeGCMClient::DoStart() {
 void FakeGCMClient::Stop() {
   DCHECK(io_thread_->RunsTasksInCurrentSequence());
   started_ = false;
-  delegate_->OnDisconnected();
 }
 
 void FakeGCMClient::Register(
@@ -246,7 +244,6 @@ void FakeGCMClient::DeleteMessages(const std::string& app_id) {
 
 void FakeGCMClient::Started() {
   delegate_->OnGCMReady();
-  delegate_->OnConnected(net::IPEndPoint());
 }
 
 void FakeGCMClient::RegisterFinished(

@@ -28,7 +28,6 @@
 #include "components/gcm_driver/fake_gcm_client_factory.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/gcm_client_factory.h"
-#include "components/gcm_driver/gcm_connection_observer.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "net/url_request/url_request_test_util.h"
@@ -48,34 +47,6 @@ const char kUserID1[] = "user1";
 const char kScope[] = "GCM";
 const char kInstanceID1[] = "IID1";
 const char kInstanceID2[] = "IID2";
-
-class FakeGCMConnectionObserver : public GCMConnectionObserver {
- public:
-  FakeGCMConnectionObserver();
-  ~FakeGCMConnectionObserver() override;
-
-  // gcm::GCMConnectionObserver implementation:
-  void OnConnected(const net::IPEndPoint& ip_endpoint) override;
-  void OnDisconnected() override;
-
-  bool connected() const { return connected_; }
-
- private:
-  bool connected_;
-};
-
-FakeGCMConnectionObserver::FakeGCMConnectionObserver() : connected_(false) {}
-
-FakeGCMConnectionObserver::~FakeGCMConnectionObserver() = default;
-
-void FakeGCMConnectionObserver::OnConnected(
-    const net::IPEndPoint& ip_endpoint) {
-  connected_ = true;
-}
-
-void FakeGCMConnectionObserver::OnDisconnected() {
-  connected_ = false;
-}
 
 void PumpCurrentLoop() {
   base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed).RunUntilIdle();
@@ -109,9 +80,6 @@ class GCMDriverTest : public testing::Test {
 
   GCMDriverDesktop* driver() { return driver_.get(); }
   FakeGCMAppHandler* gcm_app_handler() { return gcm_app_handler_.get(); }
-  FakeGCMConnectionObserver* gcm_connection_observer() {
-    return gcm_connection_observer_.get();
-  }
   const std::string& registration_id() const { return registration_id_; }
   GCMClient::Result registration_result() const { return registration_result_; }
   const std::string& send_message_id() const { return send_message_id_; }
@@ -172,7 +140,6 @@ class GCMDriverTest : public testing::Test {
 
   std::unique_ptr<GCMDriverDesktop> driver_;
   std::unique_ptr<FakeGCMAppHandler> gcm_app_handler_;
-  std::unique_ptr<FakeGCMConnectionObserver> gcm_connection_observer_;
 
   base::OnceClosure async_operation_completed_callback_;
 
@@ -255,15 +222,9 @@ void GCMDriverTest::CreateDriver() {
       os_crypt_.get());
 
   gcm_app_handler_ = std::make_unique<FakeGCMAppHandler>();
-  gcm_connection_observer_ = std::make_unique<FakeGCMConnectionObserver>();
-
-  driver_->AddConnectionObserver(gcm_connection_observer_.get());
 }
 
 void GCMDriverTest::ShutdownDriver() {
-  if (gcm_connection_observer()) {
-    driver()->RemoveConnectionObserver(gcm_connection_observer());
-  }
   driver()->Shutdown();
 }
 
@@ -363,21 +324,17 @@ void GCMDriverTest::UnregisterCompleted(GCMClient::Result result) {
 TEST_F(GCMDriverTest, Create) {
   // Create GCMDriver first. By default GCM is set to delay start.
   CreateDriver();
-  EXPECT_FALSE(driver()->IsStarted());
+  EXPECT_FALSE(driver()->IsStartedForTesting());
 
   // Adding an app handler will not start GCM.
   AddAppHandlers();
   PumpIOLoop();
   PumpUILoop();
-  EXPECT_FALSE(driver()->IsStarted());
-  EXPECT_FALSE(driver()->IsConnected());
-  EXPECT_FALSE(gcm_connection_observer()->connected());
+  EXPECT_FALSE(driver()->IsStartedForTesting());
 
   // The GCM registration will kick off the GCM.
   Register(kTestAppID1, ToSenderList("sender"), GCMDriverTest::WAIT);
-  EXPECT_TRUE(driver()->IsStarted());
-  EXPECT_TRUE(driver()->IsConnected());
-  EXPECT_TRUE(gcm_connection_observer()->connected());
+  EXPECT_TRUE(driver()->IsStartedForTesting());
 }
 
 TEST_F(GCMDriverTest, Shutdown) {
@@ -389,49 +346,47 @@ TEST_F(GCMDriverTest, Shutdown) {
 
   ShutdownDriver();
   EXPECT_FALSE(HasAppHandlers());
-  EXPECT_FALSE(driver()->IsConnected());
-  EXPECT_FALSE(gcm_connection_observer()->connected());
 }
 
 TEST_F(GCMDriverTest, StartOrStopGCMOnDemand) {
   CreateDriver();
   PumpIOLoop();
   PumpUILoop();
-  EXPECT_FALSE(driver()->IsStarted());
+  EXPECT_FALSE(driver()->IsStartedForTesting());
 
   // Adding an app handler will not start GCM.
   driver()->AddAppHandler(kTestAppID1, gcm_app_handler());
   PumpIOLoop();
   PumpUILoop();
-  EXPECT_FALSE(driver()->IsStarted());
+  EXPECT_FALSE(driver()->IsStartedForTesting());
 
   // The GCM registration will kick off the GCM.
   Register(kTestAppID1, ToSenderList("sender"), GCMDriverTest::WAIT);
-  EXPECT_TRUE(driver()->IsStarted());
+  EXPECT_TRUE(driver()->IsStartedForTesting());
 
   // Add another app handler.
   driver()->AddAppHandler(kTestAppID2, gcm_app_handler());
   PumpIOLoop();
   PumpUILoop();
-  EXPECT_TRUE(driver()->IsStarted());
+  EXPECT_TRUE(driver()->IsStartedForTesting());
 
   // GCMClient remains active after one app handler is gone.
   driver()->RemoveAppHandler(kTestAppID1);
   PumpIOLoop();
   PumpUILoop();
-  EXPECT_TRUE(driver()->IsStarted());
+  EXPECT_TRUE(driver()->IsStartedForTesting());
 
   // GCMClient should be stopped after the last app handler is gone.
   driver()->RemoveAppHandler(kTestAppID2);
   PumpIOLoop();
   PumpUILoop();
-  EXPECT_FALSE(driver()->IsStarted());
+  EXPECT_FALSE(driver()->IsStartedForTesting());
 
   // GCMClient is restarted after an app handler has been added.
   driver()->AddAppHandler(kTestAppID2, gcm_app_handler());
   PumpIOLoop();
   PumpUILoop();
-  EXPECT_TRUE(driver()->IsStarted());
+  EXPECT_TRUE(driver()->IsStartedForTesting());
 }
 
 TEST_F(GCMDriverTest, RegisterFailed) {

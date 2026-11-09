@@ -189,8 +189,6 @@ std::unique_ptr<KeyedService> CreateGCMProfileService(
   Profile* profile = Profile::FromBrowserContext(context);
   auto fake_gcm_driver =
       std::make_unique<FakeSyncGCMDriver>(profile, blocking_task_runner);
-  fake_gcm_driver->WaitForAppIdBeforeConnection(
-      fake_server::FakeServerSyncInvalidationSender::kSyncInvalidationsAppId);
 
   CHECK(invalidation_sender);
   invalidation_sender->AddFakeGCMDriver(fake_gcm_driver.get());

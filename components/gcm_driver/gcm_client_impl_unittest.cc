@@ -317,8 +317,6 @@ class GCMClientImplTest : public testing::Test, public GCMClient::Delegate {
       const gcm::GCMClient::SendErrorDetails& send_error_details) override;
   void OnGCMReady() override;
   void OnActivityRecorded() override {}
-  void OnConnected(const net::IPEndPoint& ip_endpoint) override {}
-  void OnDisconnected() override {}
   void OnStoreReset() override {}
 
   GCMClientImpl* gcm_client() const { return gcm_client_.get(); }

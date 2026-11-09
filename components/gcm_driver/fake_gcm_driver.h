@@ -33,11 +33,7 @@ class FakeGCMDriver : public GCMDriver {
                             const std::vector<std::string>& sender_ids,
                             const std::string& registration_id,
                             ValidateRegistrationCallback callback) override;
-  void AddConnectionObserver(GCMConnectionObserver* observer) override;
-  void RemoveConnectionObserver(GCMConnectionObserver* observer) override;
   GCMClient* GetGCMClientForTesting() const override;
-  bool IsStarted() const override;
-  bool IsConnected() const override;
   void GetGCMStatistics(GetGCMStatisticsCallback callback,
                         ClearActivityLogs clear_logs) override;
   void SetGCMRecording(const GCMStatisticsRecordingCallback& callback,

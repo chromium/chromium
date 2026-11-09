@@ -29,10 +29,6 @@ struct ChromeBuildInfo;
 enum class FcmDecryptionResult;
 }  // namespace fcm
 
-namespace net {
-class IPEndPoint;
-}  // namespace net
-
 namespace network {
 class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
@@ -171,13 +167,6 @@ class GCMClient {
     // Called when activities are being recorded and a new activity has just
     // been recorded.
     virtual void OnActivityRecorded() = 0;
-
-    // Called when a new connection is established and a successful handshake
-    // has been performed.
-    virtual void OnConnected(const net::IPEndPoint& ip_endpoint) = 0;
-
-    // Called when the connection is interrupted.
-    virtual void OnDisconnected() = 0;
 
     // Called when the GCM store is reset (e.g. due to corruption), which
     // changes the device ID, invalidating all prior registrations.

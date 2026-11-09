@@ -621,7 +621,6 @@ void GCMClientImpl::ResetCache() {
   destroying_gcm_store_ptr_factory_.InvalidateWeakPtrs();
   device_checkin_info_.Reset();
   connection_factory_.reset();
-  delegate_->OnDisconnected();
   mcs_client_.reset();
   checkin_request_.reset();
   // Delete all of the pending registration and unregistration requests.
@@ -1045,12 +1044,10 @@ void GCMClientImpl::OnConnected(const GURL& current_server,
                                 const net::IPEndPoint& ip_endpoint) {
   // TODO(gcm): expose current server in debug page.
   delegate_->OnActivityRecorded();
-  delegate_->OnConnected(ip_endpoint);
 }
 
 void GCMClientImpl::OnDisconnected() {
   delegate_->OnActivityRecorded();
-  delegate_->OnDisconnected();
 }
 
 void GCMClientImpl::OnMessageReceivedFromMCS(const gcm::MCSMessage& message) {

@@ -18,8 +18,6 @@ static_library("gcm_driver") {
     "gcm_app_handler.h",
     "gcm_client.cc",
     "gcm_client.h",
-    "gcm_connection_observer.cc",
-    "gcm_connection_observer.h",
     "gcm_delayed_task_controller.cc",
     "gcm_delayed_task_controller.h",
     "gcm_driver.cc",

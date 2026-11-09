@@ -33,7 +33,6 @@ enum class FcmDecryptionResult;
 namespace gcm {
 
 class GCMAppHandler;
-class GCMConnectionObserver;
 enum class GCMEncryptionResult;
 
 // Provides the InstanceID support via GCMDriver.
@@ -219,12 +218,6 @@ class GCMDriver {
   // could be found for the |app_id|.
   GCMAppHandler* GetAppHandler(const std::string& app_id);
 
-  // Adds a connection state observer.
-  virtual void AddConnectionObserver(GCMConnectionObserver* observer) = 0;
-
-  // Removes a connection state observer.
-  virtual void RemoveConnectionObserver(GCMConnectionObserver* observer) = 0;
-
   // For testing purpose. Always NULL on Android.
   virtual GCMClient* GetGCMClientForTesting() const = 0;
 
@@ -235,12 +228,6 @@ class GCMDriver {
 
   // Returns the number of unhandled messages currently buffered for `app_id`.
   size_t GetBufferedMessagesCountForTesting(const std::string& app_id) const;
-
-  // Returns true if the service was started.
-  virtual bool IsStarted() const = 0;
-
-  // Returns true if the gcm client has an open and active connection.
-  virtual bool IsConnected() const = 0;
 
   // Get GCM client internal states and statistics. The activity logs will be
   // cleared before returning the stats when |clear_logs| is set to CLEAR_LOGS.

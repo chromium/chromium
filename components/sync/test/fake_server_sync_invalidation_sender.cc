@@ -13,6 +13,8 @@
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -24,6 +26,15 @@
 
 namespace fake_server {
 
+namespace {
+
+// This has the same value as in
+// components/sync/invalidations/sync_invalidations_service_impl.cc.
+constexpr char kSyncInvalidationsAppId[] =
+    "com.google.chrome.sync.invalidations";
+
+}  // namespace
+
 FakeServerSyncInvalidationSender::FakeServerSyncInvalidationSender(
     FakeServer* fake_server,
     const base::FilePath& storage_dir)
@@ -34,12 +45,7 @@ FakeServerSyncInvalidationSender::FakeServerSyncInvalidationSender(
   fake_server_observation_.Observe(fake_server);
 }
 
-FakeServerSyncInvalidationSender::~FakeServerSyncInvalidationSender() {
-  for (instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver :
-       fake_gcm_drivers_) {
-    fake_gcm_driver->RemoveConnectionObserver(this);
-  }
-}
+FakeServerSyncInvalidationSender::~FakeServerSyncInvalidationSender() = default;
 
 void FakeServerSyncInvalidationSender::AddFakeGCMDriver(
     instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver) {
@@ -48,7 +54,9 @@ void FakeServerSyncInvalidationSender::AddFakeGCMDriver(
       << "AddFakeGCMDriver called for already registered FakeGCMDriver!";
   // It's safe to cast since SyncTest uses FakeGCMProfileService.
   fake_gcm_drivers_.push_back(fake_gcm_driver);
-  fake_gcm_driver->AddConnectionObserver(this);
+  fake_gcm_driver->SetOnAppHandlerAddedCallback(base::BindRepeating(
+      &FakeServerSyncInvalidationSender::DeliverInvalidationsToHandlers,
+      weak_ptr_factory_.GetWeakPtr()));
 
   DVLOG(1) << "Added FakeGCMDriver";
 
@@ -60,7 +68,7 @@ void FakeServerSyncInvalidationSender::RemoveFakeGCMDriver(
     instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver) {
   CHECK(fake_gcm_driver);
   CHECK(std::ranges::contains(fake_gcm_drivers_, fake_gcm_driver));
-  fake_gcm_driver->RemoveConnectionObserver(this);
+  fake_gcm_driver->SetOnAppHandlerAddedCallback(base::NullCallback());
   std::erase(fake_gcm_drivers_, fake_gcm_driver);
 }
 
@@ -118,13 +126,6 @@ void FakeServerSyncInvalidationSender::OnCommit(
   }
 
   WriteFakeStateToDisk();
-  DeliverInvalidationsToHandlers();
-}
-
-void FakeServerSyncInvalidationSender::OnConnected(
-    const net::IPEndPoint& ip_endpoint) {
-  // Try to deliver invalidations once GCMDriver is connected.
-  DVLOG(1) << "GCM driver connected";
   DeliverInvalidationsToHandlers();
 }
 

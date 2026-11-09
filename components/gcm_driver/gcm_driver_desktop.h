@@ -15,12 +15,10 @@
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/tuple.h"
 #include "components/fcm/engine/chrome_build_info.h"
 #include "components/gcm_driver/gcm_client.h"
-#include "components/gcm_driver/gcm_connection_observer.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
@@ -81,16 +79,14 @@ class GCMDriverDesktop : public GCMDriver, protected InstanceIDHandler {
   void AddAppHandler(const std::string& app_id,
                      GCMAppHandler* handler) override;
   void RemoveAppHandler(const std::string& app_id) override;
-  void AddConnectionObserver(GCMConnectionObserver* observer) override;
-  void RemoveConnectionObserver(GCMConnectionObserver* observer) override;
   GCMClient* GetGCMClientForTesting() const override;
-  bool IsStarted() const override;
-  bool IsConnected() const override;
   void GetGCMStatistics(GetGCMStatisticsCallback callback,
                         ClearActivityLogs clear_logs) override;
   void SetGCMRecording(const GCMStatisticsRecordingCallback& callback,
                        bool recording) override;
   InstanceIDHandler* GetInstanceIDHandlerInternal() override;
+
+  bool IsStartedForTesting() const { return gcm_started_; }
 
  protected:
   // GCMDriver implementation:
@@ -175,8 +171,6 @@ class GCMDriverDesktop : public GCMDriver, protected InstanceIDHandler {
   void MessageSendError(const std::string& app_id,
                         const GCMClient::SendErrorDetails& send_error_details);
   void GCMClientReady();
-  void OnConnected(const net::IPEndPoint& ip_endpoint);
-  void OnDisconnected();
   void OnStoreReset();
   void OnActivityRecorded(const GCMClient::GCMStatistics& stats);
 
@@ -195,15 +189,6 @@ class GCMDriverDesktop : public GCMDriver, protected InstanceIDHandler {
 
   // Flag to indicate if GCM is started.
   bool gcm_started_;
-
-  // Flag to indicate the last known state of the GCM client. Because this
-  // flag lives on the UI thread, while the GCM client lives on the IO thread,
-  // it may be out of date while connection changes are happening.
-  bool connected_;
-
-  // List of observers to notify when connection state changes.
-  base::ObserverList<GCMConnectionObserver, false>::Unchecked
-      connection_observer_list_;
 
   scoped_refptr<base::SequencedTaskRunner> ui_thread_;
   scoped_refptr<base::SequencedTaskRunner> io_thread_;

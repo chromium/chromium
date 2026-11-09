@@ -120,23 +120,9 @@ void GCMDriverAndroid::AddAppHandler(const std::string& app_id,
   Java_GCMDriver_replayPersistedMessages(env, java_ref_, app_id);
 }
 
-void GCMDriverAndroid::AddConnectionObserver(GCMConnectionObserver* observer) {}
-
-void GCMDriverAndroid::RemoveConnectionObserver(
-    GCMConnectionObserver* observer) {}
-
 GCMClient* GCMDriverAndroid::GetGCMClientForTesting() const {
   NOTIMPLEMENTED();
   return NULL;
-}
-
-bool GCMDriverAndroid::IsStarted() const {
-  return true;
-}
-
-bool GCMDriverAndroid::IsConnected() const {
-  // TODO(gcm): hook up to GCM connected status
-  return true;
 }
 
 void GCMDriverAndroid::GetGCMStatistics(GetGCMStatisticsCallback callback,

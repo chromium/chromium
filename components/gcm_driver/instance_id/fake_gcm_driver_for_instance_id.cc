@@ -22,8 +22,6 @@
 #include "base/time/time.h"
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/gcm_client.h"
-#include "components/gcm_driver/gcm_connection_observer.h"
-#include "net/base/ip_endpoint.h"
 
 namespace instance_id {
 
@@ -79,24 +77,16 @@ FakeGCMDriverForInstanceID::GetInstanceIDHandlerInternal() {
   return this;
 }
 
-void FakeGCMDriverForInstanceID::AddConnectionObserver(
-    gcm::GCMConnectionObserver* observer) {
-  connection_observers_.AddObserver(observer);
-}
-
-void FakeGCMDriverForInstanceID::RemoveConnectionObserver(
-    gcm::GCMConnectionObserver* observer) {
-  connection_observers_.RemoveObserver(observer);
+void FakeGCMDriverForInstanceID::SetOnAppHandlerAddedCallback(
+    base::RepeatingClosure callback) {
+  on_app_handler_added_callback_ = std::move(callback);
 }
 
 void FakeGCMDriverForInstanceID::AddAppHandler(const std::string& app_id,
                                                gcm::GCMAppHandler* handler) {
   FakeGCMDriver::AddAppHandler(app_id, handler);
-
-  DVLOG(1) << "GCMAppHandler was added: " << app_id;
-
-  if (app_id_for_connection_.empty() || app_id == app_id_for_connection_) {
-    ConnectIfNeeded();
+  if (on_app_handler_added_callback_) {
+    on_app_handler_added_callback_.Run();
   }
 }
 
@@ -115,11 +105,6 @@ bool FakeGCMDriverForInstanceID::HasTokenForAppId(
   }
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)
-}
-
-void FakeGCMDriverForInstanceID::WaitForAppIdBeforeConnection(
-    const std::string& app_id) {
-  app_id_for_connection_ = app_id;
 }
 
 void FakeGCMDriverForInstanceID::AddInstanceIDData(
@@ -237,18 +222,6 @@ void FakeGCMDriverForInstanceID::StoreTokensIfNeeded() {
   success =
       base::WriteFile(store_path_.Append(kStoredTokensFileName), encoded_data);
   DCHECK(success) << "Failed to store FCM tokens";
-}
-
-void FakeGCMDriverForInstanceID::ConnectIfNeeded() {
-  if (connected_) {
-    return;
-  }
-
-  DVLOG(1) << "GCMDriver connected.";
-  connected_ = true;
-  for (gcm::GCMConnectionObserver& observer : connection_observers_) {
-    observer.OnConnected(net::IPEndPoint());
-  }
 }
 
 }  // namespace instance_id

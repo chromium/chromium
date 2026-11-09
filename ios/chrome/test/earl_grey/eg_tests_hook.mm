@@ -45,7 +45,6 @@
 #import "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
-#import "components/sync/test/fake_server_sync_invalidation_sender.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
 #import "ios/chrome/browser/composebox/model/mock_ios_contextual_search_service.h"
@@ -373,8 +372,6 @@ std::unique_ptr<gcm::GCMProfileService> CreateGCMProfileService(
       std::make_unique<instance_id::FakeGCMDriverForInstanceID>(
           profile->GetStatePath().Append(FILE_PATH_LITERAL("gcm_test_store")),
           blocking_task_runner);
-  fake_gcm_driver->WaitForAppIdBeforeConnection(
-      fake_server::FakeServerSyncInvalidationSender::kSyncInvalidationsAppId);
   return std::make_unique<FakeGCMProfileService>(std::move(fake_gcm_driver));
 }
 
