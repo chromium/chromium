@@ -1528,7 +1528,10 @@ PhysicalRect ContainerNode::BoundingBox() const {
 }
 
 HTMLCollection* ContainerNode::children() {
-  return EnsureCachedCollection<HTMLCollection>(kNodeChildren);
+  if (NodeListsNodeData* node_lists = NodeLists()) {
+    return node_lists->EnsureChildren(*this);
+  }
+  return EnsureNodeLists().EnsureChildren(*this);
 }
 
 Element* ContainerNode::firstElementChild() {

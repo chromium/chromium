@@ -95,6 +95,13 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData>,
     return list;
   }
 
+  HTMLCollection* EnsureChildren(ContainerNode& node) {
+    if (!children_) {
+      children_ = MakeGarbageCollected<HTMLCollection>(node, kNodeChildren);
+    }
+    return children_.Get();
+  }
+
   template <typename T>
   T* AddCache(ContainerNode& node, CollectionType collection_type) {
     NodeListAtomicNameCacheMap::AddResult result = atomic_name_caches_.insert(
@@ -147,7 +154,7 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData>,
   void InvalidateCaches(const QualifiedName* attr_name = nullptr);
 
   bool IsEmpty() const {
-    return !child_node_list_ && atomic_name_caches_.empty() &&
+    return !child_node_list_ && !children_ && atomic_name_caches_.empty() &&
            tag_collection_ns_caches_.empty();
   }
 
@@ -155,6 +162,10 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData>,
 
   void AdoptDocument(Document& old_document, Document& new_document) {
     DCHECK_NE(&old_document, &new_document);
+
+    if (children_) {
+      children_->DidMoveToDocument(old_document, new_document);
+    }
 
     NodeListAtomicNameCacheMap::const_iterator atomic_name_cache_end =
         atomic_name_caches_.end();
@@ -181,6 +192,9 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData>,
  private:
   // Can be a ChildNodeList or an EmptyNodeList.
   Member<NodeList> child_node_list_;
+  // The `children` collection. It is common, so it is kept out of
+  // `atomic_name_caches_` for speed and memory savings.
+  Member<HTMLCollection> children_;
   NodeListAtomicNameCacheMap atomic_name_caches_;
   TagCollectionNSCache tag_collection_ns_caches_;
 };
