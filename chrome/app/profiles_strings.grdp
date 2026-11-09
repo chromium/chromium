@@ -209,9 +209,6 @@
         Verify it's you
       </message>
     </if>
-  <message name="IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION" desc="Text for the sign-in promo in the profile menu when the used is signed out, describing the benefits of signing in.">
-    Sign in to get your passwords and more on all your devices
-  </message>
   <message name="IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION_WITH_BOOKMARKS" desc="Text for the sign-in promo in the profile menu when the used is signed out, describing the benefits of signing in, mentioning bookmarks.">
     Sign in to get your passwords, bookmarks, and more on all your devices
   </message>
@@ -829,9 +826,6 @@
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE" desc="Title of the enterprise profile welcome screen when a managed profile will be created. It is shown after a user signs into a managed account outside of the profile creation flow.">
       Your organization will manage this profile
     </message>
-    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON" desc="Label of the proceed button on the enterprise profile welcome screen when a user signed in an enterprise account outside of the profile creation flow. The label informs the user that a profile will be created.">
-      Create
-    </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_WORK_TITLE" desc="Title of the dialog disclaiming information about the work profile they are about to create.">
       About work profiles
     </message>
@@ -849,9 +843,6 @@
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_SUBTITLE" desc="Subtitle of the dialog disclaiming information about the profile they are about to create.">
       Your profile is managed by your organization, which can view some information, including
-    </message>
-    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_KNOWN_DOMAIN_SUBTITLE" desc="Subtitle of the dialog disclaiming information about the profile they are about to create.">
-      Your profile is managed by <ph name="PROFILE_MANAGER">$1<ex>example.com</ex></ph>, which can view some information, including
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_INFORMATION_TITLE" desc="Title of a section disclaiming to the user what their organization can do with their profile information.">
       Profile information
@@ -1116,9 +1107,6 @@
     </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_AVATAR_TEXT" desc="Text of a section to pick an avatar for the profile.">
       Pick an avatar
-    </message>
-    <message name="IDS_PROFILE_PICKER_IPH_NEXT_BUTTON_LABEL" desc="Label of the next button showing on the IPH.">
-      Next
     </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_SWITCH_SWITCH_BUTTON_LABEL" desc="Label of a button that switches user browsing to existing profile">
       Switch
