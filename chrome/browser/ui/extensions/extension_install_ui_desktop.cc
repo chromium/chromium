@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -139,10 +140,16 @@ void ExtensionInstallUIDesktop::OnInstallSuccess(
     extensions::TriggerPostInstallDialog(
         profile(), extension, icon_to_use,
         base::BindOnce(
-            [](BrowserWindowInterface* bwi) {
-              return bwi->GetActiveTabInterface()->GetContents();
+            [](base::WeakPtr<BrowserWindowInterface> bwi)
+                -> content::WebContents* {
+              if (!bwi) {
+                return nullptr;
+              }
+              tabs::TabInterface* const active_tab =
+                  bwi->GetActiveTabInterface();
+              return active_tab ? active_tab->GetContents() : nullptr;
             },
-            browser_window),
+            browser_window->GetWeakPtr()),
         base::BindOnce(
             [](const extensions::ExtensionId& extension_id,
                base::WeakPtr<content::WebContents> web_contents) {
