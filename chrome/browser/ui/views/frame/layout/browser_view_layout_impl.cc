@@ -356,7 +356,7 @@ void BrowserViewLayoutImpl::OnGlassModeChangedCallback(bool in_glass_mode) {
   if (in_glass_mode == in_glass_mode_) {
     return;
   }
-  in_glass_mode_ = in_glass_mode && features::IsGlassFrameEnabled();
+  in_glass_mode_ = in_glass_mode;
   OnGlassModeChanged();
 }
 
