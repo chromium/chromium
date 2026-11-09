@@ -2897,7 +2897,7 @@
     'cast_streaming': ['jasonroberts+watch@google.com',
                        'jophba+watch@chromium.org',
                        'mfoltz+watch-media@chromium.org'],
-    'cbb_ref_info': ['johnchen+watch@chromium.org'],
+    'cbb_ref_info': [],
     'cbe_productivity_ai': ['cbe-productivity-cls@google.com'],
     'cc': ['cc-bugs@chromium.org'],
     'cc-animation': ['gerchiko@microsoft.com'],
