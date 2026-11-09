@@ -514,9 +514,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 // Check the button visibility of the toolbar when the omnibox is focused from a
 // different orientation than the default one.
-// TODO(crbug.com/443913539): The test is flaky on simulator and failing on
-// device.
-- (void)DISABLED_testFocusOmniboxFromOtherOrientation {
+- (void)testFocusOmniboxFromOtherOrientation {
   // Load a page to have the toolbar visible (hidden on NTP).
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
 
@@ -543,9 +541,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 // Check the button visibility of the toolbar when the omnibox is focused from
 // the default orientation.
-// TODO(crbug.com/443913539): The test is flaky on simulator and failing on
-// device.
-- (void)DISABLED_testFocusOmniboxFromPortrait {
+- (void)testFocusOmniboxFromPortrait {
   // Load a page to have the toolbar visible (hidden on NTP).
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
 
@@ -707,8 +703,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 // Test that the bottom toolbar is still visible after closing the last
 // incognito tab using long press. See https://crbug.com/849937.
-// TODO(crbug.com/464193172): Re-enable test for toolbar height.
-- (void)DISABLED_testBottomToolbarHeightAfterClosingTab {
+- (void)testBottomToolbarHeightAfterClosingTab {
   if (![ChromeEarlGrey isSplitToolbarMode]) {
     EARL_GREY_TEST_SKIPPED(@"This test needs a bottom toolbar.");
   }
@@ -888,8 +883,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 // Verifies that the location bar is above the keyboard when tapping a text
 // field on web. Tapping it should dismiss the keyboard.
-// TODO(crbug.com/363988044): Flaky on iphone-simulator.
-- (void)FLAKY_testTapLocationBarAboveTheKeyboard {
+- (void)testTapLocationBarAboveTheKeyboard {
   [self verifyTapLocationBarAboveTheKeyboardWithMatcher:
             FormInputAccessoryOmniboxTypingShield()];
 }

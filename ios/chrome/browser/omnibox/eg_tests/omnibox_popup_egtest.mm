@@ -512,8 +512,7 @@ TAG_SMOKE_TEST(OmniboxPopupTestCase, testSwitchToOpenTab);
   [super tearDownHelper];
 }
 
-// TODO(crbug.com/513297149): Re-enable after the fix.
-- (void)DISABLED_testTapAppendArrowButton {
+- (void)testTapAppendArrowButton {
   [ChromeEarlGrey loadURL:GURL("about:blank")];
 
   // Clears the url and replace it with local url host.
