@@ -257,12 +257,6 @@ public class AppHeaderCoordinator
 
         var isInDesktopWindow = mHeuristicResult == DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW;
 
-        // Update the caption bar background on every insets update rather than only on desktop
-        // windowing mode changes: it depends on the caption bar insets, which can change while the
-        // desktop windowing state and the app header state stay the same (e.g. a window too narrow
-        // to customize the app header).
-        updateCaptionBarBackground(isInDesktopWindow);
-
         // Avoid determining the mode when there are no window insets, which may be the case in the
         // middle of a windowing mode change. Presence of insets indicates that the window is in a
         // stable state.
@@ -314,7 +308,10 @@ public class AppHeaderCoordinator
         // 1. Enter E2E if we are in desktop windowing mode.
         setEdgeToEdgeState(mIsInDesktopWindow);
 
-        // 2. Lock the browser controls when we are in DW mode.
+        // 2. Set the captionBar background appropriately to draw into the region.
+        updateCaptionBarBackground(mIsInDesktopWindow);
+
+        // 3. Lock the browser controls when we are in DW mode.
         if (mIsInDesktopWindow) {
             mBrowserControlsToken =
                     mBrowserControlsVisibilityDelegate.showControlsPersistentAndClearOldToken(
@@ -326,14 +323,7 @@ public class AppHeaderCoordinator
         return isInDesktopWindow;
     }
 
-    private void updateCaptionBarBackground(boolean isInDesktopWindow) {
-        // Keep the caption bar background transparent while in desktop windowing mode, or when no
-        // caption bar bounding rects are present (e.g. in fullscreen, or while transitioning into
-        // desktop windowing mode) in case the OS ignores appearance updates during the transition
-        // animation. Only make the background opaque when a caption bar with bounding rects is
-        // present and Chrome does not customize it. See crbug.com/572930244.
-        boolean isTransparent =
-                isInDesktopWindow || mCaptionBarRectProvider.getBoundingRects().isEmpty();
+    private void updateCaptionBarBackground(boolean isTransparent) {
         int captionBarAppearance =
                 isTransparent ? APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND : 0;
         int currentCaptionBarAppearance =
