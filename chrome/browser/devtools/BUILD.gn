@@ -268,6 +268,7 @@ static_library("devtools") {
         "//chrome/browser/ui:browser_commands",
         "//chrome/browser/ui:browser_tabstrip",
         "//chrome/browser/ui:scoped_tabbed_browser_displayer",
+        "//chrome/browser/ui/webui/top_chrome",
       ]
     }
   }
@@ -772,6 +773,7 @@ if (enable_devtools_frontend) {
         "//chrome/browser/media/webrtc",
         "//chrome/browser/ui:browser_commands",
         "//chrome/browser/ui/views/frame:browser_view_header",
+        "//chrome/browser/ui/webui/top_chrome",
         "//chrome/browser/web_applications:web_applications_test_support",
         "//components/prefs",
         "//media:media_buildflags",

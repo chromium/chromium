@@ -13,6 +13,7 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -62,6 +63,9 @@
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/webui/devtools/devtools_ui.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -905,6 +909,18 @@ Profile* DevToolsWindow::GetProfileForDevToolsWindow(
     content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
+#if !BUILDFLAG(IS_ANDROID)
+  // TopChromeWebUIProfile has no services or prefs for the DevTools frontend,
+  // e.g. ThemeService. When debugging a Top Chrome WebUI in it, open DevTools
+  // in the user profile of the WebUI instead. Without kDebugTopChromeWebUI,
+  // keep TopChromeWebUIProfile, for which DevTools are disallowed.
+  if (profile->IsTopChromeWebUIProfile() &&
+      base::FeatureList::IsEnabled(features::kDebugTopChromeWebUI)) {
+    if (Profile* user_profile = webui::GetUserProfile(web_contents)) {
+      profile = user_profile;
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
   if (profile->IsPrimaryOTRProfile() || profile->IsDevToolsOTRProfile()) {
     return profile;
   }
