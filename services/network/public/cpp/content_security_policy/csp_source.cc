@@ -156,26 +156,20 @@ PortMatchingResult SourceAllowPort(const mojom::CSPSource& source,
   return SourceAllowPort(source, url.EffectiveIntPort(), url.scheme());
 }
 
-bool SourceAllowPath(const mojom::CSPSource& source, std::string_view path) {
-  std::string path_decoded;
-  if (!DecodePath(path, &path_decoded)) {
-    // TODO(arthursonzogni): try to figure out if that could happen and how to
-    // handle it.
-    return false;
-  }
-
-  if (source.path.empty() || (source.path == "/" && path_decoded.empty())) {
+bool SourceAllowPath(const mojom::CSPSource& source,
+                     std::string_view decoded_path) {
+  if (source.path.empty() || (source.path == "/" && decoded_path.empty())) {
     return true;
   }
 
   // If the path represents a directory.
   if (base::EndsWith(source.path, "/", base::CompareCase::SENSITIVE)) {
-    return base::StartsWith(path_decoded, source.path,
+    return base::StartsWith(decoded_path, source.path,
                             base::CompareCase::SENSITIVE);
   }
 
   // The path represents a file.
-  return source.path == path_decoded;
+  return source.path == decoded_path;
 }
 
 bool SourceAllowPath(const mojom::CSPSource& source,
@@ -185,7 +179,14 @@ bool SourceAllowPath(const mojom::CSPSource& source,
     return true;
   }
 
-  return SourceAllowPath(source, url.path());
+  std::string path_decoded;
+  if (!DecodePath(url.path(), &path_decoded)) {
+    // TODO(arthursonzogni): try to figure out if that could happen and how to
+    // handle it.
+    return false;
+  }
+
+  return SourceAllowPath(source, path_decoded);
 }
 
 bool requiresUpgrade(PortMatchingResult result) {

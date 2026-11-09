@@ -273,6 +273,18 @@ TEST(CSPSourceList, Subsume) {
       {{"http://not-example1.com/foo/ http://example1.com/foo/", "https:"},
        false},
       {{"http://*", "http://*.com http://*.example3.com:*/bar/"}, false},
+      // Percent-encoded paths are decoded once when parsed.
+      {{"http://example1.com/%66oo/page.html"}, true},
+      {{"http://example1.com/foo/%2561.html",
+        "http://example1.com/foo/%2561.html"},
+       true},
+      {{"http://example1.com/%2566oo/page.html"}, false},
+      {{"http://example1.com/%2566oo/page.html",
+        "http://example1.com/%2566oo/page.html"},
+       false},
+      {{"http://not-example1.com/%2561.html",
+        "http://not-example1.com/%2561.html"},
+       false},
   };
 
   auto origin_b =
