@@ -43,7 +43,6 @@ build_webui_tests("build") {
 
   if (!is_android) {
     ts_deps += [
-      "//chrome/browser/resources/new_tab_page:build_ts",
       "//ui/webui/resources/cr_components/app_management:build_ts",
       "//ui/webui/resources/cr_components/customize_color_scheme_mode:build_ts",
       "//ui/webui/resources/cr_components/managed_dialog:build_ts",
@@ -59,9 +58,6 @@ build_webui_tests("build") {
                     target_gen_dir),
     "chrome://new-tab-page/strings.m.js|" +
         rebase_path("//tools/typescript/definitions/strings.d.ts",
-                    target_gen_dir),
-    "chrome://new-tab-page/*|" +
-        rebase_path("$root_gen_dir/chrome/browser/resources/new_tab_page/tsc/*",
                     target_gen_dir),
   ]
 }
