@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.sync.settings;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.view.View;
 
 import androidx.test.filters.LargeTest;
@@ -20,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
@@ -36,6 +39,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.google_apis.gaia.DeviceManagementErrorDetails;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.ui.test.util.ViewUtils;
@@ -110,6 +114,31 @@ public class IdentityErrorCardPreferenceTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    public void testIdentityErrorCardForDeviceManagementError() throws Exception {
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(
+                        ContextUtils.getApplicationContext(),
+                        0,
+                        new Intent(),
+                        PendingIntent.FLAG_IMMUTABLE);
+        mFakeSyncServiceImpl.setAuthError(
+                GoogleServiceAuthError.fromDeviceManagementError(
+                        new DeviceManagementErrorDetails(pendingIntent)));
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorCard.DeviceManagementError",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsTestRule.startSettingsActivity();
+        }
+        mRenderTestRule.render(
+                getIdentityErrorCardView(), "identity_error_card_device_management_error");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
     public void testIdentityErrorCardForClientOutOfDate() throws Exception {
         mFakeSyncServiceImpl.setRequiresClientUpgrade(true);
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -151,7 +180,6 @@ public class IdentityErrorCardPreferenceTest {
         mFakeSyncServiceImpl.setEncryptEverythingEnabled(true);
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
-        mSettingsTestRule.startSettingsActivity();
         try (HistogramWatcher watchIdentityErrorCardShownHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Sync.IdentityErrorCard.TrustedVaultKeyRequiredForEverything",
@@ -171,7 +199,6 @@ public class IdentityErrorCardPreferenceTest {
         mFakeSyncServiceImpl.setEncryptEverythingEnabled(false);
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
-        mSettingsTestRule.startSettingsActivity();
         try (HistogramWatcher watchIdentityErrorCardShownHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Sync.IdentityErrorCard.TrustedVaultKeyRequiredForPasswords",
@@ -193,7 +220,6 @@ public class IdentityErrorCardPreferenceTest {
         mFakeSyncServiceImpl.setEncryptEverythingEnabled(true);
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
-        mSettingsTestRule.startSettingsActivity();
         try (HistogramWatcher watchIdentityErrorCardShownHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Sync.IdentityErrorCard.TrustedVaultRecoverabilityDegradedForEverything",

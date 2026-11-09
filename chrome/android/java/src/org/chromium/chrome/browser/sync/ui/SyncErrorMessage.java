@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.sync.ui;
 
 import static org.chromium.base.ContextUtils.getApplicationContext;
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -199,6 +200,9 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
             case UserActionableError.SIGN_IN_NEEDS_UPDATE:
                 startUpdateCredentialsFlow(mActivity);
                 break;
+            case UserActionableError.DEVICE_MANAGEMENT_ERROR:
+                SyncSettingsUtils.openDeviceManagementResolution(mActivity, mSyncService);
+                break;
             case UserActionableError.NEEDS_PASSPHRASE:
             case UserActionableError.NEEDS_CLIENT_UPGRADE:
                 openSettings();
@@ -268,6 +272,9 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
                 return context.getString(R.string.identity_error_card_button_client_out_of_date);
             case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
                 return context.getString(R.string.identity_error_card_button_get);
+            case UserActionableError.DEVICE_MANAGEMENT_ERROR:
+                return context.getString(
+                        R.string.identity_error_card_button_device_management_error);
             case UserActionableError.SIGN_IN_NEEDS_UPDATE:
             case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
             case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
@@ -292,6 +299,9 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
                 return context.getString(R.string.identity_error_message_title_client_out_of_date);
             case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
                 return context.getString(R.string.password_sync_trusted_vault_error_title);
+            case UserActionableError.DEVICE_MANAGEMENT_ERROR:
+                return context.getString(
+                        R.string.identity_error_card_button_device_management_error);
             case UserActionableError.SIGN_IN_NEEDS_UPDATE:
             case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
             case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
@@ -321,6 +331,10 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
                 return context.getString(
                         R.string
                                 .identity_error_message_body_sync_recoverability_degraded_for_passwords);
+            case UserActionableError.DEVICE_MANAGEMENT_ERROR:
+                return context.getString(
+                        R.string.identity_error_card_device_management_error,
+                        assertNonNull(mIdentityManager.getPrimaryAccountInfo()).getEmail());
             case UserActionableError.NEEDS_PASSPHRASE:
             case UserActionableError.NEEDS_CLIENT_UPGRADE:
             case UserActionableError.SIGN_IN_NEEDS_UPDATE:

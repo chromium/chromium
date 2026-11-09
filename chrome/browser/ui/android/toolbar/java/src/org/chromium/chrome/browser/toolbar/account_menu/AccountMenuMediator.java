@@ -273,7 +273,7 @@ public class AccountMenuMediator
         final @Event int shownEvent;
         if (accountInfo != null) {
             addIdentityCard(mIdentityManager, accountInfo);
-            maybeAddErrorCard();
+            maybeAddErrorCard(accountInfo);
             boolean hasIdentityError =
                     mSyncService.getUserActionableError() != UserActionableError.NONE;
             shownEvent =
@@ -328,7 +328,7 @@ public class AccountMenuMediator
         }
     }
 
-    private void maybeAddErrorCard() {
+    private void maybeAddErrorCard(AccountInfo accountInfo) {
         if (!SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU_ERROR_CARD)) {
             return;
         }
@@ -337,7 +337,8 @@ public class AccountMenuMediator
         if (error != UserActionableError.NONE) {
             mModelList.add(
                     new ListItem(
-                            ItemType.ERROR_CARD, ErrorCardProperties.createModel(error, () -> {})));
+                            ItemType.ERROR_CARD,
+                            ErrorCardProperties.createModel(error, accountInfo, () -> {})));
         }
     }
 

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 
@@ -15,11 +17,13 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.SyncSettingsUtils.ErrorUiAction;
 import org.chromium.chrome.browser.sync.ui.IdentityErrorCardViewBinder;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
 
@@ -84,11 +88,21 @@ public class IdentityErrorCardPreference extends ChromeBasePreference
         if (mIdentityError == UserActionableError.NONE) {
             return;
         }
+        assert mProfile != null;
+        AccountInfo accountInfo =
+                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile))
+                        .getPrimaryAccountInfo();
+        if (accountInfo == null) {
+            // onBindViewHolder is invoked asynchronously by RecyclerView, so it may arrive right
+            // after a sign-out happens. The card will be hidden, skip the update.
+            return;
+        }
         holder.setDividerAllowedAbove(false);
         IdentityErrorCardViewBinder.bind(
                 getContext(),
                 holder.findViewById(R.id.signin_settings_card),
                 mIdentityError,
+                accountInfo,
                 () -> mListener.onIdentityErrorCardButtonClicked(mIdentityError));
     }
 

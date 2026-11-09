@@ -18,6 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.sync.R;
 import org.chromium.chrome.browser.sync.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.SyncSettingsUtils.ErrorUiAction;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.sync.UserActionableError;
 
 /** View binder for Identity Error Card. */
@@ -27,6 +28,7 @@ public class IdentityErrorCardViewBinder {
             Context context,
             View errorCardView,
             @UserActionableError int identityError,
+            AccountInfo accountInfo,
             Runnable buttonAction) {
         ImageView image = errorCardView.findViewById(R.id.signin_settings_card_icon);
         image.setContentDescription(
@@ -36,7 +38,7 @@ public class IdentityErrorCardViewBinder {
         TextView description = errorCardView.findViewById(R.id.signin_settings_card_description);
         Button button = errorCardView.findViewById(R.id.signin_settings_card_button);
 
-        updateErrorCardDetails(context, description, button, identityError);
+        updateErrorCardDetails(context, description, button, identityError, accountInfo);
 
         button.setOnClickListener(
                 v -> {
@@ -53,44 +55,62 @@ public class IdentityErrorCardViewBinder {
             Context context,
             TextView description,
             Button button,
-            @UserActionableError int identityError) {
-        @StringRes int message;
+            @UserActionableError int identityError,
+            AccountInfo accountInfo) {
+        String message;
         @StringRes int buttonLabel;
         switch (identityError) {
             case UserActionableError.NEEDS_PASSPHRASE:
-                message = R.string.identity_error_card_passphrase_required;
+                message = context.getString(R.string.identity_error_card_passphrase_required);
                 buttonLabel = R.string.identity_error_card_button_passphrase_required;
                 break;
             case UserActionableError.NEEDS_CLIENT_UPGRADE:
-                message = R.string.identity_error_card_client_out_of_date;
+                message = context.getString(R.string.identity_error_card_client_out_of_date);
                 buttonLabel = R.string.identity_error_card_button_client_out_of_date;
                 break;
             case UserActionableError.SIGN_IN_NEEDS_UPDATE:
-                message = R.string.identity_error_card_auth_error;
+                message = context.getString(R.string.identity_error_card_auth_error);
                 buttonLabel = R.string.identity_error_card_button_verify;
                 break;
+            case UserActionableError.DEVICE_MANAGEMENT_ERROR:
+                message =
+                        context.getString(
+                                R.string.identity_error_card_device_management_error,
+                                accountInfo.getEmail());
+                buttonLabel = R.string.identity_error_card_button_device_management_error;
+                break;
             case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
-                message = R.string.identity_error_card_sync_retrieve_keys_for_everything;
+                message =
+                        context.getString(
+                                R.string.identity_error_card_sync_retrieve_keys_for_everything);
                 buttonLabel = R.string.identity_error_card_button_verify;
                 break;
             case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
-                message = R.string.identity_error_card_sync_retrieve_keys_for_passwords;
+                message =
+                        context.getString(
+                                R.string.identity_error_card_sync_retrieve_keys_for_passwords);
                 buttonLabel = R.string.identity_error_card_button_verify;
                 break;
             case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-                message = R.string.identity_error_card_sync_recoverability_degraded_for_everything;
+                message =
+                        context.getString(
+                                R.string
+                                        .identity_error_card_sync_recoverability_degraded_for_everything);
                 buttonLabel = R.string.identity_error_card_button_verify;
                 break;
             case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                message = R.string.identity_error_card_sync_recoverability_degraded_for_passwords;
+                message =
+                        context.getString(
+                                R.string
+                                        .identity_error_card_sync_recoverability_degraded_for_passwords);
                 buttonLabel = R.string.identity_error_card_button_verify;
                 break;
             case UserActionableError.NEEDS_UPM_BACKEND_UPGRADE:
-                message = R.string.sync_error_card_outdated_gms;
+                message = context.getString(R.string.sync_error_card_outdated_gms);
                 buttonLabel = R.string.password_manager_outdated_gms_positive_button;
                 break;
             case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
-                message = R.string.bookmark_sync_limit_error_description;
+                message = context.getString(R.string.bookmark_sync_limit_error_description);
                 buttonLabel = R.string.learn_more;
                 break;
             case UserActionableError.NONE:
@@ -98,7 +118,7 @@ public class IdentityErrorCardViewBinder {
                 assert false; // NOTREACHED()
                 return;
         }
-        description.setText(context.getString(message));
+        description.setText(message);
         button.setText(context.getString(buttonLabel));
     }
 }

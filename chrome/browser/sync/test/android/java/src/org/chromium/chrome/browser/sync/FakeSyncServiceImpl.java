@@ -282,6 +282,9 @@ public class FakeSyncServiceImpl implements SyncService {
             return UserActionableError.NONE;
         }
 
+        if (mAuthError.getState() == GoogleServiceAuthErrorState.DEVICE_MANAGEMENT_ERROR) {
+            return UserActionableError.DEVICE_MANAGEMENT_ERROR;
+        }
         if (mAuthError.getState() != GoogleServiceAuthErrorState.NONE) {
             return UserActionableError.SIGN_IN_NEEDS_UPDATE;
         }

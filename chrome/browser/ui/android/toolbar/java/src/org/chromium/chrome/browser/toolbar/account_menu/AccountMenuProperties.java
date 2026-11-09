@@ -13,6 +13,7 @@ import androidx.annotation.StringRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.sync.UserActionableError;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -187,17 +188,22 @@ public class AccountMenuProperties {
         /** Holds the sync {@link UserActionableError} type. */
         public static final WritableIntPropertyKey TYPE = new WritableIntPropertyKey();
 
+        /** Holds the primary account the error applies to. */
+        public static final WritableObjectPropertyKey<AccountInfo> ACCOUNT_INFO =
+                new WritableObjectPropertyKey<>();
+
         public static final WritableObjectPropertyKey<Runnable> BUTTON_CLICK_ACTION =
                 new WritableObjectPropertyKey<>();
 
-        public static final PropertyKey[] ALL_KEYS = {TYPE, BUTTON_CLICK_ACTION};
+        public static final PropertyKey[] ALL_KEYS = {TYPE, ACCOUNT_INFO, BUTTON_CLICK_ACTION};
 
         private ErrorCardProperties() {}
 
         public static PropertyModel createModel(
-                @UserActionableError int type, Runnable onButtonClick) {
+                @UserActionableError int type, AccountInfo accountInfo, Runnable onButtonClick) {
             return new PropertyModel.Builder(ALL_KEYS)
                     .with(TYPE, type)
+                    .with(ACCOUNT_INFO, accountInfo)
                     .with(BUTTON_CLICK_ACTION, onButtonClick)
                     .build();
         }

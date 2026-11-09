@@ -160,11 +160,13 @@ public class AccountMenuViewBinder {
 
     public static void bindErrorCard(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == ErrorCardProperties.TYPE
+                || propertyKey == ErrorCardProperties.ACCOUNT_INFO
                 || propertyKey == ErrorCardProperties.BUTTON_CLICK_ACTION) {
             IdentityErrorCardViewBinder.bind(
                     view.getContext(),
                     view.findViewById(R.id.signin_settings_card),
                     model.get(ErrorCardProperties.TYPE),
+                    model.get(ErrorCardProperties.ACCOUNT_INFO),
                     model.get(ErrorCardProperties.BUTTON_CLICK_ACTION));
         }
     }

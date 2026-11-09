@@ -446,6 +446,9 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                 AccountManagerFacadeProvider.getInstance()
                         .updateCredentials(mPrimaryAccount.getId(), getActivity(), null);
                 return;
+            case UserActionableError.DEVICE_MANAGEMENT_ERROR:
+                SyncSettingsUtils.openDeviceManagementResolution(getContext(), mSyncService);
+                return;
             case UserActionableError.NEEDS_CLIENT_UPGRADE:
                 // Opens the client in play store for update.
                 Intent intent = new Intent(Intent.ACTION_VIEW);
