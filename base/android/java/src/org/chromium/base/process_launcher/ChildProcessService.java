@@ -10,14 +10,12 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Build;
 import android.os.Debug;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Process;
 import android.os.RemoteException;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
@@ -325,17 +323,6 @@ public class ChildProcessService {
                 Log.e(TAG, "Failed to call reportExceptionInInit.", re);
             }
             JavaUtils.throwUnchecked(e);
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            // Record process startup time histograms.
-            long startTime = SystemClock.uptimeMillis() - Process.getStartUptimeMillis();
-            String baseHistogramName = "Android.ChildProcessStartTimeV2";
-            String suffix = ContextUtils.isIsolatedProcess() ? ".Isolated" : ".NotIsolated";
-            RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                    baseHistogramName + ".All", startTime);
-            RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                    baseHistogramName + suffix, startTime);
         }
 
         mDelegate.runMain();

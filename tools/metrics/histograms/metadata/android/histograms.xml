@@ -1695,26 +1695,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Android.ChildProcessStartTimeV2.{Type}" units="ms"
-    expires_after="2023-02-22">
-  <owner>cduvall@chromium.org</owner>
-  <owner>boliu@chromium.org</owner>
-  <summary>
-    Measures time from {Type} child process starts to right before main. Only
-    recorded on Android N+. Zygote measurements are recorded on Q+.
-
-    Zygote measurements capture the CPU time (thread time) spent to create the
-    app zygote process, before the zygote preload starts. For other processes it
-    measures the time (uptimeMillis) to create the child process service.
-  </summary>
-  <token key="Type">
-    <variant name="All" summary="all (excluding zygote)"/>
-    <variant name="Isolated" summary="isolated"/>
-    <variant name="NotIsolated" summary="non-isolated"/>
-    <variant name="Zygote" summary="app zygote"/>
-  </token>
-</histogram>
-
 <histogram name="Android.ChromeActivity.Type" enum="ChromeActivityType"
     expires_after="never">
 <!-- expires-never: Used to classify UMA reports by the dashboards. -->

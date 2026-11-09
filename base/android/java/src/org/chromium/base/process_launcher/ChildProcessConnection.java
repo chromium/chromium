@@ -190,10 +190,6 @@ public class ChildProcessConnection {
         return cl.toString() + cl.hashCode();
     }
 
-    // The last zygote PID for which the zygote startup metrics were recorded. Lives on the
-    // launcher thread.
-    private static int sLastRecordedZygotePid;
-
     // Only accessed on launcher thread.
     // Set when a launching a service with zygote times out, in which case
     // it's assumed the zygote code path is not functional. Make all future
@@ -741,10 +737,7 @@ public class ChildProcessConnection {
     }
 
     private void onSetupConnectionResultOnLauncherThread(
-            int pid,
-            int zygotePid,
-            long zygoteStartupTimeMillis,
-            @Nullable IRelroLibInfo relroInfo) {
+            int pid, int zygotePid, @Nullable IRelroLibInfo relroInfo) {
         assert isRunningOnLauncherThread();
 
         // The RELRO parcel should be accepted only when establishing the connection. This is to
@@ -765,17 +758,6 @@ public class ChildProcessConnection {
             mZygoteInfoCallback.onReceivedZygoteInfo(this, relroInfo);
         }
         mZygoteInfoCallback = null;
-
-        // Only record the zygote startup time for a process the first time it is sent.  The zygote
-        // may get killed and recreated, so keep track of the last PID recorded to avoid double
-        // counting. The app may reuse a zygote process if the app is stopped and started again
-        // quickly, so the startup time of that zygote may be recorded multiple times. There's not
-        // much we can do about that, and it shouldn't be a major issue.
-        if (sLastRecordedZygotePid != mZygotePid && hasUsableZygoteInfo()) {
-            sLastRecordedZygotePid = mZygotePid;
-            RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                    "Android.ChildProcessStartTimeV2.Zygote", zygoteStartupTimeMillis);
-        }
 
         if (mConnectionCallback != null) {
             mConnectionCallback.onConnected(this);
@@ -815,7 +797,7 @@ public class ChildProcessConnection {
                             mLauncherHandler.post(
                                     () -> {
                                         onSetupConnectionResultOnLauncherThread(
-                                                pid, zygotePid, zygoteStartupTimeMillis, relroInfo);
+                                                pid, zygotePid, relroInfo);
                                     });
                         }
 
