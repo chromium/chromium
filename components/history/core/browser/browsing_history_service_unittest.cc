@@ -1263,6 +1263,44 @@ TEST_F(BrowsingHistoryServiceTest, ShouldQueryActorVisitsOnly) {
   }
 
   EXPECT_FALSE(result.second.sync_timed_out);
+  // Remote is never queried for actor-only queries, so it must not keep the
+  // query from reaching the beginning.
+  EXPECT_TRUE(result.second.reached_beginning);
+}
+
+// Web History is never queried for actor-only queries. Once local history is
+// exhausted, there are no more results, so `reached_beginning` must be true,
+// even with Web History enabled. Otherwise callers keep requesting more pages.
+TEST_F(BrowsingHistoryServiceTest, ActorVisitsOnlyPagingReachesBeginning) {
+  ResetService(driver(), local_history(), web_history(), sync(),
+               device_info_tracker(), /*critical_action_provider=*/nullptr);
+  AddHistory({{kUrl1, 1, kRemote},
+              {kUrl2, 2, kLocal, "", VisitSource::SOURCE_ACTOR},
+              {kUrl3, 3, kLocal, "", VisitSource::SOURCE_ACTOR},
+              {kUrl4, 4, kLocal, "", VisitSource::SOURCE_ACTOR}});
+
+  QueryOptions options;
+  options.include_user_visits = false;
+  options.include_actor_visits = true;
+  options.max_count = 2;
+
+  // There are more local actor visits than `max_count`.
+  EXPECT_THAT(
+      QueryHistory(options),
+      MatchesQueryResult(baseline_time_, /*reached_beginning*/ false,
+                         std::vector<TestResult>{
+                             {kUrl4, 4, kLocal, "", VisitSource::SOURCE_ACTOR},
+                             {kUrl3, 3, kLocal, "", VisitSource::SOURCE_ACTOR},
+                         }));
+
+  // The continuation returns the last local actor visit. Web History is never
+  // queried, so this is the last page.
+  EXPECT_THAT(
+      ContinueQuery(),
+      MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
+                         std::vector<TestResult>{
+                             {kUrl2, 2, kLocal, "", VisitSource::SOURCE_ACTOR},
+                         }));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

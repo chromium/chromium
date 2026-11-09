@@ -81,6 +81,23 @@ bool CanRetry(QuerySourceStatus status) {
          status == FAILURE || status == TIMED_OUT;
 }
 
+// Returns whether remote (Web History) results can ever be part of a query
+// with `options`. If not, the remote source must not keep the query from
+// reaching the beginning.
+bool CanIncludeRemoteResults(const QueryOptions& options) {
+  // TODO(crbug.com/583357777): Support app_id filtering for remote history.
+  if (options.app_id != kNoAppIdFilter) {
+    return false;
+  }
+#if !BUILDFLAG(IS_IOS)
+  // Actor visits are local-only, so actor-only queries never use remote.
+  if (!options.include_user_visits) {
+    return false;
+  }
+#endif
+  return true;
+}
+
 base::Time OldestTime(
     const std::vector<BrowsingHistoryService::HistoryEntry>& entries) {
   // If the vector is empty, then there is no oldest, so we use the oldest
@@ -575,12 +592,9 @@ bool BrowsingHistoryService::ShouldQueryRemote(const QueryHistoryState& state) {
     return false;
   }
 
-#if !BUILDFLAG(IS_IOS)
-  // Actor visits are local-only and user visits should not be queried.
-  if (!state.original_options.include_user_visits) {
+  if (!CanIncludeRemoteResults(state.original_options)) {
     return false;
   }
-#endif
 
   const size_t desired_count =
       static_cast<size_t>(state.original_options.EffectiveMaxCount());
@@ -591,15 +605,6 @@ bool BrowsingHistoryService::ShouldQueryRemote(const QueryHistoryState& state) {
   if (state.local_results.size() + state.remote_results.size() >=
       desired_count) {
     // Already have sufficient results, no need to query more.
-    return false;
-  }
-
-  // App-specific history uses the results from the local database only, since
-  // the legacy json API service WebHistory relies on can't be updated to
-  // process app_id.
-  // TODO(crbug.com/460361854): Once migrated to a non-legacy API, also query
-  // remote app-specific history.
-  if (state.original_options.app_id != kNoAppIdFilter) {
     return false;
   }
 
@@ -1034,7 +1039,7 @@ void BrowsingHistoryService::ReturnResultsToDriver(
   info.search_text = state->search_text;
   info.reached_beginning = !CanRetry(state->local_status) &&
                            (!CanRetry(state->remote_status) ||
-                            state->original_options.app_id != kNoAppIdFilter);
+                            !CanIncludeRemoteResults(state->original_options));
   info.sync_timed_out = state->remote_status == TIMED_OUT;
   info.queried_critical_actions = queried_critical_actions;
   base::OnceClosure continuation =
