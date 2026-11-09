@@ -2059,7 +2059,7 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
 
   bool success =
       shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
-  shared_context_state_->SubmitIfNecessary(
+  success &= shared_context_state_->SubmitIfNecessary(
       std::move(end_semaphores),
       dest_scoped_access->NeedGraphiteContextSubmit());
 
@@ -2323,7 +2323,7 @@ bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
 
   bool success =
       shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
-  shared_context_state_->SubmitIfNecessary(
+  success &= shared_context_state_->SubmitIfNecessary(
       std::move(end_semaphores),
       dest_scoped_access->NeedGraphiteContextSubmit());
 
@@ -2959,8 +2959,8 @@ void RasterDecoderImpl::DoEndRasterCHROMIUM() {
       bool need_graphite_submit =
           paint_op_shared_image_provider_->NeedGraphiteContextSubmit() ||
           scoped_shared_image_write_->NeedGraphiteContextSubmit();
-      shared_context_state_->SubmitIfNecessary(std::move(end_semaphores_),
-                                               need_graphite_submit);
+      success &= shared_context_state_->SubmitIfNecessary(
+          std::move(end_semaphores_), need_graphite_submit);
       if (success && should_clear_shared_image_) {
         shared_image_->SetCleared();
       }
