@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
@@ -443,6 +444,128 @@ TEST_F(InlinePaintContextTest, StopPropagateTextDecorations) {
       <rt>
         <u></u>
       </rt>
+    </div>
+  )HTML");
+  // Test pass if no DCHECK failures.
+}
+
+class InlinePaintContextPrecomputedHoverTest : public InlinePaintContextTest {
+ public:
+  // Returns a cursor at the first fragment of the text in the element with
+  // `id`.
+  InlineCursor TextCursor(const char* id) {
+    InlineCursor cursor;
+    cursor.MoveTo(*GetLayoutObjectByElementId(id)->SlowFirstChild());
+    return cursor;
+  }
+
+  const ComputedStyle* StyleOf(const char* id) {
+    return &GetLayoutObjectByElementId(id)->EffectiveStyle(
+        StyleVariant::kStandard);
+  }
+
+ private:
+  ScopedCompositeHoverStyleForTest scoped_feature_{true};
+};
+
+// A culled inline box has no box item, so its decorating box is pushed when its
+// text is painted.
+TEST_F(InlinePaintContextPrecomputedHoverTest, CulledInlineDecoratingBox) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #source:hover {
+      text-decoration: underline;
+    }
+    </style>
+    <div><span id="source">text</span></div>
+  )HTML");
+  ASSERT_FALSE(To<LayoutInline>(GetLayoutObjectByElementId("source"))
+                   ->ShouldCreateBoxFragment());
+
+  InlineCursor cursor = TextCursor("source");
+  const FragmentItem& text_item = *cursor.CurrentItem();
+  cursor.MoveToContainingLine();
+  InlinePaintContext context;
+  context.SetLineBox(cursor);
+  EXPECT_TRUE(context.DecoratingBoxes().empty());
+  InlinePaintContext::ScopedInlineItem scoped_text(text_item, &context);
+  ASSERT_EQ(context.DecoratingBoxes().size(), 1u);
+  EXPECT_EQ(&context.DecoratingBoxes()[0].Style(), StyleOf("source"));
+}
+
+// The decorating box of a block, including an inline block, is the anonymous
+// inline box of its lines, so it is pushed with the line box.
+TEST_F(InlinePaintContextPrecomputedHoverTest, InlineBlockDecoratingBox) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #source {
+      display: inline-block;
+    }
+    #source:hover {
+      text-decoration: underline;
+    }
+    </style>
+    <div><span id="source">text</span></div>
+  )HTML");
+
+  InlineCursor cursor = TextCursor("source");
+  const FragmentItem& text_item = *cursor.CurrentItem();
+  // The text is in a line of the inline block, not of the <div>.
+  cursor.MoveToContainingLine();
+  InlinePaintContext context;
+  context.SetLineBox(cursor);
+  ASSERT_EQ(context.DecoratingBoxes().size(), 1u);
+  EXPECT_EQ(&context.DecoratingBoxes()[0].Style(), StyleOf("source"));
+  InlinePaintContext::ScopedInlineItem scoped_text(text_item, &context);
+  ASSERT_EQ(context.DecoratingBoxes().size(), 1u);
+  EXPECT_EQ(&context.DecoratingBoxes()[0].Style(), StyleOf("source"));
+}
+
+// A non-culled inline box, here because of its background, pushes its
+// decorating box when its box item is painted, before its text.
+TEST_F(InlinePaintContextPrecomputedHoverTest, NonCulledInlineDecoratingBox) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #source {
+      background: yellow;
+    }
+    #source:hover {
+      text-decoration: underline;
+    }
+    </style>
+    <div><span id="source">text</span></div>
+  )HTML");
+  ASSERT_TRUE(To<LayoutInline>(GetLayoutObjectByElementId("source"))
+                  ->ShouldCreateBoxFragment());
+
+  InlineCursor cursor = TextCursor("source");
+  const FragmentItem& text_item = *cursor.CurrentItem();
+  cursor.MoveToContainingLine();
+  InlinePaintContext context;
+  context.SetLineBox(cursor);
+  EXPECT_TRUE(context.DecoratingBoxes().empty());
+  InlineCursor box_cursor;
+  box_cursor.MoveTo(*GetLayoutObjectByElementId("source"));
+  InlinePaintContext::ScopedInlineItem scoped_box(*box_cursor.CurrentItem(),
+                                                  &context);
+  ASSERT_EQ(context.DecoratingBoxes().size(), 1u);
+  EXPECT_EQ(&context.DecoratingBoxes()[0].Style(), StyleOf("source"));
+  InlinePaintContext::ScopedInlineItem scoped_text(text_item, &context);
+  ASSERT_EQ(context.DecoratingBoxes().size(), 1u);
+  EXPECT_EQ(&context.DecoratingBoxes()[0].Style(), StyleOf("source"));
+}
+
+TEST_F(InlinePaintContextPrecomputedHoverTest, StopPropagateTextDecorations) {
+  // The `<rt>` element produces an inline box that stops propagations, and
+  // applies its own decoration.
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    .hover:hover {
+      text-decoration: underline;
+    }
+    </style>
+    <div style="text-decoration: overline">
+      <ruby>base<rt class="hover">annotation</rt></ruby>
     </div>
   )HTML");
   // Test pass if no DCHECK failures.

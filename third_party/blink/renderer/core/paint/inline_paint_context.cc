@@ -104,10 +104,10 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
           // e.g., fast/css/first-letter.html
           //       tables/mozilla/bugs/bug126742.html
           if (decorations->size() == parent_decorations.size() &&
-              (style->GetTextDecorationLine() == TextDecorationLine::kNone ||
+              (!style->IsDecoratingBoxIncludingPrecomputedHover() ||
                // Conceptually text nodes don't have styles, but |LayoutText|
-               // has a style of its parent. Ignore |GetTextDecorationLine| for
-               // |LayoutText|.
+               // has a style of its parent. Ignore
+               // |IsDecoratingBoxIncludingPrecomputedHover| for |LayoutText|.
                // http/tests/devtools/service-workers/service-workers-view.js
                IsA<LayoutText>(layout_object))) {
             if (&parent_decorations == stop_at_)
@@ -124,7 +124,7 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
             return 0;
           }
           if (decorations->size() == 1 &&
-              decorations->front().Lines() == style->GetTextDecorationLine()) {
+              style->IsDecoratingBoxIncludingPrecomputedHover()) {
             inline_context_->ClearDecoratingBoxes(&saved_decorating_boxes_);
             PushDecoratingBox(item, *layout_object, *style);
             return 1;
@@ -193,7 +193,7 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
           style.BaseTextDecorationData();
       if (base_decorations == &parent_decorations) {
         DCHECK_EQ(decorations.size(), parent_decorations.size() + 1);
-        DCHECK_NE(style.GetTextDecorationLine(), TextDecorationLine::kNone);
+        DCHECK(style.IsDecoratingBoxIncludingPrecomputedHover());
         PushDecoratingBox(item, layout_object, style);
         return 1;
       }
@@ -203,7 +203,7 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
         // When the normal style and `::first-line` have different decorations,
         // the normal style inherits from the parent, and the `:first-line`
         // inherits from the normal style, resulting two decorating boxes.
-        DCHECK_NE(style.GetTextDecorationLine(), TextDecorationLine::kNone);
+        DCHECK(style.IsDecoratingBoxIncludingPrecomputedHover());
         PushDecoratingBox(item, layout_object, style);
         PushDecoratingBox(item, layout_object, style);
         return 2;

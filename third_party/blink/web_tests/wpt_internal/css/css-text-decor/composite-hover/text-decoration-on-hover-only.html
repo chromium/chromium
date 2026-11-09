@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Text decorations that only apply on :hover are not rendered</title>
+<link rel="match" href="text-decoration-on-hover-only-ref.html">
+<style>
+  a { text-decoration: none; }
+  a:hover { text-decoration: underline green 3px; }
+  .overline { text-decoration: overline blue; }
+  .narrow { width: 200px; }
+  #card:hover { text-decoration: underline green; }
+  #line-through:hover { text-decoration: line-through green; }
+</style>
+<div><a href="#">Simple link</a></div>
+<div class="overline">Overline <a href="#">link inside an overlined block</a> after</div>
+<div class="narrow"><a href="#">A link that wraps across multiple lines, because it is very long and
+  the container is narrow</a></div>
+<div id="card"><div>Card title</div><div>Card description</div></div>
+<div><span id="line-through">Line through</span></div>

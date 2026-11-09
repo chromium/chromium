@@ -28,6 +28,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 
 #include "base/check_op.h"
 #include "base/functional/function_ref.h"
@@ -1912,8 +1913,9 @@ class ComputedStyle final : public ComputedStyleBase {
   CORE_EXPORT TextDecorationLine TextDecorationsInEffect() const;
   CORE_EXPORT const AppliedTextDecorationVector& AppliedTextDecorations() const;
   CORE_EXPORT AppliedTextDecorationVector* AppliedTextDecorationData() const {
-    return IsDecoratingBox() ? EnsureAppliedTextDecorationsCache()
-                             : BaseTextDecorationData();
+    return IsDecoratingBoxIncludingPrecomputedHover()
+               ? EnsureAppliedTextDecorationsCache()
+               : BaseTextDecorationData();
   }
 
   // Returns true if this a "decorating box".
@@ -1928,9 +1930,20 @@ class ComputedStyle final : public ComputedStyleBase {
     return true;
   }
 
+  // Returns true if this box or its precomputed :hover style (see
+  // kPseudoIdPrecomputedHover) adds a text decoration.
+  bool IsDecoratingBoxIncludingPrecomputedHover() const {
+    if (IsDecoratingBox()) {
+      return true;
+    }
+    const ComputedStyle* hover_style =
+        GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover);
+    return hover_style && hover_style->IsDecoratingBox();
+  }
+
   // Returns true if there are any text decorations.
   bool HasAppliedTextDecorations() const {
-    if (IsDecoratingBox()) {
+    if (IsDecoratingBoxIncludingPrecomputedHover()) {
       return true;
     }
     if (BaseTextDecorationData()) {
@@ -1943,7 +1956,14 @@ class ComputedStyle final : public ComputedStyleBase {
   // Returns (by value) the last text decoration, if any.
   std::optional<AppliedTextDecoration> LastAppliedTextDecoration() const {
     if (HasAppliedTextDecorations()) {
-      return AppliedTextDecorations().back();
+      for (const AppliedTextDecoration& decoration :
+           std::views::reverse(AppliedTextDecorations())) {
+        // Skip decorations that only apply on hover (see
+        // IsDecoratingBoxIncludingPrecomputedHover()).
+        if (decoration.Lines() != TextDecorationLine::kNone) {
+          return decoration;
+        }
+      }
     }
     return std::nullopt;
   }

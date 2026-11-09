@@ -2220,7 +2220,7 @@ TextDecorationLine ComputedStyle::TextDecorationsInEffect() const {
 
 AppliedTextDecorationVector* ComputedStyle::EnsureAppliedTextDecorationsCache()
     const {
-  DCHECK(IsDecoratingBox());
+  DCHECK(IsDecoratingBoxIncludingPrecomputedHover());
 
   if (!cached_data_ || !cached_data_->applied_text_decorations_) {
     AppliedTextDecorationVector* decorations =
@@ -2231,6 +2231,9 @@ AppliedTextDecorationVector* ComputedStyle::EnsureAppliedTextDecorationsCache()
       decorations->ReserveInitialCapacity(base_decorations->size() + 1u);
       *decorations = *base_decorations;
     }
+    // TODO(crbug.com/571157138): If only the precomputed :hover style adds the
+    // decoration, give it the lines of that style, transparent until the box
+    // is hovered.
     decorations->emplace_back(
         GetTextDecorationLine(), TextDecorationStyle(),
         VisitedDependentColor(GetCSSPropertyTextDecorationColor()),
@@ -2251,7 +2254,7 @@ const AppliedTextDecorationVector& ComputedStyle::AppliedTextDecorations()
     return *empty;
   }
 
-  if (!IsDecoratingBox()) {
+  if (!IsDecoratingBoxIncludingPrecomputedHover()) {
     const auto* base_decorations = BaseTextDecorationData();
     DCHECK(base_decorations);
     DCHECK_GE(base_decorations->size(), 1u);

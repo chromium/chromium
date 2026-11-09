@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/style_scope_data.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -5119,6 +5120,140 @@ TEST_F(StyleResolverTest, PrecomputeHoverAncestorInvalidation) {
                    .GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover));
   EXPECT_FALSE(outer_affected_sibling_precomp->ComputedStyleRef()
                    .GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover));
+}
+
+TEST_F(StyleResolverTest, PrecomputeHoverTextDecoration) {
+  ScopedCompositeHoverStyleForTest precompute(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #link:hover { text-decoration: underline dotted green; }
+    </style>
+    <a id="link"><span id="span">Link</span></a>
+  )HTML");
+
+  // The link is the decorating box of the decoration that its :hover style
+  // applies. The decoration has no lines until the link is hovered.
+  const ComputedStyle* style = GetElementById("link")->GetComputedStyle();
+  EXPECT_FALSE(style->IsDecoratingBox());
+  EXPECT_TRUE(style->IsDecoratingBoxIncludingPrecomputedHover());
+  ASSERT_EQ(style->AppliedTextDecorations().size(), 1u);
+  EXPECT_EQ(style->AppliedTextDecorations()[0].Lines(),
+            TextDecorationLine::kNone);
+  EXPECT_EQ(style->TextDecorationsInEffect(), TextDecorationLine::kNone);
+  EXPECT_FALSE(style->LastAppliedTextDecoration());
+
+  // It propagates to the descendants, for which it has no lines either.
+  const ComputedStyle* span_style = GetElementById("span")->GetComputedStyle();
+  EXPECT_EQ(span_style->AppliedTextDecorationData(),
+            style->AppliedTextDecorationData());
+  EXPECT_FALSE(span_style->IsDecoratingBoxIncludingPrecomputedHover());
+  EXPECT_EQ(span_style->TextDecorationsInEffect(), TextDecorationLine::kNone);
+  EXPECT_FALSE(span_style->LastAppliedTextDecoration());
+}
+
+TEST_F(StyleResolverTest, PrecomputeHoverTextDecorationOnlyIfAdded) {
+  ScopedCompositeHoverStyleForTest precompute(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .underline { text-decoration: underline red; }
+      #color:hover { text-decoration-color: green; }
+      #removed:hover { text-decoration: none; }
+      #no-decoration:hover { text-decoration-color: green; }
+    </style>
+    <div id="color" class="underline"></div>
+    <div id="removed" class="underline"></div>
+    <div id="no-decoration"></div>
+  )HTML");
+
+  // The :hover styles are precomputed, but only a decoration that a :hover
+  // style adds changes the applied text decorations.
+  for (const char* id : {"color", "removed"}) {
+    SCOPED_TRACE(id);
+    const ComputedStyle* style = GetElementById(id)->GetComputedStyle();
+    EXPECT_TRUE(style->GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover));
+    EXPECT_TRUE(style->HasAppliedTextDecorations());
+    ASSERT_EQ(style->AppliedTextDecorations().size(), 1u);
+    const AppliedTextDecoration& decoration =
+        style->AppliedTextDecorations()[0];
+    EXPECT_EQ(decoration.Lines(), TextDecorationLine::kUnderline);
+    EXPECT_EQ(decoration.GetColor(), Color(255, 0, 0));
+  }
+  const ComputedStyle* style =
+      GetElementById("no-decoration")->GetComputedStyle();
+  EXPECT_TRUE(style->GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover));
+  EXPECT_FALSE(style->HasAppliedTextDecorations());
+}
+
+TEST_F(StyleResolverTest, PrecomputeHoverTextDecorationPropagation) {
+  ScopedCompositeHoverStyleForTest precompute(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #link:hover { text-decoration: underline; }
+      #inline-block { display: inline-block; }
+      #float { float: left; }
+      #abspos { position: absolute; }
+    </style>
+    <a id="link">
+      <span id="span">Text <em id="em">text</em></span>
+      <div id="block"><span id="block-child">Block</span></div>
+      <span id="inline-block"><span id="inline-block-child">Text</span></span>
+      <span id="float">Float</span>
+      <span id="abspos">Abspos</span>
+    </a>
+  )HTML");
+
+  const AppliedTextDecorationVector* decorations =
+      GetElementById("link")->GetComputedStyle()->AppliedTextDecorationData();
+
+  // The decoration propagates to in-flow descendants, including blocks, like
+  // the other applied text decorations, sharing the same instance.
+  for (const char* id : {"span", "em", "block", "block-child"}) {
+    SCOPED_TRACE(id);
+    const ComputedStyle* style = GetElementById(id)->GetComputedStyle();
+    EXPECT_TRUE(style->HasAppliedTextDecorations());
+    EXPECT_EQ(style->AppliedTextDecorationData(), decorations);
+  }
+
+  // It doesn't propagate to atomic inlines, floats and out-of-flow positioned
+  // descendants.
+  for (const char* id :
+       {"inline-block", "inline-block-child", "float", "abspos"}) {
+    SCOPED_TRACE(id);
+    EXPECT_FALSE(
+        GetElementById(id)->GetComputedStyle()->HasAppliedTextDecorations());
+  }
+}
+
+TEST_F(StyleResolverTest, PrecomputeHoverTextDecorationInvalidation) {
+  ScopedCompositeHoverStyleForTest precompute(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .underline:hover { text-decoration: underline; }
+    </style>
+    <a id="link"><span id="span">Text</span></a>
+  )HTML");
+
+  Element* link = GetElementById("link");
+  Element* span = GetElementById("span");
+  EXPECT_FALSE(span->GetComputedStyle()->HasAppliedTextDecorations());
+
+  // Only the precomputed :hover style of the link changes, but the decoration
+  // still needs to propagate to the descendants.
+  link->classList().Add(AtomicString("underline"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(link->GetComputedStyle()->HasAppliedTextDecorations());
+  EXPECT_TRUE(span->GetComputedStyle()->HasAppliedTextDecorations());
+  EXPECT_EQ(span->GetComputedStyle()->AppliedTextDecorationData(),
+            link->GetComputedStyle()->AppliedTextDecorationData());
+
+  link->classList().Remove(AtomicString("underline"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(link->GetComputedStyle()->HasAppliedTextDecorations());
+  EXPECT_FALSE(span->GetComputedStyle()->HasAppliedTextDecorations());
 }
 
 }  // namespace blink

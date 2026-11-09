@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Text decorations that change color on :hover render as when not hovered</title>
+<link rel="match" href="text-decoration-color-change-ref.html">
+<style>
+  a { text-decoration: underline red; }
+  a:hover { text-decoration-color: green; }
+  .overline { text-decoration: overline blue; }
+  .narrow { width: 200px; }
+  #card { text-decoration: underline red; }
+  #card:hover { text-decoration-color: green; }
+  #line-through { text-decoration: line-through red; }
+  #line-through:hover { text-decoration-color: green; }
+</style>
+<div><a href="#">Simple link</a></div>
+<div class="overline">Overline <a href="#">link inside an overlined block</a> after</div>
+<div class="narrow"><a href="#">A link that wraps across multiple lines, because it is very long and
+  the container is narrow</a></div>
+<div id="card"><div>Card title</div><div>Card description</div></div>
+<div><span id="line-through">Line through</span></div>

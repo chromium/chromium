@@ -379,6 +379,25 @@
     "expires": "Jan 1, 2027"
   },
   {
+    "prefix": "composite-hover-text-decoration",
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "wpt_internal/css/css-text-decor/composite-hover"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-blink-features=CompositeHoverStyle",
+      "--enable-threaded-compositing"
+    ],
+    "owners": [
+      "awogbemila@chromium.org",
+      "blink-interactions-team@google.com"
+    ],
+    "expires": "Oct 1, 2027"
+  },
+  {
     "prefix": "connection-allowlist",
     "owners": [
       "mkwst@chromium.org",
