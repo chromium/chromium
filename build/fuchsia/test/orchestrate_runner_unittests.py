@@ -5,6 +5,8 @@
 """File for testing orchestrate_runner.py."""
 
 import json
+import os
+import tempfile
 import unittest
 from unittest import mock
 
@@ -24,6 +26,9 @@ class OrchestrateRunnerTest(unittest.TestCase):
         self.assertTrue(
             orchestrate_runner.support_orchestrate('web_engine_unittests')
         )
+        self.assertFalse(
+            orchestrate_runner.support_orchestrate('bundled_test_runner.py')
+        )
         self.assertFalse(orchestrate_runner.support_orchestrate('unknown_test'))
 
     def test_run_tests_with_orchestrate_missing_out_dir(self) -> None:
@@ -34,73 +39,110 @@ class OrchestrateRunnerTest(unittest.TestCase):
 
     @mock.patch('common.catch_sigterm', new=lambda: None)
     @mock.patch('subprocess.Popen')
-    @mock.patch('common.get_host_arch', return_value='x64')
+    @mock.patch(
+        'common.ORCHESTRATE_CONFIG',
+        new=os.path.join(orchestrate_runner.SCRIPT_DIR, 'orchestrate_x64.json'),
+    )
     def test_run_tests_with_orchestrate_x64(
-        self, _, mock_popen: mock.MagicMock
+        self, mock_popen: mock.MagicMock
     ) -> None:
         mock_proc = mock_popen.return_value.__enter__.return_value
         mock_proc.wait.return_value = 0
 
-        packages = [
-            'gen/base/base_unittests/base_unittests.far',
-        ]
-        target_cmd = ['run_executable_test.py', '--test-name', 'base_unittests']
-        logs_dir = '/tmp/test_logs'
+        with tempfile.TemporaryDirectory() as out_dir:
+            ids_dir = os.path.join(out_dir, 'gen', 'base', 'base_unittests')
+            os.makedirs(ids_dir)
+            with open(os.path.join(ids_dir, 'ids.txt'), 'w') as f:
+                f.write('')
 
-        ret = orchestrate_runner.run_tests_with_orchestrate(
-            out_dir='out/Release',
-            packages=packages,
-            target_cmd=target_cmd,
-            logs_dir=logs_dir,
-        )
-        self.assertEqual(ret, 0)
-        mock_popen.assert_called_once()
-        cmd = mock_popen.call_args[0][0]
-        self.assertIn('orchestrate', cmd[0])
-        self.assertEqual(cmd[1], 'run')
-        self.assertEqual(cmd[2], '-input')
-        self.assertTrue(cmd[3].endswith('orchestrate_x64.json'))
-        self.assertEqual(cmd[4], '-overrides')
-        overrides = json.loads(cmd[5])
-        self.assertEqual(overrides['emulator']['package_archives'], packages)
-        self.assertEqual(
-            overrides['emulator']['build_ids'],
-            ['gen/base/base_unittests/ids.txt'],
-        )
-        self.assertEqual(cmd[6], '--')
-        self.assertEqual(cmd[7:], target_cmd)
+            packages = [
+                'gen/base/base_unittests/base_unittests.far',
+                'gen/base/base_unittests/extra.far',
+                'gen/base/base_unittests/base_unittests.far',
+                'missing_ids/pkg.far',
+            ]
+            target_cmd = [
+                'run_executable_test.py',
+                '--test-name',
+                'base_unittests',
+            ]
+            logs_dir = '/tmp/test_logs'
 
-        env = mock_popen.call_args[1]['env']
-        self.assertEqual(env['TEST_UNDECLARED_OUTPUTS_DIR'], logs_dir)
-        self.assertEqual(mock_popen.call_args[1]['cwd'], 'out/Release')
+            ret = orchestrate_runner.run_tests_with_orchestrate(
+                out_dir=out_dir,
+                packages=packages,
+                target_cmd=target_cmd,
+                logs_dir=logs_dir,
+            )
+            self.assertEqual(ret, 0)
+            mock_popen.assert_called_once()
+            cmd = mock_popen.call_args[0][0]
+            self.assertIn('orchestrate', cmd[0])
+            self.assertEqual(cmd[1], 'run')
+            self.assertEqual(cmd[2], '-input')
+            self.assertTrue(cmd[3].endswith('orchestrate_x64.json'))
+            self.assertEqual(cmd[4], '-overrides')
+            overrides = json.loads(cmd[5])
+            self.assertEqual(
+                overrides['emulator']['package_archives'],
+                [
+                    'gen/base/base_unittests/base_unittests.far',
+                    'gen/base/base_unittests/extra.far',
+                    'missing_ids/pkg.far',
+                ],
+            )
+            self.assertEqual(
+                overrides['emulator']['build_ids'],
+                ['gen/base/base_unittests/ids.txt'],
+            )
+            self.assertEqual(cmd[6], '--')
+            self.assertEqual(cmd[7:], target_cmd)
+
+            env = mock_popen.call_args[1]['env']
+            self.assertEqual(env['TEST_UNDECLARED_OUTPUTS_DIR'], logs_dir)
+            self.assertEqual(mock_popen.call_args[1]['cwd'], out_dir)
 
     @mock.patch('common.catch_sigterm', new=lambda: None)
     @mock.patch('subprocess.Popen')
-    @mock.patch('common.get_host_arch', return_value='arm64')
-    def test_run_tests_with_orchestrate_arm64(
-        self, _, mock_popen: mock.MagicMock
+    @mock.patch(
+        'common.ORCHESTRATE_CONFIG',
+        new=os.path.join(
+            orchestrate_runner.SCRIPT_DIR, 'orchestrate_arm64.json'
+        ),
+    )
+    def test_run_tests_with_orchestrate_arm64_without_ids_txt(
+        self, mock_popen: mock.MagicMock
     ) -> None:
         mock_proc = mock_popen.return_value.__enter__.return_value
         mock_proc.wait.return_value = 0
 
-        packages = ['gen/base/base_unittests/base_unittests.far']
-        target_cmd = ['run_executable_test.py']
+        with tempfile.TemporaryDirectory() as out_dir:
+            packages = ['assets_unittests.far']
+            target_cmd = ['run_executable_test.py']
 
-        ret = orchestrate_runner.run_tests_with_orchestrate(
-            out_dir='out/Release',
-            packages=packages,
-            target_cmd=target_cmd,
-        )
-        self.assertEqual(ret, 0)
-        mock_popen.assert_called_once()
-        cmd = mock_popen.call_args[0][0]
-        self.assertTrue(cmd[3].endswith('orchestrate_arm64.json'))
+            ret = orchestrate_runner.run_tests_with_orchestrate(
+                out_dir=out_dir,
+                packages=packages,
+                target_cmd=target_cmd,
+            )
+            self.assertEqual(ret, 0)
+            mock_popen.assert_called_once()
+            cmd = mock_popen.call_args[0][0]
+            self.assertTrue(cmd[3].endswith('orchestrate_arm64.json'))
+            self.assertEqual(cmd[4], '-overrides')
+            self.assertEqual(
+                json.loads(cmd[5]),
+                {'emulator': {'package_archives': ['assets_unittests.far']}},
+            )
 
     @mock.patch('common.catch_sigterm', new=lambda: None)
     @mock.patch('subprocess.Popen')
-    @mock.patch('common.get_host_arch', return_value='x64')
+    @mock.patch(
+        'common.ORCHESTRATE_CONFIG',
+        new=os.path.join(orchestrate_runner.SCRIPT_DIR, 'orchestrate_x64.json'),
+    )
     def test_run_tests_with_orchestrate_keyboard_interrupt(
-        self, _, mock_popen: mock.MagicMock
+        self, mock_popen: mock.MagicMock
     ) -> None:
         mock_proc = mock_popen.return_value.__enter__.return_value
         mock_proc.wait.side_effect = KeyboardInterrupt()
@@ -114,9 +156,12 @@ class OrchestrateRunnerTest(unittest.TestCase):
 
     @mock.patch('common.catch_sigterm')
     @mock.patch('subprocess.Popen')
-    @mock.patch('common.get_host_arch', return_value='x64')
+    @mock.patch(
+        'common.ORCHESTRATE_CONFIG',
+        new=os.path.join(orchestrate_runner.SCRIPT_DIR, 'orchestrate_x64.json'),
+    )
     def test_run_tests_with_orchestrate_system_exit(
-        self, _, mock_popen: mock.MagicMock, mock_catch_sigterm: mock.MagicMock
+        self, mock_popen: mock.MagicMock, mock_catch_sigterm: mock.MagicMock
     ) -> None:
         mock_proc = mock_popen.return_value.__enter__.return_value
         mock_proc.wait.side_effect = [SystemExit(0), 0]
@@ -129,6 +174,7 @@ class OrchestrateRunnerTest(unittest.TestCase):
         mock_catch_sigterm.assert_called_once()
         mock_proc.terminate.assert_called_once()
         self.assertEqual(mock_proc.wait.call_count, 2)
+        self.assertNotIn('-overrides', mock_popen.call_args[0][0])
 
 
 if __name__ == '__main__':

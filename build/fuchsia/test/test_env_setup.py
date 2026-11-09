@@ -72,9 +72,7 @@ def setup_env(mypid: int = 0) -> int:
     if mypid == 0:
         mypid = os.getpid()
 
-    # The 'setup-environment' is a place holder and has no specific meaning; the
-    # run_test._get_test_runner is overridden.
-    sys.argv.append('setup-environment')
+    sys.argv.extend(['test_env_expose.py', f'--mypid={mypid}'])
 
     def get_test_runner(runner_args: argparse.Namespace, *_) -> TestRunner:
         return _Blocker(
@@ -108,19 +106,25 @@ def expose_env(logs_dir: str, mypid: int = 0) -> int:
     )
 
 
+def load_exposed_env(logs_dir: str, pid: int) -> bool:
+    """Loads environment variables from the pid file in logs_dir into
+    os.environ if present. Returns True if loaded."""
+    pid_file = os.path.join(logs_dir, f'test_env_setup.{pid}.pid')
+    if os.path.isfile(pid_file):
+        with open(pid_file, 'r') as f:
+            os.environ.update(json.load(f))
+        return True
+    return False
+
+
 def wait_for_env_setup(proc: Popen, logs_dir: str) -> bool:
     """Waits for the test_env_setup.py process to be ready, returns false if
     the process terminated unexpected."""
-    pid_file = os.path.join(
-        logs_dir, 'test_env_setup.' + str(proc.pid) + '.pid'
-    )
-    while not os.path.isfile(pid_file):
+    while not load_exposed_env(logs_dir, proc.pid):
         proc.poll()
         if proc.returncode:
             return False
         time.sleep(1)
-    with open(pid_file, 'r') as f:
-        os.environ.update(json.load(f))
     return True
 
 

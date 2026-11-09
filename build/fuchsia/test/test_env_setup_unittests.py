@@ -6,6 +6,7 @@
 
 import json
 import os
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -74,6 +75,43 @@ class TestEnvSetupTests(unittest.TestCase):
             mock_proc.returncode = 1
             self.assertFalse(
                 test_env_setup.wait_for_env_setup(mock_proc, logs_dir)
+            )
+
+    def test_load_exposed_env_loads_pid_file(self) -> None:
+        with tempfile.TemporaryDirectory() as logs_dir:
+            with open(
+                os.path.join(logs_dir, 'test_env_setup.7777.pid'), 'w'
+            ) as f:
+                json.dump({'DISCOVERED_VAR': 'discovered_val'}, f)
+
+            with mock.patch.dict(os.environ, {}, clear=False):
+                os.environ.pop('DISCOVERED_VAR', None)
+                self.assertTrue(test_env_setup.load_exposed_env(logs_dir, 7777))
+                self.assertEqual(
+                    os.environ.get('DISCOVERED_VAR'), 'discovered_val'
+                )
+
+    def test_load_exposed_env_returns_false_when_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as logs_dir:
+            self.assertFalse(test_env_setup.load_exposed_env(logs_dir, 1234))
+
+    def test_setup_env_passes_test_env_expose_and_mypid(self) -> None:
+        argv = ['test_env.py', '--orchestrate']
+        with mock.patch.object(sys, 'argv', argv), mock.patch(
+            'test_env_setup.catch_sigterm'
+        ), mock.patch.object(
+            test_env_setup.run_test, '_get_test_runner'
+        ), mock.patch('run_test.main', return_value=0) as mock_main:
+            self.assertEqual(test_env_setup.setup_env(2468), 0)
+            mock_main.assert_called_once()
+            self.assertEqual(
+                argv,
+                [
+                    'test_env.py',
+                    '--orchestrate',
+                    'test_env_expose.py',
+                    '--mypid=2468',
+                ],
             )
 
 

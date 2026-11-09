@@ -101,32 +101,28 @@ def run_tests_with_orchestrate(
     if not logs_dir:
         logs_dir = '/tmp/'
 
-    config_json = os.path.join(
-        SCRIPT_DIR, f'orchestrate_{common.get_host_arch()}.json'
-    )
-    assert os.path.exists(config_json)
-    overrides = {
-        'emulator': {
-            'package_archives': packages,
-            'build_ids': [
-                os.path.join(os.path.dirname(pkg), 'ids.txt')
-                for pkg in packages
-            ],
-        }
-    }
-    overrides_str = json.dumps(overrides)
-
-    orchestrate_bin = os.path.join(common.SDK_TOOLS_DIR, 'orchestrate')
-
+    assert os.path.exists(common.ORCHESTRATE_CONFIG)
     cmd = [
-        orchestrate_bin,
+        os.path.join(common.SDK_TOOLS_DIR, 'orchestrate'),
         'run',
         '-input',
-        config_json,
-        '-overrides',
-        overrides_str,
-        '--',
-    ] + target_cmd
+        common.ORCHESTRATE_CONFIG,
+    ]
+    if packages:
+        packages = list(dict.fromkeys(packages))
+        emulator_overrides = {'package_archives': packages}
+        build_ids = [
+            ids_path
+            for ids_path in dict.fromkeys(
+                os.path.join(os.path.dirname(pkg), 'ids.txt')
+                for pkg in packages
+            )
+            if os.path.isfile(os.path.join(out_dir, ids_path))
+        ]
+        if build_ids:
+            emulator_overrides['build_ids'] = build_ids
+        cmd.extend(['-overrides', json.dumps({'emulator': emulator_overrides})])
+    cmd.extend(['--', *target_cmd])
 
     # TODO(crbug.com/346624801): Revert this env injection after
     # fxrev.dev/1716732 is merged and SDK is rolled.

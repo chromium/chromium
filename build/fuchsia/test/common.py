@@ -78,6 +78,18 @@ def _find_fuchsia_gn_sdk_root() -> str:
 
 GN_SDK_ROOT = os.path.abspath(_find_fuchsia_gn_sdk_root())
 
+
+def _find_orchestrate_config() -> str:
+    """Define the config file of orchestrate."""
+    if os.environ.get('FUCHSIA_ORCHESTRATE_CONFIG'):
+        return os.environ['FUCHSIA_ORCHESTRATE_CONFIG']
+    return os.path.join(
+        os.path.dirname(__file__), f'orchestrate_{get_host_arch()}.json'
+    )
+
+
+ORCHESTRATE_CONFIG = os.path.abspath(_find_orchestrate_config())
+
 SDK_TOOLS_DIR = os.path.join(SDK_ROOT, 'tools', get_host_arch())
 _FFX_TOOL = os.path.join(SDK_TOOLS_DIR, 'ffx')
 _FFX_ISOLATE_DIR = 'FFX_ISOLATE_DIR'

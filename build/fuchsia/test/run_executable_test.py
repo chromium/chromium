@@ -15,6 +15,7 @@ from typing import List, Optional
 
 from common import (
     get_component_uri,
+    get_ffx_isolate_dir,
     get_host_arch,
     register_common_args,
     register_device_args,
@@ -300,13 +301,33 @@ def register_executable_test_args(parser: argparse.ArgumentParser) -> None:
 
 def main():
     """Stand-alone function for running executable tests."""
+    # Avoid cycle dependency with run_test -> run_executable_test.
+    from test_env_setup import load_exposed_env
 
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--mypid',
+        type=int,
+        help='The pid used to load the exposed environment from logs-dir.',
+    )
     register_common_args(parser)
     register_device_args(parser)
     register_log_args(parser)
     register_executable_test_args(parser)
     runner_args, test_args = parser.parse_known_args()
+    if runner_args.mypid:
+        env_dir = runner_args.logs_dir or get_ffx_isolate_dir()
+        if not load_exposed_env(env_dir, runner_args.mypid):
+            raise FileNotFoundError(
+                'Failed to load exposed environment for pid '
+                f'{runner_args.mypid} from {env_dir}.'
+            )
+        # register_device_args() evaluates os.environ.get('FUCHSIA_NODENAME')
+        # before load_exposed_env() updates os.environ, so prefer any exposed
+        # nodename while preserving an explicit --target-id when unset.
+        runner_args.target_id = (
+            os.environ.get('FUCHSIA_NODENAME') or runner_args.target_id
+        )
     runner = create_executable_test_runner(runner_args, test_args)
     return runner.run_test().returncode
 
