@@ -214,13 +214,9 @@ ActionAppMenu::ActionAppMenu(BrowserWindowInterface* browser_window_interface,
                              base::RepeatingClosure on_menu_closed_callback)
     : browser_window_interface_(browser_window_interface),
       on_menu_closed_callback_(std::move(on_menu_closed_callback)),
-      menu_manager_(std::make_unique<ActionAppMenuManager>(
-          browser_window_interface,
-          /*drag_and_drop_host=*/this,
-          // Unretained is safe because `this` owns `menu_manager_`.
-          base::BindRepeating(&ActionAppMenu::RebuildSubmenu,
-                              base::Unretained(this),
-                              kActionOtherDeviceTabsSubmenu))) {
+      menu_manager_(
+          std::make_unique<ActionAppMenuManager>(browser_window_interface,
+                                                 /*drag_and_drop_host=*/this)) {
   menu_manager_->CreateMenuHierarchy();
 }
 
@@ -405,6 +401,30 @@ void ActionAppMenu::UpdateMenuItem(actions::BaseAction* action,
     old_parent_menu->ChildrenChanged();
   }
   new_parent_menu->ChildrenChanged();
+}
+
+void ActionAppMenu::RebuildSubmenu(actions::ActionId submenu_id) {
+  auto it = command_to_action_map_.find(submenu_id);
+  if (it == command_to_action_map_.end()) {
+    return;
+  }
+  actions::BaseAction* const submenu_action = it->second;
+  CHECK(submenu_action->HasPopulateChildActionsCallback());
+  views::MenuItemView* const menu_item = root_->GetMenuItemByID(submenu_id);
+  CHECK(menu_item && menu_item->HasSubmenu());
+
+  ScopedCloseGuard close_guard(this);
+  views::SubmenuView* const submenu = menu_item->GetSubmenu();
+  // Rows not built yet; WillShowMenu() builds them from the new actions.
+  if (submenu->GetMenuItems().empty() && !submenu->IsShowing()) {
+    submenu_action->PopulateChildItems();
+  } else {
+    RemoveSubmenuActionsFromMap(menu_item);
+    menu_item->RemoveAllMenuItems();
+    submenu_action->PopulateChildItems();
+    PopulateMenu(menu_item, submenu_action);
+    menu_item->ChildrenChanged();
+  }
 }
 
 void ActionAppMenu::CloseMenu() {
@@ -740,27 +760,6 @@ void ActionAppMenu::RemoveSubmenuActionsFromMap(
     RemoveSubmenuActionsFromMap(child);
     command_to_action_map_.erase(child->GetCommand());
   }
-}
-
-void ActionAppMenu::RebuildSubmenu(actions::ActionId submenu_action_id) {
-  auto action_it = command_to_action_map_.find(submenu_action_id);
-  if (action_it == command_to_action_map_.end()) {
-    return;
-  }
-  views::MenuItemView* menu_item = root_->GetMenuItemByID(submenu_action_id);
-  CHECK(menu_item);
-  actions::BaseAction* submenu_action = action_it->second;
-  // Rows not built yet; WillShowMenu() builds them from the new actions.
-  if (menu_item->GetSubmenu()->GetMenuItems().empty() &&
-      !menu_item->GetSubmenu()->IsShowing()) {
-    submenu_action->PopulateChildItems();
-    return;
-  }
-  RemoveSubmenuActionsFromMap(menu_item);
-  menu_item->RemoveAllMenuItems();
-  submenu_action->PopulateChildItems();
-  PopulateMenu(menu_item, submenu_action);
-  menu_item->ChildrenChanged();
 }
 
 void ActionAppMenu::CancelAndEvaluate(actions::ActionId action_id,

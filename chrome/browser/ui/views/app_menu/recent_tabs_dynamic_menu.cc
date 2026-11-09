@@ -17,6 +17,7 @@
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
@@ -58,9 +59,10 @@ bool MayHaveMnemonics(const RecentTabItem& item) {
 
 RecentTabsDynamicMenu::RecentTabsDynamicMenu(
     BrowserWindowInterface* browser,
-    base::RepeatingClosure rebuild_submenu_callback)
-    : browser_window_interface_(browser),
-      rebuild_submenu_callback_(std::move(rebuild_submenu_callback)) {}
+    AppMenuDragAndDropDelegate::Host* host)
+    : browser_window_interface_(browser), host_(host) {
+  CHECK(host_);
+}
 
 RecentTabsDynamicMenu::~RecentTabsDynamicMenu() = default;
 
@@ -86,8 +88,12 @@ void RecentTabsDynamicMenu::BuildOtherDeviceTabsActions(
     if (sync_sessions::SessionSyncService* service =
             SessionSyncServiceFactory::GetForProfile(
                 browser_window_interface_->GetProfile())) {
+      // Unretained is safe because `host_` outlives `this`, which owns the
+      // subscription.
       foreign_session_updated_subscription_ =
-          service->SubscribeToForeignSessionsChanged(rebuild_submenu_callback_);
+          service->SubscribeToForeignSessionsChanged(base::BindRepeating(
+              &AppMenuDragAndDropDelegate::Host::RebuildSubmenu,
+              base::Unretained(host_.get()), kActionOtherDeviceTabsSubmenu));
     }
   }
   parent_item->ResetActionList();

@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_drag_and_drop_delegate.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/app_menu/recent_tabs_dynamic_menu.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -140,6 +141,18 @@ std::vector<std::u16string> GetItemsDepthFirst(actions::BaseAction* item) {
   }
   return items;
 }
+
+class MockAppMenuHost : public AppMenuDragAndDropDelegate::Host {
+ public:
+  MOCK_METHOD(void,
+              UpdateMenuItem,
+              (actions::BaseAction*,
+               actions::BaseAction*,
+               actions::BaseAction*),
+              (override));
+  MOCK_METHOD(void, RebuildSubmenu, (actions::ActionId), (override));
+  MOCK_METHOD(void, CloseMenu, (), (override));
+};
 
 }  // namespace
 
@@ -603,7 +616,8 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
   helper.AddTabWithInfo(1, 0, now - base::Minutes(20), u"Oldest");
   helper.ExportToSessionSync(sync_processor.get());
 
-  RecentTabsDynamicMenu dynamic_menu(browser(), base::DoNothing());
+  testing::NiceMock<MockAppMenuHost> host;
+  RecentTabsDynamicMenu dynamic_menu(browser(), &host);
   std::unique_ptr<actions::ActionItem> root =
       actions::ActionItem::Builder().Build();
   dynamic_menu.BuildOtherDeviceTabsActions(root.get());

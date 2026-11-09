@@ -447,12 +447,11 @@ class AppMenuBuilder {
 
 ActionAppMenuManager::ActionAppMenuManager(
     BrowserWindowInterface* browser_window_interface,
-    AppMenuDragAndDropDelegate::Host* drag_and_drop_host,
-    base::RepeatingClosure rebuild_submenu_callback)
+    AppMenuDragAndDropDelegate::Host* drag_and_drop_host)
     : browser_window_interface_(browser_window_interface),
-      recent_tabs_menu_(std::make_unique<RecentTabsDynamicMenu>(
-          browser_window_interface,
-          std::move(rebuild_submenu_callback))),
+      recent_tabs_menu_(
+          std::make_unique<RecentTabsDynamicMenu>(browser_window_interface,
+                                                  drag_and_drop_host)),
       bookmarks_menu_(
           std::make_unique<BookmarksDynamicMenu>(browser_window_interface,
                                                  drag_and_drop_host)),

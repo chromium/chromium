@@ -9,7 +9,6 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -37,8 +36,7 @@ class ActionAppMenuManager {
   using DisplayType = AppMenuActionItem::DisplayType;
 
   ActionAppMenuManager(BrowserWindowInterface* browser_window_interface,
-                       AppMenuDragAndDropDelegate::Host* drag_and_drop_host,
-                       base::RepeatingClosure rebuild_submenu_callback);
+                       AppMenuDragAndDropDelegate::Host* drag_and_drop_host);
   ActionAppMenuManager(const ActionAppMenuManager&) = delete;
   ActionAppMenuManager& operator=(const ActionAppMenuManager&) = delete;
   ~ActionAppMenuManager();

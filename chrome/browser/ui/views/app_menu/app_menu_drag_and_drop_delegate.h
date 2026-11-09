@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "ui/actions/action_id.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/views/controls/menu/menu_delegate.h"
@@ -33,10 +34,21 @@ class AppMenuDragAndDropDelegate {
    public:
     virtual ~Host() = default;
 
+    // Call when the model reports a specific change to `action`. Moves `action`
+    // and its row under `target_parent_action`, after `insert_after` (or first
+    // if null). Removes them if `target_parent_action` is null.
     virtual void UpdateMenuItem(
         actions::BaseAction* action,
         actions::BaseAction* target_parent_action,
         actions::BaseAction* insert_after = nullptr) = 0;
+
+    // Call when the model reports that something changed but not what.
+    // `submenu_id` is the ActionId of a dynamic submenu (one registered with a
+    // populate callback); its callback is rerun and its rows are replaced in
+    // place, so an open submenu stays open. No-op if the submenu isn't in the
+    // showing menu.
+    virtual void RebuildSubmenu(actions::ActionId submenu_id) = 0;
+
     virtual void CloseMenu() = 0;
   };
 

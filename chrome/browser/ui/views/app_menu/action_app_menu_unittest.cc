@@ -1220,7 +1220,7 @@ TEST_F(ActionAppMenuTest, PopulatesTabGroupsSubmenu) {
 
 TEST_F(ActionAppMenuTest, RecentTabsMinorIcon) {
   RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_,
-                                     base::DoNothing());
+                                     &mock_drag_and_drop_host_);
   auto parent = actions::ActionItem::Builder().Build();
 
   RecentTabItem tab_with_group(RecentTabItem::Type::kTab, u"Grouped Tab");
@@ -4964,7 +4964,7 @@ TEST_F(ActionAppMenuTest, SafetyHubNotificationMetrics) {
 TEST_F(ActionAppMenuTest, RecentTabsDynamicMenuMetrics) {
   base::UserActionTester user_action_tester;
   RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_,
-                                     base::DoNothing());
+                                     &mock_drag_and_drop_host_);
   auto parent = actions::ActionItem::Builder().Build();
 
   RecentTabItem local_tab(RecentTabItem::Type::kTab, u"Local Tab");
@@ -5055,8 +5055,8 @@ TEST_F(ActionAppMenuTest, SavedTabGroupsAndSidePanelMetrics) {
 TEST_F(ActionAppMenuTest, TabsFromOtherDevicesAndSendTabToSelfMetrics) {
   base::HistogramTester histogram_tester;
 
-  ActionAppMenuManager menu_manager(
-      &mock_window_interface_, &mock_drag_and_drop_host_, base::DoNothing());
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
   menu_manager.CreateMenuHierarchy();
 
   // TargetDeviceCount should not be logged when the menu hierarchy is
@@ -5289,6 +5289,100 @@ TEST_F(ActionAppMenuTest, UpdateMenuItem) {
   menu.UpdateMenuItem(item_b_action, /*target_parent_action=*/nullptr);
   ASSERT_EQ(submenu_item->GetSubmenu()->GetMenuItems().size(), 1u);
   EXPECT_EQ(submenu_item->GetSubmenu()->GetMenuItemAt(0)->title(), u"Item A");
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, RebuildSubmenu) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  actions::ActionItem* app_menu_root = actions::ActionManager::Get().FindAction(
+      kActionAppMenuRoot,
+      BrowserActions::From(&mock_window_interface_)->root_action_item());
+  ASSERT_TRUE(app_menu_root);
+
+  // Past the last real action ID, so it's unused and needs no registration.
+  constexpr actions::ActionId submenu_id = kChromeActionsEnd;
+  std::vector<std::u16string> labels = {u"Item A"};
+  std::u16string invoked;
+  auto submenu_action =
+      actions::ActionItem::Builder()
+          .SetActionId(submenu_id)
+          .SetText(u"Test Rebuild Submenu")
+          .SetProperty(AppMenuActionItem::kIsSubmenuKey, true)
+          .SetPopulateChildrenCallback(
+              base::BindLambdaForTesting([&](actions::BaseAction* parent) {
+                parent->ResetActionList();
+                for (const std::u16string& label : labels) {
+                  parent->AddChild(
+                      actions::ActionItem::Builder()
+                          .SetText(label)
+                          .SetInvokeActionCallback(base::BindLambdaForTesting(
+                              [&invoked, label](
+                                  actions::ActionItem*,
+                                  actions::ActionInvocationContext) {
+                                invoked = label;
+                              }))
+                          .Build());
+                }
+              }))
+          .Build();
+  actions::BaseAction* submenu_action_ptr =
+      AddChildBeforeFooter(app_menu_root, std::move(submenu_action));
+  submenu_action_ptr->PopulateChildItems();
+
+  // No-op while the menu isn't showing.
+  labels = {u"Item B"};
+  menu.RebuildSubmenu(submenu_id);
+  ASSERT_EQ(submenu_action_ptr->GetChildren().children().size(), 1u);
+  EXPECT_EQ(submenu_action_ptr->GetChildren()
+                .children()[0]
+                ->GetActionItem()
+                ->GetText(),
+            u"Item A");
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* submenu_item = nullptr;
+  for (views::MenuItemView* item : root->GetSubmenu()->GetMenuItems()) {
+    if (item->title() == u"Test Rebuild Submenu") {
+      submenu_item = item;
+      break;
+    }
+  }
+  ASSERT_TRUE(submenu_item);
+  ASSERT_TRUE(submenu_item->HasSubmenu());
+
+  // Rows not built yet: only the actions are rebuilt.
+  menu.RebuildSubmenu(submenu_id);
+  EXPECT_TRUE(submenu_item->GetSubmenu()->GetMenuItems().empty());
+  menu.WillShowMenu(submenu_item);
+  ASSERT_EQ(submenu_item->GetSubmenu()->GetMenuItems().size(), 1u);
+  EXPECT_EQ(submenu_item->GetSubmenu()->GetMenuItemAt(0)->title(), u"Item B");
+
+  // Built rows are replaced in place.
+  const int old_command =
+      submenu_item->GetSubmenu()->GetMenuItemAt(0)->GetCommand();
+  labels = {u"Item C", u"Item D"};
+  menu.RebuildSubmenu(submenu_id);
+  ASSERT_EQ(submenu_item->GetSubmenu()->GetMenuItems().size(), 2u);
+  EXPECT_EQ(submenu_item->GetSubmenu()->GetMenuItemAt(0)->title(), u"Item C");
+  EXPECT_EQ(submenu_item->GetSubmenu()->GetMenuItemAt(1)->title(), u"Item D");
+  EXPECT_FALSE(menu.command_to_action_map_for_testing().contains(old_command));
+
+  menu.ExecuteCommand(
+      submenu_item->GetSubmenu()->GetMenuItemAt(1)->GetCommand(), ui::EF_NONE);
+  EXPECT_EQ(invoked, u"Item D");
+
+  // IDs that aren't in the showing menu are ignored.
+  menu.RebuildSubmenu(submenu_id + 1);
+  EXPECT_EQ(submenu_item->GetSubmenu()->GetMenuItems().size(), 2u);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -5617,7 +5711,7 @@ TEST_F(ActionAppMenuTest, RecentTabsByDateHistoryInSidePanel) {
       mock_window_interface_.GetUnownedUserDataHost());
 
   RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_,
-                                     base::DoNothing());
+                                     &mock_drag_and_drop_host_);
   auto parent = actions::ActionItem::Builder().Build();
   dynamic_menu.BuildRecentTabsActions(parent.get());
 
@@ -5641,7 +5735,7 @@ TEST_F(ActionAppMenuTest, RecentTabsByDateHistoryInSidePanel) {
 
 TEST_F(ActionAppMenuTest, CreateOtherDeviceTabsActionsWithDevices) {
   RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_,
-                                     base::DoNothing());
+                                     &mock_drag_and_drop_host_);
   auto other_device_tabs_submenu =
       actions::ActionItem::Builder()
           .SetActionId(kActionOtherDeviceTabsSubmenu)
@@ -5906,7 +6000,7 @@ TEST_F(ActionAppMenuTest, UserGeneratedBookmarkTitlesEscapeAmpersands) {
 TEST_F(ActionAppMenuTest,
        RecentTabsDynamicMenu_UserGeneratedItemsEscapeAmpersands) {
   RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_,
-                                     base::DoNothing());
+                                     &mock_drag_and_drop_host_);
   auto parent = actions::ActionItem::Builder().Build();
 
   RecentTabItem tab_item(RecentTabItem::Type::kTab, u"A&B Tab");

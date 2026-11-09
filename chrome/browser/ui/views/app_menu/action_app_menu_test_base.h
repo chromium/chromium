@@ -34,6 +34,7 @@ class MockAppMenuDragAndDropHost : public AppMenuDragAndDropDelegate::Host {
                actions::BaseAction*,
                actions::BaseAction*),
               (override));
+  MOCK_METHOD(void, RebuildSubmenu, (actions::ActionId), (override));
   MOCK_METHOD(void, CloseMenu, (), (override));
 };
 

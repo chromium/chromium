@@ -70,6 +70,7 @@ class ActionAppMenu : public views::MenuDelegate,
   void UpdateMenuItem(actions::BaseAction* action,
                       actions::BaseAction* target_parent_action,
                       actions::BaseAction* insert_after = nullptr) override;
+  void RebuildSubmenu(actions::ActionId submenu_id) override;
   void CloseMenu() override;
 
   // views::MenuDelegate:
@@ -148,8 +149,6 @@ class ActionAppMenu : public views::MenuDelegate,
   AppMenuDragAndDropDelegate* GetDragAndDropDelegate(
       actions::BaseAction* action) const;
   void RemoveSubmenuActionsFromMap(views::MenuItemView* parent_menu_item);
-  // Repopulates the dynamic submenu `submenu_action_id` while the menu is open.
-  void RebuildSubmenu(actions::ActionId submenu_action_id);
 
   void CancelAndEvaluate(actions::ActionId action_id, int mouse_event_flags);
 
