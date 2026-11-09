@@ -14,6 +14,7 @@
 #include "base/base64.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
@@ -21,6 +22,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
@@ -920,6 +922,17 @@ void ToolController::ReloadPage(ToolResponseCallback callback) {
     }
     // Tool calls run one at a time, so no other reload can be in progress.
     CHECK(!crashed_tab_reload_callback_);
+    if (tabs::TabInterface* active_tab =
+            tabs::TabInterface::MaybeGetFromContents(contents)) {
+      actor::ActorKeyedService* actor_service =
+          actor::ActorKeyedService::Get(GetProfile());
+      CHECK(actor_service);
+      if (actor::ActorTask* task =
+              actor_service->GetTask(session_controller_->GetActorTaskId())) {
+        task->AddTab(active_tab->GetHandle(), /*stop_task_on_detach=*/true,
+                     base::DoNothing());
+      }
+    }
     crashed_tab_reload_callback_ = std::move(callback);
     Observe(contents);
     contents->GetController().Reload(content::ReloadType::NORMAL,

@@ -302,8 +302,12 @@ OpenKnownPageTool::GetObservationDelayer(
 
 void OpenKnownPageTool::UpdateTaskBeforeInvoke(ActorTask& task,
                                                ToolCallback callback) const {
+  // OpenKnownPageTool cannot rely on ActorTask::Act() to register the surface
+  // because the target tab is not known until Validate() searches open tabs
+  // and history. Register the target surface here before navigation starts.
   if (navigate_tool_) {
-    navigate_tool_->UpdateTaskBeforeInvoke(task, std::move(callback));
+    task.AddActorSurface(navigate_tool_->GetTargetActorSurface(),
+                         /*stop_task_on_detach=*/true, std::move(callback));
     return;
   }
   Tool::UpdateTaskBeforeInvoke(task, std::move(callback));

@@ -419,7 +419,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ReloadPage) {
 // them directly.
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ReloadPageOnCrashedTab) {
   ttc_service().StartSession();
-  auto* session_controller = ttc_service().session_controller();
+  auto* session_controller =
+      static_cast<SessionControllerImpl*>(ttc_service().session_controller());
   ASSERT_TRUE(session_controller);
 
   const GURL url =
@@ -438,6 +439,14 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ReloadPageOnCrashedTab) {
   EXPECT_TRUE(future.Take().Ok());
   EXPECT_FALSE(web_contents()->IsCrashed());
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), url);
+
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+  const actor::ActorTask* acting_task =
+      actor_service->GetActingActorTaskForWebContents(web_contents());
+  ASSERT_TRUE(acting_task);
+  EXPECT_EQ(acting_task->id(), session_controller->GetActorTaskId());
 }
 
 // Reloading a crashed tab directly still honors the enterprise policy that
@@ -537,7 +546,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenKnownPage) {
                          u"Title Of Awesomeness", bookmark_url);
 
   ttc_service().StartSession();
-  auto* session_controller = ttc_service().session_controller();
+  auto* session_controller =
+      static_cast<SessionControllerImpl*>(ttc_service().session_controller());
   ASSERT_TRUE(session_controller);
 
   base::test::TestFuture<ToolResponse> future;
@@ -553,6 +563,14 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenKnownPage) {
   ToolResponse response = future.Take();
   EXPECT_TRUE(response.Ok());
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), bookmark_url);
+
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+  const actor::ActorTask* acting_task =
+      actor_service->GetActingActorTaskForWebContents(web_contents());
+  ASSERT_TRUE(acting_task);
+  EXPECT_EQ(acting_task->id(), session_controller->GetActorTaskId());
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
