@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBrid
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
+import org.chromium.chrome.browser.omnibox.status.StatusMediator.StatusIconType;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
@@ -1002,6 +1003,9 @@ public final class StatusMediatorUnitTest {
 
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
 
+        assertEquals(
+                StatusIconType.FUSEBOX_PLUS_BUTTON,
+                mMediator.getStatusIconTypeSupplier().get().intValue());
         assertNotNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
         assertEquals(
                 R.drawable.ic_add_round_20dp_with_inset,

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.app.Activity;
 import android.view.View;
@@ -35,6 +36,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusMediator.StatusIconType;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link FuseboxPlusButtonIphController}. */
@@ -60,17 +62,25 @@ public class FuseboxPlusButtonIphControllerUnitTest {
         Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mStatusView = new View(activity);
         activity.setContentView(mStatusView);
-        mController =
-                new FuseboxPlusButtonIphController(
-                        mUserEducationHelper,
-                        mStatusView,
-                        mFuseboxStateSupplier,
-                        mStatusIconTypeSupplier);
+        mController = createController(mFuseboxStateSupplier, mStatusIconTypeSupplier);
+    }
+
+    private FuseboxPlusButtonIphController createController(
+            SettableNonNullObservableSupplier<@FuseboxState Integer> fuseboxStateSupplier,
+            SettableNonNullObservableSupplier<@StatusIconType Integer> statusIconTypeSupplier) {
+        return new FuseboxPlusButtonIphController(
+                mUserEducationHelper, mStatusView, fuseboxStateSupplier, statusIconTypeSupplier);
     }
 
     private void setIphShowingState() {
-        mFuseboxStateSupplier.set(FuseboxState.COMPACT);
-        mStatusIconTypeSupplier.set(StatusIconType.FUSEBOX_PLUS_BUTTON);
+        setIphShowingState(mFuseboxStateSupplier, mStatusIconTypeSupplier);
+    }
+
+    private void setIphShowingState(
+            SettableNonNullObservableSupplier<@FuseboxState Integer> fuseboxStateSupplier,
+            SettableNonNullObservableSupplier<@StatusIconType Integer> statusIconTypeSupplier) {
+        fuseboxStateSupplier.set(FuseboxState.COMPACT);
+        statusIconTypeSupplier.set(StatusIconType.FUSEBOX_PLUS_BUTTON);
     }
 
     @Test
@@ -170,5 +180,22 @@ public class FuseboxPlusButtonIphControllerUnitTest {
         mFuseboxStateSupplier.set(FuseboxState.DISABLED);
         setIphShowingState();
         assertFalse(mController.isShowingForTesting());
+    }
+
+    @Test
+    public void desktopPlatform_doesNotObserveOrShowIph() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        var fuseboxStateSupplier = ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
+        var statusIconTypeSupplier = ObservableSuppliers.createNonNull(StatusIconType.NONE);
+
+        var controller = createController(fuseboxStateSupplier, statusIconTypeSupplier);
+
+        assertFalse(fuseboxStateSupplier.hasObservers());
+        assertFalse(statusIconTypeSupplier.hasObservers());
+
+        setIphShowingState(fuseboxStateSupplier, statusIconTypeSupplier);
+
+        assertFalse(controller.isShowingForTesting());
+        verifyNoInteractions(mUserEducationHelper);
     }
 }

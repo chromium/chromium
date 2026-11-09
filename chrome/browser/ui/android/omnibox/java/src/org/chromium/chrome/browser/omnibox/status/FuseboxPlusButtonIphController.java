@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /**
@@ -49,6 +50,9 @@ class FuseboxPlusButtonIphController {
         mStatusView = statusView;
         mFuseboxStateSupplier = fuseboxStateSupplier;
         mStatusIconTypeSupplier = statusIconTypeSupplier;
+
+        // Suppress on desktop by not adding observers.
+        if (OmniboxCapabilities.isDesktopPlatform()) return;
 
         mFuseboxStateSupplier.addSyncObserver(mFuseboxStateObserver);
         mStatusIconTypeSupplier.addSyncObserver(mStatusIconTypeObserver);

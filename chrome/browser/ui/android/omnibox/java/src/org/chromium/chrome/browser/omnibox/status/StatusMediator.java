@@ -25,7 +25,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
@@ -131,6 +133,8 @@ public class StatusMediator
     private final NonNullObservableSupplier<@FuseboxLayoutMode Integer> mFuseboxLayoutModeSupplier;
     private final OnClickListener mFuseboxOnPlusButtonClicked;
     private final OmniboxImageSupplier mImageSupplier;
+    private final SettableNonNullObservableSupplier<@StatusIconType Integer>
+            mStatusIconTypeSupplier = ObservableSuppliers.createNonNull(StatusIconType.NONE);
     private @Nullable Runnable mOnStatusViewHiddenForPageInfoRemoval;
     private final Callback<@Nullable SiteSearchData> mSiteSearchDataObserver =
             this::onSiteSearchDataChanged;
@@ -665,6 +669,7 @@ public class StatusMediator
             case StatusIconType.SEARCH_ENGINE -> {
                 maybeUpdateStatusIconForSearchEngineIcon();
                 mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
+                mStatusIconTypeSupplier.set(iconType);
                 // No need to proceed further if we've already updated it for the search engine
                 // icon.
                 return;
@@ -678,6 +683,7 @@ public class StatusMediator
                 tintRes = mNavigationIconTintRes;
             }
             case StatusIconType.CLAPPER_QUIET_PERMISSION -> {
+                mStatusIconTypeSupplier.set(iconType);
                 return;
             }
             case StatusIconType.SECURITY -> {
@@ -737,6 +743,11 @@ public class StatusMediator
         setStatusClickListener(clickListener);
 
         updateStatusViewVisibility();
+        mStatusIconTypeSupplier.set(iconType);
+    }
+
+    NonNullObservableSupplier<@StatusIconType Integer> getStatusIconTypeSupplier() {
+        return mStatusIconTypeSupplier;
     }
 
     private @StatusIconType int resolveStatusIconType() {
