@@ -6,12 +6,16 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <algorithm>
+#include <cstdlib>
 #include <tuple>
 #include <utility>
 
 #include "base/apple/foundation_util.h"
 #import "base/mac/mac_util.h"
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -45,6 +49,7 @@
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/widget.h"
@@ -847,4 +852,76 @@ IN_PROC_BROWSER_TEST_F(
   ui_test_utils::BrowserDestroyedObserver destroyed_observer(second_browser);
   std::exchange(second_browser, nullptr)->GetTabStripModel()->CloseAllTabs();
   destroyed_observer.Wait();
+}
+
+namespace {
+
+// Checks that every time the contents are resized, they extend to the bottom
+// of the browser view. A layout that gets this wrong, even if a later layout
+// corrects it before the frame is drawn, resizes the web contents to a wrong
+// size and the page shows up clipped or with a gap at the bottom.
+class ContentsBottomChecker : public views::ViewObserver {
+ public:
+  explicit ContentsBottomChecker(BrowserView* browser_view)
+      : browser_view_(browser_view),
+        expected_bottom_inset_(GetContentsBottomInset()) {
+    observation_.Observe(browser_view->contents_container());
+  }
+
+  int resize_count() const { return resize_count_; }
+  int max_error() const { return max_error_; }
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override {
+    ++resize_count_;
+    const int error = GetContentsBottomInset() - expected_bottom_inset_;
+    max_error_ = std::max(max_error_, std::abs(error));
+  }
+
+ private:
+  int GetContentsBottomInset() const {
+    views::View* const contents = browser_view_->contents_container();
+    return browser_view_->height() -
+           views::View::ConvertRectToTarget(contents->parent(), browser_view_,
+                                            contents->bounds())
+               .bottom();
+  }
+
+  const raw_ptr<BrowserView> browser_view_;
+  const int expected_bottom_inset_;
+  int resize_count_ = 0;
+  int max_error_ = 0;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
+
+}  // namespace
+
+// Tests that the contents keep filling the browser view while the bookmark bar
+// animates in and out with "Always Show Toolbar in Full Screen". The top
+// container is in a separate widget, and the browser view resizes when the top
+// container does.
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
+                       ContentsFillBrowserViewWhileBookmarkBarAnimates) {
+  ScopedAlwaysShowToolbar scoped_always_show(browser(), true);
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  RunScheduledLayouts();
+
+  for (bool show : {true, false}) {
+    SCOPED_TRACE(show ? "Show bookmark bar" : "Hide bookmark bar");
+    const int top_container_height = browser_view->top_container()->height();
+    ContentsBottomChecker checker(browser_view);
+    chrome::ExecuteCommand(browser(), IDC_SHOW_BOOKMARK_BAR);
+    EXPECT_TRUE(browser_view->IsBookmarkBarAnimating());
+    ui_test_utils::CheckWaiter(
+        base::BindRepeating(&BrowserView::IsBookmarkBarAnimating,
+                            base::Unretained(browser_view)),
+        false, base::Seconds(3))
+        .Wait();
+    RunScheduledLayouts();
+
+    EXPECT_NE(browser_view->top_container()->height(), top_container_height);
+    EXPECT_GT(checker.resize_count(), 0);
+    EXPECT_EQ(checker.max_error(), 0);
+  }
 }
