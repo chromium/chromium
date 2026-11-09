@@ -40,6 +40,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/lens_overlay_contextual_inputs.pb.h"
 #include "third_party/lens_server_proto/search_communication.pb.h"
+#include "third_party/omnibox_proto/input_type.pb.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1186,6 +1187,8 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   EXPECT_EQ(
       dispatched_messages[1].on_context_state_changed().context_state(),
       lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+  EXPECT_THAT(dispatched_messages[1].on_context_state_changed().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_BROWSER_TAB));
 
   // Removing tab context from the session handle should dispatch
   // InjectChromeInput(CONTEXT_LIBRARY, false).
@@ -1201,6 +1204,8 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   EXPECT_EQ(
       dispatched_messages[1].on_context_state_changed().context_state(),
       lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_NONE);
+  EXPECT_THAT(dispatched_messages[1].on_context_state_changed().input_types(),
+              testing::IsEmpty());
 
   // Replacing the session with a new session that already has attached tab
   // context should immediately update the context library input state via
@@ -1224,6 +1229,8 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   EXPECT_EQ(
       dispatched_messages[1].on_context_state_changed().context_state(),
       lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+  EXPECT_THAT(dispatched_messages[1].on_context_state_changed().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_BROWSER_TAB));
 
   // Taking the session handle should notify OnSessionChanged(nullptr) and
   // clear the context library input state.
@@ -1240,6 +1247,8 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   EXPECT_EQ(
       dispatched_messages[1].on_context_state_changed().context_state(),
       lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_NONE);
+  EXPECT_THAT(dispatched_messages[1].on_context_state_changed().input_types(),
+              testing::IsEmpty());
 }
 
 TEST_F(ContextualTasksWebContentsUserDataTest,
@@ -2026,5 +2035,177 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   webui::SetBrowserWindowInterface(web_contents_, nullptr);
 }
 #endif
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       UpdateContextState_PopulatesInputTypesAndDeduplicatesBySerializedBytes) {
+  ContextualTasksWebContentsUserData::CreateForWebContents(web_contents_);
+  auto* user_data =
+      ContextualTasksWebContentsUserData::FromWebContents(web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  auto mock_handle =
+      std::make_unique<contextual_search::MockContextualSearchSessionHandle>();
+  auto* session_handle = mock_handle.get();
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(mock_handle),
+                       /*input_state_model=*/nullptr);
+
+  std::vector<lens::ClientToSearchMessage::OnContextStateChanged>
+      context_state_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&context_state_messages](const lens::ClientToSearchMessage& message) {
+        if (message.has_on_context_state_changed()) {
+          context_state_messages.push_back(message.on_context_state_changed());
+        }
+      }));
+
+  // Initial handshake with no attached context should not emit a spurious
+  // CONTEXT_STATE_NONE message.
+  user_data->OnHandshakeComplete();
+  EXPECT_TRUE(context_state_messages.empty());
+
+  // Mounting a Lens region crop emits CONTEXT_STATE_READY with
+  // INPUT_TYPE_LENS_IMAGE.
+  user_data->OnLensThumbnailCreated("data:image/png;base64,crop_1");
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(
+      context_state_messages.back().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+  EXPECT_THAT(context_state_messages.back().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_LENS_IMAGE));
+
+  // Replacing the Lens crop URI in-place keeps serialized OnContextStateChanged
+  // bytes identical, so no duplicate message is emitted.
+  context_state_messages.clear();
+  user_data->OnLensThumbnailCreated("data:image/png;base64,crop_2");
+  EXPECT_TRUE(context_state_messages.empty());
+
+  // Attaching Tab 1 (uploading) emits CONTEXT_STATE_UPLOADING with both the
+  // Lens crop and 1 browser tab.
+  base::UnguessableToken token1 = base::UnguessableToken::Create();
+  user_data->OnTabContextUploadStarted(token1);
+  session_handle->GetUploadedContextTokensForTesting().push_back(token1);
+  session_handle->AttachTabPendingUpload(
+      token1, /*tab_id=*/1, GURL("https://example.com/1"), "Tab 1");
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(context_state_messages.back().context_state(),
+            lens::ClientToSearchMessage::OnContextStateChanged::
+                CONTEXT_STATE_UPLOADING);
+  EXPECT_THAT(context_state_messages.back().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_LENS_IMAGE,
+                                   omnibox::INPUT_TYPE_BROWSER_TAB));
+
+  // Attaching Tab 2 (also uploading) while ContextState is already
+  // CONTEXT_STATE_UPLOADING changes `input_types`, so serialized-bytes
+  // deduplication dispatches an updated message.
+  context_state_messages.clear();
+  base::UnguessableToken token2 = base::UnguessableToken::Create();
+  user_data->OnTabContextUploadStarted(token2);
+  session_handle->GetUploadedContextTokensForTesting().push_back(token2);
+  session_handle->AttachTabPendingUpload(
+      token2, /*tab_id=*/2, GURL("https://example.com/2"), "Tab 2");
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(context_state_messages.back().context_state(),
+            lens::ClientToSearchMessage::OnContextStateChanged::
+                CONTEXT_STATE_UPLOADING);
+  EXPECT_THAT(context_state_messages.back().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_LENS_IMAGE,
+                                   omnibox::INPUT_TYPE_BROWSER_TAB,
+                                   omnibox::INPUT_TYPE_BROWSER_TAB));
+
+  // Failing Tab 1's upload excludes it from `input_types` and emits an updated
+  // message even though Tab 2 keeps ContextState at UPLOADING.
+  context_state_messages.clear();
+  user_data->OnContextUploadStatusChanged(
+      token1, lens::MimeType::kAnnotatedPageContent,
+      contextual_search::ContextUploadStatus::kValidationFailed, std::nullopt);
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(context_state_messages.back().context_state(),
+            lens::ClientToSearchMessage::OnContextStateChanged::
+                CONTEXT_STATE_UPLOADING);
+  EXPECT_THAT(context_state_messages.back().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_LENS_IMAGE,
+                                   omnibox::INPUT_TYPE_BROWSER_TAB));
+
+  // Redundant status notification with identical serialized bytes is
+  // deduplicated.
+  context_state_messages.clear();
+  user_data->OnContextUploadStatusChanged(
+      token1, lens::MimeType::kAnnotatedPageContent,
+      contextual_search::ContextUploadStatus::kValidationFailed, std::nullopt);
+  EXPECT_TRUE(context_state_messages.empty());
+
+  // Completing Tab 2's upload transitions to CONTEXT_STATE_READY while keeping
+  // `[LENS_IMAGE, BROWSER_TAB]`.
+  user_data->OnContextUploadStatusChanged(
+      token2, lens::MimeType::kAnnotatedPageContent,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(
+      context_state_messages.back().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+  EXPECT_THAT(context_state_messages.back().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_LENS_IMAGE,
+                                   omnibox::INPUT_TYPE_BROWSER_TAB));
+
+  // Attaching Tab 3 (already ready) while ContextState is already
+  // CONTEXT_STATE_READY emits a new message with 2 BROWSER_TAB entries.
+  context_state_messages.clear();
+  base::UnguessableToken token3 = base::UnguessableToken::Create();
+  session_handle->GetUploadedContextTokensForTesting().push_back(token3);
+  session_handle->AttachTabPendingUpload(
+      token3, /*tab_id=*/3, GURL("https://example.com/3"), "Tab 3");
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(
+      context_state_messages.back().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+  EXPECT_THAT(context_state_messages.back().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_LENS_IMAGE,
+                                   omnibox::INPUT_TYPE_BROWSER_TAB,
+                                   omnibox::INPUT_TYPE_BROWSER_TAB));
+
+  // Removing the Lens crop while remaining CONTEXT_STATE_READY drops
+  // INPUT_TYPE_LENS_IMAGE and emits an updated message.
+  context_state_messages.clear();
+  user_data->RemoveLensCrop();
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(
+      context_state_messages.back().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+  EXPECT_THAT(context_state_messages.back().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_BROWSER_TAB,
+                                   omnibox::INPUT_TYPE_BROWSER_TAB));
+
+  // Reconnecting the document resets serialized deduplication state so
+  // OnHandshakeComplete() re-sends the active context state.
+  context_state_messages.clear();
+  user_data->OnDocumentConnected(web_contents_->GetPrimaryMainFrame());
+  user_data->OnHandshakeComplete();
+  ASSERT_EQ(context_state_messages.size(), 1u);
+  EXPECT_EQ(
+      context_state_messages.back().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+  EXPECT_THAT(context_state_messages.back().input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_BROWSER_TAB,
+                                   omnibox::INPUT_TYPE_BROWSER_TAB));
+
+  // Removing `token1` (already failed) does not change the serialized message,
+  // whereas removing `token2` and `token3` emits 2 messages (`[BROWSER_TAB]`
+  // followed by `CONTEXT_STATE_NONE` with empty `input_types`).
+  context_state_messages.clear();
+  session_handle->RemoveUploadedContextToken(token1);
+  session_handle->RemoveUploadedContextToken(token2);
+  session_handle->RemoveUploadedContextToken(token3);
+  ASSERT_EQ(context_state_messages.size(), 2u);
+  EXPECT_EQ(
+      context_state_messages[0].context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+  EXPECT_THAT(context_state_messages[0].input_types(),
+              testing::ElementsAre(omnibox::INPUT_TYPE_BROWSER_TAB));
+  EXPECT_EQ(
+      context_state_messages[1].context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_NONE);
+  EXPECT_THAT(context_state_messages[1].input_types(), testing::IsEmpty());
+}
 
 }  // namespace contextual_tasks
