@@ -783,6 +783,11 @@ public class IntentHandlerRobolectricTest {
         untrustedIntent.setData(
                 Uri.parse("content://" + packageName + ".FileProvider/document.pdf"));
         Assert.assertTrue(IntentHandler.shouldIgnoreIntent(untrustedIntent, null));
+
+        String encodedPackageName = packageName.replace(".", "%2E");
+        untrustedIntent.setData(
+                Uri.parse("content://" + encodedPackageName + ".FileProvider/downloads/doc.pdf"));
+        Assert.assertTrue(IntentHandler.shouldIgnoreIntent(untrustedIntent, null));
     }
 
     @Test

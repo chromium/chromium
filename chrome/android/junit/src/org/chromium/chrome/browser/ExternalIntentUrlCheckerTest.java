@@ -8,6 +8,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.robolectric.Shadows.shadowOf;
+
+import android.content.pm.ApplicationInfo;
+import android.content.pm.ProviderInfo;
+import android.os.Process;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -106,14 +111,33 @@ public class ExternalIntentUrlCheckerTest {
         doReturn(true).when(mNativeMock).validateUrl(any());
 
         String packageName = ContextUtils.getApplicationContext().getPackageName();
+        String encodedPackageName = packageName.replace(".", "%2E");
         assertTrue(
                 ExternalIntentUrlChecker.isUnsafeExternalIntentUrl(
                         new GURL("content://" + packageName + ".FileProvider/document.pdf")));
         assertTrue(
                 ExternalIntentUrlChecker.isUnsafeExternalIntentUrl(
                         new GURL(
+                                "content://"
+                                        + encodedPackageName
+                                        + ".FileProvider/downloads/statement.pdf")));
+        assertTrue(
+                ExternalIntentUrlChecker.isUnsafeExternalIntentUrl(
+                        new GURL(
+                                "content://"
+                                        + encodedPackageName
+                                        + ".DownloadFileProvider/download?file=report.pdf")));
+        assertTrue(
+                ExternalIntentUrlChecker.isUnsafeExternalIntentUrl(
+                        new GURL(
                                 "content://userinfo@"
                                         + packageName
+                                        + ".FileProvider/document.pdf")));
+        assertTrue(
+                ExternalIntentUrlChecker.isUnsafeExternalIntentUrl(
+                        new GURL(
+                                "content://userinfo%40"
+                                        + encodedPackageName
                                         + ".FileProvider/document.pdf")));
         assertTrue(
                 ExternalIntentUrlChecker.isUnsafeExternalIntentUrl(
@@ -123,6 +147,42 @@ public class ExternalIntentUrlCheckerTest {
         assertFalse(
                 ExternalIntentUrlChecker.isUnsafeExternalIntentUrl(
                         new GURL("content://" + packageName + "cast.FileProvider/document.pdf")));
+    }
+
+    @Test
+    public void testIsUnsafeExternalIntentUrl_ResolveContentUriOwner() {
+        doReturn(true).when(mNativeMock).validateUrl(any());
+        String packageName = ContextUtils.getApplicationContext().getPackageName();
+
+        ProviderInfo unexportedProvider = new ProviderInfo();
+        unexportedProvider.packageName = packageName;
+        unexportedProvider.name = "UnexportedProvider";
+        unexportedProvider.authority = "custom.unexported.provider";
+        unexportedProvider.exported = false;
+        unexportedProvider.applicationInfo = new ApplicationInfo();
+        unexportedProvider.applicationInfo.packageName = packageName;
+        unexportedProvider.applicationInfo.uid = Process.myUid();
+        shadowOf(ContextUtils.getApplicationContext().getPackageManager())
+                .addOrUpdateProvider(unexportedProvider);
+
+        assertTrue(
+                ExternalIntentUrlChecker.isUnsafeExternalIntentUrl(
+                        new GURL("content://custom.unexported.provider/secret.pdf")));
+
+        ProviderInfo exportedTestProvider = new ProviderInfo();
+        exportedTestProvider.packageName = packageName;
+        exportedTestProvider.name = "ExportedTestProvider";
+        exportedTestProvider.authority = "custom.exported.testprovider";
+        exportedTestProvider.exported = true;
+        exportedTestProvider.applicationInfo = new ApplicationInfo();
+        exportedTestProvider.applicationInfo.packageName = packageName;
+        exportedTestProvider.applicationInfo.uid = Process.myUid();
+        shadowOf(ContextUtils.getApplicationContext().getPackageManager())
+                .addOrUpdateProvider(exportedTestProvider);
+
+        assertFalse(
+                ExternalIntentUrlChecker.isUnsafeExternalIntentUrl(
+                        new GURL("content://custom.exported.testprovider/blob.html")));
     }
 
     @Test

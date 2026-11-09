@@ -863,13 +863,28 @@ public class PdfUtils {
             return true;
         }
 
+        // Legitimate Chrome-generated provider URIs never contain percent-encoding or userinfo
+        // in their authority. Rejecting these blocks forged URIs that used encoding (such as %2E)
+        // to bypass upstream string-based authority checks.
+        String encodedAuthority = uri.getEncodedAuthority();
+        if (TextUtils.isEmpty(encodedAuthority)
+                || encodedAuthority.indexOf('%') >= 0
+                || encodedAuthority.indexOf('@') >= 0) {
+            return false;
+        }
+
         // Chrome's main FileProvider (uses file_paths.xml). We only allow sharing from the
         // temporary PDF cache ("pdfs") and the public downloads folder ("downloads").
         // Sensitive directories like "passwords" or "cache" (net-export) are blocked.
         if (authority.endsWith(".FileProvider")) {
             List<String> pathSegments = uri.getPathSegments();
-            if (pathSegments == null || pathSegments.isEmpty()) {
+            if (pathSegments == null || pathSegments.size() < 2) {
                 return false;
+            }
+            for (String segment : pathSegments) {
+                if (TextUtils.isEmpty(segment) || ".".equals(segment) || "..".equals(segment)) {
+                    return false;
+                }
             }
             String firstSegment = pathSegments.get(0);
             return "pdfs".equals(firstSegment) || "downloads".equals(firstSegment);
@@ -881,7 +896,14 @@ public class PdfUtils {
         // (legacy SD card), and "external_volume" (Android R+ SD card).
         if (authority.endsWith(".DownloadFileProvider")) {
             List<String> pathSegments = uri.getPathSegments();
-            if (pathSegments == null || pathSegments.isEmpty()) {
+            if (pathSegments == null || pathSegments.size() != 1) {
+                return false;
+            }
+            String fileParam = uri.getQueryParameter("file");
+            if (TextUtils.isEmpty(fileParam)
+                    || fileParam.equals("..")
+                    || fileParam.contains("../")
+                    || fileParam.contains("/..")) {
                 return false;
             }
             String firstSegment = pathSegments.get(0);
