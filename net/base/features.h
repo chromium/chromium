@@ -167,6 +167,20 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kEnableIntermediateDnsResultsSortTransactionsIndividually);
 
+// When the last request detaches from a HostResolverManager::Job while its
+// DnsTask has already received some results and is only waiting for
+// already-started transactions, keeps the Job running (up to
+// `kKeepHostResolverJobAliveForCacheTimeout`) so that the final results are
+// stored in the HostCache. Also enabled by
+// `kAsyncDnsQuicJobKeepHostResolverJobAliveForCache`, so disabling this feature
+// alone doesn't disable the keep-alive while `kAsyncDnsQuicJob` is enabled.
+// `kKeepHostResolverJobAliveForCacheTimeout` returns its default while this
+// feature is disabled, including when only `kAsyncDnsQuicJob` enables the
+// keep-alive.
+NET_EXPORT BASE_DECLARE_FEATURE(kKeepHostResolverJobAliveForCache);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                                      kKeepHostResolverJobAliveForCacheTimeout);
+
 // Feature to control the Happy Eyeballs slow timer (IPv6 fallback time).
 NET_EXPORT BASE_DECLARE_FEATURE(kAdjustIPv6FallbackTime);
 
@@ -458,6 +472,15 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kAsyncDnsQuicJobFastFail);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kAsyncDnsQuicJobSortTransactionsIndividually);
+// Whether to keep HostResolverManager::Jobs alive to cache DNS results, as
+// `kKeepHostResolverJobAliveForCache` does, when `kAsyncDnsQuicJob` is enabled.
+// AsyncDnsJob often cancels its request while DNS responses are in flight.
+// This is a param rather than a requirement to also enable
+// `kKeepHostResolverJobAliveForCache` so that other studies can control that
+// feature independently.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kAsyncDnsQuicJobKeepHostResolverJobAliveForCache);
 
 // Makes the QUIC slow timer delay configurable.
 // How long to wait before starting a second connection attempt

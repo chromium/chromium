@@ -12,6 +12,7 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -27,6 +28,7 @@
 #include "net/dns/dns_task_results_manager.h"
 #include "net/dns/dns_test_util.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/host_resolver_manager_job.h"
 #include "net/dns/host_resolver_manager_service_endpoint_request_impl.h"
 #include "net/dns/host_resolver_manager_unittest.h"
 #include "net/dns/host_resolver_results_test_util.h"
@@ -39,6 +41,7 @@
 #include "net/dns/resolve_context.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
+#include "net/log/test_net_log_util.h"
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -389,6 +392,21 @@ class HostResolverServiceEndpointRequestTest
         key,
         HostCache::Entry(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS),
         base::TimeTicks::Now(), kDefaultTtl);
+  }
+
+  // Returns the result of a LOCAL_ONLY request for `host`, which completes
+  // synchronously. Populates `endpoints` on success.
+  int ResolveLocalOnly(std::string_view host,
+                       std::vector<ServiceEndpoint>* endpoints = nullptr) {
+    ResolveHostParameters parameters;
+    parameters.source = HostResolverSource::LOCAL_ONLY;
+    Requester requester = CreateRequester(host, std::move(parameters));
+    int rv = requester.Start();
+    CHECK_NE(rv, ERR_IO_PENDING);
+    if (rv == OK && endpoints) {
+      *endpoints = requester.finished_endpoints();
+    }
+    return rv;
   }
 
   void AdvanceTickClockToExpirePopulatedCacheEntries() {
@@ -2020,6 +2038,809 @@ TEST_F(HostResolverServiceEndpointRequestTest, ReentrantCancelDuringAbortAll) {
   ASSERT_FALSE(requester_b.request());
 
   proc_->SignalMultiple(2u);
+}
+
+class HostResolverServiceEndpointRequestKeepAliveForCacheTest
+    : public HostResolverServiceEndpointRequestTest {
+ public:
+  using KeptAliveResult = HostResolverManager::Job::KeptAliveResult;
+
+  static constexpr std::string_view kResultHistogram =
+      "Net.DNS.Job.KeptAliveAfterLastRequestCancelled.Result";
+  static std::string DurationHistogram(std::string_view result) {
+    return base::StrCat(
+        {"Net.DNS.Job.KeptAliveAfterLastRequestCancelled.Duration.", result});
+  }
+
+  HostResolverServiceEndpointRequestKeepAliveForCacheTest() {
+    AddScopedFeatureList().InitAndEnableFeature(
+        features::kKeepHostResolverJobAliveForCache);
+  }
+};
+
+// Tests that a Job keeps running after its last request was cancelled while
+// waiting for an already-sent transaction, and that the final results are
+// cached.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       CachedAfterLastRequestCancelled) {
+  base::HistogramTester histograms;
+  RecordingNetLogObserver net_log_observer;
+  UseIpv4DelayedDnsRules("4slow_ok");
+
+  Requester requester = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+
+  // AAAA and HTTPS complete. A is still in progress.
+  FastForwardBy(base::TimeDelta());
+  ASSERT_FALSE(requester.finished_result().has_value());
+  ASSERT_THAT(requester.request()->GetEndpointResults(),
+              ElementsAre(ExpectServiceEndpoint(
+                  IsEmpty(), ElementsAre(MakeIPEndPoint("::1", 443)))));
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  // Cancel the only request. The Job should keep running.
+  requester.CancelRequest();
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+  histograms.ExpectTotalCount(kResultHistogram, 0);
+
+  // Complete A. The results should be cached.
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+  histograms.ExpectUniqueSample(kResultHistogram, KeptAliveResult::kCached, 1);
+  histograms.ExpectTotalCount(DurationHistogram("Cached"), 1);
+  // A kept-alive Job doesn't record job-level or DnsTask timing histograms,
+  // as it would have been cancelled without the keep-alive.
+  histograms.ExpectTotalCount("Net.DNS.ResolveCategory", 0);
+  histograms.ExpectTotalCount("Net.DNS.DnsTask.Insecure.SuccessTime", 0);
+
+  auto entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::HOST_RESOLVER_MANAGER_JOB_KEPT_ALIVE_FOR_CACHE);
+  ASSERT_EQ(2u, entries.size());
+  EXPECT_EQ(NetLogEventPhase::BEGIN, entries[0].phase);
+  EXPECT_EQ(NetLogEventPhase::END, entries[1].phase);
+  EXPECT_EQ("Cached", GetStringValueFromParams(entries[1], "result"));
+
+  std::vector<ServiceEndpoint> endpoints;
+  EXPECT_THAT(ResolveLocalOnly("https://4slow_ok", &endpoints), IsOk());
+  EXPECT_THAT(endpoints, ElementsAre(ExpectServiceEndpoint(
+                             ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
+                             ElementsAre(MakeIPEndPoint("::1", 443)))));
+}
+
+// Same as above, but for a legacy ResolveHostRequest.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       CachedAfterLastLegacyRequestCancelled) {
+  base::HistogramTester histograms;
+  UseIpv4DelayedDnsRules("4slow_ok");
+
+  LegacyRequester requester = CreateLegacyRequester("https://4slow_ok");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  ASSERT_FALSE(requester.complete_result().has_value());
+
+  requester.CancelRequest();
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+  histograms.ExpectUniqueSample(kResultHistogram, KeptAliveResult::kCached, 1);
+
+  EXPECT_THAT(ResolveLocalOnly("https://4slow_ok"), IsOk());
+}
+
+// Tests that a Job is cancelled as before when its last request is cancelled
+// before any transaction completes.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       NotKeptAliveBeforeAnyResult) {
+  base::HistogramTester histograms;
+  constexpr std::string_view kHost = "all_slow";
+  MockDnsClientRuleList rules;
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeA,
+             MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeAAAA,
+             MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeHttps,
+             MockDnsClientRule::ResultType::kEmpty, /*delay=*/true);
+  SetDnsRules(std::move(rules));
+
+  Requester requester = CreateRequester("https://all_slow");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(3u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  requester.CancelRequest();
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  histograms.ExpectTotalCount(kResultHistogram, 0);
+  EXPECT_THAT(ResolveLocalOnly("https://all_slow"),
+              IsError(ERR_NAME_NOT_RESOLVED));
+}
+
+// Tests that a Job is cancelled as before when its last request is cancelled
+// while some transactions have not been sent yet.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       NotKeptAliveWithUnsentTransactions) {
+  base::HistogramTester histograms;
+  constexpr std::string_view kHost = "6slow_https";
+  MockDnsClientRuleList rules;
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeA,
+             MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeAAAA,
+             MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+  std::vector<DnsResourceRecord> records = {
+      BuildTestHttpsServiceRecord(std::string(kHost), /*priority=*/1,
+                                  /*service_name=*/".", /*params=*/{})};
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeHttps,
+      /*secure=*/false,
+      MockDnsClientRule::Result(BuildTestDnsResponse(
+          std::string(kHost), dns_protocol::kTypeHttps, records)),
+      /*delay=*/false);
+
+  // Allow only one transaction at a time so that transactions are sent one by
+  // one in the order of HTTPS, AAAA and A.
+  CreateSerialResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+
+  Requester requester = CreateRequester("https://6slow_https");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+
+  // HTTPS completes, AAAA is in progress and A has not been sent yet.
+  FastForwardBy(base::TimeDelta());
+  ASSERT_FALSE(requester.finished_result().has_value());
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  requester.CancelRequest();
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  histograms.ExpectTotalCount(kResultHistogram, 0);
+  EXPECT_THAT(ResolveLocalOnly("https://6slow_https"),
+              IsError(ERR_NAME_NOT_RESOLVED));
+}
+
+// Tests that a kept-alive Job is cancelled without caching when the hard cap
+// expires.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest, CapExpired) {
+  base::HistogramTester histograms;
+  UseIpv4DelayedDnsRules("4slow_ok");
+
+  Requester requester = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  requester.CancelRequest();
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  const base::TimeDelta timeout =
+      features::kKeepHostResolverJobAliveForCacheTimeout.Get();
+  FastForwardBy(timeout - base::Milliseconds(1));
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+  histograms.ExpectTotalCount(kResultHistogram, 0);
+
+  FastForwardBy(base::Milliseconds(1));
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+  histograms.ExpectUniqueSample(kResultHistogram, KeptAliveResult::kCapExpired,
+                                1);
+  histograms.ExpectUniqueTimeSample(DurationHistogram("CapExpired"), timeout,
+                                    1);
+
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  EXPECT_THAT(ResolveLocalOnly("https://4slow_ok"),
+              IsError(ERR_NAME_NOT_RESOLVED));
+}
+
+// Tests that a new request can join a kept-alive Job and receives its results.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       RequestRejoined) {
+  base::HistogramTester histograms;
+  UseIpv4DelayedDnsRules("4slow_ok");
+
+  Requester requester1 = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester1.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  requester1.CancelRequest();
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  Requester requester2 = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester2.Start(), IsError(ERR_IO_PENDING));
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+  histograms.ExpectUniqueSample(kResultHistogram,
+                                KeptAliveResult::kRequestRejoined, 1);
+
+  // The new request is notified of the intermediate endpoints that the Job
+  // received before it was kept alive, without waiting for the A response.
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(1u, requester2.on_updated_call_count());
+  EXPECT_THAT(requester2.request()->GetEndpointResults(),
+              ElementsAre(ExpectServiceEndpoint(
+                  IsEmpty(), ElementsAre(MakeIPEndPoint("::1", 443)))));
+
+  // The hard cap no longer applies.
+  FastForwardBy(features::kKeepHostResolverJobAliveForCacheTimeout.Get());
+  ASSERT_FALSE(requester2.finished_result().has_value());
+
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  EXPECT_THAT(requester2.finished_result(), Optional(IsOk()));
+  EXPECT_THAT(requester2.finished_endpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
+                  ElementsAre(MakeIPEndPoint("::1", 443)))));
+  histograms.ExpectUniqueSample(kResultHistogram,
+                                KeptAliveResult::kRequestRejoined, 1);
+}
+
+// Tests that a rejoining request completes with the final results when the Job
+// completes before the posted endpoint notification runs.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       RequestRejoinedJobCompletesBeforeNotification) {
+  UseIpv4DelayedDnsRules("4slow_ok");
+
+  Requester requester1 = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester1.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  requester1.CancelRequest();
+
+  Requester requester2 = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester2.Start(), IsError(ERR_IO_PENDING));
+  // Complete the Job before the posted OnServiceEndpointsChanged() runs.
+  mock_dns_client_->CompleteDelayedTransactions();
+  EXPECT_THAT(requester2.finished_result(), Optional(IsOk()));
+
+  // The stale notification must be a no-op.
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(0u, requester2.on_updated_call_count());
+  EXPECT_THAT(requester2.finished_endpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
+                  ElementsAre(MakeIPEndPoint("::1", 443)))));
+}
+
+// Tests that only a request rejoining a kept-alive Job is notified of the
+// existing intermediate endpoints, not one joining a regular Job.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       OnlyRejoiningRequestNotifiedOfIntermediateEndpoints) {
+  UseIpv4DelayedDnsRules("4slow_ok");
+
+  Requester requester1 = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester1.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  requester1.CancelRequest();
+
+  // The first request rejoins the kept-alive Job, and the second one joins the
+  // now regular Job.
+  Requester requester2 = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester2.Start(), IsError(ERR_IO_PENDING));
+  Requester requester3 = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester3.Start(), IsError(ERR_IO_PENDING));
+
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(1u, requester2.on_updated_call_count());
+  EXPECT_EQ(0u, requester3.on_updated_call_count());
+  EXPECT_THAT(requester3.request()->GetEndpointResults(),
+              ElementsAre(ExpectServiceEndpoint(
+                  IsEmpty(), ElementsAre(MakeIPEndPoint("::1", 443)))));
+
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  EXPECT_THAT(requester2.finished_result(), Optional(IsOk()));
+  EXPECT_THAT(requester3.finished_result(), Optional(IsOk()));
+}
+
+// Tests that a kept-alive Job is aborted, not served from HOSTS, on a DNS
+// config change that adds a HOSTS entry for it. Running Jobs are aborted before
+// HostResolverManager tries to serve the remaining Jobs from HOSTS.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       AbortedOnDnsConfigChangeWithHosts) {
+  base::HistogramTester histograms;
+  UseIpv4DelayedDnsRules("4slow_ok");
+
+  Requester requester = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  requester.CancelRequest();
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  DnsHosts hosts;
+  hosts[DnsHostsKey("4slow_ok", ADDRESS_FAMILY_IPV4)] =
+      IPAddress::IPv4Localhost();
+  DnsConfig config = CreateValidDnsConfig();
+  config.hosts = std::move(hosts);
+  ChangeDnsConfig(config);
+  FastForwardBy(base::TimeDelta());
+
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+  histograms.ExpectUniqueSample(kResultHistogram, KeptAliveResult::kAborted, 1);
+  histograms.ExpectTotalCount("Net.DNS.ResolveCategory", 0);
+}
+
+// Tests that a kept-alive Job bound to a target network, which a DNS config
+// change doesn't abort, isn't served from HOSTS.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       TargetNetworkNotServedFromHostsWhileKeptAlive) {
+  base::HistogramTester histograms;
+  UseIpv4DelayedDnsRules("4slow_ok");
+
+  // HOSTS is only checked when the next task isn't the system task, so don't
+  // allow falling back to it.
+  ResolveHostParameters parameters;
+  parameters.source = HostResolverSource::DNS;
+  constexpr handles::NetworkHandle kTargetNetwork = 12345;
+  Requester requester(resolver_->CreateServiceEndpointRequest(
+      HostResolver::Host(url::SchemeHostPort(GURL("https://4slow_ok"))),
+      NetworkAnonymizationKey(), kTargetNetwork, NetLogWithSource(),
+      std::move(parameters), resolve_context_.get()));
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  ASSERT_FALSE(requester.finished_result().has_value());
+  requester.CancelRequest();
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  DnsHosts hosts;
+  hosts[DnsHostsKey("4slow_ok", ADDRESS_FAMILY_IPV4)] =
+      IPAddress::IPv4Localhost();
+  hosts[DnsHostsKey("4slow_ok", ADDRESS_FAMILY_IPV6)] =
+      IPAddress::IPv6Localhost();
+  DnsConfig config = CreateValidDnsConfig();
+  config.hosts = std::move(hosts);
+  ChangeDnsConfig(config);
+  FastForwardBy(base::TimeDelta());
+
+  // The Job is still waiting for its DnsTask.
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+  histograms.ExpectTotalCount(kResultHistogram, 0);
+
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+  histograms.ExpectUniqueSample(kResultHistogram, KeptAliveResult::kCached, 1);
+}
+
+// Tests that a kept-alive Job is aborted on network change.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       AbortedOnNetworkChange) {
+  base::HistogramTester histograms;
+  UseIpv4DelayedDnsRules("4slow_ok");
+
+  Requester requester = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  requester.CancelRequest();
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+  histograms.ExpectUniqueSample(kResultHistogram, KeptAliveResult::kAborted, 1);
+
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  EXPECT_THAT(ResolveLocalOnly("https://4slow_ok"),
+              IsError(ERR_NAME_NOT_RESOLVED));
+}
+
+// Tests that a kept-alive Job doesn't fall back to the system resolver when
+// its DnsTask fails.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       NoFallbackOnDnsTaskFailure) {
+  base::HistogramTester histograms;
+  constexpr std::string_view kHost = "4slow_fail";
+  MockDnsClientRuleList rules;
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeA,
+             MockDnsClientRule::ResultType::kFail, /*delay=*/true);
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeAAAA,
+             MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+  SetDnsRules(std::move(rules));
+  ASSERT_EQ(0u, resolve_context_->host_cache()->size());
+
+  Requester requester = CreateRequester("https://4slow_fail");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  requester.CancelRequest();
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  // Fail A. The Job should complete without starting a system task, which
+  // would otherwise keep a dispatcher slot until `proc_` is signaled. The
+  // failure isn't cached or recorded as a resolution failure because the
+  // system task was skipped.
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+  EXPECT_TRUE(proc_->GetCaptureList().empty());
+  histograms.ExpectUniqueSample(kResultHistogram, KeptAliveResult::kFailed, 1);
+  histograms.ExpectTotalCount("Net.DNS.ResolveCategory", 0);
+  EXPECT_EQ(0u, resolve_context_->host_cache()->size());
+}
+
+// Same as above, but with a negative response that has an SOA TTL, which a Job
+// with no remaining tasks would cache.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       NoFallbackOnCacheableDnsTaskFailure) {
+  base::HistogramTester histograms;
+  constexpr std::string_view kHost = "4slow_nxdomain";
+  MockDnsClientRuleList rules;
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeA,
+             MockDnsClientRule::ResultType::kNoDomain, /*delay=*/true);
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeAAAA,
+             MockDnsClientRule::ResultType::kEmpty, /*delay=*/false);
+  SetDnsRules(std::move(rules));
+  ASSERT_EQ(0u, resolve_context_->host_cache()->size());
+
+  Requester requester = CreateRequester("https://4slow_nxdomain");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  ASSERT_FALSE(requester.finished_result().has_value());
+  requester.CancelRequest();
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+  EXPECT_TRUE(proc_->GetCaptureList().empty());
+  histograms.ExpectUniqueSample(kResultHistogram, KeptAliveResult::kFailed, 1);
+  EXPECT_EQ(0u, resolve_context_->host_cache()->size());
+}
+
+// Tests that a kept-alive Job doesn't negatively cache a DnsTask failure even
+// when no fallback tasks remain.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       FailedWithoutFallback) {
+  base::HistogramTester histograms;
+  constexpr std::string_view kHost = "4slow_nxdomain";
+  MockDnsClientRuleList rules;
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeA,
+             MockDnsClientRule::ResultType::kNoDomain, /*delay=*/true);
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeAAAA,
+             MockDnsClientRule::ResultType::kEmpty, /*delay=*/false);
+  SetDnsRules(std::move(rules));
+  ASSERT_EQ(0u, resolve_context_->host_cache()->size());
+
+  ResolveHostParameters parameters;
+  parameters.source = HostResolverSource::DNS;
+  Requester requester =
+      CreateRequester("https://4slow_nxdomain", std::move(parameters));
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  requester.CancelRequest();
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  // Even though no other task remains, the negative-cacheable failure isn't
+  // cached, since the Job would have been cancelled without the keep-alive.
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+  EXPECT_TRUE(proc_->GetCaptureList().empty());
+  histograms.ExpectUniqueSample(kResultHistogram, KeptAliveResult::kFailed, 1);
+  histograms.ExpectTotalCount("Net.DNS.ResolveCategory", 0);
+  EXPECT_EQ(0u, resolve_context_->host_cache()->size());
+}
+
+// Tests that a kept-alive Job doesn't cache a failure from a DnsTask that
+// disallows fallback, e.g. ERR_DNS_NAME_HTTPS_ONLY for an http:// request.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       HttpsUpgradeFailureNotCached) {
+  base::HistogramTester histograms;
+  constexpr std::string_view kHost = "https_upgrade";
+  MockDnsClientRuleList rules;
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeA,
+             MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeAAAA,
+             MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+  std::vector<DnsResourceRecord> records = {
+      BuildTestHttpsServiceRecord(std::string(kHost), /*priority=*/1,
+                                  /*service_name=*/".", /*params=*/{})};
+  rules.emplace_back(
+      std::string(kHost), dns_protocol::kTypeHttps,
+      /*secure=*/false,
+      MockDnsClientRule::Result(BuildTestDnsResponse(
+          std::string(kHost), dns_protocol::kTypeHttps, records)),
+      /*delay=*/true);
+  SetDnsRules(std::move(rules));
+  ASSERT_EQ(0u, resolve_context_->host_cache()->size());
+
+  Requester requester = CreateRequester("http://https_upgrade");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  ASSERT_FALSE(requester.finished_result().has_value());
+  requester.CancelRequest();
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+  EXPECT_TRUE(proc_->GetCaptureList().empty());
+  histograms.ExpectUniqueSample(kResultHistogram, KeptAliveResult::kFailed, 1);
+  EXPECT_EQ(0u, resolve_context_->host_cache()->size());
+}
+
+// Tests that a Job isn't kept alive when its only completed transaction failed
+// without receiving a response, e.g. an HTTPS network error for which an empty
+// response is synthesized.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       NotKeptAliveAfterSynthesizedHttpsResponse) {
+  base::HistogramTester histograms;
+  constexpr std::string_view kHost = "https_fail";
+  MockDnsClientRuleList rules;
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeA,
+             MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeAAAA,
+             MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+  AddDnsRule(&rules, std::string(kHost), dns_protocol::kTypeHttps,
+             MockDnsClientRule::ResultType::kFail, /*delay=*/false);
+  SetDnsRules(std::move(rules));
+
+  Requester requester = CreateRequester("https://https_fail");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  ASSERT_FALSE(requester.finished_result().has_value());
+  EXPECT_EQ(2u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  requester.CancelRequest();
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+  histograms.ExpectTotalCount(kResultHistogram, 0);
+}
+
+// Tests that a kept-alive Job is aborted, without falling back to the system
+// resolver, when insecure DnsTasks are aborted.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       AbortedOnInsecureDnsTaskAbort) {
+  base::HistogramTester histograms;
+  UseIpv4DelayedDnsRules("4slow_ok");
+
+  Requester requester = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  requester.CancelRequest();
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  resolver_->SetInsecureDnsClientEnabled(
+      InsecureDnsMode::kDisabled,
+      /*additional_dns_types_enabled=*/false);
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+  EXPECT_TRUE(proc_->GetCaptureList().empty());
+  histograms.ExpectUniqueSample(kResultHistogram, KeptAliveResult::kAborted, 1);
+  // A Job with requests would have fallen back to the system resolver, so
+  // this isn't recorded as an aborted resolution.
+  histograms.ExpectTotalCount("Net.DNS.ResolveCategory", 0);
+  EXPECT_THAT(ResolveLocalOnly("https://4slow_ok"),
+              IsError(ERR_NAME_NOT_RESOLVED));
+}
+
+// Tests that destroying the resolver while a Job is kept alive is safe.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       DestroyResolverWhileKeptAlive) {
+  base::HistogramTester histograms;
+  UseIpv4DelayedDnsRules("4slow_ok");
+
+  Requester requester = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  requester.CancelRequest();
+
+  DestroyResolver();
+  FastForwardBy(base::TimeDelta());
+  histograms.ExpectUniqueSample(kResultHistogram, KeptAliveResult::kAborted, 1);
+}
+
+// Tests that a Job can be kept alive again after a request rejoined it and
+// was cancelled.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       KeptAliveAgainAfterRejoin) {
+  base::HistogramTester histograms;
+  UseIpv4DelayedDnsRules("4slow_ok");
+
+  Requester requester1 = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester1.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  requester1.CancelRequest();
+
+  Requester requester2 = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester2.Start(), IsError(ERR_IO_PENDING));
+  requester2.CancelRequest();
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+  histograms.ExpectBucketCount(kResultHistogram,
+                               KeptAliveResult::kRequestRejoined, 1);
+  histograms.ExpectBucketCount(kResultHistogram, KeptAliveResult::kCached, 1);
+  histograms.ExpectTotalCount(kResultHistogram, 2);
+  EXPECT_THAT(ResolveLocalOnly("https://4slow_ok"), IsOk());
+}
+
+// Tests that results of a kept-alive secure DnsTask are cached.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest, SecureCached) {
+  base::HistogramTester histograms;
+  set_secure_dns_mode(SecureDnsMode::kSecure);
+  MockDnsClientRuleList rules;
+  AddSecureDnsRule(&rules, "4slow_ok", dns_protocol::kTypeA,
+                   MockDnsClientRule::ResultType::kOk, /*delay=*/true);
+  AddSecureDnsRule(&rules, "4slow_ok", dns_protocol::kTypeAAAA,
+                   MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+  SetDnsRules(std::move(rules));
+
+  Requester requester = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  ASSERT_FALSE(requester.finished_result().has_value());
+  requester.CancelRequest();
+  histograms.ExpectTotalCount(kResultHistogram, 0);
+
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  histograms.ExpectUniqueSample(kResultHistogram, KeptAliveResult::kCached, 1);
+
+  ResolveHostParameters parameters;
+  parameters.source = HostResolverSource::LOCAL_ONLY;
+  Requester local_requester =
+      CreateRequester("https://4slow_ok", std::move(parameters));
+  EXPECT_THAT(local_requester.Start(), IsOk());
+  EXPECT_THAT(local_requester.finished_endpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
+                  ElementsAre(MakeIPEndPoint("::1", 443)))));
+  ASSERT_TRUE(local_requester.request()->GetResolutionDetails().has_value());
+  EXPECT_EQ(local_requester.request()->GetResolutionDetails()->source,
+            ResolutionSource::kCache);
+}
+
+// Tests that a kept-alive secure DnsTask doesn't fall back to insecure DNS
+// when it fails in automatic mode.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       AutomaticModeNoFallbackOnDnsTaskFailure) {
+  base::HistogramTester histograms;
+  // In automatic mode, the Job runs a secure DnsTask first and can fall back
+  // to an insecure DnsTask.
+  set_secure_dns_mode(SecureDnsMode::kAutomatic);
+  MockDnsClientRuleList rules;
+  AddSecureDnsRule(&rules, "4slow_fail", dns_protocol::kTypeA,
+                   MockDnsClientRule::ResultType::kFail, /*delay=*/true);
+  AddSecureDnsRule(&rules, "4slow_fail", dns_protocol::kTypeAAAA,
+                   MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+  AddDnsRule(&rules, "4slow_fail", dns_protocol::kTypeA,
+             MockDnsClientRule::ResultType::kUnexpected, /*delay=*/false);
+  AddDnsRule(&rules, "4slow_fail", dns_protocol::kTypeAAAA,
+             MockDnsClientRule::ResultType::kUnexpected, /*delay=*/false);
+  SetDnsRules(std::move(rules));
+
+  ResolveHostParameters parameters;
+  parameters.source = HostResolverSource::DNS;
+  Requester requester =
+      CreateRequester("https://4slow_fail", std::move(parameters));
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  ASSERT_FALSE(requester.finished_result().has_value());
+  requester.CancelRequest();
+
+  // Fail secure A. No insecure DnsTask (kUnexpected rules) should start, and
+  // the secure failure must not be cached, since later requests would then
+  // skip insecure DNS.
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+  histograms.ExpectUniqueSample(kResultHistogram, KeptAliveResult::kFailed, 1);
+  histograms.ExpectTotalCount("Net.DNS.ResolveCategory", 0);
+  EXPECT_EQ(0u, resolve_context_->host_cache()->size());
+}
+
+// Tests that a Job isn't kept alive when its ResolveContext has no HostCache.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheTest,
+       NotKeptAliveWithoutHostCache) {
+  base::HistogramTester histograms;
+  UseIpv4DelayedDnsRules("4slow_ok");
+
+  auto resolve_context2 = std::make_unique<ResolveContext>(
+      resolve_context_->url_request_context(), /*enable_caching=*/false);
+  resolver_->RegisterResolveContext(resolve_context2.get());
+
+  Requester requester(resolver_->CreateServiceEndpointRequest(
+      HostResolver::Host(url::SchemeHostPort(GURL("https://4slow_ok"))),
+      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle,
+      NetLogWithSource(), ResolveHostParameters(), resolve_context2.get()));
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  ASSERT_FALSE(requester.finished_result().has_value());
+
+  requester.CancelRequest();
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+  histograms.ExpectTotalCount(kResultHistogram, 0);
+
+  resolver_->DeregisterResolveContext(resolve_context2.get());
+}
+
+class HostResolverServiceEndpointRequestKeepAliveForCacheAsyncDnsQuicJobTest
+    : public HostResolverServiceEndpointRequestTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  HostResolverServiceEndpointRequestKeepAliveForCacheAsyncDnsQuicJobTest() {
+    AddScopedFeatureList().InitWithFeaturesAndParameters(
+        {{features::kAsyncDnsQuicJob,
+          {{features::kAsyncDnsQuicJobKeepHostResolverJobAliveForCache.name,
+            GetParam() ? "true" : "false"}}}},
+        {features::kKeepHostResolverJobAliveForCache});
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HostResolverServiceEndpointRequestKeepAliveForCacheAsyncDnsQuicJobTest,
+    testing::Bool());
+
+// Tests that kAsyncDnsQuicJob keeps a Job alive, without
+// kKeepHostResolverJobAliveForCache, only when its param is enabled.
+TEST_P(HostResolverServiceEndpointRequestKeepAliveForCacheAsyncDnsQuicJobTest,
+       KeptAliveOnlyWithParam) {
+  base::HistogramTester histograms;
+  UseIpv4DelayedDnsRules("4slow_ok");
+
+  Requester requester = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  requester.CancelRequest();
+  const bool kept_alive = GetParam();
+  EXPECT_EQ(kept_alive ? 1u : 0u,
+            resolver_->num_running_dispatcher_jobs_for_tests());
+
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+  if (kept_alive) {
+    histograms.ExpectUniqueSample(
+        HostResolverServiceEndpointRequestKeepAliveForCacheTest::
+            kResultHistogram,
+        HostResolverManager::Job::KeptAliveResult::kCached, 1);
+    EXPECT_THAT(ResolveLocalOnly("https://4slow_ok"), IsOk());
+  } else {
+    histograms.ExpectTotalCount(
+        HostResolverServiceEndpointRequestKeepAliveForCacheTest::
+            kResultHistogram,
+        0);
+    EXPECT_THAT(ResolveLocalOnly("https://4slow_ok"),
+                IsError(ERR_NAME_NOT_RESOLVED));
+  }
+}
+
+class HostResolverServiceEndpointRequestKeepAliveForCacheDisabledTest
+    : public HostResolverServiceEndpointRequestTest {
+ public:
+  HostResolverServiceEndpointRequestKeepAliveForCacheDisabledTest() {
+    AddScopedFeatureList().InitWithFeatures(
+        {}, {features::kKeepHostResolverJobAliveForCache,
+             features::kAsyncDnsQuicJob});
+  }
+};
+
+// Tests that a Job is cancelled as before when the feature is disabled.
+TEST_F(HostResolverServiceEndpointRequestKeepAliveForCacheDisabledTest,
+       NotKeptAlive) {
+  base::HistogramTester histograms;
+  UseIpv4DelayedDnsRules("4slow_ok");
+
+  Requester requester = CreateRequester("https://4slow_ok");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+  FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  requester.CancelRequest();
+  EXPECT_EQ(0u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  mock_dns_client_->CompleteDelayedTransactions();
+  FastForwardBy(base::TimeDelta());
+  histograms.ExpectTotalCount(
+      HostResolverServiceEndpointRequestKeepAliveForCacheTest::kResultHistogram,
+      0);
+  EXPECT_THAT(ResolveLocalOnly("https://4slow_ok"),
+              IsError(ERR_NAME_NOT_RESOLVED));
 }
 
 class HostResolverServiceEndpointRequestAddressHintsTest

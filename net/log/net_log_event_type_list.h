@@ -206,6 +206,17 @@ EVENT_TYPE(HOST_RESOLVER_MANAGER_JOB_REQUEST_ATTACH)
 //   }
 EVENT_TYPE(HOST_RESOLVER_MANAGER_JOB_REQUEST_DETACH)
 
+// This event is logged while a HostResolverManager::Job is kept running without
+// requests after its last request was cancelled, so that the results of its
+// DnsTask can be cached.
+//
+// The END phase contains the following parameters:
+//
+//   {
+//     "result": <How the keep-alive ended, e.g. "Cached" or "CapExpired">,
+//   }
+EVENT_TYPE(HOST_RESOLVER_MANAGER_JOB_KEPT_ALIVE_FOR_CACHE)
+
 // The creation/completion of a HostResolverSystemTask to call getaddrinfo. The
 // BEGIN phase contains the following parameters:
 //

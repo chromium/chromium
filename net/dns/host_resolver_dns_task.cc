@@ -252,8 +252,11 @@ HostResolverDnsTask::SelectAddressFailure(
 
 HostResolverDnsTask::SingleTransactionResults::SingleTransactionResults(
     DnsQueryType query_type,
-    ResultRefs results)
-    : query_type(query_type), results(results) {}
+    ResultRefs results,
+    bool received_response)
+    : query_type(query_type),
+      results(results),
+      received_response(received_response) {}
 
 HostResolverDnsTask::SingleTransactionResults::~SingleTransactionResults() =
     default;
@@ -611,6 +614,7 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
   }
 
   DCHECK(response);
+  bool received_response = !fake_response.has_value();
 
   DnsResponseResultExtractor::ResultsOrError results;
   {
@@ -638,6 +642,8 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
       DCHECK(!fatal_error);
       DCHECK_EQ(transaction_info->type, DnsQueryType::HTTPS);
       results = Results();
+      // Treat the response as missing, like for a network error.
+      received_response = false;
     } else if (transaction_info->error_behavior ==
                TransactionErrorBehavior::kIgnoreIfOtherTransactionResolves) {
       OnNonFatalAddressTransactionFailure(std::move(transaction_info),
@@ -651,6 +657,7 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
     }
   }
   CHECK(results.has_value());
+  transaction_info->received_response = received_response;
   net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_DNS_TASK_EXTRACTION_RESULTS,
                     [&] {
                       base::ListValue list;
@@ -983,7 +990,8 @@ void HostResolverDnsTask::HandleTransactionResults(
   }
 
   OnTransactionsFinished(
-      SingleTransactionResults(transaction_info->type, std::move(result_refs)));
+      SingleTransactionResults(transaction_info->type, std::move(result_refs),
+                               transaction_info->received_response));
 }
 
 void HostResolverDnsTask::OnTransactionsFinished(
@@ -1186,8 +1194,8 @@ void HostResolverDnsTask::OnNonFatalAddressTransactionFailure(
   // `DnsTaskResultsManager` knows this address family's query is done (stopping
   // the Happy Eyeballs resolution delay timer and clearing any provisional
   // address hints for the failed family).
-  OnTransactionsFinished(
-      SingleTransactionResults(transaction_info->type, ResultRefs{}));
+  OnTransactionsFinished(SingleTransactionResults(
+      transaction_info->type, ResultRefs{}, /*received_response=*/false));
 }
 
 void HostResolverDnsTask::OnFailure(

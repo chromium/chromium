@@ -17,6 +17,7 @@
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "net/base/address_family.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_handle.h"
@@ -116,6 +117,31 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     kMaxValue = kSystemSuccess,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:ResolveFallbackPath)
+
+  // Describes how a Job that was kept alive after its last request was
+  // cancelled (see ShouldKeepAliveForCache()) ended.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(DnsJobKeptAliveResult)
+  enum class KeptAliveResult {
+    // The DnsTask succeeded and the results were stored in the HostCache.
+    kCached = 0,
+    // The DnsTask failed. Nothing was cached.
+    kFailed = 1,
+    // The hard cap expired before the DnsTask completed. Nothing was cached.
+    kCapExpired = 2,
+    // The Job was aborted (e.g. network change, DNS config change or resolver
+    // shutdown). The DnsTask results were not cached.
+    kAborted = 3,
+    // A new request joined the Job, which then continued as a regular Job.
+    kRequestRejoined = 4,
+    kMaxValue = kRequestRejoined,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DnsJobKeptAliveResult)
+
+  // Returns the name of `result` used in histogram and NetLog names.
+  static std::string_view KeptAliveResultToString(KeptAliveResult result);
 
   // Helper method to calculate the ResolveFallbackPath based on the final
   // successful TaskType and the history of failed attempts. Returns
@@ -307,6 +333,21 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
   void UpdatePriority();
 
+  // Returns true if this Job should keep running after its last request was
+  // cancelled so that the results of its DnsTask can be cached. This is the
+  // case when the DnsTask has already received a response for at least one
+  // transaction and is only waiting for already-started transactions.
+  bool ShouldKeepAliveForCache() const;
+  // Starts keeping this Job alive without requests. Completes the Job without
+  // caching when the hard cap expires.
+  void StartKeepAliveForCache();
+  void OnKeepAliveForCacheTimeout();
+  // Stops keeping this Job alive and records histograms with `result`.
+  void FinishKeepAliveForCache(KeptAliveResult result);
+  bool is_kept_alive_for_cache() const {
+    return kept_alive_start_time_.has_value();
+  }
+
   // PrioritizedDispatcher::Job:
   void Start() override;
 
@@ -440,6 +481,17 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
   // Set to true when this Job executed DnsTask.
   bool dns_task_executed_ = false;
+
+  // Set to true when the current DnsTask has received a response for at least
+  // one transaction. Reset when a DnsTask is started or killed.
+  bool dns_task_received_results_ = false;
+
+  // Set while this Job is kept alive without requests after its last request
+  // was cancelled. See ShouldKeepAliveForCache().
+  std::optional<base::TimeTicks> kept_alive_start_time_;
+
+  // Hard cap on how long this Job is kept alive without requests.
+  base::OneShotTimer keep_alive_for_cache_timer_;
 
   // Set to whether DnsTask disabled HTTPS query. Set only when DnsTask
   // succeeds.

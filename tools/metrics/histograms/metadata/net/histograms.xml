@@ -3142,6 +3142,47 @@ chromium-metrics-reviews@google.com.
   <token key="secure" variants="DnsOverHttpsSecure"/>
 </histogram>
 
+<histogram
+    name="Net.DNS.Job.KeptAliveAfterLastRequestCancelled.Duration.{Result}"
+    units="ms" expires_after="2027-10-30">
+  <owner>bashi@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    How long a HostResolverManager::Job was kept alive without requests after
+    its last request was cancelled, when the keep-alive ended as {Result}. A Job
+    is kept alive when its DnsTask has already received results for some
+    transactions and is only waiting for already-started transactions, so that
+    the final results can be cached. Recorded when the Job stops being kept
+    alive (see Net.DNS.Job.KeptAliveAfterLastRequestCancelled.Result). Only
+    recorded when the KeepHostResolverJobAliveForCache feature, or the
+    AsyncDnsQuicJob feature with its
+    AsyncDnsQuicJobKeepHostResolverJobAliveForCache parameter, is enabled.
+  </summary>
+  <token key="Result">
+    <variant name="Aborted" summary="the Job was aborted"/>
+    <variant name="Cached" summary="the DnsTask results were cached"/>
+    <variant name="CapExpired" summary="the hard cap expired"/>
+    <variant name="Failed" summary="the DnsTask failed"/>
+    <variant name="RequestRejoined" summary="a new request joined the Job"/>
+  </token>
+</histogram>
+
+<histogram name="Net.DNS.Job.KeptAliveAfterLastRequestCancelled.Result"
+    enum="DnsJobKeptAliveResult" expires_after="2027-10-30">
+  <owner>bashi@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    How a HostResolverManager::Job that was kept alive without requests after
+    its last request was cancelled ended. A Job is kept alive when its DnsTask
+    has already received results for some transactions and is only waiting for
+    already-started transactions, so that the final results can be cached.
+    Recorded when the Job stops being kept alive. Only recorded when the
+    KeepHostResolverJobAliveForCache feature, or the AsyncDnsQuicJob feature
+    with its AsyncDnsQuicJobKeepHostResolverJobAliveForCache parameter, is
+    enabled.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.JobAttemptedHttps" enum="Boolean"
     expires_after="2027-10-09">
   <owner>bashi@chromium.org</owner>

@@ -810,6 +810,27 @@ historical analysis. -->
       label="DNS Config with local nameservers (including loopback)"/>
 </enum>
 
+<!-- LINT.IfChange(DnsJobKeptAliveResult) -->
+
+<enum name="DnsJobKeptAliveResult">
+  <int value="0" label="Cached">
+    The DnsTask succeeded and the results were stored in the HostCache.
+  </int>
+  <int value="1" label="Failed">The DnsTask failed. Nothing was cached.</int>
+  <int value="2" label="CapExpired">
+    The hard cap expired before the DnsTask completed. Nothing was cached.
+  </int>
+  <int value="3" label="Aborted">
+    The Job was aborted (e.g. network change, DNS config change or resolver
+    shutdown). The DnsTask results were not cached.
+  </int>
+  <int value="4" label="RequestRejoined">
+    A new request joined the Job, which then continued as a regular Job.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/dns/host_resolver_manager_job.h:DnsJobKeptAliveResult) -->
+
 <enum name="DohServerAutoupgradeStatus">
   <int value="0" label="SuccessWithNoPriorFailures"/>
   <int value="1" label="SuccessWithSomePriorFailures"/>

@@ -52,7 +52,9 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
 
   // Represents a single transaction results.
   struct NET_EXPORT_PRIVATE SingleTransactionResults {
-    SingleTransactionResults(DnsQueryType query_type, ResultRefs results);
+    SingleTransactionResults(DnsQueryType query_type,
+                             ResultRefs results,
+                             bool received_response);
     ~SingleTransactionResults();
 
     SingleTransactionResults(SingleTransactionResults&&);
@@ -64,6 +66,9 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
 
     DnsQueryType query_type;
     ResultRefs results;
+    // False when the transaction failed without receiving a valid DNS response,
+    // e.g. when an empty response was synthesized after a network error.
+    bool received_response;
   };
 
   class Delegate {
@@ -198,6 +203,8 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
     DnsQueryType type;
     TransactionErrorBehavior error_behavior;
     std::unique_ptr<DnsTransaction> transaction;
+    // Set when a valid DNS response was received and its results extracted.
+    bool received_response = false;
     base::WeakPtrFactory<TransactionInfo> weak_ptr_factory{this};
   };
 

@@ -191,6 +191,23 @@ EchMode HostResolverManager::JobKey::GetEchMode() const {
 }
 
 // static
+std::string_view HostResolverManager::Job::KeptAliveResultToString(
+    KeptAliveResult result) {
+  switch (result) {
+    case KeptAliveResult::kCached:
+      return "Cached";
+    case KeptAliveResult::kFailed:
+      return "Failed";
+    case KeptAliveResult::kCapExpired:
+      return "CapExpired";
+    case KeptAliveResult::kAborted:
+      return "Aborted";
+    case KeptAliveResult::kRequestRejoined:
+      return "RequestRejoined";
+  }
+}
+
+// static
 // WARNING: This method assumes the current task ordering configured by
 // HostResolverManager::ResolveLocally() and
 // HostResolverManager::CreateTaskSequence(). If you modify the task ordering
@@ -251,6 +268,7 @@ HostResolverManager::Job::Job(
       host_cache_(host_cache),
       tasks_(tasks),
       priority_tracker_(priority),
+      keep_alive_for_cache_timer_(tick_clock),
       tick_clock_(tick_clock),
       https_svcb_options_(https_svcb_options),
       net_log_(
@@ -264,6 +282,9 @@ HostResolverManager::Job::Job(
 }
 
 HostResolverManager::Job::~Job() {
+  if (is_kept_alive_for_cache()) {
+    FinishKeepAliveForCache(KeptAliveResult::kAborted);
+  }
   bool was_queued = is_queued();
   bool was_running = is_running();
   // Clean up now for nice NetLog.
@@ -364,6 +385,9 @@ void HostResolverManager::Job::CancelRequest(RequestImpl* request) {
   if (num_active_requests() > 0) {
     UpdatePriority();
     request->RemoveFromList();
+  } else if (ShouldKeepAliveForCache()) {
+    request->RemoveFromList();
+    StartKeepAliveForCache();
   } else {
     // If we were called from a Request's callback within CompleteRequests,
     // that Request could not have been cancelled, so num_active_requests()
@@ -377,6 +401,9 @@ void HostResolverManager::Job::AddServiceEndpointRequest(
     ServiceEndpointRequestImpl* request) {
   CHECK_EQ(host_cache_, request->host_cache());
 
+  // Checked before AddRequestCommon(), which stops keeping `this` alive.
+  const bool rejoined_kept_alive_job = is_kept_alive_for_cache();
+
   request->AssignJob(weak_ptr_factory_.GetSafeRef());
 
   AddRequestCommon(request->priority(), request->net_log(),
@@ -385,6 +412,22 @@ void HostResolverManager::Job::AddServiceEndpointRequest(
   service_endpoint_requests_.Append(request);
 
   UpdatePriority();
+
+  // A kept-alive Job has already received intermediate results and usually
+  // won't receive more until its DnsTask completes. Notify the new request of
+  // the current endpoints so that it doesn't need to wait for the remaining
+  // transactions. Post a task because notifying the delegate may delete the
+  // request.
+  // TODO(crbug.com/583538158): Also notify requests joining a regular Job
+  // that already has intermediate endpoints, once stale results are handled
+  // consistently.
+  if (rejoined_kept_alive_job && dns_task_results_manager_ &&
+      !dns_task_results_manager_->GetCurrentEndpoints().empty()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceEndpointRequestImpl::OnServiceEndpointsChanged,
+                       request->GetWeakPtr()));
+  }
 }
 
 void HostResolverManager::Job::CancelServiceEndpointRequest(
@@ -395,6 +438,9 @@ void HostResolverManager::Job::CancelServiceEndpointRequest(
   if (num_active_requests() > 0) {
     UpdatePriority();
     request->RemoveFromList();
+  } else if (ShouldKeepAliveForCache()) {
+    request->RemoveFromList();
+    StartKeepAliveForCache();
   } else {
     // See comments in CancelRequest().
     CompleteRequestsWithError(ERR_DNS_REQUEST_CANCELLED,
@@ -448,7 +494,18 @@ void HostResolverManager::Job::AbortInsecureDnsTask(int error,
   }
 
   if (dns_task_ && !dns_task_->secure()) {
-    if (has_system_fallback) {
+    if (is_kept_alive_for_cache()) {
+      // No request is waiting for this Job, so don't fall back to other tasks.
+      // A Job with requests would fall back to the system task if available,
+      // so complete as cancelled in that case so that this isn't recorded as a
+      // resolution failure.
+      if (has_system_fallback || !fallback_only) {
+        FinishKeepAliveForCache(KeptAliveResult::kAborted);
+        CompleteRequestsWithError(
+            has_system_fallback ? ERR_DNS_REQUEST_CANCELLED : error,
+            /*successful_task_type=*/std::nullopt);
+      }
+    } else if (has_system_fallback) {
       KillDnsTask();
       dns_task_error_ = OK;
       RunNextTask();
@@ -478,6 +535,13 @@ void HostResolverManager::Job::OnEvicted() {
 }
 
 bool HostResolverManager::Job::ServeFromHosts() {
+  // A kept-alive Job has no requests to serve, and HOSTS results are served by
+  // ResolveLocally() rather than from the HostCache, so leave it waiting for
+  // its DnsTask. Jobs bound to a target network aren't aborted on DNS config
+  // changes, so this can be reached from TryServingAllJobsFromHosts().
+  if (is_kept_alive_for_cache()) {
+    return false;
+  }
   DCHECK_GT(num_active_requests(), 0u);
   std::set<std::unique_ptr<HostResolverInternalResult>> results =
       resolver_->ServeFromHosts(
@@ -670,6 +734,7 @@ void HostResolverManager::Job::KillDnsTask() {
     }
     dns_task_.reset();
   }
+  dns_task_received_results_ = false;
   dns_task_results_manager_.reset();
 }
 
@@ -695,6 +760,9 @@ void HostResolverManager::Job::AddRequestCommon(
     RequestPriority request_priority,
     const NetLogWithSource& request_net_log,
     bool is_speculative) {
+  if (is_kept_alive_for_cache()) {
+    FinishKeepAliveForCache(KeptAliveResult::kRequestRejoined);
+  }
   priority_tracker_.Add(request_priority);
   request_net_log.AddEventReferencingSource(
       NetLogEventType::HOST_RESOLVER_MANAGER_JOB_ATTACH, net_log_.source());
@@ -721,6 +789,81 @@ void HostResolverManager::Job::UpdatePriority() {
   if (is_queued()) {
     handle_ = resolver_->dispatcher_->ChangePriority(handle_, priority());
   }
+}
+
+bool HostResolverManager::Job::ShouldKeepAliveForCache() const {
+  // Check the features last, so that their field trials are activated only
+  // for Jobs that would actually be kept alive.
+  //
+  // The Job must stay in `jobs_` so that it is owned and new requests can
+  // join it. Without a HostCache there is nothing to keep it alive for.
+  if (!self_iterator_.has_value() || !is_running() || is_queued() ||
+      !dns_task_ || !host_cache_) {
+    return false;
+  }
+  // Only keep waiting for already-started transactions. Never start new
+  // transactions without requests.
+  //
+  // Any transaction that received a response counts, even one without
+  // addresses (e.g. an HTTPS NODATA response while A and AAAA are in flight):
+  // it shows that the server is responsive, so the remaining responses are
+  // likely to arrive soon. Transactions that failed without a response (e.g.
+  // a synthesized empty HTTPS response after a socket error) don't count. The
+  // keep-alive is bounded by the hard cap either way.
+  if (!dns_task_received_results_ ||
+      dns_task_->num_additional_transactions_needed() > 0) {
+    return false;
+  }
+
+  const bool enabled =
+      base::FeatureList::IsEnabled(
+          features::kKeepHostResolverJobAliveForCache) ||
+      (base::FeatureList::IsEnabled(features::kAsyncDnsQuicJob) &&
+       features::kAsyncDnsQuicJobKeepHostResolverJobAliveForCache.Get());
+  return enabled &&
+         features::kKeepHostResolverJobAliveForCacheTimeout.Get().is_positive();
+}
+
+void HostResolverManager::Job::StartKeepAliveForCache() {
+  CHECK(!is_kept_alive_for_cache());
+  CHECK_EQ(num_active_requests(), 0u);
+  kept_alive_start_time_ = tick_clock_->NowTicks();
+  net_log_.BeginEvent(
+      NetLogEventType::HOST_RESOLVER_MANAGER_JOB_KEPT_ALIVE_FOR_CACHE);
+  // Unretained is safe because `this` owns the timer.
+  keep_alive_for_cache_timer_.Start(
+      FROM_HERE, features::kKeepHostResolverJobAliveForCacheTimeout.Get(),
+      base::BindOnce(&Job::OnKeepAliveForCacheTimeout, base::Unretained(this)));
+}
+
+void HostResolverManager::Job::OnKeepAliveForCacheTimeout() {
+  FinishKeepAliveForCache(KeptAliveResult::kCapExpired);
+  // This destroys `this`.
+  CompleteRequestsWithError(ERR_DNS_REQUEST_CANCELLED,
+                            /*successful_task_type=*/std::nullopt);
+}
+
+void HostResolverManager::Job::FinishKeepAliveForCache(KeptAliveResult result) {
+  CHECK(is_kept_alive_for_cache());
+  const base::TimeDelta duration =
+      tick_clock_->NowTicks() - *kept_alive_start_time_;
+  kept_alive_start_time_.reset();
+  keep_alive_for_cache_timer_.Stop();
+
+  net_log_.EndEvent(
+      NetLogEventType::HOST_RESOLVER_MANAGER_JOB_KEPT_ALIVE_FOR_CACHE, [&] {
+        return base::DictValue().Set("result", KeptAliveResultToString(result));
+      });
+
+  base::UmaHistogramEnumeration(
+      "Net.DNS.Job.KeptAliveAfterLastRequestCancelled.Result", result);
+  // Use finer buckets than UmaHistogramTimes() so that responses to classic
+  // DNS retransmissions (sent after ~1s by default) can be told apart from
+  // other durations.
+  base::UmaHistogramCustomTimes(
+      base::StrCat({"Net.DNS.Job.KeptAliveAfterLastRequestCancelled.Duration.",
+                    KeptAliveResultToString(result)}),
+      duration, base::Milliseconds(1), base::Seconds(5), 100);
 }
 
 void HostResolverManager::Job::Start() {
@@ -850,6 +993,7 @@ void HostResolverManager::Job::StartDnsTask(
       tick_clock_, !tasks_.empty() /* fallback_available */,
       https_svcb_options_);
   dns_task_executed_ = true;
+  dns_task_received_results_ = false;
   if (secure) {
     secure_dns_attempted_ = true;
   }
@@ -889,13 +1033,31 @@ void HostResolverManager::Job::OnDnsTaskFailure(
     DnsTransactionFactory::AttemptMode attempt_mode) {
   DCHECK_NE(OK, failure_results.error());
 
-  base::UmaHistogramLongTimes100(
-      base::StrCat({"Net.DNS.DnsTask.",
-                    IsAttemptModeSecure(attempt_mode) ? "Secure" : "Insecure",
-                    ".FailureTime"}),
-      duration);
+  // A kept-alive Job would have been cancelled without the keep-alive feature,
+  // killing its DnsTask. Don't record its timing, so that the slow tail isn't
+  // folded into these histograms. See also CompleteRequests().
+  if (!is_kept_alive_for_cache()) {
+    base::UmaHistogramLongTimes100(
+        base::StrCat({"Net.DNS.DnsTask.",
+                      IsAttemptModeSecure(attempt_mode) ? "Secure" : "Insecure",
+                      ".FailureTime"}),
+        duration);
+  }
 
   if (!dns_task) {
+    return;
+  }
+
+  // A Job kept alive without requests only waits for the current DnsTask, so
+  // don't start the remaining tasks. Don't cache the failure either: a Job with
+  // requests would cache it only after the remaining tasks also failed, and
+  // caching it could, e.g., make later requests in automatic mode skip insecure
+  // DNS or replace a positive entry with a negative one.
+  if (is_kept_alive_for_cache()) {
+    FinishKeepAliveForCache(KeptAliveResult::kFailed);
+    // This destroys `this`.
+    CompleteRequestsWithError(ERR_DNS_REQUEST_CANCELLED,
+                              /*successful_task_type=*/std::nullopt);
     return;
   }
 
@@ -952,13 +1114,16 @@ void HostResolverManager::Job::OnDnsTaskComplete(
   dns_task_https_disabled_ = dns_task_->https_disabled();
 
   const bool secure = IsAttemptModeSecure(attempt_mode);
-  base::UmaHistogramLongTimes100(
-      base::StrCat(
-          {"Net.DNS.DnsTask.", secure ? "Secure" : "Insecure", ".SuccessTime"}),
-      duration);
+  // See OnDnsTaskFailure() for why kept-alive Jobs are excluded.
+  if (!is_kept_alive_for_cache()) {
+    base::UmaHistogramLongTimes100(
+        base::StrCat({"Net.DNS.DnsTask.", secure ? "Secure" : "Insecure",
+                      ".SuccessTime"}),
+        duration);
 
-  base::UmaHistogramLongTimes100("Net.DNS.JobQueueTime.Success",
-                                 total_transaction_time_queued_);
+    base::UmaHistogramLongTimes100("Net.DNS.JobQueueTime.Success",
+                                   total_transaction_time_queued_);
+  }
 
   // Reset the insecure DNS failure counter if an insecure DnsTask completed
   // successfully.
@@ -983,6 +1148,11 @@ void HostResolverManager::Job::OnDnsTaskComplete(
 void HostResolverManager::Job::OnIntermediateTransactionsComplete(
     std::optional<HostResolverDnsTask::SingleTransactionResults>
         single_transaction_results) {
+  if (single_transaction_results.has_value() &&
+      single_transaction_results->received_response) {
+    dns_task_received_results_ = true;
+  }
+
   if (dispatched_) {
     DCHECK_GE(num_occupied_job_slots_,
               dns_task_->num_transactions_in_progress());
@@ -1273,6 +1443,29 @@ void HostResolverManager::Job::CompleteRequests(
     std::optional<DohResolutionDetails> doh_details) {
   CHECK(resolver_.get());
 
+  // A kept-alive Job has no requests, so it would have been cancelled without
+  // this feature. Don't record job-level histograms for it, so that it doesn't
+  // shift them (e.g. from cancelled to completed in Net.DNS.ResolveCategory)
+  // compared to when the feature is disabled. Its outcome is recorded by
+  // FinishKeepAliveForCache() instead.
+  const bool was_kept_alive_for_cache = is_kept_alive_for_cache();
+  if (was_kept_alive_for_cache) {
+    KeptAliveResult kept_alive_result;
+    const bool completed_by_dns_task = task_type == TaskType::DNS ||
+                                       task_type == TaskType::SECURE_DNS ||
+                                       task_type == TaskType::DNS_PLATFORM;
+    if (!results.did_complete() || !completed_by_dns_task) {
+      // E.g. the Job was aborted. Kept-alive Jobs are only completed by their
+      // DnsTask otherwise, so `!completed_by_dns_task` is just defensive.
+      kept_alive_result = KeptAliveResult::kAborted;
+    } else if (results.error() == OK) {
+      kept_alive_result = KeptAliveResult::kCached;
+    } else {
+      kept_alive_result = KeptAliveResult::kFailed;
+    }
+    FinishKeepAliveForCache(kept_alive_result);
+  }
+
   ResolutionDetails resolution_details;
   constexpr auto to_resolution_source = [](TaskType type) {
     switch (type) {
@@ -1335,10 +1528,12 @@ void HostResolverManager::Job::CompleteRequests(
     MaybeCacheResult(results, ttl, secure);
   }
 
-  RecordJobHistograms(results, task_type);
-  if (results.error() == OK && had_non_speculative_request_ &&
-      key_.source == HostResolverSource::ANY) {
-    RecordJobHttpsHistograms();
+  if (!was_kept_alive_for_cache) {
+    RecordJobHistograms(results, task_type);
+    if (results.error() == OK && had_non_speculative_request_ &&
+        key_.source == HostResolverSource::ANY) {
+      RecordJobHttpsHistograms();
+    }
   }
 
   // Complete all of the requests that were attached to the job and
