@@ -267,12 +267,4 @@ bool Canvas2DResourceProvider::HasUnusedResourcesForTesting() const {
   return image_pool_ && image_pool_->GetPoolSizeForTesting() > 0;
 }
 
-gpu::raster::RasterInterface* Canvas2DResourceProvider::RasterInterface()
-    const {
-  if (!ContextProviderWrapper()) {
-    return nullptr;
-  }
-  return ContextProviderWrapper()->ContextProvider().RasterInterface();
-}
-
 }  // namespace blink

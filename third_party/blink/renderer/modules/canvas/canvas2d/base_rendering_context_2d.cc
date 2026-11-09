@@ -201,9 +201,9 @@ BaseRenderingContext2D::~BaseRenderingContext2D() {
   if (HasBacking()) {
     CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
   }
-  if (shared_image_provider_ && shared_image_provider_->RasterInterface()) {
+  if (shared_image_provider_ && RasterInterface()) {
     // Last chance for outstanding GPU timers to record metrics.
-    CheckGpuTimers(shared_image_provider_->RasterInterface());
+    CheckGpuTimers(RasterInterface());
   }
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
@@ -245,9 +245,9 @@ void BaseRenderingContext2D::ResetBacking() {
   if (HasBacking()) {
     CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
   }
-  if (shared_image_provider_ && shared_image_provider_->RasterInterface()) {
+  if (shared_image_provider_ && RasterInterface()) {
     // Last chance for outstanding GPU timers to record metrics.
-    CheckGpuTimers(shared_image_provider_->RasterInterface());
+    CheckGpuTimers(RasterInterface());
   }
   ClearGpuTimers();
   shared_image_provider_.reset();
@@ -622,8 +622,15 @@ void BaseRenderingContext2D::NotifyGpuContextLostTask(
   }
 }
 
+gpu::raster::RasterInterface* BaseRenderingContext2D::RasterInterface() const {
+  if (!context_provider_wrapper_) {
+    return nullptr;
+  }
+  return context_provider_wrapper_->ContextProvider().RasterInterface();
+}
+
 bool BaseRenderingContext2D::IsGpuContextLost() const {
-  auto* raster_interface = shared_image_provider_->RasterInterface();
+  auto* raster_interface = RasterInterface();
   return !raster_interface ||
          raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
 }
@@ -743,13 +750,12 @@ void BaseRenderingContext2D::EnsureResourceReadyForDraw() {
     shared_image_provider_->resource_ =
         shared_image_provider_->NewOrRecycledResource();
     if (must_preserve_content_on_copy_on_write_) {
-      auto [src_token, dst_token] =
-          shared_image_provider_->RasterInterface()->CopySharedImage(
-              old_resource_shared_image->GetSharedImage(),
-              old_resource_shared_image->acquire_sync_token(),
-              shared_image_provider_->resource()->GetSharedImage(),
-              shared_image_provider_->resource()->acquire_sync_token(),
-              gfx::Rect(shared_image_provider_->Size()), gfx::Point(0, 0));
+      auto [src_token, dst_token] = RasterInterface()->CopySharedImage(
+          old_resource_shared_image->GetSharedImage(),
+          old_resource_shared_image->acquire_sync_token(),
+          shared_image_provider_->resource()->GetSharedImage(),
+          shared_image_provider_->resource()->acquire_sync_token(),
+          gfx::Rect(shared_image_provider_->Size()), gfx::Point(0, 0));
       old_resource_shared_image->SetReleaseSyncToken(src_token);
       shared_image_provider_->resource_->SetReleaseSyncToken(dst_token);
     } else {
@@ -827,12 +833,11 @@ void BaseRenderingContext2D::RasterRecordToSharedImage(
             &BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId,
             WrapWeakPersistent(this));
 
-    gpu::SyncToken sync_token =
-        shared_image_provider_->RasterInterface()->RasterSharedImage(
-            shared_image_provider_->resource()->GetSharedImage(),
-            shared_image_provider_->resource()->acquire_sync_token(),
-            std::move(last_recording), image_provider, needs_clear,
-            std::move(custom_callback));
+    gpu::SyncToken sync_token = RasterInterface()->RasterSharedImage(
+        shared_image_provider_->resource()->GetSharedImage(),
+        shared_image_provider_->resource()->acquire_sync_token(),
+        std::move(last_recording), image_provider, needs_clear,
+        std::move(custom_callback));
     shared_image_provider_->resource()->SetReleaseSyncToken(sync_token);
   }
 
@@ -985,11 +990,10 @@ bool BaseRenderingContext2D::WritePixelsToBacking(const SkImageInfo& orig_info,
     // Verify that this is the case and update the code here.
     must_preserve_content_on_copy_on_write_ = true;
 
-    gpu::SyncToken sync_token =
-        shared_image_provider_->RasterInterface()->WritePixels(
-            shared_image_provider_->resource()->GetSharedImage(),
-            shared_image_provider_->resource()->acquire_sync_token(), x, y,
-            SkPixmap(orig_info, pixels, row_bytes));
+    gpu::SyncToken sync_token = RasterInterface()->WritePixels(
+        shared_image_provider_->resource()->GetSharedImage(),
+        shared_image_provider_->resource()->acquire_sync_token(), x, y,
+        SkPixmap(orig_info, pixels, row_bytes));
     shared_image_provider_->resource()->SetReleaseSyncToken(sync_token);
 
     // If the overdraw optimization kicked in, we need to indicate that the
@@ -1727,7 +1731,7 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
   DidFlushRecording(recording, clear_frame_, reason);
   clear_frame_ = false;
   if (shared_image_provider_ && shared_image_provider_->IsAccelerated()) {
-    ScopedRasterTimer timer(shared_image_provider_->RasterInterface(), this);
+    ScopedRasterTimer timer(RasterInterface(), this);
     RasterRecordToSharedImage(recording);
   } else if (surface_) {
     ScopedRasterTimer timer(nullptr, nullptr);

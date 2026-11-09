@@ -30,17 +30,6 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
-namespace gpu {
-
-struct SyncToken;
-
-namespace raster {
-
-class RasterInterface;
-
-}  // namespace raster
-}  // namespace gpu
-
 namespace blink {
 
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DReclaimUnusedResources);
@@ -134,7 +123,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   void SetResourceRecyclingEnabled(bool value);
 
-  gpu::raster::RasterInterface* RasterInterface() const;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd);
 
   CanvasResourceSharedImage* resource() {
@@ -155,11 +143,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   void OnDestroyResource() override { --num_inflight_resources_; }
 
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
-
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
-      const {
-    return context_provider_wrapper_;
-  }
 
   base::WeakPtr<Canvas2DResourceProvider> CreateWeakPtr();
 

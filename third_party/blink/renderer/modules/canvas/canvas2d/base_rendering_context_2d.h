@@ -445,6 +445,7 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   void NotifyGpuContextLostTask(base::WeakPtr<Canvas2DResourceProvider>);
 
+  gpu::raster::RasterInterface* RasterInterface() const;
   bool IsGpuContextLost() const;
   bool ShouldReplaceTargetBuffer();
   void EnsureResourceReadyForDraw();
