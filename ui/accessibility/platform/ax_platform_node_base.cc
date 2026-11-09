@@ -1205,7 +1205,9 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     case ax::mojom::NameFrom::kContents:
       is_explicit_name = false;
       from = "contents";
-      CHECK(!GetName().empty(), base::NotFatalUntil::M163);
+      // TODO(crbug.com/583288593): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(!GetName().empty());
       break;
     case ax::mojom::NameFrom::kCssAltText:
       from = "CSS alt text";
