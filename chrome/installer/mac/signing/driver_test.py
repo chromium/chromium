@@ -2,10 +2,32 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import importlib.util
+import inspect
+import os
 import unittest
 from unittest import mock
 
-from signing import driver, model, test_config
+from signing import driver, model, pipeline, test_config
+
+
+def _load_updater_pipeline():
+    updater_pipeline_path = os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            *((os.pardir,) * 3),
+            'updater',
+            'mac',
+            'signing',
+            'pipeline.py',
+        )
+    )
+    spec = importlib.util.spec_from_file_location(
+        'updater_pipeline', updater_pipeline_path
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def _config_factory():
@@ -43,6 +65,7 @@ class TestDriverExecution(unittest.TestCase):
                     disable_packaging=mock.ANY,
                     skip_brands=mock.ANY,
                     channels=mock.ANY,
+                    tag_tool=mock.ANY,
                 ),
             ]
         )
@@ -80,8 +103,39 @@ class TestDriverExecution(unittest.TestCase):
 @mock.patch('signing.commands.file_exists', lambda s: True)
 @mock.patch('signing.config_factory.get_class', _config_factory)
 @mock.patch('signing.config_factory.get_invoker_class', _invoker_factory)
+@mock.patch('signing.commands.run_command')
+class TestUpdaterPipelineCompatibility(unittest.TestCase):
+    def test_updater_pipeline_signature_matches(self, *args):
+        updater_pipeline = _load_updater_pipeline()
+        self.assertEqual(
+            inspect.signature(pipeline.sign_all),
+            inspect.signature(updater_pipeline.sign_all),
+        )
+
+    def test_driver_calls_updater_pipeline_sign_all(self, *args):
+        updater_pipeline = _load_updater_pipeline()
+        with mock.patch(
+            'signing.pipeline.sign_all',
+            autospec=updater_pipeline.sign_all,
+        ) as updater_sign_all:
+            driver.main(
+                [
+                    '--input',
+                    '/input',
+                    '--output',
+                    '/output',
+                    '--identity',
+                    '-',
+                ]
+            )
+            updater_sign_all.assert_called_once()
+
+
+@mock.patch('signing.commands.file_exists', lambda s: True)
+@mock.patch('signing.config_factory.get_class', _config_factory)
+@mock.patch('signing.config_factory.get_invoker_class', _invoker_factory)
 @mock.patch.multiple('signing.driver', _show_tool_versions=mock.DEFAULT)
-@mock.patch('signing.pipeline.sign_all')
+@mock.patch('signing.pipeline.sign_all', autospec=True)
 class TestCommandLine(unittest.TestCase):
     def test_required_arguments(self, sign_all, **kwargs):
         with self.assertRaises(SystemExit):
@@ -112,6 +166,23 @@ class TestCommandLine(unittest.TestCase):
         self.assertEquals(model.NotarizeAndStapleLevel.NONE, config.notarize)
         self.assertEquals([], sign_all.call_args.kwargs['skip_brands'])
         self.assertEquals([], sign_all.call_args.kwargs['channels'])
+        self.assertIsNone(sign_all.call_args.kwargs['tag_tool'])
+
+    def test_tag_tool(self, sign_all, **kwargs):
+        driver.main(
+            [
+                '--input',
+                '/input',
+                '--output',
+                '/output',
+                '--identity',
+                '-',
+                '--tag-tool',
+                '/path/to/tag',
+            ]
+        )
+        self.assertEqual(1, sign_all.call_count)
+        self.assertEqual('/path/to/tag', sign_all.call_args.kwargs['tag_tool'])
 
     def test_development(self, sign_all, **kwargs):
         driver.main(

@@ -133,6 +133,7 @@ copy("copies") {
   deps = [
     ":copy_signing",
     "//chrome:entitlements",
+    "//chrome/updater/tools:tag",
     "//third_party/libdmg-hfsplus:dmg_tool",
     "//third_party/libdmg-hfsplus:hfs_tool",
   ]
@@ -141,6 +142,7 @@ copy("copies") {
     "$root_gen_dir/chrome/app-entitlements.plist",
     "$root_out_dir/dmg_tool",
     "$root_out_dir/hfs_tool",
+    "$root_out_dir/tag",
     "//chrome/app/helper-gpu-entitlements.plist",
     "//chrome/app/helper-renderer-entitlements.plist",
     "pkg-dmg",
@@ -205,6 +207,7 @@ script_test("mac_signing_tests") {
            "signing/run_mac_signing_tests.py",
            "signing/signing_test.py",
            "signing/test_config.py",
+           "//chrome/updater/mac/signing/pipeline.py",
            "//third_party/catapult/third_party/typ/",
          ]
 

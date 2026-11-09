@@ -164,11 +164,19 @@ def _package_zip(paths, config):
 
 
 async def sign_all(
-    orig_paths, config, disable_packaging=False, skip_brands=[], channels=[]
+    orig_paths,
+    config,
+    disable_packaging=False,
+    skip_brands=[],
+    channels=[],
+    tag_tool=None,
 ):
     """Code signs, packages, and signs the package, placing the result into
     |orig_paths.output|. |orig_paths.input| must contain the products to
     customize and sign.
+
+    The signature must remain compatible with the call made by
+    |signing.driver.main|, which is shared with Chrome.
 
     Args:
         orig_paths: A |model.Paths| object.
@@ -176,6 +184,7 @@ async def sign_all(
         disable_packaging: Ignored.
         skip_brands: Ignored.
         channels: Ignored.
+        tag_tool: Ignored.
     """
     with commands.WorkDirectory(orig_paths) as notary_paths:
         # First, sign and optionally submit the notarization requests.
