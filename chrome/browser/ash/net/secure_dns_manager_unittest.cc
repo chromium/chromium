@@ -495,8 +495,8 @@ TEST_F(SecureDnsManagerTest, kDnsOverHttpsEffectiveTemplatesChromeOS) {
   providers = GetDOHProviders();
 
   // Verify that the value of kDnsOverHttpsEffectiveTemplatesChromeOS pref is
-  // prefs::kDnsOverHttpsTemplates since the URI template with identifiers pref
-  // was cleared.
+  // ash::chrome_prefs::kDnsOverHttpsTemplates since the URI template with
+  // identifiers pref was cleared.
   EXPECT_EQ(local_state()->GetString(
                 ash::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             kGoogleDns);

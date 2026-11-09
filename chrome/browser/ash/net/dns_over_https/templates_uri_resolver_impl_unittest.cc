@@ -349,7 +349,7 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiers) {
   EXPECT_EQ(GetEffectiveTemplates(), kEffectiveTemplateIdentifiers);
   EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 
-  // `prefs::kDnsOverHttpsTemplates` should apply when
+  // `ash::chrome_prefs::kDnsOverHttpsTemplates` should apply when
   // `ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
   local_state()->ClearPref(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
   doh_template_uri_resolver_->Update(*local_state(), *user);
@@ -374,7 +374,7 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithThreeUnknownIdentifiers) {
             kEffectiveTemplateWithThreeUnknownIdentifiers);
   EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 
-  // `prefs::kDnsOverHttpsTemplates` should apply when
+  // `ash::chrome_prefs::kDnsOverHttpsTemplates` should apply when
   // `ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
   local_state()->ClearPref(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
 
@@ -474,7 +474,7 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiersNoSalt) {
   EXPECT_EQ(GetEffectiveTemplates(), kEffectiveTemplateIdentifiersNoSalt);
   EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 
-  // `prefs::kDnsOverHttpsTemplates` should apply when
+  // `ash::chrome_prefs::kDnsOverHttpsTemplates` should apply when
   // `ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
   local_state()->ClearPref(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
   doh_template_uri_resolver_->Update(*local_state(), *user);
@@ -497,7 +497,7 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithUnknownIdentifiersNoSalt) {
             kEffectiveTemplateWithThreeUnknownIdentifiersNoSalt);
   EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 
-  // `prefs::kDnsOverHttpsTemplates` should apply when
+  // `ash::chrome_prefs::kDnsOverHttpsTemplates` should apply when
   // `ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
   local_state()->ClearPref(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
   doh_template_uri_resolver_->Update(*local_state(), *user);

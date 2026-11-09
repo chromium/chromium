@@ -50,7 +50,8 @@ class KerberosFilesHandler {
   void SetFilesChangedForTesting(base::OnceClosure callback);
 
  private:
-  // Called whenever prefs::kDisableAuthNegotiateCnameLookup is changed.
+  // Called whenever ash::chrome_prefs::kDisableAuthNegotiateCnameLookup is
+  // changed.
   void OnDisabledAuthNegotiateCnameLookupChanged();
 
   // Forwards to |files_changed_for_testing_| if set.
