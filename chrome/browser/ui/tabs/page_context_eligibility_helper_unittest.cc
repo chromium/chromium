@@ -148,6 +148,9 @@ class PageContextEligibilityHelperTest
                            tabs::TabInterface::DetachReason reason) {
     helper->OnWillDetach(tab, reason);
   }
+  bool HasActiveObserver(const PageContextEligibilityHelper* helper) const {
+    return helper->observer_ != nullptr;
+  }
 
   void SetMockEligibility(bool eligible) {
     g_mock_is_eligible_with_account = eligible;
@@ -231,20 +234,84 @@ TEST_F(PageContextEligibilityHelperTest, TabActivationDeactivation) {
 
   CreateHelper();
 
-  // Initially active, helper has valid eligibility
+  // Initially active, helper has valid eligibility and a live observer.
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kEligible);
+  EXPECT_TRUE(HasActiveObserver(helper_.get()));
+
+  // Deactivating a resolved tab drops the observer while preserving the cached
+  // eligibility status.
+  ON_CALL(*mock_tab_, IsActivated()).WillByDefault(Return(false));
+  TriggerOnTabDeactivated(helper_.get(), &*mock_tab_);
+  EXPECT_FALSE(HasActiveObserver(helper_.get()));
   EXPECT_EQ(helper_->IsPageContextEligible(),
             optimization_guide::PageContextEligibilityStatus::kEligible);
 
-  // Deactivate the tab: observer is destroyed, returns kUnknown
-  TriggerOnTabDeactivated(helper_.get(), &*mock_tab_);
+  // Navigating while backgrounded resolves the new page to `kNotEligible` and
+  // drops the observer again once resolved.
+  SetMockEligibility(false);
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kNotEligible);
+  EXPECT_FALSE(HasActiveObserver(helper_.get()));
+
+  // Re-activating the tab recreates the observer while preserving the cached
+  // status, and navigating before the recreated observer resolves immediately
+  // resets status to `kUnknown` until the new page resolves.
+  ON_CALL(*mock_tab_, IsActivated()).WillByDefault(Return(true));
+  TriggerOnTabActivated(helper_.get(), &*mock_tab_);
+  EXPECT_TRUE(HasActiveObserver(helper_.get()));
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kNotEligible);
+  g_mock_is_eligible_with_account = true;
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com/reactivated"));
   EXPECT_EQ(helper_->IsPageContextEligible(),
             optimization_guide::PageContextEligibilityStatus::kUnknown);
-
-  // Activate the tab: observer is recreated, returns kEligible
-  TriggerOnTabActivated(helper_.get(), &*mock_tab_);
   WaitForEligibility(helper_.get());
   EXPECT_EQ(helper_->IsPageContextEligible(),
             optimization_guide::PageContextEligibilityStatus::kEligible);
+}
+
+TEST_F(PageContextEligibilityHelperTest,
+       InactiveTabResolvesEligibilityAndDropsObserver) {
+  EXPECT_CALL(*mock_api_, CheckPageEligibility(testing::_))
+      .WillRepeatedly(Return(optimization_guide::PageEligibilityResult{
+          .status = optimization_guide::PageEligibility::kEligible,
+          .meta_tag_names_affecting_eligibility = {.data = nullptr,
+                                                   .size = 0}}));
+  ON_CALL(*mock_tab_, IsActivated()).WillByDefault(Return(false));
+
+  CreateHelper();
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kEligible);
+  EXPECT_FALSE(HasActiveObserver(helper_.get()));
+
+  // Deactivating a tab mid-load (while still `kUnknown`) keeps the observer
+  // until initial eligibility resolves, then drops it.
+  helper_.reset();
+  g_mock_is_eligible_with_account = false;
+  ON_CALL(*mock_tab_, IsActivated()).WillByDefault(Return(true));
+  helper_ = std::make_unique<PageContextEligibilityHelper>(*mock_tab_);
+  ASSERT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kUnknown);
+  ON_CALL(*mock_tab_, IsActivated()).WillByDefault(Return(false));
+  TriggerOnTabDeactivated(helper_.get(), &*mock_tab_);
+  EXPECT_TRUE(HasActiveObserver(helper_.get()));
+
+  WaitForEligibility(helper_.get());
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kNotEligible);
+  EXPECT_FALSE(HasActiveObserver(helper_.get()));
+
+  // Discarding an inactive tab keeps the observer torn down and retains the
+  // cached eligibility status.
+  std::unique_ptr<content::WebContents> new_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  TriggerOnDiscardContents(helper_.get(), &*mock_tab_, web_contents(),
+                           new_contents.get());
+  EXPECT_FALSE(HasActiveObserver(helper_.get()));
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kNotEligible);
 }
 
 TEST_F(PageContextEligibilityHelperTest, NavigationUpdatesEligibility) {
@@ -351,6 +418,20 @@ TEST_F(PageContextEligibilityHelperTest, WillDetachDeleteResetsToUnknown) {
       updates,
       std::vector<optimization_guide::PageContextEligibilityStatus>{
           optimization_guide::PageContextEligibilityStatus::kUnknown});
+
+  // Closing an already `kNotEligible` tab tears down the observer while
+  // retaining `kNotEligible` so teardown does not transiently relax
+  // eligibility.
+  helper_.reset();
+  SetMockEligibility(false);
+  CreateHelper();
+  ASSERT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kNotEligible);
+  TriggerOnWillDetach(helper_.get(), &*mock_tab_,
+                      tabs::TabInterface::DetachReason::kDelete);
+  EXPECT_FALSE(HasActiveObserver(helper_.get()));
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kNotEligible);
 }
 
 }  // namespace tabs
