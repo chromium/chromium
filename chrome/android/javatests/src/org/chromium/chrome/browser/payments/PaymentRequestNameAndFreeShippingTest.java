@@ -6,22 +6,22 @@ package org.chromium.chrome.browser.payments;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.payments.Event2;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -33,9 +33,10 @@ import java.util.concurrent.TimeoutException;
  * regardless of address.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class PaymentRequestNameAndFreeShippingTest {
-    public final FreshCtaTransitTestRule mCtaTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public final AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     public final PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule(
@@ -121,13 +122,6 @@ public class PaymentRequestNameAndFreeShippingTest {
     @DisabledTest(message = "crbug.com/40170709")
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
-        // Start and cancel the Payment Request.
-        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.close_button, mPaymentRequestTestRule.getDismissed());
-        mPaymentRequestTestRule.expectResultContains(
-                new String[] {"User closed the Payment Request UI."});
-
         int expectedSample =
                 Event2.SHOWN
                         | Event2.USER_ABORTED
@@ -136,9 +130,16 @@ public class PaymentRequestNameAndFreeShippingTest {
                         | Event2.REQUEST_PAYER_DATA
                         | Event2.REQUEST_PAYER_NAME
                         | Event2.REQUEST_METHOD_BASIC_CARD;
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events2", expectedSample));
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher("PaymentRequest.Events2", expectedSample);
+
+        // Start and cancel the Payment Request.
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.clickAndWait(
+                R.id.close_button, mPaymentRequestTestRule.getDismissed());
+        mPaymentRequestTestRule.expectResultContains(
+                new String[] {"User closed the Payment Request UI."});
+
+        watcher.assertExpected();
     }
 }

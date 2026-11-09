@@ -6,17 +6,16 @@ package org.chromium.chrome.browser.payments;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppSpeed;
@@ -114,6 +113,16 @@ public class PaymentRequestPaymentAppUiSkipPreloadTest {
     @MediumTest
     @Feature({"Payments"})
     public void testPayViaDelayedSlowBobPay() throws TimeoutException {
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PaymentRequest.Events2",
+                        Event2.REQUEST_METHOD_OTHER
+                                | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                                | Event2.SKIPPED_SHOW
+                                | Event2.SELECTED_OTHER
+                                | Event2.PAY_CLICKED
+                                | Event2.COMPLETED);
+
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.test",
                 AppPresence.HAVE_APPS,
@@ -122,16 +131,7 @@ public class PaymentRequestPaymentAppUiSkipPreloadTest {
         mPaymentRequestTestRule.clickNodeAndWait("buy", mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"https://bobpay.test", "\"transaction\"", "1337"});
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events2",
-                        Event2.REQUEST_METHOD_OTHER
-                                | Event2.HAD_INITIAL_FORM_OF_PAYMENT
-                                | Event2.SKIPPED_SHOW
-                                | Event2.SELECTED_OTHER
-                                | Event2.PAY_CLICKED
-                                | Event2.COMPLETED));
+        watcher.assertExpected();
     }
 
     /** Two payments apps with the same payment method name should not skip payments UI. */
@@ -139,6 +139,16 @@ public class PaymentRequestPaymentAppUiSkipPreloadTest {
     @MediumTest
     @Feature({"Payments"})
     public void testTwoPaymentsAppsWithTheSamePaymentMethodName() throws TimeoutException {
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PaymentRequest.Events2",
+                        Event2.REQUEST_METHOD_OTHER
+                                | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                                | Event2.SHOWN
+                                | Event2.SELECTED_OTHER
+                                | Event2.PAY_CLICKED
+                                | Event2.COMPLETED);
+
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.test",
                 AppPresence.HAVE_APPS,
@@ -154,15 +164,6 @@ public class PaymentRequestPaymentAppUiSkipPreloadTest {
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"https://bobpay.test", "\"transaction\"", "1337"});
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events2",
-                        Event2.REQUEST_METHOD_OTHER
-                                | Event2.HAD_INITIAL_FORM_OF_PAYMENT
-                                | Event2.SHOWN
-                                | Event2.SELECTED_OTHER
-                                | Event2.PAY_CLICKED
-                                | Event2.COMPLETED));
+        watcher.assertExpected();
     }
 }
