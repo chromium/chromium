@@ -13,6 +13,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -855,6 +856,9 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
       std::optional<blink::mojom::PictureInPictureWindowOptions> pip_options =
           contents_to_navigate_or_insert->GetPictureInPictureOptions();
       if (pip_options.has_value()) {
+        // Showing the window can synchronously destroy the child.
+        base::WeakPtr<WebContents> weak_contents =
+            contents_to_navigate_or_insert->GetWeakPtr();
         const bool focus_contents =
             params->window_action ==
                 NavigateParams::WindowAction::kShowWindow &&
@@ -863,6 +867,7 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
             ->EnterStandaloneDocumentPictureInPicture(
                 params->source_contents, std::move(params->contents_to_insert),
                 std::move(*pip_options), focus_contents);
+        params->navigated_or_inserted_contents = weak_contents.get();
       }
       // If the WebContents doesn't have valid PiP options, don't enter PiP
       // mode and don't create a browser window.

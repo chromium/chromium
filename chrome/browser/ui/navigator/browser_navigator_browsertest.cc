@@ -2402,6 +2402,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorPictureInPictureTest,
 
   auto* manager = PictureInPictureWindowManager::GetInstance();
   EXPECT_EQ(nullptr, params.contents_to_insert);
+  EXPECT_EQ(child, params.navigated_or_inserted_contents);
   EXPECT_EQ(tab, manager->GetWebContents());
   ASSERT_EQ(child, manager->GetChildWebContents());
   EXPECT_TRUE(PictureInPictureWindowManager::IsChildWebContents(child));

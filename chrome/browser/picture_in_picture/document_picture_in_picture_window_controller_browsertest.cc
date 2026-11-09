@@ -1272,18 +1272,21 @@ IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBackendTest,
 
 IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBackendTest,
                        MatchMediaQuery) {
-  LoadTabAndEnterPictureInPicture(browser());
-  auto* opener_web_contents = window_controller()->GetWebContents();
-  auto* web_contents = window_controller()->GetChildWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), chrome_test_utils::GetTestUrl(
+                     base::FilePath(base::FilePath::kCurrentDirectory),
+                     base::FilePath(kPictureInPictureDocumentPipPage))));
+  auto* opener_web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(opener_web_contents);
-  ASSERT_TRUE(web_contents);
-
-  std::string match_media_picture_in_picture =
-      "window.matchMedia('(display-mode: picture-in-picture)').matches;";
-  ASSERT_FALSE(EvalJs(opener_web_contents, match_media_picture_in_picture)
-                   .ExtractBool());
-  ASSERT_TRUE(
-      EvalJs(web_contents, match_media_picture_in_picture).ExtractBool());
+  // The display mode must be correct as soon as requestWindow() resolves.
+  ASSERT_EQ(true, EvalJs(opener_web_contents, R"(
+    (async () => {
+      const pipWindow = await documentPictureInPicture.requestWindow(
+          {width: 400, height: 300});
+      return pipWindow.matchMedia('(display-mode: picture-in-picture)').matches;
+    })()
+  )"));
 }
 
 // Make sure that inner bounds of document PiP windows match the requested size.
