@@ -145,10 +145,10 @@ PDFiumTextFragmentFinder::PDFiumTextFragmentFinder(PDFiumEngine* engine)
 PDFiumTextFragmentFinder::~PDFiumTextFragmentFinder() = default;
 
 std::vector<PDFiumRange> PDFiumTextFragmentFinder::FindTextFragments(
-    base::span<const std::string> text_fragments) {
+    base::span<const std::string_view> text_fragments) {
   text_fragment_highlights_.clear();
 
-  for (const std::string& fragment : text_fragments) {
+  for (const std::string_view& fragment : text_fragments) {
     const auto text_fragment =
         shared_highlighting::TextFragment::FromEscapedString(fragment);
     // If the fragment is malformed (e.g. contains raw hyphens),

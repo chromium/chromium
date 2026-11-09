@@ -1630,7 +1630,7 @@ void PDFiumEngine::SetFormHighlight(bool enable_form) {
 }
 
 bool PDFiumEngine::FindAndHighlightTextFragments(
-    base::span<const std::string> text_fragments) {
+    base::span<const std::string_view> text_fragments) {
   HighlightChangeInvalidator invalidator(this);
   PDFiumTextFragmentFinder text_fragment_finder(this);
   client_->OnNewTextFragmentsSearchStarted();

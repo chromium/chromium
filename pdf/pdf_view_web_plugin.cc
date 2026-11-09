@@ -2055,7 +2055,7 @@ void PdfViewWebPlugin::HandleGetThumbnailMessage(
 void PdfViewWebPlugin::HandleHighlightTextFragmentsMessage(
     const base::DictValue& message) {
   const auto* text_fragment_value_list = message.FindList("textFragments");
-  std::vector<std::string> text_fragments;
+  std::vector<std::string_view> text_fragments;
   text_fragments.reserve(text_fragment_value_list->size());
   for (const base::Value& fragment : *text_fragment_value_list) {
     text_fragments.push_back(fragment.GetString());

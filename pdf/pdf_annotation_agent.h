@@ -6,6 +6,7 @@
 #define PDF_PDF_ANNOTATION_AGENT_H_
 
 #include <ostream>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -29,7 +30,7 @@ class PdfAnnotationAgent : public blink::mojom::AnnotationAgent {
     // Attempts to find and highlight all the `text_fragments` in the PDF.
     // Returns true if any of the fragments is found.
     virtual bool FindAndHighlightTextFragments(
-        base::span<const std::string> text_fragments) = 0;
+        base::span<const std::string_view> text_fragments) = 0;
 
     // Scrolls the found text fragment into the viewport.
     virtual void ScrollTextFragmentIntoView() = 0;

@@ -19,7 +19,7 @@ class MockPDFAnnogationAgentContainer : public PdfAnnotationAgent::Container {
  public:
   MOCK_METHOD(bool,
               FindAndHighlightTextFragments,
-              (base::span<const std::string> text_fragments),
+              (base::span<const std::string_view> text_fragments),
               (override));
   MOCK_METHOD(void, ScrollTextFragmentIntoView, (), (override));
   MOCK_METHOD(void, RemoveTextFragments, (), (override));

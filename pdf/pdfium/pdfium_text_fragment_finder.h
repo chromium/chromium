@@ -6,7 +6,7 @@
 #define PDF_PDFIUM_PDFIUM_TEXT_FRAGMENT_FINDER_H_
 
 #include <optional>
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -34,7 +34,7 @@ class PDFiumTextFragmentFinder {
   // `foo,-,bar` which will fail to parse. When finished searching, the
   // highlights will be returned as a list of ranges.
   std::vector<PDFiumRange> FindTextFragments(
-      base::span<const std::string> text_fragments);
+      base::span<const std::string_view> text_fragments);
 
  private:
   // Starts a text fragment search with the values provided in `fragment`.
