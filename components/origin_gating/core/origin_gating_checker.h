@@ -147,12 +147,16 @@ class OriginGatingChecker {
   OriginGatingChecker(base::WeakPtr<Delegate> delegate,
                       OriginGatingConfiguration config);
 
-  // Holds various inputs provided by the delegate (and data derived thereof),
-  // to avoid needless recomputations.
-  struct DelegateInputs {
+  // Holds state related to a particular invocation of `ComputeGatingDecision`.
+  struct EvaluationState {
+    // Provided by the caller.
     GateableEvent event;
+    // Provided by the caller. Nullopt if no source GURL was provided.
     std::optional<url::Origin> source_origin;
+    // Provided by the caller.
     url::Origin destination_origin;
+    // Whether the event requires user confirmation. Nullopt if this has not
+    // been computed yet.
     std::optional<bool> requires_user_confirmation;
     // The decision from the TaskPolicyConfig, or `kNoDecision` if there is
     // no config. This is `std::nullopt` until a predicate that involves the
@@ -163,7 +167,7 @@ class OriginGatingChecker {
   void EvaluatePredicates(
       std::unique_ptr<GatingDecisionContext> context,
       base::span<const PredicateConfiguration> pending_predicates,
-      DelegateInputs input,
+      EvaluationState state,
       GatingDecisionCallback callback);
 
   // Evaluates a single DecisionSource predicate, if possible. Returns
@@ -173,7 +177,7 @@ class OriginGatingChecker {
       std::unique_ptr<GatingDecisionContext>& context,
       base::span<const PredicateConfiguration> current_and_rest,
       DecisionSource decision_source,
-      DelegateInputs& input,
+      EvaluationState& state,
       GatingDecisionCallback& callback)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
@@ -184,14 +188,14 @@ class OriginGatingChecker {
       std::unique_ptr<GatingDecisionContext>& context,
       base::span<const PredicateConfiguration> current_and_rest,
       const CustomPredicate& custom_predicate,
-      DelegateInputs& input,
+      EvaluationState& state,
       GatingDecisionCallback& callback);
 
   void OnEvaluatedAsyncPredicate(
       std::unique_ptr<GatingDecisionContext> context,
       base::span<const PredicateConfiguration> pending_predicates,
       DecisionAttribution attribution,
-      DelegateInputs input,
+      EvaluationState state,
       GatingDecisionCallback callback,
       Decision decision);
 
@@ -199,19 +203,19 @@ class OriginGatingChecker {
       std::unique_ptr<GatingDecisionContext> context,
       base::span<const PredicateConfiguration> pending_predicates,
       DecisionAttribution attribution,
-      DelegateInputs input,
+      EvaluationState state,
       GatingDecisionCallback callback,
       Delegate::DecisionWithMetadata verdict);
 
   void OnUserConfirmationRequiredAnswer(
       std::unique_ptr<GatingDecisionContext> context,
       base::span<const PredicateConfiguration> pending_predicates,
-      DelegateInputs input,
+      EvaluationState state,
       GatingDecisionCallback callback,
       bool requires_user_confirmation);
 
   void OnNoVerdictAnswer(std::unique_ptr<GatingDecisionContext> context,
-                         DelegateInputs input,
+                         EvaluationState state,
                          GatingDecisionCallback callback,
                          Delegate::NoVerdictResult result);
 
@@ -221,7 +225,7 @@ class OriginGatingChecker {
   void RunActionOrGetUserConfirmationInfo(
       std::unique_ptr<GatingDecisionContext>& context,
       base::span<const PredicateConfiguration> pending_predicates,
-      DelegateInputs& input,
+      EvaluationState& state,
       GatingDecisionCallback& callback,
       base::FunctionRef<void()> action);
 
@@ -230,7 +234,7 @@ class OriginGatingChecker {
   Decision IsCachedWithUserConfirmation(const url::Origin& origin) const
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  Decision EvaluateTaskPolicyConfigWithCache(DelegateInputs& input) const
+  Decision EvaluateTaskPolicyConfigWithCache(EvaluationState& state) const
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
