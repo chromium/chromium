@@ -11,16 +11,23 @@ import android.util.ArrayMap;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabRestoreEntryId;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshotFactory;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -32,11 +39,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
-/** A tab model observer for managing bulk closures. */
+/**
+ * A {@link TabModelObserver} that saves closed tabs and tab groups to {@link HistoricalTabSaver}
+ * and, when {@link ChromeFeatureList#sUndoableTabClosureRework} is enabled, captures an {@link
+ * UndoClosureSnapshot} to notify the registered undo callback for undoable closures.
+ */
 @NullMarked
 public class HistoricalTabModelObserver implements TabModelObserver {
     private final TabModel mTabModel;
     private final HistoricalTabSaver mHistoricalTabSaver;
+    private @Nullable Callback<UndoClosureSnapshot> mUndoClosureCallback;
 
     /**
      * @param tabModel The tab model to observe tab closures in.
@@ -55,8 +67,18 @@ public class HistoricalTabModelObserver implements TabModelObserver {
 
     /** Removes observers. */
     public void destroy() {
+        mUndoClosureCallback = null;
         mTabModel.removeObserver(this);
         mHistoricalTabSaver.destroy();
+    }
+
+    /**
+     * Sets the callback invoked with an {@link UndoClosureSnapshot} when an undoable closure is
+     * saved to {@link HistoricalTabSaver}.
+     */
+    public void setUndoClosureCallback(
+            @Nullable Callback<UndoClosureSnapshot> undoClosureCallback) {
+        mUndoClosureCallback = undoClosureCallback;
     }
 
     /**
@@ -77,20 +99,65 @@ public class HistoricalTabModelObserver implements TabModelObserver {
 
     @Override
     public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
+        onFinishingMultipleTabClosure(
+                tabs,
+                canRestore,
+                TabClosingSource.UNKNOWN,
+                /* undoRunnable= */ null,
+                /* isAllTabs= */ false,
+                /* isUndoable= */ false);
+    }
+
+    @Override
+    public void onFinishingMultipleTabClosure(
+            List<Tab> tabs,
+            boolean canRestore,
+            @TabClosingSource int closingSource,
+            @Nullable Runnable undoRunnable,
+            boolean isAllTabs,
+            boolean isUndoable) {
         if (tabs.isEmpty() || !canRestore) return;
 
+        @TabRestoreEntryId int entryId = saveToTabRestoreService(tabs);
+        if (!isUndoable
+                || entryId == HistoricalTabSaver.INVALID_TAB_RESTORE_ENTRY_ID
+                || mUndoClosureCallback == null
+                || !ChromeFeatureList.sUndoableTabClosureRework.isEnabled()
+                || mTabModel.isIncognitoBranded()) {
+            return;
+        }
+
+        // For closures finalized at close time (isUndoable == true),
+        // TabCollectionTabModelImpl#closeTabsInternal invokes onFinishingMultipleTabClosure
+        // before removeTabsAndSelectNext removes the closing tabs or closes detached tab groups,
+        // so the tabs, selection state, and group metadata are still live in mTabModel.
+        Profile profile = mTabModel.getProfile();
+        boolean isTabGroupSyncEnabled =
+                profile != null && TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
+        UndoClosureSnapshot snapshot =
+                UndoClosureSnapshotFactory.captureFromTabModel(
+                        mTabModel,
+                        tabs,
+                        isAllTabs,
+                        isTabGroupSyncEnabled,
+                        closingSource,
+                        entryId,
+                        undoRunnable);
+        mUndoClosureCallback.onResult(snapshot);
+    }
+
+    private @TabRestoreEntryId int saveToTabRestoreService(List<Tab> tabs) {
         if (tabs.size() == 1) {
             Tab tab = tabs.get(0);
             if (!isTabGroupWithOneTab(tab)) {
-                mHistoricalTabSaver.createHistoricalTab(tab);
-                return;
+                return mHistoricalTabSaver.createHistoricalTab(tab);
             }
         }
 
-        buildGroupsAndCreateClosure(tabs);
+        return buildGroupsAndCreateClosure(tabs);
     }
 
-    private void buildGroupsAndCreateClosure(List<Tab> tabs) {
+    private @TabRestoreEntryId int buildGroupsAndCreateClosure(List<Tab> tabs) {
         Map<Token, HistoricalEntry> tabGroupIdToGroup = new ArrayMap<>();
         List<HistoricalEntry> entries = new ArrayList<>();
 
@@ -162,7 +229,7 @@ public class HistoricalTabModelObserver implements TabModelObserver {
             }
         }
 
-        mHistoricalTabSaver.createHistoricalBulkClosure(groupAdjustedEntries);
+        return mHistoricalTabSaver.createHistoricalBulkClosure(groupAdjustedEntries);
     }
 
     private boolean shouldSaveSeparateTabs(HistoricalEntry entry) {

@@ -8,10 +8,13 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -33,15 +36,23 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -65,8 +76,11 @@ public class HistoricalTabModelObserverUnitTest {
     @Mock private Profile mProfile;
     @Mock private HistoricalTabSaver mHistoricalTabSaver;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
+    @Mock private Callback<UndoClosureSnapshot> mUndoClosureCallback;
 
     @Captor private ArgumentCaptor<List<HistoricalEntry>> mEntriesCaptor;
+    @Captor private ArgumentCaptor<UndoClosureSnapshot> mSnapshotCaptor;
 
     private Context mContext;
     private HistoricalTabModelObserver mObserver;
@@ -75,6 +89,7 @@ public class HistoricalTabModelObserverUnitTest {
     @Before
     public void setUp() {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
 
         when(mTabModel.isTabGroupHiding(any())).thenReturn(false);
         when(mTabModel.isTabInTabGroup(any())).thenReturn(false);
@@ -83,6 +98,7 @@ public class HistoricalTabModelObserverUnitTest {
         when(mTabModel.iterator()).thenAnswer(inv -> Collections.emptyList().iterator());
 
         mObserver = new HistoricalTabModelObserver(mTabModel, mHistoricalTabSaver);
+        mObserver.setUndoClosureCallback(mUndoClosureCallback);
         verify(mTabModel).addObserver(mObserver);
 
         mContext = spy(ContextUtils.getApplicationContext());
@@ -524,6 +540,149 @@ public class HistoricalTabModelObserverUnitTest {
         HistoricalEntry historicalTab4 = entries.get(3);
         assertEquals(1, historicalTab4.getTabs().size());
         assertEquals(mockTab4, historicalTab4.getTabs().get(0));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
+    public void testUndoableSingleTab_BuildsSnapshotAndInvokesCallback() {
+        MockTab mockTab = createMockTab(10);
+        mockTab.setIsPinned(true);
+        when(mHistoricalTabSaver.createHistoricalTab(mockTab)).thenReturn(42);
+        when(mTabModel.index()).thenReturn(2);
+        when(mTabModel.indexOf(mockTab)).thenReturn(2);
+        when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
+        Runnable undoRunnable = mock(Runnable.class);
+
+        mObserver.onFinishingMultipleTabClosure(
+                List.of(mockTab),
+                /* canRestore= */ true,
+                TabClosingSource.TABLET_TAB_STRIP,
+                undoRunnable,
+                /* isAllTabs= */ true,
+                /* isUndoable= */ true);
+
+        verify(mHistoricalTabSaver).createHistoricalTab(mockTab);
+        verify(mUndoClosureCallback).onResult(mSnapshotCaptor.capture());
+        UndoClosureSnapshot snapshot = mSnapshotCaptor.getValue();
+        assertEquals(42, snapshot.entryId);
+        assertTrue(snapshot.isAllTabs);
+        assertTrue(snapshot.isTabGroupSyncEnabled);
+        assertEquals(TabClosingSource.TABLET_TAB_STRIP, snapshot.closingSource);
+        assertSame(undoRunnable, snapshot.undoRunnable);
+        assertEquals(1, snapshot.tabs.size());
+        assertEquals(10, snapshot.tabs.get(0).id);
+        assertEquals(2, snapshot.tabs.get(0).modelIndex);
+        assertTrue(snapshot.tabs.get(0).pinned);
+        assertTrue(snapshot.tabs.get(0).wasSelected);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
+    public void testUndoableBulkClosure_BuildsSnapshotWithGroupDataAndEntryId() {
+        MockTab mockTab0 = createMockTab(10);
+        MockTab mockTab1 = createMockTab(20);
+        Token tabGroupId = new Token(3L, 4L);
+        createGroup(
+                tabGroupId,
+                /* title= */ "Group",
+                TabGroupColorId.BLUE,
+                new MockTab[] {mockTab0, mockTab1});
+        when(mHistoricalTabSaver.createHistoricalBulkClosure(any())).thenReturn(99);
+        when(mTabModel.index()).thenReturn(1);
+        when(mTabModel.indexOf(mockTab0)).thenReturn(0);
+        when(mTabModel.indexOf(mockTab1)).thenReturn(1);
+        when(mTabModel.getIndexOfTabInGroup(mockTab0)).thenReturn(0);
+        when(mTabModel.getIndexOfTabInGroup(mockTab1)).thenReturn(1);
+        when(mTabModel.getLazyAllTabGroupIds(any(), eq(true)))
+                .thenReturn(LazyOneshotSupplier.fromValue(Collections.emptySet()));
+
+        mObserver.onFinishingMultipleTabClosure(
+                List.of(mockTab0, mockTab1),
+                /* canRestore= */ true,
+                TabClosingSource.UNKNOWN,
+                /* undoRunnable= */ null,
+                /* isAllTabs= */ false,
+                /* isUndoable= */ true);
+
+        verify(mHistoricalTabSaver).createHistoricalBulkClosure(any());
+        verify(mUndoClosureCallback).onResult(mSnapshotCaptor.capture());
+        UndoClosureSnapshot snapshot = mSnapshotCaptor.getValue();
+        assertEquals(99, snapshot.entryId);
+        assertEquals(2, snapshot.tabs.size());
+        assertEquals(0, snapshot.tabs.get(0).indexInGroup);
+        assertFalse(snapshot.tabs.get(0).wasSelected);
+        assertEquals(1, snapshot.tabs.get(1).indexInGroup);
+        assertTrue(snapshot.tabs.get(1).wasSelected);
+        assertNotNull(snapshot.groups.get(tabGroupId));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
+    public void testUndoableClosure_SkipsCallbackOnGuardConditions() {
+        MockTab mockTab = createMockTab(10);
+
+        // 1. Not undoable -> saves to TabRestoreService, skips undo callback.
+        when(mHistoricalTabSaver.createHistoricalTab(mockTab)).thenReturn(42);
+        mObserver.onFinishingMultipleTabClosure(
+                List.of(mockTab),
+                /* canRestore= */ true,
+                TabClosingSource.UNKNOWN,
+                /* undoRunnable= */ null,
+                /* isAllTabs= */ false,
+                /* isUndoable= */ false);
+
+        // 2. Invalid entryId -> skips undo callback.
+        when(mHistoricalTabSaver.createHistoricalTab(mockTab))
+                .thenReturn(HistoricalTabSaver.INVALID_TAB_RESTORE_ENTRY_ID);
+        mObserver.onFinishingMultipleTabClosure(
+                List.of(mockTab),
+                /* canRestore= */ true,
+                TabClosingSource.UNKNOWN,
+                /* undoRunnable= */ null,
+                /* isAllTabs= */ false,
+                /* isUndoable= */ true);
+
+        // 3. Incognito-branded model -> skips undo callback.
+        when(mHistoricalTabSaver.createHistoricalTab(mockTab)).thenReturn(42);
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        mObserver.onFinishingMultipleTabClosure(
+                List.of(mockTab),
+                /* canRestore= */ true,
+                TabClosingSource.UNKNOWN,
+                /* undoRunnable= */ null,
+                /* isAllTabs= */ false,
+                /* isUndoable= */ true);
+
+        // 4. Null callback -> skips cleanly without error.
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
+        mObserver.setUndoClosureCallback(null);
+        mObserver.onFinishingMultipleTabClosure(
+                List.of(mockTab),
+                /* canRestore= */ true,
+                TabClosingSource.UNKNOWN,
+                /* undoRunnable= */ null,
+                /* isAllTabs= */ false,
+                /* isUndoable= */ true);
+
+        verify(mUndoClosureCallback, never()).onResult(any());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
+    public void testUndoableClosure_FlagDisabled_SkipsCallback() {
+        MockTab mockTab = createMockTab(10);
+        when(mHistoricalTabSaver.createHistoricalTab(mockTab)).thenReturn(42);
+
+        mObserver.onFinishingMultipleTabClosure(
+                List.of(mockTab),
+                /* canRestore= */ true,
+                TabClosingSource.UNKNOWN,
+                /* undoRunnable= */ null,
+                /* isAllTabs= */ false,
+                /* isUndoable= */ true);
+
+        verify(mHistoricalTabSaver).createHistoricalTab(mockTab);
+        verify(mUndoClosureCallback, never()).onResult(any());
     }
 
     private MockTab createMockTab(int id) {

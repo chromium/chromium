@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
@@ -21,6 +22,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.GroupData;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshotFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 
@@ -47,6 +50,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class TabUndoBarController extends UndoBarController {
     private final TabModelObserver mTabModelObserver;
+    private final @Nullable Supplier<Boolean> mDialogVisibilitySupplier;
     private @Nullable UndoClosureSnapshot mReselectableSnapshot;
 
     /**
@@ -64,25 +68,9 @@ public class TabUndoBarController extends UndoBarController {
             SnackbarManageable snackbarManageable,
             @Nullable Supplier<Boolean> dialogVisibilitySupplier) {
         super(context, selector, snackbarManageable);
+        mDialogVisibilitySupplier = dialogVisibilitySupplier;
         mTabModelObserver =
                 new TabModelObserver() {
-                    /**
-                     * Decides whether we should disable an attempt to show/hide the undo bar.
-                     *
-                     * @param showingUndoBar indicates whether the expected behavior of the caller
-                     *     is to show or dismiss the undo bar.
-                     */
-                    private boolean disableUndo(boolean showingUndoBar) {
-                        // When closure(s) happen and we are trying to show the undo bar, check
-                        // whether the TabGridDialog is showing. If so, don't show the undo bar
-                        // because TabGridDialog has its own undo bar. See crbug.com/40714421. Note
-                        // that we don't disable attempts to dismiss snack bar to make sure that
-                        // snack bar state is in sync with tab model.
-                        return showingUndoBar
-                                && dialogVisibilitySupplier != null
-                                && dialogVisibilitySupplier.get();
-                    }
-
                     @Override
                     public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         switch (type) {
@@ -103,6 +91,7 @@ public class TabUndoBarController extends UndoBarController {
 
                     @Override
                     public void tabClosureUndone(Tab tab) {
+                        if (ChromeFeatureList.sUndoableTabClosureRework.isEnabled()) return;
                         if (disableUndo(false)) return;
                         onTabsResolvedExternally(List.of(tab.getId()), /* undone= */ true);
                         Token groupId = tab.getTabGroupId();
@@ -113,12 +102,14 @@ public class TabUndoBarController extends UndoBarController {
 
                     @Override
                     public void tabClosureCommitted(Tab tab) {
+                        if (ChromeFeatureList.sUndoableTabClosureRework.isEnabled()) return;
                         if (disableUndo(false)) return;
                         onTabsResolvedExternally(List.of(tab.getId()), /* undone= */ false);
                     }
 
                     @Override
                     public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
+                        if (ChromeFeatureList.sUndoableTabClosureRework.isEnabled()) return;
                         if (disableUndo(false)) return;
                         // A set keeps the per-snapshot membership checks O(1) for bulk closures.
                         Set<@TabId Integer> tabIds = new HashSet<>(TabModelUtils.getTabIds(tabs));
@@ -130,6 +121,7 @@ public class TabUndoBarController extends UndoBarController {
                             List<Tab> tabs,
                             boolean isAllTabs,
                             @TabClosingSource int closingSource) {
+                        if (ChromeFeatureList.sUndoableTabClosureRework.isEnabled()) return;
                         mReselectableSnapshot = null;
                         if (disableUndo(true)) return;
 
@@ -146,7 +138,10 @@ public class TabUndoBarController extends UndoBarController {
                                         tabs,
                                         isAllTabs,
                                         tabGroupSyncEnabled,
-                                        closingSource);
+                                        closingSource,
+                                        /* entryId= */ TabRestoreEntryId
+                                                .INVALID_TAB_RESTORE_ENTRY_ID,
+                                        /* undoRunnable= */ null);
                         mReselectableSnapshot =
                                 mTabModelSelector.isIncognitoSelected() ? null : snapshot;
                         queueUndoBar(snapshot);
@@ -178,6 +173,27 @@ public class TabUndoBarController extends UndoBarController {
     public void destroy() {
         TabModel model = mTabModelSelector.getModel(false);
         if (model != null) model.removeObserver(mTabModelObserver);
+    }
+
+    /**
+     * Handles an undoable tab closure snapshot captured when saving closed tabs.
+     *
+     * @param snapshot The pre-captured {@link UndoClosureSnapshot} for the closure.
+     */
+    public void onUndoableClosure(UndoClosureSnapshot snapshot) {
+        if (!ChromeFeatureList.sUndoableTabClosureRework.isEnabled()) return;
+        mReselectableSnapshot = null;
+        // For finalized closures, onFinishingMultipleTabClosure runs before didRemoveTabForClosure
+        // where TabGridDialogMediator hides the dialog when its tab group becomes empty. If the
+        // closure closes an entire tab group while TabGridDialog is open, still queue the undo bar
+        // here; TabGridDialogCoordinator throttles showing it until the dialog's hide animation
+        // finishes.
+        if (disableUndo(/* showingUndoBar= */ true) && !isClosingEntireTabGroup(snapshot)) return;
+        mReselectableSnapshot =
+                (!mTabModelSelector.isIncognitoSelected() && hasSelectedTab(snapshot))
+                        ? snapshot
+                        : null;
+        queueUndoBar(snapshot);
     }
 
     /**
@@ -215,5 +231,38 @@ public class TabUndoBarController extends UndoBarController {
         if (snapshot == mReselectableSnapshot) {
             mReselectableSnapshot = null;
         }
+    }
+
+    /**
+     * Decides whether we should disable an attempt to show/hide the undo bar.
+     *
+     * @param showingUndoBar indicates whether the expected behavior of the caller is to show or
+     *     dismiss the undo bar.
+     */
+    private boolean disableUndo(boolean showingUndoBar) {
+        // When closure(s) happen and we are trying to show the undo bar, check whether the
+        // TabGridDialog is showing. If so, don't show the undo bar because TabGridDialog has its
+        // own undo bar. If the TabGridDialog is closing because its tab group is now empty, we
+        // still queue this undo bar and TabGridDialogCoordinator throttles showing it until the
+        // hide animation is dismissed. See crbug.com/40714421. Note that we don't disable attempts
+        // to dismiss snack bar to make sure that snack bar state is in sync with tab model.
+        return showingUndoBar
+                && mDialogVisibilitySupplier != null
+                && mDialogVisibilitySupplier.get();
+    }
+
+    private static boolean isClosingEntireTabGroup(UndoClosureSnapshot snapshot) {
+        if (snapshot.groups.isEmpty()) return false;
+        for (GroupData groupData : snapshot.groups.values()) {
+            if (groupData.survivesInModel) return false;
+        }
+        return true;
+    }
+
+    private static boolean hasSelectedTab(UndoClosureSnapshot snapshot) {
+        for (ClosedTab tab : snapshot.tabs) {
+            if (tab.wasSelected) return true;
+        }
+        return false;
     }
 }

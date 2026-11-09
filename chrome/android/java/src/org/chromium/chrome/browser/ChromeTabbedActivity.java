@@ -954,6 +954,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             // For saving non-incognito tab closures for Recent Tabs.
             TabModel regularTabModel = mTabModelSelector.getModel(/* incognito= */ false);
             mHistoricalTabModelObserver = new HistoricalTabModelObserver(regularTabModel);
+            if (mUndoBarPopupController != null) {
+                mHistoricalTabModelObserver.setUndoClosureCallback(
+                        mUndoBarPopupController::onUndoableClosure);
+            }
             Profile profile = regularTabModel.getProfile();
             mHistoricalTabModelObserver.addSecondaryTabModelSupplier(
                     () -> {
