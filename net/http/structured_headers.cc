@@ -25,76 +25,78 @@
 // //third_party/rust/sfv/v0_15/wrapper/.
 namespace sfv {
 
+namespace {
+
+using InnerList = quiche::structured_headers::InnerList;
+
+ItemParts ToItemParts(Item& item) {
+  return {item.item, item.params};
+}
+
+InnerListParts ToInnerListParts(InnerList& inner_list) {
+  return {inner_list.items, inner_list.params};
+}
+
+}  // namespace
+
 struct Dictionary {
   std::vector<net::structured_headers::DictionaryMember> members;
 };
 
-Item& list_append_item(List& list) {
-  return *list.emplace_back(Item()).GetIfItem();
+ItemParts list_append_item(List& list) {
+  return ToItemParts(*list.emplace_back(Item()).GetIfItem());
 }
 
-InnerList& list_append_inner_list(List& list) {
-  return *list.emplace_back(InnerList()).GetIfInnerList();
+InnerListParts list_append_inner_list(List& list) {
+  return ToInnerListParts(*list.emplace_back(InnerList()).GetIfInnerList());
 }
 
-Item& dictionary_append_item(Dictionary& dictionary, rust::Str key) {
-  return *dictionary.members
-              .emplace_back(base::RustStrToStringView(key), Member(Item()))
-              .second.GetIfItem();
+ItemParts dictionary_append_item(Dictionary& dictionary, rust::Str key) {
+  return ToItemParts(
+      *dictionary.members
+           .emplace_back(base::RustStrToStringView(key), Member(Item()))
+           .second.GetIfItem());
 }
 
-Item& dictionary_set_item(Dictionary& dictionary, size_t index) {
+ItemParts dictionary_set_item(Dictionary& dictionary, size_t index) {
   Member& member = dictionary.members.at(index).second;
   if (Item* item = member.GetIfItem()) {
     item->params.clear();
-    return *item;
+    return ToItemParts(*item);
   }
   member = Member(Item());
-  return *member.GetIfItem();
+  return ToItemParts(*member.GetIfItem());
 }
 
-InnerList& dictionary_append_inner_list(Dictionary& dictionary, rust::Str key) {
-  return *dictionary.members
-              .emplace_back(base::RustStrToStringView(key), Member(InnerList()))
-              .second.GetIfInnerList();
+InnerListParts dictionary_append_inner_list(Dictionary& dictionary,
+                                            rust::Str key) {
+  return ToInnerListParts(
+      *dictionary.members
+           .emplace_back(base::RustStrToStringView(key), Member(InnerList()))
+           .second.GetIfInnerList());
 }
 
-InnerList& dictionary_set_inner_list(Dictionary& dictionary, size_t index) {
+InnerListParts dictionary_set_inner_list(Dictionary& dictionary, size_t index) {
   Member& member = dictionary.members.at(index).second;
   if (InnerList* inner_list = member.GetIfInnerList()) {
     inner_list->items.clear();
     inner_list->params.clear();
-    return *inner_list;
+    return ToInnerListParts(*inner_list);
   }
   member = Member(InnerList());
-  return *member.GetIfInnerList();
+  return ToInnerListParts(*member.GetIfInnerList());
 }
 
-Item& inner_list_append_item(InnerList& inner_list) {
-  return inner_list.items.emplace_back();
+ItemParts inner_list_append_item(InnerListItems& items) {
+  return ToItemParts(items.emplace_back());
 }
 
-BareItem& inner_list_append_param(InnerList& inner_list, rust::Str key) {
-  return inner_list.params
-      .emplace_back(base::RustStrToStringView(key), BareItem())
-      .second;
+BareItem& params_append(Parameters& params, rust::Str key) {
+  return params.emplace_back(base::RustStrToStringView(key), BareItem()).second;
 }
 
-BareItem& inner_list_get_param(InnerList& inner_list, size_t index) {
-  return inner_list.params.at(index).second;
-}
-
-BareItem& get_item_bare_item(Item& item) {
-  return item.item;
-}
-
-BareItem& item_append_param(Item& item, rust::Str key) {
-  return item.params.emplace_back(base::RustStrToStringView(key), BareItem())
-      .second;
-}
-
-BareItem& item_get_param(Item& item, size_t index) {
-  return item.params.at(index).second;
+BareItem& params_get(Parameters& params, size_t index) {
+  return params.at(index).second;
 }
 
 void set_bare_item_boolean(BareItem& out, bool v) {
@@ -160,7 +162,8 @@ std::optional<ParameterizedItem> ParseItemInternal(std::string_view str,
   if (base::FeatureList::IsEnabled(kStructuredHeadersInRust)) {
     ParameterizedItem item;
     bool ok = ParseAndRecordMetrics(kTimeMetricItem, kSuccessMetricItem, [&]() {
-      return sfv::decode_item(base::StringViewToRustSlice(str), item, strict);
+      return sfv::decode_item(base::StringViewToRustSlice(str),
+                              sfv::ToItemParts(item), strict);
     });
     if (!ok) {
       return std::nullopt;

@@ -10,30 +10,37 @@ use std::pin::Pin;
 /// C++ bindings
 #[cxx::bridge(namespace=sfv)]
 mod ffi {
+    struct ItemParts<'a> {
+        bare_item: Pin<&'a mut BareItem>,
+        params: Pin<&'a mut Parameters>,
+    }
+
+    struct InnerListParts<'a> {
+        items: Pin<&'a mut InnerListItems>,
+        params: Pin<&'a mut Parameters>,
+    }
+
     // From the `wrapper_functions` target.
     unsafe extern "C++" {
         include!("third_party/rust/sfv/v0_15/wrapper/functions.h");
 
         type BareItem;
         type Dictionary;
-        type InnerList;
-        type Item;
+        type InnerListItems;
         type List;
+        type Parameters;
 
-        fn list_append_item(ctx: Pin<&mut List>) -> Pin<&mut Item>;
-        fn list_append_inner_list(ctx: Pin<&mut List>) -> Pin<&mut InnerList>;
+        fn list_append_item(ctx: Pin<&mut List>) -> ItemParts<'_>;
+        fn list_append_inner_list(ctx: Pin<&mut List>) -> InnerListParts<'_>;
 
-        fn dictionary_append_item<'a>(ctx: Pin<&'a mut Dictionary>, key: &str)
-            -> Pin<&'a mut Item>;
-        fn dictionary_set_item(ctx: Pin<&mut Dictionary>, index: usize) -> Pin<&mut Item>;
+        fn dictionary_append_item<'a>(ctx: Pin<&'a mut Dictionary>, key: &str) -> ItemParts<'a>;
+        fn dictionary_set_item(ctx: Pin<&mut Dictionary>, index: usize) -> ItemParts<'_>;
         fn dictionary_append_inner_list<'a>(
             ctx: Pin<&'a mut Dictionary>,
             key: &str,
-        ) -> Pin<&'a mut InnerList>;
-        fn dictionary_set_inner_list(
-            ctx: Pin<&mut Dictionary>,
-            index: usize,
-        ) -> Pin<&mut InnerList>;
+        ) -> InnerListParts<'a>;
+        fn dictionary_set_inner_list(ctx: Pin<&mut Dictionary>, index: usize)
+            -> InnerListParts<'_>;
 
         fn set_bare_item_boolean(ctx: Pin<&mut BareItem>, val: bool);
         fn set_bare_item_integer(ctx: Pin<&mut BareItem>, val: i64);
@@ -42,20 +49,14 @@ mod ffi {
         fn set_bare_item_token(ctx: Pin<&mut BareItem>, val: &str);
         fn set_bare_item_byte_sequence(ctx: Pin<&mut BareItem>, val: &[u8]);
 
-        fn inner_list_append_item(ctx: Pin<&mut InnerList>) -> Pin<&mut Item>;
-        fn inner_list_append_param<'a>(
-            ctx: Pin<&'a mut InnerList>,
-            key: &str,
-        ) -> Pin<&'a mut BareItem>;
-        fn inner_list_get_param(ctx: Pin<&mut InnerList>, index: usize) -> Pin<&mut BareItem>;
+        fn inner_list_append_item(ctx: Pin<&mut InnerListItems>) -> ItemParts<'_>;
 
-        fn get_item_bare_item(ctx: Pin<&mut Item>) -> Pin<&mut BareItem>;
-        fn item_append_param<'a>(ctx: Pin<&'a mut Item>, key: &str) -> Pin<&'a mut BareItem>;
-        fn item_get_param(ctx: Pin<&mut Item>, index: usize) -> Pin<&mut BareItem>;
+        fn params_append<'a>(ctx: Pin<&'a mut Parameters>, key: &str) -> Pin<&'a mut BareItem>;
+        fn params_get(ctx: Pin<&mut Parameters>, index: usize) -> Pin<&mut BareItem>;
     }
 
     extern "Rust" {
-        fn decode_item(input: &[u8], item: Pin<&mut Item>, strict: bool) -> bool;
+        fn decode_item(input: &[u8], item: ItemParts<'_>, strict: bool) -> bool;
 
         fn decode_list(input: &[u8], ctx: Pin<&mut List>, strict: bool) -> bool;
 
@@ -122,12 +123,18 @@ impl<'de> KeyIndexMap<'de> {
     }
 }
 
-struct ItemParamVisitor<'a, 'de> {
-    item: Pin<&'a mut ffi::Item>,
+struct ParamVisitor<'a, 'de> {
+    params: Pin<&'a mut ffi::Parameters>,
     indices: KeyIndexMap<'de>,
 }
 
-impl<'de> sfv::visitor::ParameterVisitor<'de> for ItemParamVisitor<'_, 'de> {
+impl<'a> ParamVisitor<'a, '_> {
+    fn new(params: Pin<&'a mut ffi::Parameters>) -> Self {
+        Self { params, indices: KeyIndexMap::new() }
+    }
+}
+
+impl<'de> sfv::visitor::ParameterVisitor<'de> for ParamVisitor<'_, 'de> {
     type Out = ();
     type Error = Infallible;
 
@@ -137,8 +144,8 @@ impl<'de> sfv::visitor::ParameterVisitor<'de> for ItemParamVisitor<'_, 'de> {
         value: BareItemFromInput<'de>,
     ) -> Result<(), Self::Error> {
         let out = match self.indices.get_or_insert(key.as_str()) {
-            Some(index) => ffi::item_get_param(self.item.as_mut(), index),
-            None => ffi::item_append_param(self.item.as_mut(), key.as_str()),
+            Some(index) => ffi::params_get(self.params.as_mut(), index),
+            None => ffi::params_append(self.params.as_mut(), key.as_str()),
         };
         set_bare_item(out, value);
         Ok(())
@@ -149,56 +156,28 @@ impl<'de> sfv::visitor::ParameterVisitor<'de> for ItemParamVisitor<'_, 'de> {
     }
 }
 
-impl<'de> sfv::visitor::ItemVisitor<'de> for Pin<&mut ffi::Item> {
+impl<'de> sfv::visitor::ItemVisitor<'de> for ffi::ItemParts<'_> {
     type Out = ();
     type Error = Infallible;
 
     fn bare_item(
-        mut self,
+        self,
         bare_item: BareItemFromInput<'de>,
     ) -> Result<impl sfv::visitor::ParameterVisitor<'de, Out = Self::Out>, Self::Error> {
-        let out = ffi::get_item_bare_item(self.as_mut());
-        set_bare_item(out, bare_item);
-        Ok(ItemParamVisitor { item: self, indices: KeyIndexMap::new() })
+        set_bare_item(self.bare_item, bare_item);
+        Ok(ParamVisitor::new(self.params))
     }
 }
 
-struct InnerListParamVisitor<'a, 'de> {
-    inner_list: Pin<&'a mut ffi::InnerList>,
-    indices: KeyIndexMap<'de>,
-}
-
-impl<'de> sfv::visitor::ParameterVisitor<'de> for InnerListParamVisitor<'_, 'de> {
-    type Out = ();
-    type Error = Infallible;
-
-    fn parameter(
-        &mut self,
-        key: &'de KeyRef,
-        value: BareItemFromInput<'de>,
-    ) -> Result<(), Self::Error> {
-        let out = match self.indices.get_or_insert(key.as_str()) {
-            Some(index) => ffi::inner_list_get_param(self.inner_list.as_mut(), index),
-            None => ffi::inner_list_append_param(self.inner_list.as_mut(), key.as_str()),
-        };
-        set_bare_item(out, value);
-        Ok(())
-    }
-
-    fn finish(self) -> Result<Self::Out, Self::Error> {
-        Ok(())
-    }
-}
-
-impl<'de> sfv::visitor::InnerListVisitor<'de> for Pin<&mut ffi::InnerList> {
+impl<'de> sfv::visitor::InnerListVisitor<'de> for ffi::InnerListParts<'_> {
     type Error = Infallible;
 
     fn item(&mut self) -> Result<impl sfv::visitor::ItemVisitor<'de>, Self::Error> {
-        Ok(ffi::inner_list_append_item(self.as_mut()))
+        Ok(ffi::inner_list_append_item(self.items.as_mut()))
     }
 
     fn finish(self) -> Result<impl sfv::visitor::ParameterVisitor<'de>, Self::Error> {
-        Ok(InnerListParamVisitor { inner_list: self, indices: KeyIndexMap::new() })
+        Ok(ParamVisitor::new(self.params))
     }
 }
 
@@ -281,8 +260,8 @@ impl<'de> sfv::visitor::DictionaryVisitor<'de> for DictVisitor<'_, 'de> {
 /// Decodes a Structured Header Item from the input bytes using RFC 8941.
 ///
 /// Returns true if decoding was successful, and false otherwise.
-/// On success, the result is stored in the provided `Item`.
-pub fn decode_item(input: &[u8], item: Pin<&mut ffi::Item>, strict: bool) -> bool {
+/// On success, the result is stored in the provided `ItemParts`.
+pub fn decode_item(input: &[u8], item: ffi::ItemParts<'_>, strict: bool) -> bool {
     sfv::Parser::new(input)
         .with_version(sfv::Version::Rfc8941)
         .with_lenient_mode(!strict)
