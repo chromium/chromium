@@ -712,6 +712,46 @@ GenerateBlockPaths(bool should_normalize_file_path) {
   return block_path_rules;
 }
 
+// Returns true if `child_components` is the same as or a descendant of
+// `parent_components`, ignoring case differences.
+bool IsPathOrDescendantIgnoreCase(
+    const std::vector<base::FilePath::StringType>& parent_components,
+    const std::vector<base::FilePath::StringType>& child_components) {
+  if (parent_components.empty() ||
+      parent_components.size() > child_components.size()) {
+    return false;
+  }
+
+  return std::equal(parent_components.begin(), parent_components.end(),
+                    child_components.begin(),
+                    base::FilePath::CompareEqualIgnoreCase);
+}
+
+// Returns true if `child_path` is the same as or a descendant of
+// `parent_path`, ignoring case differences. Unlike
+// `base::FilePath::IsParent()`, this handles case-variant paths returned by
+// native pickers on case-insensitive filesystems.
+bool IsPathOrDescendantIgnoreCase(
+    const base::FilePath& parent_path,
+    const std::vector<base::FilePath::StringType>& parent_components,
+    const base::FilePath& child_path) {
+  // Fast path: Exact match or case-sensitive parent match.
+  if (child_path == parent_path || parent_path.IsParent(child_path)) {
+    return true;
+  }
+  return IsPathOrDescendantIgnoreCase(parent_components,
+                                      child_path.GetComponents());
+}
+
+// Returns true if `parent_components` is a strict parent of
+// `child_components`, ignoring case differences.
+bool IsParentIgnoreCase(
+    const std::vector<base::FilePath::StringType>& parent_components,
+    const std::vector<base::FilePath::StringType>& child_components) {
+  return parent_components.size() < child_components.size() &&
+         IsPathOrDescendantIgnoreCase(parent_components, child_components);
+}
+
 // Checks if `path` should be blocked by the `rules`.
 // The BlockType of the nearest ancestor of a path to check is what
 // ultimately determines if a path is blocked or not. If a blocked path is a
@@ -747,7 +787,10 @@ bool ShouldBlockAccessToPath(
   }
 #endif
 
+  const std::vector<base::FilePath::StringType> path_components =
+      path.GetComponents();
   base::FilePath nearest_ancestor;
+  std::vector<base::FilePath::StringType> nearest_ancestor_components;
   BlockType nearest_ancestor_block_type = BlockType::kDontBlockChildren;
   auto should_block_with_rule = [&](const base::FilePath& block_path,
                                     BlockType block_type) -> bool {
@@ -757,15 +800,19 @@ bool ShouldBlockAccessToPath(
       return false;
     }
 
-    if (path == block_path || path.IsParent(block_path)) {
+    std::vector<base::FilePath::StringType> block_components =
+        block_path.GetComponents();
+    if (IsPathOrDescendantIgnoreCase(path_components, block_components)) {
       LOG(ERROR) << "Blocking access to " << path
                  << " because it is a parent of " << block_path;
       return true;
     }
 
-    if (block_path.IsParent(path) &&
-        (nearest_ancestor.empty() || nearest_ancestor.IsParent(block_path))) {
+    if (IsParentIgnoreCase(block_components, path_components) &&
+        (nearest_ancestor.empty() ||
+         IsParentIgnoreCase(nearest_ancestor_components, block_components))) {
       nearest_ancestor = block_path;
+      nearest_ancestor_components = std::move(block_components);
       nearest_ancestor_block_type = block_type;
     }
     return false;
@@ -787,9 +834,6 @@ bool ShouldBlockAccessToPath(
       return true;
     }
   }
-
-  std::vector<base::FilePath::StringType> path_components =
-      path.GetComponents();
 
   // Checks if the path components contain the components of the suffix rule.
   // For example, if the rule is `.git/hooks`, it will block paths like
@@ -850,31 +894,6 @@ bool ShouldBlockAccessToPath(
   VLOG(1) << "Blocking access to " << path << " because it is inside "
           << nearest_ancestor << " and it's kBlockAllChildren";
   return true;
-}
-
-// Returns true if `child_path` is the same as or a descendant of
-// `parent_path`, ignoring case differences. Unlike
-// `base::FilePath::IsParent()`, this handles case-variant paths returned by
-// native pickers on case-insensitive filesystems.
-bool IsPathOrDescendantIgnoreCase(
-    const base::FilePath& parent_path,
-    const std::vector<base::FilePath::StringType>& parent_components,
-    const base::FilePath& child_path) {
-  // Fast path: Exact match or case-sensitive parent match.
-  if (child_path == parent_path || parent_path.IsParent(child_path)) {
-    return true;
-  }
-
-  const std::vector<base::FilePath::StringType> child_components =
-      child_path.GetComponents();
-  if (parent_components.empty() ||
-      parent_components.size() > child_components.size()) {
-    return false;
-  }
-
-  return std::equal(parent_components.begin(), parent_components.end(),
-                    child_components.begin(),
-                    base::FilePath::CompareEqualIgnoreCase);
 }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
