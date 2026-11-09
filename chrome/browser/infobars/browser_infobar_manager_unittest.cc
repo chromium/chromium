@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -1106,6 +1107,65 @@ TEST_F(BrowserInfoBarManagerUnitTest,
   EXPECT_NE(nullptr, manager()->Show(tab, promo_tab_id));
   EXPECT_TRUE(manager()->ShowGlobally(promo_global_id));
   EXPECT_EQ(3u, content_manager->infobars().size());
+}
+
+TEST_F(BrowserInfoBarManagerUnitTest, ShowAndHideForNonTabWebContents) {
+  const auto id = InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE;
+  content::WebContents* callback_contents = nullptr;
+  manager()->Register(
+      InfoBarSpec::Builder(id)
+          .SetMessageText(u"Reload needed")
+          .SetScope(InfoBarScope::kTab)
+          .AddOkButton(u"Reload",
+                       base::BindLambdaForTesting([&](content::WebContents* c) {
+                         callback_contents = c;
+                       }))
+          .Build());
+
+  auto browser1 = CreateBrowserWindow();
+  auto browser2 = CreateBrowserWindow();
+
+  std::unique_ptr<content::WebContents> side_panel_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_.get(),
+                                                        nullptr);
+  ContentInfoBarManager::CreateForWebContents(side_panel_contents.get());
+  ASSERT_EQ(nullptr, tabs::TabInterface::MaybeGetFromContents(
+                         side_panel_contents.get()));
+  webui::SetBrowserWindowInterface(side_panel_contents.get(),
+                                   &browser1->window());
+
+  auto* content_manager =
+      ContentInfoBarManager::FromWebContents(side_panel_contents.get());
+  base::HistogramTester histogram_tester;
+
+  infobars::InfoBar* infobar = manager()->Show(side_panel_contents.get(), id);
+  ASSERT_NE(nullptr, infobar);
+  ASSERT_EQ(1u, content_manager->infobars().size());
+  histogram_tester.ExpectBucketCount("InfoBar.Centralized.Show", id, 1);
+
+  EXPECT_TRUE(infobar->delegate()->AsConfirmInfoBarDelegate()->Accept());
+  content_manager->RemoveInfoBar(infobar);
+  EXPECT_EQ(side_panel_contents.get(), callback_contents);
+  histogram_tester.ExpectBucketCount("InfoBar.Centralized.Accept", id, 1);
+
+  // Re-show and verify browser-filtered `Hide()` resolves the embedding
+  // browser via `webui::GetBrowserWindowInterface()`.
+  ASSERT_NE(nullptr, manager()->Show(side_panel_contents.get(), id));
+  ASSERT_EQ(1u, content_manager->infobars().size());
+
+  manager()->Hide(id,
+                  base::BindLambdaForTesting([&](BrowserWindowInterface* b) {
+                    return b == &browser2->window();
+                  }));
+  EXPECT_EQ(1u, content_manager->infobars().size());
+
+  manager()->Hide(id,
+                  base::BindLambdaForTesting([&](BrowserWindowInterface* b) {
+                    return b == &browser1->window();
+                  }));
+  EXPECT_EQ(0u, content_manager->infobars().size());
+
+  webui::SetBrowserWindowInterface(side_panel_contents.get(), nullptr);
 }
 
 }  // namespace infobars

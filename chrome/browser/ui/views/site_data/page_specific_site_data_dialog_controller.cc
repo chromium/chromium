@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
-#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_controller.h"
@@ -100,16 +99,15 @@ bool PageSpecificSiteDataDialogController::ShowInfoBar(
   }
   if (infobars::IsInfoBarMigrated(
           infobars::InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE)) {
-    if (auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents)) {
-      auto* browser_infobar_manager =
-          infobars::BrowserInfoBarManager::From(g_browser_process);
-      CHECK(browser_infobar_manager);
-      return browser_infobar_manager->Show(
-                 tab, infobars::InfoBarDelegate::
-                          COLLECTED_COOKIES_INFOBAR_DELEGATE) != nullptr;
+    auto* browser_infobar_manager =
+        infobars::BrowserInfoBarManager::From(g_browser_process);
+    if (!browser_infobar_manager) {
+      return false;
     }
-    // TODO(crbug.com/582324173): Support non-tab WebContents in
-    // BrowserInfoBarManager.
+    return browser_infobar_manager->Show(
+               web_contents,
+               infobars::InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE) !=
+           nullptr;
   }
   auto* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);

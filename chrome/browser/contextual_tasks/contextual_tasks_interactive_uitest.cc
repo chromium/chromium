@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/threading/thread_restrictions.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -95,6 +97,7 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/host_override.h"
+#include "components/infobars/core/infobar_delegate.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
@@ -4973,11 +4976,15 @@ class ContextualTasksSidePanelRearchToolbarInteractiveUiTest
     enabled.push_back({kContextualTasksRearchitecture, {}});
     enabled.push_back({kContextualTasksSidePanelRearchitecture, {}});
     enabled.push_back({kContextualTasksEnableSpatialModelToolbarLayout, {}});
+    enabled.push_back(
+        {infobars::kCentralizedInfoBarFramework,
+         {{"MigratedCollectedCookies", "true"}, {"MigratedPageInfo", "true"}}});
 
     auto disabled = GetDefaultDisabledFeatures();
     std::erase(disabled, kContextualTasksRearchitecture);
     std::erase(disabled, kContextualTasksSidePanelRearchitecture);
     std::erase(disabled, kContextualTasksEnableSpatialModelToolbarLayout);
+    std::erase(disabled, infobars::kCentralizedInfoBarFramework);
     disabled.push_back(kContextualTasksHideMenuOnAiPage);
 
     feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
@@ -5830,6 +5837,7 @@ IN_PROC_BROWSER_TEST_P(
   };
   const GURL kAimUrl("https://www.google.com/search?q=hello+world&udm=50");
   GURL committed_url;
+  base::HistogramTester histogram_tester;
 
   RunTestSequence(
       SubmitContextualSearchboxQueryToOpenSidePanel(kOverlayId, "hello world",
@@ -5917,7 +5925,15 @@ IN_PROC_BROWSER_TEST_P(
           "Side panel remains on the thread URL while reload banner is shown."),
       PressButton(ConfirmInfoBar::kOkButtonElementId),
       WaitForWebContentsNavigation(kSidePanelContentWebContentsId),
-      WaitForHide(ConfirmInfoBar::kOkButtonElementId));
+      WaitForHide(ConfirmInfoBar::kOkButtonElementId),
+      Do([&histogram_tester]() {
+        histogram_tester.ExpectBucketCount(
+            "InfoBar.Centralized.Show",
+            infobars::InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE, 1);
+        histogram_tester.ExpectBucketCount(
+            "InfoBar.Centralized.Accept",
+            infobars::InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE, 1);
+      }));
 }
 
 // This tests the following CUJ:

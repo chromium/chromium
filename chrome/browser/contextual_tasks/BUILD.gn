@@ -1053,6 +1053,7 @@ source_set("interactive_ui_tests") {
       ":ui",
       ":user_data",
       "//chrome/browser/extensions",
+      "//chrome/browser/infobars",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/tabs:tab_menu",
 

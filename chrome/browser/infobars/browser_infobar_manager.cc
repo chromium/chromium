@@ -24,6 +24,7 @@
 #include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -464,15 +465,19 @@ void RemoveInfoBarWithoutResult(infobars::InfoBarManager* manager,
   manager->RemoveInfoBar(infobar);
 }
 
-// Returns the browser whose tab shows `infobar`, if any.
+// Returns the browser whose `WebContents` shows `infobar`, if any.
 BrowserWindowInterface* BrowserForInfoBar(infobars::InfoBar* infobar) {
   content::WebContents* web_contents =
       static_cast<RegistryInfoBarDelegate*>(infobar->delegate())
           ->web_contents();
-  tabs::TabInterface* tab =
-      web_contents ? tabs::TabInterface::MaybeGetFromContents(web_contents)
-                   : nullptr;
-  return tab ? tab->GetBrowserWindowInterface() : nullptr;
+  if (!web_contents) {
+    return nullptr;
+  }
+  if (tabs::TabInterface* tab =
+          tabs::TabInterface::MaybeGetFromContents(web_contents)) {
+    return tab->GetBrowserWindowInterface();
+  }
+  return webui::GetBrowserWindowInterface(web_contents);
 }
 
 }  // namespace
@@ -520,11 +525,38 @@ infobars::InfoBar* BrowserInfoBarManager::Show(
     tabs::TabInterface* tab,
     infobars::InfoBarDelegate::InfoBarIdentifier identifier,
     InfoBarShowParams params) {
+  if (!registered_specs_.contains(identifier)) {
+    return nullptr;
+  }
+  CHECK(tab);
+  return ShowInternal(tab->GetContents(), identifier, std::move(params));
+}
+
+infobars::InfoBar* BrowserInfoBarManager::Show(
+    content::WebContents* web_contents,
+    infobars::InfoBarDelegate::InfoBarIdentifier identifier) {
+  return Show(web_contents, identifier, InfoBarShowParams());
+}
+
+infobars::InfoBar* BrowserInfoBarManager::Show(
+    content::WebContents* web_contents,
+    infobars::InfoBarDelegate::InfoBarIdentifier identifier,
+    InfoBarShowParams params) {
+  if (!registered_specs_.contains(identifier)) {
+    return nullptr;
+  }
+  CHECK(web_contents);
+  return ShowInternal(web_contents, identifier, std::move(params));
+}
+
+infobars::InfoBar* BrowserInfoBarManager::ShowInternal(
+    content::WebContents* web_contents,
+    infobars::InfoBarDelegate::InfoBarIdentifier identifier,
+    InfoBarShowParams params) {
   auto it = registered_specs_.find(identifier);
   if (it == registered_specs_.end()) {
     return nullptr;
   }
-  CHECK(tab);
   CHECK(params.scope.value_or(it->second.scope()) == InfoBarScope::kTab);
   if (IsBlockedByPolicy(it->second)) {
     base::UmaHistogramSparse("InfoBar.Centralized.SuppressedByPolicy",
@@ -532,18 +564,17 @@ infobars::InfoBar* BrowserInfoBarManager::Show(
     return nullptr;
   }
 
-  auto* contents = tab->GetContents();
-  if (!contents) {
+  if (!web_contents) {
     return nullptr;
   }
 
-  auto* manager = ContentInfoBarManager::FromWebContents(contents);
+  auto* manager = ContentInfoBarManager::FromWebContents(web_contents);
   if (!manager) {
     return nullptr;
   }
   if (auto* added_infobar = manager->AddInfoBar(CreateInfoBarForSpec(
-          ConfirmInfoBarCreationAllowlist::GetPassKey(), it->second, contents,
-          std::move(params), *this))) {
+          ConfirmInfoBarCreationAllowlist::GetPassKey(), it->second,
+          web_contents, std::move(params), *this))) {
     static_cast<RegistryInfoBarDelegate*>(added_infobar->delegate())
         ->set_shown();
     TrackTabInstance(added_infobar);

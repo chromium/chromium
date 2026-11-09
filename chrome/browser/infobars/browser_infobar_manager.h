@@ -24,6 +24,10 @@ class BrowserProcess;
 class BrowserWindowInterface;
 class PrefService;
 
+namespace content {
+class WebContents;
+}
+
 namespace tabs {
 class TabInterface;
 }
@@ -65,6 +69,19 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
   // As above, with per-show overrides.
   infobars::InfoBar* Show(
       tabs::TabInterface* tab,
+      infobars::InfoBarDelegate::InfoBarIdentifier identifier,
+      InfoBarShowParams params);
+
+  // Shows the infobar in `web_contents`, supporting non-tab hosts such as side
+  // panels. `web_contents` must be non-null. Returns the added infobar, or null
+  // if none was added.
+  infobars::InfoBar* Show(
+      content::WebContents* web_contents,
+      infobars::InfoBarDelegate::InfoBarIdentifier identifier);
+
+  // As above, with per-show overrides.
+  infobars::InfoBar* Show(
+      content::WebContents* web_contents,
       infobars::InfoBarDelegate::InfoBarIdentifier identifier,
       InfoBarShowParams params);
 
@@ -121,6 +138,17 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
 
  private:
   friend class RegistryInfoBarDelegate;
+
+  // Shared implementation for the `Show()` overloads, named `ShowInternal()`
+  // to distinguish it from public `Show(content::WebContents*, ...)` with the
+  // same parameter types. Public `Show()` overloads `CHECK()` their non-null
+  // `tab` or `web_contents` argument first; `ShowInternal()` accepts a nullable
+  // `web_contents` (such as when `tab->GetContents()` is null), checks spec and
+  // policy eligibility, adds the tab-scoped InfoBar, and tracks the instance.
+  infobars::InfoBar* ShowInternal(
+      content::WebContents* web_contents,
+      infobars::InfoBarDelegate::InfoBarIdentifier identifier,
+      InfoBarShowParams params);
 
   void OnActiveTabChanged(BrowserWindowInterface* browser);
 
