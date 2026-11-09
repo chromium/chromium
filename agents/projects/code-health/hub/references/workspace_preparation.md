@@ -3,12 +3,19 @@
 Before making any modifications or running discovery scripts, ensure a clean and
 isolated environment.
 
-1. **Handle Local Changes:** Run
-   `git status --porcelain -uno --ignore-submodules`. If there is any output,
-   run `git stash` and inform the user: "I noticed uncommitted changes; I've
-   stashed them (`git stash`) to ensure a clean environment."
-2. **Switch and Update:** Always start fresh from `main`:
-   `git checkout main && git pull origin main --rebase > /dev/null && gclient sync -D > /dev/null 2>&1`
-3. **Check for unmerged local commits:** Run `git log origin/main..HEAD`. If
-   there is any output, stop and inform the user, as we do not want to carry
-   these over to a new branch.
+Run:
+
+```bash
+python3 agents/projects/code-health/hub/scripts/prepare_workspace.py --stash
+```
+
+The script stashes tracked local changes (under `code-health-workspace-prep`),
+switches to `main`, checks for unmerged commits on `main`, pulls `origin/main`
+with rebase, and runs `gclient sync -D`.
+
+- If the script outputs `(stashed local changes)`, inform the user: "I noticed
+  uncommitted changes; I've stashed them (`git stash`,
+  `code-health-workspace-prep`) to ensure a clean environment."
+- If the script exits non-zero (for example due to unmerged local commits on
+  `main` or sync errors), stop and report the error to the user. Do not continue
+  on a dirty or diverged tree.

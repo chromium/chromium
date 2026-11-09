@@ -8,13 +8,17 @@ import argparse
 import collections
 import importlib
 import importlib.util
+import json
 import os
+import posixpath
 import random
 import subprocess
 import sys
 
 # Add the scripts directory to path to allow loading plugins
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+import hub_utils  # pylint: disable=wrong-import-position
 
 # Folders that should always be ignored for all cleanups
 GLOBAL_SKIP_DIRS = {
@@ -28,20 +32,6 @@ GLOBAL_SKIP_DIRS = {
     "docs",
     "clank",
 }
-
-
-def get_repo_root() -> str:
-    """Finds the root of the git repository."""
-    try:
-        res = subprocess.run(
-            ["git", "rev-parse", "--show-toplevel"],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        return res.stdout.strip()
-    except Exception:
-        return os.getcwd()
 
 
 def normalize_path(filepath: str) -> str:
@@ -90,7 +80,11 @@ def get_subsystem_prefix(filepath: str) -> str:
 
 
 def get_files(search_root, extensions, plugin_skip_dirs=None):
-    """Walks the repo, filters by skip dirs/extensions, shuffles directories."""
+    """Walks the repo, filters by skip dirs/extensions, shuffles directories.
+
+    Directories (and files within them) are shuffled to maintain random
+    sampling.
+    """
     skip_dirs = GLOBAL_SKIP_DIRS.copy()
     if plugin_skip_dirs:
         skip_dirs.update(plugin_skip_dirs)
@@ -101,14 +95,14 @@ def get_files(search_root, extensions, plugin_skip_dirs=None):
     try:
         # Use git ls-files for speed
         result = subprocess.run(
-            ['git', 'ls-files'],
+            ['git', '-c', 'core.quotePath=false', 'ls-files'],
             stdout=subprocess.PIPE,
             text=True,
             check=True,
             cwd=abs_search_root,
         )
         for line in result.stdout.splitlines():
-            raw_files.append(os.path.join(search_root, line.strip()))
+            raw_files.append(os.path.join(abs_search_root, line.strip()))
     except (subprocess.CalledProcessError, FileNotFoundError):
         # Fallback to os.walk
         for root, dirs, files in os.walk(abs_search_root):
@@ -123,10 +117,8 @@ def get_files(search_root, extensions, plugin_skip_dirs=None):
         if not any(f.endswith(ext) for ext in extensions):
             continue
 
-        # Normalize and ensure relative path to repository CWD
-        if os.path.isabs(f):
-            f = os.path.relpath(f, os.getcwd())
-        f = os.path.normpath(f)
+        # Normalize to a path relative to abs_search_root (independent of CWD).
+        f = os.path.normpath(os.path.relpath(f, abs_search_root))
 
         # Filter by skip directories
         path_parts = f.split(os.sep)
@@ -136,18 +128,18 @@ def get_files(search_root, extensions, plugin_skip_dirs=None):
         directory = os.path.dirname(f)
         dir_to_files[directory].append(f)
 
-    # Shuffle directories to maintain random sampling
+    # Shuffle directories to maintain random sampling.
     directories = list(dir_to_files.keys())
     random.shuffle(directories)
 
     # Return list of (directory, files) tuples, keeping directories contiguous
-    shuffled_dirs_with_files = []
+    ordered_dirs_with_files = []
     for directory in directories:
         files_in_dir = dir_to_files[directory]
         random.shuffle(files_in_dir)
-        shuffled_dirs_with_files.append((directory, files_in_dir))
+        ordered_dirs_with_files.append((directory, files_in_dir))
 
-    return shuffled_dirs_with_files
+    return ordered_dirs_with_files
 
 
 def load_plugin_from_path(file_path: str):
@@ -167,48 +159,104 @@ def load_plugin_from_path(file_path: str):
     return module
 
 
+def _pick_subsystem(subsystem_map, batch_size):
+    """Picks a subsystem, preferring full batches, then 3+ candidates.
+
+    One is chosen at random to prevent collisions between users.
+    """
+    min_count = 3
+    full_subsystems = [
+        sub for sub, files in subsystem_map.items() if len(files) >= batch_size
+    ]
+    good_subsystems = [
+        sub for sub, files in subsystem_map.items() if len(files) >= min_count
+    ]
+    if full_subsystems:
+        tier = full_subsystems
+    elif good_subsystems:
+        tier = good_subsystems
+    else:
+        tier = list(subsystem_map.keys())
+
+    return random.choice(tier)
+
+
 def handle_grouped_mode(
-    candidates, batch_size: int, selected_subsystem: str = None
+    candidates,
+    batch_size: int,
+    selected_subsystem: str = None,
+    exclude=None,
+    json_output=False,
 ):
     """Groups file-level candidates by subsystem and prints a batch."""
+    exclude_set = set(exclude or [])
     subsystem_map = collections.defaultdict(list)
     for c in candidates:
         filepath = c.get("file")
         if filepath:
             subsystem = get_subsystem_prefix(filepath)
+            # Exclude by candidate name, file path, or containing subsystem.
+            if exclude_set & {c.get("name"), filepath, subsystem}:
+                continue
             subsystem_map[subsystem].append(c)
 
     if not subsystem_map:
-        print("No candidates found.")
+        if json_output:
+            print(
+                json.dumps(
+                    {
+                        "mode": "grouped",
+                        "subsystem": selected_subsystem,
+                        "count": 0,
+                        "candidates": [],
+                        "metadata": {},
+                    },
+                    indent=2,
+                )
+            )
+        else:
+            print("No candidates found.")
         return
 
-    if not selected_subsystem:
-        # Prioritize full batches: if any subsystem reached batch_size, pick randomly among full ones
-        full_subsystems = [
-            sub
-            for sub, files in subsystem_map.items()
-            if len(files) >= batch_size
-        ]
-        if full_subsystems:
-            selected_subsystem = random.choice(full_subsystems)
-        else:
-            # Pick a subsystem using threshold-based random selection to prevent collisions between users
-            min_count = 3
-            good_subsystems = [
-                sub
-                for sub, files in subsystem_map.items()
-                if len(files) >= min_count
-            ]
-
-            if good_subsystems:
-                selected_subsystem = random.choice(good_subsystems)
-            else:
-                selected_subsystem = random.choice(list(subsystem_map.keys()))
+    if not selected_subsystem or selected_subsystem not in subsystem_map:
+        # Also reselect when the requested subsystem was fully excluded.
+        selected_subsystem = _pick_subsystem(subsystem_map, batch_size)
 
     batch_candidates = subsystem_map[selected_subsystem]
-
     random.shuffle(batch_candidates)
     batch = batch_candidates[:batch_size]
+
+    metadata_keys = set()
+    for c in batch:
+        metadata_keys.update(
+            k for k in c.keys() if k not in ("file", "subsystem")
+        )
+
+    if json_output:
+        metadata = {}
+        for key in sorted(metadata_keys):
+            values = set()
+            for c in batch:
+                val = c.get(key)
+                if isinstance(val, (list, set)):
+                    values.update(val)
+                elif val:
+                    values.add(str(val))
+            if values:
+                metadata[key] = sorted(values)
+        print(
+            json.dumps(
+                {
+                    "mode": "grouped",
+                    "subsystem": selected_subsystem,
+                    "count": len(batch),
+                    "candidates": batch,
+                    "metadata": metadata,
+                },
+                indent=2,
+            )
+        )
+        return
 
     print("Candidate Batch Found:")
     print(f"Subsystem: {selected_subsystem}")
@@ -217,15 +265,9 @@ def handle_grouped_mode(
     for c in batch:
         print(f"  - {c['file']}")
 
-    metadata_keys = set()
-    for c in batch:
-        metadata_keys.update(
-            k for k in c.keys() if k not in ("file", "subsystem")
-        )
-
     if metadata_keys:
         print("\nBatch Metadata:")
-        for key in sorted(list(metadata_keys)):
+        for key in sorted(metadata_keys):
             values = set()
             for c in batch:
                 val = c.get(key)
@@ -235,27 +277,116 @@ def handle_grouped_mode(
                     values.add(str(val))
             if values:
                 print(f"Unique {key.capitalize()}:")
-                for val in sorted(list(values))[:10]:
+                for val in sorted(values)[:10]:
                     print(f"  - {val}")
                 if len(values) > 10:
                     print(f"  - ... and {len(values) - 10} more")
 
 
-def handle_atomic_mode(plugin, count: int, repo_root: str):
+def _path_sort_key(path):
+    """Case-insensitive path component key (ties broken case-sensitively).
+
+    Comparing per-component tuples keeps 'dir/sub' next to 'dir' rather than
+    letting 'dir-other' interleave between them, and sorts parents before
+    their children.
+    """
+    parts = [p for p in str(path or "").replace("\\", "/").split("/") if p]
+    return tuple((p.lower(), p) for p in parts)
+
+
+def _atomic_sort_key(item):
+    """Sort key ordering by directory, then file name, then name/id.
+
+    All comparisons are case-insensitive, with ties broken case-sensitively.
+    Non-dict items sort by their string form only.
+    """
+    if isinstance(item, dict):
+        file_path = str(item.get("file") or "").replace("\\", "/")
+        directory = posixpath.dirname(file_path)
+        basename = posixpath.basename(file_path)
+        ident = str(item.get("name") or item.get("id") or "")
+        return (
+            _path_sort_key(directory),
+            (basename.lower(), basename),
+            (ident.lower(), ident),
+        )
+    return ((), ("", ""), (str(item).lower(), str(item)))
+
+
+def handle_atomic_mode(
+    plugin,
+    count: int,
+    repo_root: str,
+    exclude=None,
+    json_output=False,
+    sort: str = "random",
+):
     """Handles resource-centric cleanups by sampling and printing them."""
-    # Consume only enough candidates to satisfy count (with a small pool for sampling)
+    exclude_set = set(exclude or [])
+    # Random mode consumes only a small pool for sampling; asc/desc consume
+    # every candidate so they can be sorted strictly by directory path.
     candidates_list = []
     pool_limit = max(count * 3, 10)
-    for c in plugin.find_candidates(repo_root):
+    discovered = plugin.find_candidates(repo_root)
+    for c in discovered:
+        if isinstance(c, dict):
+            # Exclude by name, id, or file path.
+            excluded = exclude_set & {
+                c.get("name"),
+                c.get("id"),
+                c.get("file"),
+            }
+        else:
+            excluded = c in exclude_set
+        if excluded:
+            continue
+        if isinstance(c, dict) and "related_histograms" in c:
+            # Copy so the plugin's dict isn't mutated.
+            c = dict(c)
+            related = [
+                r for r in c["related_histograms"] if r not in exclude_set
+            ]
+            if related:
+                c["related_histograms"] = related
+            else:
+                del c["related_histograms"]
         candidates_list.append(c)
-        if len(candidates_list) >= pool_limit:
-            break
+        if sort == "random":
+            if len(candidates_list) >= pool_limit:
+                break
 
     if not candidates_list:
-        print("No candidates found.")
+        if json_output:
+            print(
+                json.dumps(
+                    {"mode": "atomic", "count": 0, "candidates": []}, indent=2
+                )
+            )
+        else:
+            print("No candidates found.")
         return
 
-    sampled = random.sample(candidates_list, k=min(len(candidates_list), count))
+    if sort == "random":
+        sampled = random.sample(
+            candidates_list, k=min(len(candidates_list), count)
+        )
+    else:
+        # Sort by directory path regardless of any order the plugin yields.
+        candidates_list.sort(key=_atomic_sort_key, reverse=(sort == "desc"))
+        sampled = candidates_list[:count]
+
+    if json_output:
+        print(
+            json.dumps(
+                {
+                    "mode": "atomic",
+                    "count": len(sampled),
+                    "candidates": sampled,
+                },
+                indent=2,
+            )
+        )
+        return
 
     for h in sampled:
         print("Candidate Found:")
@@ -266,6 +397,46 @@ def handle_atomic_mode(plugin, count: int, repo_root: str):
                 val = ", ".join(val) if val else "None"
             print(f"{key.capitalize()}: {val}")
         print("---")
+
+
+def _load_exclude_file(path: str) -> list[str]:
+    """Loads candidate identifiers to exclude from a text file or JSON ledger.
+
+    A '.json' file must hold a dict. If it has 'uploaded' and/or 'skipped'
+    dicts (grouped ledger), their keys are used; otherwise the top-level keys
+    are used. Any other file is read as one identifier per line, ignoring
+    blank lines and lines starting with '#'.
+
+    Raises OSError if the file can't be read, and ValueError if a JSON file
+    is malformed or isn't a dict.
+    """
+    if path.endswith(".json"):
+        with open(path, encoding="utf-8") as f:
+            try:
+                data = json.load(f)
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Invalid JSON in exclude file {path}: {e}")
+        if not isinstance(data, dict):
+            raise ValueError(
+                f"Exclude file {path} must contain a JSON object, got "
+                f"{type(data).__name__}."
+            )
+        if "uploaded" in data or "skipped" in data:
+            entries = []
+            for section in ("uploaded", "skipped"):
+                value = data.get(section)
+                if isinstance(value, dict):
+                    entries.extend(value.keys())
+            return entries
+        return list(data.keys())
+
+    entries = []
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#"):
+                entries.append(line)
+    return entries
 
 
 def main():
@@ -287,19 +458,60 @@ def main():
         help="Batch size for grouped cleanups",
     )
     parser.add_argument("--search-root", default=None, help="Directory to scan")
+    parser.add_argument(
+        "--exclude",
+        nargs="*",
+        action="extend",
+        default=[],
+        help="Candidate names or identifiers to exclude from results",
+    )
+    parser.add_argument(
+        "--exclude-file",
+        action="append",
+        default=[],
+        help=(
+            "File(s) containing candidate identifiers or a JSON ledger to "
+            "exclude"
+        ),
+    )
+    parser.add_argument(
+        "--sort",
+        choices=["random", "asc", "desc"],
+        default="random",
+        help=(
+            "Candidate ordering. asc/desc (alphabetical by path) are only "
+            "supported for atomic plugins"
+        ),
+    )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Output raw candidate data as JSON without truncation",
+    )
 
     args = parser.parse_args()
 
-    search_root = args.search_root if args.search_root else get_repo_root()
+    for exclude_file in args.exclude_file:
+        args.exclude.extend(_load_exclude_file(exclude_file))
+
+    search_root = (
+        args.search_root if args.search_root else hub_utils.find_repo_root()
+    )
 
     plugin = load_plugin_from_path(args.plugin)
     mode = getattr(plugin, "MODE", "atomic")
 
+    if mode == "grouped" and args.sort != "random":
+        parser.error("--sort asc/desc is only supported for atomic plugins.")
+
     if mode == "grouped":
+        exclude_set = set(args.exclude or [])
         # Get files using the shared, optimized walker
         plugin_skip_dirs = getattr(plugin, "SKIP_DIRS", None)
         dirs_with_files = get_files(
-            search_root, plugin.FILE_EXTENSIONS, plugin_skip_dirs
+            search_root,
+            plugin.FILE_EXTENSIONS,
+            plugin_skip_dirs,
         )
 
         if hasattr(plugin, "initialize"):
@@ -317,9 +529,22 @@ def main():
         seen_files = set()
         visited_dirs = set()
 
+        def is_excluded(filepath, name=None):
+            # Exclude by candidate name, file path, or containing subsystem.
+            return bool(
+                exclude_set & {name, filepath, get_subsystem_prefix(filepath)}
+            )
+
         def scan_dir(directory, files_in_dir):
             nonlocal scanned
             new_candidates = []
+            if (
+                files_in_dir
+                and get_subsystem_prefix(files_in_dir[0]) in exclude_set
+            ):
+                # The whole subsystem is excluded, so skip scanning it.
+                visited_dirs.add(directory)
+                return new_candidates
             if has_check_directory:
                 results = plugin.check_directory(
                     directory, files_in_dir, abs_search_root
@@ -328,14 +553,20 @@ def main():
                     for r in results:
                         f = r.get("file")
                         if f and f not in seen_files:
+                            if is_excluded(f, r.get("name")):
+                                continue
                             seen_files.add(f)
                             new_candidates.append(r)
             else:
                 for f in files_in_dir:
                     if f in seen_files:
                         continue
+                    if is_excluded(f):
+                        continue
                     metadata = plugin.check_file(f, abs_search_root)
                     if metadata:
+                        if is_excluded(f, metadata.get("name")):
+                            continue
                         seen_files.add(f)
                         new_candidates.append({"file": f, **metadata})
             scanned += len(files_in_dir)
@@ -367,7 +598,14 @@ def main():
                 break
 
         if not candidates_list:
-            print("No candidates found.")
+            # Delegate so --json emits valid empty JSON instead of plain text.
+            handle_grouped_mode(
+                candidates_list,
+                args.batch_size,
+                None,
+                exclude=args.exclude,
+                json_output=args.json,
+            )
             return
 
         # Map candidates by subsystem
@@ -379,24 +617,7 @@ def main():
                 subsystem_map[subsystem].append(c)
 
         # Stage 2: Subsystem Selection
-        full_subsystems = [
-            sub
-            for sub, files in subsystem_map.items()
-            if len(files) >= args.batch_size
-        ]
-        if full_subsystems:
-            selected_subsystem = random.choice(full_subsystems)
-        else:
-            min_count = 3
-            good_subsystems = [
-                sub
-                for sub, files in subsystem_map.items()
-                if len(files) >= min_count
-            ]
-            if good_subsystems:
-                selected_subsystem = random.choice(good_subsystems)
-            else:
-                selected_subsystem = random.choice(list(subsystem_map.keys()))
+        selected_subsystem = _pick_subsystem(subsystem_map, args.batch_size)
 
         # Stage 3: Targeted Deep-Fill if batch is not full yet
         current_subsystem_candidates = subsystem_map[selected_subsystem]
@@ -409,6 +630,7 @@ def main():
                 if d not in visited_dirs
                 and files
                 and get_subsystem_prefix(files[0]) == selected_subsystem
+                and get_subsystem_prefix(files[0]) not in exclude_set
             ]
 
             stage2_scanned = 0
@@ -429,10 +651,21 @@ def main():
                         break
 
         handle_grouped_mode(
-            candidates_list, args.batch_size, selected_subsystem
+            candidates_list,
+            args.batch_size,
+            selected_subsystem,
+            exclude=args.exclude,
+            json_output=args.json,
         )
     else:
-        handle_atomic_mode(plugin, args.count, get_repo_root())
+        handle_atomic_mode(
+            plugin,
+            args.count,
+            search_root,
+            exclude=args.exclude,
+            json_output=args.json,
+            sort=args.sort,
+        )
 
 
 if __name__ == "__main__":

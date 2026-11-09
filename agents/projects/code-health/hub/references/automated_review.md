@@ -50,6 +50,7 @@ If the review returns findings:
    (one by one)**.
 4. Once all remediations have been applied, re-run the review protocol.
 5. Repeat until the review returns `PASS`.
-6. **Final Validation:** Once `PASS` is achieved, run `git cl format`. If a
-   histogram was modified, also execute
-   `python3 tools/metrics/histograms/validate_format.py`.
+6. **Final Validation:** Once `PASS` is achieved, run
+   `python3 agents/projects/code-health/hub/scripts/format_and_lint.py` (which
+   runs `git cl format` and, when histogram XML files changed,
+   `vpython3 tools/metrics/histograms/validate_format.py`).

@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 """Shared utility functions for Code Health Hub plugins."""
 
+import os
 import re
+import subprocess
 
 
 def strip_comments(text: str) -> str:
@@ -47,3 +49,36 @@ def strip_annotations_preserve_length(text: str) -> str:
         return ' ' * len(match.group(0))
 
     return re.sub(r'@[a-zA-Z0-9_.]+(\([^)]*\))?', repl, text)
+
+
+def run_cmd(cmd, cwd=None):
+    """Runs a command and returns (returncode, output).
+
+    On success, output is stdout only so that stderr warnings never pollute
+    parsed output. On failure, output is the non-empty stdout and stderr
+    joined by a newline. If the command cannot be run, returns 127.
+    """
+    try:
+        result = subprocess.run(
+            cmd,
+            cwd=cwd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False,
+        )
+    except OSError as e:
+        return 127, f'Failed to run {cmd[0]}: {e}'
+    if result.returncode == 0:
+        return 0, result.stdout or ''
+    parts = ((result.stdout or '').strip(), (result.stderr or '').strip())
+    return result.returncode, '\n'.join(p for p in parts if p)
+
+
+def find_repo_root(start=None):
+    """Returns the git repo root containing |start|, or |start| on failure."""
+    base = start or os.getcwd()
+    rc, out = run_cmd(['git', 'rev-parse', '--show-toplevel'], cwd=base)
+    if rc == 0 and out.strip():
+        return out.strip().splitlines()[0]
+    return base
