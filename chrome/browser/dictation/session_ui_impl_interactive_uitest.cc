@@ -262,7 +262,9 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
     EnsureNotPresent(DictationBubbleUi::kToggleButtonElementIdForTesting),
 
     // End first session.
-    Do([this] { dictation_service().EndSession(); }),
+    Do([this] {
+      dictation_service().session_controller()->EndSessionSynchronously();
+    }),
     WaitForHide(DictationBubbleUi::kViewElementIdForTesting),
 
     // Second session on the same document within the cooldown period shows
@@ -276,7 +278,9 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
     EnsureNotPresent(DictationBubbleUi::kSeparatorElementIdForTesting),
 
     // End second session.
-    Do([this] { dictation_service().EndSession(); }),
+    Do([this] {
+      dictation_service().session_controller()->EndSessionSynchronously();
+    }),
     WaitForHide(DictationBubbleUi::kViewElementIdForTesting),
 
     // Third session on a different document shows "Reviewing page" again.

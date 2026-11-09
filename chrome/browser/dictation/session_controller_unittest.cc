@@ -964,6 +964,55 @@ TEST_F(DictationSessionControllerTest, WebContentsDestroyedEndsSession) {
   EXPECT_EQ(controller_, nullptr);
 }
 
+// Test that ending the session mid-stream stops the stream, then enters kEnded
+// before the delegate destroys the session.
+TEST_F(DictationSessionControllerTest, EndSessionMidStreamEntersEndedState) {
+  base::HistogramTester histogram_tester;
+  controller_->StartDictationStream(EmptyTarget(),
+                                    DictationStreamStartTrigger::kSessionStart,
+                                    base::TimeTicks::Now());
+  auto* stream_provider =
+      static_cast<MockStreamProvider*>(controller_->attached_stream_provider());
+  ASSERT_NE(stream_provider, nullptr);
+  ASSERT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
+
+  std::vector<SessionState> states;
+  base::CallbackListSubscription subscription =
+      controller_->AddSessionStateChangedCallback(base::BindLambdaForTesting(
+          [&states](SessionState state) { states.push_back(state); }));
+  EXPECT_CALL(*stream_provider, Stop(DictationStreamEndTrigger::kDestructor));
+  EXPECT_CALL(mock_delegate_, EndSession()).WillOnce([this]() {
+    EXPECT_EQ(controller_->GetState(), SessionState::kEnded);
+    controller_.reset();
+  });
+
+  controller_->HostTabDidClose();
+
+  EXPECT_EQ(controller_, nullptr);
+  EXPECT_THAT(states, testing::ElementsAre(SessionState::kFinalizing,
+                                           SessionState::kEnded));
+  // As before kEnded existed, ending before listening counts as abandoning.
+  histogram_tester.ExpectTotalCount(
+      kStreamAbandonedBeforeListeningHistogramName, 1);
+}
+
+// Test that ending an idle session goes straight to kEnded.
+TEST_F(DictationSessionControllerTest, EndIdleSessionEntersEndedState) {
+  ASSERT_EQ(controller_->GetState(), SessionState::kInactive);
+  std::vector<SessionState> states;
+  base::CallbackListSubscription subscription =
+      controller_->AddSessionStateChangedCallback(base::BindLambdaForTesting(
+          [&states](SessionState state) { states.push_back(state); }));
+  EXPECT_CALL(mock_delegate_, EndSession()).WillOnce([this]() {
+    controller_.reset();
+  });
+
+  controller_->HostTabDidClose();
+
+  EXPECT_EQ(controller_, nullptr);
+  EXPECT_THAT(states, testing::ElementsAre(SessionState::kEnded));
+}
+
 TEST_F(DictationSessionControllerTest,
        AutoSessionEndDelayedShutdownFiresAfterDelay) {
   base::test::ScopedFeatureList feature_list;

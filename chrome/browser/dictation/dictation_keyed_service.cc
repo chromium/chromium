@@ -29,9 +29,11 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
+#include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_utils.h"
@@ -215,7 +217,7 @@ DictationKeyedService::DictationKeyedService(Profile* profile)
 DictationKeyedService::~DictationKeyedService() = default;
 
 void DictationKeyedService::Shutdown() {
-  EndSession();
+  EndActiveSession();
   // Ensure accelerators are unregistered safely before UI objects are
   // destroyed.
   hotkey_manager_.reset();
@@ -264,6 +266,12 @@ tabs::TabInterface* DictationKeyedService::GetActiveDictationTab() const {
   return session_ ? session_->tab_.get() : nullptr;
 }
 
+base::CallbackListSubscription DictationKeyedService::AddSessionEndedCallback(
+    base::RepeatingCallback<void(const content::GlobalDOMNodeId& target)>
+        callback) {
+  return session_ended_callbacks_.Add(std::move(callback));
+}
+
 void DictationKeyedService::StartSession(tabs::TabInterface& tab,
                                          const TargetDetails& target_details,
                                          DictationSessionEntryPoint entry_point,
@@ -283,14 +291,7 @@ void DictationKeyedService::StartSession(tabs::TabInterface& tab,
     RecordDictationSessionUrlCategory(*url_category);
   }
 
-  // The user has found dictation, so the dictation IPH shouldn't show again.
-  if (auto* const user_education =
-          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
-              tab.GetContents())) {
-    user_education->NotifyFeaturePromoFeatureUsed(
-        feature_engagement::kIPHDictationFeature,
-        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-  }
+  UpdateUserEducationForStartSession(tab, entry_point);
 
   session_.emplace(*this, tab);
   // Unretained is safe: `this` owns `session_`, which owns the subscription.
@@ -325,11 +326,41 @@ void DictationKeyedService::StartSessionForTesting(  // IN-TEST
 }
 
 void DictationKeyedService::EndSession() {
-  // `session_state_subscription_` is destroyed with the session, so report the
-  // session as inactive explicitly.
-  OnSessionStateChanged(dictation::SessionState::kInactive);
+  CHECK(session_);
+  CHECK_EQ(session_->controller_.GetState(), dictation::SessionState::kEnded);
   session_.reset();
   dictation_tab_changed_callbacks_.Notify(nullptr);
+}
+
+void DictationKeyedService::EndActiveSession() {
+  if (session_) {
+    session_->controller_.EndSessionSynchronously();
+    // WARNING: The session is destroyed, so `session_` is now empty.
+  }
+}
+
+void DictationKeyedService::UpdateUserEducationForStartSession(
+    tabs::TabInterface& tab,
+    DictationSessionEntryPoint entry_point) {
+  auto* const user_education =
+      BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+          tab.GetContents());
+  if (!user_education) {
+    return;
+  }
+  // The user has found dictation, so the dictation IPH shouldn't show again.
+  user_education->NotifyFeaturePromoFeatureUsed(
+      feature_engagement::kIPHDictationFeature,
+      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  // Starting dictation with the hotkey means the user knows about it.
+  if (entry_point == DictationSessionEntryPoint::kHotkeyToggle) {
+    user_education->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHDictationHotkeyFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  }
+  // Counts towards showing the hotkey IPH.
+  user_education->NotifyAdditionalConditionEvent(
+      feature_engagement::events::kDictationInvoked);
 }
 
 bool DictationKeyedService::ShouldShowContextMenuItem() const {
@@ -444,7 +475,7 @@ bool DictationKeyedService::IsEnabledAndReady() const {
 
 void DictationKeyedService::OnPrefChanged() {
   if (!IsEnabledAndReady()) {
-    EndSession();
+    EndActiveSession();
   }
   UpdateHotkeyManager();
 }
@@ -469,8 +500,17 @@ void DictationKeyedService::UpdateHotkeyManager() {
 
 void DictationKeyedService::OnSessionStateChanged(
     dictation::SessionState state) {
+  CHECK(session_);
   if (hotkey_manager_) {
     hotkey_manager_->OnSessionStateChanged(state);
+  }
+  if (state == dictation::SessionState::kEnded) {
+    // The session is still alive, so its target is available.
+    const std::optional<TargetDetails>& target_details =
+        session_->controller_.last_used_target_details();
+    if (target_details) {
+      session_ended_callbacks_.Notify(target_details->target_id);
+    }
   }
 }
 

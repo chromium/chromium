@@ -32,7 +32,10 @@ DictationInteractiveBrowserTestBase::~DictationInteractiveBrowserTestBase() =
     default;
 
 void DictationInteractiveBrowserTestBase::TearDownOnMainThread() {
-  dictation_service().EndSession();
+  if (SessionController* const controller =
+          dictation_service().session_controller()) {
+    controller->EndSessionSynchronously();
+  }
   InteractiveBrowserTestMixin<DictationBrowserTestBase>::TearDownOnMainThread();
 }
 

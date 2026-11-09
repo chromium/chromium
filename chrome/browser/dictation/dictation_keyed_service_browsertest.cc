@@ -4,6 +4,9 @@
 
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 
+#include <optional>
+#include <string_view>
+
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -17,6 +20,7 @@
 #include "chrome/browser/dictation/stream_provider.h"
 #include "chrome/browser/dictation/target.h"
 #include "chrome/browser/dictation/test_util.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
@@ -30,10 +34,15 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/user_education/user_education_configuration_provider.h"
 #include "chrome/common/extensions/api/dictation_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
+#include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/web_contents.h"
@@ -127,7 +136,7 @@ IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
 
   EXPECT_TRUE(dictation_service().ShouldShowContextMenuItem());
 
-  dictation_service().EndSession();
+  dictation_service().session_controller()->EndSessionSynchronously();
 
   EXPECT_TRUE(dictation_service().ShouldShowContextMenuItem());
 }
@@ -365,7 +374,145 @@ IN_PROC_BROWSER_TEST_F(DictationPasswordLikeFieldBrowserTest,
   dictation_service().ToggleHotkeyHandler();
   ASSERT_NE(session_controller(), nullptr);
   EXPECT_NE(session_controller()->attached_stream_provider(), nullptr);
-  dictation_service().EndSession();
+  dictation_service().session_controller()->EndSessionSynchronously();
+}
+
+// Checks the Feature Engagement events that the dictation hotkey IPH is based
+// on. Not parameterized: these don't depend on `kSessionEndsOnStreamEnd`.
+class DictationHotkeyIphEventsBrowserTest
+    : public DictationKeyedServiceBrowserTest {
+ public:
+  DictationHotkeyIphEventsBrowserTest()
+      : DictationKeyedServiceBrowserTest(
+            kSessionEndsOnStreamEnd.default_value) {
+    // Browser tests block all IPH, and Feature Engagement only reports event
+    // counts for IPH it has a configuration for.
+    iph_feature_list_.InitAndEnableFeatures(
+        {feature_engagement::kIPHDictationHotkeyFeature});
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    DictationKeyedServiceBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(content::NavigateToURL(
+        web_contents(),
+        embedded_test_server()->GetURL("/textinput/all_input_node.html")));
+    ASSERT_TRUE(
+        base::test::RunUntil([this]() { return tracker()->IsInitialized(); }));
+  }
+
+  feature_engagement::Tracker* tracker() {
+    return feature_engagement::TrackerFactory::GetForBrowserContext(profile());
+  }
+
+  // Returns how many times `event_name` was recorded, or nullopt if it isn't
+  // one of the hotkey IPH's events.
+  std::optional<int> GetEventCount(std::string_view event_name) {
+    for (const auto& [config, count] : tracker()->ListEvents(
+             feature_engagement::kIPHDictationHotkeyFeature)) {
+      if (config.name == event_name) {
+        return count;
+      }
+    }
+    return std::nullopt;
+  }
+
+  std::optional<int> GetInvokedCount() {
+    return GetEventCount(feature_engagement::events::kDictationInvoked);
+  }
+
+  std::optional<int> GetHotkeyUsedCount() {
+    return GetEventCount(UserEducationConfigurationProvider::GetDefaultUsedName(
+        feature_engagement::kIPHDictationHotkeyFeature));
+  }
+
+  // Focuses the textarea and waits until the browser knows it is focused.
+  void FocusTextarea() {
+    content::RenderFrameHost* const main_frame =
+        web_contents()->GetPrimaryMainFrame();
+    ASSERT_TRUE(content::ExecJs(main_frame,
+                                "document.getElementById('textarea_id')."
+                                "focus();"));
+    const blink::DOMNodeIdType node_id(
+        content::GetDOMNodeId(*main_frame, "#textarea_id").value());
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return main_frame->GetFocusedDOMNodeId() == node_id; }));
+  }
+
+  // Runs a session in the textarea in which the user dictates `text`, ends the
+  // stream, and waits for the session to end.
+  void DictateIntoTextarea(std::string_view text) {
+    FocusTextarea();
+    StartSession();
+    ASSERT_NE(session_controller(), nullptr);
+    ASSERT_NE(attached_stream(), nullptr);
+    const DictationMultiplexer::StreamId stream_id =
+        attached_stream()->stream_id_for_testing();
+    ExtensionWaitForStreamStart(profile(), stream_id);
+    ExtensionSendStreamStateUpdate(profile(), stream_id,
+                                   ExtensionStreamState::kTranscribing);
+    if (!text.empty()) {
+      ExtensionSendTranscriptUpdate(profile(), stream_id,
+                                    ExtensionTranscriptionType::kFinal, text);
+    }
+    session_controller()->UiRequestEndActiveStream();
+    ExtensionSendStreamStateUpdate(profile(), stream_id,
+                                   ExtensionStreamState::kComplete);
+    ASSERT_TRUE(
+        base::test::RunUntil([this]() { return !session_controller(); }));
+  }
+
+ private:
+  feature_engagement::test::ScopedIphFeatureList iph_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DictationHotkeyIphEventsBrowserTest,
+                       SessionStartRecordsInvoked) {
+  ASSERT_EQ(GetInvokedCount(), 0);
+
+  // Recorded as soon as the session starts, before any text is dictated.
+  FocusTextarea();
+  StartSession();
+  ASSERT_NE(session_controller(), nullptr);
+  EXPECT_EQ(GetInvokedCount(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DictationHotkeyIphEventsBrowserTest,
+                       EachSessionRecordsInvoked) {
+  DictateIntoTextarea("Hello");
+  EXPECT_EQ(GetInvokedCount(), 1);
+  DictateIntoTextarea("World");
+  EXPECT_EQ(GetInvokedCount(), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(DictationHotkeyIphEventsBrowserTest,
+                       SessionWithoutTextRecordsInvoked) {
+  DictateIntoTextarea("");
+  EXPECT_EQ(GetInvokedCount(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DictationHotkeyIphEventsBrowserTest,
+                       HotkeyRecordsUsedEvent) {
+  ASSERT_EQ(GetHotkeyUsedCount(), 0);
+
+  // Starting dictation with the hotkey counts as using it.
+  FocusTextarea();
+  dictation_service().ToggleHotkeyHandler();
+  ASSERT_NE(session_controller(), nullptr);
+  EXPECT_EQ(GetHotkeyUsedCount(), 1);
+
+  // Stopping it doesn't.
+  dictation_service().ToggleHotkeyHandler();
+  EXPECT_EQ(GetHotkeyUsedCount(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DictationHotkeyIphEventsBrowserTest,
+                       HotkeyThatDoesNothingIsNotUsed) {
+  // Nothing editable is focused and dictation isn't running, so the hotkey
+  // does nothing.
+  dictation_service().ToggleHotkeyHandler();
+  ASSERT_EQ(session_controller(), nullptr);
+  EXPECT_EQ(GetHotkeyUsedCount(), 0);
 }
 
 // TODO(crbug.com/502587072): Add tests which have the test extension simulate
@@ -871,7 +1018,10 @@ IN_PROC_BROWSER_TEST_P(DictationGlicBrowserTest, BasicStreamFunctions) {
                SessionState::kInactive;
   }));
 
-  dictation_service().EndSession();
+  if (SessionController* const active_controller =
+          dictation_service().session_controller()) {
+    active_controller->EndSessionSynchronously();
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(DictationGlicBrowserTest, TabUnderlineVisibility) {
@@ -894,7 +1044,7 @@ IN_PROC_BROWSER_TEST_P(DictationGlicBrowserTest, TabUnderlineVisibility) {
   EXPECT_TRUE(underline->IsShowing());
 
   // End session.
-  dictation_service().EndSession();
+  dictation_service().session_controller()->EndSessionSynchronously();
 
   EXPECT_FALSE(underline->IsShowing());
 }
@@ -950,7 +1100,7 @@ IN_PROC_BROWSER_TEST_P(DictationGlicBrowserTest,
   histogram_tester.ExpectUniqueSample(kSessionUrlCategoryHistogramName,
                                       DictationUrlCategory::kGlic, 1);
 
-  dictation_service().EndSession();
+  dictation_service().session_controller()->EndSessionSynchronously();
 }
 
 IN_PROC_BROWSER_TEST_P(DictationGlicBrowserTest,
@@ -990,7 +1140,7 @@ IN_PROC_BROWSER_TEST_P(DictationGlicBrowserTest,
       dictation_service().session_controller()->attached_stream_provider(),
       nullptr);
 
-  dictation_service().EndSession();
+  dictation_service().session_controller()->EndSessionSynchronously();
 }
 
 class DictationGlicSelectionOverlayBrowserTest
@@ -1030,7 +1180,7 @@ IN_PROC_BROWSER_TEST_P(DictationGlicSelectionOverlayBrowserTest,
   EXPECT_EQ(dictation_service().GetActiveDictationTab(), tab);
   histogram_tester.ExpectUniqueSample(kSessionUrlCategoryHistogramName,
                                       DictationUrlCategory::kWebUI, 1);
-  dictation_service().EndSession();
+  dictation_service().session_controller()->EndSessionSynchronously();
 
   // Focus an input inside the selection overlay and verify the hotkey targets
   // it.

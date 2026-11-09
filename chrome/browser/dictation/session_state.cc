@@ -18,6 +18,8 @@ const char* ToString(SessionState state) {
       return "kTranscribing";
     case SessionState::kFinalizing:
       return "kFinalizing";
+    case SessionState::kEnded:
+      return "kEnded";
   }
 }
 

@@ -24,6 +24,10 @@ enum class SessionState {
   // A stream provider is attached and has finished transcribing but is still
   // finalizing the transcription and more data may be provided.
   kFinalizing,
+
+  // The session has ended and is about to be destroyed, along with any stream
+  // provider. No other state can follow.
+  kEnded,
 };
 
 const char* ToString(SessionState state);
