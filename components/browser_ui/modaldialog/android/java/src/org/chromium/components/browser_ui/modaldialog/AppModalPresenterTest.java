@@ -6,10 +6,8 @@ package org.chromium.components.browser_ui.modaldialog;
 
 import static androidx.core.view.WindowInsetsCompat.Type.systemBars;
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.not;
@@ -52,6 +50,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewFinder;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
@@ -141,7 +141,6 @@ public class AppModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/530649771
     public void testDismiss_BackPressed() throws Exception {
         PropertyModel dialog1 = createDialog(sActivity, mManager, "1", null);
         PropertyModel dialog2 = createDialog(sActivity, mManager, "2", null);
@@ -154,21 +153,22 @@ public class AppModalPresenterTest {
         showDialogInRoot(mManager, dialog1, ModalDialogType.APP);
         showDialogInRoot(mManager, dialog2, ModalDialogType.APP);
         checkPendingSize(mManager, ModalDialogType.APP, 1);
-        onView(withText("1")).inRoot(isDialog()).check(matches(isDisplayed()));
+        ViewFinder.waitForView(withText("1"), ViewElement.inDialogOption());
         checkCurrentPresenter(mManager, ModalDialogType.APP);
 
         // Perform back press. The first app modal dialog should be dismissed, and the second one
-        // should be shown.
+        // should be shown. Use ViewFinder rather than Espresso.onView().check(doesNotExist()) so
+        // RootViewPicker does not block waiting for window focus on the underlying Activity window.
         Espresso.pressBack();
         checkPendingSize(mManager, ModalDialogType.APP, 0);
-        onView(withText("1")).inRoot(isDialog()).check(doesNotExist());
-        onView(withText("2")).inRoot(isDialog()).check(matches(isDisplayed()));
+        ViewFinder.waitForNoView(withText("1"));
+        ViewFinder.waitForView(withText("2"), ViewElement.inDialogOption());
         checkCurrentPresenter(mManager, ModalDialogType.APP);
 
         // Perform a second back press. The second app modal dialog should be dismissed.
         Espresso.pressBack();
         checkPendingSize(mManager, ModalDialogType.APP, 0);
-        onView(withText("2")).check(doesNotExist());
+        ViewFinder.waitForNoView(withText("2"));
         checkCurrentPresenter(mManager, null);
     }
 
