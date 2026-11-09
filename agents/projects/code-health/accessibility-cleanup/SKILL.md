@@ -96,7 +96,7 @@ Follow the [Verification](../hub/references/verification.md) workflow.
 Ensure the full `[Accessibility Cleanup] <Title>` subject is at most 72
 characters (omit `.java` or shorten the title, e.g.
 `Fix accessibility in <Component>`, if needed), and generate `../commit`. Do not
-add `[LSC]` or `LSC Doc:` (this skill is not part of the LSC).
+add `[LSC]` (this skill is not part of the LSC).
 
 ```bash
 python3 agents/projects/code-health/hub/scripts/prepare_commit_message.py \

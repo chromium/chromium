@@ -17,12 +17,17 @@ import prepare_commit_message as pcm
 
 _DESCRIPTION = 'Remove the unused `Foo` helper and its "legacy" callers.'
 _VALID = f'[cleanup] Remove Foo\n\n{_DESCRIPTION}\n\nBug: 123, 456\n'
-_LONG_URL = (
-    'https://docs.google.com/document/d/'
-    '1J1B9BV8eEedE6j6qhUUDbC43IalN2cfo3VHX3mGHbGc/edit?tab=t.0'
-)
-_LSC_DOC = f'LSC Doc: {_LONG_URL}'
+# Longer than the max line length, so it can't be wrapped.
+_LONG_LINK = 'https://example.com/' + 'a' * 80
 _LSC_SKILL = 'java-inline-fqn-cleanup'
+_LSC_SKILLS = (
+    'fix-outdated-javadocs',
+    'histogram-cleanup',
+    'java-inline-fqn-cleanup',
+    'lint-sync',
+    'remove-unused-object-overrides',
+    'replace-anonymous-runnables',
+)
 _NON_LSC_SKILLS = ('accessibility-cleanup', 'histogram-extension')
 
 
@@ -60,8 +65,7 @@ class PrepareCommitMessageTest(unittest.TestCase):
             description,
             cfg.hashtags,
             cfg.parent_bug,
-            lsc_doc=cfg.lsc_doc,
-            forbid_lsc=cfg.lsc_doc is None,
+            forbid_lsc_tag='LSC' not in cfg.hashtags,
         )
 
     def _validate(self, skill, message, extra_args=()):
@@ -85,11 +89,14 @@ class PrepareCommitMessageTest(unittest.TestCase):
 
     def test_skill_configs(self):
         self.assertEqual(list(pcm.SKILL_CONFIGS), sorted(pcm.SKILL_CONFIGS))
-        self.assertEqual(pcm.LSC_DOC_URL, _LONG_URL)
         for skill, cfg in pcm.SKILL_CONFIGS.items():
             with self.subTest(skill=skill):
+                self.assertEqual(cfg._fields, ('hashtags', 'parent_bug'))
                 self.assertTrue(cfg.parent_bug.isdigit())
-                self.assertEqual('LSC' in cfg.hashtags, cfg.lsc_doc is not None)
+        lsc_skills = tuple(
+            s for s, c in pcm.SKILL_CONFIGS.items() if 'LSC' in c.hashtags
+        )
+        self.assertEqual(lsc_skills, _LSC_SKILLS)
         self.assertEqual(
             pcm.SKILL_CONFIGS['histogram-cleanup'].hashtags,
             ('histogram-cleanup', 'LSC'),
@@ -98,6 +105,28 @@ class PrepareCommitMessageTest(unittest.TestCase):
             pcm.SKILL_CONFIGS['accessibility-cleanup'].hashtags,
             ('Accessibility Cleanup',),
         )
+
+    def test_lsc_skills_keep_lsc_tag_and_parent_bug(self):
+        for skill in _LSC_SKILLS:
+            with self.subTest(skill=skill):
+                cfg = pcm.SKILL_CONFIGS[skill]
+                message = self._make(skill)
+                subject = message.split('\n')[0]
+                self.assertEqual(
+                    subject,
+                    ''.join(f'[{t}]' for t in cfg.hashtags) + ' Remove Foo',
+                )
+                self.assertIn('[LSC]', subject)
+                self.assertTrue(
+                    message.endswith(f'\n\nBug: {cfg.parent_bug}\n')
+                )
+                self.assertNotIn('LSC Doc:', message)
+                self.assertEqual(
+                    pcm.validate_commit_message(
+                        message, [cfg.parent_bug], cfg.hashtags
+                    ),
+                    [],
+                )
 
     def test_generate_commit_message(self):
         message = pcm.generate_commit_message(
@@ -178,96 +207,66 @@ class PrepareCommitMessageTest(unittest.TestCase):
             )
 
     def test_generate_keeps_long_url_on_one_line(self):
-        doc = f'LSC Doc: {_LONG_URL}'
+        link = f'Link: {_LONG_LINK}'
         message = pcm.generate_commit_message(
-            'Remove Foo', f'Intro.\n\n{doc}', parent_bug='1'
+            'Remove Foo', f'Intro.\n\n{link}', parent_bug='1'
         )
-        self.assertIn(f'\n\n{doc}\n\n', message)
+        self.assertIn(f'\n\n{link}\n\n', message)
         self.assertEqual(pcm.validate_commit_message(message, ['1']), [])
 
-    def test_generate_lsc_doc_appended_at_end_of_body(self):
-        message = pcm.generate_commit_message(
-            'Remove Foo',
-            'One.\n\nTwo.',
-            parent_bug='1',
-            lsc_doc=_LONG_URL,
-        )
-        self.assertEqual(
-            message, f'Remove Foo\n\nOne.\n\nTwo.\n\n{_LSC_DOC}\n\nBug: 1\n'
-        )
-
-    def test_generate_lsc_doc_replaces_standalone_doc_paragraph(self):
-        docs = ('LSC Doc: https://example.com/old', 'lsc doc: old', _LSC_DOC)
-        for doc in docs:
-            with self.subTest(doc=doc):
-                message = pcm.generate_commit_message(
-                    'Remove Foo',
-                    f'One.\n\n{doc}\n\nTwo.',
-                    parent_bug='1',
-                    lsc_doc=_LONG_URL,
-                )
-                self.assertEqual(
-                    message,
-                    f'Remove Foo\n\nOne.\n\nTwo.\n\n{_LSC_DOC}\n\nBug: 1\n',
-                )
-
-    def test_generate_lsc_doc_rejects_embedded_doc(self):
-        descriptions = (
-            'See LSC Doc: foo for details.',
-            'Body.\nLSC Doc: foo',
-            'Body.\n\nLSC Doc: foo\nmore',
-        )
-        for description in descriptions:
-            with self.subTest(description=description):
-                with self.assertRaisesRegex(ValueError, 'own paragraph'):
-                    pcm.generate_commit_message(
-                        'Remove Foo',
-                        description,
-                        parent_bug='1',
-                        lsc_doc=_LONG_URL,
-                    )
-
-    def test_generate_lsc_doc_rejects_empty_body(self):
-        for description in (_LSC_DOC, f'{_LSC_DOC}\n\nLSC Doc: other', ''):
-            with self.subTest(description=description):
-                with self.assertRaisesRegex(ValueError, 'must not be empty'):
-                    pcm.generate_commit_message(
-                        'Remove Foo',
-                        description,
-                        parent_bug='1',
-                        lsc_doc=_LONG_URL,
-                    )
-
-    def test_generate_lsc_doc_goes_before_obsolete_histograms(self):
-        tags = 'OBSOLETE_HISTOGRAM[A]=gone\nOBSOLETE_HISTOGRAM[B]=gone'
-        message = pcm.generate_commit_message(
-            'Remove Foo',
-            f'Body.\n\n{tags}',
-            parent_bug='1',
-            lsc_doc=_LONG_URL,
-        )
-        self.assertEqual(
-            message,
-            f'Remove Foo\n\nBody.\n\n{_LSC_DOC}\n\n{tags}\n\nBug: 1\n',
-        )
-
-    def test_generate_forbid_lsc(self):
-        cases = {
-            'doc': ('Remove Foo', f'Body.\n\n{_LSC_DOC}'),
-            'lower_doc': ('Remove Foo', 'Body.\n\nlsc doc: x'),
-            'embedded_doc': ('Remove Foo', 'Body. LSC Doc: x'),
-            'title': ('[lsc] Remove Foo', 'Body.'),
+    def test_generate_rejects_lsc_doc(self):
+        descriptions = {
+            'doc': 'Body.\n\nLSC Doc: https://example.com/doc',
+            'lower_doc': 'Body.\n\nlsc doc: x',
+            'upper_doc': 'Body.\n\nLSC DOC: x',
+            'embedded_doc': 'Body. LSC Doc: x',
+            'only_doc': 'LSC Doc: https://example.com/doc',
+            'wrapped_doc': 'Body. LSC\nDoc: x',
+            # Auto-wrapping puts `LSC` and `Doc:` on separate lines.
+            'long_prose_wrapped_doc': 'word ' * 13 + 'LSC Doc: x',
         }
-        for name, (title, description) in cases.items():
-            with self.subTest(name=name):
-                with self.assertRaises(ValueError):
+        hashtags = (['Code Health', 'LSC'], ['Code Health'], None)
+        for name, description in descriptions.items():
+            for hashtag in hashtags:
+                for forbid_lsc_tag in (False, True):
+                    with self.subTest(
+                        name=name, hashtag=hashtag, forbid=forbid_lsc_tag
+                    ):
+                        with self.assertRaisesRegex(ValueError, 'LSC Doc'):
+                            pcm.generate_commit_message(
+                                'Remove Foo',
+                                description,
+                                hashtag=hashtag,
+                                parent_bug='1',
+                                forbid_lsc_tag=forbid_lsc_tag,
+                            )
+
+    def test_generate_forbid_lsc_tag(self):
+        for title in ('[LSC] Remove Foo', '[lsc] Remove Foo', 'Fix [Lsc] Foo'):
+            with self.subTest(title=title):
+                with self.assertRaisesRegex(ValueError, 'not allowed'):
                     pcm.generate_commit_message(
                         title,
-                        description,
+                        'Body.',
                         hashtag='Code Health',
                         parent_bug='1',
-                        forbid_lsc=True,
+                        forbid_lsc_tag=True,
                     )
+        # [LSC] is fine in the title when it is not forbidden.
+        message = pcm.generate_commit_message(
+            '[LSC] Remove Foo', 'Body.', hashtag='LSC', parent_bug='1'
+        )
+        self.assertTrue(message.startswith('[LSC] Remove Foo\n'))
+
+    def test_generate_forbid_lsc_tag_allows_lsc_in_body(self):
+        message = pcm.generate_commit_message(
+            'Remove Foo',
+            'Part of the [LSC] rollout.',
+            hashtag='Code Health',
+            parent_bug='1',
+            forbid_lsc_tag=True,
+        )
+        self.assertIn('\n\nPart of the [LSC] rollout.\n\n', message)
 
     def test_generate_rejects_bad_input(self):
         subjects = ('', 'two\nlines', 'Ends with period.', 'a' * 73)
@@ -318,7 +317,7 @@ class PrepareCommitMessageTest(unittest.TestCase):
         self.assertEqual(pcm.validate_commit_message(message), [])
 
     def test_validate_allows_long_url_line(self):
-        message = f'Subject\n\nLSC Doc: {_LONG_URL}\n\nBug: 1\n'
+        message = f'Subject\n\nLink: {_LONG_LINK}\n\nBug: 1\n'
         self.assertEqual(pcm.validate_commit_message(message), [])
 
     def test_validate_rejects_long_prose_with_url(self):
@@ -384,42 +383,52 @@ class PrepareCommitMessageTest(unittest.TestCase):
                 self.assertEqual(len(errors), 1)
                 self.assertIn('extra or duplicate', errors[0])
 
-    def test_validate_required_lsc_doc(self):
-        subject = '[LSC] Remove Foo'
-        good = f'{subject}\n\nBody.\n\n{_LSC_DOC}\n\nBug: 1\n'
-        self.assertEqual(
-            pcm.validate_commit_message(good, required_lsc_doc=_LONG_URL), []
-        )
+    def test_validate_rejects_lsc_doc(self):
+        base = '[LSC] Remove Foo\n\nBody.\n\nBug: 1\n'
         bad_messages = {
-            'missing': f'{subject}\n\nBody.\n\nBug: 1\n',
-            'wrong_url': good.replace(_LONG_URL, 'https://example.com'),
-            'duplicate': good.replace(
-                f'\n\n{_LSC_DOC}\n\n', f'\n\n{_LSC_DOC}\n\n{_LSC_DOC}\n\n'
-            ),
-            'in_footer': f'{subject}\n\nBody.\n\n{_LSC_DOC}\nBug: 1\n',
-            'embedded': f'{subject}\n\nBody. {_LSC_DOC}\n\nBug: 1\n',
+            'doc': base.replace('\n\nBug', '\n\nLSC Doc: https://a.co\n\nBug'),
+            'lower_doc': base.replace('\n\nBug', '\n\nlsc doc: x\n\nBug'),
+            'upper_doc': base.replace('\n\nBug', '\n\nLSC DOC: x\n\nBug'),
+            'in_footer': base.replace('\nBug', '\nLSC Doc: x\nBug'),
+            'embedded': base.replace('Body.', 'Body. See LSC Doc: x'),
+            'wrapped': base.replace('Body.', 'Body. See LSC\nDoc: x'),
         }
+        self.assertEqual(pcm.validate_commit_message(base), [])
         for name, message in bad_messages.items():
-            with self.subTest(name=name):
-                errors = pcm.validate_commit_message(
-                    message, required_lsc_doc=_LONG_URL
-                )
-                self.assertTrue(errors)
+            for forbid_lsc_tag in (False, True):
+                with self.subTest(name=name, forbid_lsc_tag=forbid_lsc_tag):
+                    self.assertNotEqual(message, base)
+                    errors = pcm.validate_commit_message(
+                        message, forbid_lsc_tag=forbid_lsc_tag
+                    )
+                    self.assertIn("'LSC Doc:' is not allowed.", errors)
 
-    def test_validate_forbid_lsc(self):
+    def test_validate_forbid_lsc_tag(self):
         good = '[Code Health] Remove Foo\n\nBody.\n\nBug: 1\n'
-        self.assertEqual(pcm.validate_commit_message(good, forbid_lsc=True), [])
+        self.assertEqual(
+            pcm.validate_commit_message(good, forbid_lsc_tag=True), []
+        )
         bad_messages = (
             good.replace('[Code Health]', '[Code Health][LSC]'),
             good.replace('[Code Health]', '[Code Health][Lsc]'),
-            good.replace('\n\nBug', f'\n\n{_LSC_DOC}\n\nBug'),
-            good.replace('Body.', 'See lsc doc: x'),
+            good.replace('[Code Health]', '[lsc]'),
         )
         for message in bad_messages:
             with self.subTest(message=message):
-                self.assertTrue(
-                    pcm.validate_commit_message(message, forbid_lsc=True)
+                self.assertEqual(
+                    pcm.validate_commit_message(message, forbid_lsc_tag=True),
+                    ['Subject must not contain [LSC] for this skill.'],
                 )
+                # [LSC] in the subject is fine when it is not forbidden.
+                self.assertEqual(pcm.validate_commit_message(message), [])
+
+    def test_validate_forbid_lsc_tag_only_checks_subject(self):
+        message = (
+            '[Code Health] Remove Foo\n\nPart of the [LSC] rollout.\n\nBug: 1\n'
+        )
+        self.assertEqual(
+            pcm.validate_commit_message(message, forbid_lsc_tag=True), []
+        )
 
     def test_cli_generate_to_stdout(self):
         code, out, err = self._run(
@@ -461,8 +470,7 @@ class PrepareCommitMessageTest(unittest.TestCase):
         self.assertEqual((code, err), (0, ''))
         self.assertEqual(
             out,
-            f'[Code Health][LSC] Remove Foo\n\nBody text.\n\n{_LSC_DOC}\n\n'
-            'Bug: 541671762\n',
+            '[Code Health][LSC] Remove Foo\n\nBody text.\n\nBug: 541671762\n',
         )
 
     def test_cli_generate_description_dash_reads_stdin(self):
@@ -568,8 +576,9 @@ class PrepareCommitMessageTest(unittest.TestCase):
                 prefix = ''.join(f'[{t}]' for t in cfg.hashtags)
                 self.assertTrue(message.startswith(f'{prefix} Remove Foo\n\n'))
                 self.assertIn(f'\n\nBug: {cfg.parent_bug}\n', message)
+                self.assertNotIn('LSC Doc:', message)
                 self.assertEqual(
-                    message.count('LSC Doc:'), 1 if cfg.lsc_doc else 0
+                    '[LSC]' in message.split('\n')[0], 'LSC' in cfg.hashtags
                 )
                 code, out, err = self._run(
                     ['--validate', path, '--skill', skill]
@@ -643,94 +652,27 @@ class PrepareCommitMessageTest(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn('extra or duplicate', err)
 
-    def test_cli_generate_replaces_wrong_lsc_doc(self):
+    def test_cli_histogram_cleanup_keeps_obsolete_paragraph_last(self):
+        tag = 'OBSOLETE_HISTOGRAMS=Expired and no longer recorded.'
         code, out, err = self._run(
             [
                 '--skill',
-                _LSC_SKILL,
+                'histogram-cleanup',
                 '--title',
-                'Remove Foo',
+                'Remove expired Foo histograms',
+                '--bug',
+                '123',
                 '--description',
-                'Body.\n\nLSC Doc: https://example.com/wrong',
+                f'Summary.\n\n{tag}',
             ]
         )
         self.assertEqual((code, err), (0, ''))
-        self.assertNotIn('example.com', out)
-        self.assertEqual(out.count('LSC Doc:'), 1)
-        self.assertIn(f'\n\n{_LSC_DOC}\n\nBug: 528570333\n', out)
-
-    def test_cli_generate_deduplicates_canonical_lsc_doc(self):
-        code, out, err = self._run(
-            [
-                '--skill',
-                _LSC_SKILL,
-                '--title',
-                'Remove Foo',
-                '--description',
-                f'Body.\n\n{_LSC_DOC}\n\n{_LSC_DOC}',
-            ]
-        )
-        self.assertEqual((code, err), (0, ''))
-        self.assertEqual(out.count('LSC Doc:'), 1)
         self.assertEqual(
             out,
-            f'[Code Health][LSC] Remove Foo\n\nBody.\n\n{_LSC_DOC}\n\n'
-            'Bug: 528570333\n',
+            '[histogram-cleanup][LSC] Remove expired Foo histograms'
+            f'\n\nSummary.\n\n{tag}\n\n'
+            'Bug: 499059525, 123\n',
         )
-
-    def test_cli_generate_rejects_lsc_doc_only_or_embedded(self):
-        cases = {
-            'only_doc': (_LSC_DOC, 'must not be empty'),
-            'only_wrong_doc': ('LSC Doc: https://x.com', 'must not be empty'),
-            'embedded': ('Body. LSC Doc: https://x.com', 'own paragraph'),
-        }
-        for name, (description, expected) in cases.items():
-            with self.subTest(name=name):
-                out_commit = os.path.join(self.tmp, f'{name}.txt')
-                code, _, err = self._run(
-                    [
-                        '--skill',
-                        _LSC_SKILL,
-                        '--title',
-                        'Remove Foo',
-                        '--description',
-                        description,
-                        '--out-commit',
-                        out_commit,
-                    ]
-                )
-                self.assertEqual(code, 2)
-                self.assertIn(expected, err)
-                self.assertFalse(os.path.exists(out_commit))
-
-    def test_cli_histogram_cleanup_puts_lsc_doc_before_obsolete(self):
-        tag = 'OBSOLETE_HISTOGRAMS=Expired and no longer recorded.'
-        for description in (
-            f'Summary.\n\n{tag}',
-            f'Summary.\n\n{tag}\n\n{_LSC_DOC}',
-            f'Summary.\n\n{_LSC_DOC}\n\n{tag}',
-            f'Summary.\n\nLSC Doc: https://example.com/old\n\n{tag}',
-        ):
-            with self.subTest(description=description):
-                code, out, err = self._run(
-                    [
-                        '--skill',
-                        'histogram-cleanup',
-                        '--title',
-                        'Remove expired Foo histograms',
-                        '--bug',
-                        '123',
-                        '--description',
-                        description,
-                    ]
-                )
-                self.assertEqual((code, err), (0, ''))
-                self.assertEqual(
-                    out,
-                    '[histogram-cleanup][LSC] Remove expired Foo histograms'
-                    f'\n\nSummary.\n\n{_LSC_DOC}\n\n{tag}\n\n'
-                    'Bug: 499059525, 123\n',
-                )
 
     def test_cli_histogram_cleanup_keeps_multiple_obsolete_paragraphs(self):
         tags = 'OBSOLETE_HISTOGRAM[A]=gone\nOBSOLETE_HISTOGRAM[B]=gone'
@@ -745,7 +687,7 @@ class PrepareCommitMessageTest(unittest.TestCase):
             ]
         )
         self.assertEqual((code, err), (0, ''))
-        self.assertIn(f'\n\n{_LSC_DOC}\n\n{tags}\n\nBug: 499059525\n', out)
+        self.assertIn(f'\n\n{tags}\n\nBug: 499059525\n', out)
 
     def test_cli_validate(self):
         message = self._make(_LSC_SKILL)
@@ -773,15 +715,6 @@ class PrepareCommitMessageTest(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertNotEqual(err, '')
 
-    def test_cli_validate_rejects_invalid_lsc_message(self):
-        good = self._make(_LSC_SKILL)
-        code, out, err = self._validate(
-            _LSC_SKILL, good.replace(f'{_LSC_DOC}\n\n', '')
-        )
-        self.assertEqual(code, 1)
-        self.assertEqual(out, '')
-        self.assertIn('LSC Doc', err)
-
     def test_cli_validate_reports_wrong_skill(self):
         # A message for one skill must not validate for another.
         message = self._make('fix-outdated-javadocs')
@@ -790,16 +723,13 @@ class PrepareCommitMessageTest(unittest.TestCase):
         code, _, _ = self._validate('accessibility-cleanup', message)
         self.assertEqual(code, 1)
 
-    def test_cli_non_lsc_skills_forbid_lsc_on_generate(self):
-        cases = {
-            'title': ('[LSC] Remove Foo', 'Body.'),
-            'lower_title': ('[lsc] Remove Foo', 'Body.'),
-            'doc': ('Remove Foo', f'Body.\n\n{_LSC_DOC}'),
-            'lower_doc': ('Remove Foo', 'Body.\n\nlsc doc: x'),
-            'embedded_doc': ('Remove Foo', 'Body. LSC Doc: x'),
+    def test_cli_non_lsc_skills_forbid_lsc_tag_on_generate(self):
+        titles = {
+            'title': '[LSC] Remove Foo',
+            'lower_title': '[lsc] Remove Foo',
         }
         for skill in _NON_LSC_SKILLS:
-            for name, (title, description) in cases.items():
+            for name, title in titles.items():
                 with self.subTest(skill=skill, name=name):
                     code, out, err = self._run(
                         [
@@ -808,26 +738,21 @@ class PrepareCommitMessageTest(unittest.TestCase):
                             '--title',
                             title,
                             '--description',
-                            description,
+                            'Body.',
                         ]
                     )
                     self.assertEqual(code, 2)
                     self.assertEqual(out, '')
-                    self.assertIn('LSC', err)
+                    self.assertIn('[LSC] is not allowed', err)
 
-    def test_cli_non_lsc_skills_forbid_lsc_on_validate(self):
+    def test_cli_non_lsc_skills_forbid_lsc_tag_on_validate(self):
         for skill in _NON_LSC_SKILLS:
             good = self._make(skill)
-            parent_bug = pcm.SKILL_CONFIGS[skill].parent_bug
             self.assertEqual(self._validate(skill, good)[0], 0)
             bad_messages = {
                 'lsc_tag': good.replace('] Remove Foo', '][LSC] Remove Foo'),
                 'lsc_tag_lowercase': good.replace(
                     '] Remove Foo', '][lsc] Remove Foo'
-                ),
-                'lsc_doc': good.replace(
-                    f'\n\nBug: {parent_bug}',
-                    f'\n\n{_LSC_DOC}\n\nBug: {parent_bug}',
                 ),
             }
             for name, message in bad_messages.items():
@@ -835,7 +760,85 @@ class PrepareCommitMessageTest(unittest.TestCase):
                     self.assertNotEqual(message, good)
                     code, _, err = self._validate(skill, message)
                     self.assertEqual(code, 1)
-                    self.assertNotEqual(err, '')
+                    self.assertIn('Subject must not contain [LSC]', err)
+
+    def test_cli_non_lsc_skills_allow_lsc_in_body(self):
+        description = 'Part of the [LSC] rollout.'
+        for skill in _NON_LSC_SKILLS:
+            with self.subTest(skill=skill):
+                path = os.path.join(self.tmp, f'{skill}.txt')
+                code, _, err = self._run(
+                    [
+                        '--skill',
+                        skill,
+                        '--title',
+                        'Remove Foo',
+                        '--description',
+                        description,
+                        '--out-commit',
+                        path,
+                    ]
+                )
+                self.assertEqual((code, err), (0, ''))
+                with open(path, encoding='utf-8') as f:
+                    message = f.read()
+                self.assertIn(description, message)
+                self.assertNotIn('[LSC]', message.split('\n')[0])
+                self.assertEqual(self._validate(skill, message)[0], 0)
+
+    def test_cli_every_skill_rejects_lsc_doc_on_generate(self):
+        descriptions = {
+            'doc': 'Body.\n\nLSC Doc: https://example.com/doc',
+            'lower_doc': 'Body.\n\nlsc doc: x',
+            'upper_doc': 'LSC DOC: x\n\nBody.',
+            'embedded_doc': 'Body. LSC Doc: x',
+            'only_doc': 'LSC Doc: https://example.com/doc',
+            'wrapped_doc': 'Body. LSC\nDoc: x',
+            # Auto-wrapping puts `LSC` and `Doc:` on separate lines.
+            'long_prose_wrapped_doc': 'word ' * 13 + 'LSC Doc: x',
+        }
+        for skill in sorted(pcm.SKILL_CONFIGS):
+            for name, description in descriptions.items():
+                with self.subTest(skill=skill, name=name):
+                    out_commit = os.path.join(self.tmp, f'{skill}-{name}.txt')
+                    code, out, err = self._run(
+                        [
+                            '--skill',
+                            skill,
+                            '--title',
+                            'Remove Foo',
+                            '--description',
+                            description,
+                            '--out-commit',
+                            out_commit,
+                        ]
+                    )
+                    self.assertEqual(code, 2)
+                    self.assertEqual(out, '')
+                    self.assertIn("'LSC Doc:' is not allowed", err)
+                    self.assertFalse(os.path.exists(out_commit))
+
+    def test_cli_every_skill_rejects_lsc_doc_on_validate(self):
+        for skill, cfg in pcm.SKILL_CONFIGS.items():
+            good = self._make(skill)
+            self.assertEqual(self._validate(skill, good)[0], 0)
+            footer = f'\n\nBug: {cfg.parent_bug}'
+            bad_messages = {
+                'doc': good.replace(
+                    footer, f'\n\nLSC Doc: https://example.com/doc{footer}'
+                ),
+                'lower_doc': good.replace(footer, f'\n\nlsc doc: x{footer}'),
+                'upper_doc': good.replace(footer, f'\n\nLSC DOC: x{footer}'),
+                'embedded_doc': good.replace('Body.', 'See lsc doc: x'),
+                'wrapped_doc': good.replace('Body.', 'See LSC\nDoc: x'),
+            }
+            for name, message in bad_messages.items():
+                with self.subTest(skill=skill, name=name):
+                    self.assertNotEqual(message, good)
+                    code, out, err = self._validate(skill, message)
+                    self.assertEqual(code, 1)
+                    self.assertEqual(out, '')
+                    self.assertIn("'LSC Doc:' is not allowed", err)
 
     def test_cli_non_lsc_skills_validate_extra_bug(self):
         good = self._run(

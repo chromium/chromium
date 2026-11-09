@@ -7,8 +7,8 @@ Pass the description on stdin (`--description -`, or just pipe it) so quotes
 and backticks never go through the shell. Exits 0 on success, 1 if validation
 fails, and 2 on bad arguments or unreadable input.
 
-The hashtags, parent bug and `LSC Doc:` line are fixed per skill, so pass
-`--skill` and never put `LSC Doc:` in the description.
+The hashtags and parent bug are fixed per skill, so pass `--skill`.
+Never include `LSC Doc:` in a commit message.
 
 Usage:
   prepare_commit_message.py --skill <name> --title <title> \\
@@ -28,19 +28,12 @@ BANNED_TAGS = ('CONV=', 'TAG=', 'Test:', 'Tested:')
 # Stale generator attribution that validation rejects.
 GENERATOR_DISCLAIMER = 'This change was generated using'
 
-LSC_DOC_URL = (
-    'https://docs.google.com/document/d/'
-    '1J1B9BV8eEedE6j6qhUUDbC43IalN2cfo3VHX3mGHbGc/edit?tab=t.0'
-)
-
 
 class SkillConfig(NamedTuple):
     """Commit message settings that are fixed for a skill."""
 
     hashtags: tuple[str, ...]
     parent_bug: str
-    # None means the skill is not an LSC and must not have an `LSC Doc:` line.
-    lsc_doc: str | None = None
 
 
 SKILL_CONFIGS = {
@@ -51,12 +44,10 @@ SKILL_CONFIGS = {
     'fix-outdated-javadocs': SkillConfig(
         hashtags=('Code Health', 'LSC'),
         parent_bug='564124183',
-        lsc_doc=LSC_DOC_URL,
     ),
     'histogram-cleanup': SkillConfig(
         hashtags=('histogram-cleanup', 'LSC'),
         parent_bug='499059525',
-        lsc_doc=LSC_DOC_URL,
     ),
     'histogram-extension': SkillConfig(
         hashtags=('Code Health',),
@@ -65,22 +56,18 @@ SKILL_CONFIGS = {
     'java-inline-fqn-cleanup': SkillConfig(
         hashtags=('Code Health', 'LSC'),
         parent_bug='528570333',
-        lsc_doc=LSC_DOC_URL,
     ),
     'lint-sync': SkillConfig(
         hashtags=('lint-sync', 'LSC'),
         parent_bug='498775295',
-        lsc_doc=LSC_DOC_URL,
     ),
     'remove-unused-object-overrides': SkillConfig(
         hashtags=('Code Health', 'LSC'),
         parent_bug='544923924',
-        lsc_doc=LSC_DOC_URL,
     ),
     'replace-anonymous-runnables': SkillConfig(
         hashtags=('Code Health', 'LSC'),
         parent_bug='541671762',
-        lsc_doc=LSC_DOC_URL,
     ),
 }
 
@@ -91,9 +78,7 @@ _FOOTER_LINE_RE = re.compile(r'^[A-Za-z][A-Za-z0-9-]*:\s.*$')
 _OBSOLETE_HISTOGRAM_RE = re.compile(
     r'^OBSOLETE_HISTOGRAM(?:S=|\[[^\]]+\]=)\S.*$'
 )
-_LSC_DOC_RE = re.compile(r'lsc doc:', re.IGNORECASE)
-# A single-line paragraph that is just an `LSC Doc:` line.
-_LSC_DOC_LINE_RE = re.compile(r'^lsc doc:[^\n]*$', re.IGNORECASE)
+_LSC_DOC_RE = re.compile(r'\blsc\s+doc:', re.IGNORECASE)
 _URL_RE = re.compile(r'https?://\S+')
 # A single line that is just a URL, optionally preceded by a short label.
 _URL_LABEL_LINE_RE = re.compile(
@@ -138,39 +123,6 @@ def _wrap_paragraph(paragraph):
     )
 
 
-def _apply_lsc_doc(paragraphs, lsc_doc, forbid_lsc):
-    """Returns |paragraphs| with the single canonical `LSC Doc:` paragraph.
-
-    Standalone `LSC Doc:` paragraphs are dropped and re-added once (before any
-    trailing OBSOLETE_HISTOGRAM paragraphs, else at the end). Raises
-    ValueError if LSC Doc is forbidden or is mixed into other prose.
-    """
-    if forbid_lsc:
-        if any(_LSC_DOC_RE.search(p) for p in paragraphs):
-            raise ValueError('LSC Doc is not allowed for this skill.')
-        return paragraphs
-    if lsc_doc is None:
-        return paragraphs
-    kept = []
-    for paragraph in paragraphs:
-        if not _LSC_DOC_RE.search(paragraph):
-            kept.append(paragraph)
-        elif '\n' in paragraph or not _LSC_DOC_LINE_RE.match(paragraph):
-            raise ValueError(
-                "'LSC Doc:' must be its own paragraph; remove it from the "
-                'description, the script adds it.'
-            )
-    if not kept:
-        raise ValueError('Description must not be empty.')
-    index = len(kept)
-    while index > 0 and all(
-        _OBSOLETE_HISTOGRAM_RE.match(x) for x in kept[index - 1].split('\n')
-    ):
-        index -= 1
-    kept.insert(index, f'LSC Doc: {lsc_doc}')
-    return kept
-
-
 def generate_commit_message(
     title,
     description,
@@ -178,18 +130,17 @@ def generate_commit_message(
     parent_bug=None,
     extra_bugs=(),
     extra_footers=(),
-    lsc_doc=None,
-    forbid_lsc=False,
+    forbid_lsc_tag=False,
 ):
     """Returns the commit message; raises ValueError if it is not valid.
 
     |hashtag| is a string or an iterable of strings. The subject
-    (`[tag1][tag2] title` or `title`) is never truncated. If |lsc_doc| is set,
-    an `LSC Doc:` paragraph is added; if |forbid_lsc| is set, `[LSC]` and
-    `LSC Doc:` are rejected.
+    (`[tag1][tag2] title` or `title`) is never truncated. `LSC Doc:` is
+    always rejected; if |forbid_lsc_tag| is set, `[LSC]` in the title is
+    rejected too.
     """
     title = (title or '').strip()
-    if forbid_lsc and '[lsc]' in title.lower():
+    if forbid_lsc_tag and '[lsc]' in title.lower():
         raise ValueError('[LSC] is not allowed for this skill.')
     if isinstance(hashtag, str):
         hashtag = [hashtag]
@@ -200,9 +151,7 @@ def generate_commit_message(
     prefix = ''.join(f'[{t}]' for t in tags)
     subject = f'{prefix} {title}' if prefix and title else title
     paragraphs = [p.strip() for p in (description or '').split('\n\n')]
-    paragraphs = _apply_lsc_doc(
-        [p for p in paragraphs if p], lsc_doc, forbid_lsc
-    )
+    paragraphs = [p for p in paragraphs if p]
     body = '\n\n'.join(_wrap_paragraph(p) for p in paragraphs)
     if not subject or '\n' in subject or '\r' in subject:
         raise ValueError('Subject must be a non-empty single line.')
@@ -215,8 +164,7 @@ def generate_commit_message(
     errors = validate_commit_message(
         message,
         required_hashtags=tags,
-        required_lsc_doc=lsc_doc,
-        forbid_lsc=forbid_lsc,
+        forbid_lsc_tag=forbid_lsc_tag,
     )
     if errors:
         raise ValueError('\n'.join(errors))
@@ -227,8 +175,7 @@ def validate_commit_message(
     message,
     required_bugs=(),
     required_hashtags=(),
-    required_lsc_doc=None,
-    forbid_lsc=False,
+    forbid_lsc_tag=False,
 ):
     """Returns a list of error strings (empty if the message is valid)."""
     if not message.strip():
@@ -291,21 +238,10 @@ def validate_commit_message(
             )
         elif lines[0][len(expected_prefix) :].lstrip().startswith('['):
             errors.append('Subject has an extra or duplicate [tag] prefix.')
-    if required_lsc_doc:
-        expected_doc = f'LSC Doc: {required_lsc_doc}'
-        doc_paragraphs = [p for p in paragraphs if _LSC_DOC_RE.search(p)]
-        if expected_doc not in doc_paragraphs:
-            errors.append(
-                f"Missing standalone '{expected_doc}' paragraph "
-                "(it must not be part of the 'Bug:' footer)."
-            )
-        if len(doc_paragraphs) > 1:
-            errors.append("Only one 'LSC Doc:' paragraph is allowed.")
-    if forbid_lsc:
-        if '[lsc]' in lines[0].lower():
-            errors.append('Subject must not contain [LSC] for this skill.')
-        if _LSC_DOC_RE.search(message):
-            errors.append("'LSC Doc:' is not allowed for this skill.")
+    if _LSC_DOC_RE.search(message):
+        errors.append("'LSC Doc:' is not allowed.")
+    if forbid_lsc_tag and '[lsc]' in lines[0].lower():
+        errors.append('Subject must not contain [LSC] for this skill.')
     return errors
 
 
@@ -321,7 +257,7 @@ def main(argv=None) -> int:
         parser.add_argument('--' + name, action='append', default=[])
     args = parser.parse_args(argv)
     cfg = SKILL_CONFIGS[args.skill]
-    forbid_lsc = cfg.lsc_doc is None
+    forbid_lsc_tag = 'LSC' not in cfg.hashtags
     try:
         if args.validate:
             with open(args.validate, encoding='utf-8') as f:
@@ -329,8 +265,7 @@ def main(argv=None) -> int:
                     f.read(),
                     [cfg.parent_bug, *args.bug],
                     required_hashtags=cfg.hashtags,
-                    required_lsc_doc=cfg.lsc_doc,
-                    forbid_lsc=forbid_lsc,
+                    forbid_lsc_tag=forbid_lsc_tag,
                 )
             print(
                 '\n'.join(errors) or 'Commit message is valid.',
@@ -350,8 +285,7 @@ def main(argv=None) -> int:
             cfg.parent_bug,
             args.bug,
             args.footer,
-            lsc_doc=cfg.lsc_doc,
-            forbid_lsc=forbid_lsc,
+            forbid_lsc_tag=forbid_lsc_tag,
         )
         if args.out_commit:
             with open(args.out_commit, 'w', encoding='utf-8') as f:
