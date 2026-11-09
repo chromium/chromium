@@ -30,9 +30,10 @@ bool IsBookmarkBarLocation(BookmarkLaunchLocation location) {
 
 auto GetMetricProfile(const Profile* profile) {
   CHECK(profile, base::NotFatalUntil::M162);
-  CHECK(profile->IsRegularProfile() ||
-            profile->IsPrimaryOTRProfileWithRegularParent(),
-        base::NotFatalUntil::M162);
+  // TODO(crbug.com/580150197): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(profile->IsRegularProfile() ||
+         profile->IsPrimaryOTRProfileWithRegularParent());
   if (profile->IsRegularProfile()) {
     return profile_metrics::BrowserProfileType::kRegular;
   } else if (profile->IsIncognitoProfile()) {
