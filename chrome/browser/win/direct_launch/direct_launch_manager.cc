@@ -572,10 +572,16 @@ void DirectLaunchManager::Launch(std::wstring_view uri) {
   // process was started (see `AttemptToNotifyRunningChrome()`), and without a
   // tag, Launch.Mode2 attributes the launch to how this process was started,
   // e.g. to the taskbar shortcut that started it. A direct launch has no
-  // launching process, so tag it as a launch through the browser's app id:
-  // Launch.Mode2 then counts a URI launch as a protocol handler launch, like
-  // the classic launch it replaces, and a tile launch as an app id launch.
+  // launching process, so tag it as a launch through the browser's app id, and
+  // tag a tile launch with the taskbar shortcut location: Launch.Mode2 then
+  // counts a URI launch as a protocol handler launch and a tile launch as a
+  // taskbar shortcut launch, like the classic launches they replace.
   launch_command_line.AppendSwitch(switches::kSourceAppId);
+  if (uri.empty()) {
+    launch_command_line.AppendSwitchASCII(
+        switches::kSourceShortcutLocation,
+        switches::kSourceShortcutLocationTaskbar);
+  }
   launch_callback_.Run(std::move(launch_command_line),
                        /*current_directory=*/base::FilePath());
 }

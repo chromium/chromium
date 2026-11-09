@@ -27,6 +27,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -665,9 +666,13 @@ TEST_F(DirectLaunchManagerFakeShellTest, TileLaunchHasNoArguments) {
 
   ASSERT_EQ(launches().size(), 1u);
   EXPECT_TRUE(launches()[0].GetArgs().empty());
-  EXPECT_THAT(launches()[0].GetSwitches(),
-              testing::ElementsAre(
-                  testing::Pair(switches::kSourceAppId, std::wstring())));
+  EXPECT_THAT(
+      launches()[0].GetSwitches(),
+      testing::UnorderedElementsAre(
+          testing::Pair(switches::kSourceAppId, std::wstring()),
+          testing::Pair(
+              switches::kSourceShortcutLocation,
+              base::ASCIIToWide(switches::kSourceShortcutLocationTaskbar))));
 }
 
 // Launch.Mode2 attributes a launch that arrives through the process singleton
@@ -687,12 +692,14 @@ TEST_F(DirectLaunchManagerFakeShellTest, LaunchesAreAttributedToTheShell) {
   EXPECT_TRUE(launches()[0].HasSingleArgumentSwitch());
   EXPECT_EQ(GetLaunchMode(launches()[0]), LaunchMode::kProtocolHandler);
 
-  // A tile launch counts as a launch through the browser's app id, which
-  // Launch.Mode2 attributes to the taskbar or the Start menu.
+  // A tile launch counts like the taskbar shortcut launch that it replaces.
   shell().LaunchTile();
   ASSERT_EQ(launches().size(), 2u);
   EXPECT_TRUE(launches()[1].HasSwitch(switches::kSourceAppId));
-  EXPECT_EQ(GetLaunchMode(launches()[1]), LaunchMode::kWithAppId);
+  EXPECT_EQ(
+      launches()[1].GetSwitchValueASCII(switches::kSourceShortcutLocation),
+      switches::kSourceShortcutLocationTaskbar);
+  EXPECT_EQ(GetLaunchMode(launches()[1]), LaunchMode::kShortcutTaskbar);
 }
 
 // The `WM_COPYDATA` payload is dictated by another process and is not
