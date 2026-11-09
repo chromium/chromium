@@ -143,6 +143,9 @@ VIZ_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kAndroidCustomFrameDeadlineMaxInteractionIdleDuration;
 #endif
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDisplaySDRMaxLuminanceNits);
+#if BUILDFLAG(IS_OZONE)
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kHdrVideoMetadataPassthrough);
+#endif
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kHideDelegatedFrameHostMac);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEvictionUnlocksResources);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kSingleVideoFrameRateThrottling);

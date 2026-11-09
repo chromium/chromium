@@ -2787,8 +2787,14 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   const float targeted_hdr_headroom =
       quad->dynamic_range_limit.ComputeEffectiveHdrHeadroom(
           current_frame()->display_color_spaces.GetHdrHeadroom());
-  const bool needs_tone_map = gfx::ToneMapUtil::UseGlobalToneMapFilter(
-      src_color_space, hdr_metadata, targeted_hdr_headroom);
+  // When passing through HDR metadata, the system compositor tone maps the
+  // content using its metadata, so don't tone map it here.
+  const bool hdr_passthrough =
+      quad == current_frame()->hdr_passthrough_quad.get();
+  const bool needs_tone_map =
+      !hdr_passthrough &&
+      gfx::ToneMapUtil::UseGlobalToneMapFilter(src_color_space, hdr_metadata,
+                                               targeted_hdr_headroom);
 
   sk_sp<SkColorSpace> override_color_space;
   if (overlay_color_space) {

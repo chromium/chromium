@@ -90,6 +90,12 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
                  SurfaceDamageRectList surface_damage_rect_list,
                  const TrackedElementRects& tracked_element_rects);
 
+  // Sets whether the page is in fullscreen mode (e.g. fullscreen video) for
+  // the frames drawn after this call.
+  void SetIsPageFullscreen(bool is_page_fullscreen) {
+    is_page_fullscreen_ = is_page_fullscreen;
+  }
+
   // The renderer might expand the damage (e.g: HW overlays were used,
   // invalidation rects on previous buffers). This function returns a
   // bounding rect of the area that might need to be recomposited.
@@ -139,6 +145,12 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     gfx::AxisTransform2d target_to_device_transform;
 
     OverlayProcessorInterface::CandidateList overlay_list;
+
+    // If set, this quad of the root render pass is an HDR video whose HDR
+    // metadata is passed through to the system compositor with the primary
+    // plane, so the renderer must not tone map it. Only set on Ozone. See
+    // hdr_video_passthrough.h.
+    raw_ptr<const DrawQuad> hdr_passthrough_quad = nullptr;
   };
 
   void SetCurrentFrameForTesting(const DrawingFrame& frame);
@@ -210,6 +222,12 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     // this means a DComp surface.
     bool scanout_dcomp_surface = false;
   };
+
+#if BUILDFLAG(IS_OZONE)
+  // Enables HDR video metadata passthrough for the current frame if possible.
+  // Must be called after overlay processing. See hdr_video_passthrough.h.
+  void MaybeEnableHdrVideoPassthrough(const gfx::ColorSpace& frame_color_space);
+#endif
 
   // Returns a transform that maps the the draw rect (i.e. the render pass
   // output rect) to the device space (i.e. buffer space).
@@ -356,6 +374,14 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
 
   // Track skipped non-root render passes in DrawRenderPass.
   base::flat_set<AggregatedRenderPassId> skipped_render_pass_ids_;
+
+#if BUILDFLAG(IS_OZONE)
+  // Whether HDR video metadata passthrough was used for the last frame.
+  bool last_frame_used_hdr_passthrough_ = false;
+#endif
+
+  // Whether the page is in fullscreen mode. See SetIsPageFullscreen().
+  bool is_page_fullscreen_ = false;
 
   bool has_back_buffers_ = false;
   bool disable_color_checks_for_testing_ = false;
