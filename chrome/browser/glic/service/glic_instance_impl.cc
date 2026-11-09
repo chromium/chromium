@@ -504,8 +504,7 @@ void GlicInstanceImpl::Show(ShowOptions options) {
     return;
   }
 
-  instance_metrics().OnWillShow(options.invocation_source,
-                                conversation_id().has_value());
+  instance_metrics().OnWillShow(options, conversation_id().has_value());
 
   if (!IsActiveEmbedder(new_key)) {
     DeactivateCurrentEmbedder();
@@ -605,6 +604,7 @@ void GlicInstanceImpl::Attach(tabs::TabHandle tab) {
 }
 
 void GlicInstanceImpl::AcceptNativeFre() {
+  instance_metrics_.OnNativeFreAccepted();
   service_->provider_spec().GetFreStore().CompleteOnboarding(profile_);
 }
 

@@ -174,8 +174,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   // Called before showing the instance to resolve any unseen completed response
   // and record return source if the instance has conversation history.
-  void OnWillShow(glic::mojom::InvocationSource source,
-                  bool has_conversation_id);
+  void OnWillShow(const ShowOptions& options, bool has_conversation_id);
 
   // Called when the UI is shown and it was not already showing for this
   // instance.
@@ -225,6 +224,12 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Called when the client is ready to show.
   void OnClientReady();
 
+  // Updates metrics state when the user accepts the native FRE.
+  void OnNativeFreAccepted();
+
+  // Updates metrics state when the user accepts the WebUI FRE.
+  void OnWebFreAccepted();
+
   // Guest actionability milestones for Glic.Instance.TimeToActionable, reported
   // by GlicWebClientManager.
 
@@ -242,8 +247,9 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // crashes or commits a new primary main-frame navigation.
   void OnGuestReset();
 
-  // Returns whether the current guest document is still waiting to record its
-  // initial TimeToActionable metric.
+  // Returns whether the current guest document still needs an actionable
+  // compositor frame callback (for Glic.Instance.TimeToActionable or
+  // Glic.Fre.AcceptToChatActionable).
   bool IsWaitingForActionable() const;
 
   void OnUserResizeStarted(const gfx::Size& start_size);
@@ -335,6 +341,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   void RecordSkillsInvokeFunnelStep(SkillsInvokeFunnel invoke_funnel);
   void RecordAndResetAutoOpenPdfMetric();
+  void RecordOptInImpression();
   void MaybeRecordOptInImpression();
 
   // Records the duration and prompt count for the first time the side panel is
@@ -345,7 +352,12 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // while the client was still loading.
   void MaybeRecordTimeToDismissWhileLoading();
 
+  void RecordPanelPresentationTime(base::TimeTicks end_time);
   void RecordTimeToActionable(base::TimeTicks end_time);
+  void UpdateNativeFreStateForShow(const ShowOptions& options);
+  void MaybeRecordAcceptToChatActionable(base::TimeTicks now);
+  void CancelNativeFreWait();
+  bool CanRecordOptInImpression() const;
 
   bool IsVisible() const;
 
@@ -369,6 +381,12 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
       base::TimeDelta time_until_destroyed);
   void MaybeResolvePendingResponse();
   void FinalizePendingResponse(base::TimeTicks now);
+
+  enum class NativeFreState {
+    kNone,
+    kWaitingForAccept,
+    kAccepted,
+  };
 
   base::flat_map<GlicInstanceEvent, int> event_counts_;
   EmbedderType current_ui_mode_ = EmbedderType::kUnknown;
@@ -402,6 +420,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
     // Whether a frame was submitted while an invocation was being timed but the
     // panel was hidden. Recorded when the panel is shown again.
     bool frame_submitted_while_hidden = false;
+    // Whether this guest document has submitted an actionable compositor frame.
+    bool guest_frame_submitted = false;
     std::optional<base::TimeTicks> actionable_mark_time;
   };
 
@@ -453,6 +473,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   GuestActionableState guest_actionable_;
   bool is_opt_in_pending_ = false;
   bool opt_in_impression_recorded_for_current_open_ = false;
+  NativeFreState native_fre_state_ = NativeFreState::kNone;
+  base::TimeTicks fre_accept_to_actionable_start_time_;
   bool has_consented_ = false;
   OptInShownCallback opt_in_shown_callback_;
 

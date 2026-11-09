@@ -911,6 +911,19 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   </summary>
 </histogram>
 
+<histogram name="Glic.Fre.AcceptToChatActionable" units="ms"
+    expires_after="2027-04-01">
+<!-- Allowed unsplittable: Cross-arm post-FRE metric; provider has not been selected yet. -->
+
+  <owner>alexiswu@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <owner>glic+metrics@google.com</owner>
+  <summary>
+    Records the latency from when the user accepts the FRE (native or WebUI)
+    until the chat UI becomes actionable for the user.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Fre.Dismissed.FlowSource" enum="GlicOptInFlowSource"
     expires_after="2027-05-18">
   <owner>sauski@google.com</owner>

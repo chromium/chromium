@@ -1655,6 +1655,7 @@ class GlicWebClientHandler
 
   void SetOnboardingCompleted() override {
     LogApiRequest(GlicHostApiRequestId::kSetOnboardingCompleted);
+    host().instance_metrics().OnWebFreAccepted();
     glic_service_->provider_spec().GetFreStore().CompleteOnboarding(profile_);
   }
 
