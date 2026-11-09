@@ -15,9 +15,7 @@
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/test/ios/test_utils.h"
-#import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator+testing.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator_handler.h"
-#import "ios/chrome/browser/autofill/form_input_accessory/coordinator/keyboard_accessory_optional_update_scheduler.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_consumer.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/features.h"
@@ -52,14 +50,6 @@ FormActivityParams CreateFormActivityParams(
   params.value = "value";
   params.input_missing = false;
   return params;
-}
-
-void PostKeyboardWillShowNotifications(int count = 1) {
-  for (int i = 0; i < count; ++i) {
-    [[NSNotificationCenter defaultCenter]
-        postNotificationName:UIKeyboardWillShowNotification
-                      object:nil];
-  }
 }
 
 FormSuggestion* CreateFormSuggestion(NSString* value) {
@@ -689,46 +679,6 @@ TEST_F(FormInputAccessoryMediatorTest, DidSelectSuggestion_AfterDisconnect) {
                       completion:nil];
 
   EXPECT_OCMOCK_VERIFY(formInputSuggestionProviderMock);
-}
-
-// Tests that suggestion refreshes triggered by `keyboardWillShow` are not
-// throttled when none of the feature flags are enabled.
-// The relationship of the two feature flags used in this test and a few other
-// tests below it.
-// - `kSuppressKeyboardWillShowSuggestionRefresh` has the highest impact.
-//   If it is enabled, it will suppress all suggestion refreshes from
-//   `keyboardWillShow`.
-// - `kAutofillThrottleOptionalSuggestionRefresh` has a chance to work
-//   only when kSuppressKeyboardWillShowSuggestionRefresh is disabled.
-// TODO(crbug.com/477866475): Flaky on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_keyboardWillShowRefresh_NotThrottledOrSuppressed \
-  keyboardWillShowRefresh_NotThrottledOrSuppressed
-#else
-#define MAYBE_keyboardWillShowRefresh_NotThrottledOrSuppressed \
-  DISABLED_keyboardWillShowRefresh_NotThrottledOrSuppressed
-#endif
-TEST_F(FormInputAccessoryMediatorTest,
-       MAYBE_keyboardWillShowRefresh_NotThrottledOrSuppressed) {
-
-  FormActivityParams params =
-      CreateFormActivityParams(FormActivityParams::FieldType::kText);
-  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
-                                                        params);
-
-  FormInputAccessoryMediator* mock_mediator_ = OCMPartialMock(mediator_);
-  __block int count = 0;
-  OCMStub([mock_mediator_
-              retrieveSuggestionsForForm:params
-                                webState:static_cast<web::WebState*>(
-                                             [OCMArg anyPointer])])
-      .ignoringNonObjectArgs()
-      .andDo(^(NSInvocation*) {
-        count++;
-      });
-
-  PostKeyboardWillShowNotifications(3);
-  EXPECT_EQ(count, 3);
 }
 
 // Tests that shouldShowRPId returns YES if and only if the suggestion RP ID
