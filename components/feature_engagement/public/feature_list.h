@@ -787,6 +787,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHTabGroupsRemoteGroupFeature),
         VARIATION_ENTRY(kIPHTabGroupsSurfaceFeature),
         VARIATION_ENTRY(kIPHTabGroupsSurfaceOnHideFeature),
+        VARIATION_ENTRY(kIPHTabPickerSelectTabsFeature),
         VARIATION_ENTRY(kIPHTabSwitcherAddToGroup),
         VARIATION_ENTRY(kIPHTabSwitcherButtonFeature),
         VARIATION_ENTRY(kIPHTabSwitcherButtonSwitchIncognitoFeature),
