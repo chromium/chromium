@@ -450,7 +450,9 @@ void MultideviceHandler::HandleAttemptCombinedFeatureSetup(
   }
 
   CHECK(features::IsPhoneHubEnabled(), base::NotFatalUntil::M162);
-  CHECK(!combined_access_operation_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/582750096): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!combined_access_operation_);
 
   if (!multidevice_feature_access_manager_->GetFeatureSetupRequestSupported()) {
     PA_LOG(WARNING) << "Cannot request combined access setup flow; "
