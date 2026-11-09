@@ -2132,6 +2132,9 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "education_gemini_focused", false);
     public static final BooleanCachedFeatureParam sAndroidBottomBarKeepAppMenuInToolbar =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "keep_app_menu_in_toolbar", false);
+    // Kill switch for the menu opened by long-pressing empty space on the bottom bar.
+    public static final BooleanCachedFeatureParam sAndroidBottomBarLongPressMenuEnabled =
+            newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "long_press_menu_enabled", true);
     // Whether the Address bar and Homepage settings rows are moved from MainSettings into
     // Appearance settings on phones and foldables.
     public static final BooleanCachedFeatureParam sAndroidBottomBarMoveToolbarSettingsToAppearance =
@@ -2553,6 +2556,7 @@ public abstract class ChromeFeatureList {
                     sAndroidBottomBarEducationGeminiFocused,
                     sAndroidBottomBarHeightDp,
                     sAndroidBottomBarKeepAppMenuInToolbar,
+                    sAndroidBottomBarLongPressMenuEnabled,
                     sAndroidBottomBarMoveToolbarSettingsToAppearance,
                     sAndroidBottomBarNtpScrollOffEnabled,
                     sAndroidBottomBarPinDefaultUserEnabled,

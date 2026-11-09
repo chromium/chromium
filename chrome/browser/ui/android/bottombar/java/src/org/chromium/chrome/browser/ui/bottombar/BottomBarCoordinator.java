@@ -47,6 +47,7 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
     private final PropertyModelChangeProcessor<PropertyModel, BottomBarView, PropertyKey> mMcp;
     private final BottomBarButtonManager mButtonManager;
     private final @Nullable BottomBarEducationCoordinator mEducationCoordinator;
+    private final BottomBarLongPressMenuHandler mLongPressMenuHandler;
     private final NullableObservableSupplier<Tab> mTabSupplier;
 
     /**
@@ -117,6 +118,8 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
             mEducationCoordinator = null;
         }
 
+        mLongPressMenuHandler = new BottomBarLongPressMenuHandler(context, mView);
+
         mMediator =
                 new BottomBarMediator(
                         context,
@@ -130,7 +133,8 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
                         layoutStateProvider,
                         toolbarPositionSupplier,
                         mEducationCoordinator,
-                        tabSupplier);
+                        tabSupplier,
+                        mLongPressMenuHandler);
         mTabSupplier = tabSupplier;
         mMcp = PropertyModelChangeProcessor.create(mModel, mView, BottomBarViewBinder::bind);
     }
@@ -247,6 +251,7 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
         mButtonManager.destroy();
         mMediator.destroy();
         mMcp.destroy();
+        mLongPressMenuHandler.destroy();
         if (mEducationCoordinator != null) {
             mEducationCoordinator.destroy();
         }

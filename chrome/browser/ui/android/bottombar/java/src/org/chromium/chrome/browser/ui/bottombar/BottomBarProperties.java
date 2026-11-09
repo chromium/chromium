@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.ui.bottombar;
 
+import android.view.View.OnLongClickListener;
+
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for the bottom bar. */
 @NullMarked
@@ -33,6 +37,8 @@ public class BottomBarProperties {
             new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey IS_TOP_PADDING_REMOVED =
             new WritableBooleanPropertyKey();
+    public static final WritableObjectPropertyKey<@Nullable OnLongClickListener>
+            ON_LONG_CLICK_LISTENER = new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -46,5 +52,6 @@ public class BottomBarProperties {
                 IS_TAB_SWITCHER_BUTTON_VISIBLE,
                 IS_APP_MENU_BUTTON_VISIBLE,
                 IS_TOP_PADDING_REMOVED,
+                ON_LONG_CLICK_LISTENER,
             };
 }

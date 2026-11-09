@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.bottombar;
 
 import android.view.View;
+import android.view.View.OnLongClickListener;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.actions.ActionId;
@@ -47,6 +48,12 @@ public class BottomBarViewBinder {
                     ActionId.APP_MENU, model.get(BottomBarProperties.IS_APP_MENU_BUTTON_VISIBLE));
         } else if (BottomBarProperties.IS_TOP_PADDING_REMOVED == propertyKey) {
             view.setTopPaddingRemoved(model.get(BottomBarProperties.IS_TOP_PADDING_REMOVED));
+        } else if (BottomBarProperties.ON_LONG_CLICK_LISTENER == propertyKey) {
+            OnLongClickListener listener = model.get(BottomBarProperties.ON_LONG_CLICK_LISTENER);
+            view.setOnLongClickListener(listener);
+            // setOnLongClickListener(null) leaves the view long-clickable. Turn it off, so a bar
+            // without a listener is not long-clickable at all.
+            view.setLongClickable(listener != null);
         }
     }
 }

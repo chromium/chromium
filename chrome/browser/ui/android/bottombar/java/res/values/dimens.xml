@@ -28,4 +28,7 @@ found in the LICENSE file.
     <dimen name="bottom_bar_education_title_margin_top">20dp</dimen>
     <dimen name="bottom_bar_education_body_margin_top">12dp</dimen>
     <dimen name="bottom_bar_education_button_bar_margin_top">16dp</dimen>
+    <!-- How far the long-press menu overlaps the top of the bottom bar, like the
+         toolbar menu. -->
+    <dimen name="bottom_bar_long_press_menu_overlap">2dp</dimen>
 </resources>

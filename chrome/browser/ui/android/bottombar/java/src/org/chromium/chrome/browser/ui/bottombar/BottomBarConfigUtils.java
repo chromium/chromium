@@ -387,6 +387,14 @@ public class BottomBarConfigUtils {
     }
 
     /**
+     * Returns whether long-pressing empty space on the bottom bar opens its menu. A kill switch:
+     * when off, the bar is not long-clickable at all.
+     */
+    public static boolean isLongPressMenuEnabled() {
+        return ChromeFeatureList.sAndroidBottomBarLongPressMenuEnabled.getValue();
+    }
+
+    /**
      * Returns whether the user is eligible for the education opt-in dialog: education is enabled,
      * the device is eligible for the bottom bar, the bar is off by default, and the user hasn't
      * explicitly turned it on or off.

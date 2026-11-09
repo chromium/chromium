@@ -80,6 +80,7 @@ public class BottomBarMediator
     private final NullableObservableSupplier<Profile> mProfileSupplier;
     private final @Nullable BottomBarEducationCoordinator mEducationCoordinator;
     private final NullableObservableSupplier<Tab> mTabSupplier;
+    private final BottomBarLongPressMenuHandler mLongPressMenuHandler;
 
     // Observers and Callbacks
     private final Callback<Boolean> mHomepageEnabledObserver = this::onHomepageEnabledChanged;
@@ -124,6 +125,7 @@ public class BottomBarMediator
      * @param educationCoordinator The {@link BottomBarEducationCoordinator} for the education
      *     bubble.
      * @param tabSupplier Supplier of the current tab.
+     * @param longPressMenuHandler Handler for the menu shown when long-pressing the bottom bar.
      */
     public BottomBarMediator(
             Context context,
@@ -137,7 +139,8 @@ public class BottomBarMediator
             LayoutStateProvider layoutStateProvider,
             NonNullObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier,
             @Nullable BottomBarEducationCoordinator educationCoordinator,
-            NullableObservableSupplier<Tab> tabSupplier) {
+            NullableObservableSupplier<Tab> tabSupplier,
+            BottomBarLongPressMenuHandler longPressMenuHandler) {
         mContext = context;
         mModel = model;
         mButtonManager = buttonManager;
@@ -149,7 +152,14 @@ public class BottomBarMediator
         mToolbarPositionSupplier = toolbarPositionSupplier;
         mEducationCoordinator = educationCoordinator;
         mTabSupplier = tabSupplier;
+        mLongPressMenuHandler = longPressMenuHandler;
         mGlicTimeToAppearRecorded = false;
+
+        // Without the listener the bar never becomes long-clickable, so the kill switch restores
+        // the old touch handling completely.
+        if (BottomBarConfigUtils.isLongPressMenuEnabled()) {
+            mModel.set(BottomBarProperties.ON_LONG_CLICK_LISTENER, _ -> maybeShowLongPressMenu());
+        }
 
         if (!BottomBarConfigUtils.shouldShowOnGts()) {
             layoutStateProvider.addObserver(this);
@@ -171,11 +181,21 @@ public class BottomBarMediator
         mButtonManager.setListener(this);
     }
 
+    private boolean maybeShowLongPressMenu() {
+        if (mIsVisible != TriState.TRUE
+                || mHost != Host.TABBED
+                || !BottomBarConfigUtils.shouldShowSettingsToggle(mContext)) {
+            return false;
+        }
+        return mLongPressMenuHandler.showMenu();
+    }
+
     private void onOmniboxFocusChanged(boolean focused) {
         updateVisibility();
     }
 
     private void onToolbarPositionChanged(@ControlsPosition int position) {
+        mLongPressMenuHandler.dismiss();
         updateTopPadding();
     }
 
@@ -221,8 +241,11 @@ public class BottomBarMediator
         mModel.set(BottomBarProperties.IS_VISIBLE, isVisible);
         mVisibilityDelegate.onVisibilityChanged(isVisible);
 
-        if (!isVisible && mEducationCoordinator != null) {
-            mEducationCoordinator.onBottomBarHidden();
+        if (!isVisible) {
+            mLongPressMenuHandler.dismiss();
+            if (mEducationCoordinator != null) {
+                mEducationCoordinator.onBottomBarHidden();
+            }
         }
 
         if (didBecomeVisible) {
@@ -474,6 +497,9 @@ public class BottomBarMediator
     public void setParent(@Host int host) {
         if (mHost == host) return;
         mHost = host;
+        if (host != Host.TABBED) {
+            mLongPressMenuHandler.dismiss();
+        }
         updateTopPadding();
         if (host == Host.TABBED) {
             updateColorSchemeFromThemeColorProvider();
@@ -504,6 +530,8 @@ public class BottomBarMediator
     @Override
     public void destroy() {
         mDestroyed = true;
+        // The view can outlive the mediator. Clearing the listener keeps it from retaining this.
+        mModel.set(BottomBarProperties.ON_LONG_CLICK_LISTENER, null);
         mThemeColorProvider.removeTintObserver(this);
         mHomepageEnabledSupplier.removeObserver(mHomepageEnabledObserver);
         if (mObservingSharedPrefs) {

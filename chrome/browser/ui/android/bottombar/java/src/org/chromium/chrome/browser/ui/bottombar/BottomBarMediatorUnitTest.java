@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.bottombar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
@@ -19,6 +20,8 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.View.OnLongClickListener;
 
 import org.junit.After;
 import org.junit.Before;
@@ -31,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -73,6 +77,7 @@ public class BottomBarMediatorUnitTest {
     @Mock private Resources mResources;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private BottomBarEducationCoordinator mEducationCoordinator;
+    @Mock private BottomBarLongPressMenuHandler mLongPressMenuHandler;
     @Mock private Tab mTab;
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
 
@@ -565,6 +570,89 @@ public class BottomBarMediatorUnitTest {
         verify(mEducationCoordinator, never()).destroy();
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_settings_toggle/true")
+    public void testLongPressMenu_Eligible_ShowsMenu() {
+        createMediator();
+        when(mLongPressMenuHandler.showMenu()).thenReturn(true);
+
+        assertTrue(longClickBottomBar());
+        verify(mLongPressMenuHandler).showMenu();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_settings_toggle/true")
+    public void testLongPressMenu_HubHost_DismissedAndSuppressed() {
+        createMediator();
+        assertNotNull(mMediator);
+        clearInvocations(mLongPressMenuHandler);
+
+        mMediator.setParent(Host.HUB);
+
+        verify(mLongPressMenuHandler).dismiss();
+        assertFalse(longClickBottomBar());
+        verify(mLongPressMenuHandler, never()).showMenu();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_settings_toggle/true")
+    public void testLongPressMenu_BarHidden_DismissedAndSuppressed() {
+        createMediator();
+        clearInvocations(mLongPressMenuHandler);
+
+        mOmniboxFocusStateSupplier.set(true);
+
+        verify(mLongPressMenuHandler).dismiss();
+        assertFalse(longClickBottomBar());
+        verify(mLongPressMenuHandler, never()).showMenu();
+    }
+
+    @Test
+    public void testLongPressMenu_ToolbarPositionChange_Dismissed() {
+        createMediator();
+        clearInvocations(mLongPressMenuHandler);
+
+        mToolbarPositionSupplier.set(ControlsPosition.BOTTOM);
+
+        verify(mLongPressMenuHandler).dismiss();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_settings_toggle/false")
+    public void testLongPressMenu_ShowSettingsToggleDisabled_Suppressed() {
+        createMediator();
+
+        assertFalse(longClickBottomBar());
+        verify(mLongPressMenuHandler, never()).showMenu();
+    }
+
+    @Test
+    public void testLongPressMenu_Destroy_ClearsListener() {
+        createMediator();
+        assertNotNull(mMediator);
+        assertNotNull(mModel.get(BottomBarProperties.ON_LONG_CLICK_LISTENER));
+
+        mMediator.destroy();
+
+        // The view can outlive the mediator, so it must not keep the listener.
+        assertNull(mModel.get(BottomBarProperties.ON_LONG_CLICK_LISTENER));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":long_press_menu_enabled/false")
+    public void testLongPressMenu_ParamDisabled_NoListener() {
+        createMediator();
+
+        // No listener means the bar never becomes long-clickable.
+        assertNull(mModel.get(BottomBarProperties.ON_LONG_CLICK_LISTENER));
+    }
+
+    private boolean longClickBottomBar() {
+        OnLongClickListener listener = mModel.get(BottomBarProperties.ON_LONG_CLICK_LISTENER);
+        assertNotNull(listener);
+        return listener.onLongClick(new View(ContextUtils.getApplicationContext()));
+    }
+
     private void createMediator() {
         createMediator(false, true);
     }
@@ -583,7 +671,8 @@ public class BottomBarMediatorUnitTest {
                         mLayoutStateProvider,
                         mToolbarPositionSupplier,
                         withEducation ? mEducationCoordinator : null,
-                        mTabSupplier);
+                        mTabSupplier,
+                        mLongPressMenuHandler);
         if (finishStartupFlow) {
             mMediator.onStartupPromoFlowFinished(false);
         }

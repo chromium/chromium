@@ -65,11 +65,22 @@ public class BottomBarView extends LinearLayout {
     @Override
     @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
+        // Runs the standard long-press for the long-press menu, which is set with
+        // setOnLongClickListener() like on the top toolbar. That only makes the bar
+        // long-clickable. It has no content description, so TalkBack keeps focusing the
+        // buttons, not the bar.
+        super.onTouchEvent(event);
         // Consume touches in padding/empty space so they don't fall through to WebContents
         // and trigger Contextual Search or click interactions (crbug.com/558675943).
         // Done via onTouchEvent instead of clickable="true" so TalkBack doesn't announce the
         // entire bottom bar layout as a button.
         return true;
+    }
+
+    @Override
+    protected void dispatchSetPressed(boolean pressed) {
+        // The bar is pressed while its long-press is pending. Don't pass that on to the buttons,
+        // or the ones that are enabled but not clickable would show a ripple.
     }
 
     @Override

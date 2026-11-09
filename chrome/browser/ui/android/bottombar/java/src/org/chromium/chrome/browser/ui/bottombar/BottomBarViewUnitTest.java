@@ -236,6 +236,43 @@ public class BottomBarViewUnitTest {
         upOnGone.recycle();
     }
 
+    @Test
+    public void testOnTouchEvent_PressedForLongPress_ButtonsNotPressed() {
+        layoutBottomBar();
+        mBottomBarView.setOnLongClickListener(v -> true);
+        View newTabButton = mBottomBarView.findViewById(R.id.new_tab_button);
+        View newTabContainer = mBottomBarView.getContainerForAction(ActionId.NEW_TAB);
+        assertNotNull(newTabContainer);
+        // Like a button in ButtonState.UNCLICKABLE: enabled, so it shows a ripple when pressed,
+        // but not clickable.
+        newTabButton.setClickable(false);
+        newTabButton.setEnabled(true);
+
+        // Press the container's padding to the left of the button.
+        float backgroundX = newTabContainer.getLeft() + (newTabButton.getLeft() / 2f);
+        float backgroundY = newTabContainer.getTop() + (newTabContainer.getHeight() / 2f);
+        long downTime = SystemClock.uptimeMillis();
+        MotionEvent down =
+                MotionEvent.obtain(
+                        downTime, downTime, MotionEvent.ACTION_DOWN, backgroundX, backgroundY, 0);
+        mBottomBarView.dispatchTouchEvent(down);
+        down.recycle();
+
+        assertTrue(mBottomBarView.isPressed());
+        assertFalse(newTabButton.isPressed());
+
+        MotionEvent cancel =
+                MotionEvent.obtain(
+                        downTime,
+                        SystemClock.uptimeMillis(),
+                        MotionEvent.ACTION_CANCEL,
+                        backgroundX,
+                        backgroundY,
+                        0);
+        mBottomBarView.dispatchTouchEvent(cancel);
+        cancel.recycle();
+    }
+
     private void layoutBottomBar() {
         mBottomBarView.setButtonVisibility(ActionId.NEW_TAB, true);
         mBottomBarView.measure(
