@@ -7,12 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-/// Returns the accessibility identifier for the Safari data entry point landing
-/// page.
-NSString* GetSafariDataEntryPointAccessibilityIdentifier();
+/// Accessibility identifier for the Safari data entry point landing page.
+extern NSString* const kSafariDataEntryPointAccessibilityIdentifier;
 
-/// Returns the accessibility identifier for the instructions view on the Safari
-/// data export screen.
-NSString* GetSafariDataExportInstructionsViewAccessibilityIdentifier();
+/// Accessibility identifier for the instructions view on the Safari data export
+/// screen.
+extern NSString* const kSafariDataExportInstructionsViewAccessibilityIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_PUBLIC_UTILS_H_

@@ -55,7 +55,7 @@ UIView* GetInstructionsView() {
   ]];
   instruction_view.translatesAutoresizingMaskIntoConstraints = NO;
   instruction_view.accessibilityIdentifier =
-      GetSafariDataExportInstructionsViewAccessibilityIdentifier();
+      kSafariDataExportInstructionsViewAccessibilityIdentifier;
   return instruction_view;
 }
 

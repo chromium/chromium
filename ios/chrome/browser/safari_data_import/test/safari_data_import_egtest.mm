@@ -220,7 +220,7 @@ id<GREYMatcher> ImportButton() {
     [[EarlGrey
         selectElementWithMatcher:
             grey_accessibilityID(
-                GetSafariDataExportInstructionsViewAccessibilityIdentifier())]
+                kSafariDataExportInstructionsViewAccessibilityIdentifier)]
         assertWithMatcher:grey_minimumVisiblePercent(0.5f)];
   }
 }
@@ -234,12 +234,12 @@ id<GREYMatcher> ImportButton() {
     [[EarlGrey
         selectElementWithMatcher:
             grey_accessibilityID(
-                GetSafariDataExportInstructionsViewAccessibilityIdentifier())]
+                kSafariDataExportInstructionsViewAccessibilityIdentifier)]
         performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
     [[EarlGrey
         selectElementWithMatcher:
             grey_accessibilityID(
-                GetSafariDataExportInstructionsViewAccessibilityIdentifier())]
+                kSafariDataExportInstructionsViewAccessibilityIdentifier)]
         assertWithMatcher:grey_minimumVisiblePercent(0.5f)];
     /// Dismiss by tapping the "Cancel" button on the top right.
     id<GREYMatcher> buttonInNavBar = grey_allOf(

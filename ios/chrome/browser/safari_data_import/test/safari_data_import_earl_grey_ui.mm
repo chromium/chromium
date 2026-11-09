@@ -32,8 +32,7 @@ namespace {
 bool IsSafariDataImportEntryPointVisible(bool verify_visibility) {
   bool visible = [ChromeEarlGrey
       testUIElementAppearanceWithMatcher:
-          grey_accessibilityID(
-              GetSafariDataEntryPointAccessibilityIdentifier())];
+          grey_accessibilityID(kSafariDataEntryPointAccessibilityIdentifier)];
   if (verify_visibility) {
     GREYAssertTrue(visible, @"Safari import landing page is not found.");
   }

@@ -36,7 +36,7 @@
   self.topAlignedLayout = YES;
   [super viewDidLoad];
   self.view.accessibilityIdentifier =
-      GetSafariDataEntryPointAccessibilityIdentifier();
+      kSafariDataEntryPointAccessibilityIdentifier;
   /// Hide the image on compact height.
   self.alwaysShowImage = NO;
   [self updateUIOnTraitChange];

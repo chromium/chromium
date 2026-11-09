@@ -198,8 +198,7 @@ id<GREYMatcher> AgeMismatchSecondaryButton() {
   id<GREYMatcher> nextScreenMatcher = grey_anyOf(
       grey_accessibilityID(
           first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier),
-      grey_accessibilityID(GetSafariDataEntryPointAccessibilityIdentifier()),
-      nil);
+      grey_accessibilityID(kSafariDataEntryPointAccessibilityIdentifier), nil);
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:nextScreenMatcher];
 }
 
