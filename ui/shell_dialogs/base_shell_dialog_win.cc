@@ -47,8 +47,11 @@ BaseShellDialogImpl::BaseShellDialogImpl() {
 
 BaseShellDialogImpl::~BaseShellDialogImpl() {
   // All runs should be complete by the time this is called!
-  if (--instance_count_ == 0)
-    CHECK(GetOwners().empty(), base::NotFatalUntil::M163);
+  if (--instance_count_ == 0) {
+    // TODO(crbug.com/583484130): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(GetOwners().empty());
+  }
 }
 
 // static
