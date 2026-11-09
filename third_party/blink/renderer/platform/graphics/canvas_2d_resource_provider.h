@@ -42,25 +42,6 @@ class Canvas2DResourceProvider;
 class CanvasImageProvider;
 class WebGraphicsSharedImageInterfaceProvider;
 
-// Specifies whether the provider should rasterize paint commands on the CPU
-// or GPU. This is used to support software raster with GPU compositing.
-enum class RasterMode {
-  kGPU,
-  kCPU,
-};
-
-// Canvas2DResourceProvider
-//==============================================================================
-//
-// Encapsulates a drawable graphics resource for Canvas2D.
-// Canvas2DResourceProvider serves as a provider of drawable surfaces for 2D
-// rendering with Skia.
-//
-// General usage:
-//   1) Use the Create() static method to create an instance
-//   2) use Canvas() to get a drawing interface
-//   3) Call Snapshot() to acquire a bitmap with the rendered image in it.
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 #pragma GCC diagnostic push
