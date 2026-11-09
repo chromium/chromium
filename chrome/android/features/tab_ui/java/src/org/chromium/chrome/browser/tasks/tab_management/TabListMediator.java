@@ -2922,6 +2922,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         updateTabGroupCollapsed(tabGroupId, groupItem.isCollapsed());
                 case PayloadType.TAB_GROUP_ORDER -> updateTabGroupThumbnail(tabGroupId);
                 case PayloadType.GROUP_MEMBERSHIP -> updateTabGroupMembership(groupItem);
+                case PayloadType.SELECTION -> updateSelection(groupItem);
                 default -> {}
             }
             return;
@@ -2929,6 +2930,8 @@ public class TabListMediator implements TabListNotificationHandler {
         if (item instanceof TabItem tabItem) {
             switch (payload) {
                 case PayloadType.GROUP_MEMBERSHIP -> updateTabItemGroupMembership(tabItem);
+                case PayloadType.SELECTION -> updateSelection(tabItem);
+                case PayloadType.MULTI_SELECTION -> updateMultiSelection(tabItem);
                 default -> {}
             }
         } else {
@@ -3665,6 +3668,29 @@ public class TabListMediator implements TabListNotificationHandler {
         PropertyModel model = mModelList.get(index).model;
         mTabListLayoutDelegate.setupGroupPropertiesForChildTab(tab, model);
         bindTabActionStateProperties(mTabActionState, tab, model);
+    }
+
+    /**
+     * Moves the selection highlight to or from the item's card. Providers send the deselect before
+     * the select.
+     */
+    private void updateSelection(TabListItem item) {
+        int index = mModelList.indexFromItem(item);
+        if (index == TabModel.INVALID_TAB_INDEX) return;
+        if (item.isSelected()) {
+            selectTab(/* oldIndex= */ TabModel.INVALID_TAB_INDEX, /* newIndex= */ index);
+        } else {
+            setLastSelectedTabListModelIndex(index);
+            selectTab(/* oldIndex= */ index, /* newIndex= */ TabModel.INVALID_TAB_INDEX);
+        }
+    }
+
+    /** Updates a tab card's multi-selection highlight. */
+    private void updateMultiSelection(TabItem tabItem) {
+        if (!mTabListConfig.supportsModifierMultiSelect) return;
+        int index = mModelList.indexFromItem(tabItem);
+        if (index == TabModel.INVALID_TAB_INDEX) return;
+        mModelList.get(index).model.set(TabProperties.IS_MULTI_SELECTED, tabItem.isMultiSelected());
     }
 
     /**
