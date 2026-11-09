@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_model.h"
 
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_panel_item_configuration.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
@@ -42,9 +42,15 @@ void HandleCurrentPageIsDistillableResult(
 
 }  // namespace
 
-ReaderModeModel::ReaderModeModel(ProfileIOS* profile) : profile_(profile) {}
+ReaderModeModel::ReaderModeModel(PrefService& pref_service)
+    : pref_service_(pref_service) {}
 
 ReaderModeModel::~ReaderModeModel() = default;
+
+void ReaderModeModel::Shutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
 
 void ReaderModeModel::FetchConfigurationForWebState(
     web::WebState* web_state,
@@ -70,9 +76,8 @@ void ReaderModeModel::DelayedFetchConfigurationForWebState(
   }
   ReaderModeTabHelper* reader_mode_tab_helper =
       ReaderModeTabHelper::FromWebState(web_state.get());
-  PrefService* prefs = profile_->GetPrefs();
   if (!reader_mode_tab_helper ||
-      !prefs->GetBoolean(prefs::kIosReaderModeShowAvailability)) {
+      !pref_service_->GetBoolean(prefs::kIosReaderModeShowAvailability)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), nullptr));
     return;

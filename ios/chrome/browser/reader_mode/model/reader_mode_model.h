@@ -5,21 +5,25 @@
 #ifndef IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_MODEL_H_
 #define IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_MODEL_H_
 
+#import "base/memory/raw_ref.h"
 #import "base/sequence_checker.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model.h"
 
-class ProfileIOS;
+class PrefService;
 
 // A ContextualPanelModel for Reader Mode.
 class ReaderModeModel : public ContextualPanelModel, public KeyedService {
  public:
-  explicit ReaderModeModel(ProfileIOS* profile);
+  explicit ReaderModeModel(PrefService& pref_service);
 
   ReaderModeModel(const ReaderModeModel&) = delete;
   ReaderModeModel& operator=(const ReaderModeModel&) = delete;
 
   ~ReaderModeModel() override;
+
+  // KeyedService:
+  void Shutdown() override;
 
   // ContextualPanelModel:
   void FetchConfigurationForWebState(
@@ -30,7 +34,8 @@ class ReaderModeModel : public ContextualPanelModel, public KeyedService {
   void DelayedFetchConfigurationForWebState(
       base::WeakPtr<web::WebState> web_state,
       FetchConfigurationForWebStateCallback callback);
-  raw_ptr<ProfileIOS> profile_;
+
+  const raw_ref<PrefService> pref_service_;
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ReaderModeModel> weak_ptr_factory_{this};

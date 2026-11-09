@@ -232,6 +232,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/private_insights/model",
     "//ios/chrome/browser/promos_manager/model:factory",
     "//ios/chrome/browser/push_notification/model:profile_service_factory",
+    "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/safe_browsing/model",
