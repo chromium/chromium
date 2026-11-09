@@ -568,7 +568,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualTasks.HistoryNavigation.UserAction.NavigatedInFullTab"
-    enum="Boolean" expires_after="2026-12-22">
+    enum="Boolean" expires_after="2027-12-22">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <summary>
