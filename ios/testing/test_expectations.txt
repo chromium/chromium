@@ -576,6 +576,10 @@ crbug.com/578553759 [ iPad Simulator ] ExternalURLSigninTestCase/testSignInAddAc
 crbug.com/541234336 CardUnmaskAuthenticationSelectionEgtest/testCardUnmaskAuthenticationSelectionAcceptanceButtonIsSetInitially [ Pass Failure ]
 crbug.com/541234336 CardUnmaskAuthenticationSelectionEgtest/testCardUnmaskAuthenticationSelectionShowsActivityIndicatorView [ Pass Failure ]
 crbug.com/541234336 CardUnmaskAuthenticationSelectionEgtest/testCardUnmaskAuthenticationSelectionAcceptanceButtonLabel [ Pass Failure ]
+crbug.com/444060942 [ iOS18 Simulator ] CardUnmaskAuthenticationSelectionEgtest/testCardUnmaskAuthenticationSelectionCancel [ Pass Failure ]
+crbug.com/444060942 [ iOS26 iPhone Simulator ] CardUnmaskAuthenticationSelectionEgtest/testCardUnmaskAuthenticationSelectionCancel [ Pass Failure ]
+crbug.com/444060942 [ iOS26 Simulator ASan ] CardUnmaskAuthenticationSelectionEgtest/testCardUnmaskAuthenticationSelectionCancel [ Pass Failure ]
+crbug.com/444060942 [ iOS26 iPhone Device ] CardUnmaskAuthenticationSelectionEgtest/testCardUnmaskAuthenticationSelectionCancel [ Pass Failure ]
 crbug.com/571459477 [ Device ] ReadingListTestCase/testDeleteEntries [ Pass Failure ]
 
 # Gardening suppression 2026-10-30
