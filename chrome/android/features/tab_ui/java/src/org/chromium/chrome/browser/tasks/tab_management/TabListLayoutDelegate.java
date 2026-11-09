@@ -332,6 +332,13 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
         updateLoadingState(tab, false);
     }
 
+    @Override
+    public void onDestroyed(Tab tab) {
+        // Destroyed tabs must not stay observed (e.g. a closed tab that is still part of a group
+        // card).
+        mMediator.removeObserversForTab(tab);
+    }
+
     /**
      * Updates the favicon for a tab or its representing card when the favicon changes.
      *

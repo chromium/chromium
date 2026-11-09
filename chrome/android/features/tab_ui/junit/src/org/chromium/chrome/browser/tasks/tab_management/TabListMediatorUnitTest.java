@@ -8607,6 +8607,32 @@ public class TabListMediatorUnitTest {
         userActionTester.tearDown();
     }
 
+    @Test
+    public void testDataProvider_OnTabDestroyed_DetachesObservers() {
+        setUpProviderMediator();
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1, mTab2), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+        mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID), createTabItem(TAB2_ID)));
+        clearInvocations(mTab1, mTab2);
+
+        mTabObserverCaptor.getValue().onDestroyed(mTab1);
+
+        verify(mTab1).removeObserver(mTabObserverCaptor.getValue());
+        verify(mTab2, never()).removeObserver(any());
+    }
+
+    @Test
+    public void testOnTabDestroyed_LegacyMode_DetachesObservers() {
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1, mTab2), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+        clearInvocations(mTab1, mTab2);
+
+        mTabObserverCaptor.getValue().onDestroyed(mTab1);
+
+        verify(mTab1).removeObserver(mTabObserverCaptor.getValue());
+        verify(mTab2, never()).removeObserver(any());
+    }
+
     /**
      * Replaces {@link #mMediator} with a grouped one backed by {@link #mTabListDataProvider} and an
      * empty model list, so tests can drive the captured {@link TabListDataObserver} directly.
