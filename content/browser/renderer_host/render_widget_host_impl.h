@@ -1245,7 +1245,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // IPC message handlers
   void OnClose();
   void OnUpdateScreenRectsAck();
-  void OnUpdateDragOperation(DragOperationCallback callback,
+  void OnUpdateDragOperation(uint64_t drag_target_session_id,
+                             DragOperationCallback callback,
                              ui::mojom::DragOperation current_op,
                              bool document_is_handling_drag);
 
@@ -1747,6 +1748,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   mojo::Receiver<blink::mojom::FrameWidgetHost> frame_widget_host_receiver_{
       this};
   mojo::AssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget_;
+
+  // Identifies the current renderer drag-target session. Enter starts a new
+  // session, while leave and drop invalidate pending enter/over replies.
+  uint64_t drag_target_session_id_ = 0;
 
   // If this is initialized with a popup this member will be valid and
   // manages the lifecycle of the popup in blink.

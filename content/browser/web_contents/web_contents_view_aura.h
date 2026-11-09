@@ -222,6 +222,8 @@ class CONTENT_EXPORT WebContentsViewAura
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraSessionIdTest,
                            DragTargetingCallbacksFromPreviousDragAreIgnored);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraSessionIdTest,
+                           RendererDragReplyFromPreviousSessionIsIgnored);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraSessionIdTest,
                            OldDropCompletionDoesNotEndNewDrag);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraSessionIdTest,
                            OldDropTargetingReplyDoesNotEndNewDrag);

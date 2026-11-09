@@ -2145,11 +2145,12 @@ void RenderWidgetHostImpl::DragTargetDragEnterWithMetaData(
     DragOperationsMask operations_allowed,
     int key_modifiers,
     DragOperationCallback callback) {
+  const uint64_t drag_target_session_id = ++drag_target_session_id_;
   // TODO(crbug.com/40138933): Replace with a for_frame() check.
   if (blink_frame_widget_) {
-    DragOperationCallback callback_wrapper =
-        base::BindOnce(&RenderWidgetHostImpl::OnUpdateDragOperation,
-                       base::Unretained(this), std::move(callback));
+    DragOperationCallback callback_wrapper = base::BindOnce(
+        &RenderWidgetHostImpl::OnUpdateDragOperation, base::Unretained(this),
+        drag_target_session_id, std::move(callback));
     blink_frame_widget_->DragTargetDragEnter(
         DropMetaDataToDragData(metadata),
         ConvertWindowPointToViewport(client_pt), screen_pt, operations_allowed,
@@ -2169,13 +2170,15 @@ void RenderWidgetHostImpl::DragTargetDragOver(
         ConvertWindowPointToViewport(client_point), screen_point,
         operations_allowed, key_modifiers,
         base::BindOnce(&RenderWidgetHostImpl::OnUpdateDragOperation,
-                       base::Unretained(this), std::move(callback)));
+                       base::Unretained(this), drag_target_session_id_,
+                       std::move(callback)));
   }
 }
 
 void RenderWidgetHostImpl::DragTargetDragLeave(
     const gfx::PointF& client_point,
     const gfx::PointF& screen_point) {
+  ++drag_target_session_id_;
   // TODO(crbug.com/40138933): Replace with a for_frame() check.
   if (blink_frame_widget_) {
     blink_frame_widget_->DragTargetDragLeave(
@@ -2188,6 +2191,7 @@ void RenderWidgetHostImpl::DragTargetDrop(const DropData& drop_data,
                                           const gfx::PointF& screen_point,
                                           int key_modifiers,
                                           base::OnceClosure callback) {
+  ++drag_target_session_id_;
   // TODO(crbug.com/40138933): Replace with a for_frame() check.
   if (blink_frame_widget_) {
     DropData drop_data_with_permissions(drop_data);
@@ -2415,12 +2419,16 @@ void RenderWidgetHostImpl::SelectionBoundsChanged(
 }
 
 void RenderWidgetHostImpl::OnUpdateDragOperation(
+    uint64_t drag_target_session_id,
     DragOperationCallback callback,
     ui::mojom::DragOperation current_op,
     bool document_is_handling_drag) {
-  RenderViewHostDelegateView* view = delegate_->GetDelegateView();
-  if (view) {
-    view->UpdateDragOperation(current_op, document_is_handling_drag, this);
+  if (!base::FeatureList::IsEnabled(features::kAuraDragDropSessionId) ||
+      drag_target_session_id == drag_target_session_id_) {
+    RenderViewHostDelegateView* view = delegate_->GetDelegateView();
+    if (view) {
+      view->UpdateDragOperation(current_op, document_is_handling_drag, this);
+    }
   }
   std::move(callback).Run(current_op, document_is_handling_drag);
 }
