@@ -8,6 +8,7 @@ import logging
 import os
 import subprocess
 import sys
+import tempfile
 
 from pathlib import Path
 
@@ -40,28 +41,39 @@ def main() -> int:
 
     storage = ComponentStorage('core/feedback')
 
-    assert len(storage.list('.', 'data')) > 0
-    # '/' should behave the same as '.'
-    assert storage.list('/', 'data') == storage.list('.', 'data')
+    with tempfile.TemporaryDirectory(dir=TMP) as tmp_dir:
+        src_file = os.path.join(tmp_dir, 'component_storage_test.txt')
+        Path(src_file).write_text(
+            'this is a line of meaningless content for testing only.'
+        )
+        for capability in ('data', 'tmp'):
+            storage.push(src_file, '.', capability)
+            assert 'component_storage_test.txt' in storage.list('.', capability)
+            # '/' should behave the same as '.'
+            assert storage.list('/', capability) == storage.list(
+                '.', capability
+            )
 
-    storage.pull('build_version.txt', TMP, 'data')
-    assert len(Path(os.path.join(TMP, 'build_version.txt')).read_text()) > 0
+            pull_dir = os.path.join(tmp_dir, capability)
+            os.makedirs(pull_dir)
+            storage.pull('component_storage_test.txt', pull_dir, capability)
+            assert (
+                Path(
+                    os.path.join(pull_dir, 'component_storage_test.txt')
+                ).read_text()
+                == Path(src_file).read_text()
+            )
 
-    Path(os.path.join(TMP, 'tmp.txt')).write_text(
-        'this is a line of meaningless content for testing only.'
-    )
-    storage.push(os.path.join(TMP, 'tmp.txt'), '.', 'tmp')
-    assert 'tmp.txt' in storage.list('.', 'tmp')
-    # There isn't a way to cat the file directly by using storage component; it
-    # has to be copied back.
-    storage.pull('tmp.txt', os.path.join(TMP, 'tmp2.txt'), 'tmp')
-    assert (
-        Path(os.path.join(TMP, 'tmp.txt')).read_text()
-        == Path(os.path.join(TMP, 'tmp2.txt')).read_text()
-    )
+            # There isn't a way to cat the file directly by using storage
+            # component; it has to be copied back.
+            pulled_file = os.path.join(tmp_dir, f'{capability}_pulled.txt')
+            storage.pull('component_storage_test.txt', pulled_file, capability)
+            assert Path(pulled_file).read_text() == Path(src_file).read_text()
 
-    storage.delete('tmp.txt', 'tmp')
-    assert 'tmp.txt' not in storage.list('.', 'tmp')
+            storage.delete('component_storage_test.txt', capability)
+            assert 'component_storage_test.txt' not in storage.list(
+                '.', capability
+            )
 
     proc.terminate()
     return proc.wait()
