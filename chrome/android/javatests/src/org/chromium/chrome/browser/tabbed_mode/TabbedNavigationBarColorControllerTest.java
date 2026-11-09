@@ -374,7 +374,6 @@ public class TabbedNavigationBarColorControllerTest {
     @EnableAnimations
     @Restriction({DeviceFormFactor.PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
-    @DisabledTest(message = "https://crbug.com/576880040")
     public void testNavBarColorAnimationsEdgeToEdgeEverywhere() throws InterruptedException {
         initialize();
         testNavBarColorAnimations();
@@ -434,20 +433,25 @@ public class TabbedNavigationBarColorControllerTest {
     private void testNavBarColorAnimations() {
         assertThat(mTabbedNavigationBarColorController).isNotNull();
 
-        // Create spies from real instances and inject the spies back.
+        // Wait for any initial nav bar color transition animation from activity startup to finish
+        // before attaching spies.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ValueAnimator valueAnimator =
+                            mTabbedNavigationBarColorController
+                                    .getNavbarColorTransitionAnimationForTesting();
+
+                    return valueAnimator == null || !valueAnimator.isRunning();
+                },
+                "Initial nav bar color animations did not finish.",
+                ANIMATION_MAX_TIMEOUT_MS,
+                ANIMATION_CHECK_INTERVAL_MS);
+
+        // Create spies from real instances and inject the spies back on the UI thread.
         EdgeToEdgeSystemBarColorHelper spyEdgeToEdgeSystemBarColorHelper =
                 Mockito.spy(mEdgeToEdgeSystemBarColorHelper);
-
-        mTabbedNavigationBarColorController.setEdgeToEdgeSystemBarColorHelperForTesting(
-                spyEdgeToEdgeSystemBarColorHelper);
-
         WindowSystemBarColorHelper spyWindowSystemBarColorHelper =
                 Mockito.spy(mWindowSystemBarColorHelper);
-
-        // Inject the spy back into spyEdgeToEdgeSystemBarColorHelper.
-        spyEdgeToEdgeSystemBarColorHelper.setWindowHelperForTesting(spyWindowSystemBarColorHelper);
-
-        Mockito.clearInvocations(spyEdgeToEdgeSystemBarColorHelper);
 
         // The initial nav bar color.
         int startColor = Color.BLUE;
@@ -455,9 +459,15 @@ public class TabbedNavigationBarColorControllerTest {
         // The target nav bar color after animations.
         int endColor = Color.RED;
 
-        // Trigger the color change on the UI thread.
+        // Trigger the spy injection and initial color change on the UI thread.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    mTabbedNavigationBarColorController.setEdgeToEdgeSystemBarColorHelperForTesting(
+                            spyEdgeToEdgeSystemBarColorHelper);
+                    spyEdgeToEdgeSystemBarColorHelper.setWindowHelperForTesting(
+                            spyWindowSystemBarColorHelper);
+                    Mockito.clearInvocations(spyEdgeToEdgeSystemBarColorHelper);
+
                     // Set the initial navigation bar color to blue.
                     mTabbedNavigationBarColorController.onBottomAttachedColorChanged(
                             startColor, false, /* disableAnimation= */ true);
