@@ -18,12 +18,13 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "partition_alloc/partition_alloc.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
-
 namespace base::internal {
+
+#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
 
 #define ASAN_BRP_PROTECTED(x) "MiraclePtr Status: PROTECTED\\n.*" x
 #define ASAN_BRP_NOT_PROTECTED(x) "MiraclePtr Status: NOT PROTECTED\\n.*" x
@@ -264,11 +265,7 @@ TEST_F(AsanBackupRefPtrTest, DataRaceQuarantineFreeThreadToThread) {
   thread.join();
 }
 
-}  // namespace base::internal
-
 #else  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
-
-namespace base::internal {
 
 struct AsanStruct {
   int x;
@@ -756,9 +753,53 @@ TEST_F(AsanBackupRefPtrTest, DanglingUnretained) {
       protected_ptr);
 }
 
-}  // namespace base::internal
-
 #endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
+
+TEST_F(AsanBackupRefPtrTest, AllocFromBrpRootProtected) {
+  // Create a PartitionAllocator with BRP enabled.
+  // Since AsanBackupRefPtr is enabled, the BRP is mock. The root's
+  // brp_enabled() returns true, but BRP-supported code is not compiled, because
+  // enable_backup_ref_ptr_support=false.
+  partition_alloc::PartitionOptions opts;
+  opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
+  opts.backup_ref_ptr = partition_alloc::PartitionOptions::kEnabled;
+  partition_alloc::PartitionAllocator allocator(opts);
+
+  constexpr size_t kMarker = 0xA7;
+  constexpr size_t kSize = 4;
+
+  uint8_t* buf = reinterpret_cast<uint8_t*>(allocator.root()->Alloc(kSize));
+  UNSAFE_BUFFERS(std::memset(buf, 'a', kSize));
+  raw_ptr<uint8_t, AllowPtrArithmetic> ptr = buf;
+  allocator.root()->Free(buf);
+
+  EXPECT_DEATH_IF_SUPPORTED(UNSAFE_BUFFERS(ptr[0]) = kMarker,
+                            "MiraclePtr Status: PROTECTED\\n");
+  allocator.root()->ResetForTesting(false);
+}
+
+TEST_F(AsanBackupRefPtrTest, AllocFromNonBrpRootUnprotected) {
+  // Create a PartitionAllocator with BRP disabled.
+  partition_alloc::PartitionOptions opts;
+  opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
+  opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
+  partition_alloc::PartitionAllocator allocator(opts);
+
+  constexpr size_t kMarker = 0xA7;
+  constexpr size_t kSize = 4;
+
+  uint8_t* buf = reinterpret_cast<uint8_t*>(allocator.root()->Alloc(kSize));
+  UNSAFE_BUFFERS(std::memset(buf, 'a', kSize));
+  raw_ptr<uint8_t, AllowPtrArithmetic> ptr = buf;
+  allocator.root()->Free(buf);
+
+  EXPECT_DEATH_IF_SUPPORTED(
+      UNSAFE_BUFFERS(ptr[0]) = kMarker,
+      "use-after-free[\\s\\S]*MiraclePtr Status: NOT PROTECTED\\n");
+  allocator.root()->ResetForTesting(false);
+}
+
+}  // namespace base::internal
 
 TEST(AsanBackupRefPtrImpl, RawRefGet) {
   base::debug::AsanService::GetInstance()->Initialize();

@@ -63,7 +63,8 @@ auto FreeNotificationMatches(
     size_t size,
     partition_alloc::TagViolationReportingMode mte_mode =
         partition_alloc::TagViolationReportingMode::kUndefined) {
-  return ::partition_alloc::AllocationNotificationData(address, size, nullptr)
+  return ::partition_alloc::AllocationNotificationData(
+             address, size, nullptr, partition_alloc::AllocFlags::kNone)
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
       .SetMteReportingMode(mte_mode)
 #endif

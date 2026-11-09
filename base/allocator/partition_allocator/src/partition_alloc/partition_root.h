@@ -248,9 +248,11 @@ class alignas(internal::kPartitionCachelineSize)
 #else
     static constexpr bool use_cookie = false;
 #endif  // PA_BUILDFLAG(USE_PARTITION_COOKIE)
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
+    PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
     bool brp_enabled_ = false;
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
+        // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
     internal::pool_handle pool_handle = internal::pool_handle::kNullPoolHandle;
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
@@ -748,9 +750,11 @@ class alignas(internal::kPartitionCachelineSize)
   // are indifferent.
   PA_ALWAYS_INLINE size_t AdjustSizeForExtrasSubtract(size_t size) const;
 
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
+    PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
   PA_ALWAYS_INLINE bool brp_enabled() const;
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
+        // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
   // When a SlotSpan becomes empty, the allocator tries to avoid reusing it
   // immediately, to help with fragmentation. At this point, it becomes dirty
@@ -984,7 +988,8 @@ class alignas(internal::kPartitionCachelineSize)
   PA_ALWAYS_INLINE AllocationNotificationData
   CreateAllocationNotificationData(void* object,
                                    size_t size,
-                                   const char* type_name) const;
+                                   const char* type_name,
+                                   AllocFlags flags) const;
   PA_ALWAYS_INLINE static FreeNotificationData
   CreateDefaultFreeNotificationData(void* address);
   PA_ALWAYS_INLINE FreeNotificationData

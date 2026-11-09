@@ -29,6 +29,7 @@ size_t g_realloc_override_hook_called = 0;
 
 size_t g_malloc_observer_hook_called = 0;
 size_t g_free_observer_hook_called = 0;
+size_t g_allocated_from_brp = 0;
 
 bool MallocOverrideHook(void** out,
                         AllocFlags flags,
@@ -39,9 +40,7 @@ bool MallocOverrideHook(void** out,
   ++g_malloc_override_hook_called;
   void* result = ContainsFlags(flags, AllocFlags::kZeroFill) ? calloc(1, size)
                                                              : malloc(size);
-  AllocationNotificationData data(result, size, type_name);
-  // TODO(553120509, 555037375): make `use_brp` available for
-  // AsanBackupRefPtrService and V2, and add the test to see the `use_brp`.
+  AllocationNotificationData data(result, size, type_name, flags);
   data.set_brp_enabled(use_brp);
   g_allocation_data->push_back(data);
   *out = data.address();
@@ -81,10 +80,14 @@ void ResetHookCalled() {
   g_malloc_override_hook_called = g_realloc_override_hook_called =
       g_free_override_hook_called = 0;
   g_malloc_observer_hook_called = g_free_observer_hook_called = 0;
+  g_allocated_from_brp = 0;
 }
 
 void MallocObserverHook(const AllocationNotificationData& data) {
   ++g_malloc_observer_hook_called;
+  if (data.brp_enabled()) {
+    ++g_allocated_from_brp;
+  }
 }
 
 void FreeObserverHook(const FreeNotificationData& data) {
@@ -112,6 +115,22 @@ class PAMemoryToolReplacesTest : public testing::Test {
     allocator->init({});
     return allocator;
   }
+
+#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+  // AsanBackupRefPtr needs whether memory is allocated by PartitionRoot which
+  // enables brp if `is_asan=false` in gn args or not. If so, the allocated
+  // memory should be treated as if brp is enabled.
+  std::unique_ptr<PartitionAllocator> CreateBrpEnabledAllocator() {
+    std::unique_ptr<PartitionAllocator> allocator =
+        std::make_unique<PartitionAllocator>();
+    PartitionOptions options;
+    // The `options` will make `allocator->root()->brp_enabled()` return `true`.
+    // However, no BRP-pool will be created.
+    options.backup_ref_ptr = PartitionOptions::kEnabled;
+    allocator->init(options);
+    return allocator;
+  }
+#endif
 
  private:
   void ClearAllocationData() {
@@ -312,6 +331,56 @@ TEST_F(PAMemoryToolReplacesTest, ReallocOverrideHookCalled) {
   allocator->root()->Free(ptr);
   EXPECT_OVERRIDE_HOOK_CALLED(.malloc = 2u, .free = 2u, .realloc = 1);
 }
+
+#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+TEST_F(PAMemoryToolReplacesTest, ObserverHookCalledWithBRP) {
+  std::unique_ptr<PartitionAllocator> allocator = CreateAllocator();
+  std::unique_ptr<PartitionAllocator> brp_allocator =
+      CreateBrpEnabledAllocator();
+  ScopedObserverHook observer_scope(MallocObserverHook, FreeObserverHook);
+
+  // (1) firstly, all `observer hook called` values are equal to 0.
+  EXPECT_OBSERVER_HOOK_CALLED(.malloc = 0, .free = 0);
+
+  // (2) Alloc() causes malloc observer hook called +1.
+  void* ptr1 = allocator->root()->Alloc(32);
+  EXPECT_TRUE(ptr1);
+  EXPECT_OBSERVER_HOOK_CALLED(.malloc = 1u, .free = 0);
+  EXPECT_EQ(0u, g_allocated_from_brp);
+
+  // (3) Alloc() from BRP-enabled PartitionRoot causes g_allocated_from_brp +1.
+  void* ptr2 = brp_allocator->root()->Alloc(32);
+  EXPECT_TRUE(ptr2);
+  EXPECT_OBSERVER_HOOK_CALLED(.malloc = 2u, .free = 0);
+  EXPECT_EQ(1u, g_allocated_from_brp);
+
+  // (4) Realloc() will cause Alloc() and Free().
+  ptr1 = allocator->root()->Realloc(ptr1, 128, nullptr);
+  EXPECT_TRUE(ptr1);
+  EXPECT_OBSERVER_HOOK_CALLED(.malloc = 3u, .free = 1u);
+  EXPECT_EQ(1u, g_allocated_from_brp);
+
+  // (5) Realloc() from BRP-enabled PartitionRoot causes g_allocated_from_brp
+  // +1.
+  ptr2 = brp_allocator->root()->Realloc(ptr2, 128, nullptr);
+  EXPECT_TRUE(ptr2);
+  EXPECT_OBSERVER_HOOK_CALLED(.malloc = 4u, .free = 2u);
+  EXPECT_EQ(2u, g_allocated_from_brp);
+
+  // (6) Realloc() with `nullptr` is just `malloc()`.
+  void* ptr3 = brp_allocator->root()->Realloc(nullptr, 128, nullptr);
+  EXPECT_TRUE(ptr3);
+  EXPECT_OBSERVER_HOOK_CALLED(.malloc = 5u, .free = 2u);
+  EXPECT_EQ(3u, g_allocated_from_brp);
+
+  allocator->root()->Free(ptr1);
+  EXPECT_OBSERVER_HOOK_CALLED(.malloc = 5u, .free = 3u);
+  allocator->root()->Free(ptr2);
+  EXPECT_OBSERVER_HOOK_CALLED(.malloc = 5u, .free = 4u);
+  allocator->root()->Free(ptr3);
+  EXPECT_OBSERVER_HOOK_CALLED(.malloc = 5u, .free = 5u);
+}
+#endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 }  // namespace partition_alloc::test
 

@@ -53,9 +53,9 @@ void RawPtrAsanService::AcquireInternal(uintptr_t address,
       !IsInAllocatedChunk(allocation_start_ptr, address)) {
     allocation_start_ptr =
         __sanitizer_get_allocated_begin(reinterpret_cast<void*>(address - 1));
-    if (!allocation_start_ptr) {
+    if (!allocation_start_ptr) [[unlikely]] {
       // The `address` looks not allocated.
-      if (IsFreed(address)) {
+      if (IsFreed(address)) [[unlikely]] {
         LogEvent(internal::RawPtrAsanEvent::Type::kFreeAssignment, address, 0);
         PA_CHECK(false) << "pointer laundering";
       }
@@ -89,17 +89,23 @@ void RawPtrAsanService::AcquireInternal(uintptr_t address,
     internal::PartitionAutoLock lock(map.GetLock());
     auto it =
         map.GetMap().find(reinterpret_cast<uintptr_t>(allocation_start_ptr));
-    PA_DCHECK(it != map.GetMap().end());
-    if (unprotected_in_release) {
-      // Check overflow.
-      PA_CHECK(it->second.unprotected_in_release_count < kMaxPtrCount);
-      ++it->second.unprotected_in_release_count;
+
+    // If not found, the memory was allocated from non-BRP root.
+    // So quarantine_flag should be `NotQuarantined`.
+    if (it != map.GetMap().end()) [[likely]] {
+      if (unprotected_in_release) {
+        // Check overflow.
+        PA_CHECK(it->second.unprotected_in_release_count < kMaxPtrCount);
+        ++it->second.unprotected_in_release_count;
+      } else {
+        // Check overflow.
+        PA_CHECK(it->second.count < kMaxPtrCount);
+        ++it->second.count;
+      }
+      quarantine_flag = it->second.quarantine_flag;
     } else {
-      // Check overflow.
-      PA_CHECK(it->second.count < kMaxPtrCount);
-      ++it->second.count;
+      quarantine_flag = QuarantineFlag::NotQuarantined;
     }
-    quarantine_flag = it->second.quarantine_flag;
   }
 
   if (is_data_race_check_enabled_ && !is_copy &&
@@ -120,13 +126,13 @@ uintptr_t RawPtrAsanService::GetAllocationStart(uintptr_t address) const {
   // case, __sanitizer_get_allocated_begin() will return nullptr or
   // the begin of the next chunk.
   if (!allocation_start_ptr ||
-      !IsInAllocatedChunk(allocation_start_ptr, address)) {
+      !IsInAllocatedChunk(allocation_start_ptr, address)) [[unlikely]] {
     // We will try `address-1` to obtain an allocated begin.
     allocation_start_ptr =
         __sanitizer_get_allocated_begin(reinterpret_cast<void*>(address - 1));
 
     if (!allocation_start_ptr ||
-        !IsInAllocatedChunk(allocation_start_ptr, address - 1)) {
+        !IsInAllocatedChunk(allocation_start_ptr, address - 1)) [[unlikely]] {
       return 0;
     }
   }
@@ -155,7 +161,11 @@ void RawPtrAsanService::ReleaseInternal(uintptr_t address,
         RawPtrAsanService::GetAllocationMetadataMap(allocation_start_address);
     internal::PartitionAutoLock lock(map.GetLock());
     auto it = map.GetMap().find(allocation_start_address);
-    PA_CHECK(it != map.GetMap().end());
+    if (it == map.GetMap().end()) [[unlikely]] {
+      // Not BRP-enabled memory allocation.
+      return;
+    }
+
     if (unprotected_in_release) {
       PA_CHECK(it->second.unprotected_in_release_count > 0u);
       --it->second.unprotected_in_release_count;

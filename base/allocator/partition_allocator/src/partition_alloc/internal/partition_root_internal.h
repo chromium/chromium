@@ -288,11 +288,13 @@ PartitionRoot::AdjustSizeForExtrasSubtract(size_t size) const {
   return size - settings_.extras_size;
 }
 
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
+    PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 PA_ALWAYS_INLINE bool PartitionRoot::brp_enabled() const {
   return settings_.brp_enabled_;
 }
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
+        // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 PA_ALWAYS_INLINE StraightenLargerSlotSpanFreeListsMode
 PartitionRoot::GetStraightenLargerSlotSpanFreeListsMode() {
@@ -441,15 +443,17 @@ PartitionRoot::AllocFromBucket(Bucket* bucket,
 AllocationNotificationData PartitionRoot::CreateAllocationNotificationData(
     void* object,
     size_t size,
-    const char* type_name) const {
-  AllocationNotificationData notification_data(object, size, type_name);
+    const char* type_name,
+    AllocFlags flags) const {
+  AllocationNotificationData notification_data(object, size, type_name, flags);
 
   if (IsMemoryTaggingEnabled()) {
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
     notification_data.SetMteReportingMode(memory_tagging_reporting_mode());
 #endif
   }
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
+    PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
   notification_data.set_brp_enabled(brp_enabled());
 #endif
 
@@ -1299,18 +1303,20 @@ PA_ALWAYS_INLINE bool PartitionRoot::FilterAllocationOverrideHook(
   if constexpr (ContainsFlags(flags, AllocFlags::kAlignedAlloc)) {
     override_alignment = alignment;
   }
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
+    PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
   bool use_brp = brp_enabled();
 #else
   constexpr bool use_brp = false;
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif
   if (!PartitionAllocHooks::AllocationOverrideHookIfEnabled(
           &object, flags | additional_flags, requested_size, type_name,
           override_alignment, use_brp)) {
     return false;
   }
   PartitionAllocHooks::AllocationObserverHookIfEnabled(
-      CreateAllocationNotificationData(object, requested_size, type_name));
+      CreateAllocationNotificationData(object, requested_size, type_name,
+                                       flags));
   *out = {object, std::nullopt};
   return true;
 }
@@ -1379,7 +1385,8 @@ PA_ALWAYS_INLINE bool PartitionRoot::FilterAllocationMemoryToolOverride(
   if constexpr (!ContainsFlags(flags, AllocFlags::kNoHooks)) {
     if (PartitionAllocHooks::IsAllocationObserverHookEnabled()) [[unlikely]] {
       PartitionAllocHooks::AllocationObserverHookIfEnabled(
-          CreateAllocationNotificationData(result, requested_size, type_name));
+          CreateAllocationNotificationData(result, requested_size, type_name,
+                                           flags));
     }
   }
   *out = {result, std::nullopt};
@@ -1423,7 +1430,7 @@ PartitionRoot::AllocInternal(size_t requested_size,
     if (PartitionAllocHooks::IsAllocationObserverHookEnabled()) [[unlikely]] {
       PartitionAllocHooks::AllocationObserverHookIfEnabled(
           CreateAllocationNotificationData(alloc_internal_result.object,
-                                           requested_size, type_name));
+                                           requested_size, type_name, flags));
     }
   }
 
@@ -1840,7 +1847,8 @@ PA_ALWAYS_INLINE void* PartitionRoot::ReallocInPlaceOrMove(
           [[unlikely]] {
         PartitionAllocHooks::ReallocObserverHookIfEnabled(
             CreateFreeNotificationData(ptr),
-            CreateAllocationNotificationData(ptr, new_size, type_name));
+            CreateAllocationNotificationData(ptr, new_size, type_name,
+                                             alloc_flags));
       }
       return ptr;
     }

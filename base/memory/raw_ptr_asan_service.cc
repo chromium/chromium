@@ -32,6 +32,8 @@
 #include "base/process/process.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool/thread_group.h"
+#include "partition_alloc/partition_alloc_allocation_data.h"
+#include "partition_alloc/partition_alloc_hooks.h"
 
 #if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
 #include "base/debug/leak_annotations.h"
@@ -156,6 +158,7 @@ void RawPtrAsanService::ClearLogForTesting() {
 NO_SANITIZE("address")
 void RawPtrAsanService::Reset() {
   internal::ResetRawPtrHooks();
+  partition_alloc::PartitionAllocHooks::SetObserverHooks(nullptr, nullptr);
   build_sanitizers::UninstallSanitizerHooks();
 
   // We have to free all quarantined and early-allocated objects because
@@ -204,6 +207,40 @@ constinit thread_local RawPtrAsanService::PendingReport pending_report;
 // Mark the first eight bytes of every allocation's header as "user poisoned".
 // This allows us to filter out allocations made before BRP-ASan is activated.
 // The change shouldn't reduce the regular ASan coverage.
+
+// static
+NO_SANITIZE("address")
+void RawPtrAsanService::PartitionAllocHook(
+    const partition_alloc::AllocationNotificationData& notification_data) {
+  if (notification_data.brp_enabled() || !notification_data.address() ||
+      partition_alloc::internal::ContainsFlags(
+          notification_data.flags(),
+          partition_alloc::AllocFlags::kNoMemoryToolOverride)) {
+    return;
+  }
+
+  // We should not mark the memory region as miracle-ptr protected.
+  {
+#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
+    uintptr_t address =
+        reinterpret_cast<uintptr_t>(notification_data.address());
+    // Note: Do not clear *GetShadow(header) in V2. IgnoreFreeHook() treats
+    // *GetShadow(header) != kAsanUserPoisonedMemoryMagic as an early
+    // allocation; clearing it would cause non-BRP allocations to be quarantined
+    // and leaked on free.
+    auto& map = GetAllocationMetadataMap(address);
+    internal::PartitionAutoLock guard(map.GetLock());
+    map.GetMap().erase(address);
+#else
+    uint8_t* header = UNSAFE_BUFFERS(
+        static_cast<uint8_t*>(notification_data.address()) - kChunkHeaderSize);
+    CHECK_EQ(*RawPtrAsanService::GetInstance().GetShadow(header),
+             kAsanUserPoisonedMemoryMagic);
+    *RawPtrAsanService::GetInstance().GetShadow(header) =
+        kAsanHeapLeftRedzoneMagic;
+#endif
+  }
+}
 
 // static
 NO_SANITIZE("address")
@@ -299,8 +336,9 @@ int RawPtrAsanService::IgnoreFreeHook(const volatile void* ptr) {
     auto& map = GetAllocationMetadataMap(reinterpret_cast<uintptr_t>(ptr));
     internal::PartitionAutoLock guard(map.GetLock());
     auto it = map.GetMap().find(reinterpret_cast<uintptr_t>(ptr));
-    PA_DCHECK(it != map.GetMap().end());
-    if (it == map.GetMap().end()) {
+    // If the memory was allocated from non-BRP root, the memory will not be
+    // found in AllocationMetadataMap.
+    if (it == map.GetMap().end()) [[unlikely]] {
       return 0;
     }
     // Quarantine the allocation if it is kept alive by any raw_ptr ref,
@@ -376,6 +414,20 @@ void RawPtrAsanService::Configure(
     delete dummy_alloc;
 
     debug::AsanService* asan_service = debug::AsanService::GetInstance();
+
+    // This disables observer hooks registered by other components,
+    // e.g. base::allocator::Dispatcher. Historically, observer hooks were
+    // never invoked if `MEMORY_TOOL_REPLACES_ALLOCATOR=1`, so other components
+    // did not rely on them. While PartitionAlloc now supports observer hooks
+    // under `MEMORY_TOOL_REPLACES_ALLOCATOR=1` for BRP-ASan, it is safe for
+    // ASan binaries to override them here.
+    // TODO(crbug.com/553120509): add
+    // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR) to the other components
+    // which use SetObserverHooks().
+    partition_alloc::PartitionAllocHooks::SetObserverHooks(nullptr, nullptr);
+    partition_alloc::PartitionAllocHooks::SetObserverHooks(
+        RawPtrAsanService::PartitionAllocHook, nullptr);
+
 #if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
     internal::ReentrancyState::InitializeKey();
 

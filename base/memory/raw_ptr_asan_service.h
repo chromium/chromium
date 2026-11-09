@@ -20,6 +20,10 @@
 #include "base/thread_annotations.h"
 #include "base/types/strong_alias.h"
 
+namespace partition_alloc {
+class AllocationNotificationData;
+}  // namespace partition_alloc
+
 namespace base {
 
 #if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
@@ -209,6 +213,11 @@ class BASE_EXPORT RawPtrAsanService {
   static int IgnoreFreeHook(const volatile void* ptr);
 #endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
   static void FreeHook(const volatile void*) {}
+
+  // PartitionAlloc's ObserverHooks
+  static void PartitionAllocHook(
+      const partition_alloc::AllocationNotificationData& notification_data);
+
   static void ErrorReportCallback(const char* reason,
                                   bool* should_exit_cleanly,
                                   bool* should_abort);

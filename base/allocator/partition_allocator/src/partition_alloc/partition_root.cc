@@ -1096,14 +1096,25 @@ void PartitionRoot::Init(PartitionOptions opts) {
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
 
-#if !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    // AsanBackupRefPtr only needs `brp_enabled` or not. It doesn't need any
+    // extras.
+#if !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
+    PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+    settings_.brp_enabled_ = opts.backup_ref_ptr == PartitionOptions::kEnabled;
+#endif  // !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
+        // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+
+#if !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
+    !PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
     PA_CHECK(opts.backup_ref_ptr == PartitionOptions::kDisabled);
-#endif  // !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
+        // !PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
     settings_.intended_leak = opts.intended_leak == PartitionOptions::kEnabled;
     if (settings_.intended_leak) {
       PA_CHECK(opts.thread_cache == PartitionOptions::kDisabled);
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
+    PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
       PA_CHECK(!brp_enabled());
 #endif
     }

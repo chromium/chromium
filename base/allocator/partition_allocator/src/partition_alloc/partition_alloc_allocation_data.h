@@ -9,6 +9,7 @@
 
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/tagging.h"
 
 namespace partition_alloc {
@@ -22,8 +23,11 @@ namespace partition_alloc {
 // hook.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AllocationNotificationData {
  public:
-  AllocationNotificationData(void* address, size_t size, const char* type_name)
-      : address_(address), size_(size), type_name_(type_name) {}
+  AllocationNotificationData(void* address,
+                             size_t size,
+                             const char* type_name,
+                             AllocFlags flags)
+      : address_(address), size_(size), type_name_(type_name), flags_(flags) {}
 
   void* address() const { return address_; }
   size_t size() const { return size_; }
@@ -47,6 +51,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AllocationNotificationData {
   }
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
+  AllocFlags flags() const { return flags_; }
+
   void set_brp_enabled(bool brp_enabled) { brp_enabled_ = brp_enabled; }
   bool brp_enabled() const { return brp_enabled_; }
 
@@ -58,6 +64,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AllocationNotificationData {
   TagViolationReportingMode mte_reporting_mode_ =
       TagViolationReportingMode::kUndefined;
 #endif
+  AllocFlags flags_ = AllocFlags::kNone;
   bool brp_enabled_ = false;
 };
 
