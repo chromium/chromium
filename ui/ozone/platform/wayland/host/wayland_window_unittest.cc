@@ -422,12 +422,14 @@ class WaylandWindowTest : public WaylandTest {
     CHECK(connection_->buffer_manager_host());
 
     auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
-    buffer_manager_gpu_->Initialize(std::move(interface_ptr), {},
-                                    /*supports_dma_buf=*/false,
-                                    /*supports_viewporter=*/true,
-                                    /*supports_acquire_fence=*/false,
-                                    /*supports_overlays=*/true,
-                                    /*supports_single_pixel_buffer=*/true);
+    buffer_manager_gpu_->Initialize(
+        std::move(interface_ptr), {},
+        ozone::mojom::WaylandBufferManagerCapabilities::New(
+            /*supports_dma_buf=*/false, /*supports_viewporter=*/true,
+            /*supports_acquire_fence=*/false, /*supports_overlays=*/true,
+            /*supports_single_pixel_buffer=*/true,
+            /*compositor_tone_maps_using_clli=*/false,
+            /*compositor_tone_maps_using_mdcv=*/false));
 
     const uint32_t buffer_id = ++buffer_id_gen_;
     auto length = buffer_size.width() * buffer_size.height() * 4;
@@ -4716,12 +4718,14 @@ TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
   EXPECT_TRUE(connection_->buffer_manager_host());
 
   auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
-  buffer_manager_gpu_->Initialize(std::move(interface_ptr), {},
-                                  /*supports_dma_buf=*/false,
-                                  /*supports_viewporter=*/true,
-                                  /*supports_acquire_fence=*/false,
-                                  /*supports_overlays=*/true,
-                                  /*supports_single_pixel_buffer=*/true);
+  buffer_manager_gpu_->Initialize(
+      std::move(interface_ptr), {},
+      ozone::mojom::WaylandBufferManagerCapabilities::New(
+          /*supports_dma_buf=*/false, /*supports_viewporter=*/true,
+          /*supports_acquire_fence=*/false, /*supports_overlays=*/true,
+          /*supports_single_pixel_buffer=*/true,
+          /*compositor_tone_maps_using_clli=*/false,
+          /*compositor_tone_maps_using_mdcv=*/false));
 
   // Setup wl_buffers.
   constexpr uint32_t buffer_id1 = 1;
@@ -5350,12 +5354,14 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
   EXPECT_TRUE(connection_->buffer_manager_host());
 
   auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
-  buffer_manager_gpu_->Initialize(std::move(interface_ptr), {},
-                                  /*supports_dma_buf=*/false,
-                                  /*supports_viewporter=*/true,
-                                  /*supports_acquire_fence=*/false,
-                                  /*supports_overlays=*/true,
-                                  /*supports_single_pixel_buffer=*/true);
+  buffer_manager_gpu_->Initialize(
+      std::move(interface_ptr), {},
+      ozone::mojom::WaylandBufferManagerCapabilities::New(
+          /*supports_dma_buf=*/false, /*supports_viewporter=*/true,
+          /*supports_acquire_fence=*/false, /*supports_overlays=*/true,
+          /*supports_single_pixel_buffer=*/true,
+          /*compositor_tone_maps_using_clli=*/false,
+          /*compositor_tone_maps_using_mdcv=*/false));
 
   // Setup wl_buffers.
   constexpr uint32_t buffer_id = 1;

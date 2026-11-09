@@ -55,13 +55,14 @@ class WaylandOverlayManagerTest : public WaylandTest {
     WaylandTest::SetUp();
 
     auto manager_ptr = connection_->buffer_manager_host()->BindInterface();
-    buffer_manager_gpu_->Initialize(std::move(manager_ptr),
-                                    kSupportedFormatsWithModifiers,
-                                    /*supports_dma_buf=*/false,
-                                    /*supports_viewporter=*/true,
-                                    /*supports_acquire_fence=*/false,
-                                    /*supports_overlays=*/true,
-                                    /*supports_single_pixel_buffer=*/true);
+    buffer_manager_gpu_->Initialize(
+        std::move(manager_ptr), kSupportedFormatsWithModifiers,
+        ozone::mojom::WaylandBufferManagerCapabilities::New(
+            /*supports_dma_buf=*/false, /*supports_viewporter=*/true,
+            /*supports_acquire_fence=*/false, /*supports_overlays=*/true,
+            /*supports_single_pixel_buffer=*/true,
+            /*compositor_tone_maps_using_clli=*/false,
+            /*compositor_tone_maps_using_mdcv=*/false));
 
     // Wait until initialization and mojo calls go through.
     base::RunLoop().RunUntilIdle();

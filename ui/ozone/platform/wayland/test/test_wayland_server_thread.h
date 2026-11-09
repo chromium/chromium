@@ -28,6 +28,7 @@
 #include "ui/ozone/platform/wayland/test/test_compositor.h"
 #include "ui/ozone/platform/wayland/test/test_data_device_manager.h"
 #include "ui/ozone/platform/wayland/test/test_fractional_scale.h"
+#include "ui/ozone/platform/wayland/test/test_org_kde_kwin_appmenu.h"
 #include "ui/ozone/platform/wayland/test/test_output.h"
 #include "ui/ozone/platform/wayland/test/test_overlay_prioritizer.h"
 #include "ui/ozone/platform/wayland/test/test_seat.h"
@@ -66,6 +67,9 @@ struct ServerConfig {
   bool supports_viewporter_surface_scaling = true;
   // Whether to advertise the wp_color_manager_v1 global.
   bool supports_color_management = false;
+  // Whether to advertise the KWin-specific org_kde_kwin_appmenu_manager
+  // global, which identifies the compositor as KWin.
+  bool supports_kde_appmenu = false;
 };
 
 class TestWaylandServerThread;
@@ -229,6 +233,7 @@ class TestWaylandServerThread : public base::Thread,
   MockXdgExporterV2 xdg_exporter_v2_;
   MockXdgToplevelIconManagerV1 xdg_toplevel_icon_manager_v1_;
   TestWpColorManager wp_color_manager_;
+  TestOrgKdeKwinAppmenuManager org_kde_kwin_appmenu_manager_;
   std::unique_ptr<TestSelectionDeviceManager> primary_selection_device_manager_;
 
   std::vector<std::unique_ptr<GlobalObject>> globals_;

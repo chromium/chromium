@@ -73,6 +73,13 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   bool SupportsViewporter() const;
   bool SupportsOverlays() const;
   bool SupportsSinglePixelBuffer() const;
+  // Whether the compositor is known to tone map HDR surfaces using the content
+  // light level information (CLLI: max_cll) provided by the client, instead of
+  // clipping content above the display's peak.
+  bool CompositorToneMapsUsingClli() const;
+  // Whether the compositor is known to tone map HDR surfaces using the
+  // mastering display color volume (MDCV) provided by the client.
+  bool CompositorToneMapsUsingMdcv() const;
 
   // ozone::mojom::WaylandBufferManagerHost overrides:
   //

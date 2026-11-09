@@ -17,6 +17,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/hdr_metadata.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
@@ -312,6 +313,15 @@ class WaylandWpColorManagerNoMasteringTest : public WaylandWpColorManagerTest {
   }
 };
 
+// Compositors other than KWin that don't accept mastering display metadata
+// (e.g. mutter) are not expected to tone map using client HDR metadata.
+TEST_F(WaylandWpColorManagerNoMasteringTest, NoHdrMetadataPassthrough) {
+  EXPECT_FALSE(
+      connection_->buffer_manager_host()->CompositorToneMapsUsingClli());
+  EXPECT_FALSE(
+      connection_->buffer_manager_host()->CompositorToneMapsUsingMdcv());
+}
+
 // Mastering metadata must not be sent if the compositor doesn't support it.
 TEST_F(WaylandWpColorManagerNoMasteringTest, NoMasteringRequests) {
   const gfx::HDRMetadata hdr_metadata(
@@ -328,6 +338,98 @@ TEST_F(WaylandWpColorManagerNoMasteringTest, NoMasteringRequests) {
   EXPECT_FALSE(params.mastering_luminance);
   EXPECT_EQ(params.max_cll, 800u);
   EXPECT_EQ(params.max_fall, 200u);
+}
+
+// Compositors other than KWin that accept mastering display metadata (e.g.
+// sway, Jay, Weston) clip HDR content instead of tone mapping it.
+TEST_F(WaylandWpColorManagerTest, NonKWinDoesNotToneMapUsingHdrMetadata) {
+  EXPECT_FALSE(
+      connection_->buffer_manager_host()->CompositorToneMapsUsingClli());
+  EXPECT_FALSE(
+      connection_->buffer_manager_host()->CompositorToneMapsUsingMdcv());
+}
+
+// KWin, identified by its org_kde_kwin_appmenu_manager global, tone maps using
+// client HDR metadata.
+class WaylandWpColorManagerKWinTest : public WaylandTestSimple {
+ public:
+  WaylandWpColorManagerKWinTest()
+      : WaylandTestSimple({.supports_color_management = true,
+                           .supports_kde_appmenu = true}) {}
+};
+
+TEST_F(WaylandWpColorManagerKWinTest, ToneMapsUsingHdrMetadata) {
+  ASSERT_TRUE(connection_->org_kde_kwin_appmenu_manager());
+  EXPECT_TRUE(
+      connection_->buffer_manager_host()->CompositorToneMapsUsingClli());
+  EXPECT_TRUE(
+      connection_->buffer_manager_host()->CompositorToneMapsUsingMdcv());
+}
+
+// KWin without mastering display metadata support can only use max_cll.
+class WaylandWpColorManagerKWinNoMasteringTest
+    : public WaylandWpColorManagerKWinTest {
+ public:
+  WaylandWpColorManagerKWinNoMasteringTest() {
+    server_.wp_color_manager()->set_supported_features(
+        {WP_COLOR_MANAGER_V1_FEATURE_PARAMETRIC,
+         WP_COLOR_MANAGER_V1_FEATURE_SET_PRIMARIES,
+         WP_COLOR_MANAGER_V1_FEATURE_SET_LUMINANCES});
+  }
+};
+
+TEST_F(WaylandWpColorManagerKWinNoMasteringTest, ToneMapsUsingClliOnly) {
+  EXPECT_TRUE(
+      connection_->buffer_manager_host()->CompositorToneMapsUsingClli());
+  EXPECT_FALSE(
+      connection_->buffer_manager_host()->CompositorToneMapsUsingMdcv());
+}
+
+// KWin without set_luminances can't relate the content's luminance to its SDR
+// white, so it doesn't qualify.
+class WaylandWpColorManagerKWinNoLuminancesTest
+    : public WaylandWpColorManagerKWinTest {
+ public:
+  WaylandWpColorManagerKWinNoLuminancesTest() {
+    server_.wp_color_manager()->set_supported_features(
+        {WP_COLOR_MANAGER_V1_FEATURE_PARAMETRIC,
+         WP_COLOR_MANAGER_V1_FEATURE_SET_PRIMARIES,
+         WP_COLOR_MANAGER_V1_FEATURE_SET_MASTERING_DISPLAY_PRIMARIES});
+  }
+};
+
+TEST_F(WaylandWpColorManagerKWinNoLuminancesTest,
+       NoToneMappingUsingHdrMetadata) {
+  EXPECT_FALSE(
+      connection_->buffer_manager_host()->CompositorToneMapsUsingClli());
+  EXPECT_FALSE(
+      connection_->buffer_manager_host()->CompositorToneMapsUsingMdcv());
+}
+
+using WaylandNoColorManagerTest = WaylandTestSimple;
+
+// Without color management, HDR metadata can't be passed through.
+TEST_F(WaylandNoColorManagerTest, NoHdrMetadataPassthrough) {
+  ASSERT_FALSE(connection_->wp_color_manager());
+  EXPECT_FALSE(
+      connection_->buffer_manager_host()->CompositorToneMapsUsingClli());
+  EXPECT_FALSE(
+      connection_->buffer_manager_host()->CompositorToneMapsUsingMdcv());
+}
+
+// KWin without color management can't pass HDR metadata through either.
+class WaylandKWinNoColorManagerTest : public WaylandTestSimple {
+ public:
+  WaylandKWinNoColorManagerTest()
+      : WaylandTestSimple({.supports_kde_appmenu = true}) {}
+};
+
+TEST_F(WaylandKWinNoColorManagerTest, NoHdrMetadataPassthrough) {
+  ASSERT_TRUE(connection_->org_kde_kwin_appmenu_manager());
+  EXPECT_FALSE(
+      connection_->buffer_manager_host()->CompositorToneMapsUsingClli());
+  EXPECT_FALSE(
+      connection_->buffer_manager_host()->CompositorToneMapsUsingMdcv());
 }
 
 // SDR color spaces don't get any luminance or HDR metadata, and keep the sRGB

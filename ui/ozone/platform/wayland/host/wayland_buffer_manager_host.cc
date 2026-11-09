@@ -126,6 +126,42 @@ bool WaylandBufferManagerHost::SupportsSinglePixelBuffer() const {
   return !!connection_->single_pixel_buffer();
 }
 
+bool WaylandBufferManagerHost::CompositorToneMapsUsingClli() const {
+  // max_cll can be sent with any parametric image description, but the
+  // reference luminance from set_luminances is needed to relate the content's
+  // luminance to the compositor's SDR white.
+  auto* color_manager = connection_->wp_color_manager();
+  if (!color_manager || !color_manager->ready() ||
+      !color_manager->IsSupportedFeature(
+          WP_COLOR_MANAGER_V1_FEATURE_SET_LUMINANCES) ||
+      !color_manager->IsSupportedTransferFunction(
+          WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_ST2084_PQ)) {
+    return false;
+  }
+  // TODO(crbug.com/577131189): wp_color_management_v1 has no way to query
+  // whether a compositor tone maps using the client's target color volume.
+  // Replace this allowlist with a protocol feature once one exists.
+  //
+  // Advertising mastering display metadata is not a usable signal: several
+  // compositors (e.g. sway, Jay, Weston) accept it but clip content above the
+  // display's peak. Of the compositors that implement the protocol, only KWin
+  // tone maps using max_cll and the mastering luminance. Identify KWin by its
+  // org_kde_kwin_appmenu_manager global, which KWin always exports. Other
+  // org_kde_* globals are not suitable: e.g. org_kde_kwin_server_decoration
+  // is also implemented by wlroots, Hyprland, Jay, smithay and cosmic-comp,
+  // while none of the other compositors implementing wp_color_management_v1
+  // (mutter, wlroots/sway, Hyprland, Jay, Weston) export the appmenu global.
+  return !!connection_->org_kde_kwin_appmenu_manager();
+}
+
+bool WaylandBufferManagerHost::CompositorToneMapsUsingMdcv() const {
+  // The mastering luminance can only be sent if the compositor supports
+  // set_mastering_display_primaries.
+  return CompositorToneMapsUsingClli() &&
+         connection_->wp_color_manager()->IsSupportedFeature(
+             WP_COLOR_MANAGER_V1_FEATURE_SET_MASTERING_DISPLAY_PRIMARIES);
+}
+
 void WaylandBufferManagerHost::SetWaylandBufferManagerGpu(
     mojo::PendingAssociatedRemote<ozone::mojom::WaylandBufferManagerGpu>
         buffer_manager_gpu_associated) {

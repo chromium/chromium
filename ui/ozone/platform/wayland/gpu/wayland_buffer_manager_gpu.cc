@@ -77,11 +77,7 @@ void WaylandBufferManagerGpu::Initialize(
     mojo::PendingRemote<ozone::mojom::WaylandBufferManagerHost> remote_host,
     const base::flat_map<::viz::SharedImageFormat, std::vector<uint64_t>>&
         shared_image_formats_with_modifiers,
-    bool supports_dma_buf,
-    bool supports_viewporter,
-    bool supports_acquire_fence,
-    bool supports_overlays,
-    bool supports_single_pixel_buffer) {
+    ozone::mojom::WaylandBufferManagerCapabilitiesPtr capabilities) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   // See the comment in the constructor.
@@ -89,11 +85,15 @@ void WaylandBufferManagerGpu::Initialize(
     gpu_thread_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
   supported_formats_with_modifiers_ = shared_image_formats_with_modifiers;
-  supports_viewporter_ = supports_viewporter;
-  supports_acquire_fence_ = supports_acquire_fence;
-  supports_dmabuf_ = supports_dma_buf;
-  supports_overlays_ = supports_overlays;
-  supports_single_pixel_buffer_ = supports_single_pixel_buffer;
+  supports_viewporter_ = capabilities->supports_viewporter;
+  supports_acquire_fence_ = capabilities->supports_acquire_fence;
+  supports_dmabuf_ = capabilities->supports_dma_buf;
+  supports_overlays_ = capabilities->supports_overlays;
+  supports_single_pixel_buffer_ = capabilities->supports_single_pixel_buffer;
+  compositor_tone_maps_using_clli_ =
+      capabilities->compositor_tone_maps_using_clli;
+  compositor_tone_maps_using_mdcv_ =
+      capabilities->compositor_tone_maps_using_mdcv;
 
   // Allow to rebind the interface if it hasn't been destroyed yet. Used, for
   // example, by tests which use buffer manager to emulate frames presentation.

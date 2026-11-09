@@ -206,6 +206,14 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // supported.
     bool supports_single_pixel_buffer = false;
 
+    // Whether the system compositor tone maps HDR surfaces using the
+    // client-provided content light level information (CLLI) and mastering
+    // display color volume (MDCV), respectively. Used to decide whether HDR
+    // content can be passed through with its metadata instead of being tone
+    // mapped by Chromium.
+    bool compositor_tone_maps_using_clli = false;
+    bool compositor_tone_maps_using_mdcv = false;
+
     // Indicates whether the platform supports native pixmaps.
     bool supports_native_pixmaps = false;
 

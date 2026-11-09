@@ -159,6 +159,12 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
       ui::OzonePlatform::GetInstance()
           ->GetPlatformRuntimeProperties()
           .supports_single_pixel_buffer;
+  const auto& runtime_properties =
+      ui::OzonePlatform::GetInstance()->GetPlatformRuntimeProperties();
+  capabilities_.compositor_tone_maps_using_clli =
+      runtime_properties.compositor_tone_maps_using_clli;
+  capabilities_.compositor_tone_maps_using_mdcv =
+      runtime_properties.compositor_tone_maps_using_mdcv;
 
 #elif BUILDFLAG(IS_APPLE)
   capabilities_.supports_non_backed_solid_color_overlays = true;

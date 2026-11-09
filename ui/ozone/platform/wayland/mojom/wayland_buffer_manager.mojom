@@ -17,6 +17,34 @@ import "ui/gfx/mojom/frame_data.mojom";
 import "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom";
 import "ui/ozone/platform/wayland/mojom/wayland_presentation_info.mojom";
 
+// Capabilities of the Wayland compositor that the GPU process needs to know
+// about. Sent with WaylandBufferManagerGpu.Initialize().
+struct WaylandBufferManagerCapabilities {
+  // The browser process may request the client to reset gbm device instance
+  // to avoid using zwp_linux_dmabuf protocol by setting `supports_dma_buf` to
+  // false, which results in using wl_egl_surface in a single process mode, and
+  // software rendering in a multiple process mode.
+  bool supports_dma_buf;
+  // Whether the Wayland server implements wp_viewporter extension to support
+  // cropping and scaling buffers.
+  bool supports_viewporter;
+  // Whether acquire fences can be submitted with buffers for wayland servers
+  // to wait on before accessing buffer contents.
+  bool supports_acquire_fence;
+  // Whether overlays should be used with this Wayland compositor.
+  bool supports_overlays;
+  // Whether the Wayland server implements wp_single_pixel_buffer_manager_v1.
+  bool supports_single_pixel_buffer;
+  // Whether the compositor tone maps HDR surfaces using the content light
+  // level information (CLLI: max_cll) provided by the client, instead of
+  // clipping content above the display's peak.
+  bool compositor_tone_maps_using_clli;
+  // Whether the compositor tone maps HDR surfaces using the mastering display
+  // color volume (MDCV: mastering primaries and luminance) provided by the
+  // client.
+  bool compositor_tone_maps_using_mdcv;
+};
+
 // Implemented by the browser process and used by the GPU.
 interface WaylandBufferManagerHost {
   // Sets up an associated pipe between the Gpu and Host.
@@ -99,25 +127,11 @@ interface WaylandBufferManagerGpu {
   // and modifiers so that gpu side clients could be aware of supported
   // modifiers the Wayland compositor announces. The modifiers may be empty,
   // which means modifiers are not supported.
-  // The browser process may also request the client to reset gbm device
-  // instance to avoid using zwp_linux_dmabuf protocol by setting
-  // `supports_dma_buf` to false, which results in using wl_egl_surface in a
-  // single process mode, and software rendering in a multiple process mode.
-  // `supports_viewporter` indicates whether the Wayland server implements
-  // wp_viewporter extension to support cropping and scaling buffers.
-  // `supports_acquire_fence` indicates whether acquire fences can be submitted
-  // with buffers for wayland servers to wait on before accessing buffer
-  // contents.
-  // `supports_overlays` indicates whether overlays should be used with this
-  // Wayland compositor.
+  // `capabilities` describes what the Wayland compositor supports.
   Initialize(pending_remote<WaylandBufferManagerHost> remote_host,
              map<viz.mojom.SharedImageFormat,
                  array<uint64>> shared_image_formats_with_modifiers,
-             bool supports_dma_buf,
-             bool supports_viewporter,
-             bool supports_acquire_fence,
-             bool supports_overlays,
-             bool supports_single_pixel_buffer);
+             WaylandBufferManagerCapabilities capabilities);
 
   // Signals about swap completion and presentation.
   OnSubmission(gfx.mojom.AcceleratedWidget widget,

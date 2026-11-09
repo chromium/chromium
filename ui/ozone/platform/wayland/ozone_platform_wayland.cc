@@ -408,6 +408,10 @@ class OzonePlatformWayland : public OzonePlatform,
       properties.supports_single_pixel_buffer =
           ui::IsWaylandOverlayDelegationEnabled() &&
           connection_->buffer_manager_host()->SupportsSinglePixelBuffer();
+      properties.compositor_tone_maps_using_clli =
+          connection_->buffer_manager_host()->CompositorToneMapsUsingClli();
+      properties.compositor_tone_maps_using_mdcv =
+          connection_->buffer_manager_host()->CompositorToneMapsUsingMdcv();
       // Primary planes can be transluscent due to underlay strategy. As a
       // result Wayland server draws contents occluded by an accelerated widget.
       // To prevent this, an opaque background image is stacked below the
@@ -449,6 +453,10 @@ class OzonePlatformWayland : public OzonePlatform,
       properties.supports_single_pixel_buffer =
           ui::IsWaylandOverlayDelegationEnabled() &&
           buffer_manager_->supports_single_pixel_buffer();
+      properties.compositor_tone_maps_using_clli =
+          buffer_manager_->compositor_tone_maps_using_clli();
+      properties.compositor_tone_maps_using_mdcv =
+          buffer_manager_->compositor_tone_maps_using_mdcv();
       // See the comment above.
       properties.needs_background_image =
           buffer_manager_->supports_overlays() &&

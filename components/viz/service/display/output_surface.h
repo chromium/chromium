@@ -159,6 +159,13 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     bool supports_non_backed_solid_color_overlays = false;
     // Whether the platform supports single pixel buffer protocol.
     bool supports_single_pixel_buffer = false;
+    // Whether the system compositor tone maps the primary plane using its
+    // content light level information (CLLI) and mastering display color
+    // volume (MDCV) HDR metadata, respectively. If so, viz may pass HDR content
+    // and its metadata through to the system compositor instead of tone
+    // mapping it.
+    bool compositor_tone_maps_using_clli = false;
+    bool compositor_tone_maps_using_mdcv = false;
     // Whether make current needs to be called for swap buffers.
     bool present_requires_make_current = true;
 
