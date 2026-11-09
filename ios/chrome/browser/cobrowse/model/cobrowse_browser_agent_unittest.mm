@@ -320,3 +320,43 @@ TEST_F(CobrowseBrowserAgentTest,
                    ->GetDict(prefs::kCobrowseSessionActiveMap)
                    .contains("test_session_id"));
 }
+
+// Tests that `CobrowseBrowserAgent` does not restore the session from prefs on
+// cold start when `kEphemeralBottomSheet` is enabled.
+TEST_F(CobrowseBrowserAgentTest,
+       DoesNotRestoreContextFromPrefsWhenEphemeralBottomSheetEnabled) {
+  base::test::ScopedFeatureList feature_list(kEphemeralBottomSheet);
+  ScopedDictPrefUpdate update(personal_profile_->GetPrefs(),
+                              prefs::kCobrowseSessionActiveMap);
+  update->Set(
+      "test_session_id",
+      CreateSessionPrefDict("my_server_id_123", "my_turn_id_456", "my query"));
+
+  CobrowseBrowserAgent::CreateForBrowser(browser_.get());
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+
+  EXPECT_FALSE(agent->IsSessionActive());
+  EXPECT_EQ(agent->GetCobrowseContext(), nil);
+}
+
+// Tests that activating a session and updating its context does not store
+// session restoration values in prefs when `kEphemeralBottomSheet` is enabled.
+TEST_F(CobrowseBrowserAgentTest,
+       DoesNotStoreSessionInPrefsWhenEphemeralBottomSheetEnabled) {
+  base::test::ScopedFeatureList feature_list(kEphemeralBottomSheet);
+  CobrowseBrowserAgent::CreateForBrowser(browser_.get());
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+
+  agent->SetSessionActive(true);
+  GURL loaded_url("https://www.google.com/"
+                  "search?udm=50&q=hello&mtid=server_99&mstk=turn_88");
+  CobrowseContext* loaded_context =
+      [[CobrowseContext alloc] initWithURL:loaded_url];
+  agent->SetCobrowseContext(loaded_context);
+
+  const base::DictValue& active_map =
+      personal_profile_->GetPrefs()->GetDict(prefs::kCobrowseSessionActiveMap);
+  EXPECT_FALSE(active_map.contains("test_session_id"));
+}

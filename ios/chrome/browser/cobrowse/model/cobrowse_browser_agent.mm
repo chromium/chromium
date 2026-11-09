@@ -126,7 +126,8 @@ CobrowseBrowserAgent::CobrowseBrowserAgent(Browser* browser)
     [scene_state addObserver:scene_state_observer_];
   }
 
-  if (!scene_state || scene_state.sceneSessionID.empty()) {
+  if (IsEphemeralBottomSheetEnabled() || !scene_state ||
+      scene_state.sceneSessionID.empty()) {
     return;
   }
 
@@ -241,7 +242,7 @@ void CobrowseBrowserAgent::SetCobrowseContext(CobrowseContext* context) {
 
   context_ = context;
 
-  if (!is_session_active_) {
+  if (!is_session_active_ || IsEphemeralBottomSheetEnabled()) {
     return;
   }
 
@@ -344,7 +345,8 @@ void CobrowseBrowserAgent::SetSessionActive(bool active) {
   is_session_active_ = active;
 
   SceneState* scene_state = browser_->GetSceneState();
-  if (!scene_state || scene_state.sceneSessionID.empty()) {
+  if (!scene_state || scene_state.sceneSessionID.empty() ||
+      (active && IsEphemeralBottomSheetEnabled())) {
     return;
   }
 
