@@ -12,7 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
@@ -33,12 +33,12 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.TestProfile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.signin.base.AccountInfo;
@@ -100,6 +100,7 @@ public class SendTabToSelfBottomSheetRenderTest {
 
     @After
     public void tearDown() {
+        ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
         NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
     }
 
@@ -344,7 +345,6 @@ public class SendTabToSelfBottomSheetRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @DisabledTest(message = "crbug.com/578605388")
     public void testEnhancedTargetDevicePickerBottomSheet_landscapeMode() throws Throwable {
         setUpAccountData(TestAccounts.ACCOUNT1);
         List<RemoteDeviceInfo> devices =
@@ -373,12 +373,9 @@ public class SendTabToSelfBottomSheetRenderTest {
                                 FormFactor.DESKTOP,
                                 OsType.WINDOWS,
                                 "Active 3 days ago"));
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTestRule
-                            .getActivity()
-                            .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                });
+        // Rotate and wait for the configuration change to settle before capturing the render.
+        ActivityTestUtils.rotateActivityToOrientation(
+                mActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
         View view =
                 createAndShowEnhancedDevicePickerView(
                         devices, BottomSheetController.SheetState.HALF);
