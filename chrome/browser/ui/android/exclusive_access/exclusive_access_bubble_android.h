@@ -79,10 +79,9 @@ class ExclusiveAccessBubbleAndroid : public ExclusiveAccessBubble {
   std::u16string GetBubbleText(ExclusiveAccessBubbleType bubble_type,
                                bool keyboard_connected) const;
 
-  bool notify_overridden_;
+  bool notify_overridden_ = false;
   bool was_shown_ = false;
   ExclusiveAccessBubbleHideCallback first_hide_callback_;
-  std::u16string browser_fullscreen_exit_accelerator_;
 
   std::unique_ptr<Bridge> bridge_;
 };

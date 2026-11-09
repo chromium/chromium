@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/android/exclusive_access/exclusive_access_context_android.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/fullscreen_control/fullscreen_features.h"
 #include "components/url_formatter/elide_url.h"
@@ -317,6 +318,42 @@ TEST_F(ExclusiveAccessBubbleAndroidTest,
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
   bubble.Update(params, base::DoNothing());
   EXPECT_FALSE(bubble.params().has_download);
+}
+
+// A download-only notice (type NONE + has_download) shown with a hardware
+// keyboard must name the Esc key regardless of the browser-fullscreen
+// press-and-hold feature state. Android has no browser-fullscreen accelerator,
+// and a previous implementation substituted an empty string here.
+TEST_F(ExclusiveAccessBubbleAndroidTest,
+       KeyboardDownloadNoticeAlwaysUsesEscAccelerator) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kPressAndHoldEscToExitBrowserFullscreen);
+
+  ExclusiveAccessBubbleParams params;
+  params.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE;
+  params.has_download = true;
+
+  auto mock_bridge = std::make_unique<MockBridge>();
+  auto* mock_bridge_ptr = mock_bridge.get();
+
+  std::u16string captured_text;
+  EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected()).WillOnce(Return(true));
+  EXPECT_CALL(*mock_bridge_ptr, Update(_))
+      .WillOnce(testing::SaveArg<0>(&captured_text));
+  EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
+
+  ExclusiveAccessBubbleAndroid bubble(params, base::DoNothing(),
+                                      std::move(mock_bridge));
+  testing::Mock::VerifyAndClearExpectations(mock_bridge_ptr);
+
+  const std::u16string esc = l10n_util::GetStringUTF16(IDS_APP_ESC_KEY);
+  EXPECT_EQ(captured_text,
+            exclusive_access_bubble::GetInstructionTextForType(
+                EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE, esc, std::nullopt,
+                /*has_download=*/true, /*notify_overridden=*/false));
+  EXPECT_NE(captured_text.find(esc), std::u16string::npos);
 }
 
 TEST(ExclusiveAccessBubbleAndroidOriginElisionTest, GetOriginString) {

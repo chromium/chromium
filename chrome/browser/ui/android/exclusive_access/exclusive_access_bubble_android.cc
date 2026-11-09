@@ -7,7 +7,6 @@
 #include "base/android/device_info.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "components/fullscreen_control/fullscreen_features.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -226,23 +225,12 @@ std::u16string ExclusiveAccessBubbleAndroid::GetBubbleText(
         bubble_type, origin_string, params_.has_download, notify_overridden_);
   }
 
-  std::u16string accelerator;
-  bool should_show_browser_acc =
-      (params_.has_download &&
-       bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) ||
-      exclusive_access_bubble::IsExclusiveAccessModeBrowserFullscreen(
-          bubble_type);
-  if (should_show_browser_acc &&
-      !base::FeatureList::IsEnabled(
-          features::kPressAndHoldEscToExitBrowserFullscreen)) {
-    accelerator = browser_fullscreen_exit_accelerator_;
-  } else {
-    accelerator = l10n_util::GetStringUTF16(IDS_APP_ESC_KEY);
-  }
-
+  // Android has no browser-fullscreen accelerator (F11 equivalent); Esc is the
+  // only hardware-keyboard exit for every exclusive access mode.
   return exclusive_access_bubble::GetInstructionTextForType(
-      params_.type, accelerator, GetOriginString(params_.origin),
-      params_.has_download, notify_overridden_);
+      bubble_type, l10n_util::GetStringUTF16(IDS_APP_ESC_KEY),
+      GetOriginString(params_.origin), params_.has_download,
+      notify_overridden_);
 }
 
 bool ExclusiveAccessBubbleAndroid::IsVisible() const {
