@@ -193,6 +193,7 @@ TEST(HashRealTimeUtilsTest,
     bool is_off_the_record = false;
     bool is_feature_on = true;
     bool is_background_hprt_lookup_feature_on = true;
+    bool is_ohttp_key_service_esb_feature_on = true;
     bool has_google_chrome_branding = true;
     std::optional<std::string> latest_country = std::nullopt;
     std::optional<bool> lookups_allowed_by_policy = std::nullopt;
@@ -266,29 +267,47 @@ TEST(HashRealTimeUtilsTest,
        .expected_selection = enabled_selection,
        .expected_ohttp_key_fetches_enabled = expected_ohttp_key_fetches_enabled,
        .are_background_lookups_allowed = true},
-      // The next 3 test cases test ESB lookups.
+      // The next 4 test cases test ESB lookups.
+      // OHTTP key fetches are enabled for ESB when
+      // kHashPrefixRealTimeLookupsOhttpKeyServiceForEsb is enabled, even if
+      // background lookups are not allowed and
+      // kHashPrefixRealTimeLookupsSamplePing is off.
+      {.safe_browsing_state = SafeBrowsingState::ENHANCED_PROTECTION,
+       .is_background_hprt_lookup_feature_on = false,
+       .is_ohttp_key_service_esb_feature_on = true,
+       .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+       .expected_ohttp_key_fetches_enabled = expected_ohttp_key_fetches_enabled,
+       .are_background_lookups_allowed = false,
+       .expected_ineligible_for_safe_browsing_state_log = true},
       // Background HPRT lookups enabled when the feature flag,
       // kHashPrefixRealTimeLookupsSamplePing, is on and background lookups
-      // are allowed.
+      // are allowed (even when kHashPrefixRealTimeLookupsOhttpKeyServiceForEsb
+      // is disabled).
       {.safe_browsing_state = SafeBrowsingState::ENHANCED_PROTECTION,
        .is_background_hprt_lookup_feature_on = true,
+       .is_ohttp_key_service_esb_feature_on = false,
        .expected_selection = enabled_background_selection,
        .expected_ohttp_key_fetches_enabled = expected_ohttp_key_fetches_enabled,
        .are_background_lookups_allowed = true},
       // Background HPRT lookups disabled and normal lookup is also disabled
       // when the feature flag, kHashPrefixRealTimeLookupsSamplePing, is on
-      // but background lookups are not allowed.
+      // but background lookups are not allowed (and OHTTP key fetches are
+      // disabled when kHashPrefixRealTimeLookupsOhttpKeyServiceForEsb is
+      // disabled).
       {.safe_browsing_state = SafeBrowsingState::ENHANCED_PROTECTION,
        .is_background_hprt_lookup_feature_on = true,
+       .is_ohttp_key_service_esb_feature_on = false,
        .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
        .expected_ohttp_key_fetches_enabled = false,
        .are_background_lookups_allowed = false,
        .expected_ineligible_for_safe_browsing_state_log = true},
       // Background HPRT lookups disabled and normal lookup is also disabled
       // when the feature flag, kHashPrefixRealTimeLookupsSamplePing, is off
-      // but background lookups are allowed.
+      // but background lookups are allowed (and OHTTP key fetches are disabled
+      // when kHashPrefixRealTimeLookupsOhttpKeyServiceForEsb is disabled).
       {.safe_browsing_state = SafeBrowsingState::ENHANCED_PROTECTION,
        .is_background_hprt_lookup_feature_on = false,
+       .is_ohttp_key_service_esb_feature_on = false,
        .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
        .expected_ohttp_key_fetches_enabled = false,
        .are_background_lookups_allowed = true,
@@ -369,6 +388,13 @@ TEST(HashRealTimeUtilsTest,
       enabled_features.push_back(kHashPrefixRealTimeLookupsSamplePing);
     } else {
       disabled_features.push_back(kHashPrefixRealTimeLookupsSamplePing);
+    }
+    if (test_case.is_ohttp_key_service_esb_feature_on) {
+      enabled_features.push_back(
+          kHashPrefixRealTimeLookupsOhttpKeyServiceForEsb);
+    } else {
+      disabled_features.push_back(
+          kHashPrefixRealTimeLookupsOhttpKeyServiceForEsb);
     }
     scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
 

@@ -406,6 +406,10 @@ extern const base::FeatureParam<std::string>
 extern const base::FeatureParam<std::string>
     kHashPrefixRealTimeLookupsKeyFetchCustomHeader;
 
+// Killswitch for enabling OhttpKeyService for Enhanced Safe Browsing users
+// regardless of whether background lookups are allowed (e.g. on iOS).
+BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookupsOhttpKeyServiceForEsb);
+
 // Send sample hash-prefix real-time lookups for real-time lookups to catch
 // "false positives" where real-time lookup says safe but hash-prefix lookup
 // says unsafe.

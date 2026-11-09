@@ -14,6 +14,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -78,6 +79,13 @@ class OhttpKeyServiceTest : public ::testing::Test {
     } else {
       disabled_features.emplace_back(kHashPrefixRealTimeLookups);
     }
+    if (is_ohttp_key_service_esb_feature_enabled_) {
+      enabled_features.emplace_back(
+          kHashPrefixRealTimeLookupsOhttpKeyServiceForEsb);
+    } else {
+      disabled_features.emplace_back(
+          kHashPrefixRealTimeLookupsOhttpKeyServiceForEsb);
+    }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
     RegisterProfilePrefs(pref_service_.registry());
     local_state_.registry()->RegisterStringPref(
@@ -90,7 +98,7 @@ class OhttpKeyServiceTest : public ::testing::Test {
         test_shared_loader_factory_, &pref_service_, &local_state_,
         base::BindRepeating(&OhttpKeyServiceTest::GetCountry,
                             base::Unretained(this)),
-        /*are_background_lookups_allowed=*/true);
+        are_background_lookups_allowed_);
     std::string key = google_apis::GetAPIKey();
     key_param_ =
         !key.empty()
@@ -154,6 +162,8 @@ class OhttpKeyServiceTest : public ::testing::Test {
   base::HistogramTester histogram_tester_;
   std::optional<std::string> country_;
   bool is_hash_prefix_feature_enabled_ = true;
+  bool is_ohttp_key_service_esb_feature_enabled_ = true;
+  bool are_background_lookups_allowed_ = true;
 
  private:
   hash_realtime_utils::GoogleChromeBrandingPretenderForTesting apply_branding_;
@@ -168,6 +178,17 @@ class OhttpKeyServiceLocationDisabledTest : public OhttpKeyServiceTest {
  public:
   OhttpKeyServiceLocationDisabledTest() { country_ = "cn"; }
 };
+
+class OhttpKeyServiceEsbTest : public OhttpKeyServiceTest,
+                               public ::testing::WithParamInterface<bool> {
+ public:
+  OhttpKeyServiceEsbTest() {
+    is_ohttp_key_service_esb_feature_enabled_ = GetParam();
+    are_background_lookups_allowed_ = false;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All, OhttpKeyServiceEsbTest, ::testing::Bool());
 
 TEST_F(OhttpKeyServiceTest, GetOhttpKey_Success) {
   SetupSuccessResponse();
@@ -461,20 +482,18 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_SafeBrowsingDisabled) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(OhttpKeyServiceTest, GetOhttpKey_BackgroundLookupsForbidden) {
+TEST_P(OhttpKeyServiceEsbTest,
+       GetOhttpKey_EnhancedProtectionWithoutBackgroundLookups) {
   SetupSuccessResponse();
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
-  base::MockCallback<OhttpKeyService::Callback> response_callback;
-  EXPECT_CALL(response_callback, Run(Eq(std::nullopt))).Times(1);
 
-  auto ohttp_key_service = std::make_unique<OhttpKeyService>(
-      test_shared_loader_factory_, &pref_service_, &local_state_,
-      base::BindRepeating(&OhttpKeyServiceTest::GetCountry,
-                          base::Unretained(this)),
-      /*are_background_lookups_allowed=*/false);
-
-  ohttp_key_service->GetOhttpKey(response_callback.Get());
-  task_environment_.RunUntilIdle();
+  base::test::TestFuture<std::optional<std::string>> future;
+  ohttp_key_service_->GetOhttpKey(future.GetCallback());
+  if (GetParam()) {
+    EXPECT_EQ(future.Get(), TestOhttpKey());
+  } else {
+    EXPECT_EQ(future.Get(), std::nullopt);
+  }
 }
 
 TEST_F(OhttpKeyServiceTest, GetOhttpKey_BackgroundLookupsAllowed) {
@@ -692,8 +711,9 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch_PrefChanges) {
 // kHashPrefixRealTimeLookupsSamplePing feature is fully rolled out.
 TEST_F(OhttpKeyServiceTest, AsyncFetch_PrefChanges_BackgroundHprtDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({},
-                                       {kHashPrefixRealTimeLookupsSamplePing});
+  scoped_feature_list.InitWithFeatures(
+      {}, {kHashPrefixRealTimeLookupsSamplePing,
+           kHashPrefixRealTimeLookupsOhttpKeyServiceForEsb});
   SetupSuccessResponse();
 
   task_environment_.RunUntilIdle();

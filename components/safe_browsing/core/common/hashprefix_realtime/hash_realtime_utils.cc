@@ -249,6 +249,9 @@ bool AreOhttpKeyFetchesEnabled(PrefService* prefs,
       safe_browsing::GetSafeBrowsingState(*prefs);
   bool eligible_for_safe_browsing_state =
       safe_browsing_state == SafeBrowsingState::STANDARD_PROTECTION ||
+      (safe_browsing_state == SafeBrowsingState::ENHANCED_PROTECTION &&
+       base::FeatureList::IsEnabled(
+           kHashPrefixRealTimeLookupsOhttpKeyServiceForEsb)) ||
       IsBackgroundLookupEligible(safe_browsing_state,
                                  are_background_lookups_allowed);
   return GetCommonRequirements(prefs, latest_country,
