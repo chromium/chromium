@@ -70,6 +70,9 @@ extern const char kExtensionsRequestAccessButtonClicked[];
 // The user has accepted the Glic onboarding.
 extern const char kGlicOnboardingCompleted[];
 
+// The user invoked Dictation on a field, starting a session.
+extern const char kDictationInvoked[];
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 

@@ -83,6 +83,9 @@ BASE_FEATURE(kIPHDesktopRealboxContextualSearchFeature,
 BASE_FEATURE(kIPHDictationFeature,
              "IPH_Dictation",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHDictationHotkeyFeature,
+             "IPH_DictationHotkey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDiscardRingFeature,
              "IPH_DiscardRing",
              base::FEATURE_ENABLED_BY_DEFAULT);

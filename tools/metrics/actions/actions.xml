@@ -440,6 +440,9 @@ should be able to be added at any place in this file.
   <variant name="_DesktopTabGroupsNewGroup" summary="For desktop Tab Groups."/>
   <variant name="_Dictation"
       summary="For Dictation IPH shown next to a focused text field."/>
+  <variant name="_DictationHotkey"
+      summary="For Dictation keyboard shortcut IPH shown after the user has
+               invoked Dictation a couple of times."/>
   <variant name="_DiscardRing" summary="For new tab discard ring."/>
   <variant name="_DiscoverFeedHeaderMenu"
       summary="For DiscoverFeedHeaderMenu feature."/>

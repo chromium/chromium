@@ -19894,6 +19894,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DICTATION_IPH_BODY" desc="Body text of the in-product help bubble shown next to a focused text field, introducing the dictation feature. The placeholder is the name of the dictation item in the right-click context menu." translateable="false">
         Right click and select “<ph name="MENU_ITEM_NAME">$1<ex>Talk to type</ex></ph>” to turn your spoken thoughts into polished text.
       </message>
+      <message name="IDS_DICTATION_HOTKEY_IPH_TITLE" desc="Title of the in-product help bubble shown next to a text field after the user has used dictation a couple of times, introducing the dictation keyboard shortcut." translateable="false">
+        Talk to type with a shortcut
+      </message>
+      <message name="IDS_DICTATION_HOTKEY_IPH_BODY" desc="Body text of the in-product help bubble that introduces the dictation keyboard shortcut. The placeholder is the keyboard shortcut that starts and stops dictation." translateable="false">
+        Press <ph name="SHORTCUT">$1<ex>Ctrl+Space</ex></ph> to start talking, and again when you’re done to insert polished text.
+      </message>
     </if>
 
     <if expr="is_android">

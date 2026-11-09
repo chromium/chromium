@@ -1911,6 +1911,27 @@ void MaybeRegisterChromeFeaturePromos(
                        "medium or large text field.",
                        Metadata::FeatureSet{&dictation::kDictation})));
 
+  // kIPHDictationHotkeyFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForSnoozePromo(
+          feature_engagement::kIPHDictationHotkeyFeature,
+          dictation::kDictationIphAnchorElementId,
+          IDS_DICTATION_HOTKEY_IPH_BODY)
+          .SetBubbleTitleText(IDS_DICTATION_HOTKEY_IPH_TITLE)
+          .SetBubbleIcon(kLightbulbOutlineIcon)
+          .SetBubbleArrowCallback(
+              base::BindRepeating(&dictation::GetDictationIphArrow))
+          .OverrideFocusOnShow(false)
+          .SetAdditionalConditions(std::move(
+              AdditionalConditions().AddAdditionalCondition(AdditionalCondition{
+                  feature_engagement::events::kDictationInvoked,
+                  AdditionalConditions::Constraint::kAtLeast, 2})))
+          .SetMetadata(158, "amyasinghal@google.com",
+                       "Shown when a user who hasn't used the dictation "
+                       "keyboard shortcut ends a dictation session, once they "
+                       "have invoked dictation at least twice.",
+                       Metadata::FeatureSet{&dictation::kDictation})));
+
   // kIPHDiscardRingFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
