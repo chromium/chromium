@@ -52,6 +52,21 @@ bool ShouldCreateActivityListBubbleController(Profile* profile) {
          features::kGlicActorUiTaskIcon.Get();
 }
 
+std::optional<actor::ui::ActorTaskNudgeState> ToActorTaskNudgeStateForMetrics(
+    GlicActivityNudgeState::Text nudge_text) {
+  switch (nudge_text) {
+    case GlicActivityNudgeState::Text::kNeedsAttention:
+      return actor::ui::ActorTaskNudgeState{
+          .text = actor::ui::ActorTaskNudgeState::Text::kNeedsAttention};
+    case GlicActivityNudgeState::Text::kCompleteTasks:
+      return actor::ui::ActorTaskNudgeState{
+          .text = actor::ui::ActorTaskNudgeState::Text::kCompleteTasks};
+    case GlicActivityNudgeState::Text::kResponseReady:
+    case GlicActivityNudgeState::Text::kDefault:
+      return std::nullopt;
+  }
+}
+
 }  // namespace
 
 DEFINE_USER_DATA(GlicSplitButtonController);
@@ -120,7 +135,7 @@ void GlicSplitButtonController::SetHorizontalTabsDelegate(
   glic_button_controller_->UpdateButton();
   if (base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
     if (delegate) {
-      delegate->UpdateSplitButtonUi(current_ui_state_);
+      delegate->UpdateGlicSplitButtonUi(current_ui_state_);
     }
     UpdateSplitButtonState();
   }
@@ -132,7 +147,7 @@ void GlicSplitButtonController::SetVerticalTabsDelegate(
   glic_button_controller_->UpdateButton();
   if (base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
     if (delegate) {
-      delegate->UpdateSplitButtonUi(current_ui_state_);
+      delegate->UpdateGlicSplitButtonUi(current_ui_state_);
     }
     UpdateSplitButtonState();
   }
@@ -203,9 +218,20 @@ void GlicSplitButtonController::OnSecondaryButtonClicked() {
   if (activity_list_bubble_controller_ &&
       activity_list_bubble_controller_->IsBubbleShowing()) {
     CloseBubble();
-  } else {
-    ShowBubble();
+    return;
   }
+
+  // TODO(b/565017590): Record unified Activity Hub secondary-button click
+  // metrics across chat and actor states.
+  if (base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
+    if (auto nudge_state =
+            ToActorTaskNudgeStateForMetrics(glic_service_->activity_manager()
+                                                .GetCurrentActivityNudgeState()
+                                                .text)) {
+      actor::ui::LogGlobalTaskIndicatorClick(*nudge_state);
+    }
+  }
+  ShowBubble();
 }
 
 void GlicSplitButtonController::UpdateSplitButtonState() {
@@ -222,7 +248,7 @@ void GlicSplitButtonController::UpdateSplitButtonState() {
   CallOnBoth(base::BindRepeating(
       [](const GlicSplitButtonUiState& state,
          GlicSplitButtonDelegate& delegate) {
-        delegate.UpdateSplitButtonUi(state);
+        delegate.UpdateGlicSplitButtonUi(state);
       },
       current_ui_state_));
 
@@ -231,16 +257,11 @@ void GlicSplitButtonController::UpdateSplitButtonState() {
       !current_ui_state_.secondary_label.empty()) {
     if (auto* delegate = GetActiveDelegate();
         delegate && delegate->GetIsShowingGlicActorTaskIconNudge()) {
-      const auto nudge_text =
-          glic_service_->activity_manager().GetCurrentActivityNudgeState().text;
-      if (nudge_text == GlicActivityNudgeState::Text::kNeedsAttention ||
-          nudge_text == GlicActivityNudgeState::Text::kCompleteTasks) {
-        actor::ui::ActorTaskNudgeState nudge_state;
-        nudge_state.text =
-            nudge_text == GlicActivityNudgeState::Text::kNeedsAttention
-                ? actor::ui::ActorTaskNudgeState::Text::kNeedsAttention
-                : actor::ui::ActorTaskNudgeState::Text::kCompleteTasks;
-        actor::ui::RecordGlobalTaskIndicatorNudgeShown(nudge_state);
+      if (auto nudge_state = ToActorTaskNudgeStateForMetrics(
+              glic_service_->activity_manager()
+                  .GetCurrentActivityNudgeState()
+                  .text)) {
+        actor::ui::RecordGlobalTaskIndicatorNudgeShown(*nudge_state);
       }
     }
   }

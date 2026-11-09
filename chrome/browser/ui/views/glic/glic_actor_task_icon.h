@@ -10,12 +10,17 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_ui_state.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/glic/glic_base_shim.h"
 #include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
@@ -181,9 +186,57 @@ class GlicActorTaskIcon : public GlicBaseShim<T> {
   // Sets the task icon to its default colors, label, and tooltip text.
   void SetTaskIconToDefault() {
     SetText(std::u16string());
+    // TODO(b/582808470): Use a generalized Activity Hub tooltip string when
+    // `features::kGlicActivityHub` is enabled.
     this->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ACTOR_TASK_INDICATOR_TOOLTIP));
     SetDefaultColors();
+  }
+
+  // Applies `state` to this secondary button and notifies `delegate` to show,
+  // hide, or trigger/update its nudge label.
+  void UpdateSplitButtonUi(const GlicSplitButtonUiState& state,
+                           GlicSplitButtonDelegate& delegate) {
+    switch (state.secondary_action) {
+      case GlicSplitButtonUiState::SecondaryAction::kChevron:
+        this->SetVectorIcon(vector_icons::kKeyboardArrowDownIcon);
+        SetTaskIconToDefault();
+        delegate.ShowGlicActorTaskIcon();
+        break;
+      case GlicSplitButtonUiState::SecondaryAction::kText:
+        // TODO(b/582808470): Plumb per-alert secondary icons (e.g. chat spark
+        // vs. task completion) on `GlicSplitButtonUiState`.
+        this->SetVectorIcon(kCursorSparkIcon);
+        if (state.secondary_label.empty()) {
+          SetTaskIconToDefault();
+          delegate.ShowGlicActorTaskIcon();
+        } else if (delegate.GetIsShowingGlicActorTaskIconNudge()) {
+          delegate.SetGlicActorNudgeLabel(state.secondary_label);
+        } else {
+          delegate.TriggerGlicActorNudge(state.secondary_label);
+        }
+        break;
+      case GlicSplitButtonUiState::SecondaryAction::kNone:
+        delegate.HideGlicActorTaskIcon();
+        break;
+    }
+  }
+
+  // Toggles the activity bubble for `controller` when this secondary button is
+  // activated.
+  void ToggleActivityBubble(GlicSplitButtonController& controller) {
+    // Mouse re-clicks on the anchor button already start closing the bubble
+    // via window deactivation (`IsBubbleShowing()` becomes false while
+    // `pressed_lock_` stays held until widget destruction), whereas keyboard
+    // and accessibility activations leave the bubble open. Call `CloseBubble()`
+    // when pressed so both paths close without reopening.
+    // TODO(b/582740458): Release `pressed_lock_` on widget hide so
+    // `MenuButtonController` suppresses mouse re-clicks directly.
+    if (GetIsPressed()) {
+      controller.CloseBubble();
+    } else {
+      controller.OnSecondaryButtonClicked();
+    }
   }
 
   // Updates the background painter to match the current border insets.

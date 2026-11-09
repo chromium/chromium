@@ -29,7 +29,9 @@
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/toolbar/test_support/glic_button_test_accessor.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_glic_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -45,8 +47,10 @@
 #include "ui/events/event_constants.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/mouse_watcher.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -450,6 +454,90 @@ IN_PROC_BROWSER_TEST_F(ToolbarGlicButtonThemeTest,
   EXPECT_FALSE(color_utils::IsDark(text_color));
   EXPECT_GE(color_utils::GetContrastRatio(text_color, bg_color),
             color_utils::kMinimumReadableContrastRatio);
+}
+
+class ToolbarGlicActivityHubTest : public InProcessBrowserTest {
+ public:
+  ToolbarGlicActivityHubTest()
+      : glic_test_env_({},
+                       GetEnabledFeatures(),
+                       GetDefaultDisabledGlicTestFeatures()) {}
+
+ protected:
+  ToolbarView* toolbar() {
+    return BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
+  }
+
+  void UpdateGlicSplitButtonUi(const GlicSplitButtonUiState& state) {
+    ToolbarView* toolbar_view = toolbar();
+    toolbar_view->UpdateGlicSplitButtonUi(state);
+    // Flush any deferred nudge show/hide queued when the OS cursor happens to
+    // rest over `ToolbarView` on a Swarming bot.
+    static_cast<views::MouseWatcherListener*>(toolbar_view)
+        ->MouseMovedOutOfHost();
+  }
+
+ private:
+  static std::vector<base::test::FeatureRef> GetEnabledFeatures() {
+    std::vector<base::test::FeatureRef> enabled =
+        GetDefaultEnabledGlicTestFeatures();
+    enabled.push_back(features::kGlicHorizontalTabToolbarButton);
+    enabled.push_back(features::kGlicActivityHub);
+    return enabled;
+  }
+
+  GlicTestEnvironment glic_test_env_;
+};
+
+IN_PROC_BROWSER_TEST_F(ToolbarGlicActivityHubTest,
+                       UpdateGlicSplitButtonUiTransitions) {
+  gfx::ScopedAnimationDurationScaleMode disable_animations(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  ToolbarView* toolbar_view = toolbar();
+  ASSERT_TRUE(toolbar_view);
+  auto* primary_button = views::AsViewClass<ToolbarGlicButton>(
+      GlicButtonInterface::FromBrowser(browser()));
+  ASSERT_TRUE(primary_button);
+  const std::u16string default_label(primary_button->GetText());
+  ASSERT_FALSE(default_label.empty());
+  auto* task_icon = toolbar_view->glic_actor_task_icon();
+  ASSERT_TRUE(task_icon);
+
+  // 1. Show kChevron: primary button stays expanded, secondary is focusable.
+  GlicSplitButtonUiState state;
+  state.secondary_action = GlicSplitButtonUiState::SecondaryAction::kChevron;
+  UpdateGlicSplitButtonUi(state);
+  EXPECT_TRUE(task_icon->GetVisible());
+  EXPECT_TRUE(task_icon->IsFocusable());
+  EXPECT_EQ(task_icon->GetText(), u"");
+  EXPECT_EQ(primary_button->GetText(), default_label);
+
+  // 2. Transition from kChevron to kText with label collapses primary button.
+  state.secondary_action = GlicSplitButtonUiState::SecondaryAction::kText;
+  state.secondary_label = u"Check task";
+  UpdateGlicSplitButtonUi(state);
+  EXPECT_TRUE(task_icon->GetVisible());
+  EXPECT_TRUE(task_icon->IsFocusable());
+  EXPECT_TRUE(toolbar_view->GetIsShowingGlicActorTaskIconNudge());
+  EXPECT_EQ(task_icon->GetText(), u"Check task");
+  EXPECT_EQ(primary_button->GetText(), u"");
+
+  // 3. Transition from kText back to kChevron clears the secondary label,
+  // restores the primary button label, and keeps the chevron focusable.
+  state.secondary_action = GlicSplitButtonUiState::SecondaryAction::kChevron;
+  state.secondary_label = u"";
+  UpdateGlicSplitButtonUi(state);
+  EXPECT_TRUE(task_icon->GetVisible());
+  EXPECT_TRUE(task_icon->IsFocusable());
+  EXPECT_FALSE(toolbar_view->GetIsShowingGlicActorTaskIconNudge());
+  EXPECT_EQ(task_icon->GetText(), u"");
+  EXPECT_EQ(primary_button->GetText(), default_label);
+
+  // 4. Transition from kChevron to kNone hides the secondary button.
+  state.secondary_action = GlicSplitButtonUiState::SecondaryAction::kNone;
+  UpdateGlicSplitButtonUi(state);
+  EXPECT_FALSE(task_icon->GetVisible());
 }
 
 }  // namespace

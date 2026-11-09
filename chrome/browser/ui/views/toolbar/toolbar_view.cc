@@ -731,8 +731,9 @@ void ToolbarView::Init() {
 }
 
 void ToolbarView::InitGlicContainer() {
-  if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
-      features::kGlicActorUiTaskIcon.Get()) {
+  if ((base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+       features::kGlicActorUiTaskIcon.Get()) ||
+      base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
     glic_actor_button_container_ =
         AddChildView(CreateGlicActorButtonContainer());
     glic_actor_task_icon_ =
@@ -801,6 +802,14 @@ ToolbarView::CreateGlicActorTaskIcon() {
 }
 
 void ToolbarView::OnGlicActorTaskIconClicked() {
+  if (base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
+    if (glic_split_button_controller_ && glic_actor_task_icon_) {
+      glic_actor_task_icon_->ToggleActivityBubble(
+          *glic_split_button_controller_);
+    }
+    return;
+  }
+
   Profile* const profile = browser_view_->GetProfile();
   auto* activity_manager = glic::LegacyGlicActivityManager::Get(profile);
   if (!activity_manager) {
@@ -970,7 +979,9 @@ void ToolbarView::ShowGlicActorTaskIcon() {
   glic_button_ = glic_button_view_;
   SetGlicActorShowState(true);
   SetGlicShowState(true);
-  glic_button_view_->Collapse();
+  if (!base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
+    glic_button_view_->Collapse();
+  }
   glic_button_view_->SetSplitButtonCornerStyling();
   UpdateGlicActorButtonContainerBorders();
 
@@ -1010,6 +1021,13 @@ void ToolbarView::HideGlicActorTaskIcon() {
 void ToolbarView::SetGlicActorNudgePressedState(bool pressed) {
   if (glic_actor_task_icon_) {
     glic_actor_task_icon_->SetPressedState(pressed);
+  }
+}
+
+void ToolbarView::UpdateGlicSplitButtonUi(
+    const glic::GlicSplitButtonUiState& state) {
+  if (glic_actor_task_icon_) {
+    glic_actor_task_icon_->UpdateSplitButtonUi(state, *this);
   }
 }
 
@@ -1113,6 +1131,10 @@ void ToolbarView::ExecuteHideToolbarNudge(glic::GlicButtonInterface* button) {
   }
 
   button->SetIsShowingNudge(false);
+  if (button == glic_actor_task_icon_ && glic_button_view_ &&
+      base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
+    glic_button_view_->Expand();
+  }
 }
 
 void ToolbarView::UpdateGlicActorVisibility() {

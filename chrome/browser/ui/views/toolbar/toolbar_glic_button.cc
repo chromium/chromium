@@ -1,4 +1,3 @@
-
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -248,16 +247,6 @@ ui::ColorId ToolbarGlicButton::GetBackgroundColor() {
   return background.value_or(kColorToolbarButtonBackgroundHighlightedDefault);
 }
 
-void ToolbarGlicButton::Collapse() {
-  SetInternalPadding(gfx::Insets::TLBR(0, 0, 0, kSpaceBetweenButtons));
-  GlicButton<ToolbarButton>::Collapse();
-}
-
-void ToolbarGlicButton::Expand() {
-  SetInternalPadding(gfx::Insets());
-  GlicButton<ToolbarButton>::Expand();
-}
-
 void ToolbarGlicButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   GlicButton<ToolbarButton>::OnBoundsChanged(previous_bounds);
 
@@ -312,7 +301,13 @@ void ToolbarGlicButton::SetGlicPanelIsOpen(bool open) {
   GlicButton<ToolbarButton>::SetGlicPanelIsOpen(open);
 }
 
+void ToolbarGlicButton::SetSplitButtonCornerStyling() {
+  SetInternalPadding(gfx::Insets::TLBR(0, 0, 0, kSpaceBetweenButtons));
+  GlicButton<ToolbarButton>::SetSplitButtonCornerStyling();
+}
+
 void ToolbarGlicButton::ResetSplitButtonCornerStyling() {
+  SetInternalPadding(gfx::Insets());
   SetLeftRightCornerRadii(GetRoundedCornerRadius(), GetRoundedCornerRadius());
 }
 

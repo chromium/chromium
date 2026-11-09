@@ -463,7 +463,7 @@ class GlicButton : public GlicBaseShim<T>,
 
   // Show or hide the split button styling, used when the task indicator is
   // present.
-  void SetSplitButtonCornerStyling() {
+  virtual void SetSplitButtonCornerStyling() {
     SetLeftRightCornerRadii(GetSplitRoundedEdgeRadius(), kSplitFlatEdgetRadius);
   }
 

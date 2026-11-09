@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
@@ -117,7 +118,7 @@ class MockGlicSplitButtonDelegate : public glic::GlicSplitButtonDelegate {
   void SetGlicPanelIsOpen(bool panel_open) override {
     panel_open_ = panel_open;
   }
-  void UpdateSplitButtonUi(const GlicSplitButtonUiState& state) override {
+  void UpdateGlicSplitButtonUi(const GlicSplitButtonUiState& state) override {
     last_ui_state_ = state;
   }
   bool GetIsShowingGlicNudge() override { return is_showing_nudge_; }
@@ -477,6 +478,39 @@ TEST_F(GlicSplitButtonControllerTest, SecondaryButtonClickTogglesBubble) {
   EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
             GlicSplitButtonUiState::SecondaryAction::kNone);
   EXPECT_FALSE(tab_strip_controller_delegate()->is_bubble_showing());
+}
+
+TEST_F(GlicSplitButtonControllerTest,
+       SecondaryButtonClickLogsActorMetricOnlyForActorNudges) {
+  base::UserActionTester user_actions;
+  auto* activity_manager = &glic_keyed_service()->activity_manager();
+  ASSERT_TRUE(activity_manager);
+
+  // Clicking the split chevron for pure chat activity should not pollute Actor
+  // global task indicator click actions.
+  activity_manager->OnConversationActivityStateChanged(
+      "conv-1", {.state = GlicActivityState::kInProgress});
+  controller()->OnSecondaryButtonClicked();
+  EXPECT_EQ(0, user_actions.GetActionCount(
+                   "Actor.Ui.GlobalTaskIndicator.Default.Click"));
+  EXPECT_EQ(0, user_actions.GetActionCount(
+                   "Actor.Ui.GlobalTaskIndicator.NeedsAttention.Click"));
+
+  // Close the bubble before transitioning to NeedsAttention.
+  controller()->OnSecondaryButtonClicked();
+  ASSERT_FALSE(tab_strip_controller_delegate()->is_bubble_showing());
+
+  // Clicking to open the bubble during a NeedsAttention nudge logs the paired
+  // Actor click action, while clicking again to close does not double-count.
+  activity_manager->OnConversationActivityStateChanged(
+      "conv-1", {.state = GlicActivityState::kNeedsAttention});
+  controller()->OnSecondaryButtonClicked();
+  EXPECT_EQ(1, user_actions.GetActionCount(
+                   "Actor.Ui.GlobalTaskIndicator.NeedsAttention.Click"));
+
+  controller()->OnSecondaryButtonClicked();
+  EXPECT_EQ(1, user_actions.GetActionCount(
+                   "Actor.Ui.GlobalTaskIndicator.NeedsAttention.Click"));
 }
 
 TEST_F(GlicSplitButtonControllerTest,

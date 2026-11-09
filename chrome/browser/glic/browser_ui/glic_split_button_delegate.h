@@ -71,6 +71,9 @@ class GlicSplitButtonDelegate
   // Update the nudge button "pressed state".
   virtual void SetGlicActorNudgePressedState(bool pressed);
 
+  // Update the secondary split button UI state.
+  virtual void UpdateGlicSplitButtonUi(const GlicSplitButtonUiState& state);
+
   // GlicActivityListBubbleControllerDelegate:
   void ShowActivityListBubble() override;
   void CloseActivityListBubble() override;
@@ -83,9 +86,6 @@ class GlicSplitButtonDelegate
 
   // Update the button when glic panel shows or hides.
   virtual void SetGlicPanelIsOpen(bool open);
-
-  // Split button state update:
-  virtual void UpdateSplitButtonUi(const GlicSplitButtonUiState& state) {}
 };
 
 }  // namespace glic

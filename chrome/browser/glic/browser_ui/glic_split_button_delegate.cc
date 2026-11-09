@@ -38,6 +38,8 @@ void GlicSplitButtonDelegate::SetGlicActorNudgeLabel(
 void GlicSplitButtonDelegate::TriggerGlicActorNudge(
     const std::u16string& nudge_label) {}
 void GlicSplitButtonDelegate::SetGlicActorNudgePressedState(bool pressed) {}
+void GlicSplitButtonDelegate::UpdateGlicSplitButtonUi(
+    const GlicSplitButtonUiState& state) {}
 void GlicSplitButtonDelegate::ShowActivityListBubble() {}
 void GlicSplitButtonDelegate::CloseActivityListBubble() {}
 bool GlicSplitButtonDelegate::IsActivityListBubbleShowing() {

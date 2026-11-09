@@ -31,6 +31,7 @@ class ToolbarGlicActorTaskIcon : public GlicActorTaskIcon<ToolbarButton> {
   void UpdateColors() override;
   void UpdateColorsAndInsets() override;
 
+  bool GetIsShowingNudge() const override;
   void SetIsShowingNudge(bool is_showing) override;
 
   void SetLeftRightCornerRadii(int left, int right) override;
