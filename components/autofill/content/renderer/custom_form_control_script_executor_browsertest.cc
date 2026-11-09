@@ -690,7 +690,14 @@ TEST_F(CustomFormControlScriptExecutorTest,
        DetectCustomFormControlsSkipsInvalidControls) {
   EXPECT_TRUE(executor_->DetectCustomFormControls().empty());
 
-  LoadHTML("<div id=custom-select></div>");
+  LoadHTML(R"(
+    <div id=custom-select></div>
+    <form id=form></form>
+    <input id=text-input>
+    <select id=select></select>
+    <textarea id=textarea></textarea>
+    <iframe id=iframe src="about:blank"></iframe>
+  )");
   ASSERT_TRUE(executor_->LoadScript(R"(
     function createCustomFormControlManager() {
       return {
@@ -708,6 +715,21 @@ TEST_F(CustomFormControlScriptExecutorTest,
             { ...base, canonicalDomNode: null },
             // Detached `canonicalDomNode`.
             { ...base, canonicalDomNode: document.createElement("div") },
+            // Cross-frame `canonicalDomNode`.
+            {
+              ...base,
+              canonicalDomNode:
+                  document.getElementById("iframe").contentDocument.body,
+            },
+            // `<form>` element.
+            { ...base, canonicalDomNode: document.getElementById("form") },
+            // Standard autofillable form control elements.
+            {
+              ...base,
+              canonicalDomNode: document.getElementById("text-input"),
+            },
+            { ...base, canonicalDomNode: document.getElementById("select") },
+            { ...base, canonicalDomNode: document.getElementById("textarea") },
             // Non-string `fieldType`.
             { ...base, fieldType: 123 },
             // Non-boolean `isActive`.

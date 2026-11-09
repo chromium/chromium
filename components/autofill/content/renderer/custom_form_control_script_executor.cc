@@ -33,7 +33,10 @@
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
+#include "third_party/blink/public/web/web_form_control_element.h"
+#include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "url/origin.h"
@@ -134,6 +137,12 @@ v8::Isolate* GetIsolate(content::RenderFrame* render_frame) {
   return render_frame
              ? render_frame->GetWebFrame()->GetAgentGroupScheduler()->Isolate()
              : nullptr;
+}
+
+// Returns the document of `render_frame`, or null if the frame is gone.
+blink::WebDocument GetDocument(content::RenderFrame* render_frame) {
+  return render_frame ? render_frame->GetWebFrame()->GetDocument()
+                      : blink::WebDocument();
 }
 
 // Sets the Content Security Policy, origin and name of the isolated world, once
@@ -388,11 +397,16 @@ CustomFormControlScriptExecutor::DetectCustomFormControls() {
                      }
                    },
                    std::ref(controls)));
-  // Check accessibility after all V8 property accesses finish, as reading
-  // properties on subsequent objects in the V8 array could execute JS getters
-  // that mutate the DOM and detach earlier nodes.
-  std::erase_if(controls, [](const CustomFormControl& control) {
-    return !form_util::IsAccessible(control.canonical_dom_node);
+  // Validate `canonical_dom_node` after all V8 property accesses finish, as
+  // reading properties on subsequent objects in the V8 array could execute JS
+  // getters that mutate the DOM or detach the frame.
+  std::erase_if(controls, [this](const CustomFormControl& control) {
+    const blink::WebElement& node = control.canonical_dom_node;
+    return !form_util::IsAccessible(node) ||
+           node.GetDocument() != GetDocument(render_frame()) ||
+           node.DynamicTo<blink::WebFormElement>() ||
+           form_util::IsAutofillableElement(
+               node.DynamicTo<blink::WebFormControlElement>());
   });
   return controls;
 }

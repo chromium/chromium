@@ -2396,12 +2396,13 @@ FormRendererId GetFormRendererId(const WebElement& e) {
 }
 
 FieldRendererId GetFieldRendererId(const WebElement& e) {
-  // This function is intended only for WebFormControlElements and for
-  // contenteditables that aren't WebFormElement. However, an element that used
-  // to be contenteditable may dynamically change to a non-contenteditable.
-  // Therefore, instead of checking that `e` is a WebFormControlElement or
-  // contenteditable, we just that `e` is not a WebFormElement to protect
-  // against confusions between Get{Form,Field}RendererId().
+  // This function is intended only for WebFormControlElements, and for
+  // contenteditables and custom form controls that aren't WebFormElements.
+  // However, an element that used to be contenteditable may dynamically change
+  // to a non-contenteditable, and custom form controls can be implemented using
+  // any kind of element. Therefore, instead of checking that `e` is one of the
+  // above, we just check that `e` is not a WebFormElement to protect against
+  // confusions between Get{Form,Field}RendererId().
   CHECK(!e.DynamicTo<WebFormElement>());
   return FieldRendererId(e.GetDomNodeId());
 }
