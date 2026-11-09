@@ -7293,6 +7293,7 @@
         "args": [
           "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
+        "enable_rts_filtering": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [

@@ -603,6 +603,9 @@ ci.thin_tester(
                 ],
                 remove_mixins = "mac_26_vm_optional",
             ),
+            "chrome_wpt_tests": targets.mixin(
+                enable_rts_filtering = True,
+            ),
             # TODO(crbug.com/436628295): test fails on VM
             "chromedriver_py_tests_headless_shell": targets.per_test_modification(
                 mixins = "mac_26_arm64",
