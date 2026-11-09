@@ -65,7 +65,9 @@ void BaseShellDialogImpl::DisableOwner(HWND owner) {
 std::unique_ptr<BaseShellDialogImpl::RunState> BaseShellDialogImpl::BeginRun(
     HWND owner) {
   // Cannot run a modal shell dialog if one is already running for this owner.
-  CHECK(!IsRunningDialogForOwner(owner), base::NotFatalUntil::M163);
+  // TODO(crbug.com/580068883): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!IsRunningDialogForOwner(owner));
   // The owner must be a top level window, otherwise we could end up with two
   // entries in our map for the same top level window.
   CHECK(!owner || owner == GetAncestor(owner, GA_ROOT),
