@@ -410,6 +410,9 @@ extern const base::FeatureParam<std::string>
 // regardless of whether background lookups are allowed (e.g. on iOS).
 BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookupsOhttpKeyServiceForEsb);
 
+// Enables hash-prefix real-time lookup requests on Incognito and Guest mode.
+BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookupsOnIncognitoAndGuest);
+
 // Send sample hash-prefix real-time lookups for real-time lookups to catch
 // "false positives" where real-time lookup says safe but hash-prefix lookup
 // says unsafe.

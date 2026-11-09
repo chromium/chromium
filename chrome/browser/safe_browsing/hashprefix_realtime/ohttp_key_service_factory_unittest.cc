@@ -17,12 +17,22 @@ namespace safe_browsing {
 
 class OhttpKeyServiceFactoryTest : public testing::Test {
  protected:
-  OhttpKeyServiceFactoryTest() = default;
+  OhttpKeyServiceFactoryTest()
+      : OhttpKeyServiceFactoryTest(/*is_incognito_lookup_enabled=*/false) {}
+  explicit OhttpKeyServiceFactoryTest(bool is_incognito_lookup_enabled) {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        kHashPrefixRealTimeLookups};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (is_incognito_lookup_enabled) {
+      enabled_features.push_back(kHashPrefixRealTimeLookupsOnIncognitoAndGuest);
+    } else {
+      disabled_features.push_back(
+          kHashPrefixRealTimeLookupsOnIncognitoAndGuest);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
   ~OhttpKeyServiceFactoryTest() override = default;
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kHashPrefixRealTimeLookups},
-        /*disabled_features=*/{});
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -56,6 +66,19 @@ TEST_F(OhttpKeyServiceFactoryTest, DisabledForRegularProfiles) {
   EXPECT_EQ(nullptr, OhttpKeyServiceFactory::GetForProfile(profile));
 }
 #else
+class OhttpKeyServiceFactoryIncognitoLookupTest
+    : public OhttpKeyServiceFactoryTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  OhttpKeyServiceFactoryIncognitoLookupTest()
+      : OhttpKeyServiceFactoryTest(
+            /*is_incognito_lookup_enabled=*/GetParam()) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OhttpKeyServiceFactoryIncognitoLookupTest,
+                         testing::Bool());
+
 TEST_F(OhttpKeyServiceFactoryTest, EnabledForRegularProfiles) {
   TestingProfile* profile = profile_manager_->CreateTestingProfile("profile");
   EXPECT_NE(nullptr, OhttpKeyServiceFactory::GetForProfile(profile));
@@ -75,17 +98,28 @@ TEST_F(OhttpKeyServiceFactoryTest,
   EXPECT_NE(nullptr, OhttpKeyServiceFactory::GetForProfile(profile));
 }
 
-TEST_F(OhttpKeyServiceFactoryTest, DisabledForIncognitoMode) {
-  TestingProfile* profile = TestingProfile::Builder().BuildIncognito(
-      profile_manager_->CreateTestingProfile("testing_profile"));
-  EXPECT_EQ(nullptr, OhttpKeyServiceFactory::GetForProfile(profile));
+TEST_P(OhttpKeyServiceFactoryIncognitoLookupTest, IncognitoMode) {
+  TestingProfile* regular_profile =
+      profile_manager_->CreateTestingProfile("testing_profile");
+  TestingProfile* incognito_profile =
+      TestingProfile::Builder().BuildIncognito(regular_profile);
+  OhttpKeyService* regular_service =
+      OhttpKeyServiceFactory::GetForProfile(regular_profile);
+  EXPECT_NE(nullptr, regular_service);
+  OhttpKeyService* incognito_service =
+      OhttpKeyServiceFactory::GetForProfile(incognito_profile);
+  EXPECT_EQ(GetParam(), incognito_service != nullptr);
+  EXPECT_NE(regular_service, incognito_service);
 }
 
-TEST_F(OhttpKeyServiceFactoryTest, DisabledForGuestMode) {
-  Profile* profile =
-      profile_manager_->CreateGuestProfile()->GetPrimaryOTRProfile(
-          /*create_if_needed=*/true);
-  EXPECT_EQ(nullptr, OhttpKeyServiceFactory::GetForProfile(profile));
+TEST_P(OhttpKeyServiceFactoryIncognitoLookupTest, GuestMode) {
+  TestingProfile* guest_parent_profile = profile_manager_->CreateGuestProfile();
+  EXPECT_EQ(nullptr,
+            OhttpKeyServiceFactory::GetForProfile(guest_parent_profile));
+  Profile* guest_otr_profile =
+      guest_parent_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_EQ(GetParam(), OhttpKeyServiceFactory::GetForProfile(
+                            guest_otr_profile) != nullptr);
 }
 #endif
 

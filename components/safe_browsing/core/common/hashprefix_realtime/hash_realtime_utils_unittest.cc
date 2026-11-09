@@ -194,6 +194,7 @@ TEST(HashRealTimeUtilsTest,
     bool is_feature_on = true;
     bool is_background_hprt_lookup_feature_on = true;
     bool is_ohttp_key_service_esb_feature_on = true;
+    bool is_incognito_hprt_lookup_feature_on = false;
     bool has_google_chrome_branding = true;
     std::optional<std::string> latest_country = std::nullopt;
     std::optional<bool> lookups_allowed_by_policy = std::nullopt;
@@ -212,13 +213,54 @@ TEST(HashRealTimeUtilsTest,
       {.expected_selection = enabled_selection,
        .expected_ohttp_key_fetches_enabled =
            expected_ohttp_key_fetches_enabled},
-      // Lookups disabled due to being off the record. OHTTP key fetches are
-      // still enabled since they are not dependent on whether the profile is
-      // off the record.
+      // Lookups disabled due to being off the record when
+      // kHashPrefixRealTimeLookupsOnIncognitoAndGuest is disabled. OHTTP key
+      // fetches are still enabled since they are not dependent on whether the
+      // profile is off the record.
       {.is_off_the_record = true,
+       .is_incognito_hprt_lookup_feature_on = false,
        .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
        .expected_ohttp_key_fetches_enabled = expected_ohttp_key_fetches_enabled,
        .expected_off_the_record_log = true},
+      // Foreground HPRT lookups enabled off the record for SSB users when
+      // kHashPrefixRealTimeLookupsOnIncognitoAndGuest is enabled.
+      {.safe_browsing_state = SafeBrowsingState::STANDARD_PROTECTION,
+       .is_off_the_record = true,
+       .is_incognito_hprt_lookup_feature_on = true,
+       .expected_selection = enabled_selection,
+       .expected_ohttp_key_fetches_enabled =
+           expected_ohttp_key_fetches_enabled},
+      // Foreground HPRT lookups enabled off the record for ESB users when
+      // kHashPrefixRealTimeLookupsOnIncognitoAndGuest is enabled, even if
+      // background lookups are allowed and kHashPrefixRealTimeLookupsSamplePing
+      // is on.
+      {.safe_browsing_state = SafeBrowsingState::ENHANCED_PROTECTION,
+       .is_off_the_record = true,
+       .is_background_hprt_lookup_feature_on = true,
+       .is_incognito_hprt_lookup_feature_on = true,
+       .expected_selection = enabled_selection,
+       .expected_ohttp_key_fetches_enabled = expected_ohttp_key_fetches_enabled,
+       .are_background_lookups_allowed = true},
+      // Foreground HPRT lookups enabled off the record for ESB users when
+      // kHashPrefixRealTimeLookupsOnIncognitoAndGuest is enabled, even if
+      // background lookups are not allowed and
+      // kHashPrefixRealTimeLookupsSamplePing is off.
+      {.safe_browsing_state = SafeBrowsingState::ENHANCED_PROTECTION,
+       .is_off_the_record = true,
+       .is_background_hprt_lookup_feature_on = false,
+       .is_incognito_hprt_lookup_feature_on = true,
+       .expected_selection = enabled_selection,
+       .expected_ohttp_key_fetches_enabled = expected_ohttp_key_fetches_enabled,
+       .are_background_lookups_allowed = false},
+      // Lookups disabled off the record when Safe Browsing is disabled, even
+      // when kHashPrefixRealTimeLookupsOnIncognitoAndGuest is enabled.
+      {.safe_browsing_state = SafeBrowsingState::NO_SAFE_BROWSING,
+       .is_off_the_record = true,
+       .is_incognito_hprt_lookup_feature_on = true,
+       .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+       .expected_ohttp_key_fetches_enabled = false,
+       .expected_off_the_record_log = true,
+       .expected_ineligible_for_safe_browsing_state_log = true},
       // Lookups disabled when Safe Browsing is disabled.
       {.safe_browsing_state = SafeBrowsingState::NO_SAFE_BROWSING,
        .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
@@ -395,6 +437,12 @@ TEST(HashRealTimeUtilsTest,
     } else {
       disabled_features.push_back(
           kHashPrefixRealTimeLookupsOhttpKeyServiceForEsb);
+    }
+    if (test_case.is_incognito_hprt_lookup_feature_on) {
+      enabled_features.push_back(kHashPrefixRealTimeLookupsOnIncognitoAndGuest);
+    } else {
+      disabled_features.push_back(
+          kHashPrefixRealTimeLookupsOnIncognitoAndGuest);
     }
     scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
 

@@ -177,8 +177,17 @@ HashRealTimeSelection DetermineHashRealTimeSelection(
   // changes can receive them correctly.
   SafeBrowsingState safe_browsing_state =
       safe_browsing::GetSafeBrowsingState(*prefs);
+  // Enhanced Protection only uses HPRT for background sample pings in regular
+  // mode, but is eligible for foreground HPRT lookups when off-the-record. We
+  // intentionally do not check `kHashPrefixRealTimeLookupsOnIncognitoAndGuest`
+  // here: the `"OffTheRecord"` requirement in `requirements` below gates all
+  // off-the-record lookups on that feature flag, and deferring the check until
+  // after `common_requirements.AreAllMet()` avoids activating the Finch study
+  // when lookups are ineligible for other reasons.
   bool sb_state_eligible_for_foreground_lookup =
-      safe_browsing_state == SafeBrowsingState::STANDARD_PROTECTION;
+      safe_browsing_state == SafeBrowsingState::STANDARD_PROTECTION ||
+      (safe_browsing_state == SafeBrowsingState::ENHANCED_PROTECTION &&
+       is_off_the_record);
   bool only_background_lookup_eligible =
       !sb_state_eligible_for_foreground_lookup &&
       IsBackgroundLookupEligible(safe_browsing_state,
@@ -195,7 +204,17 @@ HashRealTimeSelection DetermineHashRealTimeSelection(
   } requirements[] = {
       {"IneligibleForSessionOrLocation",
        common_requirements.eligible_for_session_and_location},
-      {"OffTheRecord", !is_off_the_record},
+      // The main required gating is just `!is_off_the_record ||
+      // base::FeatureList::IsEnabled(
+      // kHashPrefixRealTimeLookupsOnIncognitoAndGuest)`. However, also check
+      // the other requirements are met to avoid activating the
+      // kHashPrefixRealTimeLookupsOnIncognitoAndGuest Finch study when lookups
+      // are ineligible for other reasons.
+      {"OffTheRecord",
+       !is_off_the_record ||
+           (common_requirements.AreAllMet() &&
+            base::FeatureList::IsEnabled(
+                kHashPrefixRealTimeLookupsOnIncognitoAndGuest))},
       {"IneligibleForSafeBrowsingState",
        common_requirements.eligible_for_safe_browsing_state},
       {"NotAllowedByPolicy", common_requirements.allowed_by_policy}};

@@ -10,6 +10,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/chrome_features.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
@@ -34,7 +35,8 @@ OhttpKeyServiceFactory::OhttpKeyServiceFactory()
     : ProfileKeyedServiceFactory(
           "SafeBrowsingOhttpKeyService",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
+              .WithRegular(ProfileSelection::kOwnInstance)
+              .WithGuest(ProfileSelection::kOffTheRecordOnly)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
@@ -55,6 +57,11 @@ OhttpKeyServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
+  if (profile->IsOffTheRecord() &&
+      !base::FeatureList::IsEnabled(
+          kHashPrefixRealTimeLookupsOnIncognitoAndGuest)) {
+    return nullptr;
+  }
   auto url_loader_factory =
       std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
           g_browser_process->safe_browsing_service()->GetURLLoaderFactory(

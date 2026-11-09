@@ -47,17 +47,28 @@ TEST_F(HashRealTimeServiceFactoryTest, EnabledForRegularProfiles) {
   EXPECT_NE(nullptr, HashRealTimeServiceFactory::GetForProfile(profile));
 }
 
-TEST_F(HashRealTimeServiceFactoryTest, DisabledForIncognitoMode) {
-  TestingProfile* profile = TestingProfile::Builder().BuildIncognito(
-      profile_manager_->CreateTestingProfile("testing_profile"));
-  EXPECT_EQ(nullptr, HashRealTimeServiceFactory::GetForProfile(profile));
+TEST_F(HashRealTimeServiceFactoryTest, EnabledForIncognitoMode) {
+  TestingProfile* regular_profile =
+      profile_manager_->CreateTestingProfile("testing_profile");
+  TestingProfile* incognito_profile =
+      TestingProfile::Builder().BuildIncognito(regular_profile);
+  HashRealTimeService* regular_service =
+      HashRealTimeServiceFactory::GetForProfile(regular_profile);
+  EXPECT_NE(nullptr, regular_service);
+  HashRealTimeService* incognito_service =
+      HashRealTimeServiceFactory::GetForProfile(incognito_profile);
+  EXPECT_NE(nullptr, incognito_service);
+  EXPECT_NE(regular_service, incognito_service);
 }
 
-TEST_F(HashRealTimeServiceFactoryTest, DisabledForGuestMode) {
-  Profile* profile =
-      profile_manager_->CreateGuestProfile()->GetPrimaryOTRProfile(
-          /*create_if_needed=*/true);
-  EXPECT_EQ(nullptr, HashRealTimeServiceFactory::GetForProfile(profile));
+TEST_F(HashRealTimeServiceFactoryTest, EnabledForGuestMode) {
+  TestingProfile* guest_parent_profile = profile_manager_->CreateGuestProfile();
+  EXPECT_EQ(nullptr,
+            HashRealTimeServiceFactory::GetForProfile(guest_parent_profile));
+  Profile* guest_otr_profile =
+      guest_parent_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_NE(nullptr,
+            HashRealTimeServiceFactory::GetForProfile(guest_otr_profile));
 }
 
 }  // namespace safe_browsing

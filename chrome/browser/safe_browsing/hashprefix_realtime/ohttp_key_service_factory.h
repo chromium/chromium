@@ -20,8 +20,10 @@ namespace safe_browsing {
 class OhttpKeyService;
 
 // Singleton that owns OhttpKeyService objects, one for each active
-// Profile. It listens to profile destroy events and destroy its associated
-// service. It returns nullptr if the profile is in incognito or guest mode.
+// Profile. It listens to profile destroy events and destroys its associated
+// service. For Incognito and Guest off-the-record profiles, a separate
+// instance is created per profile when
+// kHashPrefixRealTimeLookupsOnIncognitoAndGuest is enabled.
 class OhttpKeyServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Creates the service if it doesn't exist already for the given |profile|.
