@@ -145,7 +145,9 @@ should be marked as medium severity.
 * An HSTS bypass ([461481](https://crbug.com/461481)).
 * A bypass of the same origin policy for pages that meet several preconditions
   ([419383](https://crbug.com/419383)).
-* A bug that allows arbitrary pages to bypass security interstitials
+* A bug that allows arbitrary pages to bypass security interstitials, excluding
+  HTTPS-first mode interstitials, for which a bypass is considered a functional,
+  non-security bug.
   ([540949](https://crbug.com/540949)).
 * A bug that allows an attacker to reliably read or infer complete browsing history
   ([381808](https://crbug.com/381808)).
