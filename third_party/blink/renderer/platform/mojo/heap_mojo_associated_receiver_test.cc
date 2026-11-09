@@ -82,9 +82,8 @@ class HeapMojoAssociatedReceiverGCBaseTest : public TestSupportingGC {
  protected:
   void SetUp() override {
     disconnected_ = false;
-    context_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
-    owner_ =
-        MakeGarbageCollected<AssociatedReceiverOwner<Mode>>(context_, this);
+    owner_ = MakeGarbageCollected<AssociatedReceiverOwner<Mode>>(
+        context_.Notifier(), this);
     scoped_refptr<base::NullTaskRunner> null_task_runner =
         base::MakeRefCounted<base::NullTaskRunner>();
     associated_remote_ = mojo::AssociatedRemote<sample::blink::Service>(
@@ -102,7 +101,7 @@ class HeapMojoAssociatedReceiverGCBaseTest : public TestSupportingGC {
     PreciselyCollectGarbage();
   }
 
-  Persistent<MockContextLifecycleNotifier> context_;
+  ScopedMockContextLifecycleNotifier context_;
   Persistent<AssociatedReceiverOwner<Mode>> owner_;
   bool is_owner_alive_ = false;
   base::RunLoop run_loop_;
@@ -115,8 +114,8 @@ class HeapMojoAssociatedReceiverDestroyContextBaseTest
     : public TestSupportingGC {
  protected:
   void SetUp() override {
-    context_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
-    owner_ = MakeGarbageCollected<AssociatedReceiverOwner<Mode>>(context_);
+    owner_ = MakeGarbageCollected<AssociatedReceiverOwner<Mode>>(
+        context_.Notifier());
     scoped_refptr<base::NullTaskRunner> null_task_runner =
         base::MakeRefCounted<base::NullTaskRunner>();
     associated_remote_ = mojo::AssociatedRemote<sample::blink::Service>(
@@ -124,7 +123,7 @@ class HeapMojoAssociatedReceiverDestroyContextBaseTest
             null_task_runner));
   }
 
-  Persistent<MockContextLifecycleNotifier> context_;
+  ScopedMockContextLifecycleNotifier context_;
   Persistent<AssociatedReceiverOwner<Mode>> owner_;
   mojo::AssociatedRemote<sample::blink::Service> associated_remote_;
 };

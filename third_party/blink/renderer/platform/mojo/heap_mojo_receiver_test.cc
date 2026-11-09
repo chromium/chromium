@@ -75,8 +75,8 @@ class HeapMojoReceiverGCBaseTest : public TestSupportingGC {
  protected:
   void SetUp() override {
     disconnected_ = false;
-    context_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
-    owner_ = MakeGarbageCollected<ReceiverOwner<Mode>>(context_, this);
+    owner_ =
+        MakeGarbageCollected<ReceiverOwner<Mode>>(context_.Notifier(), this);
     scoped_refptr<base::NullTaskRunner> null_task_runner =
         base::MakeRefCounted<base::NullTaskRunner>();
     remote_ = mojo::Remote<sample::blink::Service>(
@@ -93,7 +93,7 @@ class HeapMojoReceiverGCBaseTest : public TestSupportingGC {
     PreciselyCollectGarbage();
   }
 
-  Persistent<MockContextLifecycleNotifier> context_;
+  ScopedMockContextLifecycleNotifier context_;
   Persistent<ReceiverOwner<Mode>> owner_;
   bool is_owner_alive_ = false;
   base::RunLoop run_loop_;
@@ -111,9 +111,8 @@ class HeapMojoReceiverDisconnectWithReasonHandlerBaseTest
   void SetUp() override {
     CHECK(disconnected_reason_.empty());
     this->disconnected_ = false;
-    this->context_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
-    this->owner_ =
-        MakeGarbageCollected<ReceiverOwner<Mode>>(this->context_, this);
+    this->owner_ = MakeGarbageCollected<ReceiverOwner<Mode>>(
+        this->context_.Notifier(), this);
     scoped_refptr<base::NullTaskRunner> null_task_runner =
         base::MakeRefCounted<base::NullTaskRunner>();
     this->remote_ = mojo::Remote<sample::blink::Service>(
@@ -134,15 +133,14 @@ template <HeapMojoWrapperMode Mode>
 class HeapMojoReceiverDestroyContextBaseTest : public TestSupportingGC {
  protected:
   void SetUp() override {
-    context_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
-    owner_ = MakeGarbageCollected<ReceiverOwner<Mode>>(context_);
+    owner_ = MakeGarbageCollected<ReceiverOwner<Mode>>(context_.Notifier());
     scoped_refptr<base::NullTaskRunner> null_task_runner =
         base::MakeRefCounted<base::NullTaskRunner>();
     remote_ = mojo::Remote<sample::blink::Service>(
         owner_->receiver().BindNewPipeAndPassRemote(null_task_runner));
   }
 
-  Persistent<MockContextLifecycleNotifier> context_;
+  ScopedMockContextLifecycleNotifier context_;
   Persistent<ReceiverOwner<Mode>> owner_;
   mojo::Remote<sample::blink::Service> remote_;
 };

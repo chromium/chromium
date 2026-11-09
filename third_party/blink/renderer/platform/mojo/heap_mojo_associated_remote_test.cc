@@ -81,8 +81,8 @@ template <HeapMojoWrapperMode Mode>
 class HeapMojoAssociatedRemoteDestroyContextBaseTest : public TestSupportingGC {
  protected:
   void SetUp() override {
-    context_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
-    owner_ = MakeGarbageCollected<AssociatedRemoteOwner<Mode>>(context_);
+    owner_ =
+        MakeGarbageCollected<AssociatedRemoteOwner<Mode>>(context_.Notifier());
     scoped_refptr<base::NullTaskRunner> null_task_runner =
         base::MakeRefCounted<base::NullTaskRunner>();
     impl_.associated_receiver().Bind(
@@ -91,7 +91,7 @@ class HeapMojoAssociatedRemoteDestroyContextBaseTest : public TestSupportingGC {
   }
 
   ServiceImpl impl_;
-  Persistent<MockContextLifecycleNotifier> context_;
+  ScopedMockContextLifecycleNotifier context_;
   Persistent<AssociatedRemoteOwner<Mode>> owner_;
 };
 
@@ -105,8 +105,8 @@ class HeapMojoAssociatedRemoteDisconnectWithReasonHandlerBaseTest
  protected:
   void SetUp() override {
     CHECK(!disconnected_with_reason_);
-    context_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
-    owner_ = MakeGarbageCollected<AssociatedRemoteOwner<Mode>>(context_);
+    owner_ =
+        MakeGarbageCollected<AssociatedRemoteOwner<Mode>>(context_.Notifier());
     scoped_refptr<base::NullTaskRunner> null_task_runner =
         base::MakeRefCounted<base::NullTaskRunner>();
     impl_.associated_receiver().Bind(
@@ -123,7 +123,7 @@ class HeapMojoAssociatedRemoteDisconnectWithReasonHandlerBaseTest
   }
 
   ServiceImpl impl_;
-  Persistent<MockContextLifecycleNotifier> context_;
+  ScopedMockContextLifecycleNotifier context_;
   Persistent<AssociatedRemoteOwner<Mode>> owner_;
   base::RunLoop run_loop_;
   bool disconnected_with_reason_ = false;
@@ -133,9 +133,8 @@ template <HeapMojoWrapperMode Mode>
 class HeapMojoAssociatedRemoteMoveBaseTest : public TestSupportingGC {
  protected:
   void SetUp() override {
-    context_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
     HeapMojoAssociatedRemote<sample::blink::Service, Mode> associated_remote(
-        context_);
+        context_.Notifier());
     owner_ = MakeGarbageCollected<AssociatedRemoteOwner<Mode>>(
         std::move(associated_remote));
     scoped_refptr<base::NullTaskRunner> null_task_runner =
@@ -146,7 +145,7 @@ class HeapMojoAssociatedRemoteMoveBaseTest : public TestSupportingGC {
   }
 
   ServiceImpl impl_;
-  Persistent<MockContextLifecycleNotifier> context_;
+  ScopedMockContextLifecycleNotifier context_;
   Persistent<AssociatedRemoteOwner<Mode>> owner_;
 };
 
@@ -162,8 +161,8 @@ class HeapMojoAssociatedRemoteGCBaseTest : public TestSupportingGC {
  protected:
   void SetUp() override {
     disconnected_ = false;
-    context_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
-    owner_ = MakeGarbageCollected<AssociatedRemoteOwner<Mode>>(context_, this);
+    owner_ = MakeGarbageCollected<AssociatedRemoteOwner<Mode>>(
+        context_.Notifier(), this);
     scoped_refptr<base::NullTaskRunner> null_task_runner =
         base::MakeRefCounted<base::NullTaskRunner>();
     impl_.associated_receiver().Bind(
@@ -182,7 +181,7 @@ class HeapMojoAssociatedRemoteGCBaseTest : public TestSupportingGC {
   }
 
   ServiceImpl impl_;
-  Persistent<MockContextLifecycleNotifier> context_;
+  ScopedMockContextLifecycleNotifier context_;
   Persistent<AssociatedRemoteOwner<Mode>> owner_;
   bool is_owner_alive_ = false;
   base::RunLoop run_loop_;

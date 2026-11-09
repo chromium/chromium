@@ -7,6 +7,8 @@
 
 #include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 
 namespace blink {
@@ -36,6 +38,35 @@ class MockContextLifecycleNotifier final
 
  private:
   bool notified_destruction_ = false;
+};
+
+class ScopedMockContextLifecycleNotifier final {
+ public:
+  ScopedMockContextLifecycleNotifier()
+      : notifier_(MakeGarbageCollected<MockContextLifecycleNotifier>()) {}
+  ScopedMockContextLifecycleNotifier(
+      const ScopedMockContextLifecycleNotifier&) = delete;
+  ScopedMockContextLifecycleNotifier& operator=(
+      const ScopedMockContextLifecycleNotifier&) = delete;
+
+  ~ScopedMockContextLifecycleNotifier() { Reset(); }
+
+  MockContextLifecycleNotifier* Notifier() { return notifier_.Get(); }
+
+  MockContextLifecycleNotifier* operator->() { return notifier_.Get(); }
+
+  void Reset() {
+    if (!notifier_) {
+      return;
+    }
+    if (!notifier_->IsContextDestroyed()) {
+      notifier_->NotifyContextDestroyed();
+    }
+    notifier_.Clear();
+  }
+
+ private:
+  Persistent<MockContextLifecycleNotifier> notifier_;
 };
 
 }  // namespace blink

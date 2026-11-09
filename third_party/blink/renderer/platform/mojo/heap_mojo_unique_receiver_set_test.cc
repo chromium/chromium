@@ -45,7 +45,7 @@ class GCOwner final : public GarbageCollected<GCOwner<Mode>> {
 template <HeapMojoWrapperMode Mode>
 class HeapMojoUniqueReceiverSetBaseTest : public TestSupportingGC {
  public:
-  MockContextLifecycleNotifier* context() { return context_; }
+  MockContextLifecycleNotifier* context() { return context_.Notifier(); }
   scoped_refptr<base::NullTaskRunner> task_runner() {
     return null_task_runner_;
   }
@@ -57,12 +57,11 @@ class HeapMojoUniqueReceiverSetBaseTest : public TestSupportingGC {
 
  protected:
   void SetUp() override {
-    context_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
     owner_ = MakeGarbageCollected<GCOwner<Mode>>(context());
   }
   void TearDown() override {}
 
-  Persistent<MockContextLifecycleNotifier> context_;
+  ScopedMockContextLifecycleNotifier context_;
   Persistent<GCOwner<Mode>> owner_;
   scoped_refptr<base::NullTaskRunner> null_task_runner_ =
       base::MakeRefCounted<base::NullTaskRunner>();
