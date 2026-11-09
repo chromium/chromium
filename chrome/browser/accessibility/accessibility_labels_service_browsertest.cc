@@ -41,6 +41,7 @@
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "url/origin.h"
 #endif
 
 class AccessibilityLabelsBrowserTest : public InProcessBrowserTest {
@@ -237,7 +238,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest,
   ASSERT_NE(nullptr, labels_service);
 
   mojo::Remote<image_annotation::mojom::Annotator> remote;
-  labels_service->BindImageAnnotator(remote.BindNewPipeAndPassReceiver());
+  labels_service->BindImageAnnotator(remote.BindNewPipeAndPassReceiver(),
+                                     url::Origin());
   remote.FlushForTesting();
   EXPECT_TRUE(remote.is_connected());
 

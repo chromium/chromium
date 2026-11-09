@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/check_is_test.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -18,6 +19,7 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
@@ -88,13 +90,6 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotation() {
             }
           }
         })");
-}
-
-// For a given source ID and requested description language, returns the unique
-// image ID string that can be used to look up results from a server response.
-std::string MakeImageId(const std::string& source_id,
-                        const std::string& desc_lang_tag) {
-  return source_id + (desc_lang_tag.empty() ? "" : " " + desc_lang_tag);
 }
 
 std::string NormalizeLanguageCode(std::string_view language) {
@@ -547,16 +542,34 @@ Annotator::ClientRequestInfo::ClientRequestInfo(
 
 Annotator::ClientRequestInfo::~ClientRequestInfo() = default;
 
+Annotator::RequestKey::RequestKey(uint64_t in_origin_id,
+                                  std::string in_source_id,
+                                  std::string in_desc_lang_tag)
+    : origin_id(in_origin_id),
+      source_id(std::move(in_source_id)),
+      desc_lang_tag(std::move(in_desc_lang_tag)) {}
+
+Annotator::RequestKey::RequestKey(const RequestKey& other) = default;
+Annotator::RequestKey::RequestKey(RequestKey&& other) = default;
+Annotator::RequestKey& Annotator::RequestKey::operator=(
+    const RequestKey& other) = default;
+Annotator::RequestKey& Annotator::RequestKey::operator=(RequestKey&& other) =
+    default;
+Annotator::RequestKey::~RequestKey() = default;
+
+std::string Annotator::RequestKey::MakeImageId() const {
+  return base::NumberToString(origin_id) + " " + desc_lang_tag + " " +
+         source_id;
+}
+
 Annotator::ServerRequestInfo::ServerRequestInfo(
-    const std::string& in_source_id,
+    RequestKey in_request_key,
     const bool in_desc_requested,
     const bool in_icon_requested,
-    const std::string& in_desc_lang_tag,
     const std::vector<uint8_t>& in_image_bytes)
-    : source_id(in_source_id),
+    : request_key(std::move(in_request_key)),
       desc_requested(in_desc_requested),
       icon_requested(in_icon_requested),
-      desc_lang_tag(in_desc_lang_tag),
       image_bytes(in_image_bytes) {}
 
 Annotator::ServerRequestInfo& Annotator::ServerRequestInfo::operator=(
@@ -600,8 +613,17 @@ Annotator::~Annotator() {
   }
 }
 
-void Annotator::BindReceiver(mojo::PendingReceiver<mojom::Annotator> receiver) {
-  receivers_.Add(this, std::move(receiver));
+void Annotator::BindReceiver(mojo::PendingReceiver<mojom::Annotator> receiver,
+                             const url::Origin& parent_origin) {
+  const uint64_t origin_id =
+      origin_ids_.try_emplace(parent_origin, origin_ids_.size()).first->second;
+  receivers_.Add(this, std::move(receiver), origin_id);
+}
+
+void Annotator::BindReceiverForTesting(
+    mojo::PendingReceiver<mojom::Annotator> receiver) {
+  CHECK_IS_TEST();
+  BindReceiver(std::move(receiver), url::Origin());
 }
 
 void Annotator::AnnotateImage(
@@ -616,7 +638,8 @@ void Annotator::AnnotateImage(
       ComputePreferredLanguage(page_language);
   client_->RecordLanguageMetrics(page_language, preferred_language);
 
-  const RequestKey request_key(source_id, preferred_language);
+  const RequestKey request_key(receivers_.current_context(), source_id,
+                               preferred_language);
 
   // Return cached results if they exist.
   const auto cache_lookup = cached_results_.find(request_key);
@@ -714,9 +737,9 @@ std::string Annotator::FormatJsonRequest(
       base::DictValue desc_params;
 
       // Add preferred description language if it has been specified.
-      if (!it->desc_lang_tag.empty()) {
+      if (!it->request_key.desc_lang_tag.empty()) {
         base::ListValue desc_lang_list;
-        desc_lang_list.Append(it->desc_lang_tag);
+        desc_lang_list.Append(it->request_key.desc_lang_tag);
 
         desc_params.Set("preferredLanguages", std::move(desc_lang_list));
       }
@@ -740,7 +763,7 @@ std::string Annotator::FormatJsonRequest(
     ReportImageRequestIncludesIcon(it->icon_requested);
 
     base::DictValue image_request;
-    image_request.Set("imageId", MakeImageId(it->source_id, it->desc_lang_tag));
+    image_request.Set("imageId", it->request_key.MakeImageId());
     image_request.Set("imageBytes", std::move(base64_data));
     image_request.Set("engineParameters", std::move(engine_params_list));
 
@@ -785,9 +808,6 @@ void Annotator::OnJpgImageDataReceived(
     const std::vector<uint8_t>& image_bytes,
     const int32_t width,
     const int32_t height) {
-  const std::string& source_id = request_key.first;
-  const std::string& request_language = request_key.second;
-
   ReportPixelFetchSuccess(!image_bytes.empty());
 
   // Failed to retrieve bytes from local processor; remove dead processor and
@@ -802,8 +822,8 @@ void Annotator::OnJpgImageDataReceived(
 
   // Schedule a server request for this image.
   server_request_queue_.emplace_front(
-      source_id, IsWithinDescPolicy(width, height),
-      IsWithinIconPolicy(width, height), request_language, image_bytes);
+      request_key, IsWithinDescPolicy(width, height),
+      IsWithinIconPolicy(width, height), image_bytes);
   pending_requests_.insert(request_key);
 
   // Start sending batches to the server.
@@ -828,24 +848,24 @@ void Annotator::SendRequestBatchToServer() {
 
   if (features::IsImageDescriptionsAlternateRoutingEnabled()) {
     CHECK(anchovy_provider_);
-    // The set of (source ID, desc lang) pairs relevant for this request.
+    // The set of request keys relevant for this request.
     std::set<RequestKey> request_keys;
     for (std::deque<ServerRequestInfo>::iterator it = begin; it != end; it++) {
-      RequestKey key = {it->source_id, it->desc_lang_tag};
-      request_keys.insert(key);
+      request_keys.insert(it->request_key);
       manta::anchovy::ImageDescriptionRequest request = {
-          it->source_id, it->desc_lang_tag, it->image_bytes};
+          it->request_key.source_id, it->request_key.desc_lang_tag,
+          it->image_bytes};
       const auto now = base::Time::Now();
       anchovy_provider_->GetImageDescription(
           request, GetTrafficAnnotation(),
           base::BindOnce(&Annotator::OnMantaResponseReceived,
-                         weak_factory_.GetWeakPtr(), key, now));
+                         weak_factory_.GetWeakPtr(), it->request_key, now));
     }
   } else {
-    // The set of (source ID, desc lang) pairs relevant for this request.
+    // The set of request keys relevant for this request.
     std::set<RequestKey> request_keys;
     for (std::deque<ServerRequestInfo>::iterator it = begin; it != end; it++) {
-      request_keys.insert({it->source_id, it->desc_lang_tag});
+      request_keys.insert(it->request_key);
     }
 
     // Kick off server communication.
@@ -932,14 +952,14 @@ void Annotator::OnMantaResponseReceived(const RequestKey& request_key,
     }
 
     // Add all annotations for the image.
-    std::string image_id = MakeImageId(request_key.first, request_key.second);
+    std::string image_id = request_key.MakeImageId();
     std::map<std::string, mojom::AnnotateImageResultPtr> results;
     results[image_id] =
         mojom::AnnotateImageResult::NewAnnotations(std::move(annotations));
     // Process the result from manta.
     ProcessResult(request_key, std::move(results));
   } else {
-    LOG(ERROR) << "\nRequest for: " << request_key.first << " Failed: \n"
+    LOG(ERROR) << "\nRequest for: " << request_key.source_id << " Failed: \n"
                << base::ToString(status.status_code);
   }
 }
@@ -991,9 +1011,8 @@ void Annotator::ProcessResult(
   pending_requests_.erase(request_key);
 
   // The lookup will be successful if there is a valid result (i.e. not an
-  // error and not a malformed result) for this (source ID, desc lang) pair.
-  const auto result_lookup =
-      results.find(MakeImageId(request_key.first, request_key.second));
+  // error and not a malformed result) for this request key.
+  const auto result_lookup = results.find(request_key.MakeImageId());
 
   // Populate the result struct for this image and copy it into the cache if
   // necessary.
@@ -1008,7 +1027,7 @@ void Annotator::ProcessResult(
   const auto request_info_it = request_infos_.find(request_key);
   if (request_info_it == request_infos_.end()) {
     LOG(ERROR) << "Could not find request key in request_infos_: "
-               << request_key.first << "," << request_key.second;
+               << request_key.source_id << "," << request_key.desc_lang_tag;
     return;
   }
 

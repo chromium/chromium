@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "net/base/network_change_notifier.h"
@@ -67,7 +68,8 @@ class AccessibilityLabelsService
   // Routes an Annotator interface receiver to the Image Annotation service for
   // binding.
   void BindImageAnnotator(
-      mojo::PendingReceiver<image_annotation::mojom::Annotator> receiver);
+      mojo::PendingReceiver<image_annotation::mojom::Annotator> receiver,
+      const url::Origin& parent_origin);
 
   // Allows tests to override how this object binds a connection to a remote
   // ImageAnnotationService.

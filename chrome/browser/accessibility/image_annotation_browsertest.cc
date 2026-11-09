@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,7 +16,9 @@
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/language/core/browser/pref_names.h"
@@ -32,6 +35,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/image_annotation/public/cpp/image_processor.h"
@@ -44,6 +48,7 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 constexpr base::FilePath::CharType kDocRoot[] =
     FILE_PATH_LITERAL("chrome/test/data");
@@ -110,6 +115,12 @@ class FakeAnnotator : public image_annotation::mojom::Annotator {
     return_error_code_ = error_code;
   }
 
+  static const std::optional<url::Origin>& GetLastAnnotatedOrigin() {
+    return last_annotated_origin_;
+  }
+
+  static void ClearBoundOrigins() { last_annotated_origin_.reset(); }
+
   FakeAnnotator() = default;
 
   FakeAnnotator(const FakeAnnotator&) = delete;
@@ -118,8 +129,9 @@ class FakeAnnotator : public image_annotation::mojom::Annotator {
   ~FakeAnnotator() override = default;
 
   void BindReceiver(
-      mojo::PendingReceiver<image_annotation::mojom::Annotator> receiver) {
-    receivers_.Add(this, std::move(receiver));
+      mojo::PendingReceiver<image_annotation::mojom::Annotator> receiver,
+      const url::Origin& parent_origin) {
+    receivers_.Add(this, std::move(receiver), parent_origin);
   }
 
   void AnnotateImage(
@@ -128,6 +140,7 @@ class FakeAnnotator : public image_annotation::mojom::Annotator {
       mojo::PendingRemote<image_annotation::mojom::ImageProcessor>
           image_processor,
       AnnotateImageCallback callback) override {
+    last_annotated_origin_ = receivers_.current_context();
     if (return_error_code_) {
       image_annotation::mojom::AnnotateImageResultPtr result =
           image_annotation::mojom::AnnotateImageResult::NewErrorCode(
@@ -190,7 +203,7 @@ class FakeAnnotator : public image_annotation::mojom::Annotator {
   }
 
  private:
-  mojo::ReceiverSet<image_annotation::mojom::Annotator> receivers_;
+  mojo::ReceiverSet<image_annotation::mojom::Annotator, url::Origin> receivers_;
   std::vector<mojo::Remote<image_annotation::mojom::ImageProcessor>>
       processors_;
   static bool return_ocr_results_;
@@ -198,6 +211,7 @@ class FakeAnnotator : public image_annotation::mojom::Annotator {
   static std::map<std::string, std::string> custom_label_result_mapping_;
   static std::optional<image_annotation::mojom::AnnotateImageError>
       return_error_code_;
+  static std::optional<url::Origin> last_annotated_origin_;
 };
 
 // static
@@ -209,6 +223,8 @@ std::map<std::string, std::string> FakeAnnotator::custom_label_result_mapping_;
 // static
 std::optional<image_annotation::mojom::AnnotateImageError>
     FakeAnnotator::return_error_code_;
+// static
+std::optional<url::Origin> FakeAnnotator::last_annotated_origin_;
 
 // The fake ImageAnnotationService, which handles mojo calls from the renderer
 // process and passes them to FakeAnnotator.
@@ -225,9 +241,10 @@ class FakeImageAnnotationService
 
  private:
   // image_annotation::mojom::ImageAnnotationService:
-  void BindAnnotator(mojo::PendingReceiver<image_annotation::mojom::Annotator>
-                         receiver) override {
-    annotator_.BindReceiver(std::move(receiver));
+  void BindAnnotator(
+      mojo::PendingReceiver<image_annotation::mojom::Annotator> receiver,
+      const url::Origin& parent_origin) override {
+    annotator_.BindReceiver(std::move(receiver), parent_origin);
   }
 
   FakeAnnotator annotator_;
@@ -256,6 +273,7 @@ class ImageAnnotationBrowserTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    FakeAnnotator::ClearBoundOrigins();
 
     ASSERT_TRUE(https_server_.Start());
 
@@ -273,6 +291,7 @@ class ImageAnnotationBrowserTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    FakeAnnotator::ClearBoundOrigins();
     scoped_accessibility_mode_.reset();
     AccessibilityLabelsServiceFactory::GetForProfile(browser()->GetProfile())
         ->OverrideImageAnnotatorBinderForTesting(base::NullCallback());
@@ -699,4 +718,109 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, LazyLoadingImages) {
   EXPECT_EQ(2u, DescribeNodesWithAnnotations(
                     content::GetAccessibilityTreeSnapshot(web_contents))
                     .size());
+}
+
+IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, BindAnnotatorOrigin) {
+  FakeAnnotator::SetReturnOcrResults(true);
+  FakeAnnotator::SetReturnLabelResults(false);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Keep kAXModeComplete active without kLabelImages during navigation so that
+  // BindImageAnnotator is invoked only when kLabelImages is enabled after each
+  // navigation commits.
+  content::ScopedAccessibilityModeOverride base_ax_mode(web_contents,
+                                                        ui::kAXModeComplete);
+  scoped_accessibility_mode_.reset();
+
+  const GURL https_url =
+      https_server_.GetURL("/accessibility/image_annotation.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url));
+  FakeAnnotator::ClearBoundOrigins();
+  {
+    content::ScopedAccessibilityModeOverride label_images_mode(
+        web_contents, ui::AXMode::kLabelImages);
+    content::WaitForAccessibilityTreeToContainNodeWithName(
+        web_contents, "Appears to say: red.png Annotation");
+  }
+
+  ASSERT_TRUE(FakeAnnotator::GetLastAnnotatedOrigin().has_value());
+  const url::Origin https_origin = *FakeAnnotator::GetLastAnnotatedOrigin();
+  EXPECT_FALSE(https_origin.opaque());
+  EXPECT_EQ(url::Origin::Create(https_url), https_origin);
+
+  // Navigating to a file:// URL should bind with a unique opaque origin.
+  base::FilePath test_data_dir;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
+  const GURL file_url = net::FilePathToFileURL(
+      test_data_dir.AppendASCII("accessibility/image_annotation.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), file_url));
+  // Point the image to an HTTPS URL so AXImageAnnotator::GenerateImageSourceId
+  // produces a valid source ID while the document origin is file://.
+  const std::string load_https_image_script = content::JsReplace(
+      "new Promise(resolve => {"
+      "  const img = document.querySelector('img');"
+      "  img.onload = () => resolve(true);"
+      "  img.src = $1;"
+      "});",
+      https_server_.GetURL("/accessibility/red.png"));
+  ASSERT_EQ(true, content::EvalJs(web_contents, load_https_image_script));
+  FakeAnnotator::ClearBoundOrigins();
+  {
+    content::ScopedAccessibilityModeOverride label_images_mode(
+        web_contents, ui::AXMode::kLabelImages);
+    content::WaitForAccessibilityTreeToContainNodeWithName(
+        web_contents, "Appears to say: red.png Annotation");
+  }
+
+  ASSERT_TRUE(FakeAnnotator::GetLastAnnotatedOrigin().has_value());
+  const url::Origin file_origin = *FakeAnnotator::GetLastAnnotatedOrigin();
+  EXPECT_TRUE(file_origin.opaque());
+  EXPECT_EQ(url::kFileScheme,
+            file_origin.GetTupleOrPrecursorTupleIfOpaque().scheme());
+
+  // Navigating to a second file:// URL should bind with a different unique
+  // opaque origin so local files do not share cached annotations.
+  const GURL file_url_2 = net::FilePathToFileURL(
+      test_data_dir.AppendASCII("accessibility/image_annotation_doc.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), file_url_2));
+  ASSERT_EQ(true, content::EvalJs(web_contents, load_https_image_script));
+  FakeAnnotator::ClearBoundOrigins();
+  {
+    content::ScopedAccessibilityModeOverride label_images_mode(
+        web_contents, ui::AXMode::kLabelImages);
+    content::WaitForAccessibilityTreeToContainNodeWithName(
+        web_contents, "Appears to say: red.png Annotation");
+  }
+
+  ASSERT_TRUE(FakeAnnotator::GetLastAnnotatedOrigin().has_value());
+  const url::Origin file_origin_2 = *FakeAnnotator::GetLastAnnotatedOrigin();
+  EXPECT_TRUE(file_origin_2.opaque());
+  EXPECT_NE(file_origin, file_origin_2);
+
+  // Navigating in an OffTheRecord (Incognito) browser should also bind with a
+  // unique opaque origin even for an https:// URL.
+  BrowserWindowInterface* incognito_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  content::WebContents* incognito_web_contents =
+      incognito_browser->GetTabStripModel()->GetActiveWebContents();
+  content::ScopedAccessibilityModeOverride incognito_base_ax_mode(
+      incognito_web_contents, ui::kAXModeComplete);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, https_url));
+  FakeAnnotator::ClearBoundOrigins();
+  {
+    content::ScopedAccessibilityModeOverride incognito_label_images_mode(
+        incognito_web_contents, ui::AXMode::kLabelImages);
+    content::WaitForAccessibilityTreeToContainNodeWithName(
+        incognito_web_contents, "Appears to say: red.png Annotation");
+  }
+
+  ASSERT_TRUE(FakeAnnotator::GetLastAnnotatedOrigin().has_value());
+  const url::Origin incognito_origin = *FakeAnnotator::GetLastAnnotatedOrigin();
+  EXPECT_TRUE(incognito_origin.opaque());
+  EXPECT_EQ(url::kHttpsScheme,
+            incognito_origin.GetTupleOrPrecursorTupleIfOpaque().scheme());
+  EXPECT_NE(https_origin, incognito_origin);
+  EXPECT_NE(file_origin, incognito_origin);
 }

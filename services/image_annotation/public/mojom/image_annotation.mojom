@@ -4,6 +4,8 @@
 
 module image_annotation.mojom;
 
+import "url/mojom/origin.mojom";
+
 interface ImageProcessor {
   // Returns the (potentially resized and compressed) pixels for the image,
   // along with its new width and height.
@@ -63,6 +65,8 @@ interface Annotator {
 
 // The main interface to the Image Annotation service.
 interface ImageAnnotationService {
-  // Binds an Annotator endpoint which can be used to annotate images.
-  BindAnnotator(pending_receiver<Annotator> receiver);
+  // Binds an Annotator endpoint for a frame with |parent_origin|, which is used
+  // to partition cached results and in-flight requests.
+  BindAnnotator(pending_receiver<Annotator> receiver,
+                url.mojom.Origin parent_origin);
 };

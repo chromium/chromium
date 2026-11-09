@@ -247,7 +247,8 @@ void AccessibilityLabelsService::EnableLabelsServiceOnce(
 }
 
 void AccessibilityLabelsService::BindImageAnnotator(
-    mojo::PendingReceiver<image_annotation::mojom::Annotator> receiver) {
+    mojo::PendingReceiver<image_annotation::mojom::Annotator> receiver,
+    const url::Origin& parent_origin) {
   if (!remote_service_) {
     auto service_receiver = remote_service_.BindNewPipeAndPassReceiver();
     auto& binder = GetImageAnnotatorBinderOverride();
@@ -280,7 +281,7 @@ void AccessibilityLabelsService::BindImageAnnotator(
     }
   }
 
-  remote_service_->BindAnnotator(std::move(receiver));
+  remote_service_->BindAnnotator(std::move(receiver), parent_origin);
 }
 
 void AccessibilityLabelsService::OverrideImageAnnotatorBinderForTesting(

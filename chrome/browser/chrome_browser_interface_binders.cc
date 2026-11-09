@@ -82,6 +82,8 @@
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_mode.h"
+#include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
 #include "chrome/browser/android/contextualsearch/unhandled_tap_notifier_impl.h"  // nogncheck crbug.com/40147906
@@ -205,10 +207,21 @@ void BindImageAnnotator(
                            ui::AXMode::kLabelImages)) {
     return;
   }
-  AccessibilityLabelsServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(
-          frame_host->GetProcess()->GetBrowserContext()))
-      ->BindImageAnnotator(std::move(receiver));
+  Profile* profile = Profile::FromBrowserContext(
+      frame_host->GetProcess()->GetBrowserContext());
+  url::Origin origin = frame_host->GetLastCommittedOrigin();
+  // Derive a unique opaque origin in two cases:
+  // - Most pages with file:// urls will have paths which are different from
+  //   other local files. However, all file:// urls share the same origin, which
+  //   could lead to cross-origin data leaks if we don't partition them.
+  // - Off the record profiles share the parent profile's
+  //   AccessibilityLabelsService, so use an opaque origin to prevent leaking
+  //   cached results between regular and incognito sessions.
+  if (origin.scheme() == url::kFileScheme || profile->IsOffTheRecord()) {
+    origin = origin.DeriveNewOpaqueOrigin();
+  }
+  AccessibilityLabelsServiceFactory::GetForProfile(profile)->BindImageAnnotator(
+      std::move(receiver), origin);
 }
 
 void BindDistillabilityService(

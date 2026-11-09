@@ -14,6 +14,7 @@
 #include "services/image_annotation/annotator.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/origin.h"
 
 namespace image_annotation {
 
@@ -33,7 +34,8 @@ class ImageAnnotationService : public mojom::ImageAnnotationService {
 
  private:
   // mojom::ImageAnnotationService implementation:
-  void BindAnnotator(mojo::PendingReceiver<mojom::Annotator> receiver) override;
+  void BindAnnotator(mojo::PendingReceiver<mojom::Annotator> receiver,
+                     const url::Origin& parent_origin) override;
 
   mojo::Receiver<mojom::ImageAnnotationService> receiver_;
   Annotator annotator_;

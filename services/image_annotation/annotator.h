@@ -5,6 +5,8 @@
 #ifndef SERVICES_IMAGE_ANNOTATION_ANNOTATOR_H_
 #define SERVICES_IMAGE_ANNOTATION_ANNOTATOR_H_
 
+#include <compare>
+#include <cstdint>
 #include <deque>
 #include <list>
 #include <map>
@@ -28,6 +30,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace image_annotation {
 
@@ -108,7 +111,10 @@ class Annotator : public mojom::Annotator {
   ~Annotator() override;
 
   // Start providing behavior for the given Mojo receiver.
-  void BindReceiver(mojo::PendingReceiver<mojom::Annotator> receiver);
+  void BindReceiver(mojo::PendingReceiver<mojom::Annotator> receiver,
+                    const url::Origin& parent_origin);
+  // Binds a receiver using an empty opaque origin for single-origin unit tests.
+  void BindReceiverForTesting(mojo::PendingReceiver<mojom::Annotator> receiver);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AnnotatorTest, DescLanguage);
@@ -132,13 +138,38 @@ class Annotator : public mojom::Annotator {
                                      // processing has finished.
   };
 
+  // The tuple of (origin ID, source ID, desc lang) for a client request.
+  //
+  // Unique request keys represent unique requests to the server (i.e. two
+  // client requests that induce the same request key can be served by a single
+  // server request).
+  struct RequestKey {
+    RequestKey(uint64_t origin_id,
+               std::string source_id,
+               std::string desc_lang_tag);
+    RequestKey(const RequestKey& other);
+    RequestKey(RequestKey&& other);
+    RequestKey& operator=(const RequestKey& other);
+    RequestKey& operator=(RequestKey&& other);
+    ~RequestKey();
+
+    auto operator<=>(const RequestKey& other) const = default;
+
+    // Returns the unique image ID string that can be used to look up results
+    // from a server response.
+    std::string MakeImageId() const;
+
+    uint64_t origin_id;
+    std::string source_id;
+    std::string desc_lang_tag;
+  };
+
   // The relevant info for a request to the image annotation server for a single
   // image.
   struct ServerRequestInfo {
-    ServerRequestInfo(const std::string& source_id,
+    ServerRequestInfo(RequestKey request_key,
                       bool desc_requested,
                       bool icon_requested,
-                      const std::string& desc_lang_tag,
                       const std::vector<uint8_t>& image_bytes);
     ServerRequestInfo(const ServerRequestInfo& other) = delete;
     ~ServerRequestInfo();
@@ -147,22 +178,14 @@ class Annotator : public mojom::Annotator {
     ServerRequestInfo& operator=(ServerRequestInfo&& other);
     ServerRequestInfo& operator=(const ServerRequestInfo& other) = delete;
 
-    std::string source_id;  // The URL or hashed data URI for the image.
+    RequestKey request_key;  // The origin ID, source ID, and language for the
+                             // request.
 
     bool desc_requested;  // Whether or not descriptions have been requested.
     bool icon_requested;  // Whether or not icons have been requested.
-    std::string desc_lang_tag;  // The language in which descriptions have been
-                                // requested.
 
     std::vector<uint8_t> image_bytes;  // The encoded pixel data for the image.
   };
-
-  // The pair of (source ID, desc lang) for a client request.
-  //
-  // Unique request keys represent unique requests to the server (i.e. two
-  // client requests that induce the same request key can be served by a single
-  // server request).
-  using RequestKey = std::pair<std::string, std::string>;
 
   // List of URL loader objects.
   using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
@@ -265,8 +288,8 @@ class Annotator : public mojom::Annotator {
   // given request key.
   //
   // Note that separate local processing will be scheduled for two requests that
-  // share a source ID but differ in language. This is suboptimal; in future we
-  // could share local processing among all relevant requests.
+  // share a source ID and origin ID but differ in language. This is suboptimal;
+  // in future we could share local processing among all relevant requests.
   std::map<RequestKey,
            raw_ptr<mojo::Remote<mojom::ImageProcessor>, CtnExperimental>>
       local_processors_;
@@ -291,7 +314,11 @@ class Annotator : public mojom::Annotator {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  mojo::ReceiverSet<mojom::Annotator> receivers_;
+  // Maps from parent origin to a unique ID used to partition caches and
+  // requests.
+  std::map<url::Origin, uint64_t> origin_ids_;
+
+  mojo::ReceiverSet<mojom::Annotator, uint64_t> receivers_;
 
   // A timer used to throttle server request frequency.
   std::unique_ptr<base::RepeatingTimer> server_request_timer_;

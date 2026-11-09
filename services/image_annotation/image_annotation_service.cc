@@ -44,8 +44,9 @@ ImageAnnotationService::ImageAnnotationService(
 ImageAnnotationService::~ImageAnnotationService() = default;
 
 void ImageAnnotationService::BindAnnotator(
-    mojo::PendingReceiver<mojom::Annotator> receiver) {
-  annotator_.BindReceiver(std::move(receiver));
+    mojo::PendingReceiver<mojom::Annotator> receiver,
+    const url::Origin& parent_origin) {
+  annotator_.BindReceiver(std::move(receiver), parent_origin);
 }
 
 }  // namespace image_annotation
