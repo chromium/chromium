@@ -3439,6 +3439,15 @@ void BrowserView::Paste() {
 // manager to do that.
 void BrowserView::CutCopyPaste(int command_id) {
 #if BUILDFLAG(IS_MAC)
+  // The command is forwarded to NSApp below, which dispatches it to the first
+  // responder of whichever window is key at that time, not necessarily this
+  // one. If this window is no longer active (e.g. another window became key
+  // between the command being chosen and it being executed), drop the command
+  // so it can't be delivered to a different window.
+  if (!GetWidget() || !GetWidget()->IsActive()) {
+    return;
+  }
+
   auto command = CommandFromBrowserCommand(command_id);
   auto* application_host =
       GetWidget() ? remote_cocoa::ApplicationHost::GetForNativeView(
