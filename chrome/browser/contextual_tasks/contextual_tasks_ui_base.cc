@@ -121,6 +121,23 @@ constexpr char kMyActivityUrl[] = "https://myactivity.google.com/myactivity";
 constexpr std::string_view kProfileAvatarPathPrefix =
     "profile-avatar.png?gaia_id=";
 
+std::u16string GetSmartTabSharingMegaplusString() {
+  switch (contextual_tasks::kSmartTabSharingMegaplusStringOption.Get()) {
+    case contextual_tasks::SmartTabSharingMegaplusStringOption::kMegaplusV1:
+      return l10n_util::GetStringUTF16(
+          IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS);
+    case contextual_tasks::SmartTabSharingMegaplusStringOption::kMegaplusV2:
+      return l10n_util::GetStringUTF16(
+          IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS_V2);
+    case contextual_tasks::SmartTabSharingMegaplusStringOption::kMegaplusV3:
+      return l10n_util::GetStringUTF16(
+          IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS_V3);
+    default:
+      return l10n_util::GetStringUTF16(
+          IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS);
+  }
+}
+
 void OpenUrlWithDisposition(Profile* profile,
                             const GURL& url,
                             ui::mojom::WindowOpenDisposition disposition,
@@ -523,6 +540,10 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
        IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_FIRST_LINE},
       {"reopenTab", IDS_CONTEXTUAL_TASKS_REOPEN_TABS_BUTTON_TEXT},
       {"sourcesMenuTitle", IDS_CONTEXTUAL_TASKS_SOURCES_MENU_TITLE},
+      {"stsMegaplusAutomaticallyAddTabsHeader",
+       IDS_STS_MEGAPLUS_AUTOMATICALLY_ADD_TABS_HEADER},
+      {"stsMegaplusManuallyAddTabsHeader",
+       IDS_STS_MEGAPLUS_MANUALLY_ADD_TABS_HEADER},
       {"threadHistoryTooltip",
        IDS_CONTEXTUAL_TASKS_SIDE_PANEL_HISTORY_TOOL_TIP},
       {"title", IDS_CONTEXTUAL_TASKS_AI_MODE_TITLE},
@@ -532,6 +553,8 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
   for (const auto& str : kLocalizedStrings) {
     dict.Set(str.name, l10n_util::GetStringUTF16(str.id));
   }
+  dict.Set("stsMegaplusShareRelevantOpenTabs",
+           GetSmartTabSharingMegaplusString());
 
   dict.Set("webuiRoundedIconsAttribute",
            features::IsWebUIRoundedIconsEnabled() ? "webui-rounded-icons" : "");

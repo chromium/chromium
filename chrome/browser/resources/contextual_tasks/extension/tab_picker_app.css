@@ -188,7 +188,6 @@ composebox-favicon-group {
   outline: none;
 }
 
-
 #tabMenu .dropdown-item[disabled] {
   color: var(--tab-picker-disabled-text-color);
   cursor: default;
@@ -197,6 +196,30 @@ composebox-favicon-group {
 #tabMenu .dropdown-item[disabled]:hover,
 #tabMenu .dropdown-item[disabled]:focus {
   background-color: transparent;
+}
+
+#automaticallyAddTabsHeader,
+#manuallyAddTabsHeader {
+  color: var(--tab-picker-item-color);
+  font-family: var(--cr-composebox-context-menu-font-family,
+      'Google Sans', Roboto, sans-serif);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 16px;
+  margin: 0;
+  padding: 8px 14px 4px 14px;
+}
+
+#tabMenu hr {
+  background: var(--color-sys-divider,
+      var(--color-composebox-file-carousel-divider, rgba(0, 0, 0, 0.12)));
+  border: none;
+  height: 1px;
+  margin: 8px 0;
+}
+
+:host([dark-mode]) #tabMenu hr {
+  background: var(--color-sys-divider, rgba(255, 255, 255, 0.16));
 }
 
 :host-context(.focus-outline-visible) #tabMenu .dropdown-item:focus {
@@ -230,11 +253,11 @@ composebox-favicon-group {
   width: 72px;
 }
 
-.recent-tabs-suffix:not([disabled]) {
+.dropdown-item:not([disabled]) .recent-tabs-suffix {
   color: var(--tab-picker-item-color);
 }
 
-.recent-tabs-suffix[disabled] {
+.dropdown-item[disabled] .recent-tabs-suffix {
   color: var(--tab-picker-disabled-text-color);
 }
 
