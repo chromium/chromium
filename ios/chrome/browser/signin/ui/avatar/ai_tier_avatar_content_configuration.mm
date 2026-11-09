@@ -31,7 +31,7 @@
 
 - (CGSize)contentSize {
   CGFloat viewDiameter = self.diameter;
-  if (self.showsAITierRing && self.sizeType == AITierAvatarSizeType::kAvatar) {
+  if (self.showsAITierRing && self.sizeType == AITierAvatarSizeTypeAvatar) {
     viewDiameter += 2.0 * (kAiTierRingWidth + kAiTierAndAvatarDistance);
   }
   return CGSizeMake(viewDiameter, viewDiameter);

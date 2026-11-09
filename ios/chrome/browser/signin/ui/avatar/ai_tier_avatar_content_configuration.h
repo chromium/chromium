@@ -11,11 +11,11 @@
 
 // Defines whether the configured diameter is for the avatar image or for the
 // full view.
-enum class AITierAvatarSizeType {
+typedef NS_ENUM(NSInteger, AITierAvatarSizeType) {
   // The diameter is for the avatar image; the ring is bigger.
-  kAvatar,
+  AITierAvatarSizeTypeAvatar,
   // The diameter is for the full view (including the ring if displayed).
-  kFullView,
+  AITierAvatarSizeTypeFullView,
 };
 
 // A content configuration for an `AITierAvatarView`.

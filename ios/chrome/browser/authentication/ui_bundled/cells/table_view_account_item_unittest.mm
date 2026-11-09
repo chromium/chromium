@@ -20,7 +20,7 @@
 
 using AccountControlTableViewItemTest = PlatformTest;
 
-// Test that the avatar configuration and text labels are set properly after a
+// Tests that the avatar configuration and text labels are set properly after a
 // call to `configureCell:`.
 TEST_F(AccountControlTableViewItemTest, ImageViewAndTextLabels) {
   TableViewAccountItem* item = [[TableViewAccountItem alloc] initWithType:0];
@@ -57,14 +57,14 @@ TEST_F(AccountControlTableViewItemTest, ImageViewAndTextLabels) {
           leading_config);
   EXPECT_NSEQ(image, avatar_config.avatarImage);
   EXPECT_EQ(kTableViewIconImageSize, avatar_config.diameter);
-  EXPECT_EQ(AITierAvatarSizeType::kFullView, avatar_config.sizeType);
+  EXPECT_EQ(AITierAvatarSizeTypeFullView, avatar_config.sizeType);
   EXPECT_FALSE(avatar_config.showsAITierRing);
   EXPECT_TRUE(CGSizeEqualToSize(
       CGSizeMake(kTableViewIconImageSize, kTableViewIconImageSize),
       [avatar_config contentSize]));
 }
 
-// Test that `TableViewAccountDetailImage::kAITierRing` is forwarded to the
+// Tests that `TableViewAccountDetailImage::kAITierRing` is forwarded to the
 // leading avatar configuration, preserves the avatar center, and appends
 // "Google membership" to the accessibility label after a call to
 // `configureCell:`.
@@ -92,7 +92,7 @@ TEST_F(AccountControlTableViewItemTest, ShowsAITierRing) {
           configuration.leadingConfiguration);
   EXPECT_NSEQ(image, avatar_config.avatarImage);
   EXPECT_EQ(kTableViewIconImageSize, avatar_config.diameter);
-  EXPECT_EQ(AITierAvatarSizeType::kFullView, avatar_config.sizeType);
+  EXPECT_EQ(AITierAvatarSizeTypeFullView, avatar_config.sizeType);
   EXPECT_TRUE(avatar_config.showsAITierRing);
   EXPECT_TRUE(CGSizeEqualToSize(
       CGSizeMake(kTableViewIconImageSize, kTableViewIconImageSize),

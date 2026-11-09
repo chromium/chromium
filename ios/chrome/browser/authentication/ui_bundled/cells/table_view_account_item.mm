@@ -83,7 +83,7 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
       [[AITierAvatarContentConfiguration alloc]
           initWithAvatarImage:self.image
                      diameter:kTableViewIconImageSize
-                     sizeType:AITierAvatarSizeType::kFullView
+                     sizeType:AITierAvatarSizeTypeFullView
               showsAITierRing:showsAITierRing];
 
   configuration.leadingConfiguration = avatarConfiguration;

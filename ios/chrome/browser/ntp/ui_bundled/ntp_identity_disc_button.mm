@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
+#import "ios/chrome/browser/signin/ui/avatar/ai_tier_avatar_content_configuration.h"
 #import "ios/chrome/browser/signin/ui/avatar/ai_tier_avatar_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
@@ -219,10 +220,14 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
     }
 
     BOOL showRing = _hasAITier && !_hasAccountError;
-    _avatarViewWithRing = [[AITierAvatarView alloc]
-        initWithAvatarImage:_identityDiscImage
-             avatarDiameter:ntp_home::kIdentityAvatarDiameter
-            showsAITierRing:showRing];
+    AITierAvatarContentConfiguration* avatarConfiguration =
+        [[AITierAvatarContentConfiguration alloc]
+            initWithAvatarImage:_identityDiscImage
+                       diameter:ntp_home::kIdentityAvatarDiameter
+                       sizeType:AITierAvatarSizeTypeAvatar
+                showsAITierRing:showRing];
+    _avatarViewWithRing =
+        [[AITierAvatarView alloc] initWithConfiguration:avatarConfiguration];
     _avatarViewWithRing.userInteractionEnabled = NO;
 
     [self insertSubview:_avatarViewWithRing atIndex:0];

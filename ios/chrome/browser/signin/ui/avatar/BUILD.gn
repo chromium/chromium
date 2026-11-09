@@ -20,3 +20,14 @@ source_set("avatar") {
     "//ios/public/provider/chrome/browser/intelligence/signin",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ai_tier_avatar_view_unittest.mm" ]
+  deps = [
+    ":avatar",
+    "//ios/chrome/browser/signin/model:constants",
+    "//ios/chrome/test/app:test_support",
+    "//testing/gtest",
+  ]
+}

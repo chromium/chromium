@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
+#import "ios/chrome/browser/signin/ui/avatar/ai_tier_avatar_content_configuration.h"
 #import "ios/chrome/browser/signin/ui/avatar/ai_tier_avatar_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -92,10 +93,14 @@ UIImage* GetEnterpriseIcon() {
 
     CGFloat avatarDiameter =
         GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large).width;
+    AITierAvatarContentConfiguration* avatarConfiguration =
+        [[AITierAvatarContentConfiguration alloc]
+            initWithAvatarImage:_avatarImage
+                       diameter:avatarDiameter
+                       sizeType:AITierAvatarSizeTypeAvatar
+                showsAITierRing:showAITierViews];
     _avatarView =
-        [[AITierAvatarView alloc] initWithAvatarImage:_avatarImage
-                                       avatarDiameter:avatarDiameter
-                                      showsAITierRing:showAITierViews];
+        [[AITierAvatarView alloc] initWithConfiguration:avatarConfiguration];
     [self addSubview:_avatarView];
 
     UILabel* titleLabel = [[UILabel alloc] init];

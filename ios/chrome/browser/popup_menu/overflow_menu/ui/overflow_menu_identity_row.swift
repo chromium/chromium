@@ -20,13 +20,13 @@ private struct OverflowMenuIdentityAvatarView: UIViewRepresentable {
 
   func updateUIView(_ uiView: UIView, context: Context) {
     uiView.subviews.forEach { $0.removeFromSuperview() }
-    guard
-      let avatarView = AITierAvatarView(
-        avatarImage: image,
-        avatarDiameter: diameter,
-        showsAITierRing: showsAITierRing
-      )
-    else {
+    let configuration = AITierAvatarContentConfiguration(
+      avatarImage: image,
+      diameter: diameter,
+      sizeType: .fullView,
+      showsAITierRing: showsAITierRing
+    )
+    guard let avatarView = AITierAvatarView(configuration: configuration) else {
       return
     }
     uiView.addSubview(avatarView)

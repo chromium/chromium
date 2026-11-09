@@ -35,18 +35,6 @@
   return self;
 }
 
-- (instancetype)initWithAvatarImage:(UIImage*)avatarImage
-                     avatarDiameter:(CGFloat)avatarDiameter
-                    showsAITierRing:(BOOL)showsAITierRing {
-  AITierAvatarContentConfiguration* configuration =
-      [[AITierAvatarContentConfiguration alloc]
-          initWithAvatarImage:avatarImage
-                     diameter:avatarDiameter
-                     sizeType:AITierAvatarSizeType::kAvatar
-              showsAITierRing:showsAITierRing];
-  return [self initWithConfiguration:configuration];
-}
-
 #pragma mark - ChromeContentView
 
 - (BOOL)hasCustomAccessibilityActivationPoint {
@@ -83,11 +71,11 @@
   CGFloat ringDiameter = 0;
   if (showsAITierRing) {
     switch (_configuration.sizeType) {
-      case AITierAvatarSizeType::kAvatar:
+      case AITierAvatarSizeTypeAvatar:
         ringDiameter = avatarDiameter +
                        2.0 * (kAiTierRingWidth + kAiTierAndAvatarDistance);
         break;
-      case AITierAvatarSizeType::kFullView:
+      case AITierAvatarSizeTypeFullView:
         ringDiameter = avatarDiameter;
         avatarDiameter =
             ringDiameter - 2.0 * (kAiTierRingWidth + kAiTierAndAvatarDistance);
@@ -116,6 +104,7 @@
         kPremiumAvatarRingAccessibilityIdentifier;
 
     [self addSubview:_ringImageView];
+    AddSquareConstraints(_ringImageView, ringDiameter);
     AddSameConstraints(_ringImageView, self);
     AddSameCenterConstraints(_avatarImageView, self);
   } else {

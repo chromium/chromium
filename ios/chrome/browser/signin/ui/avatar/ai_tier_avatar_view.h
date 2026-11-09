@@ -19,12 +19,6 @@
 - (instancetype)initWithConfiguration:
     (AITierAvatarContentConfiguration*)configuration NS_DESIGNATED_INITIALIZER;
 
-// Convenience initializer with `avatarImage`, `avatarDiameter`, and
-// `showsAITierRing`.
-- (instancetype)initWithAvatarImage:(UIImage*)avatarImage
-                     avatarDiameter:(CGFloat)avatarDiameter
-                    showsAITierRing:(BOOL)showsAITierRing;
-
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
