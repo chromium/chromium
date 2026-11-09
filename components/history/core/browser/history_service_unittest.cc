@@ -27,12 +27,16 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -60,6 +64,9 @@
 #include "components/visitedlink/core/visited_link.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace history {
 
@@ -256,6 +263,47 @@ class HistoryServiceTest : public testing::Test {
         }),
         &tracker_);
     run_loop.Run();  // Will be exited in callback on query complete.
+  }
+
+  void SetFaviconsOutOfDateForPage(const GURL& page_url) {
+    history_service_->SetFaviconsOutOfDateForPage(page_url);
+  }
+
+  void CloneFaviconMappingsForPages(
+      const GURL& page_url_to_read,
+      const favicon_base::IconTypeSet& icon_types,
+      const base::flat_set<GURL>& page_urls_to_write) {
+    history_service_->CloneFaviconMappingsForPages(page_url_to_read, icon_types,
+                                                   page_urls_to_write);
+  }
+
+  void MergeFavicon(const GURL& page_url,
+                    const GURL& icon_url,
+                    favicon_base::IconType icon_type,
+                    scoped_refptr<base::RefCountedMemory> bitmap_data,
+                    const gfx::Size& pixel_size) {
+    history_service_->MergeFavicon(page_url, icon_url, icon_type, bitmap_data,
+                                   pixel_size);
+  }
+
+  void GetFaviconsForURL(const GURL& page_url,
+                         const favicon_base::IconTypeSet& icon_types,
+                         const std::vector<int>& desired_sizes,
+                         bool fallback_to_host,
+                         favicon_base::FaviconResultsCallback callback) {
+    history_service_->GetFaviconsForURL(page_url, icon_types, desired_sizes,
+                                        fallback_to_host, std::move(callback),
+                                        &tracker_);
+  }
+
+  void GetLargestFaviconForURL(
+      const GURL& page_url,
+      base::span<const favicon_base::IconTypeSet> icon_types,
+      int minimum_size_in_pixels,
+      favicon_base::FaviconRawBitmapCallback callback) {
+    history_service_->GetLargestFaviconForURL(page_url, icon_types,
+                                              minimum_size_in_pixels,
+                                              std::move(callback), &tracker_);
   }
 
   base::ScopedTempDir temp_dir_;
@@ -1697,6 +1745,132 @@ TEST_F(HistoryServiceTest, GetUnresolvableJourneysCountForFishfood) {
   history->GetUnresolvableJourneysCountForFishfood(future.GetCallback(),
                                                    &tracker_);
   EXPECT_EQ(future.Take(), 1u);
+}
+
+namespace {
+
+class NonAddableChromeUrlHistoryClient : public HistoryClient {
+ public:
+  void OnHistoryServiceCreated(HistoryService* history_service) override {}
+  void Shutdown() override {}
+  CanAddURLCallback GetThreadSafeCanAddURLCallback() const override {
+    return base::BindRepeating([](const GURL& url) {
+      return url.is_valid() && !url.SchemeIs("chrome") &&
+             !url.SchemeIs(url::kAboutScheme);
+    });
+  }
+  void NotifyProfileError(sql::InitStatus init_status,
+                          const std::string& diagnostics) override {}
+  std::unique_ptr<HistoryBackendClient> CreateBackendClient() override {
+    return nullptr;
+  }
+  void UpdateBookmarkLastUsedTime(int64_t bookmark_node_id,
+                                  base::Time time) override {}
+};
+
+}  // namespace
+
+TEST_F(HistoryServiceTest, NonAddableUrlsShortCircuitedInVisitAndFaviconApis) {
+  CleanupHistoryService();
+
+  base::test::ScopedFeatureList feature_list(kDeferHistoryBackendInit);
+
+  history_service_ = std::make_unique<history::HistoryService>(
+      std::make_unique<NonAddableChromeUrlHistoryClient>(), nullptr, nullptr,
+      nullptr);
+  history_service_->Init(TestHistoryDatabaseParamsForPath(history_dir_));
+  ASSERT_FALSE(history_service_->is_backend_init_scheduled_for_testing());
+
+  const GURL source_url("https://example.com/source");
+  const GURL addable_dest("https://example.com/dest");
+  const GURL non_addable_dest("chrome://newtab/");
+  const GURL icon_url("https://example.com/favicon.ico");
+  const std::array<GURL, 3> kNonAddableUrls = {GURL(), non_addable_dest,
+                                               GURL("about:blank")};
+
+  for (const GURL& url : kNonAddableUrls) {
+    history_service_->SetPageTitle(url, u"title");
+    history_service_->UpdateWithPageEndTime(0, 0, url, base::Time::Now());
+    history_service_->SetPageLanguageForVisit(0, 0, url, "en");
+    history_service_->SetPasswordStateForVisit(
+        0, 0, url, VisitContentAnnotations::PasswordState::kHasPasswordField);
+    SetFaviconsOutOfDateForPage(url);
+    CloneFaviconMappingsForPages(url, {favicon_base::IconType::kFavicon},
+                                 {addable_dest});
+    CloneFaviconMappingsForPages(source_url, {favicon_base::IconType::kFavicon},
+                                 {url});
+
+    base::test::TestFuture<QueryURLResult> query_url_future;
+    history_service_->QueryURL(url, query_url_future.GetCallback(), &tracker_);
+    base::test::TestFuture<QueryURLAndVisitsResult> query_visits_future;
+    history_service_->QueryURLAndVisits(url, VisitQuery404sPolicy::kInclude404s,
+                                        query_visits_future.GetCallback(),
+                                        &tracker_);
+    base::test::TestFuture<QueryURLAndVisitsResult> recent_visits_future;
+    history_service_->GetMostRecentVisitsForGurl(
+        url, 5, VisitQuery404sPolicy::kInclude404s,
+        recent_visits_future.GetCallback(), &tracker_);
+    base::test::TestFuture<std::vector<favicon_base::FaviconRawBitmapResult>>
+        favicons_future;
+    GetFaviconsForURL(
+        url, {favicon_base::IconType::kFavicon}, {16},
+        /*fallback_to_host=*/true,
+        favicons_future.GetCallback<
+            const std::vector<favicon_base::FaviconRawBitmapResult>&>());
+    base::test::TestFuture<favicon_base::FaviconRawBitmapResult>
+        largest_favicon_future;
+    const std::vector<favicon_base::IconTypeSet> icon_types = {
+        {favicon_base::IconType::kFavicon}};
+    GetLargestFaviconForURL(
+        url, icon_types, 16,
+        largest_favicon_future
+            .GetCallback<const favicon_base::FaviconRawBitmapResult&>());
+
+    // None of the calls for non-addable URLs should schedule backend tasks or
+    // trigger deferred `HistoryBackend` initialization.
+    EXPECT_FALSE(history_service_->is_backend_init_scheduled_for_testing());
+
+    EXPECT_FALSE(query_url_future.Get().success);
+    EXPECT_EQ(0, query_url_future.Get().row.id());
+    EXPECT_FALSE(query_visits_future.Get().success);
+    EXPECT_EQ(0, query_visits_future.Get().row.id());
+    EXPECT_TRUE(query_visits_future.Get().visits.empty());
+    EXPECT_FALSE(recent_visits_future.Get().success);
+    EXPECT_EQ(0, recent_visits_future.Get().row.id());
+    EXPECT_TRUE(recent_visits_future.Get().visits.empty());
+    EXPECT_TRUE(favicons_future.Get().empty());
+    EXPECT_FALSE(largest_favicon_future.Get().is_valid());
+  }
+
+  // Verify `CloneFaviconMappingsForPages()` filters out non-addable destination
+  // URLs while preserving addable ones.
+  std::set<GURL> changed_page_urls;
+  base::CallbackListSubscription subscription =
+      history_service_->AddFaviconsChangedCallback(base::BindRepeating(
+          [](std::set<GURL>* out_urls, const std::set<GURL>& page_urls,
+             const GURL& icon_url) {
+            out_urls->insert(page_urls.begin(), page_urls.end());
+          },
+          &changed_page_urls));
+
+  auto bitmap_data =
+      base::MakeRefCounted<base::RefCountedBytes>(std::vector<uint8_t>{1, 2});
+  MergeFavicon(source_url, icon_url, favicon_base::IconType::kFavicon,
+               bitmap_data, gfx::Size(16, 16));
+  CloneFaviconMappingsForPages(source_url, {favicon_base::IconType::kFavicon},
+                               {addable_dest, non_addable_dest});
+  EXPECT_TRUE(history_service_->is_backend_init_scheduled_for_testing());
+
+  base::test::TestFuture<std::vector<favicon_base::FaviconRawBitmapResult>>
+      addable_dest_future;
+  GetFaviconsForURL(
+      addable_dest, {favicon_base::IconType::kFavicon}, {16},
+      /*fallback_to_host=*/false,
+      addable_dest_future.GetCallback<
+          const std::vector<favicon_base::FaviconRawBitmapResult>&>());
+  EXPECT_FALSE(addable_dest_future.Get().empty());
+  EXPECT_THAT(changed_page_urls,
+              testing::UnorderedElementsAre(source_url, addable_dest));
 }
 
 // This class mocks the VisitDelegate in HistoryService to ensure that
