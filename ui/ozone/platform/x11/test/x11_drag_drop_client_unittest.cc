@@ -34,7 +34,6 @@
 #include "ui/base/x/x11_util.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/ozone/platform/x11/os_exchange_data_provider_x11.h"
@@ -366,7 +365,7 @@ TestDragDropClient::TestDragDropClient(X11Window* window)
 TestDragDropClient::~TestDragDropClient() = default;
 
 x11::Atom TestDragDropClient::GetAtom(const char* name) {
-  return x11::GetAtom(name);
+  return x11::Connection::Get()->GetAtom(name);
 }
 
 bool TestDragDropClient::MessageHasType(const x11::ClientMessageEvent& event,
@@ -545,7 +544,7 @@ void BasicStep2(TestDragDropClient* client, x11::Window toplevel) {
   EXPECT_EQ(1u, events[0].data.data32[1] & 1);
   std::vector<x11::Atom> targets;
   x11::Connection::Get()->GetArrayProperty(
-      client->source_xwindow(), x11::GetAtom("XdndTypeList"), &targets);
+      client->source_xwindow(), client->GetAtom("XdndTypeList"), &targets);
   EXPECT_FALSE(targets.empty());
 
   EXPECT_TRUE(client->MessageHasType(events[1], "XdndPosition"));
@@ -891,7 +890,7 @@ TEST_F(X11DragDropClientTest, ClientDestroyedDuringPerformDrop) {
   delegate.destroy_during_perform_drop_ = true;
 
   x11::ClientMessageEvent event;
-  event.type = x11::GetAtom("XdndDrop");
+  event.type = x11::Connection::Get()->GetAtom("XdndDrop");
   event.format = 32;
   event.data.data32[0] = 1;  // dummy source_window
 
@@ -908,7 +907,7 @@ TEST_F(X11DragDropClientTest, ClientDestroyedDuringOnBeforeDragLeave) {
   delegate.destroy_during_before_drag_leave_ = true;
 
   x11::ClientMessageEvent event;
-  event.type = x11::GetAtom("XdndLeave");
+  event.type = x11::Connection::Get()->GetAtom("XdndLeave");
   event.format = 32;
 
   // This should not crash!
@@ -933,36 +932,37 @@ namespace {
 
 void DriveSelectionNotifyPath(XDragDropClient* client,
                               x11::Window source_window) {
+  auto* connection = x11::Connection::Get();
   // 1. Send XdndEnter
   x11::ClientMessageEvent enter_event;
-  enter_event.type = x11::GetAtom("XdndEnter");
+  enter_event.type = connection->GetAtom("XdndEnter");
   enter_event.format = 32;
   enter_event.data.data32[0] = static_cast<uint32_t>(source_window);
   enter_event.data.data32[1] = 5 << 24;  // version 5
   enter_event.data.data32[2] =
-      static_cast<uint32_t>(x11::GetAtom("text/plain"));
+      static_cast<uint32_t>(connection->GetAtom("text/plain"));
   enter_event.data.data32[3] = 0;
   enter_event.data.data32[4] = 0;
   client->HandleXdndEvent(enter_event);
 
   // 2. Send XdndPosition
   x11::ClientMessageEvent pos_event;
-  pos_event.type = x11::GetAtom("XdndPosition");
+  pos_event.type = connection->GetAtom("XdndPosition");
   pos_event.format = 32;
   pos_event.data.data32[0] = static_cast<uint32_t>(source_window);
   pos_event.data.data32[1] = 0;
   pos_event.data.data32[2] = (100 << 16) | 200;  // x=100, y=200
   pos_event.data.data32[3] = 0;                  // time_stamp
   pos_event.data.data32[4] =
-      static_cast<uint32_t>(x11::GetAtom("XdndActionCopy"));
+      static_cast<uint32_t>(connection->GetAtom("XdndActionCopy"));
   client->HandleXdndEvent(pos_event);
 
   // 3. Send SelectionNotify
   x11::SelectionNotifyEvent selection_event;
   selection_event.requestor = static_cast<x11::Window>(1);
-  selection_event.selection = x11::GetAtom("XdndSelection");
-  selection_event.target = x11::GetAtom("text/plain");
-  selection_event.property = x11::GetAtom("_CHROMIUM_DRAG_RECEIVER");
+  selection_event.selection = connection->GetAtom("XdndSelection");
+  selection_event.target = connection->GetAtom("text/plain");
+  selection_event.property = connection->GetAtom("_CHROMIUM_DRAG_RECEIVER");
   selection_event.time = x11::Time::CurrentTime;
   client->OnSelectionNotify(selection_event);
 }
@@ -986,7 +986,7 @@ class ReentrantLeaveDelegate : public XDragDropClient::Delegate {
   int UpdateDrag(const gfx::Point& screen_point) override {
     if (client_) {
       x11::ClientMessageEvent event;
-      event.type = x11::GetAtom("XdndLeave");
+      event.type = x11::Connection::Get()->GetAtom("XdndLeave");
       event.format = 32;
       client_->HandleXdndEvent(event);
     }

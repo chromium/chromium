@@ -30,7 +30,7 @@
 #include "ui/gfx/linux/gbm_support_x11.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/switches.h"
-#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/visual_manager.h"
 #include "ui/linux/linux_ui_delegate.h"
 #include "ui/ozone/common/stub_overlay_manager.h"
@@ -227,9 +227,9 @@ class OzonePlatformX11 : public OzonePlatform,
     }
     properties.supports_subwindows_as_accelerated_widgets = false;
     properties.supports_system_tray_windowing = true;
-    properties.supports_server_window_menus =
-        x11::Connection::Get()->WmSupportsHint(
-            x11::GetAtom("_GTK_SHOW_WINDOW_MENU"));
+    auto* connection = x11::Connection::Get();
+    properties.supports_server_window_menus = connection->WmSupportsHint(
+        connection->GetAtom("_GTK_SHOW_WINDOW_MENU"));
     properties.supports_global_application_menus = true;
 
     return properties;

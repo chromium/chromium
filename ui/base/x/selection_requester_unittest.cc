@@ -20,7 +20,6 @@
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_clipboard_helper.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/xproto.h"
@@ -98,7 +97,7 @@ class SelectionRequesterTest : public testing::Test {
   void SendIncrStart(x11::Atom selection, x11::Atom target) {
     connection_->SetProperty<uint32_t>(requestor_->x_window_,
                                        requestor_->x_property_,
-                                       x11::GetAtom(kIncr), 1024);
+                                       connection_->GetAtom(kIncr), 1024);
     connection_->Sync();
 
     SendSelectionNotifyFailure(selection, target, requestor_->x_property_);
@@ -146,10 +145,10 @@ TEST_F(SelectionRequesterTest, NestedRequests) {
   // Assume that |selection| will have no owner. If there is an owner, the owner
   // will set the property passed into the XConvertSelection() request which is
   // undesirable.
-  x11::Atom selection = x11::GetAtom("FAKE_SELECTION");
+  x11::Atom selection = connection_->GetAtom("FAKE_SELECTION");
 
-  x11::Atom target1 = x11::GetAtom("TARGET1");
-  x11::Atom target2 = x11::GetAtom("TARGET2");
+  x11::Atom target1 = connection_->GetAtom("TARGET1");
+  x11::Atom target2 = connection_->GetAtom("TARGET2");
 
   ConvertSelectionFuture future1;
   ConvertSelectionFuture future2;
@@ -172,9 +171,9 @@ TEST_F(SelectionRequesterTest, NestedRequests) {
 }
 
 TEST_F(SelectionRequesterTest, RequestTypesAsync) {
-  x11::Atom selection = x11::GetAtom("FAKE_SELECTION");
-  x11::Atom target1 = x11::GetAtom("TARGET1");
-  x11::Atom target2 = x11::GetAtom("TARGET2");
+  x11::Atom selection = connection_->GetAtom("FAKE_SELECTION");
+  x11::Atom target1 = connection_->GetAtom("TARGET1");
+  x11::Atom target2 = connection_->GetAtom("TARGET2");
 
   base::test::TestFuture<SelectionData> future;
   requestor_->RequestTypesAsync(selection, {target1, target2},
@@ -193,8 +192,8 @@ TEST_F(SelectionRequesterTest, RequestTypesAsync) {
 
 // Test that a request is aborted if the selection owner never responds.
 TEST_F(SelectionRequesterTest, AbortStaleRequests) {
-  x11::Atom selection = x11::GetAtom("FAKE_SELECTION");
-  x11::Atom target = x11::GetAtom("TARGET");
+  x11::Atom selection = connection_->GetAtom("FAKE_SELECTION");
+  x11::Atom target = connection_->GetAtom("TARGET");
 
   ConvertSelectionFuture future;
   PerformConvertSelection(selection, target, future);
@@ -211,9 +210,9 @@ TEST_F(SelectionRequesterTest, AbortStaleRequests) {
 // Test that a request which is never answered does not block subsequent
 // requests indefinitely. Regression test for https://crbug.com/571343363.
 TEST_F(SelectionRequesterTest, UnansweredRequestDoesNotBlockQueue) {
-  x11::Atom selection = x11::GetAtom("FAKE_SELECTION");
-  x11::Atom target1 = x11::GetAtom("TARGET1");
-  x11::Atom target2 = x11::GetAtom("TARGET2");
+  x11::Atom selection = connection_->GetAtom("FAKE_SELECTION");
+  x11::Atom target1 = connection_->GetAtom("TARGET1");
+  x11::Atom target2 = connection_->GetAtom("TARGET2");
 
   ConvertSelectionFuture future1;
   ConvertSelectionFuture future2;
@@ -237,9 +236,9 @@ TEST_F(SelectionRequesterTest, UnansweredRequestDoesNotBlockQueue) {
 // Test that the timeout for a queued request is measured from when it is sent
 // to the selection owner, not from when it was queued.
 TEST_F(SelectionRequesterTest, TimeoutStartsWhenRequestIsSent) {
-  x11::Atom selection = x11::GetAtom("FAKE_SELECTION");
-  x11::Atom target1 = x11::GetAtom("TARGET1");
-  x11::Atom target2 = x11::GetAtom("TARGET2");
+  x11::Atom selection = connection_->GetAtom("FAKE_SELECTION");
+  x11::Atom target1 = connection_->GetAtom("TARGET1");
+  x11::Atom target2 = connection_->GetAtom("TARGET2");
 
   ConvertSelectionFuture future1;
   ConvertSelectionFuture future2;
@@ -263,8 +262,8 @@ TEST_F(SelectionRequesterTest, TimeoutStartsWhenRequestIsSent) {
 // Test that an INCR transfer that keeps making progress is not aborted, even if
 // the total transfer time exceeds the timeout.
 TEST_F(SelectionRequesterTest, IncrProgressResetsTimeout) {
-  x11::Atom selection = x11::GetAtom("FAKE_SELECTION");
-  x11::Atom target = x11::GetAtom("TARGET");
+  x11::Atom selection = connection_->GetAtom("FAKE_SELECTION");
+  x11::Atom target = connection_->GetAtom("TARGET");
 
   ConvertSelectionFuture future;
   PerformConvertSelection(selection, target, future);
@@ -291,8 +290,8 @@ TEST_F(SelectionRequesterTest, IncrProgressResetsTimeout) {
 
 // Test that an INCR transfer that stalls is aborted.
 TEST_F(SelectionRequesterTest, StalledIncrTransferTimesOut) {
-  x11::Atom selection = x11::GetAtom("FAKE_SELECTION");
-  x11::Atom target = x11::GetAtom("TARGET");
+  x11::Atom selection = connection_->GetAtom("FAKE_SELECTION");
+  x11::Atom target = connection_->GetAtom("TARGET");
 
   ConvertSelectionFuture future;
   PerformConvertSelection(selection, target, future);

@@ -69,7 +69,6 @@
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_X11)
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_os_exchange_data_provider.h"
-#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_X11)
@@ -625,8 +624,9 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropImageFromRenderer) {
   if (ui::OzonePlatform::GetPlatformNameForTest() == "x11") {
     auto* connection = x11::Connection::Get();
     x11::Window xwindow = connection->CreateDummyWindow("Test Window");
-    connection->SetStringProperty(xwindow, x11::GetAtom("XdndDirectSave0"),
-                                  x11::GetAtom("text/plain"), "image.jpg");
+    connection->SetStringProperty(
+        xwindow, connection->GetAtom("XdndDirectSave0"),
+        connection->GetAtom("text/plain"), "image.jpg");
     data = std::make_unique<ui::OSExchangeData>(
         std::make_unique<ui::XOSExchangeDataProvider>(
             xwindow, xwindow, ui::SelectionFormatMap()));
@@ -718,8 +718,9 @@ TEST_F(WebContentsViewAuraTest,
   if (ui::OzonePlatform::GetPlatformNameForTest() == "x11") {
     auto* connection = x11::Connection::Get();
     x11::Window xwindow = connection->CreateDummyWindow("Test Window");
-    connection->SetStringProperty(xwindow, x11::GetAtom("XdndDirectSave0"),
-                                  x11::GetAtom("text/plain"), "image.jpg");
+    connection->SetStringProperty(
+        xwindow, connection->GetAtom("XdndDirectSave0"),
+        connection->GetAtom("text/plain"), "image.jpg");
     data = std::make_unique<ui::OSExchangeData>(
         std::make_unique<ui::XOSExchangeDataProvider>(
             xwindow, xwindow, ui::SelectionFormatMap()));

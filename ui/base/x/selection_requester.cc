@@ -14,7 +14,7 @@
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_clipboard_helper.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {
@@ -51,7 +51,7 @@ SelectionRequester::SelectionRequester(x11::Window x_window,
                                        XClipboardHelper* helper)
     : x_window_(x_window),
       helper_(helper),
-      x_property_(x11::GetAtom(kChromeSelection)) {}
+      x_property_(x11::Connection::Get()->GetAtom(kChromeSelection)) {}
 
 SelectionRequester::~SelectionRequester() = default;
 
@@ -141,7 +141,7 @@ void SelectionRequester::OnSelectionNotify(
     x11::Connection::Get()->DeleteProperty(x_window_, event_property);
   }
 
-  if (request->out_type == x11::GetAtom(kIncr)) {
+  if (request->out_type == x11::Connection::Get()->GetAtom(kIncr)) {
     request->data_sent_incrementally = true;
     request->out_data.clear();
     request->out_type = x11::Atom::None;

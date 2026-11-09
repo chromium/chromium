@@ -11,7 +11,6 @@
 #include "base/notreached.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/switches.h"
-#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/property_cache.h"
@@ -40,7 +39,7 @@ class ScreensaverStatusWatcher : public x11::EventObserver {
 
     x_screensaver_status_ = std::make_unique<x11::PropertyCache>(
         connection, connection->default_root(),
-        std::vector<x11::Atom>{x11::GetAtom("_SCREENSAVER_STATUS")});
+        std::vector<x11::Atom>{connection->GetAtom("_SCREENSAVER_STATUS")});
 
     connection->AddEventObserver(this);
     connection->screensaver().SelectInput(connection->default_root(),
@@ -66,9 +65,10 @@ class ScreensaverStatusWatcher : public x11::EventObserver {
 
     // Ironically, xscreensaver does not use the MIT-SCREENSAVER extension,
     // so add a special check for xscreensaver.
+    auto* connection = x11::Connection::Get();
     auto* status = x_screensaver_status_->GetAs<x11::Atom>(
-        x11::GetAtom("_SCREENSAVER_STATUS"));
-    return status && *status == x11::GetAtom("LOCK");
+        connection->GetAtom("_SCREENSAVER_STATUS"));
+    return status && *status == connection->GetAtom("LOCK");
   }
 
  private:

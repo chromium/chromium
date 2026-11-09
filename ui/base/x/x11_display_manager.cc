@@ -11,7 +11,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "ui/base/x/x11_display_util.h"
 #include "ui/display/types/display_config.h"
-#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
 #include "ui/gfx/x/xproto.h"
@@ -70,7 +70,7 @@ void XDisplayManager::RemoveObserver(display::DisplayObserver* observer) {
 void XDisplayManager::OnEvent(const x11::Event& xev) {
   auto* prop = xev.As<x11::PropertyNotifyEvent>();
   if (xev.As<x11::RandR::NotifyEvent>() ||
-      (prop && prop->atom == x11::GetAtom("_NET_WORKAREA"))) {
+      (prop && prop->atom == connection_->GetAtom("_NET_WORKAREA"))) {
     DispatchDelayedDisplayListUpdate();
   }
 }

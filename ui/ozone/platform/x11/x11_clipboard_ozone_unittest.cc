@@ -17,7 +17,6 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/xfixes.h"
@@ -115,7 +114,7 @@ TEST_F(X11ClipboardOzoneTest, SelfEchoDoesNotBumpSequenceAgain) {
            "to selection events in this environment.";
   }
 
-  const x11::Atom clipboard_atom = x11::GetAtom("CLIPBOARD");
+  const x11::Atom clipboard_atom = connection_->GetAtom("CLIPBOARD");
   clipboard_->OfferClipboardData(ClipboardBuffer::kCopyPaste,
                                  MakeTextData("hello"));
 
@@ -142,7 +141,7 @@ TEST_F(X11ClipboardOzoneTest, ForeignSelectionChangeBumpsSequence) {
            "to selection events in this environment.";
   }
 
-  const x11::Atom clipboard_atom = x11::GetAtom("CLIPBOARD");
+  const x11::Atom clipboard_atom = connection_->GetAtom("CLIPBOARD");
   clipboard_->OfferClipboardData(ClipboardBuffer::kCopyPaste,
                                  MakeTextData("hello"));
 

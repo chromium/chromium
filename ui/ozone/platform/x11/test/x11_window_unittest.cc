@@ -24,7 +24,6 @@
 #include "ui/events/test/events_test_utils_x11.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/native_ui_types.h"
-#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
@@ -157,9 +156,10 @@ class WMStateWaiter : public X11PropertyChangeWaiter {
   // X11PropertyChangeWaiter:
   bool ShouldKeepOnWaiting() override {
     std::vector<x11::Atom> hints;
-    if (x11::Connection::Get()->GetArrayProperty(
-            xwindow(), x11::GetAtom("_NET_WM_STATE"), &hints)) {
-      return std::ranges::contains(hints, x11::GetAtom(hint_)) !=
+    auto* connection = x11::Connection::Get();
+    if (connection->GetArrayProperty(
+            xwindow(), connection->GetAtom("_NET_WM_STATE"), &hints)) {
+      return std::ranges::contains(hints, connection->GetAtom(hint_)) !=
              wait_till_set_;
     }
     return true;
@@ -363,7 +363,7 @@ TEST_F(X11WindowTest, DISABLED_Shape) {
   }
 
   if (connection->WmSupportsHint(
-          x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"))) {
+          connection->GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"))) {
     // The shape should be changed to a rectangle which fills the entire screen
     // when |widget1| is maximized.
     {
@@ -567,7 +567,8 @@ TEST_F(X11WindowTest, SetInputRegionDegenerateRects) {
 // window manager (e.g. via a window manager accelerator key).
 TEST_F(X11WindowTest, MAYBE_WindowManagerTogglesFullscreen) {
   auto* connection = x11::Connection::Get();
-  if (!connection->WmSupportsHint(x11::GetAtom("_NET_WM_STATE_FULLSCREEN"))) {
+  if (!connection->WmSupportsHint(
+          connection->GetAtom("_NET_WM_STATE_FULLSCREEN"))) {
     return;
   }
 
@@ -596,9 +597,11 @@ TEST_F(X11WindowTest, MAYBE_WindowManagerTogglesFullscreen) {
   // accelerator key.
   {
     ui::SendClientMessage(
-        x11_window, ui::GetX11RootWindow(), x11::GetAtom("_NET_WM_STATE"),
-        {0, static_cast<uint32_t>(x11::GetAtom("_NET_WM_STATE_FULLSCREEN")), 0,
-         1, 0});
+        x11_window, ui::GetX11RootWindow(),
+        connection->GetAtom("_NET_WM_STATE"),
+        {0,
+         static_cast<uint32_t>(connection->GetAtom("_NET_WM_STATE_FULLSCREEN")),
+         0, 1, 0});
 
     WMStateWaiter waiter(x11_window, "_NET_WM_STATE_FULLSCREEN", false);
     waiter.Wait();
@@ -655,7 +658,7 @@ TEST_F(X11WindowTest,
     EXPECT_FALSE(window->IsMinimized());
 
     SendClientMessage(x11_window, GetX11RootWindow(),
-                      x11::GetAtom("WM_CHANGE_STATE"),
+                      x11::Connection::Get()->GetAtom("WM_CHANGE_STATE"),
                       {x11::WM_STATE_ICONIC, 0, 0, 0, 0});
     // Wait till set.
     WMStateWaiter waiter(x11_window, "_NET_WM_STATE_HIDDEN", true);
@@ -667,7 +670,7 @@ TEST_F(X11WindowTest,
   // Show from minimized by sending WM_STATE_NORMAL.
   {
     SendClientMessage(x11_window, GetX11RootWindow(),
-                      x11::GetAtom("WM_CHANGE_STATE"),
+                      x11::Connection::Get()->GetAtom("WM_CHANGE_STATE"),
                       {x11::WM_STATE_NORMAL, 0, 0, 0, 0});
     // Wait till unset.
     WMStateWaiter waiter(x11_window, "_NET_WM_STATE_HIDDEN", false);

@@ -11,7 +11,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
-#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"
 
@@ -26,7 +25,7 @@ TEST(X11UtilTest, GetNativeWindowIconPicksLargestIconAndCopiesPixels) {
   const std::vector<uint32_t> data = {
       1u, 1u, 0xff000001u,                                          // 1x1
       2u, 2u, 0xff0000aau, 0xff00bb00u, 0xffcc0000u, 0x80112233u};  // 2x2
-  connection->SetArrayProperty(window, x11::GetAtom("_NET_WM_ICON"),
+  connection->SetArrayProperty(window, connection->GetAtom("_NET_WM_ICON"),
                                x11::Atom::CARDINAL, data);
   connection->Sync();
 

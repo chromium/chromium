@@ -13,7 +13,6 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/base/x/x11_display_util.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
@@ -104,7 +103,7 @@ void ActiveDisplayMonitorX11::Core::Init() {
   root_window_event_selector_ = connection_->ScopedSelectEvent(
       ui::GetX11RootWindow(), x11::EventMask::PropertyChange);
 
-  net_active_window_atom_ = x11::GetAtom("_NET_ACTIVE_WINDOW");
+  net_active_window_atom_ = connection_->GetAtom("_NET_ACTIVE_WINDOW");
 
   connection_->AddEventObserver(this);
 }

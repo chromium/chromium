@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"
 
@@ -46,7 +45,7 @@ class PropertyCacheTest : public testing::Test {
 };
 
 TEST_F(PropertyCacheTest, GetSync) {
-  auto atom = x11::GetAtom("DUMMY ATOM");
+  auto atom = connection()->GetAtom("DUMMY ATOM");
   connection()->SetProperty(window(), atom, Atom::CARDINAL, 1234);
 
   PropertyCache cache(connection(), window(), {atom});
@@ -61,7 +60,7 @@ TEST_F(PropertyCacheTest, GetSync) {
 }
 
 TEST_F(PropertyCacheTest, GetAsync) {
-  auto atom = x11::GetAtom("DUMMY ATOM");
+  auto atom = connection()->GetAtom("DUMMY ATOM");
   connection()->SetProperty(window(), atom, Atom::CARDINAL, 1234);
 
   PropertyCache cache(connection(), window(), {atom});
@@ -78,7 +77,7 @@ TEST_F(PropertyCacheTest, GetAsync) {
 }
 
 TEST_F(PropertyCacheTest, Event) {
-  auto atom = x11::GetAtom("DUMMY ATOM");
+  auto atom = connection()->GetAtom("DUMMY ATOM");
   connection()->SetProperty(window(), atom, Atom::CARDINAL, 1234);
 
   PropertyCache cache(connection(), window(), {atom});
@@ -125,7 +124,7 @@ TEST_F(PropertyCacheTest, Event) {
 }
 
 TEST_F(PropertyCacheTest, GetAs) {
-  auto atom = x11::GetAtom("DUMMY ATOM");
+  auto atom = connection()->GetAtom("DUMMY ATOM");
   connection()->SetProperty(window(), atom, Atom::CARDINAL, 1234);
 
   PropertyCache cache(connection(), window(), {atom});
@@ -182,7 +181,7 @@ TEST_F(PropertyCacheTest, GetAs) {
 }
 
 TEST_F(PropertyCacheTest, OnChangeCallback) {
-  auto atom = x11::GetAtom("DUMMY ATOM");
+  auto atom = connection()->GetAtom("DUMMY ATOM");
   connection()->SetProperty(window(), atom, Atom::CARDINAL, 1234);
 
   bool callback_fired = false;
@@ -206,7 +205,7 @@ TEST_F(PropertyCacheTest, OnChangeCallback) {
 }
 
 TEST_F(PropertyCacheTest, DestroyInCallback) {
-  auto atom = x11::GetAtom("DUMMY ATOM");
+  auto atom = connection()->GetAtom("DUMMY ATOM");
   connection()->SetProperty(window(), atom, Atom::CARDINAL, 1234);
 
   std::unique_ptr<PropertyCache> cache;

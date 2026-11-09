@@ -34,7 +34,6 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/switches.h"
-#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/randr.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -97,7 +96,7 @@ x11::Future<x11::GetPropertyReply> GetIccProfileFuture(
                               : base::StringPrintf("_ICC_PROFILE_%zu", monitor);
   auto future = connection->GetProperty({
       .window = connection->default_root(),
-      .property = x11::GetAtom(atom_name.c_str()),
+      .property = connection->GetAtom(atom_name.c_str()),
       .long_length = kMaxIccProfileLongLength,
   });
   future.IgnoreError();
@@ -126,7 +125,7 @@ x11::Future<x11::RandR::GetOutputPropertyReply> GetEdidFuture(
     x11::RandR::Output output) {
   auto future = connection->randr().GetOutputProperty({
       .output = output,
-      .property = x11::GetAtom(kRandrEdidProperty),
+      .property = connection->GetAtom(kRandrEdidProperty),
       .long_length = 128,
   });
   future.IgnoreError();

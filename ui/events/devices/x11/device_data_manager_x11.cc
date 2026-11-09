@@ -30,7 +30,7 @@
 #include "ui/events/event_switches.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
 #include "ui/gfx/geometry/point3_f.h"
-#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
 
 // Constants for checking if a data type lies in the range of CMT/Touch data
@@ -198,7 +198,7 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
   // Find all the touchpad devices.
   const XDeviceList& dev_list =
       ui::DeviceListCacheX11::GetInstance()->GetXDeviceList(connection);
-  x11::Atom xi_touchpad = x11::GetAtom("TOUCHPAD");
+  x11::Atom xi_touchpad = connection->GetAtom("TOUCHPAD");
   for (const auto& device : dev_list) {
     if (device.device_type == xi_touchpad)
       touchpads_.insert(static_cast<x11::Input::DeviceId>(device.device_id));
@@ -212,7 +212,7 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
       ui::DeviceListCacheX11::GetInstance()->GetXI2DeviceList(connection);
   base::flat_map<x11::Atom, DataType> atom_to_data_type;
   for (const auto& map_entry : kAtomNameToDataType) {
-    atom_to_data_type[x11::GetAtom(map_entry.name)] = map_entry.type;
+    atom_to_data_type[connection->GetAtom(map_entry.name)] = map_entry.type;
   }
 
   for (const auto& info : info_list) {

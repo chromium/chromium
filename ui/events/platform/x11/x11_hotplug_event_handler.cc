@@ -32,7 +32,6 @@
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touchpad_device.h"
 #include "ui/events/devices/touchscreen_device.h"
-#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/extension_manager.h"
 #include "ui/gfx/x/future.h"
@@ -185,7 +184,7 @@ base::FilePath GetDevicePath(x11::Connection* connection,
 
   // Input device has a property "Device Node" pointing to its dev input node,
   // e.g.   Device Node (250): "/dev/input/event8"
-  x11::Atom device_node = x11::GetAtom("Device Node");
+  x11::Atom device_node = connection->GetAtom("Device Node");
   if (device_node == x11::Atom::None)
     return base::FilePath();
 
@@ -434,16 +433,16 @@ void X11HotplugEventHandler::OnHotplugEvent() {
     // "xwayland-" to each device name. Though, Wayland doesn't expose TOUCHPAD
     // directly. Instead, it's part of xwayland-pointer.
     x11::Atom type = device.device_type;
-    if (type == x11::GetAtom("KEYBOARD") ||
-        type == x11::GetAtom("xwayland-keyboard")) {
+    if (type == connection->GetAtom("KEYBOARD") ||
+        type == connection->GetAtom("xwayland-keyboard")) {
       device_types[id] = DEVICE_TYPE_KEYBOARD;
-    } else if (type == x11::GetAtom("MOUSE") ||
-               type == x11::GetAtom("xwayland-pointer")) {
+    } else if (type == connection->GetAtom("MOUSE") ||
+               type == connection->GetAtom("xwayland-pointer")) {
       device_types[id] = DEVICE_TYPE_MOUSE;
-    } else if (type == x11::GetAtom("TOUCHPAD")) {
+    } else if (type == connection->GetAtom("TOUCHPAD")) {
       device_types[id] = DEVICE_TYPE_TOUCHPAD;
-    } else if (type == x11::GetAtom("TOUCHSCREEN") ||
-               type == x11::GetAtom("xwayland-touch")) {
+    } else if (type == connection->GetAtom("TOUCHSCREEN") ||
+               type == connection->GetAtom("xwayland-touch")) {
       device_types[id] = DEVICE_TYPE_TOUCHSCREEN;
     }
   }
@@ -462,8 +461,8 @@ void X11HotplugEventHandler::OnHotplugEvent() {
 
   // X11 is not thread safe, so first get all the required state.
   DisplayState display_state;
-  display_state.mt_position_x = x11::GetAtom("Abs MT Position X");
-  display_state.mt_position_y = x11::GetAtom("Abs MT Position Y");
+  display_state.mt_position_x = connection->GetAtom("Abs MT Position X");
+  display_state.mt_position_y = connection->GetAtom("Abs MT Position Y");
 
   UiCallbacks callbacks;
   callbacks.keyboard_callback = base::BindOnce(&OnKeyboardDevices);

@@ -25,23 +25,27 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/base/clipboard/clipboard_constants.h"
-#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/connection.h"
 
 namespace ui {
 
 std::vector<x11::Atom> GetTextAtomsFrom() {
-  return {x11::GetAtom(kMimeTypeLinuxUtf8String),
-          x11::GetAtom(kMimeTypeLinuxString), x11::GetAtom(kMimeTypeLinuxText),
-          x11::GetAtom(kMimeTypePlainText),
-          x11::GetAtom(kMimeTypeUtf8PlainText)};
+  auto* connection = x11::Connection::Get();
+  return {connection->GetAtom(kMimeTypeLinuxUtf8String),
+          connection->GetAtom(kMimeTypeLinuxString),
+          connection->GetAtom(kMimeTypeLinuxText),
+          connection->GetAtom(kMimeTypePlainText),
+          connection->GetAtom(kMimeTypeUtf8PlainText)};
 }
 
 std::vector<x11::Atom> GetURLAtomsFrom() {
-  return {x11::GetAtom(kMimeTypeUriList), x11::GetAtom(kMimeTypeMozillaUrl)};
+  auto* connection = x11::Connection::Get();
+  return {connection->GetAtom(kMimeTypeUriList),
+          connection->GetAtom(kMimeTypeMozillaUrl)};
 }
 
 std::vector<x11::Atom> GetURIListAtomsFrom() {
-  return {x11::GetAtom(kMimeTypeUriList)};
+  return {x11::Connection::Get()->GetAtom(kMimeTypeUriList)};
 }
 
 void GetAtomIntersection(const std::vector<x11::Atom>& desired,
@@ -171,15 +175,16 @@ base::span<const unsigned char> SelectionData::GetSpan() const {
 }
 
 std::string SelectionData::GetText() const {
-  if (type_ == x11::GetAtom(kMimeTypeLinuxUtf8String) ||
-      type_ == x11::GetAtom(kMimeTypeLinuxText) ||
-      type_ == x11::GetAtom(kMimeTypeUtf8PlainText)) {
+  auto* connection = x11::Connection::Get();
+  if (type_ == connection->GetAtom(kMimeTypeLinuxUtf8String) ||
+      type_ == connection->GetAtom(kMimeTypeLinuxText) ||
+      type_ == connection->GetAtom(kMimeTypeUtf8PlainText)) {
     return RefCountedMemoryToString(memory_);
   } else {
     // BTW, I looked at COMPOUND_TEXT, and there's no way we're going to
     // support that. Yuck.
-    CHECK(type_ == x11::GetAtom(kMimeTypeLinuxString) ||
-          type_ == x11::GetAtom(kMimeTypePlainText));
+    CHECK(type_ == connection->GetAtom(kMimeTypeLinuxString) ||
+          type_ == connection->GetAtom(kMimeTypePlainText));
     std::string result;
     base::ConvertToUtf8AndNormalize(RefCountedMemoryToString(memory_),
                                     base::kCodepageLatin1, &result);
@@ -190,7 +195,7 @@ std::string SelectionData::GetText() const {
 std::u16string SelectionData::GetHtml() const {
   std::u16string markup;
 
-  CHECK_EQ(type_, x11::GetAtom(kMimeTypeHtml));
+  CHECK_EQ(type_, x11::Connection::Get()->GetAtom(kMimeTypeHtml));
   base::span<const unsigned char> span = GetSpan();
 
   // If the data starts with U+FEFF, i.e., Byte Order Mark, assume it is

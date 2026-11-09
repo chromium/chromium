@@ -11,7 +11,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/native_ui_types.h"
-#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xlib_support.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gtk/gtk_compat.h"
@@ -69,9 +69,9 @@ void GtkUiPlatformX11::SetGtkWidgetTransientFor(GtkWidget* widget,
           : gdk_x11_window_get_xid(gtk_widget_get_window(widget)));
   connection_->SetProperty(x11_window, x11::Atom::WM_TRANSIENT_FOR,
                            x11::Atom::WINDOW, parent);
-  connection_->SetProperty(x11_window, x11::GetAtom("_NET_WM_WINDOW_TYPE"),
-                           x11::Atom::ATOM,
-                           x11::GetAtom("_NET_WM_WINDOW_TYPE_DIALOG"));
+  connection_->SetProperty(
+      x11_window, connection_->GetAtom("_NET_WM_WINDOW_TYPE"), x11::Atom::ATOM,
+      connection_->GetAtom("_NET_WM_WINDOW_TYPE_DIALOG"));
 
   ui::LinuxUiDelegate::GetInstance()->SetTransientWindowForParent(
       parent, static_cast<gfx::AcceleratedWidget>(x11_window));

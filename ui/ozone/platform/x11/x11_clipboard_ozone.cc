@@ -17,7 +17,7 @@
 #if BUILDFLAG(IS_LINUX)
 #include "base/strings/string_view_util.h"
 #include "ui/base/clipboard/clipboard_util_linux.h"
-#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/connection.h"
 #endif
 
 namespace ui {
@@ -58,9 +58,10 @@ void X11ClipboardOzone::RequestClipboardData(
   if (mime_type == kMimeTypeUriList) {
     auto uri_list_atoms = helper_->GetAtomsForFormat(
         ClipboardFormatType::CustomPlatformType(kMimeTypeUriList));
+    auto* connection = x11::Connection::Get();
     std::vector<x11::Atom> portal_atoms = {
-        x11::GetAtom(kMimeTypePortalFileTransfer),
-        x11::GetAtom(kMimeTypePortalFiles)};
+        connection->GetAtom(kMimeTypePortalFileTransfer),
+        connection->GetAtom(kMimeTypePortalFiles)};
 
     helper_->GetAvailableMimeTypesAsync(
         buffer,

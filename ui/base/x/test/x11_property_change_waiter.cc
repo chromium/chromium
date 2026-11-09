@@ -9,7 +9,7 @@
 #include "base/run_loop.h"
 #include "ui/events/event.h"
 #include "ui/events/platform/scoped_event_dispatcher.h"
-#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 
@@ -51,7 +51,7 @@ bool X11PropertyChangeWaiter::ShouldKeepOnWaiting() {
 void X11PropertyChangeWaiter::OnEvent(const x11::Event& x11_event) {
   auto* prop = x11_event.As<x11::PropertyNotifyEvent>();
   if (!wait_ || !prop || prop->window != x_window_ ||
-      prop->atom != x11::GetAtom(property_) || ShouldKeepOnWaiting()) {
+      prop->atom != connection_->GetAtom(property_) || ShouldKeepOnWaiting()) {
     return;
   }
 

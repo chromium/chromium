@@ -46,7 +46,6 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/skia_span_util.h"
 #include "ui/gfx/switches.h"
-#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/screensaver.h"
 #include "ui/gfx/x/shm.h"
@@ -262,8 +261,9 @@ void SetUseOSWindowFrame(x11::Window window, bool use_os_window_frame) {
   std::vector<uint32_t> hints(sizeof(MotifWmHints) / sizeof(uint32_t));
   base::as_writable_byte_span(hints).copy_from(
       base::byte_span_from_ref(motif_hints));
-  x11::Atom hint_atom = x11::GetAtom("_MOTIF_WM_HINTS");
-  x11::Connection::Get()->SetArrayProperty(window, hint_atom, hint_atom, hints);
+  auto* connection = x11::Connection::Get();
+  x11::Atom hint_atom = connection->GetAtom("_MOTIF_WM_HINTS");
+  connection->SetArrayProperty(window, hint_atom, hint_atom, hints);
 }
 
 bool IsShapeExtensionAvailable() {
@@ -275,14 +275,16 @@ x11::Window GetX11RootWindow() {
 }
 
 bool GetCurrentDesktop(int32_t* desktop) {
-  return x11::Connection::Get()->GetPropertyAs(
-      GetX11RootWindow(), x11::GetAtom("_NET_CURRENT_DESKTOP"), desktop);
+  auto* connection = x11::Connection::Get();
+  return connection->GetPropertyAs(
+      GetX11RootWindow(), connection->GetAtom("_NET_CURRENT_DESKTOP"), desktop);
 }
 
 void SetHideTitlebarWhenMaximizedProperty(x11::Window window,
                                           HideTitlebarWhenMaximized property) {
-  x11::Connection::Get()->SetProperty(
-      window, x11::GetAtom("_GTK_HIDE_TITLEBAR_WHEN_MAXIMIZED"),
+  auto* connection = x11::Connection::Get();
+  connection->SetProperty(
+      window, connection->GetAtom("_GTK_HIDE_TITLEBAR_WHEN_MAXIMIZED"),
       x11::Atom::CARDINAL, static_cast<uint32_t>(property));
 }
 
@@ -323,12 +325,12 @@ void SetWindowClassHint(x11::Connection* connection,
 }
 
 void SetWindowRole(x11::Window window, const std::string& role) {
-  x11::Atom prop = x11::GetAtom("WM_WINDOW_ROLE");
+  auto* connection = x11::Connection::Get();
+  x11::Atom prop = connection->GetAtom("WM_WINDOW_ROLE");
   if (role.empty()) {
-    x11::Connection::Get()->DeleteProperty(window, prop);
+    connection->DeleteProperty(window, prop);
   } else {
-    x11::Connection::Get()->SetStringProperty(window, prop, x11::Atom::STRING,
-                                              role);
+    connection->SetStringProperty(window, prop, x11::Atom::STRING, role);
   }
 }
 
@@ -337,7 +339,8 @@ void SetWMSpecState(x11::Window window,
                     x11::Atom state1,
                     x11::Atom state2) {
   SendClientMessage(
-      window, GetX11RootWindow(), x11::GetAtom("_NET_WM_STATE"),
+      window, GetX11RootWindow(),
+      x11::Connection::Get()->GetAtom("_NET_WM_STATE"),
       {static_cast<uint32_t>(enabled ? kNetWMStateAdd : kNetWMStateRemove),
        static_cast<uint32_t>(state1), static_cast<uint32_t>(state2), 1, 0});
 }
@@ -353,7 +356,8 @@ void DoWMMoveResize(x11::Connection* connection,
   // grabs when it receives the event below.
   connection->UngrabPointer({x11::Time::CurrentTime});
 
-  SendClientMessage(window, root_window, x11::GetAtom("_NET_WM_MOVERESIZE"),
+  SendClientMessage(window, root_window,
+                    connection->GetAtom("_NET_WM_MOVERESIZE"),
                     {static_cast<uint32_t>(location_px.x()),
                      static_cast<uint32_t>(location_px.y()),
                      static_cast<uint32_t>(direction), 0, 0});
@@ -366,8 +370,8 @@ bool HasWMSpecProperty(const base::flat_set<x11::Atom>& properties,
 
 bool GetCustomFramePrefDefault() {
   // _NET_WM_MOVERESIZE is needed for frame-drag-initiated window movement.
-  if (!x11::Connection::Get()->WmSupportsHint(
-          x11::GetAtom("_NET_WM_MOVERESIZE"))) {
+  auto* connection = x11::Connection::Get();
+  if (!connection->WmSupportsHint(connection->GetAtom("_NET_WM_MOVERESIZE"))) {
     return false;
   }
 
@@ -421,8 +425,9 @@ bool IsWmTiling(WindowManagerName window_manager) {
 }
 
 bool GetWindowDesktop(x11::Window window, int32_t* desktop) {
-  return x11::Connection::Get()->GetPropertyAs(
-      window, x11::GetAtom("_NET_WM_DESKTOP"), desktop);
+  auto* connection = x11::Connection::Get();
+  return connection->GetPropertyAs(
+      window, connection->GetAtom("_NET_WM_DESKTOP"), desktop);
 }
 
 WindowManagerName GuessWindowManager() {
@@ -561,16 +566,16 @@ bool IsX11WindowFullScreen(x11::Window window) {
   // If _NET_WM_STATE_FULLSCREEN is in _NET_SUPPORTED, use the presence or
   // absence of _NET_WM_STATE_FULLSCREEN in _NET_WM_STATE to determine
   // whether we're fullscreen.
-  x11::Atom fullscreen_atom = x11::GetAtom("_NET_WM_STATE_FULLSCREEN");
-  if (x11::Connection::Get()->WmSupportsHint(fullscreen_atom)) {
+  auto* connection = x11::Connection::Get();
+  x11::Atom fullscreen_atom = connection->GetAtom("_NET_WM_STATE_FULLSCREEN");
+  if (connection->WmSupportsHint(fullscreen_atom)) {
     std::vector<x11::Atom> atom_properties;
-    if (x11::Connection::Get()->GetArrayProperty(
-            window, x11::GetAtom("_NET_WM_STATE"), &atom_properties)) {
+    if (connection->GetArrayProperty(
+            window, connection->GetAtom("_NET_WM_STATE"), &atom_properties)) {
       return std::ranges::contains(atom_properties, fullscreen_atom);
     }
   }
 
-  auto* connection = x11::Connection::Get();
   gfx::Rect window_rect;
   if (auto geometry = connection->GetGeometry(window).Sync()) {
     window_rect =
@@ -665,9 +670,10 @@ bool IsVulkanSurfaceSupported() {
 
 gfx::ImageSkia GetNativeWindowIcon(intptr_t target_window_id) {
   std::vector<uint32_t> data;
-  if (!x11::Connection::Get()->GetArrayProperty(
-          static_cast<x11::Window>(target_window_id),
-          x11::GetAtom("_NET_WM_ICON"), &data)) {
+  auto* connection = x11::Connection::Get();
+  if (!connection->GetArrayProperty(static_cast<x11::Window>(target_window_id),
+                                    connection->GetAtom("_NET_WM_ICON"),
+                                    &data)) {
     return gfx::ImageSkia();
   }
 

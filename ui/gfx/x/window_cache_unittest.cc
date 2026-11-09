@@ -7,7 +7,6 @@
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
@@ -313,7 +312,7 @@ TEST_F(WindowCacheTest, GtkFrameExtents) {
   const WindowCache::WindowInfo& info = cache()->windows().at(root());
   EXPECT_EQ(info.gtk_frame_extents_px, gfx::Insets());
 
-  const Atom gtk_frame_extents = GetAtom("_GTK_FRAME_EXTENTS");
+  const Atom gtk_frame_extents = connection()->GetAtom("_GTK_FRAME_EXTENTS");
   connection()->SetArrayProperty(root(), gtk_frame_extents, Atom::CARDINAL,
                                  std::vector<uint32_t>{1, 2, 3, 4});
   cache()->SyncForTest();
@@ -397,7 +396,7 @@ TEST_F(WindowCacheTest, GetWindowAtPoint) {
 
   // GTK_FRAME_EXTENTS insets the window bounds.
   EXPECT_EQ(cache()->GetWindowAtPoint({125, 125}, root()), a);
-  const Atom gtk_frame_extents = GetAtom("_GTK_FRAME_EXTENTS");
+  const Atom gtk_frame_extents = connection()->GetAtom("_GTK_FRAME_EXTENTS");
   connection()->SetArrayProperty(a, gtk_frame_extents, Atom::CARDINAL,
                                  std::vector<uint32_t>{40, 40, 40, 40});
   cache()->SyncForTest();

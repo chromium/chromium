@@ -28,7 +28,6 @@
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_drag_drop_client.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 
 // Note: the GetBlah() methods are used immediately by the
@@ -61,7 +60,7 @@ XOSExchangeDataProvider::XOSExchangeDataProvider(
       format_map_(selection),
       selection_owner_(connection_.get(),
                        x_window_,
-                       x11::GetAtom(kDndSelection)) {}
+                       connection_->GetAtom(kDndSelection)) {}
 
 XOSExchangeDataProvider::XOSExchangeDataProvider()
     : connection_(*x11::Connection::Get()),
@@ -71,7 +70,7 @@ XOSExchangeDataProvider::XOSExchangeDataProvider()
       source_window_(x_window_),
       selection_owner_(connection_.get(),
                        x_window_,
-                       x11::GetAtom(kDndSelection)) {}
+                       connection_->GetAtom(kDndSelection)) {}
 
 XOSExchangeDataProvider::~XOSExchangeDataProvider() {
   if (own_window_) {
@@ -107,18 +106,20 @@ std::unique_ptr<OSExchangeDataProvider> XOSExchangeDataProvider::Clone() const {
 
 void XOSExchangeDataProvider::MarkRendererTaintedFromOrigin(
     const url::Origin& origin) {
-  format_map_.Insert(x11::GetAtom(kRendererTaint),
+  format_map_.Insert(connection_->GetAtom(kRendererTaint),
                      base::MakeRefCounted<base::RefCountedString>(
                          origin.opaque() ? std::string() : origin.Serialize()));
 }
 
 bool XOSExchangeDataProvider::IsRendererTainted() const {
-  return format_map_.find(x11::GetAtom(kRendererTaint)) != format_map_.end();
+  return format_map_.find(connection_->GetAtom(kRendererTaint)) !=
+         format_map_.end();
 }
 
 std::optional<url::Origin> XOSExchangeDataProvider::GetRendererTaintedOrigin()
     const {
-  ui::SelectionData data = format_map_.Get(x11::GetAtom(kRendererTaint));
+  ui::SelectionData data =
+      format_map_.Get(connection_->GetAtom(kRendererTaint));
   if (!data.IsValid()) {
     return std::nullopt;
   }
@@ -134,25 +135,26 @@ std::optional<url::Origin> XOSExchangeDataProvider::GetRendererTaintedOrigin()
 
 void XOSExchangeDataProvider::MarkAsFromPrivileged() {
   format_map_.Insert(
-      x11::GetAtom(kFromPrivileged),
+      connection_->GetAtom(kFromPrivileged),
       scoped_refptr<base::RefCountedMemory>(
           base::MakeRefCounted<base::RefCountedString>(std::string())));
 }
 
 bool XOSExchangeDataProvider::IsFromPrivileged() const {
-  return format_map_.find(x11::GetAtom(kFromPrivileged)) != format_map_.end();
+  return format_map_.find(connection_->GetAtom(kFromPrivileged)) !=
+         format_map_.end();
 }
 
 void XOSExchangeDataProvider::SetChromeDragId(
     const base::UnguessableToken& drag_id) {
   format_map_.Insert(
-      x11::GetAtom(kChromeDragId),
+      connection_->GetAtom(kChromeDragId),
       base::MakeRefCounted<base::RefCountedString>(drag_id.ToString()));
 }
 
 std::optional<base::UnguessableToken> XOSExchangeDataProvider::GetChromeDragId()
     const {
-  ui::SelectionData data = format_map_.Get(x11::GetAtom(kChromeDragId));
+  ui::SelectionData data = format_map_.Get(connection_->GetAtom(kChromeDragId));
   if (!data.IsValid()) {
     return std::nullopt;
   }
@@ -171,10 +173,10 @@ void XOSExchangeDataProvider::SetString(std::u16string_view text_data) {
       base::MakeRefCounted<base::RefCountedString>(
           base::UTF16ToUTF8(text_data)));
 
-  format_map_.Insert(x11::GetAtom(kMimeTypePlainText), mem);
-  format_map_.Insert(x11::GetAtom(kMimeTypeLinuxText), mem);
-  format_map_.Insert(x11::GetAtom(kMimeTypeLinuxString), mem);
-  format_map_.Insert(x11::GetAtom(kMimeTypeLinuxUtf8String), mem);
+  format_map_.Insert(connection_->GetAtom(kMimeTypePlainText), mem);
+  format_map_.Insert(connection_->GetAtom(kMimeTypeLinuxText), mem);
+  format_map_.Insert(connection_->GetAtom(kMimeTypeLinuxString), mem);
+  format_map_.Insert(connection_->GetAtom(kMimeTypeLinuxUtf8String), mem);
 }
 
 void XOSExchangeDataProvider::SetURLs(
@@ -192,7 +194,7 @@ void XOSExchangeDataProvider::SetURLs(
     ui::AddString16ToVector(url_info.title, &data);
     auto mem = base::MakeRefCounted<base::RefCountedBytes>(std::move(data));
 
-    format_map_.Insert(x11::GetAtom(kMimeTypeMozillaUrl), mem);
+    format_map_.Insert(connection_->GetAtom(kMimeTypeMozillaUrl), mem);
 
     // Set a string fallback as well.
     SetString(spec);
@@ -213,7 +215,7 @@ void XOSExchangeDataProvider::SetURLs(
     std::string netscape_url = url_info.url.spec();
     netscape_url += "\n";
     netscape_url += base::UTF16ToUTF8(url_info.title);
-    format_map_.Insert(x11::GetAtom(kNetscapeURL),
+    format_map_.Insert(connection_->GetAtom(kNetscapeURL),
                        scoped_refptr<base::RefCountedMemory>(
                            base::MakeRefCounted<base::RefCountedString>(
                                std::move(netscape_url))));
@@ -239,14 +241,14 @@ void XOSExchangeDataProvider::SetFilenames(
   scoped_refptr<base::RefCountedMemory> mem(
       base::MakeRefCounted<base::RefCountedString>(
           base::JoinString(paths, "\n")));
-  format_map_.Insert(x11::GetAtom(kMimeTypeUriList), mem);
+  format_map_.Insert(connection_->GetAtom(kMimeTypeUriList), mem);
 }
 
 void XOSExchangeDataProvider::SetPickledData(const ClipboardFormatType& format,
                                              const base::Pickle& pickle) {
   auto mem = base::MakeRefCounted<base::RefCountedBytes>(
       std::vector<unsigned char>(pickle.begin(), pickle.end()));
-  format_map_.Insert(x11::GetAtom(format.GetName().c_str()), mem);
+  format_map_.Insert(connection_->GetAtom(format.GetName().c_str()), mem);
 }
 
 std::optional<std::u16string> XOSExchangeDataProvider::GetString() const {
@@ -282,7 +284,7 @@ std::vector<ClipboardUrlInfo> XOSExchangeDataProvider::GetURLs(
   }
 
   // 1. Handle Mozilla URLs (UTF16: URL, newline, title).
-  if (data.GetType() == x11::GetAtom(kMimeTypeMozillaUrl)) {
+  if (data.GetType() == connection_->GetAtom(kMimeTypeMozillaUrl)) {
     std::u16string unparsed;
     data.AssignTo(&unparsed);
 
@@ -299,7 +301,7 @@ std::vector<ClipboardUrlInfo> XOSExchangeDataProvider::GetURLs(
   }
 
   // 2. Handle URI List (Standard Linux/X11 URL format)
-  if (data.GetType() == x11::GetAtom(kMimeTypeUriList)) {
+  if (data.GetType() == connection_->GetAtom(kMimeTypeUriList)) {
     std::vector<std::string> tokens = ui::ParseURIList(data);
     for (const std::string& token : tokens) {
       GURL url(token);
@@ -349,7 +351,7 @@ std::optional<std::vector<FileInfo>> XOSExchangeDataProvider::GetFilenames()
 std::optional<base::Pickle> XOSExchangeDataProvider::GetPickledData(
     const ClipboardFormatType& format) const {
   ui::SelectionData data =
-      format_map_.Get(x11::GetAtom(format.GetName().c_str()));
+      format_map_.Get(connection_->GetAtom(format.GetName().c_str()));
   if (!data.IsValid()) {
     return std::nullopt;
   }
@@ -377,10 +379,10 @@ bool XOSExchangeDataProvider::HasURL(FilenameToURLPolicy policy) const {
   // Windows does and stuffs all the data into one mime type.
   ui::SelectionData data = format_map_.GetFirstOf(requested_types);
   if (data.IsValid()) {
-    if (data.GetType() == x11::GetAtom(kMimeTypeMozillaUrl)) {
+    if (data.GetType() == connection_->GetAtom(kMimeTypeMozillaUrl)) {
       // File managers shouldn't be using this type, so this is a URL.
       return true;
-    } else if (data.GetType() == x11::GetAtom(ui::kMimeTypeUriList)) {
+    } else if (data.GetType() == connection_->GetAtom(ui::kMimeTypeUriList)) {
       std::vector<std::string> tokens = ui::ParseURIList(data);
       for (const std::string& token : tokens) {
         if (!GURL(token).SchemeIsFile() ||
@@ -426,7 +428,7 @@ bool XOSExchangeDataProvider::HasFile() const {
 bool XOSExchangeDataProvider::HasCustomFormat(
     const ClipboardFormatType& format) const {
   std::vector<x11::Atom> url_atoms;
-  url_atoms.push_back(x11::GetAtom(format.GetName().c_str()));
+  url_atoms.push_back(connection_->GetAtom(format.GetName().c_str()));
   std::vector<x11::Atom> requested_types;
   GetAtomIntersection(url_atoms, GetTargets(), &requested_types);
 
@@ -437,7 +439,7 @@ void XOSExchangeDataProvider::SetFileContents(
     const base::FilePath& filename,
     base::span<const uint8_t> file_contents) {
   CHECK(!filename.empty(), base::NotFatalUntil::M163);
-  CHECK(!format_map().contains(x11::GetAtom(kMimeTypeMozillaUrl)),
+  CHECK(!format_map().contains(connection_->GetAtom(kMimeTypeMozillaUrl)),
         base::NotFatalUntil::M163);
   set_file_contents_name(filename);
   // Direct save handling is a complicated juggling affair between this class,
@@ -456,10 +458,10 @@ void XOSExchangeDataProvider::SetFileContents(
   //   things simpler for Chrome, we always 'fail' and let the destination do
   //   the work.
   InsertData(
-      x11::GetAtom(kXdndDirectSave0),
+      connection_->GetAtom(kXdndDirectSave0),
       scoped_refptr<base::RefCountedMemory>(
           base::MakeRefCounted<base::RefCountedString>(std::string("F"))));
-  InsertData(x11::GetAtom(kMimeTypeOctetStream),
+  InsertData(connection_->GetAtom(kMimeTypeOctetStream),
              scoped_refptr<base::RefCountedMemory>(
                  base::MakeRefCounted<base::RefCountedBytes>(file_contents)));
 }
@@ -467,8 +469,8 @@ void XOSExchangeDataProvider::SetFileContents(
 std::optional<OSExchangeDataProvider::FileContentsInfo>
 XOSExchangeDataProvider::GetFileContents() const {
   std::vector<char> str;
-  if (!connection_->GetArrayProperty(source_window_,
-                                     x11::GetAtom(kXdndDirectSave0), &str)) {
+  if (!connection_->GetArrayProperty(
+          source_window_, connection_->GetAtom(kXdndDirectSave0), &str)) {
     return std::nullopt;
   }
 
@@ -478,7 +480,7 @@ XOSExchangeDataProvider::GetFileContents() const {
   }
 
   std::vector<x11::Atom> file_contents_atoms;
-  file_contents_atoms.push_back(x11::GetAtom(kMimeTypeOctetStream));
+  file_contents_atoms.push_back(connection_->GetAtom(kMimeTypeOctetStream));
   std::vector<x11::Atom> requested_types;
   GetAtomIntersection(file_contents_atoms, GetTargets(), &requested_types);
 
@@ -508,13 +510,13 @@ void XOSExchangeDataProvider::SetHtml(const std::u16string& html,
   ui::AddString16ToVector(html, &bytes);
   auto mem = base::MakeRefCounted<base::RefCountedBytes>(std::move(bytes));
 
-  format_map_.Insert(x11::GetAtom(kMimeTypeHtml), mem);
+  format_map_.Insert(connection_->GetAtom(kMimeTypeHtml), mem);
 }
 
 std::optional<OSExchangeDataProvider::HtmlInfo>
 XOSExchangeDataProvider::GetHtml() const {
   std::vector<x11::Atom> url_atoms;
-  url_atoms.push_back(x11::GetAtom(kMimeTypeHtml));
+  url_atoms.push_back(connection_->GetAtom(kMimeTypeHtml));
   std::vector<x11::Atom> requested_types;
   GetAtomIntersection(url_atoms, GetTargets(), &requested_types);
 
@@ -531,7 +533,7 @@ XOSExchangeDataProvider::GetHtml() const {
 
 bool XOSExchangeDataProvider::HasHtml() const {
   std::vector<x11::Atom> url_atoms;
-  url_atoms.push_back(x11::GetAtom(kMimeTypeHtml));
+  url_atoms.push_back(connection_->GetAtom(kMimeTypeHtml));
   std::vector<x11::Atom> requested_types;
   GetAtomIntersection(url_atoms, GetTargets(), &requested_types);
 

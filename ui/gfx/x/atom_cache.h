@@ -8,7 +8,6 @@
 #include <cstring>
 
 #include "base/compiler_specific.h"
-#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/x/xproto.h"
@@ -16,11 +15,6 @@
 namespace x11 {
 
 class Connection;
-
-// Gets the X atom for default display corresponding to atom_name.
-// TODO(thomasanderson): This should be removed and usages replaced with
-// Connection::GetAtom().
-COMPONENT_EXPORT(X11) Atom GetAtom(const char* atom_name);
 
 // Pre-caches all Atoms on first use to minimize round trips to the X11
 // server. GetAtom() will CHECK() that atoms accessed

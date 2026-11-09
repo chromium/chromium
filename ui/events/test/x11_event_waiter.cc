@@ -5,7 +5,7 @@
 #include "ui/events/test/x11_event_waiter.h"
 
 #include "base/task/single_thread_task_runner.h"
-#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {
@@ -48,7 +48,7 @@ void XEventWaiter::OnEvent(const x11::Event& xev) {
 
 // Returns atom that indidates that the XEvent is marker event.
 x11::Atom XEventWaiter::MarkerEventAtom() {
-  return x11::GetAtom("marker_event");
+  return x11::Connection::Get()->GetAtom("marker_event");
 }
 
 }  // namespace ui

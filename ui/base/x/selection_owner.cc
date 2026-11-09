@@ -15,7 +15,7 @@
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 
@@ -120,10 +120,10 @@ void SelectionOwner::RetrieveTargets(std::vector<x11::Atom>* targets) {
 
 #if BUILDFLAG(IS_LINUX)
   // Lazily advertise portal atoms if we have a URI list.
-  if (format_map_.contains(x11::GetAtom(kMimeTypeUriList))) {
+  if (format_map_.contains(connection_->GetAtom(kMimeTypeUriList))) {
     for (const char* mime :
          {kMimeTypePortalFileTransfer, kMimeTypePortalFiles}) {
-      x11::Atom portal_atom = x11::GetAtom(mime);
+      x11::Atom portal_atom = connection_->GetAtom(mime);
       if (seen.insert(portal_atom).second) {
         targets->push_back(portal_atom);
       }
@@ -166,9 +166,9 @@ void SelectionOwner::OnSelectionRequest(
   // Handle portal requests asynchronously.
   // NOTE: MULTIPLE requests are intentionally unsupported for portal paths
   // because we handle them by early-returning here before the MULTIPLE logic.
-  if (requested_target == x11::GetAtom(kMimeTypePortalFileTransfer) ||
-      requested_target == x11::GetAtom(kMimeTypePortalFiles)) {
-    auto it = format_map_.find(x11::GetAtom(kMimeTypeUriList));
+  if (requested_target == connection_->GetAtom(kMimeTypePortalFileTransfer) ||
+      requested_target == connection_->GetAtom(kMimeTypePortalFiles)) {
+    auto it = format_map_.find(connection_->GetAtom(kMimeTypeUriList));
     if (it != format_map_.end()) {
       std::vector<std::string> paths = ui::clipboard_util::GetPathsFromUriList(
           base::as_string_view(*it->second));
@@ -191,7 +191,7 @@ void SelectionOwner::OnSelectionRequest(
       .property = x11::Atom::None,  // Indicates failure
   };
 
-  if (requested_target == x11::GetAtom(kMultiple)) {
+  if (requested_target == connection_->GetAtom(kMultiple)) {
     // The contents of |requested_property| should be a list of
     // <target,property> pairs.
     std::vector<std::pair<x11::Atom, x11::Atom>> conversions;
@@ -210,7 +210,7 @@ void SelectionOwner::OnSelectionRequest(
       // Set the property to indicate which conversions succeeded. This matches
       // what GTK does.
       connection_->SetArrayProperty(requestor, requested_property,
-                                    x11::GetAtom(kAtomPair),
+                                    connection_->GetAtom(kAtomPair),
                                     conversion_results);
 
       reply.property = requested_property;
@@ -275,10 +275,10 @@ void SelectionOwner::OnPropertyEvent(const x11::PropertyNotifyEvent& event) {
 bool SelectionOwner::ProcessTarget(x11::Atom target,
                                    x11::Window requestor,
                                    x11::Atom property) {
-  x11::Atom multiple_atom = x11::GetAtom(kMultiple);
-  x11::Atom save_targets_atom = x11::GetAtom(kSaveTargets);
-  x11::Atom targets_atom = x11::GetAtom(kTargets);
-  x11::Atom timestamp_atom = x11::GetAtom(kTimestamp);
+  x11::Atom multiple_atom = connection_->GetAtom(kMultiple);
+  x11::Atom save_targets_atom = connection_->GetAtom(kSaveTargets);
+  x11::Atom targets_atom = connection_->GetAtom(kTargets);
+  x11::Atom timestamp_atom = connection_->GetAtom(kTimestamp);
 
   if (target == multiple_atom || target == save_targets_atom) {
     return false;
@@ -310,7 +310,7 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
       // the size of X requests. Notify the selection requestor that the data
       // will be sent incrementally by returning data of type "INCR".
       uint32_t length = it->second->size();
-      connection_->SetProperty(requestor, property, x11::GetAtom(kIncr),
+      connection_->SetProperty(requestor, property, connection_->GetAtom(kIncr),
                                length);
 
       // Wait for the selection requestor to indicate that it has processed

@@ -35,7 +35,6 @@
 #include "base/time/time.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/skia_span_util.h"
-#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"
 

@@ -181,7 +181,6 @@ using testing::Return;
 #if BUILDFLAG(SUPPORTS_OZONE_X11)
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -269,10 +268,11 @@ void ExpectNewWindowActivationToken(BrowserWindowInterface* browser,
     const auto xwindow = static_cast<x11::Window>(host->GetAcceleratedWidget());
     std::vector<char> token_bytes;
     x11::Atom property_type = x11::Atom::None;
-    ASSERT_TRUE(x11::Connection::Get()->GetArrayProperty(
-        xwindow, x11::GetAtom("_NET_STARTUP_ID"), &token_bytes,
+    auto* connection = x11::Connection::Get();
+    ASSERT_TRUE(connection->GetArrayProperty(
+        xwindow, connection->GetAtom("_NET_STARTUP_ID"), &token_bytes,
         &property_type));
-    EXPECT_EQ(property_type, x11::GetAtom("UTF8_STRING"));
+    EXPECT_EQ(property_type, connection->GetAtom("UTF8_STRING"));
     EXPECT_EQ(base::as_string_view(token_bytes), expected_token);
   }
 #endif

@@ -18,7 +18,6 @@
 #include "ui/events/platform/x11/x11_hotplug_event_handler.h"
 #include "ui/events/x/events_x_utils.h"
 #include "ui/events/x/x11_event_translation.h"
-#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/extension_manager.h"
 #include "ui/gfx/x/future.h"
@@ -194,7 +193,7 @@ x11::Time X11EventSource::GetCurrentServerTime() {
         .height = 1,
         .override_redirect = x11::Bool32(true),
     });
-    dummy_atom_ = x11::GetAtom("CHROMIUM_TIMESTAMP");
+    dummy_atom_ = connection_->GetAtom("CHROMIUM_TIMESTAMP");
     dummy_window_events_ = connection_->ScopedSelectEvent(
         dummy_window_, x11::EventMask::PropertyChange);
     dummy_initialized_ = true;
