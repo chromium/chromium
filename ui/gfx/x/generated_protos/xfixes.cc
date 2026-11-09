@@ -139,6 +139,10 @@ std::string XFixes::BadRegionError::ToString() const {
   return ss_.str();
 }
 
+uint8_t XFixes::BadRegionError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<XFixes::BadRegionError>(XFixes::BadRegionError* error_,
                                        ReadBuffer* buffer) {

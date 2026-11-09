@@ -1765,6 +1765,10 @@ std::string Input::DeviceError::ToString() const {
   return ss_.str();
 }
 
+uint8_t Input::DeviceError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<Input::DeviceError>(Input::DeviceError* error_,
                                    ReadBuffer* buffer) {
@@ -1807,6 +1811,10 @@ std::string Input::EventError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t Input::EventError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>
@@ -1853,6 +1861,10 @@ std::string Input::ModeError::ToString() const {
   return ss_.str();
 }
 
+uint8_t Input::ModeError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<Input::ModeError>(Input::ModeError* error_, ReadBuffer* buffer) {
   auto& buf = *buffer;
@@ -1894,6 +1906,10 @@ std::string Input::DeviceBusyError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t Input::DeviceBusyError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>
@@ -1938,6 +1954,10 @@ std::string Input::ClassError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t Input::ClassError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>

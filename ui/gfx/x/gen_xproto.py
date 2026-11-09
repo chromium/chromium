@@ -289,6 +289,9 @@ class GenXproto(FileWriter):
         # Enums that represent bit masks.
         self.bitenums = []
 
+        # Map from error names to unique type IDs.
+        self.error_type_ids = {}
+
     # Generate an ID suitable for use in temporary variable names.
     def new_uid(
         self,
@@ -861,11 +864,14 @@ class GenXproto(FileWriter):
         self.write()
 
     def declare_error(self, error, name):
+        type_id = self.error_type_ids[name]
         name = adjust_type_name(name[-1] + 'Error')
         with Indent(self, 'struct %s : public x11::Error {' % name, '};'):
+            self.write('static constexpr uint8_t kTypeId = %d;' % type_id)
             self.declare_fields(error.fields)
             self.write()
             self.write('std::string ToString() const override;')
+            self.write('uint8_t GetTypeId() const override;')
         self.write()
 
     def declare_container(self, struct, struct_name):
@@ -1124,6 +1130,9 @@ class GenXproto(FileWriter):
                 )
             self.write('ss_ << "}";')
             self.write('return ss_.str();')
+        self.write()
+        with Indent(self, 'uint8_t %s::GetTypeId() const {' % name, '}'):
+            self.write('return kTypeId;')
         self.write()
         self.write('template <>')
         self.write('void ReadError<%s>(' % name)
@@ -1517,6 +1526,8 @@ class GenExtensionManager(FileWriter):
         self.write('#ifndef UI_GFX_X_GENERATED_PROTOS_EXTENSION_MANAGER_H_')
         self.write('#define UI_GFX_X_GENERATED_PROTOS_EXTENSION_MANAGER_H_')
         self.write()
+        self.write('#include <stdint.h>')
+        self.write()
         self.write('#include <memory>')
         self.write()
         self.write('#include "base/component_export.h"')
@@ -1564,11 +1575,11 @@ class GenExtensionManager(FileWriter):
                 )
             self.write()
             self.write('// Event opcodes indexed by response ID.')
-            self.write('uint8_t opcodes_[128] = {0};')
+            self.write('uint8_t opcodes_[128] = {};')
             self.write('// Event type IDs indexed by response ID.')
-            self.write('uint8_t event_type_ids_[128] = {0};')
+            self.write('uint8_t event_type_ids_[128] = {};')
             self.write('// Generic event type IDs for all extensions.')
-            self.write('uint8_t ge_type_ids_[%d] = {0};' % self.total_ge)
+            self.write('uint8_t ge_type_ids_[%d] = {};' % self.total_ge)
             self.write(
                 'ExtensionGeMap ge_extensions_[%d] = {};' % self.ge_extensions
             )
@@ -1615,7 +1626,7 @@ class GenExtensionManager(FileWriter):
             self.write('// if the server extension is an earlier version.')
             self.write('// Always take the event with the later `first_event`')
             self.write('// to prevent conflicts.')
-            self.write('uint8_t first_events[128] = {0};')
+            self.write('uint8_t first_events[128] = {};')
             args = 'uint8_t first_event, uint8_t op, uint8_t type_id'
             with Indent(self, 'auto set_type = [&](%s) {' % args, '};'):
                 self.write('const uint8_t id = first_event + op;')
@@ -1783,14 +1794,20 @@ def main():
     for genproto in genprotos:
         genproto.resolve()
 
-    # Give each event a unique type ID.  This is used by Event to
-    # implement downcasting for events.
-    type_id = 1
+    # Give each event and error a unique type ID.  This is used by Event and
+    # Error to implement downcasting.
+    event_type_id = 1
+    error_type_id = 1
     for proto in genprotos:
-        for _, item in proto.module.all:
+        for name, item in proto.module.all:
             if item.is_event:
-                item.type_id = type_id
-                type_id += 1
+                item.type_id = event_type_id
+                event_type_id += 1
+            elif isinstance(item, xcbgen.xtypes.Error):
+                proto.error_type_ids[name] = error_type_id
+                error_type_id += 1
+    assert event_type_id <= 256
+    assert error_type_id <= 256
 
     for genproto in genprotos:
         genproto.generate()

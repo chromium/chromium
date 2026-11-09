@@ -5,20 +5,36 @@
 #ifndef UI_GFX_X_ERROR_H_
 #define UI_GFX_X_ERROR_H_
 
+#include <cstdint>
 #include <string>
+#include <type_traits>
 
 #include "base/component_export.h"
 
 namespace x11 {
 
-// This class is a generic interface for X11 errors.  Currently the only
-// functionality is printing the error as a human-readable string.
+// Generic interface for X11 errors.
 class COMPONENT_EXPORT(X11) Error {
  public:
   Error();
   virtual ~Error();
 
   virtual std::string ToString() const = 0;
+
+  template <typename T>
+  T* As() {
+    static_assert(std::is_base_of_v<Error, T>, "T must be an x11::Error");
+    static_assert(T::kTypeId > 0, "T must have a non-zero kTypeId");
+    return GetTypeId() == T::kTypeId ? static_cast<T*>(this) : nullptr;
+  }
+
+  template <typename T>
+  const T* As() const {
+    return const_cast<Error*>(this)->As<T>();
+  }
+
+ protected:
+  virtual uint8_t GetTypeId() const;
 };
 
 }  // namespace x11

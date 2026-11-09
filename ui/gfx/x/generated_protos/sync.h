@@ -139,21 +139,25 @@ class COMPONENT_EXPORT(X11) Sync {
   };
 
   struct CounterError : public x11::Error {
+    static constexpr uint8_t kTypeId = 26;
     uint16_t sequence{};
     uint32_t bad_counter{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct AlarmError : public x11::Error {
+    static constexpr uint8_t kTypeId = 27;
     uint16_t sequence{};
     uint32_t bad_alarm{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct CounterNotifyEvent {

@@ -48,6 +48,10 @@ std::string Sync::CounterError::ToString() const {
   return ss_.str();
 }
 
+uint8_t Sync::CounterError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<Sync::CounterError>(Sync::CounterError* error_,
                                    ReadBuffer* buffer) {
@@ -90,6 +94,10 @@ std::string Sync::AlarmError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t Sync::AlarmError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>

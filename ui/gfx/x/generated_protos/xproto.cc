@@ -1984,6 +1984,10 @@ std::string RequestError::ToString() const {
   return ss_.str();
 }
 
+uint8_t RequestError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<RequestError>(RequestError* error_, ReadBuffer* buffer) {
   auto& buf = *buffer;
@@ -2028,6 +2032,10 @@ std::string ValueError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t ValueError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>
@@ -2076,6 +2084,10 @@ std::string WindowError::ToString() const {
   return ss_.str();
 }
 
+uint8_t WindowError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<WindowError>(WindowError* error_, ReadBuffer* buffer) {
   auto& buf = *buffer;
@@ -2120,6 +2132,10 @@ std::string PixmapError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t PixmapError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>
@@ -2168,6 +2184,10 @@ std::string AtomError::ToString() const {
   return ss_.str();
 }
 
+uint8_t AtomError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<AtomError>(AtomError* error_, ReadBuffer* buffer) {
   auto& buf = *buffer;
@@ -2212,6 +2232,10 @@ std::string CursorError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t CursorError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>
@@ -2260,6 +2284,10 @@ std::string FontError::ToString() const {
   return ss_.str();
 }
 
+uint8_t FontError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<FontError>(FontError* error_, ReadBuffer* buffer) {
   auto& buf = *buffer;
@@ -2304,6 +2332,10 @@ std::string MatchError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t MatchError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>
@@ -2352,6 +2384,10 @@ std::string DrawableError::ToString() const {
   return ss_.str();
 }
 
+uint8_t DrawableError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<DrawableError>(DrawableError* error_, ReadBuffer* buffer) {
   auto& buf = *buffer;
@@ -2396,6 +2432,10 @@ std::string AccessError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t AccessError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>
@@ -2444,6 +2484,10 @@ std::string AllocError::ToString() const {
   return ss_.str();
 }
 
+uint8_t AllocError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<AllocError>(AllocError* error_, ReadBuffer* buffer) {
   auto& buf = *buffer;
@@ -2488,6 +2532,10 @@ std::string ColormapError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t ColormapError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>
@@ -2536,6 +2584,10 @@ std::string GContextError::ToString() const {
   return ss_.str();
 }
 
+uint8_t GContextError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<GContextError>(GContextError* error_, ReadBuffer* buffer) {
   auto& buf = *buffer;
@@ -2580,6 +2632,10 @@ std::string IDChoiceError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t IDChoiceError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>
@@ -2628,6 +2684,10 @@ std::string NameError::ToString() const {
   return ss_.str();
 }
 
+uint8_t NameError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<NameError>(NameError* error_, ReadBuffer* buffer) {
   auto& buf = *buffer;
@@ -2674,6 +2734,10 @@ std::string LengthError::ToString() const {
   return ss_.str();
 }
 
+uint8_t LengthError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<LengthError>(LengthError* error_, ReadBuffer* buffer) {
   auto& buf = *buffer;
@@ -2718,6 +2782,10 @@ std::string ImplementationError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t ImplementationError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>

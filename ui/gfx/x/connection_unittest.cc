@@ -4,11 +4,19 @@
 
 #include "ui/gfx/x/connection.h"
 
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/supports_user_data.h"
+#include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/x/event.h"
+#include "ui/gfx/x/event_observer.h"
 #include "ui/gfx/x/future.h"
+#include "ui/gfx/x/shm.h"
 #include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"
 
@@ -184,11 +192,92 @@ TEST(X11ConnectionTest, Error) {
 
   auto geometry = connection.GetGeometry(invalid_window).Sync();
   ASSERT_FALSE(geometry);
-  auto* error = geometry.error.get();
+  Error* error = geometry.error.get();
   ASSERT_TRUE(error);
-  // TODO(thomasanderson): Implement As<> for errors, similar to events.
-  auto* drawable_error = reinterpret_cast<DrawableError*>(error);
+  EXPECT_FALSE(error->As<RequestError>());
+  EXPECT_FALSE(error->As<ValueError>());
+  EXPECT_FALSE(error->As<WindowError>());
+  auto* drawable_error = error->As<DrawableError>();
+  ASSERT_TRUE(drawable_error);
   EXPECT_EQ(drawable_error->bad_value, static_cast<uint32_t>(invalid_window));
+
+  const Error* const_error = error;
+  EXPECT_EQ(const_error->As<DrawableError>(), drawable_error);
+  EXPECT_FALSE(const_error->As<WindowError>());
+
+  if (connection.shm().present()) {
+    Shm::Seg invalid_seg = connection.GenerateId<Shm::Seg>();
+    auto detach = connection.shm().Detach({invalid_seg}).Sync();
+    Error* shm_error = detach.error.get();
+    ASSERT_TRUE(shm_error);
+    EXPECT_FALSE(shm_error->As<ValueError>());
+    EXPECT_FALSE(shm_error->As<DrawableError>());
+    auto* bad_seg_error = shm_error->As<Shm::BadSegError>();
+    ASSERT_TRUE(bad_seg_error);
+    EXPECT_EQ(bad_seg_error->bad_value, static_cast<uint32_t>(invalid_seg));
+  }
+}
+
+TEST(X11ConnectionTest, UserDataDestroyedBeforeConnection) {
+  class ObserverUserData : public base::SupportsUserData::Data,
+                           public EventObserver {
+   public:
+    ObserverUserData(Connection* connection,
+                     scoped_refptr<base::RefCountedData<bool>> destroyed_ready)
+        : connection_(connection),
+          window_(CreateWindow(connection)),
+          destroyed_ready_(std::move(destroyed_ready)) {
+      connection_->AddEventObserver(this);
+    }
+
+    ~ObserverUserData() override {
+      destroyed_ready_->data = connection_->Ready();
+      connection_->DestroyWindow({window_});
+      connection_->RemoveEventObserver(this);
+    }
+
+    void OnEvent(const Event&) override {}
+
+   private:
+    raw_ptr<Connection> connection_;
+    Window window_;
+    scoped_refptr<base::RefCountedData<bool>> destroyed_ready_;
+  };
+
+  static const int kKey = 0;
+  auto destroyed_while_ready =
+      base::MakeRefCounted<base::RefCountedData<bool>>(false);
+  {
+    Connection connection;
+    ASSERT_TRUE(connection.Ready());
+    connection.SetUserData(&kKey, std::make_unique<ObserverUserData>(
+                                      &connection, destroyed_while_ready));
+  }
+  EXPECT_TRUE(destroyed_while_ready->data);
+
+  // Verify DetachFromSequence() also detaches SupportsUserData so a cloned
+  // connection can attach and destroy user data on another thread.
+  Connection main_connection;
+  ASSERT_TRUE(main_connection.Ready());
+  auto cloned = main_connection.Clone();
+  cloned->DetachFromSequence();
+
+  auto thread_destroyed_while_ready =
+      base::MakeRefCounted<base::RefCountedData<bool>>(false);
+  base::Thread worker("X11ConnectionUserDataTest");
+  ASSERT_TRUE(worker.Start());
+  worker.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](std::unique_ptr<Connection> conn,
+                        scoped_refptr<base::RefCountedData<bool>> out_ready) {
+                       ASSERT_TRUE(conn->Ready());
+                       conn->SetUserData(&kKey,
+                                         std::make_unique<ObserverUserData>(
+                                             conn.get(), std::move(out_ready)));
+                     },
+                     std::move(cloned), thread_destroyed_while_ready));
+  worker.Stop();
+  EXPECT_TRUE(thread_destroyed_while_ready->data);
 }
 
 TEST(X11ConnectionTest, LargeQueryTree) {

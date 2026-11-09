@@ -202,7 +202,6 @@ component("x") {
     "//base",
     "//base:i18n",
     "//skia",
-    "//ui/events/platform",
     "//ui/gfx:gfx_switches",
     "//ui/gfx/geometry",
   ]

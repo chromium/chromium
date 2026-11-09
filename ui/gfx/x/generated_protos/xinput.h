@@ -1664,48 +1664,58 @@ class COMPONENT_EXPORT(X11) Input {
 
   using EventForSend = std::array<uint8_t, 32>;
   struct DeviceError : public x11::Error {
+    static constexpr uint8_t kTypeId = 29;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct EventError : public x11::Error {
+    static constexpr uint8_t kTypeId = 30;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct ModeError : public x11::Error {
+    static constexpr uint8_t kTypeId = 31;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct DeviceBusyError : public x11::Error {
+    static constexpr uint8_t kTypeId = 32;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct ClassError : public x11::Error {
+    static constexpr uint8_t kTypeId = 33;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct GetExtensionVersionRequest {

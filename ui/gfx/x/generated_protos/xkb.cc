@@ -48,6 +48,10 @@ std::string Xkb::KeyboardError::ToString() const {
   return ss_.str();
 }
 
+uint8_t Xkb::KeyboardError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<Xkb::KeyboardError>(Xkb::KeyboardError* error_,
                                    ReadBuffer* buffer) {

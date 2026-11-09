@@ -179,48 +179,58 @@ class COMPONENT_EXPORT(X11) Render {
   enum class Fixed : int32_t {};
 
   struct PictFormatError : public x11::Error {
+    static constexpr uint8_t kTypeId = 20;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct PictureError : public x11::Error {
+    static constexpr uint8_t kTypeId = 21;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct PictOpError : public x11::Error {
+    static constexpr uint8_t kTypeId = 22;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct GlyphSetError : public x11::Error {
+    static constexpr uint8_t kTypeId = 23;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct GlyphError : public x11::Error {
+    static constexpr uint8_t kTypeId = 24;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct DirectFormat {

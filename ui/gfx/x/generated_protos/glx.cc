@@ -48,6 +48,10 @@ std::string Glx::GenericError::ToString() const {
   return ss_.str();
 }
 
+uint8_t Glx::GenericError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<Glx::GenericError>(Glx::GenericError* error_,
                                   ReadBuffer* buffer) {
@@ -93,6 +97,10 @@ std::string Glx::BadContextError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t Glx::BadContextError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>
@@ -142,6 +150,10 @@ std::string Glx::BadContextStateError::ToString() const {
   return ss_.str();
 }
 
+uint8_t Glx::BadContextStateError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<Glx::BadContextStateError>(Glx::BadContextStateError* error_,
                                           ReadBuffer* buffer) {
@@ -187,6 +199,10 @@ std::string Glx::BadDrawableError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t Glx::BadDrawableError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>
@@ -236,6 +252,10 @@ std::string Glx::BadPixmapError::ToString() const {
   return ss_.str();
 }
 
+uint8_t Glx::BadPixmapError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<Glx::BadPixmapError>(Glx::BadPixmapError* error_,
                                     ReadBuffer* buffer) {
@@ -281,6 +301,10 @@ std::string Glx::BadContextTagError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t Glx::BadContextTagError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>
@@ -330,6 +354,10 @@ std::string Glx::BadCurrentWindowError::ToString() const {
   return ss_.str();
 }
 
+uint8_t Glx::BadCurrentWindowError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<Glx::BadCurrentWindowError>(Glx::BadCurrentWindowError* error_,
                                            ReadBuffer* buffer) {
@@ -375,6 +403,10 @@ std::string Glx::BadRenderRequestError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t Glx::BadRenderRequestError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>
@@ -424,6 +456,10 @@ std::string Glx::BadLargeRequestError::ToString() const {
   return ss_.str();
 }
 
+uint8_t Glx::BadLargeRequestError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<Glx::BadLargeRequestError>(Glx::BadLargeRequestError* error_,
                                           ReadBuffer* buffer) {
@@ -469,6 +505,10 @@ std::string Glx::UnsupportedPrivateRequestError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t Glx::UnsupportedPrivateRequestError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>
@@ -519,6 +559,10 @@ std::string Glx::BadFBConfigError::ToString() const {
   return ss_.str();
 }
 
+uint8_t Glx::BadFBConfigError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<Glx::BadFBConfigError>(Glx::BadFBConfigError* error_,
                                       ReadBuffer* buffer) {
@@ -566,6 +610,10 @@ std::string Glx::BadPbufferError::ToString() const {
   return ss_.str();
 }
 
+uint8_t Glx::BadPbufferError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<Glx::BadPbufferError>(Glx::BadPbufferError* error_,
                                      ReadBuffer* buffer) {
@@ -611,6 +659,10 @@ std::string Glx::BadCurrentDrawableError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t Glx::BadCurrentDrawableError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>
@@ -661,6 +713,10 @@ std::string Glx::BadWindowError::ToString() const {
   return ss_.str();
 }
 
+uint8_t Glx::BadWindowError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<Glx::BadWindowError>(Glx::BadWindowError* error_,
                                     ReadBuffer* buffer) {
@@ -706,6 +762,10 @@ std::string Glx::GLXBadProfileARBError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t Glx::GLXBadProfileARBError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>

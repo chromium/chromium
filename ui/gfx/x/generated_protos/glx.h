@@ -136,138 +136,168 @@ class COMPONENT_EXPORT(X11) Glx {
   };
 
   struct GenericError : public x11::Error {
+    static constexpr uint8_t kTypeId = 1;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct BadContextError : public x11::Error {
+    static constexpr uint8_t kTypeId = 2;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct BadContextStateError : public x11::Error {
+    static constexpr uint8_t kTypeId = 3;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct BadDrawableError : public x11::Error {
+    static constexpr uint8_t kTypeId = 4;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct BadPixmapError : public x11::Error {
+    static constexpr uint8_t kTypeId = 5;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct BadContextTagError : public x11::Error {
+    static constexpr uint8_t kTypeId = 6;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct BadCurrentWindowError : public x11::Error {
+    static constexpr uint8_t kTypeId = 7;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct BadRenderRequestError : public x11::Error {
+    static constexpr uint8_t kTypeId = 8;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct BadLargeRequestError : public x11::Error {
+    static constexpr uint8_t kTypeId = 9;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct UnsupportedPrivateRequestError : public x11::Error {
+    static constexpr uint8_t kTypeId = 10;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct BadFBConfigError : public x11::Error {
+    static constexpr uint8_t kTypeId = 11;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct BadPbufferError : public x11::Error {
+    static constexpr uint8_t kTypeId = 12;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct BadCurrentDrawableError : public x11::Error {
+    static constexpr uint8_t kTypeId = 13;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct BadWindowError : public x11::Error {
+    static constexpr uint8_t kTypeId = 14;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct GLXBadProfileARBError : public x11::Error {
+    static constexpr uint8_t kTypeId = 15;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct PbufferClobberEvent {

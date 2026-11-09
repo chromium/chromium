@@ -197,7 +197,9 @@ Connection::~Connection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   window_event_manager_.Reset();
-  platform_event_source.reset();
+  // Destroy attached user data (such as the viz compositor thread's
+  // X11EventSource) while `connection_` and `event_observers_` are still valid.
+  ClearAllUserData();
 }
 
 size_t Connection::MaxRequestSizeInBytes() const {
@@ -516,6 +518,7 @@ std::unique_ptr<Connection> Connection::Clone() const {
 void Connection::DetachFromSequence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  SupportsUserData::DetachFromSequence();
 }
 
 bool Connection::Dispatch() {

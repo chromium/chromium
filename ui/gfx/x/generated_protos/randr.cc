@@ -48,6 +48,10 @@ std::string RandR::BadOutputError::ToString() const {
   return ss_.str();
 }
 
+uint8_t RandR::BadOutputError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<RandR::BadOutputError>(RandR::BadOutputError* error_,
                                       ReadBuffer* buffer) {
@@ -90,6 +94,10 @@ std::string RandR::BadCrtcError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t RandR::BadCrtcError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>
@@ -136,6 +144,10 @@ std::string RandR::BadModeError::ToString() const {
   return ss_.str();
 }
 
+uint8_t RandR::BadModeError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<RandR::BadModeError>(RandR::BadModeError* error_,
                                     ReadBuffer* buffer) {
@@ -178,6 +190,10 @@ std::string RandR::BadProviderError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t RandR::BadProviderError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/supports_user_data.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/vulkan/buildflags.h"
 #include "ui/events/platform/x11/x11_event_source.h"
@@ -167,6 +168,18 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
   bool is_swiftshader_ = false;
 };
 
+class OwnedEventSource : public base::SupportsUserData::Data {
+ public:
+  explicit OwnedEventSource(x11::Connection* connection)
+      : event_source_(connection) {}
+  OwnedEventSource(const OwnedEventSource&) = delete;
+  OwnedEventSource& operator=(const OwnedEventSource&) = delete;
+  ~OwnedEventSource() override = default;
+
+ private:
+  X11EventSource event_source_;
+};
+
 }  // namespace
 
 X11SurfaceFactory::X11SurfaceFactory(
@@ -203,13 +216,14 @@ X11SurfaceFactory::CreateVulkanImplementation(bool use_swiftshader,
 
 std::unique_ptr<SurfaceOzoneCanvas> X11SurfaceFactory::CreateCanvasForWidget(
     gfx::AcceleratedWidget widget) {
-  // X11SoftwareBitmapPresenter (created via X11CanvasSurface) requres a
+  // X11SoftwareBitmapPresenter (created via X11CanvasSurface) requires a
   // Connection TLS instance and a PlatformEventSource.
   if (connection_) {
     auto* connection = connection_.get();
     x11::Connection::Set(std::move(connection_));
-    connection->platform_event_source =
-        std::make_unique<X11EventSource>(connection);
+    static const int kEventSourceKey = 0;
+    connection->SetUserData(&kEventSourceKey,
+                            std::make_unique<OwnedEventSource>(connection));
   }
   return std::make_unique<X11CanvasSurface>(widget);
 }

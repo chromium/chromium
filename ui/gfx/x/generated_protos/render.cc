@@ -48,6 +48,10 @@ std::string Render::PictFormatError::ToString() const {
   return ss_.str();
 }
 
+uint8_t Render::PictFormatError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<Render::PictFormatError>(Render::PictFormatError* error_,
                                         ReadBuffer* buffer) {
@@ -90,6 +94,10 @@ std::string Render::PictureError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t Render::PictureError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>
@@ -136,6 +144,10 @@ std::string Render::PictOpError::ToString() const {
   return ss_.str();
 }
 
+uint8_t Render::PictOpError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<Render::PictOpError>(Render::PictOpError* error_,
                                     ReadBuffer* buffer) {
@@ -180,6 +192,10 @@ std::string Render::GlyphSetError::ToString() const {
   return ss_.str();
 }
 
+uint8_t Render::GlyphSetError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<Render::GlyphSetError>(Render::GlyphSetError* error_,
                                       ReadBuffer* buffer) {
@@ -222,6 +238,10 @@ std::string Render::GlyphError::ToString() const {
   ss_ << ".major_opcode = " << static_cast<uint64_t>(major_opcode);
   ss_ << "}";
   return ss_.str();
+}
+
+uint8_t Render::GlyphError::GetTypeId() const {
+  return kTypeId;
 }
 
 template <>

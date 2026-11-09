@@ -92,6 +92,10 @@ std::string Shm::BadSegError::ToString() const {
   return ss_.str();
 }
 
+uint8_t Shm::BadSegError::GetTypeId() const {
+  return kTypeId;
+}
+
 template <>
 void ReadError<Shm::BadSegError>(Shm::BadSegError* error_, ReadBuffer* buffer) {
   auto& buf = *buffer;

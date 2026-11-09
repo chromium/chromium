@@ -10,4 +10,8 @@ Error::Error() = default;
 
 Error::~Error() = default;
 
+uint8_t Error::GetTypeId() const {
+  return 0;
+}
+
 }  // namespace x11

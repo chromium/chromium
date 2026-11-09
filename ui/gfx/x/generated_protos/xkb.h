@@ -850,12 +850,14 @@ class COMPONENT_EXPORT(X11) Xkb {
   };
 
   struct KeyboardError : public x11::Error {
+    static constexpr uint8_t kTypeId = 34;
     uint16_t sequence{};
     uint32_t value{};
     uint16_t minorOpcode{};
     uint8_t majorOpcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct SANoAction {

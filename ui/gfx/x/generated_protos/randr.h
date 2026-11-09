@@ -149,39 +149,47 @@ class COMPONENT_EXPORT(X11) RandR {
   };
 
   struct BadOutputError : public x11::Error {
+    static constexpr uint8_t kTypeId = 16;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct BadCrtcError : public x11::Error {
+    static constexpr uint8_t kTypeId = 17;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct BadModeError : public x11::Error {
+    static constexpr uint8_t kTypeId = 18;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct BadProviderError : public x11::Error {
+    static constexpr uint8_t kTypeId = 19;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct ScreenSize {

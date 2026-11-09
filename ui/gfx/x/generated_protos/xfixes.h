@@ -142,12 +142,14 @@ class COMPONENT_EXPORT(X11) XFixes {
   };
 
   struct BadRegionError : public x11::Error {
+    static constexpr uint8_t kTypeId = 28;
     uint16_t sequence{};
     uint32_t bad_value{};
     uint16_t minor_opcode{};
     uint8_t major_opcode{};
 
     std::string ToString() const override;
+    uint8_t GetTypeId() const override;
   };
 
   struct QueryVersionRequest {

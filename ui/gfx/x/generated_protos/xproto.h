@@ -1225,156 +1225,190 @@ struct GeGenericEvent {
 };
 
 struct RequestError : public x11::Error {
+  static constexpr uint8_t kTypeId = 35;
   uint16_t sequence{};
   uint32_t bad_value{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
 
   std::string ToString() const override;
+  uint8_t GetTypeId() const override;
 };
 
 struct ValueError : public x11::Error {
+  static constexpr uint8_t kTypeId = 36;
   uint16_t sequence{};
   uint32_t bad_value{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
 
   std::string ToString() const override;
+  uint8_t GetTypeId() const override;
 };
 
 struct WindowError : public x11::Error {
+  static constexpr uint8_t kTypeId = 37;
   uint16_t sequence{};
   uint32_t bad_value{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
 
   std::string ToString() const override;
+  uint8_t GetTypeId() const override;
 };
 
 struct PixmapError : public x11::Error {
+  static constexpr uint8_t kTypeId = 38;
   uint16_t sequence{};
   uint32_t bad_value{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
 
   std::string ToString() const override;
+  uint8_t GetTypeId() const override;
 };
 
 struct AtomError : public x11::Error {
+  static constexpr uint8_t kTypeId = 39;
   uint16_t sequence{};
   uint32_t bad_value{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
 
   std::string ToString() const override;
+  uint8_t GetTypeId() const override;
 };
 
 struct CursorError : public x11::Error {
+  static constexpr uint8_t kTypeId = 40;
   uint16_t sequence{};
   uint32_t bad_value{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
 
   std::string ToString() const override;
+  uint8_t GetTypeId() const override;
 };
 
 struct FontError : public x11::Error {
+  static constexpr uint8_t kTypeId = 41;
   uint16_t sequence{};
   uint32_t bad_value{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
 
   std::string ToString() const override;
+  uint8_t GetTypeId() const override;
 };
 
 struct MatchError : public x11::Error {
+  static constexpr uint8_t kTypeId = 42;
   uint16_t sequence{};
   uint32_t bad_value{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
 
   std::string ToString() const override;
+  uint8_t GetTypeId() const override;
 };
 
 struct DrawableError : public x11::Error {
+  static constexpr uint8_t kTypeId = 43;
   uint16_t sequence{};
   uint32_t bad_value{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
 
   std::string ToString() const override;
+  uint8_t GetTypeId() const override;
 };
 
 struct AccessError : public x11::Error {
+  static constexpr uint8_t kTypeId = 44;
   uint16_t sequence{};
   uint32_t bad_value{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
 
   std::string ToString() const override;
+  uint8_t GetTypeId() const override;
 };
 
 struct AllocError : public x11::Error {
+  static constexpr uint8_t kTypeId = 45;
   uint16_t sequence{};
   uint32_t bad_value{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
 
   std::string ToString() const override;
+  uint8_t GetTypeId() const override;
 };
 
 struct ColormapError : public x11::Error {
+  static constexpr uint8_t kTypeId = 46;
   uint16_t sequence{};
   uint32_t bad_value{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
 
   std::string ToString() const override;
+  uint8_t GetTypeId() const override;
 };
 
 struct GContextError : public x11::Error {
+  static constexpr uint8_t kTypeId = 47;
   uint16_t sequence{};
   uint32_t bad_value{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
 
   std::string ToString() const override;
+  uint8_t GetTypeId() const override;
 };
 
 struct IDChoiceError : public x11::Error {
+  static constexpr uint8_t kTypeId = 48;
   uint16_t sequence{};
   uint32_t bad_value{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
 
   std::string ToString() const override;
+  uint8_t GetTypeId() const override;
 };
 
 struct NameError : public x11::Error {
+  static constexpr uint8_t kTypeId = 49;
   uint16_t sequence{};
   uint32_t bad_value{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
 
   std::string ToString() const override;
+  uint8_t GetTypeId() const override;
 };
 
 struct LengthError : public x11::Error {
+  static constexpr uint8_t kTypeId = 50;
   uint16_t sequence{};
   uint32_t bad_value{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
 
   std::string ToString() const override;
+  uint8_t GetTypeId() const override;
 };
 
 struct ImplementationError : public x11::Error {
+  static constexpr uint8_t kTypeId = 51;
   uint16_t sequence{};
   uint32_t bad_value{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
 
   std::string ToString() const override;
+  uint8_t GetTypeId() const override;
 };
 
 struct TimeCoord {

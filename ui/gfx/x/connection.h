@@ -17,7 +17,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
 #include "base/sequence_checker.h"
-#include "ui/events/platform/platform_event_source.h"
+#include "base/supports_user_data.h"
 #include "ui/gfx/x/event_observer.h"
 #include "ui/gfx/x/extension_manager.h"
 #include "ui/gfx/x/future.h"
@@ -148,7 +148,8 @@ auto CompareSequenceIds(T t, U u) {
 
 // Represents a socket to the X11 server.
 class COMPONENT_EXPORT(X11) Connection final : public XProto,
-                                               public ExtensionManager {
+                                               public ExtensionManager,
+                                               public base::SupportsUserData {
  public:
   using IOErrorHandler = base::OnceClosure;
 
@@ -181,7 +182,7 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
   }
 
   explicit Connection(const std::string& address = "");
-  ~Connection();
+  ~Connection() override;
 
   Connection(const Connection&) = delete;
   Connection(Connection&&) = delete;
@@ -465,12 +466,6 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
   std::string GetWmName();
 
   bool WmSupportsHint(Atom atom);
-
-  // The viz compositor thread hangs a PlatformEventSource off the connection so
-  // that it gets destroyed at the appropriate time.
-  // TODO(thomasanderson): This is a layering violation and this should be moved
-  // somewhere else.
-  std::unique_ptr<ui::PlatformEventSource> platform_event_source;
 
  private:
   friend class FutureBase;
