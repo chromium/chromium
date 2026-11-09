@@ -91,10 +91,6 @@ class WebStateID;
 // Returns YES if the collection has no items.
 @property(nonatomic, readonly, getter=isCollectionEmpty) BOOL collectionEmpty;
 
-// YES if the selected cell is visible in the Pinned Tabs collection.
-@property(nonatomic, readonly, getter=isSelectedCellVisible)
-    BOOL selectedCellVisible;
-
 // Updates the view when starting or ending a drag action.
 - (void)dragSessionEnabled:(BOOL)enabled;
 

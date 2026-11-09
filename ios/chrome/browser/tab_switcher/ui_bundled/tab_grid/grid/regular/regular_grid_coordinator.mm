@@ -110,16 +110,6 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   return transitionLayout;
 }
 
-- (BOOL)isSelectedCellVisible {
-  BOOL isSelectedCellVisible = [super isSelectedCellVisible];
-
-  if (IsPinnedTabsEnabled() && !self.tabGroupCoordinator) {
-    isSelectedCellVisible |= self.pinnedTabsViewController.selectedCellVisible;
-  }
-
-  return isSelectedCellVisible;
-}
-
 #pragma mark - ChromeCoordinator
 
 - (void)start {

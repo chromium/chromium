@@ -65,9 +65,6 @@ class Browser;
 // Returns the transition layout for this grid.
 - (TabGridTransitionLayout*)transitionLayout;
 
-// Returns whether the selected cell is visible.
-- (BOOL)isSelectedCellVisible;
-
 // The view displaying the grid. Used for layout purpose.
 - (UIView*)gridView;
 

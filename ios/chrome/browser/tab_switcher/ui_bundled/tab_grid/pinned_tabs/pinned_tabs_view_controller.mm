@@ -245,19 +245,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return _items.count == 0;
 }
 
-- (BOOL)isSelectedCellVisible {
-  // The collection view's selected item may not have updated yet, so use the
-  // selected index.
-  NSUInteger selectedIndex = self.selectedIndex;
-  if (selectedIndex == NSNotFound) {
-    return NO;
-  }
-
-  NSIndexPath* selectedIndexPath = CreateIndexPath(selectedIndex);
-  return [self.collectionView.indexPathsForVisibleItems
-      containsObject:selectedIndexPath];
-}
-
 - (BOOL)hasSelectedCell {
   return self.selectedIndex != NSNotFound;
 }

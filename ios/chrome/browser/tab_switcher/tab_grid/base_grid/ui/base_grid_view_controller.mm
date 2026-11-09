@@ -459,28 +459,6 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
   [self updateSuggestedActionsSection];
 }
 
-// TODO(crbug.com/427543764): Rename this method now that it checks for
-// something different.
-- (BOOL)isSelectedCellVisible {
-  // The collection view's selected item may not have updated yet, so use the
-  // selected index.
-  NSUInteger selectedIndex = self.selectedIndex;
-  if (selectedIndex == NSNotFound) {
-    return NO;
-  }
-  NSIndexPath* selectedIndexPath = [self indexPathForTabIndex:selectedIndex];
-
-  GridItemIdentifier* gridItem =
-      [self.diffableDataSource itemIdentifierForIndexPath:selectedIndexPath];
-
-  UICollectionViewCell* collectionViewCell =
-      [self.collectionView cellForItemAtIndexPath:selectedIndexPath];
-
-  return [self.collectionView.indexPathsForVisibleItems
-             containsObject:selectedIndexPath] &&
-         gridItem.type == GridItemType::kTab && collectionViewCell;
-}
-
 - (void)setContentInsets:(UIEdgeInsets)contentInsets {
   // Set the vertical insets on the collection view…
   self.collectionView.contentInset =

@@ -124,14 +124,6 @@ using collaboration::CollaborationControllerDelegate;
   NOTREACHED() << "This should be implemented in subclasses.";
 }
 
-- (BOOL)isSelectedCellVisible {
-  if (_tabGroupCoordinator) {
-    return _tabGroupCoordinator.viewController.gridViewController
-        .selectedCellVisible;
-  }
-  return self.gridViewController.selectedCellVisible;
-}
-
 - (UIView*)gridView {
   if (_tabGroupCoordinator) {
     return _tabGroupCoordinator.viewController.gridViewController.view;

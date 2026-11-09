@@ -142,9 +142,6 @@ class WebStateID;
 @property(nonatomic, assign) BOOL dropAnimationInProgress;
 // Data source for acquiring data to power PriceCardView
 @property(nonatomic, weak) id<PriceCardDataSource> priceCardDataSource;
-// YES if the selected cell is visible in the grid.
-@property(nonatomic, readonly, getter=isSelectedCellVisible)
-    BOOL selectedCellVisible;
 // Provider of context menu configurations for the tabs in the grid.
 @property(nonatomic, weak) id<TabContextMenuProvider> menuProvider;
 // Opacity of grid cells that are not the selected tab.
