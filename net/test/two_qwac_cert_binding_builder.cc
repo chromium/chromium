@@ -20,7 +20,10 @@
 namespace net {
 
 TwoQwacCertBindingBuilder::TwoQwacCertBindingBuilder()
-    : cert_chain_(CertBuilder::CreateSimpleChain(2)) {
+    : TwoQwacCertBindingBuilder(2) {}
+
+TwoQwacCertBindingBuilder::TwoQwacCertBindingBuilder(size_t chain_length)
+    : cert_chain_(CertBuilder::CreateSimpleChain(chain_length)) {
   GetLeafBuilder()->SetCertificatePolicies({"0.4.0.194112.1.6"});  // QNCP-w-gen
   GetLeafBuilder()->SetQwacQcStatements({bssl::der::Input(kEtsiQctWebOid)});
   GetLeafBuilder()->SetExtendedKeyUsages({bssl::der::Input(kIdKpTlsBinding)});

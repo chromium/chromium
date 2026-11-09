@@ -5,9 +5,11 @@
 #ifndef NET_TEST_TWO_QWAC_CERT_BINDING_BUILDER_H_
 #define NET_TEST_TWO_QWAC_CERT_BINDING_BUILDER_H_
 
+#include <cstddef>
 #include <optional>
 #include <vector>
 
+#include "base/check.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "crypto/hash.h"
@@ -24,6 +26,7 @@ namespace net {
 class TwoQwacCertBindingBuilder {
  public:
   TwoQwacCertBindingBuilder();
+  explicit TwoQwacCertBindingBuilder(size_t chain_length);
   ~TwoQwacCertBindingBuilder();
 
   void SetJwsSigAlg(JwsSigAlg sig_alg) {
@@ -49,14 +52,23 @@ class TwoQwacCertBindingBuilder {
     header_overrides_ = std::move(header_overrides);
   }
 
-  // Returns a pointer to the leaf net::CertBuilder. The caller may modify the
-  // returned CertBuilder, but only immediately after calling this method and
-  // before calling any other methods on the TwoQwacCertBindingBuilder. Once
-  // other methods are called on the 2-QWAC builder, do not make further
-  // changes to the CertBuilder without calling this method again.
+  // Returns a pointer to the leaf net::CertBuilder and invalidates the cached
+  // binding. GetHeader(), GetSignature(), and the JWS getters cache generated
+  // data. If the returned builder is modified after any of those calls, call
+  // an invalidating method (such as this method or SetBoundCerts) before
+  // calling any of those getters again.
   CertBuilder* GetLeafBuilder() {
     Invalidate();
     return cert_chain_[0].get();
+  }
+
+  // Returns the first intermediate for a chain with at least three
+  // certificates. See `GetLeafBuilder` for restrictions on modifying the
+  // returned builder.
+  CertBuilder* GetIntermediateBuilder() {
+    CHECK_GE(cert_chain_.size(), 3u);
+    Invalidate();
+    return cert_chain_[1].get();
   }
 
   // Returns a pointer to the root net::CertBuilder. See comment for

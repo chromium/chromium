@@ -267,16 +267,6 @@ class NET_EXPORT CertVerifyProc
       base::span<const uint8_t> tls_cert,
       const NetLogWithSource& net_log);
 
-  // TODO(crbug.com/436300895): remove this (make internal to
-  // CertVerifyProcBuiltin), since it is only used internally by
-  // Verify2QwacBinding.
-  // Performs 2-QWAC verification, if implemented by the subclass. The default
-  // implementation always fails.
-  virtual int Verify2Qwac(X509Certificate* cert,
-                          const std::string& hostname,
-                          CertVerifyResult* verify_result,
-                          const NetLogWithSource& net_log);
-
  protected:
   explicit CertVerifyProc(scoped_refptr<CRLSet> crl_set);
   virtual ~CertVerifyProc();

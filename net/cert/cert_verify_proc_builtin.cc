@@ -1240,7 +1240,7 @@ class CertVerifyProcBuiltin : public CertVerifyProc {
   int Verify2Qwac(X509Certificate* input_cert,
                   const std::string& hostname,
                   CertVerifyResult* verify_result,
-                  const NetLogWithSource& net_log) override;
+                  const NetLogWithSource& net_log);
   int Verify2QwacInternal(X509Certificate* input_cert,
                           const std::string& hostname,
                           CertVerifyResult* verify_result,
