@@ -93,19 +93,18 @@ void CrossOriginOpenerPolicyAccessReportManager::InstallAccessMonitorsIfNeeded(
     CrossOriginOpenerPolicyAccessReportManager* access_manager_other =
         other_ftn->current_frame_host()->coop_access_report_manager();
 
-    // If the current frame has a reporter, install the access monitors to
-    // monitor the accesses between this frame and the other frame.
-    access_manager_frame->MonitorAccesses(frame, other_ftn);
-    access_manager_frame->MonitorAccesses(other_ftn, frame);
+    // If the current document needs access reports, monitor accesses in both
+    // directions using its policy.
+    access_manager_frame->MonitorAccessesIfNeeded(frame, other_ftn);
+    access_manager_frame->MonitorAccessesIfNeeded(other_ftn, frame);
 
-    // If the other frame has a reporter, install the access monitors to monitor
-    // the accesses between this frame and the other frame.
-    access_manager_other->MonitorAccesses(frame, other_ftn);
-    access_manager_other->MonitorAccesses(other_ftn, frame);
+    // Do the same for the other document's policy if it needs access reports.
+    access_manager_other->MonitorAccessesIfNeeded(frame, other_ftn);
+    access_manager_other->MonitorAccessesIfNeeded(other_ftn, frame);
   }
 }
 
-void CrossOriginOpenerPolicyAccessReportManager::MonitorAccesses(
+void CrossOriginOpenerPolicyAccessReportManager::MonitorAccessesIfNeeded(
     FrameTreeNode* accessing_node,
     FrameTreeNode* accessed_node) {
   CHECK_NE(accessing_node, accessed_node, base::NotFatalUntil::M152);
@@ -114,8 +113,20 @@ void CrossOriginOpenerPolicyAccessReportManager::MonitorAccesses(
             accessed_node->current_frame_host()->coop_access_report_manager() ==
                 this,
         base::NotFatalUntil::M152);
-  if (!coop_reporter_.get())
+  if (!coop_reporter_.get()) {
     return;
+  }
+
+  // Access monitors only cover windows in the same browsing context group.
+  // If enforced COOP separates two windows into different groups, accesses
+  // between them are already prevented. Report-only COOP can instead put them
+  // in different virtual groups while leaving accesses possible.
+  // An unsafe-none report-only policy would not block any accesses, so this
+  // document needs no monitors for its own policy.
+  if (coop_reporter_->coop().report_only_value ==
+      network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone) {
+    return;
+  }
 
   // TODO(arthursonzogni): DCHECK same browsing context group.
   // TODO(arthursonzogni): DCHECK different virtual browsing context group.

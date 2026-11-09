@@ -128,9 +128,6 @@ CrossOriginOpenerPolicyReporter::CreateReporterParams(
     bool access_from_coop_page,
     FrameTreeNode* accessing_node,
     FrameTreeNode* accessed_node) {
-  bool endpoint_defined =
-      coop_.report_only_reporting_endpoint || coop_.reporting_endpoint;
-
   using network::mojom::CoopAccessReportType;
   CoopAccessReportType report_type;
   if (access_from_coop_page) {
@@ -183,8 +180,7 @@ CrossOriginOpenerPolicyReporter::CreateReporterParams(
       remote_reporter.InitWithNewPipeAndPassReceiver());
 
   return network::mojom::CrossOriginOpenerPolicyReporterParams::New(
-      report_type, std::move(remote_reporter), endpoint_defined,
-      reported_window_url);
+      report_type, std::move(remote_reporter), reported_window_url);
 }
 
 void CrossOriginOpenerPolicyReporter::QueueNavigationToCOOPReport(

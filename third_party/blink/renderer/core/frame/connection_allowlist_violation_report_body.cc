@@ -99,10 +99,15 @@ void ConnectionAllowlistViolationReportBody::QueueReport(
       ReportType::kConnectionAllowlistViolation, safe_document_url, body);
   const std::optional<std::string> endpoint = allowlist->reporting_endpoint;
 
+  // Only network delivery is gated on the policy declaring a `report-to`
+  // endpoint; observer delivery is not, so an empty vector means observer-only
+  // (as in ExecutionContextCSPDelegate). No fallback to the "default" group:
+  // that would upload violations where the allowlist never asked.
+  Vector<String> endpoints;
   if (endpoint.has_value()) {
-    ReportingContext::From(&execution_context)
-        ->QueueReport(report, Vector<String>{endpoint->c_str()});
+    endpoints.push_back(String(endpoint->c_str()));
   }
+  ReportingContext::From(&execution_context)->QueueReport(report, endpoints);
 }
 
 }  // namespace blink

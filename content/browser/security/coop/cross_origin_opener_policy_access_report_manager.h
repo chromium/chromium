@@ -39,10 +39,11 @@ class CrossOriginOpenerPolicyAccessReportManager {
   static int NextVirtualBrowsingContextGroup();
 
  private:
-  // Install the CoopAccessMonitors monitoring accesses from `accessing_node`
-  // toward `accessed_node`.
-  void MonitorAccesses(FrameTreeNode* accessing_node,
-                       FrameTreeNode* accessed_node);
+  // If this document's report-only COOP requires access reports, install the
+  // CoopAccessMonitors monitoring accesses from `accessing_node` toward
+  // `accessed_node`.
+  void MonitorAccessesIfNeeded(FrameTreeNode* accessing_node,
+                               FrameTreeNode* accessed_node);
 
   std::unique_ptr<CrossOriginOpenerPolicyReporter> coop_reporter_;
 };

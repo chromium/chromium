@@ -52,6 +52,7 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter {
   void set_reporting_source(const base::UnguessableToken& reporting_source) {
     reporting_source_ = reporting_source;
   }
+  const network::CrossOriginOpenerPolicy& coop() const { return coop_; }
 
   // Returns the information necessary for the renderer process to report
   // accesses between the COOP document and other pages.

@@ -232,7 +232,6 @@ class CORE_EXPORT DOMWindow : public WindowProperties, public DOMOriginUtils {
     blink::LocalFrameToken accessing_main_frame;
     HeapMojoRemote<network::mojom::blink::CrossOriginOpenerPolicyReporter>
         reporter;
-    bool endpoint_defined;
     String reported_window_url;
   };
   HeapVector<Member<CoopAccessMonitor>> coop_access_monitor_;
