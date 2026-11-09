@@ -43,6 +43,16 @@ cr-input {
   margin-bottom: 8px;
 }
 
+.toggle-container {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.toggle-container:has(cr-toggle[disabled]) {
+  opacity: var(--cr-disabled-opacity);
+}
+
 .dropdown-container label,
 .toggle-container span {
   color: var(--cr-secondary-text-color);

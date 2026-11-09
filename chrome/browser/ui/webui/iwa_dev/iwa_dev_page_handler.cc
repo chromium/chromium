@@ -16,7 +16,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/types/expected_macros.h"
+#include "build/build_config.h"
+#include "chrome/browser/about_flags.h"
 #include "chrome/browser/file_select_helper.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_check_and_prepare_task.h"
@@ -43,6 +46,7 @@
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "components/webapps/isolated_web_apps/types/update_check_and_prepare_result.h"
+#include "components/webui/flags/flags_storage.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -53,6 +57,11 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/logging.h"
+#include "chrome/browser/ash/settings/about_flags.h"
+#endif
 
 namespace {
 
@@ -354,6 +363,27 @@ void IwaDevPageHandler::ParseUpdateManifestFromUrl(
           .Then(std::move(fetcher_keep_alive)));
 }
 
+void IwaDevPageHandler::RestartBrowser() {
+#if BUILDFLAG(IS_CHROMEOS)
+  // On Chrome OS be less intrusive and restart inside the user session after
+  // we apply the newly selected flags.
+  about_flags::GetStorage(
+      &profile_.get(),
+      base::BindOnce(
+          [](PrefService* prefs,
+             std::unique_ptr<flags_ui::FlagsStorage> flags_storage,
+             flags_ui::FlagAccess access) {
+            VLOG(1) << "Restarting to apply per-session flags...";
+            ash::about_flags::FeatureFlagsUpdate(*flags_storage, prefs)
+                .UpdateSessionManager();
+            chrome::AttemptRestart();
+          },
+          profile_->GetPrefs()));
+#else
+  chrome::AttemptRestart();
+#endif
+}
+
 void IwaDevPageHandler::SelectLocalWebBundle(
     base::OnceCallback<void(SelectLocalBundleResult)> callback) {
   content::RenderFrameHost* render_frame_host =
@@ -409,6 +439,31 @@ void IwaDevPageHandler::OnLocalBundleSelectedForUpdate(
                          web_app::IwaSourceBundleDevModeWithFileOp(
                              *path, web_app::IwaSourceBundleDevFileOp::kCopy)),
                      std::move(callback));
+}
+
+void IwaDevPageHandler::SetIwaDevModeEnabled(
+    bool enabled,
+    SetIwaDevModeEnabledCallback callback) {
+  about_flags::GetStorage(
+      &profile_.get(),
+      base::BindOnce(
+          [](bool enabled, SetIwaDevModeEnabledCallback callback,
+             std::unique_ptr<flags_ui::FlagsStorage> flags_storage,
+             flags_ui::FlagAccess access) {
+            const flags_ui::FeatureEntry* entry =
+                about_flags::GetCurrentFlagsState()->FindFeatureEntryByName(
+                    "enable-isolated-web-app-dev-mode");
+            CHECK(entry);
+            about_flags::SetFeatureEntryEnabled(
+                flags_storage.get(),
+                entry->NameForOption(enabled
+                                         ? flags_ui::FeatureEntry::ENABLED
+                                         : flags_ui::FeatureEntry::DISABLED),
+                true);
+            flags_storage->CommitPendingWrites();
+            std::move(callback).Run();
+          },
+          enabled, std::move(callback)));
 }
 
 void IwaDevPageHandler::SetUpdateChannel(const std::string& app_id,

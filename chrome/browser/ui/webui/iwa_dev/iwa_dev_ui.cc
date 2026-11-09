@@ -58,7 +58,10 @@ void IwaDevUI::BindInterface(
 void IwaDevUI::CreatePageHandler(
     mojo::PendingRemote<iwa_dev::mojom::Page> page,
     mojo::PendingReceiver<iwa_dev::mojom::PageHandler> receiver) {
-  if (!web_app::IsIwaDevModeEnabled(Profile::FromWebUI(web_ui()))) {
+  // It's intentional to not to check `web_app::IsIwaDevModeEnabled()` here so
+  // the page handler is still created when Developer Mode is off, allowing the
+  // user to toggle Developer Mode on and restart the browser from the UI.
+  if (!content::AreIsolatedWebAppsEnabled(Profile::FromWebUI(web_ui()))) {
     return;
   }
   page_handler_ = std::make_unique<IwaDevPageHandler>(web_ui(), std::move(page),

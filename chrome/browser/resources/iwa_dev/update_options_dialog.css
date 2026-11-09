@@ -31,9 +31,3 @@
 iwa-dev-combobox {
   --iwa-dev-combobox-margin-bottom: 28px;
 }
-
-.toggle-container {
-  align-items: center;
-  display: flex;
-  gap: 12px;
-}

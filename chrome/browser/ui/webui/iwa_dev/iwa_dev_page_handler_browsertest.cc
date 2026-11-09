@@ -14,6 +14,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/test_future.h"
 #include "base/thread_annotations.h"
+#include "chrome/browser/about_flags.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -31,6 +32,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
+#include "components/webui/flags/flags_storage.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
@@ -1431,6 +1433,27 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
 
   EXPECT_FALSE(LaunchApp(sub_app_id));
   EXPECT_FALSE(UninstallApp(sub_app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest, SetIwaDevModeEnabled) {
+  base::test::TestFuture<std::unique_ptr<flags_ui::FlagsStorage>,
+                         flags_ui::FlagAccess>
+      storage_future;
+  about_flags::GetStorage(profile(), storage_future.GetCallback());
+  std::unique_ptr<flags_ui::FlagsStorage> flags_storage =
+      std::get<0>(storage_future.Take());
+
+  base::test::TestFuture<void> enable_future;
+  GetHandler()->SetIwaDevModeEnabled(true, enable_future.GetCallback());
+  ASSERT_TRUE(enable_future.Wait());
+  EXPECT_TRUE(
+      flags_storage->GetFlags().contains("enable-isolated-web-app-dev-mode@1"));
+
+  base::test::TestFuture<void> disable_future;
+  GetHandler()->SetIwaDevModeEnabled(false, disable_future.GetCallback());
+  ASSERT_TRUE(disable_future.Wait());
+  EXPECT_TRUE(
+      flags_storage->GetFlags().contains("enable-isolated-web-app-dev-mode@2"));
 }
 
 INSTANTIATE_TEST_SUITE_P(

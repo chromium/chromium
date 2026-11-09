@@ -8,37 +8,65 @@ import type {IwaDevAppElement} from './app.js';
 
 export function getHtml(this: IwaDevAppElement) {
   return html`
-<h1>Isolated Web App Developer Tool</h1>
-<div id="learn-more" class="subtitle">
-  Install and test Isolated Web Apps during development.
-  <a href="https://developer.chrome.com/docs/iwa/introduction" target="_blank"
-      rel="noopener" aria-label="Learn more about Isolated Web Apps">
-    Learn more
-  </a>
+<div id="page-header">
+  <div>
+    <h1>Isolated Web App Developer Tool</h1>
+    <div id="learn-more" class="subtitle">
+      Install and test Isolated Web Apps during development.
+      <a href="https://developer.chrome.com/docs/iwa/introduction"
+          target="_blank" rel="noopener"
+          aria-label="Learn more about Isolated Web Apps">
+        Learn more
+      </a>
+    </div>
+  </div>
+  ${!this.devToolsRestrictedByAdmin_ ? html`
+    <div id="dev-mode-toggle-container" class="toggle-container"
+        title="${this.getDevModeToggleTooltip_()}">
+      <span id="dev-mode-toggle-label">Developer mode</span>
+      <cr-toggle id="devModeToggle" ?checked="${this.devModeToggleChecked_}"
+          ?disabled="${!this.iwaEnabled_}"
+          aria-labelledby="dev-mode-toggle-label"
+          @change="${this.onDevModeToggleChange_}">
+      </cr-toggle>
+    </div>
+  ` : ''}
+</div>
+<div id="relaunch-banner"
+    ?show="${this.devModeToggleChecked_ !== this.devModeEnabled_}"
+    role="${this.devModeToggleChecked_ !== this.devModeEnabled_ ? 'alert' :
+                                                                  'none'}">
+  <span id="relaunch-message">
+    Your changes will take effect the next time you relaunch Chrome.
+  </span>
+  <cr-button class="action-button" id="relaunchButton"
+      ?disabled="${this.devModeToggleChecked_ === this.devModeEnabled_}"
+      @click="${this.onRelaunchClick_}">
+    Relaunch
+  </cr-button>
 </div>
 ${!this.devModeEnabled_ ? html`
-  <div id="feature-disabled-message">
-    ${this.devToolsRestrictedByAdmin_ ? html`
-      <p>Isolated Web App Developer Mode is disabled by your administrator.</p>
-    ` : html`
-      <p>To use this page, please enable the following flags:</p>
-      <ul>
+  ${!this.devModeToggleChecked_ ? html`
+    <div id="feature-disabled-message">
+      ${this.devToolsRestrictedByAdmin_ ? html`
+        <p>
+          Isolated Web App Developer Mode is disabled by your administrator.
+        </p>
+      ` : html`
         ${!this.iwaEnabled_ ? html`
-          <li>
+          <p>
+            To use this page, please enable the
             <a href="chrome://flags#enable-isolated-web-apps" target="_blank">
               Isolated Web Apps
             </a>
-          </li>
-        ` : ''}
-        <li>
-          <a href="chrome://flags#enable-isolated-web-app-dev-mode"
-              target="_blank">
-            Isolated Web App Developer Mode
-          </a>
-        </li>
-      </ul>
-    `}
-  </div>
+            flag.
+          </p>
+        ` : html`
+          <p>Turn on Developer mode to install and manage Isolated Web Apps.</p>
+        `}
+      `}
+    </div>
+  ` : ''}
 ` : html`
   <div id="content">
     ${this.hasFetchedApps_ ? html`

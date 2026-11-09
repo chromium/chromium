@@ -10,6 +10,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {assertNotReached} from '//resources/js/assert.js';
@@ -81,6 +82,7 @@ export class IwaDevAppElement extends CrLitElement {
     return {
       iwaEnabled_: {type: Boolean},
       devModeEnabled_: {type: Boolean},
+      devModeToggleChecked_: {type: Boolean, state: true},
       devToolsRestrictedByAdmin_: {type: Boolean},
       installedApps_: {type: Array},
       hasFetchedApps_: {type: Boolean, state: true},
@@ -93,6 +95,8 @@ export class IwaDevAppElement extends CrLitElement {
   protected accessor iwaEnabled_: boolean =
       loadTimeData.getBoolean('isIwaEnabled');
   protected accessor devModeEnabled_: boolean =
+      loadTimeData.getBoolean('isIwaDevModeEnabled');
+  protected accessor devModeToggleChecked_: boolean =
       loadTimeData.getBoolean('isIwaDevModeEnabled');
   protected accessor devToolsRestrictedByAdmin_: boolean =
       loadTimeData.getBoolean('isDevToolsRestrictedByAdmin');
@@ -205,6 +209,20 @@ export class IwaDevAppElement extends CrLitElement {
   protected onOpenInstallDialogClick_() {
     this.shadowRoot.querySelector<IwaDevInstallDialogElement>(
                        '#installDialog')!.showDialog();
+  }
+
+  protected async onDevModeToggleChange_(e: CustomEvent<boolean>) {
+    this.devModeToggleChecked_ = e.detail;
+    await this.browserProxy_.handler.setIwaDevModeEnabled(
+        this.devModeToggleChecked_);
+  }
+
+  protected onRelaunchClick_() {
+    this.browserProxy_.handler.restartBrowser();
+  }
+
+  protected getDevModeToggleTooltip_(): string {
+    return this.iwaEnabled_ ? '' : 'Enable Isolated Web Apps flag first.';
   }
 
   protected async onRequestInstallFromDevProxy_(e: CustomEvent<{url: Url}>) {

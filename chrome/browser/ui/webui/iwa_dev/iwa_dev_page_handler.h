@@ -64,11 +64,14 @@ class IwaDevPageHandler
   void ParseUpdateManifestFromUrl(
       const GURL& update_manifest_url,
       ParseUpdateManifestFromUrlCallback callback) override;
+  void RestartBrowser() override;
   void SelectAndInstallAppFromLocalWebBundle(
       SelectAndInstallAppFromLocalWebBundleCallback callback) override;
   void SelectAndUpdateAppFromLocalWebBundle(
       const std::string& app_id,
       SelectAndUpdateAppFromLocalWebBundleCallback callback) override;
+  void SetIwaDevModeEnabled(bool enabled,
+                            SetIwaDevModeEnabledCallback callback) override;
   void SetUpdateChannel(const std::string& app_id,
                         const std::string& update_channel,
                         SetUpdateChannelCallback callback) override;

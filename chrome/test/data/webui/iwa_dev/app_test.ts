@@ -10,6 +10,7 @@ import type {InstalledAppListItemElement} from 'chrome://iwa-dev/installed_app_l
 import type {IwaDevModeAppInfo, PageCallbackRouter, UpdateManifest, UpdateManifestOptions} from 'chrome://iwa-dev/iwa_dev.mojom-webui.js';
 import {browserProxyFactory, PageHandlerRemote} from 'chrome://iwa-dev/iwa_dev.mojom-webui.js';
 import type {IwaDevUpdateOptionsDialogElement} from 'chrome://iwa-dev/update_options_dialog.js';
+import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -83,6 +84,13 @@ suite('<iwa-dev-app>', () => {
     const dialog = app.shadowRoot.querySelector('iwa-dev-install-dialog');
     assertTrue(!!dialog);
     return dialog;
+  }
+
+  function getDevModeToggle(): CrToggleElement {
+    const toggle =
+        app.shadowRoot.querySelector<CrToggleElement>('#devModeToggle');
+    assertTrue(!!toggle);
+    return toggle;
   }
 
   function createBundleInstalledAppInfo(): IwaDevModeAppInfo {
@@ -210,6 +218,53 @@ suite('<iwa-dev-app>', () => {
         assertTrue(!!message);
         assertTrue(message.textContent.includes(
             'Isolated Web App Developer Mode is disabled by your administrator.'));
+
+        const toggle =
+            app.shadowRoot.querySelector<CrToggleElement>('#devModeToggle');
+        assertFalse(!!toggle);
+      });
+
+  test(
+      'toggling dev mode calls setIwaDevModeEnabled and updates banner',
+      async () => {
+        handler.setResultFor('setIwaDevModeEnabled', Promise.resolve());
+        createApp(/*devModeEnabled=*/ false);
+        await microtasksFinished();
+
+        const toggle = getDevModeToggle();
+        assertFalse(toggle.checked);
+        assertFalse(toggle.disabled);
+        const relaunchBanner = app.shadowRoot.querySelector('#relaunch-banner');
+        assertTrue(!!relaunchBanner);
+        assertFalse(relaunchBanner.hasAttribute('show'));
+        assertTrue(!!app.shadowRoot.querySelector('#feature-disabled-message'));
+
+        toggle.click();
+        assertTrue(await handler.whenCalled('setIwaDevModeEnabled'));
+        await microtasksFinished();
+        assertTrue(toggle.checked);
+        assertTrue(relaunchBanner.hasAttribute('show'));
+        assertFalse(
+            !!app.shadowRoot.querySelector('#feature-disabled-message'));
+
+        handler.resetResolver('setIwaDevModeEnabled');
+        toggle.click();
+        assertFalse(await handler.whenCalled('setIwaDevModeEnabled'));
+        await microtasksFinished();
+        assertFalse(toggle.checked);
+        assertFalse(relaunchBanner.hasAttribute('show'));
+        assertTrue(!!app.shadowRoot.querySelector('#feature-disabled-message'));
+
+        handler.resetResolver('setIwaDevModeEnabled');
+        toggle.click();
+        assertTrue(await handler.whenCalled('setIwaDevModeEnabled'));
+        await microtasksFinished();
+
+        const relaunchButton =
+            app.shadowRoot.querySelector<HTMLElement>('#relaunchButton');
+        assertTrue(!!relaunchButton);
+        relaunchButton.click();
+        await handler.whenCalled('restartBrowser');
       });
 
   test('display error message when IWAs are disabled', async () => {
@@ -222,21 +277,26 @@ suite('<iwa-dev-app>', () => {
     assertTrue(!!heading);
     assertEquals('Isolated Web App Developer Tool', heading.textContent.trim());
 
+    const toggle = getDevModeToggle();
+    assertFalse(toggle.checked);
+    assertTrue(toggle.disabled);
+
+    const toggleContainer =
+        app.shadowRoot.querySelector<HTMLElement>('#dev-mode-toggle-container');
+    assertTrue(!!toggleContainer);
+    assertEquals('Enable Isolated Web Apps flag first.', toggleContainer.title);
+
     const message = app.shadowRoot.querySelector('#feature-disabled-message');
     assertTrue(!!message);
-    assertTrue(message.textContent.includes(
-        'To use this page, please enable the following flags:'));
+    assertTrue(
+        message.textContent.includes('To use this page, please enable the'));
     const links = message.querySelectorAll('a');
-    assertEquals(2, links.length);
+    assertEquals(1, links.length);
     assertEquals('Isolated Web Apps', links[0]!.textContent.trim());
     assertEquals('chrome://flags/#enable-isolated-web-apps', links[0]!.href);
-    assertEquals(
-        'Isolated Web App Developer Mode', links[1]!.textContent.trim());
-    assertEquals(
-        'chrome://flags/#enable-isolated-web-app-dev-mode', links[1]!.href);
   });
 
-  test('display error message when IWA dev mode is disabled', async () => {
+  test('display message when IWA dev mode is disabled', async () => {
     createApp(/*devModeEnabled=*/ false);
     await microtasksFinished();
 
@@ -244,16 +304,15 @@ suite('<iwa-dev-app>', () => {
     assertTrue(!!heading);
     assertEquals('Isolated Web App Developer Tool', heading.textContent.trim());
 
+    const toggleContainer =
+        app.shadowRoot.querySelector<HTMLElement>('#dev-mode-toggle-container');
+    assertTrue(!!toggleContainer);
+    assertEquals('', toggleContainer.title);
+
     const message = app.shadowRoot.querySelector('#feature-disabled-message');
     assertTrue(!!message);
     assertTrue(message.textContent.includes(
-        'To use this page, please enable the following flags:'));
-    const links = message.querySelectorAll('a');
-    assertEquals(1, links.length);
-    assertEquals(
-        'Isolated Web App Developer Mode', links[0]!.textContent.trim());
-    assertEquals(
-        'chrome://flags/#enable-isolated-web-app-dev-mode', links[0]!.href);
+        'Turn on Developer mode to install and manage Isolated Web Apps.'));
   });
 
   test('display content when IWA dev mode is enabled', async () => {
@@ -273,7 +332,7 @@ suite('<iwa-dev-app>', () => {
         'Only apps installed via developer mode appear here.',
         subtitle.textContent.trim());
 
-    assertFalse(!!app.shadowRoot.querySelector('#dev-mode-disabled-message'));
+    assertFalse(!!app.shadowRoot.querySelector('#feature-disabled-message'));
   });
 
   test('display message when no IWAs installed', async () => {
