@@ -418,6 +418,10 @@ Instead, tear down deterministically:
 - Mediators reset C++ observer bridges and clear unowned C++ pointers in
   `-disconnect` (see
   [Teardown and `-disconnect`](architecture/mediators.md#teardown-and-disconnect)).
+- Classes that own timers stop them in their teardown method: call `-invalidate`
+  on every `NSTimer` (a scheduled `NSTimer` retains its target until
+  invalidated, so it keeps the object alive and keeps firing) and `Stop()` on
+  `base::OneShotTimer` and `base::RepeatingTimer` members.
 
 ### Blocks
 
@@ -810,6 +814,22 @@ ______________________________________________________________________
   - Support Dynamic Type by using `[UIFont preferredFontForTextStyle:...]` (or
     `UIFontMetrics`) and setting `adjustsFontForContentSizeCategory = YES` on
     labels, buttons, and text views.
+- **Localize every user-visible string:** Load user-visible text (labels,
+  buttons, alerts, and accessibility labels) from string resources with
+  `l10n_util::GetNSString(IDS_...)` or `l10n_util::GetNSStringF(...)` from
+  [`//ui/base/l10n/l10n_util_mac.h`](/ui/base/l10n/l10n_util_mac.h); never
+  hardcode user-visible `NSString` literals. Strings for internal debug-only UI
+  are exempt.
+- **Expose state through accessibility traits:** Make sure every interactive
+  element has an `accessibilityLabel`; set it explicitly only where UIKit cannot
+  derive it from visible text (icon-only buttons and custom controls). Express
+  state with system traits (for example `UIAccessibilityTraitSelected`,
+  `UIAccessibilityTraitNotEnabled`, or `UIAccessibilityTraitButton`) instead of
+  encoding it in `accessibilityLabel` or `accessibilityValue` strings such as
+  "selected", so VoiceOver announces it in the user's language and consistently
+  with system controls. Standard `UIControl` subclasses already update these
+  traits from their `selected` and `enabled` properties; update
+  `accessibilityTraits` manually only in custom views.
 
 ______________________________________________________________________
 
@@ -829,6 +849,15 @@ ______________________________________________________________________
   `EXPECT_NSNE(a, b)` over `EXPECT_TRUE([a isEqualToString:b])` so test failures
   print both actual and expected Objective-C objects. (Enforced by
   [`PRESUBMIT.py`](PRESUBMIT.py).)
+- **Use shared view lookup helpers in unit tests:** To find views in a
+  hierarchy, use the `chrome_test_util` helpers in
+  [`//ios/chrome/test/app/uikit_test_util.h`](/ios/chrome/test/app/uikit_test_util.h)
+  (`FindViewById()`, `FindViewByClass()`, `FindViewsByClass()`,
+  `FindLabelWithText()`, `FindViewWithPredicate()`) instead of writing local
+  recursive subview searches. Add missing generic `UIView` helpers to that
+  header rather than defining them in a test file. (This applies to
+  `//ios/chrome` tests; `//ios/web`, `//ios/components`, and `//ios/web_view`
+  cannot depend on that header.)
 - **Suppressing failing or flaky tests:**
   - **XCTest and EarlGrey tests (`*_egtest.mm`):** Do **not** use `DISABLED_` or
     `FLAKY_` method prefixes or hard-coded runtime/compile-time skips in test

@@ -1,6 +1,6 @@
 ---
 name: ios/avoid-unretained-for-background-tasks
-description: When offloading tasks to background runners, pass value copies to static or free functions without base::Unretained, WeakPtr, or self, and avoid secondary detached SEQUENCE_CHECKERs
+description: When offloading tasks to background runners, pass value copies to static or free functions without base::Unretained, WeakPtr, or self, deliver results to consumers and UIKit only from the reply on the originating sequence, and avoid secondary detached SEQUENCE_CHECKERs
 rubric: safety
 severity: blocking
 citations:
@@ -10,6 +10,9 @@ citations:
   - path: docs/threading_and_tasks.md
     heading: Posting a Parallel Task
     quote: base::ThreadPool::PostTaskAndReplyWithResult(FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE}, base::BindOnce(&ReadFromDisk, path), base::BindOnce(&OnReadFromDisk, weak_ptr_factory_.GetWeakPtr()));
+  - path: ios/architecture/mediators.md
+    heading: Sequence Guarantees
+    quote: all interactions across the mediator/UI boundary (consumer, consumer data source, and mutator calls) must occur on the main sequence
 ---
 
 **Rule.** Do not pass `base::Unretained(this)`, dereference `base::WeakPtr`, or
@@ -21,8 +24,14 @@ make background worker operations static member functions, free functions (such
 as in an anonymous namespace), or self-contained closures that accept only
 required inputs by value copy or `std::move()`, and return results to the
 calling sequence using `PostTaskAndReply` (binding `base::WeakPtr` or weak
-`self` only in the reply callback). Additionally, do not declare secondary
-`SEQUENCE_CHECKER` or `THREAD_CHECKER` members detached with
+`self` only in the reply callback). Objective-C inputs follow the same rule:
+pass immutable copies (`[array copy]`, `[string copy]`) or C++ value types
+converted on the originating sequence, and never pass `NSMutable*` collections,
+UIKit objects, or other sequence-bound Objective-C objects into the background
+task. Never call a consumer, consumer data source, mutator, or UIKit API from
+the background task itself; deliver results to them from the reply callback,
+which runs on the originating (main) sequence. Additionally, do not declare
+secondary `SEQUENCE_CHECKER` or `THREAD_CHECKER` members detached with
 `DETACH_FROM_SEQUENCE` in sequence-affine classes to validate background
 execution; instead, verify sequence execution within the worker function using
 `CHECK(task_runner->RunsTasksInCurrentSequence())`.
@@ -59,6 +68,11 @@ task_runner_->PostTask(
 task_runner_->PostTask(FROM_HERE, base::BindOnce(^{
   [self processItems:_items];
 }));
+
+// Bad: Consumer called from the background sequence.
+base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()}, base::BindOnce(^{
+  [self.consumer setItems:LoadFooItemsFromDisk()];
+}));
 ```
 
 Good:
@@ -83,4 +97,15 @@ task_runner_->PostTaskAndReply(
     base::BindOnce(^{
       [weakSelf didProcessItems];
     }));
+
+// Good: Consumer updated from the reply, on the main sequence.
+- (void)loadItems {
+  __weak __typeof(self) weakSelf = self;
+  // Read from disk in the background to avoid blocking the main sequence.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()}, base::BindOnce(&LoadFooItemsFromDisk),
+      base::BindOnce(^(NSArray<FooItem*>* items) {
+        [weakSelf.consumer setItems:items];
+      }));
+}
 ```
