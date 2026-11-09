@@ -50,14 +50,10 @@ public class ValidationTestUtil {
 
     @CalledByNative
     private static Data buildData(ByteBuffer data, int handlesCount, String errorMessage) {
-        ByteBuffer copiedData = null;
         if (data != null) {
-            copiedData = ByteBuffer.allocateDirect(data.limit());
-            copiedData.order(ByteOrder.LITTLE_ENDIAN);
-            copiedData.put(data);
-            copiedData.flip();
+            data.order(ByteOrder.LITTLE_ENDIAN);
         }
-        return new Data(copiedData, handlesCount, errorMessage);
+        return new Data(data, handlesCount, errorMessage);
     }
 
     @NativeMethods

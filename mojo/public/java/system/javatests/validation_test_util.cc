@@ -5,11 +5,18 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
+#include <vector>
+
 #include "base/android/jni_android.h"
+#include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/check.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/test/test_support_android.h"
 #include "mojo/public/cpp/bindings/tests/validation_test_input_parser.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "mojo/public/java/system/mojo_javatests_jni/ValidationTestUtil_jni.h"
@@ -34,14 +41,10 @@ static ScopedJavaLocalRef<jobject> JNI_ValidationTestUtil_ParseData(
         base::android::ConvertUTF8ToJavaString(env, error_message);
     return Java_ValidationTestUtil_buildData(env, nullptr, 0, j_error_message);
   }
-  void* data_ptr = data.data();
-  if (!data_ptr) {
-    DCHECK(!data.size());
-    data_ptr = &data;
-  }
-  auto byte_buffer =
-      jni_zero::AdoptRef(env, env->NewDirectByteBuffer(data_ptr, data.size()));
-  base::android::CheckException(env);
+  ScopedJavaLocalRef<jobject> byte_buffer = jni_zero::ByteBufferAllocateDirect(
+      env, base::checked_cast<int>(data.size()));
+  CHECK(byte_buffer);
+  base::android::JavaByteBufferToMutableSpan(env, byte_buffer).copy_from(data);
   return Java_ValidationTestUtil_buildData(env, byte_buffer, num_handles,
                                            nullptr);
 }
