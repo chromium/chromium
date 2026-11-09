@@ -37,14 +37,36 @@ message AutofillEntitySuppressionSpecifics {
   // `entity_suppression_hash`.
   optional EntitySuppressionKey entity_suppression_key = 2 [deprecated = true];
 
-  // Schema version when suppressed.
-  optional int32 schema_version = 3;
+  reserved 3;
+  reserved "schema_version";
 
-  // The time the suppression was created.
+  // The time the metadata entry was created.
   optional int64 creation_time_windows_epoch_micros = 4;
 
   // The leading bits of a SHA-256 hash of the entity type and the merge
-  // constraint values of the suppressed entity.
-  optional uint32 entity_suppression_hash = 5;
+  // constraint values of the suppressed entity. Deprecated in M159; replaced by
+  // `suppression`.
+  optional uint32 entity_suppression_hash = 5 [deprecated = true];
+
+  message Suppression {
+    // The leading bits of a SHA-256 hash of the entity type and the merge
+    // constraint values of the suppressed entity.
+    optional uint32 hash = 1;
+  }
+
+  message Confirmation {
+    // The leading bits of a SHA-256 hash of the entity type and the attribute
+    // types and values of the user-confirmed entity.
+    optional uint32 hash = 1;
+  }
+
+  oneof metadata_entry {
+    // Metadata for an entity whose suggestions were suppressed by the user.
+    // Replaces `entity_suppression_hash` in M159.
+    Suppression suppression = 6;
+
+    // Metadata for an entity whose extracted values were confirmed by the user.
+    Confirmation confirmation = 7;
+  }
 }
 // LINT.ThenChange(//components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_util.cc:TrimAutofillEntitySuppressionSpecificsDataForCaching)

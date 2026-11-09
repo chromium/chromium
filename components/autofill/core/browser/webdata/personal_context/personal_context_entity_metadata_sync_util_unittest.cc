@@ -146,8 +146,12 @@ TEST(PersonalContextEntityMetadataSyncUtilTest,
       CreateSpecificsFromEntitySuppressionKey("test-guid-1234", kTestHash,
                                               base::Time::Now(),
                                               /*base_specifics=*/{});
-  specifics.set_schema_version(1);
+  specifics.mutable_suppression()->set_hash(kTestHash.value());
+  EXPECT_EQ(TrimAutofillEntitySuppressionSpecificsDataForCaching(specifics)
+                .ByteSizeLong(),
+            0u);
 
+  specifics.mutable_confirmation()->set_hash(kTestHash.value());
   EXPECT_EQ(TrimAutofillEntitySuppressionSpecificsDataForCaching(specifics)
                 .ByteSizeLong(),
             0u);

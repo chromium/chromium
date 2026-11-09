@@ -2521,12 +2521,23 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySuppressionKey& proto) {
   VISIT_REP(attributes);
 }
 
+VISIT_PROTO_FIELDS(
+    const sync_pb::AutofillEntitySuppressionSpecifics::Suppression& proto) {
+  VISIT(hash);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::AutofillEntitySuppressionSpecifics::Confirmation& proto) {
+  VISIT(hash);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::AutofillEntitySuppressionSpecifics& proto) {
   VISIT(guid);
   VISIT(entity_suppression_key);
-  VISIT(schema_version);
   VISIT(creation_time_windows_epoch_micros);
   VISIT(entity_suppression_hash);
+  VISIT(suppression);
+  VISIT(confirmation);
 }
 
 }  // namespace syncer

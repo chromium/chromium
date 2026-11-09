@@ -875,7 +875,6 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
       CreateSpecificsFromEntitySuppressionKey(
           "guid1", ToKey(CreatePassportEntry()), base::Time::Now(),
           /*base_specifics=*/{});
-  entity_specifics.mutable_autofill_entity_suppression()->set_schema_version(1);
 
   EXPECT_EQ(bridge()
                 .TrimAllSupportedFieldsFromRemoteSpecifics(entity_specifics)
@@ -906,7 +905,6 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
   sync_pb::AutofillEntitySuppressionSpecifics* specifics =
       entity_specifics.mutable_autofill_entity_suppression();
   specifics->set_guid("guid1");
-  specifics->set_schema_version(1);
   specifics->set_creation_time_windows_epoch_micros(12345);
   specifics->mutable_entity_suppression_key()->set_entity_type_name("passport");
   sync_pb::EntitySuppressionKey::Attribute* attr =

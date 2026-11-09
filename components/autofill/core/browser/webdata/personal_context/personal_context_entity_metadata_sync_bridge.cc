@@ -402,7 +402,6 @@ PersonalContextEntityMetadataSyncBridge::MergeFullSyncData(
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsLoaded());
-  // TODO(crbug.com/501036619): Consider schema_version when merging.
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch(std::move(metadata_change_list));
 
