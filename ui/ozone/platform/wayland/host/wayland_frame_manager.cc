@@ -890,7 +890,9 @@ void WaylandFrameManager::MaybeProcessSubmittedFrames() {
     if (!all_buffers_released)
       break;
 
-    CHECK((*iter)->submission_acked, base::NotFatalUntil::M163);
+    // TODO(crbug.com/582622866): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK((*iter)->submission_acked);
     if ((*(iter + 1))->submission_acked)
       continue;
 
@@ -956,8 +958,9 @@ void WaylandFrameManager::MaybeProcessSubmittedFrames() {
   }
 
   ClearProcessedSubmittedFrames();
-  CHECK_LE(submitted_frames_.size(), kMaxNumberOfFrames,
-           base::NotFatalUntil::M163);
+  // TODO(crbug.com/582622866): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK_LE(submitted_frames_.size(), kMaxNumberOfFrames);
 
   UpdatePresentationFlushTimer();
 }
