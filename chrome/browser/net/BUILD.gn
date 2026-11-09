@@ -563,7 +563,6 @@ if (!is_android) {
       "//chrome/test/base:browser_test_waiters",
       "//chrome/test/base:test_launcher_utils",
       "//chrome/test/base:web_feature_histogram_tester",
-      "//components/component_updater/installer_policies",
       "//components/cookie_config",
       "//components/embedder_support",
       "//components/embedder_support:user_agent",

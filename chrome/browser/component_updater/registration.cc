@@ -125,7 +125,8 @@ void DeleteOldComponents(const base::FilePath& user_data_dir) {
            FILE_PATH_LITERAL("PlusAddressBlocklist"),  // Remove in M158+
            FILE_PATH_LITERAL("HistorySearch"),         // Remove in M160+
            FILE_PATH_LITERAL(
-               "PrivacySandboxAttestationsPreloaded"),  // Remove in M159+
+               "PrivacySandboxAttestationsPreloaded"),    // Remove in M159+
+           FILE_PATH_LITERAL("FirstPartySetsPreloaded"),  // Remove in M165+
 #if BUILDFLAG(IS_CHROMEOS)
            FILE_PATH_LITERAL("AppProvisioning"),
            // TODO(crbug.com/380780352): Remove these after the stepping stone.

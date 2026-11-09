@@ -20,8 +20,6 @@ static_library("installer_policies_no_content_deps") {
     "actor_safety_lists_component_installer.h",
     "amount_extraction_heuristic_regexes_component_installer.cc",
     "amount_extraction_heuristic_regexes_component_installer.h",
-    "first_party_sets_component_installer_policy.cc",
-    "first_party_sets_component_installer_policy.h",
     "origin_trials_component_installer.cc",
     "origin_trials_component_installer.h",
     "private_verification_tokens_installer_policy.cc",
@@ -88,7 +86,6 @@ source_set("unit_tests") {
   sources = [
     "actor_safety_lists_component_installer_policy_unittest.cc",
     "amount_extraction_heuristic_regexes_component_installer_unittest.cc",
-    "first_party_sets_component_installer_policy_unittest.cc",
     "optimization_hints_component_installer_unittest.cc",
     "prediction_model_component_installer_unittest.cc",
     "private_verification_tokens_installer_policy_unittest.cc",

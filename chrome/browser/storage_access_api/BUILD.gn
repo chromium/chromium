@@ -97,7 +97,6 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/webid",
       "//chrome/test:test_support",
-      "//components/component_updater/installer_policies:installer_policies_no_content_deps",
       "//content/test:test_support",
       "//testing/gtest",
     ]
