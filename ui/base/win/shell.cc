@@ -195,8 +195,9 @@ void ClearWindowPropertyStore(HWND hwnd) {
     return;
 
   // Verify none of the keys are leaking.
-  CHECK(FAILED(pps->GetCount(&property_count)) || property_count == 0,
-        base::NotFatalUntil::M163);
+  // TODO(crbug.com/582506161): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(FAILED(pps->GetCount(&property_count)) || property_count == 0);
 }
 
 }  // namespace ui::win
