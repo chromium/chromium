@@ -37,6 +37,8 @@
 #include "components/search/search.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/command.h"
@@ -357,6 +359,20 @@ void OmniboxEverywhereHandler::DismissFre(searchbox::mojom::FreStage stage) {
   if (service_ && service_->fre_controller()) {
     service_->fre_controller()->OnStageDismissed(MojoFreStageToFreStage(stage));
   }
+}
+
+void OmniboxEverywhereHandler::RecordFreImpression(
+    searchbox::mojom::FreStage stage) {
+  // Ignore impressions unless the WebContents is visibly presented and the
+  // popup is actively shown (not closing, minimized, or demoted).
+  if (!web_contents_ ||
+      web_contents_->GetVisibility() != content::Visibility::VISIBLE ||
+      !service_ || !service_->IsPopupVisibleForProfile() ||
+      !service_->fre_controller()) {
+    return;
+  }
+  service_->fre_controller()->IncrementImpression(
+      MojoFreStageToFreStage(stage));
 }
 
 void OmniboxEverywhereHandler::SetHotkey(const std::string& hotkey_spec) {

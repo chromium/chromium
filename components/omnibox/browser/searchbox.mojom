@@ -687,6 +687,9 @@ interface PageHandler {
   // Dispatched when an FRE stage is dismissed.
   DismissFre(FreStage stage);
 
+  // Dispatched when an FRE stage is visually rendered to record an impression.
+  RecordFreImpression(FreStage stage);
+
   // Shows the native Views dropdown menu for selecting a hotkey preset,
   // anchored to the specified bounds in WebUI viewport coordinates.
   ShowHotkeyDropdown(gfx.mojom.Rect anchor_bounds) => ();
