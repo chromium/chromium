@@ -18,7 +18,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/enum_set.h"
 #include "base/gtest_prod_util.h"
 #include "components/safe_browsing/core/browser/db/safebrowsing.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -88,6 +88,7 @@ enum class SBThreatType {
   // This type can be used for lists that can be checked synchronously so a
   // client callback isn't required, or for allowlists.
   SB_THREAT_TYPE_UNUSED = 0,
+  kMinValue = SB_THREAT_TYPE_UNUSED,
 
   // No threat at all.
   SB_THREAT_TYPE_SAFE = 1,
@@ -190,7 +191,7 @@ enum class SBThreatType {
 
 };
 
-using SBThreatTypeSet = base::flat_set<SBThreatType>;
+using SBThreatTypeSet = base::EnumSet<SBThreatType>;
 
 // Return true if `set` only contains types that are valid for CheckBrowseUrl().
 // Intended for use in DCHECK().
@@ -199,7 +200,7 @@ bool SBThreatTypeSetIsValidForCheckBrowseUrl(const SBThreatTypeSet& set);
 // Shorthand for creating an SBThreatTypeSet from a list of SBThreatTypes. Use
 // like CreateSBThreatTypeSet({SB_THREAT_TYPE_URL_PHISHING,
 //                             SB_THREAT_TYPE_URL_MALWARE})
-inline SBThreatTypeSet CreateSBThreatTypeSet(
+constexpr SBThreatTypeSet CreateSBThreatTypeSet(
     std::initializer_list<SBThreatType> set) {
   return SBThreatTypeSet(set);
 }

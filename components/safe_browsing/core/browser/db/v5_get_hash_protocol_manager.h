@@ -100,7 +100,7 @@ class V5GetHashProtocolManager : public KeyedService {
     ClientCallbackType check_type = ClientCallbackType::CHECK_OTHER;
 
     // Threat types matched in the local database that triggered this check.
-    std::vector<SBThreatType> local_threat_types;
+    SBThreatTypeSet local_threat_types;
 
     // SearchHashesRequest sent over the network.
     V5::SearchHashesRequest request_proto;

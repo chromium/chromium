@@ -268,11 +268,11 @@ void V4GetHashProtocolManager::GetFullHashes(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!full_hash_to_store_and_hash_prefixes.empty());
 
-  base::flat_set<SBThreatType> unique_attempt_threat_types;
+  SBThreatTypeSet unique_attempt_threat_types;
   for (const auto& [full_hash, store_and_prefixes] :
        full_hash_to_store_and_hash_prefixes) {
     for (const auto& store_and_prefix : store_and_prefixes) {
-      unique_attempt_threat_types.insert(
+      unique_attempt_threat_types.Put(
           GetSBThreatTypeForList(store_and_prefix.list_id));
     }
   }
@@ -316,12 +316,12 @@ void V4GetHashProtocolManager::GetFullHashes(
   }
 
   base::flat_set<HashPrefixStr> requested_prefixes(prefixes_to_request);
-  base::flat_set<SBThreatType> unique_network_threat_types;
+  SBThreatTypeSet unique_network_threat_types;
   for (const auto& [full_hash, store_and_prefixes] :
        full_hash_to_store_and_hash_prefixes) {
     for (const auto& store_and_prefix : store_and_prefixes) {
       if (requested_prefixes.contains(store_and_prefix.hash_prefix)) {
-        unique_network_threat_types.insert(
+        unique_network_threat_types.Put(
             GetSBThreatTypeForList(store_and_prefix.list_id));
       }
     }

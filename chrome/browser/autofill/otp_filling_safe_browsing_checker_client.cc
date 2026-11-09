@@ -124,7 +124,7 @@ void OtpFillingSafeBrowsingCheckerClient::OnCheckBrowseUrlResult(
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   timer_.Stop();
 
-  if (threat_types_.contains(threat_type)) {
+  if (threat_types_.Has(threat_type)) {
     LogCheckResult(CheckResult::kUnsafe);
     RunCallback(/*is_malicious=*/true);
     return;

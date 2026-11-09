@@ -174,10 +174,11 @@ void V5GetHashProtocolManager::GetFullHashes(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!full_hash_to_threat_types.empty());
 
-  base::flat_set<SBThreatType> unique_attempt_threat_types;
+  SBThreatTypeSet unique_attempt_threat_types;
   for (const auto& [full_hash, threat_types] : full_hash_to_threat_types) {
-    unique_attempt_threat_types.insert(threat_types.begin(),
-                                       threat_types.end());
+    for (SBThreatType threat_type : threat_types) {
+      unique_attempt_threat_types.Put(threat_type);
+    }
   }
   for (SBThreatType threat_type : unique_attempt_threat_types) {
     base::UmaHistogramEnumeration("SafeBrowsing.V5GetHash.AttemptThreatType",
@@ -229,12 +230,13 @@ void V5GetHashProtocolManager::GetFullHashes(
                               hash_prefixes_to_request.size());
 
   base::flat_set<std::string> requested_prefixes(hash_prefixes_to_request);
-  base::flat_set<SBThreatType> unique_network_threat_types;
+  SBThreatTypeSet unique_network_threat_types;
   for (const auto& [full_hash, threat_types] : full_hash_to_threat_types) {
     if (requested_prefixes.contains(
             SBProtocolManagerUtil::GetHashPrefix(full_hash))) {
-      unique_network_threat_types.insert(threat_types.begin(),
-                                         threat_types.end());
+      for (SBThreatType threat_type : threat_types) {
+        unique_network_threat_types.Put(threat_type);
+      }
     }
   }
   for (SBThreatType threat_type : unique_network_threat_types) {
@@ -524,11 +526,11 @@ void V5GetHashProtocolManager::MaybeLogLookupToWebUI(
   V5GetHashLookup lookup;
   lookup.urls = std::move(check_context->urls);
   lookup.check_type = check_context->check_type;
-  base::flat_set<SBThreatType> local_threat_types;
   for (const auto& [hash, threat_types] : full_hash_to_threat_types) {
-    local_threat_types.insert(threat_types.begin(), threat_types.end());
+    for (SBThreatType threat_type : threat_types) {
+      lookup.local_threat_types.Put(threat_type);
+    }
   }
-  lookup.local_threat_types = std::move(local_threat_types).extract();
   lookup.request_proto = std::move(request_proto);
   lookup.response_code = response_code;
   lookup.net_error = net_error;

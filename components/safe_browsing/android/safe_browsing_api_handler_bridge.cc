@@ -361,7 +361,7 @@ ScopedJavaLocalRef<jintArray> SBThreatTypeSetToSafeBrowsingJavaArray(
     const SBThreatTypeSet& threat_types) {
   DCHECK_LT(0u, threat_types.size());
   size_t threat_type_size =
-      threat_types.contains(SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER)
+      threat_types.Has(SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER)
           ? threat_types.size() + 1
           : threat_types.size();
   auto int_threat_types = base::HeapArray<int>::WithSize(threat_type_size);
@@ -689,7 +689,7 @@ void SafeBrowsingApiHandlerBridge::StartHashDatabaseUrlCheck(
     scoped_refptr<base::SequencedTaskRunner> custom_callback_task_runner) {
   bool for_browse_url = SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types);
   if (for_browse_url &&
-      threat_types.contains(SBThreatType::SB_THREAT_TYPE_URL_PHISHING) &&
+      threat_types.Has(SBThreatType::SB_THREAT_TYPE_URL_PHISHING) &&
       artificially_marked_phishing_urls_.contains(url)) {
     GetCallbackTaskRunnerOrDefault(std::move(custom_callback_task_runner))
         ->PostTask(FROM_HERE,

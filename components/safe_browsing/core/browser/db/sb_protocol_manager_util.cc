@@ -504,20 +504,14 @@ size_t StoreAndHashPrefix::hash() const {
 }
 
 bool SBThreatTypeSetIsValidForCheckBrowseUrl(const SBThreatTypeSet& set) {
-  for (SBThreatType type : set) {
-    switch (type) {
-      case SBThreatType::SB_THREAT_TYPE_URL_PHISHING:
-      case SBThreatType::SB_THREAT_TYPE_URL_MALWARE:
-      case SBThreatType::SB_THREAT_TYPE_URL_UNWANTED:
-      case SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE:
-      case SBThreatType::SB_THREAT_TYPE_BILLING:
-        break;
-
-      default:
-        return false;
-    }
-  }
-  return true;
+  constexpr SBThreatTypeSet kValidTypes = {
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+      SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
+      SBThreatType::SB_THREAT_TYPE_URL_UNWANTED,
+      SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE,
+      SBThreatType::SB_THREAT_TYPE_BILLING,
+  };
+  return kValidTypes.HasAll(set);
 }
 
 bool ListIdentifier::operator==(const ListIdentifier& other) const {

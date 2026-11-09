@@ -94,7 +94,7 @@ void AutoPictureInPictureSafeBrowsingCheckerClient::OnCheckBrowseUrlResult(
   // blocklist check result in time.
   timer_.Stop();
 
-  if (threat_types_.contains(threat_type)) {
+  if (threat_types_.Has(threat_type)) {
     LogCheckResult(CheckResult::kUnsafe);
     report_url_safety_cb_.Run(false);
     return;

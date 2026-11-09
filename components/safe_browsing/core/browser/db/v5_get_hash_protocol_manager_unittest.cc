@@ -394,7 +394,7 @@ class V5GetHashProtocolManagerTest : public ::testing::Test {
     EXPECT_EQ(lookup.urls, check_context->urls);
     EXPECT_EQ(lookup.check_type, check_context->check_type);
     EXPECT_EQ(lookup.local_threat_types,
-              std::vector<SBThreatType>{expected_threat_type});
+              SBThreatTypeSet({expected_threat_type}));
     ASSERT_EQ(lookup.request_proto.hash_prefixes_size(), 1);
     EXPECT_EQ(lookup.request_proto.hash_prefixes(0),
               SBProtocolManagerUtil::GetHashPrefix(full_hash));
