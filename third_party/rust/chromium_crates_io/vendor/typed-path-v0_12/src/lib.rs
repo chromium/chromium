@@ -1,6 +1,9 @@
 #![cfg_attr(feature = "std", doc = include_str!("../README.md"))]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(all(target_os = "wasi", target_env = "p2"), feature(wasip2))]
+#![cfg_attr(
+    all(feature = "nightly-wasip2", target_os = "wasi", target_env = "p2"),
+    feature(wasip2)
+)]
 
 #[doc = include_str!("../README.md")]
 #[cfg(all(doctest, feature = "std"))]

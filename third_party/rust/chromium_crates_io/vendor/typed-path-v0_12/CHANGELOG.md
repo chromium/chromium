@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.4] - 2026-10-19
+
+* Fix the build on stable `wasm32-wasip2`, broken since `0.12.1` by an
+  unconditional `#![feature(wasip2)]` (#71)
+* Move the `OsStr` and `OsString` conversions on `wasm32-wasip2` behind the new
+  `nightly-wasip2` feature, which requires a nightly compiler (#72)
+
 ## [0.12.3] - 2026-02-10
 
 *  Remove AsRef<Path<T>> for Cow<[u8]> and AsRef<Utf8Path<T>> for Cow<str> as they conflict with other libraries (by Its-Just-Nans)
@@ -192,7 +199,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release of the library!
 
-[Unreleased]: https://github.com/chipsenkbeil/typed-path/compare/v0.12.3...HEAD
+[Unreleased]: https://github.com/chipsenkbeil/typed-path/compare/v0.12.4...HEAD
+[0.12.4]: https://github.com/chipsenkbeil/typed-path/compare/v0.12.3...v0.12.4
 [0.12.3]: https://github.com/chipsenkbeil/typed-path/compare/v0.12.2...v0.12.3
 [0.12.2]: https://github.com/chipsenkbeil/typed-path/compare/v0.12.1...v0.12.2
 [0.12.1]: https://github.com/chipsenkbeil/typed-path/compare/v0.12.0...v0.12.1

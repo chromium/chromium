@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.65.0"
 name = "typed-path"
-version = "0.12.3"
+version = "0.12.4"
 authors = ["Chip Senkbeil <chip@senkbeil.org>"]
 build = false
 autolib = false
@@ -40,6 +40,7 @@ repository = "https://github.com/chipsenkbeil/typed-path"
 
 [features]
 default = ["std"]
+nightly-wasip2 = ["std"]
 std = []
 
 [lib]
