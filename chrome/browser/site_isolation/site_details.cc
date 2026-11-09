@@ -70,8 +70,9 @@ void SiteDetails::CollectSiteInfo(content::Page& page, SiteData* site_data) {
             &site_data->browsing_instances[primary];
 
         // Ensure that we add the frame's SiteInstance to |site_instances|.
-        CHECK(frame->GetSiteInstance()->IsRelatedSiteInstance(primary),
-              base::NotFatalUntil::M163);
+        // TODO(crbug.com/583115550): CHECK-exclusion: Convert to a CHECK once
+        // we are confident it won't be triggered.
+        DCHECK(frame->GetSiteInstance()->IsRelatedSiteInstance(primary));
 
         browsing_instance->site_instances.insert(frame->GetSiteInstance());
         browsing_instance->proxy_count += frame->GetProxyCount();
