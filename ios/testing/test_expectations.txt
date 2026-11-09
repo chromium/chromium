@@ -182,7 +182,6 @@ crbug.com/40752508 [ iPad Simulator iOS27 ] TabGridTestCase/testDragAndDropAtEdg
 crbug.com/427699033 [ iOS26 iOS27 ] TabGridTestCase/testIncognitoDragAndDropAtEdgeToCreateNewWindow [ Pass Failure ]
 crbug.com/427699033 [ iOS27 iPad Simulator ] TabGridTestCase/testIncognitoDragAndDropAtEdgeToCreateNewWindow [ Failure ]
 crbug.com/431223435 TabGridTestCase/testDragAndDropAllItemsToOtherWindow [ Pass Failure ]
-crbug.com/431223435 [ iPad Simulator ] TabGridTestCase/testDragAndDropAllItemsToOtherWindow [ Failure ]
 crbug.com/40864920 TabGridTestCase/testDragAndDropURLBetweenWindows [ Pass Failure ]
 crbug.com/40864920 [ iPad Simulator ] TabGridTestCase/testDragAndDropURLBetweenWindows [ Failure ]
 crbug.com/40868899 [ iPad ] TabGridTestCase/testDragAndDropIncognitoURLInMainWindow [ Pass Failure ]
@@ -615,7 +614,8 @@ crbug.com/441761691 [ iOS27 Simulator ] ContextMenuTestCase/testOpenIncognitoLin
 crbug.com/582739898 [ iOS27 iPad Simulator ] RecentTabsTestCase/testContextMenuRepeatedShare [ Skip ]
 
 # Gardening suppression 2026-11-09
-crbug.com/583785828 GeminiFirstRunTestCase/testAcceptPromoAndConsent [ Pass Failure Crash ]
-crbug.com/583785828 GeminiFirstRunTestCase/testLightweightConvenienceFREAcceptConsent [ Pass Failure Crash ]
-crbug.com/583785828 GeminiFirstRunTestCase/testVisualRichFREAcceptConsent [ Pass Failure Crash ]
+# The following tests crash the app. Skip is used until the fix is merged to handle crashes gracefully.
+crbug.com/583785828 GeminiFirstRunTestCase/testAcceptPromoAndConsent [ Skip ]
+crbug.com/583785828 GeminiFirstRunTestCase/testLightweightConvenienceFREAcceptConsent [ Skip ]
+crbug.com/583785828 GeminiFirstRunTestCase/testVisualRichFREAcceptConsent [ Skip ]
 crbug.com/583813595 [ iPhone ] PolicyTestCase/testEnterpriseBubbleInEnhancedSafeBrowsingPage [ Pass Failure ]
