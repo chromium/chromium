@@ -11,18 +11,23 @@ import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.util.Base64;
 
+import androidx.annotation.IntDef;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.PublicKeyCredentialParameters;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.Key;
@@ -50,6 +55,25 @@ import java.util.List;
 public final class BrowserKeyStore {
 
     public static final String ANDROID_KEY_STORE = "AndroidKeyStore";
+
+    static final String KEY_LOAD_RESULT_HISTOGRAM =
+            "Enterprise.ClientCertificates.ClankKeyLoadResult";
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    //
+    // LINT.IfChange(KeyLoadResult)
+    /** The result of loading an existing browser key. Recorded in a histogram. */
+    @IntDef({KeyLoadResult.FOUND, KeyLoadResult.NOT_FOUND, KeyLoadResult.ERROR})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface KeyLoadResult {
+        int FOUND = 0;
+        int NOT_FOUND = 1;
+        int ERROR = 2;
+        int NUM_ENTRIES = 3;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:ClankClientCertificatesKeyLoadResult)
 
     private BrowserKeyStore() {}
 
@@ -129,12 +153,18 @@ public final class BrowserKeyStore {
     @CalledByNative
     public @Nullable @JniType("std::unique_ptr<BrowserKeyAndroid>") BrowserKey
             getBrowserKeyForCredentialId(@JniType("std::vector<uint8_t>") byte[] identifier) {
+        BrowserKey browserKey = null;
+        @KeyLoadResult int result;
         try {
-            return loadBrowserKey(identifier, keyStoreAliasOf(identifier));
+            browserKey = loadBrowserKey(identifier, keyStoreAliasOf(identifier));
+            result = browserKey != null ? KeyLoadResult.FOUND : KeyLoadResult.NOT_FOUND;
         } catch (Exception e) {
             Log.e(BrowserKey.TAG, "Could not load the browser key from the key store.", e);
-            return null;
+            result = KeyLoadResult.ERROR;
         }
+        RecordHistogram.recordEnumeratedHistogram(
+                KEY_LOAD_RESULT_HISTOGRAM, result, KeyLoadResult.NUM_ENTRIES);
+        return browserKey;
     }
 
     /** Returns whether StrongBox (hardware) key storage is supported on this device. */

@@ -1169,6 +1169,19 @@ chromium-metrics-reviews@google.com.
   <token key="UploadScenario" variants="ClientCertificateUploadScenario"/>
 </histogram>
 
+<histogram name="Enterprise.ClientCertificates.ClankKeyLoadResult"
+    enum="ClankClientCertificatesKeyLoadResult" expires_after="2027-05-05">
+  <owner>antoli@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Records whether the private key of a managed identity was found in the
+    Android keystore when the identity is loaded. Recorded once per load
+    attempt. &quot;Not found&quot; means no keystore entry exists for the stored
+    key identifier (the key was lost); &quot;Error&quot; means the keystore
+    could not be queried.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.ClientCertificates.ClankKeySecurityLevel"
     enum="ClankClientCertificatesBrowserKeySecurityLevel"
     expires_after="2027-03-21">

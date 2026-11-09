@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.PublicKeyCredentialParameters;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 
@@ -167,10 +168,18 @@ public class BrowserKeyStoreTest {
     public void testGetDoesNotCreateMissingKey() {
         BrowserKeyStore browserKeyStore = BrowserKeyStore.getInstance();
         browserKeyStore.deleteBrowserKey(BK_ID);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(
+                                BrowserKeyStore.KEY_LOAD_RESULT_HISTOGRAM,
+                                BrowserKeyStore.KeyLoadResult.NOT_FOUND,
+                                2)
+                        .build();
 
         assertNull(browserKeyStore.getBrowserKeyForCredentialId(BK_ID));
         // The lookup must not have created a key as a side effect.
         assertNull(browserKeyStore.getBrowserKeyForCredentialId(BK_ID));
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -180,9 +189,14 @@ public class BrowserKeyStoreTest {
         BrowserKey createdBk =
                 browserKeyStore.getOrCreateBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS);
         assertNotNull(createdBk);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        BrowserKeyStore.KEY_LOAD_RESULT_HISTOGRAM,
+                        BrowserKeyStore.KeyLoadResult.FOUND);
 
         BrowserKey loadedBk = browserKeyStore.getBrowserKeyForCredentialId(BK_ID);
         assertNotNull(loadedBk);
+        histogramWatcher.assertExpected();
 
         // Verify the loaded key's signature using the created key's public key.
         byte[] signature = loadedBk.sign(clientData);

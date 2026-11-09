@@ -160,6 +160,20 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Unknown"/>
 </enum>
 
+<!-- LINT.IfChange(ClankClientCertificatesKeyLoadResult) -->
+
+<enum name="ClankClientCertificatesKeyLoadResult">
+  <summary>
+    The result of loading an existing client certificate private key from the
+    Android keystore.
+  </summary>
+  <int value="0" label="Found"/>
+  <int value="1" label="Not found"/>
+  <int value="2" label="Error"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/enterprise/client_certificates/android/java/src/org/chromium/components/enterprise/client_certificates/BrowserKeyStore.java:KeyLoadResult) -->
+
 <!-- LINT.IfChange(ClientCertificateCommonNameSanitization) -->
 
 <enum name="ClientCertificateCommonNameSanitization">

@@ -45,12 +45,8 @@ static constexpr std::array<device::PublicKeyCredentialParams::CredentialInfo,
         .algorithm = base::strict_cast<int32_t>(
             device::CoseAlgorithmIdentifier::kEs256)}};
 
-scoped_refptr<AndroidPrivateKey> CreateOrLoadKeyFromKeyStore(
-    scoped_refptr<BrowserKeyStore> bk_key_store,
-    std::vector<uint8_t> credential_id) {
-  std::unique_ptr<BrowserKey> bk =
-      bk_key_store->GetOrCreateBrowserKeyForCredentialId(
-          credential_id, base::ToVector(kEs256Allowed));
+scoped_refptr<AndroidPrivateKey> WrapBrowserKey(
+    std::unique_ptr<BrowserKey> bk) {
   if (!bk) {
     return nullptr;
   }
@@ -59,6 +55,26 @@ scoped_refptr<AndroidPrivateKey> CreateOrLoadKeyFromKeyStore(
   RecordClankKeySecurityLevel(bk->GetSecurityLevel());
 
   return base::MakeRefCounted<AndroidPrivateKey>(std::move(bk));
+}
+
+// Creates a key pair in the Android keystore under `credential_id`, which is
+// expected to be a new random identifier.
+scoped_refptr<AndroidPrivateKey> CreateKeyInKeyStore(
+    scoped_refptr<BrowserKeyStore> bk_key_store,
+    std::vector<uint8_t> credential_id) {
+  return WrapBrowserKey(bk_key_store->GetOrCreateBrowserKeyForCredentialId(
+      credential_id, base::ToVector(kEs256Allowed)));
+}
+
+// Loads the key pair stored under `credential_id`. Returns nullptr when no key
+// exists or the key store cannot be queried, so that the identity is
+// re-provisioned instead of a new key being silently paired with the stored
+// certificate.
+scoped_refptr<AndroidPrivateKey> LoadKeyFromKeyStore(
+    scoped_refptr<BrowserKeyStore> bk_key_store,
+    std::vector<uint8_t> credential_id) {
+  return WrapBrowserKey(
+      bk_key_store->GetBrowserKeyForCredentialId(credential_id));
 }
 
 }  // namespace
@@ -78,7 +94,7 @@ void AndroidPrivateKeyFactory::CreatePrivateKey(PrivateKeyCallback callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(
-          CreateOrLoadKeyFromKeyStore, CreateBrowserKeyStoreInstance(),
+          CreateKeyInKeyStore, CreateBrowserKeyStoreInstance(),
           std::vector<uint8_t>(std::begin(identity), std::end(identity))),
       std::move(callback));
 }
@@ -94,7 +110,7 @@ void AndroidPrivateKeyFactory::LoadPrivateKey(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(
-          CreateOrLoadKeyFromKeyStore, CreateBrowserKeyStoreInstance(),
+          LoadKeyFromKeyStore, CreateBrowserKeyStoreInstance(),
           std::vector<uint8_t>(wrapped_key_str.begin(), wrapped_key_str.end())),
       std::move(callback));
 }
@@ -116,8 +132,7 @@ void AndroidPrivateKeyFactory::LoadPrivateKeyFromDict(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(CreateOrLoadKeyFromKeyStore,
-                     CreateBrowserKeyStoreInstance(),
+      base::BindOnce(LoadKeyFromKeyStore, CreateBrowserKeyStoreInstance(),
                      std::vector<uint8_t>(decoded_wrapped_private_key.begin(),
                                           decoded_wrapped_private_key.end())),
       std::move(callback));
