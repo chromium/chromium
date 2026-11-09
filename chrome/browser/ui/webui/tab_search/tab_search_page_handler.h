@@ -76,7 +76,8 @@ class TabSearchPageHandler
       mojo::PendingRemote<tab_search::mojom::Page> page,
       content::WebUI* web_ui,
       TopChromeWebUIController* webui_controller,
-      MetricsReporter* metrics_reporter);
+      MetricsReporter* metrics_reporter,
+      bool log_metrics);
   TabSearchPageHandler(const TabSearchPageHandler&) = delete;
   TabSearchPageHandler& operator=(const TabSearchPageHandler&) = delete;
   ~TabSearchPageHandler() override;
@@ -212,6 +213,7 @@ class TabSearchPageHandler
 
   // Tracks whether the bubble UI is currently showing.
   bool bubble_showing_ = false;
+  const bool log_metrics_;
 
   // Tracks whether or not we have sent the initial payload to the Tab Search
   // UI for metric collection purposes.

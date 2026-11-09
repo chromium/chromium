@@ -256,5 +256,6 @@ void OrganizerPanelUI::CreatePageHandler(
   MetricsReporter* const metrics_reporter = service->metrics_reporter();
   CHECK(metrics_reporter);
   page_handler_ = std::make_unique<TabSearchPageHandler>(
-      std::move(receiver), std::move(page), web_ui(), this, metrics_reporter);
+      std::move(receiver), std::move(page), web_ui(), this, metrics_reporter,
+      /*log_metrics=*/false);
 }

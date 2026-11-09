@@ -178,7 +178,8 @@ class TestTabSearchPageHandler : public TabSearchPageHandler {
             std::move(page),
             web_ui,
             webui_controller,
-            &metrics_reporter_) {
+            &metrics_reporter_,
+            /*log_metrics=*/true) {
     auto timer = std::make_unique<base::MockRetainingOneShotTimer>();
     mock_debounce_timer_ = timer.get();
     SetTimerForTesting(std::move(timer));

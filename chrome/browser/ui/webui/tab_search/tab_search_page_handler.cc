@@ -176,7 +176,8 @@ TabSearchPageHandler::TabSearchPageHandler(
     mojo::PendingRemote<tab_search::mojom::Page> page,
     content::WebUI* web_ui,
     TopChromeWebUIController* webui_controller,
-    MetricsReporter* metrics_reporter)
+    MetricsReporter* metrics_reporter,
+    bool log_metrics)
     : content::WebContentsObserver(web_ui->GetWebContents()),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)),
@@ -189,6 +190,7 @@ TabSearchPageHandler::TabSearchPageHandler(
           kTabsChangeDelay,
           base::BindRepeating(&TabSearchPageHandler::NotifyTabsChanged,
                               base::Unretained(this)))),
+      log_metrics_(log_metrics),
       browser_window_changed_subscription_(
           webui::RegisterBrowserWindowInterfaceChanged(
               web_ui->GetWebContents(),
@@ -313,7 +315,7 @@ void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
   auto profile_tabs = CreateProfileData();
   // On first run record the number of windows and tabs open for the given
   // profile.
-  if (!sent_initial_payload_) {
+  if (log_metrics_ && !sent_initial_payload_) {
     sent_initial_payload_ = true;
     int tab_count = 0;
     for (const auto& window : profile_tabs->windows) {
@@ -378,15 +380,17 @@ void TabSearchPageHandler::SwitchToTab(
   // selects a tab in another window, we need to manually activate it so
   // that we can bring that window to the foreground.
   tab->GetBrowserWindowInterface()->GetWindow()->Activate();
-  metrics_reporter_->Measure(
-      "SwitchToTab",
-      base::BindOnce(
-          [](MetricsReporter* metrics_reporter, base::TimeDelta duration) {
-            base::UmaHistogramTimes("Tabs.TabSearch.Mojo.SwitchToTab",
-                                    duration);
-            metrics_reporter->ClearMark("SwitchToTab");
-          },
-          metrics_reporter_));
+  if (log_metrics_) {
+    metrics_reporter_->Measure(
+        "SwitchToTab",
+        base::BindOnce(
+            [](MetricsReporter* metrics_reporter, base::TimeDelta duration) {
+              base::UmaHistogramTimes("Tabs.TabSearch.Mojo.SwitchToTab",
+                                      duration);
+              metrics_reporter->ClearMark("SwitchToTab");
+            },
+            metrics_reporter_));
+  }
 }
 
 void TabSearchPageHandler::OpenRecentlyClosedEntry(int32_t session_id) {
@@ -421,10 +425,12 @@ void TabSearchPageHandler::SaveRecentlyClosedExpandedPref(bool expanded) {
   profile_->GetPrefs()->SetBoolean(
       tab_search_prefs::kTabSearchRecentlyClosedSectionExpanded, expanded);
 
-  base::UmaHistogramEnumeration(
-      "Tabs.TabSearch.RecentlyClosedSectionToggleAction",
-      expanded ? TabSearchRecentlyClosedToggleAction::kExpand
-               : TabSearchRecentlyClosedToggleAction::kCollapse);
+  if (log_metrics_) {
+    base::UmaHistogramEnumeration(
+        "Tabs.TabSearch.RecentlyClosedSectionToggleAction",
+        expanded ? TabSearchRecentlyClosedToggleAction::kExpand
+                 : TabSearchRecentlyClosedToggleAction::kCollapse);
+  }
 }
 
 void TabSearchPageHandler::StartTabGroupTutorial() {
@@ -978,11 +984,13 @@ void TabSearchPageHandler::OnTabDataChanged(
   }
 
   TRACE_EVENT0("browser", "TabSearchPageHandler:OnTabDataChanged");
-  const bool is_mark_overlap = metrics_reporter_->HasLocalMark("TabUpdated");
-  base::UmaHistogramBoolean("Tabs.TabSearch.Mojo.TabUpdated.IsOverlap",
-                            is_mark_overlap);
-  if (!is_mark_overlap) {
-    metrics_reporter_->Mark("TabUpdated");
+  if (log_metrics_) {
+    const bool is_mark_overlap = metrics_reporter_->HasLocalMark("TabUpdated");
+    base::UmaHistogramBoolean("Tabs.TabSearch.Mojo.TabUpdated.IsOverlap",
+                              is_mark_overlap);
+    if (!is_mark_overlap) {
+      metrics_reporter_->Mark("TabUpdated");
+    }
   }
   auto tab_update_info = tab_search::mojom::TabUpdateInfo::New();
   BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
@@ -1037,9 +1045,11 @@ void TabSearchPageHandler::BeforeBubbleWidgetShowed() {
 }
 
 void TabSearchPageHandler::LogCloseMetrics() {
-  base::UmaHistogramCounts1000("Tabs.TabSearch.NumTabsClosedPerInstance",
-                               num_tabs_closed_);
-  base::UmaHistogramEnumeration("Tabs.TabSearch.CloseAction2", action_);
+  if (log_metrics_) {
+    base::UmaHistogramCounts1000("Tabs.TabSearch.NumTabsClosedPerInstance",
+                                 num_tabs_closed_);
+    base::UmaHistogramEnumeration("Tabs.TabSearch.CloseAction2", action_);
+  }
   bubble_showing_ = false;
 }
 
