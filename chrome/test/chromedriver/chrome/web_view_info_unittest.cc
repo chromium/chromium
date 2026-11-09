@@ -71,9 +71,7 @@ TEST_P(ParseUnsupportedTypeTest, ParseType) {
 
 INSTANTIATE_TEST_SUITE_P(WebViewInfo,
                          ParseUnsupportedTypeTest,
-                         ::testing::Values("auction_worklet",
-                                           "shared_storage_worklet",
-                                           "unknown"));
+                         ::testing::Values("auction_worklet", "unknown"));
 
 TEST(WebViewInfo, ParseEmptyType) {
   WebViewInfo::Type actual_type;

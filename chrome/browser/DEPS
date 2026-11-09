@@ -648,9 +648,6 @@ specific_include_rules = {
   "permission_element_browsertest.cc": [
     "+chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h",
   ],
-  "browsing_data_model_browsertest.cc" : [
-    "+components/services/storage/shared_storage/shared_storage_manager.h",
-  ],
   "ash_session_restore_page_load_metrics_observer\\.cc": [
     "+ash/wm/window_restore/window_restore_util.h",
   ],

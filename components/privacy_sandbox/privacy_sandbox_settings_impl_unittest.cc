@@ -168,9 +168,6 @@ class PrivacySandboxSettingsM1Test : public PrivacySandboxSettingsTest {
   bool kTrue_ = true;
   bool kFalse_ = false;
 
-  bool actual_out_shared_storage_block_is_site_setting_specific_ = false;
-  bool actual_out_select_url_block_is_site_setting_specific_ = false;
-
  private:
   bool test_case_run_ = false;
 };
