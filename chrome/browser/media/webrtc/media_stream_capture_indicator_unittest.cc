@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "content/public/test/web_contents_tester.h"
@@ -515,3 +516,30 @@ INSTANTIATE_TEST_SUITE_P(All,
                          MediaStreamCaptureIndicatorDataProtectionTest,
                          testing::Bool());
 #endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+
+// Verifies that a capture in TopChromeWebUIProfile, which only hosts Top Chrome
+// WebUIs and has no ExtensionRegistry, is tracked without crashing.
+TEST_F(MediaStreamCaptureIndicatorTest, CaptureInTopChromeWebUIProfile) {
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_top_chrome_webui_profile;
+  std::unique_ptr<content::WebContents> contents =
+      content::WebContentsTester::CreateTestWebContents(
+          webui::GetTopChromeWebUIProfile(), /*instance=*/nullptr);
+  blink::mojom::StreamDevices devices;
+  devices.audio_device = blink::MediaStreamDevice(
+      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "fake_device",
+      "fake_device");
+  std::unique_ptr<content::MediaStreamUI> ui =
+      indicator()->RegisterMediaStream(contents.get(), devices);
+
+  observer()->SetOnIsCapturingAudioChangedExpectation(contents.get(), true);
+  ui->OnStarted(base::RepeatingClosure(),
+                content::MediaStreamUI::SourceCallback(),
+                /*label=*/std::string(), /*screen_capture_ids=*/{},
+                content::MediaStreamUI::StateChangeCallback());
+  EXPECT_TRUE(indicator()->IsCapturingAudio(contents.get()));
+  ::testing::Mock::VerifyAndClear(observer());
+
+  observer()->SetOnIsCapturingAudioChangedExpectation(contents.get(), false);
+  ui.reset();
+  EXPECT_FALSE(indicator()->IsCapturingAudio(contents.get()));
+}

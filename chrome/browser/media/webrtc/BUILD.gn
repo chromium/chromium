@@ -600,6 +600,7 @@ source_set("unit_tests") {
     deps += [
       ":test_support",
       ":webrtc_browser_tests_base",
+      "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/web_applications:web_app_test",
       "//chrome/browser/web_applications:web_applications_test_support",
     ]

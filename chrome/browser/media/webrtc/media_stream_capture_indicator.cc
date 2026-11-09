@@ -81,6 +81,11 @@ const extensions::Extension* GetExtension(WebContents* web_contents) {
 
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(web_contents->GetBrowserContext());
+  // Contexts without extensions, e.g. TopChromeWebUIProfile, have no
+  // ExtensionRegistry.
+  if (!registry) {
+    return nullptr;
+  }
   return registry->enabled_extensions().GetExtensionOrAppByURL(
       web_contents->GetLastCommittedURL());
 }
