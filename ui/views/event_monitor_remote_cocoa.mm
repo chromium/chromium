@@ -12,6 +12,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
 namespace views {
@@ -19,7 +20,7 @@ namespace views {
 EventMonitorRemoteCocoa::EventMonitorRemoteCocoa(
     ui::EventObserver* event_observer,
     gfx::NativeWindow target_native_window,
-    const std::set<ui::EventType>& types)
+    ui::EventTypeSet types)
     : types_(types), event_observer_(event_observer) {
   CHECK(event_observer);
 
@@ -37,7 +38,7 @@ void EventMonitorRemoteCocoa::NativeWidgetMacEventMonitorOnEvent(
     return;
   }
 
-  if (target_is_this_window && types_.contains(ui_event->type())) {
+  if (target_is_this_window && types_.Has(ui_event->type())) {
     event_observer_->OnEvent(*ui_event);
   }
 }

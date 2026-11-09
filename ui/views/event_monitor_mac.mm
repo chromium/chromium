@@ -16,6 +16,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/event_monitor_remote_cocoa.h"
 
@@ -29,7 +30,7 @@ bool g_use_remote_cocoa_for_testing = false;
 std::unique_ptr<EventMonitor> EventMonitor::CreateApplicationMonitor(
     ui::EventObserver* event_observer,
     gfx::NativeWindow context,
-    const std::set<ui::EventType>& types) {
+    ui::EventTypeSet types) {
   // |context| is not needed on Mac.
   return std::make_unique<EventMonitorMac>(event_observer, gfx::NativeWindow(),
                                            types);
@@ -39,7 +40,7 @@ std::unique_ptr<EventMonitor> EventMonitor::CreateApplicationMonitor(
 std::unique_ptr<EventMonitor> EventMonitor::CreateWindowMonitor(
     ui::EventObserver* event_observer,
     gfx::NativeWindow target_window,
-    const std::set<ui::EventType>& types) {
+    ui::EventTypeSet types) {
   CHECK(target_window)
       << "Use CreateApplicationMonitor to observe events to all windows";
 
@@ -64,7 +65,7 @@ struct EventMonitorMac::ObjCStorage {
 
 EventMonitorMac::EventMonitorMac(ui::EventObserver* event_observer,
                                  gfx::NativeWindow target_native_window,
-                                 const std::set<ui::EventType>& types)
+                                 ui::EventTypeSet types)
     : types_(types),
       event_observer_(event_observer),
       objc_storage_(std::make_unique<ObjCStorage>()) {
@@ -83,7 +84,7 @@ EventMonitorMac::EventMonitorMac(ui::EventObserver* event_observer,
     if (!target_window || [event window] == target_window) {
       std::unique_ptr<ui::Event> ui_event =
           ui::EventFromNative(base::apple::OwnedNSEvent(event));
-      if (ui_event && types_.find(ui_event->type()) != types_.end()) {
+      if (ui_event && types_.Has(ui_event->type())) {
         event_observer->OnEvent(*ui_event);
       }
     }

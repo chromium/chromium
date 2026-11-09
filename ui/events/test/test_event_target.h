@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -77,7 +76,7 @@ class TestEventTarget : public EventTarget,
   std::unique_ptr<EventTargeter> targeter_;
   bool mark_events_as_handled_;
 
-  std::set<ui::EventType> received_;
+  EventTypeSet received_;
 
   raw_ptr<HandlerSequenceRecorder> recorder_;
   std::string target_name_;

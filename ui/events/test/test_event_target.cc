@@ -48,11 +48,11 @@ void TestEventTarget::SetEventTargeter(
 }
 
 bool TestEventTarget::DidReceiveEvent(ui::EventType type) const {
-  return received_.count(type) > 0;
+  return received_.Has(type);
 }
 
 void TestEventTarget::ResetReceivedEvents() {
-  received_.clear();
+  received_.Clear();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ EventTargeter* TestEventTarget::GetEventTargeter() {
 void TestEventTarget::OnEvent(Event* event) {
   if (recorder_)
     recorder_->push_back(target_name_);
-  received_.insert(event->type());
+  received_.Put(event->type());
   EventHandler::OnEvent(event);
   if (!event->handled() && mark_events_as_handled_)
     event->SetHandled();

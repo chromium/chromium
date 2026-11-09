@@ -6,7 +6,6 @@
 #define UI_VIEWS_EVENT_MONITOR_H_
 
 #include <memory>
-#include <set>
 
 #include "ui/events/event_observer.h"
 #include "ui/events/types/event_type.h"
@@ -30,14 +29,14 @@ class VIEWS_EXPORT EventMonitor {
   static std::unique_ptr<EventMonitor> CreateApplicationMonitor(
       ui::EventObserver* event_observer,
       gfx::NativeWindow context,
-      const std::set<ui::EventType>& types);
+      ui::EventTypeSet types);
 
   // Create an instance for monitoring events on a specific window.
   // The EventMonitor instance must be destroyed before |target_window|.
   static std::unique_ptr<EventMonitor> CreateWindowMonitor(
       ui::EventObserver* event_observer,
       gfx::NativeWindow target_window,
-      const std::set<ui::EventType>& types);
+      ui::EventTypeSet types);
 
   // Returns the last recorded mouse event location in screen coordinates.
   virtual gfx::Point GetLastMouseLocation() = 0;

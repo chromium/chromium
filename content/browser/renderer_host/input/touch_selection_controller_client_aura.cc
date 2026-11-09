@@ -4,8 +4,6 @@
 
 #include "content/browser/renderer_host/input/touch_selection_controller_client_aura.h"
 
-#include <set>
-
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -23,6 +21,7 @@
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_observer.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -50,7 +49,7 @@ class TouchSelectionControllerClientAura::EnvEventObserver
       : selection_controller_(selection_controller), window_(window) {
     // Observe certain event types sent to any event target, to hide this ui.
     aura::Env* env = aura::Env::GetInstance();
-    std::set<ui::EventType> types = {
+    ui::EventTypeSet types = {
         ui::EventType::kMousePressed, ui::EventType::kMouseMoved,
         ui::EventType::kKeyPressed, ui::EventType::kMousewheel};
     env->AddEventObserver(this, env, types);

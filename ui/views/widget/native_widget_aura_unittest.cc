@@ -5,7 +5,6 @@
 #include "ui/views/widget/native_widget_aura.h"
 
 #include <memory>
-#include <set>
 #include <utility>
 
 #include "base/command_line.h"
@@ -33,6 +32,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
@@ -242,8 +242,7 @@ class EventHandlingView : public View {
 
   // Returns whether an event specified by `type_to_query` has been handled.
   bool HandledEventBefore(ui::EventType type_to_query) const {
-    return handled_gestures_set_.find(type_to_query) !=
-           handled_gestures_set_.cend();
+    return handled_gestures_set_.Has(type_to_query);
   }
 
   // View:
@@ -251,9 +250,8 @@ class EventHandlingView : public View {
   void OnGestureEvent(ui::GestureEvent* event) override {
     // Record the handled gesture event.
     const ui::EventType event_type = event->type();
-    if (handled_gestures_set_.find(event_type) ==
-        handled_gestures_set_.cend()) {
-      EXPECT_TRUE(handled_gestures_set_.insert(event->type()).second);
+    if (!handled_gestures_set_.Has(event_type)) {
+      handled_gestures_set_.Put(event_type);
     } else {
       // Only EventType::kGestureScrollUpdate events can be received more than
       // once.
@@ -264,7 +262,7 @@ class EventHandlingView : public View {
   }
 
  private:
-  std::set<ui::EventType> handled_gestures_set_;
+  ui::EventTypeSet handled_gestures_set_;
 };
 
 BEGIN_METADATA(EventHandlingView)

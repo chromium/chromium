@@ -161,7 +161,7 @@ class AURA_EXPORT Env : public ui::EventTarget {
   // Observers must be removed before their target is destroyed.
   void AddEventObserver(ui::EventObserver* observer,
                         ui::EventTarget* target,
-                        const std::set<ui::EventType>& types);
+                        ui::EventTypeSet types);
   void RemoveEventObserver(ui::EventObserver* observer);
   void NotifyEventObservers(const ui::Event& event);
 

@@ -4,7 +4,6 @@
 
 #include "ash/hud_display/hud_settings_view.h"
 
-#include <set>
 #include <string>
 
 #include "ash/hud_display/ash_tracing_handler.h"
@@ -604,9 +603,8 @@ HUDSettingsView::HUDSettingsView(HUDDisplayView* hud_display) {
 
   AshTracingManager::Get().AddObserver(this);
   aura::Env* env = aura::Env::GetInstance();
-  env->AddEventObserver(this, env,
-                        std::set<ui::EventType>({ui::EventType::kMouseDragged,
-                                                 ui::EventType::kMouseMoved}));
+  env->AddEventObserver(
+      this, env, {ui::EventType::kMouseDragged, ui::EventType::kMouseMoved});
 }
 
 HUDSettingsView::~HUDSettingsView() {

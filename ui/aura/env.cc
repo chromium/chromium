@@ -53,7 +53,7 @@ class EventObserverAdapter : public ui::EventHandler,
  public:
   EventObserverAdapter(ui::EventObserver* observer,
                        ui::EventTarget* target,
-                       const std::set<ui::EventType>& types)
+                       ui::EventTypeSet types)
       : observer_(observer), target_(target), types_(types) {
     target_->AddPreTargetHandler(this);
   }
@@ -65,11 +65,11 @@ class EventObserverAdapter : public ui::EventHandler,
 
   ui::EventObserver* observer() { return observer_; }
   ui::EventTarget* target() { return target_; }
-  const std::set<ui::EventType>& types() const { return types_; }
+  ui::EventTypeSet types() const { return types_; }
 
   // ui::EventHandler:
   void OnEvent(ui::Event* event) override {
-    if (types_.count(event->type()) > 0) {
+    if (types_.Has(event->type())) {
       std::unique_ptr<ui::Event> cloned_event = event->Clone();
       ui::Event::DispatcherApi(cloned_event.get()).set_target(event->target());
       // The root location of located events should be in screen coordinates.
@@ -85,7 +85,7 @@ class EventObserverAdapter : public ui::EventHandler,
  private:
   raw_ptr<ui::EventObserver> observer_;
   raw_ptr<ui::EventTarget> target_;
-  const std::set<ui::EventType> types_;
+  const ui::EventTypeSet types_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -207,7 +207,7 @@ void Env::UnpauseWindowOcclusionTracking() {
 
 void Env::AddEventObserver(ui::EventObserver* observer,
                            ui::EventTarget* target,
-                           const std::set<ui::EventType>& types) {
+                           ui::EventTypeSet types) {
   DCHECK(!types.empty()) << "Observers must observe at least one event type";
   auto adapter(std::make_unique<EventObserverAdapter>(observer, target, types));
   event_observer_adapter_list_.AddObserver(adapter.get());
@@ -226,7 +226,7 @@ void Env::RemoveEventObserver(ui::EventObserver* observer) {
 
 void Env::NotifyEventObservers(const ui::Event& event) {
   for (auto& adapter : event_observer_adapter_list_) {
-    if (adapter.types().count(event.type()) > 0 &&
+    if (adapter.types().Has(event.type()) &&
         (adapter.target() == event.target() || adapter.target() == this)) {
       adapter.observer()->OnEvent(event);
     }

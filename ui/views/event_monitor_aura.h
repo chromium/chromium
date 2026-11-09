@@ -5,9 +5,8 @@
 #ifndef UI_VIEWS_EVENT_MONITOR_AURA_H_
 #define UI_VIEWS_EVENT_MONITOR_AURA_H_
 
-#include <set>
-
 #include "base/memory/raw_ptr.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/event_monitor.h"
 
 namespace ui {
@@ -21,7 +20,7 @@ class EventMonitorAura : public EventMonitor {
  public:
   EventMonitorAura(ui::EventObserver* event_observer,
                    ui::EventTarget* event_target,
-                   const std::set<ui::EventType>& types);
+                   ui::EventTypeSet types);
 
   EventMonitorAura(const EventMonitorAura&) = delete;
   EventMonitorAura& operator=(const EventMonitorAura&) = delete;

@@ -6,8 +6,8 @@
 #define UI_VIEWS_EVENT_MONITOR_REMOTE_COCOA_H_
 
 #include <memory>
-#include <set>
 
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/cocoa/native_widget_mac_event_monitor.h"
 #include "ui/views/event_monitor.h"
@@ -24,7 +24,7 @@ class EventMonitorRemoteCocoa
  public:
   EventMonitorRemoteCocoa(ui::EventObserver* event_observer,
                           gfx::NativeWindow target_window,
-                          const std::set<ui::EventType>& types);
+                          ui::EventTypeSet types);
 
   EventMonitorRemoteCocoa(const EventMonitorRemoteCocoa&) = delete;
   EventMonitorRemoteCocoa& operator=(const EventMonitorRemoteCocoa&) = delete;
@@ -40,7 +40,7 @@ class EventMonitorRemoteCocoa
                                           bool target_is_this_window,
                                           bool* event_handled) override;
 
-  const std::set<ui::EventType> types_;
+  const ui::EventTypeSet types_;
   raw_ptr<ui::EventObserver> event_observer_;
   std::unique_ptr<views::NativeWidgetMacEventMonitor> event_monitor_;
 };

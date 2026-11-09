@@ -4,8 +4,6 @@
 
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 
-#include <set>
-
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
@@ -22,6 +20,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/animation/animation_delegate_notifier.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -376,7 +375,7 @@ void ImmersiveFullscreenController::EnableEventObservers(bool enable) {
   aura::Env* env = aura::Env::GetInstance();
   if (enable) {
     immersive_focus_watcher_ = std::make_unique<ImmersiveFocusWatcher>(this);
-    std::set<ui::EventType> types = {
+    ui::EventTypeSet types = {
         ui::EventType::kMouseMoved,          ui::EventType::kMousePressed,
         ui::EventType::kMouseReleased,       ui::EventType::kMousewheel,
         ui::EventType::kMouseCaptureChanged, ui::EventType::kTouchPressed};

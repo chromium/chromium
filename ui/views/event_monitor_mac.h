@@ -6,10 +6,10 @@
 #define UI_VIEWS_EVENT_MONITOR_MAC_H_
 
 #include <memory>
-#include <set>
 
 #include "base/auto_reset.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/views_export.h"
@@ -20,7 +20,7 @@ class EventMonitorMac : public EventMonitor {
  public:
   EventMonitorMac(ui::EventObserver* event_observer,
                   gfx::NativeWindow target_window,
-                  const std::set<ui::EventType>& types);
+                  ui::EventTypeSet types);
 
   EventMonitorMac(const EventMonitorMac&) = delete;
   EventMonitorMac& operator=(const EventMonitorMac&) = delete;
@@ -37,7 +37,7 @@ class EventMonitorMac : public EventMonitor {
   UseRemoteCocoaForTesting();
 
  private:
-  const std::set<ui::EventType> types_;
+  const ui::EventTypeSet types_;
   raw_ptr<ui::EventObserver> event_observer_;
 
   struct ObjCStorage;

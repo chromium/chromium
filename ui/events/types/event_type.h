@@ -5,11 +5,14 @@
 #ifndef UI_EVENTS_TYPES_EVENT_TYPE_H_
 #define UI_EVENTS_TYPES_EVENT_TYPE_H_
 
+#include "base/containers/enum_set.h"
+
 namespace ui {
 
 // Event types.
 enum class EventType {
   kUnknown = 0,
+  kMinValue = kUnknown,
   kMousePressed,
   kMouseDragged,
   kMouseReleased,
@@ -71,8 +74,11 @@ enum class EventType {
 
   // Must always be last. User namespace starts above this value.
   // See ui::RegisterCustomEventType().
-  kLast
+  kLast,
+  kMaxValue = kLast,
 };
+
+using EventTypeSet = base::EnumSet<EventType>;
 
 }  // namespace ui
 

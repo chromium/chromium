@@ -8,4 +8,6 @@ source_set("headers") {
     "scroll_input_type.h",
     "scroll_types.h",
   ]
+
+  public_deps = [ "//base" ]
 }

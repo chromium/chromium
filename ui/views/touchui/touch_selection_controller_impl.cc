@@ -4,7 +4,6 @@
 
 #include "ui/views/touchui/touch_selection_controller_impl.h"
 
-#include <set>
 #include <utility>
 
 #include "base/check_op.h"
@@ -24,6 +23,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -395,7 +395,7 @@ TouchSelectionControllerImpl::TouchSelectionControllerImpl(
 
   // Observe certain event types sent to any event target, to hide this ui.
   aura::Env* env = aura::Env::GetInstance();
-  std::set<ui::EventType> types = {
+  ui::EventTypeSet types = {
       ui::EventType::kMousePressed, ui::EventType::kMouseMoved,
       ui::EventType::kKeyPressed, ui::EventType::kMousewheel};
   env->AddEventObserver(this, env, types);
