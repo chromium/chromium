@@ -199,6 +199,7 @@ void AlertIndicatorButton::MaybeLoadActorAccessingSpinner() {
         actor_indicator_spinner_->animated_image()->GetOriginalSize(),
         kActorAccessingSpinnerScaleFactor);
     actor_indicator_spinner_->SetImageSize(actor_spinner_scaled_size_.value());
+    SetActorAccessingSpinnerBounds();
   } else {
     actor_indicator_spinner_->SetPaintToLayer(ui::LAYER_TEXTURED);
     actor_indicator_spinner_->layer()->SetFillsBoundsOpaquely(false);
@@ -262,6 +263,7 @@ void AlertIndicatorButton::TransitionToAlertState(
     delegate_->AlertStateChanged();
   }
 
+  UpdateAlertIndicatorAnimation();
   UpdateEnabledForMuteToggle();
 }
 

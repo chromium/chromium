@@ -149,6 +149,7 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
   bool was_active_at_least_once_ = false;
   bool created_by_session_restore_ = false;
   bool needs_attention_ = false;
+  base::CallbackListSubscription tab_did_activate_subscription_;
   base::CallbackListSubscription pin_tab_subscription_;
 
   std::optional<PendingNavigationState> pending_navigation_state_;

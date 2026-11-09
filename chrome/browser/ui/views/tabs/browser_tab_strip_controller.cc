@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
-#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -628,19 +627,6 @@ void BrowserTabStripController::OnTabStripModelChanged(
 
   if (tab_strip_model->empty()) {
     return;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          tabs::kSessionRestoreShowThrobberOnVisible) &&
-      selection.active_tab_changed()) {
-    // It's possible for `new_contents` to be null when the final tab in a tab
-    // strip is closed.
-    content::WebContents* const new_contents = selection.new_contents;
-    tabs::TabInterface* const new_tab_interface = selection.new_tab;
-    std::optional<size_t> index = selection.new_model.active();
-    if (new_contents && new_tab_interface && index.has_value()) {
-      TabUIHelper::From(new_tab_interface)->SetWasActiveAtLeastOnce();
-    }
   }
 
   if (selection.selection_changed()) {

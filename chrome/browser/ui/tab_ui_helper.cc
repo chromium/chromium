@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/process/kill.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "build/build_config.h"
@@ -116,6 +117,16 @@ TabUIHelper::TabUIHelper(tabs::TabInterface& tab_interface)
   // favicon should show or not.
   pin_tab_subscription_ = tab().RegisterPinnedStateChanged(base::BindRepeating(
       &TabUIHelper::OnTabPinnedStatusChange, base::Unretained(this)));
+
+  if (!base::FeatureList::IsEnabled(
+          tabs::kSessionRestoreShowThrobberOnVisible)) {
+    tab_did_activate_subscription_ = tab().RegisterDidActivate(
+        base::IgnoreArgs<tabs::TabInterface*>(base::BindRepeating(
+            &TabUIHelper::SetWasActiveAtLeastOnce, base::Unretained(this))));
+    if (tab().IsActivated()) {
+      SetWasActiveAtLeastOnce();
+    }
+  }
 }
 
 TabUIHelper::~TabUIHelper() = default;
