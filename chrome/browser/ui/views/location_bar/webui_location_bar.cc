@@ -903,13 +903,9 @@ void WebUILocationBar::ShowPageInfoBubble() {
     return;
   }
 
-  ui::TrackedElement* anchor_element =
-      !ShouldChipOverrideLocationIcon()
-          ? BrowserElements::From(browser_)->GetElement(kLocationIconElementId)
-          : nullptr;
-  if (!anchor_element) {
-    anchor_element = GetAnchorOrNull();
-  }
+  // Anchor to the whole location bar, like `LocationBarView`. The location
+  // icon is only highlighted.
+  ui::TrackedElement* location_bar_element = GetAnchorOrNull();
 
   base::OnceClosure initialized_callback =
       GetPageInfoDialogCreatedCallbackForTesting()                   // IN-TEST
@@ -918,8 +914,9 @@ void WebUILocationBar::ShowPageInfoBubble() {
 
   std::unique_ptr<PageInfoBubbleSpecification> specification =
       PageInfoBubbleSpecification::Builder(
-          anchor_element ? views::BubbleAnchor(anchor_element)
-                         : views::BubbleAnchor(toolbar_delegate_->GetView()),
+          location_bar_element
+              ? views::BubbleAnchor(location_bar_element)
+              : views::BubbleAnchor(toolbar_delegate_->GetView()),
           toolbar_delegate_->GetView()->GetWidget()->GetNativeWindow(),
           contents, entry->GetVirtualURL())
           .AddInitializedCallback(std::move(initialized_callback))
