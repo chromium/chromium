@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace crostini {
-class CrostiniInstallerUIDelegate;
+class CrostiniInstaller;
 }  // namespace crostini
 
 namespace ash {
@@ -25,7 +25,7 @@ class CrostiniInstallerPageHandler
     : public crostini_installer::mojom::PageHandler {
  public:
   CrostiniInstallerPageHandler(
-      crostini::CrostiniInstallerUIDelegate* installer_ui_delegate,
+      crostini::CrostiniInstaller* installer,
       mojo::PendingReceiver<crostini_installer::mojom::PageHandler>
           pending_page_handler,
       mojo::PendingRemote<crostini_installer::mojom::Page> pending_page,
@@ -54,7 +54,7 @@ class CrostiniInstallerPageHandler
   void OnInstallFinished(crostini::mojom::InstallerError error);
   void OnCanceled();
 
-  raw_ptr<crostini::CrostiniInstallerUIDelegate> installer_ui_delegate_;
+  raw_ptr<crostini::CrostiniInstaller> installer_;
   mojo::Receiver<crostini_installer::mojom::PageHandler> receiver_;
   mojo::Remote<crostini_installer::mojom::Page> page_;
   base::OnceClosure on_page_closed_;

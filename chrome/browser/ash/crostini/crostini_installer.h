@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_CROSTINI_INSTALLER_H_
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_INSTALLER_H_
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/crostini/crostini_installer_ui_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -22,9 +21,15 @@ namespace crostini {
 inline constexpr char kCrostiniSetupSourceHistogram[] = "Crostini.SetupSource";
 
 class CrostiniInstaller : public KeyedService,
-                          public CrostiniManager::RestartObserver,
-                          public CrostiniInstallerUIDelegate {
+                          public CrostiniManager::RestartObserver {
  public:
+  // |progress_fraction| ranges from 0.0 to 1.0.
+  using ProgressCallback =
+      base::RepeatingCallback<void(crostini::mojom::InstallerState state,
+                                   double progress_fraction)>;
+  using ResultCallback =
+      base::OnceCallback<void(crostini::mojom::InstallerError error)>;
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   // When you add entries to this enum don't forget to update enums.xml and the
@@ -81,12 +86,22 @@ class CrostiniInstaller : public KeyedService,
   ~CrostiniInstaller() override;
   void Shutdown() override;
 
-  // CrostiniInstallerUIDelegate:
+  // Start the installation. |progress_callback| will be called multiple times
+  // until |result_callback| is called. The crostini terminal will be launched
+  // when the installation succeeds.
   void Install(CrostiniManager::RestartOptions options,
                ProgressCallback progress_callback,
-               ResultCallback result_callback) override;
-  void Cancel(base::OnceClosure callback) override;
-  void CancelBeforeStart() override;
+               ResultCallback result_callback);
+
+  // Cancel the ongoing installation. |callback| will be called when it
+  // finishes. The callbacks passed to |Install()| will not be called anymore.
+  // A closing UI should call this if installation has started but hasn't
+  // finished.
+  void Cancel(base::OnceClosure callback);
+
+  // UI should call this if the user cancels without starting installation so
+  // metrics can be recorded.
+  void CancelBeforeStart();
 
   // CrostiniManager::RestartObserver:
   void OnStageStarted(crostini::mojom::InstallerState stage) override;

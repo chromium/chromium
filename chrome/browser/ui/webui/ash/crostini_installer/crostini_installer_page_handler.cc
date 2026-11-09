@@ -14,7 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
-#include "chrome/browser/ash/crostini/crostini_installer_ui_delegate.h"
+#include "chrome/browser/ash/crostini/crostini_installer.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
@@ -58,12 +58,12 @@ void OnAmountOfFreeDiskSpace(
 }  // namespace
 
 CrostiniInstallerPageHandler::CrostiniInstallerPageHandler(
-    crostini::CrostiniInstallerUIDelegate* installer_ui_delegate,
+    crostini::CrostiniInstaller* installer,
     mojo::PendingReceiver<crostini_installer::mojom::PageHandler>
         pending_page_handler,
     mojo::PendingRemote<crostini_installer::mojom::Page> pending_page,
     base::OnceClosure on_page_closed)
-    : installer_ui_delegate_{installer_ui_delegate},
+    : installer_{installer},
       receiver_{this, std::move(pending_page_handler)},
       page_{std::move(pending_page)},
       on_page_closed_{std::move(on_page_closed)} {}
@@ -75,7 +75,7 @@ void CrostiniInstallerPageHandler::Install(int64_t disk_size_bytes,
   crostini::CrostiniManager::RestartOptions options{};
   options.disk_size_bytes = disk_size_bytes;
   options.container_username = username;
-  installer_ui_delegate_->Install(
+  installer_->Install(
       std::move(options),
       base::BindRepeating(&CrostiniInstallerPageHandler::OnProgressUpdate,
                           weak_ptr_factory_.GetWeakPtr()),
@@ -84,13 +84,12 @@ void CrostiniInstallerPageHandler::Install(int64_t disk_size_bytes,
 }
 
 void CrostiniInstallerPageHandler::Cancel() {
-  installer_ui_delegate_->Cancel(
-      base::BindOnce(&CrostiniInstallerPageHandler::OnCanceled,
-                     weak_ptr_factory_.GetWeakPtr()));
+  installer_->Cancel(base::BindOnce(&CrostiniInstallerPageHandler::OnCanceled,
+                                    weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CrostiniInstallerPageHandler::CancelBeforeStart() {
-  installer_ui_delegate_->CancelBeforeStart();
+  installer_->CancelBeforeStart();
 }
 
 void CrostiniInstallerPageHandler::OnPageClosed() {

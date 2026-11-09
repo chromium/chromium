@@ -33,7 +33,6 @@ static_library("crostini") {
     "crostini_installer.h",
     "crostini_installer_factory.cc",
     "crostini_installer_factory.h",
-    "crostini_installer_ui_delegate.h",
     "crostini_low_disk_notification.cc",
     "crostini_low_disk_notification.h",
     "crostini_manager.cc",

@@ -13,7 +13,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/crostini/crostini_installer_ui_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
@@ -59,9 +58,6 @@ namespace crostini {
 
 class CrostiniInstallerTest : public testing::Test {
  public:
-  using ResultCallback = CrostiniInstallerUIDelegate::ResultCallback;
-  using ProgressCallback = CrostiniInstallerUIDelegate::ProgressCallback;
-
   class MockCallbacks {
    public:
     MOCK_METHOD2(OnProgress,
