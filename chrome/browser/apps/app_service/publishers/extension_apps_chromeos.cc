@@ -41,7 +41,6 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/child_accounts/child_user_service.h"
 #include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
-#include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/extensions/gfx_utils.h"
 #include "chrome/browser/ash/file_manager/file_browser_handlers.h"
@@ -515,10 +514,10 @@ void ExtensionAppsChromeOs::PauseApp(const std::string& app_id) {
     return;
   }
 
-  ash::app_time::AppTimeLimitInterface* app_limit =
+  ash::ChildUserService* child_user_service =
       ash::ChildUserServiceFactory::GetForBrowserContext(profile());
-  CHECK(app_limit, base::NotFatalUntil::M161);
-  app_limit->PauseWebActivity(app_id);
+  CHECK(child_user_service, base::NotFatalUntil::M161);
+  child_user_service->PauseWebActivity(app_id);
 }
 
 void ExtensionAppsChromeOs::UnpauseApp(const std::string& app_id) {
@@ -529,10 +528,10 @@ void ExtensionAppsChromeOs::UnpauseApp(const std::string& app_id) {
   AppPublisher::Publish(paused_apps_.CreateAppWithPauseStatus(
       app_type(), app_id, /*paused=*/false));
 
-  ash::app_time::AppTimeLimitInterface* app_time =
+  ash::ChildUserService* child_user_service =
       ash::ChildUserServiceFactory::GetForBrowserContext(profile());
-  CHECK(app_time, base::NotFatalUntil::M161);
-  app_time->ResumeWebActivity(app_id);
+  CHECK(child_user_service, base::NotFatalUntil::M161);
+  child_user_service->ResumeWebActivity(app_id);
 }
 
 void ExtensionAppsChromeOs::UpdateAppSize(const std::string& app_id) {

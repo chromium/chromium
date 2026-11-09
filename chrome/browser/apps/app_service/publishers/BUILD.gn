@@ -86,7 +86,6 @@ source_set("publishers") {
       "//chrome/browser/ash/borealis",
       "//chrome/browser/ash/bruschetta",
       "//chrome/browser/ash/child_accounts",
-      "//chrome/browser/ash/child_accounts/time_limits",
       "//chrome/browser/ash/crostini",
       "//chrome/browser/ash/extensions",
       "//chrome/browser/ash/file_manager",

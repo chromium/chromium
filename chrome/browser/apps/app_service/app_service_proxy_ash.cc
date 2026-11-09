@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/child_accounts/child_user_service.h"
 #include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
-#include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -646,11 +645,11 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
   // is paused.
   if (update.Paused().value_or(false) ||
       pending_pause_requests_.IsPaused(update.AppId())) {
-    ash::app_time::AppTimeLimitInterface* app_limit =
+    ash::ChildUserService* child_user_service =
         ash::ChildUserServiceFactory::GetForBrowserContext(profile_);
-    CHECK(app_limit, base::NotFatalUntil::M161);
-    auto time_limit =
-        app_limit->GetTimeLimitForApp(update.AppId(), update.AppType());
+    CHECK(child_user_service, base::NotFatalUntil::M161);
+    auto time_limit = child_user_service->GetTimeLimitForApp(update.AppId(),
+                                                             update.AppType());
     if (!time_limit.has_value()) {
       NOTREACHED();
     }

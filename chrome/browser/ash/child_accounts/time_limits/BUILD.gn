@@ -13,7 +13,6 @@ static_library("time_limits") {
     "app_service_wrapper.h",
     "app_time_controller.cc",
     "app_time_controller.h",
-    "app_time_limit_interface.h",
     "app_time_limit_utils.cc",
     "app_time_limit_utils.h",
     "app_time_limits_allowlist_policy_wrapper.cc",

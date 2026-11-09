@@ -6,20 +6,17 @@
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_CHILD_USER_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_report_interface.h"
-#include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
 #include "chrome/browser/ash/child_accounts/website_approval_notifier.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-
-namespace base {
-class TimeDelta;
-}  // namespace base
 
 namespace content {
 class BrowserContext;
@@ -43,7 +40,6 @@ class AppTimeController;
 
 // Facade that exposes child user related functionality on Chrome OS.
 class ChildUserService : public KeyedService,
-                         public app_time::AppTimeLimitInterface,
                          public app_time::AppActivityReportInterface {
  public:
   // Used for tests to get internal implementation details.
@@ -87,12 +83,27 @@ class ChildUserService : public KeyedService,
   ChildUserService& operator=(const ChildUserService&) = delete;
   ~ChildUserService() override;
 
-  // app_time::AppTimeLimitInterface:
-  void PauseWebActivity(const std::string& app_service_id) override;
-  void ResumeWebActivity(const std::string& app_service_id) override;
+  // Blocks access to Chrome and web apps. Should be called when the daily
+  // time limit is reached. Calling it multiple times is safe.
+  // `app_service_id` identifies the web application active when the limit was
+  // reached. Currently the web time limit is shared between all PWAs and
+  // Chrome and all of them will be paused regardless of `app_service_id`.
+  void PauseWebActivity(const std::string& app_service_id);
+
+  // Resumes access to Chrome and web apps. Should be called when the daily
+  // time limit is lifted. Calling it multiple times is safe. Subsequent calls
+  // will be ignored.
+  // `app_service_id` identifies the web application to resume. Currently the
+  // web time limit is shared between all PWAs and Chrome and all of them will
+  // be resumed regardless of `app_service_id`.
+  void ResumeWebActivity(const std::string& app_service_id);
+
+  // Returns current time limit for the app identified by `app_service_id` and
+  // `app_type`. Will return `std::nullopt` if there is no limit set or app
+  // does not exist.
   std::optional<base::TimeDelta> GetTimeLimitForApp(
       const std::string& app_service_id,
-      apps::AppType app_type) override;
+      apps::AppType app_type);
 
   // app_time::AppActivityReportInterface:
   app_time::AppActivityReportInterface::ReportParams GenerateAppActivityReport(
