@@ -4,6 +4,8 @@
 
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
 
+#include <string>
+
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -141,6 +143,22 @@ void SignInFunctions::SignInFromCurrentPage(
                               ConsentLevel::kSignin);
   login_ui_test_utils::ExecuteJsToSigninInSigninFrame(
       web_contents, test_account.user, test_account.password);
+  observer.WaitForAccountChanges(previously_signed_in_accounts + 1,
+                                 primary_account_wait);
+}
+
+void SignInFunctions::SignInFromPasswordChallengePage(
+    content::WebContents* web_contents,
+    const std::string& password,
+    int previously_signed_in_accounts,
+    PrimaryAccountWait primary_account_wait) {
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  SignInTestObserver observer(IdentityManagerFactory::GetForProfile(profile),
+                              AccountReconcilorFactory::GetForProfile(profile),
+                              ConsentLevel::kSignin);
+  login_ui_test_utils::EnterPasswordInNewGaiaFlow(web_contents, password);
   observer.WaitForAccountChanges(previously_signed_in_accounts + 1,
                                  primary_account_wait);
 }

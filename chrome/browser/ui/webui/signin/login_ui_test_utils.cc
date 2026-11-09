@@ -375,6 +375,25 @@ void WaitUntilUIReady(BrowserWindowInterface* browser) {
                 "});"));
 }
 
+void EnterPasswordInNewGaiaFlow(content::WebContents* web_contents,
+                                const std::string& password) {
+  // Fill the password input field once the visible challenge step is ready
+  // (ignoring hidden password inputs on intermediate pages such as
+  // `/v3/signin/proceedtochallenge`).
+  std::string password_script = kGetPasswordFieldFromDiceSigninPage;
+  ASSERT_TRUE(RunUntil([web_contents, &password_script]() -> bool {
+    return EvaluateBooleanScriptInSigninFrame(
+        web_contents, "(() => { const input = " + password_script +
+                          "; const next = "
+                          "document.getElementById('passwordNext');"
+                          " return input != null && input.checkVisibility() && "
+                          "next != null && next.checkVisibility(); })()");
+  })) << "Could not find visible Dice password field";
+  std::string js = password_script + ".value = '" + password + "';";
+  js += "document.getElementById('passwordNext').click();";
+  ASSERT_TRUE(content::ExecJs(GetSigninFrame(web_contents), js));
+}
+
 void SigninInNewGaiaFlow(content::WebContents* web_contents,
                          const std::string& email,
                          const std::string& password) {
@@ -384,16 +403,7 @@ void SigninInNewGaiaFlow(content::WebContents* web_contents,
                    "'; document.getElementById('identifierNext').click();";
   ASSERT_TRUE(content::ExecJs(GetSigninFrame(web_contents), js));
 
-  // Fill the password input field.
-  std::string password_script = kGetPasswordFieldFromDiceSigninPage;
-  // Wait until the password field exists.
-  ASSERT_TRUE(RunUntil([web_contents, &password_script]() -> bool {
-    return EvaluateBooleanScriptInSigninFrame(web_contents,
-                                              password_script + " != null");
-  })) << "Could not find Dice password field";
-  js = password_script + ".value = '" + password + "';";
-  js += "document.getElementById('passwordNext').click();";
-  ASSERT_TRUE(content::ExecJs(GetSigninFrame(web_contents), js));
+  EnterPasswordInNewGaiaFlow(web_contents, password);
 }
 
 void SigninInOldGaiaFlow(content::WebContents* web_contents,

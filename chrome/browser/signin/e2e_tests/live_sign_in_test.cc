@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include <string>
 
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -38,6 +41,7 @@
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -58,9 +62,11 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
+#include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_options.h"
 #include "net/device_bound_sessions/session_event.h"
@@ -83,6 +89,8 @@
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/signin_promo.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
@@ -805,6 +813,232 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionsLiveSignInTest,
 
   std::string cookies_after_refresh = GetCookies(GURL("https://google.com"));
   EXPECT_THAT(cookies_after_refresh, HasSubstr("__Secure-1PSIDRTS"));
+}
+
+class LiveSignInReauthSkipIdentifierPageTest : public LiveSignInTest {
+ public:
+  LiveSignInReauthSkipIdentifierPageTest() = default;
+
+  content::WebContents* OpenReauthTabForPrimaryAccount() {
+    signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
+        browser()->GetProfile(),
+        signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
+    content::WebContents* reauth_tab =
+        browser()->GetTabStripModel()->GetActiveWebContents();
+    CHECK(reauth_tab);
+    EXPECT_TRUE(content::WaitForLoadStop(reauth_tab));
+    return reauth_tab;
+  }
+
+  void ClearGoogleCookiesAndWaitForUpdate() {
+    content::BrowsingDataRemover* remover =
+        browser()->GetProfile()->GetBrowsingDataRemover();
+    content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
+
+    auto filter_builder = content::BrowsingDataFilterBuilder::Create(
+        content::BrowsingDataFilterBuilder::Mode::kDelete);
+    filter_builder->AddRegisterableDomain("google.com");
+
+    remover->RemoveWithFilterAndReply(
+        base::Time(), base::Time::Max(),
+        chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
+        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+        std::move(filter_builder), &completion_observer);
+    completion_observer.BlockUntilCompletion();
+
+    ASSERT_TRUE(base::test::RunUntil([this]() {
+      const AccountsInCookieJarInfo cookies =
+          identity_manager()->GetAccountsInCookieJar();
+      return cookies.AreAccountsFresh() && cookies.GetAllAccounts().empty();
+    }));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      switches::kReauthSkipIdentifierPage};
+};
+
+// Signs in an account, signs out on the web to enter the sign-in pending state,
+// and re-authenticates. Verifies that `/AccountChooser?ptc=1` skips Gaia's
+// identifier page, lands directly on the password challenge page, and restores
+// the signed-in state once the password is submitted.
+IN_PROC_BROWSER_TEST_F(LiveSignInReauthSkipIdentifierPageTest,
+                       MANUAL_ReauthWhenSignedOutSkipsIdentifierPage) {
+  base::HistogramTester histogram_tester;
+  std::optional<TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
+  ASSERT_TRUE(test_account.has_value());
+
+  sign_in_functions.SignInFromSettingsWithSyncChoice(
+      *test_account, /*previously_signed_in_accounts=*/0,
+      SignInFunctions::SyncChoice::kRejectOptionalDateTypesSync);
+  const CoreAccountInfo primary_account =
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  ASSERT_FALSE(primary_account.IsEmpty());
+
+  sign_in_functions.SignOutFromWeb();
+  ASSERT_EQ(signin_util::GetSignedInState(identity_manager()),
+            signin_util::SignedInState::kSignInPending);
+  ASSERT_EQ(1u, identity_manager()
+                    ->GetAccountsInCookieJar()
+                    .GetSignedOutAccounts()
+                    .size());
+
+  content::WebContents* reauth_tab = OpenReauthTabForPrimaryAccount();
+  DiceTabHelper* dice_tab_helper = DiceTabHelper::FromWebContents(reauth_tab);
+  ASSERT_TRUE(dice_tab_helper);
+  const GURL reauth_url = dice_tab_helper->signin_url();
+  EXPECT_EQ(reauth_url.path(),
+            GaiaUrls::GetInstance()->reauth_chrome_dice().path());
+  std::string ptc_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(reauth_url, "ptc", &ptc_value));
+  EXPECT_EQ("1", ptc_value);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Reauth.ProceedToChallengeResult",
+      ReauthProceedToChallengeResult::kProceedToChallenge, 1);
+
+  // Verify that real Gaia skips the identifier page (auto-advancing through
+  // `/v3/signin/proceedtochallenge` without user interaction) and navigates
+  // directly to `/v3/signin/challenge/...`. Avoid `content::EvalJs` inside
+  // `base::test::RunUntil` as nested RunLoops crash on macOS
+  // (crbug.com/396521947).
+  ASSERT_TRUE(base::test::RunUntil([reauth_tab]() {
+    return reauth_tab->GetLastCommittedURL().path().contains("/challenge/");
+  }));
+
+  sign_in_functions.SignInFromPasswordChallengePage(
+      reauth_tab, test_account->password, /*previously_signed_in_accounts=*/0,
+      PrimaryAccountWait::kWaitForAdded);
+
+  EXPECT_FALSE(
+      identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account.account_id));
+  EXPECT_EQ(signin_util::GetSignedInState(identity_manager()),
+            signin_util::SignedInState::kSignedIn);
+  const AccountsInCookieJarInfo& cookies_after_reauth =
+      identity_manager()->GetAccountsInCookieJar();
+  EXPECT_TRUE(cookies_after_reauth.AreAccountsFresh());
+  ASSERT_EQ(1u, cookies_after_reauth.GetValidSignedInAccounts().size());
+  EXPECT_TRUE(gaia::AreEmailsSame(
+      test_account->user,
+      cookies_after_reauth.GetValidSignedInAccounts()[0].email));
+}
+
+// Signs in an account, signs out on the web, and clears Google cookies so the
+// account is no longer in Gaia's cookie jar. Verifies that `/AccountChooser`
+// with `ptc=1` gracefully falls back on Gaia to showing the prefilled
+// identifier page and still completes re-authentication.
+IN_PROC_BROWSER_TEST_F(LiveSignInReauthSkipIdentifierPageTest,
+                       MANUAL_ReauthWhenCookiesClearedShowsIdentifierPage) {
+  base::HistogramTester histogram_tester;
+  std::optional<TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
+  ASSERT_TRUE(test_account.has_value());
+
+  sign_in_functions.SignInFromSettingsWithSyncChoice(
+      *test_account, /*previously_signed_in_accounts=*/0,
+      SignInFunctions::SyncChoice::kRejectOptionalDateTypesSync);
+  const CoreAccountInfo primary_account =
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  ASSERT_FALSE(primary_account.IsEmpty());
+
+  sign_in_functions.SignOutFromWeb();
+  ClearGoogleCookiesAndWaitForUpdate();
+  ASSERT_EQ(signin_util::GetSignedInState(identity_manager()),
+            signin_util::SignedInState::kSignInPending);
+
+  content::WebContents* reauth_tab = OpenReauthTabForPrimaryAccount();
+  DiceTabHelper* dice_tab_helper = DiceTabHelper::FromWebContents(reauth_tab);
+  ASSERT_TRUE(dice_tab_helper);
+  const GURL reauth_url = dice_tab_helper->signin_url();
+  EXPECT_EQ(reauth_url.path(),
+            GaiaUrls::GetInstance()->reauth_chrome_dice().path());
+  std::string ptc_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(reauth_url, "ptc", &ptc_value));
+  EXPECT_EQ("1", ptc_value);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Reauth.ProceedToChallengeResult",
+      ReauthProceedToChallengeResult::kAccountNotInCookies, 1);
+
+  // Without the account in cookies, Gaia falls back to `/v3/signin/identifier`
+  // with the email prefilled.
+  ASSERT_TRUE(base::test::RunUntil([reauth_tab]() {
+    return reauth_tab->GetLastCommittedURL().path().contains("/identifier");
+  }));
+  ASSERT_TRUE(content::WaitForLoadStop(reauth_tab));
+  login_ui_test_utils::WaitForSigninPageToLoad(reauth_tab);
+  const std::string prefilled_email =
+      content::EvalJs(reauth_tab,
+                      "document.getElementById('identifierId').value")
+          .ExtractString();
+  ASSERT_TRUE(gaia::AreEmailsSame(test_account->user, prefilled_email))
+      << "Expected prefilled email matching " << test_account->user << ", got "
+      << prefilled_email;
+  ASSERT_TRUE(content::ExecJs(
+      reauth_tab, "document.getElementById('identifierNext').click();"));
+
+  sign_in_functions.SignInFromPasswordChallengePage(
+      reauth_tab, test_account->password, /*previously_signed_in_accounts=*/0,
+      PrimaryAccountWait::kWaitForAdded);
+
+  EXPECT_FALSE(
+      identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account.account_id));
+  EXPECT_EQ(signin_util::GetSignedInState(identity_manager()),
+            signin_util::SignedInState::kSignedIn);
+}
+
+// Signs in an account and invalidates Chrome's refresh token while keeping the
+// Gaia web session valid in cookies. Verifies that Chrome falls back to
+// `/AddSession` (without `ptc=1`) so Gaia forces a fresh challenge and issues a
+// new refresh token instead of silently completing `/AccountChooser`.
+IN_PROC_BROWSER_TEST_F(LiveSignInReauthSkipIdentifierPageTest,
+                       MANUAL_ReauthWithValidWebSessionFallsBackToAddSession) {
+  base::HistogramTester histogram_tester;
+  std::optional<TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
+  ASSERT_TRUE(test_account.has_value());
+
+  sign_in_functions.SignInFromSettingsWithSyncChoice(
+      *test_account, /*previously_signed_in_accounts=*/0,
+      SignInFunctions::SyncChoice::kRejectOptionalDateTypesSync);
+  const CoreAccountInfo primary_account =
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  ASSERT_FALSE(primary_account.IsEmpty());
+  ASSERT_EQ(1u, identity_manager()
+                    ->GetAccountsInCookieJar()
+                    .GetValidSignedInAccounts()
+                    .size());
+
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager(), primary_account.account_id,
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+  ASSERT_EQ(signin_util::GetSignedInState(identity_manager()),
+            signin_util::SignedInState::kSignInPending);
+
+  content::WebContents* reauth_tab = OpenReauthTabForPrimaryAccount();
+  DiceTabHelper* dice_tab_helper = DiceTabHelper::FromWebContents(reauth_tab);
+  ASSERT_TRUE(dice_tab_helper);
+  const GURL reauth_url = dice_tab_helper->signin_url();
+  EXPECT_EQ(reauth_url.path(),
+            GaiaUrls::GetInstance()->add_account_url().path());
+  std::string ptc_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(reauth_url, "ptc", &ptc_value));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Reauth.ProceedToChallengeResult",
+      ReauthProceedToChallengeResult::kAddSessionFallbackValidSession, 1);
+
+  sign_in_functions.SignInFromCurrentPage(reauth_tab, *test_account,
+                                          /*previously_signed_in_accounts=*/0,
+                                          PrimaryAccountWait::kWaitForAdded);
+
+  EXPECT_FALSE(
+      identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account.account_id));
+  EXPECT_EQ(signin_util::GetSignedInState(identity_manager()),
+            signin_util::SignedInState::kSignedIn);
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

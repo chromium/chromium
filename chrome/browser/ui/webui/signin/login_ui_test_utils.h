@@ -32,6 +32,11 @@ void SigninInNewGaiaFlow(content::WebContents* web_contents,
                          const std::string& email,
                          const std::string& password);
 
+// Executes JS to enter and submit the password on the challenge page in the new
+// GAIA sign in flow (e.g. when the identifier page is skipped).
+void EnterPasswordInNewGaiaFlow(content::WebContents* web_contents,
+                                const std::string& password);
+
 // Executes JS to sign in the user in the old GAIA sign in flow.
 void SigninInOldGaiaFlow(content::WebContents* web_contents,
                          const std::string& email,

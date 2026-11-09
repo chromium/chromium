@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SIGNIN_E2E_TESTS_SIGNIN_UTIL_H_
 
 #include <cstddef>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
@@ -69,6 +70,14 @@ class SignInFunctions {
   void SignInFromCurrentPage(
       content::WebContents* web_contents,
       const TestAccountSigninCredentials& test_account,
+      int previously_signed_in_accounts,
+      PrimaryAccountWait primary_account_wait = PrimaryAccountWait::kNotWait);
+
+  // Completes sign-in/re-auth when Gaia lands directly on the password
+  // challenge page (skipping the identifier page).
+  void SignInFromPasswordChallengePage(
+      content::WebContents* web_contents,
+      const std::string& password,
       int previously_signed_in_accounts,
       PrimaryAccountWait primary_account_wait = PrimaryAccountWait::kNotWait);
 
