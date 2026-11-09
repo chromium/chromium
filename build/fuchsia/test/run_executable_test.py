@@ -184,6 +184,12 @@ class ExecutableTestRunner(TestRunner):
                 )
         if args.test_args:
             child_args.extend(args.test_args)
+        has_screen_info = any(
+            arg.startswith(('--ozone-override-screen-size=', '--screen-info='))
+            for arg in child_args
+        )
+        if '--ozone-platform=headless' in child_args and not has_screen_info:
+            child_args.append('--ozone-override-screen-size=800,600')
         return child_args
 
     def _postprocess(self, test_runner: FfxTestRunner) -> None:
