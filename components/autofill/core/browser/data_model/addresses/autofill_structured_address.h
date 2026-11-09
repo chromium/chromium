@@ -127,12 +127,6 @@ class BetweenStreetsOrLandmarkNode : public AddressComponent {
   ~BetweenStreetsOrLandmarkNode() override;
 };
 
-class StreetLocationAndLocalityNode : public AddressComponent {
- public:
-  explicit StreetLocationAndLocalityNode(SubcomponentsList children);
-  ~StreetLocationAndLocalityNode() override;
-};
-
 // The StreetAddress incorporates all the information specifically related to
 // the street address (e.g. street location. between streets, subpremise, etc).
 class StreetAddressNode : public AddressComponent {

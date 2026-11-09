@@ -3185,11 +3185,7 @@ struct HouseNumberTestCase {
 
 class AutofillStructuredAddressHouseNumberTest
     : public AutofillStructuredAddress,
-      public testing::WithParamInterface<HouseNumberTestCase> {
- private:
-  base::test::ScopedFeatureList features_{
-      features::kAutofillEnableStreetAddressMergeModes};
-};
+      public testing::WithParamInterface<HouseNumberTestCase> {};
 
 // TODO(crbug.com/447111009) Reenable when fixed.
 TEST_P(AutofillStructuredAddressHouseNumberTest,
@@ -3238,15 +3234,10 @@ struct MergeChildrenAndReformatTestCase {
 
 class AutofillStructuredAddressMergeReformatTest
     : public AutofillStructuredAddress,
-      public testing::WithParamInterface<MergeChildrenAndReformatTestCase> {
- private:
-  base::test::ScopedFeatureList features_{
-      features::kAutofillEnableStreetAddressMergeModes};
-};
+      public testing::WithParamInterface<MergeChildrenAndReformatTestCase> {};
 
 // Tests that the merge and reformat logic works as expected for different
-// countries with the `kAutofillEnableStreetAddressMergeModes` feature
-// enabled.
+// countries.
 // TODO(crbug.com/447111009) Reenable when fix is present.
 TEST_P(AutofillStructuredAddressMergeReformatTest, DISABLED_MergeAndReformat) {
   const MergeChildrenAndReformatTestCase& test_case = GetParam();

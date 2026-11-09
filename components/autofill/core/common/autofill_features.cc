@@ -784,13 +784,6 @@ BASE_FEATURE(kAutofillEnableSecurityTouchEventFilteringAndroid,
 BASE_FEATURE(kAutofillEnableSkippingUnrecognizedAttribute,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, the missing merge modes will be re-enabled on nodes. To do that,
-// MergeMode::kMergeChildrenAndReformatIfNeeded will be also added to all the
-// nodes where required.
-// TODO(crbug.com/447111009): Remove when launched.
-BASE_FEATURE(kAutofillEnableStreetAddressMergeModes,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, shows the Wallet Disclosure Notice after submitting a form with
 // a public pass.
 BASE_FEATURE(kAutofillEnableWalletDisclosureNoticePublicPass,

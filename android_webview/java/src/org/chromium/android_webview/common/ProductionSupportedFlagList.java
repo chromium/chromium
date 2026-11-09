@@ -362,11 +362,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, Autofill disable address lines on forms with structured address"
                         + " fields."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ENABLE_STREET_ADDRESS_MERGE_MODES,
-                "If enabled, the missing merge modes will be re-enabled on nodes. To do that,"
-                        + "MergeMode::kMergeChildrenAndReformatIfNeeded will be also added to all"
-                        + "the nodes where required."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_STRICTER_PHONE_EXTENSION_REGEX,
                 "When enabled, applies a stricter phone extension regex to avoid false"
                         + " positives."),

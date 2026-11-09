@@ -312,8 +312,6 @@ BASE_DECLARE_FEATURE(kAutofillEnableSecurityTouchEventFilteringAndroid);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSkippingUnrecognizedAttribute);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableStreetAddressMergeModes);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableWalletDisclosureNoticePublicPass);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableWalletReminderNoticePublicPass);
