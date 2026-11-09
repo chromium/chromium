@@ -106,6 +106,10 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN)
+#include "base/test/test_reg_util_win.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace metrics {
 namespace {
 
@@ -213,6 +217,18 @@ class UkmBrowserTestBase : public SyncTest {
 
   UkmBrowserTestBase(const UkmBrowserTestBase&) = delete;
   UkmBrowserTestBase& operator=(const UkmBrowserTestBase&) = delete;
+
+#if BUILDFLAG(IS_WIN)
+  void SetUp() override {
+    // Override HKCU to prevent reading or writing real consent keys. On
+    // Windows, metrics reporting consent is stored in the registry and used as
+    // the default value when `prefs::kMetricsReportingEnabled` is unset or
+    // cleared.
+    ASSERT_NO_FATAL_FAILURE(
+        override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
+    SyncTest::SetUp();
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
   void TearDownOnMainThread() override {
@@ -343,6 +359,9 @@ class UkmBrowserTestBase : public SyncTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_WIN)
+  registry_util::RegistryOverrideManager override_manager_;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 class UkmBrowserTest : public UkmBrowserTestBase {
