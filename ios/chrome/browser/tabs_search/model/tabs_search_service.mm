@@ -175,7 +175,7 @@ void TabsSearchService::SearchHistory(
         std::make_unique<history::BrowsingHistoryService>(
             history_driver_.get(), history_service_.get(),
             web_history_service_.get(), sync_service_.get(),
-            device_info_tracker_.get());
+            device_info_tracker_.get(), /*critical_action_provider=*/nullptr);
   }
 
   ongoing_history_search_term_ = term;

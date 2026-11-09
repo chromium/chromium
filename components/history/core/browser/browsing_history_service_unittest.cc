@@ -12,14 +12,23 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
+#include "components/critical_actions/core/browser/critical_action_provider.h"
+#include "components/critical_actions/core/browser/critical_action_service.h"
+#include "components/critical_actions/core/browser/critical_action_types.h"
+#include "components/critical_actions/core/browser/fake_critical_action_provider.h"
+#include "components/critical_actions/core/browser/features.h"
 #include "components/history/core/browser/browsing_history_driver.h"
 #include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_service.h"
@@ -55,7 +64,8 @@ void PrintTo(const HistoryEntry& entry, std::ostream* os) {
 void PrintTo(const BrowsingHistoryService::QueryResultsInfo& info,
              std::ostream* os) {
   *os << "{reached_beginning: " << info.reached_beginning
-      << ", sync_timed_out: " << info.sync_timed_out << "}";
+      << ", sync_timed_out: " << info.sync_timed_out
+      << ", queried_critical_actions: " << info.queried_critical_actions << "}";
 }
 
 namespace {
@@ -178,6 +188,10 @@ class TestBrowsingHistoryDriver : public BrowsingHistoryDriver {
     std::move(continuation_closure_).Run();
   }
 
+  void SetQueryCompleteCallback(base::OnceClosure callback) {
+    query_complete_callback_ = std::move(callback);
+  }
+
  private:
   // BrowsingHistoryDriver implementation.
   void OnQueryComplete(
@@ -186,6 +200,9 @@ class TestBrowsingHistoryDriver : public BrowsingHistoryDriver {
       base::OnceClosure continuation_closure) override {
     query_results_.push_back(QueryResult(results, query_results_info));
     continuation_closure_ = std::move(continuation_closure);
+    if (query_complete_callback_) {
+      std::move(query_complete_callback_).Run();
+    }
   }
   void OnRemoveVisitsComplete() override {}
   void OnRemoveVisitsFailed() override {}
@@ -207,6 +224,7 @@ class TestBrowsingHistoryDriver : public BrowsingHistoryDriver {
   std::vector<ExpireHistoryArgs> expire_list_;
   std::vector<QueryResult> query_results_;
   base::OnceClosure continuation_closure_;
+  base::OnceClosure query_complete_callback_;
 };
 
 class TestWebHistoryService : public FakeWebHistoryService {
@@ -266,18 +284,21 @@ class TimeoutWebHistoryService : public TestWebHistoryService {
 
 class TestBrowsingHistoryService : public BrowsingHistoryService {
  public:
-  TestBrowsingHistoryService(BrowsingHistoryDriver* driver,
-                             HistoryService* local_history,
-                             WebHistoryService* web_history,
-                             syncer::SyncService* sync_service,
-                             std::unique_ptr<base::OneShotTimer> timer,
-                             syncer::DeviceInfoTracker* device_info_tracker)
+  TestBrowsingHistoryService(
+      BrowsingHistoryDriver* driver,
+      HistoryService* local_history,
+      WebHistoryService* web_history,
+      syncer::SyncService* sync_service,
+      std::unique_ptr<base::OneShotTimer> timer,
+      syncer::DeviceInfoTracker* device_info_tracker,
+      critical_actions::CriticalActionProvider* critical_action_provider)
       : BrowsingHistoryService(driver,
                                local_history,
                                web_history,
                                sync_service,
                                std::move(timer),
-                               device_info_tracker) {}
+                               device_info_tracker,
+                               critical_action_provider) {}
 };
 
 class BrowsingHistoryServiceTest : public ::testing::Test {
@@ -292,20 +313,22 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
     EXPECT_TRUE(history_dir_.CreateUniqueTempDir());
     local_history_ = CreateHistoryService(history_dir_.GetPath(), true);
     ResetService(driver(), local_history(), web_history(), sync(),
-                 device_info_tracker());
+                 device_info_tracker(), /*critical_action_provider=*/nullptr);
   }
 
-  void ResetService(BrowsingHistoryDriver* driver,
-                    HistoryService* local_history,
-                    WebHistoryService* web_history,
-                    syncer::SyncService* sync_service,
-                    syncer::DeviceInfoTracker* device_info_tracker) {
+  void ResetService(
+      BrowsingHistoryDriver* driver,
+      HistoryService* local_history,
+      WebHistoryService* web_history,
+      syncer::SyncService* sync_service,
+      syncer::DeviceInfoTracker* device_info_tracker,
+      critical_actions::CriticalActionProvider* critical_action_provider) {
     std::unique_ptr<base::MockOneShotTimer> timer =
         std::make_unique<base::MockOneShotTimer>();
     timer_ = timer.get();
     browsing_history_service_ = std::make_unique<TestBrowsingHistoryService>(
         driver, local_history, web_history, sync_service, std::move(timer),
-        device_info_tracker);
+        device_info_tracker, critical_action_provider);
   }
 
   void BlockUntilHistoryProcessesPendingRequests() {
@@ -433,7 +456,8 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryIncludes404s) {
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryNoSources) {
   ResetService(driver(), /*local_history=*/nullptr, /*web_history=*/nullptr,
-               /*sync_service=*/nullptr, device_info_tracker());
+               /*sync_service=*/nullptr, device_info_tracker(),
+               /*critical_action_provider=*/nullptr);
   EXPECT_THAT(QueryHistory(), MatchesQueryResult(baseline_time_,
                                                  /*reached_beginning*/ true,
                                                  std::vector<TestResult>{}));
@@ -441,7 +465,8 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryNoSources) {
 
 TEST_F(BrowsingHistoryServiceTest, EmptyQueryHistoryJustLocal) {
   ResetService(driver(), local_history(), /*web_history=*/nullptr,
-               /*sync_service=*/nullptr, device_info_tracker());
+               /*sync_service=*/nullptr, device_info_tracker(),
+               /*critical_action_provider=*/nullptr);
   EXPECT_THAT(QueryHistory(), MatchesQueryResult(baseline_time_,
                                                  /*reached_beginning*/ true,
                                                  std::vector<TestResult>{}));
@@ -449,7 +474,8 @@ TEST_F(BrowsingHistoryServiceTest, EmptyQueryHistoryJustLocal) {
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryJustLocal) {
   ResetService(driver(), local_history(), /*web_history=*/nullptr,
-               /*sync_service=*/nullptr, device_info_tracker());
+               /*sync_service=*/nullptr, device_info_tracker(),
+               /*critical_action_provider=*/nullptr);
   AddHistory({{kUrl1, 1, kLocal}});
   EXPECT_THAT(QueryHistory(),
               MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
@@ -458,7 +484,7 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryJustLocal) {
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryWithAppIdFilter) {
   ResetService(driver(), local_history(), web_history(), sync(),
-               device_info_tracker());
+               device_info_tracker(), /*critical_action_provider=*/nullptr);
   AddHistory({{kUrl1, 1, kLocal}});
 
   QueryOptions options;
@@ -506,7 +532,8 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryWithClientIdFilter) {
 
 TEST_F(BrowsingHistoryServiceTest, EmptyQueryHistoryJustWeb) {
   ResetService(driver(), /*local_history=*/nullptr, web_history(),
-               /*sync_service=*/nullptr, device_info_tracker());
+               /*sync_service=*/nullptr, device_info_tracker(),
+               /*critical_action_provider=*/nullptr);
   EXPECT_THAT(QueryHistory(), MatchesQueryResult(baseline_time_,
                                                  /*reached_beginning*/ true,
                                                  std::vector<TestResult>{}));
@@ -515,7 +542,7 @@ TEST_F(BrowsingHistoryServiceTest, EmptyQueryHistoryJustWeb) {
 TEST_F(BrowsingHistoryServiceTest, EmptyQueryHistoryDelayedWeb) {
   web_history()->SetIsEnabled(false);
   ResetService(driver(), /*local_history=*/nullptr, web_history(), sync(),
-               device_info_tracker());
+               device_info_tracker(), /*critical_action_provider=*/nullptr);
   web_history()->SetIsEnabled(true);
   EXPECT_THAT(QueryHistory(), MatchesQueryResult(baseline_time_,
                                                  /*reached_beginning*/ true,
@@ -524,7 +551,7 @@ TEST_F(BrowsingHistoryServiceTest, EmptyQueryHistoryDelayedWeb) {
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryJustWeb) {
   ResetService(driver(), /*local_history=*/nullptr, web_history(), sync(),
-               device_info_tracker());
+               device_info_tracker(), /*critical_action_provider=*/nullptr);
   AddHistory({{kUrl1, 1, kRemote}});
   EXPECT_THAT(QueryHistory(),
               MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
@@ -533,7 +560,7 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryJustWeb) {
 
 TEST_F(BrowsingHistoryServiceTest, EmptyQueryHistoryBothSources) {
   ResetService(driver(), local_history(), web_history(), sync(),
-               device_info_tracker());
+               device_info_tracker(), /*critical_action_provider=*/nullptr);
   EXPECT_THAT(QueryHistory(), MatchesQueryResult(baseline_time_,
                                                  /*reached_beginning*/ true,
                                                  std::vector<TestResult>{}));
@@ -541,7 +568,7 @@ TEST_F(BrowsingHistoryServiceTest, EmptyQueryHistoryBothSources) {
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryAllSources) {
   ResetService(driver(), local_history(), web_history(), sync(),
-               device_info_tracker());
+               device_info_tracker(), /*critical_action_provider=*/nullptr);
   AddHistory({{kUrl1, 1, kRemote},
               {kUrl2, 2, kRemote},
               {kUrl3, 3, kLocal},
@@ -928,7 +955,7 @@ TEST_F(BrowsingHistoryServiceTest, RetryOnRemoteFailurePagingLocal) {
 TEST_F(BrowsingHistoryServiceTest, WebHistoryTimeout) {
   TimeoutWebHistoryService timeout;
   ResetService(driver(), local_history(), /*web_history=*/&timeout, sync(),
-               device_info_tracker());
+               device_info_tracker(), /*critical_action_provider=*/nullptr);
   EXPECT_EQ(0U, driver()->GetQueryResults().size());
   service()->QueryHistory(std::u16string(), QueryOptions());
   EXPECT_EQ(0U, driver()->GetQueryResults().size());
@@ -942,12 +969,13 @@ TEST_F(BrowsingHistoryServiceTest, WebHistoryTimeout) {
   // BrowsingHistoryService is removed, so reset our first
   // BrowsingHistoryService before `timeout` goes out of scope.
   ResetService(driver(), /*local_history=*/nullptr, /*web_history=*/nullptr,
-               /*sync_service=*/nullptr, device_info_tracker());
+               /*sync_service=*/nullptr, device_info_tracker(),
+               /*critical_action_provider=*/nullptr);
 }
 
 TEST_F(BrowsingHistoryServiceTest, ObservingWebHistory) {
   ResetService(driver(), /*local_history=*/nullptr, web_history(), sync(),
-               device_info_tracker());
+               device_info_tracker(), /*critical_action_provider=*/nullptr);
 
   web_history()->TriggerOnWebHistoryDeleted();
   EXPECT_EQ(1, driver()->GetHistoryDeletedCount());
@@ -958,7 +986,7 @@ TEST_F(BrowsingHistoryServiceTest, IncorrectlyOrderedRemoteResults) {
   // not start with sorted data. This case originally hit a NOTREACHED.
   ReversedWebHistoryService reversed;
   ResetService(driver(), local_history(), /*web_history=*/&reversed, sync(),
-               device_info_tracker());
+               device_info_tracker(), /*critical_action_provider=*/nullptr);
   AddHistory({{kUrl1, 1, kRemote},
               {kUrl3, 2, kRemote},
               {kUrl3, 3, kLocal},
@@ -985,7 +1013,8 @@ TEST_F(BrowsingHistoryServiceTest, IncorrectlyOrderedRemoteResults) {
   // BrowsingHistoryService is removed, so reset our first
   // BrowsingHistoryService before `reversed` goes out of scope.
   ResetService(driver(), /*local_history=*/nullptr, /*web_history=*/nullptr,
-               /*sync_service=*/nullptr, device_info_tracker());
+               /*sync_service=*/nullptr, device_info_tracker(),
+               /*critical_action_provider=*/nullptr);
 }
 
 TEST_F(BrowsingHistoryServiceTest, MultipleSubsequentQueries) {
@@ -1324,7 +1353,8 @@ TEST_F(BrowsingHistoryServiceTest, NoSyncedDevicesWhenTrackerIsNull) {
           syncer::UserSelectableTypeSet{syncer::UserSelectableType::kHistory}));
 
   ResetService(driver(), local_history(), web_history(), sync(),
-               /*device_info_tracker=*/nullptr);
+               /*device_info_tracker=*/nullptr,
+               /*critical_action_provider=*/nullptr);
 
   EXPECT_THAT(service()->GetSyncedDevicesForFiltering(), IsEmpty());
 }
@@ -1611,6 +1641,392 @@ TEST_F(BrowsingHistoryServiceTest,
           AllOf(Field(&ClientGroup::name, base_name + " (Canary)"),
                 Field(&ClientGroup::is_local_device, false),
                 Field(&ClientGroup::client_ids, ElementsAre("guid2")))));
+}
+
+critical_actions::CriticalActionEntry CreateCriticalActionEntry(
+    std::string id,
+    Time timestamp,
+    VisitID visit_id,
+    critical_actions::ActionType type = critical_actions::ActionType::kFormFill,
+    std::string conversation_id = "",
+    std::string actor_task_id = "",
+    std::string metadata = "") {
+  critical_actions::CriticalActionEntry entry;
+  entry.critical_action_id = std::move(id);
+  entry.timestamp = timestamp;
+  entry.visit_id = visit_id;
+  entry.action_type = type;
+  entry.action_source = critical_actions::ActionSource::kActor;
+  entry.conversation_id = std::move(conversation_id);
+  entry.actor_task_id = std::move(actor_task_id);
+  entry.metadata = std::move(metadata);
+  return entry;
+}
+
+std::vector<std::string> GetCriticalActionIds(const HistoryEntry& entry) {
+  std::vector<std::string> ids;
+  for (const auto& action : entry.critical_actions) {
+    ids.push_back(action.critical_action_id);
+  }
+  return ids;
+}
+
+class BrowsingHistoryServiceCriticalActionsTest
+    : public BrowsingHistoryServiceTest {
+ protected:
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        critical_actions::features::kCriticalActionHistory);
+    ASSERT_TRUE(critical_actions_dir_.CreateUniqueTempDir());
+    backend_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+    critical_action_service_ =
+        std::make_unique<critical_actions::CriticalActionService>(
+            critical_actions_dir_.GetPath().AppendASCII("CriticalActions.db"),
+            backend_task_runner_, local_history());
+    ResetService(driver(), local_history(), /*web_history=*/nullptr,
+                 /*sync_service=*/nullptr, device_info_tracker(),
+                 critical_action_service_.get());
+  }
+
+  void TearDown() override {
+    // Shut down and destroy CriticalActionService before BrowsingHistoryService
+    // to mirror Profile teardown order (CriticalActionFactory depends on
+    // HistoryServiceFactory) and verify no dangling pointers occur.
+    if (critical_action_service_) {
+      critical_action_service_->Shutdown();
+      critical_action_service_.reset();
+    }
+    // Wait for pending backend tasks (e.g. Init() and ~CriticalActionBackend())
+    // to finish before `critical_actions_dir_` is deleted by ~ScopedTempDir().
+    if (backend_task_runner_) {
+      base::test::TestFuture<void> backend_flushed;
+      backend_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                             backend_flushed.GetCallback());
+      ASSERT_TRUE(backend_flushed.Wait());
+    }
+  }
+
+  VisitID AddVisitAndGetId(const GURL& url,
+                           Time time,
+                           bool is_actor_visit = true,
+                           const std::u16string& title = u"Visit") {
+    HistoryAddPageArgs args;
+    args.url = url;
+    args.time = time;
+    args.title = title;
+    args.visit_source = is_actor_visit ? SOURCE_ACTOR : SOURCE_BROWSED;
+    local_history()->AddPage(args);
+
+    base::CancelableTaskTracker tracker;
+    base::test::TestFuture<QueryURLAndVisitsResult> future;
+    local_history()->QueryURLAndVisits(url, VisitQuery404sPolicy::kInclude404s,
+                                       future.GetCallback(), &tracker);
+    const QueryURLAndVisitsResult& result = future.Get();
+    EXPECT_TRUE(result.success);
+    EXPECT_FALSE(result.visits.empty());
+    return result.visits.back().visit_id;
+  }
+
+  static QueryOptions ActorAndUserOptions() {
+    QueryOptions options;
+    options.duplicate_policy = QueryOptions::REMOVE_DUPLICATES_PER_DAY;
+    options.include_actor_visits = true;
+    return options;
+  }
+
+  TestBrowsingHistoryDriver::QueryResult QueryHistoryAndWait(
+      const QueryOptions& options = ActorAndUserOptions()) {
+    size_t previous_count = driver()->GetQueryResults().size();
+    base::test::TestFuture<void> future;
+    driver()->SetQueryCompleteCallback(future.GetCallback());
+    service()->QueryHistory(std::u16string(), options);
+    EXPECT_TRUE(future.Wait());
+    EXPECT_EQ(previous_count + 1, driver()->GetQueryResults().size());
+    return driver()->GetQueryResults().back();
+  }
+
+  critical_actions::CriticalActionService* critical_action_service() {
+    return critical_action_service_.get();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  base::ScopedTempDir critical_actions_dir_;
+  scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
+  std::unique_ptr<critical_actions::CriticalActionService>
+      critical_action_service_;
+};
+
+TEST_F(BrowsingHistoryServiceCriticalActionsTest,
+       CriticalActionsPopulatedForActorAndUserVisits) {
+  base::HistogramTester histogram_tester;
+  const VisitID user_visit_id = AddVisitAndGetId(
+      GURL(kUrl1), OffsetToTime(1), /*is_actor_visit=*/false, u"User Visit");
+  const VisitID actor_visit_id = AddVisitAndGetId(
+      GURL(kUrl2), OffsetToTime(2), /*is_actor_visit=*/true, u"Actor Visit");
+
+  critical_action_service()->AddCriticalAction(CreateCriticalActionEntry(
+      "user-action", OffsetToTime(1), user_visit_id,
+      critical_actions::ActionType::kCredentialAccess));
+  critical_action_service()->AddCriticalAction(
+      CreateCriticalActionEntry("actor-action", OffsetToTime(2), actor_visit_id,
+                                critical_actions::ActionType::kDownload));
+
+  TestBrowsingHistoryDriver::QueryResult result = QueryHistoryAndWait();
+  EXPECT_TRUE(result.second.queried_critical_actions);
+  ASSERT_EQ(2u, result.first.size());
+
+  EXPECT_TRUE(result.first[0].is_actor_visit);
+  EXPECT_THAT(GetCriticalActionIds(result.first[0]),
+              ElementsAre("actor-action"));
+
+  EXPECT_FALSE(result.first[1].is_actor_visit);
+  EXPECT_THAT(GetCriticalActionIds(result.first[1]),
+              ElementsAre("user-action"));
+
+  histogram_tester.ExpectTotalCount("HistoryPage.CriticalActionsQueryTime", 1);
+  histogram_tester.ExpectUniqueSample(
+      "HistoryPage.CriticalActionsPerVisitCount", 1, 2);
+}
+
+TEST_F(BrowsingHistoryServiceCriticalActionsTest,
+       CriticalActionsNotQueriedWhenFeatureDisabled) {
+  base::test::ScopedFeatureList disabled;
+  disabled.InitAndDisableFeature(
+      critical_actions::features::kCriticalActionHistory);
+  base::HistogramTester histogram_tester;
+
+  const VisitID visit_id = AddVisitAndGetId(GURL(kUrl1), OffsetToTime(1));
+  critical_action_service()->AddCriticalAction(
+      CreateCriticalActionEntry("action-1", OffsetToTime(1), visit_id));
+
+  TestBrowsingHistoryDriver::QueryResult result = QueryHistoryAndWait();
+  EXPECT_FALSE(result.second.queried_critical_actions);
+  ASSERT_EQ(1u, result.first.size());
+  EXPECT_TRUE(result.first[0].critical_actions.empty());
+  histogram_tester.ExpectTotalCount("HistoryPage.CriticalActionsQueryTime", 0);
+  histogram_tester.ExpectTotalCount("HistoryPage.CriticalActionsPerVisitCount",
+                                    0);
+}
+
+TEST_F(BrowsingHistoryServiceCriticalActionsTest,
+       CriticalActionsNotQueriedWhenProviderNull) {
+  ResetService(driver(), local_history(), /*web_history=*/nullptr,
+               /*sync_service=*/nullptr, device_info_tracker(),
+               /*critical_action_provider=*/nullptr);
+  base::HistogramTester histogram_tester;
+
+  const VisitID visit_id = AddVisitAndGetId(GURL(kUrl1), OffsetToTime(1));
+  critical_action_service()->AddCriticalAction(
+      CreateCriticalActionEntry("action-1", OffsetToTime(1), visit_id));
+
+  TestBrowsingHistoryDriver::QueryResult result = QueryHistoryAndWait();
+  EXPECT_FALSE(result.second.queried_critical_actions);
+  ASSERT_EQ(1u, result.first.size());
+  EXPECT_TRUE(result.first[0].critical_actions.empty());
+  histogram_tester.ExpectTotalCount("HistoryPage.CriticalActionsQueryTime", 0);
+  histogram_tester.ExpectTotalCount("HistoryPage.CriticalActionsPerVisitCount",
+                                    0);
+}
+
+TEST_F(BrowsingHistoryServiceCriticalActionsTest,
+       CriticalActionsNotQueriedForRemoteOnlyVisits) {
+  ResetService(driver(), local_history(), web_history(), sync(),
+               device_info_tracker(), critical_action_service());
+  base::HistogramTester histogram_tester;
+
+  AddHistory({{kUrl1, 1, kRemote}});
+
+  TestBrowsingHistoryDriver::QueryResult result = QueryHistoryAndWait();
+  EXPECT_FALSE(result.second.queried_critical_actions);
+  ASSERT_EQ(1u, result.first.size());
+  EXPECT_TRUE(result.first[0].critical_actions.empty());
+  histogram_tester.ExpectTotalCount("HistoryPage.CriticalActionsQueryTime", 0);
+}
+
+TEST_F(BrowsingHistoryServiceCriticalActionsTest,
+       CriticalActionsDistinguishesSeparateVisitsSameUrl) {
+  const Time day1_visit = OffsetToTime(1);
+  const Time day2_visit = OffsetToTime(26);
+  const VisitID visit_id1 = AddVisitAndGetId(GURL(kUrl1), day1_visit);
+  const VisitID visit_id2 = AddVisitAndGetId(GURL(kUrl1), day2_visit);
+
+  critical_action_service()->AddCriticalAction(CreateCriticalActionEntry(
+      "action-visit-1", day1_visit + base::Seconds(5), visit_id1,
+      critical_actions::ActionType::kCredentialAccess));
+  critical_action_service()->AddCriticalAction(CreateCriticalActionEntry(
+      "action-visit-2", day2_visit + base::Seconds(5), visit_id2,
+      critical_actions::ActionType::kDownload));
+
+  TestBrowsingHistoryDriver::QueryResult result = QueryHistoryAndWait();
+  ASSERT_EQ(2u, result.first.size());
+  EXPECT_THAT(GetCriticalActionIds(result.first[0]),
+              ElementsAre("action-visit-2"));
+  EXPECT_THAT(GetCriticalActionIds(result.first[1]),
+              ElementsAre("action-visit-1"));
+}
+
+TEST_F(BrowsingHistoryServiceCriticalActionsTest,
+       CriticalActionsAttachedToMergedSameDayVisits) {
+  base::test::ScopedFeatureList disable_grouping;
+  disable_grouping.InitAndDisableFeature(kBrowsingHistorySimilarVisitsGrouping);
+  base::HistogramTester histogram_tester;
+
+  const Time t1 = baseline_time_ + base::Hours(1);
+  const Time t2 = baseline_time_ + base::Hours(2);
+  const VisitID visit_id1 = AddVisitAndGetId(GURL(kUrl1), t1);
+  const VisitID visit_id2 = AddVisitAndGetId(GURL(kUrl1), t2);
+
+  critical_action_service()->AddCriticalAction(CreateCriticalActionEntry(
+      "action-visit-1", t1 + base::Seconds(5), visit_id1,
+      critical_actions::ActionType::kCredentialAccess));
+  critical_action_service()->AddCriticalAction(CreateCriticalActionEntry(
+      "action-visit-2", t2 + base::Seconds(5), visit_id2,
+      critical_actions::ActionType::kDownload));
+
+  QueryOptions options = ActorAndUserOptions();
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  TestBrowsingHistoryDriver::QueryResult result = QueryHistoryAndWait(options);
+  ASSERT_EQ(1u, result.first.size());
+  EXPECT_THAT(GetCriticalActionIds(result.first[0]),
+              ElementsAre("action-visit-2", "action-visit-1"));
+  histogram_tester.ExpectUniqueSample(
+      "HistoryPage.CriticalActionsPerVisitCount", 2, 1);
+}
+
+TEST_F(BrowsingHistoryServiceCriticalActionsTest,
+       CriticalActionsAttachedToGroupedSimilarVisits) {
+  base::test::ScopedFeatureList enable_grouping;
+  enable_grouping.InitAndEnableFeature(kBrowsingHistorySimilarVisitsGrouping);
+
+  const Time t1 = baseline_time_ + base::Hours(1);
+  const Time t2 = baseline_time_ + base::Hours(2);
+  const VisitID visit_id1 = AddVisitAndGetId(
+      GURL("http://www.a.com/1"), t1, /*is_actor_visit=*/true, u"Shared Title");
+  const VisitID visit_id2 = AddVisitAndGetId(
+      GURL("http://www.a.com/2"), t2, /*is_actor_visit=*/true, u"Shared Title");
+
+  critical_action_service()->AddCriticalAction(
+      CreateCriticalActionEntry("action-1", t1, visit_id1));
+  critical_action_service()->AddCriticalAction(
+      CreateCriticalActionEntry("action-2", t2, visit_id2));
+
+  QueryOptions options = ActorAndUserOptions();
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  TestBrowsingHistoryDriver::QueryResult result = QueryHistoryAndWait(options);
+  ASSERT_EQ(1u, result.first.size());
+  EXPECT_THAT(GetCriticalActionIds(result.first[0]),
+              ElementsAre("action-2", "action-1"));
+}
+
+// Only verifies that BrowsingHistoryService deduplicates the fetched actions;
+// the deduplication rules are covered by critical_action_history_utils
+// tests.
+TEST_F(BrowsingHistoryServiceCriticalActionsTest, CriticalActionsDeduplicated) {
+  const Time visit_time = OffsetToTime(2);
+  const VisitID visit_id = AddVisitAndGetId(GURL(kUrl1), visit_time);
+
+  critical_action_service()->AddCriticalAction(CreateCriticalActionEntry(
+      "latest", visit_time + base::Seconds(1), visit_id));
+  critical_action_service()->AddCriticalAction(
+      CreateCriticalActionEntry("duplicate", visit_time, visit_id));
+
+  TestBrowsingHistoryDriver::QueryResult result = QueryHistoryAndWait();
+  ASSERT_EQ(1u, result.first.size());
+  EXPECT_THAT(GetCriticalActionIds(result.first[0]), ElementsAre("latest"));
+}
+
+TEST_F(BrowsingHistoryServiceCriticalActionsTest,
+       SupersedingQueryCancelsInFlightCriticalActionsFetch) {
+  critical_actions::FakeCriticalActionProvider fake_provider;
+  ResetService(driver(), local_history(), /*web_history=*/nullptr,
+               /*sync_service=*/nullptr, device_info_tracker(), &fake_provider);
+
+  const VisitID visit_id1 = AddVisitAndGetId(GURL(kUrl1), OffsetToTime(1));
+  const VisitID visit_id2 = AddVisitAndGetId(GURL(kUrl2), OffsetToTime(2));
+
+  // Start query 1 and wait until it requests critical actions.
+  base::test::TestFuture<void> request1_future;
+  fake_provider.SetOnRequestCallback(request1_future.GetCallback());
+  QueryOptions options1 = ActorAndUserOptions();
+  options1.end_time = OffsetToTime(2);  // Excludes visit_id2.
+  service()->QueryHistory(std::u16string(), options1);
+  ASSERT_TRUE(request1_future.Wait());
+  ASSERT_EQ(1u, fake_provider.request_count());
+  EXPECT_TRUE(driver()->GetQueryResults().empty());
+
+  // Start query 2 while query 1's critical action fetch is still in flight.
+  base::test::TestFuture<void> request2_future;
+  fake_provider.SetOnRequestCallback(request2_future.GetCallback());
+  service()->QueryHistory(std::u16string(), ActorAndUserOptions());
+  ASSERT_TRUE(request2_future.Wait());
+  ASSERT_EQ(2u, fake_provider.request_count());
+
+  // Resolving query 1's stale callback now must be ignored.
+  fake_provider.ResolveCallback(
+      0,
+      {CreateCriticalActionEntry("stale-action", OffsetToTime(1), visit_id1)});
+  EXPECT_TRUE(driver()->GetQueryResults().empty());
+
+  // Resolving query 2's callback delivers query 2's results.
+  fake_provider.ResolveCallback(
+      1,
+      {CreateCriticalActionEntry("fresh-action", OffsetToTime(2), visit_id2)});
+  ASSERT_EQ(1u, driver()->GetQueryResults().size());
+  ASSERT_EQ(2u, driver()->GetQueryResults()[0].first.size());
+  EXPECT_THAT(GetCriticalActionIds(driver()->GetQueryResults()[0].first[0]),
+              ElementsAre("fresh-action"));
+}
+
+TEST_F(BrowsingHistoryServiceCriticalActionsTest,
+       QueryDurationRecordedBeforeCriticalActionsFetch) {
+  critical_actions::FakeCriticalActionProvider fake_provider;
+  ResetService(driver(), local_history(), /*web_history=*/nullptr,
+               /*sync_service=*/nullptr, device_info_tracker(), &fake_provider);
+  base::HistogramTester histogram_tester;
+
+  const VisitID visit_id = AddVisitAndGetId(GURL(kUrl1), OffsetToTime(1));
+
+  // Start the query and wait until it requests critical actions.
+  base::test::TestFuture<void> request_future;
+  fake_provider.SetOnRequestCallback(request_future.GetCallback());
+  service()->QueryHistory(std::u16string(), ActorAndUserOptions());
+  ASSERT_TRUE(request_future.Wait());
+  ASSERT_EQ(1u, fake_provider.request_count());
+  EXPECT_TRUE(driver()->GetQueryResults().empty());
+
+  // The query duration must already be recorded, so that it excludes the
+  // critical actions lookup and has the same semantics regardless of whether
+  // `kCriticalActionHistory` is enabled.
+  histogram_tester.ExpectTotalCount("History.BrowsingHistory.QueryDuration", 1);
+  histogram_tester.ExpectTotalCount("HistoryPage.CriticalActionsQueryTime", 0);
+
+  // Completing the critical actions lookup must not record it again.
+  fake_provider.ResolveCallback(
+      0, {CreateCriticalActionEntry("action-1", OffsetToTime(1), visit_id)});
+  ASSERT_EQ(1u, driver()->GetQueryResults().size());
+  histogram_tester.ExpectTotalCount("History.BrowsingHistory.QueryDuration", 1);
+  histogram_tester.ExpectTotalCount("HistoryPage.CriticalActionsQueryTime", 1);
+}
+
+TEST_F(BrowsingHistoryServiceCriticalActionsTest,
+       ProviderShutdownSkipsCriticalActionsWithoutDangling) {
+  auto provider =
+      std::make_unique<critical_actions::FakeCriticalActionProvider>();
+  ResetService(driver(), local_history(), /*web_history=*/nullptr,
+               /*sync_service=*/nullptr, device_info_tracker(), provider.get());
+
+  AddVisitAndGetId(GURL(kUrl1), OffsetToTime(1));
+
+  // Shut down and destroy the provider before BrowsingHistoryService queries.
+  provider->Shutdown();
+  provider.reset();
+
+  TestBrowsingHistoryDriver::QueryResult result = QueryHistoryAndWait();
+  ASSERT_EQ(1u, result.first.size());
+  EXPECT_TRUE(result.first[0].critical_actions.empty());
 }
 
 }  // namespace

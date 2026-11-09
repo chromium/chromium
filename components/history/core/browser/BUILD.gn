@@ -132,6 +132,7 @@ static_library("browser") {
 
   public_deps = [
     ":features",
+    "//components/critical_actions/core/browser:types",
     "//components/sessions:session_id",
     "//components/sync/protocol",
     "//components/sync_device_info",
@@ -213,6 +214,8 @@ source_set("unit_tests") {
     ":browser",
     "//base",
     "//base/test:test_support",
+    "//components/critical_actions/core/browser",
+    "//components/critical_actions/core/browser:test_support",
     "//components/favicon/core:database",
     "//components/favicon_base",
     "//components/history/core/common",

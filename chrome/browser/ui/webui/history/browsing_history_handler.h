@@ -171,19 +171,6 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
   // signin::IdentityManager::Observer:
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
-  void CriticalActionsFetched(
-      const std::vector<history::BrowsingHistoryService::HistoryEntry>& results,
-      const history::BrowsingHistoryService::QueryResultsInfo&
-          query_results_info,
-      base::ElapsedTimer critical_actions_timer,
-      std::vector<critical_actions::CriticalActionEntry> critical_actions);
-
-  void HandleQueryResults(
-      const std::vector<history::BrowsingHistoryService::HistoryEntry>& results,
-      const history::BrowsingHistoryService::QueryResultsInfo&
-          query_results_info,
-      std::vector<critical_actions::CriticalActionEntry> critical_actions);
-
   void OnCriticalActionRetrievedForLinkout(
       OpenCriticalActionConversationCallback callback,
       std::optional<critical_actions::CriticalActionEntry> entry);

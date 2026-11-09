@@ -276,7 +276,8 @@ void HistoryClustersHandler::CommonInit() {
   browsing_history_service_ = std::make_unique<history::BrowsingHistoryService>(
       this, history_service_, web_history_service, sync_service,
       device_info_service ? device_info_service->GetDeviceInfoTracker()
-                          : nullptr);
+                          : nullptr,
+      /*critical_action_provider=*/nullptr);
 }
 
 HistoryClustersHandler::~HistoryClustersHandler() = default;

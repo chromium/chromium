@@ -13,12 +13,14 @@
 #include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "components/critical_actions/core/browser/critical_action_metrics.h"
+#include "components/critical_actions/core/browser/critical_action_provider.h"
 #include "components/critical_actions/core/browser/critical_action_redirect_metrics_recorder.h"
 #include "components/critical_actions/core/browser/critical_action_types.h"
 #include "components/history/core/browser/history_service.h"
@@ -31,6 +33,7 @@ class CriticalActionBackend;
 
 // UI thread service for recording and retrieving critical action history.
 class CriticalActionService : public KeyedService,
+                              public CriticalActionProvider,
                               public history::HistoryServiceObserver {
  public:
   CriticalActionService(
@@ -78,11 +81,12 @@ class CriticalActionService : public KeyedService,
       std::string_view critical_action_id,
       base::OnceCallback<void(std::optional<CriticalActionEntry>)> callback);
 
-  // UI thread entry point to retrieve critical action records matching
-  // `options`.
+  // CriticalActionProvider:
   void GetCriticalActions(
       const CriticalActionQueryOptions& options,
-      base::OnceCallback<void(std::vector<CriticalActionEntry>)> callback);
+      base::OnceCallback<void(std::vector<CriticalActionEntry>)> callback)
+      override;
+  base::WeakPtr<CriticalActionProvider> GetWeakPtr() override;
 
   // UI thread entry point to delete a critical action record by ID.
   void DeleteCriticalAction(std::string_view critical_action_id);
@@ -144,6 +148,8 @@ class CriticalActionService : public KeyedService,
   // available when logging critical actions.
   base::LRUCache<std::string, std::vector<PendingCriticalAction>>
       task_to_critical_action_ids_cache_;
+
+  base::WeakPtrFactory<CriticalActionService> weak_ptr_factory_{this};
 };
 
 }  // namespace critical_actions

@@ -312,11 +312,11 @@ IN_PROC_BROWSER_TEST_P(TwoClientHistorySyncTest, SyncsVisitsDeletion) {
   history::WebHistoryService* web_history_service =
       WebHistoryServiceFactory::GetForProfile(GetProfile(0));
   TestBrowsingHistoryDriver driver;
-  // No device tracker is needed as the service is not used to call
-  // `GetSyncedDevicesForFiltering`.
+  // No device tracker or critical action provider is needed as the service is
+  // only used to call `RemoveVisits`.
   history::BrowsingHistoryService browsing_history_service(
       &driver, history_service, web_history_service, GetSyncService(0),
-      /*device_info_tracker=*/nullptr);
+      /*device_info_tracker=*/nullptr, /*critical_action_provider=*/nullptr);
 
   browsing_history_service.RemoveVisits(items_to_remove);
   // Note that this API applies deletions to all matching visits on the same

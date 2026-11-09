@@ -155,6 +155,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/bookmarks",
       "//chrome/browser/critical_actions",
+      "//chrome/browser/history",
       "//chrome/browser/signin",
       "//chrome/browser/sync",
       "//chrome/browser/ui:test_support",

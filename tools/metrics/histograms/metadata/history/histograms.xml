@@ -43,10 +43,12 @@ chromium-metrics-reviews@google.com.
 
 <variants name="HasCriticalActions">
   <variant name="WithCriticalActions"
-      summary="results were non-empty and critical actions were queried from
-               the database"/>
+      summary="results contained local visits and critical actions were
+               queried from the database"/>
   <variant name="WithoutCriticalActions"
-      summary="results were empty or the critical actions feature is disabled"/>
+      summary="critical actions were not queried (no local visits in results,
+               service unavailable for the profile, or the critical actions
+               feature is disabled)"/>
 </variants>
 
 <variants name="PassagePriority">
@@ -2512,10 +2514,9 @@ chromium-metrics-reviews@google.com.
   <owner>polonium@google.com</owner>
   <summary>
     Records the total number of critical actions attached to a single browsing
-    history visit item on the chrome://history page. Recorded for each visit
-    that has at least one critical action attached whenever browsing history
-    entries are retrieved and prepared for display (on initial page load,
-    search, or infinite scroll).
+    history entry in BrowsingHistoryService. Recorded for each entry that has at
+    least one critical action attached whenever browsing history entries are
+    retrieved and prepared for display (on initial load, search, or pagination).
   </summary>
 </histogram>
 
@@ -2526,8 +2527,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time (in milliseconds) taken to query and retrieve critical
     actions from the local database for history visits. Recorded each time
-    chrome://history receives a non-empty batch of history results and completes
-    fetching their corresponding critical actions.
+    BrowsingHistoryService assembles a batch of history results with local visit
+    IDs and completes fetching their corresponding critical actions.
   </summary>
 </histogram>
 

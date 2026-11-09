@@ -21,8 +21,10 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "components/critical_actions/core/browser/critical_action_types.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/url_row.h"
@@ -35,6 +37,10 @@
 #include "url/gurl.h"
 
 FORWARD_DECLARE_TEST(BrowsingHistoryHandlerTest, ObservingWebHistoryDeletions);
+
+namespace critical_actions {
+class CriticalActionProvider;
+}  // namespace critical_actions
 
 namespace history {
 
@@ -129,6 +135,12 @@ class BrowsingHistoryService : public HistoryServiceObserver,
     // All visit IDs in the local database represented by this entry (including
     // synced visits).
     std::vector<history::VisitID> all_visit_ids;
+
+    // Critical actions performed during any of the visits represented by this
+    // entry, deduplicated and ordered by visit and timestamp (latest first).
+    // Populated only when `critical_actions::features::kCriticalActionHistory`
+    // is enabled.
+    std::vector<critical_actions::CriticalActionEntry> critical_actions;
   };
 
   // Contains information about a completed history query.
@@ -144,6 +156,11 @@ class BrowsingHistoryService : public HistoryServiceObserver,
 
     // Whether the last call to Web History timed out.
     bool sync_timed_out = false;
+
+    // Whether critical actions were queried from the database for these
+    // results. Used by drivers (e.g. `BrowsingHistoryHandler`) to record
+    // query-latency metrics split by whether a critical action lookup ran.
+    bool queried_critical_actions = false;
   };
 
   // Represents a physical device by grouping sync IDs of clients that share a
@@ -154,11 +171,14 @@ class BrowsingHistoryService : public HistoryServiceObserver,
     std::vector<std::string> client_ids;
   };
 
-  BrowsingHistoryService(BrowsingHistoryDriver* driver,
-                         HistoryService* local_history,
-                         WebHistoryService* web_history,
-                         syncer::SyncService* sync_service,
-                         syncer::DeviceInfoTracker* device_info_tracker);
+  // `critical_action_provider` may be null if critical actions are not needed.
+  BrowsingHistoryService(
+      BrowsingHistoryDriver* driver,
+      HistoryService* local_history,
+      WebHistoryService* web_history,
+      syncer::SyncService* sync_service,
+      syncer::DeviceInfoTracker* device_info_tracker,
+      critical_actions::CriticalActionProvider* critical_action_provider);
 
   BrowsingHistoryService(const BrowsingHistoryService&) = delete;
   BrowsingHistoryService& operator=(const BrowsingHistoryService&) = delete;
@@ -196,12 +216,14 @@ class BrowsingHistoryService : public HistoryServiceObserver,
 
  protected:
   // Constructor that allows specifying more dependencies for unit tests.
-  BrowsingHistoryService(BrowsingHistoryDriver* driver,
-                         HistoryService* local_history,
-                         WebHistoryService* web_history,
-                         syncer::SyncService* sync_service,
-                         std::unique_ptr<base::OneShotTimer> web_history_timer,
-                         syncer::DeviceInfoTracker* device_info_tracker);
+  BrowsingHistoryService(
+      BrowsingHistoryDriver* driver,
+      HistoryService* local_history,
+      WebHistoryService* web_history,
+      syncer::SyncService* sync_service,
+      std::unique_ptr<base::OneShotTimer> web_history_timer,
+      syncer::DeviceInfoTracker* device_info_tracker,
+      critical_actions::CriticalActionProvider* critical_action_provider);
   // Should be used only for tests when mocking the service.
   BrowsingHistoryService();
 
@@ -279,10 +301,23 @@ class BrowsingHistoryService : public HistoryServiceObserver,
       base::OnceCallback<void(base::Time)> callback,
       HistoryLastVisitResult result);
 
-  // Combines the query results from the local history database and the history
-  // server, and sends the combined results to the
-  // BrowsingHistoryDriver.
-  void ReturnResultsToDriver(scoped_refptr<QueryHistoryState> state);
+  // Merges/groups the query results from the local history database and the
+  // history server, fetches critical actions if applicable, and returns the
+  // assembled results to the `BrowsingHistoryDriver`.
+  void AssembleAndReturnResults(scoped_refptr<QueryHistoryState> state);
+
+  // Callback invoked when critical actions for `results` have been fetched.
+  void OnCriticalActionsComplete(
+      scoped_refptr<QueryHistoryState> state,
+      std::vector<HistoryEntry> results,
+      base::ElapsedTimer timer,
+      std::vector<critical_actions::CriticalActionEntry> raw_actions);
+
+  // Sends the assembled `results` (with any critical actions attached) to
+  // `driver_`.
+  void ReturnResultsToDriver(scoped_refptr<QueryHistoryState> state,
+                             const std::vector<HistoryEntry>& results,
+                             bool queried_critical_actions);
 
   // Records the metrics for results.
   static void RecordResultsMetrics(const std::vector<HistoryEntry>& results,
@@ -369,10 +404,19 @@ class BrowsingHistoryService : public HistoryServiceObserver,
 
   raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_ = nullptr;
 
+  base::WeakPtr<critical_actions::CriticalActionProvider>
+      critical_action_provider_;
+
   // The clock used to vend times.
   std::unique_ptr<base::Clock> clock_;
 
   base::WeakPtrFactory<BrowsingHistoryService> weak_factory_{this};
+
+  // Separate factory for in-flight critical action queries so starting a new
+  // history query cancels stale critical action callbacks without cancelling
+  // unrelated callbacks (e.g. RemoveVisits or GetAllAppIds).
+  base::WeakPtrFactory<BrowsingHistoryService> critical_actions_weak_factory_{
+      this};
 };
 
 }  // namespace history

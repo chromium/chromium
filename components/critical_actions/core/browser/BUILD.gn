@@ -2,6 +2,31 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# History-free types, features, and query interface so that
+# //components/history/core/browser can depend on this target without creating
+# a dependency cycle with :browser (which observes history::HistoryService).
+static_library("types") {
+  sources = [
+    "critical_action_history_utils.cc",
+    "critical_action_history_utils.h",
+    "critical_action_provider.h",
+    "critical_action_types.cc",
+    "critical_action_types.h",
+    "features.cc",
+    "features.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  deps = [
+    "//components/strings:components_strings",
+    "//ui/base",
+  ]
+}
+
 static_library("browser") {
   sources = [
     "critical_action_backend.cc",
@@ -14,19 +39,29 @@ static_library("browser") {
     "critical_action_redirect_metrics_recorder.h",
     "critical_action_service.cc",
     "critical_action_service.h",
-    "critical_action_types.cc",
-    "critical_action_types.h",
-    "features.cc",
-    "features.h",
   ]
+
+  public_deps = [ ":types" ]
 
   deps = [
     "//base",
     "//components/history/core/browser",
     "//components/keyed_service/core",
-    "//components/strings:components_strings",
     "//sql",
     "//ui/base",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_critical_action_provider.cc",
+    "fake_critical_action_provider.h",
+  ]
+
+  public_deps = [
+    ":types",
+    "//base",
   ]
 }
 
@@ -35,6 +70,7 @@ source_set("unit_tests") {
   sources = [
     "critical_action_backend_unittest.cc",
     "critical_action_database_unittest.cc",
+    "critical_action_history_utils_unittest.cc",
     "critical_action_metrics_unittest.cc",
     "critical_action_redirect_metrics_recorder_unittest.cc",
     "critical_action_service_unittest.cc",

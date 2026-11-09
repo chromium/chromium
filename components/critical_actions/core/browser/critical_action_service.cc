@@ -44,6 +44,7 @@ CriticalActionService::~CriticalActionService() {
 
 void CriticalActionService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  weak_ptr_factory_.InvalidateWeakPtrs();
   history_service_observation_.Reset();
   for (auto& [nav_id, state] : navigation_cache_) {
     DropPendingActions(state,
@@ -254,6 +255,11 @@ void CriticalActionService::GetCriticalActions(
   backend_.AsyncCall(&CriticalActionBackend::GetCriticalActions)
       .WithArgs(options)
       .Then(std::move(callback));
+}
+
+base::WeakPtr<CriticalActionProvider> CriticalActionService::GetWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void CriticalActionService::DeleteCriticalAction(

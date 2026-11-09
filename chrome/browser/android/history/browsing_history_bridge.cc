@@ -117,7 +117,8 @@ BrowsingHistoryBridge::BrowsingHistoryBridge(JNIEnv* env,
   browsing_history_service_ = std::make_unique<history::BrowsingHistoryService>(
       this, local_history, web_history, sync_service,
       device_info_service ? device_info_service->GetDeviceInfoTracker()
-                          : nullptr);
+                          : nullptr,
+      /*critical_action_provider=*/nullptr);
 
   j_history_service_obj_.Reset(env, obj);
 }

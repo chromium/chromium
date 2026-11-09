@@ -76,7 +76,8 @@
       ios::WebHistoryServiceFactory::GetForProfile(self.profile),
       SyncServiceFactory::GetForProfile(self.profile),
       device_info_service ? device_info_service->GetDeviceInfoTracker()
-                          : nullptr);
+                          : nullptr,
+      /*critical_action_provider=*/nullptr);
   self.viewController.historyService = _browsingHistoryService.get();
 
   self.viewController.presentationDelegate = self.presentationDelegate;

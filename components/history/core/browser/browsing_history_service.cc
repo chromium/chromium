@@ -28,6 +28,9 @@
 #include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/critical_actions/core/browser/critical_action_history_utils.h"
+#include "components/critical_actions/core/browser/critical_action_provider.h"
+#include "components/critical_actions/core/browser/features.h"
 #include "components/history/core/browser/browsing_history_driver.h"
 #include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
@@ -198,13 +201,15 @@ BrowsingHistoryService::BrowsingHistoryService(
     HistoryService* local_history,
     WebHistoryService* web_history,
     syncer::SyncService* sync_service,
-    syncer::DeviceInfoTracker* device_info_tracker)
+    syncer::DeviceInfoTracker* device_info_tracker,
+    critical_actions::CriticalActionProvider* critical_action_provider)
     : BrowsingHistoryService(driver,
                              local_history,
                              web_history,
                              sync_service,
                              std::make_unique<base::OneShotTimer>(),
-                             device_info_tracker) {}
+                             device_info_tracker,
+                             critical_action_provider) {}
 
 BrowsingHistoryService::BrowsingHistoryService(
     BrowsingHistoryDriver* driver,
@@ -212,13 +217,17 @@ BrowsingHistoryService::BrowsingHistoryService(
     WebHistoryService* web_history,
     syncer::SyncService* sync_service,
     std::unique_ptr<base::OneShotTimer> web_history_timer,
-    syncer::DeviceInfoTracker* device_info_tracker)
+    syncer::DeviceInfoTracker* device_info_tracker,
+    critical_actions::CriticalActionProvider* critical_action_provider)
     : web_history_timer_(std::move(web_history_timer)),
       driver_(driver),
       local_history_(local_history),
       web_history_(web_history),
       sync_service_(sync_service),
       device_info_tracker_(device_info_tracker),
+      critical_action_provider_(critical_action_provider
+                                    ? critical_action_provider->GetWeakPtr()
+                                    : nullptr),
       clock_(new base::DefaultClock()) {
   DCHECK(driver_);
 
@@ -251,7 +260,7 @@ void BrowsingHistoryService::WebHistoryTimeout(
   // Don't reset `web_history_request_` so we can still record histogram.
   // TODO(dubroy): Communicate the failure to the front end.
   if (!query_task_tracker_.HasTrackedTasks()) {
-    ReturnResultsToDriver(std::move(state));
+    AssembleAndReturnResults(std::move(state));
   }
 }
 
@@ -273,6 +282,7 @@ void BrowsingHistoryService::QueryHistoryInternal(
   // Anything in-flight is invalid.
   query_task_tracker_.TryCancelAll();
   web_history_request_.reset();
+  critical_actions_weak_factory_.InvalidateWeakPtrs();
 
   bool should_return_results_immediately = true;
   const size_t desired_count =
@@ -371,7 +381,7 @@ void BrowsingHistoryService::QueryHistoryInternal(
   // cannot check tracker/timer, and instead have to rely on local logic for
   // this choice. Note that in unit tests Web History returns synchronously.
   if (should_return_results_immediately) {
-    ReturnResultsToDriver(std::move(state));
+    AssembleAndReturnResults(std::move(state));
   }
 }
 
@@ -546,6 +556,7 @@ void BrowsingHistoryService::Shutdown() {
   delete_task_tracker_.TryCancelAll();
   web_history_request_.reset();
   web_history_timer_.reset();
+  critical_actions_weak_factory_.InvalidateWeakPtrs();
 
   history_service_observation_.Reset();
   sync_service_observation_.Reset();
@@ -554,6 +565,7 @@ void BrowsingHistoryService::Shutdown() {
   local_history_ = nullptr;
   sync_service_ = nullptr;
   device_info_tracker_ = nullptr;
+  critical_action_provider_.reset();
 }
 
 // static
@@ -911,7 +923,7 @@ void BrowsingHistoryService::QueryComplete(
   }
 
   if (!web_history_timer_->IsRunning()) {
-    ReturnResultsToDriver(std::move(state));
+    AssembleAndReturnResults(std::move(state));
   }
 }
 
@@ -921,7 +933,7 @@ void BrowsingHistoryService::OnGetAllAppIds(GetAllAppIdsResult result) {
   }
 }
 
-void BrowsingHistoryService::ReturnResultsToDriver(
+void BrowsingHistoryService::AssembleAndReturnResults(
     scoped_refptr<QueryHistoryState> state) {
   if (!driver_) {
     return;
@@ -942,17 +954,89 @@ void BrowsingHistoryService::ReturnResultsToDriver(
 
   RecordResultsMetrics(results, clock_->Now());
 
+  // Recorded here so that it only covers the main history query, not the
+  // (conditional) critical actions lookup that may follow, which is recorded
+  // separately in HistoryPage.CriticalActionsQueryTime.
+  if (!state->query_start_time.is_null()) {
+    base::UmaHistogramTimes("History.BrowsingHistory.QueryDuration",
+                            base::TimeTicks::Now() - state->query_start_time);
+    state->query_start_time = base::TimeTicks();
+  }
+
+  if (critical_action_provider_ &&
+      base::FeatureList::IsEnabled(
+          critical_actions::features::kCriticalActionHistory)) {
+    std::vector<int64_t> visit_ids;
+    for (const HistoryEntry& entry : results) {
+      visit_ids.insert(visit_ids.end(), entry.all_visit_ids.begin(),
+                       entry.all_visit_ids.end());
+    }
+    if (!visit_ids.empty()) {
+      critical_actions::CriticalActionQueryOptions options;
+      options.visit_ids = std::move(visit_ids);
+      critical_action_provider_->GetCriticalActions(
+          options,
+          base::BindOnce(&BrowsingHistoryService::OnCriticalActionsComplete,
+                         critical_actions_weak_factory_.GetWeakPtr(),
+                         std::move(state), std::move(results),
+                         base::ElapsedTimer()));
+      return;
+    }
+  }
+
+  ReturnResultsToDriver(std::move(state), results,
+                        /*queried_critical_actions=*/false);
+}
+
+void BrowsingHistoryService::OnCriticalActionsComplete(
+    scoped_refptr<QueryHistoryState> state,
+    std::vector<HistoryEntry> results,
+    base::ElapsedTimer timer,
+    std::vector<critical_actions::CriticalActionEntry> raw_actions) {
+  if (!driver_) {
+    return;
+  }
+
+  base::UmaHistogramTimes("HistoryPage.CriticalActionsQueryTime",
+                          timer.Elapsed());
+
+  critical_actions::CriticalActionsByVisitId actions_by_visit_id =
+      critical_actions::GroupCriticalActionsByVisitId(raw_actions);
+  if (!actions_by_visit_id.empty()) {
+    for (HistoryEntry& entry : results) {
+      for (VisitID visit_id : entry.all_visit_ids) {
+        auto it = actions_by_visit_id.find(visit_id);
+        if (it != actions_by_visit_id.end()) {
+          entry.critical_actions.insert(entry.critical_actions.end(),
+                                        it->second.begin(), it->second.end());
+        }
+      }
+      if (!entry.critical_actions.empty()) {
+        base::UmaHistogramCounts100("HistoryPage.CriticalActionsPerVisitCount",
+                                    entry.critical_actions.size());
+      }
+    }
+  }
+
+  ReturnResultsToDriver(std::move(state), results,
+                        /*queried_critical_actions=*/true);
+}
+
+void BrowsingHistoryService::ReturnResultsToDriver(
+    scoped_refptr<QueryHistoryState> state,
+    const std::vector<HistoryEntry>& results,
+    bool queried_critical_actions) {
+  if (!driver_) {
+    return;
+  }
+
   QueryResultsInfo info;
   info.search_text = state->search_text;
   info.reached_beginning = !CanRetry(state->local_status) &&
                            (!CanRetry(state->remote_status) ||
                             state->original_options.app_id != kNoAppIdFilter);
   info.sync_timed_out = state->remote_status == TIMED_OUT;
-  if (!state->query_start_time.is_null()) {
-    base::UmaHistogramTimes("History.BrowsingHistory.QueryDuration",
-                            base::TimeTicks::Now() - state->query_start_time);
-    state->query_start_time = base::TimeTicks();
-  }
+  info.queried_critical_actions = queried_critical_actions;
   base::OnceClosure continuation =
       base::BindOnce(&BrowsingHistoryService::QueryHistoryInternal,
                      weak_factory_.GetWeakPtr(), std::move(state));
@@ -1097,7 +1181,7 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
   }
 
   if (!query_task_tracker_.HasTrackedTasks()) {
-    ReturnResultsToDriver(std::move(state));
+    AssembleAndReturnResults(std::move(state));
   }
 }
 
