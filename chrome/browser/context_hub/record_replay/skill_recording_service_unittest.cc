@@ -41,6 +41,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "ui/base/test/mock_base_window.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -78,6 +79,8 @@ class TestBrowserInstance {
         .WillByDefault(testing::Return(&profile_.get()));
     ON_CALL(mock_bwi_, GetTabStripModel())
         .WillByDefault(testing::Return(&tab_strip_model_));
+    ON_CALL(mock_bwi_, GetWindow())
+        .WillByDefault(testing::Return(&mock_window_));
     ON_CALL(mock_bwi_, RegisterDidBecomeActive(testing::_))
         .WillByDefault(
             [this](BrowserWindowInterface::DidBecomeActiveCallback cb) {
@@ -110,6 +113,7 @@ class TestBrowserInstance {
   const raw_ref<Profile> profile_;
   TestTabStripModelDelegate tab_strip_model_delegate_;
   TabStripModel tab_strip_model_;
+  testing::NiceMock<ui::MockBaseWindow> mock_window_;
   testing::NiceMock<MockBrowserWindowInterface> mock_bwi_;
   base::RepeatingCallbackList<void(BrowserWindowInterface*)> active_callbacks_;
   base::RepeatingCallbackList<void(BrowserWindowInterface*)> close_callbacks_;
