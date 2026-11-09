@@ -298,8 +298,9 @@ class AXPosition {
       int text_offset,
       ax::mojom::TextAffinity affinity) {
     CHECK(anchor.tree(), base::NotFatalUntil::M163);
-    CHECK_NE(anchor.tree()->GetAXTreeID(), AXTreeIDUnknown(),
-             base::NotFatalUntil::M163);
+    // TODO(crbug.com/583539818): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_NE(anchor.tree()->GetAXTreeID(), AXTreeIDUnknown());
     CHECK_NE(anchor.id(), kInvalidAXNodeID, base::NotFatalUntil::M163);
 
     AXPositionInstance new_position(new AXPositionType());
