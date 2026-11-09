@@ -37,6 +37,11 @@ enum class ComposeboxInputPlateControls : unsigned int;
 // Whether to force disable the send functionality.
 - (void)disableSending:(BOOL)disableSending;
 
+// Sets whether a send is pending, i.e. held until attachments finish
+// uploading. While pending, the send button shows an activity indicator and is
+// disabled.
+- (void)setSendPending:(BOOL)sendPending;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_CONSUMER_H_

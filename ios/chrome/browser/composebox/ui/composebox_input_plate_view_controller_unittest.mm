@@ -118,4 +118,38 @@ TEST_F(ComposeboxInputPlateViewControllerTest,
   EXPECT_TRUE(base::test::RunUntil([&]() { return !send_button.enabled; }));
 }
 
+// Tests that the send button shows an activity indicator and is disabled while
+// a send is pending, and is restored afterwards.
+TEST_F(ComposeboxInputPlateViewControllerTest,
+       SendButtonShowsActivityIndicatorWhileSendPending) {
+  UIButton* send_button =
+      base::apple::ObjCCast<UIButton>(chrome_test_util::FindViewById(
+          view_controller_.view, kComposeboxSendButtonAccessibilityIdentifier));
+  ASSERT_TRUE(send_button);
+
+  ComposeboxInputItem* item = [[ComposeboxInputItem alloc]
+      initWithComposeboxInputItemType:ComposeboxInputItemType::
+                                          kComposeboxInputItemTypeTab
+                               source:ComposeboxInputItemSource::kCurrentTab];
+  item.state = ComposeboxInputItemState::kDeferred;
+  [view_controller_ setItems:@[ item ]];
+  ASSERT_TRUE(base::test::RunUntil([&]() { return send_button.enabled; }));
+  EXPECT_FALSE(send_button.configuration.showsActivityIndicator);
+  EXPECT_TRUE(send_button.configuration.image);
+
+  [view_controller_ setSendPending:YES];
+  [send_button layoutIfNeeded];
+  EXPECT_TRUE(send_button.configuration.showsActivityIndicator);
+  // The arrow image is removed, so that the activity indicator has its default
+  // size rather than the size of the image.
+  EXPECT_FALSE(send_button.configuration.image);
+  EXPECT_FALSE(send_button.enabled);
+
+  [view_controller_ setSendPending:NO];
+  [send_button layoutIfNeeded];
+  EXPECT_FALSE(send_button.configuration.showsActivityIndicator);
+  EXPECT_TRUE(send_button.configuration.image);
+  EXPECT_TRUE(send_button.enabled);
+}
+
 }  // namespace

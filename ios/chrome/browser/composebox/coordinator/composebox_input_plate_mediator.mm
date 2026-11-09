@@ -1655,10 +1655,15 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
 // Runs `callback` immediately if no attachment is awaiting extraction or
 // upload, or holds it in `_pendingSendCallback` until all attachments
-// settle.
+// settle. While held, the send is shown as pending.
 - (void)runOrWaitForPendingAttachments:(base::OnceClosure)callback {
   _pendingSendCallback = std::move(callback);
   [self maybeRunPendingSendCallback];
+  if (!_pendingSendCallback) {
+    return;
+  }
+  // TODO(crbug.com/582333512): Keep the typed text while the send is pending.
+  [self.consumer setSendPending:YES];
 }
 
 // Runs `_pendingSendCallback` if one is waiting and all attachments are ready
@@ -1672,6 +1677,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       return;
     }
   }
+  [self.consumer setSendPending:NO];
   std::move(_pendingSendCallback).Run();
 }
 
