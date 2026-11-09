@@ -99,6 +99,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -215,6 +216,12 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                         if (modalDialogManager != null) {
                             modalDialogManager.dismissAllDialogs(
                                     org.chromium.ui.modaldialog.DialogDismissalCause.UNKNOWN);
+                        }
+                        BottomSheetController bottomSheetController =
+                                BottomSheetControllerProvider.from(
+                                        mBaseActivityTestRule.getActivity().getWindowAndroid());
+                        if (bottomSheetController != null) {
+                            new BottomSheetTestSupport(bottomSheetController).endAllAnimations();
                         }
                     }
                 });
@@ -1033,8 +1040,6 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.R) // TODO(crbug.com/573646619): Re-enable.
     public void testDelegatePostSigninGeneralError_retrySuccess() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
@@ -1303,6 +1308,12 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     }
 
     private void clickContinueButtonOnCollapsedBottomSheet() {
+        waitForView(
+                allOf(
+                        withId(R.id.account_picker_continue_as_button),
+                        withParent(withId(R.id.account_picker_state_collapsed)),
+                        isCompletelyDisplayed()));
+        BottomSheetTestSupport.waitForOpen(getBottomSheetController());
         onView(
                         allOf(
                                 withId(R.id.account_picker_continue_as_button),
@@ -1312,6 +1323,12 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     }
 
     private void clickContinueButtonToTryAgainGeneralError() {
+        waitForView(
+                allOf(
+                        withId(R.id.account_picker_continue_as_button),
+                        isDescendantOfA(withId(R.id.account_picker_state_general_error)),
+                        isDisplayed()));
+        BottomSheetTestSupport.waitForOpen(getBottomSheetController());
         onView(
                         allOf(
                                 withId(R.id.account_picker_continue_as_button),
