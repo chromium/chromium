@@ -2,7 +2,7 @@
 {%- set mojom_type = struct|get_qualified_name_for_kind %}
 
 // static
-bool StructTraits<{{mojom_type}}::DataView, {{mojom_type}}Ptr>::Read(
+{% if struct.fields|length > 1 %}NOINLINE {% endif %}bool StructTraits<{{mojom_type}}::DataView, {{mojom_type}}Ptr>::Read(
     {{mojom_type}}::DataView input,
     {{mojom_type}}Ptr* output) {
   bool success = true;

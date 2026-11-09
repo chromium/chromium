@@ -167,12 +167,10 @@ bool ResultInterface_Method_ResponseParams_Data::Validate(
   [[maybe_unused]] const ResultInterface_Method_ResponseParams_Data* object =
       static_cast<const ResultInterface_Method_ResponseParams_Data*>(data);
 
-  if (!mojo::internal::ValidateInlinedUnionNonNullable(
-          object->result, 1, validation_context)) {
+  if (!mojo::internal::ValidateNonNullInlinedUnion(
+          object->result, validation_context, 1)) {
     return false;
   }
-  if (!mojo::internal::ValidateInlinedUnion(object->result, validation_context))
-    return false;
 
   return true;
 }
@@ -214,12 +212,10 @@ bool ResultInterface_SyncMethod_ResponseParams_Data::Validate(
   [[maybe_unused]] const ResultInterface_SyncMethod_ResponseParams_Data* object =
       static_cast<const ResultInterface_SyncMethod_ResponseParams_Data*>(data);
 
-  if (!mojo::internal::ValidateInlinedUnionNonNullable(
-          object->result, 1, validation_context)) {
+  if (!mojo::internal::ValidateNonNullInlinedUnion(
+          object->result, validation_context, 1)) {
     return false;
   }
-  if (!mojo::internal::ValidateInlinedUnion(object->result, validation_context))
-    return false;
 
   return true;
 }

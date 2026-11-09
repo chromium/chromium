@@ -218,7 +218,7 @@ bool StructTraits<::golden::ArrayElement::DataView, ::golden::ArrayElementPtr>::
 
 
 // static
-bool StructTraits<::golden::StructWithArrays::DataView, ::golden::StructWithArraysPtr>::Read(
+NOINLINE bool StructTraits<::golden::StructWithArrays::DataView, ::golden::StructWithArraysPtr>::Read(
     ::golden::StructWithArrays::DataView input,
     ::golden::StructWithArraysPtr* output) {
   bool success = true;

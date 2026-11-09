@@ -927,7 +927,7 @@ bool StructTraits<::golden::ResultTestError::DataView, ::golden::ResultTestError
 }
 
 // static
-bool UnionTraits<::golden::ResultInterface_Method_ResponseParam_Result::DataView, ::golden::ResultInterface_Method_ResponseParam_ResultPtr>::Read(
+NOINLINE bool UnionTraits<::golden::ResultInterface_Method_ResponseParam_Result::DataView, ::golden::ResultInterface_Method_ResponseParam_ResultPtr>::Read(
     ::golden::ResultInterface_Method_ResponseParam_Result::DataView input,
     ::golden::ResultInterface_Method_ResponseParam_ResultPtr* output) {
   using UnionType = ::golden::ResultInterface_Method_ResponseParam_Result;
@@ -957,7 +957,7 @@ bool UnionTraits<::golden::ResultInterface_Method_ResponseParam_Result::DataView
 }
 
 // static
-bool UnionTraits<::golden::ResultInterface_SyncMethod_ResponseParam_Result::DataView, ::golden::ResultInterface_SyncMethod_ResponseParam_ResultPtr>::Read(
+NOINLINE bool UnionTraits<::golden::ResultInterface_SyncMethod_ResponseParam_Result::DataView, ::golden::ResultInterface_SyncMethod_ResponseParam_ResultPtr>::Read(
     ::golden::ResultInterface_SyncMethod_ResponseParam_Result::DataView input,
     ::golden::ResultInterface_SyncMethod_ResponseParam_ResultPtr* output) {
   using UnionType = ::golden::ResultInterface_SyncMethod_ResponseParam_Result;

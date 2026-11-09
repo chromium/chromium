@@ -244,7 +244,7 @@ namespace mojo {
 
 
 // static
-bool StructTraits<::golden::StructInUnion::DataView, ::golden::StructInUnionPtr>::Read(
+NOINLINE bool StructTraits<::golden::StructInUnion::DataView, ::golden::StructInUnionPtr>::Read(
     ::golden::StructInUnion::DataView input,
     ::golden::StructInUnionPtr* output) {
   bool success = true;
@@ -259,7 +259,7 @@ bool StructTraits<::golden::StructInUnion::DataView, ::golden::StructInUnionPtr>
 }
 
 // static
-bool UnionTraits<::golden::BasicUnion::DataView, ::golden::BasicUnionPtr>::Read(
+NOINLINE bool UnionTraits<::golden::BasicUnion::DataView, ::golden::BasicUnionPtr>::Read(
     ::golden::BasicUnion::DataView input,
     ::golden::BasicUnionPtr* output) {
   using UnionType = ::golden::BasicUnion;

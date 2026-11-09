@@ -5,16 +5,10 @@
 {%- macro validate_object(field, field_index, field_expr, union_is_inlined) %}
 {%-   set name = field.name %}
 {%-   set kind = field.kind %}
-{#- For non-nullable fields (except inlined unions), the ValidateNonNull*()
-    variants are used, which also validate that the field is non-null. #}
+{#- For non-nullable fields, the ValidateNonNull*() variants are used, which
+    also validate that the field is non-null. #}
 {%-   set qualifier = "" if kind|is_nullable_kind else "NonNull" %}
 {%-   set non_nullable_arg = "" if kind|is_nullable_kind else ", %s"|format(field_index) %}
-{%-   if not kind|is_nullable_kind and kind|is_union_kind and union_is_inlined %}
-  if (!mojo::internal::ValidateInlinedUnionNonNullable(
-          {{field_expr}}, {{field_index}}, validation_context)) {
-    return false;
-  }
-{%-   endif %}
 {%-   if kind|is_array_kind or kind|is_string_kind or kind|is_map_kind %}
   constexpr const mojo::internal::ContainerValidateParams& {{name}}_validate_params =
       {{kind|get_container_validate_params_ctor_args|indent(6)}};
@@ -28,8 +22,10 @@
     return false;
 {%-   elif kind|is_union_kind %}
 {%-     if union_is_inlined %}
-  if (!mojo::internal::ValidateInlinedUnion({{field_expr}}, validation_context))
+  if (!mojo::internal::Validate{{qualifier}}InlinedUnion(
+          {{field_expr}}, validation_context{{non_nullable_arg}})) {
     return false;
+  }
 {%-     else %}
   if (!mojo::internal::Validate{{qualifier}}NonInlinedUnion(
           {{field_expr}}, validation_context{{non_nullable_arg}}))

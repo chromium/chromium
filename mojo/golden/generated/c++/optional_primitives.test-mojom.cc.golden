@@ -148,7 +148,7 @@ namespace mojo {
 
 
 // static
-bool StructTraits<::golden::OptionalPrimitives::DataView, ::golden::OptionalPrimitivesPtr>::Read(
+NOINLINE bool StructTraits<::golden::OptionalPrimitives::DataView, ::golden::OptionalPrimitivesPtr>::Read(
     ::golden::OptionalPrimitives::DataView input,
     ::golden::OptionalPrimitivesPtr* output) {
   bool success = true;

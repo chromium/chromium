@@ -402,7 +402,7 @@ namespace mojo {
 
 
 // static
-bool StructTraits<::golden::Typemapped::DataView, ::golden::TypemappedPtr>::Read(
+NOINLINE bool StructTraits<::golden::Typemapped::DataView, ::golden::TypemappedPtr>::Read(
     ::golden::Typemapped::DataView input,
     ::golden::TypemappedPtr* output) {
   bool success = true;

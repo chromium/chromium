@@ -1,7 +1,7 @@
 {%- set mojom_type = union|get_qualified_name_for_kind %}
 
 // static
-bool UnionTraits<{{mojom_type}}::DataView, {{mojom_type}}Ptr>::Read(
+NOINLINE bool UnionTraits<{{mojom_type}}::DataView, {{mojom_type}}Ptr>::Read(
     {{mojom_type}}::DataView input,
     {{mojom_type}}Ptr* output) {
   using UnionType = {{mojom_type}};

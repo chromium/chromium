@@ -19,6 +19,12 @@
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/handle.h"
 
+#if defined(__OPTIMIZE_SIZE__)
+#define MOJO_NOINLINE_UNLESS_OPTIMIZE_SIZE
+#else
+#define MOJO_NOINLINE_UNLESS_OPTIMIZE_SIZE NOINLINE
+#endif
+
 namespace mojo {
 
 template <typename T>

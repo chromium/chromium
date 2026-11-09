@@ -130,19 +130,6 @@ bool ValidatePointerNonNullable(const T& input,
 }
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-bool ValidateInlinedUnionNonNullableImpl(const void* data,
-                                         int field_index,
-                                         ValidationContext* validation_context);
-
-template <typename T>
-bool ValidateInlinedUnionNonNullable(const T& input,
-                                     int field_index,
-                                     ValidationContext* validation_context) {
-  return ValidateInlinedUnionNonNullableImpl(&input, field_index,
-                                             validation_context);
-}
-
-COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 bool IsHandleOrInterfaceValid(const AssociatedInterface_Data& input);
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 bool IsHandleOrInterfaceValid(const AssociatedEndpointHandle_Data& input);
@@ -150,27 +137,6 @@ COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 bool IsHandleOrInterfaceValid(const Interface_Data& input);
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 bool IsHandleOrInterfaceValid(const Handle_Data& input);
-
-COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-bool ValidateHandleOrInterfaceNonNullable(
-    const AssociatedInterface_Data& input,
-    int field_index,
-    ValidationContext* validation_context);
-COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-bool ValidateHandleOrInterfaceNonNullable(
-    const AssociatedEndpointHandle_Data& input,
-    int field_index,
-    ValidationContext* validation_context);
-COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-bool ValidateHandleOrInterfaceNonNullable(
-    const Interface_Data& input,
-    int field_index,
-    ValidationContext* validation_context);
-COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-bool ValidateHandleOrInterfaceNonNullable(
-    const Handle_Data& input,
-    int field_index,
-    ValidationContext* validation_context);
 
 using ValidateStructFunc = bool(const void*, ValidationContext*);
 using ValidateUnionFunc = bool(const void*, ValidationContext*, bool);
@@ -337,6 +303,12 @@ bool ValidateInlinedUnionImpl(const void* data,
                               ValidateUnionFunc* validate_func);
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateNonNullInlinedUnionImpl(const void* data,
+                                     ValidationContext* validation_context,
+                                     int field_index,
+                                     ValidateUnionFunc* validate_func);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 bool ValidateNonInlinedUnionImpl(const uint64_t* offset,
                                  ValidationContext* validation_context,
                                  ValidateUnionFunc* validate_func);
@@ -393,6 +365,14 @@ bool ValidateNonNullStruct(const Pointer<T>& input,
                            int field_index) {
   return ValidateNonNullStructImpl(&input.offset, validation_context,
                                    field_index, &T::Validate);
+}
+
+template <typename T>
+bool ValidateNonNullInlinedUnion(const T& input,
+                                 ValidationContext* validation_context,
+                                 int field_index) {
+  return ValidateNonNullInlinedUnionImpl(&input, validation_context,
+                                         field_index, &T::Validate);
 }
 
 template <typename T>

@@ -17,6 +17,7 @@
 #include "base/types/is_instantiation.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
+#include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
@@ -527,9 +528,10 @@ struct Serializer<ArrayDataView<Element>, MaybeConstUserType> {
                                ArrayIterator<Traits, MaybeConstUserType>>;
   using Data = typename MojomTypeTraits<ArrayDataView<Element>>::Data;
 
-  static void Serialize(MaybeConstUserType& input,
-                        MessageFragment<Data>& fragment,
-                        const ContainerValidateParams* validate_params) {
+  MOJO_NOINLINE_UNLESS_OPTIMIZE_SIZE static void Serialize(
+      MaybeConstUserType& input,
+      MessageFragment<Data>& fragment,
+      const ContainerValidateParams* validate_params) {
     if (CallIsNullIfExists<Traits>(input)) {
       return;
     }
@@ -556,7 +558,9 @@ struct Serializer<ArrayDataView<Element>, MaybeConstUserType> {
     }
   }
 
-  static bool Deserialize(Data* input, UserType* output, Message* message) {
+  MOJO_NOINLINE_UNLESS_OPTIMIZE_SIZE static bool Deserialize(Data* input,
+                                                             UserType* output,
+                                                             Message* message) {
     if (!input) {
       return CallSetToNullIfExists<Traits>(output);
     }

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
 #include "mojo/public/cpp/bindings/lib/array_serialization.h"
+#include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/map_data_internal.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"
 #include "mojo/public/cpp/bindings/map_data_view.h"
@@ -97,9 +98,10 @@ struct Serializer<MapDataView<Key, Value>, MaybeConstUserType> {
                       std::vector<UserValue>,
                       MapValueReader<MaybeConstUserType>>;
 
-  static void Serialize(MaybeConstUserType& input,
-                        MessageFragment<Data>& fragment,
-                        const ContainerValidateParams* validate_params) {
+  MOJO_NOINLINE_UNLESS_OPTIMIZE_SIZE static void Serialize(
+      MaybeConstUserType& input,
+      MessageFragment<Data>& fragment,
+      const ContainerValidateParams* validate_params) {
     DCHECK(validate_params->key_validate_params);
     DCHECK(validate_params->element_validate_params);
     if (CallIsNullIfExists<Traits>(input)) {
@@ -129,7 +131,9 @@ struct Serializer<MapDataView<Key, Value>, MaybeConstUserType> {
     }
   }
 
-  static bool Deserialize(Data* input, UserType* output, Message* message) {
+  MOJO_NOINLINE_UNLESS_OPTIMIZE_SIZE static bool Deserialize(Data* input,
+                                                             UserType* output,
+                                                             Message* message) {
     if (!input) {
       return CallSetToNullIfExists<Traits>(output);
     }
