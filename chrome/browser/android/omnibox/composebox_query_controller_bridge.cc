@@ -10,7 +10,6 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
-#include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
 #include "base/base64.h"
 #include "base/check.h"
@@ -244,7 +243,7 @@ std::string ComposeboxQueryControllerBridge::AddFile(
     JNIEnv* env,
     const std::string& file_name,
     const std::string& file_type,
-    const jni_zero::JavaRef<jobject>& file_data) {
+    const jni_zero::JavaRef<jbyteArray>& file_data) {
   base::UnguessableToken file_token = session_handle_->CreateContextToken();
 
   std::optional<lens::ImageEncodingOptions> image_options;
@@ -266,11 +265,13 @@ std::string ComposeboxQueryControllerBridge::AddFile(
     return {};
   }
 
-  base::span<const uint8_t> file_bytes_span =
-      base::android::JavaByteBufferToSpan(env, file_data);
-  session_handle_->StartFileContextUploadFlow(
-      file_token, file_name, file_type, mojo_base::BigBuffer(file_bytes_span),
-      std::move(image_options));
+  CHECK(file_data);
+  mojo_base::BigBuffer file_buffer(file_data.GetSize(env));
+  base::android::JavaByteArrayToByteSpan(env, file_data,
+                                         base::span(file_buffer));
+  session_handle_->StartFileContextUploadFlow(file_token, file_name, file_type,
+                                              std::move(file_buffer),
+                                              std::move(image_options));
 
   return file_token.ToString();
 }

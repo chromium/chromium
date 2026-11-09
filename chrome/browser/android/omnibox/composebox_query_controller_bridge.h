@@ -47,7 +47,7 @@ class ComposeboxQueryControllerBridge
   std::string AddFile(JNIEnv* env,
                       const std::string& file_name,
                       const std::string& file_type,
-                      const jni_zero::JavaRef<jobject>& file_data);
+                      const jni_zero::JavaRef<jbyteArray>& file_data);
   std::string AddDriveFile(const std::string& drive_id,
                            const std::optional<std::string>& resource_key,
                            const std::string& file_name,
