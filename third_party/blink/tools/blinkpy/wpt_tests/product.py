@@ -254,6 +254,10 @@ class ChromeAndroidBase(Product):
             self.browser_apk = self.default_browser_apk
         self.adb_binary = devil_env.config.FetchPath('adb')
         self.devices = []
+        # Default to a read-only system partition so emulators can fast-restore
+        # from the `default_boot` Quick Boot snapshot instead of cold-booting
+        # every shard.
+        self._writable_system = False
 
     @contextlib.contextmanager
     def _install_apk(self, device, path):
@@ -304,7 +308,8 @@ class ChromeAndroidBase(Product):
             parallelizer = SyncParallelizer(instances)
             self._tasks.callback(parallelizer.Stop)
             parallelizer.Start(
-                writable_system=True, window=self._options.emulator_window
+                writable_system=self._writable_system,
+                window=self._options.emulator_window,
             )
         elif fuchsia_cuttlefish_emulator_environment.IsSupported():
             _log.info('Launching Cuttlefish emulator')
@@ -445,6 +450,10 @@ class WebView(ChromeAndroidBase):
             self.webview_provider = options.webview_provider
         else:
             self.webview_provider = self.default_webview_provider
+        # `webview_app.UseWebViewProvider` calls `system_app.ReplaceSystemApp`
+        # when replacing a preinstalled WebView package under `/system/` or
+        # `/product/`, which requires a writable system partition.
+        self._writable_system = True
 
     @property
     def default_browser_apk(self):
