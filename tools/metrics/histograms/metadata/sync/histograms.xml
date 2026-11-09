@@ -2780,7 +2780,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncToSigninMigrationOutcome.EncryptedBookmarksFileMove"
-    enum="PlatformFileError" expires_after="2027-04-25">
+    enum="PlatformFileError" expires_after="2027-07-01">
+  <owner>arichiv@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>plcoirier@chromium.org</owner>

@@ -183,7 +183,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.AverageNodeSize.{EncryptionType}" units="Bytes"
-    expires_after="2027-02-24">
+    expires_after="2027-07-01">
+  <owner>arichiv@chromium.org</owner>
   <owner>plcoirier@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -449,7 +450,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bookmarks.BookmarksFileLoadResult.{BookmarksFileType}.{EncryptionType}"
-    enum="BookmarksFileLoadResult" expires_after="2027-04-25">
+    enum="BookmarksFileLoadResult" expires_after="2027-07-01">
+  <owner>arichiv@chromium.org</owner>
   <owner>plcoirier@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -459,7 +461,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.BookmarksSerializationResult.{ImportantFileWriter}"
-    enum="BookmarksSerializationResult" expires_after="2027-04-25">
+    enum="BookmarksSerializationResult" expires_after="2027-07-01">
+  <owner>arichiv@chromium.org</owner>
   <owner>plcoirier@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -501,7 +504,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.DeleteClearTextFile.{BookmarksFileType}"
-    enum="BooleanDeletedOrNot" expires_after="2027-04-25">
+    enum="BooleanDeletedOrNot" expires_after="2027-07-01">
+  <owner>arichiv@chromium.org</owner>
   <owner>plcoirier@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -567,7 +571,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bookmarks.EncryptedBookmarksFileMatchesResult.{BookmarksFileType}"
-    enum="BooleanMatched" expires_after="2027-04-25">
+    enum="BooleanMatched" expires_after="2027-07-01">
+  <owner>arichiv@chromium.org</owner>
   <owner>plcoirier@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -584,7 +589,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bookmarks.FallbackToClearTextFileOnLoadResult.{BookmarksFileType}"
-    enum="BookmarksFileLoadResult" expires_after="2027-02-24">
+    enum="BookmarksFileLoadResult" expires_after="2027-07-01">
+  <owner>arichiv@chromium.org</owner>
   <owner>plcoirier@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -878,7 +884,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Storage.EncryptedFileSizeAtStartup" units="KB"
-    expires_after="2027-04-25">
+    expires_after="2027-07-01">
+  <owner>arichiv@chromium.org</owner>
   <owner>plcoirier@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -891,7 +898,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Storage.FileSizeAtStartup2" units="KB"
-    expires_after="2027-02-24">
+    expires_after="2027-07-01">
+  <owner>arichiv@chromium.org</owner>
   <owner>wylieb@google.com</owner>
   <owner>plcoirier@google.com</owner>
   <owner>chrome-collections@google.com</owner>
@@ -935,7 +943,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Storage.TimeToSerialize.{ImportantFileWriter}"
-    units="ms" expires_after="2027-04-25">
+    units="ms" expires_after="2027-07-01">
+  <owner>arichiv@chromium.org</owner>
   <owner>plcoirier@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -1041,7 +1050,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.TimeToReadFile.{BookmarksFileType}.{EncryptionType}"
-    units="ms" expires_after="2027-04-25">
+    units="ms" expires_after="2027-07-01">
+  <owner>arichiv@chromium.org</owner>
   <owner>plcoirier@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
