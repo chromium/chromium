@@ -286,10 +286,9 @@ class ChromeProfileRequestGeneratorTest
       EXPECT_EQ(os_report.version(), kFakeSignalOsVersion);
       EXPECT_EQ(os_report.screen_lock_secured(), em::SettingValue::ENABLED);
       EXPECT_EQ(os_report.distribution_version(), kFakeDistoVersion);
-      // `os_firewall` is not set in the collected signals, but the report must
-      // still carry it as UNKNOWN.
-      EXPECT_TRUE(os_report.has_os_firewall());
-      EXPECT_EQ(os_report.os_firewall(), em::SettingValue::UNKNOWN);
+      // `os_firewall` is not set in the collected signals, so it must not be
+      // reported.
+      EXPECT_FALSE(os_report.has_os_firewall());
 
       EXPECT_EQ(3, os_report.mac_addresses_size());
       EXPECT_EQ(os_report.mac_addresses(0), kFakeSignalMacAddr1);
@@ -585,6 +584,53 @@ TEST_P(ChromeProfileRequestGeneratorTest, GenerateSecuritySignalsOnlyReport) {
   VerifyReportContent(requests.value(),
                       em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS,
                       /*is_profile_id_null=*/false, agent_collection_enabled);
+}
+
+// Tests that a collected `os_firewall` value is reported, including an
+// explicitly collected UNKNOWN (e.g. when desktop can't read the firewall
+// state), which must not be confused with a value that wasn't collected.
+TEST_P(ChromeProfileRequestGeneratorTest, OsFirewallValueIsReported) {
+  const struct {
+    device_signals::SettingValue collected;
+    em::SettingValue reported;
+  } kCases[] = {
+      {device_signals::SettingValue::UNKNOWN, em::SettingValue::UNKNOWN},
+      {device_signals::SettingValue::DISABLED, em::SettingValue::DISABLED},
+      {device_signals::SettingValue::ENABLED, em::SettingValue::ENABLED},
+  };
+
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(static_cast<int>(test_case.collected));
+    EXPECT_CALL(mock_aggregator_, GetSignals(CreateExpectedRequest(), _))
+        .WillOnce(
+            [&test_case](
+                const device_signals::SignalsAggregationRequest& request,
+                base::OnceCallback<void(
+                    device_signals::SignalsAggregationResponse)> callback) {
+              device_signals::SignalsAggregationResponse response =
+                  CreateFilledResponse();
+              response.os_signals_response->os_firewall = test_case.collected;
+              std::move(callback).Run(std::move(response));
+            });
+    base::test::TestFuture<
+        base::expected<ReportRequestQueue, ReportGenerationError>>
+        test_future;
+
+    generator_.Generate(
+        ReportGenerationConfig(ReportTrigger::kTriggerNone,
+                               ReportType::kProfileReport,
+                               SecuritySignalsMode::kSignalsOnly,
+                               /*use_cookies=*/false),
+        test_future.GetCallback());
+
+    const auto& requests = test_future.Get();
+    ASSERT_TRUE(requests.has_value());
+    ASSERT_EQ(1u, requests->size());
+    const auto& os_report =
+        requests->front()->GetChromeProfileReportRequest().os_report();
+    ASSERT_TRUE(os_report.has_os_firewall());
+    EXPECT_EQ(os_report.os_firewall(), test_case.reported);
+  }
 }
 
 TEST_P(ChromeProfileRequestGeneratorTest,
