@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.permissions;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -15,8 +13,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
-
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
@@ -29,6 +25,9 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.RootSpec;
+import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewFinder;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -314,24 +313,21 @@ public class PermissionTestRule implements TestRule {
 
     /** Waits for the Page Info UI to be opened. */
     public void waitForPageInfoOpen() {
-        onViewWaiting(withId(R.id.page_info_url_wrapper));
+        ViewFinder.waitForView(
+                withId(R.id.page_info_url_wrapper), ViewElement.rootSpecOption(RootSpec.anyRoot()));
     }
 
     /** Waits for the Page Info UI to be closed. */
     public void waitForPageInfoClose() {
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        onView(withId(R.id.page_info_url_wrapper)).check(doesNotExist());
-                    } catch (AssertionError e) {
-                        throw new CriteriaNotSatisfiedException(e);
-                    }
-                });
+        ViewFinder.waitForNoView(withId(R.id.page_info_url_wrapper));
     }
 
     /** Opens the Page Info UI by clicking on the location bar status icon. */
     public void openPageInfoFromStatusIcon() {
-        onViewWaiting(withId(R.id.location_bar_status_icon)).perform(click());
+        ViewFinder.waitForView(
+                        withId(R.id.location_bar_status_icon),
+                        ViewElement.rootSpecOption(RootSpec.anyRoot()))
+                .click();
         waitForPageInfoOpen();
     }
 
@@ -344,7 +340,8 @@ public class PermissionTestRule implements TestRule {
     public void verifyPageInfoPermissionsRow(int permissionNameId, int statusFormatId) {
         String permissionName = mCtaTestRule.getActivity().getString(permissionNameId);
         String expectedText = mCtaTestRule.getActivity().getString(statusFormatId, permissionName);
-        onViewWaiting(withText(expectedText));
+        ViewFinder.waitForView(
+                withText(expectedText), ViewElement.rootSpecOption(RootSpec.anyRoot()));
     }
 
     /**
@@ -354,14 +351,7 @@ public class PermissionTestRule implements TestRule {
      */
     public void verifyNoPageInfoPermissionsRow(int permissionNameId) {
         String permissionName = mCtaTestRule.getActivity().getString(permissionNameId);
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        onView(withText(permissionName)).check(doesNotExist());
-                    } catch (AssertionError e) {
-                        throw new CriteriaNotSatisfiedException(e);
-                    }
-                });
+        ViewFinder.waitForNoView(withText(permissionName));
     }
 
     /**
@@ -370,7 +360,9 @@ public class PermissionTestRule implements TestRule {
      * @param contentDescriptionRes Resource ID for the content description.
      */
     public void waitForStatusIcon(int contentDescriptionRes) {
-        onViewWaiting(withContentDescription(contentDescriptionRes));
+        ViewFinder.waitForView(
+                withContentDescription(contentDescriptionRes),
+                ViewElement.rootSpecOption(RootSpec.anyRoot()));
     }
 
     /**
@@ -379,14 +371,7 @@ public class PermissionTestRule implements TestRule {
      * @param contentDescriptionRes Resource ID for the content description.
      */
     public void waitForStatusIconGone(int contentDescriptionRes) {
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        onView(withContentDescription(contentDescriptionRes)).check(doesNotExist());
-                    } catch (AssertionError e) {
-                        throw new CriteriaNotSatisfiedException(e);
-                    }
-                });
+        ViewFinder.waitForNoView(withContentDescription(contentDescriptionRes));
     }
 
     /**

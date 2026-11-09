@@ -4,22 +4,17 @@
 
 package org.chromium.chrome.browser.permissions;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.Espresso.pressBack;
-import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressBack;
 import static androidx.test.espresso.action.ViewActions.swipeUp;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-
 import android.os.Build;
+import android.view.View;
 
-import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,9 +22,11 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.RootSpec;
+import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewFinder;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -41,9 +38,9 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.content_public.common.ContentSwitches;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -89,14 +86,36 @@ public class PermissionClapperLoudTest {
     }
 
     private void safelyClosePageInfo() {
-        try {
-            onView(withId(R.id.page_info_url_wrapper)).check(matches(isDisplayed()));
-            // If we get here, it is displayed.
-            pressBack();
+        boolean wasShowing =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            PageInfoController controller =
+                                    PageInfoController.getLastPageInfoController();
+                            if (controller != null && controller.isDialogShowing()) {
+                                controller.dismiss();
+                                return true;
+                            }
+                            return false;
+                        });
+        if (wasShowing) {
             mPermissionRule.waitForPageInfoClose();
-        } catch (NoMatchingViewException | AssertionError e) {
-            // Not displayed, safe to proceed.
         }
+    }
+
+    private void clickView(Matcher<View> matcher) {
+        ViewFinder.waitForView(matcher, ViewElement.rootSpecOption(RootSpec.anyRoot())).click();
+    }
+
+    private void waitForView(Matcher<View> matcher) {
+        ViewFinder.waitForView(matcher, ViewElement.rootSpecOption(RootSpec.anyRoot()));
+    }
+
+    private void closePageInfo() {
+        ViewFinder.waitForView(
+                        withId(R.id.page_info_url_wrapper),
+                        ViewElement.rootSpecOption(RootSpec.anyRoot()))
+                .performViewAction(pressBack());
+        mPermissionRule.waitForPageInfoClose();
     }
 
     private void triggerLoudClapper() throws Exception {
@@ -154,7 +173,7 @@ public class PermissionClapperLoudTest {
                 new String[] {"android.permission.POST_NOTIFICATIONS"},
                 RuntimePermissionTestUtils.RuntimePromptResponse.GRANT);
 
-        onViewWaiting(withId(PermissionTestRule.CLAPPER_LOUD_ALLOW_BUTTON_ID)).perform(click());
+        clickView(withId(PermissionTestRule.CLAPPER_LOUD_ALLOW_BUTTON_ID));
 
         mPermissionRule.waitForPermissionSettingForOrigin(
                 ContentSettingsType.NOTIFICATIONS, ContentSetting.ALLOW, PAGE_URL);
@@ -171,8 +190,7 @@ public class PermissionClapperLoudTest {
                 PermissionTestRule.NOTIFICATIONS_TITLE_ID,
                 PermissionTestRule.PERMISSIONS_SUMMARY_ALLOWED_ID);
 
-        pressBack();
-        mPermissionRule.waitForPageInfoClose();
+        closePageInfo();
     }
 
     @Test
@@ -199,7 +217,7 @@ public class PermissionClapperLoudTest {
                 new String[] {"android.permission.POST_NOTIFICATIONS"},
                 RuntimePermissionTestUtils.RuntimePromptResponse.DENY);
 
-        onViewWaiting(withId(PermissionTestRule.CLAPPER_LOUD_ALLOW_BUTTON_ID)).perform(click());
+        clickView(withId(PermissionTestRule.CLAPPER_LOUD_ALLOW_BUTTON_ID));
 
         mPermissionRule.waitForMessageShownState(false);
 
@@ -214,8 +232,7 @@ public class PermissionClapperLoudTest {
         mPermissionRule.openPageInfoFromStatusIcon();
         mPermissionRule.verifyNoPageInfoPermissionsRow(PermissionTestRule.NOTIFICATIONS_TITLE_ID);
 
-        pressBack();
-        mPermissionRule.waitForPageInfoClose();
+        closePageInfo();
     }
 
     @Test
@@ -236,9 +253,8 @@ public class PermissionClapperLoudTest {
 
         triggerLoudClapper();
 
-        onViewWaiting(withId(PermissionTestRule.CLAPPER_LOUD_GEAR_BUTTON_ID)).perform(click());
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_LOUD_DONT_ALLOW_BUTTON_TEXT_ID))
-                .perform(click());
+        clickView(withId(PermissionTestRule.CLAPPER_LOUD_GEAR_BUTTON_ID));
+        clickView(withText(PermissionTestRule.CLAPPER_LOUD_DONT_ALLOW_BUTTON_TEXT_ID));
 
         mPermissionRule.waitForPermissionSettingForOrigin(
                 ContentSettingsType.NOTIFICATIONS, ContentSetting.BLOCK, PAGE_URL);
@@ -254,8 +270,7 @@ public class PermissionClapperLoudTest {
                 PermissionTestRule.NOTIFICATIONS_TITLE_ID,
                 PermissionTestRule.PERMISSIONS_SUMMARY_BLOCKED_ID);
 
-        pressBack();
-        mPermissionRule.waitForPageInfoClose();
+        closePageInfo();
     }
 
     @Test
@@ -277,7 +292,9 @@ public class PermissionClapperLoudTest {
 
         triggerLoudClapper();
 
-        onViewWaiting(withId(R.id.message_banner)).perform(swipeUp());
+        ViewFinder.waitForView(
+                        withId(R.id.message_banner), ViewElement.rootSpecOption(RootSpec.anyRoot()))
+                .performViewAction(swipeUp());
 
         mPermissionRule.waitForPermissionSettingForOrigin(
                 ContentSettingsType.NOTIFICATIONS, ContentSetting.BLOCK, PAGE_URL);
@@ -312,14 +329,12 @@ public class PermissionClapperLoudTest {
                 new String[] {"android.permission.POST_NOTIFICATIONS"},
                 RuntimePermissionTestUtils.RuntimePromptResponse.GRANT);
 
-        onViewWaiting(withId(PermissionTestRule.CLAPPER_LOUD_GEAR_BUTTON_ID)).perform(click());
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_LOUD_MANAGE_BUTTON_TEXT))
-                .perform(click());
+        clickView(withId(PermissionTestRule.CLAPPER_LOUD_GEAR_BUTTON_ID));
+        clickView(withText(PermissionTestRule.CLAPPER_LOUD_MANAGE_BUTTON_TEXT));
 
         mPermissionRule.waitForPageInfoOpen();
 
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_SUBSCRIBE_BUTTON_TEXT_ID))
-                .perform(click());
+        clickView(withText(PermissionTestRule.CLAPPER_PAGE_INFO_SUBSCRIBE_BUTTON_TEXT_ID));
 
         mPermissionRule.waitForPermissionSettingForOrigin(
                 ContentSettingsType.NOTIFICATIONS, ContentSetting.ALLOW, PAGE_URL);
@@ -327,8 +342,7 @@ public class PermissionClapperLoudTest {
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
         actionWatcher.pollInstrumentationThreadUntilSatisfied();
 
-        pressBack();
-        mPermissionRule.waitForPageInfoClose();
+        closePageInfo();
 
         mPermissionRule.waitForStatusIconGone(PermissionTestRule.NOTIFICATIONS_ALLOWED_ID);
     }
@@ -356,35 +370,31 @@ public class PermissionClapperLoudTest {
                 new String[] {"android.permission.POST_NOTIFICATIONS"},
                 RuntimePermissionTestUtils.RuntimePromptResponse.DENY);
 
-        onViewWaiting(withId(PermissionTestRule.CLAPPER_LOUD_GEAR_BUTTON_ID)).perform(click());
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_LOUD_MANAGE_BUTTON_TEXT))
-                .perform(click());
+        clickView(withId(PermissionTestRule.CLAPPER_LOUD_GEAR_BUTTON_ID));
+        clickView(withText(PermissionTestRule.CLAPPER_LOUD_MANAGE_BUTTON_TEXT));
 
         mPermissionRule.waitForPageInfoOpen();
 
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_SUBSCRIBE_BUTTON_TEXT_ID))
-                .perform(click());
+        clickView(withText(PermissionTestRule.CLAPPER_PAGE_INFO_SUBSCRIBE_BUTTON_TEXT_ID));
 
         mPermissionRule.waitForPermissionSettingForOrigin(
                 ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
 
-        onViewWaiting(withText(R.string.page_info_permissions_title));
+        waitForView(withText(R.string.page_info_permissions_title));
 
-        onViewWaiting(withId(R.id.subpage_back_button)).perform(click());
+        clickView(withId(R.id.subpage_back_button));
 
         mPermissionRule.verifyNoPageInfoPermissionsRow(PermissionTestRule.NOTIFICATIONS_TITLE_ID);
 
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
         actionWatcher.pollInstrumentationThreadUntilSatisfied();
 
-        pressBack();
-        mPermissionRule.waitForPageInfoClose();
+        closePageInfo();
     }
 
     @Test
     @MediumTest
     @Feature({"Permissions"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562625966
     public void testLoudClapperManage_Reset() throws Exception {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -399,16 +409,13 @@ public class PermissionClapperLoudTest {
 
         triggerLoudClapper();
 
-        onViewWaiting(withId(PermissionTestRule.CLAPPER_LOUD_GEAR_BUTTON_ID)).perform(click());
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_LOUD_MANAGE_BUTTON_TEXT))
-                .perform(click());
+        clickView(withId(PermissionTestRule.CLAPPER_LOUD_GEAR_BUTTON_ID));
+        clickView(withText(PermissionTestRule.CLAPPER_LOUD_MANAGE_BUTTON_TEXT));
 
         mPermissionRule.waitForPageInfoOpen();
 
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_BUTTON_TEXT_ID))
-                .perform(click());
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_DIALOG_BUTTON_TEXT))
-                .perform(click());
+        clickView(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_BUTTON_TEXT_ID));
+        clickView(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_DIALOG_BUTTON_TEXT));
 
         mPermissionRule.waitForPermissionSettingForOrigin(
                 ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
@@ -417,8 +424,7 @@ public class PermissionClapperLoudTest {
         actionWatcher.pollInstrumentationThreadUntilSatisfied();
         mPermissionRule.verifyNoPageInfoPermissionsRow(PermissionTestRule.NOTIFICATIONS_TITLE_ID);
 
-        pressBack();
-        mPermissionRule.waitForPageInfoClose();
+        closePageInfo();
     }
 
     @Test
@@ -434,25 +440,22 @@ public class PermissionClapperLoudTest {
 
         triggerLoudClapper();
 
-        onViewWaiting(withId(PermissionTestRule.CLAPPER_LOUD_GEAR_BUTTON_ID)).perform(click());
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_LOUD_MANAGE_BUTTON_TEXT))
-                .perform(click());
+        clickView(withId(PermissionTestRule.CLAPPER_LOUD_GEAR_BUTTON_ID));
+        clickView(withText(PermissionTestRule.CLAPPER_LOUD_MANAGE_BUTTON_TEXT));
 
         mPermissionRule.waitForPageInfoOpen();
 
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_BUTTON_TEXT_ID))
-                .perform(click());
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_CANCEL_DIALOG_BUTTON_TEXT))
-                .perform(click());
+        clickView(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_BUTTON_TEXT_ID));
+        clickView(withText(PermissionTestRule.CLAPPER_PAGE_INFO_CANCEL_DIALOG_BUTTON_TEXT));
 
         mPermissionRule.waitForPermissionSettingForOrigin(
                 ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
 
-        onViewWaiting(withText(R.string.page_info_permissions_title));
+        waitForView(withText(R.string.page_info_permissions_title));
 
         actionWatcher.assertExpected();
         actionWatcher = expectAction(PermissionTestRule.PromptAction.DENIED);
-        onViewWaiting(withId(R.id.subpage_back_button)).perform(click());
+        clickView(withId(R.id.subpage_back_button));
         mPermissionRule.verifyPageInfoPermissionsRow(
                 PermissionTestRule.NOTIFICATIONS_TITLE_ID,
                 PermissionTestRule.PERMISSIONS_SUMMARY_BLOCKED_ID);
@@ -460,8 +463,7 @@ public class PermissionClapperLoudTest {
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
         actionWatcher.assertExpected();
 
-        pressBack();
-        mPermissionRule.waitForPageInfoClose();
+        closePageInfo();
     }
 
     @Test
@@ -481,14 +483,12 @@ public class PermissionClapperLoudTest {
 
         triggerLoudClapper();
 
-        onViewWaiting(withId(PermissionTestRule.CLAPPER_LOUD_GEAR_BUTTON_ID)).perform(click());
-        onViewWaiting(withText(PermissionTestRule.CLAPPER_LOUD_MANAGE_BUTTON_TEXT))
-                .perform(click());
+        clickView(withId(PermissionTestRule.CLAPPER_LOUD_GEAR_BUTTON_ID));
+        clickView(withText(PermissionTestRule.CLAPPER_LOUD_MANAGE_BUTTON_TEXT));
 
         mPermissionRule.waitForPageInfoOpen();
 
-        pressBack();
-        mPermissionRule.waitForPageInfoClose();
+        closePageInfo();
 
         mPermissionRule.waitForPermissionSettingForOrigin(
                 ContentSettingsType.NOTIFICATIONS, ContentSetting.BLOCK, PAGE_URL);
