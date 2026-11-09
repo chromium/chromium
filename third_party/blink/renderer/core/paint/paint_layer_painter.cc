@@ -333,6 +333,11 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   if (selection_drag_image_only && !object.IsSelected())
     return kFullyPainted;
 
+  if (paint_layer_.IsExcludedForPictureInPictureCaptions() &&
+      !(paint_flags & PaintFlag::kPaintingPictureInPictureCaptions)) {
+    return kFullyPainted;
+  }
+
   IgnorePaintTimingScope ignore_paint_timing;
   if (object.Style().Opacity() == 0.0f) {
     IgnorePaintTimingScope::IncrementIgnoreDepth();

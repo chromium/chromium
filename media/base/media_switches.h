@@ -327,6 +327,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kFileDialogsBlockPictureInPicture);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kFileDialogsTuckPictureInPicture);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaRemotingWithoutFullscreen);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPictureInPictureOcclusionTracking);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kPictureInPictureWebVttCaptionSurface);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVideoPipDisplaySmoothnessOptimization);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(
     kVideoPipForceTrustedForMediaPlaybackForTesting);

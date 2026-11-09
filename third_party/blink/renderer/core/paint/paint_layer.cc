@@ -47,6 +47,7 @@
 #include <limits>
 #include <ranges>
 
+#include "base/check.h"
 #include "build/build_config.h"
 #include "cc/input/scroll_snap_data.h"
 #include "partition_alloc/partition_alloc.h"
@@ -2676,6 +2677,22 @@ bool PaintLayer::ComputeHasFilterThatMovesPixels() const {
   if (GetLayoutObject().HasReflection())
     return true;
   return false;
+}
+
+void PaintLayer::SetIsExcludedForPictureInPictureCaptions(bool is_excluded) {
+  if (is_excluded) {
+    Node* node = GetLayoutObject().GetNode();
+    CHECK(node && node->IsTextTrackContainer());
+    CHECK(IsSelfPaintingLayer());
+    CHECK(GetLayoutObject().IsStackingContext());
+    CHECK(GetLayoutObject().ShouldApplyPaintContainment());
+  }
+  if (is_excluded_for_picture_in_picture_captions_ == is_excluded) {
+    return;
+  }
+
+  is_excluded_for_picture_in_picture_captions_ = is_excluded;
+  GetLayoutObject().SetSubtreeShouldDoFullPaintInvalidation();
 }
 
 void PaintLayer::SetNeedsRepaint() {

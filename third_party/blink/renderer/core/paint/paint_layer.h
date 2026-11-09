@@ -449,6 +449,14 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   void DidUpdateScrollsOverflow();
 
+  // Excludes this caption subtree from normal painting for Picture-in-Picture
+  // without removing it from layout. Caption painting can opt in with
+  // kPaintingPictureInPictureCaptions.
+  bool IsExcludedForPictureInPictureCaptions() const {
+    return is_excluded_for_picture_in_picture_captions_;
+  }
+  void SetIsExcludedForPictureInPictureCaptions(bool);
+
   bool SelfNeedsRepaint() const { return self_needs_repaint_; }
   // Whether any descendant in paint order (not including descendants across
   // paint-blocking display locks) has SelfNeedsRepaint().
@@ -718,6 +726,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // FIXME(crbug.com/332791): Self-painting layer should be merged into the
   // overflow-only concept.
   unsigned is_self_painting_layer_ : 1;
+
+  unsigned is_excluded_for_picture_in_picture_captions_ : 1 = false;
 
   const unsigned is_root_layer_ : 1;
 

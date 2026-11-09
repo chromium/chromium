@@ -1163,6 +1163,11 @@ BASE_FEATURE(kMediaRemotingWithoutFullscreen,
 BASE_FEATURE(kPictureInPictureOcclusionTracking,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables rendering WebVTT captions into a dedicated video
+// Picture-in-Picture surface.
+BASE_FEATURE(kPictureInPictureWebVttCaptionSurface,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables video Picture-in-Picture display smoothness optimization.
 //
 // Ensures that the video PiP window title view is properly sized to only fit
