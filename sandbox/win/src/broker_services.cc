@@ -342,10 +342,12 @@ void BrokerServicesDelegate::ParallelLaunchPostTaskAndReplyWithResult(
     const base::Location& from_here,
     base::OnceCallback<CreateTargetResult()> task,
     base::OnceCallback<void(CreateTargetResult)> reply) {
+  // Process creation can hang in third-party hooks. Do not let it block
+  // shutdown; the target's job will kill it when the broker exits.
   base::ThreadPool::PostTaskAndReplyWithResult(
       from_here,
       {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       std::move(task), std::move(reply));
 }
 

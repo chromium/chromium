@@ -275,7 +275,8 @@ class [[clang::lto_visibility_public]] BrokerServicesDelegate {
  public:
   // This method runs `task` on the thread pool, then runs `reply` on the
   // calling sequence with the returned CreateTargetResult. The task must own
-  // its inputs and may outlive the broker; Shutdown() may cancel the reply.
+  // its inputs and may outlive the broker; the reply is not guaranteed to run
+  // during shutdown.
   virtual void ParallelLaunchPostTaskAndReplyWithResult(
       const base::Location& from_here,
       base::OnceCallback<CreateTargetResult()> task,
