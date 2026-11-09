@@ -20,14 +20,14 @@ import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrom
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 /* clang-format off */
-import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 // <if expr="not is_android">
 import {TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 // </if>
 /* clang-format on */
 import type {AutocompleteResult, PageRemote as SearchboxPageRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createSuggestTemplateInfo, MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -2144,6 +2144,70 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
         assertEquals(0, mockSearchboxPageHandler.getCallCount('submitQuery'));
         assertEquals(
             0, mockSearchboxPageHandler.getCallCount('openAutocompleteMatch'));
+      });
+
+  test(
+      'delegates sync match carry-over and smart compose gating to mixin',
+      async () => {
+        const {innerComposebox} = parts;
+        innerComposebox.composeboxNoFlickerSuggestionsFix = true;
+        innerComposebox.smartComposeEnabled = true;
+
+        const zpsGroupMap = {
+          40000: {
+            header: 'Explore ideas',
+            renderType: RenderType.kGrid,
+            sideType: SideType.kDefaultPrimary,
+          },
+        };
+        searchboxCallbackRouterRemote.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              queryId: innerComposebox.activeQueryId,
+              input: '',
+              matches: [
+                createAutocompleteMatch({
+                  fillIntoEdit: 'idea 1',
+                  type: 'search-suggest',
+                  suggestionGroupId: 40000,
+                }),
+              ],
+              suggestionGroupsMap: zpsGroupMap,
+            }));
+        await searchboxCallbackRouterRemote.$.flushForTesting();
+        await innerComposebox.updateComplete;
+
+        mockTimer.install();
+        const inputElement =
+            innerComposebox.getInputElement()
+                .shadowRoot.querySelector<HTMLElement>('#input')!;
+        simulateUserInput(inputElement, 'a');
+        mockTimer.tick(300);
+        await mockSearchboxPageHandler.whenCalled('queryAutocomplete');
+
+        // Synchronous verbatim-only pass should carry over non-verbatim matches
+        // and suggestionGroupsMap, and must not apply smartComposeInlineHint.
+        searchboxCallbackRouterRemote.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              queryId: innerComposebox.activeQueryId,
+              input: 'a',
+              matches: [
+                createAutocompleteMatch({
+                  fillIntoEdit: 'a',
+                  type: 'search-what-you-typed',
+                  allowedToBeDefaultMatch: true,
+                }),
+              ],
+              suggestionGroupsMap: {},
+              smartComposeInlineHint: 'sync hint',
+            }));
+        await searchboxCallbackRouterRemote.$.flushForTesting();
+        mockTimer.tick(0);
+        await innerComposebox.updateComplete;
+
+        assertEquals(2, innerComposebox.result!.matches.length);
+        assertDeepEquals(
+            zpsGroupMap, innerComposebox.result!.suggestionGroupsMap);
+        assertEquals('', innerComposebox.smartComposeInlineHint);
       });
 });
 
