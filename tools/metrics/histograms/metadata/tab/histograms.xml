@@ -429,9 +429,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Android.DiscardStarted" enum="DiscardReason"
-    expires_after="2026-12-20">
+    expires_after="2027-12-20">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>clank-tab-dev@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
   <summary>
     [Android] Records the reason for starting a tab discard. Emitted when a Tab
     discard is started.
