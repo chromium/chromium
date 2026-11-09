@@ -82,8 +82,7 @@ TEST_F(OnDevicePageClassificationServiceTest, ClassifyWebStateNullWebState) {
 
 // Tests that ClassifyWebState returns early for off-the-record profile.
 TEST_F(OnDevicePageClassificationServiceTest, ClassifyWebStateOffTheRecord) {
-  ProfileIOS* otr_profile =
-      profile_->CreateOffTheRecordProfileWithTestingFactories();
+  ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
   auto otr_web_state = std::make_unique<web::FakeWebState>();
   otr_web_state->SetBrowserState(otr_profile);
   otr_web_state->SetCurrentURL(GURL("https://example.com"));

@@ -509,8 +509,7 @@ TEST_F(ContextualCueingCapTrackerServiceTest, FactoryGetForProfile) {
   EXPECT_NE(service, nullptr);
 
   // Off-the-record profile should not instantiate the service.
-  ProfileIOS* otr_profile =
-      profile->CreateOffTheRecordProfileWithTestingFactories();
+  ProfileIOS* otr_profile = profile->GetOffTheRecordProfile();
   ContextualCueingCapTrackerService* otr_service =
       ContextualCueingCapTrackerServiceFactory::GetForProfile(otr_profile);
   EXPECT_EQ(otr_service, nullptr);

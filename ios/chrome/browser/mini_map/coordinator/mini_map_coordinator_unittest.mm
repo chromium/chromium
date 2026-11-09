@@ -433,8 +433,7 @@ TEST_F(MiniMapCoordinatorTest, TestPresentNativePreviewIncognito) {
 
   NSURL* url = [NSURL URLWithString:@"https://maps.google.com/maps/foo"];
 
-  browser_ = std::make_unique<TestBrowser>(
-      profile_->CreateOffTheRecordProfileWithTestingFactories());
+  browser_ = std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
   [dispatcher startDispatchingToTarget:mock_scene_handler_
                            forProtocol:@protocol(SceneCommands)];

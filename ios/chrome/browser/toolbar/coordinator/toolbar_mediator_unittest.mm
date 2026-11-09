@@ -1017,8 +1017,7 @@ TEST_P(ToolbarMediatorTest, TestAssistantButtonVisibleInIncognito) {
   scoped_feature_list.InitWithFeatures({kPageActionMenu}, {});
 
   SetLocationEligible(true);
-  ProfileIOS* otr_profile =
-      profile_->CreateOffTheRecordProfileWithTestingFactories();
+  ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
   std::unique_ptr<web::FakeWebState> web_state = CreateWebState();
   web_state->SetBrowserState(otr_profile);
   browser_->GetWebStateList()->InsertWebState(

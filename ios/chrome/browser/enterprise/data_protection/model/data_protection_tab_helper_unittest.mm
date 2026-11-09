@@ -620,8 +620,7 @@ TEST_F(DataProtectionTabHelperTest, RealTimeLookupNotSet) {
 
 // Tests that real-time lookup is skipped in Incognito.
 TEST_F(DataProtectionTabHelperTest, IncognitoSkipsRealTimeLookup) {
-  TestProfileIOS* incognito_profile =
-      profile_->CreateOffTheRecordProfileWithTestingFactories({});
+  ProfileIOS* incognito_profile = profile_->GetOffTheRecordProfile();
 
   auto incognito_web_state =
       std::make_unique<web::FakeWebState>(web::WebStateID::NewUnique());

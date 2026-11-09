@@ -141,7 +141,7 @@ class TestProfileIOS final : public ProfileIOS {
   // method `GetOffTheRecordProfile()` is called on
   // this object.
   TestProfileIOS* CreateOffTheRecordProfileWithTestingFactories(
-      TestingFactories testing_factories = {});
+      TestingFactories testing_factories);
 
   // Returns the preferences as a TestingPrefServiceSyncable if possible or
   // null. Returns null for off-the-record TestProfileIOS and also

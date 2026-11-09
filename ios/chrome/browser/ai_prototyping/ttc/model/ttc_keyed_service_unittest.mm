@@ -81,8 +81,7 @@ TEST_F(TTCKeyedServiceTest, TestServiceNotCreatedWhenFeatureDisabled) {
 
 // Tests that `TTCKeyedService` is not created for off-the-record profiles.
 TEST_F(TTCKeyedServiceTest, TestServiceNotCreatedForIncognitoProfile) {
-  ProfileIOS* otr_profile =
-      profile_->CreateOffTheRecordProfileWithTestingFactories();
+  ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
   ASSERT_TRUE(otr_profile != nullptr);
   TTCKeyedService* service = TTCKeyedServiceFactory::GetForProfile(otr_profile);
   EXPECT_EQ(service, nullptr);

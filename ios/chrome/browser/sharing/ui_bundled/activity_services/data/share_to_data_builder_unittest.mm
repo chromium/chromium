@@ -92,9 +92,7 @@ class ShareToDataBuilderTest : public PlatformTest {
 
   web::WebState* web_state() { return web_state_.get(); }
   web::FakeWebState* fake_web_state() { return web_state_.get(); }
-  TestProfileIOS* profile() {
-    return static_cast<TestProfileIOS*>(profile_.get());
-  }
+  ProfileIOS* profile() { return profile_.get(); }
 
  private:
   FakeSnapshotGeneratorDelegate* delegate_ = nil;
@@ -150,8 +148,7 @@ TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingInvalidUrl) {
 // Tests that `ShareToDataForWebState` provides favicon iconProvider in
 // linkMetadata but does not generate snapshot thumbnail when in incognito mode.
 TEST_F(ShareToDataBuilderTest, TestSharePageIncognito) {
-  TestProfileIOS* otr_profile =
-      profile()->CreateOffTheRecordProfileWithTestingFactories({});
+  ProfileIOS* otr_profile = profile()->GetOffTheRecordProfile();
   fake_web_state()->SetBrowserState(otr_profile);
 
   web::FaviconStatus favicon_status;

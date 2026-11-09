@@ -67,8 +67,7 @@ TEST_F(DataSharingServiceFactoryTest, FeatureDisabledUsesEmptyService) {
 TEST_F(DataSharingServiceFactoryTest,
        FeatureEnabledUsesEmptyServiceInIncognito) {
   InitService(/*enable_feature=*/true);
-  TestProfileIOS* otr_profile =
-      profile_->CreateOffTheRecordProfileWithTestingFactories();
+  ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
   DataSharingService* service =
       DataSharingServiceFactory::GetForProfile(otr_profile);
   EXPECT_TRUE(service->IsEmptyService());

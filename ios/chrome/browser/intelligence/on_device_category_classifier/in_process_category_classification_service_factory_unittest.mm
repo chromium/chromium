@@ -57,8 +57,7 @@ TEST_F(InProcessCategoryClassificationServiceFactoryTest,
 TEST_F(InProcessCategoryClassificationServiceFactoryTest,
        DoNotCreateServiceForOffTheRecordProfile) {
   auto profile = CreateProfile();
-  ProfileIOS* otr_profile =
-      profile->CreateOffTheRecordProfileWithTestingFactories();
+  ProfileIOS* otr_profile = profile->GetOffTheRecordProfile();
   EXPECT_EQ(
       InProcessCategoryClassificationServiceFactory::GetForProfile(otr_profile),
       nullptr);

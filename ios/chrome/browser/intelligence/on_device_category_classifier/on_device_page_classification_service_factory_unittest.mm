@@ -55,8 +55,7 @@ TEST_F(OnDevicePageClassificationServiceFactoryTest, CreateServiceForProfile) {
 TEST_F(OnDevicePageClassificationServiceFactoryTest,
        DoNotCreateServiceForOffTheRecordProfile) {
   auto profile = CreateProfile();
-  ProfileIOS* otr_profile =
-      profile->CreateOffTheRecordProfileWithTestingFactories();
+  ProfileIOS* otr_profile = profile->GetOffTheRecordProfile();
   EXPECT_EQ(
       OnDevicePageClassificationServiceFactory::GetForProfile(otr_profile),
       nullptr);

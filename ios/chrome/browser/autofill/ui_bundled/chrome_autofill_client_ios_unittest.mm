@@ -459,8 +459,7 @@ TEST_F(ChromeAutofillClientIOSTest, IsAutofillTypeBlockedByPolicy_Incognito) {
                                  std::move(blocked_list));
 
   // Create an incognito profile.
-  TestProfileIOS* otr_profile =
-      profile()->CreateOffTheRecordProfileWithTestingFactories();
+  ProfileIOS* otr_profile = profile()->GetOffTheRecordProfile();
 
   // Ensure the policy service maps to the regular profile's policy service.
   EXPECT_EQ(AutofillPolicyServiceFactory::GetForProfile(profile()),

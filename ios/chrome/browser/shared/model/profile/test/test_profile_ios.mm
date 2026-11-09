@@ -256,7 +256,7 @@ ProfileIOS* TestProfileIOS::GetOffTheRecordProfile() {
     return otr_profile_.get();
   }
 
-  return CreateOffTheRecordProfileWithTestingFactories();
+  return CreateOffTheRecordProfileWithTestingFactories({});
 }
 
 void TestProfileIOS::DestroyOffTheRecordProfile() {

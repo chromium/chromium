@@ -587,8 +587,7 @@ TEST_F(ContextualCueingTabHelperTest, CreateAndRetrieve) {
 
 // Tests that classification is ignored for off-the-record profiles.
 TEST_F(ContextualCueingTabHelperTest, IgnoresOffTheRecordProfile) {
-  ProfileIOS* otr_profile =
-      profile_->CreateOffTheRecordProfileWithTestingFactories();
+  ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
   auto otr_web_state = std::make_unique<web::FakeWebState>();
   otr_web_state->SetBrowserState(otr_profile);
   otr_web_state->SetCurrentURL(GURL("https://example.com"));

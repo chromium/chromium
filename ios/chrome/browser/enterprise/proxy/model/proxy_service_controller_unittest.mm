@@ -377,8 +377,7 @@ TEST_F(ProxyServiceControllerTest, FactoryCreatesControllerForProfile) {
   EXPECT_NE(ProxyServiceControllerFactory::GetForProfile(managed_profile),
             nullptr);
 
-  ProfileIOS* otr_profile =
-      managed_profile->CreateOffTheRecordProfileWithTestingFactories();
+  ProfileIOS* otr_profile = managed_profile->GetOffTheRecordProfile();
   EXPECT_EQ(ProxyServiceControllerFactory::GetForProfile(otr_profile), nullptr);
 }
 

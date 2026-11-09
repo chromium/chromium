@@ -299,8 +299,7 @@ TEST_P(TabHelperUtilTest, EnterpriseProxyTabHelperOffTheRecord) {
   scoped_feature_list.InitAndEnableFeature(
       enterprise_net::kEnableDynamicRouteFetching);
   UseProfileWithEnterpriseProxyServices();
-  web_state_.SetBrowserState(
-      profile_->CreateOffTheRecordProfileWithTestingFactories());
+  web_state_.SetBrowserState(profile_->GetOffTheRecordProfile());
 
   AttachTabHelpers(&web_state_, tab_helper_filter());
 
