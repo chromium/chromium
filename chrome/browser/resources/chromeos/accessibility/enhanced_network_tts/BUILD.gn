@@ -146,11 +146,12 @@ js2gtest("enhanced_network_tts_extjs_tests") {
   # The test base classes generate C++ code with these deps.
   deps = [
     "//ash",
+    "//ash/constants",
     "//base",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/system_web_apps",
-    "//chrome/common",
     "//chrome/test/base:cros_extension_js_browser_test",
+    "//extensions/common",
   ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }

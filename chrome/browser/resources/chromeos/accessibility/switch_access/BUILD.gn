@@ -193,12 +193,13 @@ test_includes = [
 # The test base classes generate C++ code with these deps.
 test_deps = [
   "//ash",
+  "//ash/constants",
   "//ash/keyboard/ui",
   "//base",
   "//chrome/browser/ash/accessibility",
   "//chrome/browser/ash/system_web_apps",
-  "//chrome/common",
   "//chrome/test/base:cros_extension_js_browser_test",
+  "//extensions/common",
 ]
 
 js2gtest("switch_access_mv3_extjs_tests") {

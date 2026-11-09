@@ -26,6 +26,7 @@ E2ETestBase = class extends AccessibilityTestBase {
   testGenCppIncludes() {
     GEN(`
   #include "ash/accessibility/accessibility_delegate.h"
+  #include "ash/constants/ash_extension_constants.h"
   #include "ash/shell.h"
   #include "base/functional/bind.h"
   #include "base/functional/callback.h"
@@ -33,11 +34,11 @@ E2ETestBase = class extends AccessibilityTestBase {
   #include "chrome/browser/ash/accessibility/accessibility_manager.h"
   #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
   #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
-  #include "chrome/common/extensions/extension_constants.h"
   #include "content/public/test/browser_test.h"
   #include "content/public/test/browser_test_utils.h"
   #include "extensions/browser/test_extension_console_observer.h"
   #include "extensions/browser/process_manager.h"
+  #include "extensions/common/constants.h"
   #include "ui/accessibility/accessibility_switches.h"
       `);
   }
