@@ -951,7 +951,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.BackgroundTaskScheduler.TaskFinished2"
     enum="BackgroundTaskId" expires_after="2027-09-03">
   <owner>hnakashima@chromium.org</owner>
-  <owner>smaier@chromium.org</owner>
+  <owner>smaier@google.com</owner>
   <summary>
     Records that a specific background task has finished.
 
@@ -1505,7 +1505,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.ChildProcess.JavalessStarted" enum="Boolean"
     expires_after="2027-04-18">
-  <owner>smaier@chromium.org</owner>
+  <owner>smaier@google.com</owner>
   <summary>
     Records when a child process (specifically a renderer) is started via the
     javaless code path on Android.
@@ -1656,7 +1656,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.ChildProcessConnection.FallbackService"
     enum="AndroidChildProcessConnectionServiceNames" expires_after="2027-03-21">
   <owner>boliu@chromium.org</owner>
-  <owner>smaier@chromium.org</owner>
+  <owner>smaier@google.com</owner>
   <summary>
     Records the name of the fallback service that is used in
     ChildProcessConnection. This is recorded when a fallback to a different
@@ -3165,7 +3165,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2027-02-07">
   <owner>cduvall@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
-  <owner>smaier@chromium.org</owner>
+  <owner>smaier@google.com</owner>
   <summary>
     Amount of time it takes to create a new Context for a split. This will only
     be recorded if isolated splits are enabled. Different from ContextCreateTime
@@ -3179,7 +3179,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-07-19">
   <owner>cduvall@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
-  <owner>smaier@chromium.org</owner>
+  <owner>smaier@google.com</owner>
   <summary>
     Amount of time it takes to create a new Context and load a class for a
     split. This is simply ContextCreateTime2 + LoadFirstClassTime.
@@ -3192,7 +3192,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-07-19">
   <owner>cduvall@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
-  <owner>smaier@chromium.org</owner>
+  <owner>smaier@google.com</owner>
   <summary>
     Amount of time it takes to load the first class in a split. This will only
     be recorded if there is a hardcoded class to load in SplitChromeApplication.
@@ -3205,7 +3205,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-12-07">
   <owner>cduvall@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
-  <owner>smaier@chromium.org</owner>
+  <owner>smaier@google.com</owner>
   <summary>
     Amount of time spent waiting for a split preload task to finish. This will
     only be recorded if isolated splits are enabled. This histogram was expired

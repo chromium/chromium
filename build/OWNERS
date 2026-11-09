@@ -13,7 +13,7 @@ file://infra/config/groups/chrome-build/OWNERS
 file://tools/clang/scripts/OWNERS
 
 # For java build changes:
-smaier@chromium.org
+smaier@google.com
 wnwen@chromium.org
 hnakashima@chromium.org
 

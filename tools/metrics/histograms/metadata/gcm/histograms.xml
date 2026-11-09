@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GCM.MessageValid" enum="BooleanSuccess"
     expires_after="2026-03-08">
-  <owner>smaier@chromium.org</owner>
+  <owner>smaier@google.com</owner>
   <summary>
     Records whether or not a received GCM message is valid and will proceed to
     running a background task.

@@ -208,7 +208,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Crashpad.AnrUpload.Skipped" enum="AnrSkippedReason"
     expires_after="2024-06-30">
-  <owner>smaier@chromium.org</owner>
+  <owner>smaier@google.com</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>The reason that an ANR upload was skipped.</summary>
 </histogram>
