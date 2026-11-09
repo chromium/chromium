@@ -165,14 +165,20 @@ ChromeSafeBrowsingBlockingPageFactory::CreateControllerClient(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   CHECK(profile, base::NotFatalUntil::M162);
 
+  security_interstitials::MetricsHelper::ReportDetails reporting_info =
+      BaseBlockingPage::GetReportingInfo(unsafe_resources,
+                                         blocked_page_shown_timestamp);
+  reporting_info.profile_mode_suffix =
+      profile->IsGuestSession()
+          ? "guest"
+          : (profile->IsOffTheRecord() ? "incognito" : "regular");
+
   std::unique_ptr<ContentMetricsHelper> metrics_helper =
       std::make_unique<ContentMetricsHelper>(
           HistoryServiceFactory::GetForProfile(
               Profile::FromBrowserContext(web_contents->GetBrowserContext()),
               ServiceAccessType::EXPLICIT_ACCESS),
-          unsafe_resources[0].url,
-          BaseBlockingPage::GetReportingInfo(unsafe_resources,
-                                             blocked_page_shown_timestamp));
+          unsafe_resources[0].url, reporting_info);
 
   auto chrome_settings_page_helper =
       std::make_unique<security_interstitials::ChromeSettingsPageHelper>();

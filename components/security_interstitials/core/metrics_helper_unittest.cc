@@ -61,6 +61,21 @@ TEST_F(MetricsHelperTest, RecordUserDecisionTest) {
       "experiment_verdict_1");
 }
 
+TEST_F(MetricsHelperTest, RecordUserDecisionWithProfileModeSuffixTest) {
+  MetricsHelper::ReportDetails report_details;
+  report_details.metric_prefix = "phishing";
+  report_details.profile_mode_suffix = "regular";
+  SetMetricsHelper(/*report_details=*/report_details);
+
+  RecordUserDecision(MetricsHelper::Decision::DONT_PROCEED);
+  histogram_tester_.ExpectUniqueSample("interstitial.phishing.decision",
+                                       MetricsHelper::Decision::DONT_PROCEED,
+                                       1);
+  histogram_tester_.ExpectUniqueSample("interstitial.phishing.decision.regular",
+                                       MetricsHelper::Decision::DONT_PROCEED,
+                                       1);
+}
+
 TEST_F(MetricsHelperTest, RecordUserInteractionTest) {
   MetricsHelper::ReportDetails report_details;
   report_details.metric_prefix = "phishing";

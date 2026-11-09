@@ -4136,6 +4136,10 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageHashRealTimeCheckTest,
   histogram_tester.ExpectTotalCount("SafeBrowsing.HPRT.OperationOutcome",
                                     /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
+      "interstitial.phishing.decision.regular",
+      security_interstitials::MetricsHelper::SHOW,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.HPRT.OperationOutcome.Regular",
       /*sample=*/8,  // OperationOutcome::kResultInLocalCache
       /*expected_bucket_count=*/1);
@@ -4261,6 +4265,11 @@ class SafeBrowsingBlockingPageHashRealTimeCheckIncognitoTest
         "SafeBrowsing.HPRT.OperationOutcome." + expected_profile_mode_suffix,
         /*sample=*/8,  // OperationOutcome::kResultInLocalCache
         /*expected_bucket_count=*/expect_lookup_eligible ? 1 : 0);
+    histogram_tester.ExpectUniqueSample(
+        "interstitial.phishing.decision." +
+            base::ToLowerASCII(expected_profile_mode_suffix),
+        security_interstitials::MetricsHelper::SHOW,
+        /*expected_bucket_count=*/expect_warning_shown ? 1 : 0);
   }
 };
 

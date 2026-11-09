@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_blocking_page.h"
 
+#import <string_view>
+
 #import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/string_number_conversions.h"
@@ -75,6 +77,34 @@ class SafeBrowsingBlockingPageTest : public PlatformTest {
 
   void SendCommand(SecurityInterstitialCommand command) {
     page_->HandleCommand(command);
+  }
+
+  void VerifyProfileModeDecisionMetrics(
+      bool is_off_the_record,
+      std::string_view expected_histogram_name,
+      std::string_view unexpected_histogram_name) {
+    page_.reset();
+    base::HistogramTester histogram_tester;
+    ProfileIOS* profile =
+        is_off_the_record ? profile_->GetOffTheRecordProfile() : profile_.get();
+    navigation_manager_->SetBrowserState(profile);
+    web_state_.SetBrowserState(profile);
+    SafeBrowsingUrlAllowList::FromWebState(&web_state_)
+        ->AddPendingUnsafeNavigationDecision(url_, resource_.threat_type);
+    page_ = SafeBrowsingBlockingPage::Create(resource_);
+
+    SendCommand(security_interstitials::CMD_PROCEED);
+
+    histogram_tester.ExpectTotalCount(expected_histogram_name,
+                                      /*expected_count=*/2);
+    histogram_tester.ExpectBucketCount(expected_histogram_name,
+                                       MetricsHelper::SHOW,
+                                       /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(expected_histogram_name,
+                                       MetricsHelper::PROCEED,
+                                       /*expected_count=*/1);
+    histogram_tester.ExpectTotalCount(unexpected_histogram_name,
+                                      /*expected_count=*/0);
   }
 
  protected:
@@ -233,4 +263,23 @@ TEST_F(SafeBrowsingBlockingPageTest, RecordsClientSideDetectionSubtypeMetrics) {
                                       MetricsHelper::SHOW, 1);
   histogram_tester_.ExpectBucketCount(kCsdSubtypeDecisionMetric,
                                       MetricsHelper::PROCEED, 1);
+}
+
+// Tests that regular-profile interstitials record decision metrics with the
+// ".regular" profile mode suffix.
+TEST_F(SafeBrowsingBlockingPageTest, RecordsProfileModeDecisionMetricsRegular) {
+  VerifyProfileModeDecisionMetrics(
+      /*is_off_the_record=*/false,
+      /*expected_histogram_name=*/"interstitial.malware.decision.regular",
+      /*unexpected_histogram_name=*/"interstitial.malware.decision.incognito");
+}
+
+// Tests that incognito-profile interstitials record decision metrics with the
+// ".incognito" profile mode suffix.
+TEST_F(SafeBrowsingBlockingPageTest,
+       RecordsProfileModeDecisionMetricsIncognito) {
+  VerifyProfileModeDecisionMetrics(
+      /*is_off_the_record=*/true,
+      /*expected_histogram_name=*/"interstitial.malware.decision.incognito",
+      /*unexpected_histogram_name=*/"interstitial.malware.decision.regular");
 }

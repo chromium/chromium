@@ -183,6 +183,10 @@ void MetricsHelper::RecordUserDecision(Decision decision) {
   const std::string histogram_name("interstitial." + settings_.metric_prefix +
                                    ".decision");
   RecordUserDecisionToMetrics(decision, histogram_name);
+  if (!settings_.profile_mode_suffix.empty()) {
+    RecordSingleDecisionToMetrics(
+        decision, histogram_name + "." + settings_.profile_mode_suffix);
+  }
   // Record additional information about sites that users have visited before.
   // Report |decision| and SHOW together, filtered by the same history state
   // so they they are paired regardless of when if num_visits_ is populated.
