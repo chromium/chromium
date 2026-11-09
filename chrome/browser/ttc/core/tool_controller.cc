@@ -385,7 +385,9 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
     tool.description = actor_tool->description;
     tool.parameters_json_schema = actor_tool->parameters_json_schema.Clone();
     tool.behavior = ToolDefinition::Behavior::kBlocking;
-    tool.verbalization = ToolDefinition::Verbalization::kSilentAction;
+    tool.verbalization = actor_tool->id == actor::ToolId::kFindAndHighlight
+                             ? ToolDefinition::Verbalization::kStandard
+                             : ToolDefinition::Verbalization::kSilentAction;
     tools.push_back(std::move(tool));
   }
 
@@ -515,7 +517,7 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
       "Capture a screenshot of the active webpage's current viewport.";
   // The tool takes no arguments, so its schema is left empty.
   get_screenshot.behavior = ToolDefinition::Behavior::kBlocking;
-  get_screenshot.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  get_screenshot.verbalization = ToolDefinition::Verbalization::kStandard;
   tools.push_back(std::move(get_screenshot));
 
   if (SupportsWindowManagementTools()) {

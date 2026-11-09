@@ -2527,8 +2527,11 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
     EXPECT_EQ(tools[i].parameters_json_schema,
               expected_tools[i]->parameters_json_schema);
     EXPECT_EQ(tools[i].behavior, ToolDefinition::Behavior::kBlocking);
-    EXPECT_EQ(tools[i].verbalization,
-              ToolDefinition::Verbalization::kSilentAction);
+    const auto expected_verbalization =
+        expected_tools[i]->id == actor::ToolId::kFindAndHighlight
+            ? ToolDefinition::Verbalization::kStandard
+            : ToolDefinition::Verbalization::kSilentAction;
+    EXPECT_EQ(tools[i].verbalization, expected_verbalization);
   }
 
   // Verify the remaining legacy tool definitions that have not yet been
@@ -2659,7 +2662,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   EXPECT_FALSE(get_screenshot.description.empty());
   EXPECT_EQ(get_screenshot.behavior, ToolDefinition::Behavior::kBlocking);
   EXPECT_EQ(get_screenshot.verbalization,
-            ToolDefinition::Verbalization::kSilentAction);
+            ToolDefinition::Verbalization::kStandard);
   EXPECT_TRUE(get_screenshot.parameters_json_schema.empty());
 
   if (window_tools_supported) {
