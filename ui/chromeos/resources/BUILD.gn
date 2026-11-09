@@ -15,4 +15,5 @@ grit("resources") {
     "ui_chromeos_resources_100_percent.pak",
     "ui_chromeos_resources_200_percent.pak",
   ]
+  public_deps = [ "//ui/base:webui_resource_path" ]
 }

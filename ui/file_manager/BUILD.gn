@@ -26,6 +26,7 @@ grit("resources") {
     "file_manager_resources.pak",
     "file_manager_resources.rc",
   ]
+  public_deps = [ "//ui/base:webui_resource_path" ]
 }
 
 component("file_manager") {
@@ -345,6 +346,7 @@ grit("file_manager_gen_resources") {
 
   source = generated_grd
   deps = [ ":build_grd" ]
+  public_deps = [ "//ui/base:webui_resource_path" ]
 
   outputs = [
     "grit/file_manager_gen_resources.h",
