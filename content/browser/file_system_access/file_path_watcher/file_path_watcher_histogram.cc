@@ -13,11 +13,6 @@ void RecordWatchWithChangeInfoResultUma(WatchWithChangeInfoResult result) {
       "Storage.FileSystemAccess.WatchWithChangeInfoResult", result);
 }
 
-void RecordCallbackErrorUma(WatchWithChangeInfoResult result) {
-  base::UmaHistogramEnumeration(
-      "Storage.FileSystemAccess.FilePathWatcherCallbackError", result);
-}
-
 void RecordInotifyWatchCountUma(int count) {
   base::UmaHistogramCounts10000("Storage.FileSystemAccess.InotifyWatchCount",
                                 count);

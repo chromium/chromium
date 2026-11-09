@@ -291,7 +291,6 @@ void FilePathWatcherFSEvents::OnFilePathsChanged(
 
     if (update_stream_result != WatchWithChangeInfoResult::kSuccess) {
       // Failed to re-initialize the FSEvents event stream.
-      RecordCallbackErrorUma(update_stream_result);
       ReportError(target_);
     }
   }

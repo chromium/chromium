@@ -588,7 +588,6 @@ void FilePathWatcherImpl::WatchedDirectoryDeleted(
       weak_factory_.GetWeakPtr());
 
   if (result != WatchWithChangeInfoResult::kSuccess) {
-    RecordCallbackErrorUma(result);
     // `this` may be deleted after `callback_` is run.
     callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/true);
     return;

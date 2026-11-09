@@ -984,8 +984,6 @@ void FilePathWatcherImpl::CancelAndRunCallbackOnExceededLimit(
 
   // Fires the error callback. `this` may be deleted as a result of this call.
   callback.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/true);
-
-  RecordCallbackErrorUma(WatchWithChangeInfoResult::kInotifyWatchLimitExceeded);
 }
 
 bool FilePathWatcherImpl::WouldExceedWatchLimit() const {
