@@ -8,11 +8,15 @@
 #include <string>
 
 #include "base/check_deref.h"
+#include "base/functional/callback_helpers.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/integrators/custom_form_controls/custom_form_control_script_index.h"
+#include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "content/public/browser/render_frame_host.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -51,18 +55,21 @@ void CustomFormControlScriptRunner::OnAfterFormsSeen(
       !frames_looked_up_.insert(manager.driver().GetFrameToken()).second) {
     return;
   }
-  const GURL& url = static_cast<ContentAutofillDriver&>(manager.driver())
-                        .render_frame_host()
-                        ->GetLastCommittedURL();
-  std::optional<std::string> script = index_->FindScript(url);
+  ContentAutofillDriver& driver =
+      static_cast<ContentAutofillDriver&>(manager.driver());
+  content::RenderFrameHost* rfh = driver.render_frame_host();
+  std::optional<std::string> script =
+      index_->FindScript(rfh->GetLastCommittedURL());
   if (!script) {
     return;
   }
   if (script_found_callback_for_testing_) {
     script_found_callback_for_testing_.Run(*script);
   }
-  // TODO(b/578383598): Load `script` into the frame's renderer and detect the
-  // document's custom form controls.
+  // TODO(b/578383598): Detect the document's custom form controls if the
+  // script loaded.
+  driver.GetCustomFormControlAgent()->LoadUnsafeScript(
+      rfh->GetDocumentToken(), *script, base::DoNothing());
 }
 
 }  // namespace autofill

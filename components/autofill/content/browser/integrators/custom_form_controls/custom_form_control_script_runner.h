@@ -8,13 +8,13 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace autofill {
 
@@ -24,8 +24,9 @@ class CustomFormControlScriptIndex;
 // Will run the custom form control script of each document, i.e. the script
 // that detects and fills the document's custom form controls (e.g. select-like
 // widgets that aren't <select> elements). For now, when forms are first seen in
-// a document, it only looks up the script for the frame's URL in the
-// `CustomFormControlScriptIndex`.
+// a document, it looks up the script for the frame's URL in the
+// `CustomFormControlScriptIndex` and loads it into the frame's renderer through
+// `mojom::CustomFormControlAgent`.
 //
 // One instance per tab, owned by `ChromeAutofillClient`, which creates it if
 // the browser has a `CustomFormControlScriptIndex` (i.e. if
@@ -33,8 +34,7 @@ class CustomFormControlScriptIndex;
 // directory is set). The index is owned by `GlobalFeatures` and outlives all
 // tabs.
 //
-// TODO(b/578383598): Load the script into the frame's renderer, detect the
-// custom form controls and fill them.
+// TODO(b/578383598): Detect the custom form controls and fill them.
 class CustomFormControlScriptRunner : public AutofillManager::Observer {
  public:
   // `index` must not be null and must outlive the runner.
@@ -64,7 +64,7 @@ class CustomFormControlScriptRunner : public AutofillManager::Observer {
   const raw_ref<const CustomFormControlScriptIndex> index_;
 
   // The frames whose current document has been looked up in `index_`.
-  base::flat_set<LocalFrameToken> frames_looked_up_;
+  absl::flat_hash_set<LocalFrameToken> frames_looked_up_;
 
   base::RepeatingCallback<void(const std::string&)>
       script_found_callback_for_testing_;

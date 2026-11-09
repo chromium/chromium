@@ -7,11 +7,16 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
@@ -19,11 +24,18 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/common/autofill_test_util.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/test_renderer_host.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -31,6 +43,49 @@ namespace {
 
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Pair;
+
+// Fakes the renderer's agent of a frame: records the scripts loaded into it.
+class FakeCustomFormControlAgent : public mojom::CustomFormControlAgent {
+ public:
+  // Binds `rfh`'s requests for the agent to this while this exists.
+  explicit FakeCustomFormControlAgent(content::RenderFrameHost* rfh)
+      : rfh_(CHECK_DEREF(rfh)) {
+    rfh_->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+        mojom::CustomFormControlAgent::Name_,
+        base::BindRepeating(&FakeCustomFormControlAgent::Bind,
+                            base::Unretained(this)));
+  }
+  ~FakeCustomFormControlAgent() override {
+    rfh_->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+        mojom::CustomFormControlAgent::Name_, base::NullCallback());
+  }
+
+  // The documents and scripts of the `LoadUnsafeScript()` calls, in call order.
+  const std::vector<std::pair<blink::DocumentToken, std::string>>&
+  loaded_scripts() const {
+    return loaded_scripts_;
+  }
+
+  // mojom::CustomFormControlAgent:
+  void LoadUnsafeScript(const blink::DocumentToken& document,
+                        const std::string& script,
+                        LoadUnsafeScriptCallback callback) override {
+    loaded_scripts_.emplace_back(document, script);
+    std::move(callback).Run(/*success=*/true);
+  }
+
+ private:
+  void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
+    receivers_.Add(
+        this, mojo::PendingAssociatedReceiver<mojom::CustomFormControlAgent>(
+                  std::move(handle)));
+  }
+
+  const raw_ref<content::RenderFrameHost> rfh_;
+  mojo::AssociatedReceiverSet<mojom::CustomFormControlAgent> receivers_;
+  std::vector<std::pair<blink::DocumentToken, std::string>> loaded_scripts_;
+};
 
 class CustomFormControlScriptRunnerTest
     : public content::RenderViewHostTestHarness {
@@ -136,6 +191,20 @@ TEST_F(CustomFormControlScriptRunnerTest, LooksUpAgainAfterReset) {
       AutofillManager::LifecycleState::kPendingReset);
   SeeForms();
   EXPECT_THAT(found_scripts(), ElementsAre("example script", "example script"));
+}
+
+// Tests that a found script is loaded into the frame's renderer for the
+// frame's current document.
+TEST_F(CustomFormControlScriptRunnerTest, LoadsScriptIntoRenderer) {
+  ASSERT_TRUE(InitializeIndex("example.com", "example script"));
+  NavigateAndCommit(GURL("https://example.com/checkout"));
+  FakeCustomFormControlAgent agent(main_rfh());
+  SeeForms();
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return !agent.loaded_scripts().empty(); }));
+  EXPECT_THAT(
+      agent.loaded_scripts(),
+      ElementsAre(Pair(main_rfh()->GetDocumentToken(), "example script")));
 }
 
 // Tests that no script is found for URLs without one.

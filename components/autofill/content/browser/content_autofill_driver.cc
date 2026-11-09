@@ -784,6 +784,16 @@ ContentAutofillDriver::GetAutofillAgent() {
   return autofill_agent_;
 }
 
+const mojo::AssociatedRemote<mojom::CustomFormControlAgent>&
+ContentAutofillDriver::GetCustomFormControlAgent() {
+  // Here is a lazy binding, and will not reconnect after connection error.
+  if (!custom_form_control_agent_) {
+    render_frame_host_->GetRemoteAssociatedInterfaces()->GetInterface(
+        &custom_form_control_agent_);
+  }
+  return custom_form_control_agent_;
+}
+
 bool ContentAutofillDriver::IsSafeToFill(
     const FormFieldData& field,
     FieldType filled_type,
