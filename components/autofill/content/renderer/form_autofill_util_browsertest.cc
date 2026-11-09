@@ -315,9 +315,11 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
   std::optional<FormAndField> FindFormAndFieldForFormControlElement(
       WebFormControlElement control) {
     return form_util::FindFormAndFieldForFormControlElement(
-        control, field_data_manager(), kCallTimerStateDummy,
-        /*button_titles_cache=*/nullptr,
-        /*form_cache=*/{});
+        control, [&](const WebDocument& document, FormRendererId form_id) {
+          return form_util::ExtractFormData(
+              document, form_id, field_data_manager(), kCallTimerStateDummy,
+              /*button_titles_cache=*/nullptr);
+        });
   }
 
   FieldDataManager& field_data_manager() { return *field_data_manager_; }
@@ -1471,10 +1473,7 @@ TEST_F(FormAutofillUtilsTest,
   WebFormControlElement control_element = GetFormControlElementById(doc, "i0");
 
   std::optional<FormAndField> form_and_field =
-      form_util::FindFormAndFieldForFormControlElement(
-          control_element, field_data_manager(), kCallTimerStateDummy,
-          /*button_titles_cache=*/nullptr,
-          /*form_cache=*/{});
+      FindFormAndFieldForFormControlElement(control_element);
 
   ASSERT_TRUE(form_and_field);
   const FormData& fallback_form = form_and_field->form;
@@ -3396,10 +3395,12 @@ FormData FindForm(const blink::WebFormControlElement& element) {
   };
 
   if (auto p = form_util::FindFormAndFieldForFormControlElement(
-          element, *base::MakeRefCounted<FieldDataManager>(),
-          kExtractFormDataCallTimerStateDummy,
-          /*button_titles_cache=*/nullptr,
-          /*form_cache=*/{})) {
+          element, [&](const WebDocument& document, FormRendererId form_id) {
+            return form_util::ExtractFormData(
+                document, form_id, *base::MakeRefCounted<FieldDataManager>(),
+                kExtractFormDataCallTimerStateDummy,
+                /*button_titles_cache=*/nullptr);
+          })) {
     return p->form;
   }
   return FormData();

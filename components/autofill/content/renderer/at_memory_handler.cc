@@ -440,10 +440,14 @@ void AtMemoryHandler::RecordDoubleCtrl(const WebElement& field) {
           field.DynamicTo<WebFormControlElement>()) {
     if (std::optional<form_util::FormAndField> form_and_field =
             form_util::FindFormAndFieldForFormControlElement(
-                form_control, agent_->field_data_manager(),
-                agent_->GetCallTimerState(
-                    CallTimerState::CallSite::kDidReceiveKeyDown),
-                agent_->button_titles_cache(), /*form_cache=*/{})) {
+                form_control, [&](const blink::WebDocument& document,
+                                  FormRendererId form_id) {
+                  return form_util::ExtractFormData(
+                      document, form_id, agent_->field_data_manager(),
+                      agent_->GetCallTimerState(
+                          CallTimerState::CallSite::kDidReceiveKeyDown),
+                      agent_->button_titles_cache());
+                })) {
       set_metrics(form_and_field->form, form_and_field->field);
     }
   } else {

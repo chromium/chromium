@@ -58,6 +58,7 @@ namespace autofill {
 class CustomFormControlAgentImpl;
 class PasswordAutofillAgent;
 class PasswordGenerationAgent;
+class SynchronousFormCache;
 
 // AutofillAgent deals with Autofill related communications between Blink and
 // the browser.
@@ -457,6 +458,12 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   void ExtractFormsUnthrottled(base::OnceCallback<void(bool)> callback,
                                const CallTimerState& timer_state);
+
+  // Wrapper around `form_util::FindFormAndFieldForFormControlElement()`.
+  std::optional<form_util::FormAndField> FindFormAndFieldForFormControlElement(
+      const blink::WebFormControlElement& element,
+      CallTimerState::CallSite call_site,
+      base::optional_ref<const SynchronousFormCache> form_cache);
 
   // Hides any currently showing Autofill popup.
   void HidePopup();

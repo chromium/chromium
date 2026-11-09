@@ -31,6 +31,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/functional/function_ref.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
@@ -45,7 +46,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/content/renderer/custom_form_control_util.h"
-#include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -2512,10 +2512,9 @@ WebFormElement GetOutermostAncestorFormElement(WebNode n) {
 
 std::optional<FormAndField> FindFormAndFieldForFormControlElement(
     const WebFormControlElement& element,
-    const FieldDataManager& field_data_manager,
-    const CallTimerState& timer_state,
-    form_util::ButtonTitlesCache* button_titles_cache,
-    const SynchronousFormCache& form_cache) {
+    base::FunctionRef<std::optional<FormData>(const WebDocument&,
+                                              FormRendererId)>
+        extract_form_fn) {
   DCHECK(element);
 
   if (!IsAccessible(element) || !IsAutofillableElement(element)) {
@@ -2529,9 +2528,7 @@ std::optional<FormAndField> FindFormAndFieldForFormControlElement(
 
   WebFormElement owning_form = element.GetOwningFormForAutofill();
   FormRendererId owning_form_id = GetFormRendererId(owning_form);
-  std::optional<FormData> form =
-      form_cache.GetOrExtractForm(document, owning_form_id, field_data_manager,
-                                  timer_state, button_titles_cache);
+  std::optional<FormData> form = extract_form_fn(document, owning_form_id);
   const bool extract_form_data_succeeded = form.has_value();
 
   if (!form) {

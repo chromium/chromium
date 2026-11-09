@@ -16,6 +16,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/functional/function_ref.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/stack_allocated.h"
 #include "components/autofill/content/renderer/timing.h"
@@ -57,7 +58,6 @@ struct CustomFormControl;
 class FieldDataManager;
 class FormData;
 class FormFieldData;
-class SynchronousFormCache;
 
 namespace form_util {
 
@@ -169,17 +169,14 @@ struct FormAndField {
   const FormFieldData& field;
 };
 
-// Extracts the FormData that represents the form of `element`. If that form
-// cannot be extracted (e.g., because it is too large), falls back to a
-// single-field form that contains `element`. If however `element` is not
-// autofillable, returns nullopt. `form_cache` can be used to optimize form
-// extractions occurring synchronously after this function call.
+// Extracts the FormData that represents the form of `element` using
+// `extract_form_fn`. If that form cannot be extracted (e.g., because it is too
+// large), falls back to a single-field form that contains `element`. If however
+// `element` is not autofillable, returns nullopt.
 std::optional<FormAndField> FindFormAndFieldForFormControlElement(
     const blink::WebFormControlElement& element,
-    const FieldDataManager& field_data_manager,
-    const CallTimerState& timer_state,
-    form_util::ButtonTitlesCache* button_titles_cache,
-    const SynchronousFormCache& form_cache);
+    base::FunctionRef<std::optional<FormData>(const blink::WebDocument&,
+                                              FormRendererId)> extract_form_fn);
 
 // Creates a FormData containing a single field out of a contenteditable
 // non-form element. The FormData is synthetic in the sense that it does not

@@ -127,8 +127,11 @@ std::optional<FormData> CreateFormData(
     form_util::ButtonTitlesCache* button_titles_cache,
     const CallTimerState& timer_state,
     const SynchronousFormCache& form_cache) {
-  std::optional<FormData> form_data = form_cache.GetOrExtractForm(
-      document, form_id, field_data_manager, timer_state, button_titles_cache);
+  std::optional<FormData> form_data =
+      form_cache.GetOrExtractForm(form_id, [&](FormRendererId form_id) {
+        return form_util::ExtractFormData(document, form_id, field_data_manager,
+                                          timer_state, button_titles_cache);
+      });
   if (!form_data) {
     return std::nullopt;
   }

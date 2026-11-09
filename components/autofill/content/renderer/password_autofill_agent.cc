@@ -1190,10 +1190,16 @@ PasswordAutofillAgent::CreateSuggestionRequest(
   // the caller who needs it anyways for autofill requests.
   std::optional<form_util::FormAndField> form_and_field =
       form_util::FindFormAndFieldForFormControlElement(
-          user_input, field_data_manager(),
-          autofill_agent_->GetCallTimerState(
-              CallTimerState::CallSite::kShowSuggestionPopup),
-          autofill_agent_->button_titles_cache(), form_cache);
+          user_input, [&](const WebDocument& document, FormRendererId form_id) {
+            return form_cache.GetOrExtractForm(
+                form_id, [&](FormRendererId form_id) {
+                  return form_util::ExtractFormData(
+                      document, form_id, field_data_manager(),
+                      autofill_agent_->GetCallTimerState(
+                          CallTimerState::CallSite::kShowSuggestionPopup),
+                      autofill_agent_->button_titles_cache());
+                });
+          });
   if (!form_and_field) {
     return std::nullopt;
   }

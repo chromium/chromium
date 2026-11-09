@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/containers/map_util.h"
+#include "base/functional/function_ref.h"
 #include "base/types/pass_key.h"
-#include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -30,11 +30,9 @@ SynchronousFormCache::SynchronousFormCache(const FormCache& form_cache)
 SynchronousFormCache::~SynchronousFormCache() = default;
 
 std::optional<FormData> SynchronousFormCache::GetOrExtractForm(
-    const blink::WebDocument& document,
     FormRendererId form_id,
-    const FieldDataManager& field_data_manager,
-    const CallTimerState& timer_state,
-    form_util::ButtonTitlesCache* button_titles_cache) const {
+    base::FunctionRef<std::optional<FormData>(FormRendererId)> extract_form_fn)
+    const {
   // If `cached_form` is non-null, its value may be `std::nullopt` in case the
   // previous extraction failed. In this case, the form is not extracted again,
   // because it would fail again.
@@ -50,8 +48,7 @@ std::optional<FormData> SynchronousFormCache::GetOrExtractForm(
       return **cached_form;
     }
   }
-  return form_util::ExtractFormData(document, form_id, field_data_manager,
-                                    timer_state, button_titles_cache);
+  return extract_form_fn(form_id);
 }
 
 void SynchronousFormCache::Invalidate() {

@@ -8,19 +8,13 @@
 #include <map>
 #include <optional>
 
+#include "base/functional/function_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 
-namespace blink {
-class WebDocument;
-}  // namespace blink
-
 namespace autofill {
 
-struct CallTimerState;
-class FieldDataManager;
 class FormCache;
 
 // This class contains forms that have been previously extracted. The difference
@@ -45,14 +39,12 @@ class SynchronousFormCache {
   ~SynchronousFormCache();
 
   // Tries to look for the extracted form corresponding to `form_id` in
-  // `cache_` / `form_cache_` and if successful returns it, otherwise extracts
-  // the form from scratch.
+  // `cache_` / `form_cache_` and if successful returns it, otherwise calls
+  // `extract_form_fn(form_id)` to extract the form from scratch.
   std::optional<FormData> GetOrExtractForm(
-      const blink::WebDocument& document,
       FormRendererId form_id,
-      const FieldDataManager& field_data_manager,
-      const CallTimerState& timer_state,
-      form_util::ButtonTitlesCache* button_titles_cache) const;
+      base::FunctionRef<std::optional<FormData>(FormRendererId)>
+          extract_form_fn) const;
 
   // Clears all cached forms. Must be called when the DOM may have been mutated
   // (e.g., via `WebFormControlElement::SetAutofillValue()` dispatching
