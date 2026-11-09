@@ -683,20 +683,6 @@ void ModelContextUserData::ExecuteRemoteScriptTool(
     return;
   }
 
-  // It is not possible to target the execution of tools that live in a document
-  // with an opaque origin; therefore, `expected_target_origin` will never be
-  // opaque.
-  if (expected_target_origin.opaque()) {
-    // TODO(crbug.com/573662751): Migrate to mojo::ReportBadMessage.
-    bad_message::ReceivedBadMessage(
-        render_frame_host().GetProcess(),
-        bad_message::RFHI_WEBMCP_OPAQUE_TARGET_ORIGIN);
-    std::move(callback).Run(
-        std::nullopt,
-        blink::mojom::ExecuteRemoteScriptToolError::kInvalidStateError);
-    return;
-  }
-
   // Verify that `target_rfh`'s origin matches the origin that the tool invoker
   // expects the tool to run in. This is necessary because it is possible that
   // the `tool_owner_frame_token` points to a `RenderFrameProxyHost` whose frame

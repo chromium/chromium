@@ -1360,24 +1360,6 @@ ScriptPromise<IDLNullable<IDLString>> ModelContext::executeTool(
                           kPermissionPolicyNotEnabledErrorMessage));
   }
 
-  KURL expected_url(NullUrl(), tool->origin());
-  if (!expected_url.IsValid()) {
-    return ScriptPromise<IDLNullable<IDLString>>::RejectWithDOMException(
-        script_state,
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
-                                           "The provided origin is invalid."));
-  }
-
-  scoped_refptr<SecurityOrigin> expected_target_origin =
-      SecurityOrigin::Create(expected_url);
-  if (expected_target_origin->IsOpaque()) {
-    return ScriptPromise<IDLNullable<IDLString>>::RejectWithDOMException(
-        script_state, MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kNotSupportedError,
-                          "Cannot execute tools that live in a document with "
-                          "an opaque origin."));
-  }
-
   // Per Web IDL, an omitted or explicitly-undefined optional argument is
   // "missing", which is represented by `IsEmpty()`. We treat a "missing"
   // optional input object as the empty object.
@@ -1445,7 +1427,7 @@ ScriptPromise<IDLNullable<IDLString>> ModelContext::executeTool(
   }
 
   model_context_host_remote_->ExecuteRemoteScriptTool(
-      invocation_id, tool->ToolId(), frame_token, expected_target_origin,
+      invocation_id, tool->ToolId(), frame_token, tool->GetSecurityOrigin(),
       input_arguments,
       blink::BindOnce(&ModelContext::OnExecuteScriptToolCompleted,
                       WrapWeakPersistent(this), WrapPersistent(resolver),

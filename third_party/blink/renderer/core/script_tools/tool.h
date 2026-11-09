@@ -57,6 +57,9 @@ class CORE_EXPORT Tool final : public ScriptWrappable {
   const ScriptToolToken& ToolId() const {
     return script_tool_->tool_id.value();
   }
+  const scoped_refptr<const SecurityOrigin>& GetSecurityOrigin() const {
+    return origin_;
+  }
 
   // Web-exposed attributes. See `tool.idl`.
   const String& name() const;
