@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.crea
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 
 import androidx.test.filters.SmallTest;
 
@@ -28,6 +29,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
@@ -43,6 +45,9 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class MultiWindowUtilsTest {
+    private static final String CTA2_REASON =
+            "Uses ChromeTabbedActivity2, which is only used before Android S multi-instance";
+
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
@@ -74,10 +79,8 @@ public class MultiWindowUtilsTest {
     @Test
     @SmallTest
     @Feature("MultiWindow")
+    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.R, reason = CTA2_REASON)
     public void testTabbedActivityForIntentWithExtraWindowId() {
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            return;
-        }
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
         createSecondChromeTabbedActivity(activity1);
 
@@ -97,10 +100,8 @@ public class MultiWindowUtilsTest {
     @Test
     @SmallTest
     @Feature("MultiWindow")
+    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.R, reason = CTA2_REASON)
     public void testTabbedActivityForIntentLastResumedActivity() {
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            return;
-        }
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
         final ChromeTabbedActivity2 activity2 = createSecondChromeTabbedActivity(activity1);
 
@@ -140,10 +141,8 @@ public class MultiWindowUtilsTest {
     @Test
     @SmallTest
     @Feature("MultiWindow")
+    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.R, reason = CTA2_REASON)
     public void testTabbedActivityForIntentOnlyActivity1IsRunning() {
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            return;
-        }
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
         ChromeTabbedActivity2 activity2 = createSecondChromeTabbedActivity(activity1);
         activity2.finishAndRemoveTask();
@@ -162,10 +161,8 @@ public class MultiWindowUtilsTest {
     @Test
     @SmallTest
     @Feature("MultiWindow")
+    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.R, reason = CTA2_REASON)
     public void testTabbedActivityForIntentOnlyActivity2IsRunning() {
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            return;
-        }
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
         createSecondChromeTabbedActivity(activity1);
         activity1.finishAndRemoveTask();
@@ -185,10 +182,8 @@ public class MultiWindowUtilsTest {
     @Test
     @SmallTest
     @Feature("MultiWindow")
+    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.R, reason = CTA2_REASON)
     public void testTabbedActivityForIntentNoActivitiesAlive() {
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            return;
-        }
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
         activity1.finishAndRemoveTask();
 
@@ -203,10 +198,8 @@ public class MultiWindowUtilsTest {
     @Test
     @SmallTest
     @Feature("MultiWindow")
+    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.R, reason = CTA2_REASON)
     public void testTabbedActivity2TaskRunning() {
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            return;
-        }
         ChromeTabbedActivity activity2 =
                 createSecondChromeTabbedActivity(mActivityTestRule.getActivity());
         Assert.assertEquals(
@@ -228,11 +221,9 @@ public class MultiWindowUtilsTest {
     @Test
     @SmallTest
     @Feature("MultiWindow")
+    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.R, reason = CTA2_REASON)
     public void testAreMultipleChromeInstancesRunningSecondInstanceKilledFirst()
             throws TimeoutException {
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            return;
-        }
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         Assert.assertFalse(
@@ -323,11 +314,9 @@ public class MultiWindowUtilsTest {
     @Test
     @SmallTest
     @Feature("MultiWindow")
+    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.R, reason = CTA2_REASON)
     public void testAreMultipleChromeInstancesRunningFirstInstanceKilledFirst()
             throws TimeoutException {
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            return;
-        }
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         Assert.assertFalse(

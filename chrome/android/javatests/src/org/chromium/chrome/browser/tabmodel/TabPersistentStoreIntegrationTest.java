@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
-import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -571,21 +570,11 @@ public class TabPersistentStoreIntegrationTest {
 
         ChromeTabbedActivity activity2 = null;
         ChromeTabbedActivity recreatedActivity2 = null;
-        int windowId2 = TabWindowManager.INVALID_WINDOW_ID;
         try {
             // 1. Start second activity (Activity2).
-            if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-                activity2 = MultiWindowTestHelper.createNewChromeTabbedActivity(activity1);
-            } else {
-                activity2 = MultiWindowTestHelper.createSecondChromeTabbedActivity(activity1, null);
-            }
+            activity2 = MultiWindowTestHelper.createNewChromeTabbedActivity(activity1);
 
             final ChromeTabbedActivity finalActivity2 = activity2;
-            CriteriaHelper.pollUiThread(
-                    () -> {
-                        return finalActivity2.areTabModelsInitialized()
-                                && finalActivity2.getTabModelSelector().isTabStateInitialized();
-                    });
 
             final TabModel model2 =
                     ThreadUtils.runOnUiThreadBlocking(
@@ -645,47 +634,39 @@ public class TabPersistentStoreIntegrationTest {
                 tab1StateFile.delete();
             }
 
-            // 4. Recreate or Relaunch Activity2!
-            if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-                final int finalWindowId2 =
-                        ThreadUtils.runOnUiThreadBlocking(
-                                () ->
-                                        TabWindowManagerSingleton.getInstance()
-                                                .getIdForWindow(finalActivity2));
-                windowId2 = finalWindowId2;
+            // 4. Relaunch Activity2.
+            final int windowId2 =
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () ->
+                                    TabWindowManagerSingleton.getInstance()
+                                            .getIdForWindow(finalActivity2));
 
-                // Finish the activity first.
-                ApplicationTestUtils.finishActivity(finalActivity2);
+            // Finish the activity first.
+            ApplicationTestUtils.finishActivity(finalActivity2);
 
-                // Relaunch it (Cold Start).
-                recreatedActivity2 =
-                        ApplicationTestUtils.waitForActivityWithClass(
-                                ChromeTabbedActivity.class,
-                                Stage.RESUMED,
-                                () -> {
-                                    ThreadUtils.runOnUiThreadBlocking(
-                                            () -> {
-                                                MultiWindowUtils.relaunchChromeTabbedActivity2(
-                                                        ContextUtils.getApplicationContext(),
-                                                        finalWindowId2,
-                                                        null);
-                                            });
-                                });
-            } else {
-                recreatedActivity2 = ApplicationTestUtils.recreateActivity(activity2);
-            }
+            // Relaunch it (Cold Start).
+            recreatedActivity2 =
+                    ApplicationTestUtils.waitForActivityWithClass(
+                            ChromeTabbedActivity.class,
+                            Stage.RESUMED,
+                            () -> {
+                                ThreadUtils.runOnUiThreadBlocking(
+                                        () -> {
+                                            MultiWindowUtils.relaunchChromeTabbedActivity2(
+                                                    ContextUtils.getApplicationContext(),
+                                                    windowId2,
+                                                    null);
+                                        });
+                            });
 
             // 5. Wait for TabState to be initialized in recreated Activity2.
             final ChromeTabbedActivity finalRecreatedActivity2 = recreatedActivity2;
-            if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-                final int finalWindowId2 = windowId2;
-                final int newWindowId2 =
-                        ThreadUtils.runOnUiThreadBlocking(
-                                () ->
-                                        TabWindowManagerSingleton.getInstance()
-                                                .getIdForWindow(finalRecreatedActivity2));
-                assertEquals(finalWindowId2, newWindowId2);
-            }
+            final int newWindowId2 =
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () ->
+                                    TabWindowManagerSingleton.getInstance()
+                                            .getIdForWindow(finalRecreatedActivity2));
+            assertEquals(windowId2, newWindowId2);
 
             final TabModelSelector newSelector2 = recreatedActivity2.getTabModelSelector();
             CriteriaHelper.pollUiThread(() -> newSelector2.isTabStateInitialized(), 10000, 100);

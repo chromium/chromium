@@ -9,6 +9,8 @@ import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.move
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForSecondChromeTabbedActivity;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForTabs;
 
+import android.os.Build;
+
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -26,6 +28,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
@@ -44,6 +47,9 @@ import org.chromium.net.test.EmbeddedTestServer;
 /** Integration testing for Android's N+ MultiWindow. */
 @Batch(PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
+@MaxAndroidSdkLevel(
+        value = Build.VERSION_CODES.R,
+        reason = "Uses ChromeTabbedActivity2, which is only used before Android S multi-instance")
 public class MultiWindowIntegrationTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -63,9 +69,6 @@ public class MultiWindowIntegrationTest {
     @Feature("MultiWindow")
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     public void testIncognitoNtpHandledCorrectly() {
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            return;
-        }
         try {
             ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
 
@@ -105,9 +108,6 @@ public class MultiWindowIntegrationTest {
     @Feature("MultiWindow")
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     public void testMoveTabTwice() {
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            return;
-        }
         // Load 'google' in separate tab.
         int googleTabId =
                 mActivityTestRule
@@ -147,9 +147,6 @@ public class MultiWindowIntegrationTest {
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     @DisabledTest(message = "crbug.com/432308780")
     public void testMovingLastTabKeepsActivityAlive() {
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            return;
-        }
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         int blankTab = cta.getActivityTabProvider().get().getId();
 
