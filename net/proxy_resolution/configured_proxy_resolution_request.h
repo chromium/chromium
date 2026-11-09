@@ -5,6 +5,8 @@
 #ifndef NET_PROXY_RESOLUTION_CONFIGURED_PROXY_RESOLUTION_REQUEST_H_
 #define NET_PROXY_RESOLUTION_CONFIGURED_PROXY_RESOLUTION_REQUEST_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -123,6 +125,13 @@ class ConfiguredProxyResolutionRequest final : public ProxyResolutionRequest {
   // Ends the currently active NetLog wait event, if any.
   void EndWaitEvent();
 
+  uint64_t last_counted_dynamic_pause_episode_id() const {
+    return last_counted_dynamic_pause_episode_id_;
+  }
+  void set_last_counted_dynamic_pause_episode_id(uint64_t episode_id) {
+    last_counted_dynamic_pause_episode_id_ = episode_id;
+  }
+
   NetLogWithSource* net_log() { return &net_log_; }
 
   // Request implementation:
@@ -174,6 +183,10 @@ class ConfiguredProxyResolutionRequest final : public ProxyResolutionRequest {
   // `WAITING_FOR_DYNAMIC_PROXY_CONFIGS`), if the request is paused waiting for
   // service readiness.
   std::optional<NetLogEventType> current_wait_event_;
+  // Identifier of the most recent dynamic-routing pause episode in `service_`
+  // that already counted this request, preventing duplicate counts across
+  // intermediate config updates within the same pause episode.
+  uint64_t last_counted_dynamic_pause_episode_id_ = 0;
 
   // Map containing DNS resolution results, issued for proxy override rules'
   // conditions. The key is the host that is being resolved. The value is result

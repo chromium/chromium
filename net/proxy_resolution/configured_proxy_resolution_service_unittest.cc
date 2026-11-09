@@ -163,6 +163,52 @@ ProxyInfo ResolveProxySynchronously(ConfiguredProxyResolutionService* service,
   return info;
 }
 
+struct PendingProxyResolve {
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+};
+
+std::unique_ptr<PendingProxyResolve> StartAsyncResolve(
+    ConfiguredProxyResolutionService* service,
+    std::string_view url,
+    CompletionOnceCallback callback = {}) {
+  auto pending = std::make_unique<PendingProxyResolve>();
+  EXPECT_THAT(service->ResolveProxy(
+                  GURL(url), std::string(), NetworkAnonymizationKey(),
+                  handles::kInvalidNetworkHandle, &pending->info,
+                  callback ? std::move(callback) : pending->callback.callback(),
+                  &pending->request, NetLogWithSource(), DEFAULT_PRIORITY),
+              IsError(ERR_IO_PENDING));
+  return pending;
+}
+
+void CompletePendingPacInit(MockAsyncProxyResolverFactory* factory,
+                            MockAsyncProxyResolver* resolver,
+                            int result = OK) {
+  ASSERT_EQ(1u, factory->pending_requests().size());
+  factory->pending_requests()[0]->CompleteNowWithForwarder(result, resolver);
+}
+
+void ExpectDynamicRoutingPauseSample(const base::HistogramTester& tester,
+                                     size_t expected_total_episodes,
+                                     base::TimeDelta duration = {},
+                                     size_t paused_requests = 0,
+                                     size_t request_bucket_count = 1) {
+  tester.ExpectTotalCount("Net.ProxyResolution.DynamicRoutingPause.Duration",
+                          expected_total_episodes);
+  tester.ExpectTotalCount(
+      "Net.ProxyResolution.DynamicRoutingPause.PausedRequestCount",
+      expected_total_episodes);
+  if (expected_total_episodes > 0) {
+    tester.ExpectTimeBucketCount(
+        "Net.ProxyResolution.DynamicRoutingPause.Duration", duration, 1);
+    tester.ExpectBucketCount(
+        "Net.ProxyResolution.DynamicRoutingPause.PausedRequestCount",
+        paused_requests, request_bucket_count);
+  }
+}
+
 // This test fixture is used to partially disable the background polling done by
 // the ConfiguredProxyResolutionService (which it uses to detect whenever its
 // PAC script contents or WPAD results have changed).
@@ -287,16 +333,22 @@ class MockProxyConfigService : public ProxyConfigService {
         TRAFFIC_ANNOTATION_FOR_TESTS));
   }
 
-  void SetDynamicRoutingConfig(
+  void SetConfigWithDynamicRouting(
+      ProxyConfig config,
       bool is_update_in_progress,
       std::vector<ProxyConfig::DynamicRoutingRule> rules = {}) {
-    ProxyConfig updated_config = config_.value();
     ProxyConfig::DynamicRoutingConfig dynamic_config;
     dynamic_config.is_update_in_progress = is_update_in_progress;
     dynamic_config.routing_rules = std::move(rules);
-    updated_config.set_dynamic_routing_config(std::move(dynamic_config));
-    SetConfig(ProxyConfigWithAnnotation(updated_config,
-                                        TRAFFIC_ANNOTATION_FOR_TESTS));
+    config.set_dynamic_routing_config(std::move(dynamic_config));
+    SetConfig(ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS));
+  }
+
+  void SetDynamicRoutingConfig(
+      bool is_update_in_progress,
+      std::vector<ProxyConfig::DynamicRoutingRule> rules = {}) {
+    SetConfigWithDynamicRouting(config_.value(), is_update_in_progress,
+                                std::move(rules));
   }
 
  private:
@@ -7830,6 +7882,161 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
   EXPECT_TRUE(
       ResolveProxySynchronously(service.get(), GURL("http://www.yahoo.com"))
           .is_direct());
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       DynamicRoutingPauseMetrics_RequestCountingAndStationaryUpdates) {
+  base::HistogramTester histogram_tester;
+  mock_host_resolver_ = std::make_unique<MockCachingHostResolver>();
+  mock_host_resolver_->set_ondemand_mode(true);
+
+  ProxyConfig initial_config = ProxyConfig::CreateDirect();
+  initial_config.set_proxy_override_rules({
+      CreateOverrideRule(
+          "http://matched.test", CreateProxyList(kProxy1), kDnsHost1,
+          ProxyOverrideRule::DnsProbeCondition::Result::kResolved),
+      CreateOverrideRule(
+          "http://missed.test", CreateProxyList(kProxy1), kDnsHost2,
+          ProxyOverrideRule::DnsProbeCondition::Result::kResolved),
+  });
+  auto config_service_owned =
+      std::make_unique<MockProxyConfigService>(initial_config);
+  auto* config_service = config_service_owned.get();
+  auto service = ConfiguredProxyResolutionService::CreateWithoutProxyResolver(
+      std::move(config_service_owned), mock_host_resolver_.get(),
+      /*net_log=*/nullptr);
+
+  EXPECT_TRUE(
+      ResolveProxySynchronously(service.get(), GURL("http://www.example.com"))
+          .is_direct());
+
+  // Updating rules without pausing must not emit pause metrics.
+  const auto pvd_rule = CreateDynamicRoutingRule(
+      "www.google.com", "pvd_proxy:443", ProxyServer::SCHEME_HTTPS);
+  config_service->SetDynamicRoutingConfig(/*is_update_in_progress=*/false,
+                                          {pvd_rule});
+  ExpectDynamicRoutingPauseSample(histogram_tester, 0);
+
+  // Episode 1: idle pause with 0 requests.
+  config_service->SetDynamicRoutingConfig(/*is_update_in_progress=*/true);
+  FastForwardBy(base::Milliseconds(120));
+  config_service->SetDynamicRoutingConfig(/*is_update_in_progress=*/false);
+  ExpectDynamicRoutingPauseSample(histogram_tester, 1, base::Milliseconds(120),
+                                  0);
+
+  // Episode 2: `matched` resolves via override rule mid-pause (not counted);
+  // `missed`, `req1`, and cancelled `req2` stall on dynamic routing (3 total).
+  auto matched = StartAsyncResolve(service.get(), "http://matched.test");
+  auto missed = StartAsyncResolve(service.get(), "http://missed.test");
+  config_service->SetDynamicRoutingConfig(/*is_update_in_progress=*/true);
+  auto req1 = StartAsyncResolve(service.get(), "http://www.google.com/1");
+  auto req2 = StartAsyncResolve(service.get(), "http://www.google.com/2");
+  FastForwardBy(base::Milliseconds(100));
+  req2->request.reset();
+
+  AddDnsEntry(GURL(kDnsHost1), "1.2.3.4");
+  AddDnsEntry(GURL(kDnsHost2), ERR_NAME_NOT_RESOLVED);
+  mock_host_resolver_->ResolveAllPending();
+  EXPECT_THAT(matched->callback.WaitForResult(), IsOk());
+  EXPECT_FALSE(missed->callback.have_result());
+
+  // In-progress config updates (new rules, manual proxy, sync PAC init) keep
+  // the pause active without splitting Episode 2 or recounting requests.
+  config_service->SetDynamicRoutingConfig(
+      /*is_update_in_progress=*/true,
+      {CreateDynamicRoutingRule("www.other.com", "other_proxy:443",
+                                ProxyServer::SCHEME_HTTPS)});
+  ProxyConfig manual_config;
+  manual_config.proxy_rules().ParseFromString("http=manual_proxy:8080");
+  config_service->SetConfigWithDynamicRouting(manual_config,
+                                              /*is_update_in_progress=*/true);
+  config_service->SetConfigWithDynamicRouting(
+      ProxyConfig::CreateFromCustomPacURL(GURL("http://foopy/proxy.pac")),
+      /*is_update_in_progress=*/true);
+  ExpectDynamicRoutingPauseSample(histogram_tester, 1, base::Milliseconds(120),
+                                  0);
+
+  FastForwardBy(base::Milliseconds(150));
+  config_service->SetDynamicRoutingConfig(
+      /*is_update_in_progress=*/false,
+      {pvd_rule, CreateDynamicRoutingRule("missed.test", "pvd_proxy:443",
+                                          ProxyServer::SCHEME_HTTPS)});
+  EXPECT_THAT(missed->callback.WaitForResult(), IsOk());
+  EXPECT_THAT(req1->callback.WaitForResult(), IsOk());
+  EXPECT_FALSE(req2->callback.have_result());
+  ExpectDynamicRoutingPauseSample(histogram_tester, 2, base::Milliseconds(250),
+                                  3);
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       DynamicRoutingPauseMetrics_PacTransitionsCallbackRepauseAndTeardown) {
+  base::HistogramTester histogram_tester;
+  const auto rule = CreateDynamicRoutingRule("www.google.com", "pvd_proxy:443",
+                                             ProxyServer::SCHEME_HTTPS);
+  auto [resolver, service, config_service, factory] =
+      CreateServiceWithPacResolver();
+
+  // Dynamic routing updates that finish while PAC init is still in flight never
+  // stall solely on dynamic routing (0 episodes).
+  auto req0 = StartAsyncResolve(service.get(), "http://www.google.com/0");
+  config_service->SetDynamicRoutingConfig(/*is_update_in_progress=*/true);
+  FastForwardBy(base::Milliseconds(100));
+  config_service->SetDynamicRoutingConfig(/*is_update_in_progress=*/false,
+                                          {rule});
+  CompletePendingPacInit(factory, resolver.get());
+  EXPECT_THAT(req0->callback.WaitForResult(), IsOk());
+  ExpectDynamicRoutingPauseSample(histogram_tester, 0);
+
+  // Episode 1: 300ms PAC init is excluded; pause timer starts only once PAC
+  // becomes ready (90ms, 1 request).
+  config_service->SetPacUrlConfig("http://foopy/proxy2.pac");
+  auto req1 = StartAsyncResolve(service.get(), "http://www.google.com/1");
+  config_service->SetDynamicRoutingConfig(/*is_update_in_progress=*/true);
+  FastForwardBy(base::Milliseconds(300));
+  CompletePendingPacInit(factory, resolver.get());
+  FastForwardBy(base::Milliseconds(90));
+  config_service->SetDynamicRoutingConfig(/*is_update_in_progress=*/false,
+                                          {rule});
+  EXPECT_THAT(req1->callback.WaitForResult(), IsOk());
+  ExpectDynamicRoutingPauseSample(histogram_tester, 1, base::Milliseconds(90),
+                                  1);
+
+  // Episode 2: switching PAC URL ends the active pause (40ms, 2 requests) once
+  // async PAC init takes over.
+  config_service->SetDynamicRoutingConfig(/*is_update_in_progress=*/true,
+                                          {rule});
+  int callbacks_run = 0;
+  auto on_complete = [&](int result) {
+    if (++callbacks_run == 1) {
+      EXPECT_THAT(result, IsOk());
+      config_service->SetDynamicRoutingConfig(/*is_update_in_progress=*/true,
+                                              {rule});
+    }
+  };
+  auto req_a = StartAsyncResolve(service.get(), "http://www.google.com/a",
+                                 base::BindLambdaForTesting(on_complete));
+  auto req_b = StartAsyncResolve(service.get(), "http://www.google.com/b",
+                                 base::BindLambdaForTesting(on_complete));
+
+  FastForwardBy(base::Milliseconds(40));
+  config_service->SetConfigWithDynamicRouting(
+      ProxyConfig::CreateFromCustomPacURL(GURL("http://foopy/proxy3.pac")),
+      /*is_update_in_progress=*/false, {rule});
+  ExpectDynamicRoutingPauseSample(histogram_tester, 2, base::Milliseconds(40),
+                                  2);
+
+  // Episode 3: first resumed callback re-pauses synchronously on PAC
+  // completion; service teardown records the remaining request (75ms, 1).
+  FastForwardBy(base::Milliseconds(200));
+  CompletePendingPacInit(factory, resolver.get());
+  EXPECT_EQ(1, callbacks_run);
+
+  FastForwardBy(base::Milliseconds(75));
+  config_service = nullptr;
+  factory = nullptr;
+  service.reset();
+  ExpectDynamicRoutingPauseSample(histogram_tester, 3, base::Milliseconds(75),
+                                  1, /*request_bucket_count=*/2);
 }
 
 }  // namespace net

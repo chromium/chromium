@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -17,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -1110,6 +1112,7 @@ int ConfiguredProxyResolutionService::TryResolveSynchronously(
 ConfiguredProxyResolutionService::~ConfiguredProxyResolutionService() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   in_destruction_ = true;
+  MaybeEndDynamicRoutingPause();
   NetworkChangeNotifier::RemoveIPAddressObserver(this);
   NetworkChangeNotifier::RemoveDNSObserver(this);
   config_service_->RemoveObserver(this);
@@ -1151,6 +1154,7 @@ void ConfiguredProxyResolutionService::SetPacReadyAndResumePendingRequests() {
 
   // Keep requests paused if a dynamic routing update is still in progress.
   if (!IsReady()) {
+    MaybeBeginDynamicRoutingPause();
     for (ConfiguredProxyResolutionRequest* req : pending_requests_) {
       req->BeginWaitEvent(
           NetLogEventType::
@@ -1158,6 +1162,8 @@ void ConfiguredProxyResolutionService::SetPacReadyAndResumePendingRequests() {
     }
     return;
   }
+
+  MaybeEndDynamicRoutingPause();
 
   // TODO(lilyhoughton): This is necessary because a callback invoked by
   // |ResumeOrCompleteSynchronously()| might delete |this|.  A better
@@ -1194,6 +1200,7 @@ void ConfiguredProxyResolutionService::ApplyProxyConfigIfAvailable() {
   }
 
   // Otherwise we need to first fetch the configuration.
+  MaybeEndDynamicRoutingPause();
   pac_resolver_state_ = PacResolverState::kWaitingForProxyConfig;
 
   // Retrieve the current proxy configuration from the ProxyConfigService.
@@ -1368,6 +1375,8 @@ int ConfiguredProxyResolutionService::ProcessResolutionResult(
       ResetProxyConfig(false);
       if (!pending_requests_.empty()) {
         ApplyProxyConfigIfAvailable();
+      } else {
+        MaybeEndDynamicRoutingPause();
       }
     } else if (enable_pac_runtime_backoff_ &&
                resolver_error == ERR_PAC_SCRIPT_FAILED) {
@@ -1548,6 +1557,44 @@ bool ConfiguredProxyResolutionService::IsDynamicRoutesReady() const {
          !config_->value().dynamic_routing_config().is_update_in_progress;
 }
 
+void ConfiguredProxyResolutionService::MaybeBeginDynamicRoutingPause() {
+  CHECK(IsPacReady());
+  CHECK(!IsDynamicRoutesReady());
+  if (dynamic_routing_pause_start_time_.has_value()) {
+    return;
+  }
+  ++dynamic_routing_pause_episode_id_;
+  dynamic_routing_pause_start_time_ = TimeTicks::Now();
+  paused_requests_in_episode_ = 0;
+}
+
+void ConfiguredProxyResolutionService::MaybeEndDynamicRoutingPause() {
+  if (!dynamic_routing_pause_start_time_.has_value()) {
+    return;
+  }
+  const base::TimeDelta duration =
+      TimeTicks::Now() - *dynamic_routing_pause_start_time_;
+  dynamic_routing_pause_start_time_.reset();
+  const size_t paused_requests = std::exchange(paused_requests_in_episode_, 0);
+  base::UmaHistogramMediumTimes(
+      "Net.ProxyResolution.DynamicRoutingPause.Duration", duration);
+  base::UmaHistogramCounts1000(
+      "Net.ProxyResolution.DynamicRoutingPause.PausedRequestCount",
+      paused_requests);
+}
+
+void ConfiguredProxyResolutionService::OnRequestPausedForDynamicRouting(
+    ConfiguredProxyResolutionRequest* req) {
+  CHECK(dynamic_routing_pause_start_time_.has_value());
+  if (req->last_counted_dynamic_pause_episode_id() ==
+      dynamic_routing_pause_episode_id_) {
+    return;
+  }
+  req->set_last_counted_dynamic_pause_episode_id(
+      dynamic_routing_pause_episode_id_);
+  ++paused_requests_in_episode_;
+}
+
 base::DictValue ConfiguredProxyResolutionService::GetProxyNetLogValues() {
   base::DictValue net_info_dict;
 
@@ -1646,6 +1693,10 @@ void ConfiguredProxyResolutionService::OnProxyConfigChanged(
   config_ =
       ProxyConfigWithAnnotation(new_config, config_->traffic_annotation());
 
+  if (!IsReady()) {
+    MaybeBeginDynamicRoutingPause();
+  }
+
   // Cancel any in-flight per-request PAC evaluations (`GetProxyForURL` /
   // `resolve_job_`) so they re-evaluate the updated higher-priority dynamic
   // routing rules once ready, while leaving any in-flight `ProxyOverrideRules`
@@ -1662,6 +1713,8 @@ void ConfiguredProxyResolutionService::OnProxyConfigChanged(
   if (!IsReady()) {
     return;
   }
+
+  MaybeEndDynamicRoutingPause();
 
   base::WeakPtr<ConfiguredProxyResolutionService> weak_this =
       weak_ptr_factory_.GetWeakPtr();
@@ -1716,8 +1769,11 @@ void ConfiguredProxyResolutionService::InitializeUsingLastFetchedConfig() {
           &ConfiguredProxyResolutionService::OnInitProxyResolverComplete,
           base::Unretained(this)));
 
-  if (rv != ERR_IO_PENDING)
+  if (rv != ERR_IO_PENDING) {
     OnInitProxyResolverComplete(rv);
+  } else {
+    MaybeEndDynamicRoutingPause();
+  }
 }
 
 void ConfiguredProxyResolutionService::InitializeUsingDecidedConfig(
@@ -1739,8 +1795,11 @@ void ConfiguredProxyResolutionService::InitializeUsingDecidedConfig(
           &ConfiguredProxyResolutionService::OnInitProxyResolverComplete,
           base::Unretained(this)));
 
-  if (rv != ERR_IO_PENDING)
+  if (rv != ERR_IO_PENDING) {
     OnInitProxyResolverComplete(rv);
+  } else {
+    MaybeEndDynamicRoutingPause();
+  }
 }
 
 std::optional<ResolveHostResult>

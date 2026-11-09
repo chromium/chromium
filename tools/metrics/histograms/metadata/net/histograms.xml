@@ -5141,6 +5141,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.ProxyResolution.DynamicRoutingPause.Duration" units="ms"
+    expires_after="2027-11-01">
+  <owner>xzonghan@google.com</owner>
+  <owner>chrome-enterprise-networking-core@google.com</owner>
+  <summary>
+    Records the duration of a dynamic-routing pause episode in
+    ConfiguredProxyResolutionService, during which the PAC resolver is ready but
+    proxy resolution is paused waiting for dynamic routing rules (such as
+    enterprise Provisioning Domain configurations) to finish updating. Recorded
+    once per pause episode when the service exits the dynamic-routing pause
+    state (when dynamic routing rules become ready, when PAC initialization
+    takes over, or on service teardown).
+  </summary>
+</histogram>
+
+<histogram name="Net.ProxyResolution.DynamicRoutingPause.PausedRequestCount"
+    units="requests" expires_after="2027-11-01">
+  <owner>xzonghan@google.com</owner>
+  <owner>chrome-enterprise-networking-core@google.com</owner>
+  <summary>
+    Records the number of distinct proxy resolution requests that were stalled
+    waiting for dynamic routing rules during a single dynamic-routing pause
+    episode in ConfiguredProxyResolutionService (including 0 when no requests
+    arrived during the pause, and including requests that were cancelled before
+    the pause ended). Recorded once per pause episode alongside
+    Net.ProxyResolution.DynamicRoutingPause.Duration.
+  </summary>
+</histogram>
+
 <histogram name="Net.ProxyScriptFetcher.FirstByteDuration" units="ms"
     expires_after="2024-04-03">
   <owner>dschinazi@chromium.org</owner>

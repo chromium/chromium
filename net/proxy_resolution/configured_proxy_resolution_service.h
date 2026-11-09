@@ -6,6 +6,7 @@
 #define NET_PROXY_RESOLUTION_CONFIGURED_PROXY_RESOLUTION_SERVICE_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <algorithm>
 #include <array>
@@ -312,6 +313,12 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // Domains) are ready and not currently updating.
   bool IsDynamicRoutesReady() const;
 
+  // Starts, ends, and counts distinct requests paused during a dynamic-routing
+  // pause episode (`IsPacReady() && !IsDynamicRoutesReady()`).
+  void MaybeBeginDynamicRoutingPause();
+  void MaybeEndDynamicRoutingPause();
+  void OnRequestPausedForDynamicRouting(ConfiguredProxyResolutionRequest* req);
+
   // We won't always be able to return a good LoadState. For example, the
   // ConfiguredProxyResolutionService can only get this information from the
   // InitProxyResolver, which is not always available.
@@ -601,6 +608,12 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // ERR_MANDATORY_PROXY_CONFIGURATION_FAILED to avoid interpreting teardown
   // as a successful DIRECT fallback.
   bool in_destruction_ = false;
+
+  // Monotonically increasing identifier, start timestamp, and distinct paused
+  // request count for the active dynamic-routing pause episode, if any.
+  uint64_t dynamic_routing_pause_episode_id_ = 0;
+  std::optional<base::TimeTicks> dynamic_routing_pause_start_time_;
+  size_t paused_requests_in_episode_ = 0;
 
   // WeakPtrFactory must be the last member. Used by
   // SetPacReadyAndResumePendingRequests() to detect deletion by synchronous

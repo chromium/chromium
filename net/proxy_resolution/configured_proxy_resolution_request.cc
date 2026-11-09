@@ -227,6 +227,12 @@ int ConfiguredProxyResolutionRequest::FinalizeRequestResult(int result_code) {
 
 void ConfiguredProxyResolutionRequest::BeginWaitEvent(
     NetLogEventType event_type) {
+  if (event_type ==
+          NetLogEventType::
+              PROXY_RESOLUTION_SERVICE_WAITING_FOR_DYNAMIC_PROXY_CONFIGS &&
+      service_) {
+    service_->OnRequestPausedForDynamicRouting(this);
+  }
   if (current_wait_event_ == event_type) {
     return;
   }
