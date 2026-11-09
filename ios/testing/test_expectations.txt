@@ -538,3 +538,8 @@ crbug.com/441761691 [ iOS27 Simulator ] ContextMenuTestCase/testOpenIncognitoLin
 
 # Gardening suppression 2026-11-06
 crbug.com/582739898 [ iOS27 iPad Simulator ] RecentTabsTestCase/testContextMenuRepeatedShare [ Skip ]
+
+# Gardening suppression 2026-11-09
+crbug.com/583785828 GeminiFirstRunTestCase/testAcceptPromoAndConsent [ Pass Failure Crash ]
+crbug.com/583785828 GeminiFirstRunTestCase/testLightweightConvenienceFREAcceptConsent [ Pass Failure Crash ]
+crbug.com/583785828 GeminiFirstRunTestCase/testVisualRichFREAcceptConsent [ Pass Failure Crash ]
