@@ -82,7 +82,9 @@ std::unique_ptr<BaseShellDialogImpl::RunState> BaseShellDialogImpl::BeginRun(
 
 void BaseShellDialogImpl::EndRun(std::unique_ptr<RunState> run_state) {
   if (run_state->owner) {
-    CHECK(IsRunningDialogForOwner(run_state->owner), base::NotFatalUntil::M163);
+    // TODO(crbug.com/581711694): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(IsRunningDialogForOwner(run_state->owner));
     SetOwnerEnabled(run_state->owner, true);
     CHECK(GetOwners().find(run_state->owner) != GetOwners().end(),
           base::NotFatalUntil::M163);
