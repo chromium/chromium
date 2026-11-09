@@ -150,14 +150,14 @@
     <module name="RegexpSinglelineJava">
       <property name="id" value="UseSharedPreferencesManagerFromChromeCheck"/>
       <property name="severity" value="warning"/>
-      <property name="format" value="(getAppSharedPreferences|getDefaultSharedPreferences)"/>
+      <property name="format" value="(getAppSharedPreferences|getDefaultSharedPreferences)\("/>
       <property name="ignoreComments" value="true"/>
       <property name="message" value="Use SharedPreferencesManager instead to access app-wide SharedPreferences from //src/chrome."/>
     </module>
     <module name="RegexpSinglelineJava">
       <property name="id" value="DefaultSharedPreferencesCheck"/>
       <property name="severity" value="error"/>
-      <property name="format" value="getDefaultSharedPreferences"/>
+      <property name="format" value="getDefaultSharedPreferences\("/>
       <property name="ignoreComments" value="true"/>
       <property name="message" value="Use ContextUtils.getAppSharedPreferences() instead to access app-wide SharedPreferences."/>
     </module>

@@ -30,6 +30,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.metrics.UmaRecorderHolder;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner.HelperTestRunner;
@@ -163,6 +164,7 @@ public class BaseRobolectricTestRule implements TestRule {
             sPausedExecutor = null;
             ApplicationStatus.destroyForJUnitTests();
             PathUtils.resetForTesting();
+            SharedPreferencesManager.resetForTesting();
             ThreadUtils.clearUiThreadForTesting();
             Locale.setDefault(ORIG_LOCALE);
             TimeZone.setDefault(ORIG_TIMEZONE);

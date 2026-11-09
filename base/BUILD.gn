@@ -6402,6 +6402,7 @@ if (is_android) {
     deps = [
       ":base_java",
       ":base_java_test_support",
+      ":base_shared_preferences_java",
       "//base/version_info/android:version_constants_java",
       "//testing/android/junit:junit_test_support",
       "//third_party/androidx:androidx_test_core_java",

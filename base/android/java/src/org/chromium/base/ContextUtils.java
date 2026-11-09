@@ -110,6 +110,14 @@ public class ContextUtils {
     }
 
     /**
+     * @return the default file name (without the ".xml" suffix) of the application-wide shared
+     *     preferences.
+     */
+    public static String getDefaultSharedPreferencesName() {
+        return PreferenceManager.getDefaultSharedPreferencesName(getApplicationContext());
+    }
+
+    /**
      * Occasionally tests cannot ensure the application context doesn't change between tests (junit)
      * and sometimes specific tests has its own special needs, initApplicationContext should be used
      * as much as possible, but this method can be used to override it.

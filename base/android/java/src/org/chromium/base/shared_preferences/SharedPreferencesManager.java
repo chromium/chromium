@@ -6,7 +6,9 @@ package org.chromium.base.shared_preferences;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Pair;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.VisibleForTesting;
@@ -28,22 +30,42 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/** Layer over android {@link SharedPreferences}. */
+/**
+ * Layer over android {@link SharedPreferences}.
+ *
+ * <p>Each instance is bound to one SharedPreferences file. {@link #getInstanceForRegistry} returns
+ * the manager for the application-wide default file; {@link #getInstance(String,
+ * PreferenceKeyRegistry)} returns a manager for an arbitrarily named file.
+ */
 @JNINamespace("base::android")
 @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
 @NullMarked
 public class SharedPreferencesManager {
-    // Without asserts, this is a singleton (because no key names are checked).
-    // With asserts, there is one manager per-registry in order to not have to consult
-    // all registries each time a key name is checked.
-    @GuardedBy("sInstances")
-    private static final @Nullable Map<PreferenceKeyRegistry, SharedPreferencesManager> sInstances =
-            BuildConfig.ENABLE_ASSERTS ? new HashMap<>() : null;
-
+    // Registries are only used for key checks, which only run with asserts enabled. Without
+    // asserts, one manager can serve every registry on the default file, and this field lets
+    // getInstanceForRegistry() skip the lock and map lookup on every access.
     private static final @Nullable SharedPreferencesManager sInstance =
             BuildConfig.ENABLE_ASSERTS
                     ? null
                     : new SharedPreferencesManager((PreferenceKeyRegistry) null);
+
+    // Managers keyed by (fileName, registry), where fileName is null for the default file. With
+    // asserts, there is one manager per (file, registry) so key checks don't have to consult all
+    // registries; without asserts, registry is forced to null.
+    @GuardedBy("sInstances")
+    private static final Map<
+                    Pair<@Nullable String, @Nullable PreferenceKeyRegistry>,
+                    SharedPreferencesManager>
+            sInstances = new HashMap<>();
+
+    /**
+     * The backing SharedPreferences for a named file, or {@code null} when this manager targets the
+     * application-wide default file via {@link ContextUtils#getAppSharedPreferences} (see {@link
+     * #getSharedPrefs}).
+     */
+    private final @Nullable SharedPreferences mNamedSharedPrefs;
+
+    private @Nullable PreferenceKeyChecker mKeyChecker;
 
     /** An Editor that wraps a regular SharedPreferences.Editor while performing key checks. */
     private class CheckingEditor implements SharedPreferences.Editor {
@@ -119,45 +141,110 @@ public class SharedPreferencesManager {
         }
     }
 
-    private @Nullable PreferenceKeyChecker mKeyChecker;
-
     protected SharedPreferencesManager(@Nullable PreferenceKeyRegistry registry) {
-        mKeyChecker = BuildConfig.ENABLE_ASSERTS ? new StrictPreferenceKeyChecker(registry) : null;
+        this(null, registry);
+    }
+
+    private SharedPreferencesManager(
+            @Nullable String fileName, @Nullable PreferenceKeyRegistry registry) {
+        this(
+                fileName,
+                BuildConfig.ENABLE_ASSERTS ? new StrictPreferenceKeyChecker(registry) : null);
+    }
+
+    @VisibleForTesting
+    SharedPreferencesManager(@Nullable String fileName, @Nullable PreferenceKeyChecker keyChecker) {
+        mNamedSharedPrefs =
+                fileName == null
+                        ? null
+                        : ContextUtils.getApplicationContext()
+                                .getSharedPreferences(fileName, Context.MODE_PRIVATE);
+        mKeyChecker = keyChecker;
     }
 
     @VisibleForTesting
     SharedPreferencesManager(PreferenceKeyChecker keyChecker) {
-        mKeyChecker = keyChecker;
+        this(null, keyChecker);
     }
 
     /**
      * @param registry registry of supported and deprecated preference keys. Should be null when
      *     ENABLE_ASSERTS = false.
-     * @return a {@link SharedPreferencesManager} that operates on SharedPreferences keys registered
-     *     in the passed |registry|
+     * @return a {@link SharedPreferencesManager} over the application-wide default
+     *     SharedPreferences file that operates on keys registered in the passed |registry|
      */
-    @SuppressWarnings("NullAway") // Cannot assumeNonNull(sInstances) due to @GuardedBy warning.
     public static SharedPreferencesManager getInstanceForRegistry(
             @Nullable PreferenceKeyRegistry registry) {
-        if (!BuildConfig.ENABLE_ASSERTS) {
+        return getOrCreateInstance(null, registry);
+    }
+
+    /**
+     * Returns a {@link SharedPreferencesManager} over the SharedPreferences file named |fileName|
+     * (as passed to {@link android.content.Context#getSharedPreferences}). The same instance is
+     * returned for the same file name (and, with asserts enabled, the same registry).
+     *
+     * <p>Code under //chrome should not call this directly; use the //chrome entry points that
+     * decide which file a key belongs in.
+     *
+     * @param fileName name of the SharedPreferences file, without the ".xml" suffix.
+     * @param registry registry of supported and deprecated preference keys. Should be null when
+     *     ENABLE_ASSERTS = false.
+     */
+    public static SharedPreferencesManager getInstance(
+            String fileName, @Nullable PreferenceKeyRegistry registry) {
+        assert !fileName.isEmpty();
+        @Nullable String normalizedName =
+                fileName.equals(ContextUtils.getDefaultSharedPreferencesName()) ? null : fileName;
+        return getOrCreateInstance(normalizedName, registry);
+    }
+
+    private static SharedPreferencesManager getOrCreateInstance(
+            @Nullable String fileName, @Nullable PreferenceKeyRegistry registry) {
+        if (fileName == null && !BuildConfig.ENABLE_ASSERTS) {
             return assumeNonNull(sInstance);
         }
-        SharedPreferencesManager manager;
+        Pair<@Nullable String, @Nullable PreferenceKeyRegistry> key =
+                Pair.create(fileName, BuildConfig.ENABLE_ASSERTS ? registry : null);
+        // Called from both the UI thread and background threads.
         synchronized (sInstances) {
-            manager = sInstances.get(registry);
+            SharedPreferencesManager manager = sInstances.get(key);
             if (manager == null) {
-                manager = new SharedPreferencesManager(registry);
-                sInstances.put(registry, manager);
+                manager = new SharedPreferencesManager(fileName, registry);
+                sInstances.put(key, manager);
             }
+            return manager;
         }
-        return manager;
+    }
+
+    /**
+     * Drops cached managers for named files, which hold the SharedPreferences of the Context they
+     * were created with. Called by Robolectric between tests, since each test gets a new
+     * Application.
+     */
+    public static void resetForTesting() {
+        synchronized (sInstances) {
+            sInstances.keySet().removeIf(key -> key.first != null);
+        }
+    }
+
+    /**
+     * @return the SharedPreferences this manager reads and writes.
+     */
+    private SharedPreferences getSharedPrefs() {
+        // The default file isn't stored in mNamedSharedPrefs because sInstance is created in a
+        // static initializer (possibly before ContextUtils is initialized), and Robolectric
+        // replaces the app SharedPreferences for each test, so a cached reference would go stale.
+        // ContextUtils.getAppSharedPreferences() is only a static field read.
+        return mNamedSharedPrefs != null
+                ? mNamedSharedPrefs
+                : ContextUtils.getAppSharedPreferences();
     }
 
     /**
      * @return an Editor to write multiple values to SharedPreferences.
      */
     public SharedPreferences.Editor getEditor() {
-        return new CheckingEditor(ContextUtils.getAppSharedPreferences().edit());
+        return new CheckingEditor(getSharedPrefs().edit());
     }
 
     public void disableKeyCheckerForTesting() {
@@ -199,7 +286,7 @@ public class SharedPreferencesManager {
     @Contract("_, !null -> !null")
     public @Nullable Set<String> readStringSet(String key, @Nullable Set<String> defaultValue) {
         checkIsKeyInUse(key);
-        Set<String> values = ContextUtils.getAppSharedPreferences().getStringSet(key, defaultValue);
+        Set<String> values = getSharedPrefs().getStringSet(key, defaultValue);
         if (values != null) {
             return Collections.unmodifiableSet(values);
         }
@@ -211,9 +298,7 @@ public class SharedPreferencesManager {
         checkIsKeyInUse(key);
         // Construct a new set so it can be modified safely. See crbug.com/568369.
         Set<String> values =
-                new HashSet<>(
-                        ContextUtils.getAppSharedPreferences()
-                                .getStringSet(key, Collections.emptySet()));
+                new HashSet<>(getSharedPrefs().getStringSet(key, Collections.emptySet()));
         values.add(value);
         writeStringSetUnchecked(key, values);
     }
@@ -223,9 +308,7 @@ public class SharedPreferencesManager {
         checkIsKeyInUse(key);
         // Construct a new set so it can be modified safely. See crbug.com/568369.
         Set<String> values =
-                new HashSet<>(
-                        ContextUtils.getAppSharedPreferences()
-                                .getStringSet(key, Collections.emptySet()));
+                new HashSet<>(getSharedPrefs().getStringSet(key, Collections.emptySet()));
         if (values.remove(value)) {
             writeStringSetUnchecked(key, values);
         }
@@ -239,7 +322,7 @@ public class SharedPreferencesManager {
 
     /** Writes string set to shared preferences. */
     private void writeStringSetUnchecked(String key, Set<String> values) {
-        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        SharedPreferences.Editor ed = getSharedPrefs().edit();
         ed.putStringSet(key, values);
         ed.apply();
     }
@@ -269,7 +352,7 @@ public class SharedPreferencesManager {
     }
 
     private void writeIntUnchecked(String key, int value) {
-        SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
+        SharedPreferences.Editor ed = getSharedPrefs().edit();
         ed.putInt(key, value);
         ed.apply();
     }
@@ -306,7 +389,7 @@ public class SharedPreferencesManager {
     @CalledByNative
     public int readInt(@JniType("std::string") String key, int defaultValue) {
         checkIsKeyInUse(key);
-        return ContextUtils.getAppSharedPreferences().getInt(key, defaultValue);
+        return getSharedPrefs().getInt(key, defaultValue);
     }
 
     /**
@@ -390,7 +473,7 @@ public class SharedPreferencesManager {
      */
     public long readLong(String key, long defaultValue) {
         checkIsKeyInUse(key);
-        return ContextUtils.getAppSharedPreferences().getLong(key, defaultValue);
+        return getSharedPrefs().getLong(key, defaultValue);
     }
 
     /**
@@ -451,7 +534,7 @@ public class SharedPreferencesManager {
      */
     public float readFloat(String key, float defaultValue) {
         checkIsKeyInUse(key);
-        return ContextUtils.getAppSharedPreferences().getFloat(key, defaultValue);
+        return getSharedPrefs().getFloat(key, defaultValue);
     }
 
     /**
@@ -501,7 +584,7 @@ public class SharedPreferencesManager {
      */
     public Double readDouble(String key, double defaultValue) {
         checkIsKeyInUse(key);
-        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        SharedPreferences prefs = getSharedPrefs();
         if (!prefs.contains(key)) {
             return defaultValue;
         }
@@ -577,7 +660,7 @@ public class SharedPreferencesManager {
     @CalledByNative
     public boolean readBoolean(@JniType("std::string") String key, boolean defaultValue) {
         checkIsKeyInUse(key);
-        return ContextUtils.getAppSharedPreferences().getBoolean(key, defaultValue);
+        return getSharedPrefs().getBoolean(key, defaultValue);
     }
 
     /**
@@ -644,7 +727,7 @@ public class SharedPreferencesManager {
             @JniType("std::string") String key,
             @JniType("std::string") @Nullable String defaultValue) {
         checkIsKeyInUse(key);
-        return ContextUtils.getAppSharedPreferences().getString(key, defaultValue);
+        return getSharedPrefs().getString(key, defaultValue);
     }
 
     /**
@@ -712,7 +795,7 @@ public class SharedPreferencesManager {
 
     private void removeKeysWithPrefixInternal(KeyPrefix prefix) {
         SharedPreferences.Editor ed = getEditor();
-        Map<String, ?> allPrefs = ContextUtils.getAppSharedPreferences().getAll();
+        Map<String, ?> allPrefs = getSharedPrefs().getAll();
         for (Map.Entry<String, ?> pref : allPrefs.entrySet()) {
             String key = pref.getKey();
             if (prefix.hasGenerated(key)) {
@@ -731,12 +814,12 @@ public class SharedPreferencesManager {
     @CalledByNative
     public boolean contains(@JniType("std::string") String key) {
         checkIsKeyInUse(key);
-        return ContextUtils.getAppSharedPreferences().contains(key);
+        return getSharedPrefs().contains(key);
     }
 
     private Set<String> readAllKeysWithPrefix(KeyPrefix prefix) {
         checkIsPrefixInUse(prefix);
-        Map<String, ?> allPrefs = ContextUtils.getAppSharedPreferences().getAll();
+        Map<String, ?> allPrefs = getSharedPrefs().getAll();
         Set<String> keysWithPrefix = new HashSet<>();
         for (String key : allPrefs.keySet()) {
             if (prefix.hasGenerated(key)) {
@@ -749,7 +832,7 @@ public class SharedPreferencesManager {
     @SuppressWarnings("unchecked")
     private <T> Map<String, T> readAllWithPrefix(KeyPrefix prefix) {
         checkIsPrefixInUse(prefix);
-        Map<String, ?> allPrefs = ContextUtils.getAppSharedPreferences().getAll();
+        Map<String, ?> allPrefs = getSharedPrefs().getAll();
         Map<String, T> allPrefsWithPrefix = new HashMap<>();
         for (Map.Entry<String, ?> pref : allPrefs.entrySet()) {
             String key = pref.getKey();

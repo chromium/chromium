@@ -6,14 +6,19 @@ package org.chromium.base.shared_preferences;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,7 +27,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.BuildConfig;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -734,5 +741,221 @@ public class SharedPreferencesManagerTest {
 
         ed.remove("some_key");
         verify(mChecker).checkIsKeyInUse(eq("some_key"));
+    }
+
+    // Named-file support.
+
+    private static final String FILE_A = "SharedPreferencesManagerTest.a";
+    private static final String FILE_B = "SharedPreferencesManagerTest.b";
+
+    /** A registry that accepts exactly |legacyKeys| (legacy-format keys like "int_key"). */
+    private static PreferenceKeyRegistry registryWith(String... legacyKeys) {
+        return new PreferenceKeyRegistry(
+                "testModule",
+                Collections.emptyList(),
+                Arrays.asList(legacyKeys),
+                Collections.emptyList());
+    }
+
+    private static SharedPreferences rawPrefs(String fileName) {
+        return ContextUtils.getApplicationContext()
+                .getSharedPreferences(fileName, Context.MODE_PRIVATE);
+    }
+
+    @Test
+    public void testDefaultManager_usesAppSharedPreferences() {
+        mSubject.writeInt("int_key", 7);
+
+        assertEquals(7, ContextUtils.getAppSharedPreferences().getInt("int_key", 0));
+        assertFalse(rawPrefs(FILE_A).contains("int_key"));
+    }
+
+    @Test
+    public void testNamedManager_usesNamedFile() {
+        SharedPreferencesManager managerA = new SharedPreferencesManager(FILE_A, mChecker);
+
+        managerA.writeInt("int_key", 11);
+        managerA.writeString("string_key", "a");
+        managerA.writeStringSet("string_set_key", new HashSet<>(Arrays.asList("x", "y")));
+
+        // Visible through the raw file, not through the default file.
+        assertEquals(11, rawPrefs(FILE_A).getInt("int_key", 0));
+        assertEquals("a", rawPrefs(FILE_A).getString("string_key", null));
+        assertEquals(
+                new HashSet<>(Arrays.asList("x", "y")),
+                rawPrefs(FILE_A).getStringSet("string_set_key", null));
+        assertFalse(ContextUtils.getAppSharedPreferences().contains("int_key"));
+
+        // And read back through the manager, including prefix and removal paths.
+        assertEquals(11, managerA.readInt("int_key"));
+        assertTrue(managerA.contains("string_key"));
+        managerA.removeKey("string_key");
+        assertFalse(rawPrefs(FILE_A).contains("string_key"));
+        managerA.getEditor().putBoolean("bool_key", true).apply();
+        assertTrue(rawPrefs(FILE_A).getBoolean("bool_key", false));
+    }
+
+    @Test
+    public void testNamedManagers_differentFilesAreIsolated() {
+        SharedPreferencesManager managerA = new SharedPreferencesManager(FILE_A, mChecker);
+        SharedPreferencesManager managerB = new SharedPreferencesManager(FILE_B, mChecker);
+
+        managerA.writeInt("int_key", 1);
+        managerB.writeInt("int_key", 2);
+        managerA.writeInt(PREFIXED_KEY_1, 10);
+        managerB.writeInt(PREFIXED_KEY_2, 20);
+
+        assertEquals(1, managerA.readInt("int_key"));
+        assertEquals(2, managerB.readInt("int_key"));
+        assertEquals(0, mSubject.readInt("int_key"));
+
+        // Prefix operations only see their own file.
+        assertEquals(
+                Collections.singleton(PREFIXED_KEY_1),
+                managerA.readIntsWithPrefix(TEST_PREFIX).keySet());
+        managerB.removeKeysWithPrefix(TEST_PREFIX);
+        assertEquals(10, managerA.readInt(PREFIXED_KEY_1));
+        assertEquals(0, managerB.readInt(PREFIXED_KEY_2));
+    }
+
+    @Test
+    public void testGetInstance_sameNameAndRegistryReturnsCachedInstance() {
+        PreferenceKeyRegistry registry = registryWith("int_key");
+
+        SharedPreferencesManager first = SharedPreferencesManager.getInstance(FILE_A, registry);
+        SharedPreferencesManager second = SharedPreferencesManager.getInstance(FILE_A, registry);
+        SharedPreferencesManager other = SharedPreferencesManager.getInstance(FILE_B, registry);
+
+        assertSame(first, second);
+        assertNotSame(first, other);
+        first.writeInt("int_key", 5);
+        assertEquals(5, second.readInt("int_key"));
+        assertEquals(0, other.readInt("int_key"));
+    }
+
+    @Test
+    public void testGetInstance_isDistinctFromDefaultFileManager() {
+        PreferenceKeyRegistry registry = registryWith("int_key");
+
+        SharedPreferencesManager named = SharedPreferencesManager.getInstance(FILE_A, registry);
+        SharedPreferencesManager defaultManager =
+                SharedPreferencesManager.getInstanceForRegistry(registry);
+
+        assertNotSame(named, defaultManager);
+        named.writeInt("int_key", 5);
+        assertEquals(0, defaultManager.readInt("int_key"));
+        assertEquals(0, ContextUtils.getAppSharedPreferences().getInt("int_key", 0));
+    }
+
+    @Test
+    public void testGetInstanceForRegistry_isCachedAndUsesDefaultFile() {
+        PreferenceKeyRegistry registry = registryWith("int_key");
+
+        SharedPreferencesManager first = SharedPreferencesManager.getInstanceForRegistry(registry);
+        SharedPreferencesManager second = SharedPreferencesManager.getInstanceForRegistry(registry);
+
+        assertSame(first, second);
+        first.writeInt("int_key", 9);
+        assertEquals(9, ContextUtils.getAppSharedPreferences().getInt("int_key", 0));
+    }
+
+    @Test
+    public void testGetInstance_defaultFileNameReturnsGetInstanceForRegistryInstance() {
+        // Passing the default file name to getInstance() normalizes to the default-file manager.
+        PreferenceKeyRegistry registry = registryWith("int_key");
+
+        SharedPreferencesManager byRegistry =
+                SharedPreferencesManager.getInstanceForRegistry(registry);
+        SharedPreferencesManager byName =
+                SharedPreferencesManager.getInstance(
+                        ContextUtils.getDefaultSharedPreferencesName(), registry);
+
+        assertSame(byRegistry, byName);
+    }
+
+    @Test
+    public void testGetInstance_checksKeysAgainstRegistry() {
+        // Key checking only exists in builds with asserts enabled.
+        Assume.assumeTrue(BuildConfig.ENABLE_ASSERTS);
+        SharedPreferencesManager named =
+                SharedPreferencesManager.getInstance(FILE_A, registryWith("int_key"));
+
+        RuntimeException e =
+                assertThrows(RuntimeException.class, () -> named.writeInt("unregistered_key", 1));
+        assertTrue(e.getMessage().contains("unregistered_key"));
+    }
+
+    @Test
+    public void testGetInstance_twoRegistriesOnSameFileShareBackingPrefsAndEnforceOwnKeys() {
+        Assume.assumeTrue(BuildConfig.ENABLE_ASSERTS);
+        PreferenceKeyRegistry registry1 = registryWith("int_key", "shared_key");
+        PreferenceKeyRegistry registry2 = registryWith("string_key", "shared_key");
+
+        SharedPreferencesManager manager1 = SharedPreferencesManager.getInstance(FILE_A, registry1);
+        SharedPreferencesManager manager2 = SharedPreferencesManager.getInstance(FILE_A, registry2);
+
+        assertNotSame(manager1, manager2);
+
+        // Writes through one manager are visible through the other on the shared file.
+        manager1.writeInt("shared_key", 42);
+        assertEquals(42, manager2.readInt("shared_key"));
+
+        // Each manager rejects keys registered only in the other registry.
+        RuntimeException e1 =
+                assertThrows(RuntimeException.class, () -> manager1.readString("string_key", null));
+        assertTrue(e1.getMessage().contains("string_key"));
+        RuntimeException e2 =
+                assertThrows(RuntimeException.class, () -> manager2.readInt("int_key"));
+        assertTrue(e2.getMessage().contains("int_key"));
+    }
+
+    @Test
+    public void testGetDefaultSharedPreferencesName_matchesAppSharedPreferences() {
+        String name = ContextUtils.getDefaultSharedPreferencesName();
+        assertTrue(name.endsWith("_preferences"));
+
+        ContextUtils.getAppSharedPreferences().edit().putInt("int_key", 3).commit();
+        assertEquals(3, rawPrefs(name).getInt("int_key", 0));
+    }
+
+    @Test
+    public void testResetForTesting_dropsNamedManagersOnly() {
+        PreferenceKeyRegistry registry = registryWith("int_key");
+        SharedPreferencesManager defaultManager =
+                SharedPreferencesManager.getInstanceForRegistry(registry);
+        SharedPreferencesManager named = SharedPreferencesManager.getInstance(FILE_A, registry);
+
+        SharedPreferencesManager.resetForTesting();
+
+        assertSame(defaultManager, SharedPreferencesManager.getInstanceForRegistry(registry));
+        assertNotSame(named, SharedPreferencesManager.getInstance(FILE_A, registry));
+    }
+
+    // Like ChromeSharedPreferences.REGISTRY, one registry instance shared by every test, so the
+    // cached manager for FILE_A is the same key in each test.
+    private static final PreferenceKeyRegistry SHARED_REGISTRY = registryWith("int_key");
+
+    /**
+     * Checks that the named manager reads and writes this test's prefs rather than the previous
+     * test's. Robolectric creates a new Application per test, so without
+     * SharedPreferencesManager.resetForTesting() in BaseRobolectricTestRule, whichever of the two
+     * tests below runs second would get a manager bound to the first test's prefs.
+     */
+    private static void assertNamedManagerUsesCurrentTestPrefs() {
+        SharedPreferencesManager manager =
+                SharedPreferencesManager.getInstance(FILE_A, SHARED_REGISTRY);
+        assertFalse(manager.contains("int_key"));
+        manager.writeInt("int_key", 1);
+        assertEquals(1, rawPrefs(FILE_A).getInt("int_key", 0));
+    }
+
+    @Test
+    public void testNamedManager_notReusedAcrossTests1() {
+        assertNamedManagerUsesCurrentTestPrefs();
+    }
+
+    @Test
+    public void testNamedManager_notReusedAcrossTests2() {
+        assertNamedManagerUsesCurrentTestPrefs();
     }
 }
