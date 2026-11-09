@@ -827,9 +827,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             builder.setProductImageUrl(mPriceDropData.productImageUrl.serialize());
         }
 
-        return () -> {
-            return builder.build().toByteString().asReadOnlyByteBuffer();
-        };
+        return () -> ByteBuffer.wrap(builder.build().toByteArray());
     }
 
     @Override

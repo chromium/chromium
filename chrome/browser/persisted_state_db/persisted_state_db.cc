@@ -4,6 +4,8 @@
 
 #include "chrome/browser/persisted_state_db/persisted_state_db.h"
 
+#include <utility>
+
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
@@ -62,7 +64,7 @@ void PersistedStateDB::Save(
   base::android::JavaByteArrayToString(env, byte_array, &data);
   persisted_state_db::PersistedStateContentProto proto;
   proto.set_key(key);
-  proto.set_content_data(data);
+  proto.set_content_data(std::move(data));
   proto_db_->InsertContent(
       key, proto,
       base::BindOnce(

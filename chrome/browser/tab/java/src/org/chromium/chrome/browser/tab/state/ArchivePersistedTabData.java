@@ -73,11 +73,11 @@ public class ArchivePersistedTabData extends PersistedTabData {
     @Override
     Serializer<ByteBuffer> getSerializer() {
         return () ->
-                ArchivePersistedTabDataProto.newBuilder()
-                        .setArchivedTimeMs(mArchivedTimeMs)
-                        .build()
-                        .toByteString()
-                        .asReadOnlyByteBuffer();
+                ByteBuffer.wrap(
+                        ArchivePersistedTabDataProto.newBuilder()
+                                .setArchivedTimeMs(mArchivedTimeMs)
+                                .build()
+                                .toByteArray());
     }
 
     @Override
