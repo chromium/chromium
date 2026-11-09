@@ -28,11 +28,15 @@ WebBundledCodeCacheGenerator::CreateSerializedCodeCacheForModule(
                               base::checked_cast<int>(module_text_utf8.size()))
           .ToLocalChecked();
 
+  // `resource_is_shared_cross_origin` must match
+  // `V8ScriptRunner::CompileModule()` (`true`, as CORS is enforced for module
+  // scripts) so the deserialized `Script`'s `origin_options()` matches
+  // subsequent runtime lookups in V8's per-isolate `CompilationCacheScript`.
   v8::Local<v8::String> resource_name =
       v8::String::NewFromUtf8Literal(isolate, "compiled-module");
   v8::ScriptOrigin origin(
       resource_name, /*resource_line_offset =*/0,
-      /*resource_column_offset=*/0, /*resource_is_shared_cross_origin=*/false,
+      /*resource_column_offset=*/0, /*resource_is_shared_cross_origin=*/true,
       /*script_id=*/-1,
       /*source_map_url=*/v8::Local<v8::Value>(), /*resource_is_opaque=*/false,
       /*is_wasm=*/false, /*is_module=*/true);
