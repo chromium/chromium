@@ -927,12 +927,13 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
 }
 
 bool SaveCardBubbleControllerImpl::CanBeReshown() const {
-  if (was_url_opened_ &&
-      current_bubble_type_ == PaymentsBubbleType::kUploadComplete) {
-    return true;
+  if (current_bubble_type_ == PaymentsBubbleType::kInactive) {
+    return false;
   }
-  return current_bubble_type_ != PaymentsBubbleType::kUploadComplete &&
-         current_bubble_type_ != PaymentsBubbleType::kInactive;
+  if (current_bubble_type_ == PaymentsBubbleType::kUploadComplete) {
+    return !IsShowingBubble() || was_url_opened_;
+  }
+  return true;
 }
 
 BubbleType SaveCardBubbleControllerImpl::GetBubbleType() const {
