@@ -10,6 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -36,8 +37,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TriState;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -88,6 +89,10 @@ public class SensitiveContentTest {
         public boolean getContentSensitivity() {
             return mContentIsSensitive;
         }
+
+        public void pollContentSensitivity(boolean expected) {
+            pollUiThread(() -> Criteria.checkThat(mContentIsSensitive, is(expected)));
+        }
     }
 
     public static final String SENSITIVE_FILE =
@@ -126,7 +131,6 @@ public class SensitiveContentTest {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287319
-    @DisabledTest(message = "https://crbug.com/572882982")
     public void testSensitiveContentClientObserver() {
         assertNotSensitive(mPage);
 
@@ -139,17 +143,21 @@ public class SensitiveContentTest {
                 new TestSensitiveContentClientObserver();
         ThreadUtils.runOnUiThreadBlocking(() -> client.addObserver(observer));
 
-        assertFalse(observer.getContentSensitivity());
-        CtaPageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
-        waitUntilSensitive(page);
-        assertTrue(observer.getContentSensitivity());
+        CtaPageStation page = mPage;
+        try {
+            assertFalse(observer.getContentSensitivity());
+            page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
+            waitUntilSensitive(page);
+            observer.pollContentSensitivity(true);
 
-        page = page.loadWebPageProgrammatically(mTestServer.getURL(NOT_SENSITIVE_FILE));
-        waitUntilNotSensitive(page);
-        assertFalse(observer.getContentSensitivity());
+            page = page.loadWebPageProgrammatically(mTestServer.getURL(NOT_SENSITIVE_FILE));
+            waitUntilNotSensitive(page);
+            observer.pollContentSensitivity(false);
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(() -> client.removeObserver(observer));
+        }
 
         // After observation is removed, the observer will not be notified anymore.
-        ThreadUtils.runOnUiThreadBlocking(() -> client.removeObserver(observer));
         page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         waitUntilSensitive(page);
         assertFalse(observer.getContentSensitivity());
