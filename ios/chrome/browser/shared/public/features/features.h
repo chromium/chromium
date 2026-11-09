@@ -810,12 +810,6 @@ BASE_DECLARE_FEATURE(kAssistantSidePanel);
 // Returns true if the AssistantSidePanel feature is enabled.
 bool IsAssistantSidePanelEnabled();
 
-// Enables the YourSavedInfoSettingsPageIos feature.
-BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPageIos);
-
-// Returns true if the YourSavedInfoSettingsPageIos feature is enabled.
-bool IsYourSavedInfoSettingsPageIosEnabled();
-
 // Arms for the BackgroundRefreshRegressionTest experiment.
 enum class BackgroundRefreshRegressionTestArm {
   kControl = 0,

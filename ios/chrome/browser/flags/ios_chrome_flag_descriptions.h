@@ -2094,11 +2094,6 @@ inline constexpr char kWebPageTextZoomIPadName[] = "Enable text zoom on iPad";
 inline constexpr char kWebPageTextZoomIPadDescription[] =
     "When enabled, text zoom works on iPad";
 
-inline constexpr char kYourSavedInfoSettingsPageIosName[] =
-    "Enable Autofill and passwords settings redesign on iOS";
-inline constexpr char kYourSavedInfoSettingsPageIosDescription[] =
-    "Enables the Autofill and passwords settings page redesign on iOS.";
-
 inline constexpr char kZeroStateSuggestionsCentralizationName[] =
     "Zero-State Suggestions Centralization";
 inline constexpr char kZeroStateSuggestionsCentralizationDescription[] =
