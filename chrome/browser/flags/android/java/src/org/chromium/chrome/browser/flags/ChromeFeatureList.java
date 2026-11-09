@@ -1408,7 +1408,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sNtpVision =
             newCachedFlag(NTP_VISION, /* defaultValue= */ false);
     public static final CachedFlag sOnStartupSettingsUi =
-            newCachedFlag(ON_STARTUP_SETTINGS_UI, /* defaultValue= */ false);
+            newCachedFlag(ON_STARTUP_SETTINGS_UI, /* defaultValue= */ true);
     public static final CachedFlag sOnStartupWindowPolicy =
             newCachedFlag(ON_STARTUP_WINDOW_POLICY, /* defaultValue= */ true);
     public static final CachedFlag sOneStepAimAccess =
