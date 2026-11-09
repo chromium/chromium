@@ -52,6 +52,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/settings/test_support",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/ash/components/local_search_service/public/mojom",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
     "//ui/base",

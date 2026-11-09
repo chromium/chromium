@@ -21,7 +21,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom-forward.h"
-#include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/settings_ui/resources/grit/ash_settings_strings.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"

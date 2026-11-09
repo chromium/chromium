@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/cups_printers_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/settings_ui/resources/grit/ash_settings_strings.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

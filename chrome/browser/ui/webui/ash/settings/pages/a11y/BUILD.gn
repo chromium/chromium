@@ -47,6 +47,7 @@ static_library("a11y") {
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chromeos/ash/components/browser_delegate",
+    "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//chromeos/components/kiosk",
     "//chromeos/services/tts/public/mojom",
     "//components/application_locale_storage",

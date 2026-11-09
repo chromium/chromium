@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/webui/settings/font_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/settings_ui/resources/grit/ash_settings_strings.h"
 #include "components/live_caption/caption_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"

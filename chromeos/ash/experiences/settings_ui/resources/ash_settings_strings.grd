@@ -178,6 +178,1092 @@
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
+      <!-- Device Page (OS Settings) -->
+      <message name="IDS_OS_SETTINGS_TOUCHPAD_REVERSE_SCROLL_LABEL">
+        Reverse scrolling <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_TOUCHPAD_REVERSE_SCROLL_DESCRIPTION" desc="In Device Settings, the description for the label to set reverse scrolling.">
+        Swipe up to move the page down
+      </message>
+      <message name="IDS_SETTINGS_DEVICE_TITLE" desc="Name of the settings page which displays device and peripheral settings.">
+        Device
+      </message>
+      <message name="IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_KEYBOARD" desc="Description for keyboard settings in the Device menu item description in the left menu.">
+        keyboard
+      </message>
+      <message name="IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_MOUSE" desc="Description for mouse settings in the Device menu item description in the left menu.">
+        mouse
+      </message>
+      <message name="IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_TOUCHPAD" desc="Description for touchpad settings in the Device menu item description in the left menu.">
+        touchpad
+      </message>
+      <message name="IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_PRINT" desc="Description for print settings in the Device menu item description in the left menu.">
+        print
+      </message>
+      <message name="IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_DISPLAY" desc="Description for display settings in the Device menu item description in the left menu.">
+        display
+      </message>
+      <message name="IDS_SETTINGS_BUILT_IN_TOUCHPAD_DISABLED" desc="In Device Settings, link that shows up when the built-in touchpad is disabled.">
+        Built-in touchpad is disabled
+      </message>
+
+      <!-- Device Stylus (OS settings) -->
+      <message name="IDS_SETTINGS_STYLUS_TITLE" desc="Title of the stylus settings page.">
+        Stylus
+      </message>
+      <message name="IDS_SETTINGS_STYLUS_ENABLE_STYLUS_TOOLS" desc="Toggle that lets the user enable or disable the stylus tools.">
+        Show stylus tools in the shelf
+      </message>
+      <message name="IDS_SETTINGS_STYLUS_AUTO_OPEN_STYLUS_TOOLS" desc="Label that tells the user that the stylus tools will be automatically opened and closed when they insert or eject the stylus.">
+        Open stylus tools when the stylus is removed
+      </message>
+      <message name="IDS_SETTINGS_STYLUS_FIND_MORE_APPS_PRIMARY" desc="Primary URL label that opens up the Play Store to a curated list of stylus applications.">
+        Find more stylus apps
+      </message>
+      <message name="IDS_SETTINGS_STYLUS_FIND_MORE_APPS_SECONDARY" desc="Secondary (below the primary) URL label that opens up the Play Store to a curated list of stylus applications.">
+        Open Google Play
+      </message>
+      <message name="IDS_SETTINGS_STYLUS_NOTE_TAKING_APP_LABEL" desc="Label describing a dropdown that lets the user pick their default note-taking applications. The dropdown contains a list of all available choices. The user can install additional apps, so the contents of the dropdown is dynamic.">
+        Note-taking app
+      </message>
+      <message name="IDS_SETTINGS_STYLUS_NOTE_TAKING_APP_NONE_AVAILABLE" desc="Secondary label used when there are no note-taking applications available.">
+        None available
+      </message>
+      <message name="IDS_SETTINGS_STYLUS_NOTE_TAKING_APP_WAITING_FOR_ANDROID" desc="Secondary label used when the list of note-taking apps is not yet available, because the internal android container has not yet finished starting.">
+        Loading apps...
+      </message>
+
+      <!-- Graphics tablet page (OS settings)-->
+      <message name="IDS_SETTINGS_GRAPHICS_TABLET_TITLE" desc="Title of Graphics tablet settings page">
+        Pen tablet
+      </message>
+      <message name="IDS_SETTINGS_GRAPHICS_TABLET_CUSTOMIZE_TABLET_BUTTONS_LABEL" desc="Label of customize tablet buttons link row in graphics tablet page.">
+        Customize tablet buttons
+      </message>
+      <message name="IDS_SETTINGS_GRAPHICS_TABLET_CUSTOMIZE_PEN_BUTTONS_LABEL" desc="Label of customize pen buttons link row in graphics tablet page.">
+        Customize pen buttons
+      </message>
+
+      <!-- Customize buttons page (OS settings)-->
+      <message name="IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_TITLE" desc="Title of Customize mouse buttons page">
+        Customize mouse buttons
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_NUDGE_HEADER_WITHOUT_METADATA" desc="Header for mouse without metadata in the customize mouse buttons page nudge above the customize buttons subsection suggesting users to click buttons on their mice.">
+        Add or locate buttons on your mouse
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_NUDGE_HEADER_WITH_METADATA" desc="Header for mouse with metadata in the customize mouse buttons page nudge above the customize buttons subsection suggesting users to click buttons on their mice.">
+        Locate buttons on your mouse
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_TABLET_BUTTONS_NUDGE_HEADER_WITHOUT_METADATA" desc="Header for tablet without metadata in the customize tablet buttons page nudge above the customize buttons subsection suggesting users to click buttons on their graphics tablet.">
+        Add or locate buttons on your tablet
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_TABLET_BUTTONS_NUDGE_HEADER_WITH_METADATA" desc="Header for tablet with metadata in the customize tablet buttons page nudge above the customize buttons subsection suggesting users to click buttons on their graphics tablet.">
+        Locate buttons on your tablet
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_PEN_BUTTONS_NUDGE_HEADER_WITHOUT_METADATA" desc="Header for pen without metadata in the customize pen buttons page nudge above the customize buttons subsection suggesting users to click buttons on their graphics tablet stylus.">
+        Add or locate buttons on your pen
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_PEN_BUTTONS_NUDGE_HEADER_WITH_METADATA" desc="Header for pen with metadata in the customize pen buttons page nudge above the customize buttons subsection suggesting users to click buttons on their graphics tablet stylus.">
+        Locate buttons on your pen
+      </message>
+      <message name="IDS_SETTINGS_KEY_COMBINATION_OPTION_LABEL" desc="Label of key combination option in the button remapping action dropdown menu.">
+        Create key combination
+      </message>
+      <message name="IDS_SETTINGS_NO_REMAPPING_OPTION_LABEL" desc="Label of no remapping option in the button remapping action dropdown menu.">
+        Default
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_TITLE" desc="Title of the button renaming dialog in customize device buttons page.">
+        Change button name
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_DIALOG_DESCRIPTION" desc="Description of dialog that allows the user to input shortcuts that will be used as the action on a button.">
+        Press 1-4 modifier keys (ctrl, alt, shift, search, or launcher) and 1 more key. You can also select a single key.
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_DIALOG_CHANGE" desc="Label of change button on dialogs in customize device buttons pages.">
+        Change
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_DIALOG_CANCEL" desc="Label of cancel button on dialogs in customize device buttons pages.">
+        Cancel
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_DIALOG_SAVE" desc="Label of save button on dialogs in customize device buttons pages.">
+        Save
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_INPUT_LABEL" desc="Label above renaming button input field on the dialog in customize device buttons pages.">
+        New button name
+      </message>
+      <message name="IDS_SETTINGS_KEY_COMBINATION_DIALOG_TITLE" desc="Title of the key combination dialog that pops up after clicking key combination choice in the button remapping action dropdown menu.">
+        Create key combination
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_SUBPAGE_DESCRIPTION" desc="In customize buttons subpage, the description label above customize buttons to describe the actions the user should perform.">
+        Press a button that's not the left or right mouse button on your <ph name="DEVICE_NAME">$1<ex>MX Anywhere 2S</ex></ph>.
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_TABLET_BUTTONS_SUBPAGE_DESCRIPTION" desc="In customize buttons subpage, the description label above customize buttons to describe the actions the user should perform.">
+        Press a button on your <ph name="DEVICE_NAME">$1<ex>MX Anywhere 2S</ex></ph>.
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_INPUT_CHARACTER_COUNT" desc="Character count of the button renaming dialog input that shows up the current and maximum character count.">
+        <ph name="CURRENT_CHARACTER_COUNT">$1<ex>15</ex></ph>/<ph name="MAX_CHARACTER_COUNT">$2<ex>64</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_ERROR_MESSAGE" desc="Error message in the button renaming dialog saying the button name has taken.">
+        There is a button with the same name. Please choose another one.
+      </message>
+      <message name="IDS_SETTINGS_DISABLE_OPTION_LABEL" desc="Label of Disable option in the button remapping action dropdown menu.">
+        Disable
+      </message>
+      <message name="IDS_SETTINGS_VOLUME_ON_OFF_OPTION_LABEL" desc="Label of Volume on/off option in the button remapping action dropdown menu.">
+        Volume on/off
+      </message>
+      <message name="IDS_SETTINGS_MICROPHONE_ON_OFF_OPTION_LABEL" desc="Label of Microphone on/off option in the button remapping action dropdown menu.">
+        Microphone on/off
+      </message>
+      <message name="IDS_SETTINGS_MEDIA_PLAY_PAUSE_OPTION_LABEL" desc="Label of Media Play/Pause option in the button remapping action dropdown menu.">
+        Media Play/Pause
+      </message>
+      <message name="IDS_SETTINGS_OVERVIEW_OPTION_LABEL" desc="Label of Overview option in the button remapping action dropdown menu.">
+        Overview
+      </message>
+      <message name="IDS_SETTINGS_SCREENSHOT_OPTION_LABEL" desc="Label of Screenshot option in the button remapping action dropdown menu.">
+        Screenshot
+      </message>
+      <message name="IDS_SETTINGS_EMOJI_PICKER_OPTION_LABEL" desc="Label of Emoji Picker option in the button remapping action dropdown menu.">
+        Emoji Picker
+      </message>
+      <message name="IDS_SETTINGS_HIGH_CONTRAST_ON_OFF_OPTION_LABEL" desc="Label of High contrast on/off option in the button remapping action dropdown menu.">
+        High contrast on/off
+      </message>
+      <message name="IDS_SETTINGS_MAGNIFIER_ON_OFF_OPTION_LABEL" desc="Label of Magnifier on/off option in the button remapping action dropdown menu.">
+        Magnifier on/off
+      </message>
+      <message name="IDS_SETTINGS_DICTATION_ON_OFF_OPTION_LABEL" desc="Label of Dictation on/off option in the button remapping action dropdown menu.">
+        Dictation on/off
+      </message>
+      <message name="IDS_SETTINGS_UNDO_OPTION_LABEL" desc="Label of Undo option in the button remapping action dropdown menu.">
+        Undo
+      </message>
+      <message name="IDS_SETTINGS_REDO_OPTION_LABEL" desc="Label of Redo option in the button remapping action dropdown menu.">
+        Redo
+      </message>
+      <message name="IDS_SETTINGS_ZOOM_IN_OPTION_LABEL" desc="Label of Zoom In option in the button remapping action dropdown menu.">
+        Zoom In
+      </message>
+      <message name="IDS_SETTINGS_ZOOM_OUT_OPTION_LABEL" desc="Label of Zoom Out option in the button remapping action dropdown menu.">
+        Zoom Out
+      </message>
+      <message name="IDS_SETTINGS_RIGHT_CLICK_OPTION_LABEL" desc="Label of Right click option in the button remapping action dropdown menu.">
+        Right click
+      </message>
+      <message name="IDS_SETTINGS_LEFT_CLICK_OPTION_LABEL" desc="Label of Left click option in the button remapping action dropdown menu.">
+        Left click
+      </message>
+      <message name="IDS_SETTINGS_MIDDLE_CLICK_OPTION_LABEL" desc="Label of Middle click option in the button remapping action dropdown menu.">
+        Middle click
+      </message>
+      <message name="IDS_SETTINGS_PREVIOUS_PAGE_OPTION_LABEL" desc="Label of Previous page option in the button remapping action dropdown menu.">
+        Previous page
+      </message>
+      <message name="IDS_SETTINGS_NEXT_PAGE_OPTION_LABEL" desc="Label of Next page option in the button remapping action dropdown menu.">
+        Next page
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_REMAPPING_DROPDOWN_ARIA_LABEL" desc="Aria label for the button remapping dropdown in the customize button row.">
+        <ph name="BUTTON_NAME">$1<ex>Side button</ex></ph> remapped to <ph name="REMAPPING_OPTION">$2<ex>Copy</ex></ph>.
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_REORDER_ARIA_LABEL" desc="The aria label given for the reorder element that can typically be used by dragging. This label gives instructions on how to use with keyboard only.">
+        Reorder <ph name="BUTTON_NAME">$1<ex>Side button</ex></ph> using ctrl plus arrow up or arrow down
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_REORDER_ARIA_ANNOUNCEMENT" desc="The screen reader announcement whenever a user moves a button entry between different rows.">
+        Moved to row <ph name="ROW_NUMBER">$1<ex>1</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZATION_RENAME_ICON_LABEL" desc="The name of the rename button for the pencil icon.">
+        Rename
+      </message>
+      <message name="IDS_SETTINGS_RENAMING_DIALOG_INPUT_DESCRIPTION" desc="Description of renaming dialog input.">
+        Must be <ph name="MAX_CHARACTER_COUNT">$1<ex>20</ex></ph> characters or fewer
+      </message>
+
+      <!-- Device audio page (OS settings) -->
+      <message name="IDS_SETTINGS_AUDIO_TITLE" desc="In Device Settings, the title of the audio settings subpage.">
+        Audio
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_VOLUME_TITLE" desc="In Device Settings, the title of the volume row under the output section in audio settings subpage.">
+        Volume
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_OUTPUT_TITLE" desc="In Device Settings, the title of the output section of the audio settings subpage.">
+        Output
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_OUTPUT_DEVICE_TITLE" desc="In Device Settings, the title of the device row under the output section in audio settings subpage.">
+        Speaker
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_INPUT_TITLE" desc="In Device Settings, the title of the input section of the audio settings subpage.">
+        Input
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_INPUT_DEVICE_TITLE" desc="In Device Settings, the title of the device row under the input section in audio settings subpage.">
+        Microphone
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_INPUT_ALLOW_AGC_TITLE" desc="In Device Settings, the title of the allowance of AGC toggle under the input section in audio settings subpage." translateable="false">
+        Allow apps to automatically adjust mic volume
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_FOCUS_ENFORCEMENT_TITLE" desc="In Device Settings, the title of the audio focus enforcement (audio ducking) toggle under the audio settings subpage.">
+        Reduce background audio for notifications and alerts
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_HFP_MIC_SR_TITLE" desc="In Device Settings, the title of the super resolution toggle under the input section in audio settings subpage.">
+        Bluetooth Super Resolution
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_HFP_MIC_SR_DESCRIPTION" desc="In Device Settings, the description of the allowance of AGC toggle under the input section in audio settings subpage.">
+        Improve the quality of Bluetooth mic sound by upscaling low-res audio to high-res.
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_INPUT_GAIN_TITLE" desc="In Device Settings, the title of the slider under the input section in audio settings subpage. This slider controls the microphone's gain setting.">
+        Volume
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_NOT_MUTED" desc="In Device Settings, the aria label for the input mute button when not muted.">
+        Volume is on. Turn off volume.
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_MUTED" desc="In Device Settings, the aria label for the input mute button when muted.">
+        Volume is off. Turn on volume.
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_MUTED_BY_HARDWARE_SWITCH" desc="In Device Settings, the aria label for the input mute button when microphone mute switch is turned on.">
+        Microphone is off on your device
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_INPUT_NOISE_CANCELLATION_TITLE" desc="In Device Settings, the title of the noise cancellation toggle under the input section in audio settings subpage.">
+        Noise cancellation
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_TITLE" desc="In Device Settings, the title of the style transfer toggle under the input section in audio settings subpage.">
+        Studio-style mic
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_DESCRIPTION" desc="In Device Settings, the description of the allowance of style transfer toggle under the input section in audio settings subpage.">
+        Apply noise cancellation and audio improvements.
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_INPUT_VOICE_ISOLATION_EFFECT_FALLBACK_MESSAGE" desc="In Device Settings, the message to inform the user about the effect will fallback to noise cancellation.">
+        The connected mic can only support noise cancellation
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_INPUT_EFFECT_MODE" desc="In Device Settings, the section title of the effect mode options.">
+        Effect mode
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_INPUT_EFFECT_MODE_STYLE_TRANSFER_TITLE" desc="In Device Settings, the title of the style transfer effect mode option under the input section in audio settings subpage.">
+        Area voice
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_INPUT_EFFECT_MODE_STYLE_TRANSFER_DESCRIPTION" desc="In Device Settings, the description of the style transfer effect mode option under the input section in audio settings subpage.">
+        Improve audio quality so voices sound natural and clear.
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_INPUT_BEAMFORMING_TITLE" desc="In Device Settings, the title of the beamforming toggle under the input section in audio settings subpage.">
+        Focused voice
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_INPUT_BEAMFORMING_DESCRIPTION" desc="In Device Settings, the description of the beamforming effect under the input section in audio settings subpage.">
+        Beamforming mic so the person using the Chromebook sounds clear.
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_DEVICE_FRONT_MIC_LABEL" desc="In Device Settings, the label used for the front microphone.">
+        Front microphone
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_DEVICE_HEADPHONE_LABEL" desc="In Device Settings, the label used for the audio headphone.">
+        Headphones
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_DEVICE_INTERNAL_SPEAKERS_LABEL" desc="In Device Settings, the label used for the internal audio speaker.">
+        Speaker (internal)
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_DEVICE_INTERNAL_MIC_LABEL" desc="In Device Settings, the label used for the internal microphone.">
+        Microphone (internal)
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_DEVICE_REAR_MIC_LABEL" desc="In Device Settings, the label used for the rear microphone.">
+        Rear microphone
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_DEVICE_USB_LABEL" desc="In Device Settings, the label used for the USB audio device.">
+        <ph name="device_name">$1<ex>Headphone</ex></ph> (USB)
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_DEVICE_BLUETOOTH_LABEL" desc="In Device Settings, the label used for the bluetooth audio device.">
+        <ph name="device_name">$1<ex>Headphone</ex></ph> (Bluetooth)
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_DEVICE_HDMI_LABEL" desc="In Device Settings, the label used for the HDMI audio device.">
+        <ph name="device_name">$1<ex>Speaker</ex></ph> (HDMI/DP)
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_DEVICE_MIC_JACK_LABEL" desc="In Device Settings, the label used for the mic jack device.">
+        Mic jack
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_TOGGLE_TO_MUTE_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is unmuted.">
+        Turn off volume
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_TOGGLE_TO_UNMUTE_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is muted.">
+        Turn on volume
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_MUTED_BY_POLICY_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is muted by enterprise policy.">
+        Muted by your administrator
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_MUTED_EXTERNALLY_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is muted by hardware/switch.">
+        Microphone is off on your device
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_OUTPUT_MUTE_BUTTON_ARIA_LABEL_NOT_MUTED" desc="In Device Settings, the aria label for the output mute button when not muted.">
+        Volume is on. Turn off volume.
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_OUTPUT_MUTE_BUTTON_ARIA_LABEL_MUTED" desc="In Device Settings, the aria label for the output mute button muted.">
+        Volume is off. Turn on volume.
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_CHARGING_SOUNDS_LABEL" desc="Label for checkbox which enables charging sounds.">
+        Charging sounds
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_LOW_BATTERY_SOUND_LABEL" desc="Label for checkbox which enables the low battery sound.">
+        Low battery sound
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_STARTUP_SOUND_LABEL" desc="Label for checkbox which enables the device startup sound.">
+        Device startup sound
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_TITLE" desc="In Device Settings, the title of the device sounds section of the audio settings subpage.">
+        Device sounds
+      </message>
+      <message name="IDS_SETTINGS_AUDIO_OUTPUT_ENABLE_SPATIAL_AUDIO_TITLE" desc="In Device Settings, the title of the enablement of spatial audio toggle under the output section in audio settings subpage." translateable="false">
+        Spatial Audio
+      </message>
+
+      <!-- Device pointer page (OS settings) -->
+      <message name="IDS_SETTINGS_MOUSE_TITLE" desc="In Device Settings, the title of the mouse settings subpage.">
+        Mouse
+      </message>
+      <message name="IDS_SETTINGS_BUILT_IN_POINTING_STICK_NAME" desc="In Device Settings, the name of the built-in/internal pointing stick device within the settings app.">
+        Built-in TrackPoint
+      </message>
+      <message name="IDS_SETTINGS_POINTING_STICK_TITLE" desc="In Device Settings, the title of the pointing stick settings subpage. In most cases this will just be 'TrackPoint', the brand name of the pointing sticks used on Chromebooks.">
+        TrackPoint
+      </message>
+      <message name="IDS_SETTINGS_BUILT_IN_TOUCHPAD_NAME" desc="In Device Settings, the name of the built-in/internal touchpad device within the settings app.">
+        Built-in Touchpad
+      </message>
+      <message name="IDS_SETTINGS_TOUCHPAD_TITLE" desc="In Device Settings, the title of the touchpad settings subpage.">
+        Touchpad
+      </message>
+      <message name="IDS_OS_SETTINGS_TOUCHPAD_TAP_TO_CLICK_LABEL" desc="In Device Settings, the text next to the checkbox that allows tapping the touchpad to work as a click.">
+        Tap to click
+      </message>
+      <message name="IDS_OS_SETTINGS_TOUCHPAD_TAP_TO_CLICK_DESCRIPTION" desc="In Device Settings, the description of the label next to the checkbox that allows tapping the touchpad to work as a click.">
+        To click, tap your touchpad instead of pressing it
+      </message>
+      <message name="IDS_SETTINGS_TOUCHPAD_SPEED_LABEL" desc="In Device Settings, the text next to the slider that sets the speed (sensitivity) of the touchpad.">
+        Touchpad speed
+      </message>
+      <message name="IDS_SETTINGS_POINTER_SPEED_SLOW_LABEL" desc="In Device Settings, the text under the left (less sensitive) side of the slider for the pointer (mouse/touch) speed (sensitivity).">
+        Slow
+      </message>
+      <message name="IDS_SETTINGS_POINTER_SPEED_FAST_LABEL" desc="In Device Settings, the text under the right (more sensitive) side of the slider for the pointer (mouse/touchpad) speed (sensitivity).">
+        Fast
+      </message>
+      <message name="IDS_SETTINGS_POINTING_STICK_SPEED_LABEL" desc="In Device Settings, the text next to the slider that sets the speed (sensitivity) of the pointing stick (normally referred to as a TrackPoint).">
+        TrackPoint speed
+      </message>
+      <message name="IDS_SETTINGS_MOUSE_SCROLL_SPEED_LABEL" desc="In Device Settings, the text next to the slider that sets the speed (sensitivity) of mouse scrolling.">
+        Scrolling speed
+      </message>
+      <message name="IDS_SETTINGS_MOUSE_CURSOR_LABEL" desc="In Device Settings, the text of mouse cursor subsection title.">
+        Cursor
+      </message>
+      <message name="IDS_SETTINGS_MOUSE_SCROLLING_LABEL" desc="In Device Settings, the text of mouse scrolling subsection title.">
+        Scrolling
+      </message>
+      <message name="IDS_SETTINGS_MOUSE_SWAP_BUTTONS_LABEL" desc="In Device Settings, the text next to the checkbox to set the primary mouse button to the right button instead of the left button.">
+        Swap primary mouse button
+      </message>
+      <message name="IDS_SETTINGS_POINTING_STICK_PRIMARY_BUTTON_LABEL" desc="In Device Settings, the text next to the dropdown menu to set the primary pointing stick (a.k.a. TrackPoint) button. (TrackPoint is a trademark that's not translated.)">
+        Primary TrackPoint button
+      </message>
+      <message name="IDS_SETTINGS_PRIMARY_MOUSE_BUTTON_LEFT_LABEL" desc="In Device Settings, the text labelling the dropdown menu item for the left mouse button.">
+        Left button
+      </message>
+      <message name="IDS_SETTINGS_PRIMARY_MOUSE_BUTTON_RIGHT_LABEL" desc="In Device Settings, the text labelling the dropdown menu item for the right mouse button.">
+        Right button
+      </message>
+      <message name="IDS_OS_SETTINGS_MOUSE_REVERSE_SCROLL_LABEL" desc="In Device Settings, the text next to the checkbox to set reverse scrolling.">
+        Reverse scrolling <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_MOUSE_REVERSE_SCROLL_DESCRIPTION" desc="In Device Settings, the description for the label to set mouse reverse scrolling.">
+        Scroll up to move the page down
+      </message>
+      <message name="IDS_OS_SETTINGS_MOUSE_ACCELERATION_DESCRIPTION" desc="In Device Settings, the description for the label next to the checkbox to enable mouse acceleration.">
+        Faster movements with your mouse will move the cursor farther
+      </message>
+      <message name="IDS_SETTINGS_MOUSE_SCROLL_ACCELERATION_LABEL" desc="In Device Settings, the text next to the toggle for mouse scroll acceleration. Faster scrolling with your mouse will scroll farther.">
+        Scroll acceleration <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_MOUSE_CONTROLLED_SCROLLING_LABEL" desc="In Device Settings, the text next to the toggle for mouse controlled scrolling. Scroll at a controlled pace without automatic acceleration.">
+        Controlled scrolling <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_CURSOR_SPEED_LABEL" desc="In Device Settings, the text next to the slider that sets the speed (sensitivity) of the mouse cursor.">
+        Cursor speed
+      </message>
+      <message name="IDS_SETTINGS_CURSOR_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to disable mouse cursor acceleration. Faster movements with your mouse will move the cursor farther.">
+        Cursor acceleration
+      </message>
+      <message name="IDS_SETTINGS_POINTING_STICK_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to disable pointing stick (a.k.a. TrackPoint) acceleration. (TrackPoint is a trademark that's not translated.)">
+        Enable TrackPoint acceleration
+      </message>
+      <message name="IDS_OS_SETTINGS_TOUCHPAD_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to disable touchpad acceleration.">
+        Touchpad acceleration
+      </message>
+      <message name="IDS_OS_SETTINGS_TOUCHPAD_ACCELERATION_DESCRIPTION" desc="In Device Settings, the description of the label next to the checkbox to disable touchpad acceleration.">
+        Faster movements on your touchpad will move the cursor farther
+      </message>
+      <message name="IDS_SETTINGS_MOUSE_AND_TOUCHPAD_TITLE" desc="In Device Settings, the title of the mouse and touchpad settings subpage (when the user has both types of devices).">
+        Mouse and touchpad
+      </message>
+      <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_FEEDBACK_TITLE" desc="In Device Settings, the text next to the toggle for enabling touchpad haptic feedback.">
+        Haptic feedback
+      </message>
+      <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_FEEDBACK_SECONDARY_TEXT" desc="In Device Settings, the text next to the toggle for enabling touchpad haptic feedback.">
+        Receive vibration confirmation for actions like split screen and switching desks. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY_LABEL" desc="In Device Settings, the text next to the slider for setting the touchpad haptic click sensitivity.">
+        Click strength
+      </message>
+      <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_LIGHT_CLICK_LABEL" desc="In Device Settings, the text under the left (less sensitive) side of the slider for the touchpad haptic click sensitivity." meaning="A soft or gentle touch.">
+        Light
+      </message>
+      <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_FIRM_CLICK_LABEL" desc="In Device Settings, the text under the right (more sensitive) side of the slider for the touchpad haptic click sensitivity.">
+        Firm
+      </message>
+      <message name="IDS_SETTINGS_LEARN_MORE_LABEL" translateable="false" desc="In Device Settings, the learn more label for the cr toggle button.">
+        Learn more
+      </message>
+      <message name="IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_LABEL" desc="In Device Settings, the text next to the dropdown for setting the behavior of simulating a right click using a keyboard and touchpad.">
+        Use touchpad and keyboard to right-click
+      </message>
+      <message name="IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_DISABLED" desc="In the touchpad settings subpage, the dropdown list item for the disabled option.">
+        Disabled
+      </message>
+      <message name="IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_SEARCH" desc="In the touchpad settings subpage, the dropdown list item for the Search + Click option.">
+        search + click
+      </message>
+      <message name="IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_LAUNCHER" desc="In the touchpad settings subpage, the dropdown list item for the Launcher + Click option.">
+        launcher + click
+      </message>
+      <message name="IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_ALT" desc="In the touchpad settings subpage, the dropdown list item for the Alt + Click option.">
+        alt + click
+      </message>
+      <message name="IDS_SETTINGS_MODIFIER_KEYS_LABEL" desc="In the remap keyboard keys settings subpage, the label for the section that contains all of the modifier keys (Ctrl, Alt, etc).">
+        Select an action for each key
+      </message>
+      <message name="IDS_SETTINGS_OTHER_KEYS_LABEL" desc="In the remap keyboard keys settings subpage, the label for the section that contains all of the non-modifier keys (Backspace, Home, etc).">
+        Select a shortcut for each action
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_INSERT" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the insert 6-pack key action.">
+        insert
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_HOME" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the home 6-pack key action.">
+        home
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_END" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the end 6-pack key action.">
+        end
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the PageUp 6-pack key action.">
+        page up
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the PageDown 6-pack key action.">
+        page down
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_DELETE" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the delete 6-pack key action.">
+        delete
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_DELETE_ALT" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        alt + backspace
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_DELETE_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the search + backspace option.">
+        search + backspace
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_DELETE_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + backspace option.">
+        launcher + backspace
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_HOME_ALT" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        ctrl + alt + up arrow
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_HOME_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        search + left arrow
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_HOME_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + left arrow option.">
+        launcher + left arrow
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_END_ALT" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        ctrl + alt + down arrow
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_END_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        search + right arrow
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_END_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + right arrow option.">
+        launcher + right arrow
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_INSERT_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        search + shift + backspace
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_INSERT_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + shift + backspace option.">
+        launcher + shift + backspace
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_ALT" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        alt + down arrow
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        search + down arrow
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_DOWN_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + down arrow option.">
+        launcher + down arrow
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_ALT" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        alt + up arrow
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
+        search + up arrow
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_PAGE_UP_LAUNCHER" desc="In the keyboard settings subpage, the dropdown list item for the launcher + up arrow option.">
+        launcher + up arrow
+      </message>
+      <message name="IDS_SETTINGS_SIX_PACK_KEY_OPTION_DISABLED" desc="In the keyboard settings subpage, the dropdown list item for the disabled option.">
+        Disabled
+      </message>
+      <message name="IDS_SETTINGS_F11_KEY_LABEL" desc="In the keyboard settings subpage, the label for the F11 row.">
+        F11
+      </message>
+      <message name="IDS_SETTINGS_F12_KEY_LABEL" desc="In the keyboard settings subpage, the label for the F12 row.">
+        F12
+      </message>
+      <message name="IDS_SETTINGS_F_KEY_SHIFT_DROPDOWN_OPTION_SEARCH" desc="">
+        search + shift + <ph name="TOP_ROW_KEY">$1<ex>back</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_F_KEY_SHIFT_DROPDOWN_OPTION_LAUNCHER" desc="">
+        launcher + shift + <ph name="TOP_ROW_KEY">$1<ex>refresh</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_F_KEY_ALT_DROPDOWN_OPTION_SEARCH" desc="">
+        search + alt + <ph name="TOP_ROW_KEY">$1<ex>back</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_F_KEY_ALT_DROPDOWN_OPTION_LAUNCHER" desc="">
+        launcher + alt + <ph name="TOP_ROW_KEY">$1<ex>refresh</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION_SEARCH" desc="">
+        search + ctrl + shift + <ph name="TOP_ROW_KEY">$1<ex>back</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION_LAUNCHER" desc="">
+        launcher + ctrl + shift + <ph name="TOP_ROW_KEY">$1<ex>refresh</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_F_KEY_SHIFT_DROPDOWN_OPTION" desc="">
+        shift + <ph name="TOP_ROW_KEY">$1<ex>back</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_F_KEY_ALT_DROPDOWN_OPTION" desc="">
+        alt + <ph name="TOP_ROW_KEY">$1<ex>back</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION" desc="">
+        ctrl + shift + <ph name="TOP_ROW_KEY">$1<ex>refresh</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_BACK" desc="Describes the Back key on the top row of a ChromeOS keyboard.">
+        back
+      </message>
+      <message name="IDS_SETTINGS_FORWARD" desc="Describes the Forward key on the top row of a ChromeOS keyboard.">
+        forward
+      </message>
+      <message name="IDS_SETTINGS_FULLSCREEN" desc="Describes the Fullscreen key on the top row of a ChromeOS keyboard.">
+        fullscreen
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_BACKLIGHT_DOWN" desc="Describes the key for decreasing keyboard backlight brightness on the top row of a ChromeOS keyboard.">
+        keyboard brightness down
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_BACKLIGHT_TOGGLE" desc="Describes the key for toggling the keyboard backlight on the top row of a ChromeOS keyboard.">
+        keyboard backlight toggle
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_BACKLIGHT_UP" desc="Describes the key for increasing keyboard backlight brightness on the top row of a ChromeOS keyboard.">
+        keyboard brightness up
+      </message>
+      <message name="IDS_SETTINGS_MICROPHONE_MUTE" desc="Describes the key on the top row of a ChromeOS keyboard.">
+        microphone mute
+      </message>
+      <message name="IDS_SETTINGS_MUTE" desc="Describes the Mute key on the top row of a ChromeOS keyboard.">
+        mute
+      </message>
+      <message name="IDS_SETTINGS_OVERVIEW" desc="Describes the Overview key on the top row of a ChromeOS keyboard.">
+        overview
+      </message>
+      <message name="IDS_SETTINGS_PLAY_PAUSE" desc="Describes the play/pause key on the top row of a ChromeOS keyboard.">
+        play/pause
+      </message>
+      <message name="IDS_SETTINGS_PRIVACY_SCREEN_TOGGLE" desc="Describes the key on the top row of a ChromeOS keyboard.">
+        privacy screen toggle
+      </message>
+      <message name="IDS_SETTINGS_REFRESH" desc="Describes the Refresh key on the top row of a ChromeOS keyboard.">
+        refresh
+      </message>
+      <message name="IDS_SETTINGS_SCREENSHOT" desc="Describes the Screenshot key on the top row of a ChromeOS keyboard.">
+        screenshot
+      </message>
+      <message name="IDS_SETTINGS_SCREEN_BRIGHTNESS_DOWN" desc="Describes the key for decreasing display brightness on the top row of a ChromeOS keyboard.">
+        display brightness down
+      </message>
+      <message name="IDS_SETTINGS_SCREEN_BRIGHTNESS_UP" desc="Describes the key for increasing display brightness on the top row of a ChromeOS keyboard.">
+        display brightness up
+      </message>
+      <message name="IDS_SETTINGS_SCREEN_MIRROR" desc="Describes the key on the top row of a ChromeOS keyboard.">
+        screen mirror
+      </message>
+      <message name="IDS_SETTINGS_TRACK_NEXT" desc="Describes the next track key on the top row of a ChromeOS keyboard.">
+        next track
+      </message>
+      <message name="IDS_SETTINGS_TRACK_PREVIOUS" desc="Describes the previous track key on the top row of a ChromeOS keyboard.">
+        previous track
+      </message>
+      <message name="IDS_SETTINGS_VOLUME_DOWN" desc="Describes the volume down key on the top row of a ChromeOS keyboard.">
+        volume down
+      </message>
+      <message name="IDS_SETTINGS_VOLUME_UP" desc="Describes the volume up key on the top row of a ChromeOS keyboard.">
+        volume up
+      </message>
+      <message name="IDS_SETTINGS_ALL_APPLICATIONS" desc="Describes the all applications key on the top row of a ChromeOS keyboard.">
+        all applications
+      </message>
+      <message name="IDS_SETTINGS_EMOJI_PICKER" desc="Describes the emoji picker key on the top row of a ChromeOS keyboard.">
+        emoji pciker
+      </message>
+      <message name="IDS_SETTINGS_DICTATION" desc="Describes the dictation key on the top row of a ChromeOS keyboard.">
+        dictation
+      </message>
+
+      <!-- Device display (OS settings) -->
+      <message name="IDS_OS_SETTINGS_DISPLAY_TITLE" desc="In Device Settings, the title for display settings.">
+        Display
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_ARRANGEMENT_WITH_KEYBOARD_TEXT" desc="In Device Settings > Displays, text describing how to use a mouse or keyboard to change arrangement of displays.">
+        Drag or use arrow keys to move a display
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_ARRANGEMENT_TITLE" desc="In Device Settings > Displays, the label for the display arrangement section.">
+        Arrangement
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_BRIGHTNESS_LABEL" desc="In Device Settings > Displays, the label for setting the screen brightness of the selected display.">
+        Display brightness
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_AUTO_BRIGHTNESS_TOGGLE_LABEL" desc="In Device Settings > Displays, the label for toggling automatic display brightness for the selected display.">
+        Automatically adjust display brightness
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_AUTO_BRIGHTNESS_TOGGLE_SUBTITLE" desc="In Device Settings > Displays, the subtitle under the label for toggling automatic display brightness for the selected display.">
+        Adjust brightness based on your environment
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_MIRROR" desc="In Device Settings > Displays, the label for the control for mirroring.">
+        Mirror <ph name="DISPLAY_NAME">$1<ex>HP Z27n</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_MIRROR_DISPLAY_NAME" desc="In Device Settings > Displays, the label for the mirrored display name shown in the layout.">
+        Mirrored
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_EXCLUDE_IN_MIRROR_LABEL" desc="In Device Settings > Displays, the label for the control of excluding display in mirror mode.">
+        Exclude this display in mirror mode
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_EXCLUDE_IN_MIRROR_SUBLABEL" desc="In Device Settings > Displays, the sublabel for the control of excluding display in mirror mode.">
+        Only one display can be excluded in mirror mode
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_AMBIENT_COLOR_TITLE" desc="In Device Settings > Displays, the label for toggling ambient color.">
+        Ambient colors
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_AMBIENT_COLOR_SUBTITLE" desc="In Device Settings > Displays, descriptive sublabel for ambient color.">
+        Adjusts the screen color to match the environment
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_LABEL" desc="In Device Settings > Displays, the label for the Night Light feature (which controls the color temperature of the screen) section.">
+        Night Light
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_ON_AT_SUNSET" desc="In Device Settings > Displays, the sub label for the automatic schedule which explains that Night Light will turn on automatically at sunset.">
+        Night Light will turn on automatically at sunset
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_OFF_AT_SUNRISE" desc="In Device Settings > Displays, the sub label for the automatic schedule which explains that Night Light will turn off automatically at sunrise.">
+        Night Light will turn off automatically at sunrise
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_CUSTOM" desc="In Device Settings > Displays, the label of the option to set a custom schedule of the Night Light feature.">
+        Custom
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_LABEL" desc="In Device Settings > Displays, the label for the automatic schedule section of the Night Light feature.">
+        Schedule
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_NEVER" desc="In Device Settings > Displays, the label of the option to turn off the automatic schedule of the Night Light feature.">
+        Never
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_SUNSET_TO_SUNRISE" desc="In Device Settings > Displays, the label of the option to set the automatic schedule of the Night Light feature to turn on at sunset and off at sunrise.">
+        Sunset to sunrise
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_GEOLOCATION_WARNING_TEXT" desc="In Device Settings > Displays, the warning text that tells users that system geolocation permission is needed for scheduled night light.">
+        Current schedule is set to <ph name="SUNRISE">$1<ex>6am</ex></ph> - <ph name="SUNSET">$2<ex>6pm</ex></ph>. To automatically update the sunset and sunrise schedule, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on system location access<ph name="END_LINK">&lt;/a&gt;</ph>.
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_GEOLOCATION_MANAGED_WARNING_TEXT" desc="In Device Settings > Displays, the warning text that tells users that system geolocation permission is needed for scheduled night light.">
+        Current schedule is set to <ph name="SUNRISE">$1<ex>6am</ex></ph> - <ph name="SUNSET">$2<ex>6pm</ex></ph>. This setting is managed by your administrator.
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEXT" desc="In Device Settings > Displays, text describing the Night Light feature.">
+        Make it easier to look at your screen or read in dim light
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEMPERATURE_LABEL" desc="In Device Settings > Displays, label of the slider that controls the color temperature of the screen when the Night Light feature is on.">
+        Color temperature
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEMP_SLIDER_MAX_LABEL" desc="In Device Settings > Displays, label of the maximum value settable by the color temperature slider.">
+        Warmer
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEMP_SLIDER_MIN_LABEL" desc="In Device Settings > Displays, label of the minimum value settable by the color temperature slider.">
+        Cooler
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_UNIFIED_DESKTOP" desc="In Device Settings > Displays, the label for the control for the unified desktop feature.">
+        Allow windows to span displays
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_UNIFIED_DESKTOP_ON" desc="Label for the state for the unified desktop feature." meaning="Windows are allowed to span displays.">
+        On
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_UNIFIED_DESKTOP_OFF" desc="Label for the state for the unified desktop feature." meaning="Windows are not allowed to span displays.">
+        Off
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_RESOLUTION_TITLE" desc="In Device Settings > Displays, the label for the section for changing a display's resolution.">
+        Resolution
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_RESOLUTION_TEXT" desc="In Device Settings > Displays, the text describing the display's resolution.">
+        <ph name="WIDTH">$1<ex>1600</ex></ph> x <ph name="HEIGHT">$2<ex>1200</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_RESOLUTION_TEXT_BEST" desc="In Device Settings > Displays, the text describing the display's resolution when it is the 'best' resolution.">
+        <ph name="WIDTH">$1<ex>1600</ex></ph> x <ph name="HEIGHT">$2<ex>1200</ex></ph> (Best)
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_RESOLUTION_TEXT_NATIVE" desc="In Device Settings > Displays, the text describing the display's resolution when it is the native resolution.">
+        <ph name="WIDTH">$1<ex>1600</ex></ph> x <ph name="HEIGHT">$2<ex>1200</ex></ph> (Native)
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_RESOLUTION_SUBLABEL" desc="In Device Settings > Displays, the text describing the drop down menu to select the desired resolution and refresh rate of the selected external display.">
+        Determines sharpness of text and images
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_RESOLUTION_MENU_ITEM" desc="In Device Settings > Displays, the text entry for a single item in the external display resolution drop down menu.">
+        <ph name="WIDTH">$1<ex>1600</ex></ph> x <ph name="HEIGHT">$2<ex>1200</ex></ph> (<ph name="REFRESH_RATE">$3<ex>60</ex></ph> Hertz)
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_RESOLUTION_INTERLACED_MENU_ITEM" desc="In Device Settings > Displays, the text entry for a single item in the external display resolution drop down menu, when the display mode is interlaced (which means the display's odd and even lines are scanned alternately in two interwoven rasterized lines).">
+        <ph name="WIDTH">$1<ex>1600</ex></ph> x <ph name="HEIGHT">$2<ex>1200</ex></ph> (<ph name="REFRESH_RATE">$3<ex>60</ex></ph> Hertz) - interlaced
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_RESOLUTION_ONLY_MENU_ITEM" desc="In Device Settings > Displays, the text entry for a single item in the external display resolution drop down menu, when Resolution and Refresh Rate are displayed separately.">
+        <ph name="WIDTH">$1<ex>1600</ex></ph> x <ph name="HEIGHT">$2<ex>1200</ex></ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_DISPLAY_REFRESH_RATE_TITLE" desc="In Device Settings > Displays, the label for the section for changing a display's refresh rate.">
+        Refresh rate
+      </message>
+      <message name="IDS_OS_SETTINGS_DISPLAY_REFRESH_RATE_DESCRIPTION" desc="In Device Settings > Displays, the text describing the drop down menu to select the desired refresh rate of the selected external display.">
+        With a higher refresh rate, you'll have a smoother display with more details. Increased refresh rate may impact battery life.
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_REFRESH_RATE_MENU_ITEM" desc="In Device Settings > Displays, the text entry for a single item in the external display refresh rate drop down menu, when Resolution and Refresh Rate are displayed separately. Hz is the SI unit Hertz">
+        <ph name="REFRESH_RATE">$1<ex>60</ex></ph> Hz
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_REFRESH_RATE_INTERLACED_MENU_ITEM" desc="In Device Settings > Displays, the text entry for a single item in the external display refresh rate drop down menu, when Resolution and Refresh Rate are displayed separately and the display mode is interlaced (which means the display's odd and even lines are scanned alternately in two interwoven rasterized lines). Hz is the SI unit Hertz">
+        <ph name="REFRESH_RATE">$1<ex>60</ex></ph> Hz - interlaced
+      </message>
+      <message name="IDS_OS_SETTINGS_DISPLAY_ZOOM_LABEL" desc="In Device Settings > Displays, the label for the section for changing the display's zoom.">
+        Display and text size
+      </message>
+      <message name="IDS_OS_SETTINGS_DISPLAY_ZOOM_DESCRIPTION" desc="In Device Settings > Displays, the description for the display's zoom.">
+        Make items on your screen, including text, smaller or larger
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_ZOOM_VALUE" desc="The currently selected display zoom percentage.">
+        <ph name="DISPLAY_ZOOM">$1<ex>120</ex></ph>%
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_ZOOM_LOGICAL_RESOLUTION_TEXT" desc="In Device Settings > Displays, the text describing the display's effective resolution.">
+        Looks like <ph name="WIDTH">$1<ex>1600</ex></ph> x <ph name="HEIGHT">$2<ex>1200</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_ZOOM_LOGICAL_RESOLUTION_NATIVE_TEXT" desc="In Device Settings > Displays, the text describing the display's native resolution.">
+        Looks like <ph name="WIDTH">$1<ex>1600</ex></ph> x <ph name="HEIGHT">$2<ex>1200</ex></ph> (Native)
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_ZOOM_LOGICAL_RESOLUTION_DEFAULT_TEXT" desc="In Device Settings > Displays, the text describing the display's effective resolution that comes due to the zoom being at the recommended level.">
+        Looks like <ph name="WIDTH">$1<ex>1600</ex></ph> x <ph name="HEIGHT">$2<ex>1200</ex></ph> (Default)
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_ZOOM_SLIDER_MINIMUM" desc="In Device Settings > Displays, the label of the minimum value for the display size slider">
+        Small
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_ZOOM_SLIDER_MAXIMUM" desc="In Device Settings > Displays, the label of the maximum value for the display size slider">
+        Large
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_SCREEN" desc="In Device Settings > Displays, the label for the dropdown menu for changing the dispay type.">
+        Screen
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_SCREEN_EXTENDED" desc="The label for the dropdown menu list item to set the selected screen as extended display.">
+        Extended display
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_SCREEN_PRIMARY" desc="The label for the dropdown menu list item to set the selected screen as primary display.">
+        Primary display
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_ORIENTATION" desc="In Device Settings > Displays, the label for the control for changing a display's orientation.">
+        Orientation
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_ORIENTATION_AUTO_ROTATE" desc="In Device Settings > Displays, the label for the entry that enables auto-rotation in tablet mode.">
+        Auto-rotate
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_ORIENTATION_STANDARD" desc="In Device Settings > Displays, the label for standard orientation (0 rotation).">
+        0&#x00B0; (Default)
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_OVERSCAN_TEXT" desc="Text explaining that this setting is used to adjust the boundaries of the selected display.">
+        Adjust the boundaries of your desktop within the display
+      </message>
+      <message name="IDS_OS_SETTINGS_DISPLAY_BOUNDARIES_TITLE" desc="Title of the settings subpage which adjusts display boundaries.">
+        Display boundaries
+      </message>
+      <message name="IDS_OS_SETTINGS_DISPLAY_BOUNDARIES_DESCRIPTION" desc="Description for the display boundaries settings subpage.">
+        Press the arrow keys to shrink or expand the display area. To move the display area around, press shift and +, then use the arrow keys.
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_OVERSCAN_INSTRUCTIONS" desc="Instructions for changing the display overscan calibration.">
+        Tap the following keys to adjust or move the cropping area
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_OVERSCAN_RESIZE" desc="Label for resizing overscan calibration.">
+        Shrink / Expand
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_OVERSCAN_POSITION" desc="Label for positioning overscan calibration.">
+        Move
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_OVERSCAN_RESET" desc="Label for resetting overscan calibration.">
+        Reset
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TITLE" desc="In Device Settings > Displays, the label for initiating touch calibration.">
+        Calibrate touchscreen
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TEXT" desc="In Device Settings > Displays, the sublabel for initiating touch calibration.">
+        Set up and adjust the accuracy of your touchscreen
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_TOUCH_MAPPING_TITLE" desc="In Device Settings > Displays, the label for initiating mapping your touchscreen device to the correct display.">
+        Map your touchscreen
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_TOUCH_MAPPING_TEXT" desc="In Device Settings > Displays, the sublabel for initiating mapping your touchscreen.">
+        Set up and map your touchscreen device to the correct display
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_LAYOUT_DONW_A11Y_LABEL" desc="A11y announcement when display position moved downwards.">
+        Window moved downwards
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_LAYOUT_UP_A11Y_LABEL" desc="A11y announcement when display position moved upwards.">
+        Window moved upwards
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_LAYOUT_LEFT_A11Y_LABEL" desc="A11y announcement when display position moved to the left.">
+        Window moved to the left
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_LAYOUT_RIGHT_A11Y_LABEL" desc="A11y announcement when display position moved to the right.">
+        Window moved to the right
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_LAYOUT_DONW_AND_RIGHT_A11Y_LABEL" desc="A11y announcement when display position moved downwards and to the right.">
+        Window moved downwards and to the right
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_LAYOUT_DONW_AND_LEFT_A11Y_LABEL" desc="A11y announcement when display position moved downwards and to the left.">
+        Window moved downwards and to the left
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_LAYOUT_UP_AND_RIGHT_A11Y_LABEL" desc="A11y announcement when display position moved upwards and to the right.">
+        Window moved upwards and to the right
+      </message>
+      <message name="IDS_SETTINGS_DISPLAY_LAYOUT_UP_AND_LEFT_A11Y_LABEL" desc="A11y announcement when display position moved upwards and to the left.">
+        Window moved upwards and to the left
+      </message>
+
+      <!-- Per Device Keyboard page (OS settings) -->
+      <message name="IDS_SETTINGS_BUILT_IN_KEYBOARD_NAME" desc="In Device Settings, the name of the built-in/internal keyboard device within the settings app.">
+        Built-in Keyboard
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_REMAP_KEYS_ROW_LABEL" desc="In per-device keyboard Settings, the label of the Remap Keyboard Keys row.">
+        Customize keyboard keys
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_REMAP_KEYS_ROW_SUB_LABEL" desc="Sub-label with number of remapped keys for the Remap Keyboard Keys row.">
+        {COUNT, plural,
+     =0 {No keys customized}
+     =1 {1 customized key}
+     other {{COUNT} customized keys}}
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_REMAP_KEYS_DESCRIPTION" desc="In Keyboard remap keys subpage, the description label above remapping keys to describe the actions user can perform.">
+        For <ph name="DEVICE_NAME">$1<ex>Internal Keyboard</ex></ph>, choose an action for each key
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS" desc="In Device Settings, the inverted checkbox label for interpreting the top-row keys as function keys instead.">
+        Use function keys as top row keys
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS_DESCRIPTION" desc="In Device Settings, the inverted label describing how to use the top-row keys' original actions when they are set to behave like function keys.">
+        F keys will now have the behavior as system top-row keys
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_SEARCH" desc="In Device Settings, the checkbox label to enable the Search key to switch the behavior of the top-row keys.">
+        Use the search key to change the behavior of function keys
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION_SEARCH" desc="In Device Settings, the label describing how to use the Search key to switch the behavior of the top-row keys.">
+        Hold the search key to change between function keys and system top-row keys
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_LAUNCHER" desc="In Device Settings, the checkbox label to enable the launcher key to switch the behavior of the top-row keys.">
+        Use the launcher key to change the behavior of function keys
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION_LAUNCHER" desc="In Device Settings, the label describing how to use the launcher key to switch the behavior of the top-row keys.">
+        Hold the launcher key to change between function keys and system top-row keys
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_REMAP_RESTORE_BUTTON_LABEL" desc="In Keyboard remap keys subpage, the reset keys button label.">
+        Reset keys
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_NO_KEYBOARDS_HELP_MESSAGE" desc="In Keyboard remap keys subpage, the message that notifies users that no keyboards are connected.">
+        No keyboard connected
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_VIEW_AND_CUSTOMIZE_SHORTCUTS" desc="The link to view and customize the keyboard shortut.">
+        View and customize keyboard shortcuts
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_LEFT_ALT" desc="In keyboard remap keys subpage, the label and dropdown list item for the Alt key.">
+        alt
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_ASSISTANT" desc="In keyboard remap keys subpage, the label and dropdown list item for the Assistant key.">
+        assistant
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_BACKSPACE" desc="In keyboard remap keys subpage, the dropdown list item for the Backspace key.">
+        backspace
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_CAPS_LOCK" desc="In keyboard remap keys subpage, the label and dropdown list item for the Caps Lock key.">
+        caps lock
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_LEFT_CTRL" desc="In keyboard remap keys subpage, the label and dropdown list item for the Ctrl key.">
+        ctrl
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_ESCAPE" desc="In keyboard remap keys subpage, the dropdown list item for the Escape key.">
+        escape
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_COMMAND" desc="In keyboard remap keys subpage, the dropdown list item for the external Command key on Apple keyboards when there's no internal keyboard on the device.">
+        command
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_META" desc="In keyboard remap keys subpage, the dropdown list item for the Meta key (Search key on ChromeOS keyboards, and Windows key on Windows keyboards).">
+        meta
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_SEARCH" desc="In keyboard remap keys subpage, the label and dropdown list item for the Search key.">
+        search
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_LAUNCHER" desc="In keyboard remap keys subpage, the label and dropdown list item for the Launcher key.">
+        launcher
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_DISABLED" desc="In keyboard remap keys subpage, the dropdown list item for a disabled key.">
+        Disabled
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_ACTION_ROW_DESCRIPTION" desc="In keyboard remap keys subpage, the dropdown list label for each key.">
+        Select an action for <ph name="KEY_NAME">$1<ex>launch</ex></ph> key
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_SHORTCUT_ROW_DESCRIPTION" desc="In keyboard remap keys subpage, the dropdown list item for each shortcut.">
+        Select a shortcut for <ph name="ACTION_NAME">$1<ex>delete</ex></ph> action
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_FUNCTION" desc="In keyboard remap keys subpage, the dropdown list item for a function key.">
+        fn
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_CONNECTED_A11Y_LABEL" desc="The message announced to screen readers when a device is connected.">
+        <ph name="DEVICE_NAME">$1<ex>Internal Keyboard</ex></ph> has been connected
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_DISCONNECTED_A11Y_LABEL" desc="The message announced to screen readers when a device is disconnected.">
+        <ph name="DEVICE_NAME">$1<ex>Internal Keyboard</ex></ph> has been disconnected
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_ALL_GRAPHICS_TABLETS_DISCONNECTED_A11Y_LABEL" translateable="false" desc="The message announced to screen readers when all graphics tablets have been disconnected.">
+        All graphics tablets have been disconnected
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_ALL_MICE_DISCONNECTED_A11Y_LABEL" desc="The message announced to screen readers when all mice have been disconnected.">
+        All mice have been disconnected
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_ALL_TOUCHPADS_DISCONNECTED_A11Y_LABEL" desc="The message announced to screen readers when all mice have been disconnected.">
+        All touchpads have been disconnected
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_ALL_POINTING_STICKS_DISCONNECTED_A11Y_LABEL" desc="The message announced to screen readers when all mice have been disconnected.">
+        All TrackPoints have been disconnected
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_OPEN_APP_LABEL" translateable="false" desc="The label for the row in settings which when clicked, opens the companion app for the connected device.">
+        Open <ph name="APP_NAME">$1<ex>SteelSeries</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_INSTALL_APP_LABEL" desc="Label for the row that displays an app the user can install for their device.">
+        Install <ph name="APP_NAME">$1<ex>SteelSeries</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_INSTALL_APP_BUTTON" desc="Label for the button used to initiate an app installation.">
+        Install
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_NAME" desc="Label for the device name.">
+        Device name
+      </message>
+      <message name="IDS_SETTINGS_PER_DEVICE_BATTERY_PERCENTAGE_A11Y_LABEL" desc="A11y label informing the current battery percentage.">
+        Battery level <ph name="PERCENTAGE">$1<ex>90</ex></ph>%
+      </message>
+
+      <!-- Device Keyboard page (OS settings) -->
+      <message name="IDS_OS_SETTINGS_KEYBOARD_AND_INPUTS_TITLE" desc="In Device Settings, the title of the keyboard and input settings subpage.">
+        Keyboard and inputs
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_KEY_LEFT_CTRL" desc="In Device Settings, the label and dropdown list item for the Ctrl key.">
+        Ctrl
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_KEY_LEFT_ALT" desc="In Device Settings, the label and dropdown list item for the Alt key.">
+        Alt
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_KEY_CAPS_LOCK" desc="In Device Settings, the label and dropdown list item for the Caps Lock key.">
+        Caps Lock
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_KEY_COMMAND" desc="In Device Settings, the dropdown list item for the external Command key on Apple keyboards when there's no internal keyboard on the device.">
+        Command
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_KEY_DIAMOND" desc="In Device Settings, the label for the Diamond key.">
+        Diamond
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_KEY_ESCAPE" desc="In Device Settings, the dropdown list item for the Escape key.">
+        Escape
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_KEY_BACKSPACE" desc="In Device Settings, the dropdown list item for the Backspace key.">
+        Backspace
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_KEY_ASSISTANT" desc="In Device Settings, the label and dropdown list item for the Assistant key.">
+        Assistant
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_KEY_DISABLED" desc="In Device Settings, the dropdown list item for a disabled key.">
+        Disabled
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_KEY_EXTERNAL_COMMAND" desc="In Device Settings, the dropdown list item for the external Command key on Apple keyboards.">
+        External Command
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_KEY_EXTERNAL_META" desc="In Device Settings, the dropdown list item for the external Meta key (Search key on ChromeOS keyboards, and Windows key on Windows keyboards).">
+        External Meta
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_KEY_META" desc="In Device Settings, the dropdown list item for the external Meta key (Search key on ChromeOS keyboards, and Windows key on Windows keyboards) when there's no internal keyboard on the device.">
+        Meta
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS" desc="In Device Settings, the checkbox label for interpreting the top-row keys as function keys instead.">
+        Treat top-row keys as function keys
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_COLORS" desc="In Device Settings, the direct link from Keyboard Settings to Personalization Hub's RGB keyboard control">
+        Keyboard backlight colors
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_BRIGHTNESS_LABEL" desc="The label for setting the keyboard brightness.">
+        Keyboard backlight brightness
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_AUTO_BRIGHNTESS_ENABLE_LABEL" desc="The label for setting the keyboard auto brightness enabled.">
+        Automatically adjust keyboard backlight brightness
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_AUTO_BRIGHNTESS_ENABLE_SUB_LABEL" desc="The sub-label for setting the keyboard auto brightness enabled.">
+        Adjust brightness based on your environment
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE" desc="The checkbox label for enabling keyboard auto-repeat.">
+        Press and hold to automatically repeat the key
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE_SUB_LABEL" desc="The checkbox label for enabling keyboard auto-repeat.">
+        If you hold down a key, the key's character will repeat
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_DELAY" desc="The label for the slider for the delay before auto-repeat begins. The delay is the amount of time a key must be held down before auto-repeating begins.">
+        Delay before repeat
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_DELAY_LONG" desc="The label for the beginning of the auto-repeat delay slider, representing a long delay.">
+        Long
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_DELAY_SHORT" desc="The label for the end of the auto-repeat delay slider, representing a short delay.">
+        Short
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_RATE" desc="The label for the slider for the auto-repeat rate. The rate is how many times a key repeats per second once auto-repeating has begun.">
+        Repeat rate
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_RATE_SLOW" desc="The label for the beginning of the auto-repeat rate slider, representing a slow repeat rate.">
+        Slow
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_FAST" desc="The label for the end of the auto-repeat rate slider, representing a fast repeat rate.">
+        Fast
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_SHOW_SHORTCUT_VIEWER" desc="The link to open the keyboard shortut viewer.">
+        View keyboard shortcuts
+      </message>
+      <message name="IDS_OS_SETTINGS_KEYBOARD_SHOW_INPUT_SETTINGS" desc="The link to navigate to input method settings.">
+        Input settings
+      </message>
+      <message name="IDS_OS_SETTINGS_KEYBOARD_SHOW_A11Y_KEYBOARD_SETTINGS" desc="The link to navigate to accessibility keyboard settings.">
+        Accessibility keyboard settings
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_KEY_LAUNCHER" desc="In Device Settings, the label and dropdown list item for the Search key on keyboard layouts of newer Chromebooks.">
+        Launcher
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_KEY_SEARCH" desc="In Device Settings, the label and dropdown list item for the Search key.">
+        Search
+      </message>
+      <message name="IDS_SETTINGS_SPLIT_MODIFIER_KEYBOARD_SEND_FUNCTION_KEYS_LAYOUT_DESCRIPTION" translateable="false" desc="In split modifier keyboard, the label describing how to use the top-row keys' original actions when they are set to behave like function keys.">
+        Press the Fn key to switch the behavior of top-row keys
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_LAYOUT2_DESCRIPTION" desc="In Device Settings, when device uses 2017 keyboard layout, the label describing how to use the top-row keys' original actions when they are set to behave like function keys.">
+        Hold the Launcher key to switch the behavior of the top-row keys
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_DESCRIPTION" desc="In Device Settings, the label describing how to use the top-row keys' original actions when they are set to behave like function keys.">
+        Hold the Search key to switch the behavior of the top-row keys
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_HOLDING_KEYS" desc="In Device Settings, a label for a section containing settings for key repeat and holding down keys">
+        Repeat keys and accent marks
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_ACCENT_MARKS" desc="In Device Settings a label for a setting that allows for holding down a key to produce a pop up for inserting letters with diacritics">
+        Show accent marks and special characters
+      </message>
+      <message name="IDS_SETTINGS_KEYBOARD_ACCENT_MARKS_SUB_LABEL" desc="In Device Settings a label for a setting that allows for holding down a key to produce a pop up for inserting letters with diacritics - longer descriptive sublabel">
+        Press &amp; hold keyboard keys to see accent marks and special characters. This turns off repeat key press for alphabet keys. Only available for English (US).
+      </message>
+
       <part file="ash_settings_search_tag_strings.grdp" />
     </messages>
   </release>

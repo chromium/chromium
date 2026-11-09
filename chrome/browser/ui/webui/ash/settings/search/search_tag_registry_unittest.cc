@@ -12,8 +12,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_concept.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
+#include "chromeos/ash/experiences/settings_ui/resources/grit/ash_settings_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::settings {

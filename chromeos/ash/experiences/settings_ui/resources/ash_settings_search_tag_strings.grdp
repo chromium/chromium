@@ -1,4 +1,241 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Search tags used for ChromeOS settings search. -->
 <grit-part>
+  <!-- Device section. -->
+  <message name="IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS"  desc="Text for search result item which, when clicked, navigates the user to Audio settings.">
+    Audio
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT1"  desc="Text for search result item which, when clicked, navigates the user to Audio settings. Alternative phrase for: 'Audio'.">
+    Volume
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT2"  desc="Text for search result item which, when clicked, navigates the user to Audio settings. Alternative phrase for: 'Audio'.">
+    Sound
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT3"  desc="Text for search result item which, when clicked, navigates the user to Audio settings. Alternative phrase for: 'Audio'.">
+    Speakers
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT4"  desc="Text for search result item which, when clicked, navigates the user to Audio settings. Alternative phrase for: 'Audio'.">
+    Microphone
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_CHARGING_SOUNDS" desc="Text for search result item which, when clicked, navigates the user to settings to toggle whether the device plays charging sounds.">
+    Charging sounds
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_LOW_BATTERY_SOUND" desc="Text for search result item which, when clicked, navigates the user to settings to toggle whether the device plays the low battery warning sound.">
+    Low battery sound
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DEVICE" desc="Text for search result item which, when clicked, navigates the user to device settings.">
+    Device
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_KEYBOARD" desc="Text for search result item which, when clicked, navigates the user to keyboard settings.">
+    Keyboard
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_KEYBOARD_FUNCTION_KEYS" desc="Text for search result item which, when clicked, navigates the user to keyboard settings, with a toggle to enable/disable treating the top row as function keys.">
+    Keyboard function keys
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_KEYBOARD_BLOCK_META_FKEY_COMBO_REWRITES" translateable="false" desc="Text for search result item which, when clicked, navigates the user to keyboard settings, with a toggle to enable/disable system/launcher keys to switch the top row between function keys and chromeos actions.">
+    Block meta F-key combo rewrites
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_KEYBOARD_REMAP_KEYS" translateable="false" desc="Text for search result item which, when clicked, navigates the user to keyboard settings, with a button leading the user to remap keyboard keys page.">
+    Remap keyboard keys
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_KEYBOARD_AUTO_REPEAT" desc="Text for search result item which, when clicked, navigates the user to keyboard settings, with toggles/sliders to set the auto-repeat state. Alternate phrase for: 'Keyboard repeat latency'">
+    Keyboard auto-repeat
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_KEYBOARD_AUTO_REPEAT_ALT1" desc="Text for search result item which, when clicked, navigates the user to keyboard settings, with toggles/sliders to set the auto-repeat state. Alternate phrase for: 'Keyboard auto-repeat'">
+    Keyboard repeat latency
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_KEYBOARD_SHORTCUTS" desc="Text for search result item which, when clicked, navigates the user to keyboard shortcut settings.">
+    Keyboard shortcuts
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY" desc="Text for search result item which, when clicked, navigates the user to display settings. Alternate phrase for: 'Monitor', 'Screen'">
+    Display
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_ALT1" desc="Text for search result item which, when clicked, navigates the user to display settings. Alternate phrase for: 'Display settings', 'Screen'">
+    Monitor
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_ALT2" desc="Text for search result item which, when clicked, navigates the user to display settings. Alternate phrase for: 'Display settings', 'Monitor'">
+    Screen
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_SIZE" desc="Text for search result item which, when clicked, navigates the user to display settings, with a slider to change how small or large items appear on screen. Alternate phrase for: 'Monitor size', 'Screen size', 'Text size', 'Icon size', 'Zoom'">
+    Display size
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_SIZE_ALT1" desc="Text for search result item which, when clicked, navigates the user to display settings, with a slider to change how small or large items appear on screen. Alternate phrase for: 'Display size', 'Screen size', 'Text size', 'Icon size', 'Zoom'">
+    Monitor size
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_SIZE_ALT2" desc="Text for search result item which, when clicked, navigates the user to display settings, with a slider to change how small or large items appear on screen. Alternate phrase for: 'Display size', 'Monitor size', 'Text size', 'Icon size', 'Zoom'">
+    Screen size
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_SIZE_ALT3" desc="Text for search result item which, when clicked, navigates the user to display settings, with a slider to change how small or large items appear on screen. Alternate phrase for: 'Display size', 'Monitor size', 'Screen size', 'Icon size', 'Zoom'">
+    Text size
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_SIZE_ALT4" desc="Text for search result item which, when clicked, navigates the user to display settings, with a slider to change how small or large items appear on screen. Alternate phrase for: 'Display size', 'Monitor size', 'Screen size', 'Text size', 'Zoom'">
+    Icon size
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_SIZE_ALT5" desc="Text for search result item which, when clicked, navigates the user to display settings, with a slider to change how small or large items appear on screen. Alternate phrase for: 'Display size', 'Monitor size', 'Screen size', 'Text size', 'Icon size'">
+    Zoom
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_NIGHT_LIGHT" desc="Text for search result item which, when clicked, navigates the user to display settings, with a section for Night Light (adjusts brightness in dim light). Alternate phrase for: 'Dim light', 'Blue light reduction'">
+    Night Light
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_NIGHT_LIGHT_ALT1" desc="Text for search result item which, when clicked, navigates the user to display settings, with a section for Night Light (adjusts brightness in dim light). Alternate phrase for: 'Night Light', 'Blue light reduction'">
+    Dim light
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_NIGHT_LIGHT_ALT2" desc="Text for search result item which, when clicked, navigates the user to display settings, with a section for Night Light (adjusts brightness in dim light). Alternate phrase for: 'Night Light', 'Dim light'">
+    Blue light reduction
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_TOUCHPAD" desc="Text for search result item which, when clicked, navigates the user to touchpad settings. Alternate phrase for: 'Trackpad'">
+    Touchpad
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_TOUCHPAD_ALT1" desc="Text for search result item which, when clicked, navigates the user to touchpad settings. Alternate phrase for: 'Touchpad settings'">
+    Trackpad
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_TOUCHPAD_TAP_TO_CLICK" desc="Text for search result item which, when clicked, navigates the user to touchpad settings, with a toggle to enable/disable tap-to-click.">
+    Touchpad tap-to-click
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_TOUCHPAD_TAP_DRAGGING" desc="Text for search result item which, when clicked, navigates the user to touchpad settings, with a toggle to enable/disable tap dragging.">
+    Touchpad tap dragging
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_TOUCHPAD_REVERSE_SCROLLING" desc="Text for search result item which, when clicked, navigates the user to touchpad settings, with a toggle to enable/disable reverse scrolling.">
+    Touchpad reverse scrolling
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_TOUCHPAD_ACCELERATION" desc="Text for search result item which, when clicked, navigates the user to touchpad settings, with a toggle to enable/disable acceleration.">
+    Touchpad acceleration
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_TOUCHPAD_SPEED" desc="Text for search result item which, when clicked, navigates the user to touchpad settings, with a slider to set speed.">
+    Touchpad speed
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_FEEDBACK" desc="Text for search result item which, when clicked, navigates the user to touchpad settings, with a toggle to enable/disable haptic feedback.">
+    Touchpad haptic feedback
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY" translateable="false" desc="Text for search result item which, when clicked, navigates the user to touchpad settings, with a slider to adjust the haptic touchpad click sensitivity.">
+    Touchpad haptic click sensitivity
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MOUSE" desc="Text for search result item which, when clicked, navigates the user to mouse settings.">
+    Mouse
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MOUSE_SWAP_BUTTON" desc="Text for search result item which, when clicked, navigates the user to mouse settings, with a toggle to enable/disable swapping the primary buttons.">
+    Swap primary mouse button
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MOUSE_REVERSE_SCROLLING" desc="Text for search result item which, when clicked, navigates the user to mouse settings, with a toggle to enable/disable reverse scrolling.">
+    Mouse reverse scrolling
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MOUSE_ACCELERATION" desc="Text for search result item which, when clicked, navigates the user to mouse settings, with a toggle to enable/disable acceleration.">
+    Mouse acceleration
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MOUSE_SCROLL_ACCELERATION" desc="Text for search result item which, when clicked, navigates the user to mouse settings, with a toggle to enable/disable scroll acceleration.">
+    Mouse scroll acceleration
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MOUSE_SPEED" desc="Text for search result item which, when clicked, navigates the user to mouse settings, with a slider to set speed.">
+    Mouse speed
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_POINTING_STICK_PRIMARY_BUTTON" desc="Text for search result item which, when clicked, navigates the user to pointing stick (TrackPoint) settings, with a dropdown to choose the primary button. (TrackPoint is a trademark that's not translated.)">
+    Primary TrackPoint button
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_POINTING_STICK_ACCELERATION" desc="Text for search result item which, when clicked, navigates the user to pointing stick (TrackPoint) settings, with a toggle to enable/disable acceleration. (TrackPoint is a trademark that's not translated.)">
+    TrackPoint acceleration
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_POINTING_STICK_SPEED" desc="Text for search result item which, when clicked, navigates the user to pointing stick settings (normally known as TrackPoint settings), with a slider to set speed.">
+    TrackPoint speed
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_STYLUS" desc="Text for search result item which, when clicked, navigates the user to stylus settings.">
+    Stylus
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_STYLUS_SHELF_TOOLS" desc="Text for search result item which, when clicked, navigates the user to stylus settings, with a toggle to enable/disable showing stylus tools in the shelf. Alternate phrase for: 'Stylus tools in toolbar', 'Stylus tools in dock'">
+    Show stylus tools in shelf
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_STYLUS_SHELF_TOOLS_ALT1" desc="Text for search result item which, when clicked, navigates the user to stylus settings, with a toggle to enable/disable showing stylus tools in the shelf. Alternate phrase for: 'Show stylus tools in shelf', 'Stylus tools in dock'">
+    Stylus tools in toolbar
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_STYLUS_SHELF_TOOLS_ALT2" desc="Text for search result item which, when clicked, navigates the user to stylus settings, with a toggle to enable/disable showing stylus tools in the shelf. Alternate phrase for: 'Show stylus tools in shelf', 'Stylus tools in toolbar'">
+    Stylus tools in dock
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_STYLUS_NOTE_APP" desc="Text for search result item which, when clicked, navigates the user to stylus settings, with a dropdown to select the note-taking app. Alternate phrase for: 'Stylus writing app', 'Stylus drawing app'">
+    Stylus note-taking app
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_STYLUS_NOTE_APP_ALT1" desc="Text for search result item which, when clicked, navigates the user to stylus settings, with a dropdown to select the note-taking app. Alternate phrase for: 'Stylus note-taking app', 'Stylus drawing app'">
+    Stylus writing app
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_STYLUS_NOTE_APP_ALT2" desc="Text for search result item which, when clicked, navigates the user to stylus settings, with a dropdown to select the note-taking app. Alternate phrase for: 'Stylus note-taking app', 'Stylus writing app'">
+    Stylus drawing app
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_ARRANGEMENT" desc="Text for search result item which, when clicked, navigates the user to display settings, with the ability to rearrange screen positioning. Alternate phrase for: 'Monitor arrangement', 'Screen arrangement'">
+    Display arrangement
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_ARRANGEMENT_ALT1" desc="Text for search result item which, when clicked, navigates the user to display settings, with the ability to rearrange screen positioning. Alternate phrase for: 'Display arrangement', 'Screen arrangement'">
+    Monitor arrangement
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_ARRANGEMENT_ALT2" desc="Text for search result item which, when clicked, navigates the user to display settings, with the ability to rearrange screen positioning. Alternate phrase for: 'Display arrangement', 'Monitor arrangement'">
+    Screen arrangement
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MIRRORING" desc="Text for search result item which, when clicked, navigates the user to display settings, with a checkbox to enable/disable display mirroring.">
+    Display mirroring
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_UNIFIED_DESKTOP" desc="Text for search result item which, when clicked, navigates the user to display settings, with a toggle to enable/disable Unified Desktop mode, which allows windows to span multiple displays.">
+    Allow windows to span displays
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_ORIENTATION" desc="Text for search result item which, when clicked, navigates the user to display settings, with a dropdown to select display orientation (normal, or rotated 90/180/270 degrees). Alternate phrase for 'Display rotation'">
+    Display orientation
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_ORIENTATION_ALT1" desc="Text for search result item which, when clicked, navigates the user to display settings, with a dropdown to select display orientation (normal, or rotated 90/180/270 degrees). Alternate phrase for 'Display orientation'">
+    Display rotation
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_AMBIENT_COLORS" desc="Text for search result item which, when clicked, navigates the user to display settings, with a toggle to enable/disable ambient colors, which adapts the screen color to match the environment.">
+    Ambient colors
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_TOUCHSCREEN_CALIBRATION" desc="Text for search result item which, when clicked, navigates the user to display settings, with a link to open the touchscreen calibration UI.">
+    Touchscreen calibration
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_NIGHT_LIGHT_COLOR_TEMPERATURE" desc="Text for search result item which, when clicked, navigates the user to display settings, with a slider to increase/decrease the 'color temperature' for Night Light, which makes it easier to look at the screen in dim light.">
+    Night Light color temperature
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_RESOLUTION" desc="Text for search result item which, when clicked, navigates the user to display settings, with a dropdown to select screen resolution. Alternate phrase for: 'Monitor resolution', 'Screen resolution'">
+    Display resolution
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_RESOLUTION_ALT1" desc="Text for search result item which, when clicked, navigates the user to display settings, with a dropdown to select screen resolution. Alternate phrase for: 'Display resolution', 'Screen resolution'">
+    Monitor resolution
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_RESOLUTION_ALT2" desc="Text for search result item which, when clicked, navigates the user to display settings, with a dropdown to select screen resolution. Alternate phrase for: 'Display resolution', 'Monitor resolution'">
+    Screen resolution
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_REFRESH_RATE" desc="Text for search result item which, when clicked, navigates the user to display settings, with a dropdown to select screen refresh rate. Alternate phrase for: 'Monitor refresh rate', 'Screen refresh rate'">
+    Display refresh rate
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_REFRESH_RATE_ALT1" desc="Text for search result item which, when clicked, navigates the user to display settings, with a dropdown to select screen refresh rate. Alternate phrase for: 'Display refresh rate', 'Screen refresh rate'">
+    Monitor refresh rate
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_REFRESH_RATE_ALT2" desc="Text for search result item which, when clicked, navigates the user to display settings, with a dropdown to select screen refresh rate. Alternate phrase for: 'Display refresh rate', 'Monitor refresh rate'">
+    Screen refresh rate
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DISPLAY_OVERSCAN" desc="Text for search result item which, when clicked, navigates the user to display settings, with an option to adjust monitor overscan.">
+    Overscan
+  </message>
+
+  <!-- Printing section. -->
+  <message name="IDS_OS_SETTINGS_TAG_PRINTING" desc="Text for search result item which, when clicked, navigates the user to printer settings for CUPS printers (a.k.a. those that can use the Unix protocol). Alternate phrase for: 'Printers', 'CUPS'">
+    Printing
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_PRINTING_ALT1" desc="Text for search result item which, when clicked, navigates the user to printer settings for CUPS printers (a.k.a. those that can use the Unix protocol). Alternate phrase for: 'Printing', 'CUPS'">
+    Printers
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_PRINTING_ALT2" desc="Text for search result item which, when clicked, navigates the user to printer settings for CUPS printers (a.k.a. those that can use the Unix protocol). Alternate phrase for: 'Printers', 'Printing'">
+    CUPS
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_PRINTING_ADD_PRINTER" desc="Text for search result item which, when clicked, navigates the user to printer settings, with the option to add a printer.">
+    Add printer
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_PRINTING_SAVED_PRINTERS" desc="Text for search result item which, when clicked, navigates the user to printer settings, with the option to edit saved printers.">
+    Saved printers
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_PRINT_MANAGEMENT" desc="text for search result item which, when clicked, naviagets the user to the printing section to open the print jobs app. alternate phrase for: 'Print Management', 'Print History'">
+    Print jobs
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_PRINT_MANAGEMENT_ALT1" desc="text for search result item which, when clicked, naviagets the user to the printing section to open the print jobs app. alternate phrase for: 'Print Jobs', 'Print History'">
+    Print management
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_PRINT_MANAGEMENT_ALT2" desc="text for search result item which, when clicked, naviagets the user to the printing section to open the print jobs app. alternate phrase for: 'Print Management', 'Print Jobs'">
+    Print history
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_SCANNING_APP" desc="text for search result item which, when clicked, navigates the user to the printing section to open the scanning app.">
+    Scan
+  </message>
 </grit-part>
