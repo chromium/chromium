@@ -6,7 +6,7 @@ import 'chrome://settings/settings.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {AiPageActions} from 'chrome://settings/lazy_load.js';
-import type {CrCollapseElement} from 'chrome://settings/lazy_load.js';
+import type {CrCollapseElement, CrShortcutInputElement} from 'chrome://settings/lazy_load.js';
 import {AiSettingsSection, GlicAssistantSelection, GlicBrowserProxyImpl, LifetimeBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefService, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
 import type {CrButtonElement, SettingsGlicSubpageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -195,6 +195,21 @@ suite('GlicSubpage', function() {
         assertTrue(isVisible($(selectionShortcutSettingId)));
       });
     }
+
+    // Each shortcut row hides its visible label from screen readers, so the
+    // input's aria-label must name the shortcut of that same row.
+    test('ShortcutInputAriaLabels', () => {
+      const expectedLabels: Array<[string, string]> = [
+        ['mainShortcutSetting', 'glicKeyboardShortcut'],
+        ['selectionShortcutSetting', 'glicSelectionShortcut'],
+        ['focusToggleShortcutSetting', 'glicNavigationShortcut'],
+      ];
+      for (const [rowId, stringId] of expectedLabels) {
+        const input = $<CrShortcutInputElement>(`${rowId} .shortcut-input`);
+        assertTrue(!!input, rowId);
+        assertEquals(loadTimeData.getString(stringId), input.inputAriaLabel);
+      }
+    });
 
     test('GeolocationToggleEnabled', async () => {
       prefService.setPrefValue(PrefName.GEOLOCATION_ENABLED, true);

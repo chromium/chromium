@@ -94,7 +94,7 @@ export function getHtml(this: SettingsGlicSubpageElement) {
             </div>
           </div>
           <cr-shortcut-input class="cr-padded-text shortcut-input"
-              input-aria-label="$i18n{glicNavigationShortcut}"
+              input-aria-label="$i18n{glicSelectionShortcut}"
               edit-button-aria-label="$i18n{glicSelectionShortcutEditLabel}"
               clear-button-aria-label="$i18n{glicSelectionShortcutClearLabel}"
               .shortcut="${this.registeredSelectionShortcut_}"
