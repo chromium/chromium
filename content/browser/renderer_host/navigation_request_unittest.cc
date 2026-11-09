@@ -54,6 +54,7 @@
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "url/url_constants.h"
 
 namespace content {
 
@@ -2112,6 +2113,43 @@ TEST_F(NavigationRequestTest, SubframeWithoutMimeHandlerParentDoesNotInherit) {
 
   EXPECT_FALSE(
       request->GetUrlInfo().embedder_isolation_info.is_unique_instance());
+}
+
+// about:blank takes only unique-instance isolation from its initiator. An
+// about:blank document that a PDF document navigates to should not get PDF
+// isolation.
+TEST_F(NavigationRequestTest, AboutBlankDoesNotInheritPdfIsolation) {
+  // On Android, NavigationSimulator can't commit a PDF navigation, so the PDF
+  // document is represented by its SiteInstance.
+  const GURL kPdfUrl("https://example.com/document.pdf");
+  scoped_refptr<SiteInstanceImpl> pdf_site_instance =
+      SiteInstanceImpl::CreateForUrlInfo(
+          browser_context(),
+          UrlInfo(UrlInfoInit(kPdfUrl).WithEmbedderIsolationInfo(
+              EmbedderIsolationInfo::CreateForPdf())),
+          /*is_guest=*/false,
+          /*is_fenced=*/false,
+          /*is_fixed_storage_partition=*/false);
+  ASSERT_TRUE(
+      pdf_site_instance->GetSiteInfo().embedder_isolation_info().is_pdf());
+
+  // When LoadURLWithParams() returns, the frame no longer holds the
+  // about:blank navigation, so read the isolation when the navigation starts.
+  EmbedderIsolationInfo observed_isolation =
+      EmbedderIsolationInfo::CreateNone();
+  testing::NiceMock<MockWebContentsObserver> observer(contents());
+  EXPECT_CALL(observer, DidStartNavigation(testing::_))
+      .WillOnce([&observed_isolation](NavigationHandle* navigation_handle) {
+        observed_isolation = NavigationRequest::From(navigation_handle)
+                                 ->GetUrlInfo()
+                                 .embedder_isolation_info;
+      });
+  NavigationController::LoadURLParams params{GURL(url::kAboutBlankURL)};
+  params.source_site_instance = pdf_site_instance;
+  params.initiator_origin = url::Origin::Create(kPdfUrl);
+  contents()->GetController().LoadURLWithParams(params);
+
+  EXPECT_TRUE(observed_isolation.is_none());
 }
 
 namespace {

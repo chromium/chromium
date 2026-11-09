@@ -23,6 +23,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "content/browser/embedder_isolation_info.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -5892,6 +5893,90 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
       contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   EXPECT_EQ(data_tentative_origin_to_commit.value(), data_committed_origin);
   EXPECT_EQ(url_info_origin.value(), data_committed_origin);
+}
+
+// The embedder requests unique-instance isolation only for the iframe
+// document. An about:blank document gets the origin and the isolation of the
+// document that navigates to it. When the iframe document navigates, this holds
+// in the iframe, in the top frame and in a popup that keeps its opener. When
+// the embedder navigates the iframe, about:blank gets no isolation.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       AboutBlankFromUniqueInstanceKeepsIsolation) {
+  enum class Initiator { kIsolatedFrame, kEmbedder };
+  enum class BlankTarget { kOwnFrame, kTopFrame, kPopup };
+  struct TestCase {
+    std::string_view name;
+    Initiator initiator;
+    BlankTarget target;
+    std::string_view navigation_script;
+  };
+  constexpr TestCase kTestCases[] = {
+      {.name = "own frame",
+       .initiator = Initiator::kIsolatedFrame,
+       .target = BlankTarget::kOwnFrame,
+       .navigation_script = "location = 'about:blank';"},
+      {.name = "top frame",
+       .initiator = Initiator::kIsolatedFrame,
+       .target = BlankTarget::kTopFrame,
+       .navigation_script = "top.location = 'about:blank';"},
+      {.name = "popup that keeps its opener",
+       .initiator = Initiator::kIsolatedFrame,
+       .target = BlankTarget::kPopup,
+       .navigation_script = "popup.location = 'about:blank';"},
+      {.name = "embedder navigates the iframe",
+       .initiator = Initiator::kEmbedder,
+       .target = BlankTarget::kOwnFrame,
+       .navigation_script = "frames[0].location = 'about:blank';"},
+  };
+
+  for (const TestCase& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+    ASSERT_TRUE(NavigateToURL(
+        shell(), embedded_test_server()->GetURL(
+                     "a.com", "/cross_site_iframe_factory.html?a(a)")));
+    FrameTreeNode* child =
+        contents()->GetPrimaryFrameTree().root()->child_at(0);
+    NavigationController::LoadURLParams params(
+        embedded_test_server()->GetURL("b.com", "/title1.html"));
+    params.frame_tree_node_id = child->frame_tree_node_id();
+    params.requests_unique_instance_isolation = true;
+    TestNavigationObserver isolated_observer(contents());
+    contents()->GetController().LoadURLWithParams(params);
+    isolated_observer.Wait();
+    RenderFrameHost* isolated_frame = child->current_frame_host();
+    ASSERT_TRUE(HasUniqueInstanceIsolation(isolated_frame));
+
+    RenderFrameHost* initiator_frame =
+        test_case.initiator == Initiator::kEmbedder
+            ? contents()->GetPrimaryMainFrame()
+            : isolated_frame;
+    const url::Origin initiator_origin =
+        initiator_frame->GetLastCommittedOrigin();
+    const EmbedderIsolationInfo initiator_isolation =
+        static_cast<SiteInstanceImpl*>(initiator_frame->GetSiteInstance())
+            ->GetSiteInfo()
+            .embedder_isolation_info();
+
+    WebContents* blank_contents = contents();
+    if (test_case.target == BlankTarget::kPopup) {
+      ShellAddedObserver popup_observer;
+      ASSERT_TRUE(ExecJs(isolated_frame, "window.popup = window.open();"));
+      blank_contents = popup_observer.GetShell()->web_contents();
+    }
+    TestNavigationObserver blank_observer(blank_contents);
+    ASSERT_TRUE(ExecJs(initiator_frame, test_case.navigation_script));
+    blank_observer.Wait();
+
+    RenderFrameHost* blank_frame = test_case.target == BlankTarget::kOwnFrame
+                                       ? child->current_frame_host()
+                                       : blank_contents->GetPrimaryMainFrame();
+    EXPECT_EQ(GURL(url::kAboutBlankURL), blank_frame->GetLastCommittedURL());
+    EXPECT_EQ(initiator_origin, blank_frame->GetLastCommittedOrigin());
+    EXPECT_EQ(initiator_isolation,
+              static_cast<SiteInstanceImpl*>(blank_frame->GetSiteInstance())
+                  ->GetSiteInfo()
+                  .embedder_isolation_info());
+  }
 }
 
 // Tests that on reload of a POST request, the HTTP `Origin` header is set

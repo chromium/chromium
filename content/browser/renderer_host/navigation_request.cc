@@ -4944,6 +4944,16 @@ UrlInfo NavigationRequest::GetUrlInfo() {
     // about:blank and about:srcdoc inherit the origin per spec
     // (https://html.spec.whatwg.org/multipage/document-sequences.html#determining-the-origin).
     url_info_init.WithOrigin(*GetInitiatorOrigin());
+    // about:blank also takes the unique-instance isolation of the initiator's
+    // SiteInstance. Without it, about:blank can be placed in a process that is
+    // not allowed to commit the inherited origin.
+    if (source_site_instance_) {
+      const EmbedderIsolationInfo& source_info =
+          source_site_instance_->GetSiteInfo().embedder_isolation_info();
+      if (source_info.is_unique_instance()) {
+        url_info_init.WithEmbedderIsolationInfo(source_info);
+      }
+    }
   } else {
     // Overriding the origin for a URL is dangerous and only allowed in very
     // narrow cases which are handled explicitly above.  Please think very

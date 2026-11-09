@@ -401,6 +401,10 @@ class NavigationController {
     // (the initial navigation to content handled by a MimeHandler extension,
     // which may itself be a subframe), not on the outermost main frame in
     // general.
+    // An about:blank document that a document of this domain navigates to
+    // joins this domain, since about:blank inherits that document's origin.
+    // This holds in the document's own frame, the top frame and a popup that
+    // keeps its opener.
     bool requests_unique_instance_isolation = false;
 
     // Indicates this navigation should use a new BrowsingInstance. For example,
