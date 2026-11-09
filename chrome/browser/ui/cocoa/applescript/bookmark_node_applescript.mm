@@ -41,8 +41,7 @@ using bookmarks::BookmarkNode;
 - (instancetype)init {
   if ((self = [super init])) {
     _bookmarkGUID = base::Uuid::GenerateRandomV4();
-    self.uniqueID = [NSString
-        stringWithFormat:@"%s", _bookmarkGUID.AsLowercaseString().c_str()];
+    self.uniqueID = base::SysUTF8ToNSString(_bookmarkGUID.AsLowercaseString());
     self.tempTitle = @"";
   }
   return self;
@@ -56,8 +55,7 @@ using bookmarks::BookmarkNode;
 
   if ((self = [super init])) {
     _bookmarkGUID = bookmarkNode->uuid();
-    self.uniqueID = [NSString
-        stringWithFormat:@"%s", _bookmarkGUID.AsLowercaseString().c_str()];
+    self.uniqueID = base::SysUTF8ToNSString(_bookmarkGUID.AsLowercaseString());
   }
   return self;
 }

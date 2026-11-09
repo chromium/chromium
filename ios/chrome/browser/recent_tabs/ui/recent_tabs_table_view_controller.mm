@@ -1135,7 +1135,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   if (last_used_delta.InMicroseconds() < base::Time::kMicrosecondsPerMinute) {
     timeString = l10n_util::GetNSString(IDS_IOS_OPEN_TABS_RECENTLY_SYNCED);
     // This will return something similar to "Seconds ago"
-    return [NSString stringWithFormat:@"%@", timeString];
+    return timeString;
   }
 
   NSDate* date = [NSDate dateWithTimeIntervalSince1970:time.ToTimeT()];
@@ -1154,7 +1154,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
         ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
                                ui::TimeFormat::LENGTH_SHORT, last_used_delta));
     // This will return something similar to "1 min/hour ago"
-    return [NSString stringWithFormat:@"%@", timeString];
+    return timeString;
   }
 
   if (today - dateDay == 1) {

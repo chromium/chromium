@@ -39,13 +39,11 @@ NSString* const kPassphrase = @"hello";
 // formatted for `count` local bookmarks and `email` user email.
 void ExpectBatchUploadSection(int count, NSString* email) {
   // Verify that the batch upload section is visible.
-  NSString* detailText = base::SysUTF16ToNSString(
+  NSString* label = base::SysUTF16ToNSString(
       base::i18n::MessageFormatter::FormatWithNamedArgs(
           l10n_util::GetStringUTF16(
               IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_SECTION_DESCRIPTION),
           "count", count, "email", base::SysNSStringToUTF16(email)));
-  // Build label for a TableViewImageItem.
-  NSString* label = [NSString stringWithFormat:@"%@", detailText];
 
   [[EarlGrey
       selectElementWithMatcher:

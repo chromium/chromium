@@ -854,8 +854,7 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
         [NSString stringWithFormat:@"%@ %@", self.locationLabel.text,
                                    self.securityLevelAccessibilityString];
   } else {
-    self.locationButton.accessibilityValue =
-        [NSString stringWithFormat:@"%@", self.locationLabel.text];
+    self.locationButton.accessibilityValue = self.locationLabel.text;
   }
 
   if (self.trailingButton && self.trailingButton.enabled) {

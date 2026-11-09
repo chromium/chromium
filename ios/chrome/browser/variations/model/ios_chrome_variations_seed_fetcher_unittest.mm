@@ -43,10 +43,10 @@ const char kSeedFetchResultHistogram[] =
 const char kSeedFetchTimeHistogram[] = "IOS.Variations.FirstRun.SeedFetchTime";
 
 // Fake server url.
-const NSString* test_server = @"https://test.finch.server";
+NSString* const test_server = @"https://test.finch.server";
 
 // Fake value for "Date" header for testing.
-const NSString* test_date_header_value = @"Tue, 15 Nov 1994 12:45:26 GMT";
+NSString* const test_date_header_value = @"Tue, 15 Nov 1994 12:45:26 GMT";
 
 // Type definition of a block that retrieves the value of an HTTP header from a
 // custom NSDictionary instead of actual NSURLHTTPRequest header.
@@ -112,10 +112,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
   // Instantiate mocks.
   BOOL (^request_matcher)(NSMutableURLRequest* request) =
       ^BOOL(NSMutableURLRequest* request) {
-        // The NSString method `hasPrefix` does not take parameter of type
-        // 'const NSString *__strong`.
-        NSString* prefix = [NSString stringWithFormat:@"%@", test_server];
-        return [request.URL.absoluteString hasPrefix:prefix] &&
+        return [request.URL.absoluteString hasPrefix:test_server] &&
                [request.allHTTPHeaderFields[@"A-IM"] isEqualToString:@"gzip"];
       };
   id mock_url_session = OCMClassMock([NSURLSession class]);
@@ -420,7 +417,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
 TEST_F(IOSChromeVariationsSeedFetcherTest, testNoIMHeader) {
   // Set up.
   NSDictionary<NSString*, NSString*>* header = @{
-    @"Date" : [NSString stringWithFormat:@"%@", test_date_header_value],
+    @"Date" : test_date_header_value,
     @"X-Seed-Signature" : [NSDate now].description,
     @"X-Country" : @"US",
   };
@@ -441,7 +438,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest, testNoIMHeader) {
 TEST_F(IOSChromeVariationsSeedFetcherTest, testBadIMHeader) {
   // Set up.
   NSDictionary<NSString*, NSString*>* header = @{
-    @"Date" : [NSString stringWithFormat:@"%@", test_date_header_value],
+    @"Date" : test_date_header_value,
     @"X-Seed-Signature" : [NSDate now].description,
     @"X-Country" : @"US",
     @"IM" : @"not_gzip"
@@ -463,7 +460,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest, testBadIMHeader) {
 TEST_F(IOSChromeVariationsSeedFetcherTest, tesMoreThanOneIMHeaders) {
   // Set up.
   NSDictionary<NSString*, NSString*>* header = @{
-    @"Date" : [NSString stringWithFormat:@"%@", test_date_header_value],
+    @"Date" : test_date_header_value,
     @"X-Seed-Signature" : [NSDate now].description,
     @"X-Country" : @"US",
     @"IM" : @"gzip,somethingelse"
@@ -490,7 +487,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
   NSString* country = @"US";
   NSString* geo_level1 = @"us-ca";
   NSDictionary<NSString*, NSString*>* headers = @{
-    @"Date" : [NSString stringWithFormat:@"%@", test_date_header_value],
+    @"Date" : test_date_header_value,
     @"X-Seed-Signature" : signature,
     @"X-Country" : country,
     @"X-Geo-Level-1" : geo_level1,
@@ -542,7 +539,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
 TEST_F(IOSChromeVariationsSeedFetcherTest,
        testValidHTTPResponseWithoutGeoLevel1Header) {
   NSDictionary<NSString*, NSString*>* headers = @{
-    @"Date" : [NSString stringWithFormat:@"%@", test_date_header_value],
+    @"Date" : test_date_header_value,
     @"X-Seed-Signature" : @"signature",
     @"X-Country" : @"US",
     @"IM" : @"gzip"

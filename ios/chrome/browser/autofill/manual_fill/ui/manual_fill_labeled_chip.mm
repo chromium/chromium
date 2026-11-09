@@ -67,7 +67,7 @@ static const CGFloat kLabelButtonSpacing = 2;
         buttonTitles:(NSArray<NSString*>*)buttonTitles {
   UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
   _label.attributedText = [[NSMutableAttributedString alloc]
-      initWithString:[NSString stringWithFormat:@"%@", text]
+      initWithString:text
           attributes:@{
             NSForegroundColorAttributeName :
                 [UIColor colorNamed:kTextSecondaryColor],

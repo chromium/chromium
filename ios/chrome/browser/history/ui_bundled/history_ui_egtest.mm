@@ -6,6 +6,7 @@
 #import <XCTest/XCTest.h>
 
 #import "base/ios/ios_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/sync/base/command_line_switches.h"
@@ -181,8 +182,7 @@ TAG_SMOKE_TEST(HistoryUITestCase, testDisplayHistory);
                                           kHistorySearchScrimIdentifier)]
       assertWithMatcher:grey_notNil()];
 
-  NSString* searchString =
-      [NSString stringWithFormat:@"%s", _URL1.GetPath().c_str()];
+  NSString* searchString = base::SysUTF8ToNSString(_URL1.GetPath());
 
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       performAction:grey_replaceText(searchString)];
@@ -562,8 +562,7 @@ TAG_SMOKE_TEST(HistoryUITestCase, testDisplayHistory);
   // Search for the first URL.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       performAction:grey_tap()];
-  NSString* searchString =
-      [NSString stringWithFormat:@"%s", _URL1.GetPath().c_str()];
+  NSString* searchString = base::SysUTF8ToNSString(_URL1.GetPath());
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       performAction:grey_replaceText(searchString)];
 
