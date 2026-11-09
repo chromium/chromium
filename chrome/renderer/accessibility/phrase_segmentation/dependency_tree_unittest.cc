@@ -50,7 +50,6 @@ TEST_F(PhraseSegmentationDependencyTreeTest,
   EXPECT_EQ(dependency_heads.size(), tokenized_sentence.tokens().size());
   const DependencyTree dependency_tree(tokenized_sentence, dependency_heads);
 
-  std::vector<Dependency> expected_dep_head_array = {};
   EXPECT_THAT(
       dependency_tree.dep_head_array(),
       ElementsAre(

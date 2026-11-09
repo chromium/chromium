@@ -62,7 +62,6 @@ std::string CreateScriptToRegisterListeners(
     const char* const element_name,
     std::vector<std::u16string>* variables_to_check) {
   DCHECK(variables_to_check);
-  std::string element = element_name;
 
   std::string all_scripts = "<script>";
   for (const char* const event : kEvents) {

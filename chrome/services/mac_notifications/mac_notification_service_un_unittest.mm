@@ -1096,7 +1096,7 @@ TEST_F(MacNotificationServiceUNTest, Rebind) {
 }
 
 TEST_F(MacNotificationServiceUNTest, GetDisplayedNotificationsForProfile) {
-  auto notifications = SetupNotifications();
+  SetupNotifications();
   auto profile = mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
   auto displayed = GetDisplayedNotificationsSync(std::move(profile));
   ASSERT_EQ(2u, displayed.size());
@@ -1116,7 +1116,7 @@ TEST_F(MacNotificationServiceUNTest, GetDisplayedNotificationsForProfile) {
 
 TEST_F(MacNotificationServiceUNTest,
        GetDisplayedNotificationsForProfileAndOrigin) {
-  auto notifications = SetupNotifications();
+  SetupNotifications();
   auto profile = mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
   auto displayed = GetDisplayedNotificationsSync(std::move(profile),
                                                  GURL("https://example.com"));
@@ -1160,7 +1160,7 @@ TEST_F(MacNotificationServiceUNTest, CloseNotification) {
 
 TEST_F(MacNotificationServiceUNTest, SynchronizesNotifications) {
   // Setup 4 notifications that are being returned by system APIs too.
-  auto notifications = SetupNotifications();
+  SetupNotifications();
   ASSERT_EQ(4u, GetDisplayedNotificationsSync(/*profile=*/nullptr).size());
 
   // Display a notification which won't be reflected in the system APIs.
@@ -1890,7 +1890,7 @@ TEST_F(MacNotificationServiceUNTest,
 }
 
 TEST_F(MacNotificationServiceUNTest, CloseProfileNotifications) {
-  auto notifications = SetupNotifications();
+  SetupNotifications();
   // Even though we created 3 notifications, all of them share the same
   // category as they have the same actions.
   EXPECT_EQ(1u, category_count_);

@@ -265,7 +265,6 @@ TEST(NavigationTracker, CurrentFrameLoading) {
   NavigationTracker tracker(client_ptr, &web_view);
 
   base::DictValue params;
-  std::string top_frame_id = client_ptr->GetId();
   std::string current_frame_id = "2";
   params.Set("frameId", current_frame_id);
 
@@ -315,7 +314,6 @@ TEST(NavigationTracker, FrameAttachDetach) {
   NavigationTracker tracker(client_ptr, &web_view);
 
   base::DictValue params;
-  std::string top_frame_id = client_ptr->GetId();
   std::string current_frame_id = "2";
   params.Set("frameId", current_frame_id);
 

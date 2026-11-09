@@ -83,7 +83,6 @@ bool KSInstallApp::ParseCommandLineOptions() {
   base::CommandLine::Init(argc_, argv_);
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
-  const base::CommandLine::StringVector args = command_line->GetArgs();
   if (command_line->HasSwitch("uninstall")) {
     uninstall_ = true;
     return true;

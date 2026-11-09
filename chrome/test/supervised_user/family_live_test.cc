@@ -116,7 +116,6 @@ test_accounts::FamilyMember CreateTestAccountFromCredentialsSwitch(
     NOTREACHED() << "Unknown credentials switch: " << credentials_switch;
   }
 
-  std::string username, password;
   if (RE2::FullMatch(credentials, "(.*):(.*)", &member.username,
                      &member.password)) {
     return member;

@@ -105,7 +105,6 @@ TEST(ProductInstallDetailsTest, PathIsInProgramFiles) {
 }
 
 TEST(ProductInstallDetailsTest, GetInstallSuffix) {
-  std::wstring suffix;
   struct TestData {
     std::wstring_view path_prefix;
     std::wstring_view path_suffix;

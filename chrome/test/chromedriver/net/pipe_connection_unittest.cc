@@ -199,7 +199,6 @@ TEST_F(PipeConnectionTest, WriteToNotStarted) {
   base::ScopedPlatformFile read_pipe;
   base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
-  std::string message;
   EXPECT_FALSE(connection->IsConnected());
   EXPECT_FALSE(connection->Send("drop it"));
 }

@@ -1684,7 +1684,6 @@ Status ExecuteUploadFile(Session* session,
                                      &upload_dir)) {
     return Status(kUnknownError, "unable to create temp dir");
   }
-  std::string error_msg;
   base::FilePath upload;
   Status status = UnzipSoleFile(upload_dir, zip_data, &upload);
   if (status.IsError())

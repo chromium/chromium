@@ -569,7 +569,6 @@ TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTag_ReturnsDivForTextField) {
 
 TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTag_ReturnsHeadingTag) {
   const std::u16string sentence1 = u"Heading 1";
-  const std::u16string sentence2 = u"Heading 2";
 
   ui::AXNodeData heading_data = test::TextNode(2, sentence1);
   heading_data.AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 1);

@@ -1415,7 +1415,6 @@ TEST_F(ReadAnythingAppControllerTest,
 TEST_F(ReadAnythingAppControllerTest,
        GetHtmlTag_DivWithHeadingAndAriaLevelReturnsH) {
   std::string h3 = "h3";
-  std::string div = "div";
   ui::AXNodeData node1;
   node1.id = 2;
 

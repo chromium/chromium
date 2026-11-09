@@ -393,8 +393,6 @@ HRESULT CGaiaCredentialProvider::CreateAnonymousCredentialIfNeeded(
 HRESULT CGaiaCredentialProvider::CreateReauthCredentials(
     ICredentialProviderUserArray* users,
     GaiaCredentialComPtrStorage* auto_logon_credential) {
-  std::map<std::wstring, std::pair<std::wstring, std::wstring>> sid_to_username;
-
   // Get the SIDs of all users being shown in the logon UI.
   if (!users) {
     LOGFN(ERROR) << "hr=" << putHR(E_INVALIDARG);

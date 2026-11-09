@@ -200,7 +200,6 @@ void NetErrorHelperCore::PrepareErrorPageForMainFrame(
     content::mojom::AlternativeErrorPageOverrideInfoPtr
         alternative_error_page_info,
     std::string* error_html) {
-  std::string error_param;
   error_page::Error error = pending_error_page_info->error;
 
   if (!alternative_error_page_info &&

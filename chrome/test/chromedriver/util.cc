@@ -387,7 +387,6 @@ Status UnzipEntry(const base::FilePath& unzip_dir,
 Status UnzipSoleFile(const base::FilePath& unzip_dir,
                      const std::string& bytes,
                      base::FilePath* file) {
-  std::string archive_error, entry_error;
   Status status = UnzipArchive(unzip_dir, bytes);
   if (status.IsError()) {
     Status entry_status = UnzipEntry(unzip_dir, bytes);

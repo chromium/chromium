@@ -661,7 +661,6 @@ TEST_P(GcpCredentialProviderWithADUsersTest, ReauthCredentialTest) {
 
   base::win::ScopedBstr sid;
   DWORD error;
-  std::wstring domain;
   if (is_ad_user) {
     // Add an AD user.
     ASSERT_EQ(S_OK, fake_os_user_manager()->AddUser(

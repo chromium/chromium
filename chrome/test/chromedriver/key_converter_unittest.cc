@@ -279,7 +279,6 @@ TEST(KeyConverter, ToggleModifiers) {
 
 TEST(KeyConverter, MAYBE_AllEnglishKeyboardSymbols) {
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
-  std::u16string keys;
   const auto kSymbolKeyCodes = std::to_array<ui::KeyboardCode>({
       ui::VKEY_OEM_3,
       ui::VKEY_OEM_MINUS,

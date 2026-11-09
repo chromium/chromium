@@ -304,7 +304,6 @@ void OnSimpleCommand(base::RunLoop* run_loop,
 
 TEST(CommandsTest, ExecuteSessionCommand) {
   SessionThreadMap map;
-  SessionConnectionMap session_connection_map;
   auto thread_info = std::make_unique<SessionThreadInfo>("1", true);
   base::Thread* thread = thread_info->thread();
   ASSERT_TRUE(thread->Start());
@@ -490,7 +489,6 @@ TEST(CommandsTest, CloseWindowQuitsAfterLastTargetDetached) {
 
 TEST(CommandsTest, ExecuteSessionCommandOnNoSuchSession) {
   SessionThreadMap map;
-  SessionConnectionMap session_connection_map;
   base::DictValue params;
   ExecuteSessionCommand(&map, "cmd", base::BindRepeating(&ShouldNotBeCalled),
                         true /*w3c_standard_command*/, false, params, "session",
@@ -499,7 +497,6 @@ TEST(CommandsTest, ExecuteSessionCommandOnNoSuchSession) {
 
 TEST(CommandsTest, ExecuteSessionCommandOnNoSuchSessionWhenItExpectsOk) {
   SessionThreadMap map;
-  SessionConnectionMap session_connection_map;
   base::DictValue params;
   ExecuteSessionCommand(&map, "cmd", base::BindRepeating(&ShouldNotBeCalled),
                         true /*w3c_standard_command*/, true, params, "session",
@@ -522,7 +519,6 @@ void OnNoSuchSessionAndQuit(base::RunLoop* run_loop,
 
 TEST(CommandsTest, ExecuteSessionCommandOnJustDeletedSession) {
   SessionThreadMap map;
-  SessionConnectionMap session_connection_map;
   auto thread_info = std::make_unique<SessionThreadInfo>("1", true);
   ASSERT_TRUE(thread_info->thread()->Start());
   std::string id("id");
@@ -1039,7 +1035,6 @@ void OnSessionCommand(base::RunLoop* run_loop,
 
 TEST(CommandsTest, SuccessNotifyingCommandListeners) {
   SessionThreadMap map;
-  SessionConnectionMap session_connection_map;
   auto thread_info = std::make_unique<SessionThreadInfo>("1", true);
   base::Thread* thread = thread_info->thread();
   ASSERT_TRUE(thread->Start());
@@ -1127,7 +1122,6 @@ void VerifySessionWasDeleted() {
 
 TEST(CommandsTest, ErrorNotifyingCommandListeners) {
   SessionThreadMap map;
-  SessionConnectionMap session_connection_map;
   auto thread_info = std::make_unique<SessionThreadInfo>("1", true);
   base::Thread* thread = thread_info->thread();
   ASSERT_TRUE(thread->Start());

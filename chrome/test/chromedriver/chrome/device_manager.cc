@@ -252,7 +252,6 @@ Status Device::ForwardDevtoolsPort(const std::string& package,
 
 Status Device::TearDown() {
   if (!active_package_.empty()) {
-    std::string response;
     Status status = adb_->ForceStop(serial_, active_package_);
     if (status.IsError())
       return status;

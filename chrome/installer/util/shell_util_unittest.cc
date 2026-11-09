@@ -1200,7 +1200,6 @@ TEST_F(ShellUtilRegistryTest, DeleteApplicationClass) {
       base::FilePath(kTestIconPath)));
 
   base::win::RegKey key;
-  std::wstring value;
   ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER,
                                     L"Software\\Classes\\TestApp", KEY_READ));
 
