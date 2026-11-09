@@ -40,6 +40,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
@@ -5198,11 +5199,42 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
       active_tab);
   tab_contextualization_controller.set_return_ineligible_data(true);
 
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(coordinator_->IsErrorPageVisible());
   content::WebContentsTester::For(panel_wc)->TestDidReceiveMouseDownEvent();
   user_data->HandleOnSubmitQueryRequest("summarize");
   EXPECT_EQ(tab_contextualization_controller.get_page_context_calls(), 1);
   EXPECT_TRUE(coordinator_->IsErrorPageVisible());
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.PageContextIneligible.Panel", true, 1);
+  histogram_tester.ExpectTotalCount("ContextualTasks.PageContextIneligible.Tab",
+                                    0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.ErrorPageShown.ContextualTasks",
+      contextual_search::ContextualSearchErrorPage::kPageContextNotEligible, 1);
+
+  // When the side panel is closed, submitting on a cached panel WebContents
+  // neither shows the error scrim nor records surface metrics.
+  coordinator_->SetErrorPageVisible(false);
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(false));
+  EXPECT_FALSE(coordinator_->IsErrorPageVisible());
+
+  session_handle_ptr->AddPendingDelayedTab(
+      active_session_id.id(), GURL("https://protected.example.com"),
+      "Protected Tab");
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  content::WebContentsTester::For(panel_wc)->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("summarize while closed");
+  EXPECT_EQ(tab_contextualization_controller.get_page_context_calls(), 2);
+  EXPECT_FALSE(coordinator_->IsErrorPageVisible());
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.PageContextIneligible.Panel", true, 1);
+  histogram_tester.ExpectTotalCount("ContextualTasks.PageContextIneligible.Tab",
+                                    0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.ErrorPageShown.ContextualTasks",
+      contextual_search::ContextualSearchErrorPage::kPageContextNotEligible, 1);
 
   user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
   webui::SetBrowserWindowInterface(panel_wc, nullptr);

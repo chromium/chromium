@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -38,6 +39,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/web_contents_tester.h"
@@ -3393,6 +3395,173 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
 
   user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
   webui::SetBrowserWindowInterface(web_contents_, nullptr);
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       HandleOnSubmitQueryRequest_FullTabRecordsPageContextIneligibleMetric) {
+  ui::UnownedUserDataHost unowned_user_data_host;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+
+  tabs::MockTabInterface mock_aim_tab;
+  ON_CALL(mock_aim_tab, GetContents())
+      .WillByDefault(testing::Return(web_contents_.get()));
+  ON_CALL(mock_aim_tab, GetBrowserWindowInterface())
+      .WillByDefault(testing::Return(&mock_browser_window));
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents_,
+                                                       &mock_aim_tab);
+  base::ScopedClosureRunner cleanup_tab_lookup(base::BindOnce(
+      [](content::WebContents* wc) {
+        wc->RemoveUserData(tabs::TabLookupFromWebContents::UserDataKey());
+      },
+      base::Unretained(web_contents_)));
+
+  content::WebContents* protected_contents =
+      web_contents_factory_->CreateWebContents(profile_.get());
+  sessions::SessionTabHelper::CreateForWebContents(protected_contents,
+                                                   base::NullCallback());
+  const GURL protected_url("https://protected.example.com/doc");
+  content::WebContentsTester::For(protected_contents)
+      ->NavigateAndCommit(protected_url);
+  const SessionID protected_session_id =
+      sessions::SessionTabHelper::IdForTab(protected_contents);
+
+  tabs::MockTabInterface mock_protected_tab;
+  ON_CALL(mock_protected_tab, GetContents())
+      .WillByDefault(testing::Return(protected_contents));
+  ON_CALL(mock_protected_tab, GetBrowserWindowInterface())
+      .WillByDefault(testing::Return(&mock_browser_window));
+
+  testing::NiceMock<MockTabListInterface> mock_tab_list;
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      unowned_user_data_host, mock_tab_list);
+  std::vector<tabs::TabInterface*> all_tabs = {&mock_aim_tab,
+                                               &mock_protected_tab};
+  ON_CALL(mock_tab_list, GetActiveTab())
+      .WillByDefault(testing::Return(&mock_aim_tab));
+  ON_CALL(mock_tab_list, GetAllTabs())
+      .WillByDefault(testing::ReturnPointee(&all_tabs));
+
+  StubTabContextualizationController tab_controller(
+      &mock_protected_tab,
+      base::BindLambdaForTesting(
+          [&](lens::TabContextualizationController::GetPageContextCallback
+                  callback) {
+            auto data = std::make_unique<lens::ContextualInputData>();
+            data->tab_session_id = protected_session_id;
+            data->page_url = protected_url;
+            data->page_title = "Protected Tab";
+            data->is_page_context_eligible = false;
+            std::move(callback).Run(std::move(data));
+          }));
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+  user_data->RecordTabIdMapping(mock_protected_tab.GetHandle().raw_value(),
+                                protected_session_id.id());
+
+  std::vector<lens::ClientToSearchMessage> submit_responses;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&submit_responses](const lens::ClientToSearchMessage& message) {
+        if (message.has_on_submit_query_response()) {
+          submit_responses.push_back(message);
+        }
+      }));
+  base::ScopedClosureRunner cleanup_dispatcher(base::BindOnce(
+      [](ContextualTasksWebContentsUserData* ud) {
+        ud->SetSearchMessageDispatcherForTesting(base::NullCallback());
+      },
+      base::Unretained(user_data)));
+
+  // Simulate manually attaching a CSE-protected tab whose initial upload failed
+  // page context validation.
+  const base::UnguessableToken failed_manual_token =
+      base::UnguessableToken::Create();
+  user_data->OnTabContextUploadStarted(failed_manual_token);
+  mock_handle->GetUploadedContextTokensForTesting().push_back(
+      failed_manual_token);
+  mock_handle->AttachTabPendingUpload(failed_manual_token,
+                                      protected_session_id.id(), protected_url,
+                                      "Protected Tab");
+  user_data->OnContextUploadStatusChanged(
+      failed_manual_token, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kValidationFailed, std::nullopt);
+
+  base::HistogramTester histogram_tester;
+  content::WebContentsTester::For(web_contents_)
+      ->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("summarize protected tab");
+
+  EXPECT_EQ(tab_controller.get_page_context_calls(), 1);
+  EXPECT_FALSE(user_data->submit_pending());
+  ASSERT_EQ(submit_responses.size(), 1u);
+  EXPECT_EQ(
+      submit_responses[0].on_submit_query_response().added_contexts_size(), 0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.PageContextIneligible.Tab", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.PageContextIneligible.Panel", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualSearch.ErrorPageShown.ContextualTasks", 0);
+
+  // Verify an unhosted WebContents (neither in a panel nor attached to a
+  // TabInterface) emits neither Tab nor Panel metrics.
+  content::WebContents* unhosted_contents =
+      web_contents_factory_->CreateWebContents(profile_.get());
+  auto unhosted_session = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* unhosted_handle = unhosted_session.get();
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      unhosted_contents)
+      ->SetTaskSession(std::nullopt, std::move(unhosted_session),
+                       /*input_state_model=*/nullptr);
+  auto* unhosted_user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          unhosted_contents);
+  ASSERT_NE(unhosted_user_data, nullptr);
+  unhosted_user_data->OnHandshakeComplete();
+  unhosted_user_data->RecordTabIdMapping(
+      mock_protected_tab.GetHandle().raw_value(), protected_session_id.id());
+  submit_responses.clear();
+  unhosted_user_data->SetSearchMessageDispatcherForTesting(
+      base::BindLambdaForTesting(
+          [&submit_responses](const lens::ClientToSearchMessage& message) {
+            if (message.has_on_submit_query_response()) {
+              submit_responses.push_back(message);
+            }
+          }));
+  base::ScopedClosureRunner cleanup_unhosted_dispatcher(base::BindOnce(
+      [](ContextualTasksWebContentsUserData* ud) {
+        ud->SetSearchMessageDispatcherForTesting(base::NullCallback());
+      },
+      base::Unretained(unhosted_user_data)));
+
+  unhosted_handle->AddPendingDelayedTab(protected_session_id.id(),
+                                        protected_url, "Protected Tab");
+  content::WebContentsTester::For(unhosted_contents)
+      ->TestDidReceiveMouseDownEvent();
+  unhosted_user_data->HandleOnSubmitQueryRequest("summarize unhosted");
+
+  EXPECT_EQ(tab_controller.get_page_context_calls(), 2);
+  ASSERT_EQ(submit_responses.size(), 1u);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.PageContextIneligible.Tab", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.PageContextIneligible.Panel", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualSearch.ErrorPageShown.ContextualTasks", 0);
 }
 #endif
 

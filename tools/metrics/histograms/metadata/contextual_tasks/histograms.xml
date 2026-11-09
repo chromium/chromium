@@ -816,6 +816,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContextualTasks.PageContextIneligible.{ContextualTasksUiSurface}"
+    enum="Boolean" expires_after="2027-06-18">
+  <owner>mercerd@chromium.org</owner>
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded each time an attached tab's page context is determined to be
+    ineligible (for example, on a CSE-protected page) during query submission
+    contextualization on the {ContextualTasksUiSurface} surface. Emitted once
+    per ineligible tab encountered while a query submission is pending. Always
+    recorded as true.
+  </summary>
+  <token key="ContextualTasksUiSurface">
+    <variant name="Panel"
+        summary="Contextual Tasks side panel (active and open)"/>
+    <variant name="Tab" summary="full-tab AI Mode"/>
+  </token>
+</histogram>
+
+<histogram
     name="ContextualTasks.PermanentToolbarButton.UserAction.OpenSidePanel.ThreadAction"
     enum="ContextualTasksPermanentToolbarButtonThreadAction"
     expires_after="2027-04-15">

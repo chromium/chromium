@@ -1221,13 +1221,21 @@ void ContextualTasksWebContentsUserData::OnPageContextIneligible() {
   auto* browser = GetBrowserWindowInterface();
   auto* controller =
       browser ? ContextualTasksPanelController::From(browser) : nullptr;
-  if (!controller || !controller->IsPanelOpenForContextualTask() ||
-      controller->GetActiveWebContents() != &GetWebContents()) {
+  if (controller && controller->IsPanelOpenForContextualTask() &&
+      controller->GetActiveWebContents() == &GetWebContents()) {
+    base::UmaHistogramBoolean("ContextualTasks.PageContextIneligible.Panel",
+                              true);
+    RecordErrorPageShown(
+        contextual_search::ContextualSearchSource::kContextualTasks);
+    controller->SetErrorPageVisible(true);
     return;
   }
-  RecordErrorPageShown(
-      contextual_search::ContextualSearchSource::kContextualTasks);
-  controller->SetErrorPageVisible(true);
+  if (!ContextualTasksPanelController::IsWebContentsInPanel(
+          &GetWebContents()) &&
+      tabs::TabInterface::MaybeGetFromContents(&GetWebContents()) != nullptr) {
+    base::UmaHistogramBoolean("ContextualTasks.PageContextIneligible.Tab",
+                              true);
+  }
 }
 
 void ContextualTasksWebContentsUserData::OnPageChanged(bool is_zero_state) {
