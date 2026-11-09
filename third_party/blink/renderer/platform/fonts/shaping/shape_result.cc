@@ -2768,6 +2768,7 @@ void ShapeResult::AddRunInfoRanges(const GlyphDataRange& range,
 
 Vector<CharacterRange> ShapeResult::IndividualCharacterRanges() const {
   Vector<CharacterRange> ranges;
+  ranges.reserve(NumCharacters());
   float current_x = 0u;
 
   if (IsRtl()) {
