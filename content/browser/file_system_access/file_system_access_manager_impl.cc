@@ -1581,9 +1581,7 @@ FileSystemAccessManagerImpl::CreateDirectoryHandle(
     const storage::FileSystemURL& url,
     const SharedHandleState& handle_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/569993648): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK(url.is_valid());
+  CHECK(url.is_valid(), base::NotFatalUntil::M161);
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle> result;
   directory_receivers_.Add(
