@@ -76,7 +76,7 @@ VulkanSurfaceX11::VulkanSurfaceX11(VkInstance vk_instance,
           vk_surface,
           /*acquire_next_image_timeout_ns=*/base::Time::kNanosecondsPerSecond *
               2,
-          std::make_unique<ui::XrandrIntervalOnlyVSyncProvider>()),
+          std::make_unique<ui::XrandrIntervalOnlyVSyncProvider>(parent_window)),
       parent_window_(parent_window),
       window_(window),
       event_selector_(

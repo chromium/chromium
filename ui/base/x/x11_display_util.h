@@ -5,10 +5,14 @@
 #ifndef UI_BASE_X_X11_DISPLAY_UTIL_H_
 #define UI_BASE_X_X11_DISPLAY_UTIL_H_
 
+#include <optional>
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "ui/display/display.h"
 #include "ui/display/types/display_config.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ui {
 
@@ -25,10 +29,15 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     const display::DisplayConfig& display_config,
     size_t* primary_display_index_out);
 
-// Returns the refresh interval of the primary display. If there is no connected
-// primary display, returns the refresh interval of the first connected display.
+// Returns the refresh interval of the display in `displays` that has the
+// largest intersection with `bounds_px` (in root window pixel coordinates).
+// Falls back to the display at `primary_display_index` if `bounds_px` is not
+// set or doesn't intersect any display.
 COMPONENT_EXPORT(UI_BASE_X)
-base::TimeDelta GetPrimaryDisplayRefreshIntervalFromXrandr();
+base::TimeDelta GetDisplayRefreshInterval(
+    const std::vector<display::Display>& displays,
+    size_t primary_display_index,
+    const std::optional<gfx::Rect>& bounds_px);
 
 // A distance metric for ranges [min1, max1), [min2, max2).  Exposed for unit
 // testing.

@@ -15,7 +15,8 @@
 namespace ui {
 
 X11CanvasSurface::X11CanvasSurface(gfx::AcceleratedWidget widget)
-    : x11_software_bitmap_presenter_(*x11::Connection::Get(), widget, true) {}
+    : widget_(widget),
+      x11_software_bitmap_presenter_(*x11::Connection::Get(), widget, true) {}
 
 X11CanvasSurface::~X11CanvasSurface() = default;
 
@@ -33,7 +34,8 @@ void X11CanvasSurface::PresentCanvas(const gfx::Rect& damage) {
 }
 
 std::unique_ptr<gfx::VSyncProvider> X11CanvasSurface::CreateVSyncProvider() {
-  return std::make_unique<XrandrIntervalOnlyVSyncProvider>();
+  return std::make_unique<XrandrIntervalOnlyVSyncProvider>(
+      static_cast<x11::Window>(widget_));
 }
 
 bool X11CanvasSurface::SupportsAsyncBufferSwap() const {

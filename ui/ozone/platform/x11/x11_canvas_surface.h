@@ -45,6 +45,9 @@ class X11CanvasSurface : public SurfaceOzoneCanvas {
   int MaxFramesPending() const override;
 
  private:
+  // The window this surface presents to.
+  const gfx::AcceleratedWidget widget_;
+
   // Current surface we paint to.
   sk_sp<SkSurface> surface_;
 

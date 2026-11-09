@@ -91,7 +91,8 @@ x11::Connection* NativeViewGLSurfaceEGLX11::GetXNativeConnection() const {
 
 std::unique_ptr<gfx::VSyncProvider>
 NativeViewGLSurfaceEGLX11::CreateVsyncProviderInternal() {
-  return std::make_unique<ui::XrandrIntervalOnlyVSyncProvider>();
+  return std::make_unique<ui::XrandrIntervalOnlyVSyncProvider>(
+      static_cast<x11::Window>(window_));
 }
 
 void NativeViewGLSurfaceEGLX11::OnEvent(const x11::Event& x11_event) {
