@@ -2234,7 +2234,9 @@ void MenuController::SetSelectionOnPointerDown(SubmenuView* source,
     return;
   }
 
-  CHECK(!active_mouse_view_tracker_->view(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/580576043): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!active_mouse_view_tracker_->view());
 
   MenuPart part = GetMenuPart(source, event->location());
   if (part.is_scroll() || part.type == MenuPartType::kScrollBar) {
