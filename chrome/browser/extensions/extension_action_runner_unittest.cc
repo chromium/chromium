@@ -30,6 +30,7 @@
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
 #include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/permissions/scripting_permissions_modifier.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -691,6 +692,76 @@ TEST_F(ExtensionActionRunnerUnitTest,
     EXPECT_FALSE(RequiresUserConsent(extension));
     EXPECT_TRUE(runner()->WantsToRun(extension));
   }
+}
+
+// Tests that `OnRequestScriptInjectionPermission` does not record script
+// execution in `ScriptInjectionTracker` when the extension has no matching
+// content scripts and no pending browser-dispatched programmatic or
+// declarative script injection.
+TEST_F(ExtensionActionRunnerUnitTest,
+       UnrequestedScriptPermissionDoesNotUpdateTracker) {
+  const Extension* extension = AddExtension();
+  ASSERT_TRUE(extension);
+  NavigateAndCommit(GURL("https://www.google.com"));
+
+  // Request permission for programmatic and declarative injections while host
+  // permissions are withheld, without any browser-initiated injection having
+  // been dispatched.
+  runner()->OnRequestScriptInjectionPermission(
+      main_rfh(), extension->id(), mojom::InjectionType::kProgrammaticScript,
+      mojom::RunLocation::kDocumentIdle, base::DoNothing());
+  runner()->OnRequestScriptInjectionPermission(
+      main_rfh(), extension->id(), mojom::InjectionType::kDeclarativeScript,
+      mojom::RunLocation::kBrowserDriven, base::DoNothing());
+
+  {
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
+    runner()->RunForTesting(extension);
+    waiter.WaitForActiveTabPermissionGranted(extension->id());
+  }
+
+  // Because no programmatic or declarative injection was initiated by the
+  // browser, the process must not be marked as having executed a content
+  // script from the extension.
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *main_rfh()->GetProcess(), extension->id()));
+
+  // Grant host permissions and verify that direct permission requests in the
+  // allowed state also do not update the tracker when no script was
+  // dispatched.
+  ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(false);
+  runner()->OnRequestScriptInjectionPermission(
+      main_rfh(), extension->id(), mojom::InjectionType::kContentScript,
+      mojom::RunLocation::kDocumentIdle, base::DoNothing());
+  runner()->OnRequestScriptInjectionPermission(
+      main_rfh(), extension->id(), mojom::InjectionType::kProgrammaticScript,
+      mojom::RunLocation::kDocumentIdle, base::DoNothing());
+  runner()->OnRequestScriptInjectionPermission(
+      main_rfh(), extension->id(), mojom::InjectionType::kDeclarativeScript,
+      mojom::RunLocation::kBrowserDriven, base::DoNothing());
+
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *main_rfh()->GetProcess(), extension->id()));
+
+  // Conversely, an extension that actually declares a matching JS content
+  // script updates the tracker when content script permission is requested.
+  scoped_refptr<const Extension> content_script_extension =
+      ExtensionBuilder("content_script_extension")
+          .AddContentScript("script.js", {kAllHostsPermission})
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .Build();
+  ASSERT_TRUE(content_script_extension);
+  ExtensionRegistry::Get(profile())->AddEnabled(content_script_extension);
+  PermissionsUpdater(profile()).InitializePermissions(
+      content_script_extension.get());
+
+  runner()->OnRequestScriptInjectionPermission(
+      main_rfh(), content_script_extension->id(),
+      mojom::InjectionType::kContentScript, mojom::RunLocation::kDocumentIdle,
+      base::DoNothing());
+  EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *main_rfh()->GetProcess(), content_script_extension->id()));
 }
 
 }  // namespace extensions

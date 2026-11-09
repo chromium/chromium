@@ -121,24 +121,34 @@ class ScriptInjectionTracker {
 
   // Called before ExtensionMsg_ExecuteCode is sent to a renderer process
   // (typically when handling chrome.tabs.executeScript or a similar API call).
+  // If `is_withheld` is true (because host access is currently withheld), the
+  // injection is recorded as pending on `frame` and will only be finalized if
+  // `ExtensionActionRunner` later permits it to run.
   //
   // The caller needs to ensure that if `host_id.type() == HostID::EXTENSIONS`,
   // then the extension with the given `host_id` exists and is enabled.
   static void WillExecuteCode(base::PassKey<ScriptExecutor> pass_key,
                               ScriptType script_type,
                               content::RenderFrameHost* frame,
-                              const mojom::HostID& host_id);
+                              const mojom::HostID& host_id,
+                              bool is_withheld);
 
   // Called before `extensions::mojom::LocalFrame::ExecuteDeclarativeScript` is
   // invoked in a renderer process (e.g. when handling RequestContentScript
-  // action of the `chrome.declarativeContent` API).
+  // action of the `chrome.declarativeContent` API). If `is_withheld` is true
+  // (because host access is currently withheld), the injection is recorded as
+  // pending on `frame` and will only be finalized if `ExtensionActionRunner`
+  // later permits it to run.
   static void WillExecuteCode(base::PassKey<RequestContentScript> pass_key,
                               content::RenderFrameHost* frame,
-                              const Extension& extension);
+                              const Extension& extension,
+                              bool is_withheld);
 
-  // Called before a programmatic or declarative injection that was previously
-  // deferred (because host access was withheld) is permitted to run as a result
-  // of the user granting the extension access to the page.
+  // Called when `ExtensionActionRunner` permits a script injection to run in
+  // `frame`. For `kProgrammaticScript` and `kDeclarativeScript`, this finalizes
+  // a pending injection that was previously recorded while host access was
+  // withheld. For `kContentScript`, this records any matching scripts for the
+  // extension in `frame`'s process.
   static void WillExecuteCode(base::PassKey<ExtensionActionRunner> pass_key,
                               mojom::InjectionType script_type,
                               content::RenderFrameHost* frame,

@@ -27,11 +27,13 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/browser/scripting_utils.h"
+#include "extensions/common/content_script_injection_url_getter.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -305,32 +307,49 @@ class Handler : public content::WebContentsObserver {
 
       // When the extension's host permission for `frame`'s document is
       // withheld, the renderer defers execution and asks the browser for
-      // permission instead of running the script. In that case the
-      // ScriptInjectionTracker is updated by ExtensionActionRunner if and when
-      // the user grants access and the deferred script is permitted to run.
-      bool record_injection = true;
+      // permission instead of running the script. In that case
+      // ScriptInjectionTracker records a pending injection that is only
+      // finalized by ExtensionActionRunner (or permission updates) if and
+      // when access is granted. Otherwise (including when page_access is
+      // kDenied, since a navigation commit to an allowed document may already
+      // be in flight from the renderer), record the injection immediately so
+      // the renderer is not terminated as a bad message sender if the script
+      // runs.
+      bool is_withheld = false;
       if (!is_web_view_ && extension) {
         GURL url = frame->GetLastCommittedURL();
+        content::NavigationEntry* pending_entry =
+            frame->IsInPrimaryMainFrame()
+                ? web_contents()->GetController().GetPendingEntry()
+                : nullptr;
         if (url.is_empty() || url.SchemeIs(url::kAboutScheme)) {
-          content::NavigationEntry* pending_entry =
-              web_contents()->GetController().GetPendingEntry();
           if (pending_entry && !pending_entry->GetURL().is_empty()) {
             url = pending_entry->GetURL();
-          } else {
-            url = frame->GetLastCommittedOrigin().GetURL();
+          } else if (url.is_empty() &&
+                     (!frame->IsInPrimaryMainFrame() ||
+                      !frame->GetLastCommittedOrigin().opaque())) {
+            url = GURL(url::kAboutBlankURL);
           }
         }
         if (!url.is_empty()) {
-          record_injection = (extension->permissions_data()->GetPageAccess(
-                                  url, tab_id,
-                                  /*error=*/nullptr) !=
-                              PermissionsData::PageAccess::kWithheld);
+          GURL effective_url = ContentScriptInjectionUrlGetter::Get(
+              BrowserFrameContextData(frame), url,
+              params->match_origin_as_fallback_behavior,
+              /*allow_inaccessible_parents=*/true);
+          PermissionsData::PageAccess page_access =
+              extension->permissions_data()->GetPageAccess(effective_url,
+                                                           tab_id,
+                                                           /*error=*/nullptr);
+          if (page_access == PermissionsData::PageAccess::kDenied &&
+              pending_entry && !pending_entry->GetURL().is_empty()) {
+            page_access = extension->permissions_data()->GetPageAccess(
+                pending_entry->GetURL(), tab_id, /*error=*/nullptr);
+          }
+          is_withheld = (page_access == PermissionsData::PageAccess::kWithheld);
         }
       }
-      if (record_injection) {
-        ScriptInjectionTracker::WillExecuteCode(pass_key, script_type, frame,
-                                                host_id_);
-      }
+      ScriptInjectionTracker::WillExecuteCode(pass_key, script_type, frame,
+                                              host_id_, is_withheld);
     }
     ExtensionWebContentsObserver::GetForWebContents(web_contents())
         ->GetLocalFrameChecked(frame)

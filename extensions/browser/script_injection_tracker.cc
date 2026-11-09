@@ -5,6 +5,9 @@
 #include "extensions/browser/script_injection_tracker.h"
 
 #include <algorithm>
+#include <map>
+#include <set>
+#include <utility>
 
 #include "base/check_is_test.h"
 #include "base/debug/crash_logging.h"
@@ -71,6 +74,12 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
         process.GetUserData(kUserDataKey));
   }
 
+  static RenderProcessHostUserData* Get(content::RenderProcessHost& process) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    return static_cast<RenderProcessHostUserData*>(
+        process.GetUserData(kUserDataKey));
+  }
+
   static RenderProcessHostUserData& GetOrCreate(
       content::RenderProcessHost& process) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -113,10 +122,55 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
     GetScripts(script_type).insert(extension_id);
   }
 
+  void AddPendingScript(content::GlobalRenderFrameHostId frame_id,
+                        mojom::InjectionType injection_type,
+                        ScriptInjectionTracker::ScriptType script_type,
+                        const ExtensionId& extension_id) {
+    std::erase_if(pending_scripts_, [](const auto& entry) {
+      return !content::RenderFrameHost::FromID(entry.first.frame_id);
+    });
+    pending_scripts_[{frame_id, injection_type, extension_id}].insert(
+        script_type);
+  }
+
+  std::set<ScriptInjectionTracker::ScriptType> TakePendingScripts(
+      content::GlobalRenderFrameHostId frame_id,
+      mojom::InjectionType injection_type,
+      const ExtensionId& extension_id) {
+    auto it = pending_scripts_.find({frame_id, injection_type, extension_id});
+    if (it == pending_scripts_.end()) {
+      return {};
+    }
+    std::set<ScriptInjectionTracker::ScriptType> scripts =
+        std::move(it->second);
+    pending_scripts_.erase(it);
+    return scripts;
+  }
+
+  bool HasPendingScripts(content::GlobalRenderFrameHostId frame_id,
+                         const ExtensionId& extension_id) const {
+    return !pending_scripts_.empty() &&
+           (pending_scripts_.contains(
+                {frame_id, mojom::InjectionType::kProgrammaticScript,
+                 extension_id}) ||
+            pending_scripts_.contains({frame_id,
+                                       mojom::InjectionType::kDeclarativeScript,
+                                       extension_id}));
+  }
+
   const ExtensionIdSet& content_scripts() const { return content_scripts_; }
   const ExtensionIdSet& user_scripts() const { return user_scripts_; }
 
  private:
+  struct PendingScriptKey {
+    content::GlobalRenderFrameHostId frame_id;
+    mojom::InjectionType injection_type;
+    ExtensionId extension_id;
+
+    friend auto operator<=>(const PendingScriptKey&,
+                            const PendingScriptKey&) = default;
+  };
+
   explicit RenderProcessHostUserData(content::RenderProcessHost& process)
       : process_(process) {
     TRACE_EVENT_BEGIN("extensions",
@@ -147,6 +201,14 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
   // maintained by the ScriptInjectionTracker.
   ExtensionIdSet content_scripts_;
   ExtensionIdSet user_scripts_;
+
+  // Browser-dispatched programmatic and declarative script injections whose
+  // execution in a frame was deferred because host permissions were withheld.
+  // Stored here (keyed by GlobalRenderFrameHostId, with destroyed frames pruned
+  // on insertion) rather than in DocumentUserData to avoid ReadyToCommit /
+  // DidCommit races and preserve injections queued on initial empty documents.
+  std::map<PendingScriptKey, std::set<ScriptInjectionTracker::ScriptType>>
+      pending_scripts_;
 
   // Only used for tracing.
   const raw_ref<content::RenderProcessHost> process_;
@@ -452,13 +514,16 @@ std::vector<const Extension*> GetExtensionsInjectingContentScripts(
 
 // Adds all scripts from `extension` that matches the `process` renderers to the
 // process data.
-void AddMatchingScriptsToProcess(const Extension& extension,
+void AddMatchingScriptsToProcess(base::PassKey<ScriptInjectionTracker> pass_key,
+                                 const Extension& extension,
                                  content::RenderProcessHost& process) {
   bool any_frame_matches_content_scripts = false;
   bool any_frame_matches_user_scripts = false;
+  auto* existing_process_data = RenderProcessHostUserData::Get(process);
   process.ForEachRenderFrameHost([&any_frame_matches_content_scripts,
                                   &any_frame_matches_user_scripts,
-                                  &extension](content::RenderFrameHost* frame) {
+                                  existing_process_data, &extension,
+                                  pass_key](content::RenderFrameHost* frame) {
     const GURL& url = frame->GetLastCommittedURL();
     // Ignore error documents, which don't allow scripts to inject.
     // We need to check whether the committed URL is empty first to avoid a
@@ -476,6 +541,30 @@ void AddMatchingScriptsToProcess(const Extension& extension,
     if (!any_frame_matches_user_scripts) {
       any_frame_matches_user_scripts =
           DoUserScriptsMatch(extension, *frame, url);
+    }
+    if (!existing_process_data || !existing_process_data->HasPendingScripts(
+                                      frame->GetGlobalId(), extension.id())) {
+      return;
+    }
+
+    auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
+    int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+    GURL effective_url = GetEffectiveDocumentURL(
+        frame, url, mojom::MatchOriginAsFallbackBehavior::kAlways);
+    if (extension.permissions_data()->GetPageAccessForSecurityOrigin(
+            effective_url, tab_id) != PermissionsData::PageAccess::kAllowed) {
+      return;
+    }
+
+    for (mojom::InjectionType injection_type :
+         {mojom::InjectionType::kProgrammaticScript,
+          mojom::InjectionType::kDeclarativeScript}) {
+      for (ScriptInjectionTracker::ScriptType pending_script_type :
+           existing_process_data->TakePendingScripts(
+               frame->GetGlobalId(), injection_type, extension.id())) {
+        HandleProgrammaticScriptInjection(pass_key, pending_script_type, frame,
+                                          extension);
+      }
     }
   });
 
@@ -817,7 +906,8 @@ void ScriptInjectionTracker::WillExecuteCode(
     base::PassKey<ScriptExecutor> pass_key,
     ScriptType script_type,
     content::RenderFrameHost* frame,
-    const mojom::HostID& host_id) {
+    const mojom::HostID& host_id,
+    bool is_withheld) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::RenderProcessHost& process = *frame->GetProcess();
@@ -832,6 +922,13 @@ void ScriptInjectionTracker::WillExecuteCode(
     return;
   }
 
+  if (is_withheld) {
+    RenderProcessHostUserData::GetOrCreate(process).AddPendingScript(
+        frame->GetGlobalId(), mojom::InjectionType::kProgrammaticScript,
+        script_type, extension->id());
+    return;
+  }
+
   HandleProgrammaticScriptInjection(PassKey(), script_type, frame, *extension);
 }
 
@@ -839,12 +936,21 @@ void ScriptInjectionTracker::WillExecuteCode(
 void ScriptInjectionTracker::WillExecuteCode(
     base::PassKey<RequestContentScript> pass_key,
     content::RenderFrameHost* frame,
-    const Extension& extension) {
+    const Extension& extension,
+    bool is_withheld) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  content::RenderProcessHost& process = *frame->GetProcess();
   TRACE_EVENT("extensions", "ScriptInjectionTracker::WillExecuteCode/2",
-              ChromeTrackEvent::kRenderProcessHost, *frame->GetProcess(),
+              ChromeTrackEvent::kRenderProcessHost, process,
               ChromeTrackEvent::kChromeExtensionId,
               ExtensionIdForTracing(extension.id()));
+
+  if (is_withheld) {
+    RenderProcessHostUserData::GetOrCreate(process).AddPendingScript(
+        frame->GetGlobalId(), mojom::InjectionType::kDeclarativeScript,
+        ScriptType::kContentScript, extension.id());
+    return;
+  }
 
   // Declarative content scripts are only ever of a kContentScript type and
   // never handle user scripts.
@@ -859,16 +965,31 @@ void ScriptInjectionTracker::WillExecuteCode(
     content::RenderFrameHost* frame,
     const Extension& extension) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  content::RenderProcessHost& process = *frame->GetProcess();
   TRACE_EVENT("extensions", "ScriptInjectionTracker::WillExecuteCode/3",
-              ChromeTrackEvent::kRenderProcessHost, *frame->GetProcess(),
+              ChromeTrackEvent::kRenderProcessHost, process,
               ChromeTrackEvent::kChromeExtensionId,
               ExtensionIdForTracing(extension.id()));
 
-  // A programmatic or declarative injection that was deferred while host access
-  // was withheld is being permitted to run; this is treated like any other
-  // programmatic content script injection.
-  HandleProgrammaticScriptInjection(PassKey(), ScriptType::kContentScript,
-                                    frame, extension);
+  switch (script_type) {
+    case mojom::InjectionType::kContentScript:
+      AddMatchingScriptsToProcess(PassKey(), extension, process);
+      break;
+    case mojom::InjectionType::kProgrammaticScript:
+    case mojom::InjectionType::kDeclarativeScript: {
+      auto* process_data = RenderProcessHostUserData::Get(process);
+      if (!process_data) {
+        return;
+      }
+      std::set<ScriptType> pending_scripts = process_data->TakePendingScripts(
+          frame->GetGlobalId(), script_type, extension.id());
+      for (ScriptType pending_script_type : pending_scripts) {
+        HandleProgrammaticScriptInjection(PassKey(), pending_script_type, frame,
+                                          extension);
+      }
+      break;
+    }
+  }
 }
 
 // static
@@ -878,7 +999,7 @@ void ScriptInjectionTracker::WillGrantActiveTab(
     content::RenderProcessHost& process) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  AddMatchingScriptsToProcess(extension, process);
+  AddMatchingScriptsToProcess(PassKey(), extension, process);
 }
 
 // static
@@ -898,7 +1019,7 @@ void ScriptInjectionTracker::DidUpdateScriptsInRenderer(
     return;
   }
 
-  AddMatchingScriptsToProcess(*extension, process);
+  AddMatchingScriptsToProcess(PassKey(), *extension, process);
 }
 
 // static
@@ -908,7 +1029,7 @@ void ScriptInjectionTracker::DidUpdatePermissionsInRenderer(
     content::RenderProcessHost& process) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  AddMatchingScriptsToProcess(extension, process);
+  AddMatchingScriptsToProcess(PassKey(), extension, process);
 }
 
 // static
@@ -918,7 +1039,7 @@ void ScriptInjectionTracker::DidUpdatePermissionsInRenderer(
     content::RenderProcessHost& process) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  AddMatchingScriptsToProcess(extension, process);
+  AddMatchingScriptsToProcess(PassKey(), extension, process);
 }
 
 // static

@@ -383,7 +383,7 @@ void RequestContentScript::InstructRenderProcessToInject(
   // bypassing the check we have for an invalid selector and getting here).
   // When access is withheld, the script is still sent to the renderer, which
   // defers the injection and requests permission from the browser. Trust is
-  // only granted to the renderer process below when access is allowed.
+  // only granted to the renderer process once access is allowed.
   std::string error;
   content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
   const GURL& url = util::GetURLForExtensionPermissionCheck(main_frame);
@@ -403,12 +403,13 @@ void RequestContentScript::InstructRenderProcessToInject(
     return;
   }
 
-  // When access is withheld, `ScriptInjectionTracker` is instead updated by
-  // `ExtensionActionRunner` if the user later grants access and the deferred
-  // script is permitted to run.
-  if (page_access == PermissionsData::PageAccess::kAllowed) {
+  // When access is withheld, `ScriptInjectionTracker` records a pending
+  // injection that is only finalized by `ExtensionActionRunner` if the user
+  // later grants access and the deferred script is permitted to run.
+  if (!script_.js_scripts().empty()) {
     ScriptInjectionTracker::WillExecuteCode(
-        base::PassKey<RequestContentScript>(), main_frame, *extension);
+        base::PassKey<RequestContentScript>(), main_frame, *extension,
+        page_access == PermissionsData::PageAccess::kWithheld);
   }
   local_frame->ExecuteDeclarativeScript(
       sessions::SessionTabHelper::IdForTab(contents).id(), extension->id(),
