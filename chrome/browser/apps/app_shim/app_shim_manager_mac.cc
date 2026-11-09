@@ -838,8 +838,9 @@ void AppShimManager::OnShimLaunchRequested(
 
 void AppShimManager::OnShimProcessConnected(
     std::unique_ptr<AppShimHostBootstrap> bootstrap) {
-  CHECK(crx_file::id_util::IdIsValid(bootstrap->GetAppId()),
-        base::NotFatalUntil::M161);
+  // TODO(crbug.com/582657474): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(crx_file::id_util::IdIsValid(bootstrap->GetAppId()));
   if (app_shim_observer_) {
     app_shim_observer_->OnShimProcessConnected(bootstrap->GetAppShimPid());
   }
