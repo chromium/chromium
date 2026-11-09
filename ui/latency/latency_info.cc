@@ -192,7 +192,12 @@ void LatencyInfo::AddLatencyNumberWithTimestampImpl(
   }
 
   auto it = latency_components_.find(component);
-  CHECK(it == latency_components_.end(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/582221690): CHECK-exclusion: regarding
+  // compositor_frame_sink_mojolpm_fuzzer's comment,
+  // `MaybeSubmitCompositorFrame()` need to make a rejected frame return a
+  // SubmitResult rather than CHECK-failing (the public wrapper DCHECK_EQ()s
+  // ACCEPTED).
+  DCHECK(it == latency_components_.end());
   latency_components_[component] = time;
 
   if (component == INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT)
