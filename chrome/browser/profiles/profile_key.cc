@@ -35,7 +35,9 @@ void ProfileKey::SetPrefs(PrefService* prefs) {
 }
 
 leveldb_proto::ProtoDatabaseProvider* ProfileKey::GetProtoDatabaseProvider() {
-  CHECK(db_provider_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/580134583): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(db_provider_);
   return db_provider_;
 }
 
