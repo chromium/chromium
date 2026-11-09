@@ -58,9 +58,10 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
   if (!browser) {
     return;
   }
-  CHECK(!g_manage_passwords_bubble_ ||
-            !g_manage_passwords_bubble_->GetWidget()->IsVisible(),
-        base::NotFatalUntil::M162);
+  // TODO(crbug.com/581964653): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!g_manage_passwords_bubble_ ||
+         !g_manage_passwords_bubble_->GetWidget()->IsVisible());
 
   auto* button_provider = ToolbarButtonProvider::From(browser);
   if (!button_provider) {
