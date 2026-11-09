@@ -9,6 +9,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/values.h"
 #include "chrome/browser/ui/webui/organizer_panel/foreign_tabs.mojom.h"
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel.mojom.h"
 #include "chrome/browser/ui/webui/organizer_panel/tab_groups.mojom.h"
@@ -21,6 +22,7 @@
 
 class ForeignTabsPageHandler;
 class OrganizerPanelPageHandler;
+class Profile;
 class SearchHandler;
 class TabGroupsOrganizerPageHandler;
 class TabSearchPageHandler;
@@ -68,7 +70,20 @@ class OrganizerPanelUI
 
   static constexpr std::string_view GetWebUIName() { return "OrganizerPanel"; }
 
+  // Returns the loadTimeData values that depend on `profile`, the profile of
+  // the window that shows the panel. They are in the WebUIDataSource, or passed
+  // to each frame in WebUIRenderFrameCreated() if the data source is shared by
+  // the windows of all profiles, i.e. in TopChromeWebUIProfile.
+  // TODO(crbug.com/531575122): Move passing these values to each frame to
+  // TopChromeWebUIController, since the omnibox popup does the same and other
+  // Top Chrome WebUIs will.
+  static base::DictValue GetProfileLoadTimeData(Profile* profile);
+
  private:
+  // content::WebUIController:
+  void WebUIRenderFrameCreated(
+      content::RenderFrameHost* render_frame_host) override;
+
   // organizer_panel::mojom::ForeignTabsPageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingReceiver<organizer_panel::mojom::ForeignTabsPageHandler>

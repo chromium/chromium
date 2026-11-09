@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.h"
@@ -114,14 +115,6 @@ void PopulateAiModeButtonUiConfig(base::DictValue& dict, Profile* profile) {
   dict.Set("searchboxComposeButtonIcon", compose_icon.spec());
 }
 
-// Returns whether the WebUIDataSource of `web_ui` is shared by the windows of
-// all profiles, i.e. it is in TopChromeWebUIProfile. If so, the loadTimeData
-// values that depend on the profile are passed to each frame instead of being
-// in the data source.
-bool IsWebUIDataSourceShared(content::WebUI* web_ui) {
-  return Profile::FromWebUI(web_ui)->IsTopChromeWebUIProfile();
-}
-
 }  // namespace
 
 bool OmniboxPopupUIConfig::IsWebUIEnabled(
@@ -153,7 +146,7 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   // The values that depend on the profile. If the data source is shared by the
   // windows of all profiles, WebUIRenderFrameCreated() passes them to each
   // frame instead.
-  if (!IsWebUIDataSourceShared(web_ui)) {
+  if (!webui::IsWebUIDataSourceShared(web_ui)) {
     source->AddLocalizedStrings(GetProfileLoadTimeData(profile_));
   }
 
@@ -369,7 +362,7 @@ base::DictValue OmniboxPopupUI::GetProfileLoadTimeData(Profile* profile) {
 void OmniboxPopupUI::WebUIRenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
   // If the data source isn't shared, the constructor added these values to it.
-  if (!IsWebUIDataSourceShared(web_ui())) {
+  if (!webui::IsWebUIDataSourceShared(web_ui())) {
     return;
   }
   if (std::optional<std::string> json = base::WriteJson(GetProfileLoadTimeData(

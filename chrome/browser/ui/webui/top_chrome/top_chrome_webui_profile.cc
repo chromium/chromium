@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/top_chrome_webui_profile_impl.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/render_process_host.h"
@@ -52,6 +53,10 @@ Profile& GetProfileForTopChromeWebUIContents(Profile* user_profile) {
                          : user_profile;
   CHECK(profile);
   return *profile;
+}
+
+bool IsWebUIDataSourceShared(content::WebUI* web_ui) {
+  return Profile::FromWebUI(web_ui)->IsTopChromeWebUIProfile();
 }
 
 ScopedTopChromeWebUIProfileForTesting::ScopedTopChromeWebUIProfileForTesting() {

@@ -7,6 +7,10 @@
 
 class Profile;
 
+namespace content {
+class WebUI;
+}  // namespace content
+
 // The process-wide profile that hosts the Top Chrome WebUIs of the windows of
 // all profiles if ShouldUseTopChromeWebUIProfile(). It is not managed by
 // ProfileManager. See TopChromeWebUIProfileImpl.
@@ -35,6 +39,12 @@ Profile* GetTopChromeWebUIProfile();
 // window of `user_profile`: this profile if
 // ShouldUseTopChromeWebUIProfile(), or `user_profile` otherwise.
 Profile& GetProfileForTopChromeWebUIContents(Profile* user_profile);
+
+// Returns whether the WebUIDataSource of `web_ui` is shared by the windows of
+// all profiles, i.e. it is in this profile. If so, the loadTimeData values that
+// depend on the profile must be passed to each frame instead of being in the
+// data source.
+bool IsWebUIDataSourceShared(content::WebUI* web_ui);
 
 // Creates the profile for the lifetime of this object.
 class ScopedTopChromeWebUIProfileForTesting {

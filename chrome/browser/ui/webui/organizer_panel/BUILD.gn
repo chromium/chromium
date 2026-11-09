@@ -85,6 +85,7 @@ source_set("browser_tests") {
   sources = [
     "foreign_tabs_page_handler_browsertest.cc",
     "organizer_panel_page_handler_browsertest.cc",
+    "organizer_panel_ui_browsertest.cc",
     "tab_groups_organizer_page_handler_browsertest.cc",
   ]
   deps = [
@@ -93,6 +94,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/collaboration/messaging",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui:ui_features",
@@ -107,6 +109,8 @@ source_set("browser_tests") {
     "//components/keyed_service/content",
     "//components/prefs",
     "//components/saved_tab_groups/public",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager:test_support",
     "//components/sync_sessions",
     "//components/sync_sessions:test_support",
     "//components/tab_groups",

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '/strings.m.js';
+import './profile_load_time_data.js';
 import './app.js';
 
 export type {Range} from '/tab_group_shared/search.js';

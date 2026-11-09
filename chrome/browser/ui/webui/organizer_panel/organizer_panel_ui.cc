@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel_ui.h"
 
 #include <optional>
+#include <string>
 
 #include "base/check.h"
+#include "base/json/json_writer.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -20,6 +22,8 @@
 #include "chrome/browser/ui/webui/tab_search/search_handler.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -31,6 +35,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -66,12 +71,16 @@ std::optional<GURL> OrganizerPanelUIConfig::GetPreloadEngagementAliasURL()
 }
 
 OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
-    : TopChromeWebUIController(web_ui,
-                               /*enable_chrome_send=*/false,
-                               /*enable_chrome_histograms=*/true) {
-  Profile* profile = Profile::FromWebUI(web_ui);
+    // If the data source is shared, `enable_chrome_send` enables
+    // `BindingsPolicyValue::kWebUi`, which is required for `SetWebUIProperty` /
+    // `chrome.getVariableValue('profileLoadTimeData')`. No message is sent with
+    // chrome.send().
+    : TopChromeWebUIController(
+          web_ui,
+          /*enable_chrome_send=*/webui::IsWebUIDataSourceShared(web_ui),
+          /*enable_chrome_histograms=*/true) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      profile, chrome::kChromeUIOrganizerPanelHost);
+      Profile::FromWebUI(web_ui), chrome::kChromeUIOrganizerPanelHost);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"clearSearch", IDS_CLEAR_SEARCH},
@@ -101,11 +110,13 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("foreignTabsEnabled",
                      organizer_panel::IsOrganizerPanelForeignTabsEnabled());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  source->AddBoolean("isUserSignedIn",
-                     identity_manager && identity_manager->HasPrimaryAccount(
-                                             signin::ConsentLevel::kSignin));
+  // The values that depend on the profile. If the data source is shared by the
+  // windows of all profiles, WebUIRenderFrameCreated() passes them to each
+  // frame instead.
+  if (!webui::IsWebUIDataSourceShared(web_ui)) {
+    source->AddLocalizedStrings(GetProfileLoadTimeData(
+        webui::GetUserProfile(web_ui->GetWebContents())));
+  }
   source->AddBoolean("diceSupportEnabled",
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
                      true
@@ -113,7 +124,6 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
                      false
 #endif
   );
-  source->AddBoolean("isIncognitoMode", profile->IsIncognitoProfile());
 
   ui::Accelerator accelerator(ui::VKEY_A,
                               ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);
@@ -127,13 +137,42 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
   source->AddResourcePaths(kTabGroupSharedResources);
 #endif
 
-  content::URLDataSource::Add(
-      profile, std::make_unique<FaviconSource>(
-                   profile, chrome::FaviconUrlFormat::kFavicon2));
-  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
+  {
+    // The URL data sources are added to the profile of the WebUI, which is
+    // shared by the windows of all profiles in TopChromeWebUIProfile.
+    Profile* webui_profile = Profile::FromWebUI(web_ui);
+    content::URLDataSource::Add(
+        webui_profile, std::make_unique<FaviconSource>(
+                           webui_profile, chrome::FaviconUrlFormat::kFavicon2));
+    content::URLDataSource::Add(webui_profile,
+                                std::make_unique<ThemeSource>(webui_profile));
+  }
 }
 
 OrganizerPanelUI::~OrganizerPanelUI() = default;
+
+// static
+base::DictValue OrganizerPanelUI::GetProfileLoadTimeData(Profile* profile) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  return base::DictValue()
+      .Set("isUserSignedIn",
+           identity_manager && identity_manager->HasPrimaryAccount(
+                                   signin::ConsentLevel::kSignin))
+      .Set("isIncognitoMode", profile->IsIncognitoProfile());
+}
+
+void OrganizerPanelUI::WebUIRenderFrameCreated(
+    content::RenderFrameHost* render_frame_host) {
+  // If the data source isn't shared, the constructor added these values to it.
+  if (!webui::IsWebUIDataSourceShared(web_ui())) {
+    return;
+  }
+  if (std::optional<std::string> json = base::WriteJson(GetProfileLoadTimeData(
+          webui::GetUserProfile(web_ui()->GetWebContents())))) {
+    render_frame_host->SetWebUIProperty("profileLoadTimeData", *json);
+  }
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OrganizerPanelUI)
 
