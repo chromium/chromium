@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <initializer_list>
 #include <type_traits>
 #include <variant>
 
@@ -21,16 +22,17 @@ struct VariantIndexOfTypeHelper {
 template <typename... Ts, typename T>
 struct VariantIndexOfTypeHelper<std::variant<Ts...>, T> {
   static constexpr size_t Index() {
-    static_assert(std::is_constructible_v<std::variant<LiteralType<Ts>...>,
-                                          LiteralType<T>>,
+    static_assert((0 + ... + std::is_same_v<T, Ts>) == 1,
                   "Variant is not constructible from T");
-    return std::variant<LiteralType<Ts>...>(LiteralType<T>()).index();
+    size_t index = 0;
+    for (bool is_t : {std::is_same_v<T, Ts>...}) {
+      if (is_t) {
+        break;
+      }
+      ++index;
+    }
+    return index;
   }
-
-  // Helper struct; even if `Tag` may not be usable as a literal type, a
-  // `LiteralType<Tag>` will be.
-  template <typename Tag>
-  struct LiteralType {};
 };
 
 }  // namespace internal
