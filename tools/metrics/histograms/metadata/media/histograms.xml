@@ -7784,6 +7784,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.SRC.AudioCodec.Ogg" enum="AudioCodec"
+    expires_after="2027-06-01">
+  <owner>jophba@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Audio codec used in plain src= (not MSE) HTML5 media if the media container
+    is Ogg. Recorded once for each supported audio track when FFmpegDemuxer
+    initializes. Ogg normally carries Vorbis, Opus, or FLAC; other codecs come
+    from legacy OGM streams. Used to decide which Ogg audio mappings the
+    Symphonia-based replacement for FFmpegDemuxer needs to support.
+  </summary>
+</histogram>
+
 <histogram name="Media.SRC.VideoCodec.MP4" enum="VideoCodec"
     expires_after="never">
 <!-- expires-never: Codec and container support planning metric. -->
@@ -7793,6 +7807,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     Video codec used in plain src= (not MSE) HTML5 media if the media container
     is MP4.
+  </summary>
+</histogram>
+
+<histogram name="Media.SRC.VideoCodec.Ogg" enum="VideoCodec"
+    expires_after="2027-06-01">
+  <owner>jophba@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Video codec used in plain src= (not MSE) HTML5 media if the media container
+    is Ogg. Recorded once for each supported video track when FFmpegDemuxer
+    initializes, so tracks with codecs Chrome can't decode (such as Theora) are
+    not counted. Used to decide whether video in Ogg (in practice, VP8) needs to
+    be supported by the Symphonia-based replacement for FFmpegDemuxer.
   </summary>
 </histogram>
 

@@ -135,8 +135,13 @@ static base::TimeDelta ExtractStartTime(AVStream* stream) {
 }
 
 // Record audio decoder config UMA stats corresponding to a src= playback.
-static void RecordAudioCodecStats(const AudioDecoderConfig& audio_config) {
+static void RecordAudioCodecStats(container_names::MediaContainerName container,
+                                  const AudioDecoderConfig& audio_config) {
   base::UmaHistogramEnumeration("Media.AudioCodec", audio_config.codec());
+  if (container == container_names::MediaContainerName::kContainerOgg) {
+    base::UmaHistogramEnumeration("Media.SRC.AudioCodec.Ogg",
+                                  audio_config.codec());
+  }
 }
 
 // Record video decoder config UMA stats corresponding to a src= playback.
@@ -152,6 +157,9 @@ static void RecordVideoCodecStats(container_names::MediaContainerName container,
                                   video_config.codec());
   } else if (container == container_names::MediaContainerName::kContainerWEBM) {
     base::UmaHistogramEnumeration("Media.SRC.VideoCodec.WebM",
+                                  video_config.codec());
+  } else if (container == container_names::MediaContainerName::kContainerOgg) {
+    base::UmaHistogramEnumeration("Media.SRC.VideoCodec.Ogg",
                                   video_config.codec());
   }
 }
@@ -1541,7 +1549,7 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
     MediaTrack* media_track = nullptr;
     if (codec_type == AVMEDIA_TYPE_AUDIO) {
       AudioDecoderConfig audio_config = streams_[i]->audio_decoder_config();
-      RecordAudioCodecStats(audio_config);
+      RecordAudioCodecStats(glue_->container(), audio_config);
 
       media_track = media_tracks->AddAudioTrack(
           audio_config, stream_enabled, track_id, MediaTrack::Kind("main"),

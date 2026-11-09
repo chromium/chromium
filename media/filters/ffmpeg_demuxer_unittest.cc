@@ -24,6 +24,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -427,6 +428,27 @@ TEST_F(FFmpegDemuxerTest, Initialize_NoAudioVideo) {
   WaitableMessageLoopEvent event;
   demuxer_->Initialize(&host_, event.GetPipelineStatusCB());
   event.RunAndWaitForStatus(DEMUXER_ERROR_NO_SUPPORTED_STREAMS);
+}
+
+TEST_F(FFmpegDemuxerTest, RecordsOggVideoCodec) {
+  base::HistogramTester histogram_tester;
+  CreateDemuxer("bear_audio_longer_than_video_vp8.ogv");
+  InitializeDemuxer();
+  histogram_tester.ExpectUniqueSample("Media.SRC.VideoCodec.Ogg",
+                                      VideoCodec::kVP8, 1);
+  histogram_tester.ExpectUniqueSample("Media.SRC.AudioCodec.Ogg",
+                                      AudioCodec::kVorbis, 1);
+  histogram_tester.ExpectTotalCount("Media.SRC.VideoCodec.WebM", 0);
+}
+
+TEST_F(FFmpegDemuxerTest, RecordsWebMVideoCodec) {
+  base::HistogramTester histogram_tester;
+  CreateDemuxer("bear-320x240.webm");
+  InitializeDemuxer();
+  histogram_tester.ExpectUniqueSample("Media.SRC.VideoCodec.WebM",
+                                      VideoCodec::kVP8, 1);
+  histogram_tester.ExpectTotalCount("Media.SRC.VideoCodec.Ogg", 0);
+  histogram_tester.ExpectTotalCount("Media.SRC.AudioCodec.Ogg", 0);
 }
 
 TEST_F(FFmpegDemuxerTest, Initialize_Successful) {
