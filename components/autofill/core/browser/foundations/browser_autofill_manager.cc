@@ -2352,14 +2352,33 @@ void BrowserAutofillManager::DidShowSuggestions(
                       update_suggestions_callback,
                       driver().GetPageUkmSourceId());
   }
+
+  const DenseSet<SuggestionType> shown_suggestion_types(suggestions,
+                                                        &Suggestion::type);
+
+  if (AutofillAiManager* ai_manager = client().GetAutofillAiManager();
+      ai_manager && form_structure && autofill_field &&
+      std::ranges::contains(shown_suggestion_types, FillingProduct::kAutofillAi,
+                            &GetFillingProductFromSuggestionType)) {
+    ai_manager->OnAutofillAiSuggestionsShown(
+        CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field), suggestions,
+        metadata, driver().GetPageUkmSourceId(),
+        base::BindRepeating(
+            [](AutofillExternalDelegate::UpdateSuggestionsCallback callback,
+               AutofillSuggestionTriggerSource trigger_source,
+               std::vector<Suggestion> suggestions) {
+              if (callback) {
+                callback.Run(std::move(suggestions), trigger_source);
+              }
+            },
+            update_suggestions_callback, trigger_source));
+  }
+
   if (metadata.is_subpopup()) {
     // The shown suggestions were in a sub-popup and the code below is not
     // relevant for those.
     return;
   }
-
-  const DenseSet<SuggestionType> shown_suggestion_types(suggestions,
-                                                        &Suggestion::type);
 
   if (shown_suggestion_types.contains(SuggestionType::kWebauthnPasskeyQrCode)) {
     if (PasswordManagerDelegate* password_delegate =
@@ -2377,25 +2396,6 @@ void BrowserAutofillManager::DidShowSuggestions(
         .GetPaymentsAutofillClient()
         ->GetIbanManager()
         ->OnIbanSuggestionsShown(field_id);
-  }
-
-  if (AutofillAiManager* ai_manager = client().GetAutofillAiManager();
-      ai_manager && form_structure && autofill_field &&
-      std::ranges::any_of(shown_suggestion_types,
-                          [](const SuggestionType& type) {
-                            return GetFillingProductFromSuggestionType(type) ==
-                                   FillingProduct::kAutofillAi;
-                          })) {
-    ai_manager->OnAutofillAiSuggestionsShown(
-        CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field), suggestions,
-        driver().GetPageUkmSourceId(),
-        base::BindRepeating(
-            [](AutofillExternalDelegate::UpdateSuggestionsCallback callback,
-               AutofillSuggestionTriggerSource trigger_source,
-               std::vector<Suggestion> suggestions) {
-              callback.Run(std::move(suggestions), trigger_source);
-            },
-            update_suggestions_callback, trigger_source));
   }
 
   // Notify the BNPL manager about suggestion shown if the current shown

@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_update_strike_database.h"
 #include "components/autofill/core/browser/studies/hats_surveys_util.h"
+#include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -80,6 +81,7 @@ class AutofillAiManager
       const FormStructure& form,
       const AutofillField& field,
       base::span<const Suggestion> shown_suggestions,
+      const AutofillSuggestionDelegate::SuggestionUiMetadata& metadata,
       ukm::SourceId ukm_source_id,
       UpdateSuggestionsCallback update_suggestions_callback);
   virtual void OnFormSeen(const FormStructure& form);

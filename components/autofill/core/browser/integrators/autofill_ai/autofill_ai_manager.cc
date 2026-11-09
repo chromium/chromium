@@ -257,8 +257,17 @@ void AutofillAiManager::OnAutofillAiSuggestionsShown(
     const FormStructure& form,
     const AutofillField& field,
     base::span<const Suggestion> shown_suggestions,
+    const AutofillSuggestionDelegate::SuggestionUiMetadata& metadata,
     ukm::SourceId ukm_source_id,
     UpdateSuggestionsCallback update_suggestions_callback) {
+  // For sub-popups, only process fillable `kFillAutofillAi` suggestions (such
+  // as domain-fallback order or shipment submenus), ignoring action or
+  // attribution submenus.
+  if (metadata.is_subpopup() &&
+      !std::ranges::contains(shown_suggestions, SuggestionType::kFillAutofillAi,
+                             &Suggestion::type)) {
+    return;
+  }
   if (update_suggestions_callback) {
     generate_suggestions_and_update_popup_callback_ =
         base::BindRepeating(&AutofillAiManager::GenerateAndUpdateSuggestions,
@@ -280,6 +289,9 @@ void AutofillAiManager::OnAutofillAiSuggestionsShown(
 
   std::vector<const EntityInstance*> entities_suggested;
   for (const Suggestion& suggestion : shown_suggestions) {
+    if (suggestion.type != SuggestionType::kFillAutofillAi) {
+      continue;
+    }
     if (const auto* payload =
             std::get_if<Suggestion::AutofillAiPayload>(&suggestion.payload)) {
       if (base::optional_ref<const EntityInstance> entity =

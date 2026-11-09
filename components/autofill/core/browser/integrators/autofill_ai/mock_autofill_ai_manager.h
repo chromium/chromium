@@ -8,6 +8,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -35,6 +36,7 @@ class MockAutofillAiManager : public AutofillAiManager {
               (const FormStructure&,
                const AutofillField&,
                base::span<const Suggestion> shown_suggestions,
+               const AutofillSuggestionDelegate::SuggestionUiMetadata&,
                ukm::SourceId,
                UpdateSuggestionsCallback),
               (override));

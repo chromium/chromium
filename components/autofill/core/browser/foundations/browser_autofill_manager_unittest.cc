@@ -111,6 +111,7 @@
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_util.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/mock_autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/mock_autofill_ai_model_executor.h"
+#include "components/autofill/core/browser/network/autofill_ai/mock_autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
@@ -6135,11 +6136,11 @@ class BrowserAutofillManagerTest_AutofillAi
             autofill_client().GetIdentityManager(),
             autofill_client().GetSyncService(),
             webdata_helper_.autofill_webdata_service(),
-            /*history_service=*/nullptr,
-            /*pcontext_manager=*/nullptr,
+            /*history_service=*/nullptr, &pcontext_manager_,
             /*strike_database=*/nullptr,
             /*variation_country_code=*/GeoIpCountryCode("US")));
     autofill_client().SetUpPrefsAndIdentityForAutofillAi();
+    autofill_client().set_personal_context_access_manager(&pcontext_manager_);
 
     ai_manager_ =
         std::make_unique<AutofillAiManager>(&autofill_client(),
@@ -6149,10 +6150,14 @@ class BrowserAutofillManagerTest_AutofillAi
   }
   AutofillAiManager& ai_manager() { return *ai_manager_.get(); }
   AutofillWebDataServiceTestHelper& webdata_helper() { return webdata_helper_; }
+  MockAutofillAiPersonalContextAccessManager& pcontext_manager() {
+    return pcontext_manager_;
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_{
-      features::kAutofillAiWithDataSchema};
+      {features::kAutofillAiWithDataSchema, features::kAutofillAiOrder}};
+  NiceMock<MockAutofillAiPersonalContextAccessManager> pcontext_manager_;
   std::unique_ptr<AutofillAiManager> ai_manager_;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
@@ -6200,6 +6205,70 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
       "Autofill.Ai.KeyMetrics.FillingReadiness.Vehicle.Local", 1, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.Ai.KeyMetrics.FillingReadiness.Vehicle", 1, 1);
+}
+
+// Tests that opening a domain-fallback sub-popup marks the child
+// `kFillAutofillAi` suggestions as shown so `FillingAcceptance` is recorded
+// alongside `FillingAssistance` when a fallback suggestion is accepted.
+TEST_F(BrowserAutofillManagerTest_AutofillAi,
+       AutofillAiKeyMetrics_FallbackSubPopupOpenedAndAccepted) {
+  const EntityInstance order = test::GetOrderEntityInstance({
+      .id = u"ORD-123",
+      .merchant_domain = u"merchant.example",
+  });
+  autofill_client().GetEntityDataManager()->OnPrefetchContextComplete(
+      pcontext_manager(), std::vector<EntityInstance>{order});
+  autofill_client().set_last_committed_primary_main_frame_url(
+      GURL("https://other-site.example"));
+
+  FormData form = test::GetFormData(
+      {.fields = {{.role = ORDER_ID}}, .url = "https://other-site.example"});
+  FormsSeen({form});
+  FormStructure* cached_form =
+      test_api(autofill_manager()).FindCachedFormById(form.global_id());
+  ASSERT_TRUE(cached_form);
+  cached_form->field(0)->SetTypeTo(
+      AutofillType(ORDER_ID), AutofillPredictionSource::kServerCrowdsourcing);
+  ai_manager().OnFormSeen(*cached_form);
+
+  std::vector<Suggestion> root_suggestions =
+      ai_manager().GetSuggestions(*cached_form, form.fields()[0]);
+  ASSERT_FALSE(root_suggestions.empty());
+  ASSERT_EQ(root_suggestions[0].type, SuggestionType::kAutofillAiOtherOrders);
+  ASSERT_FALSE(root_suggestions[0].children.empty());
+
+  // 1. Show the root popup containing `kAutofillAiOtherOrders`.
+  autofill_manager().DidShowSuggestions(root_suggestions, /*metadata=*/{},
+                                        form.global_id(),
+                                        form.fields()[0].global_id(), {});
+  // 2. Open the fallback sub-popup containing the child `kFillAutofillAi`
+  // suggestion.
+  autofill_manager().DidShowSuggestions(root_suggestions[0].children,
+                                        {.multi_index = {0}}, form.global_id(),
+                                        form.fields()[0].global_id(), {});
+  // 3. Accept the fallback order suggestion and submit the form.
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form.global_id(),
+      form.fields()[0].global_id(), FillingProduct::kAutofillAi, &order,
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
+      /*blocked_fields=*/{});
+
+  base::HistogramTester histogram_tester;
+  FormSubmitted(form);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.KeyMetrics.FillingAssistance.Order.PersonalContext", true,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.KeyMetrics.FillingAcceptance.Order.PersonalContext", true,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Funnel.Submitted.SuggestionAfterReadiness.Order."
+      "PersonalContext",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Funnel.Submitted.FillAfterSuggestion.Order.PersonalContext",
+      true, 1);
 }
 
 class BrowserAutofillManagerTest_MockAutofillAi
