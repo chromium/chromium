@@ -40,8 +40,11 @@ export function getHtml(this: OverflowMenuElement) {
         </button>
       ` : ''}
       ${this.shouldShowPinButton_() ? html`
-        <button class="dropdown-item" id="pinButton" @click="${this.onPinClick_}">
-          <cr-icon icon="${this.isPinned
+        <button class="dropdown-item" id="pinButton"
+            role="menuitemcheckbox"
+            aria-checked="${this.isPinned}"
+            @click="${this.onPinClick_}">
+          <cr-icon aria-hidden="true" icon="${this.isPinned
       ? (this.webuiRoundedIconsEnabled_ ? 'contextual_tasks:keep-off'
         : 'contextual_tasks:keep_off-old')
       : (this.webuiRoundedIconsEnabled_ ? 'contextual_tasks:keep'
