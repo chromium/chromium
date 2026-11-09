@@ -37,6 +37,7 @@ const initialState: PinnedToolbarActionState = {
   icon: {handleId: 0n},
   progressRing: null,
   badgeNumber: null,
+  iconSizeDelta: 0,
 };
 
 const PinnedToolbarActionElementBase = OverflowableToolbarActionMixin(
@@ -158,6 +159,19 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
   protected isDormant_(): boolean {
     return this.state.progressRing?.status ===
         DownloadProgressRingStatus.kDormant;
+  }
+
+  /**
+   * Returns the inline style that shrinks the icon by the action's icon size
+   * delta, matching native PinnedActionToolbarButton::GetIconSize(), or
+   * undefined if the icon should be drawn at the default size.
+   */
+  protected getIconStyle_(): string|undefined {
+    if (!this.state.iconSizeDelta) {
+      return undefined;
+    }
+    return `--pinned-toolbar-action-icon-size-delta: ${
+        this.state.iconSizeDelta}px;`;
   }
 
   private getContextMenuType_(): ContextMenuType {

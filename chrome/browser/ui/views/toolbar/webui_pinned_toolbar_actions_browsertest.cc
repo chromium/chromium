@@ -24,6 +24,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -609,6 +610,60 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
                   BrowserActions::From(browser())->root_action_item())
       ->SetProperty(kActionItemUnderlineIndicatorKey, false);
   verify_activated(false);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, IconSizeDelta) {
+  actions::ActionId action_id = kActionPrint;
+  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action =
+      toolbar_ui_api::mojom::PinnedToolbarAction::kPrint;
+
+  PinAction(action_id, mojom_action);
+
+  actions::ActionItem* const action_item =
+      actions::ActionManager::Get().FindAction(
+          action_id, BrowserActions::From(browser())->root_action_item());
+  ASSERT_TRUE(action_item);
+
+  // Returns the rendered width (in px) of the action's icon, or -1 if the
+  // icon isn't rendered.
+  auto get_icon_width = [&]() {
+    return EvalJsOnPinnedAction(
+               mojom_action,
+               "const icon = btn?.querySelector('icon-from-table'); "
+               "return icon ? icon.getBoundingClientRect().width : -1;")
+        .ExtractDouble();
+  };
+
+  // Waits until the WebUI state reflects `expected_delta` and the icon is
+  // rendered at `expected_width`.
+  auto verify_icon_size = [&](int expected_delta, double expected_width) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return EvalJsOnPinnedAction(mojom_action,
+                                  "return actionEl.state.iconSizeDelta;")
+                     .ExtractInt() == expected_delta &&
+             get_icon_width() == expected_width;
+    }));
+  };
+
+  // The delta defaults to zero, and the icon is drawn at the default size.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return EvalJsOnPinnedAction(mojom_action,
+                                "return actionEl.state.iconSizeDelta;")
+                   .ExtractInt() == 0 &&
+           get_icon_width() > 0;
+  }));
+  const double default_icon_width = get_icon_width();
+
+  // Setting the property propagates to the WebUI state and shrinks the icon.
+  constexpr int kIconSizeDelta = -2;
+  action_item->SetProperty(chrome::kActionItemIconSizeDeltaKey, kIconSizeDelta);
+  verify_icon_size(kIconSizeDelta, default_icon_width + kIconSizeDelta);
+
+  // Clearing the property restores the default.
+  action_item->SetProperty(chrome::kActionItemIconSizeDeltaKey, 0);
+  verify_icon_size(0, default_icon_width);
+
+  UnpinAction(action_id, mojom_action);
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,

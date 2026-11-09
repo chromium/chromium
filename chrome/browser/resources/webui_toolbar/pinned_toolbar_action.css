@@ -47,6 +47,16 @@ toolbar-chip-button.help-anchor-highlight:not([is-activated]) {
  * foreground color inherited from toolbar-chip-button. */
 icon-from-table {
   --icon-from-table-color-override: currentColor;
+
+  /* Shrinks the icon by the action's icon size delta (set inline from
+   * PinnedToolbarActionState.iconSizeDelta), matching native
+   * PinnedActionToolbarButton::GetIconSize(). The icon stays centered since
+   * toolbar-chip-button centers its content. */
+  --pinned-toolbar-action-icon-size: calc(var(--toolbar-button-icon-size) +
+      var(--pinned-toolbar-action-icon-size-delta, 0px));
+  height: var(--pinned-toolbar-action-icon-size);
+  width: var(--pinned-toolbar-action-icon-size);
+  --icon-size: var(--pinned-toolbar-action-icon-size);
 }
 
 /* The progress ring drawn around the button's icon. This mirrors the ring the

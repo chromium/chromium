@@ -221,6 +221,39 @@ suite('PinnedToolbarAction', function() {
     assertEquals(null, getBadge());
   });
 
+  test('Applies the icon size delta', async () => {
+    action.style.setProperty('--toolbar-button-icon-size', '20px');
+    const icon: HTMLElement =
+        action.shadowRoot.querySelector('icon-from-table');
+    const getIconSize = () => {
+      const style = getComputedStyle(icon);
+      return [style.width, style.height];
+    };
+
+    // By default, the icon is drawn at the toolbar button icon size.
+    await microtasksFinished();
+    assertEquals('20px', getIconSize()[0]);
+    assertEquals('20px', getIconSize()[1]);
+
+    // A negative delta shrinks the icon.
+    action.state = {
+      ...action.state,
+      iconSizeDelta: -2,
+    };
+    await microtasksFinished();
+    assertEquals('18px', getIconSize()[0]);
+    assertEquals('18px', getIconSize()[1]);
+
+    // Clearing the delta restores the default size.
+    action.state = {
+      ...action.state,
+      iconSizeDelta: 0,
+    };
+    await microtasksFinished();
+    assertEquals('20px', getIconSize()[0]);
+    assertEquals('20px', getIconSize()[1]);
+  });
+
   test('Sets draggable attribute based on poppedOut state', async () => {
     const button = action.shadowRoot!.querySelector('toolbar-chip-button')!;
     assertEquals('true', button.getAttribute('draggable'));

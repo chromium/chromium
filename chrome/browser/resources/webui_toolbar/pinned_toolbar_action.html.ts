@@ -21,7 +21,8 @@ export function getHtml(this: PinnedToolbarActionElement) {
     @click="${this.onActionClick_}"
     @pointerdown="${this.highlightTracker.onPointerdown}"
     @contextmenu="${this.onContextmenu_}">
-  <icon-from-table slot="prefix-icon" .iconHandle="${this.state.icon}">
+  <icon-from-table slot="prefix-icon" .iconHandle="${this.state.icon}"
+      style="${this.getIconStyle_() ?? nothing}">
   </icon-from-table>
 </toolbar-chip-button>
 ${this.getProgressRingStatus_() ? html`

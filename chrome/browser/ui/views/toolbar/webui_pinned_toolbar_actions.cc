@@ -14,6 +14,7 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -261,6 +262,11 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
       state->progress_ring = download_button_->GetProgressRingState();
       state->badge_number = download_button_->GetBadgeNumber();
     }
+    // Like native PinnedActionToolbarButton::GetIconSize(), shrink the icon by
+    // the action's icon size delta.
+    state->icon_size_delta =
+        item->GetProperty(chrome::kActionItemIconSizeDeltaKey);
+    CHECK_LE(state->icon_size_delta, 0);
 
     ui::ImageModel image_model;
     if (actions::IsActionClass<actions::StatefulImageActionItem>(item)) {

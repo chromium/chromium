@@ -827,6 +827,12 @@ struct PinnedToolbarActionState {
   // The number to show in the badge drawn over the icon, if any. Null if this
   // action has no badge.
   int32? badge_number;
+
+  // Delta (in dp) applied to the default toolbar button icon size when
+  // rendering `icon`. Always non-positive. Mirrors
+  // `chrome::kActionItemIconSizeDeltaKey` and
+  // PinnedActionToolbarButton::GetIconSize().
+  int32 icon_size_delta = 0;
 };
 
 struct LocationBarState {

@@ -97,6 +97,7 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 1n},
         progressRing: null,
         badgeNumber: null,
+        iconSizeDelta: 0,
       },
       {
         action: 2,  // kShowPasswordsBubbleOrPage
@@ -109,6 +110,7 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 2n},
         progressRing: null,
         badgeNumber: null,
+        iconSizeDelta: 0,
       },
       {
         action: PinnedToolbarAction.kDivider,
@@ -121,6 +123,7 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 0n},
         progressRing: null,
         badgeNumber: null,
+        iconSizeDelta: 0,
       },
     ];
     await microtasksFinished();
@@ -139,6 +142,7 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 1n},
         progressRing: null,
         badgeNumber: null,
+        iconSizeDelta: 0,
       },
       {
         action: PinnedToolbarAction.kDivider,
@@ -151,6 +155,7 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 0n},
         progressRing: null,
         badgeNumber: null,
+        iconSizeDelta: 0,
       },
       {
         action: 3,
@@ -163,6 +168,7 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 3n},
         progressRing: null,
         badgeNumber: null,
+        iconSizeDelta: 0,
       },
     ];
     await microtasksFinished();
@@ -241,6 +247,7 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 1n},
         progressRing: null,
         badgeNumber: null,
+        iconSizeDelta: 0,
       },
       {
         action: 2,
@@ -253,6 +260,7 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 2n},
         progressRing: null,
         badgeNumber: null,
+        iconSizeDelta: 0,
       },
     ];
     await microtasksFinished();
@@ -312,6 +320,7 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 1n},
         progressRing: null,
         badgeNumber: null,
+        iconSizeDelta: 0,
       },
       {
         action: PinnedToolbarAction.kDivider,
@@ -324,6 +333,7 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 0n},
         progressRing: null,
         badgeNumber: null,
+        iconSizeDelta: 0,
       },
       {
         action: 3,
@@ -336,6 +346,7 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 3n},
         progressRing: null,
         badgeNumber: null,
+        iconSizeDelta: 0,
       },
     ];
     await microtasksFinished();
@@ -421,6 +432,7 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 2n},
         progressRing: null,
         badgeNumber: null,
+        iconSizeDelta: 0,
       },
       {
         action: 1,
@@ -433,6 +445,7 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 1n},
         progressRing: null,
         badgeNumber: null,
+        iconSizeDelta: 0,
       },
       {
         action: PinnedToolbarAction.kDivider,
@@ -445,6 +458,7 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 0n},
         progressRing: null,
         badgeNumber: null,
+        iconSizeDelta: 0,
       },
     ];
     await microtasksFinished();
