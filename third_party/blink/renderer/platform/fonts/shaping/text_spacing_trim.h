@@ -11,7 +11,7 @@ namespace blink {
 
 // Values for the `text-spacing-trim` property.
 // https://drafts.csswg.org/css-text-4/#text-spacing-trim-property
-enum class TextSpacingTrim {
+enum class TextSpacingTrim : uint32_t {
   kNormal,
   kSpaceAll,
   kSpaceFirst,

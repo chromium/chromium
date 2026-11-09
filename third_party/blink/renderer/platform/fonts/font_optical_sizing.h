@@ -10,7 +10,7 @@
 
 namespace blink {
 
-enum class OpticalSizing { kAuto, kNone };
+enum class OpticalSizing : uint32_t { kAuto, kNone };
 
 PLATFORM_EXPORT String ToString(OpticalSizing);
 }  // namespace blink

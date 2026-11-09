@@ -10,7 +10,7 @@
 namespace blink {
 
 // https://drafts.csswg.org/css-fonts/#font-variant-emoji-prop
-enum class FontVariantEmoji { kNormal, kText, kEmoji, kUnicode };
+enum class FontVariantEmoji : uint32_t { kNormal, kText, kEmoji, kUnicode };
 
 String ToString(FontVariantEmoji);
 

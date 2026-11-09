@@ -403,14 +403,14 @@ class PLATFORM_EXPORT FontDescription {
     UpdateTypesettingFeatures();
   }
   void SetTextSpacingTrim(TextSpacingTrim text_spacing_trim) {
-    fields_.text_spacing_trim_ = static_cast<uint32_t>(text_spacing_trim);
+    fields_.text_spacing_trim_ = std::to_underlying(text_spacing_trim);
   }
   void SetKeywordSize(wtf_size_t s) { fields_.keyword_size_ = s; }
   void SetFontSmoothing(FontSmoothingMode smoothing) {
-    fields_.font_smoothing_ = static_cast<uint32_t>(smoothing);
+    fields_.font_smoothing_ = std::to_underlying(smoothing);
   }
   void SetFontOpticalSizing(OpticalSizing font_optical_sizing) {
-    fields_.font_optical_sizing_ = static_cast<uint32_t>(font_optical_sizing);
+    fields_.font_optical_sizing_ = std::to_underlying(font_optical_sizing);
   }
   void SetFontPalette(scoped_refptr<const FontPalette> palette) {
     font_palette_ = std::move(palette);
@@ -460,7 +460,7 @@ class PLATFORM_EXPORT FontDescription {
     fields_.variant_position_ = variant_position;
   }
   void SetVariantEmoji(FontVariantEmoji variant_emoji) {
-    fields_.variant_emoji_ = static_cast<uint32_t>(variant_emoji);
+    fields_.variant_emoji_ = std::to_underlying(variant_emoji);
   }
   void SetWordSpacing(const Length& s) { word_spacing_ = s; }
   void SetLetterSpacing(const Length& s) {
