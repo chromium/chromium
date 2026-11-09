@@ -325,7 +325,9 @@ bool TabStateStorageDatabase::SaveNodeChildren(OpenTransaction* transaction,
       "SET children = ? "
       "WHERE id = ?";
 
-  CHECK(db_.IsSQLValid(kUpdateChildrenSql), base::NotFatalUntil::M163);
+  // TODO(crbug.com/583088730): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(db_.IsSQLValid(kUpdateChildrenSql));
 
   sql::Statement write_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kUpdateChildrenSql));
