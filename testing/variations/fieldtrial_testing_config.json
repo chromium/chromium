@@ -19573,21 +19573,6 @@
             ]
         }
     ],
-    "WasapiImproveGlitchDetection": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WasapiImproveGlitchDetection"
-                    ]
-                }
-            ]
-        }
-    ],
     "WaylandExternalBeginFrameSource": [
         {
             "platforms": [
