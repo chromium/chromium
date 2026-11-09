@@ -30,22 +30,29 @@ bool IsExtensionOrigin(const std::optional<url::Origin>& origin) {
   return origin.has_value() && origin->scheme() == extensions::kExtensionScheme;
 }
 
-// Returns true if `command` initiates a top-level tab navigation. CDP commands
-// are defined in `third_party/blink/public/devtools_protocol/domains/Page.pdl`.
+// Returns true if `command` navigates to an existing session history entry.
+bool IsHistoryNavigation(std::string_view command) {
+  return command == extensions::TabsGoBackFunction::static_function_name() ||
+         command == extensions::TabsGoForwardFunction::static_function_name() ||
+         command == "Page.navigateToHistoryEntry";
+}
+
+// Returns true if `command` starts a top-level tab navigation that doesn't have
+// the extension as its initiator. CDP commands are defined in
+// `third_party/blink/public/devtools_protocol/domains/Page.pdl`.
 bool IsNavigation(std::string_view command) {
   return command == extensions::TabsCreateFunction::static_function_name() ||
-         command == extensions::TabsUpdateFunction::static_function_name() ||
          command == extensions::TabsReloadFunction::static_function_name() ||
-         command == extensions::TabsGoBackFunction::static_function_name() ||
-         command == extensions::TabsGoForwardFunction::static_function_name() ||
-         command == "Page.navigate" || command == "Page.reload";
+         command == "Page.reload" || IsHistoryNavigation(command);
 }
 
 // Returns true if `command` can actuate a tab and should be tracked. CDP
 // commands and domains are defined in `v8/include/js_protocol.pdl` and
 // `third_party/blink/public/devtools_protocol/domains/`.
 bool IsTracked(std::string_view command) {
-  return IsNavigation(command) || command == "Runtime.evaluate" ||
+  return IsNavigation(command) ||
+         command == extensions::TabsUpdateFunction::static_function_name() ||
+         command == "Page.navigate" || command == "Runtime.evaluate" ||
          command == "Runtime.callFunctionOn" || command.starts_with("Input.") ||
          command == "DOM.focus" || command.starts_with("DOM.set");
 }
@@ -94,8 +101,10 @@ void ExtensionActorTracker::SetActiveActor(
   if (!web_contents || !IsTracked(command)) {
     return;
   }
+  // Skip about:blank, which `tabs.create` commits first, except for history.
   bool is_initial_navigation =
-      IsNavigation(command) && !web_contents->GetVisibleURL().IsAboutBlank();
+      IsNavigation(command) && (IsHistoryNavigation(command) ||
+                                !web_contents->GetVisibleURL().IsAboutBlank());
   SetActiveActorInternal(web_contents, extension_id, is_initial_navigation);
 }
 
@@ -123,11 +132,17 @@ std::optional<extensions::ExtensionId> ExtensionActorTracker::GetActiveActor(
 
 void ExtensionActorTracker::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  // Browser-initiated navigations not started by an extension (e.g. from the
-  // omnibox or bookmarks) are user input that `DidGetUserInteraction()` misses.
+  // Browser-initiated navigations (e.g. omnibox, bookmarks) are user input,
+  // unless an extension just started this reload or history navigation.
+  ui::PageTransition transition = navigation_handle->GetPageTransition();
+  bool is_extension_reload_or_history =
+      is_initial_navigation_ &&
+      (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_RELOAD) ||
+       (transition & ui::PAGE_TRANSITION_FORWARD_BACK));
   if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsRendererInitiated() || is_initial_navigation_ ||
-      (navigation_handle->GetPageTransition() & ui::PAGE_TRANSITION_FROM_API)) {
+      navigation_handle->IsRendererInitiated() ||
+      (transition & ui::PAGE_TRANSITION_FROM_API) ||
+      is_extension_reload_or_history) {
     return;
   }
   if (active_actor_id_) {
@@ -135,6 +150,7 @@ void ExtensionActorTracker::DidStartNavigation(
              << *active_actor_id_;
   }
   active_actor_id_.reset();
+  is_initial_navigation_ = false;
 }
 
 void ExtensionActorTracker::DidFinishNavigation(

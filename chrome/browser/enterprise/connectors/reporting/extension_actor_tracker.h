@@ -19,8 +19,23 @@ class BrowserContext;
 
 namespace enterprise_connectors {
 
-// Tracks active extension actor attribution on a WebContents for enterprise
+// Tracks the extension that most recently acted on this tab, for enterprise
 // security reporting events.
+//
+//                    reload / back
+//        +-------------------------------+
+//        |                               v
+//   +------+  extension  +--------+  reload /  +---------+
+//   | None | ----------> | Tagged | ---------> | Pending |
+//   +------+   action    +--------+    back    +---------+
+//     ^  ^                 |   ^                 |
+//     |  |  user action    |   |   navigation    |
+//     |  +-----------------+   +--- finishes ----+
+//     |                                          |
+//     +--------------- user action --------------+
+//
+// Pending means the extension started a navigation that would otherwise look
+// like the user's (e.g. tabs.goBack), so the actor is kept through it.
 class ExtensionActorTracker
     : public content::WebContentsObserver,
       public content::WebContentsUserData<ExtensionActorTracker> {
