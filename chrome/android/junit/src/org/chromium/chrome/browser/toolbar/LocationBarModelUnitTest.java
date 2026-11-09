@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -225,6 +226,22 @@ public class LocationBarModelUnitTest {
 
         mLocationBarModel.setTab(null, mNonPrimaryOtrProfileMock);
         assertEquals(mNonPrimaryOtrProfileMock, mLocationBarModel.getProfile());
+    }
+
+    @Test
+    public void setTab_NullTabAndNullProfile() {
+        when(mPrimaryOtrProfileMock.isIncognitoBranded()).thenReturn(true);
+        mLocationBarModel.setTab(mIncognitoTabMock, mPrimaryOtrProfileMock);
+        mLocationBarModel.addObserver(mLocationBarDataObserver);
+
+        mLocationBarModel.setTab(null, null);
+
+        assertNull(mLocationBarModel.getTab());
+        assertNull(mLocationBarModel.getProfile());
+        assertTrue(mLocationBarModel.isOffTheRecord());
+        assertTrue(mLocationBarModel.isIncognitoBranded());
+        verify(mLocationBarDataObserver).onTabChanged(mIncognitoTabMock);
+        verify(mLocationBarDataObserver).onUrlChanged(true);
     }
 
     @Test

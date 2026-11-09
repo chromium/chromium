@@ -715,6 +715,28 @@ public class ToolbarManagerUnitTest {
     }
 
     @Test
+    public void testRefreshSelectedTab_NullTabAndNullIncognitoProfile() {
+        LocationBarModel locationBarModel = mToolbarManager.getLocationBarModelForTesting();
+        assertEquals(mTab, locationBarModel.getTab());
+
+        // When the last tab in an Incognito-only window closes, IncognitoTabModelImpl destroys its
+        // delegate model (so getProfile() becomes null) while remaining the selected model.
+        when(mIncognitoTabModel.getProfile()).thenReturn(null);
+        when(mTabModelSelector.isOffTheRecordModelSelected()).thenReturn(true);
+        when(mTabModelSelector.getCurrentTab()).thenReturn(null);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
+
+        mActivityTabProvider.setForTesting(null);
+        mCurrentTabModelSupplier.set(mIncognitoTabModel);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertNull(locationBarModel.getTab());
+        assertNull(locationBarModel.getProfile());
+        assertTrue(locationBarModel.isOffTheRecord());
+        assertTrue(locationBarModel.isIncognitoBranded());
+    }
+
+    @Test
     public void testHomeButtonClickCollapsesBottomSheet() {
         TabBottomSheetUtils.attachManagerToWindow(mWindowAndroid, mTabBottomSheetManager);
 

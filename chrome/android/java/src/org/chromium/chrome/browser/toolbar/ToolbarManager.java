@@ -3724,16 +3724,15 @@ public class ToolbarManager
         assumeNonNull(mTabModelSelector);
         Profile profile =
                 tab != null ? tab.getProfile() : mTabModelSelector.getCurrentModel().getProfile();
-        assert profile != null
-                : "Failed to get Profile when offTheRecord = "
-                        + mTabModelSelector.isOffTheRecordModelSelected();
+        assert profile != null || mTabModelSelector.isOffTheRecordModelSelected()
+                : "Failed to get Profile for regular model";
 
         if (mBackPressHandler != null) mBackPressHandler.handleOnBackCancelled();
 
         mLocationBarModel.setTab(tab, profile);
         updateTabLoadingState(true);
 
-        boolean isIncognitoBranded = profile.isIncognitoBranded();
+        boolean isIncognitoBranded = mLocationBarModel.isIncognitoBranded();
         // This method is called prior to action mode destroy callback for incognito <-> normal
         // tab switch. Makes sure the action mode toolbar is hidden before selecting the new tab.
         if (previousTab != null && wasIncognitoBranded != isIncognitoBranded && mIsTablet) {
