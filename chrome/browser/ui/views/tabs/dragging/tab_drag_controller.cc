@@ -1946,9 +1946,10 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
   }
   dragged_widget->SetVisibilityChangedAnimationsEnabled(true);
 
-  // When InitialWebUI is enabled, the asynchronous loading of WebUI might cause
-  // the detached browser window to be momentarily invisible during creation. To
-  // prevent the mouse drag from racing ahead of the window rendering and
+  // When the WebUIReloadButtonDeferBrowserViewShow param is on,
+  // InitialWebUIManager::RequestDeferShow() holds the detached window's show
+  // until the toolbar WebUI loads, so the window can still be invisible here.
+  // To prevent the mouse drag from racing ahead of the window rendering and
   // dispatching inputs to the wrong target, we wait for the widget to properly
   // show itself before starting the nested move loop.
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
