@@ -258,6 +258,15 @@ class UnsafeBuffersDiagnosticConsumer
 
     const bool is_libc_diagnostic =
         diag_id == clang::diag::warn_unsafe_buffer_libc_call ||
+#ifdef LLVM_FORCE_HEAD_REVISION
+        diag_id == clang::diag::warn_unsafe_buffer_libc_call_numeric_conversion ||
+        diag_id == clang::diag::warn_unsafe_buffer_libc_call_string_manipulation ||
+        diag_id == clang::diag::warn_unsafe_buffer_libc_call_string_examination ||
+        diag_id == clang::diag::warn_unsafe_buffer_libc_call_memory ||
+        diag_id == clang::diag::warn_unsafe_buffer_libc_call_io ||
+        diag_id == clang::diag::warn_unsafe_buffer_libc_call_printf ||
+        diag_id == clang::diag::warn_unsafe_buffer_libc_call_scanf ||
+#endif
         diag_id == clang::diag::warn_unsafe_buffer_format_attr_call ||
         diag_id == clang::diag::note_unsafe_buffer_printf_call;
 

@@ -8,7 +8,8 @@
 #include <system_string.h>
 
 inline void* disallowed_bad_memcpy(int* i, unsigned s) {
-  return memcpy(i, &s, sizeof(s));  // Should generate a warning.
+  // TODO(crbug.com/583431470): Un-suppress in next Clang roll.
+  return UNSAFE_BUFFERS(memcpy(i, &s, sizeof(s)));  // Should generate a warning.
 }
 
 #endif  // TOOLS_CLANG_PLUGINS_TESTS_UNSAFE_LIBC_CALLS_NOT_CLEAN_H_
