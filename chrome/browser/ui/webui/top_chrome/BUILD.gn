@@ -162,6 +162,7 @@ if (!is_android) {
       "per_profile_webui_tracker_unittest.cc",
       "profile_preload_candidate_selector_unittest.cc",
       "top_chrome_webui_config_unittest.cc",
+      "top_chrome_webui_profile_unittest.cc",
       "top_chrome_webui_user_profile_unittest.cc",
       "webui_contents_preload_manager_unittest.cc",
       "webui_contents_prerenderer_unittest.cc",

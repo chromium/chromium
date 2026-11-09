@@ -1741,7 +1741,7 @@ void ChromeBrowserMainParts::PreBrowserStart() {
   // other services to start up before we start adjusting the oom priority.
   g_browser_process->GetTabManager()->Start();
 
-  if (base::FeatureList::IsEnabled(features::kTopChromeWebUISharedRenderer)) {
+  if (webui::ShouldUseTopChromeWebUIProfile()) {
     webui::CreateTopChromeWebUIProfile();
   }
 #endif

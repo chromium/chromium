@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/top_chrome_webui_profile_impl.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/browser/render_process_host.h"
 
 namespace webui {
 
@@ -22,6 +23,12 @@ std::unique_ptr<TopChromeWebUIProfileImpl>& GetTopChromeWebUIProfileInstance() {
 }
 
 }  // namespace
+
+bool ShouldUseTopChromeWebUIProfile() {
+  return base::FeatureList::IsEnabled(
+             features::kTopChromeWebUISharedRenderer) &&
+         !content::RenderProcessHost::run_renderer_in_process();
+}
 
 void CreateTopChromeWebUIProfile() {
   std::unique_ptr<TopChromeWebUIProfileImpl>& profile =
@@ -40,10 +47,9 @@ Profile* GetTopChromeWebUIProfile() {
 
 Profile& GetProfileForTopChromeWebUIContents(Profile* user_profile) {
   CHECK(user_profile);
-  Profile* profile =
-      base::FeatureList::IsEnabled(features::kTopChromeWebUISharedRenderer)
-          ? GetTopChromeWebUIProfile()
-          : user_profile;
+  Profile* profile = ShouldUseTopChromeWebUIProfile()
+                         ? GetTopChromeWebUIProfile()
+                         : user_profile;
   CHECK(profile);
   return *profile;
 }
