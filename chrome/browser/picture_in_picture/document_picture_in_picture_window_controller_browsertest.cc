@@ -1052,7 +1052,7 @@ IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerFrameViewTest,
 #if BUILDFLAG(IS_CHROMEOS)
 // Verify that it is possible to resize a document picture in picture window
 // using the resize outside bound in ChromeOS ASH.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBackendTest,
                        CanResizeUsingOutsideBounds) {
   // Attempt to create a Document PiP window with the minimum window size.
   LoadTabAndEnterPictureInPicture(
@@ -1062,9 +1062,10 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   WaitForPageLoad(pip_web_contents);
 
   // Get a point within the resize outside bounds.
-  auto* browser_view = static_cast<BrowserView*>(
-      BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
-  const auto left_center_point = browser_view->GetBounds().left_center();
+  views::Widget* pip_widget = GetPipWidget();
+  ASSERT_TRUE(pip_widget);
+  const auto left_center_point =
+      pip_widget->GetWindowBoundsInScreen().left_center();
   const auto resize_outside_bound_point =
       gfx::Point(left_center_point.x() - chromeos::kResizeInsideBoundsSize -
                      chromeos::kResizeOutsideBoundsSize / 2,
@@ -1072,7 +1073,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 
   // Perform a click on the left resize outside bound, followed by a drag to the
   // left.
-  aura::Window* window = browser_view->GetNativeWindow();
+  aura::Window* window = pip_widget->GetNativeWindow();
   const auto initial_window_size = window->GetBoundsInScreen().size();
   ui::test::EventGenerator event_generator(window->GetRootWindow());
   event_generator.set_current_screen_location(resize_outside_bound_point);
