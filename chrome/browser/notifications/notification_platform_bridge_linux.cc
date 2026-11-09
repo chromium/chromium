@@ -24,7 +24,6 @@
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/environment.h"
-#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -85,9 +84,6 @@
 #include "url/origin.h"
 
 namespace {
-
-// TODO(thomasanderson): Remove this feature flag in the future.
-BASE_FEATURE(kWebNotificationPortalFallback, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // DBus name / path.
 const char kFreedesktopNotificationsName[] = "org.freedesktop.Notifications";
@@ -734,8 +730,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
 
   void InitPortal(ConnectionInitializationStatusCode fallback_reason) {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
-    if (using_portal_ ||
-        !base::FeatureList::IsEnabled(kWebNotificationPortalFallback)) {
+    if (using_portal_) {
       OnConnectionInitializationFinished(fallback_reason);
       return;
     }
