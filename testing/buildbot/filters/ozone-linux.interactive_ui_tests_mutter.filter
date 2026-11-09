@@ -1,6 +1,12 @@
 # TODO(crbug.com/40759171): implement the feature for Wayland.
 -GlobalCommandsApiTest.GlobalCommand
 
+# Wayland compositors don't let a client activate an already-mapped window
+# without an activation token from user input, so BaseWindow::Activate() can't
+# switch between two shown browser windows. See crbug.com/483363917 for context.
+-GlobalBrowserCollectionTest.TestObservationWithSingleProfile
+-GlobalBrowserCollectionTest.TestObservationWithMultipleProfiles
+
 # TODO(crbug.com/373738727): Extremely flaky on the bot, locally only sometimes times out.
 -BookmarkBarViewTest4.ContextMenus
 

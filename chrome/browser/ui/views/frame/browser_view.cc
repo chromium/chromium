@@ -1772,6 +1772,17 @@ void BrowserView::Activate() {
     }
   }
 
+#if BUILDFLAG(IS_LINUX)
+  // Ozone platform windows ignore activation requests while unmapped, so
+  // activating a window that was never shown would leave the previously active
+  // window active. Show the window instead, which also activates it. This
+  // matches Mac, where activating a hidden window shows it.
+  if (!browser_widget_->IsVisible()) {
+    Show();
+    return;
+  }
+#endif
+
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   // Update the list managed by `BrowserList` synchronously the same way
   // `BrowserView::Show()` does.
