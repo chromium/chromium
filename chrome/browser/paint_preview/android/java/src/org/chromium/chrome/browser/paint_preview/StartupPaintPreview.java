@@ -23,12 +23,14 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.paintpreview.player.PlayerManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -98,6 +100,7 @@ public class StartupPaintPreview implements PlayerManager.Listener {
 
     /**
      * Shows a Paint Preview for the provided tab if it exists. Should only be called once.
+     *
      * @param onDismissed The callback for when the Paint Preview is dismissed.
      */
     public void show(@Nullable Runnable onDismissed) {
@@ -279,9 +282,12 @@ public class StartupPaintPreview implements PlayerManager.Listener {
 
     @Override
     public void onLinkClick(GURL url) {
-        if (!url.isValid() || url.isEmpty()) return;
+        if (!url.isValid() || !UrlUtilities.isHttpOrHttps(url)) return;
 
-        mTab.loadUrl(new LoadUrlParams(url.getSpec()));
+        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
+        loadUrlParams.setIsRendererInitiated(true);
+        loadUrlParams.setInitiatorOrigin(Origin.createOpaqueOrigin());
+        mTab.loadUrl(loadUrlParams);
         remove(ExitCause.LINK_CLICKED);
     }
 
