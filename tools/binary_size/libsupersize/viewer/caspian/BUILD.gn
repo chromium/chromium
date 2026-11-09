@@ -15,6 +15,8 @@ source_set("caspian-lib") {
     "diff.h",
     "file_format.cc",
     "file_format.h",
+    "file_format_v2.cc",
+    "file_format_v2.h",
     "function_signature.cc",
     "function_signature.h",
     "grouped_path.cc",
@@ -30,6 +32,8 @@ source_set("caspian-lib") {
     "//third_party/re2",
     "//third_party/zlib",
     "//third_party/zlib/google:compression_utils_portable",
+    "//third_party/zstd:decompress",
+    "//third_party/zstd:headers",
   ]
   public_deps = [
     "//third_party/abseil-cpp:absl",
@@ -57,6 +61,7 @@ test("caspian_unittests") {
     "//third_party/abseil-cpp:test_support",
     "//third_party/re2",
     "//third_party/zlib/google:compression_utils_portable",
+    "//third_party/zstd:compress",
   ]
 }
 

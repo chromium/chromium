@@ -19,7 +19,34 @@ There are three formats that SuperSize uses:
    * Contains two nested sparse `.size` files, where unchanged symbols are
      removed from each.
 
-## Format Details: .size
+## Format Details: .size v2 (Experimental, `--format-v2`)
+
+`.size` v2 is a binary container format with independently Zstandard-compressed
+blobs that can be compressed and decompressed concurrently across threads:
+
+* **Header (64 bytes)**:
+  * `b"# Created by //tools/binary_size\nSize File Format v2\n"` (53 bytes)
+  * `b"\x00\x00\x00"` (3 bytes)
+  * `uint32_le header_flags` (`bit 0 = has_padding`)
+  * `uint32_le num_blobs`
+* **Table of Contents (`40 * num_blobs` bytes at offset 64)**:
+  * Repeated `num_blobs` times: `<16sQQQ` (`char name[16]` null-padded ASCII,
+    `uint64_le offset`, `uint64_le compressed_size`, `uint64_le raw_size`).
+* **Blobs**:
+  * `meta`: UTF-8 JSON (`build_config`, `containers`, `segments` as `[container_idx, section_name, symbol_count]` triples, `total_symbols`).
+  * `paths`: `uint32_le num_components` + `uint32_le num_paths` + `BYTE_STREAM_SPLIT(4)` of `uint32` `component_indices` + `num_components` `\0`-terminated UTF-8 component strings + `2 * num_paths` `\0`-terminated UTF-8 `(object_path, source_path)` strings.
+  * Per-symbol blobs (omitted when `total_symbols == 0`):
+    * `addresses`: `BYTE_STREAM_SPLIT(4)` of `uint32` wrapping modular deltas.
+    * `sizes`: `BYTE_STREAM_SPLIT(4)` of `int32` (`size` if overhead else `size_without_padding`).
+    * `paddings` (present iff `header_flags & 1`): `BYTE_STREAM_SPLIT(4)` of `int32`.
+    * `path_indices`: `BYTE_STREAM_SPLIT(4)` of ZigZag-encoded `int32` deltas into `paths`.
+    * `flags`: `BYTE_STREAM_SPLIT(4)` of `uint32`.
+    * `aliases` (optional): `uint32_le num_groups` + `BYTE_STREAM_SPLIT(4)` delta `first_sym_idx` + `BYTE_STREAM_SPLIT(4)` `alias_count`.
+    * `names_0`..`names_{K-1}` (`K = min(8, (total_symbols + 262143) // 262144)`): `uint32_le start_sym_idx` + `uint32_le sym_count` + `BYTE_STREAM_SPLIT(4)` of ZigZag-encoded `int32` shard-local permutation deltas `perm_k` (`0..sym_count-1`) + `sym_count` `uint8` LCP prefix lengths + `sym_count` `\0`-terminated UTF-8 `full_name` suffixes in shard name-sorted order.
+  * `disassembly` (optional): `uint32_le count` + `(uint32_le sym_idx, uint32_le byte_len, <UTF-8 bytes>)` records.
+* `.sizediff` files saved with `--format-v2` use the existing `.sizediff` container format wrapping two sparse `.size` v2 streams (`before` and `after`).
+
+## Format Details: .size (Default v1 / v1.1)
 
 The file format is a `gzipped` encoding of symbols, where some symbol fields are
 delta-encoded to improve compressibility. Text was chosen over binary because it

@@ -668,6 +668,11 @@ def AddArguments(parser):
     '--title', help='Value for the "title" build_config entry.'
   )
   parser.add_argument('--url', help='Value for the "url" build_config entry.')
+  parser.add_argument(
+    '--format-v2',
+    action='store_true',
+    help='Save in experimental .size v2 (zstd binary) format.',
+  )
   _AddContainerArguments(parser, is_top_args=True)
 
 
@@ -1421,7 +1426,9 @@ def Run(top_args, on_config_error):
     )
 
   logging.info('Saving result to %s', top_args.size_file)
-  file_format.SaveSizeInfo(size_info, top_args.size_file)
+  file_format.SaveSizeInfo(
+    size_info, top_args.size_file, use_v2=top_args.format_v2
+  )
   size_in_mb = os.path.getsize(top_args.size_file) / 1024.0 / 1024.0
   logging.info('Done. File size is %.2fMiB.', size_in_mb)
 

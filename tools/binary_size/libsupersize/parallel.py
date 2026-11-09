@@ -137,7 +137,12 @@ def _MakeProcessPool(job_params, **job_kwargs):
   pool_size = min(len(job_params), multiprocessing.cpu_count())
   _fork_params = job_params
   _fork_kwargs = job_kwargs
-  ret = multiprocessing.Pool(pool_size)
+  ctx = (
+    multiprocessing.get_context('fork')
+    if 'fork' in multiprocessing.get_all_start_methods()
+    else multiprocessing
+  )
+  ret = ctx.Pool(pool_size)
   _fork_params = None
   _fork_kwargs = None
   return ret

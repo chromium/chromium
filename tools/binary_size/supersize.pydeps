@@ -60,6 +60,7 @@ libsupersize/dir_metadata.py
 libsupersize/disassembly_util.py
 libsupersize/dwarfdump.py
 libsupersize/file_format.py
+libsupersize/file_format_v2.py
 libsupersize/function_signature.py
 libsupersize/json_config_parser.py
 libsupersize/linker_map_parser.py
@@ -78,4 +79,5 @@ libsupersize/r8_disassembly.py
 libsupersize/readelf.py
 libsupersize/stream_reader.py
 libsupersize/string_extract.py
+libsupersize/vpython.toml
 libsupersize/zip_util.py

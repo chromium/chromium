@@ -26,6 +26,7 @@
 
 #include "third_party/jsoncpp/source/include/json/json.h"
 #include "third_party/zlib/google/compression_utils_portable.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/file_format_v2.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/model.h"
 
 namespace {
@@ -222,6 +223,10 @@ void CalculatePadding(std::vector<Symbol>* raw_symbols) {
 }
 
 void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info) {
+  if (IsSizeV2(gzipped, len)) {
+    ParseSizeInfoV2(reinterpret_cast<const uint8_t*>(gzipped), len, info);
+    return;
+  }
   // To avoid memory allocations, all the char* in our final Symbol set will
   // be pointers into the region originally pointed to by |decompressed_start|.
   // Calls to strsep() replace delimiter characters with null terminators.
@@ -491,7 +496,8 @@ void ParseCompressedStringList(const char* gzipped,
 }
 
 bool IsDiffSizeInfo(const char* file, unsigned long len) {
-  return !strncmp(file, kDiffHeader, 4);
+  return len >= sizeof(kDiffHeader) - 1 &&
+         !strncmp(file, kDiffHeader, sizeof(kDiffHeader) - 1);
 }
 
 void ParseDiffSizeInfo(char* file,

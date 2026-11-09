@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -118,6 +118,11 @@ class _SaveDiffAction:
       '--after-directory',
       help='Defaults to directory containing after-patch .size file.',
     )
+    parser.add_argument(
+      '--format-v2',
+      action='store_true',
+      help='Save in experimental .size v2 (zstd binary) format.',
+    )
 
   @staticmethod
   def Run(args, on_config_error):
@@ -151,7 +156,9 @@ class _SaveDiffAction:
         delta_size_info, before_path_resolver, after_path_resolver
       )
 
-    file_format.SaveDeltaSizeInfo(delta_size_info, args.output_file)
+    file_format.SaveDeltaSizeInfo(
+      delta_size_info, args.output_file, use_v2=args.format_v2
+    )
 
 
 def main():

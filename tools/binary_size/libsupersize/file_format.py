@@ -18,6 +18,7 @@ import queue
 import sys
 import threading
 
+import file_format_v2
 import models
 import parallel
 
@@ -718,8 +719,14 @@ def _LoadCompressedStringList(file_obj, size):
     return toks[1:]
 
 
-def SaveSizeInfo(size_info, path, file_obj=None):
+def SaveSizeInfo(size_info, path, file_obj=None, use_v2=False):
   """Saves |size_info| to |path|."""
+  if use_v2:
+    if file_obj is None:
+      with open(path, 'wb') as f:
+        return file_format_v2.SaveSizeInfo(size_info, f)
+    return file_format_v2.SaveSizeInfo(size_info, file_obj)
+
   if os.environ.get('SUPERSIZE_MEASURE_GZIP') == '1':
     # Doing serialization and Gzip together.
     with _OpenGzipForWrite(path, file_obj=file_obj) as f:
@@ -737,26 +744,45 @@ def SaveSizeInfo(size_info, path, file_obj=None):
 
 def LoadSizeInfo(filename, file_obj=None, is_sparse=False):
   """Returns a SizeInfo loaded from |filename|."""
+  if file_obj is None:
+    with open(filename, 'rb') as f:
+      return LoadSizeInfo(filename, file_obj=f, is_sparse=is_sparse)
+
+  magic = file_obj.read(len(file_format_v2.V2_HEADER_PREFIX))
+  if magic == file_format_v2.V2_HEADER_PREFIX:
+    return file_format_v2.LoadSizeInfo(file_obj, filename, is_sparse=is_sparse)
+  file_obj.seek(-len(magic), os.SEEK_CUR)
+
   with gzip.GzipFile(filename=filename, fileobj=file_obj) as f:
     return _LoadSizeInfoFromFile(f, filename, is_sparse)
 
 
-def SaveDeltaSizeInfo(delta_size_info, path, file_obj=None, make_sparse=True):
+def SaveDeltaSizeInfo(
+  delta_size_info, path, file_obj=None, make_sparse=True, use_v2=False
+):
   """Saves |delta_size_info| to |path|."""
   if make_sparse and not delta_size_info.is_sparse:
     delta_size_info.MakeSparse()
 
   if not file_obj:
     with open(path, 'wb') as f:
-      return SaveDeltaSizeInfo(delta_size_info, path, f)
+      return SaveDeltaSizeInfo(
+        delta_size_info, path, f, make_sparse=make_sparse, use_v2=use_v2
+      )
 
   before_size_file = io.BytesIO()
   after_size_file = io.BytesIO()
 
   after_promise = parallel.CallOnThread(
-    SaveSizeInfo, delta_size_info.after, '', file_obj=after_size_file
+    SaveSizeInfo,
+    delta_size_info.after,
+    '',
+    file_obj=after_size_file,
+    use_v2=use_v2,
   )
-  SaveSizeInfo(delta_size_info.before, '', file_obj=before_size_file)
+  SaveSizeInfo(
+    delta_size_info.before, '', file_obj=before_size_file, use_v2=use_v2
+  )
 
   removed_sources_file = None
   if delta_size_info.removed_sources:

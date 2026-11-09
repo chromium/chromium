@@ -11,6 +11,7 @@
 namespace caspian {
 
 struct SizeInfo;
+class Symbol;
 
 bool IsDiffSizeInfo(const char* file, unsigned long len);
 
@@ -24,8 +25,11 @@ void ParseDiffSizeInfo(char* file,
                        std::vector<std::string>* removed_sources,
                        std::vector<std::string>* added_sources);
 
-// Parses a .size file.
+// Parses a .size file (v1/v1.1 gzip or v2 zstd).
 void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info);
+
+// Populates symbol padding from adjacent symbol addresses.
+void CalculatePadding(std::vector<Symbol>* raw_symbols);
 
 }  // namespace caspian
 
