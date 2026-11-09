@@ -11,7 +11,6 @@
 #include "components/browser_apis/ui_controllers/bookmark_bar/bookmark_bar_api.mojom-jni.h"
 #include "components/browser_apis/ui_controllers/bookmark_bar/bookmark_bar_ui_controller.h"
 #include "mojo/public/cpp/bindings/mojo_jni_bridge.h"
-#include "ui/events/android/event_flags_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/bookmarks/android/jni_headers/BookmarkBarControllerFeature_jni.h"
@@ -44,14 +43,6 @@ static void JNI_BookmarkBarControllerFeature_DestroyController(
       bridge->stub());
   // The bridge keeps a `raw_ptr` to the controller, so delete it first.
   bridge.reset();
-}
-
-static int32_t JNI_BookmarkBarControllerFeature_ToEventFlags(
-    JNIEnv* env,
-    int32_t meta_state,
-    int32_t button_state) {
-  return ui::EventFlagsFromAndroidMetaState(meta_state) |
-         ui::EventFlagsFromAndroidButtonState(button_state);
 }
 
 DEFINE_JNI(BookmarkBarControllerFeature)

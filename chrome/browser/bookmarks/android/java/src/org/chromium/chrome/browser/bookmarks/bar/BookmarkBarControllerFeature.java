@@ -49,17 +49,11 @@ class BookmarkBarControllerFeature implements ChromeAndroidTaskFeature {
         return assertNonNull(mControllerBridge);
     }
 
-    static int toEventFlags(int metaState, int buttonState) {
-        return BookmarkBarControllerFeatureJni.get().toEventFlags(metaState, buttonState);
-    }
-
     @NativeMethods
     interface Natives {
         /** Returns a pointer to the native bridge, which owns the new controller. */
         long createController(JniPtr<NativeBrowserWindowInterface> browserWindow);
 
         void destroyController(long controllerBridge);
-
-        int toEventFlags(int metaState, int buttonState);
     }
 }

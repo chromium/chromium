@@ -39,7 +39,6 @@ source_set("android") {
     "//components/tabs:public",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
-    "//ui/events:platform_event_android",
     "//ui/gfx/geometry",
     "//url",
   ]
