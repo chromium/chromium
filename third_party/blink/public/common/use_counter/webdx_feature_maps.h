@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_USE_COUNTER_WEBDX_FEATURE_MAPS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_USE_COUNTER_WEBDX_FEATURE_MAPS_H_
 
-#include "base/containers/flat_map.h"
+#include <optional>
+
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
@@ -13,20 +14,19 @@
 
 namespace blink {
 
-// Map of WebFeature to WebDXFeature.
-BLINK_COMMON_EXPORT const
-    base::flat_map<mojom::WebFeature, mojom::WebDXFeature>&
-    GetWebFeatureToWebDXFeatureMap();
+// Maps a WebFeature to its corresponding WebDXFeature, if any.
+BLINK_COMMON_EXPORT std::optional<mojom::WebDXFeature>
+MapWebFeatureToWebDXFeature(mojom::WebFeature feature);
 
-// Map of CSSSampleId to WebDXFeature for CSS properties.
-BLINK_COMMON_EXPORT const
-    base::flat_map<mojom::CSSSampleId, mojom::WebDXFeature>&
-    GetCSSPropertiesToWebDXFeatureMap();
+// Maps a CSSSampleId to its corresponding WebDXFeature for CSS properties, if
+// any.
+BLINK_COMMON_EXPORT std::optional<mojom::WebDXFeature>
+MapCSSPropertyToWebDXFeature(mojom::CSSSampleId css_property);
 
-// Map of CSSSampleId to WebDXFeature for animated CSS properties.
-BLINK_COMMON_EXPORT const
-    base::flat_map<mojom::CSSSampleId, mojom::WebDXFeature>&
-    GetAnimatedCSSPropertiesToWebDXFeatureMap();
+// Maps a CSSSampleId to its corresponding WebDXFeature for animated CSS
+// properties, if any.
+BLINK_COMMON_EXPORT std::optional<mojom::WebDXFeature>
+MapAnimatedCSSPropertyToWebDXFeature(mojom::CSSSampleId css_property);
 
 }  // namespace blink
 

@@ -388,8 +388,8 @@ TEST_F(UseCounterPageLoadMetricsObserverTest,
   EXPECT_TRUE(allowed_features.contains(
       WebFeature::kGeolocationAccuracyModeApproximate));
 
-  const auto& webdx_map = blink::GetWebFeatureToWebDXFeatureMap();
-  EXPECT_EQ(webdx_map.at(WebFeature::kGeolocationAccuracyModeApproximate),
+  EXPECT_EQ(blink::MapWebFeatureToWebDXFeature(
+                WebFeature::kGeolocationAccuracyModeApproximate),
             WebDXFeature::kDRAFT_GeolocationAccuracyModeApproximate);
 }
 

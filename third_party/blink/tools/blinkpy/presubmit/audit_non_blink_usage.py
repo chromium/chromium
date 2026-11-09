@@ -3214,9 +3214,8 @@ _CONFIG = [
     {
         'paths': [
             'third_party/blink/common/use_counter/webdx_feature_maps.cc',
-            'third_party/blink/public/common/use_counter/webdx_feature_maps.h',
         ],
-        'allowed': ['base::NoDestructor', 'base::flat_map'],
+        'allowed': ['base::MakeFixedFlatMap'],
     },
     {
         'paths': [

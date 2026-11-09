@@ -34,27 +34,15 @@ using UseCounterFeatureType = mojom::blink::UseCounterFeatureType;
 std::optional<WebDXFeature> MapToWebDXFeature(
     const UseCounterFeature& feature) {
   switch (feature.type()) {
-    case UseCounterFeatureType::kWebFeature: {
-      auto web_feature = static_cast<WebFeature>(feature.value());
-      const auto& map = GetWebFeatureToWebDXFeatureMap();
-      if (auto it = map.find(web_feature); it != map.end()) {
-        return it->second;
-      }
-    } break;
-    case UseCounterFeatureType::kCssProperty: {
-      auto css_property = static_cast<CSSSampleId>(feature.value());
-      const auto& map = GetCSSPropertiesToWebDXFeatureMap();
-      if (auto it = map.find(css_property); it != map.end()) {
-        return it->second;
-      }
-    } break;
-    case UseCounterFeatureType::kAnimatedCssProperty: {
-      auto css_property = static_cast<CSSSampleId>(feature.value());
-      const auto& map = GetAnimatedCSSPropertiesToWebDXFeatureMap();
-      if (auto it = map.find(css_property); it != map.end()) {
-        return it->second;
-      }
-    } break;
+    case UseCounterFeatureType::kWebFeature:
+      return MapWebFeatureToWebDXFeature(
+          static_cast<WebFeature>(feature.value()));
+    case UseCounterFeatureType::kCssProperty:
+      return MapCSSPropertyToWebDXFeature(
+          static_cast<CSSSampleId>(feature.value()));
+    case UseCounterFeatureType::kAnimatedCssProperty:
+      return MapAnimatedCSSPropertyToWebDXFeature(
+          static_cast<CSSSampleId>(feature.value()));
     case UseCounterFeatureType::kWebDXFeature:
       return static_cast<WebDXFeature>(feature.value());
     default:
