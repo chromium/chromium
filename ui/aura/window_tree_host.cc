@@ -77,8 +77,9 @@ class ScopedLocalSurfaceIdValidator {
 
   ~ScopedLocalSurfaceIdValidator() {
     if (window_) {
-      CHECK_EQ(local_surface_id_, window_->GetLocalSurfaceId(),
-               base::NotFatalUntil::M163);
+      // TODO(crbug.com/583557534): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK_EQ(local_surface_id_, window_->GetLocalSurfaceId());
     }
   }
 
