@@ -60,7 +60,6 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
       browser_, TabStripComboButton::Context::kVerticalTabStrip));
   combo_button_->SetPaintToLayer();
   combo_button_->layer()->SetFillsBoundsOpaquely(false);
-  combo_button_->SetClipLayerToVisibleBounds(true);
   combo_button_->SetOrientation(
       combo_button_orientation_ = state_controller->IsCollapsed()
                                       ? views::LayoutOrientation::kVertical
@@ -98,6 +97,8 @@ VerticalTabStripTopContainer::~VerticalTabStripTopContainer() = default;
 void VerticalTabStripTopContainer::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
   combo_button_->SetOrientation(combo_button_orientation_);
+  combo_button_->SetClipLayerToVisibleBounds(
+      !GetLocalBounds().Contains(combo_button_->bounds()));
 }
 
 views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
