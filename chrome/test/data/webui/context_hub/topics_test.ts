@@ -1024,6 +1024,8 @@ suite('TopicFeedbackExportDialog', () => {
     assertFalse(!!query('#ldap'));
     const download = query<HTMLButtonElement>('#download')!;
     assertTrue(download.disabled);
+    // The rater agrees to the file being used for evaluation.
+    assertTrue(query('#acknowledge')!.textContent.includes('used to evaluate'));
 
     await click('#acknowledge');
     assertFalse(download.disabled);
