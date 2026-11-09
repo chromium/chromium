@@ -26,6 +26,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/autofill_agent_test_api.h"
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
@@ -46,10 +47,13 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-shared.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
@@ -283,15 +287,22 @@ TEST_F(AutofillAgentTest, TriggerFormExtractionWithResponse) {
 }
 
 // Tests that the agent only has a custom form control script executor once
-// custom form control scripts are enabled, and that the executor runs scripts
-// in the agent's frame.
+// custom form control scripts are enabled, that enabling them registers
+// `mojom::CustomFormControlAgent`, and that the executor runs scripts in the
+// agent's frame.
 TEST_F(AutofillAgentTest, EnableCustomFormControlScripts) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillCustomFormControlScripts};
   EXPECT_FALSE(
       test_api(autofill_agent()).custom_form_control_script_executor());
+  blink::AssociatedInterfaceRegistry registry;
   autofill_agent().EnableCustomFormControlScripts(
-      /*world_id=*/content::ISOLATED_WORLD_ID_CONTENT_END + 1);
+      /*world_id=*/content::ISOLATED_WORLD_ID_CONTENT_END + 1, registry);
+  mojo::AssociatedRemote<mojom::CustomFormControlAgent> remote;
+  mojo::ScopedInterfaceEndpointHandle handle =
+      remote.BindNewEndpointAndPassDedicatedReceiver().PassHandle();
+  EXPECT_TRUE(
+      registry.TryBindInterface(mojom::CustomFormControlAgent::Name_, &handle));
   CustomFormControlScriptExecutor* executor =
       test_api(autofill_agent()).custom_form_control_script_executor();
   ASSERT_TRUE(executor);

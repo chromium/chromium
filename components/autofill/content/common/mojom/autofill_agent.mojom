@@ -6,6 +6,7 @@ module autofill.mojom;
 
 import "components/autofill/core/common/mojom/autofill_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 // There is one instance of this interface per render frame in the render
 // process. All methods are called by browser on renderer.
@@ -269,4 +270,33 @@ interface PasswordGenerationAgent {
   // Tells the renderer to advance focus to the next field after password fields
   // (assuming that password fields are adjacent in account creation).
   FocusNextFieldAfterPasswords();
+};
+
+// Runs the custom form control script of a frame's current document in the
+// renderer. A custom form control script can detect, read and fill the page's
+// custom form controls (e.g. select-like widgets that aren't <select>
+// elements) from an isolated world. Only available if the embedder enables
+// custom form control scripts through
+// `AutofillAgent::EnableCustomFormControlScripts()` (in Chrome, if
+// `features::kAutofillCustomFormControlScripts` is enabled); then there is one
+// instance per render frame. All methods are called by the browser on the
+// renderer; replies come from the renderer, are informational and untrusted.
+//
+// For prototyping only: this isn't safe to ship yet (see `LoadUnsafeScript()`).
+interface CustomFormControlAgent {
+  // Loads `script` (whose size the browser limits) for `document`, which must
+  // be the frame's current document. The browser may send a call after it sent
+  // a navigation to the renderer, but before it learned that the navigation
+  // committed. Then the call names the previous document, which isn't the
+  // current document anymore when the call arrives. In that case, this does
+  // nothing and `success` is false. Otherwise, any previous script is dropped,
+  // even if loading fails, and `success` is false if the script couldn't be
+  // loaded, e.g. because it threw or didn't declare the expected entry point.
+  // Scripts are dropped when a new document is committed.
+  //
+  // Unsafe: the script can read and change the frame's DOM, and how to make
+  // that safe is still open. Only for prototyping behind
+  // `features::kAutofillCustomFormControlScripts`.
+  LoadUnsafeScript(blink.mojom.DocumentToken document, string script)
+      => (bool success);
 };

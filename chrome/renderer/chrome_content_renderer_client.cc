@@ -770,7 +770,8 @@ void ChromeContentRendererClient::RenderFrameCreated(
     if (base::FeatureList::IsEnabled(
             autofill::features::kAutofillCustomFormControlScripts)) {
       autofill_agent->EnableCustomFormControlScripts(
-          ISOLATED_WORLD_ID_AUTOFILL_CUSTOM_FORM_CONTROLS);
+          ISOLATED_WORLD_ID_AUTOFILL_CUSTOM_FORM_CONTROLS,
+          *associated_interfaces);
     }
   }
 

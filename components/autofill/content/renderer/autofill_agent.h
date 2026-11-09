@@ -55,7 +55,7 @@
 
 namespace autofill {
 
-class CustomFormControlScriptExecutor;
+class CustomFormControlAgentImpl;
 class PasswordAutofillAgent;
 class PasswordGenerationAgent;
 
@@ -159,11 +159,14 @@ class AutofillAgent : public content::RenderFrameObserver,
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<mojom::AutofillAgent> pending_receiver);
 
-  // Lets custom form control scripts run in this frame, in the isolated world
-  // `world_id` (Chrome passes
-  // `ISOLATED_WORLD_ID_AUTOFILL_CUSTOM_FORM_CONTROLS`). Requires
-  // `features::kAutofillCustomFormControlScripts`. Call at most once.
-  void EnableCustomFormControlScripts(int32_t world_id);
+  // Lets the browser run custom form control scripts in this frame, in the
+  // isolated world `world_id` (Chrome passes
+  // `ISOLATED_WORLD_ID_AUTOFILL_CUSTOM_FORM_CONTROLS`), through
+  // `mojom::CustomFormControlAgent`, which this registers in `registry`.
+  // Requires `features::kAutofillCustomFormControlScripts`. Call at most once.
+  void EnableCustomFormControlScripts(
+      int32_t world_id,
+      blink::AssociatedInterfaceRegistry& registry);
 
   blink::WebDocument GetDocument() const;
 
@@ -504,12 +507,11 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   mojo::AssociatedReceiver<mojom::AutofillAgent> receiver_{this};
 
-  // Runs the custom form control script of the current document. Only exists
-  // if custom form control scripts are enabled (see
-  // `EnableCustomFormControlScripts()`), until the frame is destroyed (see
-  // `OnDestruct()`).
-  std::unique_ptr<CustomFormControlScriptExecutor>
-      custom_form_control_script_executor_;
+  // Runs the custom form control script of the current document, which the
+  // browser loads through it. Only exists if custom form control scripts are
+  // enabled (see `EnableCustomFormControlScripts()`), until the frame is
+  // destroyed (see `OnDestruct()`).
+  std::unique_ptr<CustomFormControlAgentImpl> custom_form_control_agent_;
 
   mojo::AssociatedRemote<mojom::AutofillDriver> autofill_driver_;
 

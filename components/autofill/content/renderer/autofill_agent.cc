@@ -47,7 +47,7 @@
 #include "base/android/device_info.h"
 #endif
 #include "components/autofill/content/renderer/a11y_util.h"
-#include "components/autofill/content/renderer/custom_form_control_script_executor.h"
+#include "components/autofill/content/renderer/custom_form_control_agent_impl.h"
 #include "components/autofill/content/renderer/form_autofill_issues.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
@@ -592,14 +592,15 @@ void AutofillAgent::BindPendingReceiver(
   receiver_.Bind(std::move(pending_receiver));
 }
 
-void AutofillAgent::EnableCustomFormControlScripts(int32_t world_id) {
+void AutofillAgent::EnableCustomFormControlScripts(
+    int32_t world_id,
+    blink::AssociatedInterfaceRegistry& registry) {
   CHECK(base::FeatureList::IsEnabled(
       features::kAutofillCustomFormControlScripts));
-  CHECK(!custom_form_control_script_executor_);
+  CHECK(!custom_form_control_agent_);
   // Destroyed in `OnDestruct()`, so that it doesn't outlive the frame.
-  custom_form_control_script_executor_ =
-      std::make_unique<CustomFormControlScriptExecutor>(
-          CHECK_DEREF(unsafe_render_frame()), world_id);
+  custom_form_control_agent_ = std::make_unique<CustomFormControlAgentImpl>(
+      CHECK_DEREF(unsafe_render_frame()), world_id, registry);
 }
 
 void AutofillAgent::DidCommitProvisionalLoad(ui::PageTransition transition) {
@@ -884,9 +885,9 @@ void AutofillAgent::HandleCaretMovedInFormField(WebElement element,
 // triggered by JavaScript, which in turn may be triggered by AutofillAgent.
 void AutofillAgent::OnDestruct() {
   receiver_.reset();
-  // Unlike this agent, the executor is destroyed right away, so that it never
-  // outlives the frame.
-  custom_form_control_script_executor_.reset();
+  // Unlike this agent, `custom_form_control_agent_` (and its executor) is
+  // destroyed right away, so that it never outlives the frame.
+  custom_form_control_agent_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
   javascript_autofill_tracker_.Reset();
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
