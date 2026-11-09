@@ -121,10 +121,10 @@ BodyStreamBuffer* BodyStreamBuffer::Create(
     BytesConsumer* consumer,
     AbortSignal* signal,
     CachedMetadataHandler* cached_metadata_handler,
-    scoped_refptr<BlobDataHandle> side_data_blob) {
+    scoped_refptr<BlobDataHandle> cached_metadata) {
   auto* buffer = MakeGarbageCollected<BodyStreamBuffer>(
       PassKey(), script_state, consumer, signal, cached_metadata_handler,
-      std::move(side_data_blob));
+      std::move(cached_metadata));
   buffer->Init();
   return buffer;
 }
@@ -135,13 +135,13 @@ BodyStreamBuffer::BodyStreamBuffer(
     BytesConsumer* consumer,
     AbortSignal* signal,
     CachedMetadataHandler* cached_metadata_handler,
-    scoped_refptr<BlobDataHandle> side_data_blob)
+    scoped_refptr<BlobDataHandle> cached_metadata)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       script_state_(script_state),
       consumer_(consumer),
       signal_(signal),
       cached_metadata_handler_(cached_metadata_handler),
-      side_data_blob_(std::move(side_data_blob)),
+      cached_metadata_(std::move(cached_metadata)),
       made_from_readable_stream_(false) {}
 
 void BodyStreamBuffer::Init() {
@@ -174,13 +174,13 @@ BodyStreamBuffer::BodyStreamBuffer(
     ScriptState* script_state,
     ReadableStream* stream,
     CachedMetadataHandler* cached_metadata_handler,
-    scoped_refptr<BlobDataHandle> side_data_blob)
+    scoped_refptr<BlobDataHandle> cached_metadata)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       script_state_(script_state),
       stream_(stream),
       signal_(nullptr),
       cached_metadata_handler_(cached_metadata_handler),
-      side_data_blob_(std::move(side_data_blob)),
+      cached_metadata_(std::move(cached_metadata)),
       made_from_readable_stream_(true) {
   DCHECK(stream_);
 }
@@ -297,7 +297,7 @@ void BodyStreamBuffer::Tee(BodyStreamBuffer** branch1,
   *branch1 = nullptr;
   *branch2 = nullptr;
   auto* cached_metadata_handler = cached_metadata_handler_.Get();
-  scoped_refptr<BlobDataHandle> side_data_blob = TakeSideDataBlob();
+  scoped_refptr<BlobDataHandle> cached_metadata = TakeCachedMetadata();
 
   if (made_from_readable_stream_) {
     if (stream_broken_) {
@@ -326,9 +326,9 @@ void BodyStreamBuffer::Tee(BodyStreamBuffer** branch1,
     }
 
     *branch1 = MakeGarbageCollected<BodyStreamBuffer>(
-        script_state_, stream1, cached_metadata_handler, side_data_blob);
+        script_state_, stream1, cached_metadata_handler, cached_metadata);
     *branch2 = MakeGarbageCollected<BodyStreamBuffer>(
-        script_state_, stream2, cached_metadata_handler, side_data_blob);
+        script_state_, stream2, cached_metadata_handler, cached_metadata);
     return;
   }
   BytesConsumer* dest1 = nullptr;
@@ -341,9 +341,9 @@ void BodyStreamBuffer::Tee(BodyStreamBuffer** branch1,
   BytesConsumerTee(ExecutionContext::From(script_state_), handle, &dest1,
                    &dest2);
   *branch1 = BodyStreamBuffer::Create(script_state_, dest1, signal_,
-                                      cached_metadata_handler, side_data_blob);
+                                      cached_metadata_handler, cached_metadata);
   *branch2 = BodyStreamBuffer::Create(script_state_, dest2, signal_,
-                                      cached_metadata_handler, side_data_blob);
+                                      cached_metadata_handler, cached_metadata);
 }
 
 ScriptPromise<IDLUndefined> BodyStreamBuffer::Pull(
@@ -458,8 +458,8 @@ bool BodyStreamBuffer::IsAborted() {
   return signal_->aborted();
 }
 
-scoped_refptr<BlobDataHandle> BodyStreamBuffer::TakeSideDataBlob() {
-  return std::move(side_data_blob_);
+scoped_refptr<BlobDataHandle> BodyStreamBuffer::TakeCachedMetadata() {
+  return std::move(cached_metadata_);
 }
 
 void BodyStreamBuffer::Trace(Visitor* visitor) const {
@@ -561,7 +561,7 @@ void BodyStreamBuffer::RaiseOOMError() {
 }
 
 void BodyStreamBuffer::CancelConsumer() {
-  side_data_blob_.reset();
+  cached_metadata_.reset();
   virtual_time_pauser_.UnpauseVirtualTime();
   if (consumer_) {
     consumer_->Cancel();
@@ -718,7 +718,7 @@ BytesConsumer* BodyStreamBuffer::ReleaseHandle(
 
   // Do this after state checks to avoid side-effects when the method does
   // nothing.
-  side_data_blob_.reset();
+  cached_metadata_.reset();
 
   if (made_from_readable_stream_) {
     DCHECK(script_state_->ContextIsValid());

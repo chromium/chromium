@@ -116,10 +116,8 @@ blink::mojom::MatchResponsePtr EagerlyReadResponseBody(
   mojo::Remote<blink::mojom::Blob> blob(std::move(response->blob->blob));
   blob->ReadAll(std::move(producer_handle), std::move(reader_client));
 
-  // Clear the main body blob entry.  There should still be a |side_data_blob|
-  // value for reading code cache, however.
+  // Clear the main body blob entry.
   response->blob = nullptr;
-  CHECK(response->side_data_blob, base::NotFatalUntil::M158);
 
   return blink::mojom::MatchResponse::NewEagerResponse(
       blink::mojom::EagerResponse::New(std::move(response),

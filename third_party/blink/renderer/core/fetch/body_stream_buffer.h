@@ -48,7 +48,7 @@ class CORE_EXPORT BodyStreamBuffer final
       BytesConsumer* consumer,
       AbortSignal* signal,
       CachedMetadataHandler* cached_metadata_handler,
-      scoped_refptr<BlobDataHandle> side_data_blob = nullptr);
+      scoped_refptr<BlobDataHandle> cached_metadata = nullptr);
 
   // Create() should be used instead of calling this constructor directly.
   BodyStreamBuffer(PassKey,
@@ -56,12 +56,12 @@ class CORE_EXPORT BodyStreamBuffer final
                    BytesConsumer* consumer,
                    AbortSignal* signal,
                    CachedMetadataHandler* cached_metadata_handler,
-                   scoped_refptr<BlobDataHandle> side_data_blob);
+                   scoped_refptr<BlobDataHandle> cached_metadata);
 
   BodyStreamBuffer(ScriptState*,
                    ReadableStream* stream,
                    CachedMetadataHandler* cached_metadata_handler,
-                   scoped_refptr<BlobDataHandle> side_data_blob = nullptr);
+                   scoped_refptr<BlobDataHandle> cached_metadata = nullptr);
 
   BodyStreamBuffer(const BodyStreamBuffer&) = delete;
   BodyStreamBuffer& operator=(const BodyStreamBuffer&) = delete;
@@ -129,12 +129,12 @@ class CORE_EXPORT BodyStreamBuffer final
     return cached_metadata_handler_.Get();
   }
 
-  // Take the blob representing any side data associated with this body
+  // Take the blob representing cached metadata associated with this body
   // stream.  This must be called before the body is drained or begins
   // loading.
-  scoped_refptr<BlobDataHandle> TakeSideDataBlob();
-  scoped_refptr<BlobDataHandle> GetSideDataBlobForTest() const {
-    return side_data_blob_;
+  scoped_refptr<BlobDataHandle> TakeCachedMetadata();
+  scoped_refptr<BlobDataHandle> GetCachedMetadataForTesting() const {
+    return cached_metadata_;
   }
 
   bool IsMadeFromReadableStream() const { return made_from_readable_stream_; }
@@ -175,10 +175,10 @@ class CORE_EXPORT BodyStreamBuffer final
   Member<AbortSignal::AlgorithmHandle> loader_client_abort_handle_;
   // CachedMetadata handler used for loading compiled WASM code.
   Member<CachedMetadataHandler> cached_metadata_handler_;
-  // Additional side data associated with this body stream.  It should only be
+  // Cached metadata associated with this body stream. It should only be
   // retained until the body is drained or starts loading.  Client code, such
-  // as service workers, can call TakeSideDataBlob() prior to consumption.
-  scoped_refptr<BlobDataHandle> side_data_blob_;
+  // as service workers, can call TakeCachedMetadata() prior to consumption.
+  scoped_refptr<BlobDataHandle> cached_metadata_;
   WebScopedVirtualTimePauser virtual_time_pauser_;
   bool stream_needs_more_ = false;
   bool made_from_readable_stream_;

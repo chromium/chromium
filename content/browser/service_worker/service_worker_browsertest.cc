@@ -14,6 +14,7 @@
 
 #include "base/byte_size.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -40,6 +41,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
@@ -124,7 +126,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
-#include "storage/browser/blob/blob_handle.h"
+#include "storage/browser/test/blob_test_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -3426,114 +3428,63 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Bool(),
         testing::Bool()));
 
-class CacheStorageSideDataSizeChecker
-    : public base::RefCounted<CacheStorageSideDataSizeChecker> {
- public:
-  static int GetSize(storage::mojom::CacheStorageControl* cache_storage_control,
-                     const GURL& origin,
-                     const std::string& cache_name,
-                     const GURL& url) {
-    mojo::PendingRemote<blink::mojom::CacheStorage> cache_storage_remote;
-    network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
-    network::DocumentIsolationPolicy document_isolation_policy;
-    cache_storage_control->AddReceiver(
-        cross_origin_embedder_policy, mojo::NullRemote(),
-        document_isolation_policy, mojo::NullRemote(),
-        storage::BucketLocator::ForDefaultBucket(
-            blink::StorageKey::CreateFirstParty(url::Origin::Create(origin))),
-        storage::mojom::CacheStorageOwner::kCacheAPI,
-        cache_storage_remote.InitWithNewPipeAndPassReceiver());
+namespace {
 
-    auto checker = base::MakeRefCounted<CacheStorageSideDataSizeChecker>(
-        std::move(cache_storage_remote), cache_name, url);
-    return checker->GetSizeImpl();
+// Runs CacheStorage::Match for `url` and returns the size of the cache metadata
+// for the response, in bytes. Returns 0 if there's no cached metadata in
+// response.
+size_t GetCacheStorageCachedMetadataSize(
+    storage::mojom::CacheStorageControl* cache_storage_control,
+    const GURL& origin,
+    const std::string& cache_name,
+    const GURL& url) {
+  mojo::Remote<blink::mojom::CacheStorage> cache_storage;
+  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+  network::DocumentIsolationPolicy document_isolation_policy;
+  cache_storage_control->AddReceiver(
+      cross_origin_embedder_policy, mojo::NullRemote(),
+      document_isolation_policy, mojo::NullRemote(),
+      storage::BucketLocator::ForDefaultBucket(
+          blink::StorageKey::CreateFirstParty(url::Origin::Create(origin))),
+      storage::mojom::CacheStorageOwner::kCacheAPI,
+      cache_storage.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<blink::mojom::CacheStorage::OpenResult> open_future;
+  cache_storage->Open(base::UTF8ToUTF16(cache_name), /*trace_id=*/0,
+                      open_future.GetCallback());
+  blink::mojom::CacheStorage::OpenResult open_result = open_future.Take();
+  CHECK(open_result.has_value());
+
+  blink::mojom::FetchAPIRequestPtr scoped_request =
+      blink::mojom::FetchAPIRequest::New();
+  scoped_request->url = url;
+
+  mojo::AssociatedRemote<blink::mojom::CacheStorageCache> cache_storage_cache(
+      std::move(open_result.value()));
+  base::test::TestFuture<blink::mojom::CacheStorage::MatchResult> match_future;
+  cache_storage_cache->Match(std::move(scoped_request),
+                             blink::mojom::CacheQueryOptions::New(),
+                             /*in_related_fetch_event=*/false,
+                             /*in_range_fetch_event=*/false, /*trace_id=*/0,
+                             match_future.GetCallback());
+  blink::mojom::CacheStorage::MatchResult match_result = match_future.Take();
+  if (!match_result.has_value()) {
+    EXPECT_EQ(match_result.error(), CacheStorageError::kErrorNotFound);
+    return 0;
   }
+  CHECK(match_result.value()->is_response());
 
-  CacheStorageSideDataSizeChecker(
-      mojo::PendingRemote<blink::mojom::CacheStorage> cache_storage,
-      const std::string& cache_name,
-      const GURL& url)
-      : cache_storage_(std::move(cache_storage)),
-        cache_name_(cache_name),
-        url_(url) {}
-
-  CacheStorageSideDataSizeChecker(const CacheStorageSideDataSizeChecker&) =
-      delete;
-  CacheStorageSideDataSizeChecker& operator=(
-      const CacheStorageSideDataSizeChecker&) = delete;
-
- private:
-  friend class base::RefCounted<CacheStorageSideDataSizeChecker>;
-
-  virtual ~CacheStorageSideDataSizeChecker() = default;
-
-  int GetSizeImpl() {
-    int result = 0;
-    base::RunLoop loop;
-    cache_storage_->Open(
-        base::UTF8ToUTF16(cache_name_), /*trace_id=*/0,
-        base::BindOnce(
-            &CacheStorageSideDataSizeChecker::OnCacheStorageOpenCallback, this,
-            &result, loop.QuitClosure()));
-    loop.Run();
-    return result;
+  const blink::mojom::FetchAPIResponsePtr& response =
+      match_result.value()->get_response();
+  if (!response->cached_metadata) {
+    return 0;
   }
+  mojo::Remote<blink::mojom::Blob> metadata_blob(
+      std::move(response->cached_metadata->blob));
+  return storage::BlobToString(metadata_blob.get()).size();
+}
 
-  void OnCacheStorageOpenCallback(
-      int* result,
-      base::OnceClosure continuation,
-      blink::mojom::CacheStorage::OpenResult open_result) {
-    ASSERT_TRUE(open_result.has_value());
-
-    auto scoped_request = blink::mojom::FetchAPIRequest::New();
-    scoped_request->url = url_;
-
-    // Preserve lifetime of this remote across the Match call.
-    cache_storage_cache_.emplace(std::move(open_result.value()));
-
-    (*cache_storage_cache_)
-        ->Match(std::move(scoped_request),
-                blink::mojom::CacheQueryOptions::New(),
-                /*in_related_fetch_event=*/false,
-                /*in_range_fetch_event=*/false, /*trace_id=*/0,
-                base::BindOnce(&CacheStorageSideDataSizeChecker::
-                                   OnCacheStorageCacheMatchCallback,
-                               this, result, std::move(continuation)));
-  }
-
-  void OnCacheStorageCacheMatchCallback(
-      int* result,
-      base::OnceClosure continuation,
-      blink::mojom::CacheStorage::MatchResult match_result) {
-    if (!match_result.has_value()) {
-      ASSERT_EQ(match_result.error(), CacheStorageError::kErrorNotFound);
-      *result = 0;
-      std::move(continuation).Run();
-      return;
-    }
-    ASSERT_TRUE(match_result.value()->is_response());
-
-    auto& response = match_result.value()->get_response();
-    ASSERT_TRUE(response->side_data_blob);
-
-    auto blob_handle = base::MakeRefCounted<storage::BlobHandle>(
-        std::move(response->side_data_blob->blob));
-    blob_handle->get()->ReadSideData(base::BindOnce(
-        [](scoped_refptr<storage::BlobHandle> blob_handle, int* result,
-           base::OnceClosure continuation,
-           const std::optional<mojo_base::BigBuffer> data) {
-          *result = data ? data->size() : 0;
-          std::move(continuation).Run();
-        },
-        blob_handle, result, std::move(continuation)));
-  }
-
-  mojo::Remote<blink::mojom::CacheStorage> cache_storage_;
-  std::optional<mojo::AssociatedRemote<blink::mojom::CacheStorageCache>>
-      cache_storage_cache_;
-  const std::string cache_name_;
-  const GURL url_;
-};
+}  // namespace
 
 class ServiceWorkerV8CodeCacheForCacheStorageTest
     : public ServiceWorkerBrowserTest {
@@ -3586,28 +3537,28 @@ class ServiceWorkerV8CodeCacheForCacheStorageTest
     EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
   }
 
-  void WaitUntilSideDataSizeIs(int expected_size) {
+  void WaitUntilCachedMetadataSizeIs(size_t expected_size) {
     while (true) {
-      if (GetSideDataSize() == expected_size) {
+      if (GetCachedMetadataSize() == expected_size) {
         return;
       }
     }
   }
 
-  void WaitUntilSideDataSizeIsBiggerThan(int minimum_size) {
+  void WaitUntilCachedMetadataSizeIsBiggerThan(size_t minimum_size) {
     while (true) {
-      if (GetSideDataSize() > minimum_size) {
+      if (GetCachedMetadataSize() > minimum_size) {
         return;
       }
     }
   }
 
-  int GetSideDataSize() {
+  size_t GetCachedMetadataSize() {
     StoragePartition* partition = shell()
                                       ->web_contents()
                                       ->GetBrowserContext()
                                       ->GetDefaultStoragePartition();
-    return CacheStorageSideDataSizeChecker::GetSize(
+    return GetCacheStorageCachedMetadataSize(
         partition->GetCacheStorageControl(), embedded_test_server()->base_url(),
         std::string("cache_name"), embedded_test_server()->GetURL(kScriptUrl));
   }
@@ -3634,17 +3585,17 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerV8CodeCacheForCacheStorageTest,
   // First load: fetch_event_response_via_cache.js returns |cloned_response|.
   // The V8 code cache should not be stored in CacheStorage.
   NavigateToTestPage();
-  WaitUntilSideDataSizeIs(0);
+  WaitUntilCachedMetadataSizeIs(0);
 
   // Second load: The V8 code cache should be stored in CacheStorage.
   NavigateToTestPage();
 #if BUILDFLAG(IS_FUCHSIA) && defined(__OPTIMIZE_SIZE__)
   // V8 code caching for CacheStorage is explicitly disabled on Fuchsia
   // size-optimized builds to save storage space.
-  WaitUntilSideDataSizeIs(0);
+  WaitUntilCachedMetadataSizeIs(0);
 #else
   // It must have size greater than 16 bytes.
-  WaitUntilSideDataSizeIsBiggerThan(kV8CacheTimeStampDataSize);
+  WaitUntilCachedMetadataSizeIsBiggerThan(kV8CacheTimeStampDataSize);
 #endif
 
   // Third load: The V8 code cache stored in CacheStorage should be consumed.
@@ -3668,7 +3619,7 @@ IN_PROC_BROWSER_TEST_F(
   // CacheStorage and returns |cloned_response| from network fetch.
   // The V8 code cache should not be stored in CacheStorage yet.
   NavigateToTestPage();
-  WaitUntilSideDataSizeIs(0);
+  WaitUntilCachedMetadataSizeIs(0);
 
   // Second load: fetch_event_response_via_cache.js?clone returns
   // |response.clone()| from CacheStorage. The V8 code cache should be stored in
@@ -3677,10 +3628,10 @@ IN_PROC_BROWSER_TEST_F(
 #if BUILDFLAG(IS_FUCHSIA) && defined(__OPTIMIZE_SIZE__)
   // V8 code caching for CacheStorage is explicitly disabled on Fuchsia
   // size-optimized builds to save storage space.
-  WaitUntilSideDataSizeIs(0);
+  WaitUntilCachedMetadataSizeIs(0);
 #else
   // It must have size greater than 16 bytes.
-  WaitUntilSideDataSizeIsBiggerThan(kV8CacheTimeStampDataSize);
+  WaitUntilCachedMetadataSizeIsBiggerThan(kV8CacheTimeStampDataSize);
 #endif
 
   // Third load: The V8 code cache stored in CacheStorage should be consumed.
@@ -3710,12 +3661,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerV8CodeCacheForCacheStorageNoneTest,
 
   // First load.
   NavigateToTestPage();
-  WaitUntilSideDataSizeIs(0);
+  WaitUntilCachedMetadataSizeIs(0);
 
   // Second load: The V8 code cache must not be stored even after the second
   // load when --v8-cache-options=none is set.
   NavigateToTestPage();
-  WaitUntilSideDataSizeIs(0);
+  WaitUntilCachedMetadataSizeIs(0);
 }
 
 namespace {
@@ -3763,7 +3714,7 @@ IN_PROC_BROWSER_TEST_F(
   RegisterAndActivateServiceWorker();
   // The full code cache should have been generated when the script was
   // stored in the install event.
-  WaitUntilSideDataSizeIsBiggerThan(kV8CacheTimeStampDataSize);
+  WaitUntilCachedMetadataSizeIsBiggerThan(kV8CacheTimeStampDataSize);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -3772,8 +3723,8 @@ IN_PROC_BROWSER_TEST_F(
   RegisterAndActivateServiceWorker();
   // The full code cache should have been generated when the script was
   // stored in the install event.
-  WaitUntilSideDataSizeIsBiggerThan(kV8CacheTimeStampDataSize);
-  const int initial_side_data_size = GetSideDataSize();
+  WaitUntilCachedMetadataSizeIsBiggerThan(kV8CacheTimeStampDataSize);
+  const size_t initial_side_data_size = GetCachedMetadataSize();
 
   // Navigating to the page consumes the code cache from CacheStorage with hash
   // verification. Verify that the code cache metadata is recorded as hit
@@ -3787,7 +3738,7 @@ IN_PROC_BROWSER_TEST_F(
             1);
   histogram_tester.ExpectBucketCount("WebCore.Scripts.V8CodeCacheMetadata.Get",
                                      /*kNone=*/0, 0);
-  EXPECT_EQ(initial_side_data_size, GetSideDataSize());
+  EXPECT_EQ(initial_side_data_size, GetCachedMetadataSize());
 }
 
 class ServiceWorkerCacheStorageFullCodeCacheFromInstallEventDisabledByHintTest
@@ -3811,7 +3762,7 @@ IN_PROC_BROWSER_TEST_F(
   RegisterAndActivateServiceWorker();
   // The full code cache should not be generated when the script was
   // stored in the install event and the header hint disables code cache.
-  WaitUntilSideDataSizeIs(0);
+  WaitUntilCachedMetadataSizeIs(0);
 }
 
 class ServiceWorkerCacheStorageFullCodeCacheFromInstallEventOpaqueResponseTest
@@ -3839,7 +3790,7 @@ IN_PROC_BROWSER_TEST_F(
   RegisterAndActivateServiceWorker();
   // The full code cache should not be generated when the script is an opaque
   // response.
-  WaitUntilSideDataSizeIs(0);
+  WaitUntilCachedMetadataSizeIs(0);
 }
 
 // ServiceWorkerDisableWebSecurityTests check the behavior when the web security

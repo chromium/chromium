@@ -365,9 +365,9 @@ void FetchRespondWithObserver::OnResponseFulfilled(ScriptState* script_state,
 
   BodyStreamBuffer* buffer = response->InternalBodyBuffer();
   if (buffer) {
-    // The |side_data_blob| must be taken before the body buffer is
+    // The cached metadata must be taken before the body buffer is
     // drained or loading begins.
-    fetch_api_response->side_data_blob = buffer->TakeSideDataBlob();
+    fetch_api_response->cached_metadata = buffer->TakeCachedMetadata();
 
     ExceptionState exception_state(script_state->GetIsolate());
 

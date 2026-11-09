@@ -21,7 +21,6 @@
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
-#include "storage/browser/blob/blob_side_data_access_type.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 
@@ -96,18 +95,15 @@ class DiskCacheStream : public net::SourceStream {
 };
 
 // A |storage::mojom::BlobDataItemReader| implementation that
-// wraps a |DiskCacheBlobEntry|.  In addition, each |EntryReaderImpl| maps the
-// main and side data to particular disk_cache indices.
+// wraps a |DiskCacheBlobEntry| at a particular disk_cache index.
 class EntryReaderImpl : public storage::mojom::BlobDataItemReader {
  public:
   EntryReaderImpl(
       scoped_refptr<CacheStorageCacheEntryHandler::DiskCacheBlobEntry>
           blob_entry,
-      CacheStorageCache::EntryIndex disk_cache_index,
-      CacheStorageCache::EntryIndex side_data_disk_cache_index)
+      CacheStorageCache::EntryIndex disk_cache_index)
       : blob_entry_(std::move(blob_entry)),
-        disk_cache_index_(disk_cache_index),
-        side_data_disk_cache_index_(side_data_disk_cache_index) {}
+        disk_cache_index_(disk_cache_index) {}
 
   EntryReaderImpl(const EntryReaderImpl&) = delete;
   EntryReaderImpl& operator=(const EntryReaderImpl&) = delete;
@@ -139,48 +135,12 @@ class EntryReaderImpl : public storage::mojom::BlobDataItemReader {
         std::move(callback), std::move(adapter)));
   }
 
-  void ReadSideData(ReadSideDataCallback callback) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    storage::RecordBlobSideDataAccess(
-        storage::BlobSideDataAccessType::kCacheStorageSideDataRead);
-
-    // Use a WrappedIOBuffer so that the DiskCacheBlobEntry writes directly
-    // to the BigBuffer without a copy.
-    int length = blob_entry_->GetSize(side_data_disk_cache_index_);
-    if (length <= 0) {
-      std::move(callback).Run(length, mojo_base::BigBuffer());
-      return;
-    }
-    mojo_base::BigBuffer output_buf(static_cast<size_t>(length));
-    auto wrapped_buf = base::MakeRefCounted<net::WrappedIOBuffer>(output_buf);
-
-    auto split_callback = base::SplitOnceCallback(base::BindOnce(
-        [](int expected_length, mojo_base::BigBuffer output_buf,
-           ReadSideDataCallback callback, int result) {
-          if (result != expected_length) {
-            std::move(callback).Run(result < 0 ? result : net::ERR_FAILED,
-                                    mojo_base::BigBuffer());
-            return;
-          }
-          std::move(callback).Run(result, std::move(output_buf));
-        },
-        length, std::move(output_buf), std::move(callback)));
-
-    uint64_t offset = 0;
-    int result =
-        blob_entry_->Read(std::move(wrapped_buf), side_data_disk_cache_index_,
-                          offset, length, std::move(split_callback.first));
-
-    if (result == net::ERR_IO_PENDING)
-      return;
-    std::move(split_callback.second).Run(result);
-  }
+  void ReadSideData(ReadSideDataCallback callback) override { NOTREACHED(); }
 
  private:
   const scoped_refptr<CacheStorageCacheEntryHandler::DiskCacheBlobEntry>
       blob_entry_;
   const CacheStorageCache::EntryIndex disk_cache_index_;
-  const CacheStorageCache::EntryIndex side_data_disk_cache_index_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -357,19 +317,13 @@ class CacheStorageCacheEntryHandlerImpl : public CacheStorageCacheEntryHandler {
                             blink::mojom::FetchAPIResponse* response) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    // First create the blob and store it in the field for the main body
-    // loading.
-    response->blob = CreateBlobWithSideData(
-        std::move(blob_entry), CacheStorageCache::INDEX_RESPONSE_BODY,
-        CacheStorageCache::INDEX_SIDE_DATA);
+    response->blob =
+        CreateBlob(blob_entry, CacheStorageCache::INDEX_RESPONSE_BODY);
 
-    // Then clone the blob to the |side_data_blob| field for loading code_cache.
-    mojo::Remote<blink::mojom::Blob> blob_remote(
-        std::move(response->blob->blob));
-    blob_remote->Clone(response->blob->blob.InitWithNewPipeAndPassReceiver());
-    response->side_data_blob = blink::mojom::SerializedBlob::New(
-        response->blob->uuid, response->blob->content_type,
-        response->blob->size, blob_remote.Unbind());
+    if (blob_entry->GetSize(CacheStorageCache::INDEX_SIDE_DATA) > 0) {
+      response->cached_metadata =
+          CreateBlob(std::move(blob_entry), CacheStorageCache::INDEX_SIDE_DATA);
+    }
   }
 
   void PopulateRequestBody(scoped_refptr<DiskCacheBlobEntry> blob_entry,
@@ -441,14 +395,6 @@ CacheStorageCacheEntryHandler::CreateCacheEntryHandler(
   NOTREACHED();
 }
 
-blink::mojom::SerializedBlobPtr CacheStorageCacheEntryHandler::CreateBlob(
-    scoped_refptr<DiskCacheBlobEntry> blob_entry,
-    CacheStorageCache::EntryIndex disk_cache_index) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return CreateBlobWithSideData(std::move(blob_entry), disk_cache_index,
-                                CacheStorageCache::INDEX_INVALID);
-}
-
 mojo::PendingRemote<network::mojom::DataPipeGetter>
 CacheStorageCacheEntryHandler::CreateDataPipeGetter(
     scoped_refptr<DiskCacheBlobEntry> blob_entry,
@@ -462,11 +408,9 @@ CacheStorageCacheEntryHandler::CreateDataPipeGetter(
   return data_pipe_getter;
 }
 
-blink::mojom::SerializedBlobPtr
-CacheStorageCacheEntryHandler::CreateBlobWithSideData(
+blink::mojom::SerializedBlobPtr CacheStorageCacheEntryHandler::CreateBlob(
     scoped_refptr<DiskCacheBlobEntry> blob_entry,
-    CacheStorageCache::EntryIndex disk_cache_index,
-    CacheStorageCache::EntryIndex side_data_disk_cache_index) {
+    CacheStorageCache::EntryIndex disk_cache_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto blob = blink::mojom::SerializedBlob::New();
   blob->size = blob_entry->GetSize(disk_cache_index);
@@ -474,14 +418,11 @@ CacheStorageCacheEntryHandler::CreateBlobWithSideData(
 
   auto element = storage::mojom::BlobDataItem::New();
   element->size = blob_entry->GetSize(disk_cache_index);
-  element->side_data_size =
-      side_data_disk_cache_index == CacheStorageCache::INDEX_INVALID
-          ? 0
-          : blob_entry->GetSize(side_data_disk_cache_index);
+  element->side_data_size = 0;
   element->type = storage::mojom::BlobDataItemType::kCacheStorage;
 
-  auto handle = std::make_unique<EntryReaderImpl>(
-      std::move(blob_entry), disk_cache_index, side_data_disk_cache_index);
+  auto handle = std::make_unique<EntryReaderImpl>(std::move(blob_entry),
+                                                  disk_cache_index);
   mojo::MakeSelfOwnedReceiver(std::move(handle),
                               element->reader.InitWithNewPipeAndPassReceiver());
 

@@ -146,12 +146,6 @@ class CacheStorageCacheEntryHandler {
       scoped_refptr<DiskCacheBlobEntry> blob_entry,
       CacheStorageCache::EntryIndex disk_cache_index);
 
-  // Create a serialized blob from the given entry and disk_cache indices.
-  blink::mojom::SerializedBlobPtr CreateBlobWithSideData(
-      scoped_refptr<DiskCacheBlobEntry> blob_entry,
-      CacheStorageCache::EntryIndex disk_cache_index,
-      CacheStorageCache::EntryIndex side_data_disk_cache_index);
-
   mojo::PendingRemote<network::mojom::DataPipeGetter> CreateDataPipeGetter(
       scoped_refptr<DiskCacheBlobEntry> blob_entry,
       CacheStorageCache::EntryIndex disk_cache_index);

@@ -54,7 +54,7 @@ blink::mojom::FetchAPIResponsePtr BackgroundFetchSettledFetch::CloneResponse(
   CHECK(!response->cache_storage_cache_name);
   CHECK(!response->cache_storage_side_data_writer);
   CHECK(response->cors_exposed_header_names.empty());
-  CHECK(!response->side_data_blob);
+  CHECK(!response->cached_metadata);
   CHECK(!response->side_data_for_cache_put);
   CHECK(!response->parsed_headers);
   CHECK_EQ(clone->connection_info, response->connection_info);

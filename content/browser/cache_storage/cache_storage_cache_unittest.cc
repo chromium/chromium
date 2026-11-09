@@ -384,8 +384,7 @@ class FailableBackend : public disk_cache::Backend {
 };
 
 // A disk_cache::Entry wrapper that returns fewer bytes than requested when
-// reading side data, to simulate the side data being truncated by another
-// caller after GetDataSize() was sampled.
+// reading side data, to simulate short reads.
 class ShortReadCacheEntry : public disk_cache::Entry {
  public:
   ShortReadCacheEntry(disk_cache::Entry* entry, int side_data_read_len)
@@ -551,17 +550,11 @@ class ShortReadBackend : public disk_cache::Backend {
   const int side_data_read_len_;
 };
 
-std::string CopySideData(blink::mojom::Blob* actual_blob) {
-  std::string output;
-  base::RunLoop loop;
-  actual_blob->ReadSideData(base::BindLambdaForTesting(
-      [&](const std::optional<mojo_base::BigBuffer> data) {
-        if (data)
-          output.append(base::as_string_view(base::span(*data)));
-        loop.Quit();
-      }));
-  loop.Run();
-  return output;
+std::string CopyCachedMetadata(blink::mojom::FetchAPIResponse* response) {
+  CHECK(response->cached_metadata);
+  mojo::Remote<blink::mojom::Blob> blob(
+      std::move(response->cached_metadata->blob));
+  return storage::BlobToString(blob.get());
 }
 
 bool ResponseMetadataEqual(const blink::mojom::FetchAPIResponse& expected,
@@ -1668,6 +1661,7 @@ TEST_P(CacheStorageCacheTestP, MatchBody) {
   EXPECT_TRUE(Match(body_request_));
   EXPECT_TRUE(ResponseMetadataEqual(*SetCacheName(CreateBlobBodyResponse()),
                                     *callback_response_));
+  EXPECT_FALSE(callback_response_->cached_metadata);
   mojo::Remote<blink::mojom::Blob> blob(
       std::move(callback_response_->blob->blob));
   EXPECT_EQ(expected_blob_data_, storage::BlobToString(blob.get()));
@@ -1723,10 +1717,7 @@ TEST_P(CacheStorageCacheTestP, MatchResponseIncludesSideDataWriterRemote) {
   cache_->SetObserver(nullptr);
 
   EXPECT_TRUE(Match(body_request_));
-  ASSERT_TRUE(callback_response_->blob);
-  mojo::Remote<blink::mojom::Blob> blob(
-      std::move(callback_response_->blob->blob));
-  EXPECT_EQ(expected_side_data, CopySideData(blob.get()));
+  EXPECT_EQ(expected_side_data, CopyCachedMetadata(callback_response_.get()));
 }
 
 TEST_P(CacheStorageCacheTestP,
@@ -2307,7 +2298,14 @@ TEST_P(CacheStorageCacheTestP, PutWithSideData) {
   mojo::Remote<blink::mojom::Blob> blob(
       std::move(callback_response_->blob->blob));
   EXPECT_EQ(expected_blob_data_, storage::BlobToString(blob.get()));
-  EXPECT_EQ(expected_side_data, CopySideData(blob.get()));
+  ASSERT_TRUE(callback_response_->cached_metadata);
+  EXPECT_NE(callback_response_->blob->uuid,
+            callback_response_->cached_metadata->uuid);
+  EXPECT_EQ(expected_side_data.size(),
+            callback_response_->cached_metadata->size);
+  mojo::Remote<blink::mojom::Blob> cached_metadata(
+      std::move(callback_response_->cached_metadata->blob));
+  EXPECT_EQ(expected_side_data, storage::BlobToString(cached_metadata.get()));
 }
 
 TEST_P(CacheStorageCacheTestP, PutWithSideData_QuotaExceeded) {
@@ -2342,7 +2340,7 @@ TEST_P(CacheStorageCacheTestP, PutWithSideData_QuotaExceededSkipSideData) {
       std::move(callback_response_->blob->blob));
   EXPECT_EQ(expected_blob_data_, storage::BlobToString(blob.get()));
   // The side data should not be written.
-  EXPECT_EQ("", CopySideData(blob.get()));
+  EXPECT_FALSE(callback_response_->cached_metadata);
 }
 
 TEST_P(CacheStorageCacheTestP, WriteSideData) {
@@ -2362,7 +2360,7 @@ TEST_P(CacheStorageCacheTestP, WriteSideData) {
   mojo::Remote<blink::mojom::Blob> blob1(
       std::move(callback_response_->blob->blob));
   EXPECT_EQ(expected_blob_data_, storage::BlobToString(blob1.get()));
-  EXPECT_EQ(expected_side_data1, CopySideData(blob1.get()));
+  EXPECT_EQ(expected_side_data1, CopyCachedMetadata(callback_response_.get()));
 
   const std::string expected_side_data2 = "New data";
   scoped_refptr<net::IOBuffer> buffer2 =
@@ -2374,7 +2372,7 @@ TEST_P(CacheStorageCacheTestP, WriteSideData) {
   mojo::Remote<blink::mojom::Blob> blob2(
       std::move(callback_response_->blob->blob));
   EXPECT_EQ(expected_blob_data_, storage::BlobToString(blob2.get()));
-  EXPECT_EQ(expected_side_data2, CopySideData(blob2.get()));
+  EXPECT_EQ(expected_side_data2, CopyCachedMetadata(callback_response_.get()));
 
   ASSERT_TRUE(Delete(body_request_));
 }
@@ -2437,7 +2435,7 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_NotFound) {
                              base::Time::Now(), buffer, kSize));
 }
 
-TEST_P(CacheStorageCacheTestP, ReadSideDataShortRead) {
+TEST_P(CacheStorageCacheTestP, ReadCachedMetadataShortReads) {
   base::Time response_time(base::Time::Now());
   blink::mojom::FetchAPIResponsePtr response = CreateBlobBodyResponse();
   response->response_time = response_time;
@@ -2449,20 +2447,14 @@ TEST_P(CacheStorageCacheTestP, ReadSideDataShortRead) {
   EXPECT_TRUE(WriteSideData(body_request_->url, response_time, buffer,
                             side_data.length()));
 
-  // Simulate the side data stream being shorter at read time than the value
-  // returned by GetDataSize() when the read was issued.
+  // Read the cached metadata in one-byte chunks.
   cache_->UseShortReadBackend(/*side_data_read_len=*/1);
 
   EXPECT_TRUE(Match(body_request_));
-  ASSERT_TRUE(callback_response_->blob);
-  mojo::Remote<blink::mojom::Blob> blob(
-      std::move(callback_response_->blob->blob));
-  // Since it is a short read, it should be treated as an error and return
-  // empty.
-  EXPECT_EQ("", CopySideData(blob.get()));
+  EXPECT_EQ(side_data, CopyCachedMetadata(callback_response_.get()));
 }
 
-TEST_P(CacheStorageCacheTestP, ReadSideDataZeroRead) {
+TEST_P(CacheStorageCacheTestP, ReadCachedMetadataZeroRead) {
   base::Time response_time(base::Time::Now());
   blink::mojom::FetchAPIResponsePtr response = CreateBlobBodyResponse();
   response->response_time = response_time;
@@ -2479,11 +2471,8 @@ TEST_P(CacheStorageCacheTestP, ReadSideDataZeroRead) {
   cache_->UseShortReadBackend(/*side_data_read_len=*/0);
 
   EXPECT_TRUE(Match(body_request_));
-  ASSERT_TRUE(callback_response_->blob);
-  mojo::Remote<blink::mojom::Blob> blob(
-      std::move(callback_response_->blob->blob));
   // Since 0 bytes were read, an empty string should be returned.
-  EXPECT_EQ("", CopySideData(blob.get()));
+  EXPECT_EQ("", CopyCachedMetadata(callback_response_.get()));
 }
 
 TEST_F(CacheStorageCacheTest, CaselessServiceWorkerFetchRequestHeaders) {

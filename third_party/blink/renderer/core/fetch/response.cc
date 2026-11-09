@@ -91,7 +91,7 @@ FetchResponseData* CreateFetchResponseDataFromFetchAPIResponse(
         MakeGarbageCollected<BlobBytesConsumer>(
             ExecutionContext::From(script_state), fetch_api_response.blob),
         nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr,
-        fetch_api_response.side_data_blob));
+        fetch_api_response.cached_metadata));
   }
 
   // Filter the response according to |fetch_api_response|'s ResponseType.

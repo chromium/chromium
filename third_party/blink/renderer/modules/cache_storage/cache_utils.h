@@ -15,7 +15,7 @@ class ScriptState;
 
 // A utility function to deserialize an eagerly read cache_storage response
 // into a web-exposed fetch Response object.  The resulting Response will
-// have a DataPipeBytesConsumer body and a side_data_blob which can be used
+// have a DataPipeBytesConsumer body and cached_metadata which can be used
 // to read any code cache.
 Response* CreateEagerResponse(ScriptState* script_state,
                               mojom::blink::EagerResponsePtr eager_response,

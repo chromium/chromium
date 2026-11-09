@@ -567,7 +567,7 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
       std::vector<std::string>(
           metadata.response().cors_exposed_header_names().begin(),
           metadata.response().cors_exposed_header_names().end()),
-      /*side_data_blob=*/nullptr, /*side_data_for_cache_put=*/std::nullopt,
+      /*cached_metadata=*/nullptr, /*side_data_for_cache_put=*/std::nullopt,
       network::mojom::ParsedHeaders::New(),
       // Default proto value of 0 maps to HttpConnectionInfo::kUNKNOWN.
       static_cast<net::HttpConnectionInfo>(
