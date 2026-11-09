@@ -26,6 +26,15 @@ suite('OrganizerListSectionHeaderTest', () => {
     await microtasksFinished();
   });
 
+  test('has level-2 heading role and aria-label on expand button', async () => {
+    header.title = 'Open Tabs';
+    await microtasksFinished();
+    const expandButton = header.$.expandButton;
+    assertEquals('heading', expandButton.getAttribute('role'));
+    assertEquals('2', expandButton.getAttribute('aria-level'));
+    assertEquals('Open Tabs', expandButton.getAttribute('aria-label'));
+  });
+
   test('has options tooltip and aria-label on menu button', async () => {
     const menuButton = header.$.menuButton;
     assertEquals('Options', menuButton.title);

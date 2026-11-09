@@ -9,8 +9,9 @@ import type {OrganizerListSectionHeaderElement} from './organizer_list_section_h
 export function getHtml(this: OrganizerListSectionHeaderElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<cr-expand-button id="expandButton" no-hover ?expanded="${this.expanded}"
-    ?disabled="${this.disabled}" @expanded-changed="${this.onExpandedChanged_}"
+<cr-expand-button id="expandButton" role="heading" aria-level="2" no-hover
+    ?expanded="${this.expanded}" ?disabled="${this.disabled}"
+    @expanded-changed="${this.onExpandedChanged_}"
     @keydown="${this.onExpandButtonKeydown_}" expand-title="$i18n{expand}"
     collapse-title="$i18n{collapse}" aria-label="${this.title}">
   <span id="headerTitle">${this.title}</span>
