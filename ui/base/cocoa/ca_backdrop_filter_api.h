@@ -5,6 +5,8 @@
 #ifndef UI_BASE_COCOA_CA_BACKDROP_FILTER_API_H_
 #define UI_BASE_COCOA_CA_BACKDROP_FILTER_API_H_
 
+#include <array>
+
 #include "base/component_export.h"
 #include "base/feature_list.h"
 
@@ -31,6 +33,11 @@ CALayer* COMPONENT_EXPORT(UI_BASE) CreateCABackdropLayer();
 // in points, `inputNormalizeEdges` enabled). Only call when
 // CABackdropLayerSupported() is true.
 id COMPONENT_EXPORT(UI_BASE) CreateCABlurFilter(double blur_radius);
+
+// Creates a CAFilter configured with a 4x5 row-major `colorMatrix`. Only call
+// when CABackdropLayerSupported() is true.
+id COMPONENT_EXPORT(UI_BASE)
+    CreateCAColorMatrixFilter(const std::array<float, 20>& matrix);
 #endif  // __OBJC__
 
 }  // namespace ui

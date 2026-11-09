@@ -5,6 +5,7 @@
 #include "components/viz/service/display/ca_layer_overlay.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <limits>
 #include <utility>
@@ -20,6 +21,7 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/service/display/display_resource_provider.h"
+#include "third_party/skia/include/effects/SkColorMatrix.h"
 #include "ui/base/cocoa/ca_backdrop_filter_api.h"
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/gfx/buffer_types.h"
@@ -133,6 +135,13 @@ std::optional<gfx::RRectF> SkPathToRRectF(const SkPath& path) {
   return std::nullopt;
 }
 
+constexpr std::array<float, 20> kIdentityColorMatrix = {
+    1.f, 0.f, 0.f, 0.f, 0.f,  //
+    0.f, 1.f, 0.f, 0.f, 0.f,  //
+    0.f, 0.f, 1.f, 0.f, 0.f,  //
+    0.f, 0.f, 0.f, 1.f, 0.f,  //
+};
+
 bool ExtractBackdropFilter(const AggregatedRenderPassDrawQuad* quad,
                            OverlayCandidate* ca_layer_overlay) {
   if (quad->backdrop_filters.IsEmpty()) {
@@ -177,26 +186,82 @@ bool ExtractBackdropFilter(const AggregatedRenderPassDrawQuad* quad,
   const float scale =
       std::max(quad->filters_scale.x(), quad->filters_scale.y());
 
-  // Support single Gaussian blur operations; other backdrop filter operations
-  // fall back to SkiaRenderer.
+  // Support Gaussian blur and color matrix adjustments (saturate, brightness,
+  // contrast) commonly paired with blur in glassmorphism UI. Other operations
+  // (e.g. sepia, invert, grayscale, drop-shadow) fall back to SkiaRenderer.
   ui::CABackdropFilter filter_params;
   bool has_blur = false;
+  bool has_color_matrix = false;
+  SkColorMatrix color_matrix;
   for (const auto& op : quad->backdrop_filters.operations()) {
-    if (op.type() != cc::FilterOperation::BLUR) {
-      return false;
-    }
     const float amount = op.amount();
-    if (!std::isfinite(amount) || amount < 0.0f) {
-      return false;
+    switch (op.type()) {
+      case cc::FilterOperation::BLUR: {
+        if (!std::isfinite(amount) || amount < 0.0f) {
+          return false;
+        }
+        if (amount == 0.0f) {
+          break;
+        }
+        // CARendererLayerTree applies the blur filter before the color matrix.
+        // Reject chains where a non-identity color matrix precedes blur() (can
+        // be supported with a pre-blur color matrix if needed later).
+        if (has_blur || has_color_matrix || !has_uniform_scale) {
+          return false;
+        }
+        has_blur = true;
+        filter_params.blur_radius = amount * scale;
+        break;
+      }
+      case cc::FilterOperation::SATURATE: {
+        if (!std::isfinite(amount) || amount < 0.0f) {
+          return false;
+        }
+        if (amount != 1.0f) {
+          SkColorMatrix m;
+          m.setSaturation(amount);
+          color_matrix.postConcat(m);
+          has_color_matrix = true;
+        }
+        break;
+      }
+      case cc::FilterOperation::BRIGHTNESS: {
+        if (!std::isfinite(amount) || amount < 0.0f) {
+          return false;
+        }
+        if (amount != 1.0f) {
+          SkColorMatrix m;
+          m.setScale(amount, amount, amount, 1.0f);
+          color_matrix.postConcat(m);
+          has_color_matrix = true;
+        }
+        break;
+      }
+      case cc::FilterOperation::CONTRAST: {
+        if (!std::isfinite(amount) || amount < 0.0f) {
+          return false;
+        }
+        if (amount != 1.0f) {
+          const float translate = -0.5f * amount + 0.5f;
+          SkColorMatrix m;
+          m.setScale(amount, amount, amount, 1.0f);
+          m.postTranslate(translate, translate, translate, 0.0f);
+          color_matrix.postConcat(m);
+          has_color_matrix = true;
+        }
+        break;
+      }
+      default:
+        return false;
     }
-    if (amount == 0.0f) {
-      continue;
+  }
+
+  if (has_color_matrix) {
+    std::array<float, 20> row_major;
+    color_matrix.getRowMajor(row_major.data());
+    if (row_major != kIdentityColorMatrix) {
+      filter_params.color_matrix = row_major;
     }
-    if (has_blur || !has_uniform_scale) {
-      return false;
-    }
-    has_blur = true;
-    filter_params.blur_radius = amount * scale;
   }
 
   const gfx::RectF visible_rect(quad->visible_rect);

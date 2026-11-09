@@ -5,6 +5,7 @@
 #ifndef UI_GL_CA_RENDERER_LAYER_PARAMS_H_
 #define UI_GL_CA_RENDERER_LAYER_PARAMS_H_
 
+#include <array>
 #include <optional>
 #include <vector>
 
@@ -41,6 +42,8 @@ struct GL_EXPORT CABackdropFilter {
   // Blur radius in RenderPass local space (scaled by `filters_scale`, before
   // `CARendererLayerParams::transform` is applied by TransformLayer).
   float blur_radius = 0.0f;
+  // Optional 4x5 row-major color matrix matching CAColorMatrix.
+  std::optional<std::array<float, 20>> color_matrix;
 };
 
 struct GL_EXPORT CARendererLayerParams {

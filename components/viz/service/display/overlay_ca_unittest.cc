@@ -677,10 +677,89 @@ TEST_F(CALayerOverlayRPDQTest, RenderPassDrawQuadBackdropFilterChainRejected) {
 }
 
 TEST_F(CALayerOverlayRPDQTest,
+       RenderPassDrawQuadBackdropFilterChainBlurSaturateBrightnessContrast) {
+  // Glassmorphic multi-filter chain: blur(28px) saturate(135%) brightness(105%)
+  // contrast(100%). Should be promoted to CoreAnimation with a color matrix
+  // composing saturate(1.35) and brightness(1.05).
+  SetBackdropFilter(
+      cc::FilterOperations({cc::FilterOperation::CreateBlurFilter(28.0f),
+                            cc::FilterOperation::CreateSaturateFilter(1.35f),
+                            cc::FilterOperation::CreateBrightnessFilter(1.05f),
+                            cc::FilterOperation::CreateContrastFilter(1.0f)}));
+  ProcessForOverlays();
+  EXPECT_EQ(1U, test::NumOverlaysExcludingPrimaryPlane(ca_layer_list_));
+  const auto& params = ca_layer_list_.back().backdrop_filter_params;
+  ASSERT_TRUE(params.has_value());
+  EXPECT_FLOAT_EQ(28.0f, params->blur_radius);
+  ASSERT_TRUE(params->color_matrix.has_value());
+  // Diagonal entry m11 = 1.05 * (0.213 + 0.787 * 1.35).
+  EXPECT_NEAR(1.05f * (0.213f + 0.787f * 1.35f), (*params->color_matrix)[0],
+              1e-5f);
+  // Alpha scale m44 = 1.0.
+  EXPECT_FLOAT_EQ(1.0f, (*params->color_matrix)[18]);
+}
+
+TEST_F(CALayerOverlayRPDQTest,
+       RenderPassDrawQuadBackdropFilterIdentityOperationsSkipped) {
+  // Pure blur accompanied by identity saturate(100%), brightness(100%),
+  // contrast(100%). The identity operations should be skipped without creating
+  // an unnecessary colorMatrix filter.
+  SetBackdropFilter(
+      cc::FilterOperations({cc::FilterOperation::CreateBlurFilter(35.0f),
+                            cc::FilterOperation::CreateSaturateFilter(1.0f),
+                            cc::FilterOperation::CreateBrightnessFilter(1.0f),
+                            cc::FilterOperation::CreateContrastFilter(1.0f)}));
+  ProcessForOverlays();
+  EXPECT_EQ(1U, test::NumOverlaysExcludingPrimaryPlane(ca_layer_list_));
+  ASSERT_TRUE(ca_layer_list_.back().backdrop_filter_params.has_value());
+  EXPECT_FLOAT_EQ(35.0f,
+                  ca_layer_list_.back().backdrop_filter_params->blur_radius);
+  EXPECT_FALSE(
+      ca_layer_list_.back().backdrop_filter_params->color_matrix.has_value());
+
+  // All-identity chain (blur(0px) saturate(100%)) should promote the RPDQ
+  // with zero blur radius and no colorMatrix filter.
+  SetBackdropFilter(
+      cc::FilterOperations({cc::FilterOperation::CreateBlurFilter(0.0f),
+                            cc::FilterOperation::CreateSaturateFilter(1.0f)}));
+  ca_layer_list_.clear();
+  ProcessForOverlays();
+  EXPECT_EQ(1U, test::NumOverlaysExcludingPrimaryPlane(ca_layer_list_));
+  ASSERT_TRUE(ca_layer_list_.back().backdrop_filter_params.has_value());
+  EXPECT_FLOAT_EQ(0.0f,
+                  ca_layer_list_.back().backdrop_filter_params->blur_radius);
+  EXPECT_FALSE(
+      ca_layer_list_.back().backdrop_filter_params->color_matrix.has_value());
+}
+
+TEST_F(CALayerOverlayRPDQTest,
+       RenderPassDrawQuadBackdropFilterColorMatrixWithoutBlur) {
+  SetBackdropFilter(
+      cc::FilterOperations({cc::FilterOperation::CreateContrastFilter(1.2f)}));
+  ProcessForOverlays();
+  EXPECT_EQ(1U, test::NumOverlaysExcludingPrimaryPlane(ca_layer_list_));
+  const auto& params = ca_layer_list_.back().backdrop_filter_params;
+  ASSERT_TRUE(params.has_value());
+  EXPECT_FLOAT_EQ(0.0f, params->blur_radius);
+  ASSERT_TRUE(params->color_matrix.has_value());
+  EXPECT_FLOAT_EQ(1.2f, (*params->color_matrix)[0]);
+  EXPECT_NEAR(-0.5f * 1.2f + 0.5f, (*params->color_matrix)[4], 1e-5f);
+}
+
+TEST_F(CALayerOverlayRPDQTest,
        RenderPassDrawQuadBackdropFilterMultipleBlursRejected) {
   SetBackdropFilter(
       cc::FilterOperations({cc::FilterOperation::CreateBlurFilter(10.0f),
                             cc::FilterOperation::CreateBlurFilter(20.0f)}));
+  ProcessForOverlays();
+  EXPECT_EQ(0U, test::NumOverlaysExcludingPrimaryPlane(ca_layer_list_));
+
+  // Non-identity color matrix before blur() is also rejected so filter order
+  // matches SkiaRenderer.
+  SetBackdropFilter(
+      cc::FilterOperations({cc::FilterOperation::CreateContrastFilter(1.2f),
+                            cc::FilterOperation::CreateBlurFilter(10.0f)}));
+  ca_layer_list_.clear();
   ProcessForOverlays();
   EXPECT_EQ(0U, test::NumOverlaysExcludingPrimaryPlane(ca_layer_list_));
 }

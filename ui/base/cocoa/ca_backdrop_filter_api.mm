@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "base/bit_cast.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -14,11 +15,18 @@
 #include "ui/base/cocoa/remote_layer_api.h"
 
 #if BUILDFLAG(IS_MAC)
-// Private CoreAnimation methods used for hardware-accelerated backdrop filters.
-// Accessed strictly via dynamic runtime lookup below. Declared as a category on
-// NSObject rather than redeclaring @interface CAFilter / CABackdropLayer so a
-// future SDK roll exposing those headers cannot cause a duplicate interface
-// error.
+// Private CoreAnimation structs and methods used for hardware-accelerated
+// backdrop filters. Accessed strictly via dynamic runtime lookup below.
+// Declared via a category on NSObject rather than redeclaring @interface
+// CAFilter / CABackdropLayer so a future SDK roll exposing those headers cannot
+// cause a duplicate interface error.
+struct CAColorMatrix {
+  float m11, m12, m13, m14, m15;
+  float m21, m22, m23, m24, m25;
+  float m31, m32, m33, m34, m35;
+  float m41, m42, m43, m44, m45;
+};
+
 @interface NSObject (ChromiumCABackdropSPI)
 + (id)filterWithType:(NSString*)type;
 - (NSArray<NSString*>*)inputKeys;
@@ -53,6 +61,13 @@ const CABackdropSPI& GetCABackdropSPI() {
     NSArray<NSString*>* blur_keys = [blur_filter inputKeys];
     if (!blur_filter || ![blur_keys containsObject:@"inputRadius"] ||
         ![blur_keys containsObject:@"inputNormalizeEdges"]) {
+      return result;
+    }
+
+    id color_matrix_filter = [filter_class filterWithType:@"colorMatrix"];
+    NSArray<NSString*>* color_matrix_keys = [color_matrix_filter inputKeys];
+    if (!color_matrix_filter ||
+        ![color_matrix_keys containsObject:@"inputColorMatrix"]) {
       return result;
     }
 
@@ -110,6 +125,22 @@ id CreateCABlurFilter(double blur_radius) {
   // `blur_radius` of the edges.
   [blur_filter setValue:@YES forKey:@"inputNormalizeEdges"];
   return blur_filter;
+#else
+  NOTREACHED();
+#endif
+}
+
+id CreateCAColorMatrixFilter(const std::array<float, 20>& matrix) {
+#if BUILDFLAG(IS_MAC)
+  const CABackdropSPI& spi = GetCABackdropSPI();
+  CHECK(spi.supported);
+  id color_matrix_filter = [spi.filter_class filterWithType:@"colorMatrix"];
+  CHECK(color_matrix_filter);
+  CAColorMatrix ca_matrix = base::bit_cast<CAColorMatrix>(matrix);
+  NSValue* matrix_value = [NSValue valueWithBytes:&ca_matrix
+                                         objCType:@encode(CAColorMatrix)];
+  [color_matrix_filter setValue:matrix_value forKey:@"inputColorMatrix"];
+  return color_matrix_filter;
 #else
   NOTREACHED();
 #endif

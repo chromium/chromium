@@ -1481,6 +1481,49 @@ TEST_F(CALayerTreeTest, BackdropFilterTypeChange) {
   EXPECT_EQ(nil, new_backdrop_layer.superlayer);
 }
 
+TEST_F(CALayerTreeTest, BackdropFilterBlurAndColorMatrix) {
+  CALayerProperties properties;
+  properties.rect = gfx::Rect(0, 0, 256, 256);
+  properties.scale_factor = 2.0f;
+  properties.backdrop_filters.push_back({.blur_radius = 40.0f});
+  std::array<float, 20> matrix = {
+      1.2f, 0.0f, 0.0f, 0.0f, 0.1f,  //
+      0.0f, 1.3f, 0.0f, 0.0f, 0.0f,  //
+      0.0f, 0.0f, 1.4f, 0.0f, 0.0f,  //
+      0.0f, 0.0f, 0.0f, 1.0f, 0.0f   //
+  };
+  properties.backdrop_filters.push_back({.color_matrix = matrix});
+
+  std::unique_ptr<ui::CARendererLayerTree> ca_layer_tree;
+  UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+
+  CALayer* backdrop_layer = [GetOnlyTransformLayer() sublayers][0];
+  ASSERT_EQ(2u, [[backdrop_layer filters] count]);
+  id blur_filter = [backdrop_layer filters][0];
+  EXPECT_DOUBLE_EQ(20.0,
+                   [[blur_filter valueForKey:@"inputRadius"] doubleValue]);
+
+  id color_matrix_filter = [backdrop_layer filters][1];
+  NSValue* matrix_value = [color_matrix_filter valueForKey:@"inputColorMatrix"];
+  ASSERT_NE(nil, matrix_value);
+  std::array<float, 20> actual_matrix = {};
+  [matrix_value getValue:&actual_matrix size:sizeof(actual_matrix)];
+  EXPECT_EQ(matrix, actual_matrix);
+
+  // Update to colorMatrix-only (zero blur radius) and verify layer reuse.
+  properties.backdrop_filters[0].blur_radius = 0.0f;
+  matrix[0] = 1.5f;
+  properties.backdrop_filters[1].color_matrix = matrix;
+  UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+
+  ASSERT_EQ(1u, [[backdrop_layer filters] count]);
+  id updated_filter = [backdrop_layer filters][0];
+  NSValue* updated_value = [updated_filter valueForKey:@"inputColorMatrix"];
+  ASSERT_NE(nil, updated_value);
+  [updated_value getValue:&actual_matrix size:sizeof(actual_matrix)];
+  EXPECT_FLOAT_EQ(1.5f, actual_matrix[0]);
+}
+
 TEST_F(CALayerTreeTest, CABackdropLayerSPIHelpers) {
   {
     base::test::ScopedFeatureList scoped_feature_list;
@@ -1492,6 +1535,8 @@ TEST_F(CALayerTreeTest, CABackdropLayerSPIHelpers) {
   EXPECT_TRUE(ui::CABackdropLayerSupported());
   EXPECT_NE(nil, ui::CreateCABackdropLayer());
   EXPECT_NE(nil, ui::CreateCABlurFilter(10.0));
+  std::array<float, 20> matrix = {};
+  EXPECT_NE(nil, ui::CreateCAColorMatrixFilter(matrix));
 }
 
 TEST(HDRCoperLayerTest, Formats) {

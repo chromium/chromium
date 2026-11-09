@@ -1420,17 +1420,22 @@ void CARendererLayerTree::ContentLayer::CommitBackdropFilterToCA(
     bool update_backdrop_filter_bounds) {
   DCHECK_EQ(type_, CALayerType::kBackdropFilter);
   if (update_backdrop_filter) {
-    NSMutableArray* filters =
+    NSMutableArray* backdrop_filters =
         [NSMutableArray arrayWithCapacity:backdrop_filters_.size()];
     for (const auto& filter : backdrop_filters_) {
-      // `blur_radius` is in RenderPass local pixels. Convert it to points in
-      // the layer's local space. This relies on CoreAnimation scaling filter
-      // radii by the ancestor TransformLayer's transform.
-      id blur_filter =
-          CreateCABlurFilter(filter.blur_radius / tree()->scale_factor_);
-      [filters addObject:blur_filter];
+      if (filter.blur_radius > 0.0f && std::isfinite(filter.blur_radius)) {
+        // `blur_radius` is in RenderPass local pixels. Convert it to points in
+        // the layer's local space. This relies on CoreAnimation scaling filter
+        // radii by the ancestor TransformLayer's transform.
+        [backdrop_filters addObject:CreateCABlurFilter(filter.blur_radius /
+                                                       tree()->scale_factor_)];
+      }
+      if (filter.color_matrix.has_value()) {
+        [backdrop_filters
+            addObject:CreateCAColorMatrixFilter(*filter.color_matrix)];
+      }
     }
-    ca_layer_.filters = filters;
+    ca_layer_.filters = backdrop_filters;
   }
   if (update_backdrop_filter_bounds) {
     // Representability is validated in ScheduleCALayer().
