@@ -2511,6 +2511,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Enterprise.DataProtection.Watermark.Triggered"
+    enum="Boolean" expires_after="2027-11-01">
+  <owner>mxlg@google.com</owner>
+  <owner>bling-enterprise@google.com</owner>
+  <summary>
+    Logs whether enterprise watermarking was triggered on a navigated URL.
+    Recorded from the DataProtectionTabHelper when a real-time lookup result is
+    received.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ExperienceKitCalendar.Present"
     enum="ExperienceKitCalendarTypes" expires_after="2027-04-18">
   <owner>olivierrobin@chromium.org</owner>

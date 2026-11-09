@@ -293,7 +293,9 @@ void DataProtectionTabHelper::OnRealTimeLookupResult(
     watermark_text =
         IsEnableEnterpriseWatermarkingIOS() ? settings.watermark_text : "";
 
-    // TODO(crbug.com/538614118): Add histogram for watermarking.
+    base::UmaHistogramBoolean(kWatermarkTriggeredHistogram,
+                              !watermark_text.empty());
+
     if (protection_enabled) {
       base::UmaHistogramEnumeration(kScreenshotBlockSourceHistogram,
                                     ScreenshotBlockSource::kRealtimeLookup);

@@ -76,6 +76,8 @@ class DataProtectionTabHelper
       "IOS.Enterprise.DataProtection.ScreenshotBlock.Source";
   static constexpr char kRealTimeURLLookupSuccessHistogram[] =
       "IOS.Enterprise.DataProtection.RealTimeURL.Lookup.Success";
+  static constexpr char kWatermarkTriggeredHistogram[] =
+      "IOS.Enterprise.DataProtection.Watermark.Triggered";
 
   // Adds/removes observers to listen for data protection state changes.
   void AddObserver(DataProtectionTabHelperObserver* observer);

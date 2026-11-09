@@ -342,11 +342,14 @@ TEST_F(DataProtectionTabHelperTest, RealTimeLookupBlock) {
   histogram_tester.ExpectUniqueSample(
       DataProtectionTabHelper::kScreenshotBlockSourceHistogram,
       ScreenshotBlockSource::kRealtimeLookup, 1);
+  histogram_tester.ExpectUniqueSample(
+      DataProtectionTabHelper::kWatermarkTriggeredHistogram, false, 1);
 }
 
 // Tests that the watermark text is correctly updated when the real-time lookup
 // returns a matched rule with a watermark message.
 TEST_F(DataProtectionTabHelperTest, RealTimeLookupWatermark) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
   GURL protected_url(kProtectedUrl);
@@ -384,6 +387,9 @@ TEST_F(DataProtectionTabHelperTest, RealTimeLookupWatermark) {
   // Verify that the observer was notified with the watermark text.
   EXPECT_THAT(observer_.watermark_text(),
               ::testing::HasSubstr("Test Watermark"));
+
+  histogram_tester.ExpectUniqueSample(
+      DataProtectionTabHelper::kWatermarkTriggeredHistogram, true, 1);
 }
 
 // Tests that watermarking lookups occur even if screenshot protection is
@@ -547,6 +553,8 @@ TEST_F(DataProtectionTabHelperTest, RealTimeLookupFailed) {
       DataProtectionTabHelper::kRealTimeURLLookupSuccessHistogram, false, 1);
   histogram_tester.ExpectTotalCount(
       DataProtectionTabHelper::kScreenshotBlockSourceHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      DataProtectionTabHelper::kWatermarkTriggeredHistogram, 0);
 }
 
 // Tests that real-time lookup is skipped when no DM token is present.
