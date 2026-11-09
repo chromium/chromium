@@ -14,8 +14,8 @@ source_set("public") {
   deps = [
     "//base",
     "//components/autofill/core/browser",
-    "//components/strings:components_strings__strings_grit",
-    "//ios/chrome/app/strings:ios_strings__strings_grit",
+    "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui:buildflags",
@@ -24,4 +24,22 @@ source_set("public") {
     "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
   ]
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "autofill_ai_ui_util_unittest.mm" ]
+  deps = [
+    ":public",
+    "//base/test:test_support",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/model/message",
+    "//ios/chrome/browser/net/model:crurl",
+    "//testing/gtest",
+    "//ui/base",
+    "//url",
+  ]
 }

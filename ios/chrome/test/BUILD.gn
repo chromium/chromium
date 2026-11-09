@@ -270,6 +270,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/autocomplete/model:unit_tests",
     "//ios/chrome/browser/autofill/authentication/coordinator:unit_tests",
     "//ios/chrome/browser/autofill/authentication/public:unit_tests",
+    "//ios/chrome/browser/autofill/autofill_ai/public:unit_tests",
     "//ios/chrome/browser/autofill/autofill_ai/ui:unit_tests",
     "//ios/chrome/browser/autofill/bnpl/ui:unit_tests",
     "//ios/chrome/browser/autofill/branding/ui:unit_tests",

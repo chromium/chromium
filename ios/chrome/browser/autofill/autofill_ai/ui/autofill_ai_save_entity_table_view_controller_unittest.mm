@@ -8,7 +8,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_util.h"
-#import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
@@ -41,12 +40,12 @@ class AutofillAISaveEntityTableViewControllerTest : public PlatformTest {
 
   // Returns the link footer view for `section`.
   TableViewLinkHeaderFooterView* GetLinkFooterView(NSInteger section) {
-    UIView* footerView = [controller_ tableView:controller_.tableView
-                         viewForFooterInSection:section];
+    UIView* footer_view = [controller_ tableView:controller_.tableView
+                          viewForFooterInSection:section];
     EXPECT_TRUE(
-        [footerView isKindOfClass:[TableViewLinkHeaderFooterView class]]);
+        [footer_view isKindOfClass:[TableViewLinkHeaderFooterView class]]);
     return base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(
-        footerView);
+        footer_view);
   }
 
   AutofillAISaveEntityTableViewController* controller_;
@@ -54,34 +53,34 @@ class AutofillAISaveEntityTableViewControllerTest : public PlatformTest {
 
 // Tests that the table view controller displays the new and old sections.
 TEST_F(AutofillAISaveEntityTableViewControllerTest, DisplayNewAndOldSections) {
-  autofill::EntityInstance newEntity = GetTestVehicle(kCarMaker2);
-  autofill::EntityInstance oldEntity = GetTestVehicle(kCarMaker1);
+  autofill::EntityInstance new_entity = GetTestVehicle(kCarMaker2);
+  autofill::EntityInstance old_entity = GetTestVehicle(kCarMaker1);
 
-  [controller_ setNewEntity:std::move(newEntity)
-                  oldEntity:std::move(oldEntity)];
+  [controller_ setNewEntity:std::move(new_entity)
+                  oldEntity:std::move(old_entity)];
 
   [controller_ loadViewIfNeeded];
 
-  UITableViewDiffableDataSource<NSNumber*, TableViewItem*>* dataSource =
+  UITableViewDiffableDataSource<NSNumber*, TableViewItem*>* data_source =
       base::apple::ObjCCastStrict<
           UITableViewDiffableDataSource<NSNumber*, TableViewItem*>>(
           controller_.tableView.dataSource);
 
   // Verify New Info Section.
-  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-  TableViewTextEditItem* newItem =
+  NSIndexPath* index_path = [NSIndexPath indexPathForRow:0 inSection:0];
+  TableViewTextEditItem* new_item =
       base::apple::ObjCCastStrict<TableViewTextEditItem>(
-          [dataSource itemIdentifierForIndexPath:indexPath]);
-  EXPECT_NSEQ(base::SysUTF16ToNSString(kCarMaker2), newItem.textFieldValue);
+          [data_source itemIdentifierForIndexPath:index_path]);
+  EXPECT_NSEQ(base::SysUTF16ToNSString(kCarMaker2), new_item.textFieldValue);
 
   // Verify Old Info Section.
-  indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
-  TableViewTextEditItem* oldItem =
+  index_path = [NSIndexPath indexPathForRow:0 inSection:1];
+  TableViewTextEditItem* old_item =
       base::apple::ObjCCastStrict<TableViewTextEditItem>(
-          [dataSource itemIdentifierForIndexPath:indexPath]);
-  EXPECT_NSEQ(base::SysUTF16ToNSString(kCarMaker1), oldItem.textFieldValue);
+          [data_source itemIdentifierForIndexPath:index_path]);
+  EXPECT_NSEQ(base::SysUTF16ToNSString(kCarMaker1), old_item.textFieldValue);
 
-  // No footer view is returned when `footerText` has not been set.
+  // No footer view is returned when `footer_text` has not been set.
   EXPECT_EQ(nil, [controller_ tableView:controller_.tableView
                      viewForFooterInSection:2]);
 }
@@ -92,20 +91,23 @@ TEST_F(AutofillAISaveEntityTableViewControllerTest,
        DisplayFooterWithTextAndUrls) {
   [controller_ setNewEntity:GetTestVehicle(kCarMaker2) oldEntity:std::nullopt];
 
-  NSMutableArray<CrURL*>* urls = [NSMutableArray array];
-  NSString* footerText =
-      autofill::GetSaveEntityToWalletFooterTextAppendingURLsTo(
-          @"test@example.com", /*is_private_pass=*/false, urls);
-  [controller_ setFooterText:footerText urls:urls];
+  NSString* footer_text = @"Test wallet footer with BEGIN_LINKlinkEND_LINK";
+  NSArray<CrURL*>* urls =
+      @[ [[CrURL alloc] initWithGURL:GURL("https://example.com")] ];
+  [controller_ setFooterText:footer_text urls:urls];
 
   [controller_ loadViewIfNeeded];
 
   // The footer section index is 1 if there is only new entity.
-  TableViewLinkHeaderFooterView* linkFooterView =
+  TableViewLinkHeaderFooterView* link_footer_view =
       GetLinkFooterView(/*section=*/1);
 
-  ASSERT_EQ(1U, linkFooterView.urls.count);
-  EXPECT_EQ(autofill::GetManageYourInfoURL(), linkFooterView.urls[0].gurl);
+  UITextView* text_view = chrome_test_util::FindViewByClass<UITextView>(
+      link_footer_view.contentView);
+  ASSERT_NE(nil, text_view);
+  EXPECT_NSEQ(@"Test wallet footer with link", text_view.attributedText.string);
+  ASSERT_EQ(1U, link_footer_view.urls.count);
+  EXPECT_EQ(GURL("https://example.com"), link_footer_view.urls[0].gurl);
 }
 
 // Tests that setting the footer after the view is loaded reloads the footer
@@ -119,19 +121,20 @@ TEST_F(AutofillAISaveEntityTableViewControllerTest,
   EXPECT_EQ(nil, [controller_ tableView:controller_.tableView
                      viewForFooterInSection:1]);
 
-  CrURL* legalURL =
+  CrURL* legal_url =
       [[CrURL alloc] initWithGURL:GURL("https://www.example.com/legal")];
   [controller_ setFooterText:@"Saved locally.\n\nBEGIN_LINKTestEND_LINK legal"
-                        urls:@[ legalURL ]];
+                        urls:@[ legal_url ]];
 
-  TableViewLinkHeaderFooterView* linkFooterView =
+  TableViewLinkHeaderFooterView* link_footer_view =
       GetLinkFooterView(/*section=*/1);
-  UITextView* textView =
-      chrome_test_util::FindViewByClass<UITextView>(linkFooterView.contentView);
-  ASSERT_NE(nil, textView);
-  EXPECT_NSEQ(@"Saved locally.\n\nTest legal", textView.attributedText.string);
-  ASSERT_EQ(1U, linkFooterView.urls.count);
-  EXPECT_EQ(GURL("https://www.example.com/legal"), linkFooterView.urls[0].gurl);
+  UITextView* text_view = chrome_test_util::FindViewByClass<UITextView>(
+      link_footer_view.contentView);
+  ASSERT_NE(nil, text_view);
+  EXPECT_NSEQ(@"Saved locally.\n\nTest legal", text_view.attributedText.string);
+  ASSERT_EQ(1U, link_footer_view.urls.count);
+  EXPECT_EQ(GURL("https://www.example.com/legal"),
+            link_footer_view.urls[0].gurl);
 }
 
 // Tests that setting identical footer text and URLs (with distinct CrURL
@@ -142,21 +145,21 @@ TEST_F(AutofillAISaveEntityTableViewControllerTest,
   [controller_ setNewEntity:GetTestVehicle(kCarMaker2) oldEntity:std::nullopt];
   [controller_ loadViewIfNeeded];
 
-  NSString* footerText = @"Saved locally.\n\nBEGIN_LINKTestEND_LINK legal";
-  CrURL* legalURL =
+  NSString* footer_text = @"Saved locally.\n\nBEGIN_LINKTestEND_LINK legal";
+  CrURL* legal_url =
       [[CrURL alloc] initWithGURL:GURL("https://www.example.com/legal")];
-  NSArray<CrURL*>* originalURLs = @[ legalURL ];
-  [controller_ setFooterText:footerText urls:originalURLs];
+  NSArray<CrURL*>* original_urls = @[ legal_url ];
+  [controller_ setFooterText:footer_text urls:original_urls];
 
-  TableViewLinkHeaderFooterView* linkFooterView =
+  TableViewLinkHeaderFooterView* link_footer_view =
       GetLinkFooterView(/*section=*/1);
-  EXPECT_EQ(originalURLs[0], linkFooterView.urls[0]);
+  EXPECT_EQ(original_urls[0], link_footer_view.urls[0]);
 
-  CrURL* distinctLegalURL =
+  CrURL* distinct_legal_url =
       [[CrURL alloc] initWithGURL:GURL("https://www.example.com/legal")];
-  NSArray<CrURL*>* distinctURLs = @[ distinctLegalURL ];
-  [controller_ setFooterText:footerText urls:distinctURLs];
+  NSArray<CrURL*>* distinct_urls = @[ distinct_legal_url ];
+  [controller_ setFooterText:footer_text urls:distinct_urls];
 
-  linkFooterView = GetLinkFooterView(/*section=*/1);
-  EXPECT_EQ(originalURLs[0], linkFooterView.urls[0]);
+  link_footer_view = GetLinkFooterView(/*section=*/1);
+  EXPECT_EQ(original_urls[0], link_footer_view.urls[0]);
 }

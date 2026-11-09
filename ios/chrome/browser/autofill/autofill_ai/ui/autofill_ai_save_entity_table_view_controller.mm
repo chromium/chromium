@@ -23,26 +23,6 @@
 
 namespace {
 
-// Returns whether two arrays of `CrURL` are equal by comparing their `GURL`
-// values.
-BOOL AreCrURLArraysEqual(NSArray<CrURL*>* array1, NSArray<CrURL*>* array2) {
-  if (array1 == array2) {
-    return YES;
-  }
-  if (!array1 || !array2) {
-    return NO;
-  }
-  if (array1.count != array2.count) {
-    return NO;
-  }
-  for (NSUInteger i = 0; i < array1.count; ++i) {
-    if (array1[i].gurl != array2[i].gurl) {
-      return NO;
-    }
-  }
-  return YES;
-}
-
 constexpr CGFloat kSaveFormTopPadding = 16.0;
 constexpr CGFloat kUpdateFormSectionSpacing = 32.0;
 
@@ -212,7 +192,7 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
 
 - (void)setFooterText:(NSString*)footerText urls:(NSArray<CrURL*>*)urls {
   if ((footerText == _footerText || [_footerText isEqualToString:footerText]) &&
-      AreCrURLArraysEqual(_footerURLs, urls)) {
+      autofill::AreCrURLArraysEqual(_footerURLs, urls)) {
     return;
   }
   _footerText = [footerText copy];

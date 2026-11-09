@@ -164,14 +164,15 @@ TEST_F(AutofillAISaveEntityMediatorTest,
   base::test::ScopedFeatureList feature_list(
       autofill::features::kAutofillRegionalizedPrivatePassesUxRefine);
 
+  autofill::EntityInstance passport = autofill::test::GetPassportEntityInstance(
+      {.record_type = autofill::EntityInstance::RecordType::kServerWallet});
+  autofill::AutofillAiEntityFooterContent expected_footer =
+      autofill::GetEntityFooterContent(passport, /*is_update=*/false,
+                                       u"test@example.com",
+                                       /*legal_messages=*/nil);
   FakeAutofillAISaveEntityConsumer* consumer =
-      PushEntityToMediator(autofill::test::GetPassportEntityInstance(
-          {.record_type =
-               autofill::EntityInstance::RecordType::kServerWallet}));
-
-  EXPECT_NSEQ(autofill::GetSaveEntityToWalletFooterTextAppendingURLsTo(
-                  @"test@example.com", /*is_private_pass=*/true, /*urls=*/nil),
-              consumer.footerText);
+      PushEntityToMediator(std::move(passport));
+  EXPECT_NSEQ(expected_footer.text, consumer.footerText);
   ASSERT_EQ(2u, consumer.footerURLs.count);
   EXPECT_EQ(autofill::GetManageYourInfoURL(), consumer.footerURLs[0].gurl);
   EXPECT_EQ(autofill::GetGooglePrivacyPolicyURL(), consumer.footerURLs[1].gurl);
@@ -188,12 +189,14 @@ TEST_F(AutofillAISaveEntityMediatorTest,
   autofill::EntityInstance vehicle =
       autofill::test::GetVehicleEntityInstance().CopyWithNewRecordType(
           autofill::EntityInstance::RecordType::kServerWallet);
+  autofill::AutofillAiEntityFooterContent expected_footer =
+      autofill::GetEntityFooterContent(vehicle, /*is_update=*/false,
+                                       u"test@example.com",
+                                       /*legal_messages=*/nil);
   FakeAutofillAISaveEntityConsumer* consumer =
       PushEntityToMediator(std::move(vehicle));
 
-  EXPECT_NSEQ(autofill::GetSaveEntityToWalletFooterTextAppendingURLsTo(
-                  @"test@example.com", /*is_private_pass=*/false, /*urls=*/nil),
-              consumer.footerText);
+  EXPECT_NSEQ(expected_footer.text, consumer.footerText);
   ASSERT_EQ(1u, consumer.footerURLs.count);
   EXPECT_EQ(autofill::GetManageYourInfoURL(), consumer.footerURLs[0].gurl);
 }
@@ -207,13 +210,15 @@ TEST_F(AutofillAISaveEntityMediatorTest, PushesWalletUpdateFooter) {
   autofill::EntityInstance old_entity =
       autofill::test::GetVehicleEntityInstance().CopyWithNewRecordType(
           autofill::EntityInstance::RecordType::kServerWallet);
+  autofill::AutofillAiEntityFooterContent expected_footer =
+      autofill::GetEntityFooterContent(new_entity, /*is_update=*/true,
+                                       u"test@example.com",
+                                       /*legal_messages=*/nil);
 
   FakeAutofillAISaveEntityConsumer* consumer =
       PushEntityToMediator(std::move(new_entity), std::move(old_entity));
 
-  EXPECT_NSEQ(autofill::GetUpdateEntitySavedInWalletFooterTextAppendingURLsTo(
-                  @"test@example.com", /*urls=*/nil),
-              consumer.footerText);
+  EXPECT_NSEQ(expected_footer.text, consumer.footerText);
   ASSERT_EQ(1u, consumer.footerURLs.count);
   EXPECT_EQ(autofill::GetGoogleWalletPassesURL(), consumer.footerURLs[0].gurl);
 }

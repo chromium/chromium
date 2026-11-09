@@ -31,27 +31,6 @@ namespace {
 // the footer text 24pt.
 constexpr CGFloat kAttributesSectionFooterHeight = 16.0;
 
-// TODO(crbug.com/573949431): Move this to autofill_ai_ui_util in follow-up
-// cleanup CL. Returns whether two arrays of `CrURL` are equal by comparing
-// their `GURL` values.
-BOOL AreCrURLArraysEqual(NSArray<CrURL*>* array1, NSArray<CrURL*>* array2) {
-  if (array1 == array2) {
-    return YES;
-  }
-  if (!array1 || !array2) {
-    return NO;
-  }
-  if (array1.count != array2.count) {
-    return NO;
-  }
-  for (NSUInteger i = 0; i < array1.count; ++i) {
-    if (array1[i].gurl != array2[i].gurl) {
-      return NO;
-    }
-  }
-  return YES;
-}
-
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierAttributes = kSectionIdentifierEnumZero,
   SectionIdentifierFooter,
@@ -276,7 +255,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // from changing mid-session.
 - (void)setFooterText:(NSString*)footerText urls:(NSArray<CrURL*>*)urls {
   if ((footerText == _footerText || [_footerText isEqualToString:footerText]) &&
-      AreCrURLArraysEqual(_footerURLs, urls)) {
+      autofill::AreCrURLArraysEqual(_footerURLs, urls)) {
     return;
   }
   if (self.view.window) {
