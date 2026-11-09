@@ -1798,6 +1798,12 @@
       status: "experimental",
     },
     {
+      // Custom Highlight API Extensions.
+      // https://issues.chromium.org/issues/579833788
+      name: "CSSCustomHighlightExtensions",
+      status: "experimental",
+    },
+    {
       name: "CSSCustomHighlightUniversalSelector",
       status: "stable",
     },

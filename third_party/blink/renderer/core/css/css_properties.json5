@@ -715,6 +715,12 @@
       default: false,
       valid_type: "bool",
     },
+    // Additional properties valid for highlight pseudos when
+    // CSSCustomHighlightExtensions is enabled.
+    valid_for_highlight_with_extensions: {
+      default: false,
+      valid_type: "bool",
+    },
 
     // Applicable @page properties and descriptors.
     valid_for_page_context: {
@@ -979,6 +985,7 @@
       typedom_types: ["Time"],
       separator: ",",
       valid_for_marker: true,
+      valid_for_highlight_with_extensions: true,
       is_animation_property: true,
       is_animation_affecting: true,
       // Animation properites are never incremental.
@@ -997,6 +1004,7 @@
       },
       separator: ",",
       valid_for_marker: true,
+      valid_for_highlight_with_extensions: true,
       is_animation_property: true,
       is_animation_affecting: true,
       // Animation properites are never incremental.
@@ -1014,6 +1022,7 @@
       typedom_types: ["Time"],
       separator: ",",
       valid_for_marker: true,
+      valid_for_highlight_with_extensions: true,
       is_animation_property: true,
       is_animation_affecting: true,
       // Animation properites are never incremental.
@@ -1032,6 +1041,7 @@
       typedom_types: ["Keyword"],
       separator: ",",
       valid_for_marker: true,
+      valid_for_highlight_with_extensions: true,
       is_animation_property: true,
       is_animation_affecting: true,
       // Animation properites are never incremental.
@@ -1051,6 +1061,7 @@
       typedom_types: ["Keyword", "Number"],
       separator: ",",
       valid_for_marker: true,
+      valid_for_highlight_with_extensions: true,
       is_animation_property: true,
       is_animation_affecting: true,
       // Animation properites are never incremental.
@@ -1069,6 +1080,7 @@
       typedom_custom_ident: true,
       separator: ",",
       valid_for_marker: true,
+      valid_for_highlight_with_extensions: true,
       is_animation_property: true,
       is_animation_affecting: true,
       // Animation properites are never incremental.
@@ -1099,6 +1111,7 @@
       typedom_types: ["Keyword"],
       separator: ",",
       valid_for_marker: true,
+      valid_for_highlight_with_extensions: true,
       is_animation_property: true,
       is_animation_affecting: true,
       // Animation properites are never incremental.
@@ -1114,6 +1127,7 @@
       },
       separator: ",",
       valid_for_marker: true,
+      valid_for_highlight_with_extensions: true,
       is_animation_property: true,
       is_animation_affecting: true,
       // Animation properites are never incremental.
@@ -1131,6 +1145,7 @@
       },
       separator: ",",
       valid_for_marker: true,
+      valid_for_highlight_with_extensions: true,
       is_animation_property: true,
       is_animation_affecting: true,
       // Animation properites are never incremental.
@@ -1150,6 +1165,7 @@
       typedom_types: ["Keyword"],
       separator: ",",
       valid_for_marker: true,
+      valid_for_highlight_with_extensions: true,
       is_animation_property: true,
       is_animation_affecting: true,
       affected_by_zoom: true,
@@ -1179,6 +1195,7 @@
       typedom_types: ["Keyword"],
       separator: ",",
       valid_for_marker: true,
+      valid_for_highlight_with_extensions: true,
       is_animation_property: true,
       is_animation_affecting: true,
       // Animation properites are never incremental.
@@ -1293,6 +1310,7 @@
       typedom_types: ["Time"],
       separator: ",",
       valid_for_marker: true,
+      valid_for_highlight_with_extensions: true,
       is_animation_property: true,
       is_animation_affecting: true,
       // Animation properites are never incremental.
@@ -1308,6 +1326,7 @@
         attribute: "Duration",
       },
       valid_for_marker: true,
+      valid_for_highlight_with_extensions: true,
       is_animation_property: true,
       is_animation_affecting: true,
       // Animation properites are never incremental.
@@ -1323,6 +1342,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       valid_for_marker: true,
+      valid_for_highlight_with_extensions: true,
       is_animation_property: true,
       is_animation_affecting: true,
       // Animation properites are never incremental.
@@ -1339,6 +1359,7 @@
         attribute: "Behavior",
       },
       valid_for_marker: true,
+      valid_for_highlight_with_extensions: true,
       is_animation_property: true,
       is_animation_affecting: true,
       // Animation properites are never incremental.
@@ -1366,6 +1387,7 @@
       typedom_types: ["Keyword"],
       separator: ",",
       valid_for_marker: true,
+      valid_for_highlight_with_extensions: true,
       is_animation_property: true,
       is_animation_affecting: true,
       // Animation properites are never incremental.
@@ -4830,6 +4852,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,
+      valid_for_highlight_with_extensions: true,
       supports_incremental_style: true,
       accepts_numeric_literal: true,
       invalidate: ["opacity"],

@@ -57,6 +57,18 @@ TEST(CascadeFilterTest, FilterVisitedAndNonInherited) {
   EXPECT_FALSE(filter.Accepts(GetCSSPropertyInternalVisitedColor()));
 }
 
+TEST(CascadeFilterTest, FilterHighlightWithExtensions) {
+  auto filter = CascadeFilter()
+                    .Add(CSSProperty::kNotVisited)
+                    .Add(CSSProperty::kValidForHighlightWithExtensions);
+  EXPECT_TRUE(filter.Accepts(GetCSSPropertyBackgroundColor()));
+  EXPECT_TRUE(filter.Accepts(GetCSSPropertyAnimationDuration()));
+  EXPECT_TRUE(filter.Accepts(GetCSSPropertyTransitionDuration()));
+  EXPECT_TRUE(filter.Accepts(GetCSSPropertyOpacity()));
+  EXPECT_FALSE(filter.Accepts(GetCSSPropertyDisplay()));
+  EXPECT_FALSE(filter.Accepts(GetCSSPropertyInternalVisitedColor()));
+}
+
 TEST(CascadeFilterTest, RejectFlag) {
   auto filter =
       CascadeFilter().Add(CSSProperty::kVisited).Add(CSSProperty::kInherited);

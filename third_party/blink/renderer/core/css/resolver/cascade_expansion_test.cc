@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -466,6 +467,126 @@ TEST_F(CascadeExpansionTest, FilterHighlight) {
   ASSERT_EQ(2u, e.size());
   EXPECT_EQ(CSSPropertyID::kBackgroundColor, e[0].name.Id());
   EXPECT_EQ(CSSPropertyID::kInternalVisitedBackgroundColor, e[1].name.Id());
+}
+
+TEST_F(CascadeExpansionTest, FilterHighlightWithExtensions) {
+  ScopedCSSCustomHighlightExtensionsForTest feature(true);
+  MatchResult result;
+  result.BeginAddingAuthorRulesForTreeScope(GetDocument());
+  result.AddMatchedProperties(
+      ParseDeclarationBlock(
+          "animation-duration:2s;transition-duration:1s;"
+          "opacity:0.5;background-color:lime;display:block;--custom:value"),
+      /*mixin_parameter_bindings=*/nullptr,
+      {
+          .valid_property_filter =
+              static_cast<uint8_t>(ValidPropertyFilter::kHighlight),
+          .origin = CascadeOrigin::kAuthor,
+      });
+
+  auto e = ExpansionAt(result, 0);
+  bool has_animation_duration = false;
+  bool has_transition_duration = false;
+  bool has_opacity = false;
+  bool has_background_color = false;
+  bool has_custom_property = false;
+  bool has_display = false;
+  for (const auto& property : e) {
+    if (property.name.IsCustomProperty()) {
+      has_custom_property |=
+          property.name.ToAtomicString() == AtomicString("--custom");
+      continue;
+    }
+    switch (property.name.Id()) {
+      case CSSPropertyID::kAnimationDuration:
+        has_animation_duration = true;
+        break;
+      case CSSPropertyID::kTransitionDuration:
+        has_transition_duration = true;
+        break;
+      case CSSPropertyID::kBackgroundColor:
+        has_background_color = true;
+        break;
+      case CSSPropertyID::kOpacity:
+        has_opacity = true;
+        break;
+      case CSSPropertyID::kDisplay:
+        has_display = true;
+        break;
+      default:
+        break;
+    }
+  }
+  EXPECT_TRUE(has_animation_duration);
+  EXPECT_TRUE(has_transition_duration);
+  EXPECT_TRUE(has_opacity);
+  EXPECT_TRUE(has_background_color);
+  EXPECT_TRUE(has_custom_property);
+  EXPECT_FALSE(has_display);
+}
+
+TEST_F(CascadeExpansionTest, FilterHighlightWithExtensionsAndAll) {
+  ScopedCSSCustomHighlightExtensionsForTest feature(true);
+  MatchResult result;
+  result.BeginAddingAuthorRulesForTreeScope(GetDocument());
+  result.AddMatchedProperties(ParseDeclarationBlock("all:unset"),
+                              /*mixin_parameter_bindings=*/nullptr,
+                              {
+                                  .valid_property_filter = static_cast<uint8_t>(
+                                      ValidPropertyFilter::kHighlight),
+                                  .origin = CascadeOrigin::kAuthor,
+                              });
+
+  auto e = ExpansionAt(result, 0);
+  Vector<CSSPropertyID> expanded;
+  for (const auto& property : e) {
+    if (!property.name.IsCustomProperty()) {
+      expanded.push_back(property.name.Id());
+    }
+  }
+  EXPECT_TRUE(expanded.Contains(CSSPropertyID::kAnimationDuration));
+  EXPECT_TRUE(expanded.Contains(CSSPropertyID::kTransitionDuration));
+  EXPECT_TRUE(expanded.Contains(CSSPropertyID::kOpacity));
+  EXPECT_FALSE(expanded.Contains(CSSPropertyID::kDisplay));
+}
+
+TEST_F(CascadeExpansionTest, FilterHighlightExtensionsPreservesLinkFilter) {
+  ScopedCSSCustomHighlightExtensionsForTest feature(true);
+  MatchResult result;
+  result.BeginAddingAuthorRulesForTreeScope(GetDocument());
+  result.AddMatchedProperties(
+      ParseDeclarationBlock("animation-duration:2s;opacity:0.5;color:red"),
+      /*mixin_parameter_bindings=*/nullptr,
+      {
+          .link_match_type = CSSSelector::kMatchVisited,
+          .valid_property_filter =
+              static_cast<uint8_t>(ValidPropertyFilter::kHighlight),
+          .origin = CascadeOrigin::kAuthor,
+      });
+
+  auto e = ExpansionAt(result, 0);
+  ASSERT_EQ(1u, e.size());
+  EXPECT_EQ(CSSPropertyID::kInternalVisitedColor, e[0].name.Id());
+}
+
+TEST_F(CascadeExpansionTest, FilterHighlightExtensionsDisabled) {
+  ScopedCSSCustomHighlightExtensionsForTest feature(false);
+  MatchResult result;
+  result.BeginAddingAuthorRulesForTreeScope(GetDocument());
+  result.AddMatchedProperties(
+      ParseDeclarationBlock(
+          "animation: pulse 2s;transition:color 1s;opacity:0.5;color:red"),
+      /*mixin_parameter_bindings=*/nullptr,
+      {
+          .valid_property_filter =
+              static_cast<uint8_t>(ValidPropertyFilter::kHighlight),
+          .origin = CascadeOrigin::kAuthor,
+      });
+
+  auto e = ExpansionAt(result, 0);
+  ASSERT_EQ(2u, e.size());
+  EXPECT_EQ(CSSPropertyID::kColor, e[0].name.Id());
+  EXPECT_EQ(CSSPropertyID::kInternalVisitedColor, e[1].name.Id());
 }
 
 TEST_F(CascadeExpansionTest, FilterPositionFallback) {

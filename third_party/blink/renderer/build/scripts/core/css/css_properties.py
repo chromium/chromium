@@ -74,6 +74,9 @@ def validate_property(prop, props_by_name):
     assert not prop.valid_for_highlight or prop.is_longhand, (
         'Only longhands can be valid_for_highlight [%s]' % name
     )
+    assert not prop.valid_for_highlight_with_extensions or prop.is_longhand, (
+        'Only longhands can be valid_for_highlight_with_extensions [%s]' % name
+    )
     assert not prop.tracks_animated_source or prop.is_longhand, (
         'Only longhands can have tracks_animated_source [%s]' % name
     )

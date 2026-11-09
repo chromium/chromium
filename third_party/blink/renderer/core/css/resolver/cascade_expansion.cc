@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -29,7 +30,9 @@ CascadeFilter AddValidPropertiesFilter(
     case ValidPropertyFilter::kHighlightLegacy:
       return filter.Add(CSSProperty::kValidForHighlightLegacy);
     case ValidPropertyFilter::kHighlight:
-      return filter.Add(CSSProperty::kValidForHighlight);
+      return RuntimeEnabledFeatures::CSSCustomHighlightExtensionsEnabled()
+                 ? filter.Add(CSSProperty::kValidForHighlightWithExtensions)
+                 : filter.Add(CSSProperty::kValidForHighlight);
     case ValidPropertyFilter::kPositionTry:
       return filter.Add(CSSProperty::kValidForPositionTry);
     case ValidPropertyFilter::kPageContext:
