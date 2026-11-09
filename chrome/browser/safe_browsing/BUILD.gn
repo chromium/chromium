@@ -983,6 +983,8 @@ source_set("unit_tests") {
       "//chrome/browser/ui/hats:test_support",
       "//components/enterprise/common/proto:connectors_proto",
       "//components/enterprise/connectors/core",
+      "//components/enterprise/isolated_mode",
+      "//components/enterprise/isolated_mode:test_support",
       "//components/enterprise/obfuscation/core:enterprise_obfuscation",
       "//components/history/content/browser",
       "//components/history/core/browser",
