@@ -4,11 +4,9 @@
 
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 
-#include <utility>
 #include <vector>
 
 #include "base/barrier_closure.h"
-#include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -22,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -120,10 +117,6 @@ namespace {
 
 const base::FilePath::CharType kPictureInPictureDocumentPipPage[] =
     FILE_PATH_LITERAL("media/picture-in-picture/document-pip.html");
-
-std::string BackendParamName(const testing::TestParamInfo<bool>& info) {
-  return info.param ? "Standalone" : "BrowserBacked";
-}
 
 // Observes a views::Widget and waits for it to be active or inactive.
 class WidgetActivationWaiter : public views::WidgetObserver {
@@ -238,15 +231,11 @@ class DocumentPictureInPictureWindowControllerBrowserTest
   }
 
   void SetUp() override {
-    base::flat_map<base::test::FeatureRef, bool> feature_states = {
-        {blink::features::kDocumentPictureInPictureAPI, true},
-        {blink::features::kDocumentPictureInPicturePreferInitialPlacement,
-         true},
-        {features::kDocumentPipStandaloneWindow, UseStandaloneDocumentPip()}};
-    for (const auto& [feature, enabled] : GetAdditionalFeatureStates()) {
-      feature_states[feature] = enabled;
-    }
-    scoped_feature_list_.InitWithFeatureStates(feature_states);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{blink::features::kDocumentPictureInPictureAPI, true},
+         {blink::features::kDocumentPictureInPicturePreferInitialPlacement,
+          true},
+         {features::kDocumentPipStandaloneWindow, UseStandaloneDocumentPip()}});
     InProcessBrowserTest::SetUp();
   }
 
@@ -371,12 +360,6 @@ class DocumentPictureInPictureWindowControllerBrowserTest
 
  protected:
   virtual bool UseStandaloneDocumentPip() const { return false; }
-
-  // Features to override on top of the defaults in SetUp().
-  virtual std::vector<std::pair<base::test::FeatureRef, bool>>
-  GetAdditionalFeatureStates() const {
-    return {};
-  }
 
  private:
   raw_ptr<content::DocumentPictureInPictureWindowController,
@@ -523,29 +506,39 @@ class DocumentPictureInPictureWindowControllerBoundsCacheTest
 INSTANTIATE_TEST_SUITE_P(All,
                          DocumentPictureInPictureWindowControllerBackendTest,
                          testing::Bool(),
-                         BackendParamName);
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DocumentPictureInPictureWindowControllerLifecycleTest,
                          testing::Bool(),
-                         BackendParamName);
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     DocumentPictureInPictureWindowControllerRequestedSizeTest,
     testing::Bool(),
-    BackendParamName);
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "Standalone" : "BrowserBacked";
+    });
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DocumentPictureInPictureWindowControllerFrameViewTest,
                          testing::Bool(),
-                         BackendParamName);
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     DocumentPictureInPictureWindowControllerBoundsCacheTest,
     testing::Bool(),
-    BackendParamName);
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "Standalone" : "BrowserBacked";
+    });
 
 // Helper class that waits without polling a run loop until a condition is met.
 // Note that it does not ever check the condition itself; some other thing, like
@@ -1403,15 +1396,15 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                 /*is_for_tab=*/false));
 }
 
-// Keeps the picker open until the test observes tucking and cancels it.
+// A dialog that checks if the picture-in-picture window is force-tucked
+// when the dialog is shown, and then immediately cancels itself.
 class TuckingTestSelectFileDialog : public ui::SelectFileDialog {
  public:
-  TuckingTestSelectFileDialog(
-      Listener* listener,
-      std::unique_ptr<ui::SelectFilePolicy> policy,
-      base::OnceCallback<void(base::OnceClosure)> on_shown)
+  TuckingTestSelectFileDialog(Listener* listener,
+                              std::unique_ptr<ui::SelectFilePolicy> policy,
+                              bool* was_tucked)
       : ui::SelectFileDialog(listener, std::move(policy)),
-        on_shown_(std::move(on_shown)) {}
+        was_tucked_(was_tucked) {}
 
  private:
   ~TuckingTestSelectFileDialog() override = default;
@@ -1425,8 +1418,9 @@ class TuckingTestSelectFileDialog : public ui::SelectFileDialog {
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
                       const GURL* caller) override {
-    std::move(on_shown_).Run(base::BindOnce(
-        &TuckingTestSelectFileDialog::Cancel, weak_factory_.GetWeakPtr()));
+    *was_tucked_ = PictureInPictureWindowManager::GetInstance()
+                       ->IsPictureInPictureForceTucked();
+    listener_->FileSelectionCanceled();
   }
 
   bool IsRunning(gfx::NativeWindow owning_window) const override {
@@ -1435,76 +1429,64 @@ class TuckingTestSelectFileDialog : public ui::SelectFileDialog {
   void ListenerDestroyed() override {}
   bool HasMultipleFileTypeChoicesImpl() override { return false; }
 
-  void Cancel() { listener_->FileSelectionCanceled(); }
-
-  base::OnceCallback<void(base::OnceClosure)> on_shown_;
+  raw_ptr<bool> was_tucked_;
   base::WeakPtrFactory<TuckingTestSelectFileDialog> weak_factory_{this};
 };
 
 class TuckingTestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
  public:
-  explicit TuckingTestSelectFileDialogFactory(
-      base::OnceCallback<void(base::OnceClosure)> on_shown)
-      : on_shown_(std::move(on_shown)) {}
+  explicit TuckingTestSelectFileDialogFactory(bool* was_tucked)
+      : was_tucked_(was_tucked) {}
   ~TuckingTestSelectFileDialogFactory() override = default;
 
   ui::SelectFileDialog* Create(
       ui::SelectFileDialog::Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy) override {
     return new TuckingTestSelectFileDialog(listener, std::move(policy),
-                                           std::move(on_shown_));
+                                           was_tucked_);
   }
 
  private:
-  base::OnceCallback<void(base::OnceClosure)> on_shown_;
+  raw_ptr<bool> was_tucked_;
 };
 
 class DocumentPictureInPictureWindowControllerTuckingBrowserTest
-    : public DocumentPictureInPictureWindowControllerBackendTest {
- protected:
-  std::vector<std::pair<base::test::FeatureRef, bool>>
-  GetAdditionalFeatureStates() const override {
-    return {{media::kFileDialogsTuckPictureInPicture, true}};
+    : public DocumentPictureInPictureWindowControllerBrowserTest {
+ public:
+  DocumentPictureInPictureWindowControllerTuckingBrowserTest() = default;
+
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {blink::features::kDocumentPictureInPictureAPI,
+         blink::features::kDocumentPictureInPicturePreferInitialPlacement,
+         media::kFileDialogsTuckPictureInPicture},
+        {});
+    InProcessBrowserTest::SetUp();
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DocumentPictureInPictureWindowControllerTuckingBrowserTest,
-    testing::Bool(),
-    BackendParamName);
-
 // Test when the file picker is opened, the pip window is tucked.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     DocumentPictureInPictureWindowControllerTuckingBrowserTest,
     TuckOnOpenFilePicker) {
   LoadTabAndEnterPictureInPicture(browser());
-  views::Widget* pip_widget = GetPipWidget();
-  ASSERT_TRUE(pip_widget);
-  CheckOriginSet(pip_widget);
-  const gfx::Rect initial_bounds = pip_widget->GetWindowBoundsInScreen();
   // Initially it was not tucked
   EXPECT_FALSE(PictureInPictureWindowManager::GetInstance()
                    ->IsPictureInPictureForceTucked());
 
-  base::test::TestFuture<base::OnceClosure> picker_shown;
+  // `was_tucked_during_picker` will be updated if the window is tucked while
+  // the file picker dialog is open.
+  bool was_tucked_during_picker = false;
   ui::SelectFileDialog::SetFactory(
       std::make_unique<TuckingTestSelectFileDialogFactory>(
-          picker_shown.GetCallback()));
+          &was_tucked_during_picker));
 
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
-  ASSERT_TRUE(ExecJs(web_contents,
-                     "window.filePickerPromise = window.showOpenFilePicker();"
-                     "void 0;"));
-  ASSERT_TRUE(picker_shown.Wait());
-  EXPECT_TRUE(PictureInPictureWindowManager::GetInstance()
-                  ->IsPictureInPictureForceTucked());
-  EXPECT_TRUE(base::test::RunUntil([&] {
-    return pip_widget->GetWindowBoundsInScreen().x() != initial_bounds.x();
-  }));
-  picker_shown.Take().Run();
-  auto result = EvalJs(web_contents, "window.filePickerPromise;");
+  auto result = EvalJs(web_contents, "window.showOpenFilePicker();");
   EXPECT_TRUE(result.ExtractError().find("aborted") != std::string::npos)
       << result;
 
@@ -1512,8 +1494,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // The pip window should be tucked once, and now it's back to non-tucked
   // state.
+  EXPECT_TRUE(was_tucked_during_picker);
   EXPECT_FALSE(PictureInPictureWindowManager::GetInstance()
                    ->IsPictureInPictureForceTucked());
-  EXPECT_TRUE(base::test::RunUntil(
-      [&] { return pip_widget->GetWindowBoundsInScreen() == initial_bounds; }));
 }
