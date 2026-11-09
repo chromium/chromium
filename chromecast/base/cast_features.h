@@ -11,6 +11,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/values.h"
 
@@ -29,7 +30,7 @@ BASE_DECLARE_FEATURE(kEnableStarboardRenderer);
 
 // Get an iterable list of all of the cast features for checking all features as
 // a collection.
-const std::vector<const base::Feature*>& GetFeatures();
+base::span<const base::Feature* const> GetFeatures();
 
 // Below are utilities needed by the Cast receiver to persist feature
 // information. Client code which is simply querying the status of a feature

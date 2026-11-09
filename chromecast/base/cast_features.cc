@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
@@ -176,7 +177,7 @@ BASE_FEATURE(kEnableStarboardRenderer,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // End Chromecast Feature definitions.
-const base::Feature* kFeatures[] = {
+constexpr const base::Feature* kFeatures[] = {
     &kAllowUserMediaAccess,
     &kEnableQuic,
     &kTripleBuffer720,
@@ -188,21 +189,11 @@ const base::Feature* kFeatures[] = {
     &kEnableStarboardRenderer,
 };
 
-std::vector<const base::Feature*> GetInternalFeatures();
-
-const std::vector<const base::Feature*>& GetFeatures() {
-  static const base::NoDestructor<std::vector<const base::Feature*>> features(
-      [] {
-        std::vector<const base::Feature*> features(std::begin(kFeatures),
-                                                   std::end(kFeatures));
-        auto internal_features = GetInternalFeatures();
-        features.insert(features.end(), internal_features.begin(),
-                        internal_features.end());
-        return features;
-      }());
-  if (GetTestFeatures().size() > 0)
+base::span<const base::Feature* const> GetFeatures() {
+  if (!GetTestFeatures().empty()) {
     return GetTestFeatures();
-  return *features;
+  }
+  return kFeatures;
 }
 
 void InitializeFeatureList(const base::DictValue& dcs_features,

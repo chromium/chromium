@@ -7,7 +7,9 @@
 #include <cstdint>
 #include <memory>
 #include <unordered_set>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -91,7 +93,7 @@ void SetupFeatures() {
   std::vector<const base::Feature*> features = {
       &kTestFeat1,  &kTestFeat2,  &kTestFeat3,  &kTestFeat4, &kTestFeat11,
       &kTestFeat21, &kTestFeat22, &kTestFeat23, &kTestFeat24};
-  std::vector<const base::Feature*> existing_features =
+  base::span<const base::Feature* const> existing_features =
       chromecast::GetFeatures();
   features.insert(features.end(), existing_features.begin(),
                   existing_features.end());
