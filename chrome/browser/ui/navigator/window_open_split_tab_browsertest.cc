@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -23,6 +24,7 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
@@ -46,6 +48,13 @@ class WindowOpenSplitTabBrowserTest : public InProcessBrowserTest {
     // The base::Feature is enabled by default, but the Blink feature only
     // follows it when it is overridden.
     feature_list_.InitAndEnableFeature(blink::features::kWindowOpenSplitTab);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // The renderer drops clicks while it defers commits, which made the
+    // simulated clicks in ClickToOpenWindow() flaky.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   void SetUpOnMainThread() override {
