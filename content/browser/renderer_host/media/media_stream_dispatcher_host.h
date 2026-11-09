@@ -108,8 +108,15 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       base::OnceCallback<void(GenerateStreamsUIThreadCheckResult)>
           result_callback);
 
+  // Binds the renderer-side observer if not yet bound. Safe to call repeatedly.
+  void EnsureMediaStreamDeviceObserverBound();
+
+  // Accessor; binds lazily as a fallback.
   const mojo::Remote<blink::mojom::MediaStreamDeviceObserver>&
-  GetMediaStreamDeviceObserver();
+  GetMediaStreamDeviceObserver() {
+    EnsureMediaStreamDeviceObserverBound();
+    return media_stream_device_observer_;
+  }
   void OnMediaStreamDeviceObserverConnectionError();
   void CancelAllRequests();
 

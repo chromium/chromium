@@ -257,8 +257,7 @@ void MediaStreamDeviceObserver::OnZoomLevelChange(
 
 void MediaStreamDeviceObserver::BindMediaStreamDeviceObserverReceiver(
     mojo::PendingReceiver<mojom::blink::MediaStreamDeviceObserver> receiver) {
-  receiver_.reset();
-  receiver_.Bind(std::move(receiver));
+  receivers_.Add(this, std::move(receiver));
 }
 
 void MediaStreamDeviceObserver::AddStreams(

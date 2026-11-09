@@ -26,6 +26,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
@@ -57,6 +58,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -220,6 +222,17 @@ class MockMediaStreamDispatcherHost
   mojo::PendingRemote<blink::mojom::MediaStreamDeviceObserver>
   BindNewPipeAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void ResetDeviceObserver() {
+    receiver_.reset();
+    media_stream_device_observer_.reset();
+  }
+  bool IsDeviceObserverBound() const {
+    return media_stream_device_observer_.is_bound();
+  }
+  bool IsDeviceObserverConnected() const {
+    return media_stream_device_observer_.is_connected();
   }
 
   std::string label_;
@@ -637,6 +650,39 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamWithVideoOnly) {
 
   EXPECT_FALSE(audio_device(/*stream_index=*/0u).has_value());
   EXPECT_TRUE(video_device(/*stream_index=*/0u).has_value());
+}
+
+TEST_F(MediaStreamDispatcherHostTest,
+       GenerateStreamsEagerlyBindsDeviceObserver) {
+  // Clear the pre-bound test observer set in SetUp() so GenerateStreams() must
+  // bind MediaStreamDeviceObserver itself.
+  host_->ResetDeviceObserver();
+  ASSERT_FALSE(host_->IsDeviceObserverBound());
+
+  mojo::ScopedMessagePipeHandle bound_observer_pipe;
+  service_manager::InterfaceProvider::TestApi interface_provider_test_api(
+      main_rfh()->GetRemoteInterfaces());
+  interface_provider_test_api.SetBinderForName(
+      blink::mojom::MediaStreamDeviceObserver::Name_,
+      base::BindLambdaForTesting([&](mojo::ScopedMessagePipeHandle handle) {
+        bound_observer_pipe = std::move(handle);
+      }));
+
+  stub_video_device_ids_.emplace_back(kRegularVideoDeviceId2);
+  blink::StreamControls controls(false, true);
+  blink::mojom::StreamDevicesSet expectation;
+  expectation.stream_devices.emplace_back(blink::mojom::StreamDevices::New(
+      std::nullopt, blink::MediaStreamDevice()));
+  SetupFakeUI(true);
+  GenerateStreamAndWaitForResult(kPageRequestId, controls, expectation);
+
+  EXPECT_TRUE(host_->IsDeviceObserverBound());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return bound_observer_pipe.is_valid(); }));
+  EXPECT_TRUE(host_->IsDeviceObserverConnected());
+
+  interface_provider_test_api.ClearBinderForName(
+      blink::mojom::MediaStreamDeviceObserver::Name_);
 }
 
 TEST_F(MediaStreamDispatcherHostTest, GenerateStreamWithAudioOnly) {

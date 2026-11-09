@@ -234,37 +234,74 @@ TEST_F(MediaStreamDeviceObserverTest, OnDeviceChangedChangesDeviceAfterRebind) {
   AddVideoStream(kStreamLabel, initial_device);
 
   // Call the |observer_|'s bind callback and check that its internal
-  // |receiver_| is bound.
-  mojo::Remote<mojom::blink::MediaStreamDeviceObserver> remote_observer;
-  EXPECT_FALSE(observer_->receiver_.is_bound());
+  // |receivers_| set is populated.
+  mojo::Remote<mojom::blink::MediaStreamDeviceObserver> remote_observer1;
+  EXPECT_TRUE(observer_->receivers_.empty());
   observer_->BindMediaStreamDeviceObserverReceiver(
-      remote_observer.BindNewPipeAndPassReceiver());
-  EXPECT_TRUE(observer_->receiver_.is_bound());
+      remote_observer1.BindNewPipeAndPassReceiver());
+  EXPECT_FALSE(observer_->receivers_.empty());
 
   // Send an OnDeviceChanged() message using the remote mojo pipe, and verify
   // that the device is changed.
   blink::MediaStreamDevice changed_device =
       blink::MediaStreamDevice(kDeviceType, "video_device-123", kDeviceName);
-  remote_observer->OnDeviceChanged(kStreamLabel, initial_device,
-                                   changed_device);
+  remote_observer1->OnDeviceChanged(kStreamLabel, initial_device,
+                                    changed_device);
   base::RunLoop().RunUntilIdle();
   blink::MediaStreamDevices video_devices =
       observer_->GetNonScreenCaptureDevices();
   ASSERT_EQ(video_devices.size(), 1u);
   EXPECT_EQ(video_devices[0].id, "video_device-123");
 
-  // Reset the remote end of the mojo pipe, then rebind it, and verify that
-  // OnDeviceChanged() changes the device after rebind.
-  remote_observer.reset();
+  // Bind a second remote (e.g., a second MediaStreamDispatcherHost in the same
+  // frame) and verify that the first remote stays connected and both remotes
+  // can deliver OnDeviceChanged() notifications concurrently.
+  mojo::Remote<mojom::blink::MediaStreamDeviceObserver> remote_observer2;
   observer_->BindMediaStreamDeviceObserverReceiver(
-      remote_observer.BindNewPipeAndPassReceiver());
-  remote_observer->OnDeviceChanged(
-      kStreamLabel, changed_device,
-      blink::MediaStreamDevice(kDeviceType, "video_device-456", kDeviceName));
+      remote_observer2.BindNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(remote_observer1.is_connected());
+  EXPECT_TRUE(remote_observer2.is_connected());
+  EXPECT_EQ(observer_->receivers_.size(), 2u);
+
+  blink::MediaStreamDevice changed_device2 =
+      blink::MediaStreamDevice(kDeviceType, "video_device-456", kDeviceName);
+  remote_observer2->OnDeviceChanged(kStreamLabel, changed_device,
+                                    changed_device2);
   base::RunLoop().RunUntilIdle();
   video_devices = observer_->GetNonScreenCaptureDevices();
   ASSERT_EQ(video_devices.size(), 1u);
   EXPECT_EQ(video_devices[0].id, "video_device-456");
+
+  blink::MediaStreamDevice changed_device3 =
+      blink::MediaStreamDevice(kDeviceType, "video_device-789", kDeviceName);
+  remote_observer1->OnDeviceChanged(kStreamLabel, changed_device2,
+                                    changed_device3);
+  base::RunLoop().RunUntilIdle();
+  video_devices = observer_->GetNonScreenCaptureDevices();
+  ASSERT_EQ(video_devices.size(), 1u);
+  EXPECT_EQ(video_devices[0].id, "video_device-789");
+
+  // Resetting one remote leaves the other active; resetting and rebinding also
+  // continues to deliver notifications.
+  remote_observer1.reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer_->receivers_.size(), 1u);
+  EXPECT_TRUE(remote_observer2.is_connected());
+
+  remote_observer2.reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(observer_->receivers_.empty());
+
+  observer_->BindMediaStreamDeviceObserverReceiver(
+      remote_observer1.BindNewPipeAndPassReceiver());
+  remote_observer1->OnDeviceChanged(
+      kStreamLabel, changed_device3,
+      blink::MediaStreamDevice(kDeviceType, "video_device-000", kDeviceName));
+  base::RunLoop().RunUntilIdle();
+  video_devices = observer_->GetNonScreenCaptureDevices();
+  ASSERT_EQ(video_devices.size(), 1u);
+  EXPECT_EQ(video_devices[0].id, "video_device-000");
 }
 
 TEST_F(MediaStreamDeviceObserverTest, OnDeviceRequestStateChange) {

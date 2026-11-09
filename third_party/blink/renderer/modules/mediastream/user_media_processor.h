@@ -327,6 +327,11 @@ class MODULES_EXPORT UserMediaProcessor
       HashMap<String, base::UnguessableToken>
           requested_audio_capture_session_ids = {});
 
+  // Initializes the renderer-side observer if not yet created. Safe to call
+  // repeatedly.
+  void EnsureMediaStreamDeviceObserverInitialized();
+
+  // Accessor; initializes lazily as a fallback.
   WebMediaStreamDeviceObserver* GetMediaStreamDeviceObserver();
 
   MediaDevices* GetMediaDevices() const;

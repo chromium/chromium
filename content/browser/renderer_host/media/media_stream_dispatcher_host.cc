@@ -323,6 +323,12 @@ void MediaStreamDispatcherHost::OnZoomLevelChange(
 void MediaStreamDispatcherHost::OnWebContentsFocused() {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M152);
 
+  if (pending_requests_.empty()) {
+    return;
+  }
+
+  EnsureMediaStreamDeviceObserverBound();
+
   while (!pending_requests_.empty()) {
     std::unique_ptr<PendingAccessRequest> request =
         std::move(pending_requests_.front());
@@ -425,12 +431,11 @@ void MediaStreamDispatcherHost::CheckStreamsPermissionResultReceived(
   std::move(get_salt_and_origin_cb).Run(std::move(got_salt_and_origin));
 }
 
-const mojo::Remote<blink::mojom::MediaStreamDeviceObserver>&
-MediaStreamDispatcherHost::GetMediaStreamDeviceObserver() {
+void MediaStreamDispatcherHost::EnsureMediaStreamDeviceObserverBound() {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M152);
 
   if (media_stream_device_observer_) {
-    return media_stream_device_observer_;
+    return;
   }
 
   auto dispatcher_receiver =
@@ -442,7 +447,6 @@ MediaStreamDispatcherHost::GetMediaStreamDeviceObserver() {
       FROM_HERE,
       base::BindOnce(&BindMediaStreamDeviceObserverReceiver,
                      render_frame_host_id_, std::move(dispatcher_receiver)));
-  return media_stream_device_observer_;
 }
 
 void MediaStreamDispatcherHost::OnMediaStreamDeviceObserverConnectionError() {
@@ -539,6 +543,12 @@ void MediaStreamDispatcherHost::DoGenerateStreams(
         salt_and_origin));
     return;
   }
+
+  // Ensure the observer pipe is bound on the UI thread before the stream starts
+  // so that subsequent notifications (e.g., OnDeviceChanged) do not have to
+  // wait for lazy UI-thread binding and race with direct IO-thread capture
+  // teardown.
+  EnsureMediaStreamDeviceObserverBound();
 
   media_stream_manager_->GenerateStreams(
       render_frame_host_id_, requester_id_, page_request_id, controls,
@@ -814,6 +824,8 @@ void MediaStreamDispatcherHost::DoGetOpenDevice(
                             nullptr);
     return;
   }
+
+  EnsureMediaStreamDeviceObserverBound();
 
   media_stream_manager_->GetOpenDevice(
       session_id, transfer_id, render_frame_host_id_, requester_id_,

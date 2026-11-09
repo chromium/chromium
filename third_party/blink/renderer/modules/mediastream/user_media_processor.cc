@@ -1240,6 +1240,11 @@ void UserMediaProcessor::GenerateStreamForCurrentRequestInfo(
   // Capture trace for only non-transferred tracks.
   current_request_info_->StartTrace("GenerateStreams");
 
+  // Ensure the MediaStreamDeviceObserver is initialized and registered in the
+  // frame's InterfaceRegistry before requesting stream generation so that the
+  // browser can bind it eagerly.
+  EnsureMediaStreamDeviceObserverInitialized();
+
   // If SessionId is set, this request is for a transferred MediaStreamTrack and
   // GetOpenDevice() should be called.
   if (current_request_info_->request() &&
@@ -1265,6 +1270,10 @@ void UserMediaProcessor::GenerateStreamForCurrentRequestInfo(
                  WrapWeakPersistent(this),
                  current_request_info_->request_id()));
   }
+}
+
+void UserMediaProcessor::EnsureMediaStreamDeviceObserverInitialized() {
+  GetMediaStreamDeviceObserver();
 }
 
 WebMediaStreamDeviceObserver*
