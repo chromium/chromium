@@ -9,6 +9,11 @@ pub type shmatt_t = c_ulong;
 pub type mqd_t = c_int;
 pub type msgqnum_t = c_ulong;
 pub type msglen_t = c_ulong;
+// nfds_t is 32-bit on wasm64 since 6.0.1:
+// https://github.com/emscripten-core/emscripten/pull/27115
+#[cfg(not(emscripten_nfds_is_ulong))]
+pub type nfds_t = c_uint;
+#[cfg(emscripten_nfds_is_ulong)]
 pub type nfds_t = c_ulong;
 pub type nl_item = c_int;
 pub type idtype_t = c_uint;
@@ -23,8 +28,17 @@ pub type off_t = i64;
 pub type blkcnt_t = i32;
 
 pub type blksize_t = c_long;
-pub type fsblkcnt_t = u32;
-pub type fsfilcnt_t = u32;
+cfg_if! {
+    // `fsblkcnt_t` and `fsfilcnt_t` are 64-bit since v4.0.12, see:
+    // https://github.com/emscripten-core/emscripten/pull/24769
+    if #[cfg(not(emscripten_fsblkcnt_is_32bit))] {
+        pub type fsblkcnt_t = u64;
+        pub type fsfilcnt_t = u64;
+    } else {
+        pub type fsblkcnt_t = u32;
+        pub type fsfilcnt_t = u32;
+    }
+}
 pub type rlim_t = u64;
 pub type nlink_t = u32;
 
@@ -212,7 +226,12 @@ s! {
     }
 
     pub struct sigset_t {
-        __val: [c_ulong; 32],
+        // sigset_t is smaller since Emscripten v5.0.5:
+        // https://github.com/emscripten-core/emscripten/pull/26574
+        #[cfg(not(emscripten_sigset_large))]
+        __val: [c_ulong; 2],
+        #[cfg(emscripten_sigset_large)]
+        __val: [c_ulong; 128 / size_of::<c_long>()],
     }
 
     pub struct msghdr {

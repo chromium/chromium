@@ -1,6 +1,6 @@
 //! Raw FFI bindings to platform system libraries.
 //!
-//! # Documentation
+//! # API Documentation
 //!
 //! `libc` only provides the bindings, not instructions on how to use them. For this, please refer
 //! to the relevant C documentation.

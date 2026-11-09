@@ -1158,6 +1158,11 @@ extern "C" {
     pub fn pthread_cond_destroy(cond: *mut pthread_cond_t) -> c_int;
     pub fn pthread_condattr_init(attr: *mut pthread_condattr_t) -> c_int;
     pub fn pthread_condattr_destroy(attr: *mut pthread_condattr_t) -> c_int;
+    pub fn pthread_condattr_setclock(attr: *mut pthread_condattr_t, clock_id: clockid_t) -> c_int;
+    pub fn pthread_condattr_getclock(
+        attr: *const pthread_condattr_t,
+        clock_id: *mut clockid_t,
+    ) -> c_int;
     pub fn pthread_condattr_setpshared(attr: *mut pthread_condattr_t, b: c_int) -> c_int;
     pub fn pthread_condattr_getpshared(attr: *const pthread_condattr_t, b: *mut c_int) -> c_int;
 

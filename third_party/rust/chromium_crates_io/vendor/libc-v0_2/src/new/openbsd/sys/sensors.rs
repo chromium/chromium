@@ -69,3 +69,12 @@ s! {
         pub flags: c_int,
     }
 }
+
+s! {
+    pub struct sensordev {
+        pub num: c_int,
+        pub xname: [c_char; 16],
+        pub maxnumt: [c_int; SENSOR_MAX_TYPES as size_t],
+        pub sensors_count: c_int,
+    }
+}

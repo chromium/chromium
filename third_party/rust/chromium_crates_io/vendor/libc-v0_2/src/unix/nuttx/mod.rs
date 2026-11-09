@@ -491,6 +491,7 @@ pub const O_NOATIME: i32 = 0x40000;
 pub const O_CLOEXEC: i32 = 0x80000;
 pub const O_ACCMODE: i32 = 0x3;
 pub const AT_FDCWD: i32 = -100;
+pub const AT_SYMLINK_NOFOLLOW: i32 = 0x100;
 pub const AT_REMOVEDIR: i32 = 0x200;
 
 // sys/types.h

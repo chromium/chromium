@@ -251,6 +251,7 @@ cfg_if! {
         pub use net::if_mib::*;
         pub use net::route::*;
         pub use netinet6::in6_var::*;
+        pub use sys::elf_common::*;
         pub use sys::file::*;
         pub use sys::ioccom::*;
         pub use sys::socket::*;

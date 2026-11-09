@@ -1,6 +1,6 @@
 [package]
 name = "libc"
-version = "0.2.190"
+version = "0.2.191"
 keywords = ["libc", "ffi", "bindings", "operating", "system"]
 categories = ["external-ffi-bindings", "no-std", "os"]
 include = [

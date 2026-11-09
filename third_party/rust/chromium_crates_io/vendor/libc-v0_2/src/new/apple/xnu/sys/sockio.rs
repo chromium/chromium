@@ -22,8 +22,7 @@ pub const SIOCSIFNETMASK: c_ulong = _IOW::<crate::ifreq>('i' as c_ulong, 22);
 pub const SIOCGIFMETRIC: c_ulong = _IOWR::<crate::ifreq>('i' as c_ulong, 23);
 pub const SIOCSIFMETRIC: c_ulong = _IOW::<crate::ifreq>('i' as c_ulong, 24);
 pub const SIOCDIFADDR: c_ulong = _IOW::<crate::ifreq>('i' as c_ulong, 25);
-// struct ifaliasreq
-pub const SIOCAIFADDR: c_ulong = _IOC(IOC_IN, 'i' as c_ulong, 26, 64);
+pub const SIOCAIFADDR: c_ulong = _IOW::<crate::ifaliasreq>('i' as c_ulong, 26);
 pub const SIOCGIFDSTADDR: c_ulong = _IOWR::<crate::ifreq>('i' as c_ulong, 34);
 pub const SIOCGIFBRDADDR: c_ulong = _IOWR::<crate::ifreq>('i' as c_ulong, 35);
 pub const SIOCGIFCONF: c_ulong = _IOWR::<crate::ifconf>('i' as c_ulong, 36);
@@ -47,8 +46,7 @@ pub const SIOCRSLVMULTI: c_ulong = _IOC(IOC_INOUT, 'i' as c_ulong, 59, 16);
 pub const SIOCSIFLLADDR: c_ulong = _IOW::<crate::ifreq>('i' as c_ulong, 60);
 // struct ifstat
 pub const SIOCGIFSTATUS: c_ulong = _IOC(IOC_INOUT, 'i' as c_ulong, 61, 817);
-// struct ifaliasreq
-pub const SIOCSIFPHYADDR: c_ulong = _IOC(IOC_IN, 'i' as c_ulong, 62, 64);
+pub const SIOCSIFPHYADDR: c_ulong = _IOW::<crate::ifaliasreq>('i' as c_ulong, 62);
 pub const SIOCGIFPSRCADDR: c_ulong = _IOWR::<crate::ifreq>('i' as c_ulong, 63);
 pub const SIOCGIFPDSTADDR: c_ulong = _IOWR::<crate::ifreq>('i' as c_ulong, 64);
 pub const SIOCDIFPHYADDR: c_ulong = _IOW::<crate::ifreq>('i' as c_ulong, 65);

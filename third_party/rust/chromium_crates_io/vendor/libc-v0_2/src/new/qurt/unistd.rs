@@ -261,4 +261,7 @@ extern "C" {
     // System configuration
     pub fn sysconf(name: c_int) -> c_long;
     pub fn pathconf(path: *const c_char, name: c_int) -> c_long;
+
+    // Terminal functions
+    pub fn isatty(fd: c_int) -> c_int;
 }

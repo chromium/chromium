@@ -2839,6 +2839,12 @@ pub const XATTR_CREATE: c_int = 0x1;
 pub const XATTR_REPLACE: c_int = 0x2;
 
 // spawn.h
+pub const POSIX_SPAWN_RESETIDS: c_short = 0x01;
+pub const POSIX_SPAWN_SETPGROUP: c_short = 0x02;
+pub const POSIX_SPAWN_SETSIGDEF: c_short = 0x04;
+pub const POSIX_SPAWN_SETSIGMASK: c_short = 0x08;
+pub const POSIX_SPAWN_SETSCHEDPARAM: c_short = 0x10;
+pub const POSIX_SPAWN_SETSCHEDULER: c_short = 0x20;
 pub const POSIX_SPAWN_USEVFORK: c_int = 64;
 pub const POSIX_SPAWN_SETSID: c_int = 128;
 

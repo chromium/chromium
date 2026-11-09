@@ -665,6 +665,14 @@ pub const SIGEV_NONE: c_int = 0;
 pub const SIGEV_SIGNAL: c_int = 1;
 pub const SIGEV_THREAD: c_int = 2;
 
+pub const AI_PASSIVE: c_int = 0x001;
+pub const AI_CANONNAME: c_int = 0x002;
+pub const AI_NUMERICHOST: c_int = 0x004;
+pub const AI_NUMERICSERV: c_int = 0x008;
+pub const AI_ALL: c_int = 0x100;
+pub const AI_ADDRCONFIG: c_int = 0x400;
+pub const AI_V4MAPPED: c_int = 0x800;
+
 pub const EAI_AGAIN: c_int = 2;
 pub const EAI_BADFLAGS: c_int = 3;
 pub const EAI_FAIL: c_int = 4;
@@ -1167,6 +1175,14 @@ pub const SCM_RIGHTS: c_int = 0x01;
 pub const SOMAXCONN: c_int = 32;
 
 pub const NI_MAXHOST: size_t = 1025;
+pub const NI_MAXSERV: size_t = 32;
+
+pub const NI_NOFQDN: c_int = 0x01;
+pub const NI_NUMERICHOST: c_int = 0x02;
+pub const NI_NAMEREQD: c_int = 0x04;
+pub const NI_NUMERICSERV: c_int = 0x08;
+pub const NI_DGRAM: c_int = 0x10;
+pub const NI_NUMERICSCOPE: c_int = 0x40;
 
 pub const WNOHANG: c_int = 0x01;
 pub const WUNTRACED: c_int = 0x02;

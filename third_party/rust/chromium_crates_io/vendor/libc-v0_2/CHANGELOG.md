@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.2.191](https://github.com/rust-lang/libc/compare/0.2.190...0.2.191) - 2026-10-16
+
+### Support
+
+- Emscripten: Support v4.0.12 to v6.0.11 ([#5610](https://github.com/rust-lang/libc/pull/5610))
+
+### Added
+
+- Apple: Add `F_SETNOSIGPIPE` and `F_GETNOSIGPIPE` ([#5609](https://github.com/rust-lang/libc/pull/5609))
+- Apple: add `ifaliasreq` and `in6_aliasreq` ([#5557](https://github.com/rust-lang/libc/pull/5557))
+- FreeBSD: Add `PT_*` constants ([#5625](https://github.com/rust-lang/libc/pull/5625))
+- Haiku: Add `AI_*` and `NI_*` constants from netdb.h ([#5585](https://github.com/rust-lang/libc/pull/5585))
+- Hurd: Add `POSIX_SPAWN_*` flags ([#5578](https://github.com/rust-lang/libc/pull/5578))
+- NuttX: Add `AT_SYMLINK_NOFOLLOW` ([#5614](https://github.com/rust-lang/libc/pull/5614))
+- OpenBSD: Add `sensordev` ([#5534](https://github.com/rust-lang/libc/pull/5534))
+- QuRT: Add `isatty` ([#5618](https://github.com/rust-lang/libc/pull/5618))
+- WASI: Add `pthread_condattr_{get,set}clock` ([#5626](https://github.com/rust-lang/libc/pull/5626))
+
+### Fixed
+
+- FreeBSD-aarch64: Fix `gpregs` and `fpregs` ([#5603](https://github.com/rust-lang/libc/pull/5603))
+
+### Changed
+
+- AIX: Restore 'c_ulong' as the type of 'statvfs.f_fsid'. ([#5616](https://github.com/rust-lang/libc/pull/5616))
+- Android: Make `prop_info` an extern type ([#5561](https://github.com/rust-lang/libc/pull/5561))
+- Apple: Mach API is now available on non-MacOS targets again. This should resolve some issues building ecosystem crates. ([#5612](https://github.com/rust-lang/libc/pulls/5612)), ([#5636](https://github.com/rust-lang/libc/pull/5636))
+- FreeBSD: Add back `NOTE_PCTRLMASK` with a deprecation warning ([#5600](https://github.com/rust-lang/libc/pull/5600))
+
+
 ## [0.2.190](https://github.com/rust-lang/libc/compare/0.2.189...0.2.190) - 2026-10-02
 
 There is now a single config for enabling 64-bit `time_t`: `libc_unstable_time64`. This can be set

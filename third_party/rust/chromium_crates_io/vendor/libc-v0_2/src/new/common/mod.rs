@@ -35,5 +35,5 @@ pub(crate) mod netbsd_like;
 #[cfg(any(target_os = "illumos", target_os = "solaris"))]
 pub(crate) mod solarish;
 
-#[cfg(target_family = "unix")]
+#[cfg(any(target_family = "unix", target_os = "qurt"))]
 pub(crate) mod posix;

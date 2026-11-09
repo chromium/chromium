@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.65"
 name = "libc"
-version = "0.2.190"
+version = "0.2.191"
 build = "build.rs"
 include = [
     "/src",

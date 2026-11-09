@@ -21,6 +21,9 @@ enum Cfg {
     LibcPauthtest,
 
     EmscriptenOldStatAbi,
+    EmscriptenFsblkcntIs32bit,
+    EmscriptenSigsetLarge,
+    EmscriptenNfdsIsULong,
 
     /// Should be enabled by users if esp-idf (>=6.0) is build with picolibc instead of newlib. Not
     /// set by `libc` itself.
@@ -63,6 +66,9 @@ enum Cfg {
 const ALLOWED_CFGS: &[Cfg] = &[
     Cfg::LibcDenyWarnings,
     Cfg::EmscriptenOldStatAbi,
+    Cfg::EmscriptenFsblkcntIs32bit,
+    Cfg::EmscriptenSigsetLarge,
+    Cfg::EmscriptenNfdsIsULong,
     Cfg::EspidfPicolibc,
     Cfg::EspidfTime32,
     Cfg::Freebsd10,
@@ -88,6 +94,9 @@ impl fmt::Display for Cfg {
         f.write_str(match self {
             Cfg::LibcDenyWarnings => "libc_deny_warnings",
             Cfg::EmscriptenOldStatAbi => "emscripten_old_stat_abi",
+            Cfg::EmscriptenFsblkcntIs32bit => "emscripten_fsblkcnt_is_32bit",
+            Cfg::EmscriptenSigsetLarge => "emscripten_sigset_large",
+            Cfg::EmscriptenNfdsIsULong => "emscripten_nfds_is_ulong",
             Cfg::EspidfPicolibc => "espidf_picolibc",
             Cfg::EspidfTime32 => "espidf_time32",
             Cfg::Freebsd10 => "freebsd10",
@@ -214,10 +223,23 @@ fn main() {
     }
 
     if target_os == "emscripten" {
-        match emcc_version_code() {
-            Some(v) if (v < 30142) => cfgs.push(Cfg::EmscriptenOldStatAbi),
-            // Non-Emscripten or version >= 3.1.42.
-            _ => (),
+        if let Some(v) = emcc_version_code() {
+            // 3.1.42
+            if v < 30142 {
+                cfgs.push(Cfg::EmscriptenOldStatAbi);
+            }
+            // 4.0.12
+            if v < 40012 {
+                cfgs.push(Cfg::EmscriptenFsblkcntIs32bit);
+            }
+            // 5.0.5
+            if v < 50005 {
+                cfgs.push(Cfg::EmscriptenSigsetLarge);
+            }
+            // 6.0.1
+            if v < 60001 {
+                cfgs.push(Cfg::EmscriptenNfdsIsULong);
+            }
         }
     }
 
@@ -452,7 +474,10 @@ fn validate_cfg(list: &[Cfg], target_env: &str, target_os: &str, target_ptr_widt
             Cfg::EspidfPicolibc => (),
             Cfg::EspidfTime32 => (),
 
-            Cfg::EmscriptenOldStatAbi => {
+            Cfg::EmscriptenOldStatAbi
+            | Cfg::EmscriptenFsblkcntIs32bit
+            | Cfg::EmscriptenSigsetLarge
+            | Cfg::EmscriptenNfdsIsULong => {
                 assert_eq!(
                     target_os, "emscripten",
                     "{cfg:?} set on non-freebsd platform"

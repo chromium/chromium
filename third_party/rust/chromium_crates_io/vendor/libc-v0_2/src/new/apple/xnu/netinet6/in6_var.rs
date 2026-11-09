@@ -5,6 +5,17 @@
 use crate::prelude::*;
 use crate::sys::ioccom::*;
 
+s2! {
+    pub struct in6_aliasreq {
+        pub ifra_name: [c_char; crate::IFNAMSIZ],
+        pub ifra_addr: crate::sockaddr_in6,
+        pub ifra_dstaddr: crate::sockaddr_in6,
+        pub ifra_prefixmask: crate::sockaddr_in6,
+        pub ifra_flags: c_int,
+        pub ifra_lifetime: crate::in6_addrlifetime,
+    }
+}
+
 pub const IN6_IFF_ANYCAST: c_int = 0x0001;
 pub const IN6_IFF_TENTATIVE: c_int = 0x0002;
 pub const IN6_IFF_DUPLICATED: c_int = 0x0004;
@@ -19,4 +30,7 @@ pub const IN6_IFF_SECURED: c_int = 0x0400;
 pub const IN6_IFF_CLAT46: c_int = 0x1000;
 pub const IN6_IFF_NOPFX: c_int = 0x8000;
 
+pub const SIOCDIFADDR_IN6: c_ulong = _IOW::<crate::in6_ifreq>('i' as c_ulong, 25);
+pub const SIOCAIFADDR_IN6: c_ulong = _IOW::<in6_aliasreq>('i' as c_ulong, 26);
+pub const SIOCSIFPHYADDR_IN6: c_ulong = _IOW::<in6_aliasreq>('i' as c_ulong, 62);
 pub const SIOCGIFAFLAG_IN6: c_ulong = _IOWR::<crate::in6_ifreq>('i' as c_ulong, 73);

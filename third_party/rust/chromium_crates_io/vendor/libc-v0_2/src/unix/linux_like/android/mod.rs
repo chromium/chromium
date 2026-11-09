@@ -63,6 +63,10 @@ pub type eventfd_t = u64;
 pub type posix_spawn_file_actions_t = *mut c_void;
 pub type posix_spawnattr_t = *mut c_void;
 
+extern_ty! {
+    pub type prop_info;
+}
+
 s! {
     pub struct stack_t {
         pub ss_sp: *mut c_void,
@@ -595,12 +599,6 @@ s! {
         pub absmin: [crate::__s32; ABS_CNT],
         pub absfuzz: [crate::__s32; ABS_CNT],
         pub absflat: [crate::__s32; ABS_CNT],
-    }
-
-    pub struct prop_info {
-        __name: [c_char; 32],
-        __serial: c_uint,
-        __value: [c_char; 92],
     }
 
     // linux/futex.h
