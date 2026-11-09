@@ -327,7 +327,7 @@ class WaylandWindow : public PlatformWindow,
 
   // Returns the size of the root surface in Wayland DIP (i.e. not scaled by
   // `ui_scale`) for `state`: its window geometry plus decoration insets.
-  virtual gfx::Size GetSurfaceSizeInWaylandDIP(
+  gfx::Size GetSurfaceSizeInWaylandDIP(
       const PlatformWindowDelegate::State& state) const;
 
   // Returns the origin of the window geometry in Wayland DIP for `state`, i.e.
@@ -466,10 +466,9 @@ class WaylandWindow : public PlatformWindow,
   // Convert between the window geometry size in Wayland DIP (see
   // `PlatformWindowDelegate::State::geometry_size_dip`) and the size of
   // `bounds_dip` in UI DIP, which includes decoration insets.
-  virtual gfx::Size GeometrySizeToBoundsSizeDIP(
-      const gfx::Size& geometry_size_dip,
-      PlatformWindowState window_state,
-      float ui_scale) const;
+  gfx::Size GeometrySizeToBoundsSizeDIP(const gfx::Size& geometry_size_dip,
+                                        PlatformWindowState window_state,
+                                        float ui_scale) const;
   gfx::Size BoundsSizeToGeometrySizeDIP(const gfx::Size& bounds_size_dip,
                                         PlatformWindowState window_state,
                                         float ui_scale) const;

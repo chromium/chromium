@@ -355,35 +355,8 @@ void WaylandPopup::SetWindowGeometry(
     return;
   }
 
-  const auto insets_dip = delegate()->CalculateInsetsInDIP(state.window_state);
-  xdg_popup_->SetWindowGeometry(
-      gfx::Rect(gfx::Point(insets_dip.left(), insets_dip.top()),
-                state.geometry_size_dip));
-}
-
-gfx::Size WaylandPopup::GeometrySizeToBoundsSizeDIP(
-    const gfx::Size& geometry_size_dip,
-    PlatformWindowState window_state,
-    float ui_scale) const {
-  // Unlike toplevels, decoration insets are added after applying `ui_scale`.
-  gfx::Size size = gfx::ScaleToEnclosingRectIgnoringError(
-                       gfx::Rect(geometry_size_dip), 1.f / ui_scale)
-                       .size();
-  const gfx::Insets insets = delegate()->CalculateInsetsInDIP(window_state);
-  size.Enlarge(insets.width(), insets.height());
-  return size;
-}
-
-gfx::Size WaylandPopup::GetSurfaceSizeInWaylandDIP(
-    const PlatformWindowDelegate::State& state) const {
-  if (delegate()->CalculateInsetsInDIP(state.window_state).IsEmpty()) {
-    return state.geometry_size_dip;
-  }
-  // The insets are in UI DIP, so the surface size can't be derived exactly
-  // from the geometry size.
-  return gfx::ScaleToEnclosingRectIgnoringError(
-             gfx::Rect(state.bounds_dip.size()), state.ui_scale)
-      .size();
+  xdg_popup_->SetWindowGeometry(gfx::Rect(
+      GetWindowGeometryOriginInWaylandDIP(state), state.geometry_size_dip));
 }
 
 void WaylandPopup::AckConfigure(uint32_t serial) {

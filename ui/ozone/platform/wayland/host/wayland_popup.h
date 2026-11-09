@@ -38,11 +38,6 @@ class WaylandPopup final : public WaylandWindow {
                     PlatformWindowDelegate::State* state) override;
   WaylandPopup* AsWaylandPopup() override;
   void SetWindowGeometry(const PlatformWindowDelegate::State& state) override;
-  gfx::Size GeometrySizeToBoundsSizeDIP(const gfx::Size& geometry_size_dip,
-                                        PlatformWindowState window_state,
-                                        float ui_scale) const override;
-  gfx::Size GetSurfaceSizeInWaylandDIP(
-      const PlatformWindowDelegate::State& state) const override;
   void UpdateWindowMask() override;
   base::WeakPtr<WaylandWindow> AsWeakPtr() override;
 

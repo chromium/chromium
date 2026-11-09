@@ -6304,6 +6304,67 @@ TEST_P(WaylandWindowTest, UiScale_DecorationInsets) {
   VerifyAndClearExpectations();
 }
 
+// Verifies that popup window geometry offsets also scale UI-DIP decoration
+// insets by ui_scale.
+TEST_P(WaylandWindowTest, UiScale_PopupDecorationInsets) {
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+
+  connection_->window_manager()->SetFontScale(1.25f);
+  WaylandTestBase::SyncDisplay();
+  VerifyAndClearExpectations();
+
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> menu_delegate(
+      connection_.get());
+  ON_CALL(menu_delegate, CalculateInsetsInDIP(PlatformWindowState::kNormal))
+      .WillByDefault(Return(gfx::Insets(10)));
+  ui::OwnedWindowAnchor anchor{
+      .anchor_rect = gfx::Rect(100, 100, 20, 20),
+      .anchor_position = OwnedWindowAnchorPosition::kBottomRight,
+      .anchor_gravity = OwnedWindowAnchorGravity::kBottomLeft};
+  EXPECT_CALL(menu_delegate, GetOwnedWindowAnchorAndRectInDIP())
+      .WillOnce(Return(anchor));
+
+  auto menu_window = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::Rect(100, 100, 40, 80), &menu_delegate,
+      window_->GetWidget());
+  ASSERT_TRUE(menu_window);
+  const uint32_t menu_surface_id =
+      menu_window->root_surface()->get_surface_id();
+
+  constexpr uint32_t kConfigureSerial = 57u;
+  PostToServerAndWait(
+      [id = menu_surface_id](wl::TestWaylandServerThread* server) {
+        auto* surface = server->GetObject<wl::MockSurface>(id);
+        ASSERT_TRUE(surface);
+        auto* xdg_surface = surface->xdg_surface();
+        ASSERT_TRUE(xdg_surface);
+        ASSERT_TRUE(xdg_surface->xdg_popup()->resource());
+        xdg_popup_send_configure(xdg_surface->xdg_popup()->resource(), 100, 100,
+                                 100, 200);
+        xdg_surface_send_configure(xdg_surface->resource(), kConfigureSerial);
+      });
+
+  // 100x200 Wayland DIP geometry / 1.25 = 80x160 UI DIP + 20 UI DIP insets =
+  // 100x180 UI DIP bounds -> 125x225 px.
+  EXPECT_EQ(gfx::Size(100, 180),
+            menu_window->applied_state().bounds_dip.size());
+  EXPECT_EQ(gfx::Size(125, 225), menu_window->applied_state().size_px);
+
+  PostToServerAndWait([menu_surface_id](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface =
+        server->GetObject<wl::MockSurface>(menu_surface_id);
+    ASSERT_TRUE(mock_surface->xdg_surface());
+    EXPECT_CALL(*mock_surface->xdg_surface(),
+                SetWindowGeometry(gfx::Rect(13, 13, 100, 200)));
+    EXPECT_CALL(*mock_surface->xdg_surface(),
+                AckConfigure(Eq(kConfigureSerial)));
+  });
+  CreateBufferAndPresentAsNewFrame(menu_window.get(), menu_delegate,
+                                   /*buffer_size=*/gfx::Size(125, 225),
+                                   /*buffer_scale=*/1.25f);
+  VerifyAndClearExpectations(menu_delegate, menu_surface_id);
+}
+
 TEST_P(WaylandWindowTest, UiScale_InitScaleAndBounds) {
   ASSERT_TRUE(connection_->IsUiScaleEnabled());
 
