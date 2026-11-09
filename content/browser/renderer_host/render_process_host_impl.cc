@@ -2438,7 +2438,8 @@ void RenderProcessHostImpl::BindFileSystemAccessManager(
                             // URL for workers instead of the origin as source
                             // url. This URL will be used for SafeBrowsing
                             // checks and for the Quarantine Service.
-                            storage_key.origin().GetURL(), GetDeprecatedID()),
+                            storage_key.origin().GetURL(), GetDeprecatedID(),
+                            storage_key.IsThirdPartyContext()),
                         std::move(receiver));
 }
 
@@ -2466,7 +2467,8 @@ void RenderProcessHostImpl::GetSandboxedFileSystemForBucket(
           // URL for workers instead of the origin as source url.
           // This URL will be used for SafeBrowsing checks and for
           // the Quarantine Service.
-          bucket.storage_key.origin().GetURL(), GetDeprecatedID()),
+          bucket.storage_key.origin().GetURL(), GetDeprecatedID(),
+          bucket.storage_key.IsThirdPartyContext()),
       bucket, directory_path_components, std::move(callback));
 }
 

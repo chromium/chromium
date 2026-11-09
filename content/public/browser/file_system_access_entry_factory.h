@@ -42,16 +42,20 @@ class CONTENT_EXPORT FileSystemAccessEntryFactory
         : storage_key(storage_key),
           url(url),
           frame_id(frame_id),
-          is_worker(is_worker) {}
+          is_worker(is_worker),
+          is_third_party_context(storage_key.IsThirdPartyContext()) {}
     // Used for frames that don't have an associated rfh (e.g. Service Workers,
     // Shared Workers).
     BindingContext(const blink::StorageKey& storage_key,
                    const GURL& url,
-                   int worker_process_id)
+                   int worker_process_id,
+                   bool is_third_party_context)
         : storage_key(storage_key),
           url(url),
           frame_id(worker_process_id, IPC::mojom::kRoutingIdNone),
-          is_worker(true) {}
+          is_worker(true),
+          is_third_party_context(is_third_party_context ||
+                                 storage_key.IsThirdPartyContext()) {}
     blink::StorageKey storage_key;
     GURL url;
     GlobalRenderFrameHostId frame_id;
@@ -60,6 +64,14 @@ class CONTENT_EXPORT FileSystemAccessEntryFactory
       // TODO(crbug.com/379869738) Remove GetUnsafeValue.
       return frame_id.child_id.GetUnsafeValue();
     }
+
+    // Whether this execution context should be treated as third-party for
+    // non-sandboxed File System Access checks. Always true when
+    // `storage_key.IsThirdPartyContext()` is true, and also true when the
+    // context is not fully first-party despite having a first-party
+    // `storage_key` (e.g., `SharedWorker`s created via
+    // `StorageAccessHandle.SharedWorker()` or with `sameSiteCookies: 'none'`).
+    bool is_third_party_context = false;
   };
 
   // Creates a new FileSystemAccessEntryPtr from the path to a file. Assumes the

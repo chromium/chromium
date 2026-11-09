@@ -4020,4 +4020,76 @@ TEST_F(FileSystemAccessManagerImplTest,
                 third_party_file.get()));
 }
 
+// Verifies that a native file handle deserialized with a first-party storage
+// key and redeemed in a worker `BindingContext` that has a first-party
+// `StorageKey` but `is_third_party_context = true` (such as a `SharedWorker`
+// created via `StorageAccessHandle.SharedWorker()` or with
+// `sameSiteCookies: 'none'`) is downgraded to `PermissionStatus::DENIED`,
+// while a sandboxed (OPFS) file handle retains `PermissionStatus::GRANTED`.
+TEST_F(
+    FileSystemAccessManagerImplTest,
+    DeserializeHandle_FirstPartyKey_RedeemedInStorageAccessWorkerContext_Denied) {
+  const PathInfo kTestPathInfo(dir_.GetPath().AppendASCII("foo"));
+  auto grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+      FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+      kTestPathInfo);
+
+  EXPECT_CALL(permission_context_,
+              GetReadPermissionGrant(kTestStorageKey.origin(), kTestPathInfo,
+                                     HandleType::kFile, testing::_))
+      .WillRepeatedly(testing::Return(grant));
+  EXPECT_CALL(permission_context_,
+              GetWritePermissionGrant(kTestStorageKey.origin(), kTestPathInfo,
+                                      HandleType::kFile, testing::_))
+      .WillRepeatedly(testing::Return(grant));
+
+  blink::mojom::FileSystemAccessEntryPtr entry =
+      manager_->CreateFileEntryFromPath(
+          binding_context_, kTestPathInfo,
+          FileSystemAccessPermissionContext::AccessTrigger::kOpen);
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
+      std::move(entry->entry_handle->get_file()));
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
+  handle->Transfer(token_remote.InitWithNewPipeAndPassReceiver());
+
+  // Serialize, then deserialize with the first-party storage key.
+  base::test::TestFuture<std::vector<uint8_t>> serialize_future;
+  manager_->SerializeHandle(
+      kTestStorageKey, std::move(token_remote),
+      serialize_future.GetCallback<const std::vector<uint8_t>&>());
+  std::vector<uint8_t> serialized = serialize_future.Take();
+  ASSERT_FALSE(serialized.empty());
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+      deserialized_token;
+  manager_->DeserializeHandle(
+      kTestStorageKey, serialized,
+      deserialized_token.InitWithNewPipeAndPassReceiver());
+
+  // Redeem the token in a worker BindingContext that has a first-party
+  // StorageKey but `is_third_party_context = true` (as bound by
+  // `SharedWorkerHost` when `DoesRequireCrossSiteRequestForCookies()` is true).
+  const FileSystemAccessManagerImpl::BindingContext saa_worker_context(
+      kTestStorageKey, kTestURL, binding_context_.process_id(),
+      /*is_third_party_context=*/true);
+  EXPECT_TRUE(saa_worker_context.storage_key.IsFirstPartyContext());
+  EXPECT_TRUE(saa_worker_context.is_third_party_context);
+
+  mojo::Remote<blink::mojom::FileSystemAccessManager> saa_worker_manager;
+  manager_->BindReceiver(saa_worker_context,
+                         saa_worker_manager.BindNewPipeAndPassReceiver());
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle> saa_worker_file;
+  saa_worker_manager->GetFileHandleFromToken(
+      std::move(deserialized_token),
+      saa_worker_file.BindNewPipeAndPassReceiver());
+
+  EXPECT_EQ(PermissionStatus::DENIED,
+            GetPermissionStatusSync(
+                blink::mojom::FileSystemAccessPermissionMode::kRead,
+                saa_worker_file.get()));
+  EXPECT_EQ(PermissionStatus::DENIED,
+            GetPermissionStatusSync(
+                blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+                saa_worker_file.get()));
+}
+
 }  // namespace content

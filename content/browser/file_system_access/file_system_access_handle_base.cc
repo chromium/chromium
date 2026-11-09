@@ -907,7 +907,7 @@ bool FileSystemAccessHandleBase::IsThirdPartyContext(
     const storage::FileSystemURL& url,
     const BindingContext& context) {
   return url.type() != storage::kFileSystemTypeTemporary &&
-         context.storage_key.IsThirdPartyContext();
+         context.is_third_party_context;
 }
 
 }  // namespace content

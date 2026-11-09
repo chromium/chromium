@@ -194,7 +194,8 @@ class FileSystemAccessDirectoryHandleImplTestBase : public testing::Test {
   const blink::StorageKey test_src_storage_key_ =
       blink::StorageKey::CreateFromStringForTesting("http://example.com/foo");
   const FileSystemAccessManagerImpl::BindingContext kBindingContext = {
-      test_src_storage_key_, test_src_url_, /*worker_process_id=*/1};
+      test_src_storage_key_, test_src_url_, /*worker_process_id=*/1,
+      /*is_third_party_context=*/false};
 
   BrowserTaskEnvironment task_environment_;
 
@@ -862,7 +863,8 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest,
       net::SchemefulSite(GURL("https://other.com/")),
       blink::mojom::AncestorChainBit::kCrossSite);
   const FileSystemAccessManagerImpl::BindingContext kThirdPartyBindingContext =
-      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1};
+      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1,
+       /*is_third_party_context=*/true};
   auto url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_.GetPath()));
   auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
       manager_.get(), kThirdPartyBindingContext, url,
@@ -887,7 +889,8 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest,
       net::SchemefulSite(GURL("https://other.com/")),
       blink::mojom::AncestorChainBit::kCrossSite);
   const FileSystemAccessManagerImpl::BindingContext kThirdPartyBindingContext =
-      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1};
+      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1,
+       /*is_third_party_context=*/true};
   auto url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_.GetPath()));
   auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
       manager_.get(), kThirdPartyBindingContext, url,
@@ -912,7 +915,8 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest,
       net::SchemefulSite(GURL("https://other.com/")),
       blink::mojom::AncestorChainBit::kCrossSite);
   const FileSystemAccessManagerImpl::BindingContext kThirdPartyBindingContext =
-      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1};
+      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1,
+       /*is_third_party_context=*/true};
   auto url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_.GetPath()));
   auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
       manager_.get(), kThirdPartyBindingContext, url,
@@ -944,7 +948,8 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest,
       net::SchemefulSite(GURL("https://other.com/")),
       blink::mojom::AncestorChainBit::kCrossSite);
   const FileSystemAccessManagerImpl::BindingContext kThirdPartyBindingContext =
-      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1};
+      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1,
+       /*is_third_party_context=*/true};
   auto url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_.GetPath()));
   auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
       manager_.get(), kThirdPartyBindingContext, url,
@@ -975,7 +980,8 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest,
       net::SchemefulSite(GURL("https://other.com/")),
       blink::mojom::AncestorChainBit::kCrossSite);
   const FileSystemAccessManagerImpl::BindingContext kThirdPartyBindingContext =
-      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1};
+      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1,
+       /*is_third_party_context=*/true};
   auto url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_.GetPath()));
   auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
       manager_.get(), kThirdPartyBindingContext, url,
@@ -1028,7 +1034,8 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest,
       net::SchemefulSite(GURL("https://other.com/")),
       blink::mojom::AncestorChainBit::kCrossSite);
   const FileSystemAccessManagerImpl::BindingContext kThirdPartyBindingContext =
-      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1};
+      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1,
+       /*is_third_party_context=*/true};
   auto url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_.GetPath()));
   auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
       manager_.get(), kThirdPartyBindingContext, url,

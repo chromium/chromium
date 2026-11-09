@@ -808,7 +808,12 @@ void SharedWorkerHost::CreateFileSystemAccessManager(
           // instead of the origin as source url. This URL will be used for
           // SafeBrowsing checks and for the Quarantine Service.
           GetWorkerStorageKey().origin().GetURL(),
-          GetProcessHost()->GetDeprecatedID()),
+          GetProcessHost()->GetDeprecatedID(),
+          // SharedWorkers created via StorageAccessHandle.SharedWorker() or
+          // with `sameSiteCookies: 'none'` (which cross-site SAA iframes can
+          // attach to) have a first-party StorageKey, but are not fully
+          // first-party contexts.
+          instance().DoesRequireCrossSiteRequestForCookies()),
       std::move(receiver));
 }
 

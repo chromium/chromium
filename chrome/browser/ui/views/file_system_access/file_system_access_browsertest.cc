@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
@@ -65,6 +68,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
@@ -599,7 +604,232 @@ class PersistedPermissionsFileSystemAccessBrowserTest
   PersistedPermissionsFileSystemAccessBrowserTest& operator=(
       const PersistedPermissionsFileSystemAccessBrowserTest&) = delete;
 
+ protected:
+  // Creates a local test file containing `"initial data"`, starts
+  // `https_server` with a `/shared_worker.js` handler, navigates the active tab
+  // to a first-party `b.test` page, and populates first-party IndexedDB and
+  // OPFS with a `readwrite`-granted `FileSystemFileHandle` and OPFS file.
+  void SetUpSharedWorkerTest(net::EmbeddedTestServer& https_server,
+                             base::FilePath& test_file) {
+    test_file = CreateTestFile("initial data");
+    ui::SelectFileDialog::SetFactory(
+        std::make_unique<SelectPredeterminedFileDialogFactory>(
+            std::vector<base::FilePath>{test_file}));
+
+    StartSharedWorkerHttpsServer(https_server);
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server.GetURL("b.test", "/title1.html")));
+    SelectFileAndPopulateFirstPartyStorage(
+        browser()->GetTabStripModel()->GetActiveWebContents(), test_file);
+  }
+
+  // Evaluates `worker_creation_expr` in `execution_target` to connect to a
+  // `SharedWorker` and installs `self.askWorker(cmd)` to exchange messages with
+  // it.
+  void ConnectToSharedWorker(const content::ToRenderFrameHost& execution_target,
+                             std::string_view worker_creation_expr) {
+    ASSERT_TRUE(content::ExecJs(
+        execution_target,
+        base::StrCat({
+            "(async () => {\n"
+            "  self.worker = ",
+            worker_creation_expr,
+            ";\n"
+            "  self.worker.port.start();\n"
+            "  self.askWorker = (cmd) => new Promise((resolve) => {\n"
+            "    self.worker.port.onmessage = (e) => resolve(e.data);\n"
+            "    self.worker.port.postMessage(cmd);\n"
+            "  });\n"
+            "})()",
+        })));
+  }
+
+  // Verifies that the connected `SharedWorker` can access unpartitioned OPFS as
+  // well as query, read, and write the non-sandboxed `FileSystemFileHandle`
+  // loaded from first-party IndexedDB.
+  void ExpectSharedWorkerHandleAccessAllowed(
+      const content::ToRenderFrameHost& execution_target,
+      const base::FilePath& test_file) {
+    EXPECT_EQ("first-party opfs data",
+              content::EvalJs(execution_target, "self.askWorker('opfs')"));
+    EXPECT_EQ("granted", content::EvalJs(execution_target,
+                                         "self.askWorker('query_read')"));
+    EXPECT_EQ("granted", content::EvalJs(execution_target,
+                                         "self.askWorker('query_readwrite')"));
+    EXPECT_EQ("read_success: initial data",
+              content::EvalJs(execution_target, "self.askWorker('read')"));
+    EXPECT_EQ("write_success",
+              content::EvalJs(execution_target, "self.askWorker('write')"));
+    EXPECT_EQ("read_success: shared worker write",
+              content::EvalJs(execution_target, "self.askWorker('read')"));
+
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string contents;
+    EXPECT_TRUE(base::ReadFileToString(test_file, &contents));
+    EXPECT_EQ("shared worker write", contents);
+  }
+
+  // Verifies that the connected `SharedWorker` can still access unpartitioned
+  // OPFS, while non-sandboxed `FileSystemFileHandle` permissions and read/write
+  // operations are denied / rejected with `SecurityError` and `test_file` on
+  // disk remains unmodified.
+  void ExpectSharedWorkerHandleAccessBlocked(
+      const content::ToRenderFrameHost& execution_target,
+      const base::FilePath& test_file) {
+    EXPECT_EQ("first-party opfs data",
+              content::EvalJs(execution_target, "self.askWorker('opfs')"));
+    EXPECT_EQ("denied", content::EvalJs(execution_target,
+                                        "self.askWorker('query_read')"));
+    EXPECT_EQ("denied", content::EvalJs(execution_target,
+                                        "self.askWorker('query_readwrite')"));
+    EXPECT_EQ("SecurityError",
+              content::EvalJs(execution_target, "self.askWorker('read')"));
+    EXPECT_EQ("SecurityError",
+              content::EvalJs(execution_target, "self.askWorker('write')"));
+
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string contents;
+    EXPECT_TRUE(base::ReadFileToString(test_file, &contents));
+    EXPECT_EQ("initial data", contents);
+  }
+
  private:
+  // Configures and starts `https_server` with `CERT_TEST_NAMES` and a
+  // `/shared_worker.js` endpoint that exercises OPFS and a
+  // `FileSystemFileHandle` stored in IndexedDB (`fsa_db` / `handles` /
+  // `'entry'`).
+  void StartSharedWorkerHttpsServer(net::EmbeddedTestServer& https_server) {
+    https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server.RegisterRequestHandler(base::BindRepeating(
+        [](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (request.relative_url != "/shared_worker.js") {
+            return nullptr;
+          }
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("application/javascript");
+          response->set_content(R"(
+            function loadHandleFromIdb() {
+              return new Promise((resolve, reject) => {
+                const openReq = self.indexedDB.open('fsa_db', 1);
+                openReq.onerror = () => reject(openReq.error);
+                openReq.onsuccess = () => {
+                  try {
+                    const db = openReq.result;
+                    const tx = db.transaction('handles', 'readonly');
+                    const getReq = tx.objectStore('handles').get('entry');
+                    getReq.onerror = () => reject(getReq.error);
+                    getReq.onsuccess = () => resolve(getReq.result);
+                  } catch (e) {
+                    reject(e);
+                  }
+                };
+              });
+            }
+
+            self.onconnect = (event) => {
+              const port = event.ports[0];
+              port.onmessage = async (msg) => {
+                try {
+                  if (msg.data === 'opfs') {
+                    const root = await self.navigator.storage.getDirectory();
+                    const fileHandle = await root.getFileHandle('opfs.txt');
+                    const file = await fileHandle.getFile();
+                    port.postMessage(await file.text());
+                    return;
+                  }
+                  const entry = await loadHandleFromIdb();
+                  switch (msg.data) {
+                    case 'query_read':
+                      port.postMessage(
+                          await entry.queryPermission({mode: 'read'}));
+                      break;
+                    case 'query_readwrite':
+                      port.postMessage(
+                          await entry.queryPermission({mode: 'readwrite'}));
+                      break;
+                    case 'read': {
+                      const file = await entry.getFile();
+                      port.postMessage('read_success: ' + (await file.text()));
+                      break;
+                    }
+                    case 'write': {
+                      const w = await entry.createWritable();
+                      await w.write('shared worker write');
+                      await w.close();
+                      port.postMessage('write_success');
+                      break;
+                    }
+                  }
+                } catch (e) {
+                  port.postMessage(e.name);
+                }
+              };
+            };
+          )");
+          return response;
+        }));
+    https_server.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server.Start());
+  }
+
+  // Picks `test_file` in `first_party_web_contents`, activates `readwrite`
+  // permission, stores the handle in IndexedDB (`fsa_db` / `handles` /
+  // `'entry'`), and writes `'first-party opfs data'` to OPFS (`opfs.txt`).
+  void SelectFileAndPopulateFirstPartyStorage(
+      content::WebContents* first_party_web_contents,
+      const base::FilePath& test_file) {
+    FileSystemAccessPermissionRequestManager::FromWebContents(
+        first_party_web_contents)
+        ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
+
+    // Select the local file in the first-party page, then request readwrite
+    // permission in a separate EvalJs call. (This avoids a cross-pipe Mojo
+    // ordering race between LocalFrameHost::NotifyUserActivation and
+    // FileSystemAccessFileHandle::RequestPermission.)
+    ASSERT_EQ(test_file.BaseName().AsUTF8Unsafe(),
+              content::EvalJs(first_party_web_contents, R"(
+                (async () => {
+                  const [entry] = await self.showOpenFilePicker();
+                  self.entry = entry;
+                  return entry.name;
+                })()
+              )"));
+    ASSERT_EQ(
+        "granted",
+        content::EvalJs(first_party_web_contents,
+                        "self.entry.requestPermission({mode: 'readwrite'})"));
+
+    // Store the handle in first-party IndexedDB and populate first-party OPFS.
+    ASSERT_TRUE(content::ExecJs(first_party_web_contents, R"(
+      (async () => {
+        await new Promise((resolve, reject) => {
+          const openReq = self.indexedDB.open('fsa_db', 1);
+          openReq.onupgradeneeded = () => {
+            openReq.result.createObjectStore('handles');
+          };
+          openReq.onerror = () => reject(openReq.error);
+          openReq.onsuccess = () => {
+            const db = openReq.result;
+            const tx = db.transaction('handles', 'readwrite');
+            tx.objectStore('handles').put(self.entry, 'entry');
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+          };
+        });
+        const opfsRoot = await navigator.storage.getDirectory();
+        const opfsFile =
+            await opfsRoot.getFileHandle('opfs.txt', {create: true});
+        const opfsWritable = await opfsFile.createWritable();
+        await opfsWritable.write('first-party opfs data');
+        await opfsWritable.close();
+      })()
+    )"));
+  }
+
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -929,6 +1159,90 @@ IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
     EXPECT_TRUE(base::ReadFileToString(test_file, &contents));
     EXPECT_EQ("initial data", contents);
   }
+}
+
+// Verifies that a regular first-party `SharedWorker` (default
+// `sameSiteCookies: 'all'`) can still query, read, and write a non-sandboxed
+// `FileSystemFileHandle` loaded from first-party IndexedDB, as well as OPFS.
+IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
+                       FirstPartySharedWorkerHandleUseAllowed) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  base::FilePath test_file;
+  SetUpSharedWorkerTest(https_server, test_file);
+
+  content::WebContents* first_party_web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ConnectToSharedWorker(first_party_web_contents,
+                        "new SharedWorker('/shared_worker.js')");
+  ExpectSharedWorkerHandleAccessAllowed(first_party_web_contents, test_file);
+}
+
+// Verifies that a `SharedWorker` created by a first-party page with
+// `{sameSiteCookies: 'none'}` (which cross-site iframes with Storage Access can
+// attach to) cannot use a non-sandboxed `FileSystemFileHandle` loaded from
+// first-party IndexedDB, while still allowing OPFS access.
+IN_PROC_BROWSER_TEST_F(
+    PersistedPermissionsFileSystemAccessBrowserTest,
+    FirstPartySharedWorkerSameSiteCookiesNoneHandleUseBlocked) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  base::FilePath test_file;
+  SetUpSharedWorkerTest(https_server, test_file);
+
+  content::WebContents* first_party_web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ConnectToSharedWorker(first_party_web_contents,
+                        "new SharedWorker('/shared_worker.js', "
+                        "{sameSiteCookies: 'none'})");
+  ExpectSharedWorkerHandleAccessBlocked(first_party_web_contents, test_file);
+}
+
+// Verifies that a `SharedWorker` created via
+// `StorageAccessHandle.SharedWorker()` in a third-party iframe cannot use a
+// non-sandboxed `FileSystemFileHandle` loaded from first-party IndexedDB (even
+// while the origin holds an active first-party read/write grant), while still
+// allowing access to the unpartitioned Origin Private File System (OPFS).
+IN_PROC_BROWSER_TEST_F(
+    PersistedPermissionsFileSystemAccessBrowserTest,
+    ThirdPartyIframeStorageAccessSharedWorkerHandleUseBlocked) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  base::FilePath test_file;
+  SetUpSharedWorkerTest(https_server, test_file);
+  content::WebContents* first_party_web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  // Open an auxiliary window hosting an a.test document embedding a b.test
+  // iframe, keeping the first-party b.test tab open so the permission grant
+  // remains active.
+  content::TestNavigationObserver popup_observer(nullptr);
+  popup_observer.StartWatchingNewWebContents();
+  const GURL embedder_url = https_server.GetURL("a.test", "/iframe_blank.html");
+  ASSERT_TRUE(ExecJs(
+      first_party_web_contents,
+      "self.third_party_window = window.open('" + embedder_url.spec() + "');"));
+  popup_observer.Wait();
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
+  content::WebContents* third_party_web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateIframeToURL(
+      third_party_web_contents, "test",
+      https_server.GetURL("b.test", "/title1.html")));
+  content::RenderFrameHost* third_party_iframe =
+      ChildFrameAt(third_party_web_contents, 0);
+  ASSERT_TRUE(third_party_iframe);
+
+  // Grant Storage Access to b.test embedded under a.test.
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingDefaultScope(https_server.GetURL("b.test", "/"),
+                                      https_server.GetURL("a.test", "/"),
+                                      ContentSettingsType::STORAGE_ACCESS,
+                                      CONTENT_SETTING_ALLOW);
+
+  // Obtain a StorageAccessHandle and connect to a SharedWorker via
+  // StorageAccessHandle.SharedWorker().
+  ConnectToSharedWorker(third_party_iframe,
+                        "(await document.requestStorageAccess({all: true}))"
+                        ".SharedWorker('/shared_worker.js')");
+  ExpectSharedWorkerHandleAccessBlocked(third_party_iframe, test_file);
 }
 
 // Tests that permissions are revoked after all top-level frames have been

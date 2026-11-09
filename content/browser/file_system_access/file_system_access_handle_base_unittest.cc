@@ -167,7 +167,8 @@ class FileSystemAccessHandleTestBase : public testing::Test {
   TestFileSystemAccessHandle CreateTestHandle() {
     auto context = is_worker()
                        ? FileSystemAccessManagerImpl::BindingContext(
-                             kTestStorageKey, kTestURL, kWorkerProcessId)
+                             kTestStorageKey, kTestURL, kWorkerProcessId,
+                             /*is_third_party_context=*/false)
                        : FileSystemAccessManagerImpl::BindingContext(
                              kTestStorageKey, kTestURL, kFrameId);
     return TestFileSystemAccessHandle(
@@ -243,7 +244,8 @@ TEST_P(FileSystemAccessHandleGetReadPermissionStatusTest,
 
   auto context = is_worker()
                      ? FileSystemAccessManagerImpl::BindingContext(
-                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId)
+                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId,
+                           /*is_third_party_context=*/true)
                      : FileSystemAccessManagerImpl::BindingContext(
                            kThirdPartyStorageKey, kTestURL, kFrameId);
   TestFileSystemAccessHandle handle(
@@ -269,7 +271,8 @@ TEST_P(FileSystemAccessHandleGetReadPermissionStatusTest,
 
   auto context = is_worker()
                      ? FileSystemAccessManagerImpl::BindingContext(
-                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId)
+                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId,
+                           /*is_third_party_context=*/true)
                      : FileSystemAccessManagerImpl::BindingContext(
                            kThirdPartyStorageKey, kTestURL, kFrameId);
   TestFileSystemAccessHandle handle(
@@ -528,7 +531,8 @@ TEST_P(FileSystemAccessDoRequestReadPermissionTest,
 
   auto context = is_worker()
                      ? FileSystemAccessManagerImpl::BindingContext(
-                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId)
+                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId,
+                           /*is_third_party_context=*/true)
                      : FileSystemAccessManagerImpl::BindingContext(
                            kThirdPartyStorageKey, kTestURL, kFrameId);
   TestFileSystemAccessHandle handle(
@@ -571,7 +575,8 @@ TEST_P(FileSystemAccessDoRequestReadPermissionTest,
 
   auto context = is_worker()
                      ? FileSystemAccessManagerImpl::BindingContext(
-                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId)
+                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId,
+                           /*is_third_party_context=*/true)
                      : FileSystemAccessManagerImpl::BindingContext(
                            kThirdPartyStorageKey, kTestURL, kFrameId);
   auto deny_grant = base::MakeRefCounted<
@@ -602,7 +607,8 @@ TEST_P(FileSystemAccessDoRequestReadPermissionTest,
 
   auto context = is_worker()
                      ? FileSystemAccessManagerImpl::BindingContext(
-                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId)
+                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId,
+                           /*is_third_party_context=*/true)
                      : FileSystemAccessManagerImpl::BindingContext(
                            kThirdPartyStorageKey, kTestURL, kFrameId);
   TestFileSystemAccessHandle handle(
@@ -634,7 +640,8 @@ TEST_P(FileSystemAccessDoRequestReadPermissionTest,
 
   auto context = is_worker()
                      ? FileSystemAccessManagerImpl::BindingContext(
-                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId)
+                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId,
+                           /*is_third_party_context=*/true)
                      : FileSystemAccessManagerImpl::BindingContext(
                            kThirdPartyStorageKey, kTestURL, kFrameId);
   auto deny_grant = base::MakeRefCounted<
@@ -1350,7 +1357,8 @@ TEST_P(FileSystemAccessDoRequestWritePermissionTest, ThirdPartyContextBlocked) {
 
   auto context = is_worker()
                      ? FileSystemAccessManagerImpl::BindingContext(
-                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId)
+                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId,
+                           /*is_third_party_context=*/true)
                      : FileSystemAccessManagerImpl::BindingContext(
                            kThirdPartyStorageKey, kTestURL, kFrameId);
   TestFileSystemAccessHandle handle(
@@ -1396,7 +1404,8 @@ TEST_P(FileSystemAccessDoRequestWritePermissionTest,
 
   auto context = is_worker()
                      ? FileSystemAccessManagerImpl::BindingContext(
-                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId)
+                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId,
+                           /*is_third_party_context=*/true)
                      : FileSystemAccessManagerImpl::BindingContext(
                            kThirdPartyStorageKey, kTestURL, kFrameId);
   TestFileSystemAccessHandle handle(
@@ -1445,7 +1454,8 @@ TEST_P(FileSystemAccessDoRequestWritePermissionTest,
 
   auto context = is_worker()
                      ? FileSystemAccessManagerImpl::BindingContext(
-                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId)
+                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId,
+                           /*is_third_party_context=*/true)
                      : FileSystemAccessManagerImpl::BindingContext(
                            kThirdPartyStorageKey, kTestURL, kFrameId);
   TestFileSystemAccessHandle handle(
@@ -1475,7 +1485,8 @@ TEST_P(FileSystemAccessDoRequestWritePermissionTest,
 
   auto context = is_worker()
                      ? FileSystemAccessManagerImpl::BindingContext(
-                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId)
+                           kThirdPartyStorageKey, kTestURL, kWorkerProcessId,
+                           /*is_third_party_context=*/true)
                      : FileSystemAccessManagerImpl::BindingContext(
                            kThirdPartyStorageKey, kTestURL, kFrameId);
   TestFileSystemAccessHandle handle(
@@ -1549,8 +1560,9 @@ TEST_P(FileSystemAccessHandleGetParentURLTest, CustomBucketLocator) {
       base::FilePath::FromUTF8Unsafe("/test"));
   TestFileSystemAccessHandle default_handle(
       manager_.get(),
-      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
-                                                  /*worker_process_id=*/1),
+      FileSystemAccessManagerImpl::BindingContext(
+          kTestStorageKey, kTestURL,
+          /*worker_process_id=*/1, /*is_third_party_context=*/false),
       default_bucket_url, handle_state_);
   EXPECT_FALSE(default_handle.GetParentURLForTesting().bucket());
 
@@ -1564,8 +1576,9 @@ TEST_P(FileSystemAccessHandleGetParentURLTest, CustomBucketLocator) {
   custom_bucket_url.SetBucket(custom_bucket);
   TestFileSystemAccessHandle custom_handle(
       manager_.get(),
-      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
-                                                  /*worker_process_id=*/1),
+      FileSystemAccessManagerImpl::BindingContext(
+          kTestStorageKey, kTestURL,
+          /*worker_process_id=*/1, /*is_third_party_context=*/false),
       custom_bucket_url, handle_state_);
   EXPECT_TRUE(custom_handle.GetParentURLForTesting().bucket());
   EXPECT_EQ(custom_handle.GetParentURLForTesting().bucket().value(),
