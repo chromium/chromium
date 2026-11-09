@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/string_util.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
@@ -144,7 +144,7 @@ void ExtensionCleanupHandler::ReinstallExtensions() {
 base::flat_set<std::string>
 ExtensionCleanupHandler::GetCleanupExemptExtensions() {
   const base::ListValue& exempt_list = profile_->GetPrefs()->GetList(
-      prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList);
+      ash::prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList);
 
   std::vector<std::string> exempt_extensions;
   exempt_extensions.reserve(exempt_list.size());

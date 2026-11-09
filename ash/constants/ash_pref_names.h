@@ -2933,6 +2933,12 @@ inline constexpr char kStartupBrowserWindowLaunchSuppressed[] =
 // Boolean pref indicating whether someone can cast to the device.
 inline constexpr char kCastReceiverEnabled[] = "cast_receiver.enabled";
 
+// List pref containing extension IDs that are exempt from the restricted
+// managed guest session clean-up procedure.
+inline constexpr char
+    kRestrictedManagedGuestSessionExtensionCleanupExemptList[] =
+        "restricted_managed_guest_session_extension_cleanup_exempt_list";
+
 //-----------------------------------------------------------------------------
 // Login screen related Prefs
 //-----------------------------------------------------------------------------
@@ -3723,6 +3729,13 @@ inline constexpr char kDocumentScanAPITrustedExtensions[] =
 inline constexpr char kDeletePrintJobHistoryAllowed[] =
     "printing.delete_print_job_history_allowed";
 
+// The list of extensions allowed to skip print job confirmation dialog when
+// they use the chrome.printing.submitJob() function. Note that this used to be
+// `kPrintingAPIExtensionsWhitelist`, hence the difference between the variable
+// name and the string value.
+inline constexpr char kPrintingAPIExtensionsAllowlist[] =
+    "printing.printing_api_extensions_whitelist";
+
 // A pref holding the list of allowed printing color mode as a bitmask composed
 // of |printing::ColorModeRestriction| values. 0 is no restriction.
 inline constexpr char kPrintingAllowedColorModes[] =
@@ -4084,6 +4097,21 @@ inline constexpr char kNoteTakingAppId[] = "settings.note_taking_app_id";
 
 // Boolean pref to control whether to enable Lens integration with media app
 inline constexpr char kMediaAppLensEnabled[] = "media_app.enable_lens";
+
+// A boolean specifying whether the Desk API is enabled for third party web
+// applications. If set to true, the Desk API bridge component extension will be
+// installed.
+inline constexpr char kDeskAPIThirdPartyAccessEnabled[] =
+    "desk_api.third_party_access_enabled";
+
+// A list of third party web application domains allowed to use the Desk API.
+inline constexpr char kDeskAPIThirdPartyAllowlist[] =
+    "desk_api.third_party_allowlist";
+
+// A boolean specifying whether the insights extension is enabled. If set to
+// true, the CCaaS Chrome component extension will be installed.
+inline constexpr char kInsightsExtensionEnabled[] =
+    "insights_extension_enabled";
 
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.

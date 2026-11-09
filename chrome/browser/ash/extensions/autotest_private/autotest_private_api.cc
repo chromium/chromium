@@ -145,7 +145,6 @@
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_dialog.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -558,7 +557,7 @@ std::string SetAllowedPref(PrefService& local_state,
     CHECK(value.is_bool(), base::NotFatalUntil::M160);
   } else if (pref_name == ash::prefs::kLanguagePreloadEngines) {
     CHECK(value.is_string(), base::NotFatalUntil::M160);
-  } else if (pref_name == prefs::kPrintingAPIExtensionsAllowlist) {
+  } else if (pref_name == ash::prefs::kPrintingAPIExtensionsAllowlist) {
     CHECK(value.is_list(), base::NotFatalUntil::M160);
   } else if (pref_name == quick_answers::prefs::kQuickAnswersEnabled) {
     CHECK(value.is_bool(), base::NotFatalUntil::M160);

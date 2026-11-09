@@ -8,6 +8,7 @@
 #include <cstring>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/printing/print_job_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/extensions/dialogs/print_job_confirmation_dialog.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
@@ -79,7 +79,7 @@ bool IsUserConfirmationRequired(content::BrowserContext* browser_context,
   const base::ListValue& list =
       Profile::FromBrowserContext(browser_context)
           ->GetPrefs()
-          ->GetList(prefs::kPrintingAPIExtensionsAllowlist);
+          ->GetList(ash::prefs::kPrintingAPIExtensionsAllowlist);
   return !std::ranges::contains(list, base::Value(extension_id));
 }
 

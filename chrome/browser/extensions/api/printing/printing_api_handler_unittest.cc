@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -453,7 +454,8 @@ class PrintingAPIHandlerUnittest : public testing::Test {
     base::ListValue extensions_list;
     extensions_list.Append(kExtensionId);
     testing_profile_->GetTestingPrefService()->SetList(
-        prefs::kPrintingAPIExtensionsAllowlist, std::move(extensions_list));
+        ash::prefs::kPrintingAPIExtensionsAllowlist,
+        std::move(extensions_list));
 
     const char kExtensionName[] = "Printing extension";
     const char kPermissionName[] = "printing";

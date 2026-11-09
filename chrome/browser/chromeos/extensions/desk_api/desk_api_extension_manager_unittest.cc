@@ -6,11 +6,11 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
@@ -95,8 +95,9 @@ class TestDelegate : public DeskApiExtensionManager::Delegate {
 void SetDeskAPIPolicies(PrefService* pref_service,
                         bool enabled,
                         const base::ListValue& allowlist) {
-  pref_service->SetBoolean(::prefs::kDeskAPIThirdPartyAccessEnabled, enabled);
-  pref_service->SetList(::prefs::kDeskAPIThirdPartyAllowlist,
+  pref_service->SetBoolean(ash::prefs::kDeskAPIThirdPartyAccessEnabled,
+                           enabled);
+  pref_service->SetList(ash::prefs::kDeskAPIThirdPartyAllowlist,
                         allowlist.Clone());
 }
 

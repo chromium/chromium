@@ -2162,10 +2162,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kClipboardHistoryEnabled,
     base::Value::Type::INTEGER },
   { key::kDeskAPIThirdPartyAccessEnabled,
-    prefs::kDeskAPIThirdPartyAccessEnabled,
+    ash::prefs::kDeskAPIThirdPartyAccessEnabled,
     base::Value::Type::BOOLEAN },
   { key::kDeskAPIThirdPartyAllowlist,
-    prefs::kDeskAPIThirdPartyAllowlist,
+    ash::prefs::kDeskAPIThirdPartyAllowlist,
     base::Value::Type::LIST },
   { key::kDeskAPIDeskSaveAndShareEnabled,
     prefs::kDeskAPIDeskSaveAndShareEnabled,
@@ -2207,7 +2207,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kForceMaximizeOnFirstRun,
     base::Value::Type::BOOLEAN },
   { key::kInsightsExtensionEnabled,
-    prefs::kInsightsExtensionEnabled,
+    ash::prefs::kInsightsExtensionEnabled,
     base::Value::Type::BOOLEAN },
   { key::kEnableSyncConsent,
     ash::prefs::kEnableSyncConsent,
@@ -2216,7 +2216,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList,
     base::Value::Type::LIST },
   { key::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
-    prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
+    ash::prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
     base::Value::Type::LIST },
   { key::kNewWindowsInKioskAllowed,
     ash::prefs::kNewWindowsInKioskAllowed,
@@ -3152,7 +3152,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 #if BUILDFLAG(USE_CUPS)
   handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
       key::kPrintingAPIExtensionsAllowlist,
-      prefs::kPrintingAPIExtensionsAllowlist, /*allow_wildcards=*/false));
+      ash::prefs::kPrintingAPIExtensionsAllowlist, /*allow_wildcards=*/false));
 #endif  // BUILDFLAG(USE_CUPS)
 #else   // BUILDFLAG(IS_CHROMEOS)
   std::vector<std::unique_ptr<ConfigurationPolicyHandler>>

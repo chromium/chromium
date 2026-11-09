@@ -7,6 +7,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -136,7 +136,7 @@ class ExtensionCleanupHandlerUnittest : public testing::Test {
 
   void SetupExemptList() {
     prefs_->SetManagedPref(
-        prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
+        ash::prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
         base::ListValue().Append(kExemptExtensionId));
   }
 

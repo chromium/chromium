@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "ash/constants/ash_extension_constants.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -76,10 +76,10 @@ void DeskApiExtensionManager::Init() {
 
   if (delegate_->IsProfileAffiliated(profile_)) {
     // Setup registrar so it starts listening to relevant pref changes.
-    registrar_.Add(::prefs::kDeskAPIThirdPartyAccessEnabled,
+    registrar_.Add(ash::prefs::kDeskAPIThirdPartyAccessEnabled,
                    base::BindRepeating(&DeskApiExtensionManager::OnPrefChanged,
                                        weak_ptr_factory_.GetWeakPtr()));
-    registrar_.Add(::prefs::kDeskAPIThirdPartyAllowlist,
+    registrar_.Add(ash::prefs::kDeskAPIThirdPartyAllowlist,
                    base::BindRepeating(&DeskApiExtensionManager::OnPrefChanged,
                                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -92,11 +92,13 @@ bool DeskApiExtensionManager::CanInstallExtension() const {
 
   const auto& pref_service = *profile_->GetPrefs();
   // Defaults to not enabled.
-  if (!pref_service.HasPrefPath(::prefs::kDeskAPIThirdPartyAccessEnabled))
+  if (!pref_service.HasPrefPath(ash::prefs::kDeskAPIThirdPartyAccessEnabled)) {
     return false;
+  }
 
-  if (!pref_service.GetBoolean(::prefs::kDeskAPIThirdPartyAccessEnabled))
+  if (!pref_service.GetBoolean(ash::prefs::kDeskAPIThirdPartyAccessEnabled)) {
     return false;
+  }
 
   const std::string manifest = GetManifest();
 
@@ -115,7 +117,7 @@ std::string DeskApiExtensionManager::GetManifest() const {
   // `externally_connectable` `matches` property format. See more
   // https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference
   for (const auto& domain :
-       pref_service->GetList(::prefs::kDeskAPIThirdPartyAllowlist)) {
+       pref_service->GetList(ash::prefs::kDeskAPIThirdPartyAllowlist)) {
     URLPattern pattern(URLPattern::SCHEME_ALL);
     if (pattern.Parse(domain.GetString()) !=
         URLPattern::ParseResult::kSuccess) {

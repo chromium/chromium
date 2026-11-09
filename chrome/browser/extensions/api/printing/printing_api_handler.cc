@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -150,7 +151,7 @@ PrintingAPIHandler* PrintingAPIHandler::Get(
 
 // static
 void PrintingAPIHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterListPref(prefs::kPrintingAPIExtensionsAllowlist);
+  registry->RegisterListPref(ash::prefs::kPrintingAPIExtensionsAllowlist);
 }
 
 void PrintingAPIHandler::SubmitJob(

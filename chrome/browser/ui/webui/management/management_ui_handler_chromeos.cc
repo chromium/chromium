@@ -38,7 +38,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/management/management_ui_constants.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
@@ -212,7 +211,7 @@ void AddDeviceReportingInfo(base::ListValue* report_sources,
                                        &device_report_xdr_events);
   if (collector->IsReportingActivityTimes() || report_device_peripherals ||
       report_audio_status || device_report_xdr_events ||
-      profile->GetPrefs()->GetBoolean(::prefs::kInsightsExtensionEnabled)) {
+      profile->GetPrefs()->GetBoolean(ash::prefs::kInsightsExtensionEnabled)) {
     AddDeviceReportingElement(report_sources, kManagementReportActivityTimes,
                               DeviceReportingType::kDeviceActivity);
   } else {
@@ -222,7 +221,7 @@ void AddDeviceReportingInfo(base::ListValue* report_sources,
     }
   }
   if (collector->IsReportingNetworkData() ||
-      profile->GetPrefs()->GetBoolean(::prefs::kInsightsExtensionEnabled)) {
+      profile->GetPrefs()->GetBoolean(ash::prefs::kInsightsExtensionEnabled)) {
     AddDeviceReportingElement(report_sources, kManagementReportNetworkData,
                               DeviceReportingType::kDevice);
   }

@@ -19,7 +19,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(
-      prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList);
+      ash::prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList);
 
   // This pref is a per-session pref and must not be synced.
   registry->RegisterBooleanPref(

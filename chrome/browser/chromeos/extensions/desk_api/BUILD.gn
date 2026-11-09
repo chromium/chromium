@@ -19,7 +19,6 @@ static_library("desk_api") {
     "//chrome/browser/enterprise",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
-    "//chrome/common:constants",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
     "//components/prefs",
@@ -36,10 +35,10 @@ source_set("unit_tests") {
 
   deps = [
     ":desk_api",
+    "//ash/constants",
     "//base",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
-    "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
     "//content/test:test_support",

@@ -28,6 +28,7 @@ static_library("cleanup") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chrome/browser/ash/printing/print_management",
     "//chrome/browser/browsing_data:constants",
@@ -36,7 +37,6 @@ static_library("cleanup") {
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/web_applications",
-    "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//components/account_id",
     "//components/app_constants",
@@ -85,6 +85,7 @@ source_set("unit_tests") {
   deps = [
     ":cleanup",
     ":test_support",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
@@ -95,7 +96,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/printing/print_management",
     "//chrome/browser/extensions",
     "//chrome/browser/extensions:test_support",
-    "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/browser_context_helper",

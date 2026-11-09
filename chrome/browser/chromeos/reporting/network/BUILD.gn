@@ -28,9 +28,9 @@ source_set("unit_tests") {
 
   deps = [
     ":network",
+    "//ash/constants",
     "//base/test:test_support",
     "//chrome/browser:browser_process",
-    "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
     "//components/reporting/proto:metric_data_proto",

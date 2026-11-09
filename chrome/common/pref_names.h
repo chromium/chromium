@@ -471,30 +471,8 @@ inline constexpr char kMandatoryExtensionsForIncognitoNavigation[] =
 inline constexpr char kAttestationExtensionAllowlist[] =
     "attestation.extension_allowlist";
 
-// A boolean specifying whether the Desk API is enabled for third party web
-// applications. If set to true, the Desk API bridge component extension will be
-// installed.
-inline constexpr char kDeskAPIThirdPartyAccessEnabled[] =
-    "desk_api.third_party_access_enabled";
-
 inline constexpr char kDeskAPIDeskSaveAndShareEnabled[] =
     "desk_api.desk_save_and_share_enabled";
-
-// A list of third party web application domains allowed to use the Desk API.
-inline constexpr char kDeskAPIThirdPartyAllowlist[] =
-    "desk_api.third_party_allowlist";
-
-// The list of extensions allowed to skip print job confirmation dialog when
-// they use the chrome.printing.submitJob() function. Note that this used to be
-// `kPrintingAPIExtensionsWhitelist`, hence the difference between the variable
-// name and the string value.
-inline constexpr char kPrintingAPIExtensionsAllowlist[] =
-    "printing.printing_api_extensions_whitelist";
-
-// A boolean specifying whether the insights extension is enabled. If set to
-// true, the CCaaS Chrome component extension will be installed.
-inline constexpr char kInsightsExtensionEnabled[] =
-    "insights_extension_enabled";
 
 // A string pref storing the path of device wallpaper image file.
 inline constexpr char kDeviceWallpaperImageFilePath[] =
@@ -512,12 +490,6 @@ inline constexpr char kOOMKillsDailyCount[] = "oom_kills.daily_count";
 // Integer pref used by the metrics::DailyEvent owned by
 // memory::OOMKillsMonitor.
 inline constexpr char kOOMKillsDailySample[] = "oomkills.daily_sample";
-
-// List pref containing extension IDs that are exempt from the restricted
-// managed guest session clean-up procedure.
-inline constexpr char
-    kRestrictedManagedGuestSessionExtensionCleanupExemptList[] =
-        "restricted_managed_guest_session_extension_cleanup_exempt_list";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // A boolean pref set to true if a Home button to open the Home pages should be

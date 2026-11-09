@@ -24,9 +24,6 @@ specific_include_rules = {
   "network_bandwidth_sampler_ash_browsertest\\.cc": [
     "+chrome/browser/policy/dm_token_utils.h",
   ],
-  "network_bandwidth_sampler_unittest\\.cc": [
-    "+chrome/common/pref_names.h",
-  ],
   ".*(unittest|browsertest)\\.cc": [
     "+chrome/browser/browser_process.h",
   ],

@@ -619,7 +619,7 @@ class ManagementUIHandlerTests :
     crostini_features()->set_is_allowed_now(true);
 
     profile_->GetPrefs()->SetBoolean(
-        ::prefs::kInsightsExtensionEnabled,
+        ::ash::prefs::kInsightsExtensionEnabled,
         GetTestConfig().insights_extension_enabled);
 
     profile_->GetPrefs()->SetList(

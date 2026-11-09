@@ -2407,10 +2407,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   policy::NetworkAnnotationBlocklistHandler::RegisterPrefs(registry);
   quickoffice::RegisterProfilePrefs(registry);
   registry->RegisterBooleanPref(chromeos::prefs::kAutoSignOutEnabled, false);
-  registry->RegisterBooleanPref(prefs::kDeskAPIThirdPartyAccessEnabled, false);
+  registry->RegisterBooleanPref(ash::prefs::kDeskAPIThirdPartyAccessEnabled,
+                                false);
   registry->RegisterBooleanPref(prefs::kDeskAPIDeskSaveAndShareEnabled, false);
-  registry->RegisterListPref(prefs::kDeskAPIThirdPartyAllowlist);
-  registry->RegisterBooleanPref(prefs::kInsightsExtensionEnabled, false);
+  registry->RegisterListPref(ash::prefs::kDeskAPIThirdPartyAllowlist);
+  registry->RegisterBooleanPref(ash::prefs::kInsightsExtensionEnabled, false);
   registry->RegisterBooleanPref(
       ash::prefs::kAdminInstalledChromeAppsForceAllowed, false);
   registry->RegisterBooleanPref(ash::prefs::kEssentialSearchEnabled, false);

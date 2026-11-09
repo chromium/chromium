@@ -6,9 +6,9 @@
 
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
@@ -38,7 +38,8 @@ class NetworkBandwidthSamplerTest : public ::testing::Test {
   }
 
   void SetPrefValue(bool value) {
-    profile_->GetPrefs()->SetBoolean(::prefs::kInsightsExtensionEnabled, value);
+    profile_->GetPrefs()->SetBoolean(ash::prefs::kInsightsExtensionEnabled,
+                                     value);
     task_environment_.RunUntilIdle();
   }
 
