@@ -7,10 +7,14 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <utility>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
-#include "base/compiler_specific.h"
+#include "base/check.h"
+#include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/tab_android_data_provider.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -29,6 +33,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/gurl.h"
 
 namespace {
@@ -77,13 +82,14 @@ class SyncedTabDelegateAndroidTest : public testing::Test {
     TabModelList::RemoveTabModel(test_tab_model_.get());
   }
 
-  void MockBufferFromPickle(base::Pickle& pickle) {
+  void MockBufferFromPickle(const base::Pickle& pickle) {
     JNIEnv* env = base::android::AttachCurrentThread();
 
-    auto jbuffer = jni_zero::AdoptRef(
-        env, env->NewDirectByteBuffer(
-                 reinterpret_cast<void*>(pickle.AsWritableBytes().data()),
-                 pickle.size()));
+    base::span<const uint8_t> bytes = pickle.AsBytes();
+    auto jbuffer = jni_zero::ByteBufferAllocateDirect(
+        env, base::checked_cast<int>(bytes.size()));
+    ASSERT_TRUE(jbuffer);
+    base::android::JavaByteBufferToMutableSpan(env, jbuffer).copy_from(bytes);
 
     std::unique_ptr<WebContentsStateByteBuffer> buffer =
         std::make_unique<WebContentsStateByteBuffer>(jbuffer, kVersion);
