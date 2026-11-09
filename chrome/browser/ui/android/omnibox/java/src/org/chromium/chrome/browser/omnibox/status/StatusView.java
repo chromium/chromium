@@ -307,9 +307,7 @@ public class StatusView extends LinearLayout {
         if (targetIcon != null) {
             if (!isIconHidden) {
                 Drawable existingDrawable = mIconView.getDrawable();
-                if (existingDrawable instanceof ChromeTransitionDrawable) {
-                    ChromeTransitionDrawable transitionDrawable =
-                            (ChromeTransitionDrawable) existingDrawable;
+                if (existingDrawable instanceof ChromeTransitionDrawable transitionDrawable) {
                     // Finish any running animations in the existing drawable because we're going to
                     // reuse it. Concurrent animations could clobber each other's changes and cause
                     // inconsistent states.

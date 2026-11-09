@@ -71,9 +71,8 @@ public class BaseCarouselSuggestionViewBinder
             // Apply values.
             view.setBackgroundColor(bgColor);
             var layoutParams = view.getLayoutParams();
-            if (layoutParams instanceof MarginLayoutParams) {
-                ((MarginLayoutParams) layoutParams)
-                        .setMargins(horizontalMargin, 0, horizontalMargin, 0);
+            if (layoutParams instanceof MarginLayoutParams marginLayoutParams) {
+                marginLayoutParams.setMargins(horizontalMargin, 0, horizontalMargin, 0);
                 view.setLayoutParams(layoutParams);
             }
 

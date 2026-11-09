@@ -169,8 +169,7 @@ class SpanCursorController {
     }
 
     public void reflectTextUpdateInState(AutocompleteState state, CharSequence text) {
-        if (text instanceof Editable) {
-            Editable editable = (Editable) text;
+        if (text instanceof Editable editable) {
             int idx = getAutocompleteSpanIndex(editable);
             if (idx != -1) {
                 // We do not set autocomplete text here as model should solely control it.

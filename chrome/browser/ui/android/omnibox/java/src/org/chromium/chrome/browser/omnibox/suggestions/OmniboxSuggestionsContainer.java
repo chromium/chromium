@@ -153,9 +153,8 @@ public class OmniboxSuggestionsContainer extends FrameLayout {
     private void maybeUpdateLayoutParams(int topMargin) {
         // Update the layout params to ensure the parent correctly positions the suggestions
         // under the anchor view.
-        ViewGroup.LayoutParams layoutParams = getLayoutParams();
-        if (layoutParams != null && layoutParams instanceof ViewGroup.MarginLayoutParams) {
-            ((ViewGroup.MarginLayoutParams) layoutParams).topMargin = topMargin;
+        if (getLayoutParams() instanceof ViewGroup.MarginLayoutParams marginLayoutParams) {
+            marginLayoutParams.topMargin = topMargin;
         }
     }
 

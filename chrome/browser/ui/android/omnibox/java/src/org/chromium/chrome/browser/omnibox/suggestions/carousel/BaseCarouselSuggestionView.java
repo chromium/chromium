@@ -67,8 +67,8 @@ public class BaseCarouselSuggestionView extends RecyclerView {
         } else if (KeyNavigationUtil.isEnter(event)) {
             var tile = mSelectionController.getSelectedView();
             if (tile != null) {
-                if (tile instanceof ActivatableSuggestionView) {
-                    return ((ActivatableSuggestionView) tile).activate(event.getMetaState());
+                if (tile instanceof ActivatableSuggestionView activatableTile) {
+                    return activatableTile.activate(event.getMetaState());
                 }
                 return tile.performClick();
             }
