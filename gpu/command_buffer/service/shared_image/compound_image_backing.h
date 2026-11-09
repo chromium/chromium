@@ -19,8 +19,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
-#include "gpu/command_buffer/service/shared_image/shared_memory_image_backing.h"
-#include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/color_space.h"
@@ -215,7 +213,6 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   bool CopyToGpuMemoryBuffer() override;
   void CopyToGpuMemoryBufferAsync(
       base::OnceCallback<void(bool)> callback) override;
-  gfx::Rect ClearedRect() const override;
 
   // CompoundImageBacking now supports partial clear for upcoming use
   // cases as it evolves. The cleared rect is now tracked on the compound
@@ -403,21 +400,14 @@ class GPU_GLES2_EXPORT CompoundImageBacking
       base::trace_event::ProcessMemoryDump* pmd,
       uint64_t client_tracing_id) override;
 
-  // Returns a SkPixmap for shared memory backing.
-  const std::vector<SkPixmap>& GetSharedMemoryPixmaps();
-
-  // Returns the shared memory element used for access stream
-  // SharedImageAccessStream::kMemory. There can be only 1 shared memory element
-  // at most.
-  ElementHolder& GetShmElement();
-
   // Gets the element corresponding to the backing.
   ElementHolder* GetElement(const SharedImageBacking* backing);
 
-  // Finds the element which has the most recent data/content irrespective of
-  // the stream. There could be multiple elements which has the most recent
-  // data. This method finds the first element which has most recent data.
-  ElementHolder* GetElementWithLatestContent();
+  // Finds the first permanent element (excluding `exclude_element` when
+  // non-null) that holds the most recent content (`content_id_ ==
+  // latest_content_id_`).
+  ElementHolder* GetElementWithLatestContent(
+      const ElementHolder* exclude_element) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Gets or allocates a backing for a given `stream` and `params`.
   // It finds a backing that supports the given `stream` and is compatible
@@ -435,11 +425,8 @@ class GPU_GLES2_EXPORT CompoundImageBacking
       const AccessParams& params,
       std::unique_ptr<SharedImageBacking>& out_transient_backing);
 
-  // Returns the GPU backing that holds the latest content from |elements_|, or
-  // nullptr if no GPU backing holds the latest content.
-  SharedImageBacking* GetGpuBacking();
-
-  bool HasLatestContent(ElementHolder& element);
+  bool HasLatestContent(const ElementHolder& element) const
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Sets the element used for `stream` as having the latest content. If
   // `write_access` is true then only that element has the latest content.
@@ -497,9 +484,9 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   // where it can have any number of gpu backings and at most 1 cpu backing.
   std::vector<ElementHolder> elements_ GUARDED_BY(lock_);
 
-  base::OnceCallback<void(bool)> pending_copy_to_gmb_callback_;
+  base::OnceCallback<void(bool)> pending_copy_to_gmb_callback_
+      GUARDED_BY(lock_);
   scoped_refptr<SharedImageCopyManager> copy_manager_;
-  bool has_shm_backing_ = false;
   // Tracks the maximum number of SharedImageBacking elements that were
   // allocated within this CompoundImageBacking instance during its lifetime.
   // This value is recorded in a UMA histogram in the destructor.

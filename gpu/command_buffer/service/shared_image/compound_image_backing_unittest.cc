@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -263,14 +264,18 @@ class CompoundImageBackingTest : public testing::Test {
     return backings;
   }
 
-  SharedMemoryImageBacking* GetShmImageBacking(CompoundImageBacking* backing) {
-    auto* shm_backing = backing->GetShmElement().backing.get();
+  SharedMemoryImageBacking* GetShmImageBacking(CompoundImageBacking* backing)
+      NO_THREAD_SAFETY_ANALYSIS {
+    CHECK(!backing->elements_.empty());
+    auto* shm_backing = backing->elements_[0].backing.get();
     CHECK_EQ(shm_backing->GetType(), SharedImageBackingType::kSharedMemory);
     return static_cast<SharedMemoryImageBacking*>(shm_backing);
   }
 
-  bool GetShmHasLatestContent(CompoundImageBacking* backing) {
-    return backing->HasLatestContent(backing->GetShmElement());
+  bool GetShmHasLatestContent(CompoundImageBacking* backing)
+      NO_THREAD_SAFETY_ANALYSIS {
+    CHECK(!backing->elements_.empty());
+    return backing->HasLatestContent(backing->elements_[0]);
   }
 
   bool GetGpuHasLatestContent(CompoundImageBacking* backing)
@@ -290,8 +295,9 @@ class CompoundImageBackingTest : public testing::Test {
   // would otherwise require many Update() calls to reach.
   void AdvanceShmContentId(CompoundImageBacking* backing,
                            uint64_t content_id) NO_THREAD_SAFETY_ANALYSIS {
+    CHECK(!backing->elements_.empty());
     backing->latest_content_id_ = content_id;
-    backing->GetShmElement().content_id_ = content_id;
+    backing->elements_[0].content_id_ = content_id;
   }
 
   // Construct a CompoundImageBacking via the WrapExternalBacking constructor
@@ -304,11 +310,6 @@ class CompoundImageBackingTest : public testing::Test {
     return std::unique_ptr<CompoundImageBacking>(new CompoundImageBacking(
         /*buffer_usage=*/std::nullopt, std::move(backing), copy_manager_,
         std::move(shared_image_factory)));
-  }
-
-  const std::vector<SkPixmap>& CallGetSharedMemoryPixmaps(
-      CompoundImageBacking* backing) {
-    return backing->GetSharedMemoryPixmaps();
   }
 
   // Creates a compound backing wired to `shared_image_factory`, which is what
@@ -848,26 +849,6 @@ TEST_F(CompoundImageBackingTest, LazyAllocationFailsFactoryInvalidated) {
   // The backing factory to create GPU backing should be reset to avoid logging
   // about destroyed image multiple times.
   EXPECT_FALSE(HasGpuCreateBackingCallback(compound_backing));
-}
-
-TEST_F(CompoundImageBackingTest,
-       GetSharedMemoryPixmaps_ChecksOnWrongBackingType) {
-  auto tiny = std::make_unique<TestImageBacking>(
-      Mailbox::Generate(),
-      SharedImageInfo(viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(10, 10),
-                      gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-                      kOpaque_SkAlphaType, {SHARED_IMAGE_USAGE_DISPLAY_READ},
-                      "TestLabel"),
-      kTestBackingSize);
-
-  // WrapExternalBacking constructor sets elements_[0].access_streams =
-  // AccessStreamSet::All(), which includes kMemory. GetSharedMemoryPixmaps()
-  // then performs an unchecked static_cast to SharedMemoryImageBacking*.
-  auto compound = WrapExternal(std::move(tiny));
-
-  // Verify that the security fix correctly triggers a CHECK failure when
-  // the backing is not of type SharedMemoryImageBacking.
-  EXPECT_DEATH_IF_SUPPORTED(CallGetSharedMemoryPixmaps(compound.get()), "");
 }
 
 TEST_F(CompoundImageBackingTest, Multiplanar) {
@@ -1615,6 +1596,88 @@ TEST_F(CompoundImageBackingCopyToGpuMemoryBufferTest,
   EXPECT_TRUE(compound_backing->IsCleared());
   compound_backing->NotifyEndAccess(transient.get(),
                                     RepresentationAccessMode::kWrite);
+}
+
+TEST_F(CompoundImageBackingCopyToGpuMemoryBufferTest,
+       CopyToGpuMemoryBufferAsync) {
+  SharedImageManager thread_safe_manager(
+      /*thread_safe=*/true, /*display_context_on_another_thread=*/true);
+  SharedImageFactory factory(
+      GpuPreferences(), GpuDriverBugWorkarounds(), GpuFeatureInfo(),
+      /*context_state=*/nullptr, &thread_safe_manager, memory_tracker_,
+      /*is_for_display_compositor=*/false);
+  factory.RegisterSharedImageBackingFactoryForTesting(&test_factory_);
+
+  auto backing = CreateCompoundBackingWithFactory(
+      {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE},
+      factory.GetFactoryRef());
+  ASSERT_TRUE(backing);
+  auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
+  ASSERT_TRUE(compound_backing->is_thread_safe());
+  auto factory_rep =
+      thread_safe_manager.Register(std::move(backing), &memory_type_tracker_);
+
+  auto gl_rep = thread_safe_manager.ProduceGLTexturePassthrough(
+      compound_backing->mailbox(), &memory_type_tracker_);
+  ASSERT_TRUE(gl_rep);
+  {
+    auto gl_access = gl_rep->BeginScopedAccess(
+        GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
+        SharedImageRepresentation::AllowUnclearedAccess::kNo);
+    ASSERT_TRUE(gl_access);
+  }
+  TestImageBacking* gpu_backing = GetGpuBacking(compound_backing);
+  ASSERT_TRUE(gpu_backing);
+  EXPECT_FALSE(GetShmHasLatestContent(compound_backing));
+
+  // TestImageBacking::ReadbackToMemoryAsync runs completion synchronously; on a
+  // thread-safe CompoundImageBacking, both CopyImageAsync and the caller's
+  // callback must execute outside AutoLock so lock-acquiring methods succeed.
+  bool callback_ran = false;
+  compound_backing->CopyToGpuMemoryBufferAsync(
+      base::BindLambdaForTesting([&](bool success) {
+        callback_ran = true;
+        EXPECT_TRUE(success);
+        EXPECT_EQ(compound_backing->ClearedRect(), gfx::Rect(100, 100));
+        EXPECT_FALSE(compound_backing->GetGpuMemoryBufferHandle().is_null());
+      }));
+  EXPECT_TRUE(callback_ran);
+  EXPECT_TRUE(gpu_backing->GetReadbackToMemoryCalledAndReset());
+  EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
+
+  // Subsequent call when shm_element already holds the latest content skips
+  // readback and still runs the callback outside AutoLock.
+  callback_ran = false;
+  compound_backing->CopyToGpuMemoryBufferAsync(
+      base::BindLambdaForTesting([&](bool success) {
+        callback_ran = true;
+        EXPECT_TRUE(success);
+        EXPECT_EQ(compound_backing->ClearedRect(), gfx::Rect(100, 100));
+      }));
+  EXPECT_TRUE(callback_ran);
+  EXPECT_FALSE(gpu_backing->GetReadbackToMemoryCalledAndReset());
+
+  // Non-shared-memory wrapped CompoundImageBacking safely rejects both sync and
+  // async CopyToGpuMemoryBuffer() calls.
+  auto gpu_only_backing = CompoundImageBacking::Create(
+      &factory, Mailbox::Generate(),
+      SharedImageInfo(
+          viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(100, 100),
+          gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+          {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE},
+          "GpuOnly"),
+      kNullSurfaceHandle);
+  ASSERT_TRUE(gpu_only_backing);
+  auto gpu_only_rep = thread_safe_manager.Register(std::move(gpu_only_backing),
+                                                   &memory_type_tracker_);
+  EXPECT_FALSE(gpu_only_rep->CopyToGpuMemoryBuffer());
+  callback_ran = false;
+  gpu_only_rep->CopyToGpuMemoryBufferAsync(
+      base::BindLambdaForTesting([&](bool success) {
+        callback_ran = true;
+        EXPECT_FALSE(success);
+      }));
+  EXPECT_TRUE(callback_ran);
 }
 
 }  // namespace gpu
