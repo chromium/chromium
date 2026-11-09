@@ -1105,7 +1105,12 @@ void ClipBorderSidePolygonFromCorners(GraphicsContext& context,
                          .GetSkPath(),
                      kAntiAliased);
   } else {
-    context.ClipOut(opposite_edge_bounding_box);
+    // Clip out the opposite side, all the way to its outer edge, so that this
+    // side doesn't paint over it.
+    gfx::RectF opposite_side_rect = opposite_edge_bounding_box;
+    opposite_side_rect.UnionEvenIfEmpty(
+        gfx::BoundingRect(corners[2].outer.Outer(), corners[3].outer.Outer()));
+    context.ClipOut(opposite_side_rect);
   }
 
   if (!needs_miters) {
