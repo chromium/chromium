@@ -5,10 +5,10 @@
 
 #include "{{this_include_path}}"
 
-#include "base/containers/span.h"
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
 namespace blink {
 namespace {{cpp_namespace}} {
@@ -51,50 +51,52 @@ base::HeapArray<const QualifiedName*> GetAttrs() {
 
 
 void Init() {
-  struct NameEntry {
-    const char* name;
-    unsigned char length;
-    unsigned char is_tag;
-    unsigned char is_attr;
-  };
-
   // Namespace
   // Use placement new to initialize the globals.
-  new ((void*)&{{namespace_prefix}}NamespaceURI) AtomicString("{{namespace_uri}}");
+  static constexpr auto kNamespaceURIImpl =
+      MakeStaticAtomicStringImpl("{{namespace_uri}}");
+  new ((void*)&{{namespace_prefix}}NamespaceURI)
+      AtomicString(StringImpl::CreateStatic(kNamespaceURIImpl.AsStringImpl()));
 
   {% set tagnames = tags|map(attribute='name')|list() %}
   {% set attrnames = attrs|map(attribute='name')|list() %}
-  static constexpr NameEntry kNames[] = {
+  struct NamesTable {
   {% for name, tag_list in (tags + attrs)|groupby('name')|sort(attribute=0, case_sensitive=True) %}
-    { "{{name}}", {{name.original|length}}, {{ (name in tagnames)|int }}, {{ (name in attrnames)|int }} },
+    StaticAsciiStringImpl<sizeof("{{name}}") - 1> impl{{loop.index0}} =
+        MakeStaticAtomicStringImpl("{{name}}");
+  {% endfor %}
+  };
+  static constexpr NamesTable kStringImpls;
+
+  {% if tags %}
+  // Bit 0 (1) indicates the name is a tag; bit 1 (2) indicates it is an
+  // attribute.
+  static constexpr uint8_t kNameFlags[] = {
+  {% for name, tag_list in (tags + attrs)|groupby('name')|sort(attribute=0, case_sensitive=True) %}
+    {{ ((name in tagnames)|int) + ((name in attrnames)|int) * 2 }},
   {% endfor %}
   };
 
-  {% if tags %}
   size_t tag_i = 0;
   {% endif %}
   size_t attr_i = 0;
-  for (const NameEntry& name : kNames) {
-    StringImpl* impl = StringImpl::CreateStatic(base::span(name.name, name.length));
-
-    // We need a static version of the uppercase string, since the QualifiedNameWithHash
-    // constructor will call LocalNameUpper(), and we cannot insert non-static strings
-    // before we are done inserting static strings.
-    char upper_buf[256];
-    for (unsigned i = 0; i < name.length; ++i) {
-      CHECK_LT(i, sizeof(upper_buf));
-      upper_buf[i] = ToAsciiUpper(name.name[i]);
-    }
-    AtomicString upper(StringImpl::CreateStatic(base::span(upper_buf, name.length)));
+  const StringImpl* current = reinterpret_cast<const StringImpl*>(&kStringImpls);
+  {% if tags %}
+  for (uint8_t flags : kNameFlags) {
+  {% else %}
+  for (; attr_i < kAttrsCount; ++attr_i) {
+  {% endif %}
+    StringImpl* impl = StringImpl::CreateStatic(current);
+    current = StringImpl::NextStaticStringImpl(current);
 
     {% if tags %}
-    if (name.is_tag) {
+    if (flags & 1) {
       void* address = reinterpret_cast<{{namespace}}QualifiedName*>(&tag_storage) + tag_i;
       QualifiedNameWithHash::CreateStatic(address, impl, {{namespace_prefix}}NamespaceURI);
       ++tag_i;
     }
 
-    if (!name.is_attr)
+    if (!(flags & 2))
       continue;
     {% endif %}
     void* address = reinterpret_cast<QualifiedNameWithHash*>(&attr_storage) + attr_i;
@@ -103,8 +105,11 @@ void Init() {
     {% else %}
     QualifiedNameWithHash::CreateStatic(address, impl);
     {% endif %}
+    {% if tags %}
     ++attr_i;
+    {% endif %}
   }
+  DCHECK_EQ(current, reinterpret_cast<const StringImpl*>(&kStringImpls + 1));
   {% if tags %}
   DCHECK_EQ(tag_i, kTagsCount);
   {% endif %}

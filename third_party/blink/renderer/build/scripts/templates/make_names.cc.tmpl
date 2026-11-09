@@ -5,11 +5,9 @@
 
 #include "{{this_include_path}}"
 
-#include <iterator>
-
-#include "base/containers/span.h"
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
 namespace blink {
 namespace {{namespace}} {
@@ -26,22 +24,22 @@ void Init{{suffix}}() {
   if (is_loaded) return;
   is_loaded = true;
 
-  struct NameEntry {
-    const char* name;
-    unsigned char length;
-  };
-
-  static constexpr NameEntry kNames[] = {
+  struct NamesTable {
   {% for entry in entries|sort(attribute='name', case_sensitive=True) %}
-    { "{{entry|cpp_name}}", {{entry|cpp_name|length}} },
+    StaticAsciiStringImpl<sizeof("{{entry|cpp_name}}") - 1> impl{{loop.index0}} =
+        MakeStaticAtomicStringImpl("{{entry|cpp_name}}");
   {% endfor %}
   };
+  static constexpr NamesTable kNames;
 
-  for (size_t i = 0; i < std::size(kNames); ++i) {
-    StringImpl* impl = StringImpl::CreateStatic(base::span(kNames[i].name, kNames[i].length));
+  const StringImpl* current = reinterpret_cast<const StringImpl*>(&kNames);
+  for (size_t i = 0; i < k{{suffix}}NamesCount; ++i) {
+    StringImpl* impl = StringImpl::CreateStatic(current);
     void* address = reinterpret_cast<AtomicString*>(&{{suffix|lower}}names_storage) + i;
     new (address) AtomicString(impl);
+    current = StringImpl::NextStaticStringImpl(current);
   }
+  DCHECK_EQ(current, reinterpret_cast<const StringImpl*>(&kNames + 1));
 {% endif %}
 }
 
