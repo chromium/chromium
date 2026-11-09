@@ -805,12 +805,11 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/565232252")
     public void testProfileDataUpdateOnExpandedSheet() {
         buildAndShowCollapsedThenExpandedBottomSheet();
         String newFullName = "New Full Name1";
 
-        mAccountManagerTestRule.addAccount(
+        mAccountManagerTestRule.updateAccount(
                 new AccountInfo.Builder(TestAccounts.ACCOUNT1).fullName(newFullName).build());
 
         onViewFullyShownInParent(
@@ -827,12 +826,11 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/565232252")
     public void testProfileDataUpdateOnInitialExpandedSheet() {
         buildAndShowBottomSheet(AccountPickerLaunchMode.CHOOSE_ACCOUNT);
         String newFullName = "New Full Name1";
 
-        mAccountManagerTestRule.addAccount(
+        mAccountManagerTestRule.updateAccount(
                 new AccountInfo.Builder(TestAccounts.ACCOUNT1).fullName(newFullName).build());
 
         onViewFullyShownInParent(
