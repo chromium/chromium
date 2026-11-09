@@ -189,6 +189,7 @@ import org.chromium.chrome.browser.reader_mode.ReaderModeIphController;
 import org.chromium.chrome.browser.safe_browsing.AdvancedProtectionCoordinator;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogCoordinator;
 import org.chromium.chrome.browser.selection.ChromeSelectionDropdownMenuDelegate;
+import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextIphController;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfOmniboxIphController;
@@ -1496,11 +1497,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarVisibilityObserver);
         }
 
+        boolean isGlicEnabledByFlags = GlicEnabling.isEnabledByFlags();
+        if (isGlicEnabledByFlags) {
+            GlicNavigationUtils.setLauncher(SigninAndHistorySyncActivityLauncherImpl::get);
+            GlicNavigationUtils.setCustomTabLauncher(SettingsCustomTabLauncherImpl::new);
+        }
+
         initializeTabBottomSheetManagers();
 
-        if (GlicEnabling.isEnabledByFlags()
+        if (isGlicEnabledByFlags
                 && (mTabBottomSheetManager != null || GlicUtils.isSidePanelFormFactor(mActivity))) {
-            GlicNavigationUtils.setLauncher(SigninAndHistorySyncActivityLauncherImpl::get);
             ViewStub actorOverlayStub = mActivity.findViewById(R.id.actor_overlay_stub);
             mGlicUiCoordinator =
                     new GlicUiCoordinator(

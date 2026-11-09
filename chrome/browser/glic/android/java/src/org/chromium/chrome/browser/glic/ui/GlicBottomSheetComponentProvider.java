@@ -27,6 +27,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ui.ActorControlCoordinator;
 import org.chromium.chrome.browser.actor.ui.ActorControlStateTracker;
 import org.chromium.chrome.browser.glic.R;
+import org.chromium.chrome.browser.glic.settings.GlicNavigationUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseComponentProvider;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetContent;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetSkeletonCoordinator;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 
 /**
@@ -54,6 +56,7 @@ public class GlicBottomSheetComponentProvider implements CoBrowseComponentProvid
     private @Nullable JniRawPtr<NativeGlicSidePanelCoordinatorAndroid> mNativeCoordinator;
     @VisibleForTesting boolean mShowNativeFre;
     private @Nullable ActorControlStateTracker mActorControlStateTracker;
+    private @Nullable GlicBottomSheetContent mActiveContent;
 
     /** JNI static factory method to create the provider. */
     @CalledByNative
@@ -72,6 +75,11 @@ public class GlicBottomSheetComponentProvider implements CoBrowseComponentProvid
     @CalledByNative
     void configureNativeFre(boolean showNativeFre) {
         mShowNativeFre = showNativeFre;
+        if (showNativeFre) {
+            mountNativeFreOnActiveContent();
+        } else if (mActiveContent != null) {
+            mActiveContent.teardownNativeFre();
+        }
     }
 
     @Override
@@ -81,6 +89,7 @@ public class GlicBottomSheetComponentProvider implements CoBrowseComponentProvid
             mNativeCoordinator = null;
         }
         configureNativeFre(false);
+        mActiveContent = null;
         if (mActorControlStateTracker != null) {
             mActorControlStateTracker.destroy();
             mActorControlStateTracker = null;
@@ -113,15 +122,38 @@ public class GlicBottomSheetComponentProvider implements CoBrowseComponentProvid
             @Px int peekViewHeight,
             @IdRes int peekViewContainerId,
             Runnable onBackPressed) {
-        return new GlicBottomSheetContent(
-                contentView,
-                defaultHeightRatio,
-                fullHeightRatio,
-                backgroundColor,
-                peekViewHeight,
-                peekViewContainerId,
-                onBackPressed,
-                mProfile);
+        GlicBottomSheetContent content =
+                new GlicBottomSheetContent(
+                        contentView,
+                        defaultHeightRatio,
+                        fullHeightRatio,
+                        backgroundColor,
+                        peekViewHeight,
+                        peekViewContainerId,
+                        onBackPressed,
+                        mProfile);
+        if (mActiveContent != null) {
+            mActiveContent.teardownNativeFre();
+        }
+        mActiveContent = content;
+        content.setDestroyCallback(
+                () -> {
+                    if (mActiveContent == content) {
+                        mActiveContent = null;
+                    }
+                });
+        if (mShowNativeFre) {
+            mountNativeFreOnActiveContent();
+        }
+        return content;
+    }
+
+    private void mountNativeFreOnActiveContent() {
+        if (mActiveContent == null) return;
+        SettingsCustomTabLauncher customTabLauncher = GlicNavigationUtils.getCustomTabLauncher();
+        assert customTabLauncher != null;
+        if (customTabLauncher == null) return;
+        mActiveContent.mountNativeFre(customTabLauncher, this::notifyNativeFreAccepted);
     }
 
     @Override

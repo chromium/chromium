@@ -17,6 +17,7 @@ import org.jni_zero.JniType;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.glic.R;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
@@ -47,6 +49,7 @@ public class GlicNavigationUtils {
     public static final String FIELD_LOCATION_PERMISSION = "location_permission";
     public static final String FIELD_MICROPHONE_PERMISSION = "microphone_permission";
     private static @Nullable Supplier<SigninAndHistorySyncActivityLauncher> sLauncherSupplier;
+    private static @Nullable Supplier<SettingsCustomTabLauncher> sCustomTabLauncherSupplier;
 
     /**
      * Sets the launcher supplier used to trigger the bottom sheet sign-in and history sync flow.
@@ -60,6 +63,25 @@ public class GlicNavigationUtils {
 
     private static @Nullable SigninAndHistorySyncActivityLauncher getLauncher() {
         return sLauncherSupplier != null ? sLauncherSupplier.get() : null;
+    }
+
+    /** Sets the supplier for the {@link SettingsCustomTabLauncher} used by the native FRE. */
+    public static void setCustomTabLauncher(
+            Supplier<SettingsCustomTabLauncher> customTabLauncherSupplier) {
+        sCustomTabLauncherSupplier = customTabLauncherSupplier;
+    }
+
+    /** Sets the {@link SettingsCustomTabLauncher} supplier for testing. */
+    public static void setCustomTabLauncherForTesting(
+            @Nullable Supplier<SettingsCustomTabLauncher> customTabLauncherSupplier) {
+        var oldValue = sCustomTabLauncherSupplier;
+        sCustomTabLauncherSupplier = customTabLauncherSupplier;
+        ResettersForTesting.register(() -> sCustomTabLauncherSupplier = oldValue);
+    }
+
+    /** Returns the {@link SettingsCustomTabLauncher} for the native FRE, if set. */
+    public static @Nullable SettingsCustomTabLauncher getCustomTabLauncher() {
+        return sCustomTabLauncherSupplier != null ? sCustomTabLauncherSupplier.get() : null;
     }
 
     /** Opens the GLIC settings page. */
