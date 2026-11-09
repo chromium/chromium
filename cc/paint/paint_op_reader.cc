@@ -19,6 +19,7 @@
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
@@ -70,6 +71,30 @@ bool IsValidPaintShaderScalingBehavior(PaintShader::ScalingBehavior behavior) {
   return behavior == PaintShader::ScalingBehavior::kRasterAtScale ||
          behavior == PaintShader::ScalingBehavior::kFixedScale;
 }
+
+// Forwards to another SharedImageProvider and records whether any SharedImage
+// was opened through it. Nested records are deserialized with the same
+// provider, so this also sees SharedImages opened by records nested inside the
+// record being read.
+class TrackingSharedImageProvider final : public SharedImageProvider {
+  STACK_ALLOCATED();
+
+ public:
+  explicit TrackingSharedImageProvider(SharedImageProvider& provider)
+      : provider_(provider) {}
+
+  sk_sp<SkImage> OpenSharedImageForRead(const gpu::Mailbox& mailbox,
+                                        Error& error) override {
+    opened_shared_image_ = true;
+    return provider_.OpenSharedImageForRead(mailbox, error);
+  }
+
+  bool opened_shared_image() const { return opened_shared_image_; }
+
+ private:
+  SharedImageProvider& provider_;
+  bool opened_shared_image_ = false;
+};
 
 }  // namespace
 
@@ -736,10 +761,17 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   ReadSimple(&ref.end_degrees_);
   Read(&ref.gradient_interpolation_);
   Read(&ref.image_);
+  // Only image shaders use an image; clients never serialize one for any other
+  // shader type.
+  if (ref.image_ && shader_type != PaintShader::Type::kImage) {
+    SetInvalid(DeserializationError::kUnexpectedPaintShaderType);
+    return;
+  }
   bool has_record = false;
   Read(&has_record);
   PaintShader::RecordShaderId shader_id = PaintShader::kInvalidRecordShaderId;
   size_t shader_size = 0;
+  bool record_opened_shared_image = false;
   if (has_record) {
     if (shader_type != PaintShader::Type::kPaintRecord) {
       SetInvalid(DeserializationError::kUnexpectedPaintShaderType);
@@ -751,12 +783,22 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
       return;
     }
 
+    // Note whether the record opens any SharedImages, see below.
+    std::optional<TrackingSharedImageProvider> tracking_provider;
+    PaintOp::DeserializeOptions record_options = options_;
+    if (options_.shared_image_provider) {
+      tracking_provider.emplace(*options_.shared_image_provider);
+      record_options.shared_image_provider = &tracking_provider.value();
+    }
+
     // Track dependent transfer cache entries to make cached shader size
     // more realistic.
     size_t pre_size = options_.transfer_cache->GetTotalEntrySizes();
-    size_t record_size = Read(&ref.record_);
+    size_t record_size = Read(&ref.record_, record_options);
     size_t post_size = options_.transfer_cache->GetTotalEntrySizes();
     shader_size = post_size - pre_size + record_size;
+    record_opened_shared_image =
+        tracking_provider && tracking_provider->opened_shared_image();
 
     ref.id_ = shader_id;
   }
@@ -879,6 +921,16 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
 
   // All shader types but records are done.
   if (shader_type != PaintShader::Type::kPaintRecord) {
+    (*shader)->ResolveSkObjects();
+    return;
+  }
+
+  // SkImages opened through `options_.shared_image_provider` borrow their
+  // textures only until the end of the current raster pass, after which the
+  // client can destroy the SharedImages. A shader whose record holds such
+  // images must neither be cached past this pass nor replaced by a cached
+  // version, so resolve it for this use only.
+  if (record_opened_shared_image) {
     (*shader)->ResolveSkObjects();
     return;
   }
@@ -1736,6 +1788,11 @@ void PaintOpReader::ReadLightingSpotPaintFilter(
 }
 
 size_t PaintOpReader::Read(std::optional<PaintRecord>* record) {
+  return Read(record, options_);
+}
+
+size_t PaintOpReader::Read(std::optional<PaintRecord>* record,
+                           const PaintOp::DeserializeOptions& options) {
   size_t size_bytes = 0;
   ReadSize(&size_bytes);
 
@@ -1760,7 +1817,7 @@ size_t PaintOpReader::Read(std::optional<PaintRecord>* record) {
     return 0;
 
   auto span = remaining_.first(size_bytes);
-  sk_sp<PaintOpBuffer> buffer = PaintOpBuffer::MakeFromMemory(span, options_);
+  sk_sp<PaintOpBuffer> buffer = PaintOpBuffer::MakeFromMemory(span, options);
   if (!buffer) {
     SetInvalid(DeserializationError::kPaintOpBufferMakeFromMemoryFailure);
     return 0;
