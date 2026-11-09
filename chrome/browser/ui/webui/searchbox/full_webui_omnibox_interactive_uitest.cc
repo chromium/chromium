@@ -5648,8 +5648,16 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // unfocused draft, keeping the draft, and that the popup reopens unfocused once
 // it can show again: after the transition on macOS, where the location bar
 // stays drawn, and after leaving fullscreen elsewhere.
+// TODO(crbug.com/567689883): Consistently fails on Mac13 Tests.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FullscreenClosesUnfocusedDraftPopupAndReopensIt \
+  DISABLED_FullscreenClosesUnfocusedDraftPopupAndReopensIt
+#else
+#define MAYBE_FullscreenClosesUnfocusedDraftPopupAndReopensIt \
+  FullscreenClosesUnfocusedDraftPopupAndReopensIt
+#endif
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
-                       FullscreenClosesUnfocusedDraftPopupAndReopensIt) {
+                       MAYBE_FullscreenClosesUnfocusedDraftPopupAndReopensIt) {
   if (IsWebUIToolbarEnabled()) {
     GTEST_SKIP() << "TODO(b/577150359): With the WebUI toolbar, the popup "
                     "isn't closed in fullscreen or reopened after.";
