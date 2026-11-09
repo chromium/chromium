@@ -1352,16 +1352,20 @@ class FullWebUIOmniboxInteractiveTest
       bool expect_search_match) {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(
         kInputIconShowsDefaultSearchProviderIcon);
-    const std::string expected_icon =
-        base::GetQuotedJSONString(GetDefaultSearchProviderIcon(
-            TemplateURLServiceFactory::GetForProfile(browser()->GetProfile()),
-            /*is_dark_mode=*/false));
+    const auto* const turl_service =
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
+    const std::string expected_icon_light = base::GetQuotedJSONString(
+        GetDefaultSearchProviderIcon(turl_service, /*is_dark_mode=*/false));
+    const std::string expected_icon_dark = base::GetQuotedJSONString(
+        GetDefaultSearchProviderIcon(turl_service, /*is_dark_mode=*/true));
     StateChange state_change;
     state_change.event = kInputIconShowsDefaultSearchProviderIcon;
     state_change.where = kWebUIInputIcon;
-    // With the Google search provider, the icon is the Google G resource on
-    // branded builds and the provider's favicon URL otherwise. Both are shown
-    // via #faviconImage, because a mask image would drop their colors.
+    // With Google as the search provider on branded builds, light mode shows
+    // the rainbow Google G via #faviconImage (to preserve its colors), while
+    // dark mode shows the monochrome white Google G via a CSS mask on #icon.
+    // For non-Google providers or unbranded builds, the provider's favicon or
+    // fallback loupe is shown.
     state_change.test_function = base::StringPrintf(
         R"((el) => {
               if (!el || el.pageUrl !== '') {
@@ -1369,12 +1373,21 @@ class FullWebUIOmniboxInteractiveTest
               }
               const matchOk = %s ? !!el.match && el.match.isSearchType
                                  : !el.match;
+              if (!matchOk) {
+                return false;
+              }
               const img = el.shadowRoot.querySelector('#faviconImage');
-              return matchOk && el.defaultIcon === %s &&
-                  img.getAttribute('src') === %s;
+              const icon = el.shadowRoot.querySelector('#icon');
+              const isLightMatch = el.defaultIcon === %s &&
+                  img && img.getAttribute('src') === %s;
+              const isDarkMatch = el.defaultIcon === %s &&
+                  ((el.maskImage || '').includes(%s) ||
+                   (icon && (icon.style.webkitMaskImage || '').includes(%s)));
+              return isLightMatch || isDarkMatch;
             })",
-        expect_search_match ? "true" : "false", expected_icon.c_str(),
-        expected_icon.c_str());
+        expect_search_match ? "true" : "false", expected_icon_light.c_str(),
+        expected_icon_light.c_str(), expected_icon_dark.c_str(),
+        expected_icon_dark.c_str(), expected_icon_dark.c_str());
     state_change.continue_across_navigation = true;
     return InAnyContext(WaitForStateChange(kPopupWebView, state_change));
   }
