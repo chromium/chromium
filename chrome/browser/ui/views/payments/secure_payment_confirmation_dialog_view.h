@@ -129,7 +129,7 @@ class SecurePaymentConfirmationDialogView
       nullptr;
   // Cache the instrument icon generation ID to check if the instrument_icon_
   // has changed pixels.
-  uint32_t instrument_icon_generation_id_ = 0;
+  uint64_t instrument_icon_generation_id_ = 0;
 
   // The opt-out view stored in the dialog footnote. This is always created in
   // InitChildViews, but is only marked visible if opt-out was requested.

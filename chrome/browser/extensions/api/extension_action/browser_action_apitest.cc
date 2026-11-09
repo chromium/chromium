@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   ASSERT_EQ(1, GetNumberOfActionsInToolbar(browser()));
 
   gfx::Image action_icon = icon_factory.GetIcon(0);
-  uint32_t action_icon_last_id = action_icon.ToSkBitmap()->getGenerationID();
+  uint64_t action_icon_last_id = action_icon.ToSkBitmap()->getGenerationID();
 
   // Let's check that |GetIcon| doesn't always return bitmap with new id.
   ASSERT_EQ(action_icon_last_id,
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   last_bar_icon = GetToolbarActionIcon(extension->id());
 
   action_icon = icon_factory.GetIcon(0);
-  uint32_t action_icon_current_id = action_icon.ToSkBitmap()->getGenerationID();
+  uint64_t action_icon_current_id = action_icon.ToSkBitmap()->getGenerationID();
   EXPECT_GT(action_icon_current_id, action_icon_last_id);
   action_icon_last_id = action_icon_current_id;
   VerifyIconsMatch(last_bar_icon, action_icon);
