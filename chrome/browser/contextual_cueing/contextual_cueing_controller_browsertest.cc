@@ -347,7 +347,8 @@ class ContextualCueingControllerBrowserTest
           {{"ContextualCueingV2DiscardShoppingPdfs", "true"},
            {"ContextualCueingV2TabListVisibility", "always"},
            {"ContextualCueingV2EnablePrivateInsightsLogging", "true"}}}},
-        /*disabled_features=*/{kContextualCueingV2EnforceAgeRestriction});
+        /*disabled_features=*/{kContextualCueingV2EnforceAgeRestriction,
+                               kContextualCueingV2MultiSource});
   }
 };
 
@@ -359,7 +360,8 @@ class ContextualCueingControllerTabListNeverTest
         {{kContextualCueingV2,
           {{"ContextualCueingV2DiscardShoppingPdfs", "true"},
            {"ContextualCueingV2TabListVisibility", "never"}}}},
-        /*disabled_features=*/{kContextualCueingV2EnforceAgeRestriction});
+        /*disabled_features=*/{kContextualCueingV2EnforceAgeRestriction,
+                               kContextualCueingV2MultiSource});
   }
 };
 
@@ -426,7 +428,8 @@ class ContextualCueingControllerTabListOnlyIfMultipleTest
         {{kContextualCueingV2,
           {{"ContextualCueingV2DiscardShoppingPdfs", "true"},
            {"ContextualCueingV2TabListVisibility", "only-if-multiple"}}}},
-        /*disabled_features=*/{kContextualCueingV2EnforceAgeRestriction});
+        /*disabled_features=*/{kContextualCueingV2EnforceAgeRestriction,
+                               kContextualCueingV2MultiSource});
   }
 };
 
@@ -2471,7 +2474,7 @@ class ContextualCueingControllerBrowserTestWithAgeRestriction
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeatures(
         {kContextualCueingV2, kContextualCueingV2EnforceAgeRestriction},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{kContextualCueingV2MultiSource});
   }
 
   void SetUserRestriction(bool is_restricted) {
@@ -2536,7 +2539,8 @@ class ContextualCueingControllerShowInSplitViewBrowserTest
           {{"ContextualCueingV2DiscardShoppingPdfs", "true"},
            {"ContextualCueingV2TabListVisibility", "always"},
            {"ContextualCueingV2ShouldShowCueInSplitView", "true"}}}},
-        /*disabled_features=*/{kContextualCueingV2EnforceAgeRestriction});
+        /*disabled_features=*/{kContextualCueingV2EnforceAgeRestriction,
+                               kContextualCueingV2MultiSource});
   }
 };
 
@@ -3914,7 +3918,8 @@ class ContextualCueingControllerHistoricalTabsBrowserTest
            {"ContextualCueingV2TabListVisibility", "always"},
            {"ContextualCueingV2EnablePrivateInsightsLogging", "true"},
            {"ContextualCueingV2MaxNumHistoricalTabs", "5"}}}},
-        /*disabled_features=*/{kContextualCueingV2EnforceAgeRestriction});
+        /*disabled_features=*/{kContextualCueingV2EnforceAgeRestriction,
+                               kContextualCueingV2MultiSource});
   }
 };
 
