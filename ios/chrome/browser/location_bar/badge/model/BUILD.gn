@@ -12,7 +12,10 @@ source_set("model") {
     "location_bar_badge_tab_helper_observer.h",
     "location_bar_badge_tab_helper_observer_bridge.h",
     "location_bar_badge_tab_helper_observer_bridge.mm",
+    "location_bar_badge_util.h",
+    "location_bar_badge_util.mm",
   ]
+  public_deps = [ "//ios/chrome/browser/infobars/model:public" ]
   deps = [
     "//base",
     "//ios/chrome/browser/shared/public/features",
@@ -30,6 +33,7 @@ source_set("unit_tests") {
     "fake_location_bar_badge_tab_helper_observer.mm",
     "location_bar_badge_tab_helper_observer_bridge_unittest.mm",
     "location_bar_badge_tab_helper_unittest.mm",
+    "location_bar_badge_util_unittest.mm",
   ]
   deps = [
     ":model",
