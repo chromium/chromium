@@ -192,6 +192,12 @@
   <message name="IDS_SETTINGS_GLIC_INLINE_CUE_MENU_ADD_SITE" desc="Label for the Add Site button on the inline cue menu exceptions list.">
     Add site
   </message>
+  <message name="IDS_SETTINGS_GLIC_INLINE_CUE_MENU_EXPLAIN_TOGGLE" desc="Label for the toggle on the inline cue menu settings page that lets Chrome send page content to Google to explain highlighted text.">
+    Use page content to explain highlighted text
+  </message>
+  <message name="IDS_SETTINGS_GLIC_INLINE_CUE_MENU_EXPLAIN_TOGGLE_SUBLABEL" desc="Sublabel for the toggle on the inline cue menu settings page that lets Chrome send page content to Google to explain highlighted text.">
+    The content and URL of the page you're on, and the highlighted text, are sent to Google to generate an explanation
+  </message>
   <message name="IDS_SETTINGS_GLIC_PREFERENCES_SECTION" desc="Heading on settings page for basic preferences." formatter_data="android_java">
     Preferences
   </message>

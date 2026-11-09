@@ -1039,6 +1039,10 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_GLIC_INLINE_CUE_MENU},
       {"siteSettingsInlineCueMenuToggleSublabel",
        IDS_SETTINGS_GLIC_INLINE_CUE_MENU_TOGGLE_SUBLABEL},
+      {"siteSettingsInlineCueMenuExplainToggle",
+       IDS_SETTINGS_GLIC_INLINE_CUE_MENU_EXPLAIN_TOGGLE},
+      {"siteSettingsInlineCueMenuExplainToggleSublabel",
+       IDS_SETTINGS_GLIC_INLINE_CUE_MENU_EXPLAIN_TOGGLE_SUBLABEL},
       {"glicHotkeyGlobalScopeDescription",
        IDS_SETTINGS_GLIC_HOTKEY_GLOBAL_SCOPE_DESCRIPTION},
   };

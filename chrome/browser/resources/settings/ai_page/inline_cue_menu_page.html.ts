@@ -35,6 +35,14 @@ export function getHtml(this: SettingsInlineCueMenuPageElement) {
       @settings-boolean-control-change="${
           this.onMainToggleSettingsBooleanControlChange_}">
   </settings-toggle-button>
+  ${this.enableQuickAnswersSelectionSuggestions_ ? html`
+    <settings-toggle-button id="explainToggle"
+        pref-key="glic.quick_answers_fre_accepted"
+        ?disabled="${!this.explainFreAccepted_}"
+        label="$i18n{siteSettingsInlineCueMenuExplainToggle}"
+        sub-label="$i18n{siteSettingsInlineCueMenuExplainToggleSublabel}">
+    </settings-toggle-button>
+  ` : ''}
 
   <div class="cr-row exceptions-header-row">
     <h2 class="flex cr-padded-text exceptions-header">

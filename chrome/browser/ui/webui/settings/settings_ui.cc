@@ -589,6 +589,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("enableInlineCueMenuContentSetting",
                           glic::GetGlicProviderSpec(profile).SupportsFeature(
                               glic::GlicFeature::kSelectionInlineCue));
+  html_source->AddBoolean("enableQuickAnswersSelectionSuggestions",
+                          base::FeatureList::IsEnabled(
+                              features::kQuickAnswersSelectionSuggestions));
 
   // AI
   auto glic_enablement = glic::GlicEnabling::EnablementForProfile(profile);

@@ -14,7 +14,9 @@ import '../settings_page/settings_subpage.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -35,9 +37,11 @@ export interface SettingsInlineCueMenuPageElement {
 
 const INLINE_CUE_MENU_PREF_KEY =
     'synthetic.settings.contextual_cueing.inline_cue_menu.enabled';
+const EXPLAIN_FRE_ACCEPTED_PREF_KEY = 'glic.quick_answers_fre_accepted';
 
 const SettingsInlineCueMenuPageElementBase =
-    SettingsViewMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
+    SettingsViewMixinLit(PrefServiceObserverMixinLit(
+        WebUiListenerMixinLit(I18nMixinLit(CrLitElement))));
 
 export class SettingsInlineCueMenuPageElement extends
     SettingsInlineCueMenuPageElementBase {
@@ -57,11 +61,16 @@ export class SettingsInlineCueMenuPageElement extends
     return {
       sites_: {type: Array},
       showAddSiteDialog_: {type: Boolean},
+      enableQuickAnswersSelectionSuggestions_: {type: Boolean},
+      explainFreAccepted_: {type: Boolean},
     };
   }
 
   protected accessor sites_: RawSiteException[] = [];
   protected accessor showAddSiteDialog_: boolean = false;
+  protected accessor enableQuickAnswersSelectionSuggestions_: boolean =
+      loadTimeData.getBoolean('enableQuickAnswersSelectionSuggestions');
+  protected accessor explainFreAccepted_: boolean = false;
 
   private browserProxy_: SiteSettingsBrowserProxy =
       SiteSettingsBrowserProxyImpl.getInstance();
@@ -80,6 +89,14 @@ export class SettingsInlineCueMenuPageElement extends
             this.updateSites_();
           }
         });
+
+    // The toggle can only turn Explain off. It's grayed out until the user
+    // accepts the FRE, which is the only way to turn it on.
+    if (this.enableQuickAnswersSelectionSuggestions_) {
+      this.addPrefObserver<boolean>(EXPLAIN_FRE_ACCEPTED_PREF_KEY, pref => {
+        this.explainFreAccepted_ = pref.value;
+      });
+    }
 
     this.updateToggleValue_();
     this.updateSites_();

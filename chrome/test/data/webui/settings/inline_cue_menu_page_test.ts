@@ -7,7 +7,8 @@ import 'chrome://settings/lazy_load.js';
 
 import type {SettingsInlineCueMenuPageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
+import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {loadTimeData, PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -16,12 +17,19 @@ import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.j
 import {createContentSettingTypeToValuePair, createRawSiteException, createSiteSettingsPrefs} from './test_util.js';
 // clang-format on
 
+const EXPLAIN_PREF_KEY = 'glic.quick_answers_fre_accepted';
+
 suite('InlineCueMenuPage', function() {
   let browserProxy: TestSiteSettingsBrowserProxy;
   let page: SettingsInlineCueMenuPageElement;
 
   setup(async function() {
-    const prefsBrowserProxy = new TestPrefsBrowserProxy([]);
+    loadTimeData.overrideValues({enableQuickAnswersSelectionSuggestions: true});
+    const prefsBrowserProxy = new TestPrefsBrowserProxy([{
+      key: EXPLAIN_PREF_KEY,
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    }]);
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
     await PrefService.getInstance().whenInitialized();
@@ -134,5 +142,52 @@ suite('InlineCueMenuPage', function() {
 
     const addSiteDialog = page.shadowRoot.querySelector('add-site-dialog');
     assertTrue(!!addSiteDialog);
+  });
+
+  function getExplainToggle(): SettingsToggleButtonElement|null {
+    return page.shadowRoot.querySelector<SettingsToggleButtonElement>(
+        '#explainToggle');
+  }
+
+  async function acceptExplainFre() {
+    await PrefService.getInstance().setPrefValue(EXPLAIN_PREF_KEY, true);
+    await microtasksFinished();
+  }
+
+  test('ExplainToggleGrayedOutUntilFreAccepted', async function() {
+    await initPage();
+    const toggle = getExplainToggle();
+    assertTrue(!!toggle);
+    assertFalse(toggle.checked);
+    assertTrue(toggle.disabled);
+
+    await acceptExplainFre();
+    assertTrue(toggle.checked);
+    assertFalse(toggle.disabled);
+  });
+
+  test('ExplainToggleTurnsOffAndGraysOut', async function() {
+    await acceptExplainFre();
+    await initPage();
+    const toggle = getExplainToggle();
+    assertTrue(!!toggle);
+    assertTrue(toggle.checked);
+    assertFalse(toggle.disabled);
+
+    toggle.click();
+    await microtasksFinished();
+    assertFalse(
+        PrefService.getInstance().getPref<boolean>(EXPLAIN_PREF_KEY).value);
+    assertFalse(toggle.checked);
+    // Turning it back on goes through the FRE.
+    assertTrue(toggle.disabled);
+  });
+
+  test('ExplainToggleHiddenWhenExplainOff', async function() {
+    loadTimeData.overrideValues(
+        {enableQuickAnswersSelectionSuggestions: false});
+    await acceptExplainFre();
+    await initPage();
+    assertFalse(!!getExplainToggle());
   });
 });
