@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -259,11 +258,8 @@ class LookalikeUrlNavigationThrottleBrowserTest : public InProcessBrowserTest {
             net::EmbeddedTestServer::TYPE_HTTPS)) {}
 
   void SetUp() override {
-    // TODO(b:507481593): Some tests are failing when enabling these features.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features*/ {kOptimizeLookalikeUrlNavigationThrottle},
-        /*disabled_features*/ {omnibox::internal::kWebUIOmniboxPopup,
-                               omnibox::internal::kWebUIOmniboxAimPopup});
+    scoped_feature_list_.InitAndEnableFeature(
+        kOptimizeLookalikeUrlNavigationThrottle);
     InProcessBrowserTest::SetUp();
   }
 

@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -49,16 +48,6 @@
 namespace safe_browsing {
 
 class DownloadProtectionServiceBrowserTest : public InProcessBrowserTest {
- public:
-  DownloadProtectionServiceBrowserTest() {
-    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
-    // enabled and then remove this.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{omnibox::internal::kWebUIOmniboxPopup,
-                               omnibox::internal::kWebUIOmniboxAimPopup});
-  }
-
  protected:
   base::FilePath GetTestDataDirectory() {
     base::FilePath test_file_directory;
@@ -105,9 +94,6 @@ class DownloadProtectionServiceBrowserTest : public InProcessBrowserTest {
       }
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest, VerifyZipHash) {

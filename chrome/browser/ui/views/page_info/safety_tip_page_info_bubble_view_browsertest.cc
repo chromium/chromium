@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -31,7 +30,6 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -252,16 +250,6 @@ void ConfigureAllowlistWithScopes() {
 }  // namespace
 
 class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
- public:
-  SafetyTipPageInfoBubbleViewBrowserTest() {
-    // TODO(crbug.com/452061489): Remove this and fix the test failures while
-    // WebUI Omnibox is enabled.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{omnibox::internal::kWebUIOmniboxPopup,
-                               omnibox::internal::kWebUIOmniboxAimPopup});
-  }
-
  protected:
   void SetUp() override {
     lookalikes::InitializeSafetyTipConfig();
@@ -449,7 +437,6 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<LookalikeTestHelper> test_helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Ensure normal sites with low engagement are not blocked.
