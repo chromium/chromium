@@ -5,9 +5,11 @@
 #ifndef BASE_ANDROID_DEVICE_INFO_H_
 #define BASE_ANDROID_DEVICE_INFO_H_
 
+#include <optional>
 #include <string>
 
 #include "base/base_export.h"
+#include "base/types/pass_key.h"
 
 #if __ANDROID_API__ >= 29
 namespace aidl::org::chromium::base {
@@ -17,6 +19,9 @@ using ::aidl::org::chromium::base::IDeviceInfo;
 #endif
 
 namespace base::android::device_info {
+
+class ScopedDeviceName;
+
 BASE_EXPORT const std::string& gms_version_code();
 
 BASE_EXPORT void set_gms_version_code_for_test(
@@ -45,8 +50,12 @@ BASE_EXPORT void set_is_desktop_for_testing(bool is_desktop);
 BASE_EXPORT void reset_is_desktop_for_testing();
 BASE_EXPORT void set_is_foldable_for_testing(bool is_foldable);
 BASE_EXPORT void reset_is_foldable_for_testing();
-BASE_EXPORT void set_device_name_for_testing(const std::string& device_name);
-BASE_EXPORT void reset_device_name_for_testing();
+
+// For testing use only; use `ScopedDeviceName` in
+// `base/android/device_info_test_support.h`.
+BASE_EXPORT std::optional<std::string> set_device_name_for_testing(
+    base::PassKey<ScopedDeviceName>,
+    std::optional<std::string> device_name);
 }  // namespace base::android::device_info
 
 #endif  // BASE_ANDROID_DEVICE_INFO_H_

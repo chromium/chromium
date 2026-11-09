@@ -369,6 +369,8 @@ static_library("test_support") {
 
   if (is_android) {
     sources += [
+      "../android/device_info_test_support.cc",
+      "../android/device_info_test_support.h",
       "android/content_uri_test_utils.cc",
       "android/content_uri_test_utils.h",
       "android/java_handler_thread_helpers.cc",

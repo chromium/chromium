@@ -4,7 +4,7 @@
 
 #include "chrome/browser/policy/client_data_delegate_android.h"
 
-#include "base/android/device_info.h"
+#include "base/android/device_info_test_support.h"
 #include "base/system/sys_info.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -26,14 +26,8 @@ class ClientDataDelegateAndroidTest : public base::test::WithFeatureOverride,
       : base::test::WithFeatureOverride(kReportAndroidMachineName) {}
 
  protected:
-  void SetUp() override {
-    base::android::device_info::set_device_name_for_testing(kCustomDeviceName);
-  }
-
-  void TearDown() override {
-    base::android::device_info::reset_device_name_for_testing();
-  }
-
+  base::android::device_info::ScopedDeviceName scoped_device_name_{
+      kCustomDeviceName};
   base::test::TaskEnvironment task_environment_;
 };
 

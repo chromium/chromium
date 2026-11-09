@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/android/android_info.h"
-#include "base/android/device_info.h"
+#include "base/android/device_info_test_support.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -78,7 +78,6 @@ class AndroidSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
   void SetUp() override {
     task_environment_ = std::make_unique<content::BrowserTaskEnvironment>();
     GenericOsSignalsCollectorTestBase::SetUp();
-    base::android::device_info::set_device_name_for_testing(kFakeDeviceName);
     auto mock_os_security_info_provider =
         std::make_unique<NiceMock<MockOsSecurityInfoProvider>>();
     mock_os_security_info_provider_ = mock_os_security_info_provider.get();
@@ -92,11 +91,6 @@ class AndroidSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
         .WillByDefault(Return(SettingValue::ENABLED));
     SetVerifyAppsResult(VerifyAppsEnabledResult::SUCCESS_NOT_ENABLED);
     SetHarmfulAppsResult(HasHarmfulAppsResultStatus::SUCCESS, 2);
-  }
-
-  void TearDown() override {
-    base::android::device_info::reset_device_name_for_testing();
-    GenericOsSignalsCollectorTestBase::TearDown();
   }
 
   // Helper function to check a subset of signals that should or should not be
@@ -195,6 +189,8 @@ class AndroidSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
   // Verifies that no collection outcome was recorded at all.
   void ExpectNoCollectionOutcomeLogged() { ExpectCollectionSuccessLogged({}); }
 
+  base::android::device_info::ScopedDeviceName scoped_device_name_{
+      kFakeDeviceName};
   std::unique_ptr<AndroidSignalsCollector> signal_collector_;
   // Owned by `signal_collector_`.
   raw_ptr<NiceMock<MockOsSecurityInfoProvider>> mock_os_security_info_provider_;
@@ -262,8 +258,8 @@ TEST_F(AndroidSignalsCollectorTest, GetOsSignalsKillSwitchDisabled) {
                             /*can_collect_pii=*/true);
   }
 
-  base::android::device_info::set_device_name_for_testing("");
   {
+    base::android::device_info::ScopedDeviceName empty_device_name("");
     SignalsAggregationRequest empty_request;
     SignalsAggregationResponse response;
     base::RunLoop run_loop;

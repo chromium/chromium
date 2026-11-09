@@ -61,9 +61,13 @@ public class DeviceInfoUnitTest {
                 "Pixel Test Device");
         assertEquals("Pixel Test Device", DeviceInfo.getDeviceName());
 
-        DeviceInfo.setDeviceNameForTesting("Override Device Name");
+        assertNull(DeviceInfo.setDeviceNameForTesting("Override Device Name"));
         assertEquals("Override Device Name", DeviceInfo.getDeviceName());
 
+        assertEquals("Override Device Name", DeviceInfo.setDeviceNameForTesting(null));
+        assertEquals("Pixel Test Device", DeviceInfo.getDeviceName());
+
+        DeviceInfo.setDeviceNameForTesting("Override Device Name");
         DeviceInfo.resetDeviceNameForTesting();
         assertEquals("Pixel Test Device", DeviceInfo.getDeviceName());
     }
