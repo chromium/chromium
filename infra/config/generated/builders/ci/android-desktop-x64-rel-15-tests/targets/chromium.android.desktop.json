@@ -447,8 +447,7 @@
           "crashtest",
           "print-reftest",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
-          "--additional-driver-flag=--force-desktop-android",
-          "--additional-driver-flag=--disable-features=UseWebUiNtpAndroid"
+          "--additional-driver-flag=--force-desktop-android"
         ],
         "ci_only": true,
         "description": "Run with android_35_google_apis_tablet_x64_tablet_landscape",
