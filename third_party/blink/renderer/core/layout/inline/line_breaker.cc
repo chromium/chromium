@@ -1238,6 +1238,27 @@ bool LineBreaker::CanBreakAfter(const InlineItem& item) const {
   // Bidi controls produced by kOpenRubyColumn/kCloseRubyColumn are ignorable.
   unsigned ignorable_bidi_length = IgnorableBidiControlLength(item);
   if (ignorable_bidi_length > 0u) {
+    // When `item` is followed by a <ruby>, remove the bidi controls from the
+    // text so that they don't affect the break opportunity; e.g., a preserved
+    // space followed by a <ruby>. Text before `break_iterator_.StartOffset()`
+    // is disregarded anyway.
+    //
+    // Keep the existing behavior if `item` ends a ruby column. This avoids a
+    // new break opportunity after a collapsible space between `</rt>` and
+    // `</ruby>`; e.g., "<ruby>\n<rt>x</rt>\n</ruby>\nword".
+    if (RuntimeEnabledFeatures::RubySoftWrapAfterPreservedSpaceEnabled() &&
+        Text()[item.EndOffset()] != uchar::kPopDirectionalIsolate) {
+      const wtf_size_t start_offset = break_iterator_.StartOffset();
+      DCHECK_LE(start_offset, item.EndOffset());
+      StringBuilder text_content;
+      text_content.Append(
+          StringView(Text(), start_offset, item.EndOffset() - start_offset));
+      text_content.Append(
+          StringView(Text(), item.EndOffset() + ignorable_bidi_length));
+      LazyLineBreakIterator break_iterator(break_iterator_,
+                                           text_content.ReleaseString());
+      return break_iterator.IsBreakable(item.EndOffset() - start_offset);
+    }
     return break_iterator_.IsBreakable(item.EndOffset() +
                                        ignorable_bidi_length);
   }

@@ -5765,6 +5765,14 @@
       status: "stable",
     },
     {
+      // Allows a soft wrap after a preserved space (e.g. `white-space:
+      // pre-wrap`) that is followed by a <ruby>, by ignoring the bidi
+      // controls of ruby columns when checking break opportunities.
+      // https://crbug.com/580840306
+      name: "RubySoftWrapAfterPreservedSpace",
+      status: "stable",
+    },
+    {
       // Places ruby annotations clear of the base's underline or overline.
       // https://drafts.csswg.org/css-ruby-1/#ruby-text-decoration
       name: "RubyTextDecorationSpacing",

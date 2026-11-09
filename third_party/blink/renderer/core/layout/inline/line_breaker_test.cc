@@ -1344,5 +1344,129 @@ TEST_F(LineBreakerTest, BidiControlEnterFlag) {
   EXPECT_EQ(10, container->OffsetHeight());
 }
 
+// https://crbug.com/580840306
+TEST_F(LineBreakerTest, RubyAfterPreservedSpacePreWrap) {
+  LoadAhem();
+  // Each <ruby> is 80px wide, and a space is 20px. "<ruby> " fits in 120px,
+  // but the next <ruby> doesn't, so it should wrap after the space.
+  InsertStyleElement(
+      "#container { font: 20px/1 Ahem; white-space: pre-wrap; }"
+      "rt { font-size: 50%; }");
+  for (const char* space : {" ", "   ", "<span> </span>"}) {
+    InlineNode node = CreateInlineNode(
+        StrCat({"<div id=container><ruby>aaaa<rt>xxxx</rt></ruby>", space,
+                "<ruby>bbbb<rt>yyyy</rt></ruby>", space,
+                "<ruby>cccc<rt>zzzz</rt></ruby></div>"}));
+    std::array<LineInfo, 4> line_infos;
+    const wtf_size_t num_lines = BreakLines(node, LayoutUnit(120), line_infos);
+    EXPECT_EQ(num_lines, 3u) << space;
+    for (wtf_size_t i = 0; i < num_lines; ++i) {
+      EXPECT_FALSE(line_infos[i].HasOverflow()) << space << " " << i;
+    }
+    EXPECT_EQ(ComputeMinMaxSizes(node).min_size, LayoutUnit(80)) << space;
+  }
+}
+
+TEST_F(LineBreakerTest, RubyAfterPreservedSpaceBreakSpaces) {
+  LoadAhem();
+  InlineNode node = CreateInlineNode(R"HTML(
+    <style>
+      #container { font: 20px/1 Ahem; white-space: break-spaces; }
+      rt { font-size: 50%; }
+    </style>
+    <div id="container"><ruby>aaaa<rt>xxxx</rt></ruby> <ruby>bbbb<rt>yyyy</rt></ruby> <ruby>cccc<rt>zzzz</rt></ruby></div>
+  )HTML");
+  std::array<LineInfo, 4> line_infos;
+  const wtf_size_t num_lines = BreakLines(node, LayoutUnit(120), line_infos);
+  EXPECT_EQ(num_lines, 3u);
+  for (wtf_size_t i = 0; i < num_lines; ++i) {
+    EXPECT_FALSE(line_infos[i].HasOverflow()) << i;
+    EXPECT_EQ(line_infos[i].Width(), LayoutUnit(i < 2 ? 100 : 80)) << i;
+  }
+}
+
+TEST_F(LineBreakerTest, RubyAfterPreservedTab) {
+  LoadAhem();
+  InlineNode node = CreateInlineNode(R"HTML(
+    <style>
+      #container { font: 20px/1 Ahem; white-space: pre-wrap; tab-size: 1; }
+      rt { font-size: 50%; }
+    </style>
+    <div id="container"><ruby>aaaa<rt>xxxx</rt></ruby>&#9;<ruby>bbbb<rt>yyyy</rt></ruby></div>
+  )HTML");
+  std::array<LineInfo, 4> line_infos;
+  const wtf_size_t num_lines = BreakLines(node, LayoutUnit(120), line_infos);
+  EXPECT_EQ(num_lines, 2u);
+  for (wtf_size_t i = 0; i < num_lines; ++i) {
+    EXPECT_FALSE(line_infos[i].HasOverflow()) << i;
+  }
+}
+
+// `white-space: normal` should wrap at the space both with and without
+// `RubySoftWrapAfterPreservedSpace`.
+TEST_F(LineBreakerTest, RubyAfterCollapsibleSpace) {
+  LoadAhem();
+  for (const bool enabled : {false, true}) {
+    ScopedRubySoftWrapAfterPreservedSpaceForTest scoped_feature(enabled);
+    InlineNode node = CreateInlineNode(R"HTML(
+      <style>
+        #container { font: 20px/1 Ahem; }
+        rt { font-size: 50%; }
+      </style>
+      <div id="container"><ruby>aaaa<rt>xxxx</rt></ruby> <ruby>bbbb<rt>yyyy</rt></ruby> <ruby>cccc<rt>zzzz</rt></ruby></div>
+    )HTML");
+    std::array<LineInfo, 4> line_infos;
+    const wtf_size_t num_lines = BreakLines(node, LayoutUnit(120), line_infos);
+    EXPECT_EQ(num_lines, 3u) << enabled;
+    for (wtf_size_t i = 0; i < num_lines; ++i) {
+      EXPECT_FALSE(line_infos[i].HasOverflow()) << enabled << " " << i;
+      EXPECT_EQ(line_infos[i].Width(), LayoutUnit(80)) << enabled << " " << i;
+    }
+    EXPECT_EQ(ComputeMinMaxSizes(node).min_size, LayoutUnit(80)) << enabled;
+  }
+}
+
+// A collapsible space between `</rt>` and `</ruby>` should not create a break
+// opportunity before "FAIL". See multicol-fill-balance-031.html.
+TEST_F(LineBreakerTest, EmptyBaseRubyLeadingCollapsibleSpace) {
+  LoadAhem();
+  InlineNode node = CreateInlineNode(R"HTML(
+    <style>
+      #container { font: 20px/1 Ahem; }
+      rt { font-size: 50%; }
+    </style>
+    <div id="container"><ruby>
+      <rt>x</rt>
+    </ruby>
+    FAIL</div>
+  )HTML");
+  std::array<LineInfo, 4> line_infos;
+  EXPECT_EQ(BreakLines(node, LayoutUnit(32), line_infos), 1u);
+}
+
+// Ruby annotations should not affect line breaking at the base level.
+TEST_F(LineBreakerTest, RubyKinsoku) {
+  LoadAhem();
+  // `letter-spacing` makes every character wider than the available width,
+  // regardless of the fallback font.
+  for (const UChar* html : {
+           // No break before U+FF09 FULLWIDTH RIGHT PARENTHESIS.
+           u"\u3042<ruby>\u3079<rt>\u308B</rt></ruby>\uFF09",
+           // No break after U+FF08 FULLWIDTH LEFT PARENTHESIS.
+           u"\uFF08<ruby>\u3079<rt>\u308B</rt></ruby>\u3042",
+       }) {
+    InlineNode node = CreateInlineNode(StrCat({R"HTML(
+      <style>
+        #container { font: 20px/1 Ahem; letter-spacing: 10px; }
+        rt { font-size: 50%; }
+      </style>
+      <div id="container">)HTML",
+                                               String(html), "</div>"}));
+    std::array<LineInfo, 4> line_infos;
+    const wtf_size_t num_lines = BreakLines(node, LayoutUnit(1), line_infos);
+    EXPECT_EQ(num_lines, 2u) << String(html);
+  }
+}
+
 }  // namespace
 }  // namespace blink
