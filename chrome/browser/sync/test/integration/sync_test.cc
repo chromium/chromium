@@ -178,9 +178,12 @@ std::unique_ptr<KeyedService> CreateGCMProfileService(
     base::WeakPtr<fake_server::FakeServerSyncInvalidationSender>
         invalidation_sender,
     content::BrowserContext* context) {
+  // Use `USER_VISIBLE` so `GCMKeyStore` initialization is not blocked by
+  // `BEST_EFFORT` execution fences while tests await device info or sharing
+  // registration.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
       base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
 
   Profile* profile = Profile::FromBrowserContext(context);
