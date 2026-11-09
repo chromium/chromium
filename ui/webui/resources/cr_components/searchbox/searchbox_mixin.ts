@@ -789,6 +789,19 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
 
       if (this.selection.state === SelectionLineState.kKeywordMode) {
         e.preventDefault();
+        // In the unusual case where a user typed a keyword and query, then
+        // tabbed onto a keyword chip and pressed enter, we need to navigate to
+        // their keyword search even though there is no corresponding match or
+        // URL (because keyword chips don't have an associated URL since they're
+        // generally not navigable).
+        if (this.getInputElement().getInputValue().trim()) {
+          // TODO(b/582480164): Pass modifier keys to let cc handler compute the
+          //   disposition instead of hardcoding 1 (i.e. `kCurrentTab`).
+          this.pageHandler().openPopupSelection(
+              this.result!.sequenceId, this.selection,
+              /*disposition=*/ 1);
+          return true;
+        }
         this.getInputElement().focus();
         return true;
       }

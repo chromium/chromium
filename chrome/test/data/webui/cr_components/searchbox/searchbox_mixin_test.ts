@@ -4008,6 +4008,59 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         assertEquals(1, testProxy.handler.getCallCount('activateKeyword'));
       });
 
+  test(
+      'Enter on keyword chip opens the selection only with text after keyword',
+      async () => {
+        loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
+        element.virtualFocusEnabledOverride = true;
+
+        const mockInput = element.getInputElement();
+        await simulateUserTextInput(mockInput, 'youtube.com cats');
+
+        const defaultMatch = createSearchMatchForTesting({
+          fillIntoEdit: 'youtube.com cats',
+          allowedToBeDefaultMatch: true,
+          keywordModel: createMatchKeywordModelForTesting({
+            type: KeywordType.kChip,
+            keyword: 'youtube.com',
+            chipHint: 'Search YouTube',
+          }),
+        });
+
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: 'youtube.com cats',
+          matches: [defaultMatch],
+        }));
+        await microtasksFinished();
+
+        // Tab selects the keyword chip, leaving the text after the keyword.
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('Tab'));
+        await microtasksFinished();
+        assertEquals(SelectionLineState.kKeywordMode, element.selection.state);
+        assertEquals('cats', mockInput.inputElement.value);
+
+        // Enter asks the browser to open the keyword chip selection, which
+        // searches the keyword for the text.
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('Enter'));
+        await microtasksFinished();
+        assertEquals(1, testProxy.handler.getCallCount('openPopupSelection'));
+        const args = testProxy.handler.getArgs('openPopupSelection')[0];
+        assertDeepEquals(
+            {line: 0, state: SelectionLineState.kKeywordMode, actionIndex: 0},
+            args.selection);
+        assertEquals(
+            0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+
+        // Without text after the keyword, Enter does nothing.
+        mockInput.inputElement.value = '';
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('Enter'));
+        await microtasksFinished();
+        assertEquals(1, testProxy.handler.getCallCount('openPopupSelection'));
+        assertEquals(
+            0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+      });
+
   test('dynamic keyword space triggering pref change', async () => {
     assertTrue(element.keywordModeManager.keywordSpaceTriggeringEnabled);
 

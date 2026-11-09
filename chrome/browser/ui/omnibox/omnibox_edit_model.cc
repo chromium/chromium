@@ -975,9 +975,24 @@ void OmniboxEditModel::OpenSelection(
     return;
   }
 
-  // The keyword mode button doesn't commit the omnibox, it's a
-  // transient UI element leading to other normal omnibox selections.
+  // Without a query, the keyword chip doesn't commit the omnibox, it's a
+  // transient UI element leading to other normal omnibox selections. With a
+  // query, the keyword chip does commit. But there's no keyword match to open
+  // yet; generate one synchronously.
   if (selection.state == OmniboxPopupSelection::LineState::kKeywordMode) {
+    if (is_keyword_selected() && !user_text_.empty()) {
+      AutocompleteMatch keyword_match;
+      GURL alternate_nav_url;
+      controller_->client()->GetAutocompleteClassifier()->Classify(
+          MaybePrependKeyword(user_text_), /*in_keyword_mode=*/true,
+          /*allow_exact_keyword_match=*/true, GetPageClassification(),
+          &keyword_match, &alternate_nav_url);
+      if (keyword_match.destination_url.is_valid()) {
+        OpenMatch(OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
+                  keyword_match, disposition, alternate_nav_url,
+                  std::u16string(), timestamp);
+      }
+    }
     return;
   }
 
@@ -1078,7 +1093,12 @@ void OmniboxEditModel::AcceptKeyword(
   if (view_) {
     view_->OnTemporaryTextMaybeChanged(user_text_, {}, !has_temporary_text_,
                                        true);
-    if (!user_text_.empty()) {
+    // Don't rerun autocomplete on tab. Tab is a navigation key, like arrowing
+    // through the popup; replacing the matches would prevent tabbing back or
+    // through. Space & click entries will rerun autocomplete to avoid showing
+    // stale results and reflect the user's intentional input change or keyword
+    // entry.
+    if (!user_text_.empty() && entry_method != OmniboxEventProto::TAB) {
       view_->UpdatePopup();
     }
   }
@@ -1132,7 +1152,7 @@ void OmniboxEditModel::ClearKeyword() {
   //     "google.com ".
   // (4) was_toggled_into_keyword_mode == true, entry_by_tab == true
   //     The user had just typed tab to enter keyword mode, e.g.
-  //     "google.com<tab>".
+  //     "google.com<tab>" or "google.com f<tab>".
   //
   // For states 1-3, we can safely handle the exit from keyword mode by using
   // OnBefore/AfterPossibleChange() to do a complete state update of all
@@ -1163,9 +1183,17 @@ void OmniboxEditModel::ClearKeyword() {
     // State 4 above.
     SetKeywordInfo(KeywordState::kHint, keyword_, keyword_placeholder_,
                    OmniboxEventProto::INVALID);
-    const std::u16string window_text = keyword_ + view_->GetText();
-    view_->SetWindowTextAndCaretPos(window_text, keyword_.length(), false,
-                                    true);
+    // Restore `user_text_` too since, unlike states 1-3, this path doesn't go
+    // through `OnAfterPossibleChange()`.
+    const std::u16string prefix =
+        keyword_ + (view_->GetText().empty() ? u"" : u" ");
+    const std::u16string window_text = prefix + view_->GetText();
+    const size_t caret_pos =
+        std::min(window_text.length(),
+                 prefix.length() + view_->GetSelectionBounds().end());
+    user_text_ = original_user_text_with_keyword_;
+    original_user_text_with_keyword_.clear();
+    view_->SetWindowTextAndCaretPos(window_text, caret_pos, false, true);
     // TODO (manukh): Exiting keyword mode in this case will not restore
     // the omnibox additional text. E.g., if before entering keyword mode, the
     // location bar displays 'google.com | (Google)', after entering (via tab)
@@ -2433,17 +2461,7 @@ void OmniboxEditModel::StepPopupSelection(
     }
   }
 
-  // `AcceptKeyword()` above updates the popup for the case where we step into
-  // keyword mode with extra user text, e.g. user input is "youtube.com query"
-  // then press tab to enter keyword mode. This is to ensure that the user text
-  // is populated accordingly and the new default suggestion is immediately
-  // clickable. In this case, the current selection (the clickable keyword
-  // suggestion) will not match the expected "next" suggestion (the keyword
-  // button focused).
-  if (new_selection.state != OmniboxPopupSelection::LineState::kKeywordMode ||
-      user_text_.empty()) {
-    DCHECK(popup_selection_ == new_selection);
-  }
+  DCHECK(popup_selection_ == new_selection);
 
   // Inform the client that a new row is now selected.
   OnNavigationLikely(popup_selection_.line,
