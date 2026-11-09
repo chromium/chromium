@@ -260,6 +260,15 @@
       <message name="IDS_IOS_ACCOUNT_PICKER_SUBMIT_TAPPED_ACCESSIBILITY_LABEL" is_accessibility_with_no_ui="true" desc="Accessibility label of the Submit button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver. [iOS only]" meaning="Accessibility label of the Submit button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver. [iOS only]">
         Action in progress…
       </message>
+      <message name="IDS_IOS_ACCOUNT_SWITCHING_PROMO_SUBTITLE" desc="Subtitle of the Smart Account Switching startup promo asking the user if they want to switch to their recommended Google Account. [iOS only]">
+        Switch to <ph name="EMAIL">$1<ex>elisa2@gmail.com</ex></ph> to seamlessly share tabs between your devices and get your passwords, bookmarks, and more from your Google Account.
+      </message>
+      <message name="IDS_IOS_ACCOUNT_SWITCHING_PROMO_TITLE" desc="Title of the Smart Account Switching startup promo asking the user if they want to switch to their recommended Google Account. [iOS only]">
+        Pick up where you left off
+      </message>
+      <message name="IDS_IOS_ACCOUNT_SWITCHING_PROMO_TITLE_FOR_DEVICE_TYPE" desc="Title of the Smart Account Switching startup promo asking the user if they want to switch to their recommended Google Account when it was used on a computer. [iOS only]">
+        Pick up where you left off on your computer
+      </message>
       <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON" desc="Label for the button to open the passphrase dialog from the accounts table. [iOS only]">
         Enter passphrase…
       </message>
