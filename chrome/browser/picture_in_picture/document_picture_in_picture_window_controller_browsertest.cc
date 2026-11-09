@@ -910,6 +910,28 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
             pip_frame_view->browser_widget()->IsMenuRunnerRunningForTesting());
 }
 
+class DocumentPictureInPictureWindowControllerStandaloneTest
+    : public DocumentPictureInPictureWindowControllerBrowserTest {
+ protected:
+  bool UseStandaloneDocumentPip() const override { return true; }
+};
+
+// Standalone counterpart of ContextMenuIsDisabled, which needs a BrowserWidget.
+// Checks controller installation only, without simulating a native caption
+// click.
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerStandaloneTest,
+                       ContextMenuIsDisabled) {
+  LoadTabAndEnterPictureInPicture(browser());
+  auto* pip_web_contents = window_controller()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_web_contents);
+  WaitForPageLoad(pip_web_contents);
+
+  auto* host = DocumentPipHost::FromChildWebContents(pip_web_contents);
+  ASSERT_TRUE(host);
+  views::View* const contents_view = host->GetWidget()->GetContentsView();
+  ASSERT_TRUE(contents_view->context_menu_controller());
+}
+
 IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerFrameViewTest,
                        WindowClosesEvenIfDisconnectedFromWindowManager) {
   // Rarely, `PictureInPictureWindowManager` fails to close the PiP window.

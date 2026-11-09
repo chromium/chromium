@@ -49,6 +49,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/screen.h"
@@ -56,6 +57,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/context_menu_controller.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -143,6 +145,26 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(DocumentPipHostBackPointer);
 }  // namespace
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DocumentPipHost);
+
+// Suppresses the Linux window manager's title bar menu by providing the
+// controller checked by WindowEventFilterLinux::OnClickedCaption(). On other
+// platforms, installing this controller has no effect.
+class DocumentPipHost::NoOpContextMenuController
+    : public views::ContextMenuController {
+ public:
+  NoOpContextMenuController() = default;
+  NoOpContextMenuController(const NoOpContextMenuController&) = delete;
+  NoOpContextMenuController& operator=(const NoOpContextMenuController&) =
+      delete;
+  ~NoOpContextMenuController() override = default;
+
+ private:
+  // views::ContextMenuController:
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override {}
+};
 
 class DocumentPipHost::ExclusiveAccessContextImpl
     : public ExclusiveAccessContext,
@@ -260,7 +282,8 @@ class DocumentPipHost::ExclusiveAccessContextImpl
 
 DocumentPipHost::DocumentPipHost(content::WebContents* opener_web_contents)
     : content::WebContentsUserData<DocumentPipHost>(*opener_web_contents),
-      content::WebContentsObserver(opener_web_contents) {}
+      content::WebContentsObserver(opener_web_contents),
+      context_menu_controller_(std::make_unique<NoOpContextMenuController>()) {}
 
 DocumentPipHost::~DocumentPipHost() {
   ClosePipWindow();
@@ -327,6 +350,9 @@ void DocumentPipHost::CreateAndShowPipWindow(
   params.native_widget = new DocumentPipNativeWidgetMac(widget_.get());
 #endif
   widget_->Init(std::move(params));
+
+  widget_->non_client_view()->set_context_menu_controller(
+      context_menu_controller_.get());
 
   widget_observation_.Observe(widget_.get());
   if (auto* contents_view = widget_delegate_->GetDocumentPipContentsView()) {
