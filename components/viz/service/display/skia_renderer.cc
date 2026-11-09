@@ -4164,6 +4164,14 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     return;
   }
 
+  // When a RenderPassDrawQuad with a backdrop filter is promoted to an overlay
+  // (e.g., CABackdropLayer on macOS), the OS compositor applies the backdrop
+  // filter. Clear `backdrop_filter` and `backdrop_filter_bounds` so Skia does
+  // not redundantly execute a backdrop filter pass on the transparent overlay
+  // backing.
+  rpdq_params.backdrop_filter = nullptr;
+  rpdq_params.backdrop_filter_bounds.reset();
+
   SharedImageFormat si_format;
   gfx::ColorSpace color_space;
 

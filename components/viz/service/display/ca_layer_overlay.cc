@@ -5,7 +5,9 @@
 #include "components/viz/service/display/ca_layer_overlay.h"
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
+#include <utility>
 #include <variant>
 
 #include "base/mac/mac_util.h"
@@ -18,9 +20,13 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/service/display/display_resource_provider.h"
+#include "ui/base/cocoa/ca_backdrop_filter_api.h"
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/transform_util.h"
+#include "ui/gl/ca_renderer_layer_params.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace viz {
@@ -110,15 +116,137 @@ bool IsMaskableRRect(const gfx::RRectF& rrect) {
   return true;
 }
 
+// Attempts to convert an SkPath to an RRectF if it represents an RRect, oval,
+// or rect. Returns std::nullopt if the path is complex or non-axis-aligned.
+std::optional<gfx::RRectF> SkPathToRRectF(const SkPath& path) {
+  SkRRect rrect;
+  if (path.isRRect(&rrect)) {
+    return gfx::RRectF(rrect);
+  }
+  SkRect rect;
+  if (path.isOval(&rect)) {
+    return gfx::RRectF(SkRRect::MakeOval(rect));
+  }
+  if (path.isRect(&rect)) {
+    return gfx::RRectF(gfx::SkRectToRectF(rect));
+  }
+  return std::nullopt;
+}
+
+bool ExtractBackdropFilter(const AggregatedRenderPassDrawQuad* quad,
+                           OverlayCandidate* ca_layer_overlay) {
+  if (quad->backdrop_filters.IsEmpty()) {
+    return true;
+  }
+  if (!ui::CABackdropLayerSupported()) {
+    return false;
+  }
+  // Foreground filters, CSS masks, gradient masks, and non-unit opacity on the
+  // RenderPassDrawQuad apply to the combined backdrop-filtered backdrop and
+  // foreground content in SkiaRenderer, whereas PrepareRenderPassOverlay only
+  // applies them to the foreground IOSurface layer. Fall back to SkiaRenderer
+  // in these cases.
+  if (!quad->filters.IsEmpty() || !quad->mask_resource_id().is_null() ||
+      quad->shared_quad_state->mask_filter_info.HasGradientMask() ||
+      quad->shared_quad_state->opacity != 1.0f) {
+    return false;
+  }
+
+  // Reject non-positive or non-finite `filters_scale` so the filter-to-quad
+  // transform (`local_matrix`) is always valid and invertible.
+  if (quad->filters_scale.x() <= 0.0f || quad->filters_scale.y() <= 0.0f ||
+      !std::isfinite(quad->filters_scale.x()) ||
+      !std::isfinite(quad->filters_scale.y())) {
+    return false;
+  }
+
+  // Scale blur radius from CSS filter space to RenderPass local space using
+  // `filters_scale`. Do not multiply by `quad_to_target_transform` scale here:
+  // CARendererLayerTree::TransformLayer already applies
+  // `quad_to_target_transform`, and CoreAnimation scales CAFilter's
+  // `inputRadius` by the layer-to-device transform scale automatically.
+  // Because CAFilter Gaussian blur only supports an isotropic scalar radius,
+  // reject non-zero blurs when either `filters_scale` or
+  // `quad_to_target_transform` has non-uniform X/Y scale (or perspective).
+  const gfx::Vector2dF transform_scale = gfx::ComputeTransform2dScaleComponents(
+      quad->shared_quad_state->quad_to_target_transform, -1.0f);
+  const bool has_uniform_scale =
+      transform_scale.x() > 0.0f && transform_scale.y() > 0.0f &&
+      std::abs(transform_scale.x() - transform_scale.y()) <= 1e-4f &&
+      std::abs(quad->filters_scale.x() - quad->filters_scale.y()) <= 1e-4f;
+  const float scale =
+      std::max(quad->filters_scale.x(), quad->filters_scale.y());
+
+  // Support single Gaussian blur operations; other backdrop filter operations
+  // fall back to SkiaRenderer.
+  ui::CABackdropFilter filter_params;
+  bool has_blur = false;
+  for (const auto& op : quad->backdrop_filters.operations()) {
+    if (op.type() != cc::FilterOperation::BLUR) {
+      return false;
+    }
+    const float amount = op.amount();
+    if (!std::isfinite(amount) || amount < 0.0f) {
+      return false;
+    }
+    if (amount == 0.0f) {
+      continue;
+    }
+    if (has_blur || !has_uniform_scale) {
+      return false;
+    }
+    has_blur = true;
+    filter_params.blur_radius = amount * scale;
+  }
+
+  const gfx::RectF visible_rect(quad->visible_rect);
+  if (quad->backdrop_filter_bounds.has_value()) {
+    SkMatrix local_matrix;
+    local_matrix.setTranslate(quad->filters_origin.x(),
+                              quad->filters_origin.y());
+    local_matrix.postScale(quad->filters_scale.x(), quad->filters_scale.y());
+    auto bounds = SkPathToRRectF(
+        quad->backdrop_filter_bounds->makeTransform(local_matrix));
+    if (!bounds.has_value() || !IsMaskableRRect(*bounds)) {
+      return false;
+    }
+    // Plain rectangles can always be clipped directly to `visible_rect`.
+    // Rounded rects cannot be partially clipped without losing their corner
+    // geometry, so reject them unless they fit within `visible_rect` (allowing
+    // 1px for subpixel rounding against the integer `visible_rect`).
+    if (bounds->GetType() <= gfx::RRectF::Type::kRect) {
+      gfx::RectF clipped = bounds->rect();
+      clipped.Intersect(visible_rect);
+      bounds = gfx::RRectF(clipped);
+    } else {
+      gfx::RectF effective_visible_rect = visible_rect;
+      effective_visible_rect.Outset(1.0f);
+      if (!effective_visible_rect.Contains(bounds->rect())) {
+        return false;
+      }
+    }
+    // CARendererLayerTree treats empty `bounds` as "unspecified" and falls back
+    // to the full padded quad `rect_`, so reject empty bounds here.
+    if (bounds->IsEmpty()) {
+      return false;
+    }
+    ca_layer_overlay->backdrop_filter_bounds = *bounds;
+  }
+
+  ca_layer_overlay->backdrop_filter_params = std::move(filter_params);
+  return true;
+}
+
 gfx::CALayerResult FromRenderPassQuad(
     const DisplayResourceProvider* resource_provider,
     const AggregatedRenderPassDrawQuad* quad,
     OverlayCandidate* ca_layer_overlay) {
-  if (!quad->backdrop_filters.IsEmpty()) {
+  const SharedQuadState* shared_quad_state = quad->shared_quad_state;
+
+  if (!ExtractBackdropFilter(quad, ca_layer_overlay)) {
     return gfx::kCALayerFailedRenderPassBackdropFilters;
   }
 
-  const SharedQuadState* shared_quad_state = quad->shared_quad_state;
   if (shared_quad_state->sorting_context_id != 0)
     return gfx::kCALayerFailedRenderPassSortingContextId;
 

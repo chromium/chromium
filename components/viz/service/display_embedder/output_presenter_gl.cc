@@ -161,6 +161,11 @@ void OutputPresenterGL::ScheduleOverlayPlane(
     io_surface_color_space = access->representation()->color_space();
     backpressure_fences = access->GetBackpressureFences();
   }
+  std::vector<ui::CABackdropFilter> filters;
+  if (overlay_plane_candidate.backdrop_filter_params) {
+    filters.push_back(
+        std::move(*overlay_plane_candidate.backdrop_filter_params));
+  }
   presenter_->ScheduleCALayer(
       ui::CARendererLayerParams(
           overlay_plane_candidate.clip_rect.has_value(),
@@ -175,7 +180,8 @@ void OutputPresenterGL::ScheduleOverlayPlane(
           overlay_plane_candidate.nearest_neighbor_filter,
           overlay_plane_candidate.hdr_metadata,
           overlay_plane_candidate.protected_video_type,
-          overlay_plane_candidate.is_render_pass_draw_quad),
+          overlay_plane_candidate.is_render_pass_draw_quad, std::move(filters),
+          overlay_plane_candidate.backdrop_filter_bounds),
       std::move(backpressure_fences));
 
 #endif
