@@ -542,11 +542,12 @@ export class OmniboxEverywhereOmniboxElement extends
   }
 
   private canCyclePlaceholders_(): boolean {
-    // Stop cycling when an autocomplete match is selected (`!this.selectedMatch`)
-    // so the placeholder overlay does not overlap previewed match text.
+    // Only cycle in the collapsed 1-line pill state; stop cycling and show the
+    // static placeholder once suggestions open (`!this.dropdownIsVisible`) or a
+    // match is selected (`!this.selectedMatch`).
     return !this.placeholderText && this.isFuseboxEnabled && this.isActive &&
-        !this.hasUserInput_ && !this.selectedMatch && !this.inKeywordMode &&
-        !this.inVoiceSearchMode;
+        !this.dropdownIsVisible && !this.hasUserInput_ &&
+        !this.selectedMatch && !this.inKeywordMode && !this.inVoiceSearchMode;
   }
 
   private computeCyclingPlaceholderTexts_(): string[] {

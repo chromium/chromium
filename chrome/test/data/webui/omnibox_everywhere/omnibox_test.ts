@@ -1428,6 +1428,24 @@ suite('OmniboxEverywhereOmniboxTest', () => {
             'Ask about your screen with Google Lens', inputEl.placeholder);
         assertFalse(lensPlaceholder.hidden);
 
+        // Opening the suggestions dropdown (clicking into the onFocus state)
+        // stops cycling, hides `#lensPlaceholder`, and shows the static
+        // placeholder.
+        omnibox.dropdownIsVisible = true;
+        await microtasksFinished();
+        assertEquals(0, getPlaceholderAnimations().length);
+        assertEquals('Ask Google or type a URL', inputEl.placeholder);
+        assertTrue(lensPlaceholder.hidden);
+
+        // Closing the dropdown resumes cycling from the first hint.
+        omnibox.dropdownIsVisible = false;
+        await microtasksFinished();
+        assertEquals(1, getPlaceholderAnimations().length);
+        assertEquals('Ask Google or type a URL', inputEl.placeholder);
+        assertTrue(lensPlaceholder.hidden);
+        await advanceToNextPlaceholder();
+        assertFalse(lensPlaceholder.hidden);
+
         // Typing a single space (' ') hides the Lens placeholder and stops
         // cycling even though trimmed `hasUserInput_` remains false.
         omnibox.$.input.setInput({text: ' ', inline: ''});
