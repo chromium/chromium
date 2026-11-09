@@ -85,10 +85,13 @@ class RemoteActorCredentialSharingController : public PasswordStoreConsumer {
       const RemoteActorCredentialSharingController&) = delete;
   ~RemoteActorCredentialSharingController() override;
 
-  // Starts sharing a credential for `domain` on behalf of the user identified
-  // by `gaia_id`, scoped to `task_id`. Must be called at most once.
+  // Starts sharing a credential for `domain_or_origin` on behalf of the user
+  // identified by `gaia_id`, scoped to `task_id`. `domain_or_origin` may be a
+  // bare host ("example.com"), in which case HTTPS is assumed, or a full origin
+  // ("https://example.com"). Reports `kOtherError` if `domain_or_origin` does
+  // not form a valid origin. Must be called at most once.
   void Start(std::string_view gaia_id,
-             std::string_view domain,
+             std::string_view domain_or_origin,
              std::string_view task_id,
              ResultCallback callback);
 
@@ -114,8 +117,9 @@ class RemoteActorCredentialSharingController : public PasswordStoreConsumer {
   // Verifies the GAIA ID matches the signed-in user and sync is not in error.
   bool VerifyUserIdentityAndSyncState(std::string_view gaia_id) const;
 
-  // Initiates asynchronous queries to the relevant password stores.
-  void QueryPasswordStores(std::string_view domain);
+  // Initiates asynchronous queries to the relevant password stores for
+  // `origin_`.
+  void QueryPasswordStores();
 
   // Called when all password store queries have completed.
   void OnAllLoginsRetrieved();

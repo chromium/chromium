@@ -412,6 +412,89 @@ TEST_F(RemoteActorCredentialSharingControllerTest,
           Pointee(Field(&PasswordForm::username_value, u"psl_user"))));
 }
 
+// Tests that a domain sent as a full origin (with the "https://" scheme) is
+// handled the same way as a bare host.
+TEST_F(RemoteActorCredentialSharingControllerTest,
+       DomainWithHttpsScheme_IsAccepted) {
+  SignIn("user@gmail.com");
+
+  PasswordForm exact_form;
+  exact_form.signon_realm = "https://example.com/";
+  exact_form.url = GURL("https://example.com");
+  exact_form.username_value = u"exact_user";
+  exact_form.password_value = PasswordString(u"pass");
+  exact_form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(exact_form));
+
+  mock_match_helper_.ExpectCallToGetAffiliatedAndGrouped(
+      PasswordFormDigest(PasswordForm::Scheme::kHtml, "https://example.com/",
+                         GURL("https://example.com/")),
+      /*affiliated_realms=*/{}, /*grouped_realms=*/{});
+
+  std::unique_ptr<RemoteActorCredentialSharingController> controller =
+      StartController(/*gaia_id=*/account_info_.GetGaiaId().ToString(),
+                      /*domain=*/"https://example.com", base::DoNothing());
+
+  EXPECT_THAT(delegate_.TakeShownCredentials(),
+              UnorderedElementsAre(Pointee(
+                  Field(&PasswordForm::username_value, u"exact_user"))));
+}
+
+// Tests that a full HTTP URL with user info, mixed case, a non-default port
+// and a path is canonicalized to its origin, keeping the sender's scheme,
+// before querying the stores.
+TEST_F(RemoteActorCredentialSharingControllerTest,
+       DomainWithFullHttpUrl_IsCanonicalizedToOrigin) {
+  SignIn("user@gmail.com");
+
+  PasswordForm http_form;
+  http_form.signon_realm = "http://example.com:8080/";
+  http_form.url = GURL("http://example.com:8080");
+  http_form.username_value = u"http_user";
+  http_form.password_value = PasswordString(u"pass");
+  http_form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(http_form));
+
+  mock_match_helper_.ExpectCallToGetAffiliatedAndGrouped(
+      PasswordFormDigest(PasswordForm::Scheme::kHtml,
+                         "http://example.com:8080/",
+                         GURL("http://example.com:8080/")),
+      /*affiliated_realms=*/{}, /*grouped_realms=*/{});
+
+  std::unique_ptr<RemoteActorCredentialSharingController> controller =
+      StartController(/*gaia_id=*/account_info_.GetGaiaId().ToString(),
+                      /*domain=*/"http://User:pw@Example.COM:8080/login?x=1",
+                      base::DoNothing());
+
+  EXPECT_THAT(delegate_.TakeShownCredentials(),
+              UnorderedElementsAre(
+                  Pointee(Field(&PasswordForm::username_value, u"http_user"))));
+}
+
+// Tests that a domain that does not form a valid origin is rejected with
+// `kOtherError` instead of querying the stores with an opaque origin.
+TEST_F(RemoteActorCredentialSharingControllerTest,
+       DomainWithInvalidOrigin_IsRejected) {
+  SignIn("user@gmail.com");
+
+  constexpr std::string_view kInvalidDomains[] = {
+      "", "https://", "://", "http://[invalid]", "example.com:invalid_port"};
+  base::HistogramTester histograms;
+  for (std::string_view domain : kInvalidDomains) {
+    SCOPED_TRACE(domain);
+    base::test::TestFuture<RemoteActorCredentialSharingResult> result;
+    std::unique_ptr<RemoteActorCredentialSharingController> controller =
+        StartController(/*gaia_id=*/account_info_.GetGaiaId().ToString(),
+                        domain, result.GetCallback());
+
+    EXPECT_EQ(result.Get(), RemoteActorCredentialSharingResult::kOtherError);
+  }
+  histograms.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.Result",
+      RemoteActorCredentialSharingResult::kOtherError,
+      std::size(kInvalidDomains));
+}
+
 TEST_F(RemoteActorCredentialSharingControllerTest,
        SuccessFlow_SelectCredential) {
   base::HistogramTester histograms;
