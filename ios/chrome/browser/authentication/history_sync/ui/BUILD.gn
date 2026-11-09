@@ -16,6 +16,8 @@ source_set("ui") {
     "//components/signin/public/base:signin_switches",
     "//components/signin/public/identity_manager",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/history_sync/ui/resources",
+    "//ios/chrome/browser/authentication/ui_bundled/resources",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/shared/public/features",
