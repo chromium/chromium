@@ -394,22 +394,42 @@ NetworkSpeechRecognitionEngineImpl::ConnectBothStreams(const FSMEventArgs&) {
 
   // Setup upstream fetcher.
   // TODO(hans): Support for user-selected grammars.
-  std::vector<std::string> upstream_args;
-  upstream_args.push_back(
-      "key=" + base::EscapeQueryParamValue(google_apis::GetAPIKey(), true));
-  upstream_args.push_back("pair=" + request_key);
-  upstream_args.push_back("output=pb");
-  upstream_args.push_back("lang=" +
-                          base::EscapeQueryParamValue(config_.language, true));
-  upstream_args.push_back(config_.filter_profanities ? "pFilter=2"
-                                                     : "pFilter=0");
+  // Start from the embedder's parameters so that the ones below override them.
+  base::flat_map<std::string, std::string> upstream_params =
+      config_.routing_params;
+  upstream_params["key"] = google_apis::GetAPIKey();
+  upstream_params["pair"] = request_key;
+  upstream_params["output"] = "pb";
+  upstream_params["lang"] = config_.language;
+  upstream_params["pFilter"] = config_.filter_profanities ? "2" : "0";
   if (config_.max_hypotheses > 0U) {
-    uint32_t max_alternatives =
-        std::min(kMaxMaxAlternatives, config_.max_hypotheses);
-    upstream_args.push_back("maxAlternatives=" +
-                            base::NumberToString(max_alternatives));
+    upstream_params["maxAlternatives"] = base::NumberToString(
+        std::min(kMaxMaxAlternatives, config_.max_hypotheses));
   }
-  upstream_args.push_back("app=chromium");
+  upstream_params["app"] = "chromium";
+  if (!config_.continuous) {
+    upstream_params["endpoint"] = "1";
+  }
+  if (!config_.auth_token.empty() && !config_.auth_scope.empty()) {
+    upstream_params["authScope"] = config_.auth_scope;
+    upstream_params["authToken"] = config_.auth_token;
+  }
+  if (use_framed_post_data_) {
+    std::string audio_format;
+    if (preamble_encoder_) {
+      audio_format = preamble_encoder_->GetMimeType() + ",";
+    }
+    audio_format += encoder_->GetMimeType();
+    upstream_params["audioFormat"] = audio_format;
+  }
+
+  std::vector<std::string> upstream_args;
+  for (const auto& [name, value] : upstream_params) {
+    upstream_args.push_back(base::EscapeQueryParamValue(name, true) + "=" +
+                            base::EscapeQueryParamValue(value, true));
+  }
+  // "grammar" can repeat and the flags below have no value, so they are not in
+  // `upstream_params`.
   for (const media::mojom::SpeechRecognitionGrammar& grammar :
        config_.grammars) {
     std::string grammar_value(base::NumberToString(grammar.weight) + ":" +
@@ -419,26 +439,9 @@ NetworkSpeechRecognitionEngineImpl::ConnectBothStreams(const FSMEventArgs&) {
   }
   if (config_.continuous) {
     upstream_args.push_back("continuous");
-  } else {
-    upstream_args.push_back("endpoint=1");
   }
   if (config_.interim_results) {
     upstream_args.push_back("interim");
-  }
-  if (!config_.auth_token.empty() && !config_.auth_scope.empty()) {
-    upstream_args.push_back(
-        "authScope=" + base::EscapeQueryParamValue(config_.auth_scope, true));
-    upstream_args.push_back(
-        "authToken=" + base::EscapeQueryParamValue(config_.auth_token, true));
-  }
-  if (use_framed_post_data_) {
-    std::string audio_format;
-    if (preamble_encoder_) {
-      audio_format = preamble_encoder_->GetMimeType() + ",";
-    }
-    audio_format += encoder_->GetMimeType();
-    upstream_args.push_back("audioFormat=" +
-                            base::EscapeQueryParamValue(audio_format, true));
   }
 
   GURL upstream_url(std::string(web_service_base_url) +
