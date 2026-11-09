@@ -77,17 +77,12 @@
   // Mock successful reauth when opening the Password Manager.
   [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
-  if ([ChromeEarlGrey isYourSavedInfoSettingsPageIosEnabled]) {
-    [ChromeEarlGreyUI
-        tapSettingsMenuButton:grey_accessibilityID(
-                                  kSettingsAutofillAndPasswordsCellId)];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            SettingsMenuPasswordsButton()]
-        performAction:grey_tap()];
-  } else {
-    [ChromeEarlGreyUI
-        tapSettingsMenuButton:chrome_test_util::SettingsMenuPasswordsButton()];
-  }
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:grey_accessibilityID(
+                                kSettingsAutofillAndPasswordsCellId)];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsMenuPasswordsButton()]
+      performAction:grey_tap()];
 
   // Open password settings.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(

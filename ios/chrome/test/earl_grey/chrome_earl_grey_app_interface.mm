@@ -1861,10 +1861,6 @@ NSError* CanStartLoadingURL(SceneState* scene_state,
          search_engines::SupportsSearchImageWithLens(service);
 }
 
-+ (BOOL)isYourSavedInfoSettingsPageIosEnabled {
-  return IsYourSavedInfoSettingsPageIosEnabled();
-}
-
 + (BOOL)isCurrentLayoutBottomOmnibox {
   return IsCurrentLayoutBottomOmnibox(chrome_test_util::GetCurrentBrowser());
 }

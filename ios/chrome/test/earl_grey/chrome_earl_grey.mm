@@ -1768,10 +1768,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isUseLensToSearchForImageEnabled];
 }
 
-- (BOOL)isYourSavedInfoSettingsPageIosEnabled {
-  return [ChromeEarlGreyAppInterface isYourSavedInfoSettingsPageIosEnabled];
-}
-
 - (BOOL)isUnfocusedOmniboxAtBottom {
   return !self.isIPadIdiom && self.isSplitToolbarMode &&
          [self localStateBooleanPref:omnibox::kIsOmniboxInBottomPosition];

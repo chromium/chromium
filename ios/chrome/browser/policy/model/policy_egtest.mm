@@ -176,11 +176,9 @@ const char kTestPageText[] = "pony";
 
 - (void)openAutofillSettingsPage {
   [self openSettingsMenu];
-  if ([ChromeEarlGrey isYourSavedInfoSettingsPageIosEnabled]) {
-    [ChromeEarlGreyUI
-        tapSettingsMenuButton:grey_accessibilityID(
-                                  kSettingsAutofillAndPasswordsCellId)];
-  }
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:grey_accessibilityID(
+                                kSettingsAutofillAndPasswordsCellId)];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
