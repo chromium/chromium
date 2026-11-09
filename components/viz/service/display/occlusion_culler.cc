@@ -304,8 +304,6 @@ void OcclusionCuller::UpdateDeviceScaleFactor(float device_scale_factor) {
 
 void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
   base::flat_set<AggregatedRenderPassId> render_passes_affected_by_any_filters;
-  base::flat_set<AggregatedRenderPassId>
-      render_passes_affected_by_pixel_moving_backdrop_filters;
   for (const auto& pass : frame->render_pass_list) {
     for (auto quad = pass->quad_list.begin(); quad != pass->quad_list.end();
          ++quad) {
@@ -313,25 +311,11 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
         if (!rpdq->filters.IsEmpty() || !rpdq->backdrop_filters.IsEmpty()) {
           render_passes_affected_by_any_filters.insert(rpdq->render_pass_id);
         }
-        if (rpdq->backdrop_filters.HasFilterThatMovesPixels()) {
-          render_passes_affected_by_pixel_moving_backdrop_filters.insert(
-              rpdq->render_pass_id);
-        }
       }
     }
   }
 
-  base::flat_map<AggregatedRenderPassId, gfx::Rect> backdrop_filter_rects;
   for (const auto& pass : frame->render_pass_list) {
-    if (render_passes_affected_by_pixel_moving_backdrop_filters.contains(
-            pass->id)) {
-      // For the pixel-moving backdrop filters, all effects are limited to
-      // the size of the RenderPassDrawQuad rect. So unlike pixel-moving
-      // foreground filters, we can safely use the output rect.
-      backdrop_filter_rects[pass->id] = cc::MathUtil::MapEnclosingClippedRect(
-          pass->transform_to_root_target, pass->output_rect);
-    }
-
     const SharedQuadState* last_sqs = nullptr;
     bool last_sqs_is_for_rpdq = false;
 
@@ -401,18 +385,17 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
           }
         }
 
-        if (rpdq) {
+        if (rpdq && rpdq->backdrop_filters.HasFilterThatMovesPixels()) {
           // A RenderPass with backdrop filters may apply to a quad underlying
           // RenderPassQuad. These regions should be tracked so that correctly
           // handle splitting and occlusion of the underlying quad.
-          auto it = backdrop_filter_rects.find(rpdq->render_pass_id);
-          if (it != backdrop_filter_rects.end()) {
-            auto& [_, rect_in_target] = *it;
-            occlusion_in_target_space.Subtract(rect_in_target);
-            MaybeReduceOccluderComplexity(
-                occlusion_in_target_space,
-                settings_.maximum_occluder_complexity);
-          }
+          gfx::Rect backdrop_filter_rect =
+              cc::MathUtil::MapEnclosingClippedRect(
+                  rpdq->shared_quad_state->quad_to_target_transform,
+                  rpdq->rect);
+          occlusion_in_target_space.Subtract(backdrop_filter_rect);
+          MaybeReduceOccluderComplexity(occlusion_in_target_space,
+                                        settings_.maximum_occluder_complexity);
         }
 
         // If the visible_rect of the current shared quad state does not

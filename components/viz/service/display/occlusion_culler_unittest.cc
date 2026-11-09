@@ -581,6 +581,110 @@ TEST_F(OcclusionCullerTest, EnsureOccluderComplexityWithBackdropFilters) {
   EXPECT_EQ(quad_list.ElementAt(2)->visible_rect, gfx::Rect(0, 200, 1000, 200));
 }
 
+// Verifies that a pixel-moving backdrop filter RPDQ subtracts its bounds in the
+// embedding render pass's target space.
+TEST_F(OcclusionCullerTest,
+       BackdropFilterInNonRootRenderPassWithTransformToRootTarget) {
+  RendererSettings::OcclusionCullerSettings settings;
+  settings.minimum_fragments_reduced = 0;
+
+  InitOcclusionCuller(settings);
+  AggregatedFrame frame = MakeDefaultAggregatedFrame(/*num_render_passes=*/3);
+
+  const gfx::Rect pass_rect(0, 0, 1000, 1000);
+  const gfx::Rect rpdq_rect(0, 0, 1000, 200);
+  // In `intermediate_pass`'s target space, the RPDQ is translated to
+  // (0, 200, 1000, 200).
+  const gfx::Transform rpdq_to_intermediate =
+      gfx::Transform::MakeTranslation(0, 200);
+  // `intermediate_pass` itself is translated by (500, 500) in root space, so
+  // `backdrop_pass->transform_to_root_target` is translated by (500, 700).
+  const gfx::Transform intermediate_to_root =
+      gfx::Transform::MakeTranslation(500, 500);
+
+  auto& backdrop_pass = frame.render_pass_list.at(0);
+  auto& intermediate_pass = frame.render_pass_list.at(1);
+  auto& root_pass = frame.render_pass_list.at(2);
+
+  backdrop_pass->SetAll(AggregatedRenderPassId{1}, rpdq_rect, gfx::Rect(),
+                        intermediate_to_root * rpdq_to_intermediate,
+                        gfx::ContentColorUsage::kSRGB, false, false, false,
+                        false);
+  intermediate_pass->SetAll(AggregatedRenderPassId{2}, pass_rect, gfx::Rect(),
+                            intermediate_to_root, gfx::ContentColorUsage::kSRGB,
+                            false, false, false, false);
+  root_pass->SetAll(AggregatedRenderPassId{3}, pass_rect, gfx::Rect(),
+                    gfx::Transform(), gfx::ContentColorUsage::kSRGB, false,
+                    false, false, false);
+
+  // Front opaque quad covering the top 400px (0, 0, 1000, 400) of
+  // `intermediate_pass`.
+  const gfx::Rect front_quad_rect(0, 0, 1000, 400);
+  {
+    SharedQuadState* sqs = intermediate_pass->CreateAndAppendSharedQuadState();
+    sqs->SetAll(gfx::Transform(), front_quad_rect, front_quad_rect,
+                gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
+                /*contents_opaque=*/true, /*opacity_f=*/1.f,
+                SkBlendMode::kSrcOver, /*sorting_context=*/0, /*layer_id=*/0u,
+                /*fast_rounded_corner=*/false);
+    auto* quad =
+        intermediate_pass->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+    quad->SetNew(sqs, front_quad_rect, front_quad_rect, SkColors::kBlack,
+                 false);
+  }
+
+  // RPDQ with a pixel-moving backdrop filter at (0, 200, 1000, 200) in
+  // `intermediate_pass` space, with a clip_rect restricting its output to the
+  // left half (0, 200, 500, 200). The backdrop filter can still sample pixels
+  // from the unclipped RPDQ bounds (0, 200, 1000, 200).
+  const gfx::Rect rpdq_clip_rect(0, 200, 500, 200);
+  {
+    SharedQuadState* sqs = intermediate_pass->CreateAndAppendSharedQuadState();
+    sqs->SetAll(rpdq_to_intermediate, rpdq_rect, rpdq_rect,
+                gfx::MaskFilterInfo(), rpdq_clip_rect,
+                /*contents_opaque=*/true, /*opacity_f=*/1.f,
+                SkBlendMode::kSrcOver, /*sorting_context=*/0, /*layer_id=*/0u,
+                /*fast_rounded_corner=*/false);
+    auto* quad = intermediate_pass->quad_list
+                     .AllocateAndConstruct<AggregatedRenderPassDrawQuad>();
+    quad->SetNew(sqs, rpdq_rect, rpdq_rect, backdrop_pass->id, ResourceId(2),
+                 gfx::RectF(), gfx::Size(), false);
+    quad->SetFilters(
+        /*filters=*/{},
+        /*backdrop_filters=*/
+        cc::FilterOperations({cc::FilterOperation::CreateBlurFilter(5.0)}),
+        SkPath::Rect(gfx::RectToSkRect(rpdq_rect)),
+        /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
+        /*filters_origin=*/gfx::PointF(), /*backdrop_filter_quality=*/1.0f);
+  }
+
+  // Back quad at (0, 200, 1000, 200) behind both `front_quad` and the RPDQ.
+  // Because the RPDQ has a pixel-moving backdrop filter that samples across its
+  // full rect (0, 200, 1000, 200) (even outside `rpdq_clip_rect`), this quad
+  // must NOT be culled or clipped to `rpdq_clip_rect`.
+  const gfx::Rect back_quad_rect(0, 200, 1000, 200);
+  {
+    SharedQuadState* sqs = intermediate_pass->CreateAndAppendSharedQuadState();
+    sqs->SetAll(gfx::Transform(), back_quad_rect, back_quad_rect,
+                gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
+                /*contents_opaque=*/true, /*opacity_f=*/1.f,
+                SkBlendMode::kSrcOver, /*sorting_context=*/0, /*layer_id=*/0u,
+                /*fast_rounded_corner=*/false);
+    auto* quad =
+        intermediate_pass->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+    quad->SetNew(sqs, back_quad_rect, back_quad_rect, SkColors::kBlack, false);
+  }
+
+  occlusion_culler()->RemoveOverdrawQuads(&frame);
+
+  ASSERT_EQ(NumVisibleRects(intermediate_pass->quad_list), 3u);
+  EXPECT_EQ(intermediate_pass->quad_list.ElementAt(0)->visible_rect,
+            front_quad_rect);
+  EXPECT_EQ(intermediate_pass->quad_list.ElementAt(1)->visible_rect, rpdq_rect);
+  EXPECT_EQ(intermediate_pass->quad_list.ElementAt(2)->visible_rect,
+            back_quad_rect);
+}
+
 // Check if occlusion culling does not remove any DrawQuads when no quad is
 // being covered completely.
 TEST_F(OcclusionCullerTest, OcclusionCullingWithNonCoveringDrawQuad) {
