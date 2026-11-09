@@ -4,30 +4,47 @@
 
 #include "chrome/browser/enterprise/net/enterprise_proxy_tab_helper_delegate.h"
 
-#include "build/build_config.h"
-#include "content/public/browser/web_contents.h"
+#include <memory>
+#include <utility>
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/tab_android.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/android/signin_bridge.h"
-#include "chrome/browser/signin/android/signin_bridge_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#endif
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/reload_type.h"
+#include "content/public/browser/web_contents.h"
+#include "google_apis/gaia/core_account_id.h"
+#include "url/gurl.h"
 
 namespace enterprise_net {
 
-EnterpriseProxyTabHelperDelegate::EnterpriseProxyTabHelperDelegate() = default;
+EnterpriseProxyTabHelperDelegate::EnterpriseProxyTabHelperDelegate()
+    : EnterpriseProxyTabHelperDelegate(PlatformDelegate::Create()) {}
+
+EnterpriseProxyTabHelperDelegate::EnterpriseProxyTabHelperDelegate(
+    std::unique_ptr<PlatformDelegate> platform_delegate)
+    : platform_delegate_(std::move(platform_delegate)) {}
 
 EnterpriseProxyTabHelperDelegate::~EnterpriseProxyTabHelperDelegate() = default;
+
+#if !BUILDFLAG(IS_ANDROID)
+// static
+std::unique_ptr<EnterpriseProxyTabHelperDelegate::PlatformDelegate>
+EnterpriseProxyTabHelperDelegate::PlatformDelegate::Create() {
+  // TODO(crbug.com/532559920): Implement desktop re-auth and login flow for
+  // enterprise proxy.
+  return nullptr;
+}
+#endif
 
 void EnterpriseProxyTabHelperDelegate::SignIn(
     content::WebContents* web_contents) {
   if (!web_contents) {
     return;
   }
-#if BUILDFLAG(IS_ANDROID)
+
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
@@ -40,31 +57,37 @@ void EnterpriseProxyTabHelperDelegate::SignIn(
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  SigninBridge* signin_bridge = SigninBridgeFactory::GetForProfile(profile);
-  if (!identity_manager || !signin_bridge) {
+  if (!identity_manager) {
     return;
   }
 
-  CoreAccountId primary_account_id =
+  const CoreAccountId primary_account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 
-  GURL destination_url = web_contents->GetVisibleURL();
-  if (primary_account_id.empty()) {
-    signin_bridge->OpenAccountPickerBottomSheetForWebSignin(
-        web_contents, destination_url,
-        /*account_id=*/std::nullopt);
-  } else {
-    TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
-    if (tab) {
-      signin_bridge->StartUpdateCredentialsFlow(
-          tab, destination_url, /*account_to_reauth=*/primary_account_id,
-          /*target_account_id=*/primary_account_id);
-    }
+  // If the primary account is already signed in with a valid refresh token
+  // (e.g. when the error page was force-triggered for testing or shown due to a
+  // transient challenge), reload the page directly instead of starting an OS
+  // credential update flow.
+  if (!primary_account_id.empty() &&
+      identity_manager->HasAccountWithRefreshToken(primary_account_id) &&
+      !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account_id)) {
+    web_contents->GetController().Reload(content::ReloadType::NORMAL,
+                                         /*check_for_repost=*/false);
+    return;
   }
-#else
-  // TODO(crbug.com/532559920): Implement desktop re-auth and login flow for
-  // enterprise proxy.
-#endif
+
+  if (!platform_delegate_) {
+    return;
+  }
+
+  const GURL destination_url = web_contents->GetVisibleURL();
+  if (primary_account_id.empty()) {
+    platform_delegate_->StartSignInFlow(profile, web_contents, destination_url);
+  } else {
+    platform_delegate_->StartReauthFlow(profile, web_contents, destination_url,
+                                        primary_account_id);
+  }
 }
 
 }  // namespace enterprise_net
