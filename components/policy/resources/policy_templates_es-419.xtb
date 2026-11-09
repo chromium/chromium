@@ -1455,7 +1455,7 @@ La disponibilidad de las extensiones aún se controla mediante otras políticas.
 <translation id="1858775210076906272">Configuración ya completada de Kerberos</translation>
 <translation id="1861206724856734193">Establece una lista de reglas para prevenir la filtración de datos</translation>
 <translation id="1862267110714201519">Inhabilitar la función de ventana fantasma.</translation>
-<translation id="1862749749551522146">La aleatorización del tamaño del grupo de sockets es un mecanismo de seguridad que impide que los atacantes aprovechen los límites de capacidad determinísticos para obtener información entre sitios.
+<translation id="1862749749551522146">La aleatorización del tamaño del grupo de sockets es un mecanismo de seguridad que impide que los atacantes aprovechen los límites de capacidad deterministas para obtener información entre sitios.
 Si la capacidad de un grupo es normalmente de 128 sockets, este mecanismo limita aleatoriamente el grupo entre 128 y 256.
 Esto puede permitir hasta el doble de conexiones al proxy, pero en la práctica el valor esperado es más parecido a 1.2 veces.
 

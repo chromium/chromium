@@ -3249,7 +3249,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3450056559545492516">Mostrar notificaciones del sistema sobre funciones y consejos de Chrome</translation>
 <translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Estás compartiendo esta pestaña con Gemini</translation>
 <translation id="345078987193237421">Esto permite que las aplicaciones, los sitios web con el permiso de cámara y los servicios del sistema puedan acceder a la cámara</translation>
-<translation id="345163758690017738">Procesando tu tarea…</translation>
+<translation id="345163758690017738">Trabajando en tu tarea…</translation>
 <translation id="3452999110156026232">Acceso parental</translation>
 <translation id="3453082738208775226">¿Liberar espacio de almacenamiento sin conexión?</translation>
 <translation id="3453597230179205517">El acceso a la ubicación está bloqueado</translation>
@@ -3913,7 +3913,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3919798653937160644">Las páginas que aparezcan en esta ventana no se mostrarán en el historial del navegador y no dejarán otros rastros, como cookies, en el ordenador después de cerrar todas las ventanas abiertas de la sesión de invitado. No obstante, se conservará cualquier archivo que descargues.</translation>
 <translation id="3920909973552939961">No puede instalar controladores de pago</translation>
 <translation id="3920938867981797493">Políticas del actualizador</translation>
-<translation id="3921132130819999051">Deja que Chrome navegue por ti</translation>
+<translation id="3921132130819999051">Dejar que Chrome navegue por ti</translation>
 <translation id="3922823422695198027">Se han configurado otras aplicaciones para abrir los mismos enlaces que <ph name="APP_NAME" />. Se inhabilitará la apertura de enlaces compatibles desde <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> y <ph name="APP_NAME_4" />.</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
 <translation id="3923494859158167397">No se han configurado redes móviles</translation>
