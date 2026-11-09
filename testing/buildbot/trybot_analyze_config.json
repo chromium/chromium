@@ -19,6 +19,7 @@
       "build/config/siso/.*",
       "build/get_landmines.py",
       "build/gn_helpers.py",
+      "build/strict_deps_failures.gni",
       "build/toolchain/.*py",
       "build/util/lib/common/unittest_util.py",
       "DEPS",
