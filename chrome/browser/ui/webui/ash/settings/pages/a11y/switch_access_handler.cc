@@ -15,7 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/settings_ui/resources/grit/ash_settings_strings.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"

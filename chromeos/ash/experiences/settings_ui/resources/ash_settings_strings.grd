@@ -2537,6 +2537,696 @@ Use Ctrl + Alt + Brightness down to zoom out.
       <message name="IDS_OS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_TITLE" desc="Title for the overscroll history navigation setting, which allows you to navigate back and forward by swiping left or right with a touch device.">
         Use a swipe gesture to navigate between pages
       </message>
+      <!-- TODO(b/259372916): Finalize and translate these strings before Mouse Keys launches-->
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LABEL" desc="Label for the mouse keys setting toggle.">
+        Mouse Keys
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_DESCRIPTION" desc="Description of the mouse keys setting toggle.">
+        Use your keyboard or a numeric keypad to control your mouse cursor
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_ACCELERATION" desc="Label for the mouse keys acceleration slider.">
+        Acceleration
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_ACCELERATION_MIN_LABEL" desc="Label for the mouse keys acceleration slider's minimum value.">
+        Slow
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_ACCELERATION_MAX_LABEL" desc="Label for the mouse keys acceleration slider's maximum value.">
+        Fast
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_MAX_SPEED" desc="Label for the mouse keys maximum speed slider.">
+        Speed
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_MAX_SPEED_MIN_LABEL" desc="Label for the mouse keys maximum speed slider's minimum value.">
+        Low
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_MAX_SPEED_MAX_LABEL" desc="Label for the mouse keys maximum speed slider's maximum value.">
+        High
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_USE_PRIMARY_KEYS" desc="Label for the toggle to select between num pad and primary keys for mouse keys.">
+        Use primary keys
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_TO_USE" desc="Label for the drop down to select your dominant hand for mouse keys.">
+        Keys to use
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_RIGHT_HAND" desc="Drop down entries for mouse keys specifying your right hand as your dominant hand.">
+        Right side
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_KEYBOARD_SHORTCUT" desc="The body of the shortcut reminder for toggling mouse keys.">
+        Press <ph name="ALT">&lt;kbd&gt;</ph> + <ph name="LAUNCHER">&lt;kbd&gt;</ph> + <ph name="NUM_4">&lt;kbd&gt;</ph> to pause and resume mouse keys
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_KEYBOARD_SHORTCUT_TITLE" desc="The title of the mouse keys keyboard shortcut.">
+        Keyboard shortcut to pause
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LEFT_HAND" desc="Drop down entries for mouse keys specifying your left hand as your dominant hand.">
+        Left side
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_PRIMARY_KEYBOARD_TITLE" desc="Title for the mouse keys primary key keyboard configurations.">
+        Control your mouse cursor with your primary keyboard
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_RIGHT_KEYBOARD_PREVIEW_MOVE_CURSOR" desc="Instructions for mouse keys showing how the user can move their cursor using the right hand side of the primary keyboard.">
+        Use the 7, 8, 9, u, o, j, k, l keys to move the cursor
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_RIGHT_KEYBOARD_PREVIEW_PRESS_MOUSE_BUTTON" desc="Instructions for mouse keys showing the user how to press a mouse button using the right hand side of the primary keyboard.">
+        Use “i” to press a mouse button
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_RIGHT_KEYBOARD_PREVIEW_CHANGE_MOUSE_SELECTION" desc="Instructions for mouse keys showing the user how to switch between mouse buttons using the right hand side of the primary keyboard.">
+        Use “,” to change mouse button selection between left button, right button, and both
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_RIGHT_KEYBOARD_PREVIEW_DOUBLE_CLICK" desc="Instructions for mouse keys showing the user how to double click using the right hand side of the primary keyboard.">
+        When left mouse button is selected, use “/” to double-click
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_RIGHT_KEYBOARD_PREVIEW_HOLD_MOUSE_BUTTON" desc="Instructions for mouse keys showing the user how to press and hold a mouse button using the right hand side of the primary keyboard.">
+        Use “m” to press a mouse button and hold
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_RIGHT_KEYBOARD_PREVIEW_RELEASE_MOUSE_BUTTON" desc="Instructions for mouse keys showing the user how to release a mouse button using the right hand side of the primary keyboard.">
+        Use “.” to release a mouse button
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LEFT_KEYBOARD_PREVIEW_MOVE_CURSOR" desc="Instructions for mouse keys showing how the user can move their cursor using the left hand side of the primary keyboard.">
+        Use the 1, 2, 3, q, e, a, s, d keys to move the cursor
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LEFT_KEYBOARD_PREVIEW_PRESS_MOUSE_BUTTON" desc="Instructions for mouse keys showing the user how to press a mouse button using left hand side of the primary keyboard.">
+        Use “w” to press a mouse button
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LEFT_KEYBOARD_PREVIEW_CHANGE_MOUSE_SELECTION" desc="Instructions for mouse keys showing the user how to switch between mouse buttons using left hand side of the primary keyboard.">
+        Use “x” to change mouse button selection between left button, right button, and both
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LEFT_KEYBOARD_PREVIEW_DOUBLE_CLICK" desc="Instructions for mouse keys showing the user how to double click using left hand side of the primary keyboard.">
+        When left mouse button is selected, use “v” to double-click
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LEFT_KEYBOARD_PREVIEW_HOLD_MOUSE_BUTTON" desc="Instructions for mouse keys showing the user how to press and hold a mouse button using left hand side of the primary keyboard.">
+        Use “z” to press a mouse button and hold
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LEFT_KEYBOARD_PREVIEW_RELEASE_MOUSE_BUTTON" desc="Instructions for mouse keys showing the user how to release a mouse button using the left hand side of the primary keyboard.">
+        Use “c” to release a mouse button
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_NUM_KEYPAD_TITLE" desc="Title for the mouse keys num keypad configurations.">
+        Control your mouse cursor with a numeric keypad
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_NUM_KEYPAD_PREVIEW_MOVE_CURSOR" desc="Radio button option for mouse keys showing the user how to release a mouse button using a numeric keypad.">
+        Use the 7, 8, 9, 4, 6, 1, 2, 3 keys to move the cursor
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_NUM_KEYPAD_PREVIEW_PRESS_MOUSE_BUTTON" desc="Radio button option for mouse keys showing the user how to release a mouse button using a numeric keypad.">
+        Use “5” to press a mouse button
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_NUM_KEYPAD_PREVIEW_SELECT_MOUSE_BUTTON" desc="Radio button option for mouse keys showing the user how to release a mouse button using a numeric keypad.">
+        Use “/” and “-” to select left or right mouse buttons. Use “*” to select both.
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_NUM_KEYPAD_PREVIEW_DOUBLE_CLICK" desc="Radio button option for mouse keys showing the user how to release a mouse button using a numeric keypad.">
+        When left mouse button is selected, use “+” to double-click
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_NUM_KEYPAD_PREVIEW_HOLD_MOUSE_BUTTON" desc="Radio button option for mouse keys showing the user how to release a mouse button using a numeric keypad.">
+        Use “0” to press a mouse button and hold
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_NUM_KEYPAD_PREVIEW_RELEASE_MOUSE_BUTTON" desc="Radio button option for mouse keys showing the user how to release a mouse button using a numeric keypad.">
+        Use “.” to release a mouse button
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LABEL" desc="Label for checkbox which enables the ability to speak into text fields">
+        Dictation
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_NEW_DESCRIPTION" desc="Description explaining what Dictation does and how to use it. Is only user-visible if the kEnableExperimentalAccessibilityDictationOffline flag is enabled.">
+        Type with your voice. Use Search + D, then start speaking.
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_PROGRESS" desc="Description explaining the progress for the speech recognition library download.">
+        Downloading speech recognition files... <ph name="PERCENT">$1<ex>17</ex></ph>%
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_ERROR" desc="Description explaining that there was an error with the speech recognition library download.">
+        Couldn’t download <ph name="language">$1<ex>English</ex></ph> speech files. Download will be attempted later. Speech is sent to Google for processing until download is completed.
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_MENU_LABEL" desc="Description of a drop-down menu to select the language to use for Dictation's speech recognition.">
+        Language
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_SUB_LABEL_OFFLINE" desc="Sub-label for a drop-down menu to select the language to use for Dictation. Describes how that language can be processed offline with no network connection.">
+        <ph name="language">$1<ex>English</ex></ph> is processed locally and works offline
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_SUB_LABEL_NETWORK" desc="Sub-label for a drop-down menu to select the language to use for Dictation. Describes how speech will be sent over the network to Google for processing to create text.">
+        <ph name="language">$1<ex>English</ex></ph> speech is sent to Google for processing
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_CHANGE_LANGUAGE_BUTTON" desc="Text on a button to open a dialog to change the Dictation language.">
+        Change
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_CHANGE_LANGUAGE_DIALOG_TITLE" desc="Title of a dialog allowing the user to change their Dictation language.">
+        Change Dictation language
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_SEARCH_HINT" desc="Hint in a language search box in the dialog allowing users to change their Dictation language.">
+        Search languages
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_SEARCH_CLEAR" desc="Hint to clear search in a language search box in the dialog allowing users to change their Dictation language.">
+        Clear search
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_RECOMMENDED" desc="Heading for suggested languages list in the Dictation change language dialog.">
+        Suggested
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_ALL" desc="Heading for the list of all Dictation languages in the Dictation change language dialog.">
+        All languages
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_NO_RESULTS" desc="Message shown when there are no Dictation languages matching the search query the user has typed.">
+        No search results
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_UPDATE_BUTTON" desc="Text on a button to update the Dictation language in the change language dialog.">
+        Update
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_CANCEL_BUTTON" desc="Text on a button to cancel the Dictation language dialog without updating the language.">
+        Cancel
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_OFFLINE_SUBTITLE" desc="Subtitle of a language in the Dictation language settings dialog which indicates that the language is availble offline.">
+        Works offline
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_OFFLINE_DESCRIPTION" desc="Description of a language that works offline in the Dictation language settings dialog." is_accessibility_with_no_ui="true">
+        <ph name="LANGUAGE">$1<ex>English</ex></ph> (works offline)
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_SELECTED_DESCRIPTION" desc="Description of a language that is selected in the Dictation language settings dialog." is_accessibility_with_no_ui="true">
+        <ph name="LANGUAGE">$1<ex>English</ex></ph> (selected)
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_NOT_SELECTED_DESCRIPTION" desc="Description of a language that is not selected in the Dictation language settings dialog." is_accessibility_with_no_ui="true">
+        <ph name="LANGUAGE">$1<ex>English</ex></ph> (not selected)
+      </message>
+      <message name="IDS_SETTINGS_ON_SCREEN_KEYBOARD_LABEL" desc="Label for checkbox which enables an on-screen keyboard.">
+        On-screen keyboard
+      </message>
+      <message name="IDS_SETTINGS_ON_SCREEN_KEYBOARD_DESCRIPTION" desc="Description for checkbox which enables an on-screen keyboard.">
+        Select a text field to open the keyboard. You can also select the Keyboard icon on the bottom of your screen.
+      </message>
+      <message name="IDS_SETTINGS_MONO_AUDIO_LABEL" desc="Label for checkbox which enables mono audio output.">
+        Mono audio
+      </message>
+      <message name="IDS_SETTINGS_MONO_AUDIO_DESCRIPTION" desc="Description for checkbox which enables mono audio output.">
+        Play the same audio through all speakers
+      </message>
+      <message name="IDS_SETTINGS_STARTUP_SOUND_LABEL" desc="Label for checkbox which enables startup sound.">
+        Play sound on device startup
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DISPLAY_HEADING" desc="In the settings tab, the heading for accessibility features related to the computer's display.">
+        Display
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_EXPLANATION" desc="Informational message at the top of the accessibility section of the settings page about enabling additional accessibility-related features.">
+        Enable accessibility features to make your device easier to use. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_CARET_HIGHLIGHT_DESCRIPTION" desc="In the settings tab, the text next to the checkbox to highlight the caret (the text insertion point) to make it easier to see.">
+        Highlight text cursor
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_CARET_HIGHLIGHT_DESCRIPTION_SUBTEXT" desc="In the settings tab, the sub-text next to the checkbox to highlight the caret (the text insertion point) to make it easier to see.">
+        Cursor is highlighted when it appears or moves
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_CARET_BROWSING_DESCRIPTION" desc="Name of the setting to enable Caret Browsing, which allows you to move around any web page using a text caret.">
+        Navigate with text cursor (caret browsing)
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_CARET_BROWSING_DESCRIPTION_SUBTEXT" desc="Subtext of the setting to enable Caret Browsing, which allows you to move around any web page using a text caret.">
+        Use the arrow keys to move through items letter by letter
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_CURSOR_HIGHLIGHT_DESCRIPTION" desc="In the settings tab, the text next to the checkbox to highlight the mouse cursor when it's moving to make it easier to see.">
+        Highlight the mouse cursor when it's moving
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION" desc="In the settings tab, the text next to the checkbox to highlight the focused object to make it easier to see.">
+        Highlight item with keyboard focus
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION_SUBTEXT" desc="In the settings tab, the subtext next to the checkbox to highlight the focused object to make it easier to see.">
+        Item is highlighted when you move focus. Press tab or select an item to change focus.
+      </message>
+      <message name="IDS_SETTINGS_FOCUS_HIGHLIGHT_DISABLED_BY_CHROMEVOX_TOOLTIP" desc="Tooltip text which explains that the 'Highlight the item with keyboard focus' feature cannot be enabled when ChromeVox is on. Shown next to the disabled 'Highlight the item with keyboard focus' toggle when ChromeVox has been enabled.">
+        Highlight the item with keyboard focus is not available when ChromeVox is on
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_TITLE" desc="In the settings tab, the text next to the checkbox to enable an option to hold a key and click to speak any on-screen text out loud.">
+        Select-to-speak
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DISABLED_DESCRIPTION" desc="In the settings tab, the description of a feature that will read on-screen text out loud. This text is shown when that feature is disabled.">
+        Hear specific text read aloud. First, select the Select-to-speak icon on the bottom of your screen, then highlight text.
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_SPEECH" desc="In the Select-to-speak settings subpage, the label for the group of options where the user can adjust synthesized speech properties.">
+        Speech
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_LANGUAGES_FILTER_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for the control where the user can choose a language from a list, to filter the list of voices below.">
+        Language
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DEVICE_LANGUAGE" desc="In the Select-to-speak settings subpage, the option in the language list where the default language of the device is used as the speech language.">
+        Device language
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_VOICE_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for the control where the user can choose a voice.">
+        Voice
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_TEXT_TO_SPEECH_SETTINGS_LINK" desc="In the Select-to-speak settings subpage, the label for the link to the Text-to-Speech settings page.">
+        System voice settings
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_SYSTEM_VOICE" desc="In the Select-to-speak settings subpage, the label for the menu option for the voice name for the system default Text-to-Speech voice">
+        System voice
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_VOICE_PREVIEW" desc="In the Select-to-speak settings subpage, the label for the control where the user can listen to a preview of the selected voice.">
+        Voice preview
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DEFAULT_NETWORK_VOICE" desc="In the Select-to-speak settings subpage, the label for the natural voices option that uses a default, server-supplied Text-to-Speech voice">
+        Default natural voice
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_NATURAL_VOICE_PREVIEW" desc="In the Select-to-speak settings subpage, the label for the control where the user can listen to a preview of the selected high-quality voice.">
+        Natural voice preview
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT" desc="In the Select-to-speak settings subpage, the label for the group of options controlling highlighting.">
+        Highlight
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for option to highlight spoken words rather than spoken nodes.">
+        Highlight each word as it is spoken
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_VOICE_SWITCHING_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for option to toggle automatic voice switching.">
+        Automatically change language to match selected content
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_ENHANCED_NETWORK_VOICES_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for the control to enable support for high-quality voices streamed from the interent when the device is online.">
+        Use natural voice when device is online
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_ENHANCED_NETWORK_VOICES_SUBTITLE" desc="In the Select-to-speak settings subpage, informational text related to the Select-to-speak control that enables support for high-quality voices, mentioning that enabling these voices will send text to Google for processing and generating audio.">
+        Text will be sent to Google for processing.
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_ENHANCED_NETWORK_VOICE" desc="In the Select-to-speak settings subpage, the label for the control to choose a high-quality, natural-sounding voice to be streamed from the internet from a list.">
+        Natural voice
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_NATURAL_VOICE_NAME" desc="In the Select-to-speak settings subpage, the label for a voice name of a natural voice, generated by combining a localized language name like English (US) with a serial number">
+        <ph name="DISPLAY_NAME">$1<ex>English (United States)</ex></ph> Voice <ph name="COUNT">$2<ex>2</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_COLOR_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for option to pick word highlight color.">
+        Highlight color
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_COLOR_BLUE" desc="In the Select-to-speak settings subpage, the label for a blue highlight color.">
+        Blue
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_COLOR_ORANGE" desc="In the Select-to-speak settings subpage, the label for a orange highlight color.">
+        Orange
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_COLOR_YELLOW" desc="In the Select-to-speak settings subpage, the label for a yellow highlight color.">
+        Yellow
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_COLOR_GREEN" desc="In the Select-to-speak settings subpage, the label for a green highlight color.">
+        Green
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_COLOR_PINK" desc="In the Select-to-speak settings subpage, the label for a pink highlight color.">
+        Pink
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_DARK" desc="In the Select-to-speak settings subpage, an example of a word highlight on a dark background.">
+        Dark background
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_LIGHT" desc="In the Select-to-speak settings subpage, an example of a word highlight on a light background.">
+        Light background
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_BACKGROUND_SHADING_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for option to fade the background outside of the focus ring to improve focus on what is being spoken.">
+        Dim background content
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_SAMPLE_TEXT" desc="In the Select-to-speak settings subpage, the sample text around which will be drawn a Select to Speak visual preview. This should be less than one line long.">
+        The quick brown fox jumped over the lazy dog.
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_NAVIGATION_CONTROLS_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for option to show navigation controls, such as going to the previous or next paragraph, when Select-to-speak is activated.">
+        Navigation controls
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_NAVIGATION_CONTROLS_SUBTITLE" desc="In the Select-to-speak settings subpage, the subtitle for option to show navigation controls, such as going to the previous or next paragraph, when Select-to-speak is activated.">
+        Provides controls to speed up, slow down, and pause the reading voice
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DESCRIPTION" desc="For devices with a hardware keyboard. In the settings tab, the description of an option to hold a key and click or drag a box with the mouse to speak any on-screen text out loud.">
+        Hear specific text read aloud. First, select the Select-to-speak icon on the bottom of your screen, then highlight text. You can also use a keyboard shortcut: Highlight text, then press Search + S.
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DESCRIPTION_WITHOUT_KEYBOARD" desc="For devices that do not have a hardware keyboard. In the settings tab, the description of an option to highlight text to be read out loud.">
+        Tap the Select-to-Speak icon near your profile image, then select what you want to hear.
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_OPTIONS_LABEL" desc="In the settings tab, the label for the button that opens the Options page for the Select-to-Speak feature.">
+        Open select-to-speak settings
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_LABEL" desc="Label for the slow keys setting toggle.">
+        Slow keys
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_DESCRIPTION" desc="Description for the slow keys setting toggle.">
+        Adds a delay between when you press a key and when it activates
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_DELAY_LABEL" desc="Label for the slow keys delay slider.">
+        Delay before activating key
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_DELAY_SLIDER_SHORT" desc="Label for the minimum value on the slow keys delay slider.">
+        Short
+      </message>
+      <message name="IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_DELAY_SLIDER_LONG" desc="Label for the maximum value on the slow keys delay slider.">
+        Long
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SWITCH_ACCESS_DESCRIPTION" desc="In the settings tab, the text next to the checkbox to enable Switch Access (for users with limited motor control).">
+        Switch Access
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SWITCH_ACCESS_DESCRIPTION_SUBTEXT" desc="In the settings tab, the description next to the checkbox to enable Switch Access (for users with limited motor control).">
+        Control your device with one or more switches. Switches can be keyboard keys, gamepad buttons, or dedicated devices.
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SWITCH_ACCESS_OPTIONS_LABEL" desc="In the settings tab, the label for the button that opens the Options page for the Switch Access feature.">
+        Switch Access settings
+      </message>
+      <message name="IDS_SETTINGS_MANAGE_SWITCH_ACCESS_SETTINGS" desc="Title of the page to manage Switch Access settings.">
+        Switch Access settings
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_GUIDE_LABEL" desc="Label for the button that opens the setup guide dialog for Switch Access.">
+        Setup guide
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ASSIGNMENT_HEADING" desc="Heading for the settings section for Switch Access to assign switches to actions">
+        Switch action assignment
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ASSIGN_OPTION_SPACE" desc="Label for the option to assign the spacebar as a switch.">
+        Space
+      </message>
+      <message name="IDS_SETTINGS_ASSIGN_SELECT_SWITCH_LABEL" desc="Label for the setting to assign a switch to the action 'Select', which selects the currently focused element and begins an interaction (which varies depending on the element/other settings).">
+        Select
+      </message>
+      <message name="IDS_SETTINGS_ASSIGN_NEXT_SWITCH_LABEL" desc="Label for the setting to assign a switch to the action 'Next', which moves focus to the next element.">
+        Next
+      </message>
+      <message name="IDS_SETTINGS_ASSIGN_PREVIOUS_SWITCH_LABEL" desc="Label for the setting to assign a switch to the action 'Previous', which moves focus to the previous element.">
+        Previous
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_INTERNAL_DEVICE_TYPE_LABEL" desc="Label to apply to a switch key from the built-in keyboard. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Built-in Keyboard
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_USB_DEVICE_TYPE_LABEL" desc="Label to apply to a switch key from a USB device. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        USB
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_BLUETOOTH_DEVICE_TYPE_LABEL" desc="Label to apply to a switch key from a Bluetooth device. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Bluetooth
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_UNKNOWN_DEVICE_TYPE_LABEL" desc="Label to apply to a switch key from an unknown device. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Unknown
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_AUTO_SCAN_HEADING" desc="Heading for the settings section containing preferences around Switch Access automatically scanning between elements.">
+        Auto-scan
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_AUTO_SCAN_LABEL" desc="Label for the toggle which enables automatic scanning between elements in Switch Access.">
+        Enable auto-scan
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_AUTO_SCAN_SPEED_LABEL" desc="Label for slider which sets the time interval for Switch Access to automatically scan to the next element.">
+        Scanning speed
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_AUTO_SCAN_KEYBOARD_SPEED_LABEL" desc="Label for slider which sets the time interval for Switch Access to automatically scan to the next element while navigating in the keyboard. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Keyboard scanning speed
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_POINT_SCAN_SPEED_LABEL" desc="Label for slider which sets the speed of point scanning cursors for Switch Access, which move across the screen, allowing the user to choose a precise point to click. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Point scanning speed
+      </message>
+      <message name="IDS_SETTINGS_DURATION_IN_SECONDS" desc="A duration in seconds. Should be short.">
+        <ph name="DURATION">$1<ex>1.5</ex></ph>s
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_TITLE" desc="A title for a dialog to assign a switch key to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Assign switch for “<ph name="action">$1<ex>Select</ex></ph>”
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_WAIT_FOR_KEY_PROMPT_NO_SWITCHES" desc="A message shown to ask a user to press a new key to be assigned to an action. No switches are currently assigned to this action. The user can assign multiple switches to this action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Press a switch or keyboard key to assign it to “<ph name="action">$1<ex>Select</ex></ph>.”
+You can assign multiple switches to this action.
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_WAIT_FOR_KEY_PROMPT_NO_SWITCHES_SETUP_GUIDE" desc="A message shown in the setup flow to ask a user to press a new key or external switch to be assigned to an action. No switches are currently assigned to this action. The user can assign multiple switches to this action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Press a switch or keyboard key to assign it to “<ph name="action">$1<ex>Select</ex></ph>”
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_WAIT_FOR_KEY_PROMPT_AT_LEAST_ONE_SWITCH" desc="A message shown to ask a user to press a key to be assigned to an action, or press an assigned switch to remove assignment. One or more switches are currently assigned to this action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Press a new switch or keyboard key to start assignment.
+Press an assigned switch or key to remove assignment.
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_WAIT_FOR_CONFIRMATION_PROMPT" desc="A message shown to ask a user to confirm by pressing a switch key to be assigned to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Press “<ph name="currentKey">$1<ex>backspace</ex></ph>” again to confirm assignment and <ph name="response">$2<ex>exit</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_EXIT_RESPONSE" desc="A word describing that the dialog will exit after the user follows the preceding instructions.">
+        exit
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_CONTINUE_RESPONSE" desc="A word describing that the setup dialog will continue to the next step after the user follows the preceding instructions.">
+        continue
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_TRY_AGAIN_RESPONSE" desc="A word describing that the setup dialog needs the user to attempt the interaction again.">
+        try again
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_WAIT_FOR_CONFIRMATION_REMOVAL_PROMPT" desc="A message to ask a user to confirm, by pressing a switch key, for removal of a switch key assignment. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Press “<ph name="currentKey">$1<ex>backspace</ex></ph>” again to remove assignment and <ph name="response">$2<ex>exit</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_WARN_NOT_CONFIRMED_PROMPT" desc="A message warning the user that the switch key pressed during confirmation did not match the initial switch key pressed. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Keys don’t match. Press any key to <ph name="response">$1<ex>exit</ex></ph>.
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH" desc="A message warning the user that they cannot remove the last switch for the Select action. The text for the 'Select' action should be the same as the text from IDS_SETTINGS_ASSIGN_SELECT_SWITCH_LABEL. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Can’t remove the only switch assigned to “Select.” Press any key to <ph name="response">$1<ex>exit</ex></ph>.
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_AND_DEVICE_TYPE" desc="Label describing a switch key and the type of device where the switch key exists. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        <ph name="SWITCH">$1<ex>backspace</ex></ph> (<ph name="DEVICE_TYPE">$2<ex>USB</ex></ph>)
+      </message>
+      <message name="IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL_0_SWITCHES" desc="A sub-label for the link that brings up a dialog to assign a switch key to an action. Mentions zero switches assigned. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        0 switches assigned
+      </message>
+      <message name="IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL_1_SWITCH" desc="A sub-label for the link that brings up a dialog to assign a switch key to an action. Includes currently assigned switch. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        <ph name="SWITCH">$1<ex>backspace</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL_2_SWITCHES" desc="A sub-label for the link that brings up a dialog to assign a switch key to an action. Includes listing of two currently assigned switches. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        <ph name="FIRST_SWITCH">$1<ex>backspace</ex></ph>, <ph name="SECOND_SWITCH">$2<ex>enter</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL_3_SWITCHES" desc="A sub-label for the link that brings up a dialog to assign a switch key to an action. Includes listing of three currently assigned switches. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        <ph name="FIRST_SWITCH">$1<ex>backspace</ex></ph>, <ph name="SECOND_SWITCH">$2<ex>enter</ex></ph>, <ph name="THIRD_SWITCH">$3<ex>escape</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL_4_SWITCHES" desc="A sub-label for the link that brings up a dialog to assign a switch key to an action. Includes listing of three currently assigned switches, and mentions one other switch is assigned. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        <ph name="FIRST_SWITCH">$1<ex>backspace</ex></ph>, <ph name="SECOND_SWITCH">$2<ex>enter</ex></ph>, <ph name="THIRD_SWITCH">$3<ex>escape</ex></ph>, and 1 more switch
+      </message>
+      <message name="IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL_5_OR_MORE_SWITCHES" desc="A sub-label for the link that brings up a dialog to assign a switch key to an action. Includes listing of three currently assigned switches, and mentions number of other switches assigned. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        <ph name="FIRST_SWITCH">$1<ex>backspace</ex></ph>, <ph name="SECOND_SWITCH">$2<ex>enter</ex></ph>, <ph name="THIRD_SWITCH">$3<ex>escape</ex></ph>, and <ph name="NUMBER_OF_OTHER_SWITCHES">$4<ex>2</ex></ph> more switches
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_WARN_ALREADY_ASSIGNED_ACTION_PROMPT" desc="A message warning the user that the switch key pressed is assigned to another action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        '<ph name="currentKey">$1<ex>enter</ex></ph>' is already assigned to the '<ph name="action">$2<ex>Select</ex></ph>' action. Press any key to <ph name="response">$3<ex>exit</ex></ph>.
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_WARN_UNRECOGNIZED_KEY_PROMPT" desc="A message warning the user that the switch key pressed is not recognized. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Unrecognized key. Press any key to <ph name="response">$1<ex>exit</ex></ph>.
+      </message>
+      <message name="IDS_SETTINGS_NO_SWITCHES_ASSIGNED" desc="A label indicating no switches are assigned to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        No switch has been assigned yet
+      </message>
+      <message name="IDS_SETTINGS_NO_SWITCHES_ASSIGNED_SETUP_GUIDE" desc="A label indicating no switches are assigned to an action, from within the setup guide. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Switch hasn’t been assigned yet
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_DIALOG_EXIT" desc="The label of the button to exit one of the switch access dialogs without making any changes. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Exit
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_GUIDE_WARNING_DIALOG_TITLE" desc="The title for the dialog explaining that re-running the setup guide will clear all switch assignments. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Start Switch Access setup?
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_GUIDE_WARNING_DIALOG_MESSAGE" desc="The message explaining that re-running the setup guide will clear all switch assignments. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Your current scanning setup will be reset, including any assigned switches and auto-scan speed preferences.
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_INTRO_TITLE" desc="The title for the first page of the Switch Access setup guide. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Switch Access setup guide
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_INTRO_BODY" desc="The message displayed on the first page of the Switch Access setup guide, instructing the user to confirm that their external switch is appropriately connected to the chromebook. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        To get started, please make sure your USB or Bluetooth switch is connected to your Chromebook. You can also use keyboard keys.
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_ASSIGN_SELECT_TITLE" desc="The title for the page of the Switch Access setup guide where the user assigns a switch to perform the action select, which selects the element onscreen currently surrounded by the focus ring. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Assign switch for “Select”
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_AUTO_SCAN_ENABLED_TITLE" desc="The title for the page of the Switch Access setup guide that informs the user that auto-scan has been enabled, meaning that the focused item will change periodically with no additional input. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Move between items automatically
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_AUTO_SCAN_ENABLED_EXPLANATION" desc="The message displayed in the Switch Access setup guide explaining how the auto-scan behavior works. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Auto-scan lets you move through items on the screen automatically. When an item is highlighted, press “Select” to activate it.
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_AUTO_SCAN_ENABLED_DIRECTIONS" desc="The message displayed in the Switch Access setup guide after auto-scan has been enabled, informing them how to proceed. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        You can go back to change the assignment for “Select.” You can always turn off auto-scan in Settings.
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CHOOSE_SWITCH_COUNT_TITLE" desc="The title for the page of the Switch Access setup guide where the user selects the number of switches they are going to use. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Assign additional switches?
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CHOOSE_1_SWITCH" desc="The label for the option to use only one switch (already assigned), within the Switch Access setup guide. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        No, stay with 1 switch
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CHOOSE_2_SWITCHES" desc="The label for the option to use two switches (with one already assigned), within the Switch Access setup guide. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Assign 1 more switch
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CHOOSE_2_SWITCHES_DESCRIPTION" desc="The description for the option to use two switches (with one already assigned), within the Switch Access setup guide. It details that the second switch will be 'next' and move focus to the next item onscreen. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Use “Next” to move your focus forward on the screen
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CHOOSE_3_SWITCHES" desc="The label for the option to use three switches (with one already assigned), within the Switch Access setup guide. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Assign 2 more switches
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CHOOSE_3_SWITCHES_DESCRIPTION" desc="The description for the option to use three switches (with one already assigned), within the Switch Access setup guide. It details that the switches will be 'next' and 'previous', and used for navigating the items onscreen. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Use “Next” and “Previous” to move between items on the screen
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_AUTO_SCAN_SPEED_TITLE" desc="The title for the page of the Switch Access setup guide where the user sets the speed of auto-scan, which automatically advances the focus between elements at a fixed interval. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Auto-scan speed
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_AUTO_SCAN_SPEED_DESCRIPTION" desc="The description on the page of the Switch Access setup guide adjusting the auto-scan speed. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Choose how long the highlight should stay on each item
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_ASSIGN_NEXT_TITLE" desc="The title for the page of the Switch Access setup guide where the user assigns a switch to perform the action next, which advances the focus ring to the next element onscreen. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Assign switch for “Next”
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_ASSIGN_PREVIOUS_TITLE" desc="The title for the page of the Switch Access setup guide where the user assigns a switch to perform the action previous, which moves the focus ring to the previous element onscreen. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Assign switch for “Previous”
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_TITLE" desc="The title for the final page of the Switch Access setup guide, which informs the user that setup is complete and provides some final information. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        You’re all set!
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_MANUAL_SCAN_INSTRUCTIONS" desc="Instructions for how to close the Switch Access setup guide using Switch Access with at least one switch assigned to navigation. Switch Access is an alternative input method designed for users with limited mobility where the user has as little as one switch (for example, a button) to control the computer. Auto-scan is a feature of Switch Access where focus moves from one element to the next at a set interval automatically, so the user only has to select the element when it is highlighted.">
+        Since you set up multiple switches, auto-scan has been turned off.
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_INFO" desc="Final advice on changing the settings for Switch Access after the Switch Access setup guide has been closed. Switch Access is an alternative input method designed for users with limited mobility where the user has as little as one switch (for example, a button) to control the computer.">
+        You can always change your settings or open the setup guide again from Switch Access settings.
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_AUTO_SCAN_SLOWER" desc="The label on the button which slows the speed of Switch Access' auto-scan, which automatically advances the focus between elements at a fixed interval. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Slower
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_AUTO_SCAN_FASTER" desc="The label on the button which increases the speed of Switch Access' auto-scan, which automatically advances the focus between elements at a fixed interval. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Faster
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_PAIR_BLUETOOTH" desc="A button in the Switch Access setup guide that takes the user to a page where they can pair a bluetooth switch device. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Pair Bluetooth switch
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_NEXT" desc="A button in the Switch Access setup guide that takes the user to the next step in configuring the feature.">
+        Next
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_PREVIOUS" desc="A button in the Switch Access setup guide that takes the user to the previous step in the setup process.">
+        Previous
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_START_OVER" desc="A button in the Switch Access setup guide to restart from the beginning, and reconfigure any/all of the settings. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Redo setup
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_DONE" desc="A button in the Switch Access setup guide to confirm that the user has finished configuring their settings and would like to close the dialog. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Done
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_ASSIGNED_ICON_LABEL" desc="A label for an icon indicating a switch is assigned to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Assigned
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_ADD_ASSIGNMENT_ICON_LABEL" desc="A label for an icon indicating a switch is ready to add as an assignment to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Add assignment
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_REMOVE_ASSIGNMENT_ICON_LABEL" desc="A label for an icon indicating a switch is ready to remove as an assignment from an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Remove assignment
+      </message>
+      <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_ERROR_ICON_LABEL" desc="The label for an icon indicating that there was an error adding or removing a switch assignment. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+        Error
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_HEADING" desc="In the settings tab, the heading for accessibility features that enable the computer to speak text from the computer screen.">
+        Text-to-Speech
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DISPLAY_SETTINGS_TITLE" desc="In the settings tab, the title of a link to open display settings.">
+        Display settings
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DISPLAY_SETTINGS_DESCRIPTION" desc="In the settings tab, an explanation that the display settings have options to adjust the screen resolution.">
+        Change display size to make items on your screen smaller or larger
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_APPEARANCE_SETTINGS_TITLE" desc="In the settings tab, the title of a link to open appearance settings.">
+        Website text size and font
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_APPEARANCE_SETTINGS_DESCRIPTION" desc="In the settings tab, an explanation that the appearance settings allows you to change the size of text on the screen.">
+        Customize text size and font for the web browser
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_AND_TEXT_INPUT_HEADING" desc="In the settings tab, the heading above settings related to the keyboard and other text input.">
+        Keyboard and text input
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_SETTINGS_TITLE" desc="In the settings tab, the title of a link to open keyboard settings.">
+        Keyboard settings
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_SETTINGS_DESCRIPTION" desc="In the settings tab, an explanation that the keyboard settings let you adjust the rate at which keys automatically repeat when held down, automatic prediction of words, and more.">
+        Change keyboard key mapping, function keys, and more
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_MOUSE_AND_TOUCHPAD_HEADING" desc="In the settings tab, the heading for the section on mouse and touchpad settings.">
+        Mouse and touchpad
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_MOUSE_SETTINGS_TITLE" desc="In the settings tab, the title of a link to open mouse and touchpad settings.">
+        Mouse and touchpad settings
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_AUDIO_AND_CAPTIONS_HEADING" desc="In the settings tab, the heading for the section on audio / sound and caption settings.">
+        Audio and captions
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_ADDITIONAL_FEATURES_TITLE" desc="In the settings tab, the title of a link that adds additional accessibility features not found in the built-in settings.">
+        Find more accessibility tools in the Chrome Web Store
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DISABILITY_SUPPORT_TITLE" desc="In the settings tab, the title of a link that opens the disability support help center page.">
+        Contact Google Disability Support
+      </message>
+      <message name="IDS_SETTINGS_MANAGE_TTS_SETTINGS" desc="Link to manage text-to-speech settings">
+        Text-to-Speech voice settings
+      </message>
+      <message name="IDS_SETTINGS_TTS_LINK_DESCRIPTION" desc="Description of link to manage text-to-speech settings">
+        Select and customize text-to-speech voices for ChromeVox and Select-to-speak
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_VOICES" desc="Heading describing a collection of listboxes on the text-to-speech settings page. Each listbox is associated with a language, and contains all possible voices for that language">
+        Preferred Voices
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_NO_VOICES_MESSAGE" desc="Message when no text-to-speech voices are found on the ChromeOS device.">
+        No voices found
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_MORE_LANGUAGES" desc="Label for a toggle button letting users know they can pick default voices for more languages which are not shown by default">
+        More languages
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_PROPERTIES" desc="Heading describing a collection of input controls for a section of text-to-speech settings on speech properties, including speech pitch and rate">
+        Speech Properties
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_RATE" desc="The rate (speed) of speech in text-to-speech settings.">
+        Rate
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_RATE_MINIMUM_LABEL" desc="A label for the minimum side of a slider allowing users to change their text-to-speech speech rate">
+        Slow
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_RATE_MAXIMUM_LABEL" desc="A label for the maximum side of a slider allowing users to change their text-to-speech speech rate">
+        Fast
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_PITCH" desc="The pitch of speech in text-to-speech settings.">
+        Pitch
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_PITCH_MINIMUM_LABEL" desc="A label for the minimum side of a slider allowing users to change their text-to-speech speech pitch">
+        Low
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_PITCH_MAXIMUM_LABEL" desc="A label for the maximum side of a slider allowing users to change their text-to-speech speech pitch">
+        High
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_VOLUME" desc="The volume of speech compared to system volume in text-to-speech settings.">
+        Volume
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_VOLUME_MINIMUM_LABEL" desc="A label for the minimum side of a slider allowing users to change their text-to-speech speech volume">
+        Quiet
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_VOLUME_MAXIMUM_LABEL" desc="A label for the maximum side of a slider allowing users to change their text-to-speech speech volume">
+        Loud
+      </message>
+      <message name="IDS_SETTINGS_PERCENTAGE" desc="A number displayed as a percentage">
+        <ph name="PERCENTAGE">$1<ex>120</ex></ph>%
+      </message>
+      <message name="IDS_SETTINGS_DEFAULT_PERCENTAGE" desc="A number displayed as a percentage, which is the normal or default.">
+        <ph name="PERCENTAGE">$1<ex>120</ex></ph>% (default)
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_PREVIEW_HEADING" desc="The heading for a section of the text-to-speech settings page where a user can preview text to speech">
+        Preview
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_PREVIEW_INPUT_LABEL" desc="The label for sample input for a section of the text-to-speech settings page where a user can preview text to speech.">
+        Text to preview
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_PREVIEW_INPUT" desc="The sample input for a section of the text-to-speech settings page where a user can preview text to speech. Users will hear this read aloud.">
+        Hi there! I'm your text-to-speech voice.
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_PREVIEW_VOICE" desc="Label for a dropdown to select preview voice in the section of the text-to-speech settings page where a user can preview text to speech.">
+        Voice to preview
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_PREVIEW_PLAY" desc="A button on the text-to-speech settings page to start playing a preview of text to speech">
+        Play
+      </message>
+      <message name="IDS_SETTINGS_TEXT_TO_SPEECH_ENGINES" desc="Heading for a section of text-to-speech settings to do per-engine settings">
+        Speech Engines
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_LINK_TITLE" desc="In the settings tab, the title of a link that opens a screen allowing the user to change text-to-speech accessibility features.">
+        Text-to-Speech
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_LINK_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change text-to-speech accessibility features.">
+        ChromeVox screen reader and select-to-speak
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_TITLE" desc="In the settings tab, the title of a link that opens a screen allowing the user to change display and magnification accessibility features.">
+        Display and magnification
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_NEW_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change display and magnification accessibility features, including the new color correction feature.">
+        Color inversion, color correction, magnifier, and display settings
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_AND_TEXT_INPUT_LINK_TITLE" desc="In the settings tab, the title of a link that opens a screen allowing the user to change keyboard and text input accessibility features.">
+        Keyboard and text input
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_AND_TEXT_INPUT_LINK_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change keyboard and text input accessibility features.">
+        On-screen keyboard, dictation, Switch Access, and more
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_CURSOR_AND_TOUCHPAD_LINK_TITLE" desc="In the settings tab, the title of a link that opens a screen allowing the user to change cursor and touchpad accessibility features.">
+        Cursor and touchpad
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_CURSOR_AND_TOUCHPAD_LINK_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change cursor and touchpad accessibility features.">
+        Automatic clicks, cursor size, cursor color, and more
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_AUDIO_AND_CAPTIONS_LINK_TITLE" desc="In the settings tab, the title of a link that opens a screen allowing the user to change audio and captions accessibility features.">
+        Audio and captions
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_AUDIO_AND_CAPTIONS_LINK_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change audio and captions accessibility features.">
+        Mono audio, startup, Live Caption, and more
+      </message>
+      <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_LINK_TITLE" desc="In the Accessibility settings page, the title of a link that opens a screen allowing the user to change options for the Select-to-speak accessibility feature.">
+        Select-to-speak settings
+      </message>
 
       <part file="ash_settings_search_tag_strings.grdp" />
     </messages>

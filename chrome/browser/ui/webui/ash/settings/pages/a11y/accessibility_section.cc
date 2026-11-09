@@ -1001,7 +1001,7 @@ void AccessibilitySection::AddLoadTimeData(
       {"durationInSeconds", IDS_SETTINGS_DURATION_IN_SECONDS},
       {"reEnableTouchpadLabel", IDS_SETTINGS_RE_ENABLE_TOUCHPAD},
       {"focusHighlightLabel",
-       IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION},
+       IDS_OS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION},
       {"focusHighlightLabelSubtext",
        IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION_SUBTEXT},
       {"focusHighlightDisabledByChromevoxTooltip",

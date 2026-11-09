@@ -437,4 +437,172 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_CARET_BROWSING_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable browsing using the text caret. Alternate phrase for 'Caret browsing'">
     Navigate with text cursor
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_CURSOR_AND_TOUCHPAD_PAGE" desc="Text for search result item which, when clicked, navigates the user to cursor and touchpad accessibility settings. Alternate phrase for: 'Mouse accessibility settings'">
+    Cursor and touchpad
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_CURSOR_AND_TOUCHPAD_PAGE_ALT1" desc="Text for search result item which, when clicked, navigates the user to cursor and touchpad accessibility settings. Alternate phrase for: 'Cursor and touchpad'">
+    Mouse accessibility settings
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_CURSOR_AND_TOUCHPAD_PAGE_ALT2" desc="Text for search result item which, when clicked, navigates the user to cursor and touchpad accessibility settings. Alternate phrase for: 'Cursor and touchpad'">
+    Pointer accessibility settings
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_AUTOMATICALLY_CLICK" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable automatically clicking when the cursor stops.">
+    Automatically click when cursor stops
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_AUTOMATICALLY_CLICK_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable automatically clicking when the cursor stops. Alternate phrase for: 'Automatically click when cursor stops'">
+    Auto clicks
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_MOUSE_KEYS" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable controlling the mouse via the keyboard">
+    Mouse keys
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable controlling the computer via facial gestures and movement.">
+    Face control
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable controlling the computer via facial gestures and movement. Alternate phrase for: 'Face control'">
+    Facial control
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE_ALT2" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable controlling the computer via facial gestures and movement. Alternate phrase for: 'Face control'">
+    Facial gestures
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE_ALT3" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable controlling the computer via facial gestures and movement. Alternate phrase for: 'Face control'">
+    Head pointer
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE_ALT4" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable controlling the computer via facial gestures and movement. Alternate phrase for: 'Face control'">
+    Head tracking
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_LARGE_CURSOR" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable a large mouse cursor.">
+    Large cursor
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_LARGE_CURSOR_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable a large mouse cursor. Alternate phrase for: 'Large cursor'">
+    Show large mouse cursor
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_LARGE_CURSOR_ALT2" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable a large mouse cursor. Alternate phrase for: 'Large cursor'">
+    Big mouse cursor
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_LARGE_CURSOR_ALT3" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable a large mouse cursor. Alternate phrase for: 'Large cursor'">
+    Big pointer
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_LARGE_CURSOR_ALT4" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable a large mouse cursor. Alternate phrase for: 'Large cursor'">
+    Mouse size
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_HIGHLIGHT_CURSOR" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable highlighting the mouse cursor when it is moving.">
+    Highlight mouse cursor when moving
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_HIGHLIGHT_CURSOR_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable highlighting the mouse cursor when it is moving. Alternate phrase for: 'Highlight mouse cursor when moving'">
+    Highlight pointer
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_HIGHLIGHT_CURSOR_ALT2" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable highlighting the mouse cursor when it is moving. Alternate phrase for: 'Highlight mouse cursor when moving'">
+    Circle pointer
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_HIGHLIGHT_CURSOR_ALT3" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable highlighting the mouse cursor when it is moving. Alternate phrase for: 'Highlight mouse cursor when moving'">
+    Circle cursor
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_SHAKE_TO_LOCATE_CURSOR" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable enlarging the mouse cursor when it is shaken.">
+    Shake to locate cursor
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_SHAKE_TO_LOCATE_CURSOR_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable enlarging the mouse cursor when it is shaken. Alternate phrase for: 'Shake to locate cursor'">
+    Find mouse pointer
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_SHAKE_TO_LOCATE_CURSOR_ALT2" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable enlarging the mouse cursor when it is shaken. Alternate phrase for: 'Shake to locate cursor'">
+    Lost mouse cursor
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_SHAKE_TO_LOCATE_CURSOR_ALT3" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable enlarging the mouse cursor when it is shaken. Alternate phrase for: 'Shake to locate cursor'">
+    Find mouse cursor
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_TABLET_NAVIGATION_BUTTONS" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable showing navigation buttons (launcher, back, overview) in the shelf when the device is in tablet mode.">
+    Tablet navigation buttons
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_AUDIO_AND_CAPTIONS_PAGE" desc="Text for search result item which, when clicked, navigates the user to audio and captions accessibility settings. Alternate phrase for: 'Subtitles'">
+    Audio and captions
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_AUDIO_AND_CAPTIONS_PAGE_ALT1" desc="Text for search result item which, when clicked, navigates the user to audio and captions accessibility settings. Alternate phrase for: 'Audio and captions'">
+    Subtitles
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_AUDIO_AND_CAPTIONS_PAGE_ALT2" desc="Text for search result item which, when clicked, navigates the user to audio and captions accessibility settings. Alternate phrase for: 'Audio and captions'">
+    Closed captions
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_AUDIO_AND_CAPTIONS_PAGE_ALT3" desc="Text for search result item which, when clicked, navigates the user to audio and captions accessibility settings. Alternate phrase for: 'Audio and captions'">
+    Text for audio
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_MONO_AUDIO" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable mono audio (the same sound with all speakers). Alternate phrase for: 'Same audio with all speakers'">
+    Mono audio
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_MONO_AUDIO_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable mono audio (the same sound with all speakers). Alternate phrase for: 'Mono audio'">
+    Same audio with all speakers
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_STARTUP_SOUND" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable playing a sound upon device startup.">
+    Startup sound
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_STARTUP_SOUND_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable playing a sound upon device startup. Alternate phrase for: 'Startup sound'">
+    Play sound on device startup
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_CAPTIONS" desc="Text for search result item which, when clicked, navigates the user to accessibility caption preferences.">
+    Caption preferences
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_LIVE_CAPTION" desc="Text for a search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable Live Caption.">
+    Live Caption
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_LIVE_CAPTION_ALT1" desc="Text for a search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable Live Caption. Alternate phrase for: 'Live Caption'">
+    Auto captions
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_ENABLE_SWITCH_ACCESS" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable switch access, which allows users to control the computer with just one or two switches.">
+    Switch access
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_SWITCH_ACCESS" desc="Text for search result item which, when clicked, navigates the user to accessibility switch access settings, which allow users to control the computer with just one or two switches.">
+    Switch access settings
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_SWITCH_ACCESS_ASSIGNMENT" desc="Text for search result item which, when clicked, navigates the user to accessibility switch access settings, with controls to set which key(s) are used as switches.">
+    Switch action assignment
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_SWITCH_ACCESS_AUTO_SCAN" desc="Text for search result item which, when clicked, navigates the user to accessibility switch access settings, with a toggle to enable/disable switch auto-scan.">
+    Switch access auto-scan
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_SWITCH_ACCESS_AUTO_SCAN_KEYBOARD" desc="Text for search result item which, when clicked, navigates the user to accessibility switch access settings, with a slider to set the auto-scan repeat rate.">
+    Switch access keyboard auto-scan
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_OVERSCROLL_ENABLED" desc="Text for search result item which, when clicked, navigates the user to an accessibility setting to turn on or off overscroll navigation.">
+    Swipe to navigate between pages
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_OVERSCROLL_ENABLED_ALT1" desc="Text for search result item which, when clicked, navigates the user to an accessibility setting to turn on or off overscroll navigation.">
+    Overscroll to navigate between pages
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_FLASH_NOTIFICATIONS" desc="Text for search result item which, when clicked, navigates the user to an accessibility setting to turn on or off a feature that flashes the screen when a notification appears.">
+    Flash notifications
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_FLASH_NOTIFICATIONS_ALT1" desc="Text for search result item which, when clicked, navigates the user to an accessibility setting to turn on or off a feature that flashes the screen when a notification appears.">
+    Screen flash
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_LABELS_FROM_GOOGLE" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable getting image descriptions from Google.">
+    Get image descriptions from Google
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable color correction.">
+    Color correction
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT1" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable color correction.">
+    Color filters
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT2" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable color correction.">
+    Color blindness
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT3" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable color correction. One common type of color vision deficiency that can be helped by color correction is protanopia, and color correction filters include a protanopia filter.">
+    Protanomaly
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT4" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable color correction. One common type of color vision deficiency that can be helped by color correction is deuteranopia, and color correction filters include a deuteranopia filter.">
+    Deuteranomaly
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT5" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable color correction. One common type of color vision deficiency that can be helped by color correction is tritanopia, and color correction filters include a tritanopia filter.">
+    Tritanomaly
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_BOUNCE_KEYS" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable bounce keys.">
+    Bounce keys
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_SLOW_KEYS" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable slow keys.">
+    Slow keys
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_DISABLE_TOUCHPAD" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a dropdown to enable/disable the internal touchpad">
+    Disable Touchpad
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_DISABLE_TOUCHPAD_ALT1" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a dropdown to enable/disable the internal touchpad">
+    Disable Trackpad
+  </message>
 </grit-part>
