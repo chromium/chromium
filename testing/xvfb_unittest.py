@@ -8,10 +8,14 @@ Each unit test is launching xvfb_test_script.py
 through xvfb.py as a subprocess, then tests its expected output.
 """
 
+import io
 import os
 import signal
+import socket
 import subprocess
 import sys
+import tempfile
+import textwrap
 import time
 import unittest
 from unittest import mock
@@ -88,6 +92,99 @@ class XvfbLinuxTest(unittest.TestCase):
     self.assertNotIn('WAYLAND_DISPLAY', env)
     self.assertNotIn('WAYLAND_SOCKET', env)
     self.assertEqual(env['XDG_SESSION_TYPE'], 'x11')
+
+  def test_mutter_supervisor_restarts_after_crash(self):
+    fake_mutter = textwrap.dedent("""
+      import resource
+      import socket
+      import sys
+      resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+      s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+      s.bind(sys.argv[1])
+      s.listen(8)
+      while True:
+        conn, _ = s.accept()
+        conn.close()
+    """)
+    with tempfile.TemporaryDirectory() as tmpdir:
+      sock_path = os.path.join(tmpdir, 'wayland-test')
+      stderr = io.StringIO()
+      with mock.patch('sys.stderr', stderr):
+        supervisor = xvfb._MutterSupervisor(
+          [sys.executable, '-c', fake_mutter, sock_path],
+          os.environ.copy(),
+          sock_path,
+        )
+        supervisor.start()
+        try:
+          first_pid = supervisor._proc.pid
+          os.kill(first_pid, signal.SIGSEGV)
+          deadline = time.monotonic() + 5
+          while time.monotonic() < deadline:
+            with supervisor._lock:
+              restarted = supervisor._proc.pid != first_pid
+            if restarted:
+              break
+            time.sleep(0.05)
+          self.assertTrue(restarted)
+          with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
+            client.connect(sock_path)
+        finally:
+          supervisor.stop()
+      self.assertFalse(os.path.exists(sock_path))
+      output = stderr.getvalue()
+      self.assertIn('mutter died with signal SIGSEGV', output)
+      self.assertIn('Restarted mutter (restart 1)', output)
+
+  def test_mutter_supervisor_startup_failure(self):
+    with tempfile.TemporaryDirectory() as tmpdir:
+      sock_path = os.path.join(tmpdir, 'wayland-test')
+      supervisor = xvfb._MutterSupervisor(
+        [sys.executable, '-c', 'import sys; sys.exit(2)'],
+        os.environ.copy(),
+        sock_path,
+      )
+      with self.assertRaisesRegex(xvfb._ProcessError, 'exit code 2'):
+        supervisor.start()
+
+  def test_mutter_environment_isolates_wayland_display(self):
+    env = {
+      'XDG_RUNTIME_DIR': '/tmp/xdg-test',
+      'WAYLAND_DISPLAY': 'wayland-outer',
+      'WAYLAND_SOCKET': '10',
+    }
+    cmd = [
+      './test_bin',
+      '--no-xvfb',
+      '--use-mutter',
+      '--mutter-debug-logging',
+    ]
+
+    def fake_common(_, command, environment):
+      return (True, command)
+
+    with (
+      mock.patch.object(xvfb, 'dbus_session'),
+      mock.patch.object(xvfb, '_run_with_wayland_common', fake_common),
+      mock.patch.object(xvfb, '_MutterSupervisor') as supervisor_cls,
+      mock.patch.object(xvfb.test_env, 'run_executable', return_value=7) as run,
+    ):
+      rc = xvfb.run_executable(cmd, env)
+
+    self.assertEqual(rc, 7)
+    mutter_cmd, mutter_env, sock_path = supervisor_cls.call_args.args
+    self.assertNotIn('WAYLAND_DISPLAY', mutter_env)
+    self.assertNotIn('WAYLAND_SOCKET', mutter_env)
+    self.assertEqual(mutter_env['G_MESSAGES_DEBUG'], 'libmutter')
+    self.assertNotIn('G_MESSAGES_DEBUG', env)
+    self.assertNotIn('WAYLAND_SOCKET', env)
+    self.assertTrue(env['WAYLAND_DISPLAY'].startswith('wayland-xvfb-'))
+    self.assertEqual(
+      sock_path, os.path.join('/tmp/xdg-test', env['WAYLAND_DISPLAY'])
+    )
+    supervisor_cls.return_value.start.assert_called_once()
+    supervisor_cls.return_value.stop.assert_called_once()
+    run.assert_called_once_with(['./test_bin'], env, None, None)
 
   @unittest.skip('flaky; crbug.com/1320399')
   def test_xvfb_race_condition(self):

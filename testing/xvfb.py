@@ -719,39 +719,180 @@ def _run_with_mutter(cmd, env, stdoutfile, cwd, mutter_display):
       # containing the mutter executable.
       env['GSETTINGS_SCHEMA_DIR'] = os.path.dirname(mutter_executable)
 
+      # A copy, since env gets mutter's WAYLAND_DISPLAY below and is reused
+      # when mutter is restarted.
+      mutter_env = copy.deepcopy(env)
+      mutter_env.pop('WAYLAND_DISPLAY', None)
+      mutter_env.pop('WAYLAND_SOCKET', None)
+      if '--mutter-debug-logging' in cmd:
+        cmd.remove('--mutter-debug-logging')
+        mutter_env['G_MESSAGES_DEBUG'] = 'libmutter'
+        mutter_env['MUTTER_DEBUG'] = 'input'
+
+      # Run mutter as a standalone compositor rather than as the test's parent
+      # (mutter ... -- <test>), so that it can be restarted if it crashes.
+      # Otherwise a mutter crash fails every remaining test in the shard.
+      wayland_display = 'wayland-xvfb-%s' % uuid.uuid4().hex[:8]
       # Use headless wayland backend with a virtual monitor of appropriate size.
       mutter_cmd = [
         mutter_executable,
         '--headless',
         f'--virtual-monitor={mutter_display}',
-        '--',
+        f'--wayland-display={wayland_display}',
       ]
-      cmd = mutter_cmd + cmd
+      mutter_proc = _MutterSupervisor(
+        mutter_cmd,
+        mutter_env,
+        os.path.join(env['XDG_RUNTIME_DIR'], wayland_display),
+      )
+      mutter_proc.start()
 
-      if '--mutter-debug-logging' in cmd:
-        cmd.remove('--mutter-debug-logging')
-        env = copy.deepcopy(env)
-        env['G_MESSAGES_DEBUG'] = 'libmutter'
-        env['MUTTER_DEBUG'] = 'input'
-
-      returncode = test_env.run_executable(cmd, env, stdoutfile, cwd)
-      # Log the exit status explicitly. If mutter crashes before the test
-      # writes its results, wrappers such as result_adapter replace the exit
-      # code with their own, hiding the real cause.
-      if returncode < 0:
-        try:
-          signame = signal.Signals(-returncode).name
-        except ValueError:
-          signame = str(-returncode)
-        print('mutter was killed by signal %s' % signame, file=sys.stderr)
-      elif returncode:
-        print('mutter exited with code %d' % returncode, file=sys.stderr)
-      return returncode
+      env.pop('WAYLAND_SOCKET', None)
+      env['WAYLAND_DISPLAY'] = wayland_display
+      return test_env.run_executable(cmd, env, stdoutfile, cwd)
+    except OSError as e:
+      print('Failed to start mutter: %s\n' % str(e), file=sys.stderr)
+      return 1
     except _ProcessError as e:
       print('mutter fail: %s\n' % str(e), file=sys.stderr)
       return 1
     finally:
-      kill(mutter_proc, 'mutter')
+      if mutter_proc:
+        mutter_proc.stop()
+
+
+def _describe_exit(returncode):
+  """Returns a description of a subprocess' exit status for logs."""
+  if returncode < 0:
+    try:
+      return 'signal %s' % signal.Signals(-returncode).name
+    except ValueError:
+      return 'signal %d' % -returncode
+  return 'exit code %d' % returncode
+
+
+class _MutterSupervisor:
+  """Runs mutter as a standalone Wayland compositor and restarts it if it dies.
+
+  The test runs as a sibling of mutter rather than as its child, so a mutter
+  crash only fails the tests that are running at that moment instead of every
+  remaining test in the shard.
+  """
+
+  # Stops restarting after this many crashes, e.g. if mutter crashes on
+  # startup.
+  MAX_RESTARTS = 10
+  STARTUP_TIMEOUT_IN_SECONDS = 30
+
+  def __init__(self, mutter_cmd, env, socket_path):
+    self._mutter_cmd = mutter_cmd
+    self._env = env
+    self._socket_path = socket_path
+    self._lock = threading.Lock()
+    self._stopping = False
+    self._proc = None
+    self._thread = None
+
+  def start(self):
+    """Starts mutter and waits until its Wayland socket accepts connections.
+
+    Raises _ProcessError if mutter fails to start.
+    """
+    self._proc = self._start_mutter()
+    self._thread = threading.Thread(target=self._supervise, daemon=True)
+    self._thread.start()
+
+  def stop(self):
+    with self._lock:
+      self._stopping = True
+      proc = self._proc
+    kill(proc, 'mutter')
+    if self._thread:
+      self._thread.join(10)
+    self._cleanup_socket(include_lock=True)
+
+  def _cleanup_socket(self, include_lock=False):
+    paths = [self._socket_path]
+    if include_lock:
+      paths.append(self._socket_path + '.lock')
+    for path in paths:
+      try:
+        os.remove(path)
+      except FileNotFoundError:
+        pass
+
+  def _start_mutter(self):
+    proc = subprocess.Popen(
+      self._mutter_cmd, stderr=subprocess.STDOUT, env=self._env
+    )
+    deadline = time.monotonic() + self.STARTUP_TIMEOUT_IN_SECONDS
+    while time.monotonic() < deadline:
+      if self._stopping:
+        kill(proc, 'mutter')
+        raise _ProcessError('Stopped while waiting for mutter to start')
+      if proc.poll() is not None:
+        raise _ProcessError(
+          'mutter exited during startup with %s'
+          % _describe_exit(proc.returncode)
+        )
+      try:
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
+          s.connect(self._socket_path)
+        return proc
+      except OSError:
+        time.sleep(0.1)
+    kill(proc, 'mutter')
+    raise _ProcessError('Timed out waiting for mutter to start')
+
+  def _supervise(self):
+    restarts = 0
+    while True:
+      with self._lock:
+        proc = self._proc
+      proc.wait()
+      with self._lock:
+        if self._stopping:
+          return
+      # Make this easy to find in the test log: the tests that were running
+      # when mutter died fail with unrelated-looking errors.
+      print(
+        '\n*** mutter died with %s; tests running at this time are expected '
+        'to fail. ***\n' % _describe_exit(proc.returncode),
+        file=sys.stderr,
+        flush=True,
+      )
+      if restarts >= self.MAX_RESTARTS:
+        print(
+          '*** mutter died %d times; not restarting it again. ***'
+          % (restarts + 1),
+          file=sys.stderr,
+          flush=True,
+        )
+        return
+      restarts += 1
+      self._cleanup_socket()
+      try:
+        new_proc = self._start_mutter()
+      except _ProcessError as e:
+        with self._lock:
+          if self._stopping:
+            return
+        print(
+          '*** Failed to restart mutter: %s ***' % e,
+          file=sys.stderr,
+          flush=True,
+        )
+        return
+      with self._lock:
+        if self._stopping:
+          kill(new_proc, 'mutter')
+          return
+        self._proc = new_proc
+      print(
+        '*** Restarted mutter (restart %d). ***' % restarts,
+        file=sys.stderr,
+        flush=True,
+      )
 
 
 def _get_display_from_weston(weston_proc_pid):
