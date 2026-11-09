@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
@@ -901,6 +902,20 @@ void ToolController::ReloadPage(ToolResponseCallback callback) {
   content::WebContents* contents =
       session_controller_->GetVoiceFocusedWebContents();
   if (contents && contents->IsCrashed()) {
+    // Bypassing the actor also bypasses its enterprise policy check, which
+    // blocks navigations to URLs the policy explicitly blocks.
+    const actor::EnterprisePolicyChecker* policy_checker =
+        CHECK_DEREF(TtcKeyedService::Get(GetProfile()))
+            .enterprise_policy_checker();
+    if (policy_checker &&
+        policy_checker->Evaluate(contents->GetLastCommittedURL()) ==
+            actor::EnterprisePolicyChecker::UrlBlockReason::
+                kExplicitlyBlocked) {
+      std::move(callback).Run(
+          ToolResponse::Error(actor::mojom::ActionResultCode::kUrlBlocked,
+                              "URL is blocked by enterprise policy"));
+      return;
+    }
     // Tool calls run one at a time, so no other reload can be in progress.
     CHECK(!crashed_tab_reload_callback_);
     crashed_tab_reload_callback_ = std::move(callback);
