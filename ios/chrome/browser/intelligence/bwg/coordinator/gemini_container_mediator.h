@@ -23,6 +23,7 @@ enum class EntryPoint;
 
 class AuthenticationService;
 class Browser;
+class FullscreenController;
 class GeminiContainerMediatorEventHandler;
 class GeminiSharedTabsDelegate;
 @class GeminiConfiguration;
@@ -32,6 +33,7 @@ class GeminiSharedTabsDelegate;
 @class GeminiStartupState;
 @protocol AssistantContainerCommands;
 @protocol BWGGatewayProtocol;
+@protocol FullscreenCommands;
 @protocol GeminiCommands;
 @protocol GeminiContainerMediatorDelegate;
 @protocol GeminiZeroStateConsumer;
@@ -54,6 +56,13 @@ class GeminiSharedTabsDelegate;
 
 // Handler for Gemini commands (e.g. dismissing Gemini flow).
 @property(nonatomic, weak) id<GeminiCommands> geminiHandler;
+
+// Handler for fullscreen commands (e.g. exiting fullscreen on mode
+// transitions).
+@property(nonatomic, weak) id<FullscreenCommands> fullscreenHandler;
+
+// Controller for browser fullscreen state.
+@property(nonatomic, assign) FullscreenController* fullscreenController;
 
 // Consumer interface for handling UI updates from the coordinator.
 @property(nonatomic, weak) id<GeminiContainerConsumer> consumer;

@@ -21,6 +21,8 @@
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
@@ -58,7 +60,9 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -408,6 +412,8 @@ class GeminiContainerMediatorTabHelperObserver
   _geminiHandler = nil;
   _sharedTabsDelegate = nullptr;
   _sessionMetricsManager = nil;
+  self.fullscreenHandler = nil;
+  _fullscreenController = nullptr;
   _consumer = nil;
   _webStateList = nullptr;
   _prefObserverBridge.reset();
@@ -879,6 +885,10 @@ class GeminiContainerMediatorTabHelperObserver
         setAssistantContainerMediumDetentHeight:std::nullopt];
   }
 
+  if (containerUIState.detent != AssistantContainerDetent::kMinimized) {
+    [self exitFullscreen];
+  }
+
   [self.containerHandler
       animateAssistantContainerToDetent:containerUIState.detent];
   [self.containerHandler
@@ -934,6 +944,17 @@ class GeminiContainerMediatorTabHelperObserver
 }
 
 #pragma mark - Private
+
+// Exits fullscreen mode.
+- (void)exitFullscreen {
+  if (IsFullscreenRefactoringEnabled()) {
+    [self.fullscreenHandler
+        exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::kForcedByCode
+                         animated:YES];
+  } else {
+    _fullscreenController->ExitFullscreen();
+  }
+}
 
 // Updates the zero-state consumer with fetched `suggestions` and adapts the
 // medium detent height of the assistant container. Results of superseded

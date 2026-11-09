@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
@@ -13,6 +14,7 @@
 #import "base/test/test_future.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -22,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -60,9 +63,12 @@ class GeminiContainerCoordinatorTest : public PlatformTest {
     browser_list->AddBrowser(browser_.get());
     GeminiBrowserAgent::CreateForBrowser(browser_.get());
 
+    mock_fullscreen_handler_ = OCMProtocolMock(@protocol(FullscreenCommands));
     mock_gemini_handler_ = OCMProtocolMock(@protocol(GeminiCommands));
     mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    [dispatcher startDispatchingToTarget:mock_fullscreen_handler_
+                             forProtocol:@protocol(FullscreenCommands)];
     [dispatcher startDispatchingToTarget:mock_gemini_handler_
                              forProtocol:@protocol(GeminiCommands)];
     [dispatcher startDispatchingToTarget:mock_settings_handler_
@@ -81,6 +87,7 @@ class GeminiContainerCoordinatorTest : public PlatformTest {
   ~GeminiContainerCoordinatorTest() override {
     [coordinator_ stop];
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    [dispatcher stopDispatchingForProtocol:@protocol(FullscreenCommands)];
     [dispatcher stopDispatchingForProtocol:@protocol(GeminiCommands)];
     [dispatcher stopDispatchingForProtocol:@protocol(SettingsCommands)];
     BrowserList* browser_list =
@@ -104,6 +111,7 @@ class GeminiContainerCoordinatorTest : public PlatformTest {
   TestProfileManagerIOS profile_manager_;
   raw_ptr<ProfileIOS> personal_profile_ = nullptr;
   std::unique_ptr<TestBrowser> browser_;
+  id mock_fullscreen_handler_;
   id mock_gemini_handler_;
   id mock_settings_handler_;
   ScopedKeyWindow scoped_key_window_;
@@ -266,6 +274,43 @@ TEST_F(GeminiContainerCoordinatorTest, TestStartUpdatesWhenAlreadyInvoked) {
       stopDispatchingForProtocol:@protocol(AssistantContainerCommands)];
 }
 
+// Tests that `start` wires `FullscreenCommands` when `kFullscreenRefactoring`
+// is enabled.
+TEST_F(GeminiContainerCoordinatorTest,
+       TestStartWiresFullscreenHandlerWhenRefactoringEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kFullscreenRefactoring);
+
+  id mock_container_handler =
+      OCMProtocolMock(@protocol(AssistantContainerCommands));
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  [dispatcher startDispatchingToTarget:mock_container_handler
+                           forProtocol:@protocol(AssistantContainerCommands)];
+
+  __block id<AssistantContainerDelegate> captured_delegate = nil;
+  OCMExpect([mock_container_handler
+      showAssistantContainerWithContent:[OCMArg any]
+                               delegate:[OCMArg
+                                            checkWithBlock:^BOOL(
+                                                id<AssistantContainerDelegate>
+                                                    delegate) {
+                                              captured_delegate = delegate;
+                                              return YES;
+                                            }]]);
+
+  [coordinator_ start];
+  EXPECT_OCMOCK_VERIFY(mock_container_handler);
+
+  GeminiContainerMediator* mediator =
+      base::apple::ObjCCastStrict<GeminiContainerMediator>(captured_delegate);
+  ASSERT_NE(mediator.fullscreenHandler, nil);
+  OCMExpect([mock_fullscreen_handler_ exitForceFullscreen]);
+  [mediator.fullscreenHandler exitForceFullscreen];
+  EXPECT_OCMOCK_VERIFY(mock_fullscreen_handler_);
+
+  [coordinator_ stop];
+  [dispatcher stopDispatchingForProtocol:@protocol(AssistantContainerCommands)];
+}
 // Tests that calling `showWebModalForURL:` while a web modal is already shown
 // keeps the existing modal instead of presenting a second one.
 TEST_F(GeminiContainerCoordinatorTest,
