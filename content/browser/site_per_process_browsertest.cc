@@ -5178,6 +5178,17 @@ IN_PROC_BROWSER_TEST_P(
   // browser process. They should not have been inherited (for about:blank).
   EXPECT_EQ(network::mojom::WebSandboxFlags::kNone,
             foo_root->current_frame_host()->active_sandbox_flags());
+
+  // The opener's sandbox comes from the iframe's sandbox attribute, not CSP,
+  // so with allow-popups-to-escape-sandbox, neither the popup's browsing
+  // context nor its initial empty document is sandboxed. So the popup should
+  // get the opener's origin as is (opaque, since the opener is sandboxed), and
+  // no sandbox origin token. See https://crbug.com/486082219.
+  EXPECT_EQ(root->child_at(0)->current_frame_host()->GetLastCommittedOrigin(),
+            foo_root->current_frame_host()->GetLastCommittedOrigin());
+  EXPECT_FALSE(foo_root->current_frame_host()
+                   ->last_sandbox_origin_token_for_testing()
+                   .has_value());
 }
 
 // Verify that popup frames opened from sandboxed documents with the
@@ -5230,6 +5241,25 @@ IN_PROC_BROWSER_TEST_P(
   // browser process. They should have been inherited.
   EXPECT_EQ(expected_flags,
             foo_root->current_frame_host()->active_sandbox_flags());
+
+  // The popup's browsing context isn't sandboxed, but its initial empty
+  // document inherits the opener's CSP sandbox (checked above), so the
+  // renderer gives it an opaque origin with the opener as the precursor. The
+  // browser should too, derived from the same sandbox origin token, so that
+  // the nonces match as well. See https://crbug.com/486082219.
+  url::Origin popup_origin =
+      foo_root->current_frame_host()->GetLastCommittedOrigin();
+  EXPECT_TRUE(popup_origin.opaque());
+  EXPECT_EQ(url::SchemeHostPort(main_url),
+            popup_origin.GetTupleOrPrecursorTupleIfOpaque());
+  if (base::FeatureList::IsEnabled(
+          blink::features::kUseSandboxTokenForOriginDerivation)) {
+    const std::optional<base::UnguessableToken> token =
+        foo_root->current_frame_host()->last_sandbox_origin_token_for_testing();
+    ASSERT_TRUE(token.has_value());
+    ASSERT_TRUE(popup_origin.GetNonceForTesting());
+    EXPECT_EQ(*token, *popup_origin.GetNonceForTesting());
+  }
 }
 
 // Test that subresources with certificate errors get reported to the
