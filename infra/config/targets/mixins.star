@@ -1317,6 +1317,19 @@ targets.mixin(
     ),
 )
 
+# Expands Windows CPU AI WPT tasks across all x86-64 Windows 10 and Windows 11
+# hosts (both GCE VMs and physical machines) so CPU WPT shards do not saturate
+# the 11 Windows GCE VMs in chrome.tests.intelligence.
+targets.mixin(
+    name = "win_cpu_ai_wpt_dimensions",
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "x86-64",
+            "os": "Windows",
+        },
+    ),
+)
+
 # Expands Windows GPU AI WPT tasks across both Windows 10 and Windows 11 x86-64
 # discrete GPUs (NVIDIA, Intel Arc/UHD, and discrete AMD Radeon RX 5500 XT /
 # 7600 / 7900 XTX / 9070 XT) while excluding integrated AMD APUs (1002:1638 and
