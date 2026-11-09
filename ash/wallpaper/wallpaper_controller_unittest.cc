@@ -3606,6 +3606,35 @@ TEST_P(WallpaperControllerTest, DontLeakShieldView) {
   EXPECT_EQ(nullptr, view_tracker.view());
 }
 
+// Verifies that painting an unblurred wallpaper skips populating small_image_,
+// and that locking the session populates it once blur is applied.
+TEST_P(WallpaperControllerTest, SkipDownsampleWhenWallpaperIsClear) {
+  SimulateUserLogin(kAccountId1);
+  gfx::ImageSkia image = CreateImage(600, 400, kWallpaperColor);
+  controller_->ShowWallpaperImage(
+      image, CreateWallpaperInfo(WALLPAPER_LAYOUT_CENTER_CROPPED),
+      /*preview_mode=*/false, /*is_override=*/false);
+
+  // In an active session, blur is kClear so painting should draw directly
+  // without downsampling into small_image_.
+  ASSERT_EQ(wallpaper_constants::kClear, wallpaper_view()->blur_sigma());
+  ASSERT_FALSE(wallpaper_view()->bounds().IsEmpty());
+  gfx::Canvas clear_canvas(wallpaper_view()->bounds().size(),
+                           /*image_scale=*/1.0f, /*is_opaque=*/true);
+  wallpaper_view()->OnPaint(&clear_canvas);
+  EXPECT_FALSE(wallpaper_view()->small_image_for_testing().has_value());
+  EXPECT_EQ(kWallpaperColor, clear_canvas.GetBitmap().getColor(0, 0));
+
+  // Locking the session blurs the wallpaper and populates small_image_.
+  SetSessionState(SessionState::LOCKED);
+  ASSERT_EQ(wallpaper_constants::kLockLoginBlur,
+            wallpaper_view()->blur_sigma());
+  gfx::Canvas blurred_canvas(wallpaper_view()->bounds().size(),
+                             /*image_scale=*/1.0f, /*is_opaque=*/true);
+  wallpaper_view()->OnPaint(&blurred_canvas);
+  EXPECT_TRUE(wallpaper_view()->small_image_for_testing().has_value());
+}
+
 TEST_P(WallpaperControllerTest, OnlyShowDevicePolicyWallpaperOnLoginScreen) {
   // Make sure the device policy path exists so decoding succeeds.
   ASSERT_TRUE(WriteJPEGFile(

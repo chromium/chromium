@@ -170,6 +170,13 @@ void WallpaperView::DrawWallpaper(const gfx::ImageSkia& wallpaper,
                                   const gfx::Rect& dst,
                                   const cc::PaintFlags& flags,
                                   gfx::Canvas* canvas) {
+  // small_image_ is only used when applying a blur filter below; draw directly
+  // when unblurred to avoid an unused software downsample.
+  if (blur_sigma_ == wallpaper_constants::kClear) {
+    WallpaperBaseView::DrawWallpaper(wallpaper, src, dst, flags, canvas);
+    return;
+  }
+
   // The amount we downsample the original image by before applying filters to
   // improve performance.
   constexpr float quality = 0.3f;
@@ -185,13 +192,6 @@ void WallpaperView::DrawWallpaper(const gfx::ImageSkia& wallpaper,
                               quality_adjusted_rect.height(), true);
     small_image_ = std::make_optional(
         gfx::ImageSkia::CreateFrom1xBitmap(small_canvas.GetBitmap()));
-  }
-
-  if (blur_sigma_ == wallpaper_constants::kClear) {
-    canvas->DrawImageInt(wallpaper, src.x(), src.y(), src.width(), src.height(),
-                         dst.x(), dst.y(), dst.width(), dst.height(),
-                         /*filter=*/true, flags);
-    return;
   }
   bool will_not_fill = width() > dst.width() || height() > dst.height();
   // When not filling the view, we paint the small_image_ directly to the

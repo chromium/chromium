@@ -5,6 +5,7 @@
 #ifndef ASH_WALLPAPER_VIEWS_WALLPAPER_VIEW_H_
 #define ASH_WALLPAPER_VIEWS_WALLPAPER_VIEW_H_
 
+#include <optional>
 #include <set>
 
 #include "ash/wallpaper/views/wallpaper_base_view.h"
@@ -45,6 +46,9 @@ class WallpaperView : public WallpaperBaseView,
   float blur_sigma() const { return blur_sigma_; }
 
   views::View* shield_view_for_testing() { return shield_view_; }
+  const std::optional<gfx::ImageSkia>& small_image_for_testing() const {
+    return small_image_;
+  }
 
  private:
   // views::View:
