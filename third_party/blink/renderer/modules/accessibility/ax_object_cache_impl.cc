@@ -5838,8 +5838,11 @@ void AXObjectCacheImpl::MarkAXSubtreeDirtyWithCleanLayout(AXObject* obj) {
     return;
   }
   if (!obj->IsIncludedInTree()) {
-    for (const auto& included_child : obj->ChildrenIncludingIgnored()) {
-      MarkAXSubtreeDirtyWithCleanLayout(included_child);
+    HeapVector<Member<AXObject>> children = obj->ChildrenIncludingIgnored();
+    for (AXObject* included_child : children) {
+      if (!included_child->IsDetached()) {
+        MarkAXSubtreeDirtyWithCleanLayout(included_child);
+      }
     }
     return;
   }
