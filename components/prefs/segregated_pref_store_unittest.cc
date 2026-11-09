@@ -188,7 +188,6 @@ TEST_F(SegregatedPrefStoreTest, RemoveValuesByPrefix) {
   const std::string subpref_name1 = kSelectedPref;
   const std::string subpref_name2 = std::string(kSelectedPref) + "b";
   const std::string other_name = kUnselectedPref;
-  const std::string prefix = kSelectedPref;
 
   selected_store_->SetValue(subpref_name1, base::Value(kValue1),
                             WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);

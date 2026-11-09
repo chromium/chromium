@@ -17,7 +17,6 @@ void ReadAndWriteReferences(
     std::vector<uint8_t>* mutable_data) {
   zucchini::MutableBufferView mutable_image(mutable_data->data(),
                                             disassembler->size());
-  std::vector<zucchini::Reference> references;
   auto groups = disassembler->MakeReferenceGroups();
   std::map<zucchini::PoolTag, std::vector<zucchini::Reference>>
       references_of_pool;

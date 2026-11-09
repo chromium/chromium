@@ -363,7 +363,6 @@ FamilyLinkSettingsService::MergeDataAndStartSyncing(
   SyncChangeList change_list;
   for (const auto it : *queued_items) {
     std::string key_suffix = it.first;
-    std::string name_key = key_suffix;
     base::DictValue* dict = GetDictionaryAndSplitKey(&key_suffix);
     SyncData data = CreateSyncDataForSetting(it.first, it.second);
     SyncChange::SyncChangeType change_type = dict->Find(key_suffix)

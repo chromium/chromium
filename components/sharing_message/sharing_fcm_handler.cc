@@ -41,7 +41,7 @@ const char kMessageIdRegexPattern[] = "(0:[0-9]+%)([0-9]+#)?([a-f0-9]+)";
 // Retrns |message_id| with userId stripped, or |message_id| if it is not
 // confined to the format.
 std::string GetStrippedMessageId(const std::string& message_id) {
-  std::string stripped_message_id, type_timestamp, hashcode;
+  std::string type_timestamp, hashcode;
   static constexpr re2::LazyRE2 message_id_regex = {kMessageIdRegexPattern};
   if (!re2::RE2::FullMatch(message_id, *message_id_regex, &type_timestamp,
                            nullptr, &hashcode)) {

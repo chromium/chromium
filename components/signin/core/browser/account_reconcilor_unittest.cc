@@ -2008,7 +2008,6 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileCookiesDisabled) {
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
 
   base::RunLoop().RunUntilIdle();
-  std::vector<gaia::ListedAccount> accounts;
   // This will be the first call to ListAccounts.
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
       identity_test_env()->identity_manager()->GetAccountsInCookieJar();

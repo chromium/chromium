@@ -117,8 +117,7 @@ void EncodeDoesNotCrash(std::unique_ptr<BitmapImage> image,
   header_info.duplex = duplex;
   header_info.tumble = tumble;
 
-  std::string output =
-      PwgEncoder::EncodePageFromBGRAColorspace(*image, header_info);
+  PwgEncoder::EncodePageFromBGRAColorspace(*image, header_info);
 }
 
 FUZZ_TEST(PwgEncoderFuzzTest, EncodeDoesNotCrash)

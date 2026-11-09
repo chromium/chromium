@@ -446,7 +446,6 @@ TEST_F(UnsentLogStoreTest, TrimAndPersistUnsentLogs_OverwritesPrefs) {
 TEST_F(UnsentLogStoreTest, Staging) {
   TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
   LogMetadata log_metadata;
-  std::string tmp;
 
   EXPECT_FALSE(unsent_log_store.has_staged_log());
   unsent_log_store.StoreLog("one", log_metadata,

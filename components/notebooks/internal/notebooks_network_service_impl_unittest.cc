@@ -359,7 +359,6 @@ TEST_F(NotebooksNetworkServiceImplTest,
   std::string url_source_suffix = "sources";
   std::string url_path_prefix = "/v1/notebooks";
   std::string base_url = base::StrCat({"https://example.com", url_path_prefix});
-  std::string source_result = "source_result";
   EnableNotebooksFeature(base_url, url_source_suffix, "chrome");
 
   base::RunLoop run_loop;

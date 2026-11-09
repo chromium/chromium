@@ -257,9 +257,9 @@ TEST_F(MediaDeviceSaltServiceTest, DeleteSaltsInTimeRange) {
 
 TEST_F(MediaDeviceSaltServiceTest, GetAllStorageKeys) {
   // Deletion of individual salts is not supported when using the global salt.
-  std::string salt1 = GetSalt(StorageKey1());
-  std::string salt2 = GetSalt(StorageKey2());
-  std::string salt3 = GetSalt(StorageKey3());
+  GetSalt(StorageKey1());
+  GetSalt(StorageKey2());
+  GetSalt(StorageKey3());
   EXPECT_THAT(
       GetAllStorageKeys(),
       UnorderedElementsAre(StorageKey1(), StorageKey2(), StorageKey3()));

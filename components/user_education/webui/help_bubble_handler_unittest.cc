@@ -224,7 +224,6 @@ TEST_F(HelpBubbleHandlerTest, ElementHiddenOnEvent) {
 
 TEST_F(HelpBubbleHandlerTest, ElementActivatedOnEvent) {
   UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, activated);
-  const std::string name = kHelpBubbleHandlerTestElementIdentifier.GetName();
   tracked_element_handler()->TrackedElementVisibilityChanged(
       GetId(kHelpBubbleHandlerTestElementIdentifier, kSecondaryId1), true,
       kElementBounds);

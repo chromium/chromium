@@ -228,7 +228,6 @@ class ControllerPresentationServiceDelegateImplTest
         base::BindRepeating(&ControllerPresentationServiceDelegateImplTest::
                                 OnDefaultPresentationStarted,
                             base::Unretained(this));
-    std::vector<std::string> urls({kPresentationUrl1});
     delegate_impl_->SetDefaultPresentationUrls(*presentation_request_,
                                                callback);
 
@@ -780,7 +779,6 @@ TEST_F(ControllerPresentationServiceDelegateImplTest, ConnectToPresentation) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ControllerPresentationServiceDelegateImplTest, AutoJoinRequest) {
-  std::string origin(frame_origin_.Serialize());
   content::WebContentsTester::For(GetWebContents())
       ->NavigateAndCommit(frame_url_);
 

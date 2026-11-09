@@ -348,7 +348,6 @@ DISABLE_CFI_DLSYM
 std::optional<std::string> TranslateKitClient::TranslatorImpl::Translate(
     const std::string& text) {
   CHECK(client_->translator_translate_func_);
-  std::string output;
   if (client_->translator_translate_func_(
           translator_ptr_, TranslateKitInputText(text.c_str(), text.length()),
           TranslateCallback, reinterpret_cast<uintptr_t>(&text))) {

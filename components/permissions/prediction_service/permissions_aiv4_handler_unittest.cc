@@ -61,7 +61,6 @@ PermissionsAiv4ModelMetadata BuildMetadataFromValues(
     std::optional<int> text_embeddings_input_size = std::nullopt,
     std::optional<int32_t> passage_count = std::nullopt) {
   PermissionsAiv4ModelMetadata metadata;
-  std::string serialized_metadata;
   metadata.mutable_relevance_thresholds()->set_min_low_relevance(thresholds[0]);
   metadata.mutable_relevance_thresholds()->set_min_medium_relevance(
       thresholds[1]);

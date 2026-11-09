@@ -317,7 +317,6 @@ TEST_F(OSCryptAsyncTest, Empty) {
   OSCryptAsync factory(std::move(providers));
   scoped_refptr<Encryptor> encryptor = GetInstanceSync(factory);
   {
-    std::string ciphertext;
     // Encryption should fail as there are no providers.
     EXPECT_FALSE(encryptor->EncryptString("secrets"));
   }

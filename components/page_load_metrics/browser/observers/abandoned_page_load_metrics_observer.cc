@@ -988,8 +988,6 @@ void AbandonedPageLoadMetricsObserver::LogMetricsOnAbandon(
     did_terminally_abandon_navigation_ = true;
   }
 
-  const std::string abandon_string = AbandonReasonToString(abandon_reason);
-
   // Find the most latest loading milestone before the loading is abandoned. If
   // found, log it as an abandoned milesone later.
   std::optional<LoadingMilestone> latest_loading_milestone_to_abandon;

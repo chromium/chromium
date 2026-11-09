@@ -96,7 +96,6 @@ std::optional<std::string> GetAttribute(std::string_view attribute_list,
 // base::Time.
 std::optional<base::Time> GetTimeAttribute(std::string_view attribute_list,
                                            std::string_view attribute) {
-  std::string value;
   std::optional<std::string> value_str =
       GetAttribute(attribute_list, attribute);
   if (value_str) {

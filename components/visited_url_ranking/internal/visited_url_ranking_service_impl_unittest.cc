@@ -167,7 +167,6 @@ class VisitedURLRankingServiceImplTest : public testing::Test {
       tuple<ResultStatus, URLVisitsMetadata, std::vector<URLVisitAggregate>>;
   GetURLResult RunFetchURLVisitAggregates(const FetchOptions& options) {
     GetURLResult result;
-    std::vector<URLVisitAggregate> aggregates;
     base::RunLoop wait_loop;
     service_impl_->FetchURLVisitAggregates(
         options,

@@ -151,8 +151,6 @@ TEST_F(FilterToolTest, MatchRules) {
 
   filter_tool_->MatchRules(&batch_queries);
 
-  std::string result = out_stream_.str();
-
   std::string expected =
       "0.206924 disallowed1.png|\n"
       "0.103384 disallowed2.png|\n"
