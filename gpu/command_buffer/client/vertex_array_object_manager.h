@@ -72,14 +72,7 @@ class GLES2_IMPL_EXPORT VertexArrayObjectManager {
   typedef std::unordered_map<GLuint, std::unique_ptr<VertexArrayObject>>
       VertexArrayObjectMap;
 
-  GLsizei CollectData(const void* data,
-                      GLsizei bytes_per_element,
-                      GLsizei real_stride,
-                      GLsizei num_elements);
-
   GLuint max_vertex_attribs_;
-  GLsizei collection_buffer_size_;
-  std::unique_ptr<int8_t[]> collection_buffer_;
 
   VertexArrayObjectMap vertex_array_objects_;
   std::unique_ptr<VertexArrayObject> default_vertex_array_object_;

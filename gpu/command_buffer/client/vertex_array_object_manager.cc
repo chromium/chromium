@@ -313,7 +313,6 @@ const VertexArrayObject::VertexAttrib* VertexArrayObject::GetAttrib(
 
 VertexArrayObjectManager::VertexArrayObjectManager(GLuint max_vertex_attribs)
     : max_vertex_attribs_(max_vertex_attribs),
-      collection_buffer_size_(0),
       default_vertex_array_object_(
           std::make_unique<VertexArrayObject>(max_vertex_attribs)),
       bound_vertex_array_object_(default_vertex_array_object_.get()) {}
@@ -411,28 +410,6 @@ bool VertexArrayObjectManager::SetAttribPointer(
 
 void VertexArrayObjectManager::SetAttribDivisor(GLuint index, GLuint divisor) {
   bound_vertex_array_object_->SetAttribDivisor(index, divisor);
-}
-
-// Collects the data into the collection buffer and returns the number of
-// bytes collected.
-GLsizei VertexArrayObjectManager::CollectData(
-    const void* data,
-    GLsizei bytes_per_element,
-    GLsizei real_stride,
-    GLsizei num_elements) {
-  GLsizei bytes_needed = bytes_per_element * num_elements;
-  if (collection_buffer_size_ < bytes_needed) {
-    collection_buffer_.reset(new int8_t[bytes_needed]);
-    collection_buffer_size_ = bytes_needed;
-  }
-  const int8_t* src = static_cast<const int8_t*>(data);
-  int8_t* dst = collection_buffer_.get();
-  int8_t* end = UNSAFE_TODO(dst + bytes_per_element * num_elements);
-  for (; dst < end;
-       UNSAFE_TODO(src += real_stride), UNSAFE_TODO(dst += bytes_per_element)) {
-    UNSAFE_TODO(memcpy(dst, src, bytes_per_element));
-  }
-  return bytes_needed;
 }
 
 }  // namespace gpu::gles2
