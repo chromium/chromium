@@ -167,6 +167,7 @@ enum class TransitionState {
     _tabGridState = self.browser->GetSceneState().tabGridState;
     [_tabGridState addObserver:self];
   }
+  _containerViewController.tabGridState = _tabGridState;
 
   if (_tabGridState && _tabGridState.tabGridVisible) {
     _containerViewController.guideName = kTabGridBottomToolbarGuide;
@@ -412,6 +413,7 @@ enum class TransitionState {
   [self stopFullscreenObservation];
   [_tabGridState removeObserver:self];
   _tabGridState = nil;
+  _containerViewController.tabGridState = nil;
 
   if (IsUseSceneViewControllerEnabled()) {
     [self.presenter removeAssistantContainerViewController];

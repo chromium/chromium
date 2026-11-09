@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state_test_passkey_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -774,6 +775,111 @@ TEST_F(AssistantContainerViewControllerTest,
   EXPECT_EQ(view_controller_.heightConstraint.constant,
             static_cast<CGFloat>(kAssistantContainerMinimizedDetentHeight));
   view_controller_.isAnimating = NO;
+}
+
+// Tests that `assistantContainerView.accessibilityViewIsModal` remains YES
+// across undimmed and dimmed sheet detents and in panel mode when presented
+// over browser content.
+TEST_F(AssistantContainerViewControllerTest,
+       AccessibilityViewIsModalAcrossSheetDetentsAndPanel) {
+  [view_controller_ setDetents:{AssistantContainerDetent::kMinimized,
+                                AssistantContainerDetent::kMedium,
+                                AssistantContainerDetent::kLarge}];
+  view_controller_.largestUndimmedDetent = AssistantContainerDetent::kMedium;
+
+  // By default (`tabGridState` nil), `kMinimized`, `kMedium`, and `kLarge` are
+  // all modal.
+  EXPECT_EQ(nil, view_controller_.tabGridState);
+  [view_controller_ animateToDetent:AssistantContainerDetent::kMinimized
+                           duration:0.0
+                              curve:UIViewAnimationCurveEaseInOut];
+  EXPECT_EQ(0.0, view_controller_.dimmingView.alpha);
+  EXPECT_TRUE(view_controller_.assistantContainerView.accessibilityViewIsModal);
+
+  [view_controller_ animateToDetent:AssistantContainerDetent::kMedium
+                           duration:0.0
+                              curve:UIViewAnimationCurveEaseInOut];
+  EXPECT_EQ(0.0, view_controller_.dimmingView.alpha);
+  EXPECT_TRUE(view_controller_.assistantContainerView.accessibilityViewIsModal);
+
+  [view_controller_ animateToDetent:AssistantContainerDetent::kLarge
+                           duration:0.0
+                              curve:UIViewAnimationCurveEaseInOut];
+  EXPECT_GT(view_controller_.dimmingView.alpha, 0.0);
+  EXPECT_TRUE(view_controller_.assistantContainerView.accessibilityViewIsModal);
+
+  // Switching to panel presentation keeps `accessibilityViewIsModal` YES.
+  view_controller_.presentationContext = AssistantPresentationContext::kPanel;
+  [window_ layoutIfNeeded];
+  EXPECT_TRUE(view_controller_.assistantContainerView.accessibilityViewIsModal);
+}
+
+// Tests that `assistantContainerView.accessibilityViewIsModal` is NO when
+// undimmed over the Tab Grid (`tabGridState.tabGridVisible == YES`), YES when
+// dimmed at `kLarge`, and YES again when exiting the Tab Grid or clearing
+// `tabGridState` at an undimmed detent.
+TEST_F(AssistantContainerViewControllerTest,
+       AccessibilityViewIsNotModalWhenUndimmedOverTabGrid) {
+  TabGridState* tab_grid_state = [[TabGridState alloc] init];
+  view_controller_.tabGridState = tab_grid_state;
+  [view_controller_ setDetents:{AssistantContainerDetent::kMinimized,
+                                AssistantContainerDetent::kMedium,
+                                AssistantContainerDetent::kLarge}];
+  view_controller_.largestUndimmedDetent = AssistantContainerDetent::kMedium;
+  [view_controller_ animateToDetent:AssistantContainerDetent::kMinimized
+                           duration:0.0
+                              curve:UIViewAnimationCurveEaseInOut];
+  EXPECT_TRUE(view_controller_.assistantContainerView.accessibilityViewIsModal);
+
+  // Entering the Tab Grid while undimmed at `kMinimized` immediately clears
+  // modal state so the Tab Grid remains accessible to VoiceOver.
+  tab_grid_state.tabGridVisible = YES;
+  EXPECT_EQ(0.0, view_controller_.dimmingView.alpha);
+  EXPECT_FALSE(
+      view_controller_.assistantContainerView.accessibilityViewIsModal);
+
+  [view_controller_ animateToDetent:AssistantContainerDetent::kMedium
+                           duration:0.0
+                              curve:UIViewAnimationCurveEaseInOut];
+  EXPECT_EQ(0.0, view_controller_.dimmingView.alpha);
+  EXPECT_FALSE(
+      view_controller_.assistantContainerView.accessibilityViewIsModal);
+
+  // Dimmed at `kLarge` over the Tab Grid: modal.
+  [view_controller_ animateToDetent:AssistantContainerDetent::kLarge
+                           duration:0.0
+                              curve:UIViewAnimationCurveEaseInOut];
+  EXPECT_GT(view_controller_.dimmingView.alpha, 0.0);
+  EXPECT_TRUE(view_controller_.assistantContainerView.accessibilityViewIsModal);
+
+  // Returning to undimmed `kMedium` over the Tab Grid restores non-modal state,
+  // and exiting the Tab Grid immediately restores modal state without a detent
+  // change.
+  [view_controller_ animateToDetent:AssistantContainerDetent::kMedium
+                           duration:0.0
+                              curve:UIViewAnimationCurveEaseInOut];
+  EXPECT_EQ(0.0, view_controller_.dimmingView.alpha);
+  EXPECT_FALSE(
+      view_controller_.assistantContainerView.accessibilityViewIsModal);
+
+  tab_grid_state.tabGridVisible = NO;
+  EXPECT_EQ(0.0, view_controller_.dimmingView.alpha);
+  EXPECT_TRUE(view_controller_.assistantContainerView.accessibilityViewIsModal);
+
+  // Assigning an already-visible `TabGridState` immediately clears modal state
+  // at an undimmed detent, and clearing `tabGridState` detaches observation and
+  // restores modal state.
+  TabGridState* visible_tab_grid_state = [[TabGridState alloc] init];
+  visible_tab_grid_state.tabGridVisible = YES;
+  view_controller_.tabGridState = visible_tab_grid_state;
+  EXPECT_FALSE(
+      view_controller_.assistantContainerView.accessibilityViewIsModal);
+
+  view_controller_.tabGridState = nil;
+  EXPECT_TRUE(view_controller_.assistantContainerView.accessibilityViewIsModal);
+  visible_tab_grid_state.tabGridVisible = NO;
+  visible_tab_grid_state.tabGridVisible = YES;
+  EXPECT_TRUE(view_controller_.assistantContainerView.accessibilityViewIsModal);
 }
 
 // Tests that adding the container view to a parent view with different size

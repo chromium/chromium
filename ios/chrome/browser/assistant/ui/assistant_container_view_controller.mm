@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_container_view.h"
 #import "ios/chrome/browser/shared/ui/util/layout_constants.h"
@@ -76,6 +77,7 @@ AccessibilityNotificationPoster DefaultAccessibilityNotificationPoster() {
     AssistantContainerAccessibilityManagerDelegate,
     BrowserLayoutStateObserver,
     SceneLayoutStateObserver,
+    TabGridStateObserving,
     UIGestureRecognizerDelegate>
 @end
 
@@ -407,6 +409,19 @@ AccessibilityNotificationPoster DefaultAccessibilityNotificationPoster() {
                                                      .containedLayoutSupported];
 }
 
+- (void)setTabGridState:(TabGridState*)tabGridState {
+  if (_tabGridState == tabGridState) {
+    return;
+  }
+  [_tabGridState removeObserver:self];
+  _tabGridState = tabGridState;
+  [_tabGridState addObserver:self];
+  if (_heightConstraint &&
+      _presentationContext == AssistantPresentationContext::kSheet) {
+    [self updateContainerStylingForHeight:_heightConstraint.constant];
+  }
+}
+
 - (void)setPresentationContext:
     (AssistantPresentationContext)presentationContext {
   if (_presentationContext == presentationContext) {
@@ -682,6 +697,7 @@ AccessibilityNotificationPoster DefaultAccessibilityNotificationPoster() {
          bottomCornerRadius:constraints.bottom_corner_radius];
   _dimmingView.alpha = constraints.background_dimming_alpha;
   _assistantContainerView.accessibilityViewIsModal =
+      !self.tabGridState.tabGridVisible ||
       constraints.background_dimming_alpha > 0.0;
 
   _bottomCornerRadius = constraints.bottom_corner_radius;
@@ -1276,6 +1292,22 @@ AccessibilityNotificationPoster DefaultAccessibilityNotificationPoster() {
   [self updateContainerStylingForHeight:_heightConstraint.constant];
 }
 
+#pragma mark - TabGridStateObserving
+
+- (void)willEnterTabGrid {
+  if (_heightConstraint &&
+      _presentationContext == AssistantPresentationContext::kSheet) {
+    [self updateContainerStylingForHeight:_heightConstraint.constant];
+  }
+}
+
+- (void)willExitTabGrid {
+  if (_heightConstraint &&
+      _presentationContext == AssistantPresentationContext::kSheet) {
+    [self updateContainerStylingForHeight:_heightConstraint.constant];
+  }
+}
+
 #pragma mark - Private
 
 // Configures the constraints for the panel layout.
@@ -1317,7 +1349,7 @@ AccessibilityNotificationPoster DefaultAccessibilityNotificationPoster() {
   _grabberHidden = YES;
   _dimmingView.hidden = YES;
   _assistantContainerView.grabberButton.hidden = _grabberHidden;
-  _assistantContainerView.accessibilityViewIsModal = NO;
+  _assistantContainerView.accessibilityViewIsModal = YES;
 }
 
 // Applies the constraints and view states for the current presentation context.

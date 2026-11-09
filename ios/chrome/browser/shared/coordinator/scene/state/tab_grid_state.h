@@ -44,6 +44,7 @@ class TabGroup;
 @end
 
 // Object containing the state of the tab grid.
+// TODO(crbug.com/583686153): Move TabGridState out of coordinator layer.
 @interface TabGridState : NSObject
 
 // The mode of the TabGrid. Updating this property only notifies the observers.

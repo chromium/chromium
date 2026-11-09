@@ -19,6 +19,7 @@ enum class AssistantContainerDetent : NSInteger;
 @class BrowserLayoutState;
 @class LayoutGuideCenter;
 @class SceneLayoutState;
+@class TabGridState;
 
 using AccessibilityNotificationPoster =
     void (^)(UIAccessibilityNotifications notification, id argument);
@@ -66,6 +67,9 @@ using AccessibilityNotificationPoster =
 
 // The scene layout state.
 @property(nonatomic, weak) SceneLayoutState* sceneLayoutState;
+
+// The tab grid state.
+@property(nonatomic, weak) TabGridState* tabGridState;
 
 // Accessibility property. Whether to only announce the arrival of the assistant
 // instead of moving VoiceOver focus to it.
