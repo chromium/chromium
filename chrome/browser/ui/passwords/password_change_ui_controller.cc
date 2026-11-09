@@ -734,7 +734,6 @@ void PasswordChangeUIController::OnPrivacyNoticeAccepted() {
 void PasswordChangeUIController::ShowPasswordDetails() {
   CHECK(password_change_delegate_);
   password_change_delegate_->OpenPasswordDetails();
-  password_change_delegate_->Stop();
 }
 
 void PasswordChangeUIController::NavigateToPasswordChangeSettings() {

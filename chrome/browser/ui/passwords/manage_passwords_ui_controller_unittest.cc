@@ -2631,9 +2631,6 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordChangeFinishedSuccessfully) {
 
   // Emulate password change flow has started.
   PasswordChangeDelegateMock mock_delegate;
-  EXPECT_CALL(mock_delegate, GetCurrentState)
-      .WillOnce(
-          Return(PasswordChangeDelegate::State::kWaitingForChangePasswordForm));
   EXPECT_CALL(*password_change_service, GetPasswordChangeDelegate)
       .WillOnce(Return(&mock_delegate));
   ASSERT_EQ(controller()->GetState(), password_manager::ui::INACTIVE_STATE);
@@ -2966,9 +2963,6 @@ TEST_F(ManagePasswordsUIControllerTest,
 
   // Emulate password change flow has started.
   PasswordChangeDelegateMock mock_delegate;
-  EXPECT_CALL(mock_delegate, GetCurrentState)
-      .WillRepeatedly(
-          Return(PasswordChangeDelegate::State::kWaitingForChangePasswordForm));
   EXPECT_CALL(*password_change_service, GetPasswordChangeDelegate)
       .WillRepeatedly(Return(&mock_delegate));
   ASSERT_EQ(controller()->GetState(), password_manager::ui::INACTIVE_STATE);

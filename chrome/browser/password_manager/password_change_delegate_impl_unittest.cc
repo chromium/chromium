@@ -867,6 +867,8 @@ TEST_F(PasswordChangeDelegateImplTest, OpenPasswordChangeTab) {
 
 TEST_F(PasswordChangeDelegateImplTest, OpenPasswordDetails) {
   CreateDelegate();
+  MockPasswordChangeDelegateObserver observer;
+  delegate()->AddObserver(&observer);
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL(kChangePasswordURL));
 
@@ -874,10 +876,12 @@ TEST_F(PasswordChangeDelegateImplTest, OpenPasswordDetails) {
   EXPECT_CALL(*actuator(), GetGeneratedPassword())
       .WillOnce(Return(
           password_manager::PasswordString(std::u16string(kNewPassword))));
+  EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
   EXPECT_CALL(*manage_passwords_ui_controller(),
               ShowChangePasswordBubble(kTestEmail, kNewPassword));
 
   delegate()->OpenPasswordDetails();
+  delegate()->RemoveObserver(&observer);
 }
 
 TEST_F(PasswordChangeDelegateImplTest,
@@ -885,12 +889,16 @@ TEST_F(PasswordChangeDelegateImplTest,
   base::test::ScopedFeatureList scoped_features(
       password_manager::features::kShowTabWithPasswordChangeOnSuccess);
   CreateDelegate();
+  MockPasswordChangeDelegateObserver observer;
+  delegate()->AddObserver(&observer);
 
   EXPECT_CALL(*actuator(), OpenPasswordChangeTab(web_contents()));
+  EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
   EXPECT_CALL(*manage_passwords_ui_controller(), ShowChangePasswordBubble)
       .Times(0);
 
   delegate()->OpenPasswordDetails();
+  delegate()->RemoveObserver(&observer);
 }
 
 TEST_F(PasswordChangeDelegateImplTest, LoginPasswordFormIsLogged) {

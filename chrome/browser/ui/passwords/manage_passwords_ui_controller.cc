@@ -791,13 +791,7 @@ ManagePasswordsUIController::GetPasswordFeatureManager() {
 }
 
 password_manager::ui::State ManagePasswordsUIController::GetState() const {
-  PasswordChangeDelegate* delegate = GetPasswordChangeDelegate();
-  if (delegate) {
-    if (delegate->GetCurrentState() ==
-        PasswordChangeDelegate::State::kPasswordSuccessfullyChanged) {
-      // Prevent any UI being displayed instead of the password change bubble.
-      return password_manager::ui::State::PASSWORD_CHANGE_STATE;
-    }
+  if (IsPasswordChangeOngoing()) {
     // Prevent any UI being displayed during ongoing password change flow.
     return password_manager::ui::State::INACTIVE_STATE;
   }

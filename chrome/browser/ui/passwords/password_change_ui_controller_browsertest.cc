@@ -403,7 +403,6 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
   UpdateState(PasswordChangeDelegate::State::kPasswordSuccessfullyChanged);
 
   EXPECT_CALL(delegate_, OpenPasswordDetails);
-  EXPECT_CALL(delegate_, Stop);
   views::test::ButtonTestApi clicker(GetToastActionButton());
   clicker.NotifyClick(ui::test::TestEvent());
 }

@@ -485,12 +485,14 @@ void PasswordChangeDelegateImpl::OpenPasswordDetails() {
   if (base::FeatureList::IsEnabled(
           password_manager::features::kShowTabWithPasswordChangeOnSuccess)) {
     OpenPasswordChangeTab();
+    Stop();
     return;
   }
 
   bool is_same_domain = affiliations::IsExtendedPublicSuffixDomainMatch(
       change_password_url_, originator_->GetLastCommittedURL(), {});
 
+  Stop();
   if (is_same_domain) {
     // UI boundary: the confirmation bubble requires the plaintext password.
     ManagePasswordsUIController::FromWebContents(originator_)
