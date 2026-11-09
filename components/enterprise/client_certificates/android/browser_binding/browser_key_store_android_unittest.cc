@@ -101,6 +101,39 @@ TEST_F(BrowserKeyStoreAndroidTest, GetsPublicKeyWhenNoStrongBoxSupport) {
   }
 }
 
+TEST_F(BrowserKeyStoreAndroidTest, ReturnsNullWhenKeyMissing) {
+  scoped_refptr<BrowserKeyStore> bk_store = CreateBrowserKeyStoreInstance();
+  ASSERT_TRUE(bk_store);
+  std::vector<uint8_t> bk_id{5, 6, 7, 8};
+  // Make sure no key is left over from a previous run.
+  bk_store->DeleteBrowserKey(bk_id);
+
+  EXPECT_EQ(bk_store->GetBrowserKeyForCredentialId(bk_id), nullptr);
+}
+
+TEST_F(BrowserKeyStoreAndroidTest, ReturnsExistingKey) {
+  scoped_refptr<BrowserKeyStore> bk_store = CreateBrowserKeyStoreInstance();
+  ASSERT_TRUE(bk_store);
+  std::vector<uint8_t> bk_id{5, 6, 7, 8};
+  // Make sure no key is left over from a previous run.
+  bk_store->DeleteBrowserKey(bk_id);
+  std::unique_ptr<BrowserKey> created_bk =
+      bk_store->GetOrCreateBrowserKeyForCredentialId(
+          bk_id, base::ToVector(kEs256Allowed));
+  ASSERT_TRUE(created_bk);
+
+  std::unique_ptr<BrowserKey> loaded_bk =
+      bk_store->GetBrowserKeyForCredentialId(bk_id);
+  // Clean up before asserting so that a failure does not leak the key.
+  bk_store->DeleteBrowserKey(bk_id);
+  ASSERT_TRUE(loaded_bk);
+  EXPECT_EQ(loaded_bk->GetIdentifier(), bk_id);
+  EXPECT_EQ(loaded_bk->GetPublicKeyAsSPKI(), created_bk->GetPublicKeyAsSPKI());
+
+  // Once deleted, the key is no longer found.
+  EXPECT_EQ(bk_store->GetBrowserKeyForCredentialId(bk_id), nullptr);
+}
+
 }  // namespace
 
 }  // namespace client_certificates

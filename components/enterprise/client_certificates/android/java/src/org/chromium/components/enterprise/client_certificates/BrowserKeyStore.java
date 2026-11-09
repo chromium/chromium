@@ -23,14 +23,17 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
+import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.UnrecoverableEntryException;
+import java.security.PrivateKey;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,6 +96,9 @@ public final class BrowserKeyStore {
      * Get the corresponding browser key (or creates it).
      *
      * @param identifier An identifier for the browser key.
+     * @param allowedAlgorithms A list of allowed credential parameters used if the key needs to be
+     *     created. Consequently, if this list is empty no key will be created but an existing one
+     *     may be returned.
      * @return The BrowserKey object or null when the key pair could not be created.
      */
     @CalledByNative
@@ -101,11 +107,34 @@ public final class BrowserKeyStore {
                     @JniType("std::vector<uint8_t>") byte[] identifier,
                     List<PublicKeyCredentialParameters> allowedAlgorithms) {
         String keyStoreAlias = keyStoreAliasOf(identifier);
-        BrowserKey browserKey = getBrowserKey(identifier, keyStoreAlias);
+        BrowserKey browserKey = null;
+        try {
+            browserKey = loadBrowserKey(identifier, keyStoreAlias);
+        } catch (Exception e) {
+            Log.e(BrowserKey.TAG, "Could not load the browser key from the key store.", e);
+        }
         if (browserKey == null && containsEs256(allowedAlgorithms)) {
             browserKey = createBrowserKey(identifier, keyStoreAlias);
         }
         return browserKey;
+    }
+
+    /**
+     * Gets an existing browser key. Never creates one.
+     *
+     * @param identifier An identifier for the browser key.
+     * @return The BrowserKey object, or null when no key exists for the identifier or the key store
+     *     could not be queried.
+     */
+    @CalledByNative
+    public @Nullable @JniType("std::unique_ptr<BrowserKeyAndroid>") BrowserKey
+            getBrowserKeyForCredentialId(@JniType("std::vector<uint8_t>") byte[] identifier) {
+        try {
+            return loadBrowserKey(identifier, keyStoreAliasOf(identifier));
+        } catch (Exception e) {
+            Log.e(BrowserKey.TAG, "Could not load the browser key from the key store.", e);
+            return null;
+        }
     }
 
     /** Returns whether StrongBox (hardware) key storage is supported on this device. */
@@ -148,31 +177,41 @@ public final class BrowserKeyStore {
         return false;
     }
 
-    private @Nullable BrowserKey getBrowserKey(byte[] identifier, String keyStoreAlias) {
-        try {
-            KeyStore keyStore = KeyStore.getInstance(ANDROID_KEY_STORE);
-            keyStore.load(null);
-            if (!keyStore.containsAlias(keyStoreAlias)) {
-                return null;
-            }
-            KeyStore.PrivateKeyEntry privateKeyEntry =
-                    (KeyStore.PrivateKeyEntry)
-                            keyStore.getEntry(keyStoreAlias, /* protParam= */ null);
-            return new BrowserKey(
-                    identifier,
-                    new KeyPair(
-                            privateKeyEntry.getCertificate().getPublicKey(),
-                            privateKeyEntry.getPrivateKey()));
-        } catch (UnrecoverableEntryException e) {
-            // Recreate the key pair by returning null here.
-            return null;
-        } catch (KeyStoreException
-                | CertificateException
-                | IOException
-                | NoSuchAlgorithmException e) {
-            Log.e(BrowserKey.TAG, "Could not load the browser key from the key store.");
+    /**
+     * Loads an existing browser key from the key store.
+     *
+     * @return The BrowserKey object, or null when no key exists for the alias.
+     * @throws GeneralSecurityException when the key store could not be queried, in which case the
+     *     key may still exist.
+     * @throws IOException when the key store could not be loaded.
+     * @throws RuntimeException when the AndroidKeyStore provider is in a degraded state.
+     */
+    private @Nullable BrowserKey loadBrowserKey(byte[] identifier, String keyStoreAlias)
+            throws GeneralSecurityException, IOException {
+        KeyStore keyStore = KeyStore.getInstance(ANDROID_KEY_STORE);
+        keyStore.load(null);
+        // containsAlias() and getEntry() report any key store error as a missing entry. On
+        // Android 12+, getKey() returns null only when there is no key for the alias and throws
+        // UnrecoverableKeyException for other errors; older releases still report some errors as
+        // a missing key.
+        Key key = keyStore.getKey(keyStoreAlias, /* password= */ null);
+        if (key == null) {
             return null;
         }
+        if (!(key instanceof PrivateKey)) {
+            throw new KeyStoreException(
+                    "Key store entry is a "
+                            + key.getClass().getName()
+                            + " instead of a private key: "
+                            + keyStoreAlias);
+        }
+        Certificate certificate = keyStore.getCertificate(keyStoreAlias);
+        if (certificate == null) {
+            throw new KeyStoreException(
+                    "Key store entry has no certificate holding the public key: " + keyStoreAlias);
+        }
+        return new BrowserKey(
+                identifier, new KeyPair(certificate.getPublicKey(), (PrivateKey) key));
     }
 
     private @Nullable BrowserKey createBrowserKey(byte[] identifier, String keyStoreAlias) {

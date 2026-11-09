@@ -55,6 +55,14 @@ BrowserKeyStoreAndroid::GetOrCreateBrowserKeyForCredentialId(
       ConvertToListOfPublicKeyCredentialParameters(env, allowed_credentials));
 }
 
+std::unique_ptr<BrowserKey>
+BrowserKeyStoreAndroid::GetBrowserKeyForCredentialId(
+    const std::vector<uint8_t>& credential_id) {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  return Java_BrowserKeyStore_getBrowserKeyForCredentialId(env, impl_,
+                                                           credential_id);
+}
+
 bool BrowserKeyStoreAndroid::GetDeviceSupportsHardwareKeys() {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   return Java_BrowserKeyStore_getDeviceSupportsHardwareKeys(env);

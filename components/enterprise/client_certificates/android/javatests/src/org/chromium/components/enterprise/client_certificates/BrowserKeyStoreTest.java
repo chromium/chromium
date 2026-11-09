@@ -69,10 +69,8 @@ public class BrowserKeyStoreTest {
 
     @After
     public void removeBk() {
-        if (isStrongBoxAvailable()) {
-            BrowserKeyStore browserKeyStore = BrowserKeyStore.getInstance();
-            browserKeyStore.deleteBrowserKey(BK_ID);
-        }
+        BrowserKeyStore browserKeyStore = BrowserKeyStore.getInstance();
+        browserKeyStore.deleteBrowserKey(BK_ID);
     }
 
     private void setSdkInt(int sdkInt) throws Exception {
@@ -163,6 +161,46 @@ public class BrowserKeyStoreTest {
         assertNotNull(bkAfter);
         // The key pair should be different after deletion.
         assertFalse(Arrays.equals(bk.getPublicKeyAsSPKI(), bkAfter.getPublicKeyAsSPKI()));
+    }
+
+    @Test
+    public void testGetDoesNotCreateMissingKey() {
+        BrowserKeyStore browserKeyStore = BrowserKeyStore.getInstance();
+        browserKeyStore.deleteBrowserKey(BK_ID);
+
+        assertNull(browserKeyStore.getBrowserKeyForCredentialId(BK_ID));
+        // The lookup must not have created a key as a side effect.
+        assertNull(browserKeyStore.getBrowserKeyForCredentialId(BK_ID));
+    }
+
+    @Test
+    public void testGetFindsExistingKey() throws Exception {
+        BrowserKeyStore browserKeyStore = BrowserKeyStore.getInstance();
+        byte[] clientData = new byte[] {0x01, 0x02, 0x03, 0x04};
+        BrowserKey createdBk =
+                browserKeyStore.getOrCreateBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS);
+        assertNotNull(createdBk);
+
+        BrowserKey loadedBk = browserKeyStore.getBrowserKeyForCredentialId(BK_ID);
+        assertNotNull(loadedBk);
+
+        // Verify the loaded key's signature using the created key's public key.
+        byte[] signature = loadedBk.sign(clientData);
+        Signature verifier = Signature.getInstance("SHA256withECDSA");
+        verifier.initVerify(createdBk.getKeyPair().getPublic());
+        verifier.update(clientData);
+        assertTrue(verifier.verify(signature));
+    }
+
+    @Test
+    public void testGetAfterDeleteReturnsNull() {
+        BrowserKeyStore browserKeyStore = BrowserKeyStore.getInstance();
+        assertNotNull(
+                browserKeyStore.getOrCreateBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS));
+
+        browserKeyStore.deleteBrowserKey(BK_ID);
+
+        assertNull(browserKeyStore.getBrowserKeyForCredentialId(BK_ID));
     }
 
     @Test

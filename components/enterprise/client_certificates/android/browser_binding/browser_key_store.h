@@ -38,6 +38,11 @@ class BrowserKeyStore : public base::RefCounted<BrowserKeyStore> {
       const std::vector<uint8_t>& credential_id,
       const CredentialInfoList& allowed_credentials) = 0;
 
+  // Gets the existing browser key for the given credential_id. Never creates
+  // one. Returns nullptr when no key exists or the key could not be loaded.
+  virtual std::unique_ptr<BrowserKey> GetBrowserKeyForCredentialId(
+      const std::vector<uint8_t>& credential_id) = 0;
+
   // Returns whether hardware keys are supported by this implementation on the
   // current device.
   virtual bool GetDeviceSupportsHardwareKeys() = 0;

@@ -22,6 +22,9 @@ class BrowserKeyStoreAndroid : public BrowserKeyStore {
       const std::vector<uint8_t>& credential_id,
       const CredentialInfoList& allowed_credentials) override;
 
+  std::unique_ptr<BrowserKey> GetBrowserKeyForCredentialId(
+      const std::vector<uint8_t>& credential_id) override;
+
   bool GetDeviceSupportsHardwareKeys() override;
 
   void DeleteBrowserKey(const std::vector<uint8_t>& credential_id) override;
