@@ -87,3 +87,8 @@ WebViewSafeBrowsingClient::CreateClientSideDetectionHost(
   // ios/web_view does not support client side detection.
   return nullptr;
 }
+
+void WebViewSafeBrowsingClient::OnSuspiciousSiteWarningTriggered(
+    const security_interstitials::UnsafeResource& resource) {
+  // ios/web_view does not support suspicious site warnings.
+}

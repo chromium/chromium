@@ -4,15 +4,22 @@
 
 #import "ios/components/security_interstitials/safe_browsing/url_checker_delegate_impl.h"
 
+#import "base/feature_list.h"
+#import "base/functional/bind.h"
+#import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/db/database_manager.h"
 #import "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
+#import "components/safe_browsing/core/common/features.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/components/security_interstitials/safe_browsing/ios_unsafe_resource_util.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/web_state.h"
 
 #pragma mark - UrlCheckerDelegateImpl
 
@@ -121,12 +128,48 @@ void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(
 void UrlCheckerDelegateImpl::ShowSuspiciousSiteWarning(
     const security_interstitials::UnsafeResource& resource,
     const base::RepeatingCallback<content::WebContents*()>&
-        web_contents_getter) {}
+        web_contents_getter) {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  // Post to the UI thread to avoid reentrancy while
+  // `SafeBrowsingUrlCheckerImpl` is still on the stack and before
+  // `SafeBrowsingQueryManager` marks the async URL check complete.
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<UrlCheckerDelegateImpl> delegate,
+             const security_interstitials::UnsafeResource& resource,
+             const base::RepeatingCallback<content::WebContents*()>&
+                 web_contents_getter) {
+            web::WebState* web_state = resource.weak_web_state.get();
+            if (!web_state || !web_state->GetBrowserState() ||
+                web_state->GetBrowserState()->IsOffTheRecord() ||
+                !delegate->client_) {
+              // The `WebState` or `SafeBrowsingClient` may have been destroyed
+              // while the task was queued, or the navigation may belong to an
+              // off-the-record profile where suspicious site warnings are
+              // suppressed.
+              return;
+            }
+            if (delegate->client_->ShouldBlockUnsafeResource(resource) ||
+                !delegate->AreSuspiciousSiteWarningsAllowed(
+                    web_contents_getter)) {
+              return;
+            }
+            delegate->client_->OnSuspiciousSiteWarningTriggered(resource);
+          },
+          base::WrapRefCounted(this), resource, web_contents_getter));
+}
 
 bool UrlCheckerDelegateImpl::AreSuspiciousSiteWarningsAllowed(
     const base::RepeatingCallback<content::WebContents*()>&
         web_contents_getter) {
-  return false;
+  if (!client_) {
+    // `client_` is a `WeakPtr` and may be null during profile shutdown.
+    return false;
+  }
+  PrefService* prefs = client_->GetPrefs();
+  return prefs && safe_browsing::IsEnhancedProtectionEnabled(*prefs) &&
+         base::FeatureList::IsEnabled(safe_browsing::kSuspiciousSiteWarnings);
 }
 
 void UrlCheckerDelegateImpl::SendUrlRealTimeAndHashRealTimeDiscrepancyReport(

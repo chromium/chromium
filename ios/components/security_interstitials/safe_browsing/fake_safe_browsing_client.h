@@ -9,6 +9,7 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/run_loop.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
+#import "url/gurl.h"
 
 class FakeSafeBrowsingService;
 
@@ -38,6 +39,8 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
       const security_interstitials::UnsafeResource& resource) override;
   std::unique_ptr<safe_browsing::ClientSideDetectionHostBase>
   CreateClientSideDetectionHost(web::WebState* web_state) override;
+  void OnSuspiciousSiteWarningTriggered(
+      const security_interstitials::UnsafeResource& resource) override;
 
   // Controls the return value of `ShouldBlockUnsafeResource`.
   void set_should_block_unsafe_resource(bool should_block_unsafe_resource) {
@@ -77,6 +80,17 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
   // Whether `OnSecurityInterstitialShown` was called.
   bool on_security_interstitial_shown_called() const {
     return on_security_interstitial_shown_called_;
+  }
+
+  // Whether `OnSuspiciousSiteWarningTriggered` was called.
+  bool on_suspicious_site_warning_triggered_called() const {
+    return on_suspicious_site_warning_triggered_called_;
+  }
+
+  // Returns the URL of the last `UnsafeResource` passed to
+  // `OnSuspiciousSiteWarningTriggered`.
+  const GURL& last_suspicious_site_url() const {
+    return last_suspicious_site_url_;
   }
 
   // Stores a sync callback in `sync_completion_callbacks_` to be ran at a later
@@ -124,6 +138,8 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
   bool main_frame_cancellation_decided_called_ = false;
   bool should_force_sync_real_time_url_checks_ = false;
   bool on_security_interstitial_shown_called_ = false;
+  bool on_suspicious_site_warning_triggered_called_ = false;
+  GURL last_suspicious_site_url_;
 
   // Must be last.
   base::WeakPtrFactory<FakeSafeBrowsingClient> weak_factory_{this};

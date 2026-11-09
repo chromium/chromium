@@ -49,6 +49,13 @@ class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
       int render_process_id,
       base::optional_ref<const base::UnguessableToken> render_frame_token,
       bool originated_from_service_worker) override;
+  void ShowSuspiciousSiteWarning(
+      const security_interstitials::UnsafeResource& resource,
+      const base::RepeatingCallback<content::WebContents*()>&
+          web_contents_getter) override;
+  bool AreSuspiciousSiteWarningsAllowed(
+      const base::RepeatingCallback<content::WebContents*()>&
+          web_contents_getter) override;
 
 #pragma mark - Unused on iOS
   // This function is unused on iOS, since iOS cannot use content/.
@@ -57,13 +64,6 @@ class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
   // platforms, and move methods used only by content/ to classes used only by
   // content/.
   void NotifySuspiciousSiteDetected(
-      const base::RepeatingCallback<content::WebContents*()>&
-          web_contents_getter) override;
-  void ShowSuspiciousSiteWarning(
-      const security_interstitials::UnsafeResource& resource,
-      const base::RepeatingCallback<content::WebContents*()>&
-          web_contents_getter) override;
-  bool AreSuspiciousSiteWarningsAllowed(
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter) override;
   void SendUrlRealTimeAndHashRealTimeDiscrepancyReport(

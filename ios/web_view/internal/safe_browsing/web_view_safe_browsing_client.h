@@ -36,6 +36,8 @@ class WebViewSafeBrowsingClient : public SafeBrowsingClient {
       const security_interstitials::UnsafeResource& resource) override;
   std::unique_ptr<safe_browsing::ClientSideDetectionHostBase>
   CreateClientSideDetectionHost(web::WebState* web_state) override;
+  void OnSuspiciousSiteWarningTriggered(
+      const security_interstitials::UnsafeResource& resource) override;
 
  private:
   raw_ptr<PrefService> prefs_;

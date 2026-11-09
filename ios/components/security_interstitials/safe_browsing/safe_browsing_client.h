@@ -77,6 +77,11 @@ class SafeBrowsingClient : public KeyedService {
   // Clients may return nullptr if CSD is not supported or disabled.
   virtual std::unique_ptr<safe_browsing::ClientSideDetectionHostBase>
   CreateClientSideDetectionHost(web::WebState* web_state) = 0;
+  // Notifies the client that a non-blocking suspicious site warning was
+  // triggered for `resource`. Unlike blocking Safe Browsing threats, navigation
+  // proceeds while the client coordinates presenting the post-commit warning.
+  virtual void OnSuspiciousSiteWarningTriggered(
+      const security_interstitials::UnsafeResource& resource) = 0;
 };
 
 #endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_CLIENT_H_

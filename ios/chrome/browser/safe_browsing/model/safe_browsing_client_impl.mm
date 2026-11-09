@@ -167,3 +167,9 @@ SafeBrowsingClientImpl::CreateClientSideDetectionHost(
       IdentityManagerFactory::GetForProfile(profile),
       ios::HistoryServiceFactory::GetForProfile(profile));
 }
+
+void SafeBrowsingClientImpl::OnSuspiciousSiteWarningTriggered(
+    const security_interstitials::UnsafeResource& resource) {
+  // TODO(crbug.com/583869103): Wired to `SuspiciousSiteTabHelper` in a
+  // follow-up CL.
+}

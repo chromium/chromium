@@ -12,6 +12,7 @@
 #import "base/run_loop.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/prefs/pref_service.h"
@@ -236,10 +237,11 @@ class SafeBrowsingServiceTest : public PlatformTest,
                                 public ::testing::WithParamInterface<bool> {
  public:
   SafeBrowsingServiceTest()
-      : SafeBrowsingServiceTest(/*enable_hash_prefix_realtime=*/std::nullopt) {}
+      : SafeBrowsingServiceTest(/*enable_hash_prefix_realtime=*/std::nullopt,
+                                /*enable_suspicious_site_warnings=*/false) {}
 
-  explicit SafeBrowsingServiceTest(
-      std::optional<bool> enable_hash_prefix_realtime)
+  SafeBrowsingServiceTest(std::optional<bool> enable_hash_prefix_realtime,
+                          bool enable_suspicious_site_warnings)
       : browser_state_(new web::FakeBrowserState()) {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
@@ -254,6 +256,9 @@ class SafeBrowsingServiceTest : public PlatformTest,
       } else {
         disabled_features.push_back(safe_browsing::kHashPrefixRealTimeLookups);
       }
+    }
+    if (enable_suspicious_site_warnings) {
+      enabled_features.push_back(safe_browsing::kSuspiciousSiteWarnings);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
@@ -349,6 +354,25 @@ class SafeBrowsingServiceTest : public PlatformTest,
         safe_browsing::RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
     threat_info->set_cache_duration_sec(100);
     threat_info->set_cache_expression_using_match_type(bad_url.GetHost() + "/");
+    threat_info->set_cache_expression_match_type(
+        safe_browsing::RTLookupResponse::ThreatInfo::COVERING_MATCH);
+    verdict_cache_manager_->CacheRealTimeUrlVerdict(response,
+                                                    base::Time::Now());
+  }
+
+  // Caches `suspicious_url` as a warnable suspicious site (`ThreatInfo::WARN`
+  // + `ThreatInfo::SOCIAL_ENGINEERING`) in `VerdictCacheManager`.
+  void MarkUrlAsRealTimeSuspicious(const GURL& suspicious_url) {
+    safe_browsing::RTLookupResponse response;
+    safe_browsing::RTLookupResponse::ThreatInfo* threat_info =
+        response.add_threat_info();
+    threat_info->set_verdict_type(
+        safe_browsing::RTLookupResponse::ThreatInfo::WARN);
+    threat_info->set_threat_type(
+        safe_browsing::RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
+    threat_info->set_cache_duration_sec(100);
+    threat_info->set_cache_expression_using_match_type(
+        suspicious_url.GetHost() + "/");
     threat_info->set_cache_expression_match_type(
         safe_browsing::RTLookupResponse::ThreatInfo::COVERING_MATCH);
     verdict_cache_manager_->CacheRealTimeUrlVerdict(response,
@@ -938,7 +962,8 @@ class SafeBrowsingServiceHashPrefixEnabledTest
     : public SafeBrowsingServiceTest {
  public:
   SafeBrowsingServiceHashPrefixEnabledTest()
-      : SafeBrowsingServiceTest(/*enable_hash_prefix_realtime=*/true) {}
+      : SafeBrowsingServiceTest(/*enable_hash_prefix_realtime=*/true,
+                                /*enable_suspicious_site_warnings=*/false) {}
 };
 
 // Verifies that Safe Browsing hash prefix metrics are correctly recorded and
@@ -982,7 +1007,8 @@ class SafeBrowsingServiceHashPrefixDisabledTest
     : public SafeBrowsingServiceTest {
  public:
   SafeBrowsingServiceHashPrefixDisabledTest()
-      : SafeBrowsingServiceTest(/*enable_hash_prefix_realtime=*/false) {}
+      : SafeBrowsingServiceTest(/*enable_hash_prefix_realtime=*/false,
+                                /*enable_suspicious_site_warnings=*/false) {}
 };
 
 // Verifies that Safe Browsing hash prefix metrics are correctly recorded and
@@ -1020,6 +1046,43 @@ TEST_P(SafeBrowsingServiceHashPrefixDisabledTest, HashPrefixDisabled) {
       /*expected_bucket_count=*/1);
 
   task_environment_.RunUntilIdle();
+}
+
+class SafeBrowsingServiceSuspiciousSiteTest : public SafeBrowsingServiceTest {
+ public:
+  SafeBrowsingServiceSuspiciousSiteTest()
+      : SafeBrowsingServiceTest(/*enable_hash_prefix_realtime=*/std::nullopt,
+                                /*enable_suspicious_site_warnings=*/true) {}
+};
+
+// Tests that a real-time `WARN` verdict for `SOCIAL_ENGINEERING` allows the
+// navigation to proceed while notifying `SafeBrowsingClient` of a suspicious
+// site warning when Enhanced Safe Browsing and `kSuspiciousSiteWarnings` are
+// enabled.
+TEST_P(SafeBrowsingServiceSuspiciousSiteTest, RealTimeWarnableSuspiciousSite) {
+  TestUrlCheckerClient client(safe_browsing_service_.get(),
+                              browser_state_.get(),
+                              safe_browsing_client_.get());
+
+  // Wait for an initial result to ensure the Safe Browsing database has
+  // finished initializing before caching real-time verdicts.
+  GURL safe_url(kSafePage);
+  client.CheckUrlWithAsyncChecker(safe_url);
+  client.WaitForResult();
+
+  pref_service_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  GURL suspicious_url("https://suspicious.test/login.html");
+  MarkUrlAsRealTimeSuspicious(suspicious_url);
+  client.CheckUrlWithAsyncChecker(suspicious_url);
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_FALSE(client.url_is_unsafe());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return safe_browsing_client_->on_suspicious_site_warning_triggered_called();
+  }));
+  EXPECT_EQ(suspicious_url, safe_browsing_client_->last_suspicious_site_url());
 }
 
 // Verifies that Safe Browsing preference metrics are correctly recorded when
@@ -1062,6 +1125,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          SafeBrowsingServiceHashPrefixDisabledTest,
+                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         SafeBrowsingServiceSuspiciousSiteTest,
                          ::testing::Bool());
 
 using SafeBrowsingServiceInitializationTest = PlatformTest;

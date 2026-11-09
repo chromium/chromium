@@ -4,6 +4,7 @@
 
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_client.h"
 
+#import "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
 #import "ios/web/public/web_state.h"
 
@@ -70,4 +71,10 @@ std::unique_ptr<safe_browsing::ClientSideDetectionHostBase>
 FakeSafeBrowsingClient::CreateClientSideDetectionHost(
     web::WebState* web_state) {
   return nullptr;
+}
+
+void FakeSafeBrowsingClient::OnSuspiciousSiteWarningTriggered(
+    const security_interstitials::UnsafeResource& resource) {
+  on_suspicious_site_warning_triggered_called_ = true;
+  last_suspicious_site_url_ = resource.url;
 }
