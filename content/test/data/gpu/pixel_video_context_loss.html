@@ -27,6 +27,13 @@ var QueryString = function() {
   return params;
 }();
 
+function sendHeartbeat() {
+  if (typeof wrapper !== 'undefined' && wrapper &&
+      wrapper.sendHeartbeatThrottled) {
+    wrapper.sendHeartbeatThrottled();
+  }
+}
+
 function CrashGpuProcess() {
   // Ensure we only get one crash in case of multiple canplaythrough events.
   video.removeEventListener('canplaythrough', CrashGpuProcess, false);
@@ -38,11 +45,15 @@ function CrashGpuProcess() {
 
   // webglcontextlost may not be invoked unless we actually try to execute a GL
   // command, so use a repeating function to tickle the context.
-  var tickle = setInterval(function() { gl.getParameter(gl.VERSION); }, 250);
+  var tickle = setInterval(function() {
+    sendHeartbeat();
+    gl.getParameter(gl.VERSION);
+  }, 250);
 
   // Now wait for the context loss before starting video playback.
   canvas.addEventListener('webglcontextlost', function(e) {
     clearInterval(tickle);
+    sendHeartbeat();
 
     // Now wait for the video to play until the end, by which point a frame
     // should be visible on screen.
@@ -61,6 +72,7 @@ function Main() {
 
   // Wait until we're sure a frame has been displayed before crashing GPU.
   video.addEventListener('canplaythrough', CrashGpuProcess, false);
+  video.addEventListener('timeupdate', sendHeartbeat, false);
 
   // Add an error listener to avoid timeouts if playback fails.
   video.addEventListener('error', function(e) {
