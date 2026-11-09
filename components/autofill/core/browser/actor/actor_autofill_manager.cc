@@ -118,7 +118,7 @@ void ActorAutofillManager::MaybeLogCriticalAction(
       critical_actions::CriticalActionEntry::Builder()
           .SetActionType(critical_actions::ActionType::kFormFill)
           .SetActionSource(critical_actions::ActionSource::kAutofill)
-          .SetConversationId(std::move(active_actor_task_->conversation_id))
+          .SetConversationId(active_actor_task_->conversation_id)
           .SetActorTaskId(
               base::NumberToString(active_actor_task_->task_id.value()))
           .SetMetadata(
