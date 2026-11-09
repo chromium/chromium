@@ -54,10 +54,7 @@ void SafeBrowsingQueryManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void SafeBrowsingQueryManager::StartQuery(const Query& query) {
-  // Store the query request.
-  results_.insert({query, Result()});
-
+bool SafeBrowsingQueryManager::StartQuery(const Query& query) {
   // Create a URL checker and perform the query on the IO thread.
   network::mojom::RequestDestination request_destination =
       network::mojom::RequestDestination::kDocument;
@@ -66,6 +63,12 @@ void SafeBrowsingQueryManager::StartQuery(const Query& query) {
 
   bool async_check_enabled =
       safe_browsing_service->ShouldCreateAsyncChecker(web_state_, client_);
+
+  // Store the query request before starting checks in case `CheckUrl()`
+  // completes synchronously.
+  Result initial_result;
+  initial_result.has_async_check = async_check_enabled;
+  results_.insert({query, initial_result});
 
   if (async_check_enabled) {
     base::OnceCallback<void(
@@ -111,6 +114,8 @@ void SafeBrowsingQueryManager::StartQuery(const Query& query) {
     url_checker_client_->CheckUrl(std::move(url_checker), query.url,
                                   query.http_method, std::move(callback));
   }
+
+  return async_check_enabled;
 }
 
 void SafeBrowsingQueryManager::StoreUnsafeResource(

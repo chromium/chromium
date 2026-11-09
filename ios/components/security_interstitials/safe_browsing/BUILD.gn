@@ -83,6 +83,7 @@ source_set("test_support") {
 
   deps = [
     ":safe_browsing",
+    "//base",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/common",

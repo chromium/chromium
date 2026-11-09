@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
+#import "base/functional/function_ref.h"
 #import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -80,6 +81,14 @@ class SafeBrowsingTabHelper
   // vector if there is none.
   std::vector<GURL> GetRedirectChain() const;
 
+  // Returns whether any non-cancelled main-frame Safe Browsing URL check is
+  // still in flight for the current or pending navigation.
+  bool HasPendingMainFrameChecks() const;
+
+  // Returns whether `url` belongs to a non-cancelled current or pending
+  // main-frame navigation (including redirects).
+  bool IsUrlInCurrentOrPendingNavigation(const GURL& url) const;
+
   // Returns the client side detection host, or nullptr if disabled.
   safe_browsing::ClientSideDetectionHostBase* client_side_detection_host() {
     return csd_host_.get();
@@ -115,12 +124,29 @@ class SafeBrowsingTabHelper
 
     // Commits the pending or to-be-committed redirect chain as
     // `committed_redirect_chain_` and records `navigation_id` as its owner in
-    // `committed_navigation_id_`. Clears both if there is no chain to commit.
+    // `committed_navigation_id_` when `committed_url` can be checked by Safe
+    // Browsing, or clears both if there is no checkable chain to commit.
     // Pending and to-be-committed state is always reset.
-    void SetCommittedRedirectChain(int64_t navigation_id);
+    void SetCommittedRedirectChain(int64_t navigation_id,
+                                   const GURL& committed_url);
+
+    // Records check completion on `previous_main_frame_query_` if a candidate
+    // redirect source finishes its check before `DidRedirectNavigation()` moves
+    // it into `pending_main_frame_redirect_chain_`.
+    void MaybeUpdatePreviousMainFrameQuery(
+        const SafeBrowsingQueryManager::QueryData& query_data,
+        const web::WebStatePolicyDecider::PolicyDecision& policy_decision);
 
     // Returns the redirect chain for the committed navigation.
     std::vector<GURL> GetRedirectChain() const;
+
+    // Returns whether any non-cancelled main-frame Safe Browsing URL check is
+    // still in flight for the current or pending navigation.
+    bool HasPendingMainFrameChecks() const;
+
+    // Returns whether `url` belongs to a non-cancelled current or pending
+    // main-frame navigation (including redirects).
+    bool IsUrlInCurrentOrPendingNavigation(const GURL& url) const;
 
     // Reloads the page with `url`. Used when a reload is necessary for
     // triggering an error page.
@@ -152,15 +178,16 @@ class SafeBrowsingTabHelper
         const SafeBrowsingQueryManager::QueryData& query_data,
         const web::WebStatePolicyDecider::PolicyDecision& policy_decision);
 
-    // Notifies the policy decider that a new main frame document has been
-    // loaded for `navigation_id`. `is_error_page` indicates whether the
-    // committed navigation resulted in an error page. An error page whose
-    // `navigation_id` matches `committed_navigation_id_` is a post-commit
-    // failure of the already committed navigation. In that case, all Safe
-    // Browsing state (committed, pending, and reload-on-commit) is left
-    // untouched so that late verdicts for the committed document are still
+    // Notifies the policy decider that a new main frame document
+    // (`committed_url`) has been loaded for `navigation_id`. `is_error_page`
+    // indicates whether the committed navigation resulted in an error page. An
+    // error page whose `navigation_id` matches `committed_navigation_id_` is a
+    // post-commit failure of the already committed navigation. In that case,
+    // all Safe Browsing state (committed, pending, and reload-on-commit) is
+    // left untouched so that late verdicts for the committed document are still
     // honored.
     void UpdateForMainFrameDocumentChange(int64_t navigation_id,
+                                          const GURL& committed_url,
                                           bool is_error_page);
 
     // Notifies the policy decider that the most recent main frame query is
@@ -185,6 +212,8 @@ class SafeBrowsingTabHelper
       std::string http_method;
       std::optional<web::WebStatePolicyDecider::PolicyDecision> decision;
       web::WebStatePolicyDecider::PolicyDecisionCallback response_callback;
+      bool has_sync_check = false;
+      bool has_async_check = false;
       bool sync_check_complete = false;
       bool async_check_complete = false;
 
@@ -202,6 +231,12 @@ class SafeBrowsingTabHelper
         NSURLResponse* response,
         web::WebStatePolicyDecider::ResponseInfo response_info,
         web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
+
+    // Returns whether any query in a non-cancelled active main-frame
+    // navigation chain (pending, candidate redirect source, to-be-committed, or
+    // committed) satisfies `predicate`.
+    bool AnyActiveMainFrameQueryMatches(
+        base::FunctionRef<bool(const MainFrameUrlQuery&)> predicate) const;
 
     // Returns the oldest query for `url` that has not yet received a decision.
     // If there are no queries for `url` or if all such queries have already

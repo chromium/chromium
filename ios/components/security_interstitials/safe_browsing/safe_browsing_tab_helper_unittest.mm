@@ -10,6 +10,7 @@
 #import "base/test/bind.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
@@ -2144,6 +2145,414 @@ TEST_P(SafeBrowsingTabHelperTest,
   EXPECT_NSEQ(decision_error.domain, kSafeBrowsingErrorDomain);
   EXPECT_EQ(static_cast<SafeBrowsingErrorCode>(decision_error.code),
             SafeBrowsingErrorCode::kUnsafeResource);
+}
+
+// Tests that `HasPendingMainFrameChecks()` tracks both sync and async checks
+// across pending, to-be-committed, and committed main-frame states.
+TEST_P(SafeBrowsingTabHelperTest, HasPendingMainFrameChecksWithAsyncChecks) {
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_FALSE(tab_helper->HasPendingMainFrameChecks());
+
+  GURL url("http://chromium.test/page.html");
+  EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
+  EXPECT_TRUE(tab_helper->HasPendingMainFrameChecks());
+
+  // Completing only the sync check leaves the async check pending across
+  // response and commit.
+  client_.run_sync_callbacks();
+  EXPECT_TRUE(tab_helper->HasPendingMainFrameChecks());
+
+  EXPECT_TRUE(ShouldAllowResponseUrl(url).ShouldAllowNavigation());
+  EXPECT_TRUE(tab_helper->HasPendingMainFrameChecks());
+
+  web::FakeNavigationContext commit_context;
+  commit_context.SetUrl(url);
+  commit_context.SetHasCommitted(true);
+  web_state_.OnNavigationFinished(&commit_context);
+  EXPECT_TRUE(tab_helper->HasPendingMainFrameChecks());
+
+  // Completing the async check clears the pending check state.
+  client_.run_async_callbacks();
+  EXPECT_FALSE(tab_helper->HasPendingMainFrameChecks());
+}
+
+// Tests that `HasPendingMainFrameChecks()` returns `false` once the sync check
+// completes when async checks are disabled.
+TEST_P(SafeBrowsingTabHelperTest,
+       HasPendingMainFrameChecksWhenAsyncChecksDisabled) {
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+  client_.set_should_force_sync_real_time_url_checks(true);
+
+  GURL url("http://chromium.test/sync_only.html");
+  EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
+  EXPECT_TRUE(tab_helper->HasPendingMainFrameChecks());
+
+  // With async checks disabled, `FakeSafeBrowsingService::CreateUrlChecker`
+  // posts completion on the current task runner.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !tab_helper->HasPendingMainFrameChecks(); }));
+}
+
+// Tests that `IsUrlInCurrentOrPendingNavigation()` matches URLs (including
+// redirects and URLs with fragments) across pending, to-be-committed, and
+// committed states, and stops matching superseded or interrupted navigations.
+TEST_P(SafeBrowsingTabHelperTest,
+       IsUrlInCurrentOrPendingNavigationLifecycleAndRedirects) {
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+
+  GURL url1("http://chromium1.test/start.html");
+  GURL url2("http://chromium2.test/final.html");
+  GURL url2_with_ref("http://chromium2.test/final.html#section");
+  GURL unrelated_url("http://other.test/");
+
+  EXPECT_FALSE(tab_helper->IsUrlInCurrentOrPendingNavigation(url1));
+
+  // Start `url1` and redirect to `url2`.
+  EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
+  EXPECT_TRUE(tab_helper->IsUrlInCurrentOrPendingNavigation(url1));
+  EXPECT_FALSE(tab_helper->IsUrlInCurrentOrPendingNavigation(unrelated_url));
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
+  // Even before `DidRedirectNavigation()`, `url1` is tracked as the candidate
+  // redirect source.
+  EXPECT_TRUE(tab_helper->IsUrlInCurrentOrPendingNavigation(url1));
+  EXPECT_TRUE(tab_helper->IsUrlInCurrentOrPendingNavigation(url2));
+  EXPECT_TRUE(tab_helper->IsUrlInCurrentOrPendingNavigation(url2_with_ref));
+
+  SimulateMainFrameRedirect();
+  client_.run_sync_callbacks();
+  client_.run_async_callbacks();
+
+  EXPECT_TRUE(ShouldAllowResponseUrl(url2).ShouldAllowNavigation());
+  EXPECT_TRUE(tab_helper->IsUrlInCurrentOrPendingNavigation(url1));
+  EXPECT_TRUE(tab_helper->IsUrlInCurrentOrPendingNavigation(url2));
+
+  web::FakeNavigationContext commit_context;
+  commit_context.SetUrl(url2);
+  commit_context.SetHasCommitted(true);
+  web_state_.OnNavigationFinished(&commit_context);
+  EXPECT_TRUE(tab_helper->IsUrlInCurrentOrPendingNavigation(url1));
+  EXPECT_TRUE(tab_helper->IsUrlInCurrentOrPendingNavigation(url2));
+
+  // Start an interrupted request (`interrupted_url`), then supersede it without
+  // redirecting by navigating to and committing `url3`.
+  GURL interrupted_url("http://interrupted.test/");
+  GURL url3("http://chromium3.test/");
+  EXPECT_TRUE(ShouldAllowRequestUrl(interrupted_url).ShouldAllowNavigation());
+  EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
+  client_.run_sync_callbacks();
+  client_.run_async_callbacks();
+  EXPECT_TRUE(ShouldAllowResponseUrl(url3).ShouldAllowNavigation());
+
+  web::FakeNavigationContext url3_commit_context;
+  url3_commit_context.SetUrl(url3);
+  url3_commit_context.SetHasCommitted(true);
+  web_state_.OnNavigationFinished(&url3_commit_context);
+
+  EXPECT_FALSE(tab_helper->IsUrlInCurrentOrPendingNavigation(url1));
+  EXPECT_FALSE(tab_helper->IsUrlInCurrentOrPendingNavigation(url2));
+  EXPECT_FALSE(tab_helper->IsUrlInCurrentOrPendingNavigation(interrupted_url));
+  EXPECT_TRUE(tab_helper->IsUrlInCurrentOrPendingNavigation(url3));
+}
+
+// Tests that a redirect chain cancelled by a Safe Browsing blocking decision is
+// excluded from both `HasPendingMainFrameChecks()` and
+// `IsUrlInCurrentOrPendingNavigation()`.
+TEST_P(SafeBrowsingTabHelperTest,
+       CancelledNavigationExcludedFromPendingChecksAndCurrentNavigation) {
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+
+  GURL safe_redirect_source("http://chromium1.test/redirect.html");
+  GURL unsafe_target("http://" + FakeSafeBrowsingService::kUnsafeHost);
+
+  EXPECT_TRUE(
+      ShouldAllowRequestUrl(safe_redirect_source).ShouldAllowNavigation());
+  EXPECT_TRUE(ShouldAllowRequestUrl(unsafe_target).ShouldAllowNavigation());
+  SimulateMainFrameRedirect();
+
+  // Complete sync checks so `unsafe_target` receives a cancel decision while
+  // async callbacks are still unrun.
+  client_.run_sync_callbacks();
+
+  EXPECT_FALSE(tab_helper->HasPendingMainFrameChecks());
+  EXPECT_FALSE(
+      tab_helper->IsUrlInCurrentOrPendingNavigation(safe_redirect_source));
+  EXPECT_FALSE(tab_helper->IsUrlInCurrentOrPendingNavigation(unsafe_target));
+}
+
+// Tests that when an unsafe redirect source redirects to a safe target and the
+// blocking sync decision arrives before `ShouldAllowResponse()` cancels the
+// navigation, `safe_target` is cleared rather than left pending or promoted on
+// error-page commit.
+TEST_P(SafeBrowsingTabHelperTest,
+       UnsafeRedirectSourceToSafeTargetCancelledBeforeResponse) {
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+
+  GURL unsafe_source("http://" + FakeSafeBrowsingService::kUnsafeHost);
+  GURL safe_target("http://chromium.test/safe_target.html");
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(unsafe_source).ShouldAllowNavigation());
+  EXPECT_TRUE(ShouldAllowRequestUrl(safe_target).ShouldAllowNavigation());
+  SimulateMainFrameRedirect();
+  client_.run_sync_callbacks();
+
+  EXPECT_TRUE(ShouldAllowResponseUrl(safe_target).ShouldCancelNavigation());
+  EXPECT_FALSE(tab_helper->HasPendingMainFrameChecks());
+  EXPECT_FALSE(tab_helper->IsUrlInCurrentOrPendingNavigation(unsafe_source));
+  EXPECT_FALSE(tab_helper->IsUrlInCurrentOrPendingNavigation(safe_target));
+
+  // Committing the Safe Browsing error page must not promote `safe_target` into
+  // the committed redirect chain.
+  web::FakeNavigationContext error_commit_context;
+  error_commit_context.SetUrl(unsafe_source);
+  error_commit_context.SetHasCommitted(true);
+  web_state_.OnNavigationFinished(&error_commit_context);
+  EXPECT_TRUE(tab_helper->GetRedirectChain().empty());
+  EXPECT_FALSE(tab_helper->IsUrlInCurrentOrPendingNavigation(safe_target));
+}
+
+// Tests that when an unsafe redirect source redirects to a safe target and
+// `ShouldAllowResponse()` is cancelled asynchronously once the blocking sync
+// decision arrives, `safe_target` is cleared rather than left pending or
+// promoted on error-page commit.
+TEST_P(SafeBrowsingTabHelperTest,
+       UnsafeRedirectSourceToSafeTargetCancelledAfterResponse) {
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+
+  GURL unsafe_source("http://" + FakeSafeBrowsingService::kUnsafeHost);
+  GURL safe_target("http://chromium.test/safe_target.html");
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(unsafe_source).ShouldAllowNavigation());
+  EXPECT_TRUE(ShouldAllowRequestUrl(safe_target).ShouldAllowNavigation());
+  SimulateMainFrameRedirect();
+
+  NSURLResponse* response =
+      [[NSURLResponse alloc] initWithURL:net::NSURLWithGURL(safe_target)
+                                MIMEType:@"text/html"
+                   expectedContentLength:0
+                        textEncodingName:nil];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      decision_future;
+  web_state_.ShouldAllowResponse(
+      response,
+      web::WebStatePolicyDecider::ResponseInfo(/*for_main_frame=*/true),
+      decision_future.GetCallback());
+  EXPECT_FALSE(decision_future.IsReady());
+
+  client_.run_sync_callbacks();
+  EXPECT_TRUE(decision_future.Get().ShouldCancelNavigation());
+  EXPECT_FALSE(tab_helper->HasPendingMainFrameChecks());
+  EXPECT_FALSE(tab_helper->IsUrlInCurrentOrPendingNavigation(unsafe_source));
+  EXPECT_FALSE(tab_helper->IsUrlInCurrentOrPendingNavigation(safe_target));
+
+  // Committing the Safe Browsing error page must not promote `safe_target` into
+  // the committed redirect chain.
+  web::FakeNavigationContext error_commit_context;
+  error_commit_context.SetUrl(unsafe_source);
+  error_commit_context.SetHasCommitted(true);
+  web_state_.OnNavigationFinished(&error_commit_context);
+  EXPECT_TRUE(tab_helper->GetRedirectChain().empty());
+  EXPECT_FALSE(tab_helper->IsUrlInCurrentOrPendingNavigation(safe_target));
+}
+
+// Tests that `HasPendingMainFrameChecks()` clears properly when a redirect
+// source completes its sync and async checks while temporarily held in
+// `previous_main_frame_query_` (after `ShouldAllowRequest()` for the redirect
+// target, before `DidRedirectNavigation()`).
+TEST_P(SafeBrowsingTabHelperTest,
+       RedirectCheckCompletedBeforeDidRedirectNavigation) {
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+
+  GURL redirect_source("http://chromium1.test/redirect_source.html");
+  GURL redirect_target("http://chromium2.test/redirect_target.html");
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(redirect_source).ShouldAllowNavigation());
+  EXPECT_TRUE(ShouldAllowRequestUrl(redirect_target).ShouldAllowNavigation());
+
+  // Complete all currently queued callbacks before `DidRedirectNavigation()`
+  // moves `redirect_source` into `pending_main_frame_redirect_chain_`.
+  client_.run_sync_callbacks();
+  client_.run_async_callbacks();
+
+  SimulateMainFrameRedirect();
+  EXPECT_TRUE(ShouldAllowResponseUrl(redirect_target).ShouldAllowNavigation());
+
+  web::FakeNavigationContext commit_context;
+  commit_context.SetUrl(redirect_target);
+  commit_context.SetHasCommitted(true);
+  web_state_.OnNavigationFinished(&commit_context);
+
+  EXPECT_FALSE(tab_helper->HasPendingMainFrameChecks());
+  EXPECT_TRUE(tab_helper->IsUrlInCurrentOrPendingNavigation(redirect_source));
+  EXPECT_TRUE(tab_helper->IsUrlInCurrentOrPendingNavigation(redirect_target));
+}
+
+// Tests that receiving a response for an unchecked URL (such as `about:blank`)
+// after starting a checkable navigation clears the superseded pending query
+// before commit.
+TEST_P(SafeBrowsingTabHelperTest,
+       UncheckedResponseClearsSupersededPendingQuery) {
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+
+  GURL aborted_url("http://chromium.test/aborted.html");
+  GURL unchecked_url("about:blank");
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(aborted_url).ShouldAllowNavigation());
+  EXPECT_TRUE(tab_helper->HasPendingMainFrameChecks());
+  EXPECT_TRUE(tab_helper->IsUrlInCurrentOrPendingNavigation(aborted_url));
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(unchecked_url).ShouldAllowNavigation());
+  EXPECT_TRUE(ShouldAllowResponseUrl(unchecked_url).ShouldAllowNavigation());
+
+  EXPECT_FALSE(tab_helper->HasPendingMainFrameChecks());
+  EXPECT_FALSE(tab_helper->IsUrlInCurrentOrPendingNavigation(aborted_url));
+}
+
+// Tests that committing an unchecked URL (such as `about:blank` or
+// `chrome://newtab`) without a prior `ShouldAllowResponse()` call clears any
+// superseded pending query from `HasPendingMainFrameChecks()` and
+// `IsUrlInCurrentOrPendingNavigation()`.
+TEST_P(SafeBrowsingTabHelperTest,
+       UncheckedCommittedNavigationClearsSupersededPendingQuery) {
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+
+  GURL aborted_url("http://chromium.test/aborted.html");
+  GURL unchecked_url("about:blank");
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(aborted_url).ShouldAllowNavigation());
+  EXPECT_TRUE(tab_helper->HasPendingMainFrameChecks());
+  EXPECT_TRUE(tab_helper->IsUrlInCurrentOrPendingNavigation(aborted_url));
+
+  // Preempt `aborted_url` by navigating to and committing `about:blank`.
+  EXPECT_TRUE(ShouldAllowRequestUrl(unchecked_url).ShouldAllowNavigation());
+  web::FakeNavigationContext unchecked_commit_context;
+  unchecked_commit_context.SetUrl(unchecked_url);
+  unchecked_commit_context.SetHasCommitted(true);
+  web_state_.OnNavigationFinished(&unchecked_commit_context);
+
+  EXPECT_FALSE(tab_helper->HasPendingMainFrameChecks());
+  EXPECT_FALSE(tab_helper->IsUrlInCurrentOrPendingNavigation(aborted_url));
+}
+
+// Tests that when a sync-unsafe redirect source completes its check while held
+// in `previous_main_frame_query_` (before `DidRedirectNavigation()`), the
+// redirect target response is cancelled with an error and pending state is
+// cleared.
+TEST_P(SafeBrowsingTabHelperTest,
+       SyncUnsafeRedirectCheckCompletedBeforeDidRedirectNavigation) {
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+
+  GURL unsafe_source("http://" + FakeSafeBrowsingService::kUnsafeHost);
+  GURL safe_target("http://chromium.test/safe_target.html");
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(unsafe_source).ShouldAllowNavigation());
+  EXPECT_TRUE(ShouldAllowRequestUrl(safe_target).ShouldAllowNavigation());
+
+  client_.run_sync_callbacks();
+  ASSERT_TRUE(WaitForPendingUnsafeNavigationDecision(unsafe_source));
+  EXPECT_FALSE(client_.main_frame_cancellation_decided_called());
+
+  SimulateMainFrameRedirect();
+  EXPECT_TRUE(client_.main_frame_cancellation_decided_called());
+  EXPECT_FALSE(tab_helper->HasPendingMainFrameChecks());
+  EXPECT_FALSE(tab_helper->IsUrlInCurrentOrPendingNavigation(unsafe_source));
+  EXPECT_FALSE(tab_helper->IsUrlInCurrentOrPendingNavigation(safe_target));
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(safe_target);
+  EXPECT_TRUE(response_decision.ShouldCancelNavigation());
+  EXPECT_TRUE(response_decision.ShouldDisplayError());
+}
+
+// Tests that when an async-unsafe redirect source completes both its sync and
+// async checks while held in `previous_main_frame_query_` (before
+// `DidRedirectNavigation()`), the redirect target response is cancelled with an
+// error and `HasPendingMainFrameChecks()` does not stay wedged at `true`.
+TEST_P(SafeBrowsingTabHelperTest,
+       AsyncUnsafeRedirectCheckCompletedBeforeDidRedirectNavigation) {
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+
+  GURL async_unsafe_source("http://" +
+                           FakeSafeBrowsingService::kAsyncUnsafeHost);
+  GURL safe_target("http://chromium.test/safe_target.html");
+
+  EXPECT_TRUE(
+      ShouldAllowRequestUrl(async_unsafe_source).ShouldAllowNavigation());
+  EXPECT_TRUE(ShouldAllowRequestUrl(safe_target).ShouldAllowNavigation());
+
+  client_.run_sync_callbacks();
+  client_.run_async_callbacks();
+  ASSERT_TRUE(WaitForPendingUnsafeNavigationDecision(async_unsafe_source));
+  EXPECT_FALSE(client_.main_frame_cancellation_decided_called());
+
+  SimulateMainFrameRedirect();
+  EXPECT_TRUE(client_.main_frame_cancellation_decided_called());
+  EXPECT_FALSE(tab_helper->HasPendingMainFrameChecks());
+  EXPECT_FALSE(
+      tab_helper->IsUrlInCurrentOrPendingNavigation(async_unsafe_source));
+  EXPECT_FALSE(tab_helper->IsUrlInCurrentOrPendingNavigation(safe_target));
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(safe_target);
+  EXPECT_TRUE(response_decision.ShouldCancelNavigation());
+  EXPECT_TRUE(response_decision.ShouldDisplayError());
+}
+
+// Tests that `HasPendingMainFrameChecks()` and
+// `IsUrlInCurrentOrPendingNavigation()` remain active across a post-commit
+// error page reusing the committed `NavigationContext` until the in-flight
+// async check finishes.
+TEST_P(SafeBrowsingTabHelperTest,
+       HasPendingMainFrameChecksPreservedAcrossPostCommitErrorPage) {
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+
+  GURL url("http://chromium.test/page.html");
+  EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
+  client_.run_sync_callbacks();
+  EXPECT_TRUE(ShouldAllowResponseUrl(url).ShouldAllowNavigation());
+
+  web::FakeNavigationContext commit_context;
+  commit_context.SetUrl(url);
+  commit_context.SetHasCommitted(true);
+  web_state_.OnNavigationFinished(&commit_context);
+  EXPECT_TRUE(tab_helper->HasPendingMainFrameChecks());
+  EXPECT_TRUE(tab_helper->IsUrlInCurrentOrPendingNavigation(url));
+
+  // Simulate a post-commit error page reusing `commit_context`.
+  commit_context.SetError([NSError errorWithDomain:NSURLErrorDomain
+                                              code:NSURLErrorTimedOut
+                                          userInfo:nil]);
+  web_state_.OnNavigationFinished(&commit_context);
+  EXPECT_TRUE(tab_helper->HasPendingMainFrameChecks());
+  EXPECT_TRUE(tab_helper->IsUrlInCurrentOrPendingNavigation(url));
+
+  client_.run_async_callbacks();
+  EXPECT_FALSE(tab_helper->HasPendingMainFrameChecks());
+  EXPECT_TRUE(tab_helper->IsUrlInCurrentOrPendingNavigation(url));
 }
 
 INSTANTIATE_TEST_SUITE_P(

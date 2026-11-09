@@ -73,6 +73,8 @@ class SafeBrowsingQueryManager
     bool show_error_page = false;
     // Checks if sync check was completed.
     bool sync_check_complete = false;
+    // Whether an async check was started for the URL.
+    bool has_async_check = false;
     // Checks if async check was completed.
     bool async_check_complete = false;
     // The UnsafeResource created for the URL check, if any.
@@ -138,8 +140,9 @@ class SafeBrowsingQueryManager
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Starts the URL check for `query`.
-  void StartQuery(const Query& query);
+  // Starts the URL check for `query` and returns whether an async check was
+  // started alongside the sync check.
+  bool StartQuery(const Query& query);
 
   // Stores `resource` in the result for the query that triggered the URL check.
   // No-ops if there is no active query for `resource`'s URL.
