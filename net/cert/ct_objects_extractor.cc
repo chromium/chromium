@@ -5,8 +5,10 @@
 #include "net/cert/ct_objects_extractor.h"
 
 #include <string_view>
+#include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
@@ -35,27 +37,34 @@ bool SkipOptionalElement(CBS* cbs, unsigned tag) {
   return !CBS_peek_asn1_tag(cbs, tag) || CBS_get_asn1(cbs, &unused, tag);
 }
 
+// Returns the bytes in |outer| before and after |inner|, respectively. |inner|
+// must be a subset of |outer|.
+std::pair<base::span<const uint8_t>, base::span<const uint8_t>> SplitAround(
+    base::span<const uint8_t> outer,
+    base::span<const uint8_t> inner) {
+  CHECK_LE(outer.data(), inner.data());
+  // `split_at()` and `subspan()` CHECK that `inner` lies within `outer`.
+  auto [before, rest] =
+      outer.split_at(static_cast<size_t>(inner.data() - outer.data()));
+  return {before, rest.subspan(inner.size())};
+}
+
 // Copies all the bytes in |outer| which are before |inner| to |out|. |inner|
 // must be a subset of |outer|.
-bool CopyBefore(const CBS& outer, const CBS& inner, CBB* out) {
-  CHECK_LE(CBS_data(&outer), CBS_data(&inner));
-  CHECK_LE(UNSAFE_TODO(CBS_data(&inner) + CBS_len(&inner)),
-           UNSAFE_TODO(CBS_data(&outer) + CBS_len(&outer)));
-
-  return !!CBB_add_bytes(out, CBS_data(&outer),
-                         CBS_data(&inner) - CBS_data(&outer));
+bool CopyBefore(bssl::Span<const uint8_t> outer,
+                bssl::Span<const uint8_t> inner,
+                CBB* out) {
+  base::span<const uint8_t> before = SplitAround(outer, inner).first;
+  return !!CBB_add_bytes(out, before.data(), before.size());
 }
 
 // Copies all the bytes in |outer| which are after |inner| to |out|. |inner|
 // must be a subset of |outer|.
-bool CopyAfter(const CBS& outer, const CBS& inner, CBB* out) {
-  CHECK_LE(CBS_data(&outer), CBS_data(&inner));
-  CHECK_LE(UNSAFE_TODO(CBS_data(&inner) + CBS_len(&inner)),
-           UNSAFE_TODO(CBS_data(&outer) + CBS_len(&outer)));
-
-  return !!CBB_add_bytes(out, UNSAFE_TODO(CBS_data(&inner) + CBS_len(&inner)),
-                         UNSAFE_TODO(CBS_data(&outer) + CBS_len(&outer) -
-                                     CBS_data(&inner) - CBS_len(&inner)));
+bool CopyAfter(bssl::Span<const uint8_t> outer,
+               bssl::Span<const uint8_t> inner,
+               CBB* out) {
+  base::span<const uint8_t> after = SplitAround(outer, inner).second;
+  return !!CBB_add_bytes(out, after.data(), after.size());
 }
 
 // Skips |tbs_cert|, which must be a TBSCertificate body, to just before the
@@ -76,8 +85,7 @@ bool SkipTBSCertificateToExtensions(CBS* tbs_cert) {
 // contain the contents of a SEQUENCE of X.509 extension structures. If found,
 // returns true and sets |*out| to the full extension element.
 bool FindExtensionElement(const CBS& extensions,
-                          const uint8_t* oid,
-                          size_t oid_len,
+                          base::span<const uint8_t> oid,
                           CBS* out) {
   CBS extensions_copy = extensions;
   CBS result;
@@ -97,7 +105,7 @@ bool FindExtensionElement(const CBS& extensions,
       return false;
     }
 
-    if (CBS_mem_equal(&extension_oid, oid, oid_len)) {
+    if (CBS_mem_equal(&extension_oid, oid.data(), oid.size())) {
       if (found)
         return false;
       found = true;
@@ -115,11 +123,10 @@ bool FindExtensionElement(const CBS& extensions,
 // |x509_exts|. If found, returns true and sets |*out_sct_list| to the encoded
 // SCT list.
 bool ParseSCTListFromExtensions(const CBS& extensions,
-                                const uint8_t* oid,
-                                size_t oid_len,
+                                base::span<const uint8_t> oid,
                                 std::string* out_sct_list) {
   CBS extension_element, extension, extension_oid, value, sct_list;
-  if (!FindExtensionElement(extensions, oid, oid_len, &extension_element) ||
+  if (!FindExtensionElement(extensions, oid, &extension_element) ||
       !CBS_get_asn1(&extension_element, &extension, CBS_ASN1_SEQUENCE) ||
       !CBS_get_asn1(&extension, &extension_oid, CBS_ASN1_OBJECT) ||
       // Skip the optional critical element.
@@ -134,9 +141,8 @@ bool ParseSCTListFromExtensions(const CBS& extensions,
     return false;
   }
 
-  DCHECK(CBS_mem_equal(&extension_oid, oid, oid_len));
-  *out_sct_list = std::string(
-      reinterpret_cast<const char*>(CBS_data(&sct_list)), CBS_len(&sct_list));
+  DCHECK(CBS_mem_equal(&extension_oid, oid.data(), oid.size()));
+  *out_sct_list = std::string(bssl::BytesAsStringView(sct_list));
   return true;
 }
 
@@ -158,8 +164,7 @@ bool ExtractEmbeddedSCTList(const CRYPTO_BUFFER* cert, std::string* sct_list) {
     return false;
   }
 
-  return ParseSCTListFromExtensions(extensions, kEmbeddedSCTOid,
-                                    sizeof(kEmbeddedSCTOid), sct_list);
+  return ParseSCTListFromExtensions(extensions, kEmbeddedSCTOid, sct_list);
 }
 
 bool GetPrecertSignedEntry(const CRYPTO_BUFFER* leaf,
@@ -202,8 +207,7 @@ bool GetPrecertSignedEntry(const CRYPTO_BUFFER* leaf,
   if (!CBS_get_asn1(&tbs_cert, &extensions_wrap, kExtensionsTag) ||
       !CBS_get_asn1(&extensions_wrap, &extensions, CBS_ASN1_SEQUENCE) ||
       CBS_len(&extensions_wrap) != 0 || CBS_len(&tbs_cert) != 0 ||
-      !FindExtensionElement(extensions, kEmbeddedSCTOid,
-                            sizeof(kEmbeddedSCTOid), &sct_extension)) {
+      !FindExtensionElement(extensions, kEmbeddedSCTOid, &sct_extension)) {
     return false;
   }
 
