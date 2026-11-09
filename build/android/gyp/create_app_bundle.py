@@ -151,6 +151,11 @@ def _ParseArgs(args):
         '--compress-dex', action='store_true', help='Compress .dex files'
     )
     parser.add_argument(
+        '--uncompressed',
+        action='store_true',
+        help='Store entries uncompressed in the output .aab.',
+    )
+    parser.add_argument(
         '--split-dimensions', help="GN-list of split dimensions to support."
     )
     parser.add_argument(
@@ -701,6 +706,8 @@ def main(args):
             '--output=' + tmp_bundle,
             '--config=' + tmp_bundle_config,
         ]
+        if options.uncompressed:
+            cmd_args += ['--uncompressed=true']
 
         if options.rotation_config:
             cmd_args += [

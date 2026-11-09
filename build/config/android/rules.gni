@@ -4937,6 +4937,12 @@ if (!is_robolectric && enable_java_templates) {
         args += [ "--compress-dex" ]
       }
 
+      # Official builds archive the .aab, so keep it compressed for size
+      # savings.
+      if (!is_official_build) {
+        args += [ "--uncompressed" ]
+      }
+
       if (defined(invoker.rotation_config)) {
         args += [
           "--rotation-config",
