@@ -10,6 +10,7 @@ import static org.chromium.components.signin.AccountCapabilitiesConstants.IS_SUB
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.admin.DevicePolicyManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -58,6 +59,40 @@ import java.util.concurrent.atomic.AtomicReference;
 /** AccountManagerFacade wraps our access of AccountManager in Android. */
 @NullMarked
 public class AccountManagerFacadeImpl implements AccountManagerFacade {
+    /**
+     * Whether Android returned an add-account intent, and if not, which known blocker was active.
+     * Recorded in Signin.Android.CreateAddAccountIntentResult. The blocker is inferred from the
+     * device state when Android returns no intent, so it shows which known blocker was active, not
+     * what Android reported as the cause.
+     *
+     * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused.
+     */
+    // LINT.IfChange(CreateAddAccountIntentResult)
+    @VisibleForTesting
+    @IntDef({
+        CreateAddAccountIntentResult.NO_INTENT_OTHER,
+        CreateAddAccountIntentResult.INTENT_CREATED,
+        CreateAddAccountIntentResult.NO_INTENT_RESTRICTED,
+        CreateAddAccountIntentResult.NO_INTENT_MANAGEMENT_DISABLED,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface CreateAddAccountIntentResult {
+        // Android returned no intent, and none of the known blockers below is active.
+        int NO_INTENT_OTHER = 0;
+        // Android returned an add-account intent.
+        int INTENT_CREATED = 1;
+        // Android returned no intent, and the user that Chrome runs as has the
+        // DISALLOW_MODIFY_ACCOUNTS restriction.
+        int NO_INTENT_RESTRICTED = 2;
+        // Android returned no intent, and a device or profile owner disabled account management
+        // for Google accounts with DevicePolicyManager#setAccountManagementDisabled.
+        int NO_INTENT_MANAGEMENT_DISABLED = 3;
+        int NUM_ENTRIES = 4;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninAndroidCreateAddAccountIntentResult)
+
     /**
      * Whether adding accounts is blocked by the DISALLOW_MODIFY_ACCOUNTS user restriction, and
      * whether the device has any accounts. Recorded in Signin.Android.AddAccountRestrictionState.
@@ -538,7 +573,12 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     public void createAddAccountIntent(
             @Nullable String prefilledEmail, Callback<@Nullable Intent> callback) {
         RecordUserAction.record("Signin_AddAccountToDevice");
-        mDelegate.createAddAccountIntent(prefilledEmail, callback);
+        mDelegate.createAddAccountIntent(
+                prefilledEmail,
+                intent -> {
+                    recordCreateAddAccountIntentResult(intent != null);
+                    callback.onResult(intent);
+                });
     }
 
     @Override
@@ -888,12 +928,52 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                 AddAccountRestrictionState.NUM_ENTRIES);
     }
 
+    /**
+     * Records Signin.Android.CreateAddAccountIntentResult. If Android returned no intent, the
+     * DISALLOW_MODIFY_ACCOUNTS restriction is checked first, so NO_INTENT_RESTRICTED is recorded
+     * even if Google account management is also disabled.
+     *
+     * @param intentCreated Whether Android returned an add-account intent.
+     */
+    private static void recordCreateAddAccountIntentResult(boolean intentCreated) {
+        final @CreateAddAccountIntentResult int result;
+        if (intentCreated) {
+            result = CreateAddAccountIntentResult.INTENT_CREATED;
+        } else if (!isAddingAccountsAllowed()) {
+            result = CreateAddAccountIntentResult.NO_INTENT_RESTRICTED;
+        } else if (isGoogleAccountManagementDisabled()) {
+            result = CreateAddAccountIntentResult.NO_INTENT_MANAGEMENT_DISABLED;
+        } else {
+            result = CreateAddAccountIntentResult.NO_INTENT_OTHER;
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                "Signin.Android.CreateAddAccountIntentResult",
+                result,
+                CreateAddAccountIntentResult.NUM_ENTRIES);
+    }
+
     /** Returns whether the current Android user profile allows adding accounts. */
     private static boolean isAddingAccountsAllowed() {
         final @Nullable UserManager userManager =
                 ContextUtils.getApplicationContext().getSystemService(UserManager.class);
         return userManager == null
                 || !userManager.hasUserRestriction(UserManager.DISALLOW_MODIFY_ACCOUNTS);
+    }
+
+    /**
+     * Returns whether a device or profile owner disabled account management for Google accounts.
+     */
+    private static boolean isGoogleAccountManagementDisabled() {
+        // Null on devices without FEATURE_DEVICE_ADMIN.
+        final @Nullable DevicePolicyManager devicePolicyManager =
+                ContextUtils.getApplicationContext().getSystemService(DevicePolicyManager.class);
+        if (devicePolicyManager == null) {
+            return false;
+        }
+        final String @Nullable [] disabledAccountTypes =
+                devicePolicyManager.getAccountTypesWithManagementDisabled();
+        return disabledAccountTypes != null
+                && Arrays.asList(disabledAccountTypes).contains(AccountUtils.GOOGLE_ACCOUNT_TYPE);
     }
 
     private class GetAccountAsyncTask extends AsyncTask<@Nullable List<GaiaId>> {

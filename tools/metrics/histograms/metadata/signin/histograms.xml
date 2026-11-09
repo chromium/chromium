@@ -1148,6 +1148,24 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Android.CreateAddAccountIntentResult"
+    enum="SigninAndroidCreateAddAccountIntentResult" expires_after="2027-06-27">
+  <owner>mziel@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether Android returned an intent to add an account to the device,
+    and if not, which known blocker was active. Recorded each time
+    AccountManagerFacade.createAddAccountIntent() gets a result from Android, so
+    a user who tries several times is counted each time.
+
+    If Android returns no intent, the reason is inferred from the device state
+    at that time - it shows which known blocker was active, not what Android
+    reported as the cause. If both the DISALLOW_MODIFY_ACCOUNTS user restriction
+    and a device policy that disables Google account management are active, the
+    restriction is recorded.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Android.FRESigninEvents" enum="FRESigninEvents"
     expires_after="2027-04-11">
   <owner>mthiesse@chromium.org</owner>

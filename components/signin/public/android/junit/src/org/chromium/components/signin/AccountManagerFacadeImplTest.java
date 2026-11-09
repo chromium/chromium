@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -23,6 +25,8 @@ import static org.robolectric.Shadows.shadowOf;
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -59,6 +63,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.AccountManagerFacadeImpl.AddAccountRestrictionState;
+import org.chromium.components.signin.AccountManagerFacadeImpl.CreateAddAccountIntentResult;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -88,6 +93,8 @@ public class AccountManagerFacadeImplTest {
             "Signin.Android.SystemAccountManagerAccessTokenLatency.Failure";
     private static final String ADD_ACCOUNT_RESTRICTION_STATE_HISTOGRAM =
             "Signin.Android.AddAccountRestrictionState";
+    private static final String CREATE_ADD_ACCOUNT_INTENT_RESULT_HISTOGRAM =
+            "Signin.Android.CreateAddAccountIntentResult";
 
     private static final AccountInfo TEST_ACCOUNT =
             new AccountInfo.Builder("test@gmail.com", new GaiaId("testGaiaId")).build();
@@ -116,6 +123,8 @@ public class AccountManagerFacadeImplTest {
     @Mock private ChildAccountStatusListener mChildAccountStatusListenerMock;
 
     @Mock private Callback<Boolean> mMockCallback;
+
+    @Mock private Callback<Intent> mIntentCallbackMock;
 
     @Mock private AccountsChangeObserver mObserverMock;
 
@@ -256,6 +265,88 @@ public class AccountManagerFacadeImplTest {
         mDelegate.callOnAccountsChanged();
         RobolectricUtil.runAllBackgroundAndUi();
 
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testCreateAddAccountIntentResult_noIntentOther() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        CREATE_ADD_ACCOUNT_INTENT_RESULT_HISTOGRAM,
+                        CreateAddAccountIntentResult.NO_INTENT_OTHER);
+
+        mFacade.createAddAccountIntent(/* prefilledEmail= */ null, mIntentCallbackMock);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mIntentCallbackMock).onResult(isNull());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testCreateAddAccountIntentResult_noIntentRestricted() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        CREATE_ADD_ACCOUNT_INTENT_RESULT_HISTOGRAM,
+                        CreateAddAccountIntentResult.NO_INTENT_RESTRICTED);
+        setModifyAccountsRestriction();
+
+        mFacade.createAddAccountIntent(/* prefilledEmail= */ null, mIntentCallbackMock);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mIntentCallbackMock).onResult(isNull());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testCreateAddAccountIntentResult_noIntentManagementDisabled() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        CREATE_ADD_ACCOUNT_INTENT_RESULT_HISTOGRAM,
+                        CreateAddAccountIntentResult.NO_INTENT_MANAGEMENT_DISABLED);
+        setGoogleAccountManagementDisabled();
+
+        mFacade.createAddAccountIntent(/* prefilledEmail= */ null, mIntentCallbackMock);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mIntentCallbackMock).onResult(isNull());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testCreateAddAccountIntentResult_restrictionWinsOverManagementDisabled() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        CREATE_ADD_ACCOUNT_INTENT_RESULT_HISTOGRAM,
+                        CreateAddAccountIntentResult.NO_INTENT_RESTRICTED);
+        setModifyAccountsRestriction();
+        setGoogleAccountManagementDisabled();
+
+        mFacade.createAddAccountIntent(/* prefilledEmail= */ null, mIntentCallbackMock);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mIntentCallbackMock).onResult(isNull());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testCreateAddAccountIntentResult_intentCreated() {
+        // The stub returns the intent synchronously, so there is no task to run.
+        doAnswer(
+                        invocation -> {
+                            Callback<Intent> callback = invocation.getArgument(1);
+                            callback.onResult(new Intent());
+                            return null;
+                        })
+                .when(mDelegate)
+                .createAddAccountIntent(any(), any());
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        CREATE_ADD_ACCOUNT_INTENT_RESULT_HISTOGRAM,
+                        CreateAddAccountIntentResult.INTENT_CREATED);
+
+        mFacade.createAddAccountIntent(/* prefilledEmail= */ null, mIntentCallbackMock);
+
+        verify(mIntentCallbackMock).onResult(notNull());
         histogramWatcher.assertExpected();
     }
 
@@ -1190,6 +1281,16 @@ public class AccountManagerFacadeImplTest {
     private void setModifyAccountsRestriction() {
         mShadowUserManager.setUserRestriction(
                 Process.myUserHandle(), UserManager.DISALLOW_MODIFY_ACCOUNTS, true);
+    }
+
+    private void setGoogleAccountManagementDisabled() {
+        final DevicePolicyManager devicePolicyManager =
+                (DevicePolicyManager) mContext.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        final ComponentName admin = new ComponentName(mContext, "TestDeviceAdminReceiver");
+        // Only a device or profile owner may disable account management.
+        shadowOf(devicePolicyManager).setProfileOwner(admin);
+        devicePolicyManager.setAccountManagementDisabled(
+                admin, AccountUtils.GOOGLE_ACCOUNT_TYPE, true);
     }
 
     private CoreAccountInfo addTestAccount(String accountEmail) {

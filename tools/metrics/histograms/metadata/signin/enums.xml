@@ -1443,6 +1443,18 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Returned and sign-in activity was not destroyed"/>
 </enum>
 
+<!-- LINT.IfChange(SigninAndroidCreateAddAccountIntentResult) -->
+
+<enum name="SigninAndroidCreateAddAccountIntentResult">
+  <int value="0" label="No intent, none of the known blockers active"/>
+  <int value="1" label="Intent created"/>
+  <int value="2" label="No intent, DISALLOW_MODIFY_ACCOUNTS restriction"/>
+  <int value="3"
+      label="No intent, Google account management disabled by device policy"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/public/android/java/src/org/chromium/components/signin/AccountManagerFacadeImpl.java:CreateAddAccountIntentResult) -->
+
 <!-- LINT.IfChange(SigninCrossDeviceInitialState) -->
 
 <enum name="SigninCrossDeviceInitialState">
