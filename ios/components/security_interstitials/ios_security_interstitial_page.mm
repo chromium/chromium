@@ -23,7 +23,10 @@ IOSSecurityInterstitialPage::IOSSecurityInterstitialPage(
     web::WebState* web_state,
     const GURL& request_url,
     IOSBlockingPageControllerClient* client)
-    : web_state_(web_state), request_url_(request_url), client_(client) {}
+    : web_state_(web_state),
+      request_url_(request_url),
+      application_locale_(client ? client->GetApplicationLocale()
+                                 : std::string()) {}
 
 IOSSecurityInterstitialPage::~IOSSecurityInterstitialPage() {}
 
@@ -34,8 +37,7 @@ std::string IOSSecurityInterstitialPage::GetHtmlContents() const {
   // for safety.
   load_time_data.Set("url_to_reload", request_url_.spec());
   PopulateInterstitialStrings(load_time_data);
-  webui::SetLoadTimeDataDefaults(client_->GetApplicationLocale(),
-                                 &load_time_data);
+  webui::SetLoadTimeDataDefaults(application_locale_, &load_time_data);
   AdjustFontSize(load_time_data, ui_util::SystemSuggestedFontSizeMultiplier());
   std::string html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(

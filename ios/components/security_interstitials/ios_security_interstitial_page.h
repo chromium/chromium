@@ -77,10 +77,10 @@ class IOSSecurityInterstitialPage {
   raw_ptr<web::WebState> web_state_;
   const GURL request_url_;
 
-  // Used to interact with the embedder. Unowned pointer; must outlive `this`
-  // instance.
-  const raw_ptr<IOSBlockingPageControllerClient, DanglingUntriaged> client_ =
-      nullptr;
+  // The application locale, copied from the controller client at construction
+  // time. The client itself is typically owned by a subclass and is destroyed
+  // before this base class, so it is not retained here.
+  const std::string application_locale_;
 };
 
 }  // namespace security_interstitials
