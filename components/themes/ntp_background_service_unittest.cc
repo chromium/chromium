@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
+#include "base/i18n/tag_converters.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -108,7 +109,8 @@ class NtpBackgroundServiceTest : public testing::Test {
 };
 
 TEST_F(NtpBackgroundServiceTest, CollectionRequest) {
-  application_locale_storage_->Set("foo");
+  application_locale_storage_->SetTag(
+      base::i18n::GetLanguageTagFromString("foo").value());
 
   service()->FetchCollectionInfo();
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -137,7 +139,8 @@ TEST_F(NtpBackgroundServiceTest, CollectionRequest) {
 }
 
 TEST_F(NtpBackgroundServiceTest, CollectionRequestWithFilteringLabel) {
-  application_locale_storage_->Set("foo");
+  application_locale_storage_->SetTag(
+      base::i18n::GetLanguageTagFromString("foo").value());
 
   service()->FetchCollectionInfo("test");
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -170,7 +173,8 @@ TEST_F(NtpBackgroundServiceTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       ntp_features::kNtpBackgroundImageErrorDetection);
-  application_locale_storage_->Set("foo");
+  application_locale_storage_->SetTag(
+      base::i18n::GetLanguageTagFromString("foo").value());
 
   service()->FetchCollectionInfo();
   EXPECT_TRUE(base::test::RunUntil([&]() {

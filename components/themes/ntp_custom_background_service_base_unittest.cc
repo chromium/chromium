@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/i18n/language_tag.h"
 #include "base/test/task_environment.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -24,7 +25,7 @@
 namespace {
 const char kTestDictPref[] = "dict_pref";
 const char kTestLocalPref[] = "local_pref";
-const char kTestLocale[] = "en-US";
+constexpr char kTestLocale[] = "en-US";
 const char kTestBackgroundUrlKey[] = "background_url";
 const char kTestBackgroundUrl[] = "https://example.com/image.jpg";
 const char kValidBackgroundUrl[] = "https://www.foo.com/";
@@ -69,7 +70,8 @@ class NtpCustomBackgroundServiceBaseTest : public testing::Test {
     pref_service_->registry()->RegisterBooleanPref(kTestLocalPref, false);
 
     application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();
-    application_locale_storage_->Set(kTestLocale);
+    application_locale_storage_->SetTag(
+        base::i18n::GetKnownLanguageTag(kTestLocale));
 
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

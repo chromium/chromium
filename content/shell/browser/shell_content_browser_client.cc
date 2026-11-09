@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -131,6 +132,8 @@
 #endif
 
 #if BUILDFLAG(IS_IOS)
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "components/application_locale_storage/application_locale_storage.h"  // nogncheck
 #include "components/permissions/bluetooth_delegate_impl.h"
 #include "content/shell/browser/bluetooth/shell_bluetooth_delegate_impl_client.h"
@@ -832,7 +835,11 @@ ShellContentBrowserClient::GetNetworkContextsParentDirectory() {
 base::i18n::LanguageTag ShellContentBrowserClient::GetApplicationLocale() {
   if (!application_locale_storage_) {
     application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();
-    application_locale_storage_->Set(l10n_util::GetLocaleOverride());
+    if (std::optional<base::i18n::LanguageTag> locale_override =
+            base::i18n::GetLanguageTagFromString(
+                l10n_util::GetLocaleOverride())) {
+      application_locale_storage_->SetTag(*std::move(locale_override));
+    }
   }
 
   return application_locale_storage_->GetTag();

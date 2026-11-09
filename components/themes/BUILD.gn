@@ -68,6 +68,7 @@ source_set("unit_tests") {
   deps = [
     ":themes",
     "//base",
+    "//base/i18n:language_tag",
     "//base/test:test_support",
     "//components/application_locale_storage",
     "//components/policy/core/browser",
