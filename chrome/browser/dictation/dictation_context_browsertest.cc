@@ -106,14 +106,24 @@ class DictationContextBrowserTest : public DictationBrowserTestBase {
   DictationContextBrowserTest() = default;
   ~DictationContextBrowserTest() override = default;
 
+ protected:
+  // Navigates to `path` on the test server. The page is marked eligible for
+  // page context unless `add_eligible_hint` is false.
+  void NavigateToUrl(std::string_view path, bool add_eligible_hint = true) {
+    const GURL url = embedded_test_server()->GetURL(path);
+    if (add_eligible_hint) {
+      AddOptimizationGuideEligibleHint(url);
+    }
+    ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, APCCaptured) {
   // This test page has a bit of text content.
-  const GURL url = embedded_test_server()->GetURL("/simple.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  NavigateToUrl("/simple.html");
 
   StartSession();
 
@@ -145,9 +155,7 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, APCCaptured) {
 }
 
 IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, SelectedTextCaptured) {
-  const GURL url =
-      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  NavigateToUrl("/textinput/simple_textarea.html");
 
   const std::string script = R"JS(
     var textarea = document.getElementById('text_id');
@@ -177,8 +185,7 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, SelectedTextCaptured) {
 }
 
 IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, InnerTextCaptured) {
-  const GURL url = embedded_test_server()->GetURL("/simple.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  NavigateToUrl("/simple.html");
 
   StartSession();
 
@@ -214,9 +221,7 @@ class DictationContextAsyncBrowserTest : public DictationContextBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DictationContextAsyncBrowserTest, AsyncContextCaptured) {
-  const GURL url =
-      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  NavigateToUrl("/textinput/simple_textarea.html");
 
   const std::string script = R"JS(
     var textarea = document.getElementById('text_id');
@@ -260,8 +265,7 @@ IN_PROC_BROWSER_TEST_F(DictationContextAsyncBrowserTest, AsyncContextCaptured) {
 IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest,
                        SelectedTextCapturedFromIframe) {
   // Load the page with the iframe.
-  const GURL url = embedded_test_server()->GetURL("/actor/simple_iframe.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  NavigateToUrl("/actor/simple_iframe.html");
 
   // Navigate the iframe to the simple textarea page.
   const GURL iframe_url =
@@ -305,6 +309,9 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, IneligiblePageElided) {
   ScopedPageContextEligibilityForTesting scoped_eligibility(&g_ineligible_api);
 
   const GURL url = embedded_test_server()->GetURL("/simple.html");
+  // This test verifies CSE/IRM ineligibility mocked in `scoped_eligibility`
+  // above.
+  AddOptimizationGuideEligibleHint(url);
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
@@ -323,6 +330,56 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, IneligiblePageElided) {
   ASSERT_TRUE(context.has_value());
 
   // Verify that the context was elided because the page is not eligible.
+  EXPECT_FALSE(context->annotated_page_content.has_value());
+  EXPECT_FALSE(context->inner_text.has_value());
+  EXPECT_FALSE(context->editable_content.has_value());
+}
+
+// Pages whose Optimization Guide hint marks them ineligible must not have any
+// page context extracted.
+IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest,
+                       NoPageContextWithIneligibleHint) {
+  AddOptimizationGuideIneligibleHint(
+      embedded_test_server()->GetURL("/simple.html"));
+  NavigateToUrl("/simple.html", /*add_eligible_hint=*/false);
+
+  StartSession();
+
+  ASSERT_NE(session_controller(), nullptr);
+
+  ListenerStreamProvider* provider = static_cast<ListenerStreamProvider*>(
+      session_controller()->attached_stream_provider());
+  ASSERT_NE(provider, nullptr);
+
+  ExtensionWaitForStreamStart(profile(), provider->stream_id_for_testing());
+  std::optional<DictationContext> context = ExtensionGetStartStreamDetails(
+      profile(), provider->stream_id_for_testing());
+  ASSERT_TRUE(context.has_value());
+
+  EXPECT_FALSE(context->annotated_page_content.has_value());
+  EXPECT_FALSE(context->inner_text.has_value());
+  EXPECT_FALSE(context->editable_content.has_value());
+}
+
+// Pages with no cached Optimization Guide hint (where `CanApplyOptimization`
+// returns `kUnknown`) must not have any page context extracted.
+IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest,
+                       NoPageContextWithoutEligibleHint) {
+  NavigateToUrl("/simple.html", /*add_eligible_hint=*/false);
+
+  StartSession();
+
+  ASSERT_NE(session_controller(), nullptr);
+
+  ListenerStreamProvider* provider = static_cast<ListenerStreamProvider*>(
+      session_controller()->attached_stream_provider());
+  ASSERT_NE(provider, nullptr);
+
+  ExtensionWaitForStreamStart(profile(), provider->stream_id_for_testing());
+  std::optional<DictationContext> context = ExtensionGetStartStreamDetails(
+      profile(), provider->stream_id_for_testing());
+  ASSERT_TRUE(context.has_value());
+
   EXPECT_FALSE(context->annotated_page_content.has_value());
   EXPECT_FALSE(context->inner_text.has_value());
   EXPECT_FALSE(context->editable_content.has_value());
@@ -354,10 +411,14 @@ class DictationEditContextBrowserTest : public DictationBrowserTestBase {
 
   // Loads a page on `host` and adds a focused `#editor` whose EditContext only
   // holds a "_" placeholder until it sees IME input, then fills in "Hello
-  // world" and selects "world".
-  void NavigateToEditor(std::string_view host) {
-    ASSERT_TRUE(content::NavigateToURL(
-        web_contents(), https_server_.GetURL(host, "/simple.html")));
+  // world" and selects "world". The page is marked eligible for page context
+  // unless `add_eligible_hint` is false.
+  void NavigateToEditor(std::string_view host, bool add_eligible_hint = true) {
+    const GURL url = https_server_.GetURL(host, "/simple.html");
+    if (add_eligible_hint) {
+      AddOptimizationGuideEligibleHint(url);
+    }
+    ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
     ASSERT_TRUE(content::ExecJs(web_contents(), R"JS(
       const editor = document.createElement('div');
       editor.id = 'editor';
@@ -460,6 +521,21 @@ IN_PROC_BROWSER_TEST_F(DictationEditContextBrowserTest,
   EXPECT_EQ(*context->editable_content, "Real");
   ASSERT_TRUE(context->inner_text.has_value());
   EXPECT_THAT(*context->inner_text, testing::HasSubstr("Real text"));
+}
+
+// Pages marked ineligible by Optimization Guide must not receive synthetic IME
+// input, even on hosts listed for EditContext population.
+IN_PROC_BROWSER_TEST_F(DictationEditContextBrowserTest,
+                       EditContextNotPopulatedWithIneligibleHint) {
+  AddOptimizationGuideIneligibleHint(
+      https_server_.GetURL(kListedHost, "/simple.html"));
+  NavigateToEditor(kListedHost, /*add_eligible_hint=*/false);
+
+  std::optional<DictationContext> context = StartDictationInEditor();
+  ASSERT_TRUE(context.has_value());
+
+  EXPECT_EQ(GetImeEvents(), "");
+  EXPECT_EQ(content::EvalJs(web_contents(), "ec.text"), "_");
 }
 
 }  // namespace dictation

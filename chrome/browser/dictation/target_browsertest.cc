@@ -126,6 +126,7 @@ IN_PROC_BROWSER_TEST_F(DictationTargetBrowserTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textinput.html");
+  AddOptimizationGuideEligibleHint(url);
   const DeepQuery kInput{"#text_id"};
 
   // clang-format off

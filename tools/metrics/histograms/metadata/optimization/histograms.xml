@@ -471,6 +471,9 @@ chromium-metrics-reviews@google.com.
                Applies to only credit cards that are supported by Curinos
                sourced benefits on Chrome."/>
   <variant name="DeferAllScript" summary="Defers execution of script"/>
+  <variant name="DictationEligible"
+      summary="Provides information about whether a page is eligible for
+               Dictation page context extraction."/>
   <variant name="DigitalCredentialsLowFriction"
       summary="This optimization provides information about whether a URL is
                a known low risk origin for which the digital credential

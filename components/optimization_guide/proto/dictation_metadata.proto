@@ -1,0 +1,19 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package optimization_guide.proto;
+
+// Metadata attached to the DICTATION_ELIGIBLE optimization.
+//
+// Keep in sync with chrome/breve/cacao/boq/proto/dictation.proto in google3.
+// Only the message name and field numbers need to match.
+message DictationMetadata {
+  // Whether the page passed the server's safety checks and is eligible for
+  // Dictation page context extraction.
+  optional bool eligible = 1;
+}

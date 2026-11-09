@@ -86,7 +86,9 @@ Core dictation logic
   messages to the appropriate stream provider object.
 * dictation_context_fetcher.h - Responsible for collecting any relevant context
   from the page being dictated into. Used by a stream provider to send page
-  context to the connector extension.
+  context to the connector extension. Context is only collected for pages that
+  pass the on-device page context eligibility check and have an Optimization
+  Guide `DICTATION_ELIGIBLE` hint whose metadata marks the page eligible.
 
 ### chrome/browser/extensions/api/dictation_private/
 

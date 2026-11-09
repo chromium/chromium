@@ -13,16 +13,23 @@
 #include "chrome/browser/dictation/session_controller.h"
 #include "chrome/browser/dictation/target.h"
 #include "chrome/browser/dictation/test_util.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/optimization_guide/core/hints/optimization_metadata.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/proto/dictation_metadata.pb.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/common/switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "url/gurl.h"
 
 namespace dictation {
 
@@ -127,6 +134,28 @@ void DictationBrowserTestBase::WaitForSessionState(SessionState target_state) {
     }
     return session_controller()->GetState() == target_state;
   }));
+}
+
+void DictationBrowserTestBase::AddOptimizationGuideEligibleHint(
+    const GURL& url) {
+  AddDictationHint(url, /*eligible=*/true);
+}
+
+void DictationBrowserTestBase::AddOptimizationGuideIneligibleHint(
+    const GURL& url) {
+  AddDictationHint(url, /*eligible=*/false);
+}
+
+void DictationBrowserTestBase::AddDictationHint(const GURL& url,
+                                                bool eligible) {
+  optimization_guide::proto::DictationMetadata dictation_metadata;
+  dictation_metadata.set_eligible(eligible);
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.set_any_metadata(
+      optimization_guide::AnyWrapProto(dictation_metadata));
+  OptimizationGuideKeyedServiceFactory::GetForProfile(profile())
+      ->AddHintForTesting(url, optimization_guide::proto::DICTATION_ELIGIBLE,
+                          metadata);
 }
 
 }  // namespace dictation

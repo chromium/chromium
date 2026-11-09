@@ -22,6 +22,8 @@
 #include "chrome/browser/dictation/session_ui_impl.h"
 #include "chrome/browser/dictation/target.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -31,6 +33,12 @@
 #include "chrome/common/pref_names.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decider.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/optimization_metadata.h"
+#include "components/optimization_guide/proto/dictation_metadata.pb.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/device_service.h"
@@ -41,6 +49,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_utils.h"
+#include "url/gurl.h"
 
 namespace dictation {
 
@@ -196,6 +205,8 @@ DictationKeyedService::SessionState::~SessionState() = default;
 
 DictationKeyedService::DictationKeyedService(Profile* profile)
     : profile_(profile),
+      optimization_guide_decider_(
+          OptimizationGuideKeyedServiceFactory::GetForProfile(profile)),
       connector_extension_(profile),
       onboarding_manager_(*this, *profile->GetPrefs()),
       log_buffer_(profile) {
@@ -207,11 +218,9 @@ DictationKeyedService::DictationKeyedService(Profile* profile)
                           base::Unretained(this)));
   // `kDictation` is implicitly enabled by virtue of DictationKeyedService being
   // created (`CHECK`ed above).
-  bool disabled_by_policy =
-      profile_->GetPrefs()->GetInteger(prefs::kVoiceTypingSettings) ==
-      kVoiceTypingSettingsDisabled;
-  RecordDictationIsEnabledOnProfileInit(!disabled_by_policy);
+  RecordDictationIsEnabledOnProfileInit(!IsDisabledByPolicy());
 
+  MaybeRegisterOptimizationTypes();
   UpdateHotkeyManager();
 }
 
@@ -471,18 +480,44 @@ void DictationKeyedService::ToggleHotkeyHandler() {
 
 bool DictationKeyedService::IsEnabledAndReady() const {
   CHECK(profile_);
-  bool disabled_by_policy =
-      profile_->GetPrefs()->GetInteger(prefs::kVoiceTypingSettings) ==
-      kVoiceTypingSettingsDisabled;
-
   // Until the connector extension is available consider the feature disabled.
-  return !connector_extension_.IsPending() && !disabled_by_policy;
+  return !connector_extension_.IsPending() && !IsDisabledByPolicy();
+}
+
+optimization_guide::PageContextEligibilityStatus
+DictationKeyedService::CheckOptimizationGuideHint(const GURL& url) const {
+  if (!optimization_guide_decider_) {
+    return optimization_guide::PageContextEligibilityStatus::kNotEligible;
+  }
+  // Uses the synchronous API, which only consults cached hints, because the
+  // asynchronous one may wait indefinitely and block the stream from starting.
+  optimization_guide::OptimizationMetadata metadata;
+  switch (optimization_guide_decider_->CanApplyOptimization(
+      url, optimization_guide::proto::DICTATION_ELIGIBLE, &metadata)) {
+    case optimization_guide::OptimizationGuideDecision::kUnknown:
+      return optimization_guide::PageContextEligibilityStatus::kUnknown;
+    case optimization_guide::OptimizationGuideDecision::kFalse:
+      return optimization_guide::PageContextEligibilityStatus::kNotEligible;
+    case optimization_guide::OptimizationGuideDecision::kTrue: {
+      // The server attaches DICTATION_ELIGIBLE to any page it has a safety
+      // verdict for, so the hint alone isn't enough: the verdict must say
+      // eligible.
+      const auto dictation_metadata =
+          metadata
+              .ParsedMetadata<optimization_guide::proto::DictationMetadata>();
+      return (dictation_metadata && dictation_metadata->eligible())
+                 ? optimization_guide::PageContextEligibilityStatus::kEligible
+                 : optimization_guide::PageContextEligibilityStatus::
+                       kNotEligible;
+    }
+  }
 }
 
 void DictationKeyedService::OnPrefChanged() {
   if (!IsEnabledAndReady()) {
     EndActiveSession();
   }
+  MaybeRegisterOptimizationTypes();
   UpdateHotkeyManager();
 }
 
@@ -502,6 +537,23 @@ void DictationKeyedService::UpdateHotkeyManager() {
         /*is_listening=*/session_ &&
             IsListeningState(session_->controller_.GetState()));
   }
+}
+
+bool DictationKeyedService::IsDisabledByPolicy() const {
+  return profile_->GetPrefs()->GetInteger(prefs::kVoiceTypingSettings) ==
+         kVoiceTypingSettingsDisabled;
+}
+
+void DictationKeyedService::MaybeRegisterOptimizationTypes() {
+  // Avoid fetching hints that can't be used while Dictation is disabled. Note
+  // that Optimization Guide does not support unregistering types if the policy
+  // later changes from enabled to disabled.
+  if (!optimization_guide_decider_ || IsDisabledByPolicy()) {
+    return;
+  }
+  // Registration is idempotent, so this may be called on every policy change.
+  optimization_guide_decider_->RegisterOptimizationTypes(
+      {optimization_guide::proto::DICTATION_ELIGIBLE});
 }
 
 void DictationKeyedService::OnSessionStateChanged(

@@ -7,6 +7,7 @@
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/metrics.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 
@@ -30,7 +31,9 @@ DictationKeyedServiceFactory* DictationKeyedServiceFactory::GetInstance() {
 DictationKeyedServiceFactory::DictationKeyedServiceFactory(
     base::PassKey<DictationKeyedServiceFactory>)
     : ProfileKeyedServiceFactory("DictationKeyedService",
-                                 ProfileSelections::BuildForRegularProfile()) {}
+                                 ProfileSelections::BuildForRegularProfile()) {
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+}
 
 DictationKeyedServiceFactory::~DictationKeyedServiceFactory() = default;
 

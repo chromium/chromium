@@ -12,6 +12,7 @@
 #include "chrome/test/base/platform_browser_test.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
 
+class GURL;
 class Profile;
 
 namespace content {
@@ -63,7 +64,20 @@ class DictationBrowserTestBase : public PlatformBrowserTest {
   // Waits until the session reaches the expected state.
   void WaitForSessionState(SessionState target_state);
 
+  // Adds an Optimization Guide DICTATION_ELIGIBLE hint for `url` whose metadata
+  // marks the page eligible, as the server would for pages that pass its safety
+  // checks.
+  void AddOptimizationGuideEligibleHint(const GURL& url);
+
+  // Adds a DICTATION_ELIGIBLE hint for `url` whose metadata marks the page
+  // ineligible, as the server would for pages that fail its safety checks.
+  void AddOptimizationGuideIneligibleHint(const GURL& url);
+
  private:
+  // Adds a DICTATION_ELIGIBLE hint for `url` with DictationMetadata carrying
+  // `eligible`.
+  void AddDictationHint(const GURL& url, bool eligible);
+
   base::test::ScopedFeatureList scoped_feature_list_;
   // Prevents tests from registering real OS-wide hotkeys.
   std::unique_ptr<ScopedFakeGlobalAcceleratorListener> fake_global_listener_;

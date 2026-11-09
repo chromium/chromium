@@ -27,12 +27,18 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom-forward.h"
 
+class GURL;
 class Profile;
 
 namespace content {
 class BrowserContext;
 struct GlobalDOMNodeId;
 }
+
+namespace optimization_guide {
+class OptimizationGuideDecider;
+enum class PageContextEligibilityStatus;
+}  // namespace optimization_guide
 
 namespace tabs {
 class TabInterface;
@@ -124,6 +130,15 @@ class DictationKeyedService : public KeyedService,
 
   bool IsEnabledAndReady() const;
 
+  // Checks the Optimization Guide's cached DICTATION_ELIGIBLE hint for `url`.
+  // Returns `kEligible` if the hint is present and its DictationMetadata marks
+  // the page eligible, `kUnknown` if the hint is not yet in the cache (e.g. a
+  // navigation fetch is still in flight), or `kNotEligible` if the Optimization
+  // Guide is unavailable, the hint is absent, or the metadata is missing or
+  // marks the page ineligible.
+  optimization_guide::PageContextEligibilityStatus CheckOptimizationGuideHint(
+      const GURL& url) const;
+
   HotkeyManager* hotkey_manager_for_testing() { return hotkey_manager_.get(); }
 
   DictationLogBuffer& log_buffer() { return log_buffer_; }
@@ -161,6 +176,9 @@ class DictationKeyedService : public KeyedService,
   // `kEnded` like any other session end.
   void EndActiveSession();
 
+  bool IsDisabledByPolicy() const;
+  void MaybeRegisterOptimizationTypes();
+
   // Forwards session state changes to `hotkey_manager_`, and notifies
   // `session_ended_callbacks_` when the session ends.
   void OnSessionStateChanged(dictation::SessionState state);
@@ -179,6 +197,10 @@ class DictationKeyedService : public KeyedService,
                       DictationSessionEntryPoint entry_point);
 
   raw_ptr<Profile> profile_;
+
+  // Null if the Optimization Guide is not available for `profile_`.
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_;
 
   PrefChangeRegistrar pref_change_registrar_;
 
