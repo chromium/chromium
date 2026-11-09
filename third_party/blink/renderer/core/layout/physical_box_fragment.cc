@@ -663,10 +663,7 @@ PhysicalRect PhysicalBoxFragment::SelfInkOverflowRect() const {
 }
 
 PhysicalRect PhysicalBoxFragment::ContentsInkOverflowRect() const {
-  if (!CanUseFragmentsForInkOverflow()) [[unlikely]] {
-    const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
-    return owner_box->ContentsVisualOverflowRect();
-  }
+  DCHECK(CanUseFragmentsForInkOverflow());
   if (!HasInkOverflow())
     return LocalRect();
   return ink_overflow_.Contents(InkOverflowType(), Size());
@@ -1077,11 +1074,8 @@ PhysicalRect PhysicalBoxFragment::ComputeSelfInkOverflow() const {
           To<LayoutTableCell>(child_fragment.GetLayoutObject());
       if (child_layout_object->ComputedRowSpan() == 1)
         continue;
-      PhysicalRect child_rect;
-      if (child_fragment.CanUseFragmentsForInkOverflow())
-        child_rect = child_fragment.InkOverflowRect();
-      else
-        child_rect = child_layout_object->VisualOverflowRect();
+      DCHECK(child_fragment.CanUseFragmentsForInkOverflow());
+      PhysicalRect child_rect = child_fragment.InkOverflowRect();
       child_rect.offset += child.offset;
       ink_overflow.Unite(child_rect);
     }

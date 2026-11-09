@@ -3458,14 +3458,8 @@ void LayoutBox::ClearVisualOverflow() {
 
 bool LayoutBox::CanUseFragmentsForVisualOverflow() const {
   NOT_DESTROYED();
-  // TODO(crbug.com/1144203): Legacy, or no-fragments-objects such as
-  // table-column. What to do with them is TBD.
-  if (!PhysicalFragmentCount())
-    return false;
-  const PhysicalBoxFragment& fragment = *GetPhysicalFragment(0);
-  if (!fragment.CanUseFragmentsForInkOverflow())
-    return false;
-  return true;
+  return PhysicalFragmentCount() &&
+         GetPhysicalFragment(0)->CanUseFragmentsForInkOverflow();
 }
 
 // Copy visual overflow from |PhysicalFragments()|.
