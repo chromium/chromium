@@ -1997,4 +1997,34 @@ TEST(AuthenticationCredentialsContainerTest,
   }
 }
 
+TEST(AuthenticationCredentialsContainerTest, WebAuthnAmbientUiGetUseCounter) {
+  test::TaskEnvironment task_environment;
+  ScopedWebAuthenticationAmbientForTest webauthn_ambient(true);
+
+  MockAuthenticatorInterface mock_authenticator;
+  CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
+                                          &mock_authenticator);
+
+  auto* request_options = CredentialRequestOptions::Create();
+  request_options->setMediation(
+      V8CredentialMediationRequirement::Enum::kConditional);
+  request_options->setUiMode(V8CredentialUiModeRequirement::Enum::kPassive);
+  auto* public_key_request_options =
+      PublicKeyCredentialRequestOptions::Create();
+  public_key_request_options->setRpId("https://www.example.com");
+  const Vector<uint8_t> challenge = {1, 2, 3, 4};
+  public_key_request_options->setChallenge(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+          DOMArrayBuffer::Create(challenge)));
+  request_options->setPublicKey(public_key_request_options);
+
+  AuthenticationCredentialsContainer::credentials(
+      *context.DomWindow().navigator())
+      ->get(context.GetScriptState(), request_options,
+            IGNORE_EXCEPTION_FOR_TESTING);
+
+  EXPECT_TRUE(context.DomWindow().document()->IsUseCounted(
+      WebFeature::kWebAuthnAmbientUiGet));
+}
+
 }  // namespace blink

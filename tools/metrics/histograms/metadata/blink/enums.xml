@@ -6931,6 +6931,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6092" label="BeforeUnloadShowedDialogWithoutUserOrFormEdit"/>
   <int value="6093"
       label="BeforeUnloadDialogBlockedUnloadWithoutUserOrFormEdit"/>
+  <int value="6094" label="WebAuthnAmbientUiGet"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

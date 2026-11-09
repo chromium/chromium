@@ -5410,6 +5410,7 @@ enum WebFeature {
   kRenderBlockingAttributeTargetingFrameOwner = 6091,
   kBeforeUnloadShowedDialogWithoutUserOrFormEdit = 6092,
   kBeforeUnloadDialogBlockedUnloadWithoutUserOrFormEdit = 6093,
+  kWebAuthnAmbientUiGet = 6094,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
