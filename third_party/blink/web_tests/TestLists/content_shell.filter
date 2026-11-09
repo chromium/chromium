@@ -87,9 +87,7 @@ external/wpt/css/filter-effects/drop-shadow-currentcolor-dynamic-003.html
 external/wpt/css/selectors/focus-visible-024.html
 external/wpt/css/selectors/focus-visible-025.html
 external/wpt/css/selectors/user-invalid-form-submission-invalidation.html
-external/wpt/density-size-correction/density-corrected-image-in-canvas.html
 external/wpt/dom/events/scrolling/input-text-scroll-event-when-using-arrow-keys.html
-external/wpt/dom/events/scrolling/scrollend-event-fired-after-snap.html
 external/wpt/dom/events/scrolling/scrollend-event-fires-on-visual-viewport.html
 external/wpt/dom/events/scrolling/wheel-event-transactions-basic.html?include=scroll-over-scrollable-child
 external/wpt/dom/events/scrolling/wheel-event-transactions-basic.html?include=target-basic
@@ -100,7 +98,6 @@ external/wpt/dom/events/scrolling/wheel-event-transactions-target-move.html
 external/wpt/dom/events/scrolling/wheel-event-transactions-target-resize.html?include=passive-false
 external/wpt/dom/events/scrolling/wheel-event-transactions-target-resize.html?include=passive-true
 external/wpt/dom/events/webkit-animation-iteration-event.html
-external/wpt/dom/nodes/moveBefore/select-option-optgroup.html
 external/wpt/dom/nodes/moveBefore/selection-preserve.html
 external/wpt/editing/crashtests/contenteditable-will-be-blurred-by-focus-event-listener.html
 external/wpt/editing/edit-context/edit-context-execCommand.tentative.https.html
@@ -124,7 +121,6 @@ external/wpt/editing/other/typing-around-link-element-at-non-collapsed-selection
 external/wpt/editing/other/typing-around-link-element-at-non-collapsed-selection.tentative.html?target=DesignMode&parent=b
 external/wpt/editing/other/typing-around-link-element-at-non-collapsed-selection.tentative.html?target=DesignMode&parent=b&child=i
 external/wpt/editing/plaintext-only/paste.https.html*
-external/wpt/event-timing/keyup.html
 external/wpt/event-timing/modal-dialog-interrupt-paint.html
 external/wpt/event-timing/selection-autoscroll.html
 external/wpt/fedcm/fedcm-disconnect-errors.https.html
@@ -141,7 +137,6 @@ external/wpt/fetch/stale-while-revalidate/stale-css.html
 external/wpt/fetch/stale-while-revalidate/stale-image.html
 external/wpt/fetch/stale-while-revalidate/stale-script.html
 external/wpt/html-aam/names.html
-external/wpt/html-aam/roles.html
 external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/inflight-fetch-redirects.html
 external/wpt/html/browsers/browsing-the-web/history-traversal/pageswap/pageswap-push-navigation-hidden-document.html
 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/cross-origin-top-navigation-with-user-activation-in-parent.window.html
@@ -165,7 +160,6 @@ external/wpt/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.dropShad
 external/wpt/html/canvas/offscreen/filters/2d.filter.layers.dropShadow.tentative.html
 external/wpt/html/canvas/offscreen/filters/2d.filter.layers.dropShadow.tentative.w.html
 external/wpt/html/cross-origin-opener-policy/javascript-url.https.html*
-external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/nested-sharedworker-success.https.html
 external/wpt/html/interaction/focus/focusgroup/tentative/grid-navigation/rowspan.html
 external/wpt/html/interaction/focus/the-autofocus-attribute/first-reconnected.html
 external/wpt/html/interaction/focus/the-autofocus-attribute/not-on-first-task.html
