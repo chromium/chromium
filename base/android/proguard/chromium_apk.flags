@@ -67,9 +67,3 @@
 # traces in contexts where it's not trivial to deobfuscate them - for example
 # when reported to app developers who are using WebView.
 -keepnames,allowaccessmodification class ** extends java.lang.Throwable {}
-
-# Allow R8 to optimize away proto lite functionality that is not used.
--assumenosideeffects class com.google.protobuf.SchemaUtil {
-    java.lang.Class getGeneratedMessageClass();
-    java.lang.Class getUnknownFieldSetSchemaClass();
-}
