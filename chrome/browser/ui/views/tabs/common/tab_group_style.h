@@ -54,6 +54,12 @@ class TabGroupStyle {
   // Returns the trailing padding for a collapsed tab group header when it is
   // the last item in the tab strip.
   static int GetTrailingGroupHeaderPadding();
+
+  // Thickness of the line drawn under (or beside) the tabs in a group.
+  static int GetUnderlineStrokeThickness();
+  // Returns how far the group underline is inset from the leading/trailing
+  // edges of the group in a horizontal tab strip.
+  static int GetUnderlineStrokeInset();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_GROUP_STYLE_H_

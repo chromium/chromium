@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_test_util.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_thumbnail_observer.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
-#include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -206,8 +205,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardControllerTest, HoverCardLabel_DomainIsUrl) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   HoverCardAnchorTarget* const target_tab = GetHoverCardAnchorTargetAt(1);
-  controller()->UpdateHoverCard(target_tab,
-                                TabSlotController::HoverCardUpdateType::kHover);
+  controller()->UpdateHoverCard(target_tab, HoverCardUpdateType::kHover);
 
   TabHoverCardBubbleView* hover_card = controller()->hover_card_for_testing();
   ASSERT_TRUE(hover_card);

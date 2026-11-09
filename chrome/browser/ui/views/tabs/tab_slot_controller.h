@@ -10,6 +10,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/views/tabs/hovercard/hover_card_update_type.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -48,16 +49,6 @@ class HoverCardAnchorTarget;
 // Controller for tabs and group headers.
 class TabSlotController {
  public:
-  enum HoverCardUpdateType {
-    kHover,
-    kFocus,
-    kTabDataChanged,
-    kAnimating,
-    kTabRemoved,
-    kSelectionChanged,
-    kEvent
-  };
-
   enum class Liveness { kAlive, kDeleted };
 
   virtual ui::ListSelectionModel GetSelectionModel() const = 0;

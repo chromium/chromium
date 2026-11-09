@@ -15,10 +15,10 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_z_order_manager.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
-#include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -101,7 +101,8 @@ void TabGroupLineView::PaintVertical(gfx::Canvas* canvas, SkColor color) {
 void TabGroupLineView::PaintHorizontal(gfx::Canvas* canvas, SkColor color) {
   gfx::ScopedCanvas scoped_canvas(canvas);
   const float scale = canvas->UndoDeviceScaleFactor();
-  const float stroke_thickness = TabGroupUnderline::kStrokeThickness * scale;
+  const float stroke_thickness =
+      TabGroupStyle::GetUnderlineStrokeThickness() * scale;
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
@@ -117,8 +118,9 @@ void TabGroupLineView::PaintHorizontal(gfx::Canvas* canvas, SkColor color) {
 SkPath TabGroupLineView::GetHorizontalLinePath(
     const std::optional<SkPath>& active_tab_path,
     float scale) const {
-  const float stroke_inset = TabGroupUnderline::GetStrokeInset() * scale;
-  const float stroke_thickness = TabGroupUnderline::kStrokeThickness * scale;
+  const float stroke_inset = TabGroupStyle::GetUnderlineStrokeInset() * scale;
+  const float stroke_thickness =
+      TabGroupStyle::GetUnderlineStrokeThickness() * scale;
   const bool is_rtl = base::i18n::IsRTL();
   const float width_pixels = width() * scale;
   const float start_x = is_rtl ? stroke_inset : 0.0f;

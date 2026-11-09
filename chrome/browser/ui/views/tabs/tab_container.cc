@@ -557,16 +557,15 @@ std::optional<int> TabContainer::GetModelIndexOfFirstNonClosingTab(
   return GetModelIndexOf(tab);
 }
 
-void TabContainer::UpdateHoverCard(
-    HoverCardAnchorTarget* anchor_target,
-    TabSlotController::HoverCardUpdateType update_type) {
+void TabContainer::UpdateHoverCard(HoverCardAnchorTarget* anchor_target,
+                                   HoverCardUpdateType update_type) {
   // Some operations (including e.g. starting a drag) can cause the tab focus
   // to change at the same time as the tabstrip is starting to animate; the
   // hover card should not be visible at this time.
   // See crbug.com/40773156 for an example case.
   if (controller_->IsAnimatingInTabStrip()) {
     anchor_target = nullptr;
-    update_type = TabSlotController::HoverCardUpdateType::kAnimating;
+    update_type = HoverCardUpdateType::kAnimating;
   }
 
   if (!hover_card_controller_) {
@@ -678,7 +677,7 @@ void TabContainer::InvalidateIdealBounds() {
 
 void TabContainer::AnimateToIdealBounds() {
   UpdateIdealBounds();
-  UpdateHoverCard(nullptr, TabSlotController::HoverCardUpdateType::kAnimating);
+  UpdateHoverCard(nullptr, HoverCardUpdateType::kAnimating);
 
   for (int i = 0; i < GetTabCount(); ++i) {
     Tab* tab = GetTabAtModelIndex(i);
@@ -1416,7 +1415,7 @@ void TabContainer::CloseTabInViewModel(int index) {
   Tab* tab = GetTabAtModelIndex(index);
   bool tab_was_active = tab->IsActive();
 
-  UpdateHoverCard(nullptr, TabSlotController::HoverCardUpdateType::kTabRemoved);
+  UpdateHoverCard(nullptr, HoverCardUpdateType::kTabRemoved);
 
   tabs_view_model_.Remove(index);
   layout_helper_->MarkTabAsClosing(index, tab);

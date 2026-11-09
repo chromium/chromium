@@ -22,9 +22,8 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/themed_background.h"
-#include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
 #include "chrome/browser/ui/views/tabs/tab/glow_hover_controller.h"
-#include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/grit/theme_resources.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -666,7 +665,7 @@ float HorizontalTabStyleViews::GetHoverOpacity() const {
 int HorizontalTabStyleViews::GetStrokeThickness() const {
   if (delegate_->GetGroup().has_value() && !delegate_->IsInFocusedGroup() &&
       delegate_->IsActive()) {
-    return TabGroupUnderline::kStrokeThickness;
+    return TabGroupStyle::GetUnderlineStrokeThickness();
   }
 
   if (delegate_->IsActive()) {

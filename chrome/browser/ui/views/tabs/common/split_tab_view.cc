@@ -234,8 +234,8 @@ void SplitTabView::ResetCollectionNode() {
   TabHoverCardController* hover_card_controller =
       collection_node_->GetController()->GetHoverCardController();
   if (hover_card_controller) {
-    hover_card_controller->UpdateHoverCard(
-        nullptr, TabSlotController::HoverCardUpdateType::kTabRemoved);
+    hover_card_controller->UpdateHoverCard(nullptr,
+                                           HoverCardUpdateType::kTabRemoved);
   }
 
   node_destroyed_subscription_ = {};

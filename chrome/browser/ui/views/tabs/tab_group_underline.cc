@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
@@ -24,8 +23,7 @@ constexpr int TabGroupUnderline::kStrokeThickness;
 
 // static
 int TabGroupUnderline::GetStrokeInset() {
-  return TabStyle::Get()->GetTabOverlap() -
-         TabGroupStyle::GetTabGroupOverlapAdjustment() + kStrokeThickness;
+  return TabGroupStyle::GetUnderlineStrokeInset();
 }
 
 TabGroupUnderline::TabGroupUnderline(TabGroupViews* tab_group_views,

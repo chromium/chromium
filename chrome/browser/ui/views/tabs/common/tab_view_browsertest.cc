@@ -780,15 +780,15 @@ IN_PROC_BROWSER_TEST_P(TabViewTest,
           ? static_cast<views::View*>(split_tab_view)
           : static_cast<views::View*>(tab_2_view);
 
-  hover_card_controller()->UpdateHoverCard(
-      tab_1_view, TabSlotController::HoverCardUpdateType::kHover);
+  hover_card_controller()->UpdateHoverCard(tab_1_view,
+                                           HoverCardUpdateType::kHover);
 
   ASSERT_TRUE(hover_card_controller()->hover_card_for_testing());
   EXPECT_EQ(hover_card_controller()->hover_card_for_testing()->GetAnchorView(),
             expected_anchor_1);
 
-  hover_card_controller()->UpdateHoverCard(
-      tab_2_view, TabSlotController::HoverCardUpdateType::kHover);
+  hover_card_controller()->UpdateHoverCard(tab_2_view,
+                                           HoverCardUpdateType::kHover);
 
   ASSERT_TRUE(hover_card_controller()->hover_card_for_testing());
   EXPECT_EQ(hover_card_controller()->hover_card_for_testing()->GetAnchorView(),
@@ -819,20 +819,20 @@ IN_PROC_BROWSER_TEST_P(TabViewTest,
 
   // Show hover card for each tab and then check that we set the
   // target tab is set correctly.
-  hover_card_controller()->UpdateHoverCard(
-      tab_0_target, TabSlotController::HoverCardUpdateType::kHover);
+  hover_card_controller()->UpdateHoverCard(tab_0_target,
+                                           HoverCardUpdateType::kHover);
   EXPECT_EQ(tab_0_target, hover_card_controller()->target_tab());
 
-  hover_card_controller()->UpdateHoverCard(
-      tab_1_target, TabSlotController::HoverCardUpdateType::kHover);
+  hover_card_controller()->UpdateHoverCard(tab_1_target,
+                                           HoverCardUpdateType::kHover);
   EXPECT_EQ(tab_1_target, hover_card_controller()->target_tab());
 
-  hover_card_controller()->UpdateHoverCard(
-      tab_2_target, TabSlotController::HoverCardUpdateType::kHover);
+  hover_card_controller()->UpdateHoverCard(tab_2_target,
+                                           HoverCardUpdateType::kHover);
   EXPECT_EQ(tab_2_target, hover_card_controller()->target_tab());
 
-  hover_card_controller()->UpdateHoverCard(
-      nullptr, TabSlotController::HoverCardUpdateType::kTabRemoved);
+  hover_card_controller()->UpdateHoverCard(nullptr,
+                                           HoverCardUpdateType::kTabRemoved);
   EXPECT_EQ(nullptr, hover_card_controller()->target_tab());
 }
 

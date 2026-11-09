@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_group_focus_animation_state.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/hovercard/hover_card_anchor_target.h"
+#include "chrome/browser/ui/views/tabs/hovercard/hover_card_update_type.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -61,8 +62,8 @@ class TabGroupHeaderView : public views::FlexLayoutView,
     virtual void CancelHeaderDrag() = 0;
     virtual const TabGroup& GetTabGroup() const = 0;
     virtual const tabs::TabGroupData& GetTabGroupData() const = 0;
-    virtual void UpdateHoverCard(int update_type) const = 0;
-    virtual void HideHoverCard(int update_type) const = 0;
+    virtual void UpdateHoverCard(HoverCardUpdateType update_type) const = 0;
+    virtual void HideHoverCard(HoverCardUpdateType update_type) const = 0;
     virtual bool IsFocusInTabStrip() = 0;
     virtual std::unique_ptr<ExpandOnHoverLock> AcquireExpandOnHoverLock() = 0;
     virtual std::unique_ptr<TabHoverCardController::ScopedHideHoverCardLock>

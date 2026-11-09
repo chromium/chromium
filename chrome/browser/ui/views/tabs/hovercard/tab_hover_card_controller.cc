@@ -214,8 +214,7 @@ class TabHoverCardController::EventSniffer : public ui::EventObserver {
     }
 
     if (close_hover_card) {
-      controller_->UpdateHoverCard(
-          nullptr, TabSlotController::HoverCardUpdateType::kEvent);
+      controller_->UpdateHoverCard(nullptr, HoverCardUpdateType::kEvent);
     }
   }
 
@@ -299,10 +298,10 @@ bool TabHoverCardController::IsHoverCardShowingForTab(
 
 void TabHoverCardController::UpdateHoverCard(
     HoverCardAnchorTarget* anchor_target,
-    TabSlotController::HoverCardUpdateType update_type) {
+    HoverCardUpdateType update_type) {
   if (hide_hover_card_lock_count_ > 0) {
     anchor_target = nullptr;
-    update_type = TabSlotController::HoverCardUpdateType::kAnimating;
+    update_type = HoverCardUpdateType::kAnimating;
   }
 
   // Never display a hover card for an invalid tab.
@@ -334,26 +333,26 @@ void TabHoverCardController::UpdateHoverCard(
   }
 
   switch (update_type) {
-    case TabSlotController::HoverCardUpdateType::kSelectionChanged:
+    case HoverCardUpdateType::kSelectionChanged:
       ResetCardsSeenCount();
       break;
-    case TabSlotController::HoverCardUpdateType::kHover:
+    case HoverCardUpdateType::kHover:
       if (!anchor_target) {
         last_mouse_exit_timestamp_ = base::TimeTicks::Now();
       }
       break;
-    case TabSlotController::HoverCardUpdateType::kTabDataChanged:
+    case HoverCardUpdateType::kTabDataChanged:
       // TODO(crbug.com/580580736): CHECK-exclusion: Convert to a CHECK once
       // we are confident it won't be triggered.
       DCHECK(anchor_target && IsHoverCardShowingForTab(anchor_target));
       break;
-    case TabSlotController::HoverCardUpdateType::kTabRemoved:
-    case TabSlotController::HoverCardUpdateType::kAnimating:
+    case HoverCardUpdateType::kTabRemoved:
+    case HoverCardUpdateType::kAnimating:
       // Neither of these cases should have a tab associated.
       CHECK(!anchor_target, base::NotFatalUntil::M162);
       break;
-    case TabSlotController::HoverCardUpdateType::kEvent:
-    case TabSlotController::HoverCardUpdateType::kFocus:
+    case HoverCardUpdateType::kEvent:
+    case HoverCardUpdateType::kFocus:
       // No special action taken for this type of even (yet).
       break;
   }
@@ -403,8 +402,7 @@ void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
   if (hover_card_ == observed_view) {
     OnCardClosing();
   } else if (target_tab_ && target_tab_->GetView() == observed_view) {
-    UpdateHoverCard(nullptr,
-                    TabSlotController::HoverCardUpdateType::kTabRemoved);
+    UpdateHoverCard(nullptr, HoverCardUpdateType::kTabRemoved);
     // These postconditions should always be met after calling
     // UpdateHoverCard(nullptr, ...)
     CHECK(!target_tab_, base::NotFatalUntil::M162);
@@ -428,8 +426,7 @@ void TabHoverCardController::OnViewVisibilityChanged(views::View* observed_view,
 
 void TabHoverCardController::OnTabResourceMetricsRefreshed() {
   if (hover_card_ && target_tab_) {
-    UpdateHoverCard(target_tab_,
-                    TabSlotController::HoverCardUpdateType::kTabDataChanged);
+    UpdateHoverCard(target_tab_, HoverCardUpdateType::kTabDataChanged);
   }
 }
 
@@ -606,7 +603,7 @@ void TabHoverCardController::StartThumbnailObservation(
 
 void TabHoverCardController::UpdateOrShowCard(
     HoverCardAnchorTarget* anchor_target,
-    TabSlotController::HoverCardUpdateType update_type) {
+    HoverCardUpdateType update_type) {
   // Close is asynchronous, so make sure that if we're closing we clear out all
   // of our data *now* rather than waiting for the deletion message.
   if (hover_card_ && GetCardWidget()->IsClosed()) {
@@ -615,7 +612,7 @@ void TabHoverCardController::UpdateOrShowCard(
 
   // If a hover card is being updated because of a data change, the hover card
   // had better already be showing for the affected tab.
-  if (update_type == TabSlotController::HoverCardUpdateType::kTabDataChanged) {
+  if (update_type == HoverCardUpdateType::kTabDataChanged) {
     if (!IsHoverCardShowingForTab(anchor_target)) {
       return;
     }

@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_unfocus_button.h"
-#include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -79,8 +78,8 @@ class MockDelegate : public TabGroupHeaderView::Delegate,
               GetTabGroupData,
               (),
               (const, override));
-  MOCK_METHOD(void, UpdateHoverCard, (int), (const, override));
-  MOCK_METHOD(void, HideHoverCard, (int), (const, override));
+  MOCK_METHOD(void, UpdateHoverCard, (HoverCardUpdateType), (const, override));
+  MOCK_METHOD(void, HideHoverCard, (HoverCardUpdateType), (const, override));
   MOCK_METHOD(bool, IsFocusInTabStrip, (), (override));
   MOCK_METHOD(std::unique_ptr<ExpandOnHoverLock>,
               AcquireExpandOnHoverLock,
@@ -977,9 +976,7 @@ TEST_F(TabGroupHeaderViewTest, HideHoverCardOnBlurWhenUnfocusButtonFocused) {
   ASSERT_NE(nullptr, focus_manager);
   focus_manager->SetKeyboardAccessible(true);
 
-  EXPECT_CALL(delegate,
-              UpdateHoverCard(TabSlotController::HoverCardUpdateType::kFocus))
-      .Times(1);
+  EXPECT_CALL(delegate, UpdateHoverCard(HoverCardUpdateType::kFocus)).Times(1);
   focus_manager->SetFocusedView(header);
 
   // Blurring to another hovercard target in the tab strip does not hide the
@@ -989,18 +986,14 @@ TEST_F(TabGroupHeaderViewTest, HideHoverCardOnBlurWhenUnfocusButtonFocused) {
   EXPECT_CALL(delegate, HideHoverCard(testing::_)).Times(0);
   focus_manager->SetFocusedView(other_view);
 
-  EXPECT_CALL(delegate,
-              UpdateHoverCard(TabSlotController::HoverCardUpdateType::kFocus))
-      .Times(1);
+  EXPECT_CALL(delegate, UpdateHoverCard(HoverCardUpdateType::kFocus)).Times(1);
   focus_manager->SetFocusedView(header);
 
   // Blurring to the unfocus button hides the hovercard even though focus is
   // still in the tab strip.
   ON_CALL(delegate, IsUnfocusButtonFocused())
       .WillByDefault(testing::Return(true));
-  EXPECT_CALL(delegate,
-              HideHoverCard(TabSlotController::HoverCardUpdateType::kFocus))
-      .Times(1);
+  EXPECT_CALL(delegate, HideHoverCard(HoverCardUpdateType::kFocus)).Times(1);
   focus_manager->SetFocusedView(other_view);
 }
 
@@ -1019,14 +1012,10 @@ TEST_F(TabGroupHeaderViewTest, HideHoverCardOnMouseExitInFocusMode) {
   widget->Show();
 
   ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
-  EXPECT_CALL(delegate,
-              UpdateHoverCard(TabSlotController::HoverCardUpdateType::kHover))
-      .Times(1);
+  EXPECT_CALL(delegate, UpdateHoverCard(HoverCardUpdateType::kHover)).Times(1);
   MoveMouseTo(generator, header, true);
 
-  EXPECT_CALL(delegate,
-              HideHoverCard(TabSlotController::HoverCardUpdateType::kHover))
-      .Times(1);
+  EXPECT_CALL(delegate, HideHoverCard(HoverCardUpdateType::kHover)).Times(1);
   MoveMouseTo(generator, header, false);
 }
 

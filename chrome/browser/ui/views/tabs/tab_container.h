@@ -133,7 +133,7 @@ class TabContainer : public views::View,
   std::optional<int> GetModelIndexOfFirstNonClosingTab(Tab* tab) const;
 
   void UpdateHoverCard(HoverCardAnchorTarget* anchor_target,
-                       TabSlotController::HoverCardUpdateType update_type);
+                       HoverCardUpdateType update_type);
 
   void HandleLongTap(ui::GestureEvent* event);
 

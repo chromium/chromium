@@ -2237,8 +2237,7 @@ void TabStrip::Layout(PassKey) {
   }
 
   if (tab_container_->bounds() != GetLocalBounds()) {
-    UpdateHoverCard(nullptr,
-                    TabSlotController::HoverCardUpdateType::kAnimating);
+    UpdateHoverCard(nullptr, HoverCardUpdateType::kAnimating);
     tab_container_->SetBoundsRect(GetLocalBounds());
   } else {
     // We still need to layout in this case, as the available width may have

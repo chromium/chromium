@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/hovercard/hover_card_anchor_target.h"
+#include "chrome/browser/ui/views/tabs/hovercard/hover_card_update_type.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
@@ -193,7 +194,7 @@ class TabView : public views::View,
   void RecordMousePressedInTab();
 
   void UpdateHoverCard(HoverCardAnchorTarget* target,
-                       int hover_card_update_type);
+                       HoverCardUpdateType hover_card_update_type);
 
   double GetHoverAnimationValue() const;
   float GetHoverOpacity() const;

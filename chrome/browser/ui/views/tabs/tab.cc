@@ -314,8 +314,7 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
 
  private:
   void OnViewFocused(views::View* observed_view) override {
-    controller_->UpdateHoverCard(
-        tab_, TabSlotController::HoverCardUpdateType::kFocus);
+    controller_->UpdateHoverCard(tab_, HoverCardUpdateType::kFocus);
     if (features::IsTabStripDeclutterEnabled()) {
       tab_->InvalidateLayout();
     }
@@ -324,8 +323,7 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
   void OnViewBlurred(views::View* observed_view) override {
     // Only hide hover card if not keyboard navigating.
     if (!controller_->IsFocusInTabStrip()) {
-      controller_->UpdateHoverCard(
-          nullptr, TabSlotController::HoverCardUpdateType::kFocus);
+      controller_->UpdateHoverCard(nullptr, HoverCardUpdateType::kFocus);
     }
     if (features::IsTabStripDeclutterEnabled()) {
       tab_->InvalidateLayout();
@@ -457,8 +455,7 @@ Tab::~Tab() {
   // Observer must be unregistered before child views are destroyed.
   tab_close_button_observer_.reset();
   if (controller_->HoverCardIsShowing(this)) {
-    controller_->UpdateHoverCard(
-        nullptr, TabSlotController::HoverCardUpdateType::kTabRemoved);
+    controller_->UpdateHoverCard(nullptr, HoverCardUpdateType::kTabRemoved);
   }
 }
 
@@ -736,8 +733,7 @@ bool IsSelectionModifierDown(const ui::MouseEvent& event) {
 
 bool Tab::OnMousePressed(const ui::MouseEvent& event) {
   shift_pressed_on_mouse_down_ = event.IsShiftDown();
-  controller_->UpdateHoverCard(nullptr,
-                               TabSlotController::HoverCardUpdateType::kEvent);
+  controller_->UpdateHoverCard(nullptr, HoverCardUpdateType::kEvent);
   controller_->OnMouseEventInTab(this, event);
 
   // Allow a right click from touch to drag, which corresponds to a long click.
@@ -865,8 +861,7 @@ void Tab::OnMouseExited(const ui::MouseEvent& event) {
 }
 
 void Tab::OnGestureEvent(ui::GestureEvent* event) {
-  controller_->UpdateHoverCard(nullptr,
-                               TabSlotController::HoverCardUpdateType::kEvent);
+  controller_->UpdateHoverCard(nullptr, HoverCardUpdateType::kEvent);
   switch (event->type()) {
     case ui::EventType::kGestureTapDown: {
       // TAP_DOWN is only dispatched for the first touch point.
@@ -959,8 +954,7 @@ void Tab::OnFocus() {
   // Update the accessible name so that screen reader announce the correct
   // memory usage that will be shown on hover card.
   UpdateAccessibleName();
-  controller_->UpdateHoverCard(this,
-                               TabSlotController::HoverCardUpdateType::kFocus);
+  controller_->UpdateHoverCard(this, HoverCardUpdateType::kFocus);
   if (features::IsTabStripDeclutterEnabled()) {
     InvalidateLayout();
   }
@@ -972,8 +966,7 @@ void Tab::OnBlur() {
   controller_->TabKeyboardFocusChangedTo(nullptr);
 
   if (!controller_->IsFocusInTabStrip()) {
-    controller_->UpdateHoverCard(
-        nullptr, TabSlotController::HoverCardUpdateType::kFocus);
+    controller_->UpdateHoverCard(nullptr, HoverCardUpdateType::kFocus);
   }
   if (features::IsTabStripDeclutterEnabled()) {
     InvalidateLayout();
@@ -1098,8 +1091,7 @@ bool Tab::IsApparentlyActive() const {
 
 void Tab::AlertStateChanged() {
   if (controller_->HoverCardIsShowing(this)) {
-    controller_->UpdateHoverCard(
-        this, TabSlotController::HoverCardUpdateType::kTabDataChanged);
+    controller_->UpdateHoverCard(this, HoverCardUpdateType::kTabDataChanged);
   }
   DeprecatedLayoutImmediately();
 }
@@ -1530,8 +1522,7 @@ void Tab::MaybeUpdateHoverStatus(const ui::MouseEvent& event) {
   mouse_hovered_ = true;
   controller_->ShowHover(this, TabStyle::ShowHoverStyle::kSubtle);
   if (g_show_hover_card_on_mouse_hover) {
-    controller_->UpdateHoverCard(
-        this, TabSlotController::HoverCardUpdateType::kHover);
+    controller_->UpdateHoverCard(this, HoverCardUpdateType::kHover);
   }
 }
 
@@ -1627,8 +1618,7 @@ void Tab::OnTabDataChanged(TabChangeType tab_change_type,
   }
   SetHoverCardDataFrom(data_);
   if (controller_->HoverCardIsShowing(this)) {
-    controller_->UpdateHoverCard(
-        this, TabSlotController::HoverCardUpdateType::kTabDataChanged);
+    controller_->UpdateHoverCard(this, HoverCardUpdateType::kTabDataChanged);
   }
 
   // Since tab group naming can be based on the name of the first tab in the

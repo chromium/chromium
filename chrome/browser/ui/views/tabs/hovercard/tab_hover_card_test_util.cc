@@ -95,16 +95,14 @@ TabHoverCardBubbleView* TabHoverCardTestUtil::SimulateHoverTab(
         browser->GetTabStripModel()->GetTabAtIndex(tab_index)->GetHandle()));
     if (tab_view) {
       if (auto* controller = GetHoverCardController(browser)) {
-        controller->UpdateHoverCard(
-            tab_view, TabSlotController::HoverCardUpdateType::kHover);
+        controller->UpdateHoverCard(tab_view, HoverCardUpdateType::kHover);
       }
     }
   } else {
     auto* const tab_strip = GetTabStrip(browser);
     if (tab_strip) {
-      tab_strip->UpdateHoverCard(
-          tab_strip->tab_at(tab_index),
-          TabSlotController::HoverCardUpdateType::kHover);
+      tab_strip->UpdateHoverCard(tab_strip->tab_at(tab_index),
+                                 HoverCardUpdateType::kHover);
     }
   }
 

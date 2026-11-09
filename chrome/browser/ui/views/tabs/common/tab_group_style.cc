@@ -14,6 +14,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/controls/focus_ring.h"
 
 namespace {
 
@@ -150,4 +151,15 @@ int TabGroupStyle::GetTrailingGroupHeaderPadding() {
          TabStyle::Get()->GetBottomExtensionWidth() +
          GetLayoutConstant(LayoutConstant::kTabStripPadding) +
          GetLayoutConstant(LayoutConstant::kNewTabButtonLeadingMargin);
+}
+
+// static
+int TabGroupStyle::GetUnderlineStrokeThickness() {
+  return views::FocusRing::kDefaultHaloThickness;
+}
+
+// static
+int TabGroupStyle::GetUnderlineStrokeInset() {
+  return TabStyle::Get()->GetTabOverlap() - GetTabGroupOverlapAdjustment() +
+         GetUnderlineStrokeThickness();
 }

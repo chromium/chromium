@@ -3040,6 +3040,7 @@ source_set("browser_view_tabbed_layout_impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/views/animations",
     "//chrome/browser/ui/views/bookmarks",
     "//chrome/browser/ui/views/infobars",

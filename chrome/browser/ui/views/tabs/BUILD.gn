@@ -18,6 +18,8 @@ source_set("base") {
     "tab_width_constraints.h",
   ]
 
+  public_deps = [ "//chrome/browser/ui/views/tabs/hovercard:hovercard_helpers" ]
+
   deps = [
     "//base",
     "//chrome/browser/ui/tabs",

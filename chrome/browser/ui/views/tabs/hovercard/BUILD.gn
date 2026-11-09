@@ -12,6 +12,7 @@ source_set("hovercard_helpers") {
     "fade_label_view.h",
     "fade_view.h",
     "filename_elider.h",
+    "hover_card_update_type.h",
     "tab_hover_card_thumbnail_observer.h",
   ]
 
@@ -52,20 +53,12 @@ source_set("hovercard") {
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/ui/thumbnails",
     "//chrome/browser/ui/views:layout_provider",
-    "//chrome/browser/ui/views/tabs:base",
     "//components/prefs",
     "//ui/base/metadata",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/views",
   ]
-
-  # TODO(crbug.com/451609048): Remove this circular dependency when the
-  # following header gets componentized:
-  # - c/b/ui/views/tabs/tab_slot_controller.h
-  # (No allow_circular_includes_from entry belongs here -- the waiver that
-  # makes this legal is declared on //chrome/browser/ui:ui, which is the
-  # target that owns tab_slot_controller.h and depends on this target.)
 }
 
 source_set("impl") {
@@ -159,7 +152,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui/tabs:features",
     "//chrome/browser/ui/thumbnails",
     "//chrome/browser/ui/views/frame:browser_view_header",
-    "//chrome/browser/ui/views/tabs:base",
     "//chrome/browser/ui/views/tabs/common:impl",
     "//chrome/common:constants",
     "//chrome/test:test_support",

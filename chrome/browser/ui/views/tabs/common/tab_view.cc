@@ -53,7 +53,6 @@
 #include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_title.h"
-#include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/common/buildflags.h"
@@ -667,7 +666,7 @@ bool TabView::OnMousePressed(const ui::MouseEvent& event) {
   auto* controller = collection_node_->GetController();
   shift_pressed_on_mouse_down_ = event.IsShiftDown();
   RecordMousePressedInTab();
-  UpdateHoverCard(nullptr, TabSlotController::HoverCardUpdateType::kEvent);
+  UpdateHoverCard(nullptr, HoverCardUpdateType::kEvent);
 
   // Capture the selection model before selection changes.
   const ui::ListSelectionModel original_selection_model =
@@ -753,7 +752,7 @@ void TabView::OnMouseMoved(const ui::MouseEvent& event) {
 
 void TabView::OnMouseEntered(const ui::MouseEvent& event) {
   CHECK(collection_node_);
-  UpdateHoverCard(this, TabSlotController::HoverCardUpdateType::kHover);
+  UpdateHoverCard(this, HoverCardUpdateType::kHover);
 
   // Hover state is handled by the parent if it is split.
   if (split_) {
@@ -793,7 +792,7 @@ bool TabView::OnMouseDragged(const ui::MouseEvent& event) {
 
 void TabView::OnGestureEvent(ui::GestureEvent* event) {
   CHECK(collection_node_);
-  UpdateHoverCard(nullptr, TabSlotController::HoverCardUpdateType::kEvent);
+  UpdateHoverCard(nullptr, HoverCardUpdateType::kEvent);
 
   auto* controller = collection_node_->GetController();
   CHECK(controller);
@@ -933,7 +932,7 @@ void TabView::OnFocus() {
   if (collection_node_) {
     UpdateAccessibleName();
   }
-  UpdateHoverCard(this, TabSlotController::HoverCardUpdateType::kFocus);
+  UpdateHoverCard(this, HoverCardUpdateType::kFocus);
   InvalidateLayout();
 }
 
@@ -948,7 +947,7 @@ void TabView::OnBlur() {
 
   if (auto* tab_strip_view = GetTabStripView(this)) {
     if (!tab_strip_view->IsFocusInTabStrip()) {
-      UpdateHoverCard(nullptr, TabSlotController::HoverCardUpdateType::kFocus);
+      UpdateHoverCard(nullptr, HoverCardUpdateType::kFocus);
     }
   }
   InvalidateLayout();
@@ -1120,8 +1119,8 @@ void TabView::ResetCollectionNode() {
   collection_node_ = nullptr;
 
   if (hover_card_controller && hover_card_controller->target_tab() == this) {
-    hover_card_controller->UpdateHoverCard(
-        nullptr, TabSlotController::HoverCardUpdateType::kTabRemoved);
+    hover_card_controller->UpdateHoverCard(nullptr,
+                                           HoverCardUpdateType::kTabRemoved);
   }
 
   // Reset the active/selected/hovered states so the tab animates out without a
@@ -1461,16 +1460,14 @@ const tabs::TabInterface* TabView::GetTabInterface() const {
 }
 
 void TabView::UpdateHoverCard(HoverCardAnchorTarget* target,
-                              int hover_card_update_type) {
+                              HoverCardUpdateType hover_card_update_type) {
   if (!collection_node_ || !collection_node_->GetController()) {
     return;
   }
 
   if (TabHoverCardController* hover_card_controller =
           collection_node_->GetController()->GetHoverCardController()) {
-    hover_card_controller->UpdateHoverCard(
-        target, static_cast<TabSlotController::HoverCardUpdateType>(
-                    hover_card_update_type));
+    hover_card_controller->UpdateHoverCard(target, hover_card_update_type);
   }
 }
 

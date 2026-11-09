@@ -402,8 +402,8 @@ IN_PROC_BROWSER_TEST_P(TabGroupHoverCardTest, TabGroupHeaderHoverCardUnnamed) {
   TabGroupHeaderView* header_view = group_view->group_header();
 
   // Trigger the hover card.
-  hover_card_controller()->UpdateHoverCard(
-      header_view, TabSlotController::HoverCardUpdateType::kHover);
+  hover_card_controller()->UpdateHoverCard(header_view,
+                                           HoverCardUpdateType::kHover);
   TabHoverCardBubbleView* bubble =
       hover_card_controller()->hover_card_for_testing();
   ASSERT_TRUE(bubble);
@@ -448,8 +448,8 @@ IN_PROC_BROWSER_TEST_P(TabGroupHoverCardTest, TabGroupHeaderHoverCardNamed) {
   TabGroupHeaderView* header_view = group_view->group_header();
 
   // Trigger the hover card.
-  hover_card_controller()->UpdateHoverCard(
-      header_view, TabSlotController::HoverCardUpdateType::kHover);
+  hover_card_controller()->UpdateHoverCard(header_view,
+                                           HoverCardUpdateType::kHover);
 
   // Verify the hover card exists and has correct content.
   TabHoverCardBubbleView* bubble =
@@ -485,8 +485,8 @@ IN_PROC_BROWSER_TEST_P(TabGroupHoverCardTest,
   TabGroupHeaderView* header_view = group_view->group_header();
 
   // Trigger the hover card.
-  hover_card_controller()->UpdateHoverCard(
-      header_view, TabSlotController::HoverCardUpdateType::kHover);
+  hover_card_controller()->UpdateHoverCard(header_view,
+                                           HoverCardUpdateType::kHover);
   TabHoverCardBubbleView* bubble =
       hover_card_controller()->hover_card_for_testing();
   ASSERT_TRUE(bubble);
@@ -518,8 +518,8 @@ IN_PROC_BROWSER_TEST_P(TabGroupHoverCardTest,
   ASSERT_TRUE(tab_view);
 
   // Trigger the hover card before opening the editor bubble.
-  hover_card_controller()->UpdateHoverCard(
-      header_view, TabSlotController::HoverCardUpdateType::kHover);
+  hover_card_controller()->UpdateHoverCard(header_view,
+                                           HoverCardUpdateType::kHover);
   EXPECT_TRUE(hover_card_controller()->IsHoverCardVisible());
 
   // Opening the editor bubble should hide the hover card and prevent new hover
@@ -527,12 +527,12 @@ IN_PROC_BROWSER_TEST_P(TabGroupHoverCardTest,
   model->OpenTabGroupEditor(group_id);
   EXPECT_FALSE(hover_card_controller()->IsHoverCardVisible());
 
-  hover_card_controller()->UpdateHoverCard(
-      header_view, TabSlotController::HoverCardUpdateType::kHover);
+  hover_card_controller()->UpdateHoverCard(header_view,
+                                           HoverCardUpdateType::kHover);
   EXPECT_FALSE(hover_card_controller()->IsHoverCardVisible());
 
-  hover_card_controller()->UpdateHoverCard(
-      tab_view, TabSlotController::HoverCardUpdateType::kHover);
+  hover_card_controller()->UpdateHoverCard(tab_view,
+                                           HoverCardUpdateType::kHover);
   EXPECT_FALSE(hover_card_controller()->IsHoverCardVisible());
 
   // Closing the editor bubble should allow hover cards to be shown again.
@@ -543,8 +543,8 @@ IN_PROC_BROWSER_TEST_P(TabGroupHoverCardTest,
   ASSERT_FALSE(bubble_views.empty());
   bubble_views[0]->GetWidget()->Close();
 
-  hover_card_controller()->UpdateHoverCard(
-      header_view, TabSlotController::HoverCardUpdateType::kHover);
+  hover_card_controller()->UpdateHoverCard(header_view,
+                                           HoverCardUpdateType::kHover);
   EXPECT_TRUE(hover_card_controller()->IsHoverCardVisible());
 }
 

@@ -400,7 +400,7 @@ bool TabGroupHeaderView::OnMousePressed(const ui::MouseEvent& event) {
   }
 
   // Hide the group hovercard if it is currently showing.
-  delegate_->HideHoverCard(TabSlotController::HoverCardUpdateType::kEvent);
+  delegate_->HideHoverCard(HoverCardUpdateType::kEvent);
 
   // Potentially start the drag for the mouse press.
   // Follow-up mouse-movement events will update the drag controller and
@@ -432,7 +432,7 @@ void TabGroupHeaderView::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void TabGroupHeaderView::OnGestureEvent(ui::GestureEvent* event) {
-  delegate_->HideHoverCard(TabSlotController::HoverCardUpdateType::kEvent);
+  delegate_->HideHoverCard(HoverCardUpdateType::kEvent);
 
   switch (event->type()) {
     case ui::EventType::kGestureTapDown:
@@ -480,7 +480,7 @@ void TabGroupHeaderView::OnMouseMoved(const ui::MouseEvent& event) {
 }
 
 void TabGroupHeaderView::OnMouseEntered(const ui::MouseEvent& event) {
-  delegate_->UpdateHoverCard(TabSlotController::HoverCardUpdateType::kHover);
+  delegate_->UpdateHoverCard(HoverCardUpdateType::kHover);
   UpdateEditorBubbleButtonVisibility();
 }
 
@@ -496,19 +496,19 @@ void TabGroupHeaderView::OnMouseExited(const ui::MouseEvent& event) {
 #endif
   );
   if (delegate_->IsGroupFocused()) {
-    delegate_->HideHoverCard(TabSlotController::HoverCardUpdateType::kHover);
+    delegate_->HideHoverCard(HoverCardUpdateType::kHover);
   }
 }
 
 void TabGroupHeaderView::OnFocus() {
   UpdateEditorBubbleButtonVisibility();
-  delegate_->UpdateHoverCard(TabSlotController::HoverCardUpdateType::kFocus);
+  delegate_->UpdateHoverCard(HoverCardUpdateType::kFocus);
 }
 
 void TabGroupHeaderView::OnBlur() {
   UpdateEditorBubbleButtonVisibility();
   if (!delegate_->IsFocusInTabStrip() || delegate_->IsUnfocusButtonFocused()) {
-    delegate_->HideHoverCard(TabSlotController::HoverCardUpdateType::kFocus);
+    delegate_->HideHoverCard(HoverCardUpdateType::kFocus);
   }
 }
 

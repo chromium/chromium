@@ -269,8 +269,8 @@ void TabStripView::OnMouseExited(const ui::MouseEvent& event) {
 
   if (TabHoverCardController* hover_card_controller =
           collection_node_->GetController()->GetHoverCardController()) {
-    hover_card_controller->UpdateHoverCard(
-        nullptr, TabSlotController::HoverCardUpdateType::kHover);
+    hover_card_controller->UpdateHoverCard(nullptr,
+                                           HoverCardUpdateType::kHover);
   }
 }
 
@@ -303,8 +303,8 @@ void TabStripView::OnWidgetActivationChanged(views::Widget* widget,
   if (TabHoverCardController* hover_card_controller =
           collection_node_->GetController()->GetHoverCardController();
       hover_card_controller) {
-    hover_card_controller->UpdateHoverCard(
-        nullptr, TabSlotController::HoverCardUpdateType::kEvent);
+    hover_card_controller->UpdateHoverCard(nullptr,
+                                           HoverCardUpdateType::kEvent);
   }
 }
 
@@ -890,8 +890,8 @@ void TabStripView::HideHoverCardOnScroll() {
   if (TabHoverCardController* hover_card_controller =
           collection_node_->GetController()->GetHoverCardController();
       hover_card_controller && hover_card_controller->IsHoverCardVisible()) {
-    hover_card_controller->UpdateHoverCard(
-        nullptr, TabSlotController::HoverCardUpdateType::kAnimating);
+    hover_card_controller->UpdateHoverCard(nullptr,
+                                           HoverCardUpdateType::kAnimating);
   }
 }
 
