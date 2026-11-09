@@ -26,7 +26,9 @@ export function getHtml(this: SettingsSearchPageElement) {
         <div class="cr-row first">
           <settings-search-engine-icon .engine="${this.defaultSearchEngine_}">
           </settings-search-engine-icon>
-          <div class="search-engine-name">${this.defaultSearchEngine_?.name}</div>
+          <div class="search-engine-name">
+            ${this.defaultSearchEngine_?.name}
+          </div>
           ${this.isDefaultSearchControlledByPolicy_() ? html`
             <cr-policy-pref-indicator
                 .pref="${this.defaultSearchProviderDataPref_}">
@@ -65,26 +67,26 @@ export function getHtml(this: SettingsSearchPageElement) {
     ${this.defaultSearchProviderDataPref_?.extensionId ? html`
       ${this.searchSettingsUpdateEnabled_ ? html`
         <div class="cr-row">
-          <extension-controlled-message
-              class="flex"
-              extension-id="${this.defaultSearchProviderDataPref_?.extensionId}"
+          <extension-controlled-message class="flex"
+              extension-id="${
+                  this.defaultSearchProviderDataPref_?.extensionId}"
               extension-name="${
                   this.defaultSearchProviderDataPref_?.controlledByName}"
               ?extension-can-be-disabled="${
                   !!this.defaultSearchProviderDataPref_
-                      ?.extensionCanBeDisabled}">
+                        ?.extensionCanBeDisabled}">
           </extension-controlled-message>
         </div>
       ` : html`
         <div class="cr-row continuation">
-          <extension-controlled-indicator
-              class="flex"
-              extension-id="${this.defaultSearchProviderDataPref_?.extensionId}"
+          <extension-controlled-indicator class="flex"
+              extension-id="${
+                  this.defaultSearchProviderDataPref_?.extensionId}"
               extension-name="${
                   this.defaultSearchProviderDataPref_?.controlledByName}"
               ?extension-can-be-disabled="${
                   !!this.defaultSearchProviderDataPref_
-                      ?.extensionCanBeDisabled}">
+                        ?.extensionCanBeDisabled}">
           </extension-controlled-indicator>
         </div>
       `}
@@ -95,7 +97,8 @@ export function getHtml(this: SettingsSearchPageElement) {
       <cr-link-row class="hr" id="enginesSubpageTrigger"
           label="$i18n{searchEnginesManageSiteSearch}"
           @click="${this.onManageSearchEnginesClick_}"
-          role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
     ` : ''}
   </div>
 </settings-section>

@@ -23,7 +23,7 @@ ${this.showResetProfileBanner_ ? html`
 
 <cr-view-manager id="switcher" ?show-all="${this.shouldShowAll_()}">
   ${cache(this.settingsRefresh2026Enabled_ &&
-      this.showPage_(this.pageVisibility_?.home) ? html`
+  this.showPage_(this.pageVisibility_?.home) ? html`
     <div slot="view" id="home">
       ${cache(this.renderPlugin_(this.routes_.BASIC) ? html`
         <div>Home page placeholder</div>
@@ -32,7 +32,7 @@ ${this.showResetProfileBanner_ ? html`
   ` : '')}
 
   ${cache(!this.settingsRefresh2026Enabled_ &&
-      this.showPage_(this.pageVisibility_?.people) ? html`
+  this.showPage_(this.pageVisibility_?.people) ? html`
     <div slot="view" id="people">
       ${cache(this.renderPlugin_(this.routes_.PEOPLE) ? html`
         <settings-people-page-index ?in-search-mode="${this.inSearchMode_}">
@@ -62,7 +62,8 @@ ${this.showResetProfileBanner_ ? html`
   ${cache(this.showPage_(this.pageVisibility_?.performance) ? html`
     <div slot="view" id="performance">
       ${cache(this.renderPlugin_(this.routes_.PERFORMANCE) ? html`
-        <settings-performance-page-index ?in-search-mode="${this.inSearchMode_}">
+        <settings-performance-page-index
+            ?in-search-mode="${this.inSearchMode_}">
         </settings-performance-page-index>
       ` : '')}
     </div>
@@ -95,7 +96,7 @@ ${this.showResetProfileBanner_ ? html`
 
 <if expr="not is_chromeos">
   ${cache(!this.settingsRefresh2026Enabled_ &&
-      this.showPage_(this.pageVisibility_?.defaultBrowser) ? html`
+  this.showPage_(this.pageVisibility_?.defaultBrowser) ? html`
     <div slot="view" id="defaultBrowser">
       ${cache(this.renderPlugin_(this.routes_.DEFAULT_BROWSER) ? html`
         <settings-default-browser-page></settings-default-browser-page>
@@ -105,7 +106,7 @@ ${this.showResetProfileBanner_ ? html`
 </if>
 
   ${cache(!this.settingsRefresh2026Enabled_ &&
-      this.showPage_(this.pageVisibility_?.onStartup) ? html`
+  this.showPage_(this.pageVisibility_?.onStartup) ? html`
     <div slot="view" id="onStartup">
       ${cache(this.renderPlugin_(this.routes_.ON_STARTUP) ? html`
         <settings-on-startup-page></settings-on-startup-page>
@@ -121,8 +122,7 @@ ${this.showResetProfileBanner_ ? html`
         </settings-languages-page-index-cros>
 </if>
 <if expr="not is_chromeos">
-        <settings-languages-page-index
-            ?in-search-mode="${this.inSearchMode_}">
+        <settings-languages-page-index ?in-search-mode="${this.inSearchMode_}">
         </settings-languages-page-index>
 </if>
       ` : '')}
@@ -130,7 +130,7 @@ ${this.showResetProfileBanner_ ? html`
   ` : '')}
 
   ${cache(!this.settingsRefresh2026Enabled_ &&
-      this.showPage_(this.pageVisibility_?.downloads) ? html`
+  this.showPage_(this.pageVisibility_?.downloads) ? html`
     <div slot="view" id="downloads">
       ${cache(this.renderPlugin_(this.routes_.DOWNLOADS) ? html`
         <settings-downloads-page></settings-downloads-page>
@@ -148,7 +148,7 @@ ${this.showResetProfileBanner_ ? html`
   ` : '')}
 
   ${cache(this.settingsRefresh2026Enabled_ &&
-      this.showPage_(this.pageVisibility_?.general) ? html`
+  this.showPage_(this.pageVisibility_?.general) ? html`
     <div slot="view" id="general">
       ${cache(this.renderPlugin_(this.routes_.GENERAL) ? html`
         <settings-general-page-index ?in-search-mode="${this.inSearchMode_}">
@@ -159,7 +159,7 @@ ${this.showResetProfileBanner_ ? html`
 
 <if expr="not is_chromeos">
   ${cache(!this.settingsRefresh2026Enabled_ &&
-      this.showPage_(this.pageVisibility_?.system) ? html`
+  this.showPage_(this.pageVisibility_?.system) ? html`
     <div slot="view" id="system">
       ${cache(this.renderPlugin_(this.routes_.SYSTEM) ? html`
         <settings-system-page></settings-system-page>
@@ -169,7 +169,7 @@ ${this.showResetProfileBanner_ ? html`
 </if>
 
   ${cache(!this.settingsRefresh2026Enabled_ &&
-      this.showPage_(this.pageVisibility_?.reset) ? html`
+  this.showPage_(this.pageVisibility_?.reset) ? html`
     <div slot="view" id="reset">
       ${cache(this.renderPlugin_(this.routes_.RESET) ? html`
         <settings-reset-page></settings-reset-page>

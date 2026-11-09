@@ -33,8 +33,7 @@ export function getHtml(this: SiteShortcutsPageElement) {
     </div>
   </cr-expand-button>
   <cr-collapse ?opened="${this.activeShortcutsExpanded_}">
-    <settings-search-engines-list
-        id="activeShortcutsList"
+    <settings-search-engines-list id="activeShortcutsList"
         ?hidden="${!this.activeShortcuts.length}"
         .engines="${this.activeShortcuts}" show-shortcut>
     </settings-search-engines-list>
@@ -60,8 +59,7 @@ export function getHtml(this: SiteShortcutsPageElement) {
     </div>
   </cr-expand-button>
   <cr-collapse ?opened="${this.inactiveShortcutsExpanded_}">
-    <settings-search-engines-list
-        id="inactiveShortcutsList"
+    <settings-search-engines-list id="inactiveShortcutsList"
         ?hidden="${!this.inactiveShortcuts.length}"
         .engines="${this.inactiveShortcuts}" show-shortcut>
     </settings-search-engines-list>

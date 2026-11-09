@@ -30,7 +30,8 @@ export function getHtml(this: SettingsSearchEngineListDialogElement) {
             ${item.name}
             ${item.isRecommendedFromPolicy ? html`
               <cr-policy-indicator indicator-type="recommended"
-                  tooltip-position="${this.getPolicyIndicatorTooltipPosition_()}">
+                  tooltip-position="${
+                      this.getPolicyIndicatorTooltipPosition_()}">
               </cr-policy-indicator>
             ` : ''}
           </div>

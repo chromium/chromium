@@ -19,12 +19,10 @@ export function getHtml(this: SettingsOmniboxExtensionEntryElement) {
       title="$i18n{moreActions}">
   </cr-icon-button>
   <cr-action-menu role-description="$i18n{menu}">
-    <button class="dropdown-item" @click="${this.onManageClick_}"
-        id="manage">
+    <button class="dropdown-item" @click="${this.onManageClick_}" id="manage">
       $i18n{searchEnginesManageExtension}
     </button>
-    <button class="dropdown-item" @click="${this.onDisableClick_}"
-        id="disable">
+    <button class="dropdown-item" @click="${this.onDisableClick_}" id="disable">
       $i18n{disable}
     </button>
   </cr-action-menu>

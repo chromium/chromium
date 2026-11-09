@@ -5,16 +5,15 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {RestartType} from '../relaunch_mixin_lit.js';
+
 import type {SettingsSystemPageElement} from './system_page.js';
 
 export function getHtml(this: SettingsSystemPageElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <settings-section page-title="$i18n{systemPageTitle}"
     class="cr-centered-card-container">
 <if expr="not is_macosx">
-  <settings-toggle-button
-      pref-key="background_mode.enabled"
+  <settings-toggle-button pref-key="background_mode.enabled"
       label="$i18n{backgroundAppsLabel}">
   </settings-toggle-button>
   <div class="hr"></div>
@@ -32,8 +31,7 @@ export function getHtml(this: SettingsSystemPageElement) {
   ${this.showProcessIsolationSetting_ ? html`
     <div class="hr"></div>
     <settings-toggle-button id="isolationState"
-        pref-key="isolation_state.enabled"
-        label="$i18n{isolationStateLabel}"
+        pref-key="isolation_state.enabled" label="$i18n{isolationStateLabel}"
         sub-label="$i18n{isolationStateSubLabel}"
         learn-more-url="$i18n{isolationStateLearnMoreUrl}">
       ${this.shouldShowIsolationRestart_() ? html`
@@ -64,17 +62,15 @@ export function getHtml(this: SettingsSystemPageElement) {
       <div class="flex cr-row-text" ?hidden="${!this.isProxyDefault_}">
         $i18n{proxySettingsLabel}
       </div>
-      <div class="flex cr-row-text"
-          ?hidden="${!this.proxyPref_?.extensionId}">
+      <div class="flex cr-row-text" ?hidden="${!this.proxyPref_?.extensionId}">
         $i18n{proxySettingsExtensionLabel}
       </div>
-      <div class="flex cr-row-text"
-          ?hidden="${!this.isProxyEnforcedByPolicy_}">
+      <div class="flex cr-row-text" ?hidden="${!this.isProxyEnforcedByPolicy_}">
         $i18n{proxySettingsPolicyLabel}
       </div>
-      <cr-icon-button class="icon-external"
-          ?hidden="${!this.isProxyDefault_}"
-          aria-label="$i18n{proxySettingsLabel}"></cr-icon-button>
+      <cr-icon-button class="icon-external" ?hidden="${!this.isProxyDefault_}"
+          aria-label="$i18n{proxySettingsLabel}">
+      </cr-icon-button>
       ${this.isProxyEnforcedByPolicy_ ? html`
         <cr-policy-pref-indicator .pref="${this.proxyPref_}"
             icon-aria-label="$i18n{proxySettingsLabel}">
@@ -94,9 +90,9 @@ export function getHtml(this: SettingsSystemPageElement) {
       <div class="flex cr-row-text proxy-multisource-padding">
         $i18n{proxySettingsYourDevice}
       </div>
-      <cr-icon-button class="icon-external"
-          ?hidden="${!this.isProxyDefault_}"
-          aria-label="$i18n{proxySettingsLabel}"></cr-icon-button>
+      <cr-icon-button class="icon-external" ?hidden="${!this.isProxyDefault_}"
+          aria-label="$i18n{proxySettingsLabel}">
+      </cr-icon-button>
     </div>
     ${!this.proxyOverrideRulesPref_?.extensionId ? html`
       <div class="cr-row continuation">
@@ -113,8 +109,10 @@ export function getHtml(this: SettingsSystemPageElement) {
         <extension-controlled-indicator class="flex proxy-multisource-padding"
             extension-id="${this.proxyOverrideRulesPref_.extensionId}"
             extension-name="${this.proxyOverrideRulesPref_.controlledByName}"
-            ?extension-name-only-in-label="${this.isProxyEnforcedByMultipleSources_}"
-            ?extension-can-be-disabled="${!!this.proxyOverrideRulesPref_.extensionCanBeDisabled}">
+            ?extension-name-only-in-label="${
+                this.isProxyEnforcedByMultipleSources_}"
+            ?extension-can-be-disabled="${
+                !!this.proxyOverrideRulesPref_.extensionCanBeDisabled}">
         </extension-controlled-indicator>
       </div>
     ` : ''}
@@ -124,8 +122,10 @@ export function getHtml(this: SettingsSystemPageElement) {
       <extension-controlled-indicator class="flex"
           extension-id="${this.proxyPref_.extensionId}"
           extension-name="${this.proxyPref_.controlledByName}"
-          ?extension-name-only-in-label="${this.isProxyEnforcedByMultipleSources_}"
-          ?extension-can-be-disabled="${!!this.proxyPref_.extensionCanBeDisabled}"
+          ?extension-name-only-in-label="${
+              this.isProxyEnforcedByMultipleSources_}"
+          ?extension-can-be-disabled="${
+              !!this.proxyPref_.extensionCanBeDisabled}"
           @disable-extension-click="${this.onDisableExtensionClick_}">
       </extension-controlled-indicator>
     </div>
@@ -138,5 +138,4 @@ export function getHtml(this: SettingsSystemPageElement) {
   ` : ''}
 </settings-section>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

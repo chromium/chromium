@@ -19,37 +19,28 @@ export function getHtml(this: SettingsSearchEngineEditDialogElement) {
         </span>
       </div>
     ` : ''}
-    <cr-input id="searchEngine"
-        label="$i18n{searchEnginesName}"
-        ?readonly="${this.readonly_}"
-        error-message="$i18n{notValid}"
+    <cr-input id="searchEngine" label="$i18n{searchEnginesName}"
+        ?readonly="${this.readonly_}" error-message="$i18n{notValid}"
         .value="${this.searchEngine_}"
         @value-changed="${this.onSearchEngineValueChanged_}"
-        @input="${this.onSearchEngineInput_}"
-        autofocus>
+        @input="${this.onSearchEngineInput_}" autofocus>
     </cr-input>
-    <cr-input id="keyword"
-        label="$i18n{searchEnginesShortcut}"
-        ?readonly="${this.readonly_}"
-        error-message="$i18n{notValid}"
+    <cr-input id="keyword" label="$i18n{searchEnginesShortcut}"
+        ?readonly="${this.readonly_}" error-message="$i18n{notValid}"
         .value="${this.keyword_}"
         @value-changed="${this.onKeywordValueChanged_}"
-        @focus="${this.onKeywordFocus_}"
-        @input="${this.onKeywordInput_}">
+        @focus="${this.onKeywordFocus_}" @input="${this.onKeywordInput_}">
     </cr-input>
-    <cr-input id="queryUrl"
-        label="$i18n{searchEnginesQueryURLExplanation}"
-        ?readonly="${this.urlIsReadonly_}"
-        error-message="$i18n{notValid}"
+    <cr-input id="queryUrl" label="$i18n{searchEnginesQueryURLExplanation}"
+        ?readonly="${this.urlIsReadonly_}" error-message="$i18n{notValid}"
         .value="${this.queryUrl_}"
         @value-changed="${this.onQueryUrlValueChanged_}"
-        @focus="${this.onQueryUrlFocus_}"
-        @input="${this.onQueryUrlInput_}">
+        @focus="${this.onQueryUrlFocus_}" @input="${this.onQueryUrlInput_}">
     </cr-input>
   </div>
   <div slot="button-container">
-    <cr-button class="cancel-button" @click="${this.onCancelClick_}"
-        id="cancel" ?hidden="${this.readonly_}">
+    <cr-button class="cancel-button" @click="${this.onCancelClick_}" id="cancel"
+        ?hidden="${this.readonly_}">
       $i18n{cancel}
     </cr-button>
     <cr-button id="actionButton" class="action-button"

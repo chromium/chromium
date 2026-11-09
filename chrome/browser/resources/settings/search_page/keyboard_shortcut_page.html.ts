@@ -11,12 +11,12 @@ export function getHtml(this: KeyboardShortcutPageElement) {
 <settings-section page-title="$i18n{searchKeyboardKeyTitle}">
   <div class="cr-row first">
     $i18n{searchKeyboardKeyDescription}
-    <settings-dropdown-menu
-        id="dropdown"
+    <settings-dropdown-menu id="dropdown"
         label="$i18n{searchKeyboardKeyDescription}"
         pref-key="omnibox.keyword_space_triggering_enabled"
         .menuOptions="${this.keyboardShortcutMenuOptions_}"
-        @settings-control-change="${this.onKeyboardShortcutSettingsControlChange_}">
+        @settings-control-change="${
+            this.onKeyboardShortcutSettingsControlChange_}">
     </settings-dropdown-menu>
   </div>
 </settings-section>

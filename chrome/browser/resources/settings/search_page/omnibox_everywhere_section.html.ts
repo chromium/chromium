@@ -9,8 +9,7 @@ import type {SettingsOmniboxEverywhereSectionElement} from './omnibox_everywhere
 export function getHtml(this: SettingsOmniboxEverywhereSectionElement) {
   return html`<!--_html_template_start_-->
 <settings-section page-title="$i18n{omniboxEverywhereTitle}">
-  <settings-toggle-button id="mainToggle"
-      class="first"
+  <settings-toggle-button id="mainToggle" class="first"
       pref-key="omnibox_everywhere.enabled"
       @change="${this.onMainToggleChange_}"
       label="$i18n{omniboxEverywhereToggleTitle}"
@@ -26,19 +25,16 @@ export function getHtml(this: SettingsOmniboxEverywhereSectionElement) {
         <div class="secondary">
           $i18n{omniboxEverywhereShortcutSublabel}
           <a href="$i18n{omniboxEverywhereLearnMoreURL}"
-              aria-description="$i18n{opensInNewTab}"
-              target="_blank">
+              aria-description="$i18n{opensInNewTab}" target="_blank">
             $i18n{learnMore}
           </a>
         </div>
       </div>
-      <cr-shortcut-input class="shortcut-input"
-          id="shortcutInput"
+      <cr-shortcut-input class="shortcut-input" id="shortcutInput"
           input-aria-label="$i18n{omniboxEverywhereShortcutTitle}"
           edit-button-aria-label="$i18n{edit}"
           clear-button-aria-label="$i18n{shortcutClear}"
-          .shortcut="${this.registeredShortcut_}"
-          allow-ctrl-alt-shortcuts
+          .shortcut="${this.registeredShortcut_}" allow-ctrl-alt-shortcuts
           @input-capture-change="${this.onInputCaptureChange_}"
           @shortcut-updated="${this.onShortcutUpdated_}">
       </cr-shortcut-input>
@@ -46,8 +42,7 @@ export function getHtml(this: SettingsOmniboxEverywhereSectionElement) {
 
     <settings-toggle-button id="showShortcutsToggle"
         pref-key="synthetic.settings.omnibox_everywhere.show_shortcuts"
-        no-set-pref
-        @change="${this.onShowShortcutsToggleChange_}"
+        no-set-pref @change="${this.onShowShortcutsToggleChange_}"
         label="$i18n{omniboxEverywhereShowShortcutsTitle}"
         sub-label="$i18n{omniboxEverywhereShowShortcutsSublabel}">
     </settings-toggle-button>

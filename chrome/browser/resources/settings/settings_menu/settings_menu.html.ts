@@ -8,175 +8,161 @@ import type {SettingsMenuElement} from './settings_menu.js';
 
 export function getHtml(this: SettingsMenuElement) {
   return html`<!--_html_template_start_-->
-    <div role="navigation">
-      <cr-menu-selector id="menu" selectable="a:not(#extensionsLink)"
-          attr-for-selected="href" @iron-activate="${this.onIronActivate_}"
-          @click="${this.onLinkClick_}" selected-attribute="selected">
-        ${this.settingsRefresh2026Enabled_ ? html`
-          <a role="menuitem"
-              id="home" href="/"
-              ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.home)}"
-              class="cr-nav-menu-item">
-            <cr-icon icon="settings20:home"></cr-icon>
-            <!-- TODO(b/574662686): Update "Home" string -->
-            <span class="menu-label">Home</span>
-            <cr-ripple></cr-ripple>
-          </a>
-        ` : html`
-          <a role="menuitem"
-              id="people" href="/people"
-              ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.people)}"
-              class="cr-nav-menu-item">
+<div role="navigation">
+  <cr-menu-selector id="menu" selectable="a:not(#extensionsLink)"
+      attr-for-selected="href" @iron-activate="${this.onIronActivate_}"
+      @click="${this.onLinkClick_}" selected-attribute="selected">
+    ${this.settingsRefresh2026Enabled_ ? html`
+      <a role="menuitem" id="home" href="/"
+          ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.home)}"
+          class="cr-nav-menu-item">
+        <cr-icon icon="settings20:home"></cr-icon>
+        <!-- TODO(b/574662686): Update "Home" string -->
+        <span class="menu-label">Home</span>
+        <cr-ripple></cr-ripple>
+      </a>
+    ` : html`
+      <a role="menuitem" id="people" href="/people"
+          ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.people)}"
+          class="cr-nav-menu-item">
 <if expr="not _google_chrome">
-            <cr-icon icon="settings:person"></cr-icon>
+        <cr-icon icon="settings:person"></cr-icon>
 </if>
 <if expr="_google_chrome">
-            <cr-icon icon="settings-internal:google-g"></cr-icon>
+        <cr-icon icon="settings-internal:google-g"></cr-icon>
 </if>
-            <span class="menu-label">$i18n{peoplePageTitle}</span>
-            <cr-ripple></cr-ripple>
-          </a>
-        `}
-        <a role="menuitem" id="autofill" href="/autofill"
-            @click="${this.onAutofillClick_}"
-            class="cr-nav-menu-item"
-            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.yourSavedInfo)}">
-          <cr-icon icon="settings:password-manager"></cr-icon>
-          <span class="menu-label">$i18n{autofillPageTitle}</span>
-          <cr-ripple></cr-ripple>
-        </a>
-        <a role="menuitem" id="privacy" href="/privacy"
-            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.privacy)}"
-            class="cr-nav-menu-item">
-          <cr-icon icon="settings:security"></cr-icon>
-          <span class="menu-label">$i18n{privacyPageTitle}</span>
-          <cr-ripple></cr-ripple>
-        </a>
-        <a role="menuitem" id="performance" href="/performance"
-            class="cr-nav-menu-item"
-            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.performance)}">
-          <cr-icon icon="settings:speed"></cr-icon>
-          <span class="menu-label">$i18n{performancePageTitle}</span>
-          <cr-ripple></cr-ripple>
-        </a>
-        <a role="menuitem" id="ai" href="/ai"
-            ?hidden="${!this.showAiPageMenuItem_()}"
-            class="cr-nav-menu-item">
-          <cr-icon icon="settings20:button-magic"></cr-icon>
-          <span class="menu-label">$i18n{aiPageTitle}</span>
-          <cr-ripple></cr-ripple>
-        </a>
-        <a role="menuitem" id="appearance" href="/appearance"
-            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.appearance)}"
-            class="cr-nav-menu-item">
-          <cr-icon icon="settings:palette"></cr-icon>
-          <span class="menu-label">$i18n{appearancePageTitle}</span>
-          <cr-ripple></cr-ripple>
-        </a>
-        ${!this.settingsRefresh2026Enabled_ ? html`
-          <a role="menuitem" id="search" href="/search"
-              class="cr-nav-menu-item">
-            <cr-icon icon="settings:search"></cr-icon>
-            <span class="menu-label">$i18n{searchPageTitle}</span>
-            <cr-ripple></cr-ripple>
-          </a>
+        <span class="menu-label">$i18n{peoplePageTitle}</span>
+        <cr-ripple></cr-ripple>
+      </a>
+    `}
+    <a role="menuitem" id="autofill" href="/autofill"
+        @click="${this.onAutofillClick_}" class="cr-nav-menu-item" ?hidden="${
+            this.shouldHideMenuItem_(this.pageVisibility_?.yourSavedInfo)}">
+      <cr-icon icon="settings:password-manager"></cr-icon>
+      <span class="menu-label">$i18n{autofillPageTitle}</span>
+      <cr-ripple></cr-ripple>
+    </a>
+    <a role="menuitem" id="privacy" href="/privacy"
+        ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.privacy)}"
+        class="cr-nav-menu-item">
+      <cr-icon icon="settings:security"></cr-icon>
+      <span class="menu-label">$i18n{privacyPageTitle}</span>
+      <cr-ripple></cr-ripple>
+    </a>
+    <a role="menuitem" id="performance" href="/performance"
+        class="cr-nav-menu-item" ?hidden="${
+            this.shouldHideMenuItem_(this.pageVisibility_?.performance)}">
+      <cr-icon icon="settings:speed"></cr-icon>
+      <span class="menu-label">$i18n{performancePageTitle}</span>
+      <cr-ripple></cr-ripple>
+    </a>
+    <a role="menuitem" id="ai" href="/ai"
+        ?hidden="${!this.showAiPageMenuItem_()}" class="cr-nav-menu-item">
+      <cr-icon icon="settings20:button-magic"></cr-icon>
+      <span class="menu-label">$i18n{aiPageTitle}</span>
+      <cr-ripple></cr-ripple>
+    </a>
+    <a role="menuitem" id="appearance" href="/appearance"
+        ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.appearance)}"
+        class="cr-nav-menu-item">
+      <cr-icon icon="settings:palette"></cr-icon>
+      <span class="menu-label">$i18n{appearancePageTitle}</span>
+      <cr-ripple></cr-ripple>
+    </a>
+    ${!this.settingsRefresh2026Enabled_ ? html`
+      <a role="menuitem" id="search" href="/search" class="cr-nav-menu-item">
+        <cr-icon icon="settings:search"></cr-icon>
+        <span class="menu-label">$i18n{searchPageTitle}</span>
+        <cr-ripple></cr-ripple>
+      </a>
 <if expr="not is_chromeos">
-          <a role="menuitem" id="defaultBrowser" class="cr-nav-menu-item"
-              href="/defaultBrowser"
-              ?hidden="${this.shouldHideMenuItem_(
-                  this.pageVisibility_?.defaultBrowser)}">
-            <cr-icon icon="settings:web-asset"></cr-icon>
-            <span class="menu-label">$i18n{defaultBrowser}</span>
-            <cr-ripple></cr-ripple>
-          </a>
+      <a role="menuitem" id="defaultBrowser" class="cr-nav-menu-item"
+          href="/defaultBrowser" ?hidden="${
+              this.shouldHideMenuItem_(this.pageVisibility_?.defaultBrowser)}">
+        <cr-icon icon="settings:web-asset"></cr-icon>
+        <span class="menu-label">$i18n{defaultBrowser}</span>
+        <cr-ripple></cr-ripple>
+      </a>
 </if>
-          <a role="menuitem" id="onStartup" href="/onStartup"
-              class="cr-nav-menu-item"
-              ?hidden="${this.shouldHideMenuItem_(
-                  this.pageVisibility_?.onStartup)}">
-            <cr-icon icon="settings:power-settings-new"></cr-icon>
-            <span class="menu-label">$i18n{onStartup}</span>
-            <cr-ripple></cr-ripple>
-          </a>
-          <div class="menu-separator"></div>
-        ` : ''}
-        <a role="menuitem" id="languages" href="/languages"
-            class="cr-nav-menu-item"
-            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.languages)}">
-          <cr-icon icon="settings:translate"></cr-icon>
-          <span class="menu-label">$i18n{languagesPageTitle}</span>
-          <cr-ripple></cr-ripple>
-        </a>
-        ${!this.settingsRefresh2026Enabled_ ? html`
-          <a role="menuitem" id="downloads" href="/downloads"
-              class="cr-nav-menu-item"
-              ?hidden="${this.shouldHideMenuItem_(
-                  this.pageVisibility_?.downloads)}">
-            <cr-icon icon="settings:download"></cr-icon>
-            <span class="menu-label">$i18n{downloadsPageTitle}</span>
-            <cr-ripple></cr-ripple>
-          </a>
-        ` : ''}
-        <a role="menuitem" id="accessibility" href="/accessibility"
-            class="cr-nav-menu-item"
-            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.a11y)}">
-          <cr-icon icon="settings:accessibility"></cr-icon>
-          <span class="menu-label">$i18n{a11yPageTitle}</span>
-          <cr-ripple></cr-ripple>
-        </a>
-        ${this.settingsRefresh2026Enabled_ ? html`
-          <a role="menuitem" id="search" href="/search"
-              class="cr-nav-menu-item">
-            <cr-icon icon="settings:search"></cr-icon>
-            <span class="menu-label">$i18n{searchPageTitle}</span>
-            <cr-ripple></cr-ripple>
-          </a>
-          <a role="menuitem" id="general" href="/general"
-              class="cr-nav-menu-item"
-              ?hidden="${this.shouldHideMenuItem_(
-                  this.pageVisibility_?.general)}">
-            <cr-icon icon="cr:settings-filled"></cr-icon>
-            <span class="menu-label">$i18n{generalPageTitle}</span>
-            <cr-ripple></cr-ripple>
-          </a>
-        ` : html`
+      <a role="menuitem" id="onStartup" href="/onStartup"
+          class="cr-nav-menu-item" ?hidden="${
+              this.shouldHideMenuItem_(this.pageVisibility_?.onStartup)}">
+        <cr-icon icon="settings:power-settings-new"></cr-icon>
+        <span class="menu-label">$i18n{onStartup}</span>
+        <cr-ripple></cr-ripple>
+      </a>
+      <div class="menu-separator"></div>
+    ` : ''}
+    <a role="menuitem" id="languages" href="/languages" class="cr-nav-menu-item"
+        ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.languages)}">
+      <cr-icon icon="settings:translate"></cr-icon>
+      <span class="menu-label">$i18n{languagesPageTitle}</span>
+      <cr-ripple></cr-ripple>
+    </a>
+    ${!this.settingsRefresh2026Enabled_ ? html`
+      <a role="menuitem" id="downloads" href="/downloads"
+          class="cr-nav-menu-item" ?hidden="${
+              this.shouldHideMenuItem_(this.pageVisibility_?.downloads)}">
+        <cr-icon icon="settings:download"></cr-icon>
+        <span class="menu-label">$i18n{downloadsPageTitle}</span>
+        <cr-ripple></cr-ripple>
+      </a>
+    ` : ''}
+    <a role="menuitem" id="accessibility" href="/accessibility"
+        class="cr-nav-menu-item"
+        ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.a11y)}">
+      <cr-icon icon="settings:accessibility"></cr-icon>
+      <span class="menu-label">$i18n{a11yPageTitle}</span>
+      <cr-ripple></cr-ripple>
+    </a>
+    ${this.settingsRefresh2026Enabled_ ? html`
+      <a role="menuitem" id="search" href="/search" class="cr-nav-menu-item">
+        <cr-icon icon="settings:search"></cr-icon>
+        <span class="menu-label">$i18n{searchPageTitle}</span>
+        <cr-ripple></cr-ripple>
+      </a>
+      <a role="menuitem" id="general" href="/general" class="cr-nav-menu-item"
+          ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.general)}">
+        <cr-icon icon="cr:settings-filled"></cr-icon>
+        <span class="menu-label">$i18n{generalPageTitle}</span>
+        <cr-ripple></cr-ripple>
+      </a>
+    ` : html`
 <if expr="not is_chromeos">
-          <a role="menuitem" id="system" href="/system" class="cr-nav-menu-item"
-              ?hidden="${this.shouldHideMenuItem_(
-                  this.pageVisibility_?.system)}">
-            <cr-icon icon="settings:build"></cr-icon>
-            <span class="menu-label">$i18n{systemPageTitle}</span>
-            <cr-ripple></cr-ripple>
-          </a>
+      <a role="menuitem" id="system" href="/system" class="cr-nav-menu-item"
+          ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.system)}">
+        <cr-icon icon="settings:build"></cr-icon>
+        <span class="menu-label">$i18n{systemPageTitle}</span>
+        <cr-ripple></cr-ripple>
+      </a>
 </if>
-          <a role="menuitem" id="reset" href="/reset"
-              ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.reset)}"
-              class="cr-nav-menu-item">
-            <cr-icon icon="settings:restart-alt"></cr-icon>
-            <span class="menu-label">$i18n{resetPageTitle}</span>
-            <cr-ripple></cr-ripple>
-          </a>
-        `}
-        <div ?hidden="${this.hideBottomMenuSeparator_()}"
-            class="menu-separator"></div>
-        <a role="menuitem" id="extensionsLink" class="cr-nav-menu-item"
-            href="chrome://extensions" target="_blank"
-            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.extensions)}"
-            @click="${this.onExtensionsLinkClick_}"
-            title="$i18n{extensionsLinkTooltip}">
-          <cr-icon icon="settings:chrome-extension"></cr-icon>
-          <span class="menu-label">$i18n{extensionsPageTitle}</span>
-          <div class="cr-icon icon-external"></div>
-          <cr-ripple></cr-ripple>
-        </a>
-        <a role="menuitem" id="about-menu" href="/help"
-            class="cr-nav-menu-item">
-          <cr-icon icon="cr:chrome-product"></cr-icon>
-          <span class="menu-label">$i18n{aboutPageTitle}</span>
-          <cr-ripple></cr-ripple>
-        </a>
-      </cr-menu-selector>
+      <a role="menuitem" id="reset" href="/reset"
+          ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.reset)}"
+          class="cr-nav-menu-item">
+        <cr-icon icon="settings:restart-alt"></cr-icon>
+        <span class="menu-label">$i18n{resetPageTitle}</span>
+        <cr-ripple></cr-ripple>
+      </a>
+    `}
+    <div ?hidden="${this.hideBottomMenuSeparator_()}" class="menu-separator">
     </div>
+    <a role="menuitem" id="extensionsLink" class="cr-nav-menu-item"
+        href="chrome://extensions" target="_blank"
+        ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.extensions)}"
+        @click="${this.onExtensionsLinkClick_}"
+        title="$i18n{extensionsLinkTooltip}">
+      <cr-icon icon="settings:chrome-extension"></cr-icon>
+      <span class="menu-label">$i18n{extensionsPageTitle}</span>
+      <div class="cr-icon icon-external"></div>
+      <cr-ripple></cr-ripple>
+    </a>
+    <a role="menuitem" id="about-menu" href="/help" class="cr-nav-menu-item">
+      <cr-icon icon="cr:chrome-product"></cr-icon>
+      <span class="menu-label">$i18n{aboutPageTitle}</span>
+      <cr-ripple></cr-ripple>
+    </a>
+  </cr-menu-selector>
+</div>
 
 <!--_html_template_end_-->`;
 }

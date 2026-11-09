@@ -14,11 +14,10 @@ export function getHtml(this: SettingsSearchEnginesListElement) {
       <span class="name" role="columnheader">$i18n{searchEnginesName}</span>
       <span class="additional-info-column-group">
         <span class="shortcut" role="columnheader"
-              ?hidden="${!this.showShortcut}">
+            ?hidden="${!this.showShortcut}">
           $i18n{searchEnginesShortcut}
         </span>
-        <span class="url" role="columnheader"
-              ?hidden="${!this.showQueryUrl}">
+        <span class="url" role="columnheader" ?hidden="${!this.showQueryUrl}">
           $i18n{searchEnginesQueryURL}
         </span>
         <span class="controls-group">
@@ -44,8 +43,7 @@ export function getHtml(this: SettingsSearchEnginesListElement) {
 
   ${this.collapseList ? html`
     <div id="containerWithCollapsibleSection" class="scroll-container"
-        ?hidden="${!this.collapseList}"
-        ?scrollable="${this.fixedHeight}">
+        ?hidden="${!this.collapseList}" ?scrollable="${this.fixedHeight}">
       <div role="rowgroup">
         ${this.visibleEngines_.map(item => html`
           <settings-search-engine-entry .engine="${item}"

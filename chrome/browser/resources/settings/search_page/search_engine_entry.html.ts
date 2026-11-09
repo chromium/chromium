@@ -23,30 +23,26 @@ export function getHtml(this: SettingsSearchEngineEntryElement) {
     </span>
     <span role="cell" id="controls-column-group">
       ${!this.searchSettingsUpdateEnabled_ ? html`
-        <cr-button class="secondary-button"
-            @click="${this.onActivateClick_}"
+        <cr-button class="secondary-button" @click="${this.onActivateClick_}"
             aria-label="${this.getActivateButtonAriaLabel_()}"
             ?hidden="${!this.engine.canBeActivated}" id="activateButton">
           $i18n{searchEnginesActivate}
         </cr-button>
       ` : ''}
-      <cr-button class="secondary-button"
-          @click="${this.onViewOrEditClick_}"
+      <cr-button class="secondary-button" @click="${this.onViewOrEditClick_}"
           ?hidden="${!this.shouldShowSecondaryButton_()}"
           id="viewDetailsButton">
         $i18n{searchEnginesViewDetails}
       </cr-button>
       ${!this.searchSettingsUpdateEnabled_ ? html`
-        <cr-icon-button class="icon-edit"
-            @click="${this.onViewOrEditClick_}"
+        <cr-icon-button class="icon-edit" @click="${this.onViewOrEditClick_}"
             title="$i18n{edit}" ?hidden="${!this.shouldShowEditIcon_()}"
             aria-label="${this.getEditButtonAriaLabel_()}"
             .disabled="${!this.engine.canBeEdited}" id="editIconButton">
         </cr-icon-button>
       ` : ''}
       ${this.engine.isManaged ? html`
-        <cr-policy-indicator indicator-type="userPolicy">
-        </cr-policy-indicator>
+        <cr-policy-indicator indicator-type="userPolicy"></cr-policy-indicator>
       ` : html`
         ${this.engine.isRecommendedFromPolicy ? html`
           <cr-policy-indicator indicator-type="recommended">
@@ -54,8 +50,7 @@ export function getHtml(this: SettingsSearchEngineEntryElement) {
         ` : ''}
       `}
       <cr-icon-button class="icon-more-vert" @click="${this.onDotsClick_}"
-          ?disabled="${this.shouldDisableDots_()}"
-          title="$i18n{moreActions}"
+          ?disabled="${this.shouldDisableDots_()}" title="$i18n{moreActions}"
           aria-label="${this.getMoreActionsAriaLabel_()}">
       </cr-icon-button>
       <cr-action-menu role-description="$i18n{menu}">
@@ -95,8 +90,7 @@ export function getHtml(this: SettingsSearchEngineEntryElement) {
           </button>
           <button class="dropdown-item" @click="${this.onMakeDefaultClick_}"
               ?hidden="${!this.showMakeDefaultOption_()}"
-              ?disabled="${!this.engine.canBeDefault}"
-              id="makeDefaultOption">
+              ?disabled="${!this.engine.canBeDefault}" id="makeDefaultOption">
             $i18n{searchEnginesMakeDefault}
           </button>
           <!-- Options only available for extensions -->
@@ -117,8 +111,7 @@ export function getHtml(this: SettingsSearchEngineEntryElement) {
   </span>
 </div>
 ${this.showControlledIndicator_() ? html`
-  <extension-controlled-indicator
-      extension-id="${this.engine.extension!.id}"
+  <extension-controlled-indicator extension-id="${this.engine.extension!.id}"
       extension-name="${this.engine.extension!.name}"
       ?extension-can-be-disabled="${this.engine.extension!.canBeDisabled}">
   </extension-controlled-indicator>

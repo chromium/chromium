@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SettingsSubpageElement} from './settings_subpage.js';
 
 export function getHtml(this: SettingsSubpageElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="cr-row first" id="headerLine">
   <cr-icon-button class="icon-arrow-back" id="closeButton"
@@ -25,11 +24,9 @@ export function getHtml(this: SettingsSubpageElement) {
   <h1 class="cr-title-text">${this.pageTitle}</h1>
   <slot name="subpage-title-extra"></slot>
   ${this.learnMoreUrl ? html`
-    <cr-icon-button iron-icon="cr:help" suppress-rtl-flip
-        id="infoButton"
+    <cr-icon-button iron-icon="cr:help" suppress-rtl-flip id="infoButton"
         aria-label="${this.getLearnMoreAriaLabel_()}"
-        aria-description="$i18n{opensInNewTab}"
-        @click="${this.onHelpClick_}">
+        aria-description="$i18n{opensInNewTab}" @click="${this.onHelpClick_}">
     </cr-icon-button>
   ` : ''}
   ${this.searchLabel ? html`
@@ -42,5 +39,4 @@ export function getHtml(this: SettingsSubpageElement) {
 </div>
 <slot></slot>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

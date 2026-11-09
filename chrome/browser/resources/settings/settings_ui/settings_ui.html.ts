@@ -8,55 +8,47 @@ import type {SettingsUiElement} from './settings_ui.js';
 
 export function getHtml(this: SettingsUiElement) {
   return html`<!--_html_template_start_-->
-    <cr-toolbar id="toolbar"
-        page-name="$i18n{settings}"
-        clear-label="$i18n{clearSearch}"
-        autofocus
-        search-prompt="$i18n{searchPrompt}"
-        @cr-toolbar-menu-click="${this.onCrToolbarMenuClick_}"
-        ?spinner-active="${this.toolbarSpinnerActive_}"
-        menu-label="$i18n{menuButtonLabel}"
-        @search-changed="${this.onSearchChanged_}"
-        role="banner"
-        ?narrow="${this.narrow_}"
-        @narrow-changed="${this.onToolbarNarrowChanged_}"
-        narrow-threshold="980"
-        ?show-menu="${this.getLeftMenuHidden_()}">
-    </cr-toolbar>
-    ${this.isSettingsSearch2026Enabled_ ? html`
-      <settings-search-dropdown .query="${this.lastSearchQuery_}">
-      </settings-search-dropdown>
-    ` : ''}
-    <cr-drawer id="drawer" @close="${this.onMenuClose_}" heading="$i18n{settings}"
-        align="$i18n{textdirection}">
-      <div slot="body">
-        <cr-lazy-render-lit id="drawerMenu"
-            .template="${() => html`
-              <settings-menu @iron-activate="${this.onIronActivate_}">
-              </settings-menu>
-            `}">
-        </cr-lazy-render-lit>
-      </div>
-    </cr-drawer>
-    <div id="container" class="no-outline cr-scrollable">
-      <div id="scrollableShadow" class="cr-scrollable-top-shadow"></div>
-      <div id="left"
-          ?hidden="${this.getLeftMenuHidden_()}"
-          ?collapsed="${this.getLeftMenuCollapsed_()}">
-        <settings-menu id="leftMenu"
-            .collapsed="${this.getLeftMenuCollapsed_()}"
-            @iron-activate="${this.onIronActivate_}">
-        </settings-menu>
-      </div>
-      <settings-main id="main"
-          .toolbarSpinnerActive="${this.toolbarSpinnerActive_}"
-          @toolbar-spinner-active-changed="${this.onToolbarSpinnerActiveChanged_}"
-          @search-finished="${this.onSearchFinished_}"
-          @search-result-interaction="${this.onSearchResultInteraction_}">
-      </settings-main>
-      <!-- An additional child of the flex #container to take up space,
-           aligned with the right-hand child of the flex toolbar. -->
-      <div id="right" ?hidden="${this.narrow_}"></div>
-    </div>
+<cr-toolbar id="toolbar" page-name="$i18n{settings}"
+    clear-label="$i18n{clearSearch}" autofocus
+    search-prompt="$i18n{searchPrompt}"
+    @cr-toolbar-menu-click="${this.onCrToolbarMenuClick_}"
+    ?spinner-active="${this.toolbarSpinnerActive_}"
+    menu-label="$i18n{menuButtonLabel}"
+    @search-changed="${this.onSearchChanged_}" role="banner"
+    ?narrow="${this.narrow_}" @narrow-changed="${this.onToolbarNarrowChanged_}"
+    narrow-threshold="980" ?show-menu="${this.getLeftMenuHidden_()}">
+</cr-toolbar>
+${this.isSettingsSearch2026Enabled_ ? html`
+  <settings-search-dropdown .query="${this.lastSearchQuery_}">
+  </settings-search-dropdown>
+` : ''}
+<cr-drawer id="drawer" @close="${this.onMenuClose_}" heading="$i18n{settings}"
+    align="$i18n{textdirection}">
+  <div slot="body">
+    <cr-lazy-render-lit id="drawerMenu"
+        .template="${() => html`
+          <settings-menu @iron-activate="${this.onIronActivate_}">
+          </settings-menu>
+        `}">
+    </cr-lazy-render-lit>
+  </div>
+</cr-drawer>
+<div id="container" class="no-outline cr-scrollable">
+  <div id="scrollableShadow" class="cr-scrollable-top-shadow"></div>
+  <div id="left" ?hidden="${this.getLeftMenuHidden_()}"
+      ?collapsed="${this.getLeftMenuCollapsed_()}">
+    <settings-menu id="leftMenu" .collapsed="${this.getLeftMenuCollapsed_()}"
+        @iron-activate="${this.onIronActivate_}">
+    </settings-menu>
+  </div>
+  <settings-main id="main" .toolbarSpinnerActive="${this.toolbarSpinnerActive_}"
+      @toolbar-spinner-active-changed="${this.onToolbarSpinnerActiveChanged_}"
+      @search-finished="${this.onSearchFinished_}"
+      @search-result-interaction="${this.onSearchResultInteraction_}">
+  </settings-main>
+  <!-- An additional child of the flex #container to take up space,
+       aligned with the right-hand child of the flex toolbar. -->
+  <div id="right" ?hidden="${this.narrow_}"></div>
+</div>
 <!--_html_template_end_-->`;
 }
