@@ -257,7 +257,7 @@ void FakeLocalFrame::GetScrollPosition(GetScrollPositionCallback callback) {
 
 void FakeLocalFrame::InvokeScriptToolForInspector(
     const blink::ToolInvocationToken& invocation_id,
-    const std::string& tool_name,
+    blink::mojom::ScriptToolSelectorPtr tool,
     const std::string& input_arguments,
     InvokeScriptToolForInspectorCallback callback) {
   std::move(callback).Run(false);

@@ -1031,17 +1031,19 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
 
 void LocalFrameMojoHandler::InvokeScriptToolForInspector(
     const ToolInvocationToken& invocation_id,
-    const String& tool_name,
+    mojom::blink::ScriptToolSelectorPtr tool,
     const String& input_arguments,
     InvokeScriptToolForInspectorCallback callback) {
   if (auto* model_context =
           ModelContextSupplement::GetIfExists(*GetDocument())) {
-    // DevTools refers to tools by name, but `ExecuteTool()` keys on the tool's
-    // (non-web-exposed) id, so resolve the name here. If the tool is
-    // unregistered before the posted task runs, `ExecuteTool()` simply won't
-    // find the id and will fail, rather than running whatever tool happens to
-    // hold the name by then.
-    if (ToolData* tool_data = model_context->FindToolDataByName(tool_name)) {
+    // `ExecuteTool()` keys on the tool's (non-web-exposed) id, so resolve a
+    // name to an id here. Either way, if the tool is unregistered before the
+    // posted task runs, `ExecuteTool()` simply won't find the id and will fail,
+    // rather than running whatever tool happens to hold the name by then.
+    ToolData* tool_data =
+        tool->is_id() ? model_context->FindToolDataById(tool->get_id())
+                      : model_context->FindToolDataByName(tool->get_name());
+    if (tool_data) {
       frame_->GetTaskRunner(TaskType::kInternalInspector)
           ->PostTask(FROM_HERE,
                      blink::BindOnce(

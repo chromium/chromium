@@ -5,6 +5,7 @@
 #include "content/browser/devtools/protocol/webmcp_handler.h"
 
 #include "base/functional/bind.h"
+#include "base/unguessable_token.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/protocol/handler_helpers.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
@@ -56,7 +57,8 @@ Response WebMCPHandler::CancelInvocation(const std::string& invocation_id) {
 }
 
 void WebMCPHandler::InvokeTool(const std::string& frame_id,
-                               const std::string& tool_name,
+                               std::optional<std::string> tool_id,
+                               std::optional<std::string> tool_name,
                                std::unique_ptr<protocol::DictionaryValue> input,
                                std::unique_ptr<InvokeToolCallback> callback) {
   if (!enabled_) {
@@ -85,6 +87,26 @@ void WebMCPHandler::InvokeTool(const std::string& frame_id,
     return;
   }
 
+  if (tool_id.has_value() == tool_name.has_value()) {
+    callback->sendFailure(Response::InvalidParams(
+        "Exactly one of toolId and toolName must be specified"));
+    return;
+  }
+
+  blink::mojom::ScriptToolSelectorPtr tool;
+  if (tool_id) {
+    std::optional<base::UnguessableToken> token =
+        base::UnguessableToken::DeserializeFromString(*tool_id);
+    if (!token) {
+      callback->sendFailure(Response::InvalidParams("Invalid toolId"));
+      return;
+    }
+    tool =
+        blink::mojom::ScriptToolSelector::NewId(blink::ScriptToolToken(*token));
+  } else {
+    tool = blink::mojom::ScriptToolSelector::NewName(*tool_name);
+  }
+
   RenderFrameHostImpl* rfh = frame_tree_node->current_frame_host();
 
   std::string input_arguments;
@@ -102,7 +124,7 @@ void WebMCPHandler::InvokeTool(const std::string& frame_id,
   initiated_invocations_[invocation_token] = rfh->GetLastCommittedOrigin();
 
   rfh->GetAssociatedLocalFrame()->InvokeScriptToolForInspector(
-      invocation_token, tool_name, input_arguments,
+      invocation_token, std::move(tool), input_arguments,
       base::BindOnce(
           [](std::unique_ptr<InvokeToolCallback> callback,
              blink::ToolInvocationToken invocation_token, bool success) {

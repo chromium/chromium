@@ -10,13 +10,28 @@ toolResponded event: {
     output : hello world
     status : Completed
 }
+\n--- Invoking test_tool by toolId ---
+invokeTool response: {
+    invocationId : <string 1>
+}
+toolResponded event: {
+    invocationId : <string 1>
+    output : hello by id
+    status : Completed
+}
+\n--- Invoking with both toolId and toolName ---
+Exactly one of toolId and toolName must be specified
+\n--- Invoking with neither toolId nor toolName ---
+Exactly one of toolId and toolName must be specified
+\n--- Invoking with a malformed toolId ---
+Invalid toolId
 \n--- Invoking with invalid tool name ---
 Tool not found
 \n--- Invoking with invalid frameId ---
 No frame for given id found
 \n--- Invoking failing_tool (should fail execution) ---
 invokeTool response: {
-    invocationId : <string 1>
+    invocationId : <string 2>
 }
 toolResponded invocationId matches
 toolResponded event for failing tool: {
@@ -24,11 +39,11 @@ toolResponded event for failing tool: {
     exception : {
         className : Error
         description : Error: This tool always fails     at fail (<anonymous>:12:19)
-        objectId : <string 2>
+        objectId : <string 3>
         subtype : error
         type : object
     }
-    invocationId : <string 1>
+    invocationId : <string 2>
     status : Error
 }
 

@@ -1,5 +1,5 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  const {dp} = await testRunner.startHTML(
+  const {dp, session} = await testRunner.startHTML(
       `
       <script>
         window.executed = [];
@@ -26,13 +26,10 @@
         };
       </script>
       `,
-      'Tests that WebMCP.invokeTool targets tools by name, and therefore ' +
-          'executes a different tool that was re-registered under the name of ' +
-          'a tool the client previously observed.');
-
-  // TODO(https://crbug.com/536063275): This documents the current, racy
-  // behavior. Once CDP clients can target tools by ID, invoking the observed
-  // (now unregistered) tool should fail instead of executing the replacement.
+      'Tests that WebMCP.invokeTool with the toolId of a tool the client ' +
+          'previously observed fails once that tool is replaced by a different ' +
+          'tool with the same name, while invoking by (deprecated) toolName ' +
+          'executes the replacement.');
 
   testRunner.log('Enabling WebMCP Domain');
   const addedPromise = dp.WebMCP.onceToolsAdded();
@@ -45,13 +42,30 @@
                  'name...');
   const removedPromise = dp.WebMCP.onceToolsRemoved();
   const reAddedPromise = dp.WebMCP.onceToolsAdded();
-  await dp.Runtime.evaluate(
-      {expression: 'window.swapTool()', awaitPromise: true});
+  await session.evaluateAsync('window.swapTool()');
   await removedPromise;
   const {params: {tools: [newTool]}} = await reAddedPromise;
   testRunner.log(`New tool: ${newTool.name} (${newTool.description})`);
 
-  testRunner.log('Invoking the observed tool by name...');
+  if (newTool.toolId !== observedTool.toolId) {
+    testRunner.log('The new tool has a different toolId');
+  }
+
+  const logExecuted = async () => {
+    const executed = await session.evaluate('window.executed.join(",")');
+    testRunner.log(`Executed tools: [${executed}]`);
+  };
+
+  testRunner.log('Invoking the observed tool by toolId...');
+  const {error} = await dp.WebMCP.invokeTool({
+    frameId: observedTool.frameId,
+    toolId: observedTool.toolId,
+    input: {},
+  });
+  testRunner.log(`invokeTool error: ${error.message}`);
+  await logExecuted();
+
+  testRunner.log('Invoking the observed tool by (deprecated) toolName...');
   const respondedPromise = dp.WebMCP.onceToolResponded();
   await dp.WebMCP.invokeTool({
     frameId: observedTool.frameId,
@@ -60,10 +74,7 @@
   });
   const {params: {status, output}} = await respondedPromise;
   testRunner.log(`toolResponded: status=${status}, output=${output}`);
-
-  const {result: {result: {value: executed}}} =
-      await dp.Runtime.evaluate({expression: 'window.executed.join(",")'});
-  testRunner.log(`Executed tools: ${executed}`);
+  await logExecuted();
 
   testRunner.completeTest();
 });

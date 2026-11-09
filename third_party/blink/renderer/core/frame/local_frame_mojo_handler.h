@@ -178,7 +178,7 @@ class LocalFrameMojoHandler
       JavaScriptExecuteRequestInIsolatedWorldCallback callback) final;
   void InvokeScriptToolForInspector(
       const ToolInvocationToken& invocation_id,
-      const String& tool_name,
+      mojom::blink::ScriptToolSelectorPtr tool,
       const String& input_arguments,
       InvokeScriptToolForInspectorCallback callback) final;
   void NotifyInspectorOfCrossDocumentScriptToolResult(

@@ -821,6 +821,16 @@ interface NonAssociatedLocalFrameHost {
 // content. In the future this interface will likely host more methods as the
 // Onion Soup project advances, which can potentially lead to the removal of
 // content/common/frame.mojom if enough code is moved to Blink.
+// Identifies a WebMCP script tool registered in a frame, for
+// `LocalFrame.InvokeScriptToolForInspector()`.
+union ScriptToolSelector {
+  // The tool's internal ID. Selects exactly that tool, which may no longer be
+  // registered.
+  blink.mojom.ScriptToolToken id;
+  // The tool's name. Selects whichever tool is registered under this name.
+  string name;
+};
+
 interface LocalFrame {
   // Retrieves the text surrounding the current selection for the frame up to
   // the length specified by |max_length|, along with its start and end offsets.
@@ -1080,13 +1090,13 @@ interface LocalFrame {
       bool wants_result,
       int32 world_id) => (mojo_base.mojom.Value result);
 
-  // Invokes a script tool in the frame. Returns true if the tool was found and
-  // invocation started.
+  // Invokes the script tool identified by `tool` in the frame. Returns true if
+  // the tool was found and invocation started.
   // TODO(crbug.com/515541906): This method is to be merged with the InvokeTool
   // method in chrome/common/chrome_render_frame.mojom once //chrome
   // implementation for script tools is moved to //content.
   InvokeScriptToolForInspector(blink.mojom.ToolInvocationToken invocation_id,
-                               string tool_name,
+                               ScriptToolSelector tool,
                                string input_arguments) => (bool success);
 
   // Notifies the frame that a tool invocation resulted in a navigation to this

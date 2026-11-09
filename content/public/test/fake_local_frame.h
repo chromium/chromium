@@ -195,7 +195,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void GetScrollPosition(GetScrollPositionCallback callback) override;
   void InvokeScriptToolForInspector(
       const blink::ToolInvocationToken& invocation_id,
-      const std::string& tool_name,
+      blink::mojom::ScriptToolSelectorPtr tool,
       const std::string& input_arguments,
       InvokeScriptToolForInspectorCallback callback) override;
   void NotifyInspectorOfCrossDocumentScriptToolResult(

@@ -24,7 +24,10 @@
       'Tests WebMCP invokeTool command.');
 
   testRunner.log('Enabling WebMCP Domain');
+  const addedPromise = dp.WebMCP.onceToolsAdded();
   await dp.WebMCP.enable();
+  const {params: {tools}} = await addedPromise;
+  const testTool = tools.find(tool => tool.name === 'test_tool');
 
   const getFrameId = async () => {
     const {result} = await dp.Page.getFrameTree();
@@ -49,6 +52,34 @@
       testRunner.log("toolResponded invocationId matches");
   }
   testRunner.log(params, "toolResponded event: ", [], ["invocationId"]);
+
+  testRunner.log('\\n--- Invoking test_tool by toolId ---');
+  eventPromise = dp.WebMCP.onceToolResponded();
+  response = await dp.WebMCP.invokeTool(
+      {frameId, toolId: testTool.toolId, input: {text: 'hello by id'}});
+  testRunner.log(response.result, 'invokeTool response: ', [],
+                 ['invocationId']);
+  event = await eventPromise;
+  testRunner.log(event.params, 'toolResponded event: ', [], ['invocationId']);
+
+  testRunner.log('\\n--- Invoking with both toolId and toolName ---');
+  response = await dp.WebMCP.invokeTool({
+    frameId,
+    toolId: testTool.toolId,
+    toolName: 'test_tool',
+    input: {text: 'hello world'}
+  });
+  testRunner.log(response.error.message, 'invokeTool error message: ');
+
+  testRunner.log('\\n--- Invoking with neither toolId nor toolName ---');
+  response =
+      await dp.WebMCP.invokeTool({frameId, input: {text: 'hello world'}});
+  testRunner.log(response.error.message, 'invokeTool error message: ');
+
+  testRunner.log('\\n--- Invoking with a malformed toolId ---');
+  response = await dp.WebMCP.invokeTool(
+      {frameId, toolId: 'not-a-tool-id', input: {text: 'hello world'}});
+  testRunner.log(response.error.message, 'invokeTool error message: ');
 
   testRunner.log('\\n--- Invoking with invalid tool name ---');
   response = await dp.WebMCP.invokeTool({

@@ -66,13 +66,19 @@ experimental domain WebMCP
   # Disables the WebMCP domain.
   command disable
 
-   # Invokes a registered tool.
+  # Invokes a registered tool. Exactly one of `toolId` and `toolName` must be specified; the command fails if both or
+  # neither are.
   command invokeTool
     parameters
       # Frame in which to invoke the tool.
       Page.FrameId frameId
-      # Name of the tool to invoke.
-      string toolName
+      # Identifier of the tool to invoke, as reported in `Tool.toolId`. Invokes exactly that tool, and fails if it is no
+      # longer registered, even if a different tool has since been registered under the same name.
+      optional ToolId toolId
+      # Name of the tool to invoke. Deprecated: invokes whichever tool is registered under this name when the command
+      # is handled, which may not be the tool the client observed if the page has since replaced it. Use `toolId`
+      # instead.
+      deprecated optional string toolName
       # Input parameters for the tool, matching the tool's inputSchema.
       object input
     returns

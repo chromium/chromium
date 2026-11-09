@@ -5,6 +5,9 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_WEBMCP_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_WEBMCP_HANDLER_H_
 
+#include <optional>
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/web_mcp.h"
@@ -40,7 +43,8 @@ class CONTENT_EXPORT WebMCPHandler : public DevToolsDomainHandler,
   Response CancelInvocation(const std::string& invocation_id) override;
 
   void InvokeTool(const std::string& frame_id,
-                  const std::string& tool_name,
+                  std::optional<std::string> tool_id,
+                  std::optional<std::string> tool_name,
                   std::unique_ptr<protocol::DictionaryValue> input,
                   std::unique_ptr<InvokeToolCallback> callback) override;
 
