@@ -260,7 +260,9 @@ void ChildProcessLauncher::SetProcessPriorityImpl(
 #endif
 
 bool ChildProcessLauncher::IsStarting() {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  // TODO(crbug.com/581809102): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return starting_;
 }
 
