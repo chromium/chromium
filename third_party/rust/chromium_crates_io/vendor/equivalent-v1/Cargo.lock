@@ -2,5 +2,5 @@
 # It is not intended for manual editing.
 [[package]]
 name = "equivalent"
-version = "1.0.2"
+version = "1.0.3"
 

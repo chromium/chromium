@@ -12,7 +12,7 @@
 [package]
 rust-version = "1.6"
 name = "equivalent"
-version = "1.0.2"
+version = "1.0.3"
 build = false
 autolib = false
 autobins = false

@@ -73,7 +73,8 @@ use core::cmp::Ordering;
 ///
 /// # Contract
 ///
-/// The implementor **must** hash like `K`, if it is hashable.
+/// The implementor **must** hash like `K`, if it is hashable. In other words,
+/// `self.equivalent(key)` implies `hash(self) == hash(key)`.
 pub trait Equivalent<K: ?Sized> {
     /// Compare self to `key` and return `true` if they are equal.
     fn equivalent(&self, key: &K) -> bool;
@@ -96,6 +97,11 @@ where
 /// implementation that uses the regular solution with `Borrow` and `Ord`, just
 /// like `BTreeMap` does, so that you can pass `&str` to lookup into a map with
 /// `String` keys and so on.
+///
+/// # Contract
+///
+/// Implementations **must** agree with [`Equivalent`], such that
+/// `self.compare(key).is_eq()` always matches `self.equivalent(key)`.
 pub trait Comparable<K: ?Sized>: Equivalent<K> {
     /// Compare self to `key` and return their ordering.
     fn compare(&self, key: &K) -> Ordering;
