@@ -903,7 +903,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ComponentUpdater.UpdateCompleteError"
-    enum="UpdateClientErrors" expires_after="2026-12-31">
+    enum="UpdateClientErrors" expires_after="2027-11-01">
   <owner>sorin@chromium.org</owner>
   <owner>src/components/component_updater/OWNERS</owner>
   <summary>The result of an install or an update check.</summary>
@@ -917,7 +917,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ComponentUpdater.UpdateCompleteTime" units="ms"
-    expires_after="2026-12-20">
+    expires_after="2027-11-01">
   <owner>sorin@chromium.org</owner>
   <owner>src/components/component_updater/OWNERS</owner>
   <summary>
