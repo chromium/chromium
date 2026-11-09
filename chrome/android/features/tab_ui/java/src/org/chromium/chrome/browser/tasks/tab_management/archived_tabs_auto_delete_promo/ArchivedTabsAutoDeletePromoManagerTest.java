@@ -18,6 +18,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -25,16 +27,27 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.UiFormat;
 
 /** Unit tests for {@link ArchivedTabsAutoDeletePromoManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
 public class ArchivedTabsAutoDeletePromoManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BottomSheetController mMockBottomSheetController;
     @Mock private TabArchiveSettings mMockTabArchiveSettings;
+    @Mock private Tracker mMockTracker;
+    @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
     private SettableNonNullObservableSupplier<Integer> mArchivedTabCountSupplier;
     private ArchivedTabsAutoDeletePromoManager mManager;
 
@@ -78,9 +91,65 @@ public class ArchivedTabsAutoDeletePromoManagerTest {
                 /* autoDeleteEnabled= */ false,
                 /* archiveCount= */ 1);
 
-        mManager.tryToShowArchivedTabsAutoDeleteDecisionPromo();
+        mManager.tryToShowArchivedTabsAutoDeleteDecisionPromo(mMockTracker);
         verify(mMockBottomSheetController)
                 .requestShowContent(any(ArchivedTabsAutoDeletePromoSheetContent.class), eq(true));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
+    public void testTryToShowPromo_CooldownGroupEnabledAndAllowed_ShowsPromo() {
+        createManager(
+                /* decisionMade= */ false,
+                /* archiveEnabled= */ true,
+                /* autoDeleteEnabled= */ false,
+                /* archiveCount= */ 1);
+        when(mMockBottomSheetController.requestShowContent(
+                        any(ArchivedTabsAutoDeletePromoSheetContent.class), eq(true)))
+                .thenReturn(true);
+        FeatureProperties expectedProps =
+                new FeatureProperties(
+                        UiFormat.BOTTOM_SHEET,
+                        /* isBlockedByCooldownGroup= */ true,
+                        /* blocksCooldownGroup= */ true);
+        when(mMockTracker.shouldTriggerHelpUi(
+                        eq(FeatureConstants.ARCHIVED_TABS_AUTO_DELETE_PROMO_FEATURE),
+                        eq(expectedProps)))
+                .thenReturn(true);
+
+        mManager.tryToShowArchivedTabsAutoDeleteDecisionPromo(mMockTracker);
+
+        verify(mMockTracker)
+                .shouldTriggerHelpUi(
+                        FeatureConstants.ARCHIVED_TABS_AUTO_DELETE_PROMO_FEATURE, expectedProps);
+        verify(mMockTracker, never())
+                .dismissed(FeatureConstants.ARCHIVED_TABS_AUTO_DELETE_PROMO_FEATURE);
+        verify(mMockBottomSheetController)
+                .requestShowContent(any(ArchivedTabsAutoDeletePromoSheetContent.class), eq(true));
+        verify(mMockBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+
+        mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.NONE);
+        verify(mMockTracker).dismissed(FeatureConstants.ARCHIVED_TABS_AUTO_DELETE_PROMO_FEATURE);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
+    public void testTryToShowPromo_CooldownGroupEnabledAndBlocked_NoPromo() {
+        createManager(
+                /* decisionMade= */ false,
+                /* archiveEnabled= */ true,
+                /* autoDeleteEnabled= */ false,
+                /* archiveCount= */ 1);
+        when(mMockTracker.shouldTriggerHelpUi(
+                        eq(FeatureConstants.ARCHIVED_TABS_AUTO_DELETE_PROMO_FEATURE),
+                        any(FeatureProperties.class)))
+                .thenReturn(false);
+
+        mManager.tryToShowArchivedTabsAutoDeleteDecisionPromo(mMockTracker);
+
+        verify(mMockTracker, never())
+                .dismissed(FeatureConstants.ARCHIVED_TABS_AUTO_DELETE_PROMO_FEATURE);
+        verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
     }
 
     @Test
@@ -91,7 +160,7 @@ public class ArchivedTabsAutoDeletePromoManagerTest {
                 /* autoDeleteEnabled= */ false,
                 /* archiveCount= */ 1);
 
-        mManager.tryToShowArchivedTabsAutoDeleteDecisionPromo();
+        mManager.tryToShowArchivedTabsAutoDeleteDecisionPromo(mMockTracker);
         verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
     }
 
@@ -103,7 +172,7 @@ public class ArchivedTabsAutoDeletePromoManagerTest {
                 /* autoDeleteEnabled= */ false,
                 /* archiveCount= */ 1);
 
-        mManager.tryToShowArchivedTabsAutoDeleteDecisionPromo();
+        mManager.tryToShowArchivedTabsAutoDeleteDecisionPromo(mMockTracker);
         verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
     }
 
@@ -115,7 +184,7 @@ public class ArchivedTabsAutoDeletePromoManagerTest {
                 /* autoDeleteEnabled= */ true,
                 /* archiveCount= */ 1);
 
-        mManager.tryToShowArchivedTabsAutoDeleteDecisionPromo();
+        mManager.tryToShowArchivedTabsAutoDeleteDecisionPromo(mMockTracker);
         verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
     }
 
@@ -127,7 +196,7 @@ public class ArchivedTabsAutoDeletePromoManagerTest {
                 /* autoDeleteEnabled= */ false,
                 /* archiveCount= */ 0);
 
-        mManager.tryToShowArchivedTabsAutoDeleteDecisionPromo();
+        mManager.tryToShowArchivedTabsAutoDeleteDecisionPromo(mMockTracker);
         verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
     }
 
@@ -142,7 +211,7 @@ public class ArchivedTabsAutoDeletePromoManagerTest {
                         any(ArchivedTabsAutoDeletePromoSheetContent.class), eq(true)))
                 .thenReturn(true);
 
-        mManager.tryToShowArchivedTabsAutoDeleteDecisionPromo();
+        mManager.tryToShowArchivedTabsAutoDeleteDecisionPromo(mMockTracker);
         mManager.destroy();
 
         verify(mMockBottomSheetController)

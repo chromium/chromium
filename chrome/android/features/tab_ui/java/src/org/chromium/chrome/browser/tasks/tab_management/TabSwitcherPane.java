@@ -263,7 +263,8 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
         tryToTriggerRemoteGroupIph();
         // Attempts to show the Auto Delete Decision Promo
         if (mArchivedTabsAutoDeletePromoManager != null) {
-            mArchivedTabsAutoDeletePromoManager.tryToShowArchivedTabsAutoDeleteDecisionPromo();
+            mArchivedTabsAutoDeletePromoManager.tryToShowArchivedTabsAutoDeleteDecisionPromo(
+                    mTracker);
         }
     }
 

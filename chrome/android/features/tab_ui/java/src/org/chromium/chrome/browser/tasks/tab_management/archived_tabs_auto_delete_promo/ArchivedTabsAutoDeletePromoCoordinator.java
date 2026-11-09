@@ -14,6 +14,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tasks.tab_management.archived_tabs.TabArchiveSettingsFragment;
@@ -21,6 +22,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -40,6 +43,7 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final TabArchiveSettings mTabArchiveSettings;
+    private final @Nullable Tracker mTracker;
     private final PropertyModel mModel;
     private SettingsNavigation mSettingsNavigation;
 
@@ -73,9 +77,27 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
             Context context,
             BottomSheetController bottomSheetController,
             TabArchiveSettings tabArchiveSettings) {
+        this(context, bottomSheetController, tabArchiveSettings, /* tracker= */ null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param context The Android {@link Context}.
+     * @param bottomSheetController The system {@link BottomSheetController}.
+     * @param tabArchiveSettings The {@link TabArchiveSettings} instance for managing related
+     *     preferences.
+     * @param tracker The Feature Engagement {@link Tracker} to notify when the promo is dismissed.
+     */
+    public ArchivedTabsAutoDeletePromoCoordinator(
+            Context context,
+            BottomSheetController bottomSheetController,
+            TabArchiveSettings tabArchiveSettings,
+            @Nullable Tracker tracker) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mTabArchiveSettings = tabArchiveSettings;
+        mTracker = tracker;
         mSettingsNavigation = SettingsNavigationFactory.createSettingsNavigation();
 
         mModel = ArchivedTabsAutoDeletePromoProperties.createDefaultModel();
@@ -141,6 +163,7 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
             mIsSheetCurrentlyManagedByController = true;
         } else {
             // Failed to show. Promo was NOT seen. Clean up resources just created.
+            notifyTrackerDismissed();
             cleanupSheetResourcesOnly();
         }
     }
@@ -183,7 +206,15 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
         } else {
             RecordUserAction.record("Tabs.ArchivedTabAutoDeletePromo.Yes");
         }
+        notifyTrackerDismissed();
         cleanupSheetResourcesOnly();
+    }
+
+    private void notifyTrackerDismissed() {
+        if (mTracker != null
+                && ChromeFeatureList.sUserEducationInterruptiveCooldownGroup.isEnabled()) {
+            mTracker.dismissed(FeatureConstants.ARCHIVED_TABS_AUTO_DELETE_PROMO_FEATURE);
+        }
     }
 
     /**
