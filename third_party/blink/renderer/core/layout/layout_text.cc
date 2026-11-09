@@ -1449,15 +1449,12 @@ const InlineItemSpan& LayoutText::InlineItems() const {
 
 #if DCHECK_IS_ON()
 void LayoutText::RecalcVisualOverflow() {
+  NOT_DESTROYED();
   // We should never reach here, because |PaintLayer| calls
   // |RecalcVisualOverflow| for each layer, and the containing |LayoutObject|
   // should recalculate its |FragmentItem|s without traversing descendant
   // |LayoutObject|s.
-  if (IsInline() && IsInLayoutNGInlineFormattingContext()) {
-    NOTREACHED();
-  }
-
-  LayoutObject::RecalcVisualOverflow();
+  NOTREACHED();
 }
 #endif
 

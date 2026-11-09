@@ -140,6 +140,13 @@ bool LayoutSVGModelObject::CheckForImplicitTransformChange(
   NOTREACHED();
 }
 
+void LayoutSVGModelObject::RecalcVisualOverflow() {
+  NOT_DESTROYED();
+  // Inside SVG we need to walk the subtree in search for physical fragment
+  // roots, such as SVG text.
+  RecalcVisualOverflowForChildren();
+}
+
 void LayoutSVGModelObject::ImageChanged(WrappedImagePtr image,
                                         CanDeferInvalidation defer) {
   NOT_DESTROYED();

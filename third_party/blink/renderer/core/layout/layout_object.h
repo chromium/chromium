@@ -2168,7 +2168,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // Recalculates visual overflow for this object and non-self-painting
   // PaintLayer descendants.
-  virtual void RecalcVisualOverflow();
+  virtual void RecalcVisualOverflow() { NOT_DESTROYED(); }
 
   void RecalcVisualOverflowForChildren();
 

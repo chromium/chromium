@@ -784,6 +784,20 @@ PhysicalRect LayoutInline::VisualOverflowRect() const {
   return overflow_rect;
 }
 
+void LayoutInline::RecalcVisualOverflow() {
+  NOT_DESTROYED();
+  // |PaintLayer| calls this function when |HasSelfPaintingLayer|.
+  DCHECK(IsInLayoutNGInlineFormattingContext());
+  DCHECK(HasSelfPaintingLayer());
+  InlineCursor cursor;
+  InlinePaintContext inline_context;
+  for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
+    InlinePaintContext::ScopedInlineBoxAncestors scoped_items(cursor,
+                                                              &inline_context);
+    cursor.Current().RecalcInkOverflow(cursor, &inline_context);
+  }
+}
+
 bool LayoutInline::MapToVisualRectInAncestorSpaceInternal(
     const LayoutBoxModelObject* ancestor,
     TransformState& transform_state,

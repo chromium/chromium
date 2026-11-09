@@ -80,6 +80,8 @@ class LayoutSVGModelObject : public LayoutObject {
     return true;
   }
 
+  void RecalcVisualOverflow() override;
+
  protected:
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
   void WillBeDestroyed(const ComputedStyle*) override;

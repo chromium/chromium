@@ -438,26 +438,6 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
                              include_block_overflows);
 }
 
-void LayoutBoxModelObject::RecalcVisualOverflow() {
-  NOT_DESTROYED();
-  // |PaintLayer| calls this function when |HasSelfPaintingLayer|. When |this|
-  // is an inline box or an atomic inline, its ink overflow is stored in
-  // |FragmentItem| in the inline formatting context.
-  if (IsInline() && IsInLayoutNGInlineFormattingContext()) {
-    DCHECK(HasSelfPaintingLayer());
-    InlineCursor cursor;
-    InlinePaintContext inline_context;
-    for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
-      InlinePaintContext::ScopedInlineBoxAncestors scoped_items(
-          cursor, &inline_context);
-      cursor.Current().RecalcInkOverflow(cursor, &inline_context);
-    }
-    return;
-  }
-
-  LayoutObject::RecalcVisualOverflow();
-}
-
 bool LayoutBoxModelObject::ShouldBeHandledAsInline(
     const ComputedStyle& style) const {
   NOT_DESTROYED();

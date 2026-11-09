@@ -230,8 +230,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   bool BackgroundTransfersToView(
       const ComputedStyle* document_element_style = nullptr) const;
 
-  void RecalcVisualOverflow() override;
-
   void AddOutlineRectsForNormalChildren(OutlineRectCollector&,
                                         const PhysicalOffset& additional_offset,
                                         OutlineType) const;

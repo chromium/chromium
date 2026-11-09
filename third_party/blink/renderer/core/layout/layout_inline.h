@@ -154,6 +154,8 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   PhysicalRect LinesVisualOverflowBoundingBox() const;
   PhysicalRect VisualOverflowRect() const final;
 
+  void RecalcVisualOverflow() final;
+
   bool HasInlineFragments() const final;
   wtf_size_t FirstInlineFragmentItemIndex() const final;
   void ClearFirstInlineFragmentItemIndex() final;

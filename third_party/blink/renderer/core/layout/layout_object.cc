@@ -2436,12 +2436,6 @@ void LayoutObject::Paint(const PaintInfo&) const {
   NOT_DESTROYED();
 }
 
-void LayoutObject::RecalcVisualOverflow() {
-  NOT_DESTROYED();
-  // TODO(layout-dev): Remove this.
-  RecalcVisualOverflowForChildren();
-}
-
 void LayoutObject::RecalcVisualOverflowForChildren() {
   NOT_DESTROYED();
   for (LayoutObject* current = SlowFirstChild(); current;
