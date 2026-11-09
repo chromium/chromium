@@ -46,6 +46,8 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -287,6 +289,44 @@ public class ChromeTabCreatorJUnitTest {
                 "AsyncTabParams must be removed after createFrozenTab",
                 AsyncTabParamsManagerSingleton.getInstance().hasParamsForTabId(tabId));
         verify(tabModel).addTab(eq(mockTab), eq(0), eq(TabLaunchType.FROM_RESTORE), anyInt());
+    }
+
+    @Test
+    public void testRedirectTabCreator_ReparentingDestroysAsyncParams() {
+        MultiInstanceOrchestrator orchestrator = mock(MultiInstanceOrchestrator.class);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(orchestrator);
+
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        RedirectTabCreator redirectTabCreator =
+                new RedirectTabCreator(
+                        activity,
+                        mock(WindowAndroid.class),
+                        () -> mock(TabDelegateFactory.class),
+                        new OneshotSupplierImpl<>(),
+                        /* incognito= */ true,
+                        AsyncTabParamsManagerSingleton.getInstance(),
+                        SupplierUtils.ofNull(),
+                        SupplierUtils.ofNull());
+        redirectTabCreator.setTabModel(mock(TabModel.class));
+
+        int tabId = 321;
+        Tab mockTab = mock(Tab.class);
+        TabReparentingParams params = new TabReparentingParams(mockTab, null);
+        AsyncTabParamsManagerSingleton.getInstance().add(tabId, params);
+
+        Intent intent = new Intent();
+        IntentHandler.setTabId(intent, tabId);
+
+        redirectTabCreator.createNewTab(
+                new LoadUrlParams("about:blank"),
+                TabLaunchType.FROM_REPARENTING,
+                /* parent= */ null,
+                intent);
+
+        assertFalse(
+                "AsyncTabParams must be removed after RedirectTabCreator.createNewTab",
+                AsyncTabParamsManagerSingleton.getInstance().hasParamsForTabId(tabId));
+        verify(mockTab).destroy();
     }
 
     private ChromeTabCreator createTabCreator(Activity activity, boolean incognito) {

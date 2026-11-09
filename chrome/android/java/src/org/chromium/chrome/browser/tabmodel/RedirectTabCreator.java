@@ -77,7 +77,10 @@ public class RedirectTabCreator extends ChromeTabCreator {
             boolean openInTabGroup,
             @Nullable Intent intent) {
         // Clean up AsyncTabParams with the tab to reparent if any.
-        mAsyncTabParamsManager.remove(IntentHandler.getTabId(intent));
+        AsyncTabParams params = mAsyncTabParamsManager.remove(IntentHandler.getTabId(intent));
+        if (params != null) {
+            params.destroy();
+        }
 
         // Sanitize the url.
         GURL url = UrlFormatter.fixupUrl(loadUrlParams.getUrl());
