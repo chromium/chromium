@@ -547,11 +547,7 @@ void RendererController::UpdateAndMaybeSwitch(StartTrigger start_trigger,
     metrics_recorder_.WillStartSession(start_trigger);
     // |MediaObserverClient::SwitchToRemoteRenderer()| will be called after
     // remoting is started successfully.
-    if (is_media_remoting_requested_) {
-      remoter_->StartWithPermissionAlreadyGranted();
-    } else {
-      remoter_->Start();
-    }
+    remoter_->Start();
   }
 }
 

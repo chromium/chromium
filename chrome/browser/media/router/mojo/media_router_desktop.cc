@@ -186,6 +186,25 @@ void MediaRouterDesktop::CreateRoute(const MediaSource::Id& source_id,
     connector->ResetRemotingPermission();
 
     MediaRouterMojoMetrics::RecordTabMirroringMetrics(web_contents);
+  } else if (source.IsRemotePlaybackSource() && web_contents) {
+    if (CastRemotingConnector* const connector =
+            CastRemotingConnector::Get(web_contents)) {
+      connector->GrantPermissionForRemotePlayback();
+      callback = base::BindOnce(
+          [](base::WeakPtr<content::WebContents> web_contents,
+             MediaRouteResponseCallback callback,
+             mojom::RoutePresentationConnectionPtr connection,
+             const RouteRequestResult& result) {
+            if (!result.route() && web_contents) {
+              if (CastRemotingConnector* const connector =
+                      CastRemotingConnector::Get(web_contents.get())) {
+                connector->ResetRemotingPermission();
+              }
+            }
+            std::move(callback).Run(std::move(connection), result);
+          },
+          web_contents->GetWeakPtr(), std::move(callback));
+    }
   }
 
   if (IsSiteInitiatedMirroringSource(source_id)) {

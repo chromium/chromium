@@ -37,6 +37,8 @@
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/test/test_helper.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -250,6 +252,71 @@ TEST_F(MediaRouterDesktopTest, CreateRoute) {
   TestCreateRoute();
   ExpectCastResultBucketCount("CreateRoute", mojom::RouteRequestResultCode::OK,
                               1);
+}
+
+TEST_F(MediaRouterDesktopTest, CreateRouteWithRemotePlaybackSource) {
+  const char kRemotePlaybackSource[] =
+      "remote-playback:media-session?&video_codec=vp8&audio_codec=aac";
+  ProvideTestSink(mojom::MediaRouteProviderId::CAST, kSinkId);
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+  MediaRoute route(kRouteId, MediaSource(kRemotePlaybackSource), kSinkId,
+                   kDescription, true);
+  EXPECT_CALL(mock_cast_provider_,
+              CreateRouteInternal(kRemotePlaybackSource, kSinkId, _,
+                                  url::Origin::Create(GURL(kOrigin)), _, _, _))
+      .WillOnce(WithArg<6>(
+          [&route](mojom::MediaRouteProvider::CreateRouteCallback& cb) {
+            std::move(cb).Run(route, nullptr, std::nullopt,
+                              mojom::RouteRequestResultCode::OK);
+          }));
+
+  RouteResponseCallbackHandler handler;
+  base::RunLoop run_loop;
+  EXPECT_CALL(handler, DoInvoke(testing::Pointee(route), Not(""), "",
+                                mojom::RouteRequestResultCode::OK, _))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  static_cast<MediaRouter*>(router())->CreateRoute(
+      kRemotePlaybackSource, kSinkId, url::Origin::Create(GURL(kOrigin)),
+      web_contents.get(),
+      base::BindOnce(&RouteResponseCallbackHandler::Invoke,
+                     base::Unretained(&handler)),
+      base::Milliseconds(kTimeoutMillis));
+  run_loop.Run();
+}
+
+TEST_F(MediaRouterDesktopTest,
+       CreateRouteWithRemotePlaybackSourceFailsAndResetsPermission) {
+  const char kRemotePlaybackSource[] =
+      "remote-playback:media-session?&video_codec=vp8&audio_codec=aac";
+  ProvideTestSink(mojom::MediaRouteProviderId::CAST, kSinkId);
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+  EXPECT_CALL(mock_cast_provider_,
+              CreateRouteInternal(kRemotePlaybackSource, kSinkId, _,
+                                  url::Origin::Create(GURL(kOrigin)), _, _, _))
+      .WillOnce(
+          WithArg<6>([](mojom::MediaRouteProvider::CreateRouteCallback& cb) {
+            std::move(cb).Run(std::nullopt, nullptr, "Route creation failed",
+                              mojom::RouteRequestResultCode::TIMED_OUT);
+          }));
+
+  RouteResponseCallbackHandler handler;
+  base::RunLoop run_loop;
+  EXPECT_CALL(handler, DoInvoke(nullptr, "", "Route creation failed",
+                                mojom::RouteRequestResultCode::TIMED_OUT, _))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  static_cast<MediaRouter*>(router())->CreateRoute(
+      kRemotePlaybackSource, kSinkId, url::Origin::Create(GURL(kOrigin)),
+      web_contents.get(),
+      base::BindOnce(&RouteResponseCallbackHandler::Invoke,
+                     base::Unretained(&handler)),
+      base::Milliseconds(kTimeoutMillis));
+  run_loop.Run();
 }
 
 // Tests that MediaRouter is aware when a route is created, even if

@@ -77,7 +77,6 @@ class FakeRemoter final : public mojom::Remoter {
 
   // mojom::Remoter implementations.
   void Start() override;
-  void StartWithPermissionAlreadyGranted() override;
   void StartDataStreams(mojo::ScopedDataPipeConsumerHandle audio_pipe,
                         mojo::ScopedDataPipeConsumerHandle video_pipe,
                         mojo::PendingReceiver<mojom::RemotingDataStreamSender>

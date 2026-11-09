@@ -118,7 +118,6 @@ class TestRemoter final : public mojom::Remoter {
 
   // mojom::Remoter implementation.
   void Start() override { source_->OnStarted(); }
-  void StartWithPermissionAlreadyGranted() override { source_->OnStarted(); }
 
   void StartDataStreams(mojo::ScopedDataPipeConsumerHandle audio_pipe,
                         mojo::ScopedDataPipeConsumerHandle video_pipe,

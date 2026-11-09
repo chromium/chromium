@@ -63,7 +63,6 @@ class RedirectionConnector final : public RemotingBridge::Client {
   void DeregisterBridge(RemotingBridge* bridge,
                         media::mojom::RemotingStopReason reason) final;
   void StartRemoting(RemotingBridge* bridge) final;
-  void StartWithPermissionAlreadyGranted(RemotingBridge* bridge) final;
   void StartRemotingDataStreams(
       RemotingBridge* bridge,
       mojo::ScopedDataPipeConsumerHandle audio_pipe,

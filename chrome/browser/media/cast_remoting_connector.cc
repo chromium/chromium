@@ -71,6 +71,15 @@ void CastRemotingConnector::ResetRemotingPermission() {
   remoting_allowed_ = GetRemotingAllowedUserPref();
 }
 
+void CastRemotingConnector::GrantPermissionForRemotePlayback() {
+  remoting_allowed_ = true;
+  if (HasSinkMetadata() && !active_bridge_) {
+    for (RemotingBridge* notifyee : bridges_) {
+      notifyee->OnSinkAvailable(this, sink_metadata_);
+    }
+  }
+}
+
 void CastRemotingConnector::ConnectWithMediaRemoter(
     mojo::PendingRemote<media::mojom::Remoter> remoter,
     mojo::PendingReceiver<media::mojom::RemotingSource> receiver) {
@@ -100,6 +109,7 @@ void CastRemotingConnector::OnMirrorServiceStopped() {
   receiver_.reset();
   remoter_.reset();
 
+  ResetRemotingPermission();
   sink_metadata_ = RemotingSinkMetadata();
   if (active_bridge_)
     StopRemoting(active_bridge_, RemotingStopReason::SERVICE_GONE, false);
@@ -134,16 +144,6 @@ void CastRemotingConnector::StartRemoting(RemotingBridge* bridge) {
   }
 
   StartRemotingIfPermitted();
-}
-
-void CastRemotingConnector::StartWithPermissionAlreadyGranted(
-    RemotingBridge* bridge) {
-  if (!StartRemotingCommon(bridge)) {
-    return;
-  }
-
-  CHECK(remoter_, base::NotFatalUntil::M161);
-  remoter_->Start();
 }
 
 bool CastRemotingConnector::StartRemotingCommon(RemotingBridge* bridge) {

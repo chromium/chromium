@@ -39,7 +39,6 @@ class RemotingBridge final : public media::mojom::Remoter {
     virtual void DeregisterBridge(RemotingBridge* bridge,
                                   media::mojom::RemotingStopReason reason) = 0;
     virtual void StartRemoting(RemotingBridge* bridge) = 0;
-    virtual void StartWithPermissionAlreadyGranted(RemotingBridge* bridge) = 0;
     virtual void StartRemotingDataStreams(
         RemotingBridge* bridge,
         mojo::ScopedDataPipeConsumerHandle audio_pipe,
@@ -118,7 +117,6 @@ class RemotingBridge final : public media::mojom::Remoter {
   // connections. The client will respond to this request by calling one of:
   // OnStarted() or OnStartFailed().
   void Start() final;
-  void StartWithPermissionAlreadyGranted() final;
   void StartDataStreams(
       mojo::ScopedDataPipeConsumerHandle audio_pipe,
       mojo::ScopedDataPipeConsumerHandle video_pipe,

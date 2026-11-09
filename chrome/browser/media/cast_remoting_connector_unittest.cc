@@ -105,7 +105,6 @@ class MockMediaRemoter final : public media::mojom::Remoter {
 
   // media::mojom::Remoter implementation.
   MOCK_METHOD0(RequestStart, void());
-  MOCK_METHOD0(StartWithPermissionAlreadyGranted, void());
   MOCK_METHOD1(Stop, void(RemotingStopReason));
   MOCK_METHOD1(SendMessageToSink, void(const std::vector<uint8_t>&));
   void Start() override {
@@ -292,6 +291,9 @@ TEST_F(CastRemotingConnectorTest, NoPermissionToStart) {
   mojo::Remote<media::mojom::Remoter> remoter(CreateRemoter(&source));
   std::unique_ptr<MockMediaRemoter> media_remoter =
       std::make_unique<MockMediaRemoter>(GetConnector());
+  EXPECT_CALL(source, OnSinkAvailable(_)).Times(0);
+  media_remoter->OnSinkAvailable();
+  RunUntilIdle();
 
   EXPECT_CALL(source,
               OnStartFailed(RemotingStartFailReason::REMOTING_NOT_PERMITTED))
@@ -299,8 +301,42 @@ TEST_F(CastRemotingConnectorTest, NoPermissionToStart) {
   remoter->Start();
   RunUntilIdle();
 
+  // Granting permission for Remote Playback in the browser allows starting and
+  // re-notifies existing registered bridges that the sink is available.
+  EXPECT_CALL(source, OnSinkAvailable(_)).Times(1);
+  GetConnector()->GrantPermissionForRemotePlayback();
+
+  // A new client created while sink metadata is present and permission is
+  // already granted immediately receives OnSinkAvailable in OnClientActivated.
+  MockRemotingSource source2;
+  EXPECT_CALL(source2, OnSinkAvailable(_)).Times(1);
+  mojo::Remote<media::mojom::Remoter> remoter2(CreateRemoter(&source2));
+  RunUntilIdle();
+
   EXPECT_CALL(source, OnStarted()).Times(1);
-  remoter->StartWithPermissionAlreadyGranted();
+  EXPECT_CALL(source2, OnSinkGone()).Times(1);
+  remoter->Start();
+  RunUntilIdle();
+}
+
+TEST_F(CastRemotingConnectorTest, RemotePlaybackPermissionClearedOnReset) {
+  CreateConnector(false);
+  pref_service_.registry()->RegisterBooleanPref(
+      media_router::prefs::kMediaRouterMediaRemotingEnabled, false);
+  pref_service_.SetBoolean(
+      media_router::prefs::kMediaRouterMediaRemotingEnabled, false);
+  MockRemotingSource source;
+  mojo::Remote<media::mojom::Remoter> remoter(CreateRemoter(&source));
+  std::unique_ptr<MockMediaRemoter> media_remoter =
+      std::make_unique<MockMediaRemoter>(GetConnector());
+
+  GetConnector()->GrantPermissionForRemotePlayback();
+  GetConnector()->ResetRemotingPermission();
+
+  EXPECT_CALL(source,
+              OnStartFailed(RemotingStartFailReason::REMOTING_NOT_PERMITTED))
+      .Times(1);
+  remoter->Start();
   RunUntilIdle();
 }
 

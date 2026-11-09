@@ -165,15 +165,6 @@ void RemotingBridge::Start() {
   active_client_->StartRemoting(this);
 }
 
-void RemotingBridge::StartWithPermissionAlreadyGranted() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!active_client_) {
-    source_->OnStartFailed(RemotingStartFailReason::INVALID_ANSWER_MESSAGE);
-    return;
-  }
-  active_client_->StartWithPermissionAlreadyGranted(this);
-}
-
 void RemotingBridge::StartDataStreams(
     mojo::ScopedDataPipeConsumerHandle audio_pipe,
     mojo::ScopedDataPipeConsumerHandle video_pipe,

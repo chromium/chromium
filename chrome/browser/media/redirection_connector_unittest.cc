@@ -74,7 +74,6 @@ class FakeRemoter final : public media::mojom::Remoter {
     ++start_count_;
     source_->OnStarted();
   }
-  void StartWithPermissionAlreadyGranted() override { Start(); }
   void StartDataStreams(
       mojo::ScopedDataPipeConsumerHandle audio_pipe,
       mojo::ScopedDataPipeConsumerHandle video_pipe,

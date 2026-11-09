@@ -69,11 +69,6 @@ void RedirectionConnector::DeregisterBridge(RemotingBridge* bridge,
 }
 
 void RedirectionConnector::StartRemoting(RemotingBridge* bridge) {
-  StartWithPermissionAlreadyGranted(bridge);
-}
-
-void RedirectionConnector::StartWithPermissionAlreadyGranted(
-    RemotingBridge* bridge) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto it = bridges_.find(bridge);
   CHECK(it != bridges_.end());

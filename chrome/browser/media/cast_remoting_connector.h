@@ -85,6 +85,10 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
   // Called at the start of mirroring to reset the permission.
   void ResetRemotingPermission();
 
+  // Called when an explicit Remote Playback session is initiated, granting
+  // permission without requiring the Tab Mirroring permission dialog.
+  void GrantPermissionForRemotePlayback();
+
   // Used by Mirroring Service to connect the media remoter with this source.
   void ConnectWithMediaRemoter(
       mojo::PendingRemote<media::mojom::Remoter> remoter,
@@ -110,7 +114,6 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
   void DeregisterBridge(RemotingBridge* bridge,
                         media::mojom::RemotingStopReason reason) override;
   void StartRemoting(RemotingBridge* bridge) override;
-  void StartWithPermissionAlreadyGranted(RemotingBridge* bridge) override;
   void StartRemotingDataStreams(
       RemotingBridge* bridge,
       mojo::ScopedDataPipeConsumerHandle audio_pipe,
