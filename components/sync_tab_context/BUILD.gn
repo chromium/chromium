@@ -64,6 +64,8 @@ static_library("test_support") {
   sources = [
     "fake_ephemeral_key_server.cc",
     "fake_ephemeral_key_server.h",
+    "fake_tab_context_sync_service.cc",
+    "fake_tab_context_sync_service.h",
     "mock_tab_context_sync_service.cc",
     "mock_tab_context_sync_service.h",
   ]
@@ -71,6 +73,8 @@ static_library("test_support") {
   public_deps = [
     ":sync_tab_context",
     "//base",
+    "//components/sync:test_support",
+    "//components/sync/base",
     "//components/sync/model",
     "//components/sync/protocol",
     "//net",

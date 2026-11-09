@@ -43,6 +43,7 @@ if (!is_android) {
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
       "//components/sync/base",
+      "//components/sync_tab_context:test_support",
       "//content/test:test_support",
       "//google_apis",
     ]

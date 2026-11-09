@@ -7,8 +7,8 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
@@ -23,10 +23,10 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
-#include "components/sync/test/fake_data_type_controller_delegate.h"
+#include "components/sync_tab_context/container_id.h"
+#include "components/sync_tab_context/fake_tab_context_sync_service.h"
 #include "components/sync_tab_context/http_rpc_constants.h"
 #include "components/sync_tab_context/tab_context_sync_service.h"
-#include "components/sync_tab_context/upload_outcome.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -38,57 +38,6 @@
 namespace {
 
 constexpr char kMismatchGaiaId[] = "987654321";
-constexpr char kFakeToken[] = "fake_decryption_token_12345";
-
-class FakeTabContextSyncService
-    : public sync_tab_context::TabContextSyncService {
- public:
-  FakeTabContextSyncService() = default;
-  ~FakeTabContextSyncService() override = default;
-
-  // sync_tab_context::TabContextSyncService:
-  std::optional<sync_tab_context::ContainerId> CreateContainer() override {
-    NOTREACHED();
-  }
-
-  std::optional<sync_tab_context::ContainerId>
-  CreateContainerPossiblyUnencryptedEphemeral() override {
-    NOTREACHED();
-  }
-
-  void UploadPageContext(
-      const sync_tab_context::ContainerId& container_id,
-      const std::string& entry_id,
-      std::string page_context,
-      base::OnceCallback<void(sync_tab_context::UploadOutcome)> callback)
-      override {
-    NOTREACHED();
-  }
-
-  void GetContainerAccessToken(
-      const sync_tab_context::ContainerId& container_id,
-      base::OnceCallback<void(std::optional<std::string>)> cb) override {
-    std::move(cb).Run(kFakeToken);
-  }
-
-  base::WeakPtr<syncer::DataTypeControllerDelegate>
-  GetSyncControllerDelegateForContainer() override {
-    return container_delegate_.GetWeakPtr();
-  }
-
-  base::WeakPtr<syncer::DataTypeControllerDelegate>
-  GetSyncControllerDelegateForItem() override {
-    return item_delegate_.GetWeakPtr();
-  }
-
-  bool IsActiveForTesting() const override { NOTREACHED(); }
-
- private:
-  syncer::FakeDataTypeControllerDelegate container_delegate_{
-      syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER};
-  syncer::FakeDataTypeControllerDelegate item_delegate_{
-      syncer::ENCRYPTED_TAB_CONTEXT_ITEM};
-};
 
 class TabContextDecryptionTokenTabHelperBrowserTest
     : public InProcessBrowserTest {
@@ -127,7 +76,8 @@ class TabContextDecryptionTokenTabHelperBrowserTest
     TabContextSyncServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating([](content::BrowserContext* context)
                                          -> std::unique_ptr<KeyedService> {
-          return std::make_unique<FakeTabContextSyncService>();
+          return std::make_unique<
+              sync_tab_context::FakeTabContextSyncService>();
         }));
   }
 
@@ -152,6 +102,11 @@ class TabContextDecryptionTokenTabHelperBrowserTest
   }
 
  protected:
+  sync_tab_context::FakeTabContextSyncService* GetService() {
+    return static_cast<sync_tab_context::FakeTabContextSyncService*>(
+        TabContextSyncServiceFactory::GetForProfile(GetProfile()));
+  }
+
   content::WebContents* GetActiveWebContents() {
     return browser()->GetTabStripModel()->GetActiveWebContents();
   }
@@ -227,9 +182,12 @@ IN_PROC_BROWSER_TEST_F(TabContextDecryptionTokenTabHelperBrowserTest,
   const GURL url = https_server_.GetURL("chromestorage.goog", "/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  const sync_tab_context::ContainerId container_id =
+      CHECK_DEREF(GetService()->CreateContainer());
+
   EXPECT_EQ(-1, GetContainerDecryptionTokenByteLength(
                     GetActiveWebContents(), kMismatchGaiaId,
-                    base::Uuid::GenerateRandomV4().AsLowercaseString()));
+                    container_id.value().AsLowercaseString()));
 }
 
 IN_PROC_BROWSER_TEST_F(TabContextDecryptionTokenTabHelperBrowserTest,
@@ -237,11 +195,13 @@ IN_PROC_BROWSER_TEST_F(TabContextDecryptionTokenTabHelperBrowserTest,
   const GURL url = https_server_.GetURL("chromestorage.goog", "/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  const std::string valid_container_id =
-      base::Uuid::GenerateRandomV4().AsLowercaseString();
-  EXPECT_EQ(kFakeToken,
-            GetContainerDecryptionTokenString(
-                GetActiveWebContents(), primary_gaia_id_, valid_container_id));
+  const sync_tab_context::ContainerId container_id =
+      CHECK_DEREF(GetService()->CreateContainer());
+
+  EXPECT_TRUE(GetService()->IsValidToken(
+      container_id, GetContainerDecryptionTokenString(
+                        GetActiveWebContents(), primary_gaia_id_,
+                        container_id.value().AsLowercaseString())));
 }
 
 }  // namespace

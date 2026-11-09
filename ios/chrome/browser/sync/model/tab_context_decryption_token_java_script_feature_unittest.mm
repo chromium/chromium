@@ -12,6 +12,7 @@
 #import <utility>
 
 #import "base/apple/foundation_util.h"
+#import "base/check_deref.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
@@ -27,8 +28,9 @@
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/sync/base/features.h"
 #import "components/sync_tab_context/container_id.h"
+#import "components/sync_tab_context/fake_tab_context_sync_service.h"
 #import "components/sync_tab_context/http_rpc_constants.h"
-#import "components/sync_tab_context/mock_tab_context_sync_service.h"
+#import "components/sync_tab_context/tab_context_sync_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -39,7 +41,6 @@
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/web_state.h"
-#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "url/gurl.h"
@@ -47,24 +48,18 @@
 
 namespace {
 
-using ::testing::_;
-using ::testing::Eq;
-
 constexpr char kDisallowedUrl[] = "https://example.com/";
 constexpr char kUserEmail[] = "user@gmail.com";
 constexpr char kMismatchGaiaId[] = "mismatch_gaia_id";
-constexpr char kFakeToken[] = "fake_decryption_token_12345";
 NSString* const kInvalidUuid = @"not-a-valid-uuid";
 NSString* const kTestHtml = @"<html><body></body></html>";
 NSString* const kObfuscatedGaiaIdKey = @"obfuscatedGaiaId";
 NSString* const kContainerIdKey = @"containerId";
 
-// Builds a `testing::NiceMock<sync_tab_context::MockTabContextSyncService>` for
-// `profile`.
-std::unique_ptr<KeyedService> BuildMockTabContextSyncService(
+// Builds a `sync_tab_context::FakeTabContextSyncService` for `profile`.
+std::unique_ptr<KeyedService> BuildFakeTabContextSyncService(
     ProfileIOS* profile) {
-  return std::make_unique<
-      testing::NiceMock<sync_tab_context::MockTabContextSyncService>>();
+  return std::make_unique<sync_tab_context::FakeTabContextSyncService>();
 }
 
 }  // namespace
@@ -98,13 +93,13 @@ class TabContextDecryptionTokenJavaScriptFeatureTest
                                     BuildIdentityManagerForTests)},
         TestProfileIOS::TestingFactory{
             TabContextSyncServiceFactory::GetInstance(),
-            base::BindRepeating(&BuildMockTabContextSyncService)},
+            base::BindRepeating(&BuildFakeTabContextSyncService)},
     };
   }
 
-  // Returns the `MockTabContextSyncService` associated with `profile()`.
-  sync_tab_context::MockTabContextSyncService* GetMockService() {
-    return static_cast<sync_tab_context::MockTabContextSyncService*>(
+  // Returns the `FakeTabContextSyncService` associated with `profile()`.
+  sync_tab_context::FakeTabContextSyncService* GetService() {
+    return static_cast<sync_tab_context::FakeTabContextSyncService*>(
         TabContextSyncServiceFactory::GetForProfile(profile()));
   }
 
@@ -224,28 +219,21 @@ TEST_F(TabContextDecryptionTokenJavaScriptFeatureTest,
        ShouldExposeApiOnAllowedOriginAndReturnToken) {
   LoadTestPage(GURL(sync_tab_context::kDefaultTabContextAllowedOrigin));
 
-  const base::Uuid container_uuid = base::Uuid::GenerateRandomV4();
-  ON_CALL(*GetMockService(),
-          GetContainerAccessToken(
-              Eq(sync_tab_context::ContainerId(container_uuid)), _))
-      .WillByDefault(
-          [](const sync_tab_context::ContainerId&,
-             base::OnceCallback<void(std::optional<std::string>)> callback) {
-            std::move(callback).Run(std::string(kFakeToken));
-          });
+  const sync_tab_context::ContainerId container_id =
+      CHECK_DEREF(GetService()->CreateContainer());
 
   NSString* token = ExecuteGetContainerDecryptionToken(
       web_state(), primary_gaia_id_,
-      base::SysUTF8ToNSString(container_uuid.AsLowercaseString()));
-  EXPECT_NSEQ(base::SysUTF8ToNSString(kFakeToken), token);
+      base::SysUTF8ToNSString(container_id.value().AsLowercaseString()));
+  ASSERT_TRUE(token);
+  EXPECT_TRUE(
+      GetService()->IsValidToken(container_id, base::SysNSStringToUTF8(token)));
 }
 
 // Tests that `ScriptMessageReceivedWithReply` replies with `null` when
 // `containerId` is not a valid UUID.
 TEST_F(TabContextDecryptionTokenJavaScriptFeatureTest,
        ShouldReturnNullOnInvalidUuid) {
-  EXPECT_CALL(*GetMockService(), GetContainerAccessToken).Times(0);
-
   EXPECT_EQ(std::nullopt, SendTokenRequestMessage(web_state(), primary_gaia_id_,
                                                   kInvalidUuid));
 }
@@ -254,62 +242,58 @@ TEST_F(TabContextDecryptionTokenJavaScriptFeatureTest,
 // `TabContextSyncService` returns `std::nullopt`.
 TEST_F(TabContextDecryptionTokenJavaScriptFeatureTest,
        ShouldReturnNullWhenServiceReturnsNullopt) {
-  const base::Uuid container_uuid = base::Uuid::GenerateRandomV4();
-  ON_CALL(*GetMockService(), GetContainerAccessToken)
-      .WillByDefault(
-          [](const sync_tab_context::ContainerId&,
-             base::OnceCallback<void(std::optional<std::string>)> callback) {
-            std::move(callback).Run(std::nullopt);
-          });
-
-  EXPECT_EQ(std::nullopt,
-            SendTokenRequestMessage(
-                web_state(), primary_gaia_id_,
-                base::SysUTF8ToNSString(container_uuid.AsLowercaseString())));
+  const base::Uuid unknown_container_uuid = base::Uuid::GenerateRandomV4();
+  EXPECT_EQ(
+      std::nullopt,
+      SendTokenRequestMessage(
+          web_state(), primary_gaia_id_,
+          base::SysUTF8ToNSString(unknown_container_uuid.AsLowercaseString())));
 }
 
-// Tests that `ScriptMessageReceivedWithReply` replies with `null` without
-// querying `TabContextSyncService` when the Gaia ID does not match the primary
-// account.
+// Tests that `ScriptMessageReceivedWithReply` replies with `null` when the Gaia
+// ID does not match the primary account.
 TEST_F(TabContextDecryptionTokenJavaScriptFeatureTest,
        ShouldReturnNullOnGaiaIdMismatch) {
-  EXPECT_CALL(*GetMockService(), GetContainerAccessToken).Times(0);
+  const sync_tab_context::ContainerId container_id =
+      CHECK_DEREF(GetService()->CreateContainer());
 
-  const base::Uuid container_uuid = base::Uuid::GenerateRandomV4();
-  EXPECT_EQ(std::nullopt,
-            SendTokenRequestMessage(
-                web_state(), kMismatchGaiaId,
-                base::SysUTF8ToNSString(container_uuid.AsLowercaseString())));
+  EXPECT_EQ(
+      std::nullopt,
+      SendTokenRequestMessage(
+          web_state(), kMismatchGaiaId,
+          base::SysUTF8ToNSString(container_id.value().AsLowercaseString())));
 }
 
 // Tests that `ScriptMessageReceivedWithReply` replies with `null` in an
 // off-the-record profile.
 TEST_F(TabContextDecryptionTokenJavaScriptFeatureTest,
        ShouldReturnNullInOffTheRecordProfile) {
+  const sync_tab_context::ContainerId container_id =
+      CHECK_DEREF(GetService()->CreateContainer());
+
   web::WebState::CreateParams otr_params(profile()->GetOffTheRecordProfile());
   std::unique_ptr<web::WebState> otr_web_state =
       web::WebState::Create(otr_params);
 
-  EXPECT_CALL(*GetMockService(), GetContainerAccessToken).Times(0);
-
-  const base::Uuid container_uuid = base::Uuid::GenerateRandomV4();
-  EXPECT_EQ(std::nullopt,
-            SendTokenRequestMessage(
-                otr_web_state.get(), primary_gaia_id_,
-                base::SysUTF8ToNSString(container_uuid.AsLowercaseString())));
+  EXPECT_EQ(
+      std::nullopt,
+      SendTokenRequestMessage(
+          otr_web_state.get(), primary_gaia_id_,
+          base::SysUTF8ToNSString(container_id.value().AsLowercaseString())));
 }
 
 // Tests that messages from subframes are rejected with an empty reply.
 TEST_F(TabContextDecryptionTokenJavaScriptFeatureTest,
        ShouldIgnoreSubframeMessage) {
-  EXPECT_CALL(*GetMockService(), GetContainerAccessToken).Times(0);
+  const sync_tab_context::ContainerId container_id =
+      CHECK_DEREF(GetService()->CreateContainer());
 
   const GURL allowed_url(sync_tab_context::kDefaultTabContextAllowedOrigin);
   web::ScriptMessage subframe_message(
       web::ScriptMessageValue(@{
         kObfuscatedGaiaIdKey : base::SysUTF8ToNSString(primary_gaia_id_),
-        kContainerIdKey : base::SysUTF8ToNSString(
-            base::Uuid::GenerateRandomV4().AsLowercaseString()),
+        kContainerIdKey :
+            base::SysUTF8ToNSString(container_id.value().AsLowercaseString()),
       }),
       /*is_user_interacting=*/false,
       /*is_main_frame=*/false,
@@ -333,14 +317,15 @@ TEST_F(TabContextDecryptionTokenJavaScriptFeatureTest,
 // reply.
 TEST_F(TabContextDecryptionTokenJavaScriptFeatureTest,
        ShouldIgnoreDisallowedOriginMessage) {
-  EXPECT_CALL(*GetMockService(), GetContainerAccessToken).Times(0);
+  const sync_tab_context::ContainerId container_id =
+      CHECK_DEREF(GetService()->CreateContainer());
 
   const GURL disallowed_url(kDisallowedUrl);
   web::ScriptMessage disallowed_origin_message(
       web::ScriptMessageValue(@{
         kObfuscatedGaiaIdKey : base::SysUTF8ToNSString(primary_gaia_id_),
-        kContainerIdKey : base::SysUTF8ToNSString(
-            base::Uuid::GenerateRandomV4().AsLowercaseString()),
+        kContainerIdKey :
+            base::SysUTF8ToNSString(container_id.value().AsLowercaseString()),
       }),
       /*is_user_interacting=*/false,
       /*is_main_frame=*/true,
