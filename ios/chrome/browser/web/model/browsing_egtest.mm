@@ -189,9 +189,7 @@ TAG_SMOKE_TEST(BrowsingTestCase, testReload);
 // Tests that clicking a link with URL changed by onclick uses the href of the
 // anchor tag instead of the one specified in JavaScript. Also verifies a new
 // tab is opened by target '_blank'.
-// TODO(crbug.com/41299306): WKWebView does not open a new window as expected by
-// this test.
-- (void)DISABLED_testBrowsingPreventDefaultWithLinkOpenedByJavascript {
+- (void)testBrowsingPreventDefaultWithLinkOpenedByJavascript {
   // Create map of canned responses and set up the test HTML server.
   std::map<GURL, std::string> responses;
   const GURL URL =
@@ -228,8 +226,7 @@ TAG_SMOKE_TEST(BrowsingTestCase, testReload);
 
 // Tests tapping a link that navigates to a page that immediately navigates
 // again via document.location.href.
-// TODO(crbug.com/40234734): Flaky on iPhone.
-- (void)DISABLED_testBrowsingWindowDataLinkScriptRedirect {
+- (void)testBrowsingWindowDataLinkScriptRedirect {
   // Create map of canned responses and set up the test HTML server.
   std::map<GURL, std::string> responses;
   const GURL URL = self.testServer->GetURL("/windowDataLinkScriptRedirect");
@@ -374,8 +371,7 @@ TAG_SMOKE_TEST(BrowsingTestCase, testBrowsingJavaScriptBasedNavigation);
 
 // Tests that evaluating user JavaScript that causes navigation correctly
 // modifies history.
-// TODO(crbug.com/362621166): Test is flaky.
-- (void)DISABLED_testBrowsingUserJavaScriptNavigation {
+- (void)testBrowsingUserJavaScriptNavigation {
   // TODO(crbug.com/40511873): Keyboard entry inside the omnibox fails only on
   // iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -419,8 +415,7 @@ TAG_SMOKE_TEST(BrowsingTestCase, testBrowsingJavaScriptBasedNavigation);
 }
 
 // Tests that evaluating non-navigation user JavaScript doesn't affect history.
-// TODO(crbug.com/362621166): Test is flaky.
-- (void)DISABLED_testBrowsingUserJavaScriptWithoutNavigation {
+- (void)testBrowsingUserJavaScriptWithoutNavigation {
   // TODO(crbug.com/40511873): Keyboard entry inside the omnibox fails only on
   // iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {

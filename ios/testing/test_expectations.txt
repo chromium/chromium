@@ -265,6 +265,56 @@ crbug.com/455701421 [ iPhone Device iOS18 ] SettingsAccessibilityTestCase/testAc
 crbug.com/451929382 SettingsTestCase/testClearCookies [ Pass Failure ]
 crbug.com/509785308 InactiveTabsSettingsTestCase/testInactiveTabsPreferenceChange [ Pass Failure ]
 
+# Migrated from in-source test disable annotations: auth, web, passwords.
+crbug.com/440027809 [ iOS26 iOS27 Device ] ForcedSigninTestCase/testSigninScreenTransferToOtherWindow [ Pass Failure ]
+crbug.com/440027809 [ iOS26 iOS27 iPad Device ] ForcedSigninTestCase/testSigninScreenTransferToOtherWindow [ Failure ]
+# Fails to background the app from `backgroundApplication`.
+crbug.com/427699033 [ iOS26 iOS27 ] ForcedSigninTestCase/testSignInScreenOnIncognitoWithMultiWindows [ Pass Failure ]
+crbug.com/384874382 ForcedSigninTestCase/testSignInScreenOnTabSwitcherWithMultiWindows [ Pass Failure ]
+crbug.com/384874382 ForcedSigninTestCase/testSignInScreenOnRegularSigninPromptMultiWindows [ Pass Failure ]
+crbug.com/384874382 [ iPad ] ForcedSigninTestCase/testSignInScreenOnRegularSigninPromptMultiWindows [ Failure ]
+crbug.com/384874382 ForcedSigninTestCase/testSignInScreenOnModalMultiWindows [ Pass Failure ]
+crbug.com/411035267 SeparateProfilesTestCase/testSwitchFromPersonalToManagedAndBack [ Pass Failure ]
+crbug.com/411035267 [ Device ] SeparateProfilesTestCase/testRefuseToSwitchToManageAccount [ Pass Failure ]
+# Fails on ASan and fieldtrial builds.
+crbug.com/411035267 [ Device ] SeparateProfilesTestCase/testProfileDeletedOnManagedAccountGone [ Pass Failure ]
+crbug.com/429403548 [ iOS18 ] SigninCoordinatorTestCase/testSignInCancelAddAccount [ Pass Failure ]
+crbug.com/453582633 SigninCoordinatorTestCase/testSignInFromNTPAndDeclineHistorySync [ Pass Failure ]
+# See also crbug.com/386196414.
+crbug.com/568719330 SigninCoordinatorTestCase/testSyncOnWhenPassphraseIntroducedAfterSignIn [ Pass Failure ]
+crbug.com/500733745 [ iOS27 ] CredentialSuggestionBottomSheetEGTest/testAutoSubmission [ Failure ]
+crbug.com/40279461 CredentialSuggestionBottomSheetEGTest/testOpenCredentialBottomSheetExpand [ Pass Failure ]
+crbug.com/40279461 CredentialSuggestionBottomSheetEGTest/testOpenCredentialBottomSheetNoUsername [ Pass Failure ]
+crbug.com/361518360 CredentialSuggestionBottomSheetEGTest/testOpenCredentialBottomSheetWithSingleSharedPassword [ Pass Failure ]
+crbug.com/361518360 CredentialSuggestionBottomSheetEGTest/testOpenCredentialBottomSheetWithSharedPasswordsAndUseKeyboard [ Pass Failure ]
+crbug.com/361518360 [ iPhone Device ] CredentialSuggestionBottomSheetEGTest/testOpenCredentialBottomSheetWithSharedPasswordsAndUseKeyboard [ Failure ]
+crbug.com/40260214 [ Simulator ] PasswordControllerEGTest/testPasswordGeneration [ Pass Failure ]
+crbug.com/371189341 [ Device ] PasswordControllerEGTest/testPasswordGenerationWhileSignedInWithPasswordsDisabled [ Pass Failure ]
+crbug.com/371189341 [ Device ] PasswordControllerEGTest/testPasswordGenerationWhileSignedInWithError [ Pass Failure ]
+crbug.com/453627553 PasswordControllerEGTest/testSaveTypedCredentialInUff [ Pass Failure ]
+crbug.com/453627553 PasswordControllerEGTest/testUpdateTypedCredentialInUff [ Pass Failure ]
+crbug.com/429140546 PasswordControllerEGTest/testPasswordBreachEventReported [ Pass Failure ]
+crbug.com/425885707 PasswordSuggestionEGTest/testFillNewPasswordWithProactiveBottomSheet [ Pass Failure ]
+crbug.com/440577394 PasswordSuggestionEGTest/testUserSignedOut [ Pass Failure ]
+# WKWebView does not open a new window as expected by this test.
+crbug.com/41299306 BrowsingTestCase/testBrowsingPreventDefaultWithLinkOpenedByJavascript [ Failure ]
+crbug.com/40234734 BrowsingTestCase/testBrowsingWindowDataLinkScriptRedirect [ Failure ]
+crbug.com/362621166 BrowsingTestCase/testBrowsingUserJavaScriptNavigation [ Pass Failure ]
+crbug.com/362621166 [ iPhone ] BrowsingTestCase/testBrowsingUserJavaScriptNavigation [ Failure ]
+crbug.com/362621166 BrowsingTestCase/testBrowsingUserJavaScriptWithoutNavigation [ Pass Failure ]
+crbug.com/362621166 [ iPhone ] BrowsingTestCase/testBrowsingUserJavaScriptWithoutNavigation [ Failure ]
+crbug.com/395066388 [ Simulator ] BrowsingPreventDefaultTestCase/testPreventDefaultOverridesTargetBlank [ Pass Failure ]
+crbug.com/395066388 [ Simulator ] BrowsingPreventDefaultTestCase/testPreventDefaultOverridesWindowOpen [ Pass Failure ]
+crbug.com/568719330 ChildWindowOpenByDOMTestCase/testWindowClosedWithoutName [ Pass Failure ]
+crbug.com/443199230 ErrorPageTestCase/testBackForwardErrorPage [ Pass Failure ]
+crbug.com/1185639 [ Simulator ] ErrorPageTestCase/testNavigateForwardToErrorPage [ Pass Failure ]
+crbug.com/495387290 [ Simulator ] FormsTestCase/testRepostFormCancellingAfterRedirect [ Pass Failure ]
+crbug.com/1147654 FormsTestCase/testPostFormEntryWithKeyboard [ Pass Failure ]
+crbug.com/405302626 LookalikeUrlTestCase/testRestoreToWarningPagePreservesHistory [ Pass Failure ]
+crbug.com/435144099 [ Device ] RestoreWithCacheTestCase/testRestoreHistory [ Pass Failure ]
+crbug.com/435144099 [ Device ] RestoreWithSynthesizedTestCase/testRestoreHistory [ Pass Failure ]
+crbug.com/361752763 WindowOpenByDOMTestCase/testLinkWithBlankTargetWithImmediateClose [ Pass Failure ]
+
 # Gardening surpression 2026-07-09
 crbug.com/533057223 [ iPad ] SigninCoordinatorTestCase/testSyncOnWhenPassphraseIntroducedAfterSignIn [ Pass Failure ]
 crbug.com/533075931 [ iOS18 iOS26 iPad Simulator ] GeminiCopresenceTestCase/testConversationPersistenceOnSignOut [ Pass Failure ]
@@ -274,7 +324,7 @@ crbug.com/536840723 [ iPad Simulator ] TabGridTestCase/testEmptyStateAfterNoResu
 
 # Gardening suppression 2026-07-30
 crbug.com/540811503 DeeplinkSigninTestCase/testCrossDeviceSigninSignedInTargetAccountNotOnDevice [Pass Failure]
-crbug.com/540829196 DeeplinkSigninTestCase/testCrossDeviceSigninSignedInTargetAccountOnDevice [Failure]
+crbug.com/540829196 DeeplinkSigninTestCase/testCrossDeviceSigninSignedInTargetAccountOnDevice [ Pass Failure ]
 crbug.com/540481922 [iOS18 iPhone] SnapshotTestCase/testSnapshotWithScrollDown [Pass Failure]
 
 # Multi-window iPad iOS 27 issues

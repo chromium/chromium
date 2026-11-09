@@ -70,8 +70,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that the error page is correctly displayed after navigating back to it
 // multiple times. See http://crbug.com/944037 .
-// TODO:(crbug.com/443199230): Fails on simulator and device.
-- (void)DISABLED_testBackForwardErrorPage {
+- (void)testBackForwardErrorPage {
   std::string errorText = net::ErrorToShortString(net::ERR_INVALID_URL);
   self.serverRespondsWithContent = YES;
 
@@ -104,14 +103,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Loads the URL which fails to load, then sucessfully navigates back/forward to
 // the page.
-// TODO:(crbug.com/1185639): Re-enable this test on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testNavigateForwardToErrorPage \
-  FLAKY_testNavigateForwardToErrorPage
-#else
-#define MAYBE_testNavigateForwardToErrorPage testNavigateForwardToErrorPage
-#endif
-- (void)MAYBE_testNavigateForwardToErrorPage {
+- (void)testNavigateForwardToErrorPage {
   self.serverRespondsWithContent = YES;
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo-query?bar")];
   [ChromeEarlGrey waitForWebStateContainingText:"bar"];

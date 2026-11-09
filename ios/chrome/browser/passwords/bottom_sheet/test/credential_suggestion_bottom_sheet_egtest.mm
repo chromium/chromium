@@ -402,7 +402,7 @@ void VerifyManualFillShowsSignInActionButton(
     config.features_disabled.push_back(kAutofillBottomSheetNewBlur);
   }
 
-  if ([self isRunningTest:@selector(DISABLED_testAutoSubmission)]) {
+  if ([self isRunningTest:@selector(testAutoSubmission)]) {
     config.features_enabled.push_back(
         password_manager::features::kIOSPasswordAutoSubmission);
   } else {
@@ -1150,8 +1150,7 @@ void VerifyManualFillShowsSignInActionButton(
   GREYWaitForAppToIdle(@"App failed to idle");
 }
 
-// TODO(crbug.com/40279461): Fix flaky test & re-enable.
-- (void)DISABLED_testOpenCredentialBottomSheetExpand {
+- (void)testOpenCredentialBottomSheetExpand {
   NSURL* URL = net::NSURLWithGURL([self loginPageURL]);
   for (int i = 1; i <= 9; i++) {
     [PasswordManagerAppInterface
@@ -1233,8 +1232,7 @@ void VerifyManualFillShowsSignInActionButton(
   [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
-// TODO(crbug.com/40279461): Fix flaky test & re-enable.
-- (void)DISABLED_testOpenCredentialBottomSheetNoUsername {
+- (void)testOpenCredentialBottomSheetNoUsername {
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@""
                          password:@"password"
@@ -1299,8 +1297,7 @@ void VerifyManualFillShowsSignInActionButton(
   [self verifyPasswordFieldsHaveBeenFilled:@"user"];
 }
 
-// TODO(crbug.com/361518360): Unflake the test.
-- (void)DISABLED_testOpenCredentialBottomSheetWithSingleSharedPassword {
+- (void)testOpenCredentialBottomSheetWithSingleSharedPassword {
   NSURL* URL = net::NSURLWithGURL([self loginPageURL]);
 
   // Save 1 password that has been received via sharing and the other not.
@@ -1396,9 +1393,7 @@ void VerifyManualFillShowsSignInActionButton(
   [self verifyPasswordFieldsHaveBeenFilled:@"user1"];
 }
 
-// TODO(crbug.com/361518360): Unflake the test.
-- (void)
-    DISABLED_testOpenCredentialBottomSheetWithSharedPasswordsAndUseKeyboard {
+- (void)testOpenCredentialBottomSheetWithSharedPasswordsAndUseKeyboard {
   // Save a password that has been received via sharing.
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user1"
@@ -1520,7 +1515,7 @@ void VerifyManualFillShowsSignInActionButton(
 // [ Checkbox ] (Ignored by heuristic)
 // [ Password ]
 // [ Submit   ]
-- (void)DISABLED_testAutoSubmission {
+- (void)testAutoSubmission {
   GURL URL = self.testServer->GetURL("/auto_submit_test.html");
 
   [PasswordManagerAppInterface

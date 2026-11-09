@@ -54,15 +54,7 @@ const CFTimeInterval kConditionTimeout = 4.0;
 
 // Taps a link with onclick="event.preventDefault()" and target="_blank" and
 // verifies that the URL didn't change and no tabs were opened.
-// TODO(crbug.com/395066388): Test is flaky on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testPreventDefaultOverridesTargetBlank \
-  FLAKY_testPreventDefaultOverridesTargetBlank
-#else
-#define MAYBE_testPreventDefaultOverridesTargetBlank \
-  testPreventDefaultOverridesTargetBlank
-#endif
-- (void)MAYBE_testPreventDefaultOverridesTargetBlank {
+- (void)testPreventDefaultOverridesTargetBlank {
   [self runTestAndVerifyNoNavigationForLinkID:"overrides-target-blank"];
 }
 
@@ -74,15 +66,7 @@ const CFTimeInterval kConditionTimeout = 4.0;
 
 // Tests clicking a link with event 'preventDefault()' and URL loaded by
 // JavaScript does not open a new tab, but does navigate to the URL.
-// TODO(crbug.com/395066388): Test is flaky on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testPreventDefaultOverridesWindowOpen \
-  FLAKY_testPreventDefaultOverridesWindowOpen
-#else
-#define MAYBE_testPreventDefaultOverridesWindowOpen \
-  testPreventDefaultOverridesWindowOpen
-#endif
-- (void)MAYBE_testPreventDefaultOverridesWindowOpen {
+- (void)testPreventDefaultOverridesWindowOpen {
   // Disable popup blocking, because that will mask failures that try to open
   // new tabs.
   ScopedBlockPopupsPref scoper(CONTENT_SETTING_ALLOW);

@@ -477,21 +477,7 @@ TAG_SMOKE_TEST(FormsTestCase, testGoBackButtonAfterFormSubmission);
 }
 
 // Tests that a POST followed by a redirect does not show the popup.
-// TODO(crbug.com/495387290): Flaky on iPad simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testRepostFormCancellingAfterRedirect \
-  FLAKY_testRepostFormCancellingAfterRedirect
-#else
-#define MAYBE_testRepostFormCancellingAfterRedirect \
-  testRepostFormCancellingAfterRedirect
-#endif
-- (void)MAYBE_testRepostFormCancellingAfterRedirect {
-#if TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iPad simulator.");
-  }
-#endif
-
+- (void)testRepostFormCancellingAfterRedirect {
   const GURL destinationURL = [self destinationUrl];
 
   [ChromeEarlGrey loadURL:[self redirectFormUrl]];
@@ -541,13 +527,7 @@ TAG_SMOKE_TEST(FormsTestCase, testGoBackButtonAfterFormSubmission);
 // Tests that submitting a POST-based form by tapping the 'Go' button on the
 // keyboard navigates to the correct URL and the back button works as expected
 // afterwards.
-// TODO:(crbug.com/1147654): re-enable after figuring out why it is failing.
-- (void)DISABLE_testPostFormEntryWithKeyboard {
-  // Test fails on iPad Air 2 13.4 crbug.com/1102608.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails in iOS 13 on iPads.");
-  }
-
+- (void)testPostFormEntryWithKeyboard {
   [self setUpFormTestSimpleHttpServer];
   const GURL destinationURL = [self destinationUrl];
 

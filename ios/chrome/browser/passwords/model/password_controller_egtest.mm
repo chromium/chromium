@@ -271,7 +271,7 @@ void LoginOnUff() {
     config.relaunch_policy = ForceRelaunchByKilling;
   }
 
-  if ([self isRunningTest:@selector(FLAKY_testPasswordBreachEventReported)]) {
+  if ([self isRunningTest:@selector(testPasswordBreachEventReported)]) {
     config.features_enabled.push_back(
         password_manager::features::kMarkAllCredentialsAsLeaked);
   }
@@ -300,10 +300,9 @@ void LoginOnUff() {
 }
 
 - (std::optional<std::string_view>)enterpriseReportingEventForTest {
-  if ([self isRunningTest:@selector(DISABLED_testLoginEventReported)]) {
+  if ([self isRunningTest:@selector(testLoginEventReported)]) {
     return "loginEvent";
-  } else if ([self isRunningTest:@selector
-                   (FLAKY_testPasswordBreachEventReported)]) {
+  } else if ([self isRunningTest:@selector(testPasswordBreachEventReported)]) {
     return "passwordBreachEvent";
   }
   return std::nullopt;
@@ -583,13 +582,7 @@ TAG_SMOKE_TEST(PasswordControllerEGTest, testSavePromptAppearsOnFormSubmission);
 }
 
 // Tests password generation flow.
-// TODO(crbug.com/40260214): The test fails on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testPasswordGeneration FLAKY_testPasswordGeneration
-#else
-#define MAYBE_testPasswordGeneration testPasswordGeneration
-#endif
-- (void)MAYBE_testPasswordGeneration {
+- (void)testPasswordGeneration {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_signup_form.html")];
@@ -698,15 +691,7 @@ TAG_SMOKE_TEST(PasswordControllerEGTest, testSavePromptAppearsOnFormSubmission);
 
 // Tests that password generation is not offered for signed in users with
 // passwords toggle disabled.
-// TODO(crbug.com/371189341): Test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testPasswordGenerationWhileSignedInWithPasswordsDisabled \
-  testPasswordGenerationWhileSignedInWithPasswordsDisabled
-#else
-#define MAYBE_testPasswordGenerationWhileSignedInWithPasswordsDisabled \
-  FLAKY_testPasswordGenerationWhileSignedInWithPasswordsDisabled
-#endif
-- (void)MAYBE_testPasswordGenerationWhileSignedInWithPasswordsDisabled {
+- (void)testPasswordGenerationWhileSignedInWithPasswordsDisabled {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Disable Passwords toggle in account settings.
@@ -740,15 +725,7 @@ TAG_SMOKE_TEST(PasswordControllerEGTest, testSavePromptAppearsOnFormSubmission);
 
 // Tests that password generation is not offered for signed in users with an
 // encryption error; missing passphrase.
-// TODO(crbug.com/371189341): Test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testPasswordGenerationWhileSignedInWithError \
-  testPasswordGenerationWhileSignedInWithError
-#else
-#define MAYBE_testPasswordGenerationWhileSignedInWithError \
-  FLAKY_testPasswordGenerationWhileSignedInWithError
-#endif
-- (void)MAYBE_testPasswordGenerationWhileSignedInWithError {
+- (void)testPasswordGenerationWhileSignedInWithError {
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
@@ -799,11 +776,6 @@ TAG_SMOKE_TEST(PasswordControllerEGTest, testSavePromptAppearsOnFormSubmission);
 
 // Tests that the typed credentials are correctly saved in the sign-in UFF flow.
 - (void)testSaveTypedCredentialInUff {
-  // TODO(crbug.com/453627553): Re-enable the test.
-  if (@available(iOS 18.5, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 18.5.");
-  }
-
   NSString* usernameValue = @"test-username";
   NSString* passwordValue = @"test-password";
 
@@ -885,11 +857,6 @@ TAG_SMOKE_TEST(PasswordControllerEGTest, testSavePromptAppearsOnFormSubmission);
 // Tests that the typed credentials are correctly updated in the sign-in UFF
 // flow when there is already a credential stored for the corresponding email.
 - (void)testUpdateTypedCredentialInUff {
-  // TODO(crbug.com/453627553): Re-enable the test.
-  if (@available(iOS 18.5, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 18.5.");
-  }
-
   NSString* usernameValue = @"test-username";
   NSString* passwordValue = @"test-password";
   NSString* passwordValueToBeReplaced = @"old-password";
@@ -935,8 +902,7 @@ TAG_SMOKE_TEST(PasswordControllerEGTest, testSavePromptAppearsOnFormSubmission);
 }
 
 // Tests that a login event is reported to an enterprise connector.
-// TODO(crbug.com/567129485): Flaky on iOS Simulator.
-- (void)DISABLED_testLoginEventReported {
+- (void)testLoginEventReported {
   [self loadLoginPage];
 
   // Simulate login.
@@ -966,8 +932,7 @@ TAG_SMOKE_TEST(PasswordControllerEGTest, testSavePromptAppearsOnFormSubmission);
 }
 
 // Tests that a password breach event is reported to an enterprise connector.
-// TODO(crbug.com/429140546): flaky on chromium/ci/ios-simulator-noncq.
-- (void)FLAKY_testPasswordBreachEventReported {
+- (void)testPasswordBreachEventReported {
   [self loadLoginPage];
 
   // Simulate login.

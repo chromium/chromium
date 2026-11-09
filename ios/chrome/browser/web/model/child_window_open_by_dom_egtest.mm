@@ -186,8 +186,7 @@ std::unique_ptr<net::test_server::HttpResponse> SlowResponseHandler(
 
 // Tests that closing a tab will set window.closed to true for only
 // corresponding window object and not for any other window objects.
-// TODO(crbug.com/568719330): Re-enable this test.
-- (void)DISABLED_testWindowClosedWithoutName {
+- (void)testWindowClosedWithoutName {
   [ChromeEarlGrey tapWebStateElementWithID:@"openWindowNoName"];
   [ChromeEarlGrey waitForMainTabCount:2];
   [ChromeEarlGrey selectTabAtIndex:0];

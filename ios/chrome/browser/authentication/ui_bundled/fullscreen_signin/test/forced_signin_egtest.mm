@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -745,13 +744,6 @@ void CompleteSigninFlow() {
 // Tests that the sign-in prompt is shown on the other window when the window
 // presenting the forced sign-in screen is closed.
 - (void)testSigninScreenTransferToOtherWindow {
-  // TODO(crbug.com/440027809): Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-#endif
-
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
@@ -785,11 +777,6 @@ void CompleteSigninFlow() {
 - (void)testSignInScreenOnIncognitoWithMultiWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
-  }
-  if (@available(iOS 26.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-    // Fails to background app from [self backgroundApplication]
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
 
   // Restart the app to reset the policies.
@@ -830,8 +817,7 @@ void CompleteSigninFlow() {
 
 // Tests that the forced sign-in prompt, when there are multiple windows
 // opened, can be shown on dynamic policy update when on the tab switcher.
-// TODO(crbug.com/384874382): Flaky test.
-- (void)DISABLED_testSignInScreenOnTabSwitcherWithMultiWindows {
+- (void)testSignInScreenOnTabSwitcherWithMultiWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
@@ -875,8 +861,7 @@ void CompleteSigninFlow() {
 // opened, can be shown on dynamic policy update after cancelling the regular
 // sign-in prompt. The policy is applied while the regular sign-in prompt is
 // shown.
-// TODO(crbug.com/384874382): Flaky test.
-- (void)DISABLED_testSignInScreenOnRegularSigninPromptMultiWindows {
+- (void)testSignInScreenOnRegularSigninPromptMultiWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
@@ -924,8 +909,7 @@ void CompleteSigninFlow() {
 // Tests that the forced sign-in prompt can be shown on dynamic policy update
 // when a browser modal is displayed on top of the browser view when there are
 // multiple windows.
-// TODO(crbug.com/384874382): Flaky test.
-- (void)DISABLED_testSignInScreenOnModalMultiWindows {
+- (void)testSignInScreenOnModalMultiWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "base/ios/block_types.h"
-#import "base/ios/ios_util.h"
 #import "base/strings/strcat.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -479,11 +478,6 @@ TAG_SMOKE_TEST(SigninCoordinatorTestCase, testSignInOneUser);
 // Opens the add account screen and then cancels it by opening a new tab.
 // Ensures that the add account screen is correctly dismissed. crbug.com/462200
 - (void)testSignInCancelAddAccount {
-  // TODO(crbug.com/429403548): Re-enable this flaky test on iOS below 26.
-  if (!base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iOS below 26.");
-  }
-
   // Add an identity to avoid arriving on the Add Account screen when opening
   // sign-in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -689,8 +683,7 @@ TAG_SMOKE_TEST(SigninCoordinatorTestCase, testSignInOneUser);
 
 // Tests that when signing-in using the NTP avatar disc, the user is not signed
 // out if history sync is declined.
-// TODO(crbug.com/453582633): Test is failing on the waterfall.
-- (void)DISABLED_testSignInFromNTPAndDeclineHistorySync {
+- (void)testSignInFromNTPAndDeclineHistorySync {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -911,9 +904,7 @@ TAG_SMOKE_TEST(SigninCoordinatorTestCase,
 
 // Tests that Sync is on when introducing passphrase from settings, after
 // logging in.
-// TODO(crbug.com/386196414): Test is flaky.
-// TODO(crbug.com/568719330): Re-enable this test.
-- (void)DISABLED_testSyncOnWhenPassphraseIntroducedAfterSignIn {
+- (void)testSyncOnWhenPassphraseIntroducedAfterSignIn {
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
