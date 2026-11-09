@@ -5,6 +5,7 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_NATIVE_INPUT_METHOD_ENGINE_OBSERVER_H_
 
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/input_method/assistive_suggester.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
-#include "chrome/browser/ash/input_method/editor_event_sink.h"
 #include "chrome/browser/ash/input_method/grammar_manager.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/ash/input_method/pref_change_recorder.h"
@@ -33,9 +33,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/character_composer.h"
+#include "ui/gfx/range/range.h"
 
 namespace ash {
 namespace input_method {
+
+class EditorMediator;
 
 bool CanRouteToNativeMojoEngine(std::string_view engine_id);
 
@@ -52,7 +55,7 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   // to e2e Tast tests and unit tests, then dismantle this for-test-only flag.
   NativeInputMethodEngineObserver(
       PrefService* prefs,
-      EditorEventSink* editor_event_sink,
+      EditorMediator* editor_mediator,
       LobsterEventSink* lobster_event_sink,
       std::unique_ptr<InputMethodEngineObserver> ime_base_observer,
       std::unique_ptr<AssistiveSuggester> assistive_suggester,
@@ -186,7 +189,7 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
 
   // Not owned by this class.
   raw_ptr<PrefService> prefs_ = nullptr;
-  raw_ptr<EditorEventSink> editor_event_sink_;
+  raw_ptr<EditorMediator> editor_mediator_;
   raw_ptr<LobsterEventSink> lobster_event_sink_;
 
   std::unique_ptr<InputMethodEngineObserver> ime_base_observer_;

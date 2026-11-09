@@ -75,7 +75,7 @@ void NativeInputMethodEngine::Initialize(
   auto suggestions_collector = std::make_unique<SuggestionsCollector>(
       assistive_suggester_, std::move(suggestions_service_client));
 
-  EditorMediator* editor_event_sink =
+  EditorMediator* editor_mediator =
       chromeos::features::IsOrcaEnabled()
           ? EditorMediatorFactory::GetInstance()->GetForProfile(profile)
           : nullptr;
@@ -91,7 +91,7 @@ void NativeInputMethodEngine::Initialize(
   // Wrap the given observer in our observer that will decide whether to call
   // Mojo directly or forward to the extension.
   auto native_observer = std::make_unique<NativeInputMethodEngineObserver>(
-      profile->GetPrefs(), editor_event_sink, lobster_event_sink,
+      profile->GetPrefs(), editor_mediator, lobster_event_sink,
       std::move(observer), std::move(assistive_suggester),
       std::move(autocorrect_manager), std::move(suggestions_collector),
       std::make_unique<GrammarManager>(

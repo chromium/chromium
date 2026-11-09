@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
+#include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/ash/input_method/input_method_quick_settings_helpers.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
@@ -706,7 +707,7 @@ bool CanRouteToNativeMojoEngine(std::string_view engine_id) {
 
 NativeInputMethodEngineObserver::NativeInputMethodEngineObserver(
     PrefService* prefs,
-    EditorEventSink* editor_event_sink,
+    EditorMediator* editor_mediator,
     LobsterEventSink* lobster_event_sink,
     std::unique_ptr<InputMethodEngineObserver> ime_base_observer,
     std::unique_ptr<AssistiveSuggester> assistive_suggester,
@@ -715,7 +716,7 @@ NativeInputMethodEngineObserver::NativeInputMethodEngineObserver(
     std::unique_ptr<GrammarManager> grammar_manager,
     bool use_ime_service)
     : prefs_(prefs),
-      editor_event_sink_(editor_event_sink),
+      editor_mediator_(editor_mediator),
       lobster_event_sink_(lobster_event_sink),
       ime_base_observer_(std::move(ime_base_observer)),
       assistive_suggester_(std::move(assistive_suggester)),
@@ -801,8 +802,8 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
       ->SetCurrentInputMethodMenuItemList({});
   autocorrect_manager_->OnActivate(engine_id);
   assistive_suggester_->OnActivate(engine_id);
-  if (editor_event_sink_) {
-    editor_event_sink_->OnActivateIme(engine_id);
+  if (editor_mediator_) {
+    editor_mediator_->OnActivateIme(engine_id);
   }
 
   // TODO(b/181077907): Always launch the IME service and let IME service
@@ -855,8 +856,8 @@ void NativeInputMethodEngineObserver::OnFocus(
     const TextInputMethod::InputContext& context) {
   text_client_ =
       TextClient{.context_id = context_id, .state = TextClientState::kPending};
-  if (chromeos::features::IsOrcaEnabled() && editor_event_sink_) {
-    editor_event_sink_->OnFocus(context_id);
+  if (chromeos::features::IsOrcaEnabled() && editor_mediator_) {
+    editor_mediator_->OnFocus(context_id);
   }
   if (lobster_event_sink_) {
     lobster_event_sink_->OnFocus(context_id);
@@ -949,8 +950,8 @@ void NativeInputMethodEngineObserver::OnBlur(const std::string& engine_id,
 
   text_client_ = std::nullopt;
 
-  if (chromeos::features::IsOrcaEnabled() && editor_event_sink_) {
-    editor_event_sink_->OnBlur();
+  if (chromeos::features::IsOrcaEnabled() && editor_mediator_) {
+    editor_mediator_->OnBlur();
   }
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
     assistive_suggester_->OnBlur();
@@ -1099,8 +1100,8 @@ void NativeInputMethodEngineObserver::OnSurroundingTextChanged(
     ime_base_observer_->OnSurroundingTextChanged(engine_id, text,
                                                  selection_range, offset_pos);
   }
-  if (editor_event_sink_) {
-    editor_event_sink_->OnSurroundingTextChanged(text, selection_range);
+  if (editor_mediator_) {
+    editor_mediator_->OnSurroundingTextChanged(text, selection_range);
   }
 }
 

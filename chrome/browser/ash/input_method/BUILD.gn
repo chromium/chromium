@@ -48,7 +48,6 @@ static_library("input_method") {
     "editor_context.h",
     "editor_event_proxy.cc",
     "editor_event_proxy.h",
-    "editor_event_sink.h",
     "editor_feedback.cc",
     "editor_feedback.h",
     "editor_geolocation_mock_provider.cc",
