@@ -817,6 +817,28 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         window.getComputedStyle(bottomControls).animationName);
   });
 
+  test('profile icon follows the action buttons in tab order', () => {
+    // Tab order follows the DOM. In the 1-line pill, the voice, Lens, and
+    // overflow buttons render before the trailing profile icon.
+    const tabStops = [
+      '#input',
+      '#voiceSearchButton',
+      '#lensSearchButton',
+      '#overflowMenuButton',
+      '#profileIcon',
+    ].map(selector => omnibox.shadowRoot.querySelector(selector));
+    for (let i = 1; i < tabStops.length; i++) {
+      const previous = tabStops[i - 1];
+      const next = tabStops[i];
+      assertTrue(!!previous);
+      assertTrue(!!next);
+      assertTrue(
+          (previous.compareDocumentPosition(next) &
+           Node.DOCUMENT_POSITION_FOLLOWING) !== 0,
+          `#${previous.id} should precede #${next.id}`);
+    }
+  });
+
   test(
       'clicking lens button calls showScreenshotMenu and sets ' +
           'isScreenshotMenuOpen',

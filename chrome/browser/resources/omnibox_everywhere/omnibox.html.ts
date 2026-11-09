@@ -55,7 +55,6 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
         ` :
                                   ''}
       </cr-searchbox-input>
-      <omnibox-everywhere-profile-icon id="profileIcon"></omnibox-everywhere-profile-icon>
       <div class="dropdownContainer">
         <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
             exportparts="dropdown-content"
@@ -141,6 +140,10 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
           </div>
         </div>
       </div>
+      <!-- Keep last so Tab reaches it after the action buttons, which render
+           before it in the 1-line pill. -->
+      <omnibox-everywhere-profile-icon id="profileIcon">
+      </omnibox-everywhere-profile-icon>
     </div>
   `;
 }
