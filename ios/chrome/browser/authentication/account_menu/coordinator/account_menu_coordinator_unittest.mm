@@ -29,16 +29,21 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -275,14 +280,21 @@ TEST_F(AccountMenuCoordinatorTest, testEditAccountList) {
   AssertOpenAndStop();
 }
 
-// Tests that `signOutFromTargetRect` requests the delegate to be stopped and
-// shows a snackbar and calls its completion.
+// Tests that `signOutFromTargetRect` requests the delegate to be stopped,
+// shows a snackbar with an undo action that triggers undo sign-out, and calls
+// its completion.
 TEST_F(AccountMenuCoordinatorTest, testSignOut) {
   base::RunLoop run_loop;
   base::RepeatingClosure closure = run_loop.QuitClosure();
   CGRect rect = CGRect();
+  __block SnackbarMessage* snackbar_message = nil;
   OCMExpect([mock_snackbar_commands_handler_
-      showSnackbarMessageOverBrowserToolbar:[OCMArg isNotNil]]);
+      showSnackbarMessageOverBrowserToolbar:[OCMArg
+                                                checkWithBlock:^BOOL(
+                                                    SnackbarMessage* message) {
+                                                  snackbar_message = message;
+                                                  return YES;
+                                                }]]);
   [coordinator_ signOutFromTargetRect:rect
                            completion:^(BOOL success, SceneState* scene_state) {
                              EXPECT_TRUE(success);
@@ -290,7 +302,16 @@ TEST_F(AccountMenuCoordinatorTest, testSignOut) {
                              closure.Run();
                            }];
   run_loop.Run();
+  ASSERT_NE(snackbar_message, nil);
+  ASSERT_NE(snackbar_message.action, nil);
+  EXPECT_NSEQ(snackbar_message.action.title,
+              l10n_util::GetNSString(IDS_IOS_SIGNIN_SNACKBAR_UNDO));
+  ASSERT_NE(snackbar_message.action.handler, nil);
   EXPECT_EQ(authentication_service()->GetPrimaryIdentity(), nil);
+
+  OCMExpect([mock_scene_handler_
+      showUndoSignoutFromSnackbarForIdentity:kPrimaryIdentity]);
+  snackbar_message.action.handler();
 }
 
 // Tests that `mediatorWantsToBeDismissed` requests to the delegate to stop the

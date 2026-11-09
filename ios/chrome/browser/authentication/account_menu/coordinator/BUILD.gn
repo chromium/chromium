@@ -80,6 +80,7 @@ source_set("unit_tests") {
     "//components/sync/service",
     "//components/test/ios",
     "//components/trusted_vault",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/account_menu/public",
     "//ios/chrome/browser/authentication/account_menu/ui",
     "//ios/chrome/browser/authentication/add_account_signin/coordinator",
@@ -99,6 +100,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/snackbar",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
@@ -114,5 +116,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
   ]
 }
