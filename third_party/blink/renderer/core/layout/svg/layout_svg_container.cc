@@ -119,17 +119,19 @@ bool LayoutSVGContainer::UpdateAfterSVGLayout(
   }
 
   if (!IsSVGHiddenContainer()) {
-    SetTransformAffectsVectorEffect(false);
+    bool transform_affects_vector_effect = false;
     ClearSVGDescendantMayHaveTransformRelatedOperations();
     for (auto* child = FirstChild(); child; child = child->NextSibling()) {
-      if (child->TransformAffectsVectorEffect())
-        SetTransformAffectsVectorEffect(true);
+      if (child->TransformAffectsVectorEffect()) {
+        transform_affects_vector_effect = true;
+      }
       if (child->Style().HasCurrentTransformRelatedAnimation() ||
           child->SVGDescendantMayHaveTransformRelatedOperations() ||
           child->Style().HasNonIdentityTransformOperation()) {
         SetSVGDescendantMayHaveTransformRelatedOperations();
       }
     }
+    SetTransformAffectsVectorEffect(transform_affects_vector_effect);
   }
 
   return transform_change != SVGTransformChange::kNone;

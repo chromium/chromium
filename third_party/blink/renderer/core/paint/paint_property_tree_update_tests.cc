@@ -2575,4 +2575,42 @@ TEST_P(PaintPropertyTreeUpdateTest, SVGTransformAnimationZoomChange) {
   EXPECT_EQ(gfx::Point3F(50, 50, 0), transform->Origin());
 }
 
+TEST_P(PaintPropertyTreeUpdateTest, SVGTransformAnimationVectorEffectChange) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(10deg); }
+      }
+      .animate {
+        transform-origin: 50% 50%;
+        animation: anim 1s infinite;
+      }
+    </style>
+    <svg width="100" height="100">
+      <g id="g" class="animate">
+        <rect id="rect" width="100" height="100" class="animate"/>
+      </g>
+    </svg>
+  )HTML");
+
+  const auto* g_transform = PaintPropertiesForElement("g")->Transform();
+  const auto* rect_transform = PaintPropertiesForElement("rect")->Transform();
+  ASSERT_TRUE(g_transform);
+  ASSERT_TRUE(rect_transform);
+  EXPECT_EQ(gfx::Point3F(50, 50, 0), g_transform->Origin());
+  EXPECT_EQ(gfx::Point3F(50, 50, 0), rect_transform->Origin());
+
+  GetElementById("rect")->setAttribute(svg_names::kVectorEffectAttr,
+                                       AtomicString("non-scaling-stroke"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::Point3F(), g_transform->Origin());
+  EXPECT_EQ(gfx::Point3F(), rect_transform->Origin());
+
+  GetElementById("rect")->removeAttribute(svg_names::kVectorEffectAttr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::Point3F(50, 50, 0), g_transform->Origin());
+  EXPECT_EQ(gfx::Point3F(50, 50, 0), rect_transform->Origin());
+}
+
 }  // namespace blink

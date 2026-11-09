@@ -135,15 +135,16 @@ void LayoutSVGText::UpdateTransformAffectsVectorEffect() {
     return;
   }
 
-  SetTransformAffectsVectorEffect(false);
+  bool transform_affects_vector_effect = false;
   for (LayoutObject* descendant = FirstChild(); descendant;
        descendant = descendant->NextInPreOrder(this)) {
     if (descendant->IsSVGInline() && descendant->Style().VectorEffect() ==
                                          EVectorEffect::kNonScalingStroke) {
-      SetTransformAffectsVectorEffect(true);
+      transform_affects_vector_effect = true;
       break;
     }
   }
+  SetTransformAffectsVectorEffect(transform_affects_vector_effect);
 }
 
 void LayoutSVGText::Paint(const PaintInfo& paint_info) const {

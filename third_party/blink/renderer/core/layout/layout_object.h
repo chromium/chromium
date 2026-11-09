@@ -3662,7 +3662,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   void SetTransformAffectsVectorEffect(bool b) {
     NOT_DESTROYED();
     DCHECK(IsSVGChild());
-    transform_affects_vector_effect_ = b;
+    if (transform_affects_vector_effect_ != b) {
+      transform_affects_vector_effect_ = b;
+      // `CompositorAnimations::CanStartTransformAnimationOnCompositorForSVG`
+      // depends on `TransformAffectsVectorEffect`, which is used for the
+      // transform paint property.
+      SetNeedsPaintPropertyUpdate();
+    }
   }
 
   void ClearSVGDescendantMayHaveTransformRelatedOperations() {
