@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -3665,6 +3666,35 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
         target_browser));
   }
 
+  // Waits until the avatar button in `target_browser`'s WebUI toolbar has the
+  // label mode `label_mode` (see LabelMode in avatar_button.ts), and its label
+  // text is displayed if and only if `expect_text_displayed` is true.
+  [[nodiscard]] bool WaitForAvatarLabelMode(
+      BrowserWindowInterface* target_browser,
+      std::string_view label_mode,
+      bool expect_text_displayed) {
+    static constexpr char kGetAvatarLabelStateScript[] = R"(
+      (() => {
+        const app = document.querySelector('toolbar-app');
+        const avatar = app?.shadowRoot?.querySelector('#avatar');
+        const text = avatar?.shadowRoot?.querySelector('#text');
+        if (!text) {
+          return '';
+        }
+        const displayed = getComputedStyle(text).display !== 'none' &&
+            getComputedStyle(text).visibility !== 'hidden';
+        return avatar.getAttribute('label-mode') + ':' + displayed;
+      })()
+    )";
+    const std::string expected = base::StrCat(
+        {label_mode, ":", expect_text_displayed ? "true" : "false"});
+    return base::test::RunUntil([&]() -> bool {
+      return content::EvalJs(GetWebUIWebContents(target_browser),
+                             kGetAvatarLabelStateScript)
+                 .ExtractString() == expected;
+    });
+  }
+
   // Waits until the pinned toolbar actions, from left to right, match
   // `expected`: a comma-separated list of "<action>:<visible|hidden>" entries,
   // where <action> is either the integer value of a mojom PinnedToolbarAction,
@@ -4562,6 +4592,79 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
       *overflow_menu, browser()));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+// Test that when an avatar button with label text has overflowed, clicking it
+// on the overflow menu displays just its icon, without any label text, while
+// the profile menu is anchored to it.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
+                       OverflowMenuClickAvatarButtonWithText) {
+  // ChromeOS only displays the avatar button for regular profiles in some
+  // cases, but always displays it for Incognito profiles.
+#if BUILDFLAG(IS_CHROMEOS)
+  BrowserWindowInterface* target_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+#else
+  BrowserWindowInterface* target_browser = browser();
+#endif
+  ASSERT_TRUE(target_browser);
+
+  // Wait until avatar button is visible and ready to accept an explicit state.
+  ASSERT_TRUE(WaitForTrackedElements({kToolbarAvatarButtonElementId}, {},
+                                     target_browser));
+  AvatarToolbarButtonInterface* avatar_button =
+      GetWebUIToolbar(target_browser)->GetAvatarToolbarButtonInterface();
+  ASSERT_TRUE(avatar_button);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return avatar_button->IsReadyForIPH(); }));
+
+  // Give the avatar button label text, and wait for it to be displayed.
+  base::ScopedClosureRunner reset_explicit_state =
+      avatar_button->SetExplicitButtonState(
+          u"Avatar button text",
+          /*accessibility_label=*/std::nullopt,
+          /*explicit_action=*/std::nullopt);
+  ASSERT_TRUE(WaitForAvatarLabelMode(target_browser, "text",
+                                     /*expect_text_displayed=*/true));
+
+  // Force all overflowable elements into the overflow menu.
+  gfx::Rect window_bounds = target_browser->GetWindow()->GetBounds();
+  ASSERT_EQ(SetSpacerWidth(window_bounds.width(), target_browser), true);
+  ASSERT_TRUE(WaitForTrackedElements({kToolbarOverflowButtonElementId},
+                                     {kToolbarAvatarButtonElementId},
+                                     target_browser));
+
+  // Click the avatar button on the overflow menu, and wait for the profile
+  // menu to be shown.
+  OverflowMenu* overflow_menu = OpenOverflowMenu(target_browser);
+  ASSERT_TRUE(overflow_menu);
+  ASSERT_TRUE(ClickOverflowMenuItem(
+      *overflow_menu, IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE, target_browser));
+  ProfileMenuCoordinator* const profile_menu_coordinator =
+      ProfileMenuCoordinator::From(target_browser);
+  ASSERT_TRUE(profile_menu_coordinator);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return profile_menu_coordinator->IsShowing(); }));
+
+  // The avatar button should be visible, since the profile menu is anchored to
+  // it, but there's no room for its label, so only its icon should be shown.
+  ui::TrackedElement* avatar_element = WaitForTrackedElementVisible(
+      kToolbarAvatarButtonElementId, target_browser);
+  ASSERT_TRUE(avatar_element);
+  EXPECT_TRUE(WaitForAvatarLabelMode(target_browser, "collapsed",
+                                     /*expect_text_displayed=*/false));
+
+  // The profile menu should be anchored to the collapsed button.
+  ProfileMenuViewBase* const profile_menu =
+      profile_menu_coordinator->GetProfileMenuViewBaseForTesting();
+  ASSERT_TRUE(profile_menu);
+  EXPECT_EQ(profile_menu->GetAnchorRect(), avatar_element->GetScreenBounds());
+
+  // Closing the profile menu should allow the button to overflow again.
+  profile_menu->GetWidget()->Close();
+  EXPECT_TRUE(WaitForTrackedElements({kToolbarOverflowButtonElementId},
+                                     {kToolbarAvatarButtonElementId},
+                                     target_browser));
+}
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Test that on ChromeOS, the avatar button on the overflow menu is enabled

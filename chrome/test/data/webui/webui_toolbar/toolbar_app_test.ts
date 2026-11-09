@@ -799,7 +799,7 @@ suite('ToolbarAppTest', () => {
     await microtasksFinished();
 
     const avatarButton = app.shadowRoot.querySelector('avatar-button')!;
-    const textSpan = avatarButton.shadowRoot.querySelector('#text')!;
+    const textSpan = avatarButton.$.text;
 
     assertTrue(avatarButton.classList.contains('initial-load'));
 
@@ -849,7 +849,7 @@ suite('ToolbarAppTest', () => {
     await microtasksFinished();
 
     const avatarButton = app.shadowRoot.querySelector('avatar-button')!;
-    const textSpan = avatarButton.shadowRoot.querySelector('#text')!;
+    const textSpan = avatarButton.$.text;
 
     assertTrue(avatarButton.classList.contains('initial-load'));
 
@@ -917,7 +917,7 @@ suite('ToolbarAppTest', () => {
     browserProxy.fireToolbarStateListener([], navState);
     await microtasksFinished();
 
-    assertFalse(avatarButton.hasAttribute('has-label'));
+    assertEquals('no-text', avatarButton.getAttribute('label-mode'));
     assertFalse(appMenuButton.hasAttribute('has-label'));
     assertEquals(
         '0px', window.getComputedStyle(appMenuButton).marginInlineStart);
@@ -930,7 +930,7 @@ suite('ToolbarAppTest', () => {
     browserProxy.fireToolbarStateListener([], appMenuExpandedState);
     await microtasksFinished();
 
-    assertFalse(avatarButton.hasAttribute('has-label'));
+    assertEquals('no-text', avatarButton.getAttribute('label-mode'));
     assertTrue(appMenuButton.hasAttribute('has-label'));
     assertEquals(
         '3px', window.getComputedStyle(appMenuButton).marginInlineStart);
@@ -945,15 +945,47 @@ suite('ToolbarAppTest', () => {
     browserProxy.fireToolbarStateListener([], bothExpandedState);
     await microtasksFinished();
 
-    assertTrue(avatarButton.hasAttribute('has-label'));
+    assertEquals('text', avatarButton.getAttribute('label-mode'));
     assertTrue(appMenuButton.hasAttribute('has-label'));
     assertEquals(
         '0px', window.getComputedStyle(appMenuButton).marginInlineStart);
 
-    // 4. If avatar button is overflowed/hidden, appMenuButton's leading margin
-    // uncollapses to 3px.
-    avatarButton.classList.add('overflow-display-none');
+    // 4. Avatar label collapsed due to lack of space, but the avatar button is
+    // still visible, since overflow is prevented. The avatar button keeps its
+    // 3px trailing margin, so appMenuButton's leading margin stays collapsed to
+    // 0px.
+    const avatarCollapsedState = createMockToolbarState();
+    avatarCollapsedState.avatarControlState.text = 'Paused';
+    avatarCollapsedState.appMenuControlState.labelText = 'Update';
+    browserProxy.fireToolbarStateListener([], {
+      ...avatarCollapsedState,
+      avatarControlState: {
+        ...avatarCollapsedState.avatarControlState,
+        preventOverflow: true,
+      },
+    });
     await microtasksFinished();
+    avatarButton.setToMinWidth();
+
+    assertEquals('collapsed', avatarButton.getAttribute('label-mode'));
+    assertFalse(avatarButton.classList.contains('overflow-display-none'));
+    assertTrue(appMenuButton.hasAttribute('has-label'));
+    assertEquals(
+        '3px', window.getComputedStyle(avatarButton.$.button).marginInlineEnd);
+    assertEquals(
+        '0px', window.getComputedStyle(appMenuButton).marginInlineStart);
+
+    // 5. If avatar button is overflowed/hidden, appMenuButton's leading margin
+    // uncollapses to 3px.
+    const avatarHiddenState = createMockToolbarState();
+    avatarHiddenState.avatarControlState.text = 'Paused';
+    avatarHiddenState.appMenuControlState.labelText = 'Update';
+    browserProxy.fireToolbarStateListener([], avatarHiddenState);
+    await microtasksFinished();
+    avatarButton.setToMinWidth();
+
+    assertEquals('collapsed', avatarButton.getAttribute('label-mode'));
+    assertTrue(avatarButton.classList.contains('overflow-display-none'));
     assertEquals(
         '3px', window.getComputedStyle(appMenuButton).marginInlineStart);
   });
@@ -1178,7 +1210,7 @@ suite('ToolbarAppTest', () => {
     const root = app.shadowRoot;
     const locationBar = root.querySelector('location-bar')!.shadowRoot;
     const labels = [
-      root.querySelector('avatar-button')!.shadowRoot.querySelector('#text')!,
+      root.querySelector('avatar-button')!.$.text,
       root.querySelector('app-menu-button')!.shadowRoot.querySelector('#text')!,
       locationBar.querySelector('selected-keyword')!.shadowRoot.querySelector(
           '#text-wrap')!,

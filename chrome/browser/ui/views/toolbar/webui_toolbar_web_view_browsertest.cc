@@ -6256,8 +6256,11 @@ class WebUIToolbarFullyEnabledBrowserTest
   //
   // Takes `all_controls_info` as an argument so that it can be used with
   // ASSERT_NO_FATAL_FAILURE(), and use ASSERT calls inline. Asserts on error,
-  // and leaves `all_controls_info` unchanged.
-  void MeasureResponsiveControls(AllResponsiveControlsInfo& all_controls_info) {
+  // and leaves `all_controls_info` unchanged. Uses browser() if
+  // `browser_instance` is null.
+  void MeasureResponsiveControls(
+      AllResponsiveControlsInfo& all_controls_info,
+      BrowserWindowInterface* browser_instance = nullptr) {
     static constexpr char kMeasureScript[] = R"(
       (() => {
         const app = document.querySelector('toolbar-app');
@@ -6328,7 +6331,7 @@ class WebUIToolbarFullyEnabledBrowserTest
     )";
 
     content::EvalJsResult eval_result =
-        content::EvalJs(GetWebUIWebContents(), kMeasureScript);
+        content::EvalJs(GetWebUIWebContents(browser_instance), kMeasureScript);
     ASSERT_TRUE(eval_result.is_ok());
     ASSERT_TRUE(eval_result.is_dict());
     const base::DictValue& measure_dict = eval_result.ExtractDict();
@@ -6389,8 +6392,10 @@ class WebUIToolbarFullyEnabledBrowserTest
 
   // Returns a dictionary mapping control id to actual width for all
   // ResponsiveControls whose shouldBeShown() method currently returns true.
-  // Also includes the overflow button, if not hidden.
-  base::DictValue GetControlSizes() {
+  // Also includes the overflow button, if not hidden. Uses browser() if
+  // `browser_instance` is null.
+  base::DictValue GetControlSizes(
+      BrowserWindowInterface* browser_instance = nullptr) {
     static constexpr char kCheckScript[] = R"(
       (async () => {
         // Wait for an animation frame. This yields control to control, allowing
@@ -6422,7 +6427,7 @@ class WebUIToolbarFullyEnabledBrowserTest
     )";
 
     content::EvalJsResult actual_widths =
-        content::EvalJs(GetWebUIWebContents(), kCheckScript);
+        content::EvalJs(GetWebUIWebContents(browser_instance), kCheckScript);
     EXPECT_TRUE(actual_widths.is_ok());
     EXPECT_TRUE(actual_widths.is_dict());
     if (!actual_widths.is_dict()) {
@@ -7521,6 +7526,146 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
   }));
 
   AssertNoJsErrors();
+}
+
+// Tests that once lower-priority controls have overflowed, an avatar button
+// with label text shrinks as the available space decreases, rather than
+// overflowing, until there's not enough room for even a button without a
+// label, at which point it overflows.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
+                       AvatarButtonWithTextShrinksBeforeOverflowing) {
+  // ChromeOS only displays the avatar button for regular profiles in some
+  // cases, but always displays it for Incognito profiles.
+#if BUILDFLAG(IS_CHROMEOS)
+  BrowserWindowInterface* target_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+#else
+  BrowserWindowInterface* target_browser = browser();
+#endif
+  ASSERT_TRUE(target_browser);
+  content::WebContents* web_contents = GetWebUIWebContents(target_browser);
+
+  // Wait for the avatar button to be displayed and fully set up.
+  ASSERT_TRUE(WaitForTrackedElements({kToolbarAvatarButtonElementId}, {},
+                                     target_browser));
+  AvatarToolbarButtonInterface* avatar_button =
+      GetWebUIToolbar(target_browser)->GetAvatarToolbarButtonInterface();
+  ASSERT_TRUE(avatar_button);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return avatar_button->IsReadyForIPH(); }));
+
+  // Give the Avatar button a label.
+  base::ScopedClosureRunner reset_explicit_state =
+      avatar_button->SetExplicitButtonState(
+          u"Avatar button text",
+          /*accessibility_label=*/std::nullopt,
+          /*explicit_action=*/std::nullopt);
+
+  // Wait for the label to be displayed, and for its width animation to finish,
+  // so it's measured at its full width below.
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    return content::EvalJs(web_contents, R"(
+        (() => {
+          const avatar = document.querySelector('toolbar-app').shadowRoot
+              .querySelector('#avatar');
+          return avatar.getAttribute('label-mode') === 'text' &&
+              avatar.$.text.getAnimations().length === 0;
+        })())")
+        .ExtractBool();
+  }));
+
+  // Create spacer so that any padding it will add is taken into account by
+  // the MeasureResponsiveControls() call.
+  int spacer_width = 0;
+  ASSERT_EQ(SetSpacerWidth(spacer_width, target_browser), true);
+  AllResponsiveControlsInfo all_controls_info;
+  ASSERT_NO_FATAL_FAILURE(
+      MeasureResponsiveControls(all_controls_info, target_browser));
+  auto avatar_info = std::ranges::find(all_controls_info.controls, "avatar",
+                                       &ResponsiveControlInfo::id);
+  ASSERT_NE(avatar_info, all_controls_info.controls.end());
+
+  // Calculate the expected width of the avatar button when it's in collapsed
+  // state, and only displaying its icon. This is wider than the button width
+  // because additional margins are added for the highlight. To calculate, add
+  // the icon size to the margins around the avatar button element, when it has
+  // a label, which won't be changed when we hide the label, due to space
+  // limitations.
+  //
+  // This uses `all_controls_info.overflow_button_width`, assuming all buttons
+  // are the same width.
+  const int collapsed_width = all_controls_info.overflow_button_width +
+                              content::EvalJs(web_contents, R"(
+          (() => {
+            const avatar =
+                document.querySelector('toolbar-app').shadowRoot
+                    .querySelector('#avatar');
+            return Math.round(avatar.getBoundingClientRect().width -
+                avatar.$.button.getBoundingClientRect().width);
+          })())")
+                                  .ExtractInt();
+
+  // Use up all space not needed by the avatar button and higher-priority
+  // controls, shrinking the location bar to its minimum width, if it has lower
+  // priority. Space for one lower-priority button is retained, since
+  // overflowing the others shows the overflow button, which takes up as much
+  // space as one button.
+  spacer_width += all_controls_info.location_bar_extra_width;
+  bool skipped_button = false;
+  for (auto it = avatar_info + 1; it != all_controls_info.controls.end();
+       ++it) {
+    if (it->id != "location-bar" && !skipped_button) {
+      skipped_button = true;
+      continue;
+    }
+    spacer_width += it->effective_width_delta;
+  }
+  ASSERT_TRUE(skipped_button);
+  ASSERT_EQ(SetSpacerWidth(spacer_width, target_browser), true);
+
+  // Returns the avatar button's width. The width will be 0 if it has
+  // overflowed.
+  auto get_avatar_width = [&]() {
+    // This is -1 if the avatar button is not found, which should not happen.
+    int width = GetControlSizes(target_browser).FindInt("avatar").value_or(-1);
+    EXPECT_GE(width, 0);
+    return width;
+  };
+
+  // The avatar button should be at (roughly) its full width. Depending on
+  // rounding, the skipped button may or may not have overflowed yet.
+  int full_width = 0;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    full_width = get_avatar_width();
+    return full_width >= avatar_info->preferred_width - 1 &&
+           full_width <= avatar_info->preferred_width;
+  }));
+
+  // Removing a pixel of space should shrink the avatar button, rather than
+  // overflowing it. All lower priority buttons should remain overflowed.
+  ASSERT_EQ(SetSpacerWidth(++spacer_width, target_browser), true);
+  EXPECT_TRUE(WaitForTrackedElements({kToolbarOverflowButtonElementId}, {},
+                                     target_browser));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    int width = get_avatar_width();
+    return width < full_width && width > collapsed_width;
+  }));
+
+  // Shrink the avatar button to roughly its collapsed size. The positions of
+  // these transitions are only known to within a pixel or so, due to rounding,
+  // so leave a pixel of slack. -2 is needed for a single pixel of slack, since
+  // we already added 1 to the spacer width since calculating `full_width`.
+  spacer_width += full_width - collapsed_width - 2;
+  ASSERT_EQ(SetSpacerWidth(spacer_width, target_browser), true);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    int width = get_avatar_width();
+    return width >= collapsed_width && width <= collapsed_width + 2;
+  }));
+
+  // With even less space, the avatar button should overflow.
+  spacer_width += 2;
+  ASSERT_EQ(SetSpacerWidth(spacer_width, target_browser), true);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return get_avatar_width() == 0; }));
 }
 
 // Tests that extensions are hidden when there's not enough room for them, and

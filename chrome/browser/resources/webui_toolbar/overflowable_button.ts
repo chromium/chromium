@@ -65,6 +65,13 @@ export interface OverflowableButton extends ResponsiveControl {
   state: unknown;
 
   /**
+   * True if the button is currently not allowed to overflow, either because
+   * the browser has set `preventOverflow` or because its context menu is
+   * showing.
+   */
+  shouldPreventOverflow(): boolean;
+
+  /**
    * Called by subclasses when should show a left-click menu or bubble. Invokes
    * showContextMenu() on the BrowserProxy, but also adds a `menuOpenToken`, and
    * keeps the OverflowableButton visible until it has been echoed back in an
@@ -112,12 +119,7 @@ export const OverflowableButtonMixin =
           return this.state.shouldBeShown ?? true;
         }
 
-        /**
-         * True if the button is currently not allowed to overflow, either
-         * because the browser has set `preventOverflow` or because its context
-         * menu is showing.
-         */
-        private shouldPreventOverflow_(): boolean {
+        shouldPreventOverflow(): boolean {
           // These use `=== true` because both can be undefined or bool, and
           // `preventOverflow` may also be null, when `shouldBeShown` is false.
           return this.state.preventOverflow === true ||
@@ -128,7 +130,7 @@ export const OverflowableButtonMixin =
           // The minimum width hides the button using `overflow-display-none`.
 
           // If overflow is currently prevented, leave at full width.
-          if (this.shouldPreventOverflow_()) {
+          if (this.shouldPreventOverflow()) {
             return;
           }
           this.classList.add('overflow-display-none');
@@ -144,7 +146,7 @@ export const OverflowableButtonMixin =
 
           // If overflow is currently prevented, should already be at preferred
           // width, so do nothing.
-          if (this.shouldPreventOverflow_()) {
+          if (this.shouldPreventOverflow()) {
             return;
           }
           this.setToPreferredWidth();
@@ -220,9 +222,13 @@ export const OverflowableButtonMixin =
 
             // When overflow is prevented, this class should never hide the
             // control. Note that the child class may still be hiding the
-            // control itself, based on `shouldBeShown`.
-            if (this.shouldPreventOverflow_()) {
-              this.setToPreferredWidth();
+            // control itself, based on `shouldBeShown`. This only un-hides
+            // the control rather than calling setToPreferredWidth(), since
+            // subclasses may override that to do more than un-hide the
+            // control, and the `request-layout` below will take care of
+            // resizing it, if needed.
+            if (this.shouldPreventOverflow()) {
+              this.classList.remove('overflow-display-none');
             }
 
             // Need to run a layout if this is the first state update, if the

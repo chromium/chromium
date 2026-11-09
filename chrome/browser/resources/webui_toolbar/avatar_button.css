@@ -21,7 +21,10 @@
   display: none !important;
 }
 
-#button[has-label] {
+/* Applied whenever there's label text, even when it's collapsed, so that the
+ * toolbar space taken up by the button changes continuously when switching to
+ * and from the 'collapsed' label mode. */
+:host(:not([label-mode='no-text'])) #button {
   margin-inline: calc(var(--toolbar-button-refresh-expanded-margin) -
                       var(--toolbar-icon-default-margin));
 }
@@ -30,6 +33,10 @@
   /* Set padding variables for the nested button */
   --toolbar-chip-padding-start: var(--avatar-chip-padding-left);
   --toolbar-chip-padding-end: var(--avatar-chip-padding-right);
+  /* Overrides toolbar-chip-button's "min-width: max-content", so its width can
+   * be constrained below that of its full label, which then shrinks to fit.
+   * It still won't be shrunk by flex layout, since it has "flex-shrink: 0". */
+  min-width: 0;
 }
 
 :host(.anchor-highlight) #button {
@@ -51,7 +58,8 @@
   width: var(--icon-size);
 }
 
-#text {
+#text,
+#ellipsis {
   display: inline-block;
   font-family: var(--toolbar-button-font-family);
   font-size: var(--toolbar-button-font-size);
@@ -59,11 +67,6 @@
   line-height: var(--toolbar-button-line-height);
   margin-inline-start: var(--avatar-chip-icon-label-spacing);
   max-width: max-content;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: max-width 200ms var(--ease-out-cubic-bezier),
-      margin-inline-start 200ms var(--ease-out-cubic-bezier),
-      opacity 200ms var(--ease-out-cubic-bezier);
   white-space: nowrap;
 }
 
@@ -73,13 +76,85 @@
   opacity: 0;
 }
 
+/* #text-specific rules. */
+#text {
+  /* Allow the label to shrink when the button's width is constrained. This
+   * overrides toolbar-chip-button's "flex-shrink: 0" for slotted content. */
+  flex-shrink: 1;
+  min-width: 0;
+  transition: max-width 200ms var(--ease-out-cubic-bezier),
+      margin-inline-start 200ms var(--ease-out-cubic-bezier),
+      opacity 200ms var(--ease-out-cubic-bezier);
+  /* Determine the text's direction from its contents, so when CSS elides it,
+   * the ellipsis is placed at its logical end, regardless of UI direction.
+   * Unlike dir="auto", this doesn't affect the logical margin above. */
+  unicode-bidi: plaintext;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* Normally hidden, and only used to measure the width of an ellipsis.
+ * Displayed instead of the label when there's only room for an ellipsis. */
+#ellipsis {
+  /* Allow it to take up the entire width of the label area, when displayed,
+   * and to shrink if that's a bit narrower than the measured ellipsis. */
+  flex-shrink: 1;
+  max-width: none;
+  min-width: 0;
+  position: absolute;
+  visibility: hidden;
+}
+
+/* Modes used when the full label doesn't fit. These use display and visibility
+ * rather than the transitioned properties above, since layout measures widths
+ * synchronously. See LabelMode in avatar_button.ts. */
+:host([label-mode='collapsed']) #text,
+:host([label-mode='ellipsis']) #text {
+  display: none;
+}
+
+:host([label-mode='ellipsis']) #ellipsis {
+  flex-grow: 1;
+  /* Matches the positioning toolbar-chip-button gives slotted content, so it's
+   * painted above the button's highlight layers. */
+  position: relative;
+  visibility: visible;
+}
+
+:host([label-mode='space-only']) #text {
+  visibility: hidden;
+}
+
+/* When the label is collapsed, the button has no padding, so these spacers
+ * split any space not taken up by the icon equally, keeping it centered, until
+ * the start spacer is as wide as the start padding when there's a label. After
+ * that, the end spacer takes up all extra space, so the icon stays put as the
+ * button grows, and doesn't jump when switching to the 'space-only' label
+ * mode. */
+.icon-spacer {
+  display: none;
+}
+
+:host([label-mode='collapsed']) .icon-spacer {
+  display: block;
+  flex: 1 1 0;
+}
+
+:host([label-mode='collapsed']) #icon-spacer-start {
+  /* Inherited from #button, which sets it to the start padding used when
+   * there's a label area. This only keeps the icon centered in the collapsed
+   * button if that padding is at least (button height - icon size) / 2. */
+  max-width: var(--toolbar-chip-padding-start);
+}
+
 :host(.initial-load) #text {
   transition: none !important;
 }
 
 /* Like native toolbar buttons, whose label is disabled while the browser
  * window is inactive on Mac (the browser sets controls-appear-inactive). */
-:host-context(toolbar-app[controls-appear-inactive]) #text {
+:host-context(toolbar-app[controls-appear-inactive]) #text,
+:host-context(toolbar-app[controls-appear-inactive]) #ellipsis {
   color: var(--color-label-foreground-disabled);
 }
 

@@ -788,6 +788,17 @@ export class ToolbarAppElement extends AppElementBase {
   }
 
   /**
+   * Like getAvailableWidth(), but uses the toolbar's fractional width, rather
+   * than its `clientWidth`, which is rounded to an integer. Useful for
+   * controls that size themselves to fill the available width, as using the
+   * rounded value may leave them up to a pixel narrower or wider than they
+   * should be.
+   */
+  getExactAvailableWidth(): number {
+    return window.innerWidth - this.getBoundingClientRect().width;
+  }
+
+  /**
    * Resizes / shows / hides responsive controls based on available space in the
    * toolbar. Returns true if all controls were successfully laid out; returns
    * false if `failOnOverflow` is true and any control overflowed.

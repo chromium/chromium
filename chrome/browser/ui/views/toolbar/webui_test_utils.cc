@@ -589,8 +589,10 @@ std::u16string AvatarToolbarButtonTestAccessor::GetText() {
                     "app.shadowRoot?.querySelector('avatar-button');"
                     "  if (!btn) return '';"
                     "  await btn.updateComplete;"
-                    "  const textEl = btn.shadowRoot?.querySelector('#text');"
-                    "  return textEl?.textContent?.trim() || '';"
+                    // Use `state.text` rather than the #text element, which
+                    // may be hidden or visually elided, to match Views'
+                    // unelided GetText().
+                    "  return btn.state?.text || '';"
                     "})()")
                     .ExtractString());
           },

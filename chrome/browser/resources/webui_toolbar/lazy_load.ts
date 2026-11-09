@@ -28,6 +28,7 @@ export type {IconFromTableElement} from '/shared/icon_from_table.js';
 export {PermissionChipElement} from '/shared/permission_chip.js';
 export type {PermissionDashboardElement} from '/shared/permission_dashboard.js';
 export {AppMenuButtonElement} from './app_menu_button.js';
+export type {AvatarButtonElement} from './avatar_button.js';
 export {BatterySaverButtonElement} from './battery_saver_button.js';
 export {ContentSettingIconElement} from './content_setting_icon.js';
 export type {ExtensionsElement} from './extensions.js';
