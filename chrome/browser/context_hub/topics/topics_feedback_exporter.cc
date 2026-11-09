@@ -59,19 +59,27 @@ struct TopicVisit {
 
 // Drops visits that must not be exported, minimizes the URLs of the rest, and
 // links each to the first Topic with a visit at the same time to the same
-// minimized URL. Then adds the Topic visits since `data.window_start` that
-// are missing from `data.visits`, and returns all the visits newest first.
+// minimized URL, preferring Topics not in `excluded_topic_ids`. Then adds the
+// Topic visits since `data.window_start` that are missing from `data.visits`,
+// and returns all the visits newest first.
 std::vector<ExportedVisit> MinimizeAndLinkVisits(
-    const TopicsFeedbackExportData& data) {
+    const TopicsFeedbackExportData& data,
+    const std::set<std::string, std::less<>>& excluded_topic_ids) {
   std::map<std::pair<base::Time, std::string>, TopicVisit> topic_visits;
   for (const history::journeys::Journey& journey : data.journeys) {
+    const bool excluded = excluded_topic_ids.contains(journey.journey_id);
     for (const history::journeys::JourneyVisit& visit : journey.visits) {
       if (std::optional<GURL> url = MinimizeUrlForTopicsFeedback(visit.url)) {
-        // `emplace()` keeps the first Topic if a visit is in several.
-        topic_visits.emplace(
-            std::make_pair(visit.visit_time, url->spec()),
-            TopicVisit{.visit = raw_ref(visit),
-                       .topic_id = raw_ref(journey.journey_id)});
+        const TopicVisit topic_visit{.visit = raw_ref(visit),
+                                     .topic_id = raw_ref(journey.journey_id)};
+        // If a visit is in several Topics, keep the first one that isn't left
+        // out.
+        auto [it, inserted] = topic_visits.emplace(
+            std::make_pair(visit.visit_time, url->spec()), topic_visit);
+        if (!inserted && !excluded &&
+            excluded_topic_ids.contains(*it->second.topic_id)) {
+          it->second = topic_visit;
+        }
       }
     }
   }
@@ -118,13 +126,22 @@ std::vector<ExportedVisit> MinimizeAndLinkVisits(
   return exported_visits;
 }
 
+// Topics in `excluded_topic_ids` aren't counted, and their visits count as
+// unclustered, matching how the bundle exports them.
 mojom::TopicsFeedbackExportStatsPtr ComputeStats(
     const TopicsFeedbackExportData& data,
-    const std::vector<ExportedVisit>& visits) {
-  const auto unclustered_visits = std::ranges::count_if(
-      visits, [](const ExportedVisit& visit) { return !visit.topic_id; });
+    const std::vector<ExportedVisit>& visits,
+    const std::set<std::string, std::less<>>& excluded_topic_ids) {
+  const auto topics = std::ranges::count_if(
+      data.journeys, [&](const history::journeys::Journey& journey) {
+        return !excluded_topic_ids.contains(journey.journey_id);
+      });
+  const auto unclustered_visits =
+      std::ranges::count_if(visits, [&](const ExportedVisit& visit) {
+        return !visit.topic_id || excluded_topic_ids.contains(*visit.topic_id);
+      });
   return mojom::TopicsFeedbackExportStats::New(
-      base::checked_cast<uint32_t>(data.journeys.size()),
+      base::checked_cast<uint32_t>(topics),
       base::checked_cast<uint32_t>(visits.size()),
       base::checked_cast<uint32_t>(unclustered_visits),
       base::saturated_cast<uint32_t>(data.unresolvable_topics));
@@ -252,7 +269,10 @@ base::DictValue DuplicateTopicToDict(
       .Set("visit_times", TimesToList(duplicate.visit_times));
 }
 
-base::DictValue FeedbackToDict(const mojom::TopicFeedback& feedback) {
+// `duplicate_of` is exported as null if it is in `excluded_topic_ids`.
+base::DictValue FeedbackToDict(
+    const mojom::TopicFeedback& feedback,
+    const std::set<std::string, std::less<>>& excluded_topic_ids) {
   base::ListValue defects = base::ToValueList(feedback.defects, DefectToString);
 
   base::ListValue query_feedbacks =
@@ -275,6 +295,9 @@ base::DictValue FeedbackToDict(const mojom::TopicFeedback& feedback) {
       });
 
   const mojom::TopicSnapshot& snapshot = *feedback.snapshot;
+  const bool has_duplicate =
+      feedback.duplicate_of &&
+      !excluded_topic_ids.contains(feedback.duplicate_of->id);
   return base::DictValue()
       .Set("id", feedback.id)
       .Set(
@@ -293,7 +316,7 @@ base::DictValue FeedbackToDict(const mojom::TopicFeedback& feedback) {
       // Null rather than absent when there is no duplicate, so every key is
       // always present.
       .Set("duplicate_of",
-           feedback.duplicate_of
+           has_duplicate
                ? base::Value(DuplicateTopicToDict(*feedback.duplicate_of))
                : base::Value())
       .Set("collection_feedbacks", std::move(collection_feedbacks));
@@ -340,7 +363,10 @@ std::string FormatTopicsFeedbackTime(base::Time time) {
 
 mojom::TopicsFeedbackExportPreviewPtr BuildTopicsFeedbackExportPreview(
     const TopicsFeedbackExportData& data) {
-  const std::vector<ExportedVisit> visits = MinimizeAndLinkVisits(data);
+  // The rater picks the topics to leave out after seeing the preview.
+  const std::set<std::string, std::less<>> no_excluded_topics;
+  const std::vector<ExportedVisit> visits =
+      MinimizeAndLinkVisits(data, no_excluded_topics);
 
   // Domains and their URLs, keyed by host and URL spec. Visits are newest
   // first, so the first visit to a URL provides its title.
@@ -380,15 +406,18 @@ mojom::TopicsFeedbackExportPreviewPtr BuildTopicsFeedbackExportPreview(
         return std::make_pair(domain->default_excluded, domain->visit_count);
       });
 
-  return mojom::TopicsFeedbackExportPreview::New(ComputeStats(data, visits),
-                                                 std::move(domains));
+  return mojom::TopicsFeedbackExportPreview::New(
+      ComputeStats(data, visits, no_excluded_topics), std::move(domains));
 }
 
 std::string BuildTopicsFeedbackBundle(
     const TopicsFeedbackExportData& data,
     const TopicsFeedbackExportContext& context,
     const mojom::TopicsFeedbackExportOptions& options) {
-  const std::vector<ExportedVisit> visits = MinimizeAndLinkVisits(data);
+  const std::set<std::string, std::less<>> excluded_topic_ids(
+      options.excluded_topic_ids.begin(), options.excluded_topic_ids.end());
+  const std::vector<ExportedVisit> visits =
+      MinimizeAndLinkVisits(data, excluded_topic_ids);
 
   const std::set<std::string, std::less<>> excluded_domains(
       options.excluded_domains.begin(), options.excluded_domains.end());
@@ -415,21 +444,29 @@ std::string BuildTopicsFeedbackBundle(
 
   base::ListValue topics;
   topics.reserve(data.journeys.size());
+  int excluded_topics_count = 0;
   for (const history::journeys::Journey& journey : data.journeys) {
+    if (excluded_topic_ids.contains(journey.journey_id)) {
+      ++excluded_topics_count;
+      continue;
+    }
     topics.Append(JourneyToDict(journey));
   }
 
   base::ListValue visits_list;
   visits_list.reserve(visits.size());
   for (const ExportedVisit& visit : visits) {
+    const bool in_excluded_topic =
+        visit.topic_id && excluded_topic_ids.contains(*visit.topic_id);
     base::Value topic_id;
-    if (visit.topic_id) {
+    if (visit.topic_id && !in_excluded_topic) {
       topic_id = base::Value(*visit.topic_id);
     }
     base::DictValue visit_dict;
     visit_dict.Set("t", FormatTopicsFeedbackTime(visit.visit_time));
     // A visit is either exported with its URL and title, or redacted.
-    const bool redacted = excluded_domains.contains(visit.url.host()) ||
+    const bool redacted = in_excluded_topic ||
+                          excluded_domains.contains(visit.url.host()) ||
                           excluded_urls.contains(visit.url.spec());
     if (!redacted) {
       visit_dict.Set("url", visit.url.spec());
@@ -444,7 +481,10 @@ std::string BuildTopicsFeedbackBundle(
   base::ListValue feedbacks;
   feedbacks.reserve(data.feedbacks.size());
   for (const mojom::TopicFeedbackPtr& feedback : data.feedbacks) {
-    feedbacks.Append(FeedbackToDict(*feedback));
+    if (excluded_topic_ids.contains(feedback->id)) {
+      continue;
+    }
+    feedbacks.Append(FeedbackToDict(*feedback, excluded_topic_ids));
   }
 
   base::DictValue bundle =
@@ -464,8 +504,10 @@ std::string BuildTopicsFeedbackBundle(
                    .Set("excluded_domains_count",
                         base::checked_cast<int>(excluded_domains.size()))
                    .Set("excluded_urls_count",
-                        base::checked_cast<int>(excluded_urls.size())))
-          .Set("stats", StatsToDict(*ComputeStats(data, visits)))
+                        base::checked_cast<int>(excluded_urls.size()))
+                   .Set("excluded_topics_count", excluded_topics_count))
+          .Set("stats",
+               StatsToDict(*ComputeStats(data, visits, excluded_topic_ids)))
           .Set("topics", std::move(topics))
           .Set("visits", std::move(visits_list))
           .Set("feedback", base::DictValue()

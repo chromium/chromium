@@ -107,7 +107,10 @@ BuildTopicsFeedbackExportPreview(const TopicsFeedbackExportData& data);
 // containing a visit with the same time and minimized URL, and Topic visits
 // since `data.window_start` that are missing from `data.visits` are added.
 // Visits to `options.excluded_domains` or `options.excluded_urls` are exported
-// as stubs without a URL or title.
+// as stubs without a URL or title. Topics in `options.excluded_topic_ids` are
+// dropped along with their feedback, and their visits are exported as stubs
+// unless a kept Topic contains them. The stats and other Topics' `duplicate_of`
+// don't refer to them either.
 std::string BuildTopicsFeedbackBundle(
     const TopicsFeedbackExportData& data,
     const TopicsFeedbackExportContext& context,

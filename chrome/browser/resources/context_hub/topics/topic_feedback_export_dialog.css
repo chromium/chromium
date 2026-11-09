@@ -165,6 +165,24 @@ h2 {
   color: var(--cr-link-color);
 }
 
+#unratedTopics {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#unratedTopics cr-checkbox {
+  font-size: 13px;
+  line-height: 20px;
+}
+
+#leaveOutAll {
+  align-self: flex-start;
+}
+
 /* The domains share one rounded container, separated by thin gaps. It keeps
  * at least about three rows visible. */
 #domainList {

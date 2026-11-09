@@ -413,6 +413,125 @@ TEST_F(TopicsFeedbackExporterTest,
   }])"));
 }
 
+TEST_F(TopicsFeedbackExporterTest, Bundle_ExcludedTopicsAreLeftOut) {
+  TopicsFeedbackExportData data;
+  // The shared visit is in both topics, so it stays linked to the kept one.
+  data.journeys.push_back(
+      Journey("left-out", {JourneyVisit("https://a.com/shared", kTime2),
+                           JourneyVisit("https://a.com/private", kTime1),
+                           JourneyVisit("https://a.com/missing", kTime3)}));
+  data.journeys.push_back(
+      Journey("kept", {JourneyVisit("https://a.com/shared", kTime2)}));
+  data.visits = {
+      Visit("https://a.com/shared", u"Shared", kTime2),
+      Visit("https://a.com/private", u"Private", kTime1),
+  };
+  for (const char* id : {"left-out", "kept"}) {
+    auto feedback = mojom::TopicFeedback::New();
+    feedback->id = id;
+    feedback->snapshot = mojom::TopicSnapshot::New();
+    data.feedbacks.push_back(std::move(feedback));
+  }
+  auto options = DefaultOptions();
+  options->excluded_topic_ids = {"left-out"};
+
+  std::optional<base::DictValue> bundle = base::JSONReader::ReadDict(
+      BuildTopicsFeedbackBundle(data, TopicsFeedbackExportContext(), *options),
+      base::JSON_PARSE_RFC);
+  ASSERT_TRUE(bundle);
+  const base::ListValue& topics = *bundle->FindList("topics");
+  ASSERT_EQ(1u, topics.size());
+  EXPECT_EQ("kept", *topics[0].GetDict().FindString("id"));
+  const base::ListValue& feedbacks =
+      *bundle->FindListByDottedPath("feedback.topics");
+  ASSERT_EQ(1u, feedbacks.size());
+  EXPECT_EQ("kept", *feedbacks[0].GetDict().FindString("id"));
+  EXPECT_EQ(1, bundle->FindIntByDottedPath("redaction.excluded_topics_count"));
+  EXPECT_EQ(1, bundle->FindIntByDottedPath("stats.topics"));
+  EXPECT_EQ(2, bundle->FindIntByDottedPath("stats.unclustered_visits"));
+  EXPECT_THAT(*bundle->FindList("visits"), IsJson(R"([
+    {
+      "t": "2026-09-23T09:00:00.000000Z",
+      "topic_id": null,
+      "device": "local",
+      "redacted": true
+    },
+    {
+      "t": "2026-09-22T10:05:00.000000Z",
+      "url": "https://a.com/shared",
+      "title": "Shared",
+      "topic_id": "kept",
+      "device": "local",
+      "redacted": false
+    },
+    {
+      "t": "2026-09-22T10:01:02.123456Z",
+      "topic_id": null,
+      "device": "local",
+      "redacted": true
+    }
+  ])"));
+}
+
+TEST_F(TopicsFeedbackExporterTest, Bundle_VisitsLinkToKeptTopicInAnyOrder) {
+  TopicsFeedbackExportData data;
+  // "a.com/kept" is in a kept topic listed before a left-out one, and
+  // "a.com/left-out" is only in left-out topics.
+  data.journeys.push_back(
+      Journey("kept", {JourneyVisit("https://a.com/kept", kTime2)}));
+  data.journeys.push_back(
+      Journey("left-out-1", {JourneyVisit("https://a.com/kept", kTime2),
+                             JourneyVisit("https://a.com/left-out", kTime1)}));
+  data.journeys.push_back(
+      Journey("left-out-2", {JourneyVisit("https://a.com/left-out", kTime1)}));
+  data.visits = {
+      Visit("https://a.com/kept", u"Kept", kTime2),
+      Visit("https://a.com/left-out", u"Left out", kTime1),
+  };
+  auto options = DefaultOptions();
+  options->excluded_topic_ids = {"left-out-1", "left-out-2"};
+
+  EXPECT_THAT(BuildVisits(data, *options), IsJson(R"([
+    {
+      "t": "2026-09-22T10:05:00.000000Z",
+      "url": "https://a.com/kept",
+      "title": "Kept",
+      "topic_id": "kept",
+      "device": "local",
+      "redacted": false
+    },
+    {
+      "t": "2026-09-22T10:01:02.123456Z",
+      "topic_id": null,
+      "device": "local",
+      "redacted": true
+    }
+  ])"));
+}
+
+TEST_F(TopicsFeedbackExporterTest, Bundle_DropsDuplicateOfExcludedTopic) {
+  TopicsFeedbackExportData data;
+  auto feedback = mojom::TopicFeedback::New();
+  feedback->id = "kept";
+  feedback->snapshot = mojom::TopicSnapshot::New();
+  feedback->duplicate_of = mojom::DuplicateTopicSnapshot::New(
+      "left-out", "Left out", std::vector{kTime2});
+  data.feedbacks.push_back(std::move(feedback));
+  auto options = DefaultOptions();
+  options->excluded_topic_ids = {"left-out"};
+
+  std::optional<base::DictValue> bundle = base::JSONReader::ReadDict(
+      BuildTopicsFeedbackBundle(data, TopicsFeedbackExportContext(), *options),
+      base::JSON_PARSE_RFC);
+  ASSERT_TRUE(bundle);
+  const base::ListValue& feedbacks =
+      *bundle->FindListByDottedPath("feedback.topics");
+  ASSERT_EQ(1u, feedbacks.size());
+  const base::Value* duplicate_of = feedbacks[0].GetDict().Find("duplicate_of");
+  ASSERT_TRUE(duplicate_of);
+  EXPECT_TRUE(duplicate_of->is_none());
+}
+
 TEST_F(TopicsFeedbackExporterTest, Bundle_KeepsTitlesOfUnredactedVisits) {
   TopicsFeedbackExportData data;
   data.visits = {
@@ -534,7 +653,8 @@ TEST_F(TopicsFeedbackExporterTest, Bundle_MatchesSchema) {
     "window_start": "2026-09-19T21:00:00.000000Z",
     "redaction": {
       "excluded_domains_count": 1,
-      "excluded_urls_count": 0
+      "excluded_urls_count": 0,
+      "excluded_topics_count": 0
     },
     "stats": {
       "topics": 1,

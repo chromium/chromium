@@ -1038,7 +1038,7 @@ suite('TopicFeedbackExportDialog', () => {
     assertTrue(download.disabled);
     assertFalse(query('#ratingStatus')!.hasAttribute('complete'));
     assertTrue(query('#ratingProgress')!.textContent.includes(
-        'You rated 3 of 4 topics. Rate every topic'));
+        'You rated 3 of 4 topics. Rate the others'));
 
     // The last topic was rated on its details page in another tab.
     handler.setResultFor(
@@ -1050,6 +1050,60 @@ suite('TopicFeedbackExportDialog', () => {
     assertEquals(
         'You rated every topic.',
         query('#ratingProgress')!.textContent.trim());
+    assertFalse(!!query('#unratedTopics'));
+  });
+
+  test('unrated topics can be left out instead', async () => {
+    await openDialog(likeTopics(3));
+    await click('#acknowledge');
+    const download = query<HTMLButtonElement>('#download')!;
+    assertTrue(download.disabled);
+    const checkboxes = queryAll<CrCheckboxElement>('.leave-out-checkbox');
+    assertEquals(1, checkboxes.length);
+    assertEquals('Topic 4', checkboxes[0]!.textContent.trim());
+    assertDeepEquals([], dialog.getExportOptionsForTesting().excludedTopicIds);
+
+    checkboxes[0]!.click();
+    await microtasksFinished();
+    assertFalse(download.disabled);
+    assertTrue(query('#ratingStatus')!.hasAttribute('complete'));
+    assertEquals(
+        'You rated 3 of 4 topics and left out 1.',
+        query('#ratingProgress')!.textContent.trim());
+    assertDeepEquals(
+        ['topic-4'], dialog.getExportOptionsForTesting().excludedTopicIds);
+
+    // Rating the topic later includes it again.
+    handler.setResultFor(
+        'getTopicFeedbacks', Promise.resolve({feedbacks: likeTopics(4)}));
+    document.dispatchEvent(new Event('visibilitychange'));
+    await microtasksFinished();
+    assertDeepEquals([], dialog.getExportOptionsForTesting().excludedTopicIds);
+    assertFalse(!!query('#unratedTopics'));
+
+    // Clearing the rating doesn't leave it out again.
+    handler.setResultFor(
+        'getTopicFeedbacks', Promise.resolve({feedbacks: likeTopics(3)}));
+    document.dispatchEvent(new Event('visibilitychange'));
+    await microtasksFinished();
+    assertFalse(queryAll<CrCheckboxElement>('.leave-out-checkbox')[0]!.checked);
+    assertDeepEquals([], dialog.getExportOptionsForTesting().excludedTopicIds);
+  });
+
+  test('leaves out all unrated topics at once', async () => {
+    await openDialog(likeTopics(1));
+    await click('#acknowledge');
+    assertTrue(query<HTMLButtonElement>('#download')!.disabled);
+
+    await click('#leaveOutAll');
+    assertTrue(
+        queryAll<CrCheckboxElement>('.leave-out-checkbox')
+            .every(checkbox => checkbox.checked));
+    assertTrue(query<HTMLButtonElement>('#leaveOutAll')!.disabled);
+    assertFalse(query<HTMLButtonElement>('#download')!.disabled);
+    assertDeepEquals(
+        ['topic-2', 'topic-3', 'topic-4'],
+        dialog.getExportOptionsForTesting().excludedTopicIds);
   });
 
   test('downloads the bundle and links to the form', async () => {
@@ -1096,6 +1150,7 @@ suite('TopicFeedbackExportDialog', () => {
     await openDialog();
     await select(query<HTMLSelectElement>('#windowSelect')!, '14');
     queryAll<CrCheckboxElement>('.domain-checkbox')[0]!.click();
+    queryAll<CrCheckboxElement>('.leave-out-checkbox')[0]!.click();
     query<CrTextareaElement>('#missingTopics')!.value = 'My trip planning';
     await microtasksFinished();
     await closeDialog();
@@ -1106,6 +1161,7 @@ suite('TopicFeedbackExportDialog', () => {
     assertEquals(14, options.windowDays);
     assertDeepEquals(
         ['www.example.com', 'docs.google.com'], options.excludedDomains);
+    assertDeepEquals(['topic-1'], options.excludedTopicIds);
     assertEquals('My trip planning', options.missingTopics);
   });
 

@@ -108,12 +108,33 @@ export function getHtml(this: TopicFeedbackExportDialogElement) {
 
     <section id="coverageSection">
       <h2>Your ratings</h2>
-      <div id="ratingStatus" ?complete="${this.areAllTopicsRated_()}">
-        <cr-icon icon="${this.areAllTopicsRated_() ?
+      <div id="ratingStatus" ?complete="${this.areAllTopicsHandled_()}">
+        <cr-icon icon="${this.areAllTopicsHandled_() ?
             'cr:check-circle' : 'cr:error'}" aria-hidden="true">
         </cr-icon>
         <div id="ratingProgress">${this.getRatingProgressText_()}</div>
       </div>
+      ${this.getUnratedTopics_().length > 0 ? html`
+        <div class="secondary">
+          Check the topics you don't want to share. Visits that are only in
+          these topics are sent without their URL and title.
+        </div>
+        <ul id="unratedTopics">
+          ${this.getUnratedTopics_().map(topic => html`
+            <li>
+              <cr-checkbox class="leave-out-checkbox" data-id="${topic.id}"
+                  ?checked="${this.isTopicLeftOut_(topic)}"
+                  @checked-changed="${this.onLeaveOutCheckedChanged_}">
+                ${topic.title}
+              </cr-checkbox>
+            </li>
+          `)}
+        </ul>
+        <cr-button id="leaveOutAll" @click="${this.onLeaveOutAllClick_}"
+            ?disabled="${this.areAllTopicsHandled_()}">
+          Leave out all unrated
+        </cr-button>
+      ` : ''}
       ${this.getCoverageTopics_().length > 0 ? html`
         <div class="secondary">
           If you have time, also review these topics on their details page:
