@@ -253,6 +253,7 @@ public class SendTabToSelfReceiverTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/577466171
     public void testSendTabToSelfMessageBannerClickOpensNewestTabForMultipleTabs() {
         long now = getCurrentTimeSinceWindowsEpochMicros();
         ThreadUtils.runOnUiThreadBlocking(
@@ -301,6 +302,7 @@ public class SendTabToSelfReceiverTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/577466171
     public void testNoSendTabToSelfMessageBannerForExpiredEntry() {
         long now = getCurrentTimeSinceWindowsEpochMicros();
         // Set the shared time to 10 days ago, which is greater than the TTL of the STTS entry.
@@ -683,6 +685,7 @@ public class SendTabToSelfReceiverTest {
     @LargeTest
     @Feature({"Sync"})
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/577466171
     public void testAutoOpenOnActivationAfterReceivedInBackground() {
         ChromeTabbedActivity activity = mSyncTestRule.getActivity();
 
