@@ -32,6 +32,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -61,6 +62,7 @@
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_request_handler_base.h"
+#include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/public/fido_types.h"
@@ -318,7 +320,8 @@ const device::DiscoverableCredentialMetadata kEnclaveCred1(
 AuthenticatorRequestDialogModel::Mechanism::CredentialInfo CredentialInfoFrom(
     const device::DiscoverableCredentialMetadata& metadata) {
   return AuthenticatorRequestDialogModel::Mechanism::CredentialInfo(
-      metadata.source, metadata.user.id, metadata.last_used_time);
+      metadata.source, metadata.user.id, metadata.last_used_time,
+      metadata.is_apple_passwords);
 }
 
 template <class Value, class ArgumentType = Value>
@@ -2987,21 +2990,154 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PopulatePasswordsWithOrigin) {
 }
 
 TEST(WebAuthnUiHelpersTest, GetProviderIcon) {
+  using CredentialInfo =
+      AuthenticatorRequestDialogModel::Mechanism::CredentialInfo;
   using device::AuthenticatorType;
 
-  EXPECT_EQ(webauthn_ui_helpers::GetProviderIcon(AuthenticatorType::kEnclave),
+  auto credential_info = [](AuthenticatorType source,
+                            bool is_apple_passwords = false) {
+    return CredentialInfo(source, /*user_id_in=*/{},
+                          /*last_used_time_in=*/std::nullopt,
+                          is_apple_passwords);
+  };
+
+  EXPECT_EQ(webauthn_ui_helpers::GetProviderIcon(
+                credential_info(AuthenticatorType::kEnclave)),
             &GooglePasswordManagerVectorIcon());
-  EXPECT_EQ(
-      webauthn_ui_helpers::GetProviderIcon(AuthenticatorType::kICloudKeychain),
-      &kApplePasswordsColorCustomIcon);
-  EXPECT_EQ(webauthn_ui_helpers::GetProviderIcon(AuthenticatorType::kWinNative),
+  EXPECT_EQ(webauthn_ui_helpers::GetProviderIcon(
+                credential_info(AuthenticatorType::kICloudKeychain,
+                                /*is_apple_passwords=*/true)),
+            &kApplePasswordsColorCustomIcon);
+  EXPECT_EQ(webauthn_ui_helpers::GetProviderIcon(
+                credential_info(AuthenticatorType::kICloudKeychain,
+                                /*is_apple_passwords=*/false)),
+            nullptr);
+  EXPECT_EQ(webauthn_ui_helpers::GetProviderIcon(
+                credential_info(AuthenticatorType::kWinNative)),
             &kWindowsHelloColorCustomIcon);
-  EXPECT_EQ(webauthn_ui_helpers::GetProviderIcon(AuthenticatorType::kTouchID),
+  EXPECT_EQ(webauthn_ui_helpers::GetProviderIcon(
+                credential_info(AuthenticatorType::kTouchID)),
             &vector_icons::kProductRefreshIcon);
 
   // Other sources have no provider icon.
-  EXPECT_EQ(webauthn_ui_helpers::GetProviderIcon(AuthenticatorType::kPhone),
+  EXPECT_EQ(webauthn_ui_helpers::GetProviderIcon(
+                credential_info(AuthenticatorType::kPhone)),
             nullptr);
-  EXPECT_EQ(webauthn_ui_helpers::GetProviderIcon(AuthenticatorType::kOther),
+  EXPECT_EQ(webauthn_ui_helpers::GetProviderIcon(
+                credential_info(AuthenticatorType::kOther)),
             nullptr);
+}
+
+// Verifies that `kApplePasswordsColorCustomIcon` is only shown for macOS 15+
+// credentials confirmed to belong to Apple's built-in Passwords app
+// (`is_apple_passwords == true`), while third-party credential provider
+// extensions (e.g., Bitwarden, 1Password) and pre-macOS 15 ("iCloud Keychain")
+// fall back to the generic passkey icon across both modal presentations.
+// Regression test for crbug.com/578112294.
+TEST_F(AuthenticatorRequestDialogControllerTest,
+       ModalProviderIconsForApplePasswordsAndThirdPartyProviders) {
+  device::DiscoverableCredentialMetadata apple_passwords_cred(
+      device::AuthenticatorType::kICloudKeychain, "rp.com", {10},
+      device::PublicKeyCredentialUserEntity({1}, "apple_user", std::nullopt),
+      "Passwords");
+  apple_passwords_cred.is_apple_passwords = true;
+
+  device::DiscoverableCredentialMetadata third_party_cred(
+      device::AuthenticatorType::kICloudKeychain, "rp.com", {11},
+      device::PublicKeyCredentialUserEntity({2}, "bitwarden_user",
+                                            std::nullopt),
+      "Bitwarden");
+  third_party_cred.is_apple_passwords = false;
+
+  device::DiscoverableCredentialMetadata legacy_ickc_cred(
+      device::AuthenticatorType::kICloudKeychain, "rp.com", {12},
+      device::PublicKeyCredentialUserEntity({3}, "legacy_user", std::nullopt),
+      "iCloud Keychain");
+  legacy_ickc_cred.is_apple_passwords = false;
+
+  const gfx::VectorIcon& generic_passkey_icon =
+      features::IsRoundedIconsEnabled() ? vector_icons::kPasskeyIcon
+                                        : vector_icons::kPasskeyOldIcon;
+
+  for (const UIPresentation presentation :
+       {UIPresentation::kModal, UIPresentation::kModalImmediate}) {
+    SCOPED_TRACE(static_cast<int>(presentation));
+    base::test::ScopedFeatureList feature_list{
+        device::kWebAuthnModalProviderIcons};
+
+    auto model =
+        base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
+    controller.set_allow_icloud_keychain(true);
+    controller.SetUIPresentation(presentation);
+
+    TransportAvailabilityInfo tai;
+    tai.request_type = device::FidoRequestType::kGetAssertion;
+    tai.has_empty_allow_list = true;
+    tai.available_transports = {AuthenticatorTransport::kInternal};
+    tai.has_icloud_keychain = true;
+    tai.has_icloud_keychain_credential = device::FidoRequestHandlerBase::
+        RecognizedCredential::kHasRecognizedCredential;
+    tai.recognized_credentials = {apple_passwords_cred, third_party_cred,
+                                  legacy_ickc_cred};
+
+    UpdateModelBeforeStartFlow(model.get(), tai, /*is_off_the_record=*/false);
+    controller.StartFlow(std::move(tai), {});
+    EXPECT_EQ(model->step(), Step::kMechanismSelection);
+
+    auto find_mechanism = [&](std::u16string_view username)
+        -> const AuthenticatorRequestDialogModel::Mechanism* {
+      auto it =
+          std::ranges::find(model->mechanisms, username,
+                            &AuthenticatorRequestDialogModel::Mechanism::name);
+      return it != model->mechanisms.end() ? &*it : nullptr;
+    };
+
+    const auto* apple_mech = find_mechanism(u"apple_user");
+    ASSERT_TRUE(apple_mech);
+    EXPECT_EQ(&*apple_mech->icon, &kApplePasswordsColorCustomIcon);
+
+    const auto* third_party_mech = find_mechanism(u"bitwarden_user");
+    ASSERT_TRUE(third_party_mech);
+    EXPECT_EQ(&*third_party_mech->icon, &generic_passkey_icon);
+
+    const auto* legacy_mech = find_mechanism(u"legacy_user");
+    ASSERT_TRUE(legacy_mech);
+    EXPECT_EQ(&*legacy_mech->icon, &generic_passkey_icon);
+  }
+
+  // When `kWebAuthnModalProviderIcons` is disabled, standard `kModal` should
+  // use the generic passkey icon even for `is_apple_passwords == true`.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(device::kWebAuthnModalProviderIcons);
+
+    auto model =
+        base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
+    controller.set_allow_icloud_keychain(true);
+    controller.SetUIPresentation(UIPresentation::kModal);
+
+    TransportAvailabilityInfo tai;
+    tai.request_type = device::FidoRequestType::kGetAssertion;
+    tai.has_empty_allow_list = true;
+    tai.available_transports = {AuthenticatorTransport::kInternal};
+    tai.has_icloud_keychain = true;
+    tai.has_icloud_keychain_credential = device::FidoRequestHandlerBase::
+        RecognizedCredential::kHasRecognizedCredential;
+    tai.recognized_credentials = {apple_passwords_cred, third_party_cred};
+
+    UpdateModelBeforeStartFlow(model.get(), tai, /*is_off_the_record=*/false);
+    controller.StartFlow(std::move(tai), {});
+    EXPECT_EQ(model->step(), Step::kMechanismSelection);
+
+    ASSERT_GE(model->mechanisms.size(), 2u);
+    for (const auto& mech : model->mechanisms) {
+      if (std::holds_alternative<
+              AuthenticatorRequestDialogModel::Mechanism::Credential>(
+              mech.type)) {
+        EXPECT_EQ(&*mech.icon, &generic_passkey_icon);
+      }
+    }
+  }
 }

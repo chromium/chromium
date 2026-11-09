@@ -12,8 +12,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_base.h"
@@ -188,11 +192,11 @@ class iCloudKeychainTest : public testing::Test,
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   API_AVAILABLE(macos(13.3))
   scoped_refptr<FakeSystemInterface> fake_;
   std::unique_ptr<FidoDiscoveryBase> discovery_;
   raw_ptr<FidoAuthenticator> authenticator_ = nullptr;
-  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(iCloudKeychainTest, RequestAuthorization) {
@@ -929,6 +933,128 @@ TEST_F(iCloudKeychainTest, FetchCredentialMetadataNoPermission) {
     EXPECT_EQ(std::get<1>(result),
               FidoRequestHandlerBase::RecognizedCredential::kUnknown);
   }
+}
+
+TEST_F(iCloudKeychainTest, FetchCredentialMetadataSetsIsApplePasswords) {
+  if (@available(macOS 13.5, *)) {
+    ScopedApplePasswordsProviderNamesForTesting scoped_names(
+        {"Passwords", "Passwörter"});
+    const std::vector<DiscoverableCredentialMetadata> creds = {
+        {AuthenticatorType::kICloudKeychain,
+         "example.com",
+         {1, 2, 3, 4},
+         {{4, 3, 2, 1}, "apple_user", std::nullopt},
+         "Passwords"},
+        {AuthenticatorType::kICloudKeychain,
+         "example.com",
+         {1, 2, 3, 5},
+         {{4, 3, 2, 2}, "localized_apple_user", std::nullopt},
+         "Passwörter"},
+        {AuthenticatorType::kICloudKeychain,
+         "example.com",
+         {1, 2, 3, 6},
+         {{4, 3, 2, 3}, "third_party_user", std::nullopt},
+         "1Password"},
+        {AuthenticatorType::kICloudKeychain,
+         "example.com",
+         {1, 2, 3, 7},
+         {{4, 3, 2, 4}, "legacy_user", std::nullopt},
+         "iCloud Keychain"},
+    };
+    fake_->SetCredentials(creds);
+    base::test::TestFuture<std::vector<DiscoverableCredentialMetadata>,
+                           FidoRequestHandlerBase::RecognizedCredential>
+        future;
+    CtapGetAssertionRequest request("example.com", "{}");
+    CtapGetAssertionOptions options;
+
+    ASSERT_TRUE(authenticator_);
+    authenticator_->GetPlatformCredentialInfoForRequest(request, options,
+                                                        future.GetCallback());
+    std::vector<DiscoverableCredentialMetadata> creds_out =
+        std::move(std::get<0>(future.Take()));
+
+    ASSERT_EQ(creds_out.size(), 4u);
+    if (@available(macOS 15.0, *)) {
+      EXPECT_TRUE(creds_out[0].is_apple_passwords);
+      EXPECT_TRUE(creds_out[1].is_apple_passwords);
+    } else {
+      EXPECT_FALSE(creds_out[0].is_apple_passwords);
+      EXPECT_FALSE(creds_out[1].is_apple_passwords);
+    }
+    EXPECT_FALSE(creds_out[2].is_apple_passwords);
+    EXPECT_FALSE(creds_out[3].is_apple_passwords);
+  }
+}
+
+TEST_F(iCloudKeychainTest,
+       FetchCredentialMetadataWithoutOverrideWarmsAndReadsAtomicCache) {
+  if (@available(macOS 13.5, *)) {
+    const std::vector<DiscoverableCredentialMetadata> creds = {
+        {AuthenticatorType::kICloudKeychain,
+         "example.com",
+         {1, 2, 3, 5},
+         {{4, 3, 2, 2}, "third_party_user", std::nullopt},
+         "1Password"},
+    };
+    fake_->SetCredentials(creds);
+    CtapGetAssertionRequest request("example.com", "{}");
+    CtapGetAssertionOptions options;
+    ASSERT_TRUE(authenticator_);
+
+    // First call exercises the parallel `ThreadPool` warm-up / cold-start path;
+    // second call exercises the lock-free cached atomic fast path.
+    for (int i = 0; i < 2; ++i) {
+      base::test::TestFuture<std::vector<DiscoverableCredentialMetadata>,
+                             FidoRequestHandlerBase::RecognizedCredential>
+          future;
+      authenticator_->GetPlatformCredentialInfoForRequest(request, options,
+                                                          future.GetCallback());
+      std::vector<DiscoverableCredentialMetadata> creds_out =
+          std::move(std::get<0>(future.Take()));
+
+      ASSERT_EQ(creds_out.size(), 1u);
+      EXPECT_FALSE(creds_out[0].is_apple_passwords);
+    }
+  }
+}
+
+TEST_F(iCloudKeychainTest, GetLocalizedAppNamesFromBundleReadsLoctable) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const base::FilePath bundle_path = temp_dir.GetPath().Append("Passwords.app");
+  const base::FilePath contents_path = bundle_path.Append("Contents");
+  const base::FilePath resources_path = contents_path.Append("Resources");
+  ASSERT_TRUE(base::CreateDirectory(resources_path));
+
+  NSDictionary* info_plist = @{
+    @"CFBundleIdentifier" : @"com.apple.Passwords",
+    @"CFBundleName" : @"Passwords",
+    @"CFBundleDisplayName" : @"Passwords",
+  };
+  ASSERT_TRUE([info_plist writeToURL:base::apple::FilePathToNSURL(
+                                         contents_path.Append("Info.plist"))
+                               error:nil]);
+
+  NSDictionary* loctable = @{
+    @"es" : @{@"CFBundleDisplayName" : @"Contraseñas"},
+    @"de" : @{@"CFBundleDisplayName" : @"Passwörter"},
+    @"fr" : @{@"CFBundleName" : @"Mots de passe"},
+  };
+  ASSERT_TRUE([loctable
+      writeToURL:base::apple::FilePathToNSURL(
+                     resources_path.Append("InfoPlist.loctable"))
+           error:nil]);
+
+  const base::flat_set<std::string> names =
+      GetLocalizedAppNamesForTesting(bundle_path);
+  EXPECT_TRUE(names.contains("Passwords"));
+  EXPECT_TRUE(names.contains("Contraseñas"));
+  EXPECT_TRUE(names.contains("Passwörter"));
+  EXPECT_TRUE(names.contains("Mots de passe"));
+  EXPECT_FALSE(names.contains("1Password"));
+  EXPECT_FALSE(names.contains("Bitwarden"));
 }
 
 }  // namespace

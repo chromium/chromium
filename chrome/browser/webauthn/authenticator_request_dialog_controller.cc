@@ -366,7 +366,7 @@ const gfx::VectorIcon& GetMechanismIcon(
             if (show_modal_provider_icons) {
               if (const gfx::VectorIcon* provider_icon =
                       webauthn_ui_helpers::GetProviderIcon(
-                          credential.value().source)) {
+                          credential.value())) {
                 return *provider_icon;
               }
             }
@@ -1965,8 +1965,9 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
       }
       specific_local_passkeys_listed = true;
       std::u16string name = base::UTF8ToUTF16(cred.user.name.value_or(""));
-      Mechanism::Type mechanism_type = Mechanism::Credential(
-          {cred.source, cred.user.id, cred.last_used_time});
+      Mechanism::Type mechanism_type =
+          Mechanism::Credential({cred.source, cred.user.id, cred.last_used_time,
+                                 cred.is_apple_passwords});
       auto& mechanism = model_->mechanisms.emplace_back(
           mechanism_type, name,
           GetMechanismIcon(mechanism_type, ui_presentation()),

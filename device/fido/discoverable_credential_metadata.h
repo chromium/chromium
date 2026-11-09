@@ -48,9 +48,19 @@ class COMPONENT_EXPORT(DEVICE_FIDO) DiscoverableCredentialMetadata {
   // credential for login.microsoft.com can be auto-created for users.
   bool system_created = false;
 
-  // The name of the third-party provider the passkey is stored in. This is
-  // populated for credentials coming from the MacOS API.
+  // The localized display name of the credential provider reported by the OS
+  // API. On macOS 14+, AuthenticationServices populates this for *all*
+  // credentials, including Apple's built-in manager ("Passwords" on macOS 15+,
+  // "iCloud Keychain" on macOS 14) as well as third-party credential provider
+  // extensions ("1Password", "Bitwarden", etc.). On Windows (webauthn.dll v8+),
+  // this is populated only for third-party plugin authenticators and is nullopt
+  // for built-in Windows Hello.
   std::optional<std::string> provider_name;
+
+  // True when the credential originated from Apple Passwords, as opposed to
+  // another provider. This affects what icon will be shown for this credential
+  // in UI.
+  bool is_apple_passwords = false;
 
   // The transports that this credential supports, as reported by the platform
   // API. May be empty if the platform does not provide transport information.

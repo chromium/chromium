@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <list>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -2302,7 +2303,18 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
         std::optional<std::string_view> user_name,
         bool is_enclave_authenticator_available,
         device::FidoDiscoveryFactory* fido_discovery_factory) override {
+      request_type_ = request_type;
       fido_discovery_factory->set_allow_no_nswindow_for_testing(true);
+    }
+
+    bool EmbedderControlsAuthenticatorDispatch(
+        const device::FidoAuthenticator& authenticator) override {
+      // Hold dispatch until `OnTransportAvailabilityEnumerated()` runs so tests
+      // inspecting `TransportAvailabilityInfo` do not race with async platform
+      // credential enumeration on `base::ThreadPool`.
+      return request_type_ == device::FidoRequestType::kGetAssertion &&
+             authenticator.GetType() ==
+                 device::AuthenticatorType::kICloudKeychain;
     }
 
     void OnTransportAvailabilityEnumerated(
@@ -2324,6 +2336,7 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
     Callback callback_;
     device::FidoRequestHandlerBase::RequestCallback request_callback_;
     std::optional<std::string> icloud_keychain_id_;
+    std::optional<device::FidoRequestType> request_type_;
   };
 
   class InspectTAIContentBrowserClient : public ContentBrowserClient {
@@ -2401,6 +2414,9 @@ TEST_F(ICloudKeychainAuthenticatorImplTest, Discovery) {
                        kHasRecognizedCredential);
 
           CHECK_EQ(tai.recognized_credentials[0].user.name.value(), "name");
+          CHECK(icloud_keychain_id.has_value());
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, base::BindOnce(request_callback, *icloud_keychain_id));
         });
 
     auto options = GetTestPublicKeyCredentialRequestOptions();

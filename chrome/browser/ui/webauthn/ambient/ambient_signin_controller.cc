@@ -79,7 +79,7 @@ void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
                 : ambient_signin::CredentialType::kPassword,
         /*display_name=*/mechanism.display_name,
         /*provider_icon=*/
-        passkey ? webauthn_ui_helpers::GetProviderIcon(passkey->value().source)
+        passkey ? webauthn_ui_helpers::GetProviderIcon(passkey->value())
                 : &GooglePasswordManagerVectorIcon(),
     });
   }

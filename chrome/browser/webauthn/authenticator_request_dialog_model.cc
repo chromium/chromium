@@ -339,10 +339,12 @@ AuthenticatorRequestDialogModel::Mechanism::Mechanism(Mechanism&&) = default;
 AuthenticatorRequestDialogModel::Mechanism::CredentialInfo::CredentialInfo(
     device::AuthenticatorType source_in,
     std::vector<uint8_t> user_id_in,
-    std::optional<base::Time> last_used_time_in)
+    std::optional<base::Time> last_used_time_in,
+    bool is_apple_passwords_in)
     : source(source_in),
       user_id(std::move(user_id_in)),
-      last_used_time(last_used_time_in) {}
+      last_used_time(last_used_time_in),
+      is_apple_passwords(is_apple_passwords_in) {}
 AuthenticatorRequestDialogModel::Mechanism::CredentialInfo::CredentialInfo(
     const CredentialInfo&) = default;
 AuthenticatorRequestDialogModel::Mechanism::CredentialInfo::~CredentialInfo() =

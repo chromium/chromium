@@ -8,11 +8,17 @@
 #import <Foundation/Foundation.h>
 
 #include <algorithm>
+#include <atomic>
 #include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/apple/foundation_util.h"
+#include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,6 +28,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
@@ -50,6 +59,174 @@ namespace {
 std::vector<uint8_t> ToVector(NSData* data) {
   auto span = NSDataToSpan(data);
   return {span.begin(), span.end()};
+}
+
+void AppendNonEmptyNSString(NSString* str, std::vector<std::string>& names) {
+  if (str && str.length > 0) {
+    names.push_back(base::SysNSStringToUTF8(str));
+  }
+}
+
+void AppendBundleDisplayNamesFromDictionary(NSDictionary* dict,
+                                            std::vector<std::string>& names) {
+  if (!dict) {
+    return;
+  }
+  AppendNonEmptyNSString(
+      base::apple::ObjCCast<NSString>(dict[@"CFBundleDisplayName"]), names);
+  AppendNonEmptyNSString(base::apple::ObjCCast<NSString>(dict[@"CFBundleName"]),
+                         names);
+}
+
+// Loads all localized display names for a macOS `.app` bundle on disk.
+std::vector<std::string> CollectLocalizedAppNamesFromBundle(
+    const base::FilePath& app_bundle_path) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  std::vector<std::string> names;
+  NSString* bundle_path_ns = base::apple::FilePathToNSString(app_bundle_path);
+  if (!bundle_path_ns ||
+      ![NSFileManager.defaultManager fileExistsAtPath:bundle_path_ns]) {
+    return names;
+  }
+
+  // 1. Active user/system locale display name via LaunchServices/Finder.
+  AppendNonEmptyNSString(
+      [NSFileManager.defaultManager displayNameAtPath:bundle_path_ns], names);
+
+  // 2. Unlocalized and preferred-localization Info.plist keys via NSBundle.
+  NSBundle* bundle = [NSBundle bundleWithPath:bundle_path_ns];
+  if (bundle) {
+    AppendBundleDisplayNamesFromDictionary(bundle.infoDictionary, names);
+    AppendBundleDisplayNamesFromDictionary(bundle.localizedInfoDictionary,
+                                           names);
+  }
+
+  // 3. Best-effort read of all OS localizations packaged in
+  // `Contents/Resources/InfoPlist.loctable` (a binary plist dictionary mapping
+  // locale codes such as "en", "es", "de", "ja" to dictionaries containing
+  // `CFBundleDisplayName` / `CFBundleName`). This covers cases where Chrome's
+  // process locale and the AuthenticationServices XPC daemon's effective locale
+  // differ.
+  //
+  // Note: `InfoPlist.loctable` is an undocumented macOS bundle detail rather
+  // than a guaranteed API contract. If Apple changes or removes this file in a
+  // future macOS release, reading or casting safely fails and is ignored; in
+  // the worst case (if steps 1 and 2 above also fail to match), Apple Passwords
+  // credentials will fall back to the generic passkey icon instead of showing
+  // `kApplePasswordsColorCustomIcon`.
+  NSURL* loctable_url = base::apple::FilePathToNSURL(
+      app_bundle_path.Append("Contents/Resources/InfoPlist.loctable"));
+  NSDictionary* loctable =
+      loctable_url
+          ? [NSDictionary dictionaryWithContentsOfURL:loctable_url error:nil]
+          : nil;
+  for (id key in loctable) {
+    AppendBundleDisplayNamesFromDictionary(
+        base::apple::ObjCCast<NSDictionary>(loctable[key]), names);
+  }
+
+  return names;
+}
+
+std::optional<base::flat_set<std::string>>& GetApplePasswordsNamesOverride() {
+  static base::NoDestructor<std::optional<base::flat_set<std::string>>>
+      override_names;
+  return *override_names;
+}
+
+void ApplyApplePasswordsProviderNames(
+    const base::flat_set<std::string>& apple_passwords_names,
+    std::vector<DiscoverableCredentialMetadata>& credentials) {
+  for (DiscoverableCredentialMetadata& cred : credentials) {
+    if (cred.provider_name) {
+      cred.is_apple_passwords =
+          apple_passwords_names.contains(*cred.provider_name);
+    }
+  }
+}
+
+// Cached set of localized display names for
+// `/System/Applications/Passwords.app`. Populated once per process on a
+// `base::ThreadPool` worker with release semantics and read lock-free with
+// acquire semantics once non-null.
+constinit std::atomic<const base::flat_set<std::string>*>
+    g_apple_passwords_names{nullptr};
+
+constexpr base::TaskTraits kApplePasswordsLoaderTaskTraits = {
+    base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+    base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
+
+void EnsureApplePasswordsNamesLoadedBlocking() {
+  if (g_apple_passwords_names.load(std::memory_order_acquire)) {
+    return;
+  }
+  static const base::NoDestructor<base::flat_set<std::string>>
+      kApplePasswordsNames([] {
+        return base::flat_set<std::string>(CollectLocalizedAppNamesFromBundle(
+            base::FilePath("/System/Applications/Passwords.app")));
+      }());
+  g_apple_passwords_names.store(kApplePasswordsNames.get(),
+                                std::memory_order_release);
+}
+
+void FinishGetPlatformCredentials(
+    FidoAuthenticator::GetPlatformCredentialInfoForRequestCallback callback,
+    std::vector<DiscoverableCredentialMetadata> credentials) {
+  const auto has_credentials =
+      credentials.empty() ? FidoRequestHandlerBase::RecognizedCredential::
+                                kNoRecognizedCredential
+                          : FidoRequestHandlerBase::RecognizedCredential::
+                                kHasRecognizedCredential;
+  std::move(callback).Run(std::move(credentials), has_credentials);
+}
+
+void FinishWithCachedApplePasswordsNames(
+    FidoAuthenticator::GetPlatformCredentialInfoForRequestCallback callback,
+    std::vector<DiscoverableCredentialMetadata> credentials) {
+  const auto* cached_names =
+      g_apple_passwords_names.load(std::memory_order_acquire);
+  CHECK(cached_names);
+  ApplyApplePasswordsProviderNames(*cached_names, credentials);
+  FinishGetPlatformCredentials(std::move(callback), std::move(credentials));
+}
+
+void PopulateIsApplePasswordsAndReply(
+    FidoAuthenticator::GetPlatformCredentialInfoForRequestCallback callback,
+    std::vector<DiscoverableCredentialMetadata> credentials) {
+  // The Apple Passwords app and its 3-key icon were introduced in macOS 15; on
+  // macOS 14 the built-in provider is "iCloud Keychain".
+  if (@available(macOS 15.0, *)) {
+    const bool has_named_provider = std::ranges::any_of(
+        credentials, [](const DiscoverableCredentialMetadata& cred) {
+          return cred.provider_name.has_value();
+        });
+    if (has_named_provider) {
+      if (const auto& override_names = GetApplePasswordsNamesOverride();
+          override_names.has_value()) {
+        ApplyApplePasswordsProviderNames(*override_names, credentials);
+        FinishGetPlatformCredentials(std::move(callback),
+                                     std::move(credentials));
+        return;
+      }
+      if (const auto* cached_names =
+              g_apple_passwords_names.load(std::memory_order_acquire)) {
+        ApplyApplePasswordsProviderNames(*cached_names, credentials);
+        FinishGetPlatformCredentials(std::move(callback),
+                                     std::move(credentials));
+        return;
+      }
+      // Cold-start fallback if the XPC query completed before the parallel
+      // warm-up task finished.
+      base::ThreadPool::PostTaskAndReply(
+          FROM_HERE, kApplePasswordsLoaderTaskTraits,
+          base::BindOnce(&EnsureApplePasswordsNamesLoadedBlocking),
+          base::BindOnce(&FinishWithCachedApplePasswordsNames,
+                         std::move(callback), std::move(credentials)));
+      return;
+    }
+  }
+  FinishGetPlatformCredentials(std::move(callback), std::move(credentials));
 }
 
 bool SupportsLargeBlob() {
@@ -272,6 +449,17 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
         break;
     }
 
+    if (@available(macOS 15.0, *)) {
+      if (!GetApplePasswordsNamesOverride().has_value() &&
+          !g_apple_passwords_names.load(std::memory_order_acquire)) {
+        // Start loading localized `Passwords.app` names in parallel with the
+        // `AuthenticationServices` XPC credential query below.
+        base::ThreadPool::PostTask(
+            FROM_HERE, kApplePasswordsLoaderTaskTraits,
+            base::BindOnce(&EnsureApplePasswordsNamesLoadedBlocking));
+      }
+    }
+
     scoped_refptr<base::SequencedTaskRunner> origin_task_runner =
         base::SequencedTaskRunner::GetCurrentDefault();
     __block auto internal_callback = std::move(callback);
@@ -296,7 +484,9 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
         if (@available(macOS 14.0, *)) {
           // `providerName` is documented available in 13.3+, but appears broken
           // in 13.* (see https://crbug.com/407900955)
-          provider_name = cred.providerName.UTF8String;
+          if (cred.providerName) {
+            provider_name = base::SysNSStringToUTF8(cred.providerName);
+          }
         }
         ret.emplace_back(AuthenticatorType::kICloudKeychain, rp_id,
                          std::move(cred_id),
@@ -307,14 +497,10 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                              std::nullopt),
                          std::move(provider_name));
       }
-      const auto has_credentials =
-          ret.empty() ? FidoRequestHandlerBase::RecognizedCredential::
-                            kNoRecognizedCredential
-                      : FidoRequestHandlerBase::RecognizedCredential::
-                            kHasRecognizedCredential;
       origin_task_runner->PostTask(
-          FROM_HERE, base::BindOnce(std::move(internal_callback),
-                                    std::move(ret), has_credentials));
+          FROM_HERE,
+          base::BindOnce(&PopulateIsApplePasswordsAndReply,
+                         std::move(internal_callback), std::move(ret)));
     };
     sys_interface->GetPlatformCredentials(rp_id, handler);
   }
@@ -652,6 +838,24 @@ std::optional<bool> HasPermission() {
 API_AVAILABLE(macos(26.2))
 bool IsConfiguredForPasskeys() {
   return GetSystemInterface()->IsConfiguredForPasskeys();
+}
+
+ScopedApplePasswordsProviderNamesForTesting::
+    ScopedApplePasswordsProviderNamesForTesting(
+        base::flat_set<std::string> names) {
+  CHECK(!GetApplePasswordsNamesOverride().has_value());
+  GetApplePasswordsNamesOverride() = std::move(names);
+}
+
+ScopedApplePasswordsProviderNamesForTesting::
+    ~ScopedApplePasswordsProviderNamesForTesting() {
+  GetApplePasswordsNamesOverride().reset();
+}
+
+base::flat_set<std::string> GetLocalizedAppNamesForTesting(
+    const base::FilePath& app_bundle_path) {
+  return base::flat_set<std::string>(
+      CollectLocalizedAppNamesFromBundle(app_bundle_path));
 }
 
 }  // namespace device::fido::icloud_keychain

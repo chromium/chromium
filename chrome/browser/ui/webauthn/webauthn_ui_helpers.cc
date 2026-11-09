@@ -29,10 +29,17 @@ std::u16string RpIdToElidedHost(const std::string& relying_party_id,
   return url_formatter::ElideHost(relying_party_id_url, font_list, width);
 }
 
-const gfx::VectorIcon* GetProviderIcon(device::AuthenticatorType type) {
-  switch (type) {
+const gfx::VectorIcon* GetProviderIcon(
+    const AuthenticatorRequestDialogModel::Mechanism::CredentialInfo&
+        credential) {
+  switch (credential.source) {
     case device::AuthenticatorType::kICloudKeychain:
-      return &kApplePasswordsColorCustomIcon;
+      // Only show the Apple Passwords 3-key icon when the credential
+      // originated from Apple's built-in Passwords app on macOS 15+.
+      // Third-party credential provider extensions and pre-macOS 15 ("iCloud
+      // Keychain") have no provider icon (see crbug.com/578112294).
+      return credential.is_apple_passwords ? &kApplePasswordsColorCustomIcon
+                                           : nullptr;
     case device::AuthenticatorType::kEnclave:
       return &GooglePasswordManagerVectorIcon();
     case device::AuthenticatorType::kWinNative:
