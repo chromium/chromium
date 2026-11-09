@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include "base/strings/span_printf.h"
+#include "base/strings/string_util.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
@@ -68,20 +69,14 @@ std::basic_string_view<CHAR> DoRemoveUrlWhitespace(
   // ASCII-case-insensitively and after stepping over any leading removable
   // whitespace, so that the result is the same regardless of how the scheme
   // is spelled.
-  //
-  // TODO(mkwst): Ideally, this would use something like `base::StartsWith`, but
-  // that turns out to be difficult to do correctly given this function's
-  // character type templating.
   size_t scheme_start = 0;
   while (scheme_start < input.length() &&
          IsRemovableURLWhitespace(input[scheme_start])) {
     ++scheme_start;
   }
   std::basic_string_view<CHAR> trimmed = input.substr(scheme_start);
-  if (trimmed.length() > 5 && (trimmed[0] == 'd' || trimmed[0] == 'D') &&
-      (trimmed[1] == 'a' || trimmed[1] == 'A') &&
-      (trimmed[2] == 't' || trimmed[2] == 'T') &&
-      (trimmed[3] == 'a' || trimmed[3] == 'A') && trimmed[4] == ':') {
+  if (trimmed.length() > 5 &&
+      base::EqualsCaseInsensitiveASCII(trimmed.substr(0, 5), "data:")) {
     return trimmed;
   }
 
