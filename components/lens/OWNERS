@@ -11,9 +11,9 @@ mercerd@google.com        #{LAST_RESORT_SUGGESTION}
 nguyenbryan@google.com    #{LAST_RESORT_SUGGESTION}
 stanfield@google.com      #{LAST_RESORT_SUGGESTION}
 
-erikchen@chromium.org
-jdonnelly@chromium.org
-mahmadi@chromium.org
+erikchen@chromium.org     #{LAST_RESORT_SUGGESTION}
+jdonnelly@chromium.org    #{LAST_RESORT_SUGGESTION}
+mahmadi@chromium.org      #{LAST_RESORT_SUGGESTION}
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
