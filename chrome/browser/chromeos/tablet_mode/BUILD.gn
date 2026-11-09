@@ -23,12 +23,12 @@ static_library("tablet_mode") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chrome/browser/chromeos/arc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
-    "//chrome/common",
     "//chromeos/ash/components/browser_delegate",
     "//content/public/browser",
     "//content/public/common",

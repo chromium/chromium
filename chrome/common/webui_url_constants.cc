@@ -7,7 +7,6 @@
 #include <array>
 #include <string_view>
 
-#include "base/containers/fixed_flat_set.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/commerce/core/commerce_constants.h"
@@ -35,6 +34,8 @@ namespace chrome {
 // refers.
 static_assert(std::string_view(kChromeUICertificateManagerDialogURL) ==
               ash::chrome_urls::kChromeUICertificateManagerDialogURL);
+static_assert(std::string_view(kChromeUICertificateManagerHost) ==
+              ash::chrome_urls::kChromeUICertificateManagerHost);
 static_assert(std::string_view(kChromeUIFlagsURL) ==
               ash::chrome_urls::kChromeUIFlagsURL);
 static_assert(std::string_view(kChromeUIFeedbackURL) ==
@@ -76,44 +77,6 @@ static_assert(std::string_view(kSearchSubPage) ==
               ash::chrome_urls::kSearchSubPage);
 static_assert(std::string_view(kSyncSetupSubPage) ==
               ash::chrome_urls::kSyncSetupSubPage);
-
-bool IsSystemWebUIHost(std::string_view host) {
-  // Compares host instead of full URL for performance (the strings are
-  // shorter).
-  constexpr auto kHosts = base::MakeFixedFlatSet<std::string_view>({
-      ash::kChromeUIAccountManagerErrorHost,
-      ash::kChromeUIAccountMigrationWelcomeHost,
-      ash::kChromeUIAddSupervisionHost,
-      ash::kChromeUIAppInstallDialogHost,
-      ash::kChromeUIBluetoothPairingHost,
-      ash::kChromeUIBorealisCreditsHost,
-      kChromeUICertificateManagerHost,
-      ash::kChromeUICloudUploadHost,
-      ash::kChromeUICrostiniCreditsHost,
-      ash::kChromeUICrostiniInstallerHost,
-      ash::kChromeUICryptohomeHost,
-      ash::kChromeUIEmojiPickerHost,
-      ash::kChromeUIExtendedUpdatesDialogHost,
-      ash::kChromeUIInternetConfigDialogHost,
-      ash::kChromeUIInternetDetailDialogHost,
-      ash::kChromeUILockScreenNetworkHost,
-      ash::kChromeUILockScreenStartReauthHost,
-      ash::kChromeUIMobileSetupHost,
-      ash::kChromeUIMultiDeviceSetupHost,
-      ash::kChromeUINetworkHost,
-      ash::kChromeUINotificationTesterHost,
-      ash::kChromeUIOobeHost,
-      ash::kChromeUIOSCreditsHost,
-      ash::kChromeUIOSSettingsHost,
-      ash::kChromeUIPasswordChangeHost,
-      ash::kChromeUIPowerHost,
-      ash::kChromeUISetTimeHost,
-      ash::kChromeUISmbCredentialsHost,
-      ash::kChromeUISmbShareHost,
-  });
-
-  return kHosts.contains(host);
-}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Add hosts here to be suggested by BuiltinProvider.

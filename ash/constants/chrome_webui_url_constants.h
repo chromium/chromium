@@ -23,6 +23,7 @@ inline constexpr char kChromeUICameraPermissionsSettingsURL[] =
 
 inline constexpr char kChromeUICertificateManagerDialogURL[] =
     "chrome://certificate-manager";
+inline constexpr char kChromeUICertificateManagerHost[] = "certificate-manager";
 inline constexpr char kChromeUIFlagsURL[] = "chrome://flags/";
 inline constexpr char kChromeUIFeedbackURL[] = "chrome://feedback/";
 inline constexpr char kChromeUIHistogramsURL[] = "chrome://histograms";
