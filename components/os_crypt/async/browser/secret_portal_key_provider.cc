@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "components/dbus/utils/call_method.h"
 #include "components/dbus/utils/name_has_owner.h"
 #include "components/dbus/xdg/portal.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
@@ -37,6 +38,13 @@ namespace {
 
 constexpr std::string_view kSaltForHkdf = "fdo_portal_secret_salt";
 constexpr std::string_view kInfoForHkdf = "HKDF-SHA-256 AES-256-GCM";
+
+// Returns true if `error` is the error that libdbus synthesizes when a method
+// call times out.
+bool IsNoReply(const dbus_utils::CallMethodError& error) {
+  return error.status == dbus_utils::CallMethodErrorStatus::kErrorResponse &&
+         error.error_name == DBUS_ERROR_NO_REPLY;
+}
 
 }  // namespace
 
@@ -85,6 +93,50 @@ void SecretPortalKeyProvider::OnPortalServiceStarted(uint32_t version) {
   if (version == 0) {
     return Finalize(InitStatus::kNoService);
   }
+
+  // RetrieveSecret may wait indefinitely for the user to unlock the keyring,
+  // and the portal backend (e.g. GNOME Keyring) may stop processing other
+  // requests until the keyring is unlocked, so an unresponsive backend can't
+  // be detected once RetrieveSecret is called. Instead, check that the Secret
+  // Service responds to a request that never involves the user first.
+  dbus_utils::NameHasOwner(
+      bus_.get(), kSecretServiceName,
+      base::BindOnce(&SecretPortalKeyProvider::OnSecretServiceHasOwner,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SecretPortalKeyProvider::OnSecretServiceHasOwner(
+    std::optional<bool> has_owner) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!has_owner.value_or(false)) {
+    // The portal backend will be started by xdg-desktop-portal if needed.
+    return RetrieveSecret();
+  }
+
+  auto* secret_service_proxy = bus_->GetObjectProxy(
+      kSecretServiceName, dbus::ObjectPath(kSecretServicePath));
+  dbus_utils::CallMethod<"ss", "v">(
+      secret_service_proxy, kPropertiesInterface, kMethodGet,
+      kSecretServiceProbeTimeout,
+      base::BindOnce(&SecretPortalKeyProvider::OnSecretServiceProbed,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kSecretServiceInterface, kPropertyCollections);
+}
+
+void SecretPortalKeyProvider::OnSecretServiceProbed(
+    dbus_utils::CallMethodResultSig<"v"> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Only a timeout indicates a hung backend. Other errors (e.g. a Secret
+  // Service that doesn't implement the property) are not fatal.
+  if (!result.has_value() && IsNoReply(result.error())) {
+    LOG(ERROR) << "The Secret Service did not reply in time.";
+    return Finalize(InitStatus::kBackendUnresponsive);
+  }
+  RetrieveSecret();
+}
+
+void SecretPortalKeyProvider::RetrieveSecret() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Create a pipe to retrieve the secret.
   int fds[2];

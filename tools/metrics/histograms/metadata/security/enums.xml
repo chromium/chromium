@@ -507,6 +507,9 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="(Obsolete) DestructedBeforeComplete"/>
   <int value="11" label="SignalConnectFailed"/>
   <int value="12" label="SignalParseFailed"/>
+  <int value="13" label="OtherCancelledUnlock"/>
+  <int value="14" label="InvalidResponseCode"/>
+  <int value="15" label="BackendUnresponsive"/>
 </enum>
 
 <enum name="SecurityLevel">

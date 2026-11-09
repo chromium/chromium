@@ -17,6 +17,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
+#include "components/dbus/utils/call_method.h"
 #include "components/dbus/xdg/request.h"
 #include "components/os_crypt/async/browser/key_provider.h"
 
@@ -60,7 +62,8 @@ class SecretPortalKeyProvider : public KeyProvider {
     kSignalParseFailed = 12,
     kOtherCancelledUnlock = 13,
     kInvalidResponseCode = 14,
-    kMaxValue = kInvalidResponseCode,
+    kBackendUnresponsive = 15,
+    kMaxValue = kBackendUnresponsive,
   };
 
   static void RegisterLocalPrefs(PrefRegistrySimple* registry);
@@ -74,6 +77,10 @@ class SecretPortalKeyProvider : public KeyProvider {
   friend class SecretPortalKeyProviderTest;
   friend class TestSecretPortal;
   FRIEND_TEST_ALL_PREFIXES(SecretPortalKeyProviderTest, GetKey);
+  FRIEND_TEST_ALL_PREFIXES(SecretPortalKeyProviderTest,
+                           GetKeyWithoutSecretService);
+  FRIEND_TEST_ALL_PREFIXES(SecretPortalKeyProviderTest,
+                           SecretServiceUnresponsive);
 
   // DBus constants.  Exposed in header for tests.
   static constexpr char kServiceSecret[] = "org.freedesktop.portal.Desktop";
@@ -82,6 +89,20 @@ class SecretPortalKeyProvider : public KeyProvider {
   static constexpr char kInterfaceRequest[] = "org.freedesktop.portal.Request";
   static constexpr char kMethodRetrieveSecret[] = "RetrieveSecret";
   static constexpr char kSignalResponse[] = "Response";
+
+  // The Secret Service, which usually backs the secret portal (e.g. GNOME
+  // Keyring). It is probed before calling RetrieveSecret, see
+  // OnPortalServiceStarted().
+  static constexpr char kSecretServiceName[] = "org.freedesktop.secrets";
+  static constexpr char kSecretServicePath[] = "/org/freedesktop/secrets";
+  static constexpr char kSecretServiceInterface[] =
+      "org.freedesktop.Secret.Service";
+  static constexpr char kPropertiesInterface[] =
+      "org.freedesktop.DBus.Properties";
+  static constexpr char kMethodGet[] = "Get";
+  static constexpr char kPropertyCollections[] = "Collections";
+  static constexpr base::TimeDelta kSecretServiceProbeTimeout =
+      base::Seconds(3);
 
   static constexpr char kOsCryptTokenPrefName[] = "os_crypt.portal.token";
   static constexpr char kOsCryptPrevDesktopPrefName[] =
@@ -107,6 +128,12 @@ class SecretPortalKeyProvider : public KeyProvider {
   bool UseForEncryption() override;
 
   void OnPortalServiceStarted(uint32_t version);
+
+  void OnSecretServiceHasOwner(std::optional<bool> has_owner);
+
+  void OnSecretServiceProbed(dbus_utils::CallMethodResultSig<"v"> result);
+
+  void RetrieveSecret();
 
   void OnRetrieveSecret(
       base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results);

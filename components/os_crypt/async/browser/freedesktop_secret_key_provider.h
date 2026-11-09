@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "components/dbus/utils/call_method.h"
 #include "components/dbus/utils/check_for_service_and_start.h"
@@ -59,7 +60,8 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
     kKWalletEntryCheckFailed = 19,
     kKWalletReadFailed = 20,
     kKWalletWriteFailed = 21,
-    kMaxValue = kKWalletWriteFailed,
+    kBackendUnresponsive = 22,
+    kMaxValue = kBackendUnresponsive,
   };
 
   FreedesktopSecretKeyProvider(const std::string& password_store,
@@ -80,10 +82,22 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
                            KWalletCreateFolderAndPassword);
   FRIEND_TEST_ALL_PREFIXES(FreedesktopSecretKeyProviderTest,
                            SearchItemsWithItemUnlockPrompt);
+  FRIEND_TEST_ALL_PREFIXES(FreedesktopSecretKeyProviderTest,
+                           ReadAliasNoReplyIsTemporary);
+  FRIEND_TEST_ALL_PREFIXES(FreedesktopSecretKeyProviderTest,
+                           UnlockNoReplyIsTemporary);
+  FRIEND_TEST_ALL_PREFIXES(FreedesktopSecretKeyProviderTest,
+                           KWalletNoReplyIsTemporary);
   friend class FreedesktopSecretKeyProviderCompatTest;
 
   template <typename T>
   class Prompter;
+
+  // Timeout for replies to method calls. None of the methods called wait for
+  // user input (unlocking happens through Prompt objects whose Completed
+  // signal is waited for without a timeout, or through KWallet's openAsync), so
+  // a backend that doesn't reply within this time is considered unresponsive.
+  static constexpr base::TimeDelta kMethodCallTimeout = base::Seconds(3);
 
   static constexpr char kSecretServiceName[] = "org.freedesktop.secrets";
   static constexpr char kSecretServicePath[] = "/org/freedesktop/secrets";
@@ -211,6 +225,28 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   void FinalizeSuccess(Encryptor::Key key);
   void FinalizeFailure(InitStatus status);
   void CloseSession();
+
+  // Calls a method with `kMethodCallTimeout`. If the backend doesn't reply in
+  // time, initialization fails with `kBackendUnresponsive` and `callback` is
+  // not run.
+  template <dbus_utils::SignatureLiteral ArgsSignature,
+            dbus_utils::SignatureLiteral RetsSignature>
+  void CallMethod(
+      dbus::ObjectProxy* proxy,
+      const std::string& interface,
+      const std::string& method,
+      base::OnceCallback<void(dbus_utils::CallMethodResultSig<RetsSignature>)>
+          callback,
+      const auto&... args);
+  template <dbus_utils::SignatureLiteral RetsSignature>
+  void OnMethodReply(
+      base::OnceCallback<void(dbus_utils::CallMethodResultSig<RetsSignature>)>
+          callback,
+      dbus_utils::CallMethodResultSig<RetsSignature> result);
+
+  // Returns a callback for `Prompter` to run when the backend doesn't reply to
+  // a method call.
+  base::OnceClosure GetBackendUnresponsiveCallback();
 
   raw_ptr<dbus::ObjectProxy> default_collection_proxy_ = nullptr;
   raw_ptr<dbus::ObjectProxy> session_proxy_ = nullptr;

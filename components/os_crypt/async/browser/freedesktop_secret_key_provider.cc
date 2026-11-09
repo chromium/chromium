@@ -45,6 +45,13 @@ constexpr size_t kDerivedKeySizeInBits = 128;
 constexpr size_t kEncryptionIterations = 1;
 constexpr size_t kSecretLengthBytes = 16;
 
+// Returns true if `error` is the error that libdbus synthesizes when a method
+// call times out.
+bool IsNoReply(const dbus_utils::CallMethodError& error) {
+  return error.status == dbus_utils::CallMethodErrorStatus::kErrorResponse &&
+         error.error_name == DBUS_ERROR_NO_REPLY;
+}
+
 }  // namespace
 
 // A helper class to handle a Secret Service prompt. It is templated on the
@@ -55,6 +62,10 @@ class FreedesktopSecretKeyProvider::Prompter
  public:
   using PromptCallback = base::OnceCallback<void(std::optional<T>)>;
 
+  // `on_no_reply` is run instead of `callback` if the backend doesn't reply to
+  // a method call within `kMethodCallTimeout`. The wait for the prompt's
+  // Completed signal has no timeout, since the user may take arbitrarily long
+  // to respond to the prompt.
   template <dbus_utils::SignatureLiteral ArgsSig,
             dbus_utils::SignatureLiteral RetsSig,
             typename... Args>
@@ -63,16 +74,22 @@ class FreedesktopSecretKeyProvider::Prompter
                      const std::string& interface_name,
                      const std::string& method_name,
                      PromptCallback callback,
+                     base::OnceClosure on_no_reply,
                      const Args&... args) {
-    auto handler =
-        base::MakeRefCounted<Prompter<T>>(std::move(bus), std::move(callback));
+    auto handler = base::MakeRefCounted<Prompter<T>>(
+        std::move(bus), std::move(callback), std::move(on_no_reply));
     dbus_utils::CallMethod<ArgsSig, RetsSig>(
         object_proxy, interface_name, method_name,
+        FreedesktopSecretKeyProvider::kMethodCallTimeout,
         base::BindOnce(&Prompter::OnReply, handler), args...);
   }
 
-  Prompter(scoped_refptr<dbus::Bus> bus, PromptCallback callback)
-      : bus_(std::move(bus)), callback_(std::move(callback)) {}
+  Prompter(scoped_refptr<dbus::Bus> bus,
+           PromptCallback callback,
+           base::OnceClosure on_no_reply)
+      : bus_(std::move(bus)),
+        callback_(std::move(callback)),
+        on_no_reply_(std::move(on_no_reply)) {}
 
   Prompter(const Prompter&) = delete;
   Prompter& operator=(const Prompter&) = delete;
@@ -85,6 +102,10 @@ class FreedesktopSecretKeyProvider::Prompter
   void OnReply(base::expected<std::tuple<T, dbus::ObjectPath>,
                               dbus_utils::CallMethodError> reply) {
     if (!reply.has_value()) {
+      if (IsNoReply(reply.error())) {
+        NoReply();
+        return;
+      }
       Finish(std::nullopt);
       return;
     }
@@ -105,17 +126,32 @@ class FreedesktopSecretKeyProvider::Prompter
         "Completed",
         base::BindRepeating(&Prompter::OnPromptCompletedSignal, this),
         base::BindOnce(&Prompter::OnSignalConnected, this));
+    // Prompt() returns immediately; the result is sent in the Completed
+    // signal.
     dbus_utils::CallMethod<"s", "">(
         prompt_proxy, FreedesktopSecretKeyProvider::kSecretPromptInterface,
         FreedesktopSecretKeyProvider::kMethodPrompt,
+        FreedesktopSecretKeyProvider::kMethodCallTimeout,
         base::BindOnce(&Prompter::OnPromptResponse, this), "");
   }
 
   void OnPromptResponse(dbus_utils::CallMethodResult<> response) {
     if (!response.has_value()) {
       LOG(ERROR) << "Prompt call returned no response.";
+      if (IsNoReply(response.error())) {
+        NoReply();
+        return;
+      }
       Finish(std::nullopt);
     }
+  }
+
+  void NoReply() {
+    callback_.Reset();
+    if (on_no_reply_) {
+      std::move(on_no_reply_).Run();
+    }
+    Finish(std::nullopt);
   }
 
   void OnSignalConnected(const std::string& interface_name,
@@ -166,6 +202,7 @@ class FreedesktopSecretKeyProvider::Prompter
 
   scoped_refptr<dbus::Bus> bus_;
   PromptCallback callback_;
+  base::OnceClosure on_no_reply_;
   dbus::ObjectPath prompt_path_;
 };
 
@@ -183,6 +220,44 @@ FreedesktopSecretKeyProvider::FreedesktopSecretKeyProvider(
 
 FreedesktopSecretKeyProvider::~FreedesktopSecretKeyProvider() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+template <dbus_utils::SignatureLiteral ArgsSignature,
+          dbus_utils::SignatureLiteral RetsSignature>
+void FreedesktopSecretKeyProvider::CallMethod(
+    dbus::ObjectProxy* proxy,
+    const std::string& interface,
+    const std::string& method,
+    base::OnceCallback<void(dbus_utils::CallMethodResultSig<RetsSignature>)>
+        callback,
+    const auto&... args) {
+  dbus_utils::CallMethod<ArgsSignature, RetsSignature>(
+      proxy, interface, method, kMethodCallTimeout,
+      base::BindOnce(
+          &FreedesktopSecretKeyProvider::OnMethodReply<RetsSignature>,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      args...);
+}
+
+template <dbus_utils::SignatureLiteral RetsSignature>
+void FreedesktopSecretKeyProvider::OnMethodReply(
+    base::OnceCallback<void(dbus_utils::CallMethodResultSig<RetsSignature>)>
+        callback,
+    dbus_utils::CallMethodResultSig<RetsSignature> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!result.has_value() && IsNoReply(result.error())) {
+    LOG(ERROR) << "The secret service did not reply in time.";
+    FinalizeFailure(InitStatus::kBackendUnresponsive);
+    return;
+  }
+  std::move(callback).Run(std::move(result));
+}
+
+base::OnceClosure
+FreedesktopSecretKeyProvider::GetBackendUnresponsiveCallback() {
+  return base::BindOnce(&FreedesktopSecretKeyProvider::FinalizeFailure,
+                        weak_ptr_factory_.GetWeakPtr(),
+                        InitStatus::kBackendUnresponsive);
 }
 
 void FreedesktopSecretKeyProvider::GetKey(KeyCallback callback) {
@@ -267,7 +342,7 @@ void FreedesktopSecretKeyProvider::OnServiceStarted(
 
   auto* service_proxy = bus_->GetObjectProxy(
       kSecretServiceName, dbus::ObjectPath(kSecretServicePath));
-  dbus_utils::CallMethod<"s", "o">(
+  CallMethod<"s", "o">(
       service_proxy, kSecretServiceInterface, kMethodReadAlias,
       base::BindOnce(&FreedesktopSecretKeyProvider::OnReadAliasDefault,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -286,7 +361,7 @@ void FreedesktopSecretKeyProvider::OnReadAliasDefault(
   if (collection_path.value() != "/") {
     default_collection_proxy_ =
         bus_->GetObjectProxy(kSecretServiceName, collection_path);
-    dbus_utils::CallMethod<"ss", "v">(
+    CallMethod<"ss", "v">(
         default_collection_proxy_, kPropertiesInterface, kMethodGet,
         base::BindOnce(
             &FreedesktopSecretKeyProvider::OnGetCollectionLabelResponse,
@@ -304,7 +379,7 @@ void FreedesktopSecretKeyProvider::OnReadAliasDefault(
         bus_, service_proxy, kSecretServiceInterface, kMethodCreateCollection,
         base::BindOnce(&FreedesktopSecretKeyProvider::OnCreateCollection,
                        weak_ptr_factory_.GetWeakPtr()),
-        props, kDefaultAlias);
+        GetBackendUnresponsiveCallback(), props, kDefaultAlias);
   }
 }
 
@@ -352,7 +427,7 @@ void FreedesktopSecretKeyProvider::UnlockDefaultCollection() {
       bus_, service_proxy, kSecretServiceInterface, kMethodUnlock,
       base::BindOnce(&FreedesktopSecretKeyProvider::OnUnlock,
                      weak_ptr_factory_.GetWeakPtr()),
-      objects);
+      GetBackendUnresponsiveCallback(), objects);
 }
 
 void FreedesktopSecretKeyProvider::OnUnlock(
@@ -369,7 +444,7 @@ void FreedesktopSecretKeyProvider::OnUnlock(
 void FreedesktopSecretKeyProvider::OpenSession() {
   auto* service_proxy = bus_->GetObjectProxy(
       kSecretServiceName, dbus::ObjectPath(kSecretServicePath));
-  dbus_utils::CallMethod<"sv", "vo">(
+  CallMethod<"sv", "vo">(
       service_proxy, kSecretServiceInterface, kMethodOpenSession,
       base::BindOnce(&FreedesktopSecretKeyProvider::OnOpenSession,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -390,7 +465,7 @@ void FreedesktopSecretKeyProvider::OnOpenSession(
   std::map<std::string, std::string> search_attrs{
       {kApplicationAttributeKey, kAppName}};
 
-  dbus_utils::CallMethod<"a{ss}", "ao">(
+  CallMethod<"a{ss}", "ao">(
       default_collection_proxy_, kSecretCollectionInterface, kMethodSearchItems,
       base::BindOnce(&FreedesktopSecretKeyProvider::OnSearchItems,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -421,7 +496,7 @@ void FreedesktopSecretKeyProvider::OnSearchItems(
       bus_, service_proxy, kSecretServiceInterface, kMethodUnlock,
       base::BindOnce(&FreedesktopSecretKeyProvider::OnUnlockItems,
                      weak_ptr_factory_.GetWeakPtr(), result_paths.front()),
-      objects);
+      GetBackendUnresponsiveCallback(), objects);
 }
 
 void FreedesktopSecretKeyProvider::OnUnlockItems(
@@ -436,7 +511,7 @@ void FreedesktopSecretKeyProvider::OnUnlockItems(
   auto* service_proxy = bus_->GetObjectProxy(
       kSecretServiceName, dbus::ObjectPath(kSecretServicePath));
   std::vector<dbus::ObjectPath> items = {item_path};
-  dbus_utils::CallMethod<"aoo", "a{o(oayays)}">(
+  CallMethod<"aoo", "a{o(oayays)}">(
       service_proxy, kSecretServiceInterface, kMethodGetSecrets,
       base::BindOnce(&FreedesktopSecretKeyProvider::OnGetSecrets,
                      weak_ptr_factory_.GetWeakPtr(), item_path),
@@ -490,7 +565,7 @@ void FreedesktopSecretKeyProvider::OnKWalletServiceStarted(
     return;
   }
 
-  dbus_utils::CallMethod<"", "b">(
+  CallMethod<"", "b">(
       kwallet_proxy_, kKWalletInterface, kKWalletMethodIsEnabled,
       base::BindOnce(&FreedesktopSecretKeyProvider::OnKWalletIsEnabled,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -503,7 +578,7 @@ void FreedesktopSecretKeyProvider::OnKWalletIsEnabled(
     FinalizeFailure(InitStatus::kKWalletDisabled);
     return;
   }
-  dbus_utils::CallMethod<"", "s">(
+  CallMethod<"", "s">(
       kwallet_proxy_, kKWalletInterface, kKWalletMethodNetworkWallet,
       base::BindOnce(&FreedesktopSecretKeyProvider::OnKWalletNetworkWallet,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -528,7 +603,7 @@ void FreedesktopSecretKeyProvider::OnKWalletNetworkWallet(
   // handleSession = true means KWallet will take care of keeping the wallet
   // open as long as the application is running.
   constexpr bool kHandleSession = true;
-  dbus_utils::CallMethod<"sxsb", "i">(
+  CallMethod<"sxsb", "i">(
       kwallet_proxy_, kKWalletInterface, kKWalletMethodOpenAsync,
       base::BindOnce(&FreedesktopSecretKeyProvider::OnKWalletOpenAsync,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -592,7 +667,7 @@ void FreedesktopSecretKeyProvider::OnKWalletOpen(int32_t handle) {
     return;
   }
 
-  dbus_utils::CallMethod<"iss", "b">(
+  CallMethod<"iss", "b">(
       kwallet_proxy_, kKWalletInterface, kKWalletMethodHasFolder,
       base::BindOnce(&FreedesktopSecretKeyProvider::OnKWalletHasFolder,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -608,13 +683,13 @@ void FreedesktopSecretKeyProvider::OnKWalletHasFolder(
   }
 
   if (std::get<0>(has_folder.value())) {
-    dbus_utils::CallMethod<"isss", "b">(
+    CallMethod<"isss", "b">(
         kwallet_proxy_, kKWalletInterface, kKWalletMethodHasEntry,
         base::BindOnce(&FreedesktopSecretKeyProvider::OnKWalletHasEntry,
                        weak_ptr_factory_.GetWeakPtr()),
         kwallet_handle_, kKWalletFolder, kKeyName, product_name_);
   } else {
-    dbus_utils::CallMethod<"iss", "b">(
+    CallMethod<"iss", "b">(
         kwallet_proxy_, kKWalletInterface, kKWalletMethodCreateFolder,
         base::BindOnce(&FreedesktopSecretKeyProvider::OnKWalletCreateFolder,
                        weak_ptr_factory_.GetWeakPtr()),
@@ -641,7 +716,7 @@ void FreedesktopSecretKeyProvider::OnKWalletHasEntry(
   }
 
   if (std::get<0>(has_entry.value())) {
-    dbus_utils::CallMethod<"isss", "s">(
+    CallMethod<"isss", "s">(
         kwallet_proxy_, kKWalletInterface, kKWalletMethodReadPassword,
         base::BindOnce(&FreedesktopSecretKeyProvider::OnKWalletReadPassword,
                        weak_ptr_factory_.GetWeakPtr()),
@@ -676,7 +751,7 @@ void FreedesktopSecretKeyProvider::GenerateAndWriteKWalletPassword() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto secret = base::MakeRefCounted<base::RefCountedString>(
       base::Base64Encode(base::RandBytesAsVector(kSecretLengthBytes)));
-  dbus_utils::CallMethod<"issss", "i">(
+  CallMethod<"issss", "i">(
       kwallet_proxy_, kKWalletInterface, kKWalletMethodWritePassword,
       base::BindOnce(&FreedesktopSecretKeyProvider::OnKWalletWritePassword,
                      weak_ptr_factory_.GetWeakPtr(), secret),
@@ -726,7 +801,7 @@ void FreedesktopSecretKeyProvider::CreateItem(
       bus_, collection_proxy, kSecretCollectionInterface, kMethodCreateItem,
       base::BindOnce(&FreedesktopSecretKeyProvider::OnCreateItem,
                      weak_ptr_factory_.GetWeakPtr(), secret),
-      props, secret_struct, false);
+      GetBackendUnresponsiveCallback(), props, secret_struct, false);
 }
 
 void FreedesktopSecretKeyProvider::OnCreateItem(
@@ -765,9 +840,13 @@ void FreedesktopSecretKeyProvider::FinalizeFailure(InitStatus status) {
     return;
   }
   base::UmaHistogramEnumeration(kUmaInitStatus, status);
-  std::move(key_callback_)
-      .Run(kEncryptionTag,
-           base::unexpected(KeyProvider::KeyError::kPermanentlyUnavailable));
+  // An unresponsive backend may work again on the next run, so data encrypted
+  // with its key should be kept.
+  const KeyProvider::KeyError error =
+      status == InitStatus::kBackendUnresponsive
+          ? KeyProvider::KeyError::kTemporarilyUnavailable
+          : KeyProvider::KeyError::kPermanentlyUnavailable;
+  std::move(key_callback_).Run(kEncryptionTag, base::unexpected(error));
   CloseSession();
 }
 
@@ -775,12 +854,14 @@ void FreedesktopSecretKeyProvider::CloseSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (session_opened_) {
     dbus_utils::CallMethod<"", "">(session_proxy_, kSecretSessionInterface,
-                                   kMethodClose, base::DoNothing());
+                                   kMethodClose, kMethodCallTimeout,
+                                   base::DoNothing());
   }
   if (kwallet_handle_ != kKWalletInvalidHandle) {
     dbus_utils::CallMethod<"ibs", "i">(kwallet_proxy_, kKWalletInterface,
-                                       kKWalletMethodClose, base::DoNothing(),
-                                       kwallet_handle_, false, product_name_);
+                                       kKWalletMethodClose, kMethodCallTimeout,
+                                       base::DoNothing(), kwallet_handle_,
+                                       false, product_name_);
     kwallet_handle_ = kKWalletInvalidHandle;
   }
 }

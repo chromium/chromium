@@ -133,6 +133,18 @@ auto RespondWith(Args&&... args) {
   };
 }
 
+// Respond with the error that libdbus generates when a method call times out.
+void RespondWithNoReply(const std::string& interface,
+                        const std::string& method_name,
+                        const ArgsVector&,
+                        dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+  dbus::MethodCall method_call(interface, method_name);
+  method_call.SetSerial(1);
+  auto error = dbus::ErrorResponse::FromMethodCall(
+      &method_call, DBUS_ERROR_NO_REPLY, "Did not receive a reply.");
+  std::move(*callback).Run(nullptr, error.get());
+}
+
 auto RespondWithTrue(const std::string&,
                      const std::string&,
                      const ArgsVector&,
@@ -196,6 +208,7 @@ class MockObjectProxyWithTypedCalls : public dbus::MockObjectProxy {
   void CallMethodWithErrorResponse(dbus::MethodCall* method_call,
                                    int timeout_ms,
                                    ResponseOrErrorCallback callback) override {
+    timeouts_ms[method_call->GetMember()] = timeout_ms;
     dbus::MessageReader reader(method_call);
     auto args = ReadDbusMessage(reader);
     Call(method_call->GetInterface(), method_call->GetMember(), std::move(args),
@@ -215,6 +228,9 @@ class MockObjectProxyWithTypedCalls : public dbus::MockObjectProxy {
                const std::string& method_name,
                const ArgsVector& args,
                dbus::ObjectProxy::ResponseCallback* callback));
+
+  // Timeout of the last call to each method, by method name.
+  std::map<std::string, int> timeouts_ms;
 
  protected:
   ~MockObjectProxyWithTypedCalls() override = default;
@@ -990,6 +1006,173 @@ TEST(FreedesktopSecretKeyProviderTest, KWalletCreateFolderAndPassword) {
 
   EXPECT_EQ(tag, "v11");
   EXPECT_TRUE(key.has_value());
+}
+
+namespace {
+
+// Runs `provider.GetKey()` and returns the result, which must be available
+// synchronously.
+std::optional<base::expected<Encryptor::Key, KeyProvider::KeyError>> GetKeySync(
+    FreedesktopSecretKeyProvider& provider) {
+  std::optional<base::expected<Encryptor::Key, KeyProvider::KeyError>> result;
+  provider.GetKey(base::BindLambdaForTesting(
+      [&](const std::string& tag,
+          base::expected<Encryptor::Key, KeyProvider::KeyError> key) {
+        EXPECT_EQ(tag, "v11");
+        result = std::move(key);
+      }));
+  return result;
+}
+
+}  // namespace
+
+// A Secret Service that doesn't reply makes the key temporarily unavailable
+// rather than blocking for the D-Bus default timeout.
+TEST(FreedesktopSecretKeyProviderTest, ReadAliasNoReplyIsTemporary) {
+  auto mock_bus = base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
+  auto mock_dbus_proxy = base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
+      mock_bus.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
+  EXPECT_CALL(*mock_bus, GetObjectProxy(DBUS_SERVICE_DBUS,
+                                        dbus::ObjectPath(DBUS_PATH_DBUS)))
+      .WillRepeatedly(Return(mock_dbus_proxy.get()));
+  auto mock_service_proxy = base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
+      mock_bus.get(), FreedesktopSecretKeyProvider::kSecretServiceName,
+      dbus::ObjectPath(FreedesktopSecretKeyProvider::kSecretServicePath));
+  EXPECT_CALL(
+      *mock_bus,
+      GetObjectProxy(
+          FreedesktopSecretKeyProvider::kSecretServiceName,
+          dbus::ObjectPath(FreedesktopSecretKeyProvider::kSecretServicePath)))
+      .WillRepeatedly(Return(mock_service_proxy.get()));
+
+  EXPECT_CALL(
+      *mock_dbus_proxy,
+      CallWithoutError(
+          DBUS_INTERFACE_DBUS, "NameHasOwner",
+          MatchArgs(FreedesktopSecretKeyProvider::kSecretServiceName), _))
+      .WillOnce(RespondWithTrue);
+  EXPECT_CALL(*mock_service_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
+                   FreedesktopSecretKeyProvider::kMethodReadAlias,
+                   MatchArgs(FreedesktopSecretKeyProvider::kDefaultAlias), _))
+      .WillOnce(RespondWithNoReply);
+
+  FreedesktopSecretKeyProvider provider("gnome-libsecret", kProductName,
+                                        mock_bus);
+  auto result = GetKeySync(provider);
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result->has_value());
+  EXPECT_EQ(result->error(), KeyProvider::KeyError::kTemporarilyUnavailable);
+  EXPECT_EQ(mock_service_proxy
+                ->timeouts_ms[FreedesktopSecretKeyProvider::kMethodReadAlias],
+            FreedesktopSecretKeyProvider::kMethodCallTimeout.InMilliseconds());
+}
+
+// The Unlock method call itself is bounded by a timeout. Waiting for the
+// user to respond to the unlock prompt is not (see
+// CreateCollectionAndItemWithUnlockPrompt).
+TEST(FreedesktopSecretKeyProviderTest, UnlockNoReplyIsTemporary) {
+  auto mock_bus = base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
+  auto mock_dbus_proxy = base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
+      mock_bus.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
+  EXPECT_CALL(*mock_bus, GetObjectProxy(DBUS_SERVICE_DBUS,
+                                        dbus::ObjectPath(DBUS_PATH_DBUS)))
+      .WillRepeatedly(Return(mock_dbus_proxy.get()));
+  auto mock_service_proxy = base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
+      mock_bus.get(), FreedesktopSecretKeyProvider::kSecretServiceName,
+      dbus::ObjectPath(FreedesktopSecretKeyProvider::kSecretServicePath));
+  EXPECT_CALL(
+      *mock_bus,
+      GetObjectProxy(
+          FreedesktopSecretKeyProvider::kSecretServiceName,
+          dbus::ObjectPath(FreedesktopSecretKeyProvider::kSecretServicePath)))
+      .WillRepeatedly(Return(mock_service_proxy.get()));
+  auto mock_collection_proxy =
+      base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
+          mock_bus.get(), FreedesktopSecretKeyProvider::kSecretServiceName,
+          dbus::ObjectPath(kCollectionPath));
+  EXPECT_CALL(*mock_bus,
+              GetObjectProxy(FreedesktopSecretKeyProvider::kSecretServiceName,
+                             dbus::ObjectPath(kCollectionPath)))
+      .WillRepeatedly(Return(mock_collection_proxy.get()));
+
+  EXPECT_CALL(
+      *mock_dbus_proxy,
+      CallWithoutError(
+          DBUS_INTERFACE_DBUS, "NameHasOwner",
+          MatchArgs(FreedesktopSecretKeyProvider::kSecretServiceName), _))
+      .WillOnce(RespondWithTrue);
+  EXPECT_CALL(*mock_service_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
+                   FreedesktopSecretKeyProvider::kMethodReadAlias,
+                   MatchArgs(FreedesktopSecretKeyProvider::kDefaultAlias), _))
+      .WillOnce(RespondWith(dbus::ObjectPath(kCollectionPath)));
+  EXPECT_CALL(
+      *mock_collection_proxy,
+      Call(FreedesktopSecretKeyProvider::kPropertiesInterface,
+           FreedesktopSecretKeyProvider::kMethodGet,
+           MatchArgs(FreedesktopSecretKeyProvider::kSecretCollectionInterface,
+                     FreedesktopSecretKeyProvider::kLabelProperty),
+           _))
+      .WillOnce(RespondWith(dbus_utils::Variant::Wrap<"s">(
+          FreedesktopSecretKeyProvider::kDefaultCollectionLabel)));
+  EXPECT_CALL(*mock_service_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
+                   FreedesktopSecretKeyProvider::kMethodUnlock,
+                   MatchArgs(std::vector<dbus::ObjectPath>{
+                       dbus::ObjectPath(kCollectionPath)}),
+                   _))
+      .WillOnce(RespondWithNoReply);
+
+  FreedesktopSecretKeyProvider provider("gnome-libsecret", kProductName,
+                                        mock_bus);
+  auto result = GetKeySync(provider);
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result->has_value());
+  EXPECT_EQ(result->error(), KeyProvider::KeyError::kTemporarilyUnavailable);
+  EXPECT_EQ(mock_service_proxy
+                ->timeouts_ms[FreedesktopSecretKeyProvider::kMethodUnlock],
+            FreedesktopSecretKeyProvider::kMethodCallTimeout.InMilliseconds());
+}
+
+TEST(FreedesktopSecretKeyProviderTest, KWalletNoReplyIsTemporary) {
+  auto mock_bus = base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
+  auto mock_dbus_proxy = base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
+      mock_bus.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
+  EXPECT_CALL(*mock_bus, GetObjectProxy(DBUS_SERVICE_DBUS,
+                                        dbus::ObjectPath(DBUS_PATH_DBUS)))
+      .WillRepeatedly(Return(mock_dbus_proxy.get()));
+  auto mock_kwallet5_proxy =
+      base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
+          mock_bus.get(), FreedesktopSecretKeyProvider::kKWalletD5Service,
+          dbus::ObjectPath(FreedesktopSecretKeyProvider::kKWalletD5Path));
+  EXPECT_CALL(*mock_bus,
+              GetObjectProxy(FreedesktopSecretKeyProvider::kKWalletD5Service,
+                             dbus::ObjectPath(
+                                 FreedesktopSecretKeyProvider::kKWalletD5Path)))
+      .WillRepeatedly(Return(mock_kwallet5_proxy.get()));
+
+  EXPECT_CALL(
+      *mock_dbus_proxy,
+      CallWithoutError(
+          DBUS_INTERFACE_DBUS, "NameHasOwner",
+          MatchArgs(FreedesktopSecretKeyProvider::kKWalletD5Service), _))
+      .WillOnce(RespondWithTrue);
+  EXPECT_CALL(*mock_kwallet5_proxy,
+              Call(FreedesktopSecretKeyProvider::kKWalletInterface,
+                   FreedesktopSecretKeyProvider::kKWalletMethodIsEnabled,
+                   MatchArgs(), _))
+      .WillOnce(RespondWithNoReply);
+
+  FreedesktopSecretKeyProvider provider("kwallet5", kProductName, mock_bus);
+  auto result = GetKeySync(provider);
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result->has_value());
+  EXPECT_EQ(result->error(), KeyProvider::KeyError::kTemporarilyUnavailable);
+  EXPECT_EQ(
+      mock_kwallet5_proxy
+          ->timeouts_ms[FreedesktopSecretKeyProvider::kKWalletMethodIsEnabled],
+      FreedesktopSecretKeyProvider::kMethodCallTimeout.InMilliseconds());
 }
 
 }  // namespace os_crypt_async
