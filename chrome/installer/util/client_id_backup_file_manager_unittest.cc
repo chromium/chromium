@@ -176,7 +176,23 @@ TEST_F(ClientIdBackupFileManagerTest, ClientIdFromCacheOrDisk_FileTooLarge) {
 
   EXPECT_THAT(
       ClientIdBackupFileManager::GetInstance().ClientIdFromCacheOrDisk(),
-      Optional(file_content));
+      Optional(file_content.substr(0, 64)));
+  EXPECT_TRUE(base::PathExists(file_path));
+
+  histogram_tester.ExpectUniqueSample("UMA.ClientIdBackupValidation", 3, 1);
+}
+
+TEST_F(ClientIdBackupFileManagerTest,
+       ClientIdFromCacheOrDisk_UuidWithTrailingDataOverCap) {
+  base::HistogramTester histogram_tester;
+  const base::FilePath file_path =
+      ClientIdBackupFileManager::GetBackupFilePathForTesting();
+  std::string file_content = std::string(kValidUuid1) + std::string(4096, 'x');
+  ASSERT_TRUE(base::WriteFile(file_path, file_content));
+
+  EXPECT_THAT(
+      ClientIdBackupFileManager::GetInstance().ClientIdFromCacheOrDisk(),
+      Optional(file_content.substr(0, 64)));
   EXPECT_TRUE(base::PathExists(file_path));
 
   histogram_tester.ExpectUniqueSample("UMA.ClientIdBackupValidation", 3, 1);

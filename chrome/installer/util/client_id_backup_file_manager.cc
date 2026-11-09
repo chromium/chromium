@@ -4,6 +4,8 @@
 
 #include "chrome/installer/util/client_id_backup_file_manager.h"
 
+#include <stddef.h>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,6 +29,11 @@ constexpr base::FilePath::CharType kClientIdBackupFileName[] =
 constexpr base::FilePath::CharType kClientIdBackupFileName[] =
     FILE_PATH_LITERAL("Consent To Send Stats");
 #endif
+
+// Maximum number of bytes read from the client ID backup file. A valid UUID is
+// 36 ASCII bytes; capping reads to 64 bytes bounds memory and I/O on oversized
+// files while ensuring any file exceeding the cap still fails UUID validation.
+constexpr size_t kMaxBackupFileSize = 64;
 
 base::FilePath GetBackupFilePath() {
   base::FilePath dir;
@@ -106,10 +113,15 @@ ClientIdBackupFileManager::ClientIdFromCacheOrDisk() {
   }
   std::string client_id;
 
-  if (!base::ReadFileToString(backup_file_path, &client_id)) {
-    // The file doesn't exist or can't be read. Treat both cases as if UMA was
-    // never activated.
-    return std::nullopt;
+  if (!base::ReadFileToStringWithMaxSize(backup_file_path, &client_id,
+                                         kMaxBackupFileSize)) {
+    if (client_id.empty()) {
+      // The file doesn't exist or can't be read. Treat both cases as if UMA was
+      // never activated.
+      return std::nullopt;
+    }
+    // Otherwise, `kMaxBackupFileSize` was exceeded and `client_id` holds the
+    // truncated prefix; let it through for validation below.
   }
   const ClientIdBackupValidationResult validation_result =
       ValidateClientId(client_id);
