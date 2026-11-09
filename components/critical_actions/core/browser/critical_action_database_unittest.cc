@@ -4,6 +4,9 @@
 
 #include "components/critical_actions/core/browser/critical_action_database.h"
 
+#include <string>
+#include <vector>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/rand_util.h"
@@ -63,6 +66,7 @@ TEST_F(CriticalActionDatabaseTest, AddAndGetEntry) {
   CriticalActionEntry entry = CreateDefaultEntry();
   entry.visit_id = base::RandIntInclusive(1, 1000000);
   entry.conversation_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  entry.conversation_anchor_id = "turn_1";
   entry.actor_task_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   entry.metadata = "{\"key\": \"val\"}";
 
@@ -74,6 +78,7 @@ TEST_F(CriticalActionDatabaseTest, AddAndGetEntry) {
   EXPECT_EQ(retrieved->critical_action_id, entry.critical_action_id);
   EXPECT_EQ(retrieved->actor_task_id, entry.actor_task_id);
   EXPECT_EQ(retrieved->conversation_id, entry.conversation_id);
+  EXPECT_EQ(retrieved->conversation_anchor_id, entry.conversation_anchor_id);
   EXPECT_EQ(retrieved->metadata, entry.metadata);
 
   database.Close();
@@ -471,6 +476,7 @@ TEST_F(CriticalActionDatabaseTest, MigrationV1ToV2) {
     ASSERT_TRUE(act_1.has_value());
     EXPECT_EQ(act_1->visit_id, 42);
     EXPECT_EQ(act_1->conversation_id, "conv_1");
+    EXPECT_TRUE(act_1->conversation_anchor_id.empty());
     EXPECT_EQ(act_1->actor_task_id, "task_1");
     EXPECT_EQ(act_1->action_type, ActionType::kFormFill);
     EXPECT_EQ(act_1->metadata, "meta1");
@@ -489,14 +495,16 @@ TEST_F(CriticalActionDatabaseTest, MigrationV1ToV2) {
     EXPECT_EQ(act_3->conversation_id, "conv_2");
     EXPECT_EQ(act_3->action_type, ActionType::kSettingChange);
 
-    // Verify database version was updated to 3.
+    // Verify database version was updated to 4.
     sql::MetaTable meta;
-    ASSERT_TRUE(meta.Init(&database.GetDBForTesting(), 3, 3));
-    EXPECT_EQ(meta.GetVersionNumber(), 3);
+    ASSERT_TRUE(meta.Init(&database.GetDBForTesting(), 4, 3));
+    EXPECT_EQ(meta.GetVersionNumber(), 4);
     EXPECT_EQ(meta.GetCompatibleVersionNumber(), 3);
     EXPECT_FALSE(database.GetDBForTesting().DoesColumnExist(
         "CriticalActionEntries", "url"));
     EXPECT_FALSE(database.GetDBForTesting().DoesIndexExist("idx_entries_url"));
+    EXPECT_TRUE(database.GetDBForTesting().DoesColumnExist(
+        "CriticalActionEntries", "conversation_anchor_id"));
 
     // Verify GetCriticalActions retrieves all migrated records.
     EXPECT_EQ(database.GetCriticalActions({}).size(), 3u);
@@ -560,11 +568,12 @@ TEST_F(CriticalActionDatabaseTest, MigrationV2ToV3) {
   EXPECT_EQ(act_1->visit_id, 42);
   EXPECT_EQ(act_1->actor_task_id, "task_1");
   EXPECT_EQ(act_1->metadata, "meta1");
+  EXPECT_TRUE(act_1->conversation_anchor_id.empty());
   EXPECT_EQ(database.GetCriticalActions({}).size(), 3u);
 
   sql::MetaTable meta;
-  ASSERT_TRUE(meta.Init(&db, 3, 3));
-  EXPECT_EQ(meta.GetVersionNumber(), 3);
+  ASSERT_TRUE(meta.Init(&db, 4, 3));
+  EXPECT_EQ(meta.GetVersionNumber(), 4);
   EXPECT_EQ(meta.GetCompatibleVersionNumber(), 3);
 
   // The one-shot VACUUM ran, succeeded, and left no free pages behind.
@@ -573,6 +582,232 @@ TEST_F(CriticalActionDatabaseTest, MigrationV2ToV3) {
   sql::Statement s(db.GetReadonlyStatement("PRAGMA freelist_count"));
   ASSERT_TRUE(s.Step());
   EXPECT_EQ(0, s.ColumnInt(0));
+}
+
+TEST_F(CriticalActionDatabaseTest, MigrationV3ToV4) {
+  base::HistogramTester histograms;
+  {
+    sql::Database raw_db(sql::Database::Tag("CriticalActions"));
+    ASSERT_TRUE(raw_db.Open(db_path_));
+    sql::MetaTable meta;
+    ASSERT_TRUE(meta.Init(&raw_db, /*version=*/3, /*compatible_version=*/3));
+    // Frozen V3 schema snapshot -- do NOT call InitSchema(), it is V4 now.
+    ASSERT_TRUE(
+        raw_db.Execute("CREATE TABLE CriticalActionEntries ("
+                       "  critical_action_id TEXT PRIMARY KEY NOT NULL,"
+                       "  timestamp INTEGER NOT NULL,"
+                       "  actor_task_id TEXT,"
+                       "  action_type INTEGER NOT NULL,"
+                       "  metadata TEXT)"));
+    ASSERT_TRUE(
+        raw_db.Execute("CREATE TABLE CriticalActionVisits ("
+                       "  critical_action_id TEXT PRIMARY KEY NOT NULL,"
+                       "  visit_id INTEGER NOT NULL)"));
+    ASSERT_TRUE(
+        raw_db.Execute("CREATE TABLE CriticalActionConversations ("
+                       "  critical_action_id TEXT PRIMARY KEY NOT NULL,"
+                       "  conversation_id TEXT NOT NULL)"));
+
+    ASSERT_TRUE(
+        raw_db.Execute("INSERT INTO CriticalActionEntries VALUES ("
+                       "  'act_1', 1000000, 'task_1', 1, 'meta1')"));
+    ASSERT_TRUE(
+        raw_db.Execute("INSERT INTO CriticalActionEntries VALUES ("
+                       "  'act_2', 2000000, 'task_2', 2, 'meta2')"));
+    ASSERT_TRUE(raw_db.Execute(
+        "INSERT INTO CriticalActionVisits VALUES ('act_1', 42)"));
+    ASSERT_TRUE(raw_db.Execute(
+        "INSERT INTO CriticalActionVisits VALUES ('act_2', 43)"));
+    ASSERT_TRUE(raw_db.Execute(
+        "INSERT INTO CriticalActionConversations VALUES ('act_1', 'conv_1')"));
+    raw_db.Close();
+  }
+
+  CriticalActionDatabase database(db_path_);
+  ASSERT_TRUE(database.Init());
+  auto& db = database.GetDBForTesting();
+
+  EXPECT_TRUE(
+      db.DoesColumnExist("CriticalActionEntries", "conversation_anchor_id"));
+
+  sql::MetaTable meta;
+  ASSERT_TRUE(meta.Init(&db, 4, 3));
+  EXPECT_EQ(meta.GetVersionNumber(), 4);
+  EXPECT_EQ(meta.GetCompatibleVersionNumber(), 3);
+  histograms.ExpectTotalCount("CriticalActions.Database.MigrationVacuumResult",
+                              0);
+
+  auto act_1 = database.GetCriticalAction("act_1");
+  ASSERT_TRUE(act_1.has_value());
+  EXPECT_EQ(act_1->critical_action_id, "act_1");
+  EXPECT_EQ(act_1->timestamp, base::Time::FromDeltaSinceWindowsEpoch(
+                                  base::Microseconds(1000000)));
+  EXPECT_EQ(act_1->visit_id, 42);
+  EXPECT_EQ(act_1->conversation_id, "conv_1");
+  EXPECT_EQ(act_1->actor_task_id, "task_1");
+  EXPECT_EQ(act_1->action_type, ActionType::kFormFill);
+  EXPECT_EQ(act_1->metadata, "meta1");
+  EXPECT_EQ(act_1->conversation_anchor_id, "");
+
+  auto act_2 = database.GetCriticalAction("act_2");
+  ASSERT_TRUE(act_2.has_value());
+  EXPECT_EQ(act_2->critical_action_id, "act_2");
+  EXPECT_EQ(act_2->timestamp, base::Time::FromDeltaSinceWindowsEpoch(
+                                  base::Microseconds(2000000)));
+  EXPECT_EQ(act_2->visit_id, 43);
+  EXPECT_EQ(act_2->conversation_id, "");
+  EXPECT_EQ(act_2->actor_task_id, "task_2");
+  EXPECT_EQ(act_2->action_type, ActionType::kDownload);
+  EXPECT_EQ(act_2->metadata, "meta2");
+  EXPECT_EQ(act_2->conversation_anchor_id, "");
+
+  auto all_entries = database.GetCriticalActions({});
+  ASSERT_EQ(all_entries.size(), 2u);
+  EXPECT_EQ(all_entries[0], *act_2);
+  EXPECT_EQ(all_entries[1], *act_1);
+
+  CriticalActionEntry act_v4 = CreateDefaultEntry();
+  act_v4.critical_action_id = "act_v4";
+  act_v4.conversation_id = "conv_v4";
+  act_v4.conversation_anchor_id = "turn_99";
+  ASSERT_TRUE(database.AddCriticalAction(act_v4));
+
+  auto retrieved_v4 = database.GetCriticalAction("act_v4");
+  ASSERT_TRUE(retrieved_v4.has_value());
+  EXPECT_EQ(retrieved_v4->conversation_anchor_id, "turn_99");
+  EXPECT_EQ(*retrieved_v4, act_v4);
+
+  // A new entry without an anchor is stored as NULL too, matching migrated
+  // rows.
+  CriticalActionEntry act_v4_no_anchor = CreateDefaultEntry();
+  act_v4_no_anchor.critical_action_id = "act_v4_no_anchor";
+  ASSERT_TRUE(database.AddCriticalAction(act_v4_no_anchor));
+
+  // Check the raw column: migrated rows and the anchorless v4 row must be
+  // NULL (not ''), and only `act_v4` has a non-NULL anchor.
+  {
+    sql::Statement null_stmt(db.GetReadonlyStatement(
+        "SELECT critical_action_id FROM CriticalActionEntries "
+        "WHERE conversation_anchor_id IS NULL ORDER BY critical_action_id"));
+    std::vector<std::string> null_anchor_ids;
+    while (null_stmt.Step()) {
+      null_anchor_ids.push_back(null_stmt.ColumnString(0));
+    }
+    ASSERT_TRUE(null_stmt.Succeeded());
+    EXPECT_THAT(null_anchor_ids,
+                testing::ElementsAre("act_1", "act_2", "act_v4_no_anchor"));
+  }
+  {
+    sql::Statement empty_stmt(
+        db.GetReadonlyStatement("SELECT COUNT(*) FROM CriticalActionEntries "
+                                "WHERE conversation_anchor_id = ''"));
+    ASSERT_TRUE(empty_stmt.Step());
+    EXPECT_EQ(0, empty_stmt.ColumnInt(0));
+  }
+
+  database.Close();
+}
+
+// Version 4 keeps kCompatibleVersion = 3, so the exact statements a v3 client
+// runs must keep working against a v4 database. If this test fails after a
+// schema change, bump kCompatibleVersion.
+TEST_F(CriticalActionDatabaseTest, V3StatementsWorkOnV4Database) {
+  const base::Time v3_timestamp =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000000));
+
+  CriticalActionEntry v4_entry = CreateDefaultEntry();
+  v4_entry.critical_action_id = "act_v4";
+  v4_entry.visit_id = 43;
+  v4_entry.conversation_id = "conv_v4";
+  v4_entry.conversation_anchor_id = "turn_v4";
+  v4_entry.actor_task_id = "task_v4";
+  v4_entry.metadata = "meta_v4";
+  {
+    CriticalActionDatabase database(db_path_);
+    ASSERT_TRUE(database.Init());
+    ASSERT_TRUE(database.AddCriticalAction(v4_entry));
+    database.Close();
+  }
+
+  {
+    sql::Database raw_db(sql::Database::Tag("CriticalActions"));
+    ASSERT_TRUE(raw_db.Open(db_path_));
+    sql::MetaTable meta;
+    ASSERT_TRUE(meta.Init(&raw_db, /*version=*/4, /*compatible_version=*/3));
+    EXPECT_EQ(meta.GetVersionNumber(), 4);
+    EXPECT_EQ(meta.GetCompatibleVersionNumber(), 3);
+
+    // v3 CriticalActionDatabase::AddCriticalAction() statements.
+    sql::Statement insert_entry(raw_db.GetUniqueStatement(
+        "INSERT INTO CriticalActionEntries (critical_action_id, timestamp, "
+        "action_type, metadata, actor_task_id) "
+        "VALUES (?, ?, ?, ?, ?)"));
+    insert_entry.BindString(0, "act_v3");
+    insert_entry.BindTime(1, v3_timestamp);
+    insert_entry.BindInt(2, static_cast<int>(ActionType::kDownload));
+    insert_entry.BindString(3, "meta_v3");
+    insert_entry.BindString(4, "task_v3");
+    ASSERT_TRUE(insert_entry.Run());
+
+    sql::Statement insert_visit(raw_db.GetUniqueStatement(
+        "INSERT INTO CriticalActionVisits (critical_action_id, "
+        "visit_id) VALUES (?, ?)"));
+    insert_visit.BindString(0, "act_v3");
+    insert_visit.BindInt64(1, 42);
+    ASSERT_TRUE(insert_visit.Run());
+
+    sql::Statement insert_conv(raw_db.GetUniqueStatement(
+        "INSERT INTO CriticalActionConversations "
+        "(critical_action_id, conversation_id) VALUES (?, ?)"));
+    insert_conv.BindString(0, "act_v3");
+    insert_conv.BindString(1, "conv_v3");
+    ASSERT_TRUE(insert_conv.Run());
+
+    // v3 CriticalActionDatabase::GetCriticalAction() statement, run against
+    // a row written by v4.
+    sql::Statement select(raw_db.GetUniqueStatement(
+        "SELECT e.critical_action_id, e.timestamp, v.visit_id, "
+        "c.conversation_id, "
+        "       e.actor_task_id, e.action_type, e.metadata "
+        "FROM CriticalActionEntries e "
+        "LEFT JOIN CriticalActionVisits v ON e.critical_action_id = "
+        "v.critical_action_id "
+        "LEFT JOIN CriticalActionConversations c ON e.critical_action_id = "
+        "c.critical_action_id "
+        "WHERE e.critical_action_id = ?"));
+    select.BindString(0, "act_v4");
+    ASSERT_TRUE(select.Step());
+    EXPECT_EQ(select.ColumnString(0), "act_v4");
+    EXPECT_EQ(select.ColumnTime(1), v4_entry.timestamp);
+    EXPECT_EQ(select.ColumnInt64(2), 43);
+    EXPECT_EQ(select.ColumnString(3), "conv_v4");
+    EXPECT_EQ(select.ColumnString(4), "task_v4");
+    EXPECT_EQ(select.ColumnInt(5), static_cast<int>(v4_entry.action_type));
+    EXPECT_EQ(select.ColumnString(6), "meta_v4");
+    EXPECT_FALSE(select.Step());
+    EXPECT_TRUE(select.Succeeded());
+    // `raw_db` is closed when it goes out of scope, after the statements.
+  }
+
+  // The row written by the v3 statements reads back in v4 with an empty
+  // anchor (NULL column), and the v4 row keeps its anchor.
+  CriticalActionDatabase database(db_path_);
+  ASSERT_TRUE(database.Init());
+  auto act_v3 = database.GetCriticalAction("act_v3");
+  ASSERT_TRUE(act_v3.has_value());
+  EXPECT_EQ(act_v3->timestamp, v3_timestamp);
+  EXPECT_EQ(act_v3->visit_id, 42);
+  EXPECT_EQ(act_v3->conversation_id, "conv_v3");
+  EXPECT_EQ(act_v3->actor_task_id, "task_v3");
+  EXPECT_EQ(act_v3->action_type, ActionType::kDownload);
+  EXPECT_EQ(act_v3->metadata, "meta_v3");
+  EXPECT_EQ(act_v3->conversation_anchor_id, "");
+
+  auto act_v4 = database.GetCriticalAction("act_v4");
+  ASSERT_TRUE(act_v4.has_value());
+  EXPECT_EQ(*act_v4, v4_entry);
+
+  database.Close();
 }
 
 TEST_F(CriticalActionDatabaseTest, FreshDatabaseDoesNotVacuum) {
@@ -598,8 +833,8 @@ TEST_F(CriticalActionDatabaseTest, SchemaHasNoUrlColumn) {
   EXPECT_FALSE(db.DoesColumnExist("CriticalActionEntries", "url"));
   EXPECT_FALSE(db.DoesIndexExist("idx_entries_url"));
   static constexpr base::cstring_view kExpectedColumns[] = {
-      "critical_action_id", "timestamp", "actor_task_id", "action_type",
-      "metadata"};
+      "critical_action_id", "timestamp", "actor_task_id",
+      "action_type",        "metadata",  "conversation_anchor_id"};
   for (base::cstring_view column : kExpectedColumns) {
     EXPECT_TRUE(db.DoesColumnExist("CriticalActionEntries", column)) << column;
   }
@@ -655,6 +890,7 @@ TEST(CriticalActionDatabaseHelpersTest,
   std::string query = CriticalActionDatabase::BuildGetCriticalActionsQuery(
       options, /*batch_visit_ids_count=*/0);
   EXPECT_THAT(query, HasSubstr("SELECT e.critical_action_id"));
+  EXPECT_THAT(query, HasSubstr("e.conversation_anchor_id"));
   EXPECT_THAT(query, Not(HasSubstr("e.url")));
   EXPECT_THAT(query, Not(HasSubstr("WHERE")));
   EXPECT_THAT(query, HasSubstr("ORDER BY e.timestamp DESC"));
@@ -750,6 +986,89 @@ TEST_F(CriticalActionDatabaseTest,
 
   // Empty conversation ID returns false.
   EXPECT_FALSE(database.SetCriticalActionsConversationId({action_id}, ""));
+
+  database.Close();
+}
+
+// SetCriticalActionsConversationId() uses INSERT OR REPLACE on
+// CriticalActionConversations. Replacing an existing conversation_id must not
+// clobber the anchor stored on CriticalActionEntries.
+TEST_F(CriticalActionDatabaseTest,
+       SetCriticalActionsConversationIdPreservesConversationAnchorId) {
+  CriticalActionDatabase database(db_path_);
+  ASSERT_TRUE(database.Init());
+
+  CriticalActionEntry entry = CreateDefaultEntry();
+  entry.conversation_id = "initial_conv";
+  entry.conversation_anchor_id = "anchor_abc";
+  ASSERT_TRUE(database.AddCriticalAction(entry));
+
+  ASSERT_TRUE(database.SetCriticalActionsConversationId(
+      {entry.critical_action_id}, "backfilled_conv"));
+  auto updated = database.GetCriticalAction(entry.critical_action_id);
+  ASSERT_TRUE(updated.has_value());
+  EXPECT_EQ(updated->conversation_id, "backfilled_conv");
+  EXPECT_EQ(updated->conversation_anchor_id, "anchor_abc");
+
+  database.Close();
+}
+
+TEST_F(CriticalActionDatabaseTest, ConversationAnchorIdMaxLengthGuard) {
+  CriticalActionDatabase database(db_path_);
+  ASSERT_TRUE(database.Init());
+
+  const base::Time base_time = base::Time::Now();
+  const std::string max_len_anchor(kMaxConversationAnchorIdLength, 'a');
+  const std::string oversized_anchor(kMaxConversationAnchorIdLength + 1, 'b');
+
+  CriticalActionEntry valid_entry = CreateDefaultEntry();
+  valid_entry.timestamp = base_time - base::Minutes(1);
+  valid_entry.visit_id = 201;
+  valid_entry.conversation_id = "conv_valid";
+  valid_entry.conversation_anchor_id = max_len_anchor;
+  valid_entry.actor_task_id = "task_valid";
+  valid_entry.action_type = ActionType::kFormFill;
+  valid_entry.metadata = R"({"status":"ok"})";
+  ASSERT_TRUE(database.AddCriticalAction(valid_entry));
+
+  auto retrieved_valid =
+      database.GetCriticalAction(valid_entry.critical_action_id);
+  ASSERT_TRUE(retrieved_valid.has_value());
+  EXPECT_EQ(retrieved_valid->conversation_anchor_id, max_len_anchor);
+  EXPECT_EQ(*retrieved_valid, valid_entry);
+
+  CriticalActionEntry oversized_entry = CreateDefaultEntry();
+  oversized_entry.timestamp = base_time;
+  oversized_entry.visit_id = 202;
+  oversized_entry.conversation_id = "conv_oversized";
+  oversized_entry.conversation_anchor_id = oversized_anchor;
+  oversized_entry.actor_task_id = "task_oversized";
+  oversized_entry.action_type = ActionType::kDownload;
+  oversized_entry.metadata = R"({"status":"dropped_anchor"})";
+  ASSERT_TRUE(database.AddCriticalAction(oversized_entry));
+
+  auto retrieved_oversized =
+      database.GetCriticalAction(oversized_entry.critical_action_id);
+  ASSERT_TRUE(retrieved_oversized.has_value());
+  EXPECT_EQ(retrieved_oversized->visit_id, oversized_entry.visit_id);
+  EXPECT_EQ(retrieved_oversized->conversation_id,
+            oversized_entry.conversation_id);
+  EXPECT_EQ(retrieved_oversized->actor_task_id, oversized_entry.actor_task_id);
+  EXPECT_EQ(retrieved_oversized->action_type, oversized_entry.action_type);
+  EXPECT_EQ(retrieved_oversized->metadata, oversized_entry.metadata);
+  EXPECT_TRUE(retrieved_oversized->conversation_anchor_id.empty());
+
+  auto all_entries = database.GetCriticalActions({});
+  ASSERT_EQ(all_entries.size(), 2u);
+  EXPECT_EQ(all_entries[0].critical_action_id,
+            oversized_entry.critical_action_id);
+  EXPECT_EQ(all_entries[0].visit_id, oversized_entry.visit_id);
+  EXPECT_EQ(all_entries[0].conversation_id, oversized_entry.conversation_id);
+  EXPECT_EQ(all_entries[0].actor_task_id, oversized_entry.actor_task_id);
+  EXPECT_EQ(all_entries[0].action_type, oversized_entry.action_type);
+  EXPECT_EQ(all_entries[0].metadata, oversized_entry.metadata);
+  EXPECT_TRUE(all_entries[0].conversation_anchor_id.empty());
+  EXPECT_EQ(all_entries[1], valid_entry);
 
   database.Close();
 }

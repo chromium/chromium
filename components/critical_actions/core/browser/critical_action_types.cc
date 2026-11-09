@@ -158,6 +158,13 @@ CriticalActionEntry::Builder&& CriticalActionEntry::Builder::SetConversationId(
   return std::move(*this);
 }
 
+CriticalActionEntry::Builder&&
+CriticalActionEntry::Builder::SetConversationAnchorId(
+    std::string conversation_anchor_id_val) && {
+  entry_.conversation_anchor_id = std::move(conversation_anchor_id_val);
+  return std::move(*this);
+}
+
 CriticalActionEntry::Builder&& CriticalActionEntry::Builder::SetActorTaskId(
     std::string actor_task_id_val) && {
   entry_.actor_task_id = std::move(actor_task_id_val);

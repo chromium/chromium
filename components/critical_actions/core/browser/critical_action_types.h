@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CRITICAL_ACTIONS_CORE_BROWSER_CRITICAL_ACTION_TYPES_H_
 #define COMPONENTS_CRITICAL_ACTIONS_CORE_BROWSER_CRITICAL_ACTION_TYPES_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -53,6 +54,12 @@ enum class OpenConversationResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:OpenConversationResult)
 
+// Maximum allowed byte length for
+// `CriticalActionEntry::conversation_anchor_id`. Generous enough for
+// agent-agnostic identifiers (e.g., Glic turn IDs, UUIDs, or opaque 3P agent
+// tokens) while bounding SQLite storage.
+inline constexpr size_t kMaxConversationAnchorIdLength = 512;
+
 // Represents a memory row copy of a single record in critical_actions database.
 struct CriticalActionEntry {
   CriticalActionEntry();
@@ -74,7 +81,11 @@ struct CriticalActionEntry {
   base::Time timestamp;
   int64_t visit_id = 0;         // References History visit
   std::string conversation_id;  // References conversation context
-  std::string actor_task_id;    // References agent task
+  // Opaque, agent-defined identifier for the position in the conversation
+  // where the action occurred (e.g., turn ID for Glic); empty if unknown.
+  // Must not exceed kMaxConversationAnchorIdLength bytes.
+  std::string conversation_anchor_id;
+  std::string actor_task_id;  // References agent task
   ActionType action_type = ActionType::kUnknown;
   ActionSource action_source = ActionSource::kUnknown;
   // Action-specific details in JSON format. Must NOT contain page-identifying
@@ -101,6 +112,7 @@ class CriticalActionEntry::Builder {
   Builder&& SetActionType(ActionType action_type_val) &&;
   Builder&& SetActionSource(ActionSource action_source_val) &&;
   Builder&& SetConversationId(std::string conversation_id_val) &&;
+  Builder&& SetConversationAnchorId(std::string conversation_anchor_id_val) &&;
   Builder&& SetActorTaskId(std::string actor_task_id_val) &&;
   Builder&& SetMetadata(std::string metadata_val) &&;
   Builder&& SetVisitId(int64_t visit_id_val) &&;

@@ -143,6 +143,10 @@ class CriticalActionDatabase {
   // Migrates schema from version 2 to version 3 (drops `url` column and index).
   bool MigrateFromV2ToV3();
 
+  // Migrates schema from version 3 to version 4 (adds `conversation_anchor_id`
+  // column to CriticalActionEntries).
+  bool MigrateFromV3ToV4();
+
   // SQLite error callback.
   void DatabaseErrorCallback(int extended_error, sql::Statement* statement);
 

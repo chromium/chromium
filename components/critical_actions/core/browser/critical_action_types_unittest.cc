@@ -127,5 +127,33 @@ TEST(CriticalActionTypesTest, LabelsAndTooltipsForActionTypes) {
   EXPECT_EQ(unknown_action.GetTooltip(), "");
 }
 
+TEST(CriticalActionTypesTest, BuilderSetsConversationAnchorId) {
+  const base::Time timestamp = base::Time::FromTimeT(1700000000);
+
+  CriticalActionEntry with_anchor = CriticalActionEntry::Builder()
+                                        .SetCriticalActionId("id_1")
+                                        .SetTimestamp(timestamp)
+                                        .SetActionType(ActionType::kFormFill)
+                                        .SetActionSource(ActionSource::kActor)
+                                        .SetConversationId("conv_1")
+                                        .SetConversationAnchorId("turn_42")
+                                        .Build();
+  EXPECT_EQ(with_anchor.conversation_anchor_id, "turn_42");
+
+  CriticalActionEntry without_anchor =
+      CriticalActionEntry::Builder()
+          .SetCriticalActionId("id_1")
+          .SetTimestamp(timestamp)
+          .SetActionType(ActionType::kFormFill)
+          .SetActionSource(ActionSource::kActor)
+          .SetConversationId("conv_1")
+          .Build();
+  EXPECT_TRUE(without_anchor.conversation_anchor_id.empty());
+
+  // Entries that differ only in `conversation_anchor_id` must not compare
+  // equal.
+  EXPECT_NE(with_anchor, without_anchor);
+}
+
 }  // namespace
 }  // namespace critical_actions

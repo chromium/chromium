@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <functional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -33,7 +34,10 @@ namespace {
 // SQLite's parameter limits (SQLITE_MAX_VARIABLE_NUMBER) and minimizing
 // parser memory.
 constexpr size_t kMaxBatchSize = 500;
-constexpr int kCurrentVersion = 3;
+constexpr int kCurrentVersion = 4;
+// Version 3 remains compatible because version 4 only adds the nullable
+// `conversation_anchor_id` TEXT column, and v3 statements name columns
+// explicitly and ignore unknown nullable columns on read and write.
 constexpr int kCompatibleVersion = 3;
 
 constexpr std::string_view kTableNames[] = {
@@ -212,7 +216,8 @@ bool CriticalActionDatabase::InitSchema() {
                    "  timestamp INTEGER NOT NULL,"
                    "  actor_task_id TEXT,"
                    "  action_type INTEGER NOT NULL,"
-                   "  metadata TEXT"
+                   "  metadata TEXT,"
+                   "  conversation_anchor_id TEXT"
                    ")")) {
     return false;
   }
@@ -285,6 +290,8 @@ bool CriticalActionDatabase::MigrateToVersion(int version) {
       return MigrateFromV1ToV2();
     case 3:
       return MigrateFromV2ToV3();
+    case 4:
+      return MigrateFromV3ToV4();
     default:
       return true;
   }
@@ -355,7 +362,11 @@ bool CriticalActionDatabase::MigrateFromV2ToV3() {
   // Older clients SELECT/INSERT `url`, so they can no longer read this file.
   // MetaTable::Init()'s compatible_version argument only applies to newly
   // created databases, so existing ones must be updated explicitly.
-  if (!meta_table_.SetCompatibleVersionNumber(kCompatibleVersion)) {
+  // Intentionally hard-coded rather than `kCompatibleVersion`: this step must
+  // leave the database exactly as a v3 client expects, even after later
+  // schema versions change `kCompatibleVersion`. Later migrations that need a
+  // higher compatible version set it themselves.
+  if (!meta_table_.SetCompatibleVersionNumber(3)) {
     return false;
   }
 
@@ -363,6 +374,22 @@ bool CriticalActionDatabase::MigrateFromV2ToV3() {
   // return to the OS by itself. Init() vacuums once after committing, since
   // VACUUM cannot run inside a transaction.
   needs_vacuum_ = true;
+
+  return transaction.Commit();
+}
+
+bool CriticalActionDatabase::MigrateFromV3ToV4() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  if (!db_.Execute("ALTER TABLE CriticalActionEntries "
+                   "ADD COLUMN conversation_anchor_id TEXT")) {
+    return false;
+  }
 
   return transaction.Commit();
 }
@@ -379,13 +406,29 @@ bool CriticalActionDatabase::AddCriticalAction(
   sql::Statement stmt_entry(db_.GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO CriticalActionEntries (critical_action_id, timestamp, "
-      "action_type, metadata, actor_task_id) "
-      "VALUES (?, ?, ?, ?, ?)"));
+      "action_type, metadata, actor_task_id, conversation_anchor_id) "
+      "VALUES (?, ?, ?, ?, ?, ?)"));
   stmt_entry.BindString(0, entry.critical_action_id);
   stmt_entry.BindTime(1, entry.timestamp);
   stmt_entry.BindInt(2, static_cast<int>(entry.action_type));
   stmt_entry.BindString(3, entry.metadata);
   stmt_entry.BindString(4, entry.actor_task_id);
+  // Enforce kMaxConversationAnchorIdLength here so storage stays bounded
+  // regardless of the caller. Oversized anchors are dropped (stored as NULL)
+  // without failing the insertion, so the action itself is still recorded.
+  std::string_view conversation_anchor_id = entry.conversation_anchor_id;
+  if (conversation_anchor_id.size() > kMaxConversationAnchorIdLength) {
+    DLOG(WARNING) << "Dropping oversized conversation_anchor_id (length="
+                  << conversation_anchor_id.size() << ")";
+    conversation_anchor_id = std::string_view();
+  }
+  // Store NULL rather than '' for a missing anchor so that new rows match rows
+  // migrated from v3, which have a NULL column.
+  if (conversation_anchor_id.empty()) {
+    stmt_entry.BindNull(5);
+  } else {
+    stmt_entry.BindString(5, conversation_anchor_id);
+  }
   if (!stmt_entry.Run()) {
     return false;
   }
@@ -462,7 +505,8 @@ std::optional<CriticalActionEntry> CriticalActionDatabase::GetCriticalAction(
       SQL_FROM_HERE,
       "SELECT e.critical_action_id, e.timestamp, v.visit_id, "
       "c.conversation_id, "
-      "       e.actor_task_id, e.action_type, e.metadata "
+      "       e.actor_task_id, e.action_type, e.metadata, "
+      "e.conversation_anchor_id "
       "FROM CriticalActionEntries e "
       "LEFT JOIN CriticalActionVisits v ON e.critical_action_id = "
       "v.critical_action_id "
@@ -527,7 +571,8 @@ std::string CriticalActionDatabase::BuildGetCriticalActionsQuery(
   std::string sql_query =
       "SELECT e.critical_action_id, e.timestamp, v.visit_id, "
       "c.conversation_id, "
-      "       e.actor_task_id, e.action_type, e.metadata "
+      "       e.actor_task_id, e.action_type, e.metadata, "
+      "e.conversation_anchor_id "
       "FROM CriticalActionEntries e "
       "LEFT JOIN CriticalActionVisits v ON e.critical_action_id = "
       "v.critical_action_id "
@@ -621,6 +666,7 @@ CriticalActionEntry CriticalActionDatabase::StatementToEntry(
           ? static_cast<ActionType>(raw_action_type)
           : ActionType::kUnknown;
   entry.metadata = statement.ColumnString(6);
+  entry.conversation_anchor_id = statement.ColumnString(7);
   return entry;
 }
 
