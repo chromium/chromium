@@ -704,7 +704,6 @@ TEST_F(ScrollJankV4RecorderTest,
           {"id", "name", "ts", "dur", "result_id"},
           {kSliceIdMatcher, "ScrollJankV4", "20000000", "10001000", "123"},
       }));
-  std::string scroll_jank_v4_slice_id = scroll_jank_v4_slices_result[1][0];
   QueryResult sub_slices_result = QueryTraceProcessor(kSubSlicesQuery);
   EXPECT_THAT(sub_slices_result,
               QueryResultIs({

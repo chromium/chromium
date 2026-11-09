@@ -160,12 +160,6 @@ F1:     |-------------------| {I0, I1}
 F2:                   |---------------------| {I2, I3}
  */
 TEST_F(ScrollJankDroppedFrameTrackerTest, NoFrameProducedForMissingInput) {
-  const std::vector<base::TimeTicks> inputs = {
-      MillisSinceEpoch(103), MillisSinceEpoch(111), MillisSinceEpoch(135),
-      MillisSinceEpoch(143)};
-  const std::vector<base::TimeTicks> vsyncs = {MillisSinceEpoch(148),
-                                               MillisSinceEpoch(180)};
-
   FrameTimestamps f1 = {MillisSinceEpoch(103), MillisSinceEpoch(111),
                         MillisSinceEpoch(148)};
   FrameTimestamps f2 = {MillisSinceEpoch(135), MillisSinceEpoch(143),

@@ -2315,7 +2315,6 @@ bool TileManager::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
 
   std::unique_ptr<EvictionTilePriorityQueue> eviction_priority_queue(
       client_->BuildEvictionQueue());
-  std::set<Tile*> tiles_to_evict;
   while (!eviction_priority_queue->IsEmpty()) {
     const PrioritizedTile& tile = eviction_priority_queue->Top();
 

@@ -404,7 +404,6 @@ TEST_F(CompositorFrameReporterTest, TreesInVizLifecycleTest) {
 
   EXPECT_EQ(3u, pipeline_reporter_->stage_history_size_for_testing());
   pipeline_reporter_ = nullptr;
-  auto x = histogram_tester.GetAllHistogramsRecorded();
 
   // Confirm TreesInViz expected latencies
   struct {
