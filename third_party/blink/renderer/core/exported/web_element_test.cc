@@ -23,10 +23,13 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace blink {
 
@@ -639,6 +642,25 @@ TEST_F(WebElementTest, Labels) {
     <input id=testElement>
   )HTML");
   ExpectLabelIdsEqual({"testLabel1", "testLabel2"});
+}
+
+TEST_F(WebElementTest, CanvasImageContentsOriginClean) {
+  InsertHTML("<canvas id=testElement width=50 height=40></canvas>");
+  AddScript(R"JS(
+    const c = document.getElementById('testElement');
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = 'rgb(0, 0, 255)';
+    ctx.fillRect(0, 0, 50, 40);
+  )JS");
+  CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
+
+  EXPECT_FALSE(TestElement().ImageContents().drawsNothing());
+
+  // Tainting the canvas blocks pixel extraction through WebElement.
+  auto* canvas = To<HTMLCanvasElement>(GetElementById("testElement"));
+  ASSERT_NE(canvas, nullptr);
+  canvas->SetOriginTainted();
+  EXPECT_TRUE(TestElement().ImageContents().drawsNothing());
 }
 
 }  // namespace blink

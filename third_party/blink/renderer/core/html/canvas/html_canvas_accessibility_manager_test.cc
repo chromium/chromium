@@ -569,6 +569,39 @@ TEST_F(HTMLCanvasAccessibilityManagerOCRTest, OCRNeededSignalPropagation) {
   EXPECT_FALSE(canvas_element_->HasRequestedOCR());
 }
 
+TEST_F(HTMLCanvasAccessibilityManagerOCRTest,
+       TaintedCanvasDoesNotScheduleOrRequestOCR) {
+  EXPECT_TRUE(manager_->IsOCRTimerActiveForTesting());
+
+  // Tainting the canvas and finalizing a frame cancels the pending OCR timer
+  // and does not request OCR.
+  canvas_element_->SetOriginTainted();
+  canvas_element_->PostFinalizeFrame(FlushReason::kOther);
+  EXPECT_FALSE(manager_->IsOCRTimerActiveForTesting());
+  EXPECT_FALSE(canvas_element_->HasRequestedOCR());
+
+  FastForwardBy(HTMLCanvasAccessibilityManager::kOCRDelay);
+  EXPECT_FALSE(canvas_element_->HasRequestedOCR());
+
+  WebAXObject web_ax_object = WebAXObject::FromWebNode(canvas_element_.Get());
+  ASSERT_FALSE(web_ax_object.IsNull());
+  EXPECT_FALSE(web_ax_object.HasRequestedOCR());
+}
+
+TEST_F(HTMLCanvasAccessibilityManagerOCRTest,
+       TaintedCanvasCapturesRenderedTextWithoutSchedulingOCR) {
+  canvas_element_->SetOriginTainted();
+  canvas_element_->PostFinalizeFrame(FlushReason::kOther);
+  ASSERT_FALSE(manager_->IsOCRTimerActiveForTesting());
+
+  // Same-origin Basic Mode text drawn via fillText/strokeText remains
+  // functional on a tainted canvas without scheduling OCR.
+  manager_->RecordRenderedText("Label", gfx::RectF(0, 0, 100, 20), 12.0f);
+  manager_->UpdateAnnotation();
+  EXPECT_EQ(manager_->CanvasAnnotation(), "Label");
+  EXPECT_FALSE(manager_->IsOCRTimerActiveForTesting());
+}
+
 TEST_F(HTMLCanvasAccessibilityManagerTest,
        OCRTriggeredOnAccessibilityEnabledLater) {
   base::test::ScopedFeatureList feature_list;

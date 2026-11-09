@@ -569,6 +569,11 @@ SkBitmap WebElement::ImageContents() {
   }
 
   if (auto* canvas = blink::DynamicTo<HTMLCanvasElement>(element)) {
+    // Do not expose pixels from canvases tainted by cross-origin content or
+    // blocked from readback by document settings (crbug.com/581379623).
+    if (!canvas->OriginClean()) {
+      return {};
+    }
     scoped_refptr<StaticBitmapImage> image = canvas->Snapshot(kBackBuffer);
     if (!image) {
       return {};

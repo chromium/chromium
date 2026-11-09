@@ -203,8 +203,9 @@ class BLINK_EXPORT WebElement : public WebNode {
   // function will update the layout if required.
   std::vector<gfx::Rect> ClientRectsInWidget();
 
-  // Returns the image contents of this element or a null SkBitmap
-  // if there isn't any.
+  // Returns the image contents of this element or a null SkBitmap if there
+  // isn't any. For <canvas> elements, returns a null SkBitmap if the canvas is
+  // not origin-clean.
   SkBitmap ImageContents();
 
   // Returns a copy of original image data of this element or an empty vector

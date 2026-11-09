@@ -307,7 +307,9 @@ bool HTMLCanvasAccessibilityManager::ShouldRunOCR() const {
       features::CanvasAccessibilityMode::kAdvanced) {
     return false;
   }
-  if (!NeedsA11ySupport()) {
+  // Never run OCR on canvases that are tainted by cross-origin data or blocked
+  // from readback by document settings (crbug.com/581379623).
+  if (!NeedsA11ySupport() || !canvas_element_->OriginClean()) {
     return false;
   }
   // OCR is needed if no text is extracted, or too much text is extracted.
@@ -349,6 +351,7 @@ void HTMLCanvasAccessibilityManager::ScheduleOCRIfNeeded() {
   } else {
     ocr_timer_.Stop();
     ClearOCRDeadline();
+    has_requested_ocr_ = false;
   }
 }
 

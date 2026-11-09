@@ -1,0 +1,49 @@
+<!-- Note: This test page sets up a cross-origin tainted canvas alongside a
+     same-origin sentinel canvas dynamically via JavaScript. -->
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    function loadImage(url) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = url;
+      });
+    }
+
+    function createCanvasWithImage(id, img) {
+      const canvas = document.createElement('canvas');
+      canvas.id = id;
+      canvas.width = img.width;
+      canvas.height = img.height;
+      document.body.appendChild(canvas);
+      // Note: { willReadFrequently: true } is used here to force a software
+      // backing store, avoiding GPU texture readback stalls in static test
+      // environments.
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+    }
+
+    (async () => {
+      const crossOriginUrl =
+          `${window.location.protocol}//b.com:${window.location.port}` +
+          '/ocr/just_one_letter.png';
+      const crossOriginImg = await loadImage(crossOriginUrl);
+      createCanvasWithImage('cross_origin_canvas', crossOriginImg);
+
+      // Since OCR is scheduled asynchronously after a delay, draw a second
+      // same-origin sentinel canvas afterwards so the browser test can wait
+      // until its OCR annotation arrives before verifying that
+      // cross_origin_canvas remains unannotated.
+      const sameOriginImg = await loadImage('/ocr/simple_text_only_sample.png');
+      createCanvasWithImage('same_origin_canvas', sameOriginImg);
+
+      document.title = 'loaded';
+    })();
+  </script>
+</body>
+</html>
