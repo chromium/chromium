@@ -17,6 +17,7 @@
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/x_callback_url.h"
@@ -147,14 +148,31 @@ std::optional<AppGroupCommandTab> TabForAppGroupCommand(
       // opened via the share extension, as the legacy startup flow does.
       return std::nullopt;
     case AppGroupCommandType::kVoiceSearch:
+      return AppGroupCommandTab{
+          GURL(kChromeUINewTabURL), ApplicationModeForTabOpening::NORMAL,
+          TabOpeningPostOpeningAction::START_VOICE_SEARCH};
     case AppGroupCommandType::kNewTab:
+      return AppGroupCommandTab{GURL(kChromeUINewTabURL),
+                                ApplicationModeForTabOpening::NORMAL};
     case AppGroupCommandType::kFocusOmnibox:
+      return AppGroupCommandTab{GURL(kChromeUINewTabURL),
+                                ApplicationModeForTabOpening::NORMAL,
+                                TabOpeningPostOpeningAction::FOCUS_OMNIBOX};
     case AppGroupCommandType::kIncognitoSearch:
+      return AppGroupCommandTab{GURL(kChromeUINewTabURL),
+                                ApplicationModeForTabOpening::INCOGNITO,
+                                TabOpeningPostOpeningAction::FOCUS_OMNIBOX};
     case AppGroupCommandType::kQRScanner:
+      return AppGroupCommandTab{
+          GURL(kChromeUINewTabURL), ApplicationModeForTabOpening::NORMAL,
+          TabOpeningPostOpeningAction::START_QR_CODE_SCANNER};
     case AppGroupCommandType::kLens:
+      return AppGroupCommandTab{
+          GURL(), ApplicationModeForTabOpening::NORMAL,
+          TabOpeningPostOpeningAction::START_LENS_FROM_HOME_SCREEN_WIDGET};
     case AppGroupCommandType::kSearchPasswords:
-      // TODO(crbug.com/493816082): Open the tab requested by the command.
-      return std::nullopt;
+      return AppGroupCommandTab{GURL(), ApplicationModeForTabOpening::NORMAL,
+                                TabOpeningPostOpeningAction::SEARCH_PASSWORDS};
   }
 }
 

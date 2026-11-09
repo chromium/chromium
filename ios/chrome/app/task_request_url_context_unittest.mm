@@ -1139,6 +1139,7 @@ TEST_F(TaskRequestForURLContextTest, TestXCallbackInvalidCommandIgnored) {
 // expected post-opening action.
 TEST_F(TaskRequestForURLContextTest, TestAppGroupCommandExecution) {
   NSString* const kExternalURL = @"https://www.example.com/";
+  const GURL kNTPURL(kChromeUINewTabURL);
   struct TestCase {
     NSString* command;
     NSString* external_text;
@@ -1155,6 +1156,29 @@ TEST_F(TaskRequestForURLContextTest, TestAppGroupCommandExecution) {
        GURL(base::SysNSStringToUTF8(kExternalURL)),
        ApplicationModeForTabOpening::INCOGNITO,
        TabOpeningPostOpeningAction::NO_ACTION, true},
+      {base::SysUTF8ToNSString(app_group::kChromeAppGroupVoiceSearchCommand),
+       nil, kNTPURL, ApplicationModeForTabOpening::NORMAL,
+       TabOpeningPostOpeningAction::START_VOICE_SEARCH, true},
+      {base::SysUTF8ToNSString(app_group::kChromeAppGroupNewTabCommand), nil,
+       kNTPURL, ApplicationModeForTabOpening::NORMAL,
+       TabOpeningPostOpeningAction::NO_ACTION, true},
+      {base::SysUTF8ToNSString(app_group::kChromeAppGroupFocusOmniboxCommand),
+       nil, kNTPURL, ApplicationModeForTabOpening::NORMAL,
+       TabOpeningPostOpeningAction::FOCUS_OMNIBOX, false},
+      {base::SysUTF8ToNSString(
+           app_group::kChromeAppGroupIncognitoSearchCommand),
+       nil, kNTPURL, ApplicationModeForTabOpening::INCOGNITO,
+       TabOpeningPostOpeningAction::FOCUS_OMNIBOX, false},
+      {base::SysUTF8ToNSString(app_group::kChromeAppGroupQRScannerCommand), nil,
+       kNTPURL, ApplicationModeForTabOpening::NORMAL,
+       TabOpeningPostOpeningAction::START_QR_CODE_SCANNER, true},
+      {base::SysUTF8ToNSString(app_group::kChromeAppGroupLensCommand), nil,
+       GURL(), ApplicationModeForTabOpening::NORMAL,
+       TabOpeningPostOpeningAction::START_LENS_FROM_HOME_SCREEN_WIDGET, true},
+      {base::SysUTF8ToNSString(
+           app_group::kChromeAppGroupSearchPasswordsCommand),
+       nil, GURL(), ApplicationModeForTabOpening::NORMAL,
+       TabOpeningPostOpeningAction::SEARCH_PASSWORDS, true},
   };
 
   for (const auto& test_case : test_cases) {
@@ -1203,8 +1227,8 @@ TEST_F(TaskRequestForURLContextTest, TestAppGroupOpenURLCommandWithoutHTTPURL) {
   }
 }
 
-// Tests that unknown App Group commands, and the commands not yet supported by
-// the new startup flow, don't open a tab.
+// Tests that unknown App Group commands, and the search commands not yet
+// supported by the new startup flow, don't open a tab.
 TEST_F(TaskRequestForURLContextTest, TestUnhandledAppGroupCommandIgnored) {
   NSString* commands[] = {
       @"unknowncommand",
@@ -1212,13 +1236,6 @@ TEST_F(TaskRequestForURLContextTest, TestUnhandledAppGroupCommandIgnored) {
       app_group::kChromeAppGroupIncognitoSearchTextCommand,
       base::SysUTF8ToNSString(app_group::kChromeAppGroupSearchImageCommand),
       app_group::kChromeAppGroupIncognitoSearchImageCommand,
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupVoiceSearchCommand),
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupNewTabCommand),
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupFocusOmniboxCommand),
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupIncognitoSearchCommand),
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupQRScannerCommand),
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupLensCommand),
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupSearchPasswordsCommand),
   };
 
   for (NSString* command : commands) {
@@ -1252,8 +1269,8 @@ TEST_F(TaskRequestForURLContextTest, TestAppGroupCommandWithoutNameIgnored) {
 // Tests that an App Group command can't be executed twice.
 TEST_F(TaskRequestForURLContextTest, TestAppGroupCommandExecutedOnce) {
   WriteRecentAppGroupCommand(
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupOpenURLCommand),
-      app_group::kOpenCommandSourceShareExtension, @"https://www.example.com/");
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupNewTabCommand),
+      app_group::kOpenCommandSourceShareExtension, nil);
   EXPECT_TRUE(ExecuteAppGroupCommandRequest().completionActionExecuted);
 
   EXPECT_FALSE(ExecuteAppGroupCommandRequest().completionActionExecuted);
