@@ -103,22 +103,7 @@ ui::ButtonStyle MdTextButton::GetStyle() const {
   return style_;
 }
 
-void MdTextButton::SetBgColorIdOverride(
-    const std::optional<ui::ColorId> color_id) {
-  CHECK(!bg_color_override_.has_value());
-
-  if (color_id == bg_color_id_override_) {
-    return;
-  }
-  bg_color_id_override_ = color_id;
-  UpdateColors();
-  OnPropertyChanged(&bg_color_id_override_, PropertyEffects::kNone);
-}
-
-void MdTextButton::SetBgColorOverrideDeprecated(
-    const std::optional<SkColor>& color) {
-  CHECK(!bg_color_id_override_.has_value());
-
+void MdTextButton::SetBgColorOverride(std::optional<ui::ColorVariant> color) {
   if (color == bg_color_override_) {
     return;
   }
@@ -127,30 +112,12 @@ void MdTextButton::SetBgColorOverrideDeprecated(
   OnPropertyChanged(&bg_color_override_, PropertyEffects::kNone);
 }
 
-std::optional<SkColor> MdTextButton::GetBgColorOverrideDeprecated() const {
+std::optional<ui::ColorVariant> MdTextButton::GetBgColorOverride() const {
   return bg_color_override_;
 }
 
-std::optional<ui::ColorId> MdTextButton::GetBgColorIdOverride() const {
-  return bg_color_id_override_;
-}
-
-void MdTextButton::SetStrokeColorIdOverride(
-    const std::optional<ui::ColorId> color_id) {
-  CHECK(!stroke_color_override_.has_value());
-
-  if (color_id == stroke_color_id_override_) {
-    return;
-  }
-  stroke_color_id_override_ = color_id;
-  UpdateColors();
-  OnPropertyChanged(&stroke_color_id_override_, PropertyEffects::kNone);
-}
-
-void MdTextButton::SetStrokeColorOverrideDeprecated(
-    const std::optional<SkColor>& color) {
-  CHECK(!stroke_color_id_override_.has_value());
-
+void MdTextButton::SetStrokeColorOverride(
+    std::optional<ui::ColorVariant> color) {
   if (color == stroke_color_override_) {
     return;
   }
@@ -159,12 +126,8 @@ void MdTextButton::SetStrokeColorOverrideDeprecated(
   OnPropertyChanged(&stroke_color_override_, PropertyEffects::kNone);
 }
 
-std::optional<SkColor> MdTextButton::GetStrokeColorOverrideDeprecated() const {
+std::optional<ui::ColorVariant> MdTextButton::GetStrokeColorOverride() const {
   return stroke_color_override_;
-}
-
-std::optional<ui::ColorId> MdTextButton::GetStrokeColorIdOverride() const {
-  return stroke_color_id_override_;
 }
 
 void MdTextButton::SetCornerRadii(const gfx::RoundedCornersF& radii) {
@@ -317,10 +280,8 @@ void MdTextButton::UpdateBackgroundColor() {
   const ui::ColorProvider* color_provider = GetColorProvider();
   SkColor bg_color = color_provider->GetColor(ui::kColorButtonBackground);
 
-  if (bg_color_id_override_) {
-    bg_color = color_provider->GetColor(bg_color_id_override_.value());
-  } else if (bg_color_override_) {
-    bg_color = *bg_color_override_;
+  if (bg_color_override_) {
+    bg_color = bg_color_override_->ResolveToSkColor(color_provider);
   } else if (style_ == ui::ButtonStyle::kProminent) {
     bg_color = color_provider->GetColor(
         HasFocus() ? ui::kColorButtonBackgroundProminentFocused
@@ -345,10 +306,8 @@ void MdTextButton::UpdateBackgroundColor() {
 
   SkColor stroke_color = color_provider->GetColor(
       is_disabled ? ui::kColorButtonBorderDisabled : ui::kColorButtonBorder);
-  if (stroke_color_id_override_.has_value()) {
-    stroke_color = color_provider->GetColor(stroke_color_id_override_.value());
-  } else if (stroke_color_override_) {
-    stroke_color = *stroke_color_override_;
+  if (stroke_color_override_) {
+    stroke_color = stroke_color_override_->ResolveToSkColor(color_provider);
   } else if (style_ == ui::ButtonStyle::kProminent ||
              style_ == ui::ButtonStyle::kText ||
              style_ == ui::ButtonStyle::kTonal) {
@@ -421,8 +380,7 @@ void MdTextButtonActionViewInterface::ActionItemChangedImpl(
 
 BEGIN_METADATA(MdTextButton)
 ADD_PROPERTY_METADATA(gfx::RoundedCornersF, CornerRadii)
-ADD_PROPERTY_METADATA(std::optional<SkColor>, BgColorOverrideDeprecated)
-ADD_PROPERTY_METADATA(std::optional<ui::ColorId>, BgColorIdOverride)
+ADD_PROPERTY_METADATA(std::optional<ui::ColorVariant>, BgColorOverride)
 ADD_PROPERTY_METADATA(std::optional<gfx::Insets>, CustomPadding)
 ADD_PROPERTY_METADATA(ui::ButtonStyle, Style)
 END_METADATA

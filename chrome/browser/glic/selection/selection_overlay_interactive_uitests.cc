@@ -1622,7 +1622,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUIColor) {
       CheckView(lens::LensPreselectionBubble::kCancelButtonElementId,
                 [](views::View* view) {
                   auto* button = static_cast<views::MdTextButton*>(view);
-                  return button->GetBgColorIdOverride() ==
+                  return button->GetBgColorOverride() ==
                          kColorGlicSelectionOverlayToast;
                 }),
       CheckView(lens::LensPreselectionBubble::kCancelButtonElementId,

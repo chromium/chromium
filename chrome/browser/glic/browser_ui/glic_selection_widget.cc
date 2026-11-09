@@ -176,7 +176,7 @@ class GlicSelectionContentsView : public views::View {
     } else {
       ask_gemini_btn->SetCustomPadding(gfx::Insets::TLBR(5, 6, 5, 6));
     }
-    ask_gemini_btn->SetBgColorOverrideDeprecated(SK_ColorTRANSPARENT);
+    ask_gemini_btn->SetBgColorOverride(SK_ColorTRANSPARENT);
     ask_gemini_btn->SetInstallFocusRingOnFocus(false);
 
     ask_gemini_btn_ = ask_gemini_btn;

@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/button/label_button.h"
@@ -49,28 +48,13 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   void SetStyle(ui::ButtonStyle button_style);
   ui::ButtonStyle GetStyle() const;
 
-  // Sets the background color id to use. Cannot be called if
-  // `bg_color_override_` has already been set.
-  void SetBgColorIdOverride(const std::optional<ui::ColorId> color_id);
-  std::optional<ui::ColorId> GetBgColorIdOverride() const;
+  // Sets the background color to use instead of the style's default.
+  void SetBgColorOverride(std::optional<ui::ColorVariant> color);
+  std::optional<ui::ColorVariant> GetBgColorOverride() const;
 
-  // Sets the background color to use. Cannot be called if
-  // `bg_color_id_override_` has already been set.
-  // TODO(crbug.com/40259212): Get rid of SkColor versions of these functions in
-  // favor of the ColorId versions.
-  void SetBgColorOverrideDeprecated(const std::optional<SkColor>& color);
-  std::optional<SkColor> GetBgColorOverrideDeprecated() const;
-
-  // Sets the border stroke color id to use.
-  void SetStrokeColorIdOverride(const std::optional<ui::ColorId> color_id);
-  std::optional<ui::ColorId> GetStrokeColorIdOverride() const;
-
-  // Sets the border color to use. Cannot be called if
-  // `stroke_color_id_override_` has already been set.
-  // TODO(crbug.com/40259212): Get rid of SkColor versions of these functions in
-  // favor of the ColorId versions.
-  void SetStrokeColorOverrideDeprecated(const std::optional<SkColor>& color);
-  std::optional<SkColor> GetStrokeColorOverrideDeprecated() const;
+  // Sets the border stroke color to use instead of the style's default.
+  void SetStrokeColorOverride(std::optional<ui::ColorVariant> color);
+  std::optional<ui::ColorVariant> GetStrokeColorOverride() const;
 
   // Override the default corner radius (or radii) (received from the
   // `LayoutProvider` for `ShapeContextTokens::kButtonRadius`) of the round rect
@@ -119,14 +103,11 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
 
   ui::ButtonStyle style_ = ui::ButtonStyle::kDefault;
 
-  // When set, this provides the background color. At most one of
-  // `bg_color_override_` or `bg_color_id_override_` can be set.
-  std::optional<SkColor> bg_color_override_;
-  std::optional<ui::ColorId> bg_color_id_override_;
+  // When set, this provides the background color.
+  std::optional<ui::ColorVariant> bg_color_override_;
 
   // When set, this provides the border stroke color.
-  std::optional<SkColor> stroke_color_override_;
-  std::optional<ui::ColorId> stroke_color_id_override_;
+  std::optional<ui::ColorVariant> stroke_color_override_;
 
   // Used to set the corner radii of the button.
   std::optional<gfx::RoundedCornersF> radii_;
@@ -153,8 +134,7 @@ class VIEWS_EXPORT MdTextButtonActionViewInterface
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, MdTextButton, LabelButton)
 VIEW_BUILDER_PROPERTY(gfx::RoundedCornersF, CornerRadii)
-VIEW_BUILDER_PROPERTY(std::optional<SkColor>, BgColorOverrideDeprecated)
-VIEW_BUILDER_PROPERTY(std::optional<ui::ColorId>, BgColorIdOverride)
+VIEW_BUILDER_PROPERTY(std::optional<ui::ColorVariant>, BgColorOverride)
 VIEW_BUILDER_PROPERTY(std::optional<gfx::Insets>, CustomPadding)
 VIEW_BUILDER_PROPERTY(ui::ButtonStyle, Style)
 END_VIEW_BUILDER

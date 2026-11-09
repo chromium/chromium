@@ -1029,9 +1029,9 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
   OnPartialTranscription("Most marsupials are nocturnal.");
   EXPECT_EQ(default_color, GetBubble()->background_color());
   EXPECT_EQ(ui::kColorLiveCaptionBubbleButtonBackground,
-            GetSourceLanguageButton()->GetBgColorIdOverride());
+            GetSourceLanguageButton()->GetBgColorOverride());
   EXPECT_EQ(ui::kColorLiveCaptionBubbleButtonBackground,
-            GetTargetLanguageButton()->GetBgColorIdOverride());
+            GetTargetLanguageButton()->GetBgColorOverride());
 
   // Set the window color to red with 0.5 opacity.
   caption_style.window_color = "rgba(255,0,0,0.5)";

@@ -54,7 +54,7 @@ LogoutButtonTray::LogoutButtonTray(Shelf* shelf)
   button_->SetPaintToLayer();
   button_->layer()->SetFillsBoundsOpaquely(false);
   button_->SetStyle(ui::ButtonStyle::kProminent);
-  button_->SetBgColorIdOverride(cros_tokens::kColorAlert);
+  button_->SetBgColorOverride(cros_tokens::kColorAlert);
   button_->SetEnabledTextColors(cros_tokens::kColorPrimaryInverted);
   set_use_bounce_in_animation(false);
 

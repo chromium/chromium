@@ -50,7 +50,7 @@ void InitButton(views::MdTextButton* button, views::Label* label) {
   button->SetCustomPadding(kLanguageButtonInsets);
   label->SetMultiLine(false);
   button->SetImageLabelSpacing(kLanguageButtonImageLabelSpacing);
-  button->SetBgColorIdOverride(ui::kColorLiveCaptionBubbleButtonBackground);
+  button->SetBgColorOverride(ui::kColorLiveCaptionBubbleButtonBackground);
   button->SetPaintToLayer();
 }
 
@@ -229,13 +229,11 @@ void TranslationViewWrapperBase::SetTextColor(
 #if BUILDFLAG(IS_MAC)
     button->SetTextColor(views::Button::STATE_DISABLED, language_label_color);
 #endif
-    // TODO(crbug.com/40259212): The live caption bubble allows users to set
-    // their own color and alpha value from a predefined list. This SKColor is
-    // calculated during  ParseNonTransparentRGBACSSColorString, however the
-    // equivalent ui::ColorId may not exist. To avoid needing to define around
-    // 40 new color ids to account for each combination, we use the deprecated
-    // SKColor function.
-    button->SetStrokeColorOverrideDeprecated(language_label_border_color);
+    // The live caption bubble allows users to set their own color and alpha
+    // value from a predefined list. The resulting `SkColor` comes from
+    // `ParseNonTransparentRGBACSSColorString()` and has no matching
+    // `ui::ColorId`, so it is passed directly.
+    button->SetStrokeColorOverride(language_label_border_color);
   }
   translation_header_text_->SetEnabledColor(header_color);
   translate_icon_->SetImage(ui::ImageModel::FromVectorIcon(

@@ -124,8 +124,8 @@ PasswordChangeToast::PasswordChangeToast(ToastOptions toast_configuration) {
                           base::Unretained(this)),
       toast_configuration.action_button_text.value_or(std::u16string())));
   action_button_->SetEnabledTextColors(ui::kColorToastButton);
-  action_button_->SetBgColorIdOverride(ui::kColorToastBackgroundProminent);
-  action_button_->SetStrokeColorIdOverride(ui::kColorToastButton);
+  action_button_->SetBgColorOverride(ui::kColorToastBackgroundProminent);
+  action_button_->SetStrokeColorOverride(ui::kColorToastButton);
   action_button_->SetStyle(ui::ButtonStyle::kProminent);
   action_button_->SetProperty(views::kElementIdentifierKey,
                               kPasswordChangeActionButton);

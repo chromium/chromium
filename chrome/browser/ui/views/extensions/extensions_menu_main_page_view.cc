@@ -338,7 +338,7 @@ void ExtensionsMenuMainPageView::AddExtensionRequestingAccess(
                       &ExtensionsMenuHandler::OnDismissExtensionClicked,
                       base::Unretained(menu_handler_), request.extension_id))
                   .SetStyle(ui::ButtonStyle::kText)
-                  .SetBgColorIdOverride(kColorExtensionsMenuContainerBackground)
+                  .SetBgColorOverride(kColorExtensionsMenuContainerBackground)
                   .SetText(l10n_util::GetStringUTF16(
                       IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_TEXT))
                   .SetTooltipText(l10n_util::GetStringUTF16(
@@ -351,7 +351,7 @@ void ExtensionsMenuMainPageView::AddExtensionRequestingAccess(
                       &ExtensionsMenuHandler::OnAllowExtensionClicked,
                       base::Unretained(menu_handler_), request.extension_id))
                   .SetStyle(ui::ButtonStyle::kText)
-                  .SetBgColorIdOverride(kColorExtensionsMenuContainerBackground)
+                  .SetBgColorOverride(kColorExtensionsMenuContainerBackground)
                   .SetText(l10n_util::GetStringUTF16(
                       IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TEXT))
                   .SetTooltipText(l10n_util::GetStringUTF16(
@@ -602,7 +602,7 @@ ExtensionsMenuMainPageView::CreateContentsBuilder(
                                   &ExtensionsMenuHandler::
                                       OnReloadPageButtonClicked,
                                   base::Unretained(menu_handler_)))
-                              .SetBgColorIdOverride(
+                              .SetBgColorOverride(
                                   kColorExtensionsMenuContainerBackground)
                               .SetProperty(views::kMarginsKey,
                                            reload_button_margins)

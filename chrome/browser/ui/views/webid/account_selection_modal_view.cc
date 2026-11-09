@@ -1180,7 +1180,7 @@ void AccountSelectionModalView::ReplaceButtonWithSpinner(
   button->AddChildView(std::move(spinner_container));
   button->SetTextColor(HoverButton::ButtonState::STATE_DISABLED, button_color);
   button->SetEnabledTextColors(button_color);
-  button->SetBgColorIdOverride(button_color);
+  button->SetBgColorOverride(button_color);
 }
 
 std::string AccountSelectionModalView::GetDialogTitle() const {

@@ -255,8 +255,8 @@ void ToastView::Init() {
                                 ToastCloseReason::kActionButton)),
         action_button_text_));
     action_button_->SetEnabledTextColors(ui::kColorToastButton);
-    action_button_->SetBgColorIdOverride(ui::kColorToastBackgroundProminent);
-    action_button_->SetStrokeColorIdOverride(ui::kColorToastButton);
+    action_button_->SetBgColorOverride(ui::kColorToastBackgroundProminent);
+    action_button_->SetStrokeColorOverride(ui::kColorToastButton);
     action_button_->SetPreferredSize(gfx::Size(
         action_button_->GetPreferredSize().width(),
         lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT_ACTION_BUTTON)));

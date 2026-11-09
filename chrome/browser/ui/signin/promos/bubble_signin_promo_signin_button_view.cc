@@ -48,7 +48,7 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
   // with the neutral color.
   if (button_style == ui::ButtonStyle::kDefault ||
       button_style == ui::ButtonStyle::kText) {
-    button_builder.SetBgColorIdOverride(ui::kColorSysNeutralContainer);
+    button_builder.SetBgColorOverride(ui::kColorSysNeutralContainer);
   }
 
   views::Builder<BubbleSignInPromoSignInButtonView>(this)

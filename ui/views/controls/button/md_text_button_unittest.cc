@@ -4,6 +4,8 @@
 
 #include "ui/views/controls/button/md_text_button.h"
 
+#include <utility>
+
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/actions/actions.h"
@@ -148,22 +150,55 @@ TEST_F(MdTextButtonActionViewInterfaceTest, CustomCornerRadii) {
   EXPECT_EQ(md_text_button->GetFocusRingCornerRadii(), kCustomCornerRadii);
 }
 
-TEST_F(MdTextButtonTest, StrokeColorIdOverride) {
-  auto button = std::make_unique<MdTextButton>();
-
-  ASSERT_FALSE(button->GetStrokeColorIdOverride().has_value());
-
-  button->SetStrokeColorIdOverride(ui::kColorButtonBorder);
-  EXPECT_EQ(ui::kColorButtonBorder, button->GetStrokeColorIdOverride().value());
-}
-
 TEST_F(MdTextButtonTest, StrokeColorOverride) {
   auto button = std::make_unique<MdTextButton>();
 
-  ASSERT_FALSE(button->GetStrokeColorOverrideDeprecated().has_value());
+  EXPECT_FALSE(button->GetStrokeColorOverride().has_value());
 
-  button->SetStrokeColorOverrideDeprecated(SK_ColorBLUE);
-  EXPECT_EQ(SK_ColorBLUE, button->GetStrokeColorOverrideDeprecated().value());
+  button->SetStrokeColorOverride(ui::kColorButtonBorder);
+  EXPECT_EQ(button->GetStrokeColorOverride(), ui::kColorButtonBorder);
+
+  button->SetStrokeColorOverride(SK_ColorBLUE);
+  EXPECT_EQ(button->GetStrokeColorOverride(), SK_ColorBLUE);
+
+  button->SetStrokeColorOverride(std::nullopt);
+  EXPECT_FALSE(button->GetStrokeColorOverride().has_value());
+}
+
+TEST_F(MdTextButtonTest, BackgroundColorChangesWithBgColorOverride) {
+  // Test that setting or clearing `BgColorOverride` with a `ui::ColorId` or
+  // `SkColor` updates the button's painted background color.
+  auto button = std::make_unique<MdTextButton>(Button::PressedCallback(), u" ");
+  // Calling setter before widget attach must not crash.
+  button->SetBgColorOverride(ui::kColorAlertHighSeverity);
+  EXPECT_EQ(button->GetBgColorOverride(), ui::kColorAlertHighSeverity);
+
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* button_ptr = widget->SetContentsView(std::move(button));
+  button_ptr->SetBounds(0, 0, 70, 20);
+  widget->LayoutRootViewIfNecessary();
+
+  const ui::ColorProvider* color_provider = button_ptr->GetColorProvider();
+  auto background_color = [button_ptr](const SkBitmap& bitmap) {
+    return bitmap.getColor(button_ptr->size().width() / 2,
+                           button_ptr->size().height() / 2);
+  };
+
+  EXPECT_EQ(background_color(views::test::PaintViewToBitmap(button_ptr)),
+            color_provider->GetColor(ui::kColorAlertHighSeverity));
+
+  // Switching to `SkColor` should work without `CHECK`.
+  button_ptr->SetBgColorOverride(SK_ColorGREEN);
+  EXPECT_EQ(button_ptr->GetBgColorOverride(), SK_ColorGREEN);
+  EXPECT_EQ(background_color(views::test::PaintViewToBitmap(button_ptr)),
+            SK_ColorGREEN);
+
+  // Clearing override returns to default button background.
+  button_ptr->SetBgColorOverride(std::nullopt);
+  EXPECT_FALSE(button_ptr->GetBgColorOverride().has_value());
+  EXPECT_EQ(background_color(views::test::PaintViewToBitmap(button_ptr)),
+            color_provider->GetColor(ui::kColorButtonBackground));
 }
 
 }  // namespace views

@@ -155,7 +155,7 @@ ContextualTasksOnboardingBubbleView::ContextualTasksOnboardingBubbleView(
                              kAcceptButtonElementId);
   accept_button->SetStyle(ui::ButtonStyle::kProminent);
   accept_button->SetLabelStyle(views::style::STYLE_BODY_4_MEDIUM);
-  accept_button->SetBgColorIdOverride(ui::kColorRefPrimary40);
+  accept_button->SetBgColorOverride(ui::kColorRefPrimary40);
   accept_button->SetEnabledTextColors(kBubbleBgColor);
   accept_button->SetCornerRadius(100);
   accept_button->SetMinSize(gfx::Size(62, 32));

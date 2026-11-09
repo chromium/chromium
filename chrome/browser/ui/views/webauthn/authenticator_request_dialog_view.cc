@@ -233,14 +233,14 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
     if (show_spinner) {
       // Show the spinner and hide the button text.
       existing_container->SetVisible(true);
-      ok_button->SetBgColorIdOverride(ui::kColorButtonBackgroundProminent);
+      ok_button->SetBgColorOverride(ui::kColorButtonBackgroundProminent);
       ok_button->SetTextColor(views::Button::ButtonState::STATE_DISABLED,
                               ui::kColorButtonBackgroundProminent);
     } else {
       if (existing_container) {
         existing_container->SetVisible(false);
       }
-      ok_button->SetBgColorIdOverride(std::nullopt);
+      ok_button->SetBgColorOverride(std::nullopt);
     }
   }
 

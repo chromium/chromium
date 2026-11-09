@@ -167,7 +167,7 @@ void LensPreselectionBubble::Init() {
     exit_button_->SetEnabledTextColors(kColorLensOverlayToastForeground);
     exit_button_->SetBorder(views::CreateRoundedRectBorder(
         1, 48, kColorLensOverlayToastButtonBorder));
-    exit_button_->SetBgColorIdOverride(bubble_background_color_);
+    exit_button_->SetBgColorOverride(bubble_background_color_);
   }
   if (cancel_button_config_.has_value()) {
     cancel_button_ = AddChildView(std::make_unique<views::MdTextButton>(
@@ -186,7 +186,7 @@ void LensPreselectionBubble::Init() {
     cancel_button_->SetBorder(views::CreatePaddedBorder(
         views::CreateRoundedRectBorder(1, 48, color_id),
         cancel_button_config_->padding));
-    cancel_button_->SetBgColorIdOverride(bubble_background_color_);
+    cancel_button_->SetBgColorOverride(bubble_background_color_);
   }
   NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
 }

@@ -367,7 +367,7 @@ void TabSharingStatusMessageView::AddButton(
   button->SetCustomPadding(kRefreshButtonInsets);
   button->SetProperty(views::kCrossAxisAlignmentKey,
                       views::LayoutAlignment::kCenter);
-  button->SetBgColorIdOverride(ui::kColorSysNeutralContainer);
+  button->SetBgColorOverride(ui::kColorSysNeutralContainer);
   button->SetTextColor(views::Button::ButtonState::STATE_NORMAL,
                        ui::kColorLinkForeground);
   button->SetTextColor(views::Button::ButtonState::STATE_HOVERED,
