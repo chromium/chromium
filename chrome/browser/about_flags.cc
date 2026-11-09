@@ -1371,6 +1371,9 @@ const FeatureEntry::FeatureParam kVoiceSearchCoherenceRealboxArm4Params[] = {
     {"VoiceSearchCoherenceRealboxAutoEndpoint", "true"},
     {"VoiceSearchCoherenceRealboxHelperText", "true"}};
 
+const FeatureEntry::FeatureParam kVoiceSearchCoherenceRealboxArm5Params[] = {
+    {"VoiceSearchCoherenceRealboxKeepLegacyUi", "true"}};
+
 const FeatureEntry::FeatureVariation
     kVoiceSearchCoherenceSearchboxVariations[] = {
         {"Arm 1: Wave only, manual submit + Listening",
@@ -1380,7 +1383,9 @@ const FeatureEntry::FeatureVariation
         {"Arm 3: Wave + Transcript, manual submit + Listening",
          kVoiceSearchCoherenceRealboxArm3Params, nullptr},
         {"Arm 4: Wave + Transcript, 3s auto endpoint + Listening",
-         kVoiceSearchCoherenceRealboxArm4Params, nullptr}};
+         kVoiceSearchCoherenceRealboxArm4Params, nullptr},
+        {"Arm 5: Legacy voice search UI, updated model",
+         kVoiceSearchCoherenceRealboxArm5Params, nullptr}};
 
 const FeatureEntry::FeatureParam
     kVoiceSearchCoherenceComposeboxCobrowsingParams[] = {

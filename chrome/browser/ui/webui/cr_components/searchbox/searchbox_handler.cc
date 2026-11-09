@@ -351,6 +351,9 @@ bool SearchboxHandler::GetVoiceSearchCoherenceCobrowsingComposeboxEnabled() {
 // Returns if the new voice search animation/metrics/stop button are enabled,
 // regardless of transcription.
 bool SearchboxHandler::GetVoiceSearchCoherenceAnySearchboxExperimentEnabled() {
+  if (omnibox::kVoiceSearchCoherenceRealboxKeepLegacyUi.Get()) {
+    return false;
+  }
   return base::FeatureList::IsEnabled(
              omnibox::kVoiceSearchCoherenceSearchbox) ||
          omnibox::kVoiceSearchCoherenceSearchboxWithLiveTranscription.Get();
