@@ -291,6 +291,8 @@ TabGroupHeaderView::TabGroupHeaderView(
   views::HighlightPathGenerator::Install(
       this, std::make_unique<views::RoundRectHighlightPathGenerator>(
                 gfx::Insets(kFocusRingInset), GetCornerRadius()));
+
+  set_context_menu_controller(this);
 }
 
 TabGroupHeaderView::~TabGroupHeaderView() = default;

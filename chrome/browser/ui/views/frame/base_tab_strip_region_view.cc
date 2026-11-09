@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_drag_handler.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
@@ -313,8 +314,15 @@ views::View* BaseTabStripRegionView::GetTabGroupAnchorView(
 
   if (const TabGroup* tab_group =
           tab_strip_model_->group_model()->GetTabGroup(group)) {
-    return root_node_->GetNodeForHandle(tab_group->GetCollectionHandle())
-        ->view();
+    if (const TabCollectionNode* node =
+            root_node_->GetNodeForHandle(tab_group->GetCollectionHandle())) {
+      if (orientation_ == TabStripOrientation::kHorizontal) {
+        if (auto* group_view = views::AsViewClass<TabGroupView>(node->view())) {
+          return group_view->group_header();
+        }
+      }
+      return node->view();
+    }
   }
 
   return nullptr;

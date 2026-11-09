@@ -248,8 +248,16 @@ class TabDragTest
     if (static_cast<size_t>(group_index) >= groups.size()) {
       return nullptr;
     }
-    return views::AsViewClass<TabGroupView>(
-        GetTabStripRegionView()->GetTabGroupAnchorView(groups[group_index]));
+    RootTabCollectionNode* root_node =
+        GetTabStripRegionView()->root_node_for_testing();
+    const TabGroup* tab_group =
+        model->group_model()->GetTabGroup(groups[group_index]);
+    return root_node && tab_group
+               ? views::AsViewClass<TabGroupView>(
+                     root_node
+                         ->GetNodeForHandle(tab_group->GetCollectionHandle())
+                         ->view())
+               : nullptr;
   }
 
   views::View* GetTabViewAt(int tab_index) {
@@ -456,10 +464,18 @@ class TabDragTest
       handling = GetUnpinnedContainer();
     }
     TabStripModel* model = browser()->GetTabStripModel();
+    RootTabCollectionNode* root_node =
+        GetTabStripRegionView()->root_node_for_testing();
     for (const tab_groups::TabGroupId& group_id :
          model->group_model()->ListTabGroups()) {
-      auto* group_view = views::AsViewClass<TabGroupView>(
-          GetTabStripRegionView()->GetTabGroupAnchorView(group_id));
+      const TabGroup* tab_group = model->group_model()->GetTabGroup(group_id);
+      auto* group_view =
+          root_node && tab_group
+              ? views::AsViewClass<TabGroupView>(
+                    root_node
+                        ->GetNodeForHandle(tab_group->GetCollectionHandle())
+                        ->view())
+              : nullptr;
       if (group_view && group_view->IsHandlingDrag()) {
         EXPECT_EQ(nullptr, handling);
         handling = group_view;
@@ -2248,10 +2264,8 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
   views::test::RunScheduledLayout(&GetBrowserView());
   ASSERT_FALSE(tab_strip_model->IsGroupCollapsed(group_id));
 
-  auto* group_view = views::AsViewClass<TabGroupView>(
-      GetBrowserView().tab_strip_view()->GetTabGroupAnchorView(group_id));
-  ASSERT_NE(nullptr, group_view);
-  views::View* group_header = group_view->group_header();
+  views::View* group_header =
+      GetBrowserView().tab_strip_view()->GetTabGroupAnchorView(group_id);
   ASSERT_NE(nullptr, group_header);
 
   // A long press that ends without dragging (or where kGestureLongTap is

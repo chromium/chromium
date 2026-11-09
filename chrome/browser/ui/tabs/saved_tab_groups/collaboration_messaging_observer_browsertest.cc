@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/strings/strcat.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -304,7 +305,8 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   tab_group_header->OnMouseReleased(event);
 
   // Tab 2 should be hidden. Do all tests on this tab.
-  EXPECT_FALSE(GetTabIcon(browser(), 2)->IsDrawn());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !GetTabIcon(browser(), 2)->IsDrawn(); }));
 
   // CHIP messages set the message in TabFeatures
   auto tab2_id =

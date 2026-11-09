@@ -1228,10 +1228,12 @@ class HorizontalTabGroupViewBrowserTest : public InProcessBrowserTest {
       widget->SetBounds(bounds);
     }
     widget->LayoutRootViewIfNecessary();
-    return views::AsViewClass<TabGroupView>(
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->tab_strip_view()
-            ->GetTabGroupAnchorView(group_id));
+    views::View* group_header = BrowserView::GetBrowserViewForBrowser(browser())
+                                    ->tab_strip_view()
+                                    ->GetTabGroupAnchorView(group_id);
+    return group_header
+               ? views::AsViewClass<TabGroupView>(group_header->parent())
+               : nullptr;
   }
 
   void ToggleCollapse(TabGroupView* group_view,

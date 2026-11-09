@@ -25,6 +25,8 @@
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
@@ -187,7 +189,13 @@ IN_PROC_BROWSER_TEST_P(BaseTabStripRegionViewBrowserTest,
       model->group_model()->GetTabGroup(group_id.value());
   const TabCollectionNode* node =
       root_node()->GetNodeForHandle(tab_group->GetCollectionHandle());
-  EXPECT_EQ(node->view(), group_anchor_view);
+  if (is_horizontal()) {
+    auto* group_view = views::AsViewClass<TabGroupView>(node->view());
+    ASSERT_NE(nullptr, group_view);
+    EXPECT_EQ(group_view->group_header(), group_anchor_view);
+  } else {
+    EXPECT_EQ(node->view(), group_anchor_view);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(BaseTabStripRegionViewBrowserTest, CanFocusTabView) {
