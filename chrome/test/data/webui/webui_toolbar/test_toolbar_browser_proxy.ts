@@ -24,8 +24,8 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
   constructor() {
     super([
       'adjustOmniboxTextForCopy',
-      'bind',
       'executeExtensionAction',
+      'getInitialState',
       'invokePinnedToolbarAction',
       'moveExtensionAction',
       'moveExtensionActionBy',
@@ -67,8 +67,8 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
     ]);
   }
 
-  bind(): Promise<InitialState> {
-    this.methodCalled('bind');
+  getInitialState(): Promise<InitialState> {
+    this.methodCalled('getInitialState');
     return new Promise<never>(() => {});
   }
 

@@ -299,7 +299,7 @@ export class BrowserProxyImpl implements BrowserProxy {
   addToolbarStateListener(listener: ToolbarStateListener) {
     const handle =
         this.callbackRouter.onToolbarStateChanged.addListener(listener);
-    this.toolbarUIHandler.bind().then(fence => {
+    this.toolbarUIHandler.getInitialState().then(fence => {
       listener(fence.icons, fence.state);
       this.callbackRouter.$.bindHandle(fence.updateStream.handle);
     });

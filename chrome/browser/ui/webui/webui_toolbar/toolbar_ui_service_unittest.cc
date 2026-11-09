@@ -46,7 +46,7 @@ class Observer : public mojom::ToolbarUIObserver {
  public:
   explicit Observer(ToolbarUIService* service) {
     base::RunLoop run_loop;
-    service->Bind(base::BindLambdaForTesting(
+    service->GetInitialState(base::BindLambdaForTesting(
         [&](base::expected<mojom::InitialStatePtr, mojo_base::mojom::ErrorPtr>
                 result) {
           ASSERT_TRUE(result.has_value());

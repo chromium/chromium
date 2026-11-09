@@ -36,6 +36,9 @@ interface ToolbarUIObserver {
   ShowSplitTabsContextMenu();
 };
 
+// Initial state returned by ToolbarUIService.GetInitialState(). Contains the
+// toolbar state snapshot and an observer update stream which the client can
+// subscribe to for all updates since the snapshot.
 struct InitialState {
     array<IconUpdate> icons;
     ToolbarState state;
@@ -70,10 +73,17 @@ struct OverflowMenuItem {
 // ToolbarUIService defines methods to be called from the WebUI to the
 // browser-side to drive UI logic.
 interface ToolbarUIService {
-  // Binds an observer to the service. This is a synchronization point between
-  // the client and the browser. All subsequent updates after the initial
-  // data will be associated receiver.
-  Bind() => result<InitialState, mojo_base.mojom.Error>;
+  // Returns a snapshot of the current toolbar state together with an update
+  // stream which the client can subscribe to for all updates since the
+  // snapshot.
+  //
+  // This is a synchronization point between the client and the browser:
+  // because `update_stream` arrives in the same response as the snapshot, and
+  // updates sent before the client binds it are queued in the pipe, the client
+  // never observes an update before the snapshot it follows. Each call creates
+  // a new update stream; not calling it only means the client receives neither
+  // the initial state nor any updates.
+  GetInitialState() => result<InitialState, mojo_base.mojom.Error>;
 
   // Displays the context menu with the provided menu type at the provided
   // bounding rectangle in CSS pixels relative to the WebUIToolbarWebView's

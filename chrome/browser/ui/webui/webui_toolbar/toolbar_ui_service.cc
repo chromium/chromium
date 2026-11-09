@@ -79,7 +79,7 @@ void ToolbarUIService::OnToolbarStateChanged(const mojom::ToolbarState& state) {
   }
 }
 
-void ToolbarUIService::Bind(BindCallback callback) {
+void ToolbarUIService::GetInitialState(GetInitialStateCallback callback) {
   auto result = toolbar_ui_api::mojom::InitialState::New();
   result->state = state_fetcher_->GetToolbarState();
   result->icons = icon_table_fetcher_->GetFullState();

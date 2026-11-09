@@ -58,7 +58,7 @@ class ToolbarUIServiceConnectionManager {
       const ToolbarUIServiceConnectionManager&) = delete;
 
   void RegisterObserver() {
-    service_remote_->Bind(base::BindOnce(
+    service_remote_->GetInitialState(base::BindOnce(
         [](ToolbarUIServiceConnectionManager* self,
            base::expected<toolbar_ui_api::mojom::InitialStatePtr,
                           mojo_base::mojom::ErrorPtr> result) {

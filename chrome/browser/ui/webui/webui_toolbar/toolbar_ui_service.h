@@ -142,7 +142,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
   void FlushObserversForTesting();
 
   // toolbar_ui_api::mojom::ToolbarUIService:
-  void Bind(BindCallback callback) override;
+  void GetInitialState(GetInitialStateCallback callback) override;
   void ShowContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,
                        const gfx::RectF& bounds_in_css_pixels,
                        ui::mojom::MenuSourceType source,
