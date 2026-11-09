@@ -9,7 +9,6 @@
 # DO NOT ADD QUOTATION MARK AND TRAILING COMMA AT EACH LINE
 
 # b/549299789
-tast.secagentd.AuthenticationEvents
 tast.secagentd.FileEvents.cookies
 tast.secagentd.FileEvents.user_fs
 tast.secagentd.FileEvents.auth_factors
