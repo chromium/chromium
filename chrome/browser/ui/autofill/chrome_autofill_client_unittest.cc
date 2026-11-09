@@ -1497,6 +1497,17 @@ TEST_F(ChromeAutofillClientTest, GetOtpPhishGuardDelegate_FeatureDisabled) {
   EXPECT_EQ(client()->GetOtpPhishGuardDelegate(), nullptr);
 }
 
+TEST_F(ChromeAutofillClientTest, GetOtpCoordinator_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(features::kAutofillOtpCoordinator);
+  EXPECT_NE(client()->GetOtpCoordinator(), nullptr);
+}
+
+TEST_F(ChromeAutofillClientTest, GetOtpCoordinator_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillOtpCoordinator);
+  EXPECT_EQ(client()->GetOtpCoordinator(), nullptr);
+}
+
 class ChromeAutofillClientReauthAvailabilityTest : public testing::Test {
  protected:
   using CheckerFactory =

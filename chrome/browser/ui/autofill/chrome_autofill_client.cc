@@ -136,6 +136,7 @@
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_coordinator.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_result.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_coordinator.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_metrics_tracker.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
@@ -195,6 +196,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/page_type.h"
@@ -1616,6 +1618,47 @@ ChromeAutofillClient::GetContentCredentialManager() {
 
 OtpFieldDetector* ChromeAutofillClient::GetOtpFieldDetector() {
   return otp_field_detector_.get();
+}
+
+ChromeAutofillClient::OtpTabActivityObserver::OtpTabActivityObserver(
+    ChromeAutofillClient* client)
+    : content::WebContentsObserver(client->web_contents()), client_(*client) {}
+
+void ChromeAutofillClient::OtpTabActivityObserver::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (client_->otp_coordinator_) {
+    client_->otp_coordinator_->OnTabVisibilityChanged(
+        visibility == content::Visibility::VISIBLE);
+  }
+}
+
+void ChromeAutofillClient::OtpTabActivityObserver::OnWebContentsFocused(
+    content::RenderWidgetHost* render_widget_host) {
+  if (client_->otp_coordinator_) {
+    client_->otp_coordinator_->OnWindowFocusChanged(true);
+  }
+}
+
+void ChromeAutofillClient::OtpTabActivityObserver::OnWebContentsLostFocus(
+    content::RenderWidgetHost* render_widget_host) {
+  if (client_->otp_coordinator_) {
+    client_->otp_coordinator_->OnWindowFocusChanged(false);
+  }
+}
+
+OtpCoordinator* ChromeAutofillClient::GetOtpCoordinator() {
+  if (!otp_coordinator_ &&
+      base::FeatureList::IsEnabled(features::kAutofillOtpCoordinator)) {
+    otp_coordinator_ = std::make_unique<OtpCoordinator>(this);
+    if (web_contents()) {
+      otp_coordinator_->OnTabVisibilityChanged(
+          web_contents()->GetVisibility() == content::Visibility::VISIBLE);
+      content::RenderWidgetHostView* rwhv =
+          web_contents()->GetRenderWidgetHostView();
+      otp_coordinator_->OnWindowFocusChanged(rwhv && rwhv->HasFocus());
+    }
+  }
+  return otp_coordinator_.get();
 }
 
 OtpMetricsTracker* ChromeAutofillClient::GetOtpMetricsTracker() {

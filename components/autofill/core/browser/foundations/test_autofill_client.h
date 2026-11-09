@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_coordinator.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_metrics_tracker.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
@@ -795,6 +796,7 @@ class TestAutofillClientTemplate : public T {
 
   void set_sms_otp_service(
       std::unique_ptr<one_time_tokens::SmsOtpService> sms_otp_service) {
+    otp_coordinator_.reset();
     injected_sms_otp_service_ = std::move(sms_otp_service);
   }
 
@@ -805,6 +807,7 @@ class TestAutofillClientTemplate : public T {
 
   void set_gmail_otp_service(
       std::unique_ptr<one_time_tokens::GmailOtpService> gmail_otp_service) {
+    otp_coordinator_.reset();
     injected_gmail_otp_service_ = std::move(gmail_otp_service);
   }
 
@@ -834,6 +837,18 @@ class TestAutofillClientTemplate : public T {
   void set_otp_field_detector(
       std::unique_ptr<OtpFieldDetector> otp_field_detector) {
     otp_field_detector_ = std::move(otp_field_detector);
+  }
+
+  void set_otp_coordinator(std::unique_ptr<OtpCoordinator> otp_coordinator) {
+    otp_coordinator_ = std::move(otp_coordinator);
+  }
+
+  OtpCoordinator* GetOtpCoordinator() override {
+    if (!otp_coordinator_ &&
+        base::FeatureList::IsEnabled(features::kAutofillOtpCoordinator)) {
+      otp_coordinator_ = std::make_unique<OtpCoordinator>(this);
+    }
+    return otp_coordinator_.get();
   }
 
  private:
@@ -983,6 +998,7 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<TestVotesUploader> votes_uploader_;
 
   raw_ptr<affiliations::AffiliationService> affiliation_service_ = nullptr;
+  std::unique_ptr<OtpCoordinator> otp_coordinator_;
 
   base::WeakPtrFactory<TestAutofillClientTemplate> weak_ptr_factory_{this};
 };

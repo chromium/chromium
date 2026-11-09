@@ -958,6 +958,10 @@ BASE_FEATURE(kAutofillOnlyConsiderSingleFieldFormsAsSearchForms,
 BASE_FEATURE(kAutofillOptimizeIsNormalizedNameVariantOf,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, uses the tab-scoped `OtpCoordinator` and per-frame
+// `OtpTabToFrameOrchestrator` instead of `OtpManagerImpl`.
+BASE_FEATURE(kAutofillOtpCoordinator, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables detection of language from Translate.
 // TODO(crbug.com/40158074): Cleanup when launched.
 BASE_FEATURE(kAutofillPageLanguageDetection, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -12,26 +12,33 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_coordinator.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/one_time_tokens/core/browser/fake_sms_otp_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
@@ -105,14 +112,9 @@ class OtpTabToFrameOrchestratorTest
         std::make_unique<FakeOtpPhishGuardDelegate>());
 
     CreateAutofillDriver();
-    coordinator_ = std::make_unique<OtpCoordinator>(&autofill_client());
-    orchestrator_ = std::make_unique<OtpTabToFrameOrchestrator>(
-        &autofill_manager(), coordinator_.get());
   }
 
   void TearDown() override {
-    orchestrator_.reset();
-    coordinator_.reset();
     sms_otp_service_ = nullptr;
     DestroyAutofillClient();
   }
@@ -138,8 +140,8 @@ class OtpTabToFrameOrchestratorTest
         .AddSeenFormStructure(std::move(form_structure));
     test_api(autofill_manager()).OnFormsParsed({form});
 
-    orchestrator_->OnFieldTypesDetermined(
-        autofill_manager(), form_id,
+    autofill_manager().NotifyObservers(
+        &AutofillManager::Observer::OnFieldTypesDetermined, form_id,
         AutofillManager::Observer::FieldTypeSource::kAutofillServer,
         /*small_forms_were_parsed=*/false);
     return *autofill_manager().FindCachedFormById(form_id);
@@ -148,7 +150,9 @@ class OtpTabToFrameOrchestratorTest
   std::vector<OneTimeToken> QuerySuggestions(const FormStructure& form,
                                              const FormFieldData& field) {
     base::test::TestFuture<std::vector<OneTimeToken>> future;
-    orchestrator_->GetOtpSuggestions(form, field, future.GetCallback());
+    test_api(autofill_manager())
+        .otp_manager()
+        ->GetOtpSuggestions(form, field, future.GetCallback());
     return future.Take();
   }
 
@@ -158,12 +162,12 @@ class OtpTabToFrameOrchestratorTest
         OneTimeToken(OneTimeTokenType::kSmsOtp, code, base::TimeTicks::Now()));
   }
 
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillOtpCoordinator};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   raw_ptr<one_time_tokens::FakeSmsOtpService> sms_otp_service_ = nullptr;
-  std::unique_ptr<OtpCoordinator> coordinator_;
-  std::unique_ptr<OtpTabToFrameOrchestrator> orchestrator_;
 };
 
 // Tests that OTP suggestions are served on all fields of an OTP form and that
@@ -176,8 +180,9 @@ TEST_F(OtpTabToFrameOrchestratorTest,
 
   EXPECT_THAT(QuerySuggestions(form, *field0), IsEmpty());
 
-  orchestrator_->OnBeforeFocusOnFormField(autofill_manager(), form.global_id(),
-                                          field1->global_id());
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFocusOnFormField, form.global_id(),
+      field1->global_id());
   SendSmsOtp("654321");
 
   EXPECT_THAT(autofill_driver().triggered_fields(),
@@ -197,19 +202,22 @@ TEST_F(OtpTabToFrameOrchestratorTest,
   // proactive popup.
   FieldGlobalId non_otp_field(autofill_driver().GetFrameToken(),
                               FieldRendererId(999));
-  orchestrator_->OnBeforeFocusOnFormField(autofill_manager(), form.global_id(),
-                                          non_otp_field);
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFocusOnFormField, form.global_id(),
+      non_otp_field);
   SendSmsOtp("654321");
   EXPECT_THAT(autofill_driver().triggered_fields(), IsEmpty());
 
   // Query suggestions on `field0`, mark "654321" as shown, focus `field0`, and
   // resend "654321": no proactive trigger should fire.
   EXPECT_THAT(QuerySuggestions(form, *field0), HasValue("654321"));
-  orchestrator_->OnSuggestionsShown(
-      autofill_manager(),
-      {Suggestion(u"654321", SuggestionType::kOneTimePasswordEntry)});
-  orchestrator_->OnBeforeFocusOnFormField(autofill_manager(), form.global_id(),
-                                          field0->global_id());
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnSuggestionsShown,
+      std::vector<Suggestion>{
+          Suggestion(u"654321", SuggestionType::kOneTimePasswordEntry)});
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFocusOnFormField, form.global_id(),
+      field0->global_id());
   SendSmsOtp("654321");
   EXPECT_THAT(autofill_driver().triggered_fields(), IsEmpty());
 }
@@ -222,8 +230,9 @@ TEST_F(OtpTabToFrameOrchestratorTest, SuppressesProactiveTriggerOnNonOtpFocus) {
 
   FieldGlobalId non_otp_field(autofill_driver().GetFrameToken(),
                               FieldRendererId(999));
-  orchestrator_->OnBeforeFocusOnFormField(autofill_manager(), form.global_id(),
-                                          non_otp_field);
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFocusOnFormField, form.global_id(),
+      non_otp_field);
 
   SendSmsOtp("111111");
   EXPECT_THAT(autofill_driver().triggered_fields(), IsEmpty());
@@ -239,8 +248,12 @@ TEST_F(OtpTabToFrameOrchestratorTest,
 
   FieldGlobalId non_otp_field(autofill_driver().GetFrameToken(),
                               FieldRendererId(999));
-  orchestrator_->OnAfterTextFieldValueChanged(autofill_manager(),
-                                              form.global_id(), non_otp_field);
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeTextFieldValueChanged,
+      form.global_id(), non_otp_field);
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnAfterTextFieldValueChanged,
+      form.global_id(), non_otp_field);
   SendSmsOtp("222222");
   EXPECT_THAT(autofill_driver().triggered_fields(), IsEmpty());
   EXPECT_THAT(QuerySuggestions(form, *field), HasValue("222222"));
@@ -249,7 +262,8 @@ TEST_F(OtpTabToFrameOrchestratorTest,
   // allowing a proactive trigger on `form2` when a new OTP arrives.
   FormData submitted_form = form.ToFormData();
   test_api(submitted_form).field(0).set_value(u"222222");
-  orchestrator_->OnBeforeFormSubmitted(autofill_manager(), submitted_form);
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormSubmitted, submitted_form);
   EXPECT_THAT(QuerySuggestions(form, *field), IsEmpty());
 
   test_api(autofill_manager()).ClearFormStructures();
@@ -258,12 +272,50 @@ TEST_F(OtpTabToFrameOrchestratorTest,
   SendSmsOtp("222222");
   EXPECT_THAT(QuerySuggestions(form2, *form2.field(0)), IsEmpty());
 
-  orchestrator_->OnBeforeFocusOnFormField(autofill_manager(), form2.global_id(),
-                                          form2.field(0)->global_id());
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFocusOnFormField, form2.global_id(),
+      form2.field(0)->global_id());
   SendSmsOtp("333333");
   EXPECT_THAT(autofill_driver().triggered_fields(),
               ElementsAre(form2.field(0)->global_id()));
   EXPECT_THAT(QuerySuggestions(form2, *form2.field(0)), HasValue("333333"));
+}
+
+TEST_F(OtpTabToFrameOrchestratorTest,
+       FillOrPreviewFormMarksOtpConsumedAcrossFields) {
+  const FormStructure& form = AddOtpForm(/*fields=*/2);
+  const AutofillField* field0 = form.field(0);
+  const AutofillField* field1 = form.field(1);
+
+  SendSmsOtp("42");
+  EXPECT_THAT(QuerySuggestions(form, *field0), HasValue("42"));
+  EXPECT_THAT(QuerySuggestions(form, *field1), HasValue("42"));
+
+  OtpFillData fill_data = CreateFillDataForOtpSuggestion(form, *field0, u"42");
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kPreview, form.global_id(), field0->global_id(),
+      FillingProduct::kOneTimePassword, &fill_data,
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
+      /*blocked_fields=*/{});
+  EXPECT_THAT(QuerySuggestions(form, *field0), HasValue("42"));
+  EXPECT_THAT(QuerySuggestions(form, *field1), HasValue("42"));
+
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form.global_id(), field0->global_id(),
+      FillingProduct::kOneTimePassword, &fill_data,
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
+      /*blocked_fields=*/{field0->global_id(), field1->global_id()});
+  EXPECT_THAT(QuerySuggestions(form, *field0), HasValue("42"));
+  EXPECT_THAT(QuerySuggestions(form, *field1), HasValue("42"));
+
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form.global_id(), field0->global_id(),
+      FillingProduct::kOneTimePassword, &fill_data,
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
+      /*blocked_fields=*/{});
+
+  EXPECT_THAT(QuerySuggestions(form, *field0), IsEmpty());
+  EXPECT_THAT(QuerySuggestions(form, *field1), IsEmpty());
 }
 
 // Tests that destroying and recreating the frame orchestrator retains token
@@ -274,11 +326,7 @@ TEST_F(OtpTabToFrameOrchestratorTest,
   SendSmsOtp("333333");
   EXPECT_THAT(QuerySuggestions(form, *form.field(0)), HasValue("333333"));
 
-  // Match `BrowserAutofillManager::Reset()`, which constructs the new
-  // orchestrator before destroying the old one.
-  test_api(autofill_manager()).ClearFormStructures();
-  orchestrator_ = std::make_unique<OtpTabToFrameOrchestrator>(
-      &autofill_manager(), coordinator_.get());
+  test_api(autofill_manager()).Reset();
   const FormStructure& form2 = AddOtpForm();
   EXPECT_THAT(QuerySuggestions(form2, *form2.field(0)), HasValue("333333"));
 }
@@ -292,14 +340,16 @@ TEST_F(OtpTabToFrameOrchestratorTest,
   EXPECT_THAT(QuerySuggestions(form, *form.field(0)), HasValue("333333"));
 
   autofill_driver().SetIsActive(false);
-  orchestrator_->OnAutofillManagerStateChanged(
-      autofill_manager(), AutofillManager::LifecycleState::kActive,
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnAutofillManagerStateChanged,
+      AutofillManager::LifecycleState::kActive,
       AutofillManager::LifecycleState::kInactive);
   EXPECT_THAT(QuerySuggestions(form, *form.field(0)), IsEmpty());
 
   autofill_driver().SetIsActive(true);
-  orchestrator_->OnAutofillManagerStateChanged(
-      autofill_manager(), AutofillManager::LifecycleState::kInactive,
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnAutofillManagerStateChanged,
+      AutofillManager::LifecycleState::kInactive,
       AutofillManager::LifecycleState::kActive);
   EXPECT_THAT(QuerySuggestions(form, *form.field(0)), HasValue("333333"));
 }
@@ -312,16 +362,22 @@ TEST_F(OtpTabToFrameOrchestratorTest,
   EXPECT_EQ(sms_otp_service_->num_subscribers(), 1u);
 
   test_api(const_cast<FormStructure&>(form)).SetFieldTypes({NAME_FIRST});
-  orchestrator_->OnFieldTypesDetermined(
-      autofill_manager(), form.global_id(),
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form.global_id(),
       AutofillManager::Observer::FieldTypeSource::kAutofillServer,
       /*small_forms_were_parsed=*/false);
   EXPECT_EQ(sms_otp_service_->num_subscribers(), 0u);
 
   const FormStructure& form2 = AddOtpForm();
   EXPECT_EQ(sms_otp_service_->num_subscribers(), 1u);
-  orchestrator_->OnAfterFormsSeen(autofill_manager(), /*updated_forms=*/{},
-                                  /*removed_forms=*/{form2.global_id()});
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormsSeen,
+      /*updated_forms=*/std::vector<FormGlobalId>{},
+      /*removed_forms=*/std::vector<FormGlobalId>{form2.global_id()});
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnAfterFormsSeen,
+      /*updated_forms=*/std::vector<FormGlobalId>{},
+      /*removed_forms=*/std::vector<FormGlobalId>{form2.global_id()});
   EXPECT_EQ(sms_otp_service_->num_subscribers(), 0u);
 }
 

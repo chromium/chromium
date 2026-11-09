@@ -519,6 +519,10 @@ OtpFieldDetector* AutofillClient::GetOtpFieldDetector() {
   return nullptr;
 }
 
+OtpCoordinator* AutofillClient::GetOtpCoordinator() {
+  return nullptr;
+}
+
 OtpMetricsTracker* AutofillClient::GetOtpMetricsTracker() {
   return nullptr;
 }

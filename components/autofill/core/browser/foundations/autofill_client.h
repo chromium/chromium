@@ -150,6 +150,7 @@ class FormDataImporter;
 class FormFieldData;
 enum class GmailOtpOptInResult;
 class LogManager;
+class OtpCoordinator;
 class OtpFieldDetector;
 class OtpMetricsTracker;
 class OtpPhishGuardDelegate;
@@ -1023,6 +1024,10 @@ class AutofillClient {
 
   // May return null on platforms where OTPs are not supported.
   virtual OtpFieldDetector* GetOtpFieldDetector();
+
+  // Returns the tab-scoped `OtpCoordinator` when `kAutofillOtpCoordinator` is
+  // enabled, or null otherwise.
+  virtual OtpCoordinator* GetOtpCoordinator();
 
   // Returns the OtpMetricsTracker for the current tab. May return null on
   // platforms where it is not supported or when the feature is disabled.

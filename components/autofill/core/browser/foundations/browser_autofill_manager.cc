@@ -45,6 +45,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
@@ -85,9 +86,12 @@
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/form_cache_query_util.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_coordinator.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_impl.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_legacy_impl.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_tab_to_frame_orchestrator.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
@@ -132,10 +136,10 @@
 #include "components/autofill/core/browser/suggestions/payments/merchant_promo_code_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
-#include "components/autofill/core/browser/suggestions/trusted_vault/trusted_vault_error_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
+#include "components/autofill/core/browser/suggestions/trusted_vault/trusted_vault_error_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/valuables/valuable_suggestion_generator.h"
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
@@ -816,6 +820,9 @@ FilterSuggestionsByPrioritization(
 std::unique_ptr<OtpManager> CreateOtpManager(
     BrowserAutofillManager& owner,
     one_time_tokens::SmsOtpService* service) {
+  if (OtpCoordinator* coordinator = owner.client().GetOtpCoordinator()) {
+    return std::make_unique<OtpTabToFrameOrchestrator>(&owner, coordinator);
+  }
   if (base::FeatureList::IsEnabled(
           features::kAutofillShowGmailOtpSuggestions)) {
     return std::make_unique<OtpManagerImpl>(owner, service);
@@ -2959,9 +2966,28 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
                        // TODO(crbug.com/380367784): consider moving the
                        // notification to the delegate here.
                      },
-                     [&](const OtpFillData*) {
+                     [&](const OtpFillData* otp_fill_data) {
                        metrics_->otp_form_event_logger.OnDidFillOtpSuggestion(
                            form, trigger_field);
+                       if (OtpCoordinator* coordinator =
+                               client().GetOtpCoordinator();
+                           coordinator && !safe_filled_fields.empty()) {
+                         std::u16string filled_value;
+                         base::flat_set<FieldGlobalId> seen_fields;
+                         for (const auto& field : form.fields()) {
+                           if (seen_fields.insert(field->global_id()).second) {
+                             if (const std::u16string* value = base::FindOrNull(
+                                     *otp_fill_data, field->global_id())) {
+                               filled_value += *value;
+                             }
+                           }
+                         }
+                         if (!filled_value.empty()) {
+                           coordinator->OnOtpFilled(
+                               BuildOtpTarget(*this, form, trigger_field),
+                               base::UTF16ToUTF8(filled_value));
+                         }
+                       }
                      }},
       filling_payload);
 }

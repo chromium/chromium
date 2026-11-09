@@ -95,6 +95,7 @@ class EmailVerificationController;
 class EmailVerifierDelegate;
 class FormFieldData;
 class GmailOtpOptInCoordinator;
+class OtpCoordinator;
 class OtpFieldDetector;
 class OtpMetricsTracker;
 class ChromeOtpPhishGuardDelegate;
@@ -412,6 +413,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
       override;
 
   OtpFieldDetector* GetOtpFieldDetector() override;
+  OtpCoordinator* GetOtpCoordinator() override;
   OtpMetricsTracker* GetOtpMetricsTracker() override;
   OtpPhishGuardDelegate* GetOtpPhishGuardDelegate() override;
 
@@ -524,6 +526,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
   std::unique_ptr<EmailVerificationController> email_verification_controller_;
   std::unique_ptr<EmailVerifierDelegate> email_verifier_delegate_;
   std::unique_ptr<ChromeOtpPhishGuardDelegate> otp_phish_guard_delegate_;
+  std::unique_ptr<OtpCoordinator> otp_coordinator_;
   // Only exists on desktop, if the browser has a
   // `CustomFormControlScriptIndex`.
   std::unique_ptr<CustomFormControlScriptRunner>
@@ -536,6 +539,23 @@ class ChromeAutofillClient : public ContentAutofillClient {
   std::unique_ptr<ActorAutofillManager> actor_autofill_manager_;
 
   AtMemoryCopyPasteObserver at_memory_copy_paste_observer_{this};
+
+  class OtpTabActivityObserver : public content::WebContentsObserver {
+   public:
+    explicit OtpTabActivityObserver(ChromeAutofillClient* client);
+    ~OtpTabActivityObserver() override = default;
+
+    // content::WebContentsObserver:
+    void OnVisibilityChanged(content::Visibility visibility) override;
+    void OnWebContentsFocused(
+        content::RenderWidgetHost* render_widget_host) override;
+    void OnWebContentsLostFocus(
+        content::RenderWidgetHost* render_widget_host) override;
+
+   private:
+    const base::raw_ref<ChromeAutofillClient> client_;
+  };
+  OtpTabActivityObserver otp_tab_activity_observer_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 
