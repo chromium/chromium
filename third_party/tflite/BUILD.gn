@@ -397,6 +397,7 @@ if (!use_litert_tflite) {
       "//components/optimization_guide/internal/*",
       "//modules/*",
       "//services/webnn/*",
+      "//third_party/litert:*",
       "//third_party/mediapipe/*",
       "//third_party/webrtc/modules/*",
     ]

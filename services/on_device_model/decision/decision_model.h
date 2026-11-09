@@ -14,12 +14,14 @@
 
 namespace on_device_model {
 
+class LayaModel;
+
 class DecisionModel final : public mojom::DecisionModel {
  public:
   static std::unique_ptr<DecisionModel> Create(
       mojom::DecisionModelParamsPtr params);
 
-  explicit DecisionModel();
+  explicit DecisionModel(std::unique_ptr<LayaModel> model);
   ~DecisionModel() override;
 
   DecisionModel(const DecisionModel&) = delete;
@@ -31,6 +33,8 @@ class DecisionModel final : public mojom::DecisionModel {
       mojo::PendingReceiver<mojom::DecisionSession> session) override;
 
  private:
+  std::unique_ptr<LayaModel> model_;
+  // Declared after `model_` so sessions are destroyed before `model_`.
   mojo::UniqueReceiverSet<mojom::DecisionSession> sessions_;
 };
 

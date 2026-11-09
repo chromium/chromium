@@ -1,1 +1,6 @@
-include_rules = []
+include_rules = [
+  "+third_party/abseil-cpp",
+  "+third_party/flatbuffers",
+  "+third_party/litert",
+  "+third_party/sentencepiece",
+]

@@ -15,4 +15,52 @@ source_set("decision") {
   ]
 
   deps = []
+
+  if (!is_android && !is_fuchsia && !is_ios) {
+    sources += [
+      "laya_model.cc",
+      "laya_model.h",
+      "laya_query_adapter.cc",
+      "laya_query_adapter.h",
+    ]
+
+    deps += [
+      "//third_party/abseil-cpp:absl",
+      "//third_party/flatbuffers",
+      "//third_party/litert",
+      "//third_party/litert:buildflags",
+      "//third_party/sentencepiece",
+      "//third_party/sentencepiece:sentencepiece_proto",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (!is_android && !is_fuchsia && !is_ios) {
+    sources += [ "laya_model_unittest.cc" ]
+    deps += [
+      ":decision",
+      "//base/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/flatbuffers",
+      "//third_party/litert",
+      "//third_party/sentencepiece:sentencepiece_proto",
+    ]
+  }
+}
+
+if (!is_android && !is_fuchsia && !is_ios) {
+  executable("laya_model_main") {
+    sources = [ "laya_model_main.cc" ]
+    deps = [
+      ":decision",
+      "//base",
+      "//services/on_device_model/public/mojom",
+    ]
+  }
 }

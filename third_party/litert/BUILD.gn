@@ -659,14 +659,15 @@ tflite_static_library("litert_runtime") {
       ":tflite",
       ":tflite_builtin_op_resolver",
     ]
+  } else {
+    conditional_deps = [
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_builtin_op_resolver",
+    ]
   }
 
   if (build_litert_with_xnnpack) {
-    if (defined(conditional_deps)) {
-      conditional_deps += [ "//third_party/xnnpack" ]
-    } else {
-      conditional_deps = [ "//third_party/xnnpack" ]
-    }
+    conditional_deps += [ "//third_party/xnnpack" ]
   }
   configs_to_remove = [ "//build/config/compiler:chromium_code" ]
   configs_to_add = [
