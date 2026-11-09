@@ -21,7 +21,7 @@ bool StructTraits<blink::mojom::UntrustworthyContextMenuParamsDataView,
       !data.ReadLinkText(&out->link_text) ||
       !data.ReadUnfilteredLinkUrl(&out->unfiltered_link_url) ||
       !data.ReadSrcUrl(&out->src_url) ||
-      !data.ReadImageBounds(&out->image_bounds) ||
+      !data.ReadNodeBounds(&out->node_bounds) ||
       !data.ReadSelectionText(&out->selection_text) ||
       !data.ReadTitleText(&out->title_text) ||
       !data.ReadAltText(&out->alt_text) ||

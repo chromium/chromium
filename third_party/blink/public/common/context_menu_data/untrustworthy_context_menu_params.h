@@ -67,9 +67,9 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   bool has_image_contents;
 
   // For the outermost main frame's widget, this will be the bounds of the
-  // image in viewport space (in DIPs). For a local root, this is in the DIP
+  // node in viewport space (in DIPs). For a local root, this is in the DIP
   // coordinates of the local frame root.
-  gfx::Rect image_bounds;
+  gfx::Rect node_bounds;
 
   // The frame token of the replacement subframe if the context menu was invoked
   // on an image which has an active user agent replacement.

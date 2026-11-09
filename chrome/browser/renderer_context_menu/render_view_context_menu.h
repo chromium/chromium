@@ -350,6 +350,7 @@ class RenderViewContextMenu
   void AppendVideoItems();
   void AppendMediaItems();
   void AppendPluginItems();
+  bool IsFullPagePlugin() const;
   void AppendPageItems();
   void AppendExitFullscreenItem();
   void AppendCopyItem();
@@ -521,6 +522,17 @@ class RenderViewContextMenu
       supervised_user::WebFilteringResult result);
 
   void MaybeAppendOpenGlicItem(bool add_separator = true);
+  bool CanAppendGlicSmartSuggestionItem() const;
+  void AppendGlicSmartSuggestionItem(const std::u16string& label);
+
+  // Appends the Glic smart suggestion item at the top of the menu if the
+  // feature is enabled, the browser/profile/page are eligible (see
+  // `CanAppendGlicSmartSuggestionItem()`), the target is not a password field,
+  // and the context is a non-empty text selection, a valid image with non-empty
+  // bounds, an editable field with non-empty bounds, a page, or a full-page
+  // plugin. Note that this does not append an item on links (unless there is a
+  // text selection or valid image), as links are handled separately in
+  // `AppendLinkItems()` so the item is placed after the "Open link..." items.
   void MaybeAppendGlicSmartSuggestionItem();
 
   // Opens the Lens overlay to search a region defined by the given bounds of

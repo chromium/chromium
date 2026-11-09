@@ -85,6 +85,12 @@ class GlicSelectionObserver
   // panel from the context menu entry point.
   void UpdateSelectionStateFromContextMenu(const std::u16string& selected_text);
 
+  // Notifies the observer that the smart suggestion context menu was invoked
+  // on `selected_text`, ensuring the selection is tracked (and sent to the
+  // panel when open) even for selections in editable fields.
+  void UpdateSelectionStateFromSmartSuggestionContextMenu(
+      const std::u16string& selected_text);
+
   bool has_sent_selection_context() const {
     return has_sent_selection_context_;
   }

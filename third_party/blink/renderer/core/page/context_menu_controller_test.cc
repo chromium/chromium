@@ -1311,7 +1311,7 @@ TEST_F(ContextMenuControllerTest,
   EXPECT_EQ("http://test.png/", context_menu_data.src_url.spec());
   EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kImage,
             context_menu_data.media_type);
-  EXPECT_EQ(gfx::Rect(0, 0, 100, 100), context_menu_data.image_bounds);
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100), context_menu_data.node_bounds);
 
   histograms.ExpectBucketCount(
       "Blink.ContextMenu.ImageSelection.Outcome",
@@ -1366,7 +1366,7 @@ TEST_F(ContextMenuControllerTest, ContextMenuImageHitTestClippedImageBounds) {
   EXPECT_EQ("http://test.png/", context_menu_data.src_url.spec());
   EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kImage,
             context_menu_data.media_type);
-  EXPECT_EQ(gfx::Rect(20, 10, 40, 30), context_menu_data.image_bounds);
+  EXPECT_EQ(gfx::Rect(20, 10, 40, 30), context_menu_data.node_bounds);
 }
 
 // Test that image selection can penetrate through a fully transparent div
@@ -1411,7 +1411,7 @@ TEST_F(ContextMenuControllerTest, ContextMenuImageHitTestSucceededPenetrating) {
   EXPECT_EQ("http://test.png/", context_menu_data.src_url.spec());
   EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kImage,
             context_menu_data.media_type);
-  EXPECT_EQ(gfx::Rect(0, 0, 100, 100), context_menu_data.image_bounds);
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100), context_menu_data.node_bounds);
 
   histograms.ExpectBucketCount(
       "Blink.ContextMenu.ImageSelection.Outcome",
@@ -2750,6 +2750,59 @@ TEST_F(ContextMenuControllerTest, ImageReplacement) {
   EXPECT_TRUE(context_menu_data.image_replacement_frame_token.has_value());
   EXPECT_EQ(context_menu_data.image_replacement_frame_token,
             image_element->ReplacementFrameToken());
+}
+
+TEST_F(ContextMenuControllerTest, NodeBoundsForLinkAndEditableElements) {
+  frame_test_helpers::LoadHTMLString(
+      LocalMainFrame(), R"HTML(
+        <style>
+          body { margin: 0; }
+          #link {
+            position: fixed;
+            left: 10px;
+            top: 20px;
+            width: 80px;
+            height: 40px;
+            display: block;
+          }
+          #svg-child {
+            width: 80px;
+            height: 40px;
+          }
+          #input {
+            position: fixed;
+            left: 15px;
+            top: 70px;
+            width: 120px;
+            height: 30px;
+            box-sizing: border-box;
+          }
+        </style>
+        <a id="link" href="https://example.com">
+          <svg id="svg-child"><rect width="80" height="40"/></svg>
+        </a>
+        <input id="input" type="text" value="hello">
+      )HTML",
+      url_test_helpers::ToKURL("https://example.com/"));
+
+  Document* document = GetDocument();
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  Element* svg_child = document->getElementById(AtomicString("svg-child"));
+  ASSERT_TRUE(svg_child);
+  ASSERT_TRUE(ShowContextMenuForElement(
+      svg_child, ui::mojom::blink::MenuSourceType::kMouse));
+  ContextMenuData link_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(link_data.link_url, GURL("https://example.com/"));
+  EXPECT_EQ(link_data.node_bounds, gfx::Rect(10, 20, 80, 40));
+
+  Element* input = document->getElementById(AtomicString("input"));
+  ASSERT_TRUE(input);
+  ASSERT_TRUE(ShowContextMenuForElement(
+      input, ui::mojom::blink::MenuSourceType::kMouse));
+  ContextMenuData input_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_TRUE(input_data.is_editable);
+  EXPECT_EQ(input_data.node_bounds, gfx::Rect(15, 70, 120, 30));
 }
 
 }  // namespace blink

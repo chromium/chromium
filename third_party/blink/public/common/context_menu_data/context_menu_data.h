@@ -66,8 +66,8 @@ struct ContextMenuData {
   // Whether the image in context is a null.
   bool has_image_contents;
 
-  // Bounds of the image in context in viewport coordinates.
-  gfx::Rect image_bounds;
+  // Bounds of the node in context in viewport coordinates.
+  gfx::Rect node_bounds;
 
   // The frame token of the replacement subframe if the image in context has an
   // active user agent replacement.

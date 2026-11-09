@@ -129,6 +129,9 @@ void GlicContextMenuInvocationHelper::HandleSmartSuggestionClick(
 #if !BUILDFLAG(IS_ANDROID)
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&frame);
+  if (web_contents) {
+    web_contents = web_contents->GetResponsibleWebContents();
+  }
   if (!web_contents ||
       !GlicEnabling::IsEnabledForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
@@ -141,15 +144,23 @@ void GlicContextMenuInvocationHelper::HandleSmartSuggestionClick(
     return;
   }
 
-  // A text selection takes precedence over an image.
-  // Selections in editable fields are ignored.
+  // A text selection takes precedence over an image or element.
+  // Selections in password fields are ignored.
   gfx::Rect selection_bounds;
   auto interaction_options = selection::InteractionOptions::New();
   ::selection::EntryPoint entry_point =
       ::selection::EntryPoint::kContextMenuPage;
-  if (!params.is_editable &&
-      !base::TrimWhitespace(params.selection_text, base::TRIM_ALL).empty()) {
+  const bool is_password_field =
+      params.form_control_type == blink::mojom::FormControlType::kInputPassword;
+  std::u16string_view trimmed_selection =
+      base::TrimWhitespace(params.selection_text, base::TRIM_ALL);
+  if (!is_password_field && !trimmed_selection.empty()) {
     entry_point = ::selection::EntryPoint::kContextMenuText;
+    if (auto* observer = GlicSelectionObserver::From(
+            tabs::TabInterface::MaybeGetFromContents(web_contents))) {
+      observer->UpdateSelectionStateFromSmartSuggestionContextMenu(
+          std::u16string(trimmed_selection));
+    }
     selection_bounds =
         web_contents->GetTextSelectionBounds(&frame).value_or(gfx::Rect());
     if (!selection_bounds.IsEmpty()) {
@@ -157,21 +168,26 @@ void GlicContextMenuInvocationHelper::HandleSmartSuggestionClick(
       interaction_options->disable_multi_select = true;
       interaction_options->skip_intro_animation = true;
     }
-  } else if (params.media_type ==
-                 blink::mojom::ContextMenuDataMediaType::kImage &&
-             params.has_image_contents) {
-    entry_point = ::selection::EntryPoint::kContextMenuImage;
-    if (content::RenderWidgetHostView* view = frame.GetView()) {
-      gfx::Rect view_bounds = view->GetViewBounds();
-      selection_bounds = params.image_bounds;
-      selection_bounds.Intersect(gfx::Rect(view_bounds.size()));
-      selection_bounds.Offset(view_bounds.OffsetFromOrigin());
-      selection_bounds.Intersect(web_contents->GetViewBounds());
+  } else {
+    const bool is_image =
+        params.media_type == blink::mojom::ContextMenuDataMediaType::kImage;
+    if (is_image && params.has_image_contents) {
+      entry_point = ::selection::EntryPoint::kContextMenuImage;
     }
-    if (!selection_bounds.IsEmpty()) {
-      interaction_options->hide_handles = false;
-      interaction_options->disable_multi_select = true;
-      interaction_options->skip_intro_animation = true;
+    const bool is_broken_image = is_image && !params.has_image_contents;
+    if (!is_broken_image && !params.node_bounds.IsEmpty()) {
+      if (content::RenderWidgetHostView* view = frame.GetView()) {
+        gfx::Rect view_bounds = view->GetViewBounds();
+        selection_bounds = params.node_bounds;
+        selection_bounds.Intersect(gfx::Rect(view_bounds.size()));
+        selection_bounds.Offset(view_bounds.OffsetFromOrigin());
+        selection_bounds.Intersect(web_contents->GetViewBounds());
+      }
+      if (!selection_bounds.IsEmpty()) {
+        interaction_options->hide_handles = false;
+        interaction_options->disable_multi_select = true;
+        interaction_options->skip_intro_animation = true;
+      }
     }
   }
   controller->ShowWithSelection(&frame, selection_bounds,

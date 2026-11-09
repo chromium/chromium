@@ -814,10 +814,11 @@ void SelectionOverlayController::SetRegionFromBounds(
   session_->active_region_id.reset();
   session_->surrounding_text_timer.Stop();
   if (tab_ && tab_->GetContents()) {
-    // The bounds are an image only from the image context menu; every other
-    // entry point pre-selects text.
+    // The bounds are an element selection from the image or page context menu;
+    // every other entry point pre-selects text.
     bool is_text_selection =
-        session_->entry_point != ::selection::EntryPoint::kContextMenuImage;
+        session_->entry_point != ::selection::EntryPoint::kContextMenuImage &&
+        session_->entry_point != ::selection::EntryPoint::kContextMenuPage;
     if (auto region = CreateRegionFromBounds(
             selection_bounds, tab_->GetContents()->GetViewBounds(),
             /*apply_padding=*/is_text_selection)) {

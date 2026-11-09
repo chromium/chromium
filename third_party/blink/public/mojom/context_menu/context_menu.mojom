@@ -109,10 +109,10 @@ struct UntrustworthyContextMenuParams {
   // non-empty contents.
   bool has_image_contents;
 
-  // Bounds of the image that the context menu was invoked on, in DIP
+  // Bounds of the node that the context menu was invoked on, in DIP
   // coordinates of the local frame root (or viewport space for the outermost
   // main frame's widget).
-  gfx.mojom.Rect image_bounds;
+  gfx.mojom.Rect node_bounds;
 
   // The frame token of the replacement subframe if the context menu was
   // invoked on an image which has an active user agent replacement.

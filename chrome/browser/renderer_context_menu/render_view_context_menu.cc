@@ -2224,6 +2224,22 @@ void RenderViewContextMenu::AppendLinkItems() {
 
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 
+    // For links (without a text selection or valid image), the Glic smart
+    // suggestion item is added here rather than at the top of the menu via
+    // `MaybeAppendGlicSmartSuggestionItem` so that it does not appear before
+    // the "Open link..." items.
+    const bool is_broken_image =
+        params_.media_type == ContextMenuDataMediaType::kImage &&
+        !params_.has_image_contents;
+    if (CanAppendGlicSmartSuggestionItem() && !IsPasswordField() &&
+        !is_broken_image && !params_.node_bounds.IsEmpty() &&
+        !menu_model_
+             .GetIndexOfCommandId(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION)
+             .has_value()) {
+      AppendGlicSmartSuggestionItem(
+          l10n_util::GetStringUTF16(IDS_GLIC_CONTEXT_MENU_ASK_ABOUT_THIS));
+    }
+
     // Send-Tab-To-Self (user's other devices), link level.
     if (GetBrowser() && send_tab_to_self::ShouldDisplayEntryPoint(
                             embedder_web_contents_, params_.link_url)) {
@@ -2621,17 +2637,7 @@ void RenderViewContextMenu::AppendMediaItems() {
 }
 
 void RenderViewContextMenu::AppendPluginItems() {
-  bool is_full_page_oopif_pdf_viewer = false;
-#if BUILDFLAG(ENABLE_PDF)
-  is_full_page_oopif_pdf_viewer =
-      chrome_pdf::features::IsOopifPdfEnabled() && embedder_web_contents_ &&
-      embedder_web_contents_->GetContentsMimeType() == pdf::kPDFMimeType;
-#endif  // BUILDFLAG(ENABLE_PDF)
-
-  if (params_.page_url == params_.src_url ||
-      ((is_full_page_oopif_pdf_viewer ||
-        guest_view::GuestViewBase::IsGuest(GetRenderFrameHost())) &&
-       (!embedder_web_contents_ || !embedder_web_contents_->IsSavable()))) {
+  if (IsFullPagePlugin()) {
     // Both full page and embedded plugins are hosted as guest now,
     // the difference is a full page plugin is not considered as savable.
     // For full page plugin, we show page menu items so long as focus is not
@@ -2652,6 +2658,20 @@ void RenderViewContextMenu::AppendPluginItems() {
       menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
     }
   }
+}
+
+bool RenderViewContextMenu::IsFullPagePlugin() const {
+  bool is_full_page_oopif_pdf_viewer = false;
+#if BUILDFLAG(ENABLE_PDF)
+  is_full_page_oopif_pdf_viewer =
+      chrome_pdf::features::IsOopifPdfEnabled() && embedder_web_contents_ &&
+      embedder_web_contents_->GetContentsMimeType() == pdf::kPDFMimeType;
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+  return params_.page_url == params_.src_url ||
+         ((is_full_page_oopif_pdf_viewer ||
+           guest_view::GuestViewBase::IsGuest(GetRenderFrameHost())) &&
+          (!embedder_web_contents_ || !embedder_web_contents_->IsSavable()));
 }
 
 void RenderViewContextMenu::AppendPageItems() {
@@ -5947,22 +5967,51 @@ void RenderViewContextMenu::MaybeAppendOpenGlicItem(bool add_separator) {
   }
 }
 
+bool RenderViewContextMenu::CanAppendGlicSmartSuggestionItem() const {
+  return base::FeatureList::IsEnabled(features::kGlicSuggestionContextMenu) &&
+         IsNormalBrowser() && !IsAnyGlicWebContents(this) &&
+         glic::GlicEnabling::IsEnabledForProfile(GetProfile()) &&
+         IsPageContextEligible(embedder_web_contents_);
+}
+
+void RenderViewContextMenu::AppendGlicSmartSuggestionItem(
+    const std::u16string& label) {
+  menu_model_.AddItemWithIcon(
+      IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION, label,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kTextAnalysisIcon
+                                         : kTextAnalysisOldIcon,
+                                     ui::kColorMenuIcon, kTabMenuIconSize));
+  menu_model_.SetIsNewFeatureAt(
+      menu_model_.GetItemCount() - 1,
+      UserEducationService::MaybeShowNewBadge(
+          GetBrowserContext(), features::kGlicSuggestionContextMenu));
+  menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+}
+
 void RenderViewContextMenu::MaybeAppendGlicSmartSuggestionItem() {
-  if (!base::FeatureList::IsEnabled(features::kGlicSuggestionContextMenu) ||
-      !IsNormalBrowser() || IsAnyGlicWebContents(this) ||
-      !glic::GlicEnabling::IsEnabledForProfile(GetProfile()) ||
-      !IsPageContextEligible(source_web_contents_)) {
+  if (!CanAppendGlicSmartSuggestionItem() || IsPasswordField()) {
     return;
   }
-  // Selections in editable fields, including password fields, are excluded.
   const bool has_selection =
-      !params_.is_editable &&
       !base::TrimWhitespace(params_.selection_text, base::TRIM_ALL).empty();
   const bool is_image = content_type_->SupportsGroup(
-      ContextMenuContentType::ITEM_GROUP_MEDIA_IMAGE);
+                            ContextMenuContentType::ITEM_GROUP_MEDIA_IMAGE) &&
+                        params_.has_image_contents &&
+                        !params_.node_bounds.IsEmpty();
+  if (!has_selection && !is_image &&
+      content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_LINK)) {
+    return;
+  }
+  const bool is_editable = content_type_->SupportsGroup(
+                               ContextMenuContentType::ITEM_GROUP_EDITABLE) &&
+                           !params_.node_bounds.IsEmpty();
   const bool is_page =
-      content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE);
-  if (!has_selection && !is_image && !is_page) {
+      content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE) ||
+      (content_type_->SupportsGroup(
+           ContextMenuContentType::ITEM_GROUP_MEDIA_PLUGIN) &&
+       IsFullPagePlugin());
+  if (!has_selection && !is_image && !is_editable && !is_page) {
     return;
   }
 
@@ -5978,24 +6027,14 @@ void RenderViewContextMenu::MaybeAppendGlicSmartSuggestionItem() {
     EscapeAmpersands(&printable_selection_text);
     label = l10n_util::GetStringFUTF16(
         IDS_GLIC_CONTEXT_MENU_ASK_ABOUT_SELECTION, printable_selection_text);
-  } else if (is_image) {
-    label = l10n_util::GetStringUTF16(IDS_GLIC_CONTEXT_MENU_ASK_ABOUT_THIS);
-  } else {
+  } else if (is_page) {
     label =
         l10n_util::GetStringUTF16(IDS_GLIC_CONTEXT_MENU_ASK_ABOUT_THIS_PAGE);
+  } else {
+    label = l10n_util::GetStringUTF16(IDS_GLIC_CONTEXT_MENU_ASK_ABOUT_THIS);
   }
 
-  menu_model_.AddItemWithIcon(
-      IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION, label,
-      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                         ? kTextAnalysisIcon
-                                         : kTextAnalysisOldIcon,
-                                     ui::kColorMenuIcon, kTabMenuIconSize));
-  menu_model_.SetIsNewFeatureAt(
-      menu_model_.GetItemCount() - 1,
-      UserEducationService::MaybeShowNewBadge(
-          GetBrowserContext(), features::kGlicSuggestionContextMenu));
-  menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+  AppendGlicSmartSuggestionItem(label);
 }
 
 void RenderViewContextMenu::ExecPictureInPicture() {

@@ -247,6 +247,16 @@ void GlicSelectionObserver::UpdateSelectionStateFromContextMenu(
                        SelectionSource::kContextMenu);
 }
 
+void GlicSelectionObserver::UpdateSelectionStateFromSmartSuggestionContextMenu(
+    const std::u16string& selected_text) {
+  ResetPendingSelection();
+  if (last_selected_text_ == selected_text && has_sent_selection_context_) {
+    return;
+  }
+  UpdateSelectionState(selected_text, /*is_pending_selection=*/false,
+                       SelectionSource::kAutomatic);
+}
+
 void GlicSelectionObserver::DismissUI(DismissReason reason) {
   bounds_retry_count_ = 0;
   ResetPendingSelection();
