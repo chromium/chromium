@@ -124,8 +124,9 @@ TEST_F(BrowserActionManifestTest,
         }
       })");
   ASSERT_TRUE(manifest_value.is_dict());
-  LoadAndExpectError(ManifestData(std::move(manifest_value).TakeDict()),
-                     errors::kInvalidIconPath);
+  std::u16string error =
+      ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidIconPath, "19");
+  LoadAndExpectError(ManifestData(std::move(manifest_value).TakeDict()), error);
 }
 
 }  // namespace
