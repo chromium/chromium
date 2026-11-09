@@ -52,11 +52,14 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/console_message_storage.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
@@ -452,6 +455,131 @@ TEST_F(LocalDOMWindowTest, AlwaysOnTopUseCounters) {
       "window.open('about:blank', '_blank', 'popup,alwaysOnTop=true')")
       ->RunScript(GetFrame().DomWindow());
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWindowOpenAlwaysOnTop));
+}
+
+namespace {
+
+class MoveResizeRecordingChromeClient : public EmptyChromeClient {
+ public:
+  void SetWindowRect(const gfx::Rect& rect, LocalFrame&) override {
+    window_rect_ = rect;
+    ++set_window_rect_count_;
+  }
+  void MoveWindowTo(const gfx::Point& origin, LocalFrame&) override {
+    window_rect_.set_origin(origin);
+    ++move_count_;
+  }
+  void ResizeWindowTo(const gfx::Size& size, LocalFrame&) override {
+    window_rect_.set_size(size);
+    ++resize_count_;
+  }
+  gfx::Rect RootWindowRect(LocalFrame&) override { return window_rect_; }
+
+  const gfx::Rect& window_rect() const { return window_rect_; }
+  int move_count() const { return move_count_; }
+  int resize_count() const { return resize_count_; }
+  int set_window_rect_count() const { return set_window_rect_count_; }
+
+ private:
+  gfx::Rect window_rect_{10, 20, 300, 200};
+  int move_count_ = 0;
+  int resize_count_ = 0;
+  int set_window_rect_count_ = 0;
+};
+
+class LocalDOMWindowMoveResizeTest : public LocalDOMWindowTest {
+ protected:
+  void SetUp() override {
+    chrome_client_ = MakeGarbageCollected<MoveResizeRecordingChromeClient>();
+    SetupPageWithClients(chrome_client_);
+  }
+
+  Persistent<MoveResizeRecordingChromeClient> chrome_client_;
+};
+
+}  // namespace
+
+TEST_F(LocalDOMWindowMoveResizeTest,
+       AlwaysOnTopPopupMoveAndResizeRestrictions) {
+  LocalDOMWindow* window = GetFrame().DomWindow();
+  GetFrame().GetPage()->SetAlwaysOnTopPopup(true);
+  ASSERT_TRUE(window->alwaysOnTopPopup());
+
+  // 1. moveTo() and moveBy() are no-ops without user activation.
+  window->moveTo(100, 150);
+  window->moveBy(50, 60);
+  EXPECT_EQ(gfx::Point(10, 20), chrome_client_->window_rect().origin());
+  EXPECT_EQ(0, chrome_client_->move_count());
+  EXPECT_EQ(0, chrome_client_->set_window_rect_count());
+
+  // 2. moveTo() and moveBy() remain no-ops even with transient user activation.
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::blink::UserActivationNotificationType::kTest);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  window->moveTo(100, 150);
+  window->moveBy(50, 60);
+  EXPECT_EQ(gfx::Point(10, 20), chrome_client_->window_rect().origin());
+  EXPECT_EQ(0, chrome_client_->move_count());
+  EXPECT_EQ(0, chrome_client_->set_window_rect_count());
+
+  // Clear transient user activation before testing resize without activation.
+  EXPECT_TRUE(LocalFrame::ConsumeTransientUserActivation(&GetFrame()));
+  ASSERT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+
+  // 3. resizeTo() and resizeBy() throw NotAllowedError without transient user
+  // activation.
+  {
+    DummyExceptionStateForTesting exception_state;
+    window->resizeTo(400, 300, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(DOMExceptionCode::kNotAllowedError,
+              exception_state.CodeAs<DOMExceptionCode>());
+    EXPECT_EQ(gfx::Size(300, 200), chrome_client_->window_rect().size());
+    EXPECT_EQ(0, chrome_client_->resize_count());
+  }
+  {
+    DummyExceptionStateForTesting exception_state;
+    window->resizeBy(50, 40, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(DOMExceptionCode::kNotAllowedError,
+              exception_state.CodeAs<DOMExceptionCode>());
+    EXPECT_EQ(gfx::Size(300, 200), chrome_client_->window_rect().size());
+    EXPECT_EQ(0, chrome_client_->resize_count());
+  }
+
+  // 4. resizeTo() succeeds with transient user activation and consumes it.
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::blink::UserActivationNotificationType::kTest);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  {
+    DummyExceptionStateForTesting exception_state;
+    window->resizeTo(400, 300, exception_state);
+    EXPECT_FALSE(exception_state.HadException());
+    EXPECT_EQ(gfx::Size(400, 300), chrome_client_->window_rect().size());
+    EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  }
+
+  // A subsequent resizeTo() without new user activation must fail.
+  {
+    DummyExceptionStateForTesting exception_state;
+    window->resizeTo(500, 400, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(DOMExceptionCode::kNotAllowedError,
+              exception_state.CodeAs<DOMExceptionCode>());
+    EXPECT_EQ(gfx::Size(400, 300), chrome_client_->window_rect().size());
+  }
+
+  // 5. resizeBy() succeeds with transient user activation and consumes it.
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::blink::UserActivationNotificationType::kTest);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  {
+    DummyExceptionStateForTesting exception_state;
+    window->resizeBy(50, 40, exception_state);
+    EXPECT_FALSE(exception_state.HadException());
+    EXPECT_EQ(gfx::Size(450, 340), chrome_client_->window_rect().size());
+    EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  }
 }
 
 TEST_F(LocalDOMWindowTest, OutgoingReferrerUrlCaching) {

@@ -3154,4 +3154,92 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestAlwaysOnTop,
       blink::mojom::WebFeature::kWindowOpenAlwaysOnTop, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestAlwaysOnTop,
+                       AlwaysOnTopPopupMoveAndResizeRestrictions) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL opener_url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), opener_url));
+
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingDefaultScope(opener_url, opener_url,
+                                      ContentSettingsType::WINDOW_MANAGEMENT,
+                                      CONTENT_SETTING_ALLOW);
+
+  ui_test_utils::BrowserCreatedObserver observer;
+  ASSERT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "window.open('about:blank', 'popup', "
+                      "'alwaysontop=true,width=300,height=200');"));
+  BrowserWindowInterface* popup_browser = observer.Wait();
+  ASSERT_TRUE(popup_browser);
+  ASSERT_EQ(popup_browser->GetType(),
+            BrowserWindowInterface::Type::TYPE_FLOATING);
+
+  content::WebContents* popup_contents =
+      popup_browser->GetActiveTabInterface()->GetContents();
+  ASSERT_TRUE(popup_contents);
+  ASSERT_EQ(true, content::EvalJs(popup_contents, "window.alwaysOnTopPopup",
+                                  content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // 1. moveTo() and moveBy() must be disabled both without and with user
+  // activation.
+  const gfx::Point initial_origin =
+      popup_browser->GetWindow()->GetBounds().origin();
+  const int target_x = initial_origin.x() > 100 ? 40 : 140;
+  const int target_y = initial_origin.y() > 100 ? 40 : 140;
+  EXPECT_TRUE(content::ExecJs(
+      popup_contents,
+      content::JsReplace("window.moveTo($1, $2); window.moveBy(25, 25);",
+                         target_x, target_y),
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(initial_origin, popup_browser->GetWindow()->GetBounds().origin());
+
+  EXPECT_TRUE(content::ExecJs(
+      popup_contents,
+      content::JsReplace("window.moveTo($1, $2); window.moveBy(25, 25);",
+                         target_x, target_y)));
+  EXPECT_EQ(initial_origin, popup_browser->GetWindow()->GetBounds().origin());
+
+  // 2. resizeTo() and resizeBy() require and consume transient user activation.
+  const int initial_outer_width =
+      content::EvalJs(popup_contents, "window.outerWidth",
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+          .ExtractInt();
+  EXPECT_EQ(initial_outer_width + 40,
+            content::EvalJs(
+                popup_contents,
+                "new Promise(resolve => {"
+                "  window.addEventListener('resize', () => "
+                "resolve(window.outerWidth),"
+                "                          {once: true});"
+                "  window.resizeTo(window.outerWidth + 40, window.outerHeight);"
+                "  if (navigator.userActivation.isActive) {"
+                "    resolve(-1);"
+                "  }"
+                "});"));
+  EXPECT_EQ(
+      "NotAllowedError",
+      content::EvalJs(
+          popup_contents,
+          "try { window.resizeTo(360, 260); 'ok'; } catch (e) { e.name; }",
+          content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  EXPECT_EQ(initial_outer_width + 60,
+            content::EvalJs(popup_contents,
+                            "new Promise(resolve => {"
+                            "  window.addEventListener('resize', () => "
+                            "resolve(window.outerWidth),"
+                            "                          {once: true});"
+                            "  window.resizeBy(20, 0);"
+                            "  if (navigator.userActivation.isActive) {"
+                            "    resolve(-1);"
+                            "  }"
+                            "});"));
+  EXPECT_EQ("NotAllowedError",
+            content::EvalJs(
+                popup_contents,
+                "try { window.resizeBy(10, 10); 'ok'; } catch (e) { e.name; }",
+                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+}
+
 }  // namespace
