@@ -17,8 +17,8 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
-#include "chrome/common/logging_chrome.h"
 #include "chromeos/ash/components/logging/log_file_util.h"
+#include "chromeos/ash/components/logging/session_log.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
@@ -53,7 +53,7 @@ void ReinitializeLoggingForProcessHost(ProcessHost* process_host,
                                     std::move(log_file_descriptor));
 }
 
-void LogFileSetUp(const base::CommandLine& command_line,
+void LogFileSetUp(logging::LoggingDestination logging_dest,
                   const base::FilePath& log_path,
                   const base::FilePath& target_path) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
@@ -61,7 +61,7 @@ void LogFileSetUp(const base::CommandLine& command_line,
   // The |log_path| is the new log file after log rotation. so it shouldn't be
   // deleted even if it already exists.
   logging::LoggingSettings settings;
-  settings.logging_dest = logging::DetermineLoggingDestination(command_line);
+  settings.logging_dest = logging_dest;
   settings.log_file_path = log_path.value().c_str();
   if (!logging::InitLogging(settings)) {
     DLOG(ERROR) << "Unable to initialize logging to " << log_path.value();
@@ -118,9 +118,24 @@ void RedirectChromeLogging(const base::CommandLine& command_line) {
     return;
   }
 
+  // Keep the current logging destination, which is initialized on the process
+  // startup.
+  const logging::LoggingDestination logging_dest =
+      logging::GetLoggingDestination();
+  if (!(logging_dest & logging::LOG_TO_FILE)) {
+    LOG(WARNING) << "NOT redirecting logging, because logging to a file is "
+                 << "not enabled.";
+    return;
+  }
+
+  // The current log file is the one initialized on the process startup.
+  const base::FilePath current_log_path(logging::GetLogFileFullPath());
+  CHECK(!current_log_path.empty());
+
   // Redirect logs to the session log directory, if set.  Otherwise
   // defaults to the profile dir.
-  const base::FilePath log_path = logging::GetSessionLogFile(command_line);
+  const base::FilePath log_path =
+      GetSessionLogDir().Append(current_log_path.BaseName());
 
   LOG(WARNING) << "Redirecting post-login logging to " << log_path.value();
 
@@ -128,7 +143,7 @@ void RedirectChromeLogging(const base::CommandLine& command_line) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&SetUpLogFile, log_path, /*new_log=*/true),
-      base::BindOnce(&LogFileSetUp, command_line, log_path));
+      base::BindOnce(&LogFileSetUp, logging_dest, log_path));
 }
 
 }  // namespace ash
