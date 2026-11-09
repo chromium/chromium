@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ttc/core/session_view_impl.h"
 
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/states.h"
@@ -349,6 +350,30 @@ IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest,
     CheckHasSession(true)
   );
   // clang-format on
+}
+
+// Closing the last tabbed window ends the session, even with a popup still
+// open: no window is left to show the plate in or to supply page context.
+IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest,
+                       ClosingLastTabbedWindowEndsSession) {
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(TtcVoicePlate::kViewElementId)
+  );
+  // clang-format on
+
+  BrowserWindowInterface* const popup_browser =
+      CreateBrowserForPopup(profile());
+  ui_test_utils::WaitForBrowserSetLastActive(popup_browser);
+
+  TtcKeyedService& service = ttc_service();
+  CloseBrowserSynchronously(browser());
+  // `browser()` is gone; point the fixture at the popup.
+  SetBrowser(popup_browser);
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&service]() { return !service.is_session_active(); }));
 }
 
 }  // namespace

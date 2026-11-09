@@ -360,11 +360,9 @@ source_set("browser_tests") {
     sources += [ "voice_focused_contents_tracker_browsertest.cc" ]
     deps += [
       "//chrome/browser/glic/test_support",
-      "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/ttc/app:browser_tests",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
-      "//components/keep_alive_registry",
       "//third_party/blink/public/common",
     ]
   }

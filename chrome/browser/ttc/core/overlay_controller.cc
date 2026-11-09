@@ -71,17 +71,23 @@ void OverlayController::OnBrowserClosed(BrowserWindowInterface* browser) {
   // closes, so FindTabbedBrowser() skips them. Other shutdown paths, such as
   // ChromeOS session end, may not, so also skip the move once shutdown has
   // started; otherwise each closing window would get new views.
-  if (!browser_shutdown::HasShutdownStarted()) {
+  const bool shutting_down = browser_shutdown::HasShutdownStarted();
+  if (!shutting_down) {
     MoveToWindow(
         browser_collection_observation_.GetSource()->FindTabbedBrowser());
-  }
-  if (anchored_browser_ != browser) {
-    return;
+    if (anchored_browser_ != browser) {
+      return;
+    }
   }
 
-  // The views are recreated when a tabbed window is next activated.
   anchored_browser_ = nullptr;
   views_.clear();
+
+  // No tabbed window is left to show the views in or to supply page context,
+  // so end the session rather than keep listening with no UI.
+  if (!shutting_down) {
+    delegate_->EndSessionAsync();
+  }
 }
 
 void OverlayController::MoveToWindow(BrowserWindowInterface* browser) {

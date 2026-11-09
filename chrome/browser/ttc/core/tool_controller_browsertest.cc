@@ -105,16 +105,12 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"  // nogncheck
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"  // nogncheck
 #include "chrome/browser/glic/test_support/glic_browser_test.h"  // nogncheck
-#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/core/task_source_info.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "ui/base/base_window.h"
 #endif
 
@@ -2071,32 +2067,6 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshot) {
   EXPECT_GT(bitmap.height(), 0);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshotNoActiveTab) {
-  ttc_service().StartSession();
-  auto* session_controller = ttc_service().session_controller();
-  ASSERT_TRUE(session_controller);
-
-  Profile* test_profile = profile();
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
-                             KeepAliveRestartOption::DISABLED);
-  ScopedProfileKeepAlive profile_keep_alive(
-      test_profile, ProfileKeepAliveOrigin::kBrowserWindow);
-  CloseBrowserSynchronously(browser());
-
-  base::test::TestFuture<ToolResponse> future;
-  ToolRequest tool_request;
-  tool_request.name = "get_screenshot";
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
-
-  ToolResponse response = future.Take();
-  EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kTabWentAway);
-
-  SetBrowser(CreateBrowser(test_profile));
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshotDisallowedUrl) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -2208,11 +2178,11 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
       embedded_https_test_server().GetURL("example.com", "/title1.html")));
   content::WaitForCopyableViewInWebContents(web_contents());
 
-  Profile* test_profile = profile();
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
-                             KeepAliveRestartOption::DISABLED);
-  ScopedProfileKeepAlive profile_keep_alive(
-      test_profile, ProfileKeepAliveOrigin::kBrowserWindow);
+  // Closing the last tabbed window would end the session, so keep another one
+  // open behind the window being captured.
+  BrowserWindowInterface* const other_browser = CreateBrowser(profile());
+  browser()->GetWindow()->Activate();
+  ui_test_utils::WaitForBrowserSetLastActive(browser());
 
   base::WaitableEvent allow_safety_check;
   actor::SafetyListManager::GetInstance()->SetLoadSafetyListsClosure(
@@ -2233,10 +2203,12 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
 
   allow_safety_check.Signal();
 
+  // Focus has moved to the other window's tab, so the captured page is gone.
   ToolResponse response = future.Take();
-  EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kTabWentAway);
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kScreenshotCaptureFailed);
 
-  SetBrowser(CreateBrowser(test_profile));
+  SetBrowser(other_browser);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
