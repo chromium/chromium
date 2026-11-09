@@ -3648,6 +3648,19 @@
     <message name="IDS_SETTINGS_PASSPHRASE_RECOVER" desc="Message about how to recover from a lost passphrase.">
       If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>reset sync<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
     </message>
+    <!-- TODO(crbug.com/570417844): Remove translateable="false" once the strings are finalized. -->
+    <message name="IDS_SETTINGS_DEVICE_TAB_VISIBILITY_TITLE" translateable="false" desc="Title of the Device tab visibility setting row and subpage in Chrome Settings.">
+      Device tab visibility
+    </message>
+    <message name="IDS_SETTINGS_DEVICE_TAB_VISIBILITY_SUBLABEL" translateable="false" desc="Sublabel for the Device tab visibility setting row in Chrome Settings.">
+      Choose which device tabs appear in your tab list
+    </message>
+    <message name="IDS_SETTINGS_DEVICE_TAB_VISIBILITY_DESCRIPTION" translateable="false" desc="Description text on the Device tab visibility subpage in Chrome Settings, explaining how to choose which devices appear in the tab list and linking to Google Account device activity to remotely sign out of a device.">
+      Choose which devices appear in your tab list. To remotely sign out of a device, manage them <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>here<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
+    </message>
+    <message name="IDS_SETTINGS_DEVICE_TAB_VISIBILITY_NO_DEVICES" translateable="false" desc="Message shown on the Device tab visibility subpage when no synced devices are available.">
+      No synced devices found
+    </message>
     <message name="IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_TITLE" desc="Title of the personalize Google services section. When clicked, takes the user to the Google Activity Controls.">
       Control how your browsing history is used to personalize Search and more
     </message>

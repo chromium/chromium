@@ -199,6 +199,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, DefaultBrowser) {
 }
 #endif
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, DeviceTabVisibilityPage) {
+  RunTest("settings/device_tab_visibility_page_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, DoNotTrackToggle) {
   RunTest("settings/do_not_track_toggle_test.js", "mocha.run()");
 }

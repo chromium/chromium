@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/settings/device_tab_visibility_handler.h"
 
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -30,7 +29,6 @@ namespace settings {
 
 namespace {
 
-using FormFactor = syncer::DeviceInfo::FormFactor;
 using sync_sessions::OpenTabsUIDelegate;
 using sync_sessions::SessionSyncPrefs;
 using sync_sessions::SessionSyncService;
@@ -43,37 +41,18 @@ using syncer::RemoteDeviceInfo;
 constexpr char kDeviceTabVisibilityListChangedEvent[] =
     "device-tab-visibility-list-changed";
 
-// Maps `form_factor` to the device icon category expected by the Settings
-// WebUI (`"phone"`, `"tablet"`, or `"desktop"`). Non-mobile form factors fall
-// back to `"desktop"` because the subpage only renders phone, tablet, and
-// desktop icons.
-std::string_view GetFormFactorString(FormFactor form_factor) {
-  switch (form_factor) {
-    case FormFactor::kPhone:
-      return "phone";
-    case FormFactor::kTablet:
-      return "tablet";
-    case FormFactor::kDesktop:
-    case FormFactor::kAutomotive:
-    case FormFactor::kWearable:
-    case FormFactor::kTv:
-    case FormFactor::kUnknown:
-      return "desktop";
-  }
-}
-
 // Serializes `session` and its local `visible` state into the
 // `DeviceTabVisibilityEntry` dictionary structure consumed by the WebUI.
 base::DictValue BuildSessionDictionary(const SyncedSession& session,
                                        bool visible) {
   return base::DictValue()
-      .Set("tag", session.GetSessionTag())
-      .Set("name", session.GetSessionName())
+      .Set("sessionTag", session.GetSessionTag())
+      .Set("deviceName", session.GetSessionName())
       .Set("lastActiveTime",
            base::UTF16ToUTF8(RemoteDeviceInfo::GetLastActiveTimeForDisplay(
                session.GetModifiedTime(),
                /*has_high_precision_timestamp=*/true)))
-      .Set("formFactor", GetFormFactorString(session.GetDeviceFormFactor()))
+      .Set("formFactor", static_cast<int>(session.GetDeviceFormFactor()))
       .Set("visible", visible);
 }
 

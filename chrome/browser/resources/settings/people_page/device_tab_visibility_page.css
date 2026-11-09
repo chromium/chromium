@@ -1,0 +1,42 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=../settings_shared_lit.css.js
+ * #include=cr-shared-style-lit settings-shared-lit
+ * #css_wrapper_metadata_end */
+
+#description {
+  padding: 0 var(--cr-section-padding) 8px;
+}
+
+#deviceList,
+#noDevicesLabel {
+  padding-inline-start: var(--cr-section-padding);
+}
+
+#deviceList .list-item cr-icon {
+  fill: var(--cr-secondary-text-color);
+  margin-inline-end: 20px;
+}
+
+.device-content {
+  align-items: center;
+  border-bottom: var(--cr-separator-line);
+  display: flex;
+  flex: 1;
+  min-height: var(--cr-section-min-height);
+}
+
+.device-content > .cr-padded-text {
+  flex: 1;
+}
+
+#noDevicesLabel {
+  padding-bottom: var(--cr-section-vertical-padding);
+  padding-top: var(--cr-section-vertical-padding);
+}

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/settings_localized_strings_provider.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -2568,8 +2569,22 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_SYNC_DISCONNECT_DELETE_PROFILE_WARNING_WITH_COUNTS_PLURAL},
       {"deleteProfileWarningWithoutCounts",
        IDS_SETTINGS_SYNC_DISCONNECT_DELETE_PROFILE_WARNING_WITHOUT_COUNTS},
+      {"deviceTabVisibilityTitle", IDS_SETTINGS_DEVICE_TAB_VISIBILITY_TITLE},
+      {"deviceTabVisibilitySublabel",
+       IDS_SETTINGS_DEVICE_TAB_VISIBILITY_SUBLABEL},
+      {"deviceTabVisibilityNoDevices",
+       IDS_SETTINGS_DEVICE_TAB_VISIBILITY_NO_DEVICES},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddString(
+      "deviceTabVisibilityDescription",
+      l10n_util::GetStringFUTF8(IDS_SETTINGS_DEVICE_TAB_VISIBILITY_DESCRIPTION,
+                                base::ASCIIToUTF16(std::string_view(
+                                    chrome::kGoogleAccountDeviceActivityURL))));
+  html_source->AddBoolean(
+      "enableDeviceTabVisibilitySettings",
+      base::FeatureList::IsEnabled(syncer::kDeviceTabVisibilitySettings));
 
 #if !BUILDFLAG(IS_CHROMEOS)
   html_source->AddLocalizedString(

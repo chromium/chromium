@@ -57,8 +57,8 @@ constexpr char kListChangedEvent[] = "device-tab-visibility-list-changed";
 constexpr char kWebUIResponse[] = "cr.webUIResponse";
 constexpr char kWebUIListenerCallback[] = "cr.webUIListenerCallback";
 
-constexpr char kTagKey[] = "tag";
-constexpr char kNameKey[] = "name";
+constexpr char kSessionTagKey[] = "sessionTag";
+constexpr char kDeviceNameKey[] = "deviceName";
 constexpr char kFormFactorKey[] = "formFactor";
 constexpr char kLastActiveTimeKey[] = "lastActiveTime";
 constexpr char kVisibleKey[] = "visible";
@@ -74,26 +74,22 @@ constexpr char kDesktopName[] = "MacBook Pro";
 constexpr char kUnknownTag[] = "unknown_tag";
 constexpr char kUnknownName[] = "Linux Workstation";
 
-constexpr char kPhoneFormFactor[] = "phone";
-constexpr char kTabletFormFactor[] = "tablet";
-constexpr char kDesktopFormFactor[] = "desktop";
-
 constexpr int kTabletActiveMinutes = 5;
 constexpr int kDesktopActiveHours = 3;
 constexpr int kUnknownActiveDays = 2;
 
 MATCHER_P5(IsDeviceEntry,
-           tag,
-           name,
+           session_tag,
+           device_name,
            form_factor,
            last_active_time,
            visible,
            "") {
   return ExplainMatchResult(
       IsJson(base::DictValue()
-                 .Set(kTagKey, tag)
-                 .Set(kNameKey, name)
-                 .Set(kFormFactorKey, form_factor)
+                 .Set(kSessionTagKey, session_tag)
+                 .Set(kDeviceNameKey, device_name)
+                 .Set(kFormFactorKey, static_cast<int>(form_factor))
                  .Set(kLastActiveTimeKey, last_active_time)
                  .Set(kVisibleKey, visible)),
       arg, result_listener);
@@ -218,9 +214,8 @@ TEST_F(DeviceTabVisibilityHandlerTest, GetListWhenDelegateUnavailable) {
 // states from `SessionSyncPrefs`.
 TEST_F(DeviceTabVisibilityHandlerTest, GetListPopulatesDevices) {
   const base::Time now = base::Time::Now();
-  // Add sessions spanning each supported form factor and active-time bucket
-  // (future/< 1 min, minutes, hours, days). `FormFactor::kUnknown` falls back
-  // to `"desktop"`.
+  // Add sessions spanning multiple form factors and active-time buckets
+  // (future/< 1 min, minutes, hours, days).
   fake_open_tabs_ui_delegate().AddForeignSession(CreateSyncedSession(
       kPhoneTag, kPhoneName, now + base::Seconds(10), FormFactor::kPhone));
   fake_open_tabs_ui_delegate().AddForeignSession(CreateSyncedSession(
@@ -240,21 +235,21 @@ TEST_F(DeviceTabVisibilityHandlerTest, GetListPopulatesDevices) {
   EXPECT_THAT(
       web_ui()->call_data(),
       ElementsAre(IsWebUIListResponse(ElementsAre(
-          IsDeviceEntry(kPhoneTag, kPhoneName, kPhoneFormFactor,
+          IsDeviceEntry(kPhoneTag, kPhoneName, FormFactor::kPhone,
                         GetStringUTF8(IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_NOW),
                         true),
           IsDeviceEntry(
-              kTabletTag, kTabletName, kTabletFormFactor,
+              kTabletTag, kTabletName, FormFactor::kTablet,
               GetPluralStringFUTF8(IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_MINUTES,
                                    kTabletActiveMinutes),
               false),
           IsDeviceEntry(
-              kDesktopTag, kDesktopName, kDesktopFormFactor,
+              kDesktopTag, kDesktopName, FormFactor::kDesktop,
               GetPluralStringFUTF8(IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_HOURS,
                                    kDesktopActiveHours),
               true),
           IsDeviceEntry(
-              kUnknownTag, kUnknownName, kDesktopFormFactor,
+              kUnknownTag, kUnknownName, FormFactor::kUnknown,
               GetPluralStringFUTF8(IDS_SEND_TAB_TO_SELF_DEVICE_LAST_UPDATE_DAYS,
                                    kUnknownActiveDays),
               true)))));

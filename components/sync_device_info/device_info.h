@@ -187,6 +187,7 @@ class DeviceInfo {
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync_device_info
   //
+  // LINT.IfChange(FormFactor)
   enum class FormFactor {
     kUnknown = 0,
     kDesktop = 1,
@@ -196,6 +197,7 @@ class DeviceInfo {
     kWearable = 5,
     kTv = 6,
   };
+  // LINT.ThenChange(//chrome/browser/resources/settings/people_page/device_tab_visibility_browser_proxy.ts:FormFactor)
 
   // Tracks the per-device user opt-in and readiness state for the Glic
   // experimental triggering feature.

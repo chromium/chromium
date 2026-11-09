@@ -103,6 +103,7 @@ import './people_page/import_data_dialog.js';
 import './people_page/manage_profile.js';
 // </if>
 import './people_page/account_page.js';
+import './people_page/device_tab_visibility_page.js';
 import './people_page/google_services_page.js';
 import './people_page/signout_dialog.js';
 import './people_page/sync_controls_page.js';
@@ -247,6 +248,9 @@ export {PageColors} from './page_colors.mojom-webui.js';
 // </if>
 
 export {SettingsAccountPageElement} from './people_page/account_page.js';
+export {DeviceTabVisibilityBrowserProxyImpl, SyncedDeviceFormFactor} from './people_page/device_tab_visibility_browser_proxy.js';
+export type {DeviceTabVisibilityBrowserProxy, DeviceTabVisibilityEntry} from './people_page/device_tab_visibility_browser_proxy.js';
+export {SettingsDeviceTabVisibilityPageElement} from './people_page/device_tab_visibility_page.js';
 export {SettingsGoogleServicesPageElement} from './people_page/google_services_page.js';
 // <if expr="not is_chromeos">
 export {ImportDataBrowserProxyImpl, ImportDataStatus} from './people_page/import_data_browser_proxy.js';
