@@ -2130,7 +2130,9 @@ TextAttributeMap BrowserAccessibility::GetSpellingAndGrammarAttributes() const {
              BrowserAccessibilityManager::NextTextOnlyObject(
                  InternalGetFirstChild());
          static_text; static_text = static_text->InternalGetNextSibling()) {
-      CHECK(static_text->IsDescendantOf(this), base::NotFatalUntil::M163);
+      // TODO(crbug.com/582860926): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(static_text->IsDescendantOf(this));
       TextAttributeMap text_spelling_attributes =
           static_text->GetSpellingAndGrammarAttributes();
       for (auto& attribute : text_spelling_attributes) {
