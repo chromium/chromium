@@ -101,6 +101,7 @@ class NamedTrack;
 namespace cc {
 
 class BrowserControlsOffsetManagerInterface;
+struct BrowserControlsAnimationParams;
 class CompositorFrameReportingController;
 class RasterDarkModeFilter;
 class DebugRectHistory;
@@ -703,6 +704,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   BrowserControlsOffsetManagerInterface* browser_controls_manager() {
     return browser_controls_offset_manager_.get();
   }
+  // Animates the browser controls as dictated by the browser process. Only
+  // valid when the browser process owns the controls position.
+  void SetBrowserControlsAnimation(
+      const BrowserControlsAnimationParams& params);
   const GlobalStateThatImpactsTilePriority& global_tile_state() {
     return global_tile_state_;
   }

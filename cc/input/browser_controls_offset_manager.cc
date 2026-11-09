@@ -16,9 +16,11 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
+#include "cc/input/browser_controls_animation_params.h"
 #include "cc/input/browser_controls_offset_manager_client.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -432,6 +434,11 @@ void BrowserControlsOffsetManager::OnBrowserControlsParamsChanged(
 
   UpdateOldBrowserControlsParams();
   client().SetCurrentBrowserControlsShownRatio(new_top_ratio, new_bottom_ratio);
+}
+
+void BrowserControlsOffsetManager::SetAnimation(
+    const BrowserControlsAnimationParams& params) {
+  NOTREACHED() << "Only valid when the browser owns the controls position";
 }
 
 void BrowserControlsOffsetManager::ScrollBegin() {

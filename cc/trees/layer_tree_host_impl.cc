@@ -646,6 +646,11 @@ void LayerTreeHostImpl::UpdateBrowserControlsState(
       constraints, current, animate, offset_tag_modifications);
 }
 
+void LayerTreeHostImpl::SetBrowserControlsAnimation(
+    const BrowserControlsAnimationParams& params) {
+  browser_controls_offset_manager_->SetAnimation(params);
+}
+
 bool LayerTreeHostImpl::HasScrollLinkedAnimation(ElementId for_scroller) const {
   return mutator_host_->HasScrollLinkedAnimation(for_scroller);
 }

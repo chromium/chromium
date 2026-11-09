@@ -59,6 +59,7 @@ cc_component("cc") {
     "input/actively_scrolling_type.h",
     "input/browser_controls_animation.cc",
     "input/browser_controls_animation.h",
+    "input/browser_controls_animation_params.h",
     "input/browser_controls_offset_manager.cc",
     "input/browser_controls_offset_manager.h",
     "input/browser_controls_offset_manager_cib.cc",

@@ -50,6 +50,7 @@ class CC_EXPORT BrowserControlsOffsetManager
   std::pair<float, float> BottomControlsShownRatioRange() override;
   bool HasAnimation() override;
   void OnBrowserControlsParamsChanged(bool animate_changes) override;
+  void SetAnimation(const BrowserControlsAnimationParams& params) override;
   void ScrollBegin() override;
   gfx::Vector2dF ScrollBy(const gfx::Vector2dF& pending_delta,
                           bool is_inertial) override;

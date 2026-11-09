@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "cc/input/browser_controls_animation_params.h"
 #include "cc/input/browser_controls_offset_manager_client.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_offset_tags.h"
@@ -65,6 +66,7 @@ class TestBrowserControlsOffsetManager
   }
   bool HasAnimation() override { return false; }
   void OnBrowserControlsParamsChanged(bool animate_changes) override {}
+  void SetAnimation(const BrowserControlsAnimationParams& params) override {}
   void ScrollBegin() override {}
   gfx::Vector2dF ScrollBy(const gfx::Vector2dF& pending_delta,
                           bool is_inertial) override {

@@ -32,6 +32,7 @@
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/base/features.h"
+#include "cc/input/browser_controls_animation_params.h"
 #include "cc/input/browser_controls_offset_manager_interface.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/main_thread_scrolling_reason.h"
@@ -2466,6 +2467,15 @@ class LayerTreeHostImplControlsInBrowserTest
         ->scroll_tree_mutable()
         .UpdateScrollOffsetBaseForTesting(outer_scroll->element_id(),
                                           gfx::PointF(0, 200));
+    // The setup above requested a frame; the tests assert on new requests.
+    did_request_next_frame_ = false;
+  }
+
+ protected:
+  void AnimateFrame(base::TimeTicks frame_time) {
+    BeginImplFrameAndAnimate(
+        viz::CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 1),
+        frame_time);
   }
 };
 
@@ -2481,6 +2491,95 @@ TEST_P(LayerTreeHostImplControlsInBrowserTest, ScrollDoesNotMoveControls) {
   EXPECT_FLOAT_EQ(1.0f,
                   host_impl_->active_tree()->CurrentTopControlsShownRatio());
   EXPECT_EQ(250, CurrentScrollOffset(OuterViewportScrollLayer()).y());
+  EXPECT_FALSE(host_impl_->browser_controls_manager()->HasAnimation());
+}
+
+constexpr base::TimeTicks kFrameStartTime =
+    base::TimeTicks() + base::Milliseconds(1000);
+
+// A zero-duration animation applies `top` and `bottom` on the next frame.
+BrowserControlsAnimationParams InstantParams(float top, float bottom) {
+  return BrowserControlsAnimationParams{
+      .target_top_controls_visible_height = top,
+      .target_bottom_controls_visible_height = bottom,
+  };
+}
+
+TEST_P(LayerTreeHostImplControlsInBrowserTest,
+       ZeroDurationAnimationCounterScrolls) {
+  ASSERT_EQ(1.f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  ASSERT_EQ(200, CurrentScrollOffset(OuterViewportScrollLayer()).y());
+
+  // Hide the top controls. Nothing moves until the next frame, which applies
+  // the ratio and counter-scrolls the page by the change in the top controls
+  // height together, so that the content stays in place on screen.
+  host_impl_->SetBrowserControlsAnimation(InstantParams(0.f, 0.f));
+  EXPECT_EQ(1.f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  EXPECT_TRUE(host_impl_->browser_controls_manager()->HasAnimation());
+  EXPECT_TRUE(did_request_next_frame_);
+
+  AnimateFrame(kFrameStartTime);
+  EXPECT_EQ(0.f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  EXPECT_EQ(200 - top_controls_height_,
+            CurrentScrollOffset(OuterViewportScrollLayer()).y());
+  EXPECT_FALSE(host_impl_->browser_controls_manager()->HasAnimation());
+
+  // Showing the controls again counter-scrolls the page back down.
+  host_impl_->SetBrowserControlsAnimation(
+      InstantParams(top_controls_height_, 0.f));
+  AnimateFrame(kFrameStartTime);
+  EXPECT_EQ(1.f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  EXPECT_EQ(200, CurrentScrollOffset(OuterViewportScrollLayer()).y());
+}
+
+TEST_P(LayerTreeHostImplControlsInBrowserTest,
+       ZeroDurationAnimationAtPageTopDoesNotScroll) {
+  ASSERT_EQ(1.f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+
+  auto* outer_scroll = OuterViewportScrollLayer();
+  outer_scroll->layer_tree_impl()
+      ->property_trees()
+      ->scroll_tree_mutable()
+      .UpdateScrollOffsetBaseForTesting(outer_scroll->element_id(),
+                                        gfx::PointF());
+
+  host_impl_->SetBrowserControlsAnimation(InstantParams(0.f, 0.f));
+  AnimateFrame(kFrameStartTime);
+  EXPECT_EQ(0.f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  EXPECT_EQ(0, CurrentScrollOffset(outer_scroll).y());
+  EXPECT_FALSE(host_impl_->browser_controls_manager()->HasAnimation());
+}
+
+TEST_P(LayerTreeHostImplControlsInBrowserTest,
+       SetBrowserControlsAnimationCounterScrollsEveryFrame) {
+  ASSERT_EQ(1.f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  ASSERT_EQ(200, CurrentScrollOffset(OuterViewportScrollLayer()).y());
+
+  // Hide the top controls over 200ms with a linear curve so that the expected
+  // values are exact.
+  host_impl_->SetBrowserControlsAnimation(BrowserControlsAnimationParams{
+      .target_top_controls_visible_height = 0,
+      .target_bottom_controls_visible_height = 0,
+      .duration = base::Milliseconds(200),
+  });
+  EXPECT_TRUE(host_impl_->browser_controls_manager()->HasAnimation());
+  EXPECT_TRUE(did_request_next_frame_);
+
+  // The first frame starts the animation at the current ratio.
+  AnimateFrame(kFrameStartTime);
+  EXPECT_EQ(1.f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  EXPECT_EQ(200, CurrentScrollOffset(OuterViewportScrollLayer()).y());
+
+  // Halfway: 25px of the controls are hidden and the page is counter-scrolled
+  // by the same amount.
+  AnimateFrame(kFrameStartTime + base::Milliseconds(100));
+  EXPECT_EQ(0.5f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  EXPECT_EQ(175, CurrentScrollOffset(OuterViewportScrollLayer()).y());
+  EXPECT_TRUE(host_impl_->browser_controls_manager()->HasAnimation());
+
+  AnimateFrame(kFrameStartTime + base::Milliseconds(200));
+  EXPECT_EQ(0.f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  EXPECT_EQ(150, CurrentScrollOffset(OuterViewportScrollLayer()).y());
   EXPECT_FALSE(host_impl_->browser_controls_manager()->HasAnimation());
 }
 

@@ -10,6 +10,7 @@
 
 #include "base/time/time.h"
 #include "cc/cc_export.h"
+#include "cc/input/browser_controls_animation.h"
 #include "cc/input/browser_controls_offset_manager_interface.h"
 #include "cc/input/browser_controls_state.h"
 #include "components/viz/common/quads/offset_tag.h"
@@ -18,11 +19,13 @@
 namespace cc {
 
 class BrowserControlsOffsetManagerClient;
+struct BrowserControlsAnimationParams;
 
 // Browser-controls offset manager for Controls-in-Browser (CIB). Runs in the
 // renderer compositor, and in its Viz display tree when TreesInViz is enabled;
 // never in the browser process. The browser process owns the controls
-// position; this class does not move or animate the controls.
+// position; this class only applies the positions and animations that the
+// browser process sends.
 class CC_EXPORT BrowserControlsOffsetManagerCib
     : public BrowserControlsOffsetManagerInterface {
  public:
@@ -40,6 +43,7 @@ class CC_EXPORT BrowserControlsOffsetManagerCib
   std::pair<float, float> BottomControlsShownRatioRange() override;
   bool HasAnimation() override;
   void OnBrowserControlsParamsChanged(bool animate_changes) override;
+  void SetAnimation(const BrowserControlsAnimationParams& params) override;
   void ScrollBegin() override;
   gfx::Vector2dF ScrollBy(const gfx::Vector2dF& pending_delta,
                           bool is_inertial) override;
@@ -54,6 +58,11 @@ class CC_EXPORT BrowserControlsOffsetManagerCib
   void OnBrowserControlsStateUpdated(BrowserControlsState constraints,
                                      BrowserControlsState current,
                                      bool animate) override;
+
+ private:
+  // Shown-ratio animations driven by the browser process.
+  BrowserControlsAnimation top_controls_animation_;
+  BrowserControlsAnimation bottom_controls_animation_;
 };
 
 }  // namespace cc
