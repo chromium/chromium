@@ -6545,7 +6545,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5989497858237037960">Quando navighi nei siti, i contenuti delle pagine vengono criptati e salvati sul tuo dispositivo. Questa operazione potrebbe influire sulle prestazioni di Chrome</translation>
 <translation id="5990266201903445068">Solo Wi-Fi</translation>
 <translation id="5990386583461751448">Tradotta</translation>
-<translation id="5991039386730545918">Il tema cromatico della pagina selezionato viene utilizzato solo quando è attivo il contrasto elevato del sistema</translation>
+<translation id="5991039386730545918">Il tema cromatico selezionato per la pagina viene usato solo quando è attivato il contrasto elevato di sistema</translation>
 <translation id="5992225669837656567">Tutti i mouse sono stati disconnessi</translation>
 <translation id="5992652489368666106">Senza bordo</translation>
 <translation id="5996490984199062729">Il tuo profilo non è stato configurato</translation>
@@ -10014,7 +10014,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8648408795949963811">Temperatura di colore della luminosità notturna</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> richiede le autorizzazioni: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> e altre</translation>
 <translation id="8648889679430451455">Cancella dati personalizzati</translation>
-<translation id="8649290269169747916">Utilizza i colori predefiniti della pagina quando il contrasto elevato del sistema è disattivato</translation>
+<translation id="8649290269169747916">Usa i colori predefiniti della pagina quando il contrasto elevato di sistema è disattivato</translation>
 <translation id="8651585100578802546">Forza aggiornamento di questa pagina</translation>
 <translation id="8651806635673244884">Puoi spostare di nuovo le schede in alto facendo clic con il tasto destro del mouse su una scheda qualsiasi e selezionando "Mostra schede orizzontalmente"</translation>
 <translation id="8652400352452647993">Errore nel pacchetto estensione</translation>
