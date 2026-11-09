@@ -30,9 +30,10 @@ TEST_F(CRWErrorPageHelperTest, FailedNavigationURL) {
 }
 
 // Tests that the original URL is correctly extracted from the file error URL
-// created by the helper.
+// created by the helper, including when the URL contains query parameters and
+// single quotes.
 TEST_F(CRWErrorPageHelperTest, ExtractOriginalURLFromErrorPageURL) {
-  NSString* url_string = @"https://test-error-page.com";
+  NSString* url_string = @"https://test-error-page.com?a=1&b='2'";
   NSError* error = [NSError
       errorWithDomain:NSURLErrorDomain
                  code:NSURLErrorBadURL
@@ -45,13 +46,18 @@ TEST_F(CRWErrorPageHelperTest, ExtractOriginalURLFromErrorPageURL) {
       failedNavigationURLFromErrorPageFileURL:url_from_helper];
   EXPECT_EQ(GURL(base::SysNSStringToUTF8(url_string)), result_original_url);
   EXPECT_TRUE([CRWErrorPageHelper isErrorPageFileURL:url_from_helper]);
+
+  std::string raw_url_query_param;
+  ASSERT_TRUE(
+      net::GetValueForKeyInQuery(url_from_helper, "url", &raw_url_query_param));
+  EXPECT_EQ(base::SysNSStringToUTF8(url_string), raw_url_query_param);
 }
 
 // Tests that errorPageFileURLWithoutDontLoad does not contain the 'dontLoad'
 // parameter but still contains the failed URL and is identified as an error
 // page.
 TEST_F(CRWErrorPageHelperTest, ErrorPageFileURLWithoutDontLoad) {
-  NSString* url_string = @"https://test-error-page.com";
+  NSString* url_string = @"https://test-error-page.com?a=1&b='2'";
   NSError* error = [NSError
       errorWithDomain:NSURLErrorDomain
                  code:NSURLErrorBadURL
@@ -66,13 +72,17 @@ TEST_F(CRWErrorPageHelperTest, ErrorPageFileURLWithoutDontLoad) {
   EXPECT_TRUE([helper isErrorPageFileURLForFailedNavigationURL:
                           helper.errorPageFileURLWithoutDontLoad]);
 
+  std::string raw_url_query_param;
+  ASSERT_TRUE(net::GetValueForKeyInQuery(url, "url", &raw_url_query_param));
+  EXPECT_EQ(base::SysNSStringToUTF8(url_string), raw_url_query_param);
+
   std::string dont_load_value;
   EXPECT_FALSE(net::GetValueForKeyInQuery(url, "dontLoad", &dont_load_value));
 }
 
 // Tests that the error page is correctly identified as error page.
 TEST_F(CRWErrorPageHelperTest, IsErrorPageFileURL) {
-  NSString* url_string = @"https://test-error-page.com";
+  NSString* url_string = @"https://test-error-page.com?a=1&b='2'";
   NSError* error = [NSError
       errorWithDomain:NSURLErrorDomain
                  code:NSURLErrorBadURL
@@ -156,4 +166,23 @@ TEST_F(CRWErrorPageHelperTest,
       [CRWErrorPageHelper failedNavigationURLFromErrorPageFileURL:url];
   EXPECT_TRUE(result_url.is_empty());
   EXPECT_FALSE([CRWErrorPageHelper isErrorPageFileURL:url]);
+}
+
+// Tests that the injected script with automatic reload preserves query
+// parameters and single quotes without HTML-escaping them.
+TEST_F(CRWErrorPageHelperTest, ScriptForInjectingHTMLWithAutomaticReload) {
+  NSString* url_string = @"https://test-error-page.com?a=1&b='2'";
+  NSError* error = [NSError
+      errorWithDomain:NSURLErrorDomain
+                 code:NSURLErrorBadURL
+             userInfo:@{
+               NSURLErrorFailingURLErrorKey : [NSURL URLWithString:url_string]
+             }];
+  CRWErrorPageHelper* helper = [[CRWErrorPageHelper alloc] initWithError:error];
+  NSString* script = [helper scriptForInjectingHTML:@"<html></html>"
+                                 addAutomaticReload:YES];
+  EXPECT_TRUE(
+      [script containsString:@"https:\\/\\/test-error-page.com?a=1&b='2'"]);
+  EXPECT_FALSE([script containsString:@"&amp;"]);
+  EXPECT_FALSE([script containsString:@"&#39;"]);
 }

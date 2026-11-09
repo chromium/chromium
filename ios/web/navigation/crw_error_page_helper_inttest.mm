@@ -56,7 +56,9 @@ class CRWErrorPageHelperIntTest : public WebIntTest {
   GURL GetSecondUrl() { return server_.GetURL("/second_page.html"); }
 
   // Returns the original url. This is the url of the page which load failed.
-  GURL GetOriginalUrl() { return server_.GetURL("/original_page.html"); }
+  GURL GetOriginalUrl() {
+    return server_.GetURL("/original_page.html?a=1&b='2'");
+  }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {

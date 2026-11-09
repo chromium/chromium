@@ -8,9 +8,8 @@
 
 #import "base/apple/bundle_locations.h"
 #import "base/check.h"
-#import "base/strings/escape.h"
+#import "base/json/string_escape.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/strings/utf_string_conversions.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
 
@@ -18,10 +17,11 @@ namespace {
 
 const char kOriginalUrlKey[] = "url";
 
-// Escapes HTML characters in `text`.
-NSString* EscapeHTMLCharacters(NSString* text) {
+// Returns `text` as a quoted JSON string literal suitable for embedding in
+// JavaScript.
+NSString* QuoteJavaScriptString(NSString* text) {
   return base::SysUTF8ToNSString(
-      base::EscapeForHTML(base::SysNSStringToUTF8(text)));
+      base::GetQuotedJSONString(base::SysNSStringToUTF8(text)));
 }
 
 // Resturns the path for the error page to be loaded.
@@ -75,8 +75,7 @@ NSString* InjectedErrorPageFilePath() {
 - (NSURL*)errorPageFileURLWithDontLoad:(BOOL)dontLoad {
   NSURLQueryItem* itemURL = [NSURLQueryItem
       queryItemWithName:base::SysUTF8ToNSString(kOriginalUrlKey)
-                  value:EscapeHTMLCharacters(
-                            self.failedNavigationURL.absoluteString)];
+                  value:self.failedNavigationURL.absoluteString];
   NSURLComponents* components =
       [[NSURLComponents alloc] initWithString:@"file:///"];
   components.path = LoadedErrorPageFilePath();
@@ -113,7 +112,7 @@ NSString* InjectedErrorPageFilePath() {
                                   encoding:NSUTF8StringEncoding
                                      error:nil];
     NSString* failedNavigationURLString =
-        EscapeHTMLCharacters(self.failedNavigationURL.absoluteString);
+        QuoteJavaScriptString(self.failedNavigationURL.absoluteString);
     _automaticReloadJavaScript =
         [NSString stringWithFormat:HTMLTemplate, failedNavigationURLString];
   }
@@ -131,9 +130,7 @@ NSString* InjectedErrorPageFilePath() {
       URL.GetPath() == base::SysNSStringToUTF8(LoadedErrorPageFilePath())) {
     std::string value;
     if (net::GetValueForKeyInQuery(URL, kOriginalUrlKey, &value)) {
-      // The URL was escaped when it was added to the error URL, unescape it
-      // here.
-      return GURL(base::UnescapeForHTML(base::UTF8ToUTF16(value)));
+      return GURL(value);
     }
   }
 
