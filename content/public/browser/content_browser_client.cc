@@ -2078,10 +2078,6 @@ ContentBrowserClient::GetClipboardTypesIfPolicyApplied(
   return std::nullopt;
 }
 
-bool ContentBrowserClient::UsePrefetchPrerenderIntegration() {
-  return false;
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 bool ContentBrowserClient::ShouldDisallowCredentialRequest(
     WebContents* web_contents) {

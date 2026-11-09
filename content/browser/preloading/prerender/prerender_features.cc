@@ -4,8 +4,6 @@
 
 #include "content/browser/preloading/prerender/prerender_features.h"
 
-#include "content/public/browser/content_browser_client.h"
-#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -80,15 +78,5 @@ const base::FeatureParam<int> kPrerender2ReuseInitiatorProcessMaxReuseCount{
 
 const base::FeatureParam<bool> kPrerender2CrossOriginIframesNesting{
     &blink::features::kPrerender2CrossOriginIframes, "nesting", true};
-
-bool UsePrefetchPrerenderIntegration() {
-  return base::FeatureList::IsEnabled(
-             features::kPrerender2FallbackPrefetchSpecRules) ||
-         base::FeatureList::IsEnabled(
-             features::kPrefetchPrerenderIntegration) ||
-         content::GetContentClient()
-             ->browser()
-             ->UsePrefetchPrerenderIntegration();
-}
 
 }  // namespace features

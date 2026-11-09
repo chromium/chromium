@@ -4,7 +4,6 @@
 
 #include "content/browser/preloading/prerender/prerender_url_loader_throttle.h"
 
-#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -22,10 +21,6 @@ PrerenderURLLoaderThrottle::PrerenderURLLoaderThrottle(
 // static
 std::unique_ptr<PrerenderURLLoaderThrottle>
 PrerenderURLLoaderThrottle::MaybeCreate(FrameTreeNodeId frame_tree_node_id) {
-  if (!features::UsePrefetchPrerenderIntegration()) {
-    return nullptr;
-  }
-
   auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
   if (!frame_tree_node) {
     return nullptr;

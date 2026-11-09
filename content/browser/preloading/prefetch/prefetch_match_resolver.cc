@@ -20,7 +20,6 @@
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/browser/preloading/preload_serving_metrics_holder.h"
-#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -564,8 +563,6 @@ void PrefetchMatchResolver::OnWillBeDestroyed(
 
 void PrefetchMatchResolver::OnGotInitialEligibility(
     const PrefetchContainer& prefetch_container) {
-  CHECK(features::UsePrefetchPrerenderIntegration());
-
   std::optional<PreloadingEligibility> eligibility =
       prefetch_container.GetInitialEligibility();
   CHECK(eligibility.has_value());

@@ -884,10 +884,6 @@ const base::FeatureParam<bool>
         &kPrefetchOffTheMainThread, "check_will_create_url_loader_factory",
         false};
 
-// Use code paths for prefetch/prerender integration.
-// See also `kPrerender2FallbackPrefetchSpecRules`.
-BASE_FEATURE(kPrefetchPrerenderIntegration, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If explicitly disabled, prefetch proxy is not used.
 BASE_FEATURE(kPrefetchProxy, base::FEATURE_ENABLED_BY_DEFAULT);
 

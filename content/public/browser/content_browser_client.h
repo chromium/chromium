@@ -3388,10 +3388,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   GetClipboardTypesIfPolicyApplied(
       const ui::ClipboardSequenceNumberToken& seqno);
 
-  // Returns true if PrefetchPrerenderIntegration should be allowed, this
-  // allows a prerender fall back to prefetch if available.
-  virtual bool UsePrefetchPrerenderIntegration();
-
 #if !BUILDFLAG(IS_ANDROID)
   // Gives the content embedder a chance to disallow a credential request,
   // for example if there's an active actor task in the tab associated with

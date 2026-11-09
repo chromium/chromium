@@ -50,7 +50,6 @@ import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.test.util.NavigationControllerUtil;
 import org.chromium.content_public.browser.test.util.NavigationEntrySimple;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
-import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.ServerCertificate;
 
@@ -805,10 +804,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({
-        ContentFeatures.PREFETCH_PRERENDER_INTEGRATION,
-        AwFeatures.WEBVIEW_PREFETCH_AHEAD_OF_PRERENDER
-    })
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_PREFETCH_AHEAD_OF_PRERENDER})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testCrossSiteRedirection_PrefetchAheadOfPrerenderEnabled() throws Throwable {
@@ -2108,10 +2104,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({
-        ContentFeatures.PREFETCH_PRERENDER_INTEGRATION,
-        AwFeatures.WEBVIEW_PREFETCH_AHEAD_OF_PRERENDER
-    })
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_PREFETCH_AHEAD_OF_PRERENDER})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testPrefetchAndPrerenderWithNoVarySearchHeader_PrefetchAheadOfPrerenderEnabled()
@@ -2163,10 +2156,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({
-        ContentFeatures.PREFETCH_PRERENDER_INTEGRATION,
-        AwFeatures.WEBVIEW_PREFETCH_AHEAD_OF_PRERENDER
-    })
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_PREFETCH_AHEAD_OF_PRERENDER})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     @DisabledTest(message = "Flaky, see crbug.com/506930789")
@@ -2211,7 +2201,6 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({ContentFeatures.PREFETCH_PRERENDER_INTEGRATION})
     @Features.DisableFeatures({
         BlinkFeatures.PRERENDER2_MEMORY_CONTROLS,
         AwFeatures.WEBVIEW_PREFETCH_AHEAD_OF_PRERENDER
@@ -2250,10 +2239,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({
-        ContentFeatures.PREFETCH_PRERENDER_INTEGRATION,
-        AwFeatures.WEBVIEW_PREFETCH_AHEAD_OF_PRERENDER
-    })
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_PREFETCH_AHEAD_OF_PRERENDER})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void
@@ -2296,10 +2282,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({
-        ContentFeatures.PREFETCH_PRERENDER_INTEGRATION,
-        AwFeatures.WEBVIEW_PREFETCH_AHEAD_OF_PRERENDER
-    })
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_PREFETCH_AHEAD_OF_PRERENDER})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testHogeAdditionalHeaders_PrefetchAheadOfPrerenderEnabled() throws Throwable {
@@ -2484,10 +2467,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({
-        ContentFeatures.PREFETCH_PRERENDER_INTEGRATION,
-        AwFeatures.WEBVIEW_PREFETCH_AHEAD_OF_PRERENDER
-    })
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_PREFETCH_AHEAD_OF_PRERENDER})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void

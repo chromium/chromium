@@ -8138,8 +8138,7 @@ INSTANTIATE_TEST_SUITE_P(ParametrizedTests,
                          PrefetchServiceAddPrefetchContainerTest,
                          testing::ValuesIn(PrefetchRearchParam::Params()));
 
-TEST_P(PrefetchServiceAddPrefetchContainerTest,
-       PreserveOldIfOldIsAliveIfUsePrefetchPrerenderIntegrationEnabled) {
+TEST_P(PrefetchServiceAddPrefetchContainerTest, PreserveOldIfOldIsAlive) {
   blink::DocumentToken document_token;
 
   auto prefetch_container1 = CreateSpeculationRulesPrefetchContainer(

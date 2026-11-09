@@ -91,10 +91,6 @@ enum class PrefetchPotentialCandidateServingResult {
   kNotServedPrefetchWillBeDestroyed = 3,
 
   // The candidate is not served because it turned out to be ineligible.
-  // This can be recorded only when
-  // `features::UsePrefetchPrerenderIntegration()` is
-  // true, where the prefetch matching starts before the initial eligibility is
-  // determined.
   kNotServedIneligiblePrefetch = 4,
 
   // Deprecated

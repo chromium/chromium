@@ -9933,13 +9933,6 @@ ChromeContentBrowserClient::GetClipboardTypesIfPolicyApplied(
   return std::nullopt;
 }
 
-bool ChromeContentBrowserClient::UsePrefetchPrerenderIntegration() {
-  return base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrefetch) ||
-         base::FeatureList::IsEnabled(
-             features::kNewTabPageTriggerForPrefetch) ||
-         base::FeatureList::IsEnabled(features::kDsePreload2);
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 bool ChromeContentBrowserClient::ShouldDisallowCredentialRequest(
     content::WebContents* web_contents) {

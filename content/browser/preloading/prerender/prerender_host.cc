@@ -1880,8 +1880,6 @@ void PrerenderHost::OnWaitingForHeadersFinished(
 }
 
 bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
-  CHECK(features::UsePrefetchPrerenderIntegration());
-
   auto is_ineligibility_admissible =
       [](PreloadingEligibility prefetch_eligibility) -> bool {
     switch (prefetch_eligibility) {

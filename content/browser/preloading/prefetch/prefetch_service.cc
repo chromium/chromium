@@ -45,7 +45,6 @@
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/prefetch/prefetch_url_loader_factory_utils.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
-#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/proxy_lookup_client_impl.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -439,10 +438,6 @@ base::WeakPtr<PrefetchContainer> PrefetchService::AddPrefetchRequestInternal(
       return Action::kTakeNew;
     }
     PrefetchContainer& prefetch_container_old = *prefetch_iter->second;
-
-    if (!features::UsePrefetchPrerenderIntegration()) {
-      return Action::kReplaceOldWithNew;
-    }
 
     switch (prefetch_container_old.GetMatchResolverAction().ToServableState()) {
       case PrefetchServableState::kNotServable:

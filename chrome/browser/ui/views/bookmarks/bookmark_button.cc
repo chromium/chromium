@@ -277,9 +277,8 @@ bool BookmarkButton::OnMousePressed(const ui::MouseEvent& event) {
     // Stopping preloading timers to avoid starting preconnect/prefetch after
     // prerender has been started.
     StopPreloadingTimers();
-    // Starting prefetch before prerender. With
-    // `UsePrefetchPrerenderIntegration()` being true, preloading can fall back
-    // to prefetch if prerender fails. If a prefetch has been started, this
+    // Starting prefetch before prerender so that preloading can fall back to
+    // prefetch if prerender fails. If a prefetch has been started, this
     // function call will do nothing.
     if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrefetch)) {
       StartPreloading(*url_, content::PreloadingType::kPrefetch);

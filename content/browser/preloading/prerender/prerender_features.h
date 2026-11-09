@@ -79,7 +79,6 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kPrerender2CrossOriginIframesNesting;
 
-CONTENT_EXPORT bool UsePrefetchPrerenderIntegration();
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_FEATURES_H_

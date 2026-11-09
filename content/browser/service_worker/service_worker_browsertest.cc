@@ -8228,8 +8228,7 @@ class ServiceWorkerSyntheticResponseBrowserTest
             IsUnnecessaryBufferingSkipped() ? "true" : "false"}}},
          {network::features::kURLLoaderUseProvidedResponseBodyStream, {}},
          {network::features::kServiceWorkerSyntheticResponseHeaderCheck, {}}},
-        {features::kPrerender2FallbackPrefetchSpecRules,
-         features::kPrefetchPrerenderIntegration});
+        {features::kPrerender2FallbackPrefetchSpecRules});
     prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
         base::BindRepeating(
             &ServiceWorkerSyntheticResponseBrowserTest::web_contents,

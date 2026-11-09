@@ -37,7 +37,6 @@
 #include "content/browser/preloading/prefetch/prefetch_url_loader_factory_utils.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_trigger_type_impl.h"
-#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/proxy_lookup_client_impl.h"
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -246,10 +245,6 @@ bool CalculateMatchesBurstQueryParam(const GURL& url) {
 
 bool CalculateIsLikelyAheadOfPrerender(
     const PreloadPipelineInfoImpl& preload_pipeline_info) {
-  if (!features::UsePrefetchPrerenderIntegration()) {
-    return false;
-  }
-
   switch (preload_pipeline_info.planned_max_preloading_type()) {
     case PreloadingType::kPrefetch:
       return false;
@@ -1563,25 +1558,7 @@ PrefetchMatchResolverAction PrefetchContainer::GetMatchResolverAction() const {
 
   switch (load_state_) {
     case LoadState::kNotStarted:
-      if (features::UsePrefetchPrerenderIntegration()) {
-        return PrefetchMatchResolverAction(
-            PrefetchMatchResolverAction::ActionKind::kWait, load_state_,
-            std::nullopt);
-      } else {
-        return PrefetchMatchResolverAction(
-            PrefetchMatchResolverAction::ActionKind::kDrop, load_state_,
-            std::nullopt);
-      }
     case LoadState::kEligible:
-      if (features::UsePrefetchPrerenderIntegration()) {
-        return PrefetchMatchResolverAction(
-            PrefetchMatchResolverAction::ActionKind::kWait, load_state_,
-            std::nullopt);
-      } else {
-        return PrefetchMatchResolverAction(
-            PrefetchMatchResolverAction::ActionKind::kDrop, load_state_,
-            std::nullopt);
-      }
     case LoadState::kStarted:
       return PrefetchMatchResolverAction(
           PrefetchMatchResolverAction::ActionKind::kWait, load_state_,
