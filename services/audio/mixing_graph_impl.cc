@@ -28,12 +28,6 @@ void SanitizeOutput(media::AudioBus* bus) {
     media::vector_math::FCLAMP(channel, channel);
   }
 }
-
-bool SameChannelSetup(const media::AudioParameters& a,
-                      const media::AudioParameters& b) {
-  return a.channel_layout() == b.channel_layout() &&
-         a.channels() == b.channels();
-}
 }  // namespace
 
 // Counts how often mixing callback duration exceeded the given time limit and
@@ -157,7 +151,8 @@ void MixingGraphImpl::AddInput(Input* input) {
   }
 
   // Check if channel mixing is needed.
-  if (!SameChannelSetup(channel_mixer_input_params, resampler_input_params)) {
+  if (channel_mixer_input_params.channel_layout_config() !=
+      resampler_input_params.channel_layout_config()) {
     // Re-use or create a channel mixer.
     converter = FindOrAddConverter(channel_mixer_input_params,
                                    resampler_input_params, converter);
@@ -196,14 +191,14 @@ void MixingGraphImpl::Remove(const AudioConverterKey& key,
     // can be deduced. This key is used to find the grandparent and remove the
     // reference to the empty parent converter.
     AudioConverterKey next_key(key);
-    if (!key.SameChannelSetup(output_params_)) {
-      next_key.UpdateChannelSetup(output_params_);
+    if (key.channel_layout_config != output_params_.channel_layout_config()) {
+      next_key.channel_layout_config = output_params_.channel_layout_config();
     } else {
       // If the parent converter is not the main converter its key (and input
       // parameters) should differ from the output parameters in sample rate,
       // channel setup or both.
-      DCHECK_NE(key.sample_rate(), output_params_.sample_rate());
-      next_key.set_sample_rate(output_params_.sample_rate());
+      DCHECK_NE(key.sample_rate, output_params_.sample_rate());
+      next_key.sample_rate = output_params_.sample_rate();
     }
     Remove(next_key, parent);
     converters_.erase(converter);

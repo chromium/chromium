@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "services/audio/mixing_graph_impl.h"
+
+#include <array>
+
 #include "media/base/channel_layout.h"
 #include "media/base/loopback_audio_converter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -193,7 +196,7 @@ TEST(MixingGraphImpl, AddInputWithResampler) {
 TEST(MixingGraphImpl, OutputDiscreteChannelLayout) {
   media::AudioParameters output_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      {media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE, 2}, 48000, 480);
+      {media::CHANNEL_LAYOUT_DISCRETE, 2}, 48000, 480);
   media::AudioParameters input_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
       media::ChannelLayoutConfig::Stereo(), 48000, 480);
@@ -226,10 +229,10 @@ TEST(MixingGraphImpl, OutputDiscreteChannelLayout) {
 TEST(MixingGraphImpl, AddInputWithDiscreteChannelLayout) {
   media::AudioParameters output_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      {media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE, 1}, 48000, 480);
+      {media::CHANNEL_LAYOUT_DISCRETE, 1}, 48000, 480);
   media::AudioParameters input_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      {media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE, 2}, 48000, 480);
+      {media::CHANNEL_LAYOUT_DISCRETE, 2}, 48000, 480);
   MixingGraph::OnMoreDataCallback on_more_data_cb;
   MixingGraph::OnErrorCallback on_error_cb;
   MixingGraphImplUnderTest mixing_graph(output_params, on_more_data_cb,
@@ -352,7 +355,7 @@ TEST(MixingGraphImpl, BuildComplexGraph) {
   // to having a discrete channel layout.
   media::AudioParameters input_params_resamp_discrete(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      {media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE, 1}, 48000, 160);
+      {media::CHANNEL_LAYOUT_DISCRETE, 1}, 48000, 160);
   MockInput input8(input_params_resamp_discrete);
   mixing_graph.AddInput(&input8);
   // Graph:
@@ -410,7 +413,7 @@ TEST(MixingGraphImpl, VerifyConverters) {
   media::AudioParameters output_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
       media::ChannelLayoutConfig::Mono(), 48000, 480);
-  MockConverterFactory mock_converter_factory;
+  testing::StrictMock<MockConverterFactory> mock_converter_factory;
   MixingGraph::OnMoreDataCallback on_more_data_cb;
   MixingGraph::OnErrorCallback on_error_cb;
   MixingGraphImpl::CreateConverterCallback create_converter_cb =
@@ -425,10 +428,11 @@ TEST(MixingGraphImpl, VerifyConverters) {
       media::ChannelLayoutConfig::Mono(), 16000, 160);
   MockInput input1(input_params_resamp);
   EXPECT_CALL(mock_converter_factory,
-              VerifyInput(16000, media::ChannelLayout::CHANNEL_LAYOUT_MONO));
+              VerifyInput(16000, media::CHANNEL_LAYOUT_MONO));
   EXPECT_CALL(mock_converter_factory,
-              VerifyOutput(48000, media::ChannelLayout::CHANNEL_LAYOUT_MONO));
+              VerifyOutput(48000, media::CHANNEL_LAYOUT_MONO));
   mixing_graph.AddInput(&input1);
+  testing::Mock::VerifyAndClearExpectations(&mock_converter_factory);
   // Graph:
   // main <--- converter (resampler) <--- input1
 
@@ -446,10 +450,11 @@ TEST(MixingGraphImpl, VerifyConverters) {
       media::ChannelLayoutConfig::Stereo(), 48000, 480);
   MockInput input3(input_params_downmix);
   EXPECT_CALL(mock_converter_factory,
-              VerifyInput(48000, media::ChannelLayout::CHANNEL_LAYOUT_STEREO));
+              VerifyInput(48000, media::CHANNEL_LAYOUT_STEREO));
   EXPECT_CALL(mock_converter_factory,
-              VerifyOutput(48000, media::ChannelLayout::CHANNEL_LAYOUT_MONO));
+              VerifyOutput(48000, media::CHANNEL_LAYOUT_MONO));
   mixing_graph.AddInput(&input3);
+  testing::Mock::VerifyAndClearExpectations(&mock_converter_factory);
   // Graph:
   // main <--- converter (resampler) <--- input1
   //                                 <--- input2
@@ -462,10 +467,11 @@ TEST(MixingGraphImpl, VerifyConverters) {
       media::ChannelLayoutConfig::Stereo(), 16000, 160);
   MockInput input4(input_params_resamp_downmix);
   EXPECT_CALL(mock_converter_factory,
-              VerifyInput(16000, media::ChannelLayout::CHANNEL_LAYOUT_STEREO));
+              VerifyInput(16000, media::CHANNEL_LAYOUT_STEREO));
   EXPECT_CALL(mock_converter_factory,
-              VerifyOutput(16000, media::ChannelLayout::CHANNEL_LAYOUT_MONO));
+              VerifyOutput(16000, media::CHANNEL_LAYOUT_MONO));
   mixing_graph.AddInput(&input4);
+  testing::Mock::VerifyAndClearExpectations(&mock_converter_factory);
   // Graph:
   // main <--- converter (resampler) <--- input1
   //                                 <--- input2
@@ -487,14 +493,14 @@ TEST(MixingGraphImpl, VerifyConverters) {
   // to having a discrete channel layout.
   media::AudioParameters input_params_resamp_discrete(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      {media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE, 1}, 48000, 160);
+      {media::CHANNEL_LAYOUT_DISCRETE, 1}, 48000, 160);
   MockInput input6(input_params_resamp_discrete);
-  EXPECT_CALL(
-      mock_converter_factory,
-      VerifyInput(48000, media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE));
   EXPECT_CALL(mock_converter_factory,
-              VerifyOutput(48000, media::ChannelLayout::CHANNEL_LAYOUT_MONO));
+              VerifyInput(48000, media::CHANNEL_LAYOUT_DISCRETE));
+  EXPECT_CALL(mock_converter_factory,
+              VerifyOutput(48000, media::CHANNEL_LAYOUT_MONO));
   mixing_graph.AddInput(&input6);
+  testing::Mock::VerifyAndClearExpectations(&mock_converter_factory);
   // Graph:
   // main <--- converter (resampler) <--- input1
   //                                 <--- input2
@@ -511,98 +517,25 @@ TEST(MixingGraphImpl, VerifyConverters) {
   mixing_graph.RemoveInput(&input6);
 }
 
-// Verifies operator< of AudioConverterKey.
+// Verifies operator< and operator== of AudioConverterKey.
 TEST(MixingGraphImpl, AudioConverterKeySorting) {
-  auto MakeKey = [](media::ChannelLayout channel_layout, int sample_rate) {
-    return MixingGraphImpl::AudioConverterKey(media::AudioParameters(
-        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-        {channel_layout, media::ChannelLayoutToChannelCount(channel_layout)},
-        sample_rate, sample_rate / 100));
-  };
-  auto MakeDiscreteKey = [](int channels, int sample_rate) {
-    media::AudioParameters params(
-        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-        {media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE, channels}, sample_rate,
-        sample_rate / 100);
-    return MixingGraphImpl::AudioConverterKey(params);
-  };
+  const auto kSortedKeys = std::to_array<MixingGraphImpl::AudioConverterKey>({
+      {16000, media::ChannelLayoutConfig::Mono()},
+      {16000, media::ChannelLayoutConfig::Stereo()},
+      {16000, {media::CHANNEL_LAYOUT_DISCRETE, 1}},
+      {16000, {media::CHANNEL_LAYOUT_DISCRETE, 2}},
+      {48000, media::ChannelLayoutConfig::Mono()},
+      {48000, media::ChannelLayoutConfig::Stereo()},
+      {48000, {media::CHANNEL_LAYOUT_DISCRETE, 1}},
+      {48000, {media::CHANNEL_LAYOUT_DISCRETE, 2}},
+  });
 
-  // Identical keys.
-  EXPECT_FALSE(MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_MONO,
-                       /*sample_rate=*/48000) <
-               MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_MONO,
-                       /*sample_rate=*/48000));
-
-  // Sample rate has the highest precedence when sorting.
-  EXPECT_TRUE(MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_MONO,
-                      /*sample_rate=*/16000) <
-              MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_MONO,
-                      /*sample_rate=*/48000));
-  EXPECT_FALSE(MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_MONO,
-                       /*sample_rate=*/48000) <
-               MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_MONO,
-                       /*sample_rate=*/16000));
-  EXPECT_TRUE(MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
-                      /*sample_rate=*/16000) <
-              MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_MONO,
-                      /*sample_rate=*/48000));
-  EXPECT_FALSE(MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
-                       /*sample_rate=*/48000) <
-               MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_MONO,
-                       /*sample_rate=*/16000));
-  EXPECT_TRUE(MakeDiscreteKey(/*channels=*/2,
-                              /*sample_rate=*/16000) <
-              MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_MONO,
-                      /*sample_rate=*/48000));
-  EXPECT_FALSE(MakeDiscreteKey(/*channels=*/2,
-                               /*sample_rate=*/48000) <
-               MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_MONO,
-                       /*sample_rate=*/16000));
-  EXPECT_FALSE(MakeDiscreteKey(/*channels=*/1,
-                               /*sample_rate=*/48000) <
-               MakeDiscreteKey(/*channels=*/2,
-                               /*sample_rate=*/16000));
-
-  // Channel layout has the second highest precedence when sorting.
-  EXPECT_TRUE(MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_MONO,
-                      /*sample_rate=*/48000) <
-              MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
-                      /*sample_rate=*/48000));
-  EXPECT_FALSE(MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
-                       /*sample_rate=*/48000) <
-               MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_MONO,
-                       /*sample_rate=*/48000));
-  EXPECT_TRUE(MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_MONO,
-                      /*sample_rate=*/48000) <
-              MakeDiscreteKey(/*channels=*/2,
-                              /*sample_rate=*/48000));
-  EXPECT_FALSE(MakeDiscreteKey(/*channels=*/2,
-                               /*sample_rate=*/48000) <
-               MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_MONO,
-                       /*sample_rate=*/48000));
-  EXPECT_TRUE(MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
-                      /*sample_rate=*/48000) <
-              MakeDiscreteKey(/*channels=*/2,
-                              /*sample_rate=*/48000));
-  EXPECT_FALSE(MakeDiscreteKey(/*channels=*/2,
-                               /*sample_rate=*/48000) <
-               MakeKey(media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
-                       /*sample_rate=*/48000));
-
-  // Number of channels determines sort order when comparing two keys with the
-  // same sampling rate and discrete channel layout.
-  EXPECT_FALSE(MakeDiscreteKey(/*channels=*/1,
-                               /*sample_rate=*/48000) <
-               MakeDiscreteKey(/*channels=*/1,
-                               /*sample_rate=*/48000));
-  EXPECT_TRUE(MakeDiscreteKey(/*channels=*/1,
-                              /*sample_rate=*/48000) <
-              MakeDiscreteKey(/*channels=*/2,
-                              /*sample_rate=*/48000));
-  EXPECT_FALSE(MakeDiscreteKey(/*channels=*/2,
-                               /*sample_rate=*/48000) <
-               MakeDiscreteKey(/*channels=*/1,
-                               /*sample_rate=*/48000));
+  for (size_t i = 0; i < kSortedKeys.size(); ++i) {
+    for (size_t j = 0; j < kSortedKeys.size(); ++j) {
+      EXPECT_EQ(kSortedKeys[i] < kSortedKeys[j], i < j);
+      EXPECT_EQ(kSortedKeys[i] == kSortedKeys[j], i == j);
+    }
+  }
 }
 
 }  // namespace audio
