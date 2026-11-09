@@ -2912,7 +2912,7 @@ void ContextualTasksSidePanelCoordinator::AttachTabsToTask(
 
       auto result = CaptureAndUploadTabContext(tab_handle_id, session_handle,
                                                std::move(on_context_uploaded),
-                                               browser_window_);
+                                               browser_window_, user_data);
       base::UnguessableToken token =
           result.has_value() ? *result : session_handle->CreateContextToken();
       if (!result.has_value() && active_task_context_provider_) {
@@ -2922,7 +2922,6 @@ void ContextualTasksSidePanelCoordinator::AttachTabsToTask(
         user_data->RecordTabIdMapping(tab_handle_id, session_id.id());
         if (result.has_value()) {
           user_data->AssociateTabWithTask(session_id);
-          user_data->OnTabContextUploadStarted(*result);
         }
       }
       if (omnibox::IsTabDeselectionInComposeboxEnabled() ||

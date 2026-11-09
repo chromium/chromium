@@ -376,6 +376,23 @@ ContextualTasksWebContentsUserData::ContextualTasksWebContentsUserData(
   MaybeRefreshTabContextSubscription(helper->session_handle());
 }
 
+ContextualTasksWebContentsUserData::PendingSubmit::PendingSubmit(
+    std::string query_text,
+    std::vector<lens::AddedContext> lens_added_contexts,
+    std::optional<base::UnguessableToken> overlay_token)
+    : query_text(std::move(query_text)),
+      lens_added_contexts(std::move(lens_added_contexts)),
+      overlay_token(overlay_token) {}
+
+ContextualTasksWebContentsUserData::PendingSubmit::PendingSubmit(
+    PendingSubmit&&) noexcept = default;
+
+ContextualTasksWebContentsUserData::PendingSubmit&
+ContextualTasksWebContentsUserData::PendingSubmit::operator=(
+    PendingSubmit&&) noexcept = default;
+
+ContextualTasksWebContentsUserData::PendingSubmit::~PendingSubmit() = default;
+
 ContextualTasksWebContentsUserData::~ContextualTasksWebContentsUserData() {
   if (observed_controller_) {
     observed_controller_->RemoveObserver(this);
@@ -812,6 +829,7 @@ void ContextualTasksWebContentsUserData::UpdateContextLibraryInputState() {
   }
   UpdateContextState();
   UpdateSuggestInputs();
+  MaybeFinishPendingSubmit();
 }
 
 bool ContextualTasksWebContentsUserData::HasContextLibraryTabs() {
@@ -842,6 +860,7 @@ void ContextualTasksWebContentsUserData::OnTabContextRemoved(
     const base::UnguessableToken& context_token) {
   pending_context_uploads_.erase(context_token);
   failed_context_uploads_.erase(context_token);
+  MaybeFinishPendingSubmit();
 }
 
 void ContextualTasksWebContentsUserData::OnContextUploadStatusChanged(
@@ -862,6 +881,7 @@ void ContextualTasksWebContentsUserData::OnContextUploadStatusChanged(
     pending_context_uploads_.insert(context_token);
     failed_context_uploads_.erase(context_token);
   }
+  MaybeFinishPendingSubmit();
   UpdateContextState();
   UpdateSuggestInputs();
 }
@@ -919,7 +939,7 @@ void ContextualTasksWebContentsUserData::RenderFrameDeleted(
 
 void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest(
     std::string_view query_text) {
-  if (submit_pending_) {
+  if (pending_submit_.has_value()) {
     return;
   }
 
@@ -979,15 +999,15 @@ void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest(
   params.on_ineligible_callback = base::BindRepeating(
       &ContextualTasksWebContentsUserData::OnPageContextIneligible,
       weak_ptr_factory_.GetWeakPtr());
+  pending_submit_.emplace(std::string(query_text),
+                          std::move(lens_added_contexts), overlay_token);
   // The contextualizer's session handle is ignored: it is null when there was
   // nothing to contextualize, so the callback gets the session handle itself.
   params.complete_callback = base::IgnoreArgs<
       base::WeakPtr<contextual_search::ContextualSearchSessionHandle>>(
       base::BindOnce(
           &ContextualTasksWebContentsUserData::OnSubmitQueryContextualized,
-          weak_ptr_factory_.GetWeakPtr(), std::string(query_text),
-          std::move(lens_added_contexts), overlay_token));
-  submit_pending_ = true;
+          weak_ptr_factory_.GetWeakPtr()));
   query_contextualizer_->Contextualize(std::move(params));
 }
 
@@ -1055,27 +1075,38 @@ std::vector<int32_t> ContextualTasksWebContentsUserData::GetPendingDelayedTabs(
   return tabs;
 }
 
-void ContextualTasksWebContentsUserData::OnSubmitQueryContextualized(
-    std::string query_text,
-    std::vector<lens::AddedContext> lens_added_contexts,
-    std::optional<base::UnguessableToken> overlay_token) {
-  if (!submit_pending_) {
+void ContextualTasksWebContentsUserData::OnSubmitQueryContextualized() {
+  if (!pending_submit_.has_value()) {
     return;
   }
-  submit_pending_ = false;
+  pending_submit_->contextualized = true;
+  MaybeFinishPendingSubmit();
+}
 
-  const bool has_lens_added_context = !lens_added_contexts.empty();
+void ContextualTasksWebContentsUserData::MaybeFinishPendingSubmit() {
+  if (!pending_submit_.has_value() || !pending_submit_->contextualized) {
+    return;
+  }
+  if (std::ranges::any_of(
+          GetSelectedTabs(), [&](const contextual_search::TabInfo& tab) {
+            return pending_context_uploads_.contains(tab.context_token);
+          })) {
+    return;
+  }
+  PendingSubmit submit = *std::exchange(pending_submit_, std::nullopt);
+
+  const bool has_lens_added_context = !submit.lens_added_contexts.empty();
   lens::ClientToSearchMessage response_message;
   auto* on_submit_response =
       response_message.mutable_on_submit_query_response();
-  for (auto& lens_added_context : lens_added_contexts) {
+  for (auto& lens_added_context : submit.lens_added_contexts) {
     *on_submit_response->add_added_contexts() = std::move(lens_added_context);
   }
   auto* session_handle = GetOrCreateContextualSessionHandle();
   if (session_handle) {
-    if (!query_text.empty()) {
+    if (!submit.query_text.empty()) {
       ThreadTurn turn;
-      turn.query = std::move(query_text);
+      turn.query = std::move(submit.query_text);
       session_handle->AddThreadTurn(turn);
     }
     if (ShouldToggleOffAfterSubmit() && IsSmartTabSharingActive()) {
@@ -1087,16 +1118,16 @@ void ContextualTasksWebContentsUserData::OnSubmitQueryContextualized(
       NotifyExtensionFramesTabContextUpdated();
     }
     AppendTabContextsToOnSubmitQueryResponse(&response_message, session_handle,
-                                             overlay_token);
+                                             submit.overlay_token);
   }
   PostSearchMessage(response_message);
 
   if (session_handle) {
     std::vector<base::UnguessableToken> submitted_tokens;
-    if (has_lens_added_context && overlay_token.has_value() &&
+    if (has_lens_added_context && submit.overlay_token.has_value() &&
         !std::ranges::contains(session_handle->GetSubmittedContextTokens(),
-                               *overlay_token)) {
-      submitted_tokens.push_back(*overlay_token);
+                               *submit.overlay_token)) {
+      submitted_tokens.push_back(*submit.overlay_token);
     }
     // The page owns the query text, so no query length metrics are recorded
     // here. This moves the uploaded tabs into the session's persisted tabs so
@@ -1114,7 +1145,7 @@ void ContextualTasksWebContentsUserData::OnSubmitQueryContextualized(
 }
 
 void ContextualTasksWebContentsUserData::OnPageContextIneligible() {
-  if (!submit_pending_ || !GetIsProtectedPageErrorEnabled()) {
+  if (!pending_submit_.has_value() || !GetIsProtectedPageErrorEnabled()) {
     return;
   }
   auto* browser = GetBrowserWindowInterface();
@@ -2135,7 +2166,7 @@ void ContextualTasksWebContentsUserData::ClearFiles(
 }
 
 void ContextualTasksWebContentsUserData::ClearInputPlateState() {
-  submit_pending_ = false;
+  pending_submit_.reset();
   preserve_prestaged_context_ = false;
   RemoveLensCrop();
   auto& page_state = GetPrimaryPageSearchState();

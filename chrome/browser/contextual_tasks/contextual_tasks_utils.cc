@@ -38,6 +38,7 @@
 #include "net/http/http_response_headers.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -48,6 +49,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/contextual_input.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -426,7 +428,8 @@ CaptureAndUploadTabContext(
     int32_t tab_id,
     contextual_search::ContextualSearchSessionHandle* session_handle,
     base::RepeatingClosure on_context_uploaded,
-    BrowserWindowInterface* browser_window_interface) {
+    BrowserWindowInterface* browser_window_interface,
+    ContextualTasksWebContentsUserData* user_data) {
   if (!session_handle) {
     return base::unexpected(
         contextual_search::ContextUploadErrorType::kBrowserProcessingError);
@@ -473,20 +476,34 @@ CaptureAndUploadTabContext(
   }
 
   auto context_token = session_handle->CreateContextToken();
+  if (user_data) {
+    user_data->OnTabContextUploadStarted(context_token);
+  }
 
   tab_contextualization_controller->GetPageContext(base::BindOnce(
       [](base::UnguessableToken context_token,
          base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
              session_handle,
+         base::WeakPtr<ContextualTasksWebContentsUserData> user_data,
          base::RepeatingClosure on_context_uploaded,
          std::unique_ptr<lens::ContextualInputData> page_content_data) {
-        if (!session_handle || !page_content_data) {
+        if (!session_handle) {
           return;
         }
         auto uploaded_context_tokens =
             session_handle->GetUploadedContextTokens();
         if (std::ranges::find(uploaded_context_tokens, context_token) ==
             uploaded_context_tokens.end()) {
+          return;
+        }
+        if (!page_content_data) {
+          if (user_data) {
+            user_data->OnContextUploadStatusChanged(
+                context_token, lens::MimeType::kUnknown,
+                contextual_search::ContextUploadStatus::kValidationFailed,
+                contextual_search::ContextUploadErrorType::
+                    kBrowserProcessingError);
+          }
           return;
         }
         session_handle->StartTabContextUploadFlow(context_token,
@@ -497,6 +514,7 @@ CaptureAndUploadTabContext(
         }
       },
       context_token, session_handle->AsWeakPtr(),
+      user_data ? user_data->AsWeakPtr() : nullptr,
       std::move(on_context_uploaded)));
 
   return base::ok(context_token);

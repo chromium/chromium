@@ -25,6 +25,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/contextual_tasks/public/prefs.h"
+#include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
@@ -44,8 +45,11 @@
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #endif
@@ -2207,5 +2211,726 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
       lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_NONE);
   EXPECT_THAT(context_state_messages[1].input_types(), testing::IsEmpty());
 }
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       HandleOnSubmitQueryRequest_WaitsForInFlightManualTabUpload) {
+  std::vector<contextual_search::FileInfo> uploaded_files;
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, search_session_id())
+      .WillByDefault(testing::Return("manual_upload_session"));
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(testing::ReturnPointee(&uploaded_files));
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+
+  std::vector<lens::ClientToSearchMessage> sent_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&sent_messages](const lens::ClientToSearchMessage& message) {
+        sent_messages.push_back(message);
+      }));
+
+  // 1. Attach a manual tab whose upload is still in flight.
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  user_data->OnTabContextUploadStarted(token);
+  mock_handle->GetUploadedContextTokensForTesting().push_back(token);
+  mock_handle->AttachTabPendingUpload(token, 10, GURL("https://example.com/1"),
+                                      "Tab 1");
+
+  // 2. Submit a query while the manual tab upload is still in flight.
+  sent_messages.clear();
+
+  lens::SearchToClientMessage submit_msg;
+  submit_msg.mutable_on_submit_query_request()->set_query_text("summarize tab");
+  std::vector<uint8_t> submit_bytes(submit_msg.ByteSizeLong());
+  submit_msg.SerializeToArray(submit_bytes.data(), submit_bytes.size());
+
+  content::WebContentsTester::For(web_contents_)
+      ->TestDidReceiveMouseDownEvent();
+  EXPECT_TRUE(user_data->OnSearchMessageReceived(submit_bytes));
+  EXPECT_TRUE(sent_messages.empty());
+  EXPECT_TRUE(mock_handle->previous_turns().empty());
+
+  // Non-terminal upload status updates (`kProcessing`, `kUploadStarted`) and a
+  // duplicate submit request while deferred must not prematurely send
+  // `OnSubmitQueryResponse`.
+  user_data->OnContextUploadStatusChanged(
+      token, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kProcessing, std::nullopt);
+  user_data->OnContextUploadStatusChanged(
+      token, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kUploadStarted, std::nullopt);
+  content::WebContentsTester::For(web_contents_)
+      ->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("duplicate submit");
+  EXPECT_TRUE(sent_messages.empty());
+  EXPECT_TRUE(mock_handle->previous_turns().empty());
+
+  // 3. When the manual tab upload finishes with `kUploadSuccessful`, the
+  // deferred `OnSubmitQueryResponse` is sent with the uploaded tab's
+  // `AddedContext` and the original query text is recorded in the thread turn.
+  contextual_search::FileInfo file_info;
+  file_info.file_token = token;
+  lens::LensOverlayRequestId req_id;
+  req_id.set_context_id(101);
+  file_info.request_id = req_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  file_info.input_data = std::make_unique<lens::ContextualInputData>();
+  file_info.input_data->upload_type =
+      lens::LensOverlayContextualInputUploadType::
+          CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
+  uploaded_files.push_back(std::move(file_info));
+
+  user_data->OnContextUploadStatusChanged(
+      token, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+
+  ASSERT_EQ(mock_handle->previous_turns().size(), 1u);
+  EXPECT_EQ(mock_handle->previous_turns()[0].query, "summarize tab");
+
+  ASSERT_GE(sent_messages.size(), 2u);
+  ASSERT_TRUE(sent_messages[0].has_on_submit_query_response());
+  const auto& submit_response = sent_messages[0].on_submit_query_response();
+  ASSERT_EQ(submit_response.added_contexts_size(), 1);
+  EXPECT_EQ(submit_response.added_contexts(0).search_session_id(),
+            "manual_upload_session");
+  EXPECT_EQ(submit_response.added_contexts(0).request_id().context_id(), 101);
+  EXPECT_EQ(submit_response.added_contexts(0).contextual_input_upload_type(),
+            lens::LensOverlayContextualInputUploadType::
+                CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT);
+
+  ASSERT_TRUE(sent_messages[1].has_on_context_state_changed());
+  EXPECT_EQ(
+      sent_messages[1].on_context_state_changed().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_NONE);
+
+  user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(
+          testing::Return(std::vector<contextual_search::FileInfo>{}));
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       HandleOnSubmitQueryRequest_WaitsForAllMultipleInFlightManualTabUploads) {
+  std::vector<contextual_search::FileInfo> uploaded_files;
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, search_session_id())
+      .WillByDefault(testing::Return("multi_manual_session"));
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(testing::ReturnPointee(&uploaded_files));
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+
+  std::vector<lens::ClientToSearchMessage> submit_responses;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&submit_responses](const lens::ClientToSearchMessage& message) {
+        if (message.has_on_submit_query_response()) {
+          submit_responses.push_back(message);
+        }
+      }));
+
+  base::UnguessableToken token1 = base::UnguessableToken::Create();
+  base::UnguessableToken token2 = base::UnguessableToken::Create();
+  user_data->OnTabContextUploadStarted(token1);
+  mock_handle->GetUploadedContextTokensForTesting().push_back(token1);
+  mock_handle->AttachTabPendingUpload(token1, 10, GURL("https://example.com/1"),
+                                      "Tab 1");
+  user_data->OnTabContextUploadStarted(token2);
+  mock_handle->GetUploadedContextTokensForTesting().push_back(token2);
+  mock_handle->AttachTabPendingUpload(token2, 20, GURL("https://example.com/2"),
+                                      "Tab 2");
+
+  content::WebContentsTester::For(web_contents_)
+      ->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("compare tabs");
+  EXPECT_TRUE(submit_responses.empty());
+
+  // Tab 1 finishes uploading first; Tab 2 is still in flight, so submission
+  // remains deferred.
+  contextual_search::FileInfo file1;
+  file1.file_token = token1;
+  lens::LensOverlayRequestId req1;
+  req1.set_context_id(101);
+  file1.request_id = req1;
+  file1.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  uploaded_files.push_back(file1);
+
+  user_data->OnContextUploadStatusChanged(
+      token1, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+  EXPECT_TRUE(submit_responses.empty());
+
+  // Tab 2 finishes uploading -> `OnSubmitQueryResponse` is sent with both tabs.
+  contextual_search::FileInfo file2;
+  file2.file_token = token2;
+  lens::LensOverlayRequestId req2;
+  req2.set_context_id(202);
+  file2.request_id = req2;
+  file2.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  uploaded_files.push_back(file2);
+
+  user_data->OnContextUploadStatusChanged(
+      token2, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+
+  ASSERT_EQ(submit_responses.size(), 1u);
+  const auto& resp = submit_responses[0].on_submit_query_response();
+  ASSERT_EQ(resp.added_contexts_size(), 2);
+  EXPECT_EQ(resp.added_contexts(0).request_id().context_id(), 101);
+  EXPECT_EQ(resp.added_contexts(1).request_id().context_id(), 202);
+
+  user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(
+          testing::Return(std::vector<contextual_search::FileInfo>{}));
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       HandleOnSubmitQueryRequest_UnblocksOnTerminalUploadFailureStatuses) {
+  std::vector<contextual_search::FileInfo> uploaded_files;
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, search_session_id())
+      .WillByDefault(testing::Return("failure_session"));
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(testing::ReturnPointee(&uploaded_files));
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+
+  std::vector<lens::ClientToSearchMessage> submit_responses;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&submit_responses](const lens::ClientToSearchMessage& message) {
+        if (message.has_on_submit_query_response()) {
+          submit_responses.push_back(message);
+        }
+      }));
+
+  const contextual_search::ContextUploadStatus kFailureStatuses[] = {
+      contextual_search::ContextUploadStatus::kUploadFailed,
+      contextual_search::ContextUploadStatus::kValidationFailed,
+      contextual_search::ContextUploadStatus::kUploadExpired,
+      contextual_search::ContextUploadStatus::kUploadReplaced,
+  };
+
+  for (auto failure_status : kFailureStatuses) {
+    submit_responses.clear();
+
+    base::UnguessableToken ready_token = base::UnguessableToken::Create();
+    base::UnguessableToken failing_token = base::UnguessableToken::Create();
+
+    contextual_search::FileInfo ready_file;
+    ready_file.file_token = ready_token;
+    lens::LensOverlayRequestId ready_req;
+    ready_req.set_context_id(101);
+    ready_file.request_id = ready_req;
+    ready_file.upload_status =
+        contextual_search::ContextUploadStatus::kUploadSuccessful;
+    uploaded_files = {ready_file};
+
+    mock_handle->GetUploadedContextTokensForTesting() = {ready_token,
+                                                         failing_token};
+    mock_handle->AttachTabPendingUpload(
+        ready_token, 10, GURL("https://example.com/ready"), "Ready Tab");
+    user_data->OnTabContextUploadStarted(failing_token);
+    mock_handle->AttachTabPendingUpload(
+        failing_token, 20, GURL("https://example.com/failing"), "Failing Tab");
+
+    content::WebContentsTester::For(web_contents_)
+        ->TestDidReceiveMouseDownEvent();
+    user_data->HandleOnSubmitQueryRequest("query with failing tab");
+    EXPECT_TRUE(submit_responses.empty());
+
+    // Terminal failure unblocks the pending query and sends the ready tab.
+    user_data->OnContextUploadStatusChanged(
+        failing_token, lens::MimeType::kHtml, failure_status,
+        contextual_search::ContextUploadErrorType::kServerError);
+
+    ASSERT_EQ(submit_responses.size(), 1u);
+    const auto& resp = submit_responses[0].on_submit_query_response();
+    ASSERT_EQ(resp.added_contexts_size(), 1);
+    EXPECT_EQ(resp.added_contexts(0).request_id().context_id(), 101);
+  }
+
+  user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(
+          testing::Return(std::vector<contextual_search::FileInfo>{}));
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       HandleOnSubmitQueryRequest_UnblocksWhenInFlightManualTabRemoved) {
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+
+  std::vector<lens::ClientToSearchMessage> submit_responses;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&submit_responses](const lens::ClientToSearchMessage& message) {
+        if (message.has_on_submit_query_response()) {
+          submit_responses.push_back(message);
+        }
+      }));
+
+  // Case 1: Deleting the in-flight tab via `DeleteContext` unblocks submit.
+  base::UnguessableToken token1 = base::UnguessableToken::Create();
+  user_data->OnTabContextUploadStarted(token1);
+  mock_handle->GetUploadedContextTokensForTesting().push_back(token1);
+  mock_handle->AttachTabPendingUpload(token1, 10, GURL("https://example.com/1"),
+                                      "Tab 1");
+
+  content::WebContentsTester::For(web_contents_)
+      ->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("delete context query");
+  EXPECT_TRUE(submit_responses.empty());
+
+  user_data->DeleteContext(token1);
+  ASSERT_EQ(submit_responses.size(), 1u);
+  EXPECT_EQ(
+      submit_responses[0].on_submit_query_response().added_contexts_size(), 0);
+
+  // Case 2: Removing the token via `OnTabContextRemoved` unblocks submit.
+  submit_responses.clear();
+  base::UnguessableToken token2 = base::UnguessableToken::Create();
+  user_data->OnTabContextUploadStarted(token2);
+  mock_handle->GetUploadedContextTokensForTesting().push_back(token2);
+  mock_handle->AttachTabPendingUpload(token2, 20, GURL("https://example.com/2"),
+                                      "Tab 2");
+
+  content::WebContentsTester::For(web_contents_)
+      ->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("remove token query");
+  EXPECT_TRUE(submit_responses.empty());
+
+  user_data->OnTabContextRemoved(token2);
+  ASSERT_EQ(submit_responses.size(), 1u);
+
+  // Case 3: Removing the uploaded token on `session_handle` unblocks submit via
+  // `UpdateContextLibraryInputState()`.
+  submit_responses.clear();
+  base::UnguessableToken token3 = base::UnguessableToken::Create();
+  user_data->OnTabContextUploadStarted(token3);
+  mock_handle->GetUploadedContextTokensForTesting().push_back(token3);
+  mock_handle->AttachTabPendingUpload(token3, 30, GURL("https://example.com/3"),
+                                      "Tab 3");
+
+  content::WebContentsTester::For(web_contents_)
+      ->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("session remove token query");
+  EXPECT_TRUE(submit_responses.empty());
+
+  mock_handle->RemoveUploadedContextToken(token3);
+  ASSERT_EQ(submit_responses.size(), 1u);
+
+  user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       HandleOnSubmitQueryRequest_ClearInputPlateStateCancelsDeferredSubmit) {
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+
+  std::vector<lens::ClientToSearchMessage> submit_responses;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&submit_responses](const lens::ClientToSearchMessage& message) {
+        if (message.has_on_submit_query_response()) {
+          submit_responses.push_back(message);
+        }
+      }));
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  user_data->OnTabContextUploadStarted(token);
+  mock_handle->GetUploadedContextTokensForTesting().push_back(token);
+  mock_handle->AttachTabPendingUpload(token, 10, GURL("https://example.com/1"),
+                                      "Tab 1");
+
+  content::WebContentsTester::For(web_contents_)
+      ->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("stale query");
+  EXPECT_TRUE(submit_responses.empty());
+
+  // Clearing input plate state (e.g. on page/thread change) cancels the
+  // deferred submit without sending `OnSubmitQueryResponse`.
+  user_data->ClearInputPlateState();
+  EXPECT_TRUE(submit_responses.empty());
+  EXPECT_TRUE(mock_handle->previous_turns().empty());
+
+  // A late upload completion for the cleared tab must not trigger the cancelled
+  // submit.
+  user_data->OnContextUploadStatusChanged(
+      token, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+  EXPECT_TRUE(submit_responses.empty());
+
+  // A subsequent fresh submission on the new thread succeeds immediately.
+  content::WebContentsTester::For(web_contents_)
+      ->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("fresh query");
+  ASSERT_EQ(submit_responses.size(), 1u);
+  ASSERT_EQ(mock_handle->previous_turns().size(), 1u);
+  EXPECT_EQ(mock_handle->previous_turns()[0].query, "fresh query");
+
+  user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+namespace {
+
+class StubTabContextualizationController
+    : public lens::TabContextualizationController {
+ public:
+  using CallbackHandler =
+      base::RepeatingCallback<void(GetPageContextCallback callback)>;
+
+  StubTabContextualizationController(tabs::TabInterface* tab,
+                                     CallbackHandler handler)
+      : lens::TabContextualizationController(tab),
+        handler_(std::move(handler)) {}
+  ~StubTabContextualizationController() override = default;
+
+  void GetPageContext(GetPageContextCallback callback) override {
+    ++get_page_context_calls_;
+    handler_.Run(std::move(callback));
+  }
+
+  int get_page_context_calls() const { return get_page_context_calls_; }
+
+ private:
+  CallbackHandler handler_;
+  int get_page_context_calls_ = 0;
+};
+
+}  // namespace
+
+TEST_F(
+    ContextualTasksWebContentsUserDataTest,
+    HandleOnSubmitQueryRequest_ActiveTabRecontextualizationSkipStillWaitsForManualUpload) {
+  ui::UnownedUserDataHost unowned_user_data_host;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+  testing::NiceMock<MockTabListInterface> mock_tab_list;
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      unowned_user_data_host, mock_tab_list);
+  webui::SetBrowserWindowInterface(web_contents_, &mock_browser_window);
+
+  content::WebContents* active_contents =
+      web_contents_factory_->CreateWebContents(profile_.get());
+  sessions::SessionTabHelper::CreateForWebContents(active_contents,
+                                                   base::NullCallback());
+  const GURL active_url("https://example.com/active");
+  content::WebContentsTester::For(active_contents)
+      ->NavigateAndCommit(active_url);
+  const SessionID active_session_id =
+      sessions::SessionTabHelper::IdForTab(active_contents);
+
+  tabs::MockTabInterface mock_active_tab;
+  ON_CALL(mock_active_tab, GetContents())
+      .WillByDefault(testing::Return(active_contents));
+  ON_CALL(mock_active_tab, GetBrowserWindowInterface())
+      .WillByDefault(testing::Return(&mock_browser_window));
+  std::vector<tabs::TabInterface*> all_tabs = {&mock_active_tab};
+  ON_CALL(mock_tab_list, GetActiveTab())
+      .WillByDefault(testing::Return(&mock_active_tab));
+  ON_CALL(mock_tab_list, GetAllTabs())
+      .WillByDefault(testing::ReturnPointee(&all_tabs));
+
+  StubTabContextualizationController tab_controller(
+      &mock_active_tab,
+      base::BindLambdaForTesting(
+          [&](lens::TabContextualizationController::GetPageContextCallback
+                  callback) {
+            auto data = std::make_unique<lens::ContextualInputData>();
+            data->tab_session_id = active_session_id;
+            data->page_url = active_url;
+            data->page_title = "Active Tab";
+            data->is_page_context_eligible = true;
+            data->viewport_screenshot_bytes = {1, 2, 3};
+            std::move(callback).Run(std::move(data));
+          }));
+
+  const base::UnguessableToken manual_token = base::UnguessableToken::Create();
+  lens::LensOverlayRequestId req_id;
+  req_id.set_context_id(101);
+
+  contextual_search::FileInfo in_flight_file;
+  in_flight_file.file_token = manual_token;
+  in_flight_file.tab_session_id = active_session_id;
+  in_flight_file.tab_url = active_url;
+  in_flight_file.tab_title = "Active Tab";
+  in_flight_file.request_id = req_id;
+  in_flight_file.upload_status =
+      contextual_search::ContextUploadStatus::kUploadStarted;
+  in_flight_file.input_data = std::make_unique<lens::ContextualInputData>();
+  in_flight_file.input_data->tab_session_id = active_session_id;
+  in_flight_file.input_data->page_url = active_url;
+  in_flight_file.input_data->page_title = "Active Tab";
+  in_flight_file.input_data->viewport_screenshot_bytes = {1, 2, 3};
+  in_flight_file.input_data->upload_type =
+      lens::LensOverlayContextualInputUploadType::
+          CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
+
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_context_controller;
+  ON_CALL(mock_context_controller, GetFileInfoList())
+      .WillByDefault([&in_flight_file]() {
+        return std::vector<raw_ptr<const contextual_search::FileInfo>>{
+            &in_flight_file};
+      });
+  ON_CALL(mock_context_controller, GetFileInfo(manual_token))
+      .WillByDefault(testing::Return(&in_flight_file));
+
+  std::vector<contextual_search::FileInfo> uploaded_files;
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, search_session_id())
+      .WillByDefault(testing::Return("active_tab_manual_session"));
+  ON_CALL(*mock_handle, GetController())
+      .WillByDefault(testing::Return(&mock_context_controller));
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(testing::ReturnPointee(&uploaded_files));
+  // Recontextualization sees unchanged content and must not start a new upload.
+  EXPECT_CALL(*mock_handle,
+              StartTabContextUploadFlow(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  const base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(task_id, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  testing::NiceMock<MockContextualTasksService> mock_tasks_service;
+  ON_CALL(mock_tasks_service,
+          GetContextForTask(task_id, testing::_, testing::_, testing::_))
+      .WillByDefault(
+          [task_id, active_url, active_session_id](
+              const base::Uuid&, const std::set<ContextualTaskContextSource>&,
+              std::unique_ptr<ContextDecorationParams>,
+              base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+                  callback) {
+            ContextualTask task(task_id);
+            UrlResource resource(active_url, ResourceType::kWebpage);
+            resource.tab_id = active_session_id;
+            task.AddUrlResource(resource);
+            std::move(callback).Run(
+                std::make_unique<ContextualTaskContext>(task));
+          });
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->SetTaskId(task_id);
+  user_data->SetContextualTasksServiceForTesting(&mock_tasks_service);
+  user_data->RecordTabIdMapping(mock_active_tab.GetHandle().raw_value(),
+                                active_session_id.id());
+  user_data->OnHandshakeComplete();
+
+  std::vector<lens::ClientToSearchMessage> submit_responses;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&submit_responses](const lens::ClientToSearchMessage& message) {
+        if (message.has_on_submit_query_response()) {
+          submit_responses.push_back(message);
+        }
+      }));
+
+  // Manually attach the active tab while its network upload is still in flight.
+  user_data->OnTabContextUploadStarted(manual_token);
+  mock_handle->GetUploadedContextTokensForTesting().push_back(manual_token);
+  mock_handle->AttachTabPendingUpload(manual_token, active_session_id.id(),
+                                      active_url, "Active Tab");
+
+  // Submit while the manual upload is still in `kUploadStarted`.
+  // `QueryContextualizer` recontextualizes the active tab, sees unchanged
+  // content, and skips starting a new upload, but submission must remain
+  // deferred until `manual_token` finishes uploading.
+  content::WebContentsTester::For(web_contents_)
+      ->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("summarize active tab");
+  EXPECT_EQ(tab_controller.get_page_context_calls(), 1);
+  EXPECT_TRUE(user_data->submit_pending());
+  EXPECT_TRUE(submit_responses.empty());
+
+  // Completing the in-flight manual upload sends `OnSubmitQueryResponse` with
+  // the manual tab's context.
+  in_flight_file.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  contextual_search::FileInfo completed_file;
+  completed_file.file_token = manual_token;
+  completed_file.request_id = req_id;
+  completed_file.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  completed_file.input_data = std::make_unique<lens::ContextualInputData>();
+  completed_file.input_data->upload_type =
+      lens::LensOverlayContextualInputUploadType::
+          CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
+  uploaded_files.push_back(std::move(completed_file));
+
+  user_data->OnContextUploadStatusChanged(
+      manual_token, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+  EXPECT_FALSE(user_data->submit_pending());
+  ASSERT_EQ(submit_responses.size(), 1u);
+  const auto& resp = submit_responses[0].on_submit_query_response();
+  ASSERT_EQ(resp.added_contexts_size(), 1);
+  EXPECT_EQ(resp.added_contexts(0).request_id().context_id(), 101);
+
+  user_data->SetContextualTasksServiceForTesting(nullptr);
+  user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+  ON_CALL(*mock_handle, GetController())
+      .WillByDefault(testing::Return(nullptr));
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(
+          testing::Return(std::vector<contextual_search::FileInfo>{}));
+  webui::SetBrowserWindowInterface(web_contents_, nullptr);
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       CaptureAndUploadTabContext_NullPageContextUnblocksSubmit) {
+  content::WebContents* tab_contents =
+      web_contents_factory_->CreateWebContents(profile_.get());
+  sessions::SessionTabHelper::CreateForWebContents(tab_contents,
+                                                   base::NullCallback());
+  const GURL tab_url("https://example.com/null-context");
+  content::WebContentsTester::For(tab_contents)->NavigateAndCommit(tab_url);
+  const SessionID session_id =
+      sessions::SessionTabHelper::IdForTab(tab_contents);
+
+  tabs::MockTabInterface mock_tab;
+  ON_CALL(mock_tab, GetContents()).WillByDefault(testing::Return(tab_contents));
+
+  bool hold_callback = false;
+  lens::TabContextualizationController::GetPageContextCallback held_callback;
+  StubTabContextualizationController tab_controller(
+      &mock_tab,
+      base::BindLambdaForTesting(
+          [&](lens::TabContextualizationController::GetPageContextCallback
+                  callback) {
+            if (hold_callback) {
+              held_callback = std::move(callback);
+            } else {
+              std::move(callback).Run(nullptr);
+            }
+          }));
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, CreateContextToken()).WillByDefault([mock_handle]() {
+    auto token = base::UnguessableToken::Create();
+    mock_handle->GetUploadedContextTokensForTesting().push_back(token);
+    return token;
+  });
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+
+  std::vector<lens::ClientToSearchMessage> submit_responses;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&submit_responses](const lens::ClientToSearchMessage& message) {
+        if (message.has_on_submit_query_response()) {
+          submit_responses.push_back(message);
+        }
+      }));
+
+  // 1. Synchronous null `GetPageContext` result does not leave a pending upload
+  // token blocking submission.
+  auto sync_result = CaptureAndUploadTabContext(
+      mock_tab.GetHandle().raw_value(), mock_handle, base::DoNothing(),
+      /*browser_window_interface=*/nullptr, user_data);
+  ASSERT_TRUE(sync_result.has_value());
+  user_data->RecordTabIdMapping(mock_tab.GetHandle().raw_value(),
+                                session_id.id());
+  mock_handle->AttachTabPendingUpload(*sync_result, session_id.id(), tab_url,
+                                      "Null Context Tab");
+
+  content::WebContentsTester::For(web_contents_)
+      ->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("sync null query");
+  ASSERT_EQ(submit_responses.size(), 1u);
+
+  // 2. Asynchronous null `GetPageContext` result holds submission while in
+  // flight and unblocks submission as soon as `GetPageContext` finishes null.
+  submit_responses.clear();
+  hold_callback = true;
+
+  auto async_result = CaptureAndUploadTabContext(
+      mock_tab.GetHandle().raw_value(), mock_handle, base::DoNothing(),
+      /*browser_window_interface=*/nullptr, user_data);
+  ASSERT_TRUE(async_result.has_value());
+  ASSERT_TRUE(held_callback);
+  mock_handle->AttachTabPendingUpload(*async_result, session_id.id(), tab_url,
+                                      "Null Context Tab");
+
+  content::WebContentsTester::For(web_contents_)
+      ->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("async null query");
+  EXPECT_TRUE(submit_responses.empty());
+
+  std::move(held_callback).Run(nullptr);
+  ASSERT_EQ(submit_responses.size(), 1u);
+
+  user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+}
+#endif
 
 }  // namespace contextual_tasks
