@@ -3,13 +3,12 @@
 # individuals. These CLs will be automatically reassigned to a reviewer within
 # about 5 minutes. Googlers can read more about this at go/gwsq-gerrit.
 lens-chrome-eng+reviews@google.com
-dianaou@google.com        #{LAST_RESORT_SUGGESTION}
-helloshez@google.com      #{LAST_RESORT_SUGGESTION}
-hujasonx@google.com       #{LAST_RESORT_SUGGESTION}
-juanmojica@google.com     #{LAST_RESORT_SUGGESTION}
-mercerd@google.com        #{LAST_RESORT_SUGGESTION}
-nguyenbryan@google.com    #{LAST_RESORT_SUGGESTION}
-stanfield@google.com      #{LAST_RESORT_SUGGESTION}
+dianaou@google.com
+hujasonx@google.com
+juanmojica@google.com
+mercerd@google.com
+nguyenbryan@google.com
+stanfield@google.com
 
 ayman@chromium.org
 jilinyang@google.com
