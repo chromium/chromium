@@ -90,6 +90,12 @@ message PageContext {
 
   // Information about the scroll position on the page.
   optional ScrollPosition scroll_position = 2;
+
+  // The URL of the tab being shared. Used to verify that an
+  // `encrypted_page_context` belongs to the enclosing `SendTabToSelfSpecifics`
+  // entry.
+  // New in M159.
+  optional string url = 3;
 }
 
 message FormFieldInfo {

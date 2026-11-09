@@ -557,7 +557,7 @@ const SendTabToSelfEntry* SendTabToSelfBridge::SendEntry(
 
   // The size is recorded when `context` is non-empty, before potential
   // truncation (dropping) of the context due to the per-entity size limit.
-  if (const size_t size = PageContextToProto(context).ByteSizeLong();
+  if (const size_t size = PageContextToProto(context, url).ByteSizeLong();
       size > 0) {
     RecordPageContextSize(size);
   }

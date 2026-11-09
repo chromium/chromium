@@ -22,6 +22,7 @@
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/fake_server.h"
+#include "url/gurl.h"
 
 namespace send_tab_to_self {
 
@@ -69,8 +70,9 @@ void PopulatePageContext(
       syncer::CryptographerImpl::FromSingleKeyForTesting(
           key_base64, syncer::KeyDerivationParams::CreateForPbkdf2());
   CHECK(cryptographer);
-  CHECK(cryptographer->Encrypt(PageContextToProto(context),
-                               specifics->mutable_encrypted_page_context()));
+  CHECK(cryptographer->Encrypt(
+      PageContextToProto(context, GURL(specifics->url())),
+      specifics->mutable_encrypted_page_context()));
 }
 
 }  // namespace

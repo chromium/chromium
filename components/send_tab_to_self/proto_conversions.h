@@ -10,12 +10,19 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 
+class GURL;
+
 namespace send_tab_to_self {
 
 struct PageContext;
 
-sync_pb::PageContext PageContextToProto(const PageContext& context);
-PageContext PageContextFromProto(const sync_pb::PageContext& pb_page_context);
+sync_pb::PageContext PageContextToProto(const PageContext& context,
+                                        const GURL& url);
+
+// If `pb_page_context` has a URL that does not match `url`, returns an empty
+// `PageContext`.
+PageContext PageContextFromProto(const sync_pb::PageContext& pb_page_context,
+                                 const GURL& url);
 
 std::optional<sync_pb::FormField_AutofillFieldType> AutofillFieldTypeToProto(
     autofill::FieldType type);

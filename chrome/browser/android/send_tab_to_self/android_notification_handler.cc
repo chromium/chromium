@@ -201,7 +201,8 @@ void AndroidNotificationHandler::ShowNotification(
   std::vector<uint8_t> page_context_bytes;
   if (!entry.GetPageContext().form_field_info.fields.empty()) {
     std::string serialized_page_context =
-        PageContextToProto(entry.GetPageContext()).SerializeAsString();
+        PageContextToProto(entry.GetPageContext(), entry.GetURL())
+            .SerializeAsString();
     page_context_bytes.assign(serialized_page_context.begin(),
                               serialized_page_context.end());
   }

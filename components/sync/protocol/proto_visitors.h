@@ -1430,6 +1430,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ScrollPosition& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::PageContext& proto) {
   VISIT(form_field_info);
   VISIT(scroll_position);
+  VISIT(url);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::FormFieldInfo& proto) {

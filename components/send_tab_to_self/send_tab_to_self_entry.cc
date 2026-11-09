@@ -220,7 +220,8 @@ SendTabToSelfLocal SendTabToSelfEntry::AsLocalProto() const {
         TimeToProtoTime(GetActivatedTime()));
   }
 
-  sync_pb::PageContext pb_page_context = PageContextToProto(page_context_);
+  sync_pb::PageContext pb_page_context =
+      PageContextToProto(page_context_, GetURL());
   if (const size_t size = pb_page_context.ByteSizeLong();
       size > 0 && size <= kMaxPageContextSizeBytes) {
     *pb_entry->mutable_page_context() = std::move(pb_page_context);
@@ -275,7 +276,7 @@ std::unique_ptr<SendTabToSelfEntry> SendTabToSelfEntry::FromProto(
   auto entry = std::make_unique<SendTabToSelfEntry>(
       std::move(guid), url, pb_entry.title(), shared_time,
       pb_entry.device_name(), pb_entry.target_device_sync_cache_guid(),
-      PageContextFromProto(pb_entry.page_context()),
+      PageContextFromProto(pb_entry.page_context(), url),
       std::move(navigation_history));
 
   if (pb_entry.has_opened_time_windows_epoch_micros()) {

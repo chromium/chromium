@@ -107,6 +107,7 @@ void CommitContributionImpl::AddToCommitMessage(
     CHECK(!sync_entity->specifics()
                .incoming_password_sharing_invitation()
                .has_client_only_unencrypted_data());
+    CHECK(!sync_entity->specifics().send_tab_to_self().has_page_context());
 
     // Purposefully crash since no metadata should be uploaded if a custom
     // passphrase is set.

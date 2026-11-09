@@ -13,6 +13,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
+#include "url/gurl.h"
 
 namespace send_tab_to_self {
 
@@ -413,7 +414,8 @@ ScrollPosition ScrollPositionFromProto(
 
 }  // namespace
 
-sync_pb::PageContext PageContextToProto(const PageContext& context) {
+sync_pb::PageContext PageContextToProto(const PageContext& context,
+                                        const GURL& url) {
   sync_pb::PageContext pb_page_context;
   if (!context.form_field_info.fields.empty()) {
     *pb_page_context.mutable_form_field_info() =
@@ -423,10 +425,25 @@ sync_pb::PageContext PageContextToProto(const PageContext& context) {
     *pb_page_context.mutable_scroll_position() =
         ScrollPositionToProto(context.scroll_position);
   }
+  // Avoid populating the page URL (and thus making the proto non-empty) if it's
+  // otherwise empty.
+  if (pb_page_context.ByteSizeLong() > 0) {
+    pb_page_context.set_url(url.spec());
+  }
   return pb_page_context;
 }
 
-PageContext PageContextFromProto(const sync_pb::PageContext& pb_page_context) {
+PageContext PageContextFromProto(const sync_pb::PageContext& pb_page_context,
+                                 const GURL& url) {
+  // Verify that the URL in the page context is the same as the entry's URL, to
+  // ensure the sensitive page context is not filled into the wrong page. See
+  // crbug.com/579584997 for context.
+  // TODO(crbug.com/579584997): Start requiring `pb_page_context.has_url()`
+  // around M166 / March 2027.
+  if (pb_page_context.has_url() && GURL(pb_page_context.url()) != url) {
+    return PageContext();
+  }
+
   PageContext page_context;
   page_context.form_field_info =
       FormFieldInfoFromProto(pb_page_context.form_field_info());

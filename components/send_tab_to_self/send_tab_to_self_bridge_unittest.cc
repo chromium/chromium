@@ -2469,13 +2469,14 @@ TEST_F(SendTabToSelfBridgeTest, SendEntry_RecordsPageContextSize) {
   PageContext context;
   context.scroll_position.text_fragment.text_start = "fragment";
 
-  bridge()->SendEntry(GURL("http://www.example.com/"), "title",
-                      kLocalDeviceCacheGuid, context, NavigationHistory(),
-                      base::DoNothing(), ShareEntryPoint::kShareSheet);
+  const GURL kUrl("http://www.example.com/");
+  bridge()->SendEntry(kUrl, "title", kLocalDeviceCacheGuid, context,
+                      NavigationHistory(), base::DoNothing(),
+                      ShareEntryPoint::kShareSheet);
 
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.PageContextSize2",
-      PageContextToProto(context).ByteSizeLong(), 1);
+      PageContextToProto(context, kUrl).ByteSizeLong(), 1);
 }
 
 // Verifies that `Sharing.SendTabToSelf.PageContextSize2` records the
@@ -2493,11 +2494,12 @@ TEST_F(SendTabToSelfBridgeTest, SendEntry_RecordsPageContextSize_ExceedsLimit) {
   context.scroll_position.text_fragment.text_start =
       std::string(kLargeSize, 'a');
 
-  bridge()->SendEntry(GURL("http://www.example.com/"), "title",
-                      kLocalDeviceCacheGuid, context, NavigationHistory(),
-                      base::DoNothing(), ShareEntryPoint::kShareSheet);
+  const GURL kUrl("http://www.example.com/");
+  bridge()->SendEntry(kUrl, "title", kLocalDeviceCacheGuid, context,
+                      NavigationHistory(), base::DoNothing(),
+                      ShareEntryPoint::kShareSheet);
 
-  size_t size = PageContextToProto(context).ByteSizeLong();
+  size_t size = PageContextToProto(context, kUrl).ByteSizeLong();
   ASSERT_GT(size, kMaxPageContextSizeBytes);
 
   histogram_tester.ExpectUniqueSample("Sharing.SendTabToSelf.PageContextSize2",
@@ -2513,14 +2515,15 @@ TEST_F(SendTabToSelfBridgeTest,
 
   base::HistogramTester histogram_tester;
 
+  const GURL kUrl("http://www.example.com/");
   // An empty `PageContext` serializes to `0` bytes and should not emit a sample
   // to `Sharing.SendTabToSelf.PageContextSize2`.
   const PageContext empty_context;
-  ASSERT_EQ(PageContextToProto(empty_context).ByteSizeLong(), 0u);
+  ASSERT_EQ(PageContextToProto(empty_context, kUrl).ByteSizeLong(), 0u);
 
-  bridge()->SendEntry(GURL("http://www.example.com/"), "title",
-                      kLocalDeviceCacheGuid, empty_context, NavigationHistory(),
-                      base::DoNothing(), ShareEntryPoint::kShareSheet);
+  bridge()->SendEntry(kUrl, "title", kLocalDeviceCacheGuid, empty_context,
+                      NavigationHistory(), base::DoNothing(),
+                      ShareEntryPoint::kShareSheet);
 
   histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.PageContextSize2",
                                     0);

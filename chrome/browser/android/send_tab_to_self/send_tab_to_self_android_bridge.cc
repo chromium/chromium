@@ -378,7 +378,7 @@ static void JNI_SendTabToSelfAndroidBridge_FillWebContents(
     return;
   }
 
-  PageContext page_context = PageContextFromProto(proto);
+  PageContext page_context = PageContextFromProto(proto, url);
   FillWebContents(web_contents, url::Origin::Create(url), page_context);
 }
 
