@@ -13267,7 +13267,8 @@
     "OmniboxPrefetchSelectedSuggestionsOmtAndroid": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_desktop"
             ],
             "experiments": [
                 {
