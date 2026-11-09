@@ -123,9 +123,11 @@ public class AdaptiveUiDialogCoordinatorTest {
                 AdaptiveUiProperties.ALL_KEYS.length,
                 allKeys.size());
         for (Field field : AdaptiveUiProperties.class.getDeclaredFields()) {
-            if (!Modifier.isStatic(field.getModifiers())) continue;
+            if (!Modifier.isStatic(field.getModifiers())
+                    || !PropertyKey.class.isAssignableFrom(field.getType())) {
+                continue;
+            }
             Object value = field.get(null);
-            if (!(value instanceof PropertyKey)) continue;
             assertTrue("Key missing from ALL_KEYS: " + field.getName(), allKeys.contains(value));
         }
     }
