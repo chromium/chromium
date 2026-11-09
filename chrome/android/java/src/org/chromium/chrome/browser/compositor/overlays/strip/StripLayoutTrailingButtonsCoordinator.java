@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicNudgeActivity;
 import org.chromium.chrome.browser.glic.GlicPrefNames;
 import org.chromium.chrome.browser.glic.GlicUtils;
+import org.chromium.chrome.browser.glic.SecondaryAction;
 import org.chromium.chrome.browser.glic.toolbar_button.ActorTaskRowData;
 import org.chromium.chrome.browser.glic.toolbar_button.GlicButtonDelegate;
 import org.chromium.chrome.browser.glic.toolbar_button.GlicSplitButtonDelegate;
@@ -262,6 +263,21 @@ public class StripLayoutTrailingButtonsCoordinator {
                         mGlicActorButton.setHighlighted(pressed);
                         mRenderHost.requestRender();
                     }
+                }
+
+                @Override
+                public void updateSplitButtonUi(
+                        @SecondaryAction int secondaryAction, String secondaryLabel) {
+                    // TODO(b/582740696): Swap mGlicActorButton's drawable to a chevron when
+                    // secondaryAction == SecondaryAction.CHEVRON once Android Activity Hub UI is
+                    // supported; for now both TEXT and CHEVRON keep ic_arrow_selector_spark_16dp.
+                    mIsGlicActorButtonShowing = (secondaryAction != SecondaryAction.NONE);
+                    mActorNudgeLabel =
+                            (secondaryAction == SecondaryAction.TEXT && !secondaryLabel.isEmpty())
+                                    ? secondaryLabel
+                                    : null;
+                    updateTrailingButtonsState(
+                            /* animate= */ true, /* forceLayoutChanged= */ false);
                 }
 
                 @Override

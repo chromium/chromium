@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.glic.toolbar_button;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.glic.SecondaryAction;
 
 import java.util.List;
 
@@ -93,4 +94,12 @@ public interface GlicSplitButtonDelegate {
     default boolean isActorTaskListBubbleShowing() {
         return false;
     }
+
+    /**
+     * Called when native C++ updates the split button secondary UI state.
+     *
+     * @param secondaryAction The {@link SecondaryAction} to display.
+     * @param secondaryLabel Text string when secondaryAction is {@link SecondaryAction#TEXT}.
+     */
+    default void updateSplitButtonUi(@SecondaryAction int secondaryAction, String secondaryLabel) {}
 }

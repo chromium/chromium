@@ -27,7 +27,10 @@ generate_jni("jni_headers") {
 }
 
 java_cpp_enum("java_enums_srcjar") {
-  sources = [ "//chrome/browser/glic/browser_ui/glic_nudge_controller.h" ]
+  sources = [
+    "//chrome/browser/glic/browser_ui/glic_nudge_controller.h",
+    "//chrome/browser/glic/browser_ui/glic_split_button_ui_state.h",
+  ]
 }
 
 java_cpp_enum("glic_settings_enums_srcjar") {

@@ -11,10 +11,14 @@ namespace glic {
 
 // Represents the UI state of the secondary slot of the Glic split button.
 struct GlicSplitButtonUiState {
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.glic
   enum class SecondaryAction {
-    kNone,  // Unitary button mode (no secondary button shown)
-    kText,  // Pill button: label + icon (e.g., "Check task", "Task complete")
-    kChevron,  // Chevron icon
+    // Unitary button mode (no secondary button shown).
+    kNone = 0,
+    // Pill button: label + icon (e.g., "Check task", "Task complete").
+    kText = 1,
+    // Chevron icon.
+    kChevron = 2,
   };
 
   SecondaryAction secondary_action = SecondaryAction::kNone;

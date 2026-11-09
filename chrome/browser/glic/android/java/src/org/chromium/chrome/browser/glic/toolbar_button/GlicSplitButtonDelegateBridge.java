@@ -12,6 +12,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.glic.GlicNudgeActivity;
+import org.chromium.chrome.browser.glic.SecondaryAction;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
@@ -119,6 +120,14 @@ public class GlicSplitButtonDelegateBridge implements ChromeAndroidTaskFeature {
     @CalledByNative
     public boolean isActorTaskListBubbleShowing() {
         return mDelegate.isActorTaskListBubbleShowing();
+    }
+
+    @CalledByNative
+    public void updateSplitButtonUi(
+            @JniType("GlicSplitButtonUiState::SecondaryAction") @SecondaryAction
+                    int secondaryAction,
+            @JniType("std::u16string") String secondaryLabel) {
+        mDelegate.updateSplitButtonUi(secondaryAction, secondaryLabel);
     }
 
     /** Notifies native side of user nudge activity. */

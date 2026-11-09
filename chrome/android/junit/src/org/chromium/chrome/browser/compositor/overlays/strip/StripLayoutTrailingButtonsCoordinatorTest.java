@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.glic.GlicPrefNames;
 import org.chromium.chrome.browser.glic.GlicUtils;
+import org.chromium.chrome.browser.glic.SecondaryAction;
 import org.chromium.chrome.browser.glic.toolbar_button.ActorTaskRowData;
 import org.chromium.chrome.browser.glic.toolbar_button.GlicButtonDelegate;
 import org.chromium.chrome.browser.glic.toolbar_button.GlicSplitButtonDelegate;
@@ -664,6 +665,42 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 mCoordinator.shouldGlicActorBeVisible());
         assertFalse(
                 "Actor nudge should not be showing after hide.",
+                delegate.getIsShowingGlicActorTaskIconNudge());
+    }
+
+    @Test
+    public void testGlicSplitButtonDelegate_UpdateSplitButtonUi() {
+        GlicSplitButtonDelegate delegate = mCoordinator.getGlicSplitButtonDelegateForTesting();
+        assertNotNull("Glic split button delegate should be created.", delegate);
+
+        // TEXT with label shows actor button with nudge text.
+        delegate.updateSplitButtonUi(SecondaryAction.TEXT, "Acting on 1 tab");
+        assertTrue(
+                "Actor button should be visible for SecondaryAction.TEXT.",
+                mCoordinator.shouldGlicActorBeVisible());
+        assertTrue("Actor nudge should be showing.", delegate.getIsShowingGlicActorTaskIconNudge());
+        assertEquals(
+                "Actor button text should match label.",
+                "Acting on 1 tab",
+                mGlicActorButton.getText());
+
+        // CHEVRON keeps actor button visible and clears the nudge label.
+        delegate.updateSplitButtonUi(SecondaryAction.CHEVRON, "");
+        assertTrue(
+                "Actor button should remain visible for SecondaryAction.CHEVRON.",
+                mCoordinator.shouldGlicActorBeVisible());
+        assertFalse(
+                "Actor nudge should be cleared for SecondaryAction.CHEVRON.",
+                delegate.getIsShowingGlicActorTaskIconNudge());
+        assertNull("Actor button text should be cleared.", mGlicActorButton.getText());
+
+        // NONE hides the actor button and clears the nudge.
+        delegate.updateSplitButtonUi(SecondaryAction.NONE, "");
+        assertFalse(
+                "Actor button should be hidden for SecondaryAction.NONE.",
+                mCoordinator.shouldGlicActorBeVisible());
+        assertFalse(
+                "Actor nudge should not be showing for SecondaryAction.NONE.",
                 delegate.getIsShowingGlicActorTaskIconNudge());
     }
 
