@@ -13,7 +13,7 @@ bool IsShareDefaultBrowserStatusEnabled() {
 }
 
 BASE_FEATURE(kIOSSettingsDefaultBrowserPromoV2,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kIOSSettingsDefaultBrowserPromoTypeParam[] =
     "SettingsDefaultBrowserPromoType";
