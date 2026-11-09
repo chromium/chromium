@@ -17,7 +17,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom.h"
-#include "url/origin.h"
 
 namespace base {
 class FilePath;
@@ -39,7 +38,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
    public:
     virtual ~Delegate() {}
     virtual bool CanReadFile(const base::FilePath& file) = 0;
-    virtual bool CanAccessDataForOrigin(const url::Origin& origin) = 0;
     // Returns an opaque string identifying the creator of blobs registered
     // through this delegate (e.g. process lock URL of the renderer process).
     virtual scoped_refptr<base::RefCountedString> GetCreatorIdentity() = 0;

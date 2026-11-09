@@ -14,11 +14,6 @@ bool MockBlobRegistryDelegate::CanReadFile(const base::FilePath& file) {
   return can_read_file_result;
 }
 
-bool MockBlobRegistryDelegate::CanAccessDataForOrigin(
-    const url::Origin& origin) {
-  return can_access_data_for_origin;
-}
-
 scoped_refptr<base::RefCountedString>
 MockBlobRegistryDelegate::GetCreatorIdentity() {
   return nullptr;

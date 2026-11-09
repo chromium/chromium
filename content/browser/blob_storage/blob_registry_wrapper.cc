@@ -27,9 +27,6 @@ class BindingDelegate : public storage::BlobRegistryImpl::Delegate {
   bool CanReadFile(const base::FilePath& file) override {
     return security_policy_handle_.CanReadFile(file);
   }
-  bool CanAccessDataForOrigin(const url::Origin& origin) override {
-    return security_policy_handle_.CanAccessDataForOrigin(origin);
-  }
   // Returns an interned RefCountedString identifying the site/origin of the
   // renderer process creating the blob. Deduplicates origin strings across all
   // blobs and stream chunks created by this renderer process.
