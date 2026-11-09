@@ -38,6 +38,13 @@ BOOL HasPlatformPolicyKey() {
              dictionaryForKey:kPolicyLoaderIOSConfigurationKey] != nil;
 }
 
+// Returns whether `key` is an entry of the managed app configuration that is
+// consumed by Chrome directly rather than being a policy (see
+// `kPolicyLoaderIOSDeviceNameKey`).
+bool IsNonPolicyKey(const std::string& key) {
+  return key == base::SysNSStringToUTF8(kPolicyLoaderIOSDeviceNameKey);
+}
+
 }  // namespace
 
 namespace policy {
@@ -83,6 +90,11 @@ void PolicyLoaderIOS::LoadNSDictionaryToPolicyBundle(NSDictionary* dictionary,
 
   PolicyMap& map = bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
   for (const auto it : value->GetDict()) {
+    // Entries that aren't policies would otherwise be reported as unknown
+    // policies.
+    if (IsNonPolicyKey(it.first)) {
+      continue;
+    }
     map.Set(it.first, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
             POLICY_SOURCE_PLATFORM,
             ConvertPolicyDataIfNecessary(it.first, it.second), nullptr);

@@ -55,6 +55,14 @@ source_set("util") {
       "//components/session_manager/core",
     ]
   }
+
+  if (is_ios) {
+    sources += [
+      "cloud/cloud_policy_util_ios.h",
+      "cloud/cloud_policy_util_ios.mm",
+    ]
+    frameworks = [ "Foundation.framework" ]
+  }
 }
 
 source_set("internal") {
@@ -651,7 +659,10 @@ source_set("unit_tests") {
     }
 
     if (is_ios) {
-      sources += [ "policy_loader_ios_unittest.mm" ]
+      sources += [
+        "cloud/cloud_policy_util_ios_unittest.mm",
+        "policy_loader_ios_unittest.mm",
+      ]
     }
   }
   if (is_win || is_linux || is_chromeos) {

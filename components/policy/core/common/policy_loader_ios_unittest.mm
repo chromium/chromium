@@ -323,4 +323,25 @@ TEST_F(PolicyLoaderIosTest, ReloadIntervalWhenManagedByPlatformBeforeStartup) {
   EXPECT_TRUE(provider_->policies().Equals(bundle));
 }
 
+TEST_F(PolicyLoaderIosTest, DeviceNameKeyIsNotLoadedAsPolicy) {
+  // The device name entry of the App Config is consumed directly by
+  // `GetIOSManagedDeviceName()`; it must not be reported as an (unknown)
+  // policy.
+  NSDictionary* app_config = @{
+    @"StringPolicy" : @"string_value",
+    kPolicyLoaderIOSDeviceNameKey : @"Device Name",
+  };
+  [[NSUserDefaults standardUserDefaults]
+      setObject:app_config
+         forKey:kPolicyLoaderIOSConfigurationKey];
+
+  InitProvider();
+
+  PolicyBundle bundle;
+  bundle.Get(GetPolicyNamespace())
+      .Set("StringPolicy", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+           POLICY_SOURCE_PLATFORM, base::Value("string_value"), nullptr);
+  EXPECT_TRUE(provider_->policies().Equals(bundle));
+}
+
 }  // namespace policy

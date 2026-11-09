@@ -12,7 +12,7 @@
 #include "components/policy/policy_export.h"
 #include "components/version_info/channel.h"
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 #include "base/feature_list.h"
 #endif
 
@@ -32,6 +32,14 @@ namespace policy {
 // name when unset) in `policy::GetMachineName()`. Used as a kill switch.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kReportAndroidMachineName);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_IOS)
+// When enabled, the machine name reported by Chrome on iOS (e.g. in enterprise
+// reports) is the device name configured by the MDM administrator in the
+// Managed App Configuration (falling back to the Vendor ID when unset). Used as
+// a kill switch.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kIOSReportMachineName);
+#endif  // BUILDFLAG(IS_IOS)
 
 // Returns the name of the machine. This function is platform specific.
 POLICY_EXPORT std::string GetMachineName();

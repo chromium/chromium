@@ -6,3 +6,5 @@
 
 NSString* const kPolicyLoaderIOSConfigurationKey =
     @"com.apple.configuration.managed";
+
+NSString* const kPolicyLoaderIOSDeviceNameKey = @"DeviceName";

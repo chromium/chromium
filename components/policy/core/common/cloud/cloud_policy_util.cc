@@ -79,7 +79,9 @@
 #endif
 
 #if BUILDFLAG(IS_IOS)
+#include "base/feature_list.h"
 #include "base/ios/device_util.h"
+#include "components/policy/core/common/cloud/cloud_policy_util_ios.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -93,6 +95,10 @@ namespace policy {
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kReportAndroidMachineName, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kIOSReportMachineName, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_IOS)
 
 namespace em = enterprise_management;
 
@@ -109,7 +115,15 @@ std::string GetMachineName() {
     return hostname;
   return std::string();
 #elif BUILDFLAG(IS_IOS)
-  // Use the Vendor ID as the machine name.
+  if (base::FeatureList::IsEnabled(kIOSReportMachineName)) {
+    // Prefer the device name configured by the MDM administrator, if any,
+    // since the user-visible device name isn't accessible to the app.
+    if (std::string mdm_device_name = GetIOSManagedDeviceName();
+        !mdm_device_name.empty()) {
+      return mdm_device_name;
+    }
+  }
+  // Fall back to the Vendor ID as the machine name.
   return ios::device_util::GetVendorId();
 #elif BUILDFLAG(IS_MAC)
   // Do not use NSHost currentHost, as it's very slow. http://crbug.com/138570
