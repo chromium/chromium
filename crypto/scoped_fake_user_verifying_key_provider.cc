@@ -95,7 +95,6 @@ class FakeUserVerifyingKeyProvider : public UserVerifyingKeyProvider {
         return;
       }
     }
-    std::vector<sign::SignatureKind> algorithms = {sign::ECDSA_SHA256};
     std::optional<std::vector<uint8_t>> wrapped_key =
         base::Base64Decode(key_label);
     CHECK(wrapped_key);
