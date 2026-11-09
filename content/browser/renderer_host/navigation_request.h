@@ -1499,12 +1499,6 @@ class CONTENT_EXPORT NavigationRequest
     resume_commit_closure_ = std::move(closure);
   }
 
-  // Records metrics for `GetFrameHostForNavigation()` attempts that failed due
-  // to this `NavigationRequest` being in the pending commit state.
-  // `commit_attempt` should be true if `GetFrameHostForNavigation()` failed
-  // when trying to get a RenderFrameHost when committing a navigation.
-  void RecordMetricsForBlockedGetFrameHostAttempt(bool commit_attempt);
-
   // Creates a WebUI object for this navigation and saves it in `web_ui_`. Later
   // on, the WebUI created will be moved to `frame_host` (if `frame_host` is
   // null, it means a RenderFrameHost has not been picked for the navigation).
@@ -3728,11 +3722,6 @@ class CONTENT_EXPORT NavigationRequest
     // When this `NavigationRequest` caused its speculative RenderFrameHost to
     // enter pending commit.
     base::TimeTicks start_time;
-    // How many `GetFrameHostForNavigation()` calls failed in total.
-    int blocked_count = 0;
-    // How many `GetFrameHostForNavigation()` calls failed when trying to assign
-    // a final `RenderFrameHost` for commit.
-    int blocked_commit_count = 0;
   };
   PendingCommitMetrics pending_commit_metrics_;
 

@@ -2026,46 +2026,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Navigation.PendingCommit.BlockedCommitCount.{RegularOrMHTMLType}"
-    units="count" expires_after="2023-12-31">
-  <owner>dcheng@chromium.org</owner>
-  <owner>rakina@chromium.org</owner>
-  <summary>
-    Records how many attempts to assign a final RenderFrameHost for a navigation
-    were blocked due to a pre-existing speculative RenderFrameHost being in the
-    kPendingCommit state. Collected when the navigation commits in
-    DidCommitNavigation().
-  </summary>
-  <token key="RegularOrMHTMLType" variants="RegularOrMHTMLType"/>
-</histogram>
-
-<histogram name="Navigation.PendingCommit.BlockedCount.{RegularOrMHTMLType}"
-    units="count" expires_after="2023-12-31">
-  <owner>dcheng@chromium.org</owner>
-  <owner>rakina@chromium.org</owner>
-  <summary>
-    Records how many attempts to assign RenderFrameHost (initial or final) for a
-    navigation were blocked due to a pre-existing speculative RenderFrameHost
-    being in the kPendingCommit state. Collected when the navigation commits in
-    DidCommitNavigation().
-  </summary>
-  <token key="RegularOrMHTMLType" variants="RegularOrMHTMLType"/>
-</histogram>
-
-<histogram
-    name="Navigation.PendingCommit.DidBlockGetFrameHostForNavigation.{RegularOrMHTMLType}"
-    enum="Boolean" expires_after="2023-12-31">
-  <owner>dcheng@chromium.org</owner>
-  <owner>rakina@chromium.org</owner>
-  <summary>
-    Records whether any calls to `GetFrameHostForNavigation()` that failed due
-    to a pre-existing speculative RenderFrameHost being in the kPendingCommit
-    state. Collected when the navigation commits in DidCommitNavigation().
-  </summary>
-  <token key="RegularOrMHTMLType" variants="RegularOrMHTMLType"/>
-</histogram>
-
 <histogram name="Navigation.PendingCommit.Duration.{RegularOrMHTMLType}"
     units="ms" expires_after="2026-03-15">
   <owner>dcheng@chromium.org</owner>

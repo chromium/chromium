@@ -1724,12 +1724,6 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
               request->GetNavigationId(), request->IsInOutermostMainFrame()));
       if (result.has_value()) {
         CHECK(result.value());
-      } else if (result.error() ==
-                 GetFrameHostForNavigationFailed::kBlockedByPendingCommit) {
-        frame_tree_node_->render_manager()
-            ->speculative_frame_host()
-            ->RecordMetricsForBlockedGetFrameHostAttempt(
-                /* commit_attempt=*/false);
       }
     }
     base::UmaHistogramEnumeration("Navigation.DeferSpeculativeRFHAction",

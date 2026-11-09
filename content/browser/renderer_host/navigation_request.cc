@@ -3260,10 +3260,6 @@ void NavigationRequest::
             &NavigationRequest::
                 SelectFrameHostForCrossDocumentNavigationWithNoUrlLoader,
             weak_factory_.GetWeakPtr());
-        frame_tree_node_->render_manager()
-            ->speculative_frame_host()
-            ->RecordMetricsForBlockedGetFrameHostAttempt(
-                /* commit_attempt=*/true);
         return;
     }
   }
@@ -5631,10 +5627,6 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
               weak_factory_.GetWeakPtr(),
               std::move(url_loader_client_endpoints), is_download,
               std::move(subresource_loader_params));
-          frame_tree_node_->render_manager()
-              ->speculative_frame_host()
-              ->RecordMetricsForBlockedGetFrameHostAttempt(
-                  /* commit_attempt=*/true);
           return;
       }
     }
@@ -6168,10 +6160,6 @@ void NavigationRequest::SelectFrameHostForOnRequestFailedInternal(
             &NavigationRequest::SelectFrameHostForOnRequestFailedInternal,
             weak_factory_.GetWeakPtr(), exists_in_cache, skip_throttles,
             error_page_content);
-        frame_tree_node_->render_manager()
-            ->speculative_frame_host()
-            ->RecordMetricsForBlockedGetFrameHostAttempt(
-                /* commit_attempt=*/true);
         return;
     }
   }
@@ -9889,24 +9877,6 @@ void NavigationRequest::DidCommitNavigation(
         is_for_mhtml ? "Navigation.PendingCommit.Duration.MHTML"
                      : "Navigation.PendingCommit.Duration.Regular",
         base::TimeTicks::Now() - pending_commit_metrics_.start_time);
-    const bool did_block_get_frame_host_for_navigation =
-        pending_commit_metrics_.blocked_count > 0;
-    base::UmaHistogramBoolean(
-        is_for_mhtml
-            ? "Navigation.PendingCommit.DidBlockGetFrameHostForNavigation.MHTML"
-            : "Navigation.PendingCommit.DidBlockGetFrameHostForNavigation."
-              "Regular",
-        did_block_get_frame_host_for_navigation);
-    if (did_block_get_frame_host_for_navigation) {
-      base::UmaHistogramCounts100(
-          is_for_mhtml ? "Navigation.PendingCommit.BlockedCount.MHTML"
-                       : "Navigation.PendingCommit.BlockedCount.Regular",
-          pending_commit_metrics_.blocked_count);
-      base::UmaHistogramCounts100(
-          is_for_mhtml ? "Navigation.PendingCommit.BlockedCommitCount.MHTML"
-                       : "Navigation.PendingCommit.BlockedCommitCount.Regular",
-          pending_commit_metrics_.blocked_commit_count);
-    }
   }
   if (ignored_duplicate_navigation_count_ > 0) {
     base::UmaHistogramCounts100(
@@ -13006,15 +12976,6 @@ bool NavigationRequest::ShouldQueueDueToExistingPendingCommitRFH() const {
     return speculative_rfh->HasPendingCommitForCrossDocumentNavigation();
   }
   return false;
-}
-
-void NavigationRequest::RecordMetricsForBlockedGetFrameHostAttempt(
-    bool commit_attempt) {
-  CHECK(!pending_commit_metrics_.start_time.is_null());
-  ++pending_commit_metrics_.blocked_count;
-  if (commit_attempt) {
-    ++pending_commit_metrics_.blocked_commit_count;
-  }
 }
 
 void NavigationRequest::PostResumeCommitTask() {

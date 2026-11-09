@@ -7044,14 +7044,6 @@ bool RenderFrameHostImpl::HasPendingCommitForCrossDocumentNavigation() const {
   return !navigation_requests_.empty();
 }
 
-void RenderFrameHostImpl::RecordMetricsForBlockedGetFrameHostAttempt(
-    bool commit_attempt) {
-  CHECK_EQ(lifecycle_state_, LifecycleStateImpl::kPendingCommit);
-  CHECK_EQ(1u, navigation_requests_.size());
-  navigation_requests_.begin()
-      ->first->RecordMetricsForBlockedGetFrameHostAttempt(commit_attempt);
-}
-
 NavigationRequest* RenderFrameHostImpl::GetSameDocumentNavigationRequest(
     const base::UnguessableToken& token) {
   auto request = same_document_navigation_requests_.find(token);
