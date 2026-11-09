@@ -1740,10 +1740,27 @@ IN_PROC_BROWSER_TEST_F(SettingsGeolocationPageTest, GeolocationPage) {
           "runMochaSuite('GeolocationPage')");
 }
 
-class JavascriptOptimizerPageTest : public SettingsBrowserTest {};
+class JavascriptOptimizerPageTest : public SettingsBrowserTest {
+ public:
+  JavascriptOptimizerPageTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        content_settings::features::kBlockV8OptimizerOnUnfamiliarSites);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerPageTest, JavascriptOptimizerPage) {
   RunTest("settings/v8_page_test.js", "runMochaSuite('V8Page')");
+}
+
+// TODO(crbug.com/570186404): Remove once kBlockV8OptimizerOnUnfamiliarSites is
+// removed.
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerPageTest,
+                       BlockOnUnfamiliarSitesFeatureEnabled) {
+  RunTest("settings/v8_page_test.js",
+          "runMochaSuite('V8Page_BlockOnUnfamiliarSitesFeatureEnabled')");
 }
 
 using SettingsRouteTest = SettingsBrowserTest;

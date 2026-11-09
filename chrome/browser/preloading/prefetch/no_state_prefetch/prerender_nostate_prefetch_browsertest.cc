@@ -50,6 +50,7 @@
 #include "chrome/common/webui_url_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/embedder_support/switches.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
@@ -1840,8 +1841,11 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
                        MAYBE_ServiceWorkerIntercept) {
   bool expect_two_hosts = false;
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  expect_two_hosts = base::FeatureList::IsEnabled(
-      safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites);
+  expect_two_hosts =
+      base::FeatureList::IsEnabled(
+          safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites) &&
+      base::FeatureList::IsEnabled(
+          content_settings::features::kBlockV8OptimizerOnUnfamiliarSites);
 #endif
   RunServiceWorkerInterceptTest(expect_two_hosts);
 }
@@ -1850,8 +1854,12 @@ class NoStatePrefetchBrowserTestWithEsbBlockV8
     : public NoStatePrefetchBrowserTest {
  public:
   NoStatePrefetchBrowserTestWithEsbBlockV8() {
-    feature_list_.InitAndEnableFeature(
-        safe_browsing::kEnableBlockV8OptimizerOnUnfamiliarSitesForEsbClients);
+    // TODO(crbug.com/570186404): Remove once
+    // kBlockV8OptimizerOnUnfamiliarSites is removed.
+    feature_list_.InitWithFeatures(
+        {safe_browsing::kEnableBlockV8OptimizerOnUnfamiliarSitesForEsbClients,
+         content_settings::features::kBlockV8OptimizerOnUnfamiliarSites},
+        {});
   }
 
   void SetUpOnMainThread() override {

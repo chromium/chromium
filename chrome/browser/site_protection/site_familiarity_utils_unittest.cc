@@ -12,6 +12,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -26,7 +27,12 @@ class SiteFamiliarityUtilsJsOptimizerTest : public testing::Test {
   explicit SiteFamiliarityUtilsJsOptimizerTest(
       const std::vector<base::test::FeatureRef>& enabled_features = {},
       const std::vector<base::test::FeatureRef>& disabled_features = {}) {
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    std::vector<base::test::FeatureRef> all_enabled = enabled_features;
+    // TODO(crbug.com/570186404): Remove once
+    // kBlockV8OptimizerOnUnfamiliarSites is removed.
+    all_enabled.push_back(
+        content_settings::features::kBlockV8OptimizerOnUnfamiliarSites);
+    feature_list_.InitWithFeatures(all_enabled, disabled_features);
   }
 
   void SetUp() override {
@@ -100,6 +106,29 @@ TEST_P(SiteFamiliarityUtilsJsOptimizerParameterizedTest,
   safe_browsing::SetSafeBrowsingState(
       profile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
+  ExpectJsOptimizerSetting(
+      content_settings::JavascriptOptimizerSetting::kAllowed);
+}
+
+TEST_P(SiteFamiliarityUtilsJsOptimizerParameterizedTest,
+       ReturnsAllowedIfSettingFlagDisabled) {
+  base::test::ScopedFeatureList local_features;
+  local_features.InitAndDisableFeature(
+      content_settings::features::kBlockV8OptimizerOnUnfamiliarSites);
+  ExpectJsOptimizerSetting(
+      content_settings::JavascriptOptimizerSetting::kAllowed);
+}
+
+TEST_P(SiteFamiliarityUtilsJsOptimizerParameterizedTest,
+       ManualBlockForUnfamiliarSitesReturnsAllowedIfSettingFlagDisabled) {
+  SetJsOptimizerSetting(
+      content_settings::JavascriptOptimizerSetting::kBlockedForUnfamiliarSites);
+  ExpectJsOptimizerSetting(
+      content_settings::JavascriptOptimizerSetting::kBlockedForUnfamiliarSites);
+
+  base::test::ScopedFeatureList local_features;
+  local_features.InitAndDisableFeature(
+      content_settings::features::kBlockV8OptimizerOnUnfamiliarSites);
   ExpectJsOptimizerSetting(
       content_settings::JavascriptOptimizerSetting::kAllowed);
 }
@@ -184,6 +213,16 @@ TEST_F(SiteFamiliarityUtilsJsOptimizerTest, IsV8OptimizerBlockingDryRun) {
 
     // Default user (no pref) -> should be dry run.
     EXPECT_TRUE(IsV8OptimizerBlockingDryRun(profile()));
+
+    // kBlockV8OptimizerOnUnfamiliarSites disabled -> should NOT be dry run.
+    // TODO(crbug.com/570186404): Remove once
+    // kBlockV8OptimizerOnUnfamiliarSites is removed.
+    {
+      base::test::ScopedFeatureList setting_flag_disabled;
+      setting_flag_disabled.InitAndDisableFeature(
+          content_settings::features::kBlockV8OptimizerOnUnfamiliarSites);
+      EXPECT_FALSE(IsV8OptimizerBlockingDryRun(profile()));
+    }
 
     // User opted in via pref -> should NOT be dry run.
     SetJsOptimizerSetting(content_settings::JavascriptOptimizerSetting::

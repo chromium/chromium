@@ -12,6 +12,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -227,7 +228,9 @@ class V8OptimizerPolicyTest_UseSiteFamiliarity : public V8OptimizerPolicyTest {
   V8OptimizerPolicyTest_UseSiteFamiliarity() {
     feature_list_
         .InitWithFeatures(/*enabled_features=*/
-                          {features::kProcessSelectionDeferringConditions},
+                          {features::kProcessSelectionDeferringConditions,
+                           content_settings::features::
+                               kBlockV8OptimizerOnUnfamiliarSites},
                           /*disabled_features=*/{});
   }
 

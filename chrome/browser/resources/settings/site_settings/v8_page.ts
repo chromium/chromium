@@ -13,6 +13,7 @@ import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_obs
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
 import {SafeBrowsingSetting} from '../privacy_page/security/safe_browsing_types.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
@@ -35,6 +36,14 @@ export class V8PageElement extends V8PageElementBase {
     return {
       searchTerm: String,
 
+      enableBlockV8OptimizerOnUnfamiliarSites_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'enableBlockV8OptimizerOnUnfamiliarSites');
+        },
+      },
+
       // Expose ContentSettingsTypes enum to the HTML template.
       contentSettingsTypesEnum_: {
         type: Object,
@@ -55,6 +64,7 @@ export class V8PageElement extends V8PageElementBase {
   }
 
   declare searchTerm: string;
+  declare private enableBlockV8OptimizerOnUnfamiliarSites_: boolean;
   declare private blockForUnfamiliarSitesSubLabel_: string;
 
   override connectedCallback() {

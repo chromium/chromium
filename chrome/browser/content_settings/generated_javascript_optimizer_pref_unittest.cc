@@ -15,6 +15,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -112,7 +113,9 @@ class GeneratedJavascriptOptimizerPrefTest : public testing::Test {
 void EnableFeature(base::test::ScopedFeatureList* feature_list) {
   feature_list
       ->InitWithFeatures(/*enabled_features=*/
-                         {::features::kProcessSelectionDeferringConditions},
+                         {content_settings::features::
+                              kBlockV8OptimizerOnUnfamiliarSites,
+                          ::features::kProcessSelectionDeferringConditions},
                          /*disabled_features=*/{});
 }
 
@@ -152,11 +155,15 @@ TEST_F(GeneratedJavascriptOptimizerPrefTest, GetPrefObject_FeatureDisabled) {
   prefs()->SetBoolean(prefs::kJavascriptOptimizerBlockedForUnfamiliarSites,
                       true);
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      ::features::kProcessSelectionDeferringConditions);
-  EXPECT_EQ(static_cast<int>(JavascriptOptimizerSetting::kAllowed),
-            GetGeneratedPrefValue(profile()));
+  std::vector<base::test::FeatureRef> test_cases = {
+      content_settings::features::kBlockV8OptimizerOnUnfamiliarSites,
+      ::features::kProcessSelectionDeferringConditions};
+  for (const base::test::FeatureRef& feature : test_cases) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(*feature);
+    EXPECT_EQ(static_cast<int>(JavascriptOptimizerSetting::kAllowed),
+              GetGeneratedPrefValue(profile()));
+  }
 }
 
 // Test potential future scenario where
@@ -302,6 +309,9 @@ TEST_F(GeneratedJavascriptOptimizerPrefTest, SetPref_OutOfRange) {
 
 TEST_F(GeneratedJavascriptOptimizerPrefTest,
        OnSettingsBundleChanged_PrefChangedExternally) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  EnableFeature(&scoped_feature_list);
+
   // Verify initial preference state.
   EXPECT_EQ(static_cast<int>(JavascriptOptimizerSetting::kAllowed),
             GetGeneratedPrefValue(profile()));
@@ -339,6 +349,34 @@ TEST_F(GeneratedJavascriptOptimizerPrefTest,
             GetGeneratedPrefValue(profile()));
   EXPECT_EQ(safe_browsing::GetSecurityBundleSetting(*prefs()),
             safe_browsing::SecuritySettingsBundleSetting::STANDARD);
+}
+
+// TODO(crbug.com/570186404): Remove once kBlockV8OptimizerOnUnfamiliarSites is
+// removed.
+TEST_F(GeneratedJavascriptOptimizerPrefTest,
+       OnSettingsBundleChanged_SettingFlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      content_settings::features::kBlockV8OptimizerOnUnfamiliarSites);
+
+  GeneratedJavascriptOptimizerPref pref(profile());
+  TestObserver observer;
+  pref.AddObserver(&observer);
+
+  // Set bundled settings state to ENHANCED programmatically.
+  prefs()->SetDefaultPrefValue(
+      prefs::kSecuritySettingsBundle,
+      base::Value(static_cast<int>(
+          safe_browsing::SecuritySettingsBundleSetting::ENHANCED)));
+
+  // Selecting the enhanced bundle still persists the boolean
+  // kJavascriptOptimizerBlockedForUnfamiliarSites pref, but because blocking on
+  // unfamiliar sites is unavailable, the setting should read back as kAllowed.
+  observer.WaitForGeneratedPrefChange();
+  EXPECT_TRUE(prefs()->GetBoolean(
+      prefs::kJavascriptOptimizerBlockedForUnfamiliarSites));
+  EXPECT_EQ(static_cast<int>(JavascriptOptimizerSetting::kAllowed),
+            GetGeneratedPrefValue(profile()));
 }
 
 }  // namespace content_settings

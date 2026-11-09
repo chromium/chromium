@@ -986,32 +986,35 @@ void BrowserActions::InitializePageActionIconActions() {
           .SetEnabled(true)
           .Build());
 
-  root_action_item_->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                if (!bwi) {
-                  return;
-                }
-                auto anchor =
-                    CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(bwi))
-                        .toolbar_button_provider()
-                        ->GetBubbleAnchor(kActionShowJsOptimizationsIcon);
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kBlockV8OptimizerOnUnfamiliarSites)) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  if (!bwi) {
+                    return;
+                  }
+                  auto anchor =
+                      CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(bwi))
+                          .toolbar_button_provider()
+                          ->GetBubbleAnchor(kActionShowJsOptimizationsIcon);
 
-                JsOptimizationsPageActionController::From(
-                    bwi->GetActiveTabInterface())
-                    ->ShowBubble(anchor, item);
-              },
-              bwi))
-          .SetActionId(kActionShowJsOptimizationsIcon)
-          .SetTooltipText(l10n_util::GetStringUTF16(
-              IDS_JS_OPTIMIZATIONS_DISABLED_ICON_TOOLTIP))
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              vector_icons::kShieldIcon, ui::kColorIcon,
-              ui::SimpleMenuModel::kDefaultIconSize))
-          .SetEnabled(true)
-          .Build());
+                  JsOptimizationsPageActionController::From(
+                      bwi->GetActiveTabInterface())
+                      ->ShowBubble(anchor, item);
+                },
+                bwi))
+            .SetActionId(kActionShowJsOptimizationsIcon)
+            .SetTooltipText(l10n_util::GetStringUTF16(
+                IDS_JS_OPTIMIZATIONS_DISABLED_ICON_TOOLTIP))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                vector_icons::kShieldIcon, ui::kColorIcon,
+                ui::SimpleMenuModel::kDefaultIconSize))
+            .SetEnabled(true)
+            .Build());
+  }
 
   if (base::FeatureList::IsEnabled(
           record_replay::features::kRecordReplayBase)) {

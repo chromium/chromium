@@ -17,6 +17,7 @@
 #include "chrome/browser/site_protection/site_protection_metrics.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -685,8 +686,12 @@ class SiteProtectionMetricsObserverV8OptTest
     : public SiteProtectionMetricsObserverTest {
  public:
   SiteProtectionMetricsObserverV8OptTest() {
+    // TODO(crbug.com/570186404): Remove kBlockV8OptimizerOnUnfamiliarSites
+    // once it is removed.
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kProcessSelectionDeferringConditions,
+                              content_settings::features::
+                                  kBlockV8OptimizerOnUnfamiliarSites,
                               features::kOriginKeyedProcessesByDefault},
         /*disabled_features=*/{});
   }
@@ -774,6 +779,22 @@ TEST_F(SiteProtectionMetricsObserverV8OptTest, NoIframe) {
   EXPECT_EQ(
       0u, histogram_tester.GetAllSamples("SafeBrowsing.V8Optimizer.IframeState")
               .size());
+}
+
+// TODO(crbug.com/570186404): Remove once kBlockV8OptimizerOnUnfamiliarSites is
+// removed.
+TEST_F(SiteProtectionMetricsObserverV8OptTest,
+       NoIframeMetricsIfSettingFlagDisabled) {
+  base::test::ScopedFeatureList local_features;
+  local_features.InitAndDisableFeature(
+      content_settings::features::kBlockV8OptimizerOnUnfamiliarSites);
+
+  base::HistogramTester histogram_tester;
+  NavigateToPageWithIframeAndV8OptState(
+      GURL("https://foo.com"),
+      /*topmost_are_v8_optimizations_enabled=*/true, GURL("https://bar.com"),
+      /*iframe_are_v8_optimizations_enabled=*/true);
+  histogram_tester.ExpectTotalCount("SafeBrowsing.V8Optimizer.IframeState", 0);
 }
 
 TEST_F(SiteProtectionMetricsObserverV8OptTest,

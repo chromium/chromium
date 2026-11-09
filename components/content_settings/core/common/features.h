@@ -65,6 +65,14 @@ BASE_DECLARE_FEATURE(kApproximateGeolocationPermission);
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kLeftHandSideSensorActivityIndicators);
 
+// Makes the "block JavaScript optimization on unfamiliar sites" option
+// available. When enabled, users can choose this option in settings, Chrome
+// applies it on sites the user hasn't visited before, and Chrome shows the
+// JavaScript optimizations omnibox icon. Disabling this flag acts as a kill
+// switch for all of these; users' stored choice is preserved.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kBlockV8OptimizerOnUnfamiliarSites);
+
 }  // namespace features
 }  // namespace content_settings
 

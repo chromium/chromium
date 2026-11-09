@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/site_protection/site_familiarity_utils.h"
@@ -166,6 +167,12 @@ TEST_F(BundledSettingsMetricsProviderUnitTest,
 
 TEST_F(BundledSettingsMetricsProviderUnitTest,
        EnhancedBundle_JavascriptOptimizerMetrics) {
+  // TODO(crbug.com/570186404): Remove once kBlockV8OptimizerOnUnfamiliarSites
+  // is removed.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      content_settings::features::kBlockV8OptimizerOnUnfamiliarSites);
+
   const char* kHistogramName =
       kEnhancedJavascriptOptimizerWasModifiedHistogram;
 

@@ -7,7 +7,7 @@ import 'chrome://settings/lazy_load.js';
 
 import type {SettingsCollapseRadioButtonElement, V8PageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, SafeBrowsingSetting, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
+import {loadTimeData, PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
 
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
@@ -39,9 +39,53 @@ function queryBlockOnUnfamiliarSitesRadioButton(page: HTMLElement) {
 
 suite('V8Page', function() {
   let page: V8PageElement;
+
+  setup(async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    SiteSettingsBrowserProxyImpl.setInstance(
+        new TestSiteSettingsBrowserProxy());
+    PrefsBrowserProxy.setInstance(new TestPrefsBrowserProxy(getInitialPrefs()));
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
+
+    page = document.createElement('settings-v8-page');
+    document.body.appendChild(page);
+    await flushTasks();
+  });
+
+  teardown(function() {
+    page?.remove();
+  });
+
+  test('CheckRadioButtons', function() {
+    for (const id of ['#enableForAllSites', '#blockForAllSites']) {
+      const radioButton =
+          page.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
+              id);
+      assertTrue(!!radioButton);
+      assertTrue(isVisible(radioButton));
+      assertFalse(radioButton.disabled);
+    }
+
+    // TODO(crbug.com/570186404): Remove once
+    // kBlockV8OptimizerOnUnfamiliarSites is removed.
+    assertFalse(!!queryBlockOnUnfamiliarSitesRadioButton(page));
+  });
+});
+
+// TODO(crbug.com/570186404): Remove once kBlockV8OptimizerOnUnfamiliarSites
+// is removed.
+suite('V8Page_BlockOnUnfamiliarSitesFeatureEnabled', function() {
+  let page: V8PageElement;
   let prefService: PrefService;
   let prefsBrowserProxy: TestPrefsBrowserProxy;
   let siteSettingsBrowserProxy: TestSiteSettingsBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableBlockV8OptimizerOnUnfamiliarSites: true,
+    });
+  });
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

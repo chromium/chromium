@@ -43,6 +43,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
@@ -873,17 +874,7 @@ class JavascriptOptimizerBrowserTest_UseSiteFamiliarityBase
       command_line->AppendSwitch(::switches::kSitePerProcess);
     }
 
-    if (ShouldEnableSiteFamiliarityFeature()) {
-      feature_list_
-          .InitWithFeatures(/*enabled_features=*/
-                            {features::kProcessSelectionDeferringConditions},
-                            /*disabled_features=*/{});
-    } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/
-          {features::kProcessSelectionDeferringConditions});
-    }
+    InitFeatures(feature_list_);
   }
 
   void CreatedBrowserMainParts(
@@ -962,6 +953,21 @@ class JavascriptOptimizerBrowserTest_UseSiteFamiliarityBase
   virtual bool ShouldEnableSiteFamiliarityFeature() = 0;
 
   virtual bool ShouldForceSitePerProcess() { return true; }
+
+  virtual void InitFeatures(base::test::ScopedFeatureList& feature_list) {
+    if (ShouldEnableSiteFamiliarityFeature()) {
+      feature_list.InitWithFeatures(
+          /*enabled_features=*/
+          {features::kProcessSelectionDeferringConditions,
+           content_settings::features::kBlockV8OptimizerOnUnfamiliarSites},
+          /*disabled_features=*/{});
+    } else {
+      feature_list.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/
+          {features::kProcessSelectionDeferringConditions});
+    }
+  }
 
  private:
   safe_browsing::TestSafeBrowsingServiceFactory factory_;
@@ -1323,6 +1329,31 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_DoNotUseSiteFamiliarity,
                                 ContentSetting::CONTENT_SETTING_BLOCK);
   NavigateToUnfamiliarSite(/*expect_v8_optimizations_enabled=*/false);
 }
+
+// Test harness where process selection deferral is available and the user has
+// chosen to block JavaScript optimization on unfamiliar sites, but
+// kBlockV8OptimizerOnUnfamiliarSites is disabled. The base class's
+// SetUpOnMainThread() opts the user in to blocking on unfamiliar sites.
+// TODO(crbug.com/570186404): Remove once kBlockV8OptimizerOnUnfamiliarSites is
+// removed.
+class JavascriptOptimizerBrowserTest_SiteFamiliarityWithoutFlag
+    : public JavascriptOptimizerBrowserTest_UseSiteFamiliarityBase {
+ protected:
+  bool ShouldEnableSiteFamiliarityFeature() override { return false; }
+
+  void InitFeatures(base::test::ScopedFeatureList& feature_list) override {
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{features::kProcessSelectionDeferringConditions},
+        /*disabled_features=*/{
+            content_settings::features::kBlockV8OptimizerOnUnfamiliarSites});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    JavascriptOptimizerBrowserTest_SiteFamiliarityWithoutFlag,
+    ExpectOptimizationEnabledForUnfamiliarSite) {
+  NavigateToUnfamiliarSite(/*expect_v8_optimizations_enabled=*/true);
+}
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1334,6 +1365,13 @@ constexpr char kScreenshotBaselineCL[] = "7805312";
 class JavascriptOptimizerUiBaseBrowserTest
     : public JavascriptOptimizerBrowserTestMixin<InteractiveBrowserTest> {
  public:
+  JavascriptOptimizerUiBaseBrowserTest() {
+    // TODO(crbug.com/570186404): Remove once
+    // kBlockV8OptimizerOnUnfamiliarSites is removed.
+    feature_list_.InitAndEnableFeature(
+        content_settings::features::kBlockV8OptimizerOnUnfamiliarSites);
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     policy_provider_.SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
@@ -1371,6 +1409,7 @@ class JavascriptOptimizerUiBaseBrowserTest
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
@@ -1501,6 +1540,37 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
   RunTestSequence(
       WaitForPageActionChipNotVisible(kActionShowJsOptimizationsIcon));
+  EXPECT_FALSE(IsOmnibarIconVisible());
+}
+
+// TODO(crbug.com/570186404): Remove once kBlockV8OptimizerOnUnfamiliarSites is
+// removed.
+class JavascriptOptimizerOmnibarIconBrowserTest_WithoutFlag
+    : public JavascriptOptimizerOmnibarIconBrowserTest {
+ public:
+  JavascriptOptimizerOmnibarIconBrowserTest_WithoutFlag() {
+    feature_list_.InitAndDisableFeature(
+        content_settings::features::kBlockV8OptimizerOnUnfamiliarSites);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerOmnibarIconBrowserTest_WithoutFlag,
+                       IconDoesNotShowWhenFlagNotEnabled) {
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                ContentSetting::CONTENT_SETTING_BLOCK);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_https_test_server().GetURL("/simple.html")));
+  // V8 optimizations are disabled, but omnibar icon is not visible.
+  ASSERT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+  // The page action is never registered when the flag is disabled.
+  EXPECT_EQ(nullptr, actions::ActionManager::Get().FindAction(
+                         kActionShowJsOptimizationsIcon,
+                         BrowserActions::From(browser())->root_action_item()));
   EXPECT_FALSE(IsOmnibarIconVisible());
 }
 
