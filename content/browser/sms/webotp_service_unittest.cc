@@ -114,6 +114,9 @@ class Service {
 
   void AbortRequest() { service_remote_->Abort(); }
 
+  // Waits until the service has handled all the messages sent so far.
+  void Flush() { service_remote_.FlushForTesting(); }
+
   void NotifyReceive(const GURL& url,
                      const string& otp,
                      /* avoid showing user prompts */
@@ -542,6 +545,71 @@ TEST_F(WebOTPServiceTest, Abort) {
 
   loop.Run();
 
+  ASSERT_FALSE(service.fetcher()->HasSubscribers());
+}
+
+// The browser can complete a request before the renderer receives the
+// response, so the renderer can still call Abort() for it. The abort must be
+// ignored instead of being treated as a bad message.
+TEST_F(WebOTPServiceTest, AbortAfterRequestCompleted) {
+  NavigateAndCommit(GURL(kTestUrl));
+
+  Service service(web_contents());
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  base::RunLoop loop;
+
+  EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce([&service]() {
+    service.NotifyReceive(GURL(kTestUrl), "hi");
+    // Abort after the request completed but before the response arrives.
+    service.AbortRequest();
+  });
+
+  service.MakeRequest(BindLambdaForTesting(
+      [&loop](SmsStatus status, const optional<string>& otp) {
+        EXPECT_EQ(SmsStatus::kSuccess, status);
+        EXPECT_EQ("hi", otp.value());
+        loop.Quit();
+      }));
+
+  loop.Run();
+  service.Flush();
+
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+  ASSERT_FALSE(service.fetcher()->HasSubscribers());
+}
+
+// A page can make several requests with the same AbortSignal and then abort
+// them. The renderer sends one Abort() per request, but only the latest request
+// is still pending because each request cancels the previous one.
+TEST_F(WebOTPServiceTest, AbortMultipleRequests) {
+  NavigateAndCommit(GURL(kTestUrl));
+
+  Service service(web_contents());
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  base::RunLoop loop1, loop2;
+
+  service.MakeRequest(BindLambdaForTesting(
+      [&loop1](SmsStatus status, const optional<string>& otp) {
+        EXPECT_EQ(SmsStatus::kCancelled, status);
+        EXPECT_EQ(std::nullopt, otp);
+        loop1.Quit();
+      }));
+  service.MakeRequest(BindLambdaForTesting(
+      [&loop2](SmsStatus status, const optional<string>& otp) {
+        EXPECT_EQ(SmsStatus::kAborted, status);
+        EXPECT_EQ(std::nullopt, otp);
+        loop2.Quit();
+      }));
+  service.AbortRequest();
+  service.AbortRequest();
+
+  loop1.Run();
+  loop2.Run();
+  service.Flush();
+
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
   ASSERT_FALSE(service.fetcher()->HasSubscribers());
 }
 

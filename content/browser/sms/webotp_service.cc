@@ -305,9 +305,11 @@ void WebOTPService::OnFailure(FailureType failure_type) {
 }
 
 void WebOTPService::Abort() {
+  // A well-behaved renderer can call Abort() when there is no pending request,
+  // e.g. if the request completed but the renderer had not received the
+  // response yet, or if the page aborted several requests and only the latest
+  // one was still pending. There is nothing to abort in these cases.
   if (!callback_) {
-    mojo::ReportBadMessage(
-        "The abort controller must be used after initiating an SMS request.");
     return;
   }
   CompleteRequest(SmsStatus::kAborted);
