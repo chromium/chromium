@@ -56,6 +56,7 @@ public class VariationsSeedFetcherTest {
     private static final String sRestrict = "restricted";
     private static final String sMilestone = "64";
     private static final String sChannel = "dev";
+    private static final String sCorpus = "experimental";
 
     @Before
     public void setUp() throws IOException {
@@ -624,6 +625,7 @@ public class VariationsSeedFetcherTest {
                         .setRestrictMode(sRestrict)
                         .setMilestone(sMilestone)
                         .setChannel(sChannel)
+                        .setCorpus(sCorpus)
                         .build();
         String urlString = mFetcher.getConnectionString(params);
 
@@ -632,11 +634,13 @@ public class VariationsSeedFetcherTest {
         assertTrue(urlString, urlString.contains("osname"));
         assertTrue(urlString, urlString.contains("milestone"));
         assertTrue(urlString, urlString.contains("channel"));
+        assertTrue(urlString, urlString.contains("corpus"));
 
         // Has the param values.
         assertTrue(urlString, urlString.contains(sRestrict));
         assertTrue(urlString, urlString.contains(sMilestone));
         assertTrue(urlString, urlString.contains(sChannel));
+        assertTrue(urlString, urlString.contains(sCorpus));
 
         params =
                 VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
@@ -644,12 +648,14 @@ public class VariationsSeedFetcherTest {
                         .setRestrictMode("")
                         .setMilestone(sMilestone)
                         .setChannel(sChannel)
+                        .setCorpus("")
                         .build();
         urlString = mFetcher.getConnectionString(params);
         assertFalse(urlString.contains("restrict"));
         assertTrue(urlString.contains("osname"));
         assertTrue(urlString.contains("milestone"));
         assertTrue(urlString.contains("channel"));
+        assertFalse(urlString.contains("corpus"));
 
         params =
                 VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
@@ -676,6 +682,7 @@ public class VariationsSeedFetcherTest {
         assertTrue(urlString.contains("osname"));
         assertTrue(urlString.contains("milestone"));
         assertFalse(urlString.contains("channel"));
+        assertFalse(urlString.contains("corpus"));
     }
 
     /**

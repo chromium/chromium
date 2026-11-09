@@ -250,6 +250,9 @@ public class VariationsSeedFetcher {
         if (params.mChannel != null && !params.mChannel.isEmpty()) {
             urlString += "&channel=" + params.mChannel;
         }
+        if (params.mCorpus != null && !params.mCorpus.isEmpty()) {
+            urlString += "&corpus=" + params.mCorpus;
+        }
 
         return urlString;
     }
@@ -296,6 +299,7 @@ public class VariationsSeedFetcher {
         private final @Nullable String mMilestone;
         private @Nullable String mChannel;
         private final boolean mIsFastFetchMode;
+        private final @Nullable String mCorpus;
 
         // This is added as a convenience for using Mockito.
         @Override
@@ -307,12 +311,14 @@ public class VariationsSeedFetcher {
                     && getIsFastFetchMode() == castObj.getIsFastFetchMode()
                     && Objects.equals(getMilestone(), castObj.getMilestone())
                     && Objects.equals(getRestrictMode(), castObj.getRestrictMode())
-                    && Objects.equals(getChannel(), castObj.getChannel());
+                    && Objects.equals(getChannel(), castObj.getChannel())
+                    && Objects.equals(getCorpus(), castObj.getCorpus());
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(mPlatform, mRestrictMode, mMilestone, mChannel, mIsFastFetchMode);
+            return Objects.hash(
+                    mPlatform, mRestrictMode, mMilestone, mChannel, mIsFastFetchMode, mCorpus);
         }
 
         private SeedFetchParameters(
@@ -320,12 +326,14 @@ public class VariationsSeedFetcher {
                 @Nullable String restrictMode,
                 @Nullable String milestone,
                 @Nullable String channel,
-                boolean isFastFetchMode) {
+                boolean isFastFetchMode,
+                @Nullable String corpus) {
             this.mPlatform = platform;
             this.mRestrictMode = restrictMode;
             this.mMilestone = milestone;
             this.mChannel = channel;
             this.mIsFastFetchMode = isFastFetchMode;
+            this.mCorpus = corpus;
         }
 
         /** Builder class for {@link SeedFetchParameters}. */
@@ -335,6 +343,7 @@ public class VariationsSeedFetcher {
             private @Nullable String mMilestone;
             private @Nullable String mChannel;
             private boolean mIsFastFetchMode;
+            private @Nullable String mCorpus;
 
             private Builder() {
                 this.mPlatform = VariationsPlatform.ANDROID;
@@ -343,7 +352,7 @@ public class VariationsSeedFetcher {
 
             public SeedFetchParameters build() {
                 return new SeedFetchParameters(
-                        mPlatform, mRestrictMode, mMilestone, mChannel, mIsFastFetchMode);
+                        mPlatform, mRestrictMode, mMilestone, mChannel, mIsFastFetchMode, mCorpus);
             }
 
             public static Builder newBuilder() {
@@ -374,6 +383,11 @@ public class VariationsSeedFetcher {
                 this.mIsFastFetchMode = isFastFetchMode;
                 return this;
             }
+
+            public Builder setCorpus(@Nullable String corpus) {
+                this.mCorpus = corpus;
+                return this;
+            }
         }
 
         // Getters
@@ -395,6 +409,10 @@ public class VariationsSeedFetcher {
 
         public boolean getIsFastFetchMode() {
             return mIsFastFetchMode;
+        }
+
+        public @Nullable String getCorpus() {
+            return mCorpus;
         }
     }
 

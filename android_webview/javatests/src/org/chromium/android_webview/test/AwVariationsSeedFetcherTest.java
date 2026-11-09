@@ -42,6 +42,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.variations.VariationsSeedOuterClass.VariationsSeed;
+import org.chromium.components.variations.VariationsSwitches;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher.DateTime;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
@@ -522,6 +523,52 @@ public class AwVariationsSeedFetcherTest {
             Assert.assertNotNull("downloadContent should have been called", mDownloader.lastParams);
             Assert.assertTrue(mDownloader.lastParams.getIsFastFetchMode());
             Assert.assertEquals("test-restrict-value", mDownloader.lastParams.getRestrictMode());
+        } finally {
+            mScheduler.clear();
+            VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
+        }
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add(VariationsSwitches.VARIATIONS_SEED_CORPUS + "=experimental")
+    public void testFetchUsesSeedCorpusFlag() throws IOException, TimeoutException {
+        try {
+            TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
+            mDownloader.fetchResult = HTTP_OK;
+
+            when(mMockJobParameters.getExtras()).thenReturn(new PersistableBundle());
+            fetcher.onStartJob(mMockJobParameters);
+            fetcher.helper.waitForCallback(
+                    "Timeout out waiting for AwVariationsSeedFetcher to call jobFinished",
+                    fetcher.helper.getCallCount());
+
+            Assert.assertNotNull("downloadContent should have been called", mDownloader.lastParams);
+            Assert.assertEquals("experimental", mDownloader.lastParams.getCorpus());
+        } finally {
+            VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
+        }
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add(VariationsSwitches.VARIATIONS_SEED_CORPUS + "=experimental")
+    public void testFastModeFetchUsesSeedCorpusFlag() throws IOException, TimeoutException {
+        try {
+            TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
+            mDownloader.fetchResult = HTTP_OK;
+            PersistableBundle bundle = new PersistableBundle();
+            bundle.putBoolean(AwVariationsSeedFetcher.JOB_REQUEST_FAST_MODE, true);
+
+            when(mMockJobParameters.getExtras()).thenReturn(bundle);
+            fetcher.onStartJob(mMockJobParameters);
+            fetcher.helper.waitForCallback(
+                    "Timeout out waiting for AwVariationsSeedFetcher to call jobFinished",
+                    fetcher.helper.getCallCount());
+
+            Assert.assertNotNull("downloadContent should have been called", mDownloader.lastParams);
+            Assert.assertTrue(mDownloader.lastParams.getIsFastFetchMode());
+            Assert.assertEquals("experimental", mDownloader.lastParams.getCorpus());
         } finally {
             mScheduler.clear();
             VariationsTestUtils.deleteSeeds(); // Remove the stamp file.

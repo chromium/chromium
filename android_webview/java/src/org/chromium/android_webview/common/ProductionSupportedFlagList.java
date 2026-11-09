@@ -144,6 +144,10 @@ public final class ProductionSupportedFlagList {
                 VariationsSwitches.ENABLE_FINCH_SEED_DELTA_COMPRESSION,
                 "Enables delta-compression when requesting a new seed from the server."),
         Flag.commandLine(
+                VariationsSwitches.VARIATIONS_SEED_CORPUS,
+                "Requests the experimental variations seed from the variations server.",
+                "experimental"),
+        Flag.commandLine(
                 AwSwitches.WEBVIEW_FENCED_FRAMES,
                 "Enables fenced frames. Also enables PrivacySandboxAdsAPIsOverride."),
         Flag.commandLine(
