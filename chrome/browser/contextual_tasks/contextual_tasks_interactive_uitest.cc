@@ -61,7 +61,6 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -3886,10 +3885,8 @@ class ContextualTasksCopyUrlTest
     auto enabled = GetDefaultEnabledFeatures();
     auto disabled = GetDefaultDisabledFeatures();
     std::vector<base::test::FeatureRef> webui_features = {
-        features::kInitialWebUI, features::kWebUILocationBar,
-        omnibox::internal::kWebUIOmniboxAimPopup};
+        features::kInitialWebUI, features::kWebUILocationBar};
     if (IsWebUI()) {
-      std::erase(disabled, omnibox::internal::kWebUIOmniboxAimPopup);
       for (const auto& f : webui_features) {
         enabled.push_back({*f, {}});
       }
