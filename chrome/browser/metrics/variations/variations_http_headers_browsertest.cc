@@ -195,12 +195,13 @@ VariationsSeed CreateTestSeedWithLimitedEntropyLayer(
 
 #if BUILDFLAG(IS_ANDROID)
 TabModel* FindTabModelForProfile(content::BrowserContext* context) {
-  for (TabModel* model : TabModelList::models()) {
-    if (model->GetProfile() == context) {
-      return model;
-    }
-  }
-  return nullptr;
+  TabModel* found = nullptr;
+  TabModelList::ForEach(Profile::FromBrowserContext(context),
+                        [&found](TabModel* model) {
+                          found = model;
+                          return false;
+                        });
+  return found;
 }
 
 void OpenUrlInNewTab(content::BrowserContext* context,

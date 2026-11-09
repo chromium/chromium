@@ -23,8 +23,6 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths_internal.h"
@@ -139,8 +137,7 @@ IN_PROC_BROWSER_TEST_F(ProfileDeleteMediaBrowserTest, DeleteMediaCache) {
   // Make sure the legacy media cache directory (created in SetUp) gets deleted
   // properly.
   base::FilePath cache_base;
-  chrome::GetUserCacheDirectory(
-      TabModelList::models()[0]->GetProfile()->GetPath(), &cache_base);
+  chrome::GetUserCacheDirectory(GetProfile()->GetPath(), &cache_base);
 
   // |cache_base_| computation in SetUp() makes assumptions on implementation
   // details to be able to run that early, so verify its result is sane.
@@ -174,7 +171,7 @@ class ProfileAndroidSecondProfileBrowserTest : public AndroidBrowserTest {
 IN_PROC_BROWSER_TEST_F(ProfileAndroidSecondProfileBrowserTest,
                        DISABLED_SecondProfileLoadsItsOwnData) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* startup_profile = TabModelList::models()[0]->GetProfile();
+  Profile* startup_profile = GetProfile();
   ASSERT_TRUE(startup_profile);
 
   // ProfileManager::GenerateNextProfileDirectoryPath() requires

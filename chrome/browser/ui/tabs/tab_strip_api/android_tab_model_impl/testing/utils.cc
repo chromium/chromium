@@ -9,12 +9,12 @@
 namespace tabs_api::testing {
 
 TabModel& GetTabModel(Profile* profile) {
-  for (TabModel* model : TabModelList::models()) {
-    if (model->GetProfile() == profile) {
-      return *model;
-    }
-  }
-  NOTREACHED() << "could not find a tab model to construct the api with";
+  TabModel* found = nullptr;
+  TabModelList::ForEach(profile, [&found](TabModel* model) {
+    found = model;
+    return false;
+  });
+  return CHECK_DEREF(found);
 }
 
 }  // namespace tabs_api::testing

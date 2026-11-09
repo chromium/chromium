@@ -383,10 +383,17 @@ class UkmBrowserTest : public UkmBrowserTestBase {
     // would need to remove the pre-existing TabModel and add a new one.
     // Having an empty TabModelList allows us to simply add the appropriate
     // TabModel.
-    EXPECT_EQ(1U, TabModelList::models().size());
-    initial_tab_model_ = TabModelList::models()[0].get();
+    size_t count = 0;
+    TabModelList::ForEachAll([this, &count](TabModel* model) {
+      if (!initial_tab_model_) {
+        initial_tab_model_ = model;
+      }
+      ++count;
+      return true;
+    });
+    ASSERT_EQ(1U, count);
     TabModelList::RemoveTabModel(initial_tab_model_);
-    EXPECT_EQ(0U, TabModelList::models().size());
+    EXPECT_FALSE(TabModelList::Contains(initial_tab_model_));
   }
 
   void PostRunTestOnMainThread() override {

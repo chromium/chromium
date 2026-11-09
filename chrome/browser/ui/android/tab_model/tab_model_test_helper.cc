@@ -6,7 +6,6 @@
 
 #include <jni.h>
 
-#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <numeric>
@@ -57,13 +56,9 @@ TestTabModel::~TestTabModel() {
   // TabModel's destructor does not unregister itself. gtest runs many tests in
   // a single process, so a TestTabModel that is registered but never removed
   // leaves a dangling pointer behind that causes a use-after-free in whichever
-  // unrelated test next walks TabModelList::models(). Defensively unregister
-  // here so that a missing RemoveTabModel() call can't corrupt other tests.
-  TabModel* self = this;
-  if (std::ranges::contains(TabModelList::models(), self)) {
-    TabModelList::RemoveTabModel(self);
-  }
-  TabModelList::RemoveArchivedTabModel(self);
+  // unrelated test next walks TabModelList. Defensively unregister here so that
+  // a missing RemoveTabModel() call can't corrupt other tests.
+  TabModelList::RemoveTabModel(this);
 }
 
 void TestTabModel::AddTabListInterfaceObserver(
@@ -708,8 +703,13 @@ void OwningTestTabModel::CloseTab(tabs::TabHandle tab) {
 }
 
 std::vector<tabs::TabInterface*> OwningTestTabModel::GetAllTabs() {
-  NOTIMPLEMENTED();
-  return {};
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<tabs::TabInterface*> tabs;
+  tabs.reserve(owned_tabs_.size());
+  for (const auto& tab : owned_tabs_) {
+    tabs.push_back(tab.get());
+  }
+  return tabs;
 }
 
 void OwningTestTabModel::PinTab(tabs::TabHandle tab) {

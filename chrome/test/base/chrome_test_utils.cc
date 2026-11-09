@@ -19,14 +19,29 @@
 
 namespace chrome_test_utils {
 
+#if BUILDFLAG(IS_ANDROID)
+namespace {
+
+TabModel* GetActiveTabModel() {
+  TabModel* active_model = nullptr;
+  TabModelList::ForEachAll([&active_model](TabModel* model) {
+    if (model->IsActiveModel()) {
+      active_model = model;
+      return false;
+    }
+    return true;
+  });
+  CHECK(active_model) << "No active TabModel??";
+  return active_model;
+}
+
+}  // namespace
+#endif
+
 content::WebContents* GetActiveWebContents(
     const PlatformBrowserTest* browser_test) {
 #if BUILDFLAG(IS_ANDROID)
-  for (const TabModel* model : TabModelList::models()) {
-    if (model->IsActiveModel())
-      return model->GetActiveWebContents();
-  }
-  NOTREACHED() << "No active TabModel??";
+  return GetActiveTabModel()->GetActiveWebContents();
 #else
   return browser_test->browser()->GetTabStripModel()->GetActiveWebContents();
 #endif
@@ -34,12 +49,7 @@ content::WebContents* GetActiveWebContents(
 
 tabs::TabInterface* GetActiveTab(const PlatformBrowserTest* browser_test) {
 #if BUILDFLAG(IS_ANDROID)
-  for (TabModel* model : TabModelList::models()) {
-    if (model->IsActiveModel()) {
-      return model->GetActiveTab();
-    }
-  }
-  NOTREACHED() << "No active TabModel??";
+  return GetActiveTabModel()->GetActiveTab();
 #else
   return browser_test->browser()->GetTabStripModel()->GetActiveTab();
 #endif
@@ -48,12 +58,7 @@ tabs::TabInterface* GetActiveTab(const PlatformBrowserTest* browser_test) {
 content::WebContents* GetWebContentsAt(const PlatformBrowserTest* browser_test,
                                        int index) {
 #if BUILDFLAG(IS_ANDROID)
-  for (const TabModel* model : TabModelList::models()) {
-    if (model->IsActiveModel()) {
-      return model->GetWebContentsAt(index);
-    }
-  }
-  NOTREACHED() << "No active TabModel??";
+  return GetActiveTabModel()->GetWebContentsAt(index);
 #else
   return browser_test->browser()->GetTabStripModel()->GetWebContentsAt(index);
 #endif
@@ -61,11 +66,7 @@ content::WebContents* GetWebContentsAt(const PlatformBrowserTest* browser_test,
 
 Profile* GetProfile(const PlatformBrowserTest* browser_test) {
 #if BUILDFLAG(IS_ANDROID)
-  for (TabModel* model : TabModelList::models()) {
-    if (model->IsActiveModel())
-      return model->GetProfile();
-  }
-  NOTREACHED() << "No active TabModel??";
+  return GetActiveTabModel()->GetProfile();
 #else
   return browser_test->browser()->GetProfile();
 #endif

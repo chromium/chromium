@@ -4,7 +4,8 @@
 
 #include "chrome/browser/sync/test/integration/sync_test_tab_utils.h"
 
-#include "base/notreached.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -34,12 +35,16 @@ namespace {
 #if BUILDFLAG(IS_ANDROID)
 
 TabModel* GetActiveTabModel() {
-  for (TabModel* model : TabModelList::models()) {
+  TabModel* active_model = nullptr;
+  TabModelList::ForEachAll([&active_model](TabModel* model) {
     if (model->IsActiveModel()) {
-      return model;
+      active_model = model;
+      return false;
     }
-  }
-  NOTREACHED() << "No active tab model";
+    return true;
+  });
+  CHECK(active_model) << "No active tab model";
+  return active_model;
 }
 
 TabAndroid* GetFirstTabAtGroup(

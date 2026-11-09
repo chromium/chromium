@@ -4,11 +4,9 @@
 
 #include "chrome/test/base/android/android_browser_test.h"
 
-#include <ranges>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
@@ -136,15 +134,9 @@ void AndroidBrowserTest::PostRunTestOnMainThread() {
   // and running a full compositor frame right before destroying the Activity.
   testing::android::RunActivityTeardownCallback();
 
-  // Closing all tabs in a TabModel can result in it removing itself from
-  // TabModelList::models(), so we must copy the list first.
-  std::vector<raw_ptr<TabModel, VectorExperimental>> models =
-      TabModelList::models();
-  for (TabModel* model : models) {
-    // Ensure this model hasn't already been removed from the main model list.
-    if (!std::ranges::contains(TabModelList::models(), model)) {
-      continue;
-    }
+  // TabModelList::ForEachAll snapshots the model list and skips models removed
+  // during iteration.
+  TabModelList::ForEachAll([](TabModel* model) {
     CHECK(model);
     bool is_otr_tab_model = model->IsOffTheRecord();
     if (model->GetTabCount()) {
@@ -156,9 +148,10 @@ void AndroidBrowserTest::PostRunTestOnMainThread() {
     // again for off-the-record TabModel.
     // Otherwise, we'll dereference a non-null, but invalid pointer.
     if (!is_otr_tab_model) {
-      ASSERT_EQ(0, model->GetTabCount());
+      EXPECT_EQ(0, model->GetTabCount());
     }
-  }
+    return true;
+  });
 
   // Run any shutdown events from closing tabs.
   content::RunAllPendingInMessageLoop();
@@ -188,20 +181,28 @@ BrowserWindowInterface* AndroidBrowserTest::GetBrowserWindowInterface() const {
 }
 
 Profile* AndroidBrowserTest::GetProfile() const {
-  for (TabModel* model : TabModelList::models()) {
+  Profile* profile = nullptr;
+  TabModelList::ForEachAll([&profile](TabModel* model) {
     if (model->GetProfile()) {
-      return model->GetProfile();
+      profile = model->GetProfile();
+      if (!model->IsOffTheRecord()) {
+        return false;
+      }
     }
-  }
-  return nullptr;
+    return true;
+  });
+  return profile;
 }
 
 TabListInterface* AndroidBrowserTest::GetTabListInterface() const {
-  for (TabModel* model : TabModelList::models()) {
-    if (model->GetProfile() == GetProfile()) {
-      return model;
-    }
+  Profile* current_profile = GetProfile();
+  TabListInterface* tab_list = nullptr;
+  TabModelList::ForEach(current_profile, [&tab_list](TabModel* model) {
+    tab_list = model;
+    return false;
+  });
+  if (!tab_list) {
+    ADD_FAILURE() << "No TabModel found for the current profile.";
   }
-  ADD_FAILURE() << "No TabModel found for the current profile.";
-  return nullptr;
+  return tab_list;
 }

@@ -139,9 +139,13 @@ class TabStatsTrackerBrowserTest : public PlatformBrowserTest {
     ASSERT_TRUE(tab_stats_tracker_ != nullptr);
 
 #if BUILDFLAG(IS_ANDROID)
-    ASSERT_FALSE(TabModelList::models().empty());
-    tab_strip_ = std::make_unique<TabStripInterface>(
-        TabModelList::models().front().get());
+    TabModel* first_model = nullptr;
+    TabModelList::ForEach(GetProfile(), [&first_model](TabModel* model) {
+      first_model = model;
+      return false;
+    });
+    ASSERT_TRUE(first_model);
+    tab_strip_ = std::make_unique<TabStripInterface>(first_model);
 
     // The initial tab of the main TabModel will be in an inconsistent state,
     // since its WebContents is created and navigates to an initial URL

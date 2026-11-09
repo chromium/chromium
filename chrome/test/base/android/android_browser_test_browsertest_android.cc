@@ -24,10 +24,18 @@
 #include "services/network/test/test_network_connection_tracker.h"
 
 IN_PROC_BROWSER_TEST_F(AndroidBrowserTest, Smoke) {
-  ASSERT_EQ(TabModelList::models().size(), 1u);
+  size_t model_count = 0;
+  const TabModel* tab_model = nullptr;
+  TabModelList::ForEachAll([&](TabModel* model) {
+    if (!tab_model) {
+      tab_model = model;
+    }
+    ++model_count;
+    return true;
+  });
+  ASSERT_EQ(model_count, 1u);
 
   // Grab a tab an navigate its contents
-  const TabModel* tab_model = TabModelList::models()[0];
   EXPECT_TRUE(content::NavigateToURL(tab_model->GetActiveWebContents(),
                                      GURL("about:blank")));
 }
