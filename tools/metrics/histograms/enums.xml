@@ -8195,6 +8195,7 @@ from previous Chrome versions.
   <int value="-2033950090" label="AutofillNoLocalSaveOnUploadSuccess:disabled"/>
   <int value="-2033908928" label="NightLight:enabled"/>
   <int value="-2033853607" label="ShimlessRMAFlow:disabled"/>
+  <int value="-2033820137" label="TabbedCctIfAllowedByEmbedder:disabled"/>
   <int value="-2033678085"
       label="HappinessTrackingSurveysForDesktopPrivacySandbox:enabled"/>
   <int value="-2033225430" label="NTPMostLikelyFaviconsFromServer:disabled"/>
@@ -12204,8 +12205,6 @@ from previous Chrome versions.
   <int value="-853404233"
       label="ServiceWorkerSkipIgnorableFetchHandler:enabled"/>
   <int value="-853035945" label="SafeBrowsingLocalListsUseSBv5:disabled"/>
-  <int value="-852910698"
-      label="CCTTabSwitcherEnabledForEmbedderExperiment:enabled"/>
   <int value="-852882930"
       label="NewTabPageAndroidTriggerForPrerender2:enabled"/>
   <int value="-852804781"
@@ -13969,6 +13968,7 @@ from previous Chrome versions.
   <int value="-325020026" label="SidePanelFlyoverAnimation:disabled"/>
   <int value="-324786035"
       label="EnableAmbientAuthenticationInGuestSession:enabled"/>
+  <int value="-324687937" label="TabbedCctIfAllowedByEmbedder:enabled"/>
   <int value="-324429921" label="HttpsFirstModeV2ForEngagedSites:disabled"/>
   <int value="-324291988" label="EnableNearbyMdns:enabled"/>
   <int value="-324239279" label="DiscardedTabTreatment:disabled"/>
@@ -14224,8 +14224,6 @@ from previous Chrome versions.
   <int value="-255157394" label="ButtonARCNetworkDiagnostics:enabled"/>
   <int value="-254887599" label="google-profile-info"/>
   <int value="-254375567" label="OpenDownloadInPreferredApp:disabled"/>
-  <int value="-254371436"
-      label="CCTTabSwitcherEnabledForEmbedderExperiment:disabled"/>
   <int value="-254183580" label="AccessibilityLabeledBy:disabled"/>
   <int value="-254158542" label="SubresourceRedirectPreviews:enabled"/>
   <int value="-253685023" label="PrivacyGuideAndroid3:enabled"/>
@@ -15328,8 +15326,6 @@ from previous Chrome versions.
       label="ChromeHomePersonalizedOmniboxSuggestions:enabled"/>
   <int value="83893372" label="SigninInterceptBubbleV2:disabled"/>
   <int value="84092881" label="ComposeProactiveNudge:enabled"/>
-  <int value="84146097"
-      label="CCTTabSwitcherEnabledForChromeExperiment:enabled"/>
   <int value="84911198" label="ScanCardsInWebPayments:disabled"/>
   <int value="86386196"
       label="SafeBrowsingExtensionTelemetryForEnterprise:enabled"/>
@@ -18411,6 +18407,7 @@ from previous Chrome versions.
   <int value="1009713313" label="NtpChromeCartHistoryClusterCoexist:disabled"/>
   <int value="1009837378" label="OverscrollEffectOnNonRootScrollers:disabled"/>
   <int value="1009976778" label="SidePanel:disabled"/>
+  <int value="1010447580" label="TabbedCctIfEnabledByEmbedder:disabled"/>
   <int value="1010832751" label="VideoToolboxAv1Decoding:disabled"/>
   <int value="1011491959" label="PageInfoCookiesSubpage:enabled"/>
   <int value="1012449492" label="StarterPackIPH:disabled"/>
@@ -19613,8 +19610,6 @@ from previous Chrome versions.
       label="DesktopPWAsMigrationUserDisplayModeCleanUp:disabled"/>
   <int value="1355923367" label="CrOSContainer:disabled"/>
   <int value="1356161410" label="VizHitTestSurfaceLayer:enabled"/>
-  <int value="1357337799"
-      label="CCTTabSwitcherEnabledForChromeExperiment:disabled"/>
   <int value="1357722794" label="TextClassifierTimeout:enabled"/>
   <int value="1357749568" label="EnableLazyLoadImageForInvisiblePage:enabled"/>
   <int value="1357785514" label="AndroidNativePagesInNewTab:disabled"/>
@@ -21942,6 +21937,7 @@ from previous Chrome versions.
   <int value="2053479012" label="PersistDeviceBoundSessions:disabled"/>
   <int value="2054616439" label="OmniboxMobileParityUpdate:enabled"/>
   <int value="2055184887" label="LocalHistoryZeroSuggestBeyondNTP:enabled"/>
+  <int value="2056482440" label="TabbedCctIfEnabledByEmbedder:enabled"/>
   <int value="2056572020" label="EnableUsernameCorrection:disabled"/>
   <int value="2057084644" label="AndroidTabDeclutterArchiveTabGroups:disabled"/>
   <int value="2057560522"

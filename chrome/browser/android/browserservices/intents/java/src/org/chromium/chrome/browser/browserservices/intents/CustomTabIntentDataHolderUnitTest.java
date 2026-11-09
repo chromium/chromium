@@ -108,8 +108,8 @@ public class CustomTabIntentDataHolderUnitTest {
         assertFalse(restored.mIsPartialCustomTabFixedHeight);
         assertFalse(restored.mContentScrollMayResizeTab);
         assertFalse(restored.mInteractWithBackground);
-        assertFalse(restored.mCctTabSwitcherEnabledForChromeExperiment);
-        assertFalse(restored.mCctTabSwitcherEnabledForEmbedderExperiment);
+        assertFalse(restored.mTabbedCctAllowedByEmbedder);
+        assertFalse(restored.mTabbedCctEnabledByEmbedder);
         assertNull(restored.mAuthRedirectScheme);
         assertNull(restored.mAuthRedirectHost);
         assertNull(restored.mAuthRedirectPath);
@@ -245,8 +245,8 @@ public class CustomTabIntentDataHolderUnitTest {
                         .setIsPartialCustomTabFixedHeight(true)
                         .setContentScrollMayResizeTab(true)
                         .setInteractWithBackground(true)
-                        .setCctTabSwitcherEnabledForChromeExperiment(true)
-                        .setCctTabSwitcherEnabledForEmbedderExperiment(true)
+                        .setTabbedCctAllowedByEmbedder(true)
+                        .setTabbedCctEnabledByEmbedder(true)
                         .setAuthRedirectScheme("myscheme")
                         .setAuthRedirectHost("auth.example.com")
                         .setAuthRedirectPath("/callback")
@@ -335,8 +335,8 @@ public class CustomTabIntentDataHolderUnitTest {
         assertTrue(restored.mIsPartialCustomTabFixedHeight);
         assertTrue(restored.mContentScrollMayResizeTab);
         assertTrue(restored.mInteractWithBackground);
-        assertTrue(restored.mCctTabSwitcherEnabledForChromeExperiment);
-        assertTrue(restored.mCctTabSwitcherEnabledForEmbedderExperiment);
+        assertTrue(restored.mTabbedCctAllowedByEmbedder);
+        assertTrue(restored.mTabbedCctEnabledByEmbedder);
         assertEquals("myscheme", restored.mAuthRedirectScheme);
         assertEquals("auth.example.com", restored.mAuthRedirectHost);
         assertEquals("/callback", restored.mAuthRedirectPath);

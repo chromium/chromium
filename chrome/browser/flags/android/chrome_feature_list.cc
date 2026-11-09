@@ -375,8 +375,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResetTimeoutSkipConfigurationChanges,
     &kCCTResizableForThirdParties,
     &kCCTTabModalDialog,
-    &kCCTTabSwitcherEnabledForChromeExperiment,
-    &kCCTTabSwitcherEnabledForEmbedderExperiment,
     &kCacheIsGoogleSigned,
     &kCacheIsMultiInstanceApi31Enabled,
     &kCctTabResumption,
@@ -548,6 +546,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabSwitcherMessagesOnDesktopWindowingKillSwitch,
     &kTabUiDataVirtualization,
     &kTabWindowManagerReportIndicesMismatch,
+    &kTabbedCctIfAllowedByEmbedder,
+    &kTabbedCctIfEnabledByEmbedder,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
     &kTextHighlightFullLink,
@@ -837,8 +837,6 @@ BASE_FEATURE(kCCTResetTimeoutAllowed, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTResetTimeoutSkipConfigurationChanges, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTResizableForThirdParties, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTTabModalDialog, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kCCTTabSwitcherEnabledForChromeExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kCCTTabSwitcherEnabledForEmbedderExperiment, base::FEATURE_ENABLED_BY_DEFAULT);
 // Used in downstream code.
 BASE_FEATURE(kCacheIsGoogleSigned, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCacheIsMultiInstanceApi31Enabled, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1021,6 +1019,8 @@ BASE_FEATURE(kTabSwitcherGroupSuggestionsTestModeAndroid, base::FEATURE_DISABLED
 BASE_FEATURE(kTabSwitcherMessagesOnDesktopWindowingKillSwitch, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabUiDataVirtualization, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTabWindowManagerReportIndicesMismatch, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTabbedCctIfAllowedByEmbedder, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTabbedCctIfEnabledByEmbedder, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTestDefaultDisabled, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTestDefaultEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTextHighlightFullLink, base::FEATURE_DISABLED_BY_DEFAULT);

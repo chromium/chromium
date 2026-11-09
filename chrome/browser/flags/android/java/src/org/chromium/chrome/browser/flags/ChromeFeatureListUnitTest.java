@@ -190,8 +190,8 @@ public class ChromeFeatureListUnitTest {
 
     @Test
     public void testCctTabSwitcherFlagsDefaultValues() {
-        assertFalse(ChromeFeatureList.sCctTabSwitcherEnabledForChromeExperiment.isEnabled());
-        assertTrue(ChromeFeatureList.sCctTabSwitcherEnabledForEmbedderExperiment.isEnabled());
+        assertFalse(ChromeFeatureList.sTabbedCctIfAllowedByEmbedder.isEnabled());
+        assertTrue(ChromeFeatureList.sTabbedCctIfEnabledByEmbedder.isEnabled());
     }
 
     @Test

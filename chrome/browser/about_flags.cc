@@ -13964,18 +13964,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kXplatSyncedSetupThemes,
                                     kXplatSyncedSetupThemesVariations,
                                     "XplatSyncedSetupThemes")},
-    {"cct-tab-switcher-enabled-for-chrome-experiment",
-     flag_descriptions::kCCTTabSwitcherEnabledForChromeExperimentName,
-     flag_descriptions::kCCTTabSwitcherEnabledForChromeExperimentDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kCCTTabSwitcherEnabledForChromeExperiment)},
-    {"cct-tab-switcher-enabled-for-embedder-experiment",
-     flag_descriptions::kCCTTabSwitcherEnabledForEmbedderExperimentName,
-     flag_descriptions::kCCTTabSwitcherEnabledForEmbedderExperimentDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kCCTTabSwitcherEnabledForEmbedderExperiment)},
+    {"tabbed-cct-if-allowed-by-embedder",
+     flag_descriptions::kTabbedCctIfAllowedByEmbedderName,
+     flag_descriptions::kTabbedCctIfAllowedByEmbedderDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabbedCctIfAllowedByEmbedder)},
+    {"tabbed-cct-if-enabled-by-embedder",
+     flag_descriptions::kTabbedCctIfEnabledByEmbedderName,
+     flag_descriptions::kTabbedCctIfEnabledByEmbedderDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabbedCctIfEnabledByEmbedder)},
 #endif
 
     {"critical-action-history", flag_descriptions::kCriticalActionHistoryName,

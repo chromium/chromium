@@ -532,10 +532,6 @@ public abstract class ChromeFeatureList {
     public static final String CCT_RESIZABLE_FOR_THIRD_PARTIES = "CCTResizableForThirdParties";
     public static final String CCT_TAB_MODAL_DIALOG = "CCTTabModalDialog";
     public static final String CCT_TAB_RESUMPTION = "CctTabResumption";
-    public static final String CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT =
-            "CCTTabSwitcherEnabledForChromeExperiment";
-    public static final String CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT =
-            "CCTTabSwitcherEnabledForEmbedderExperiment";
     public static final String CHANGE_UNFOCUSED_PRIORITY = "ChangeUnfocusedPriority";
     public static final String CHOICE_ENGINE_STATUS_REPORTING = "ChoiceEngineStatusReporting";
     public static final String CHROME_NATIVE_URL_OVERRIDING = "ChromeNativeUrlOverriding";
@@ -883,6 +879,8 @@ public abstract class ChromeFeatureList {
     public static final String SYNC_RESTORE_ON_STARTUP_PREF = "SyncRestoreOnStartupPref";
     public static final String SYNC_TRUSTED_VAULT_ERROR_MESSAGE_DURATION =
             "SyncTrustedVaultErrorMessageDuration";
+    public static final String TABBED_CCT_IF_ALLOWED_BY_EMBEDDER = "TabbedCctIfAllowedByEmbedder";
+    public static final String TABBED_CCT_IF_ENABLED_BY_EMBEDDER = "TabbedCctIfEnabledByEmbedder";
     public static final String TAB_ANDROID_GRACEFUL_SHUTDOWN = "TabAndroidGracefulShutdown";
     public static final String TAB_BOTTOM_SHEET = "TabBottomSheet";
     public static final String TAB_BOTTOM_SHEET_EDGE_TO_EDGE = "TabBottomSheetEdgeToEdge";
@@ -1194,10 +1192,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, true);
     public static final CachedFlag sCctTabModalDialog = newCachedFlag(CCT_TAB_MODAL_DIALOG, true);
     public static final CachedFlag sCctTabResumption = newCachedFlag(CCT_TAB_RESUMPTION, false);
-    public static final CachedFlag sCctTabSwitcherEnabledForChromeExperiment =
-            newCachedFlag(CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT, false);
-    public static final CachedFlag sCctTabSwitcherEnabledForEmbedderExperiment =
-            newCachedFlag(CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT, true);
     public static final CachedFlag sChromeNativeUrlOverriding =
             newCachedFlag(CHROME_NATIVE_URL_OVERRIDING, BuildConfig.IS_DESKTOP_ANDROID);
     public static final CachedFlag sClampAutomotiveScaling =
@@ -1491,6 +1485,10 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ true);
     public static final CachedFlag sTabWindowManagerReportIndicesMismatch =
             newCachedFlag(TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH, true);
+    public static final CachedFlag sTabbedCctIfAllowedByEmbedder =
+            newCachedFlag(TABBED_CCT_IF_ALLOWED_BY_EMBEDDER, false);
+    public static final CachedFlag sTabbedCctIfEnabledByEmbedder =
+            newCachedFlag(TABBED_CCT_IF_ENABLED_BY_EMBEDDER, true);
     public static final CachedFlag sTestDefaultDisabled =
             newCachedFlag(TEST_DEFAULT_DISABLED, false);
     public static final CachedFlag sTestDefaultEnabled = newCachedFlag(TEST_DEFAULT_ENABLED, true);
@@ -1634,8 +1632,6 @@ public abstract class ChromeFeatureList {
                     sCctResizableForThirdParties,
                     sCctTabModalDialog,
                     sCctTabResumption,
-                    sCctTabSwitcherEnabledForChromeExperiment,
-                    sCctTabSwitcherEnabledForEmbedderExperiment,
                     sChromeNativeUrlOverriding,
                     sClampAutomotiveScaling,
                     sClankOmniboxMinimization,
@@ -1739,6 +1735,8 @@ public abstract class ChromeFeatureList {
                     sTabStripLayoutTransitionDebounceFix,
                     sTabSwitcherMessagesOnDesktopWindowingKillSwitch,
                     sTabWindowManagerReportIndicesMismatch,
+                    sTabbedCctIfAllowedByEmbedder,
+                    sTabbedCctIfEnabledByEmbedder,
                     sThreeDotMenuBackButton,
                     sToolbarCaptureFixForSPAs,
                     sToolbarPhoneAnimationRefactor,

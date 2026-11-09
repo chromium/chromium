@@ -2390,114 +2390,90 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     @DisableFeatures({
-        ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
-        ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT
+        ChromeFeatureList.TABBED_CCT_IF_ALLOWED_BY_EMBEDDER,
+        ChromeFeatureList.TABBED_CCT_IF_ENABLED_BY_EMBEDDER
     })
-    public void isCctTabSwitcherEnabled_bothFlagsDisabled_returnsFalse() {
+    public void isTabbedCctEnabled_bothFlagsDisabled_returnsFalse() {
         Intent intent = new Intent();
-        intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
-                true);
-        intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT,
-                true);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ALLOWED_BY_EMBEDDER, true);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER, true);
         CustomTabIntentDataProvider provider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertFalse(provider.isCctTabSwitcherEnabled());
+        assertFalse(provider.isTabbedCctEnabled());
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT)
-    @DisableFeatures(ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT)
-    public void isCctTabSwitcherEnabled_embedderFlagEnabled_intentExtraEnabled_returnsTrue() {
+    @EnableFeatures(ChromeFeatureList.TABBED_CCT_IF_ENABLED_BY_EMBEDDER)
+    @DisableFeatures(ChromeFeatureList.TABBED_CCT_IF_ALLOWED_BY_EMBEDDER)
+    public void isTabbedCctEnabled_embedderFlagEnabled_intentExtraEnabled_returnsTrue() {
         Intent intent = new Intent();
-        intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT,
-                true);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER, true);
         CustomTabIntentDataProvider provider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertTrue(provider.isCctTabSwitcherEnabled());
+        assertTrue(provider.isTabbedCctEnabled());
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT)
-    @DisableFeatures(ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT)
-    public void isCctTabSwitcherEnabled_embedderFlagEnabled_intentExtraDisabled_returnsFalse() {
+    @EnableFeatures(ChromeFeatureList.TABBED_CCT_IF_ENABLED_BY_EMBEDDER)
+    @DisableFeatures(ChromeFeatureList.TABBED_CCT_IF_ALLOWED_BY_EMBEDDER)
+    public void isTabbedCctEnabled_embedderFlagEnabled_intentExtraDisabled_returnsFalse() {
         Intent intent = new Intent();
-        intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
-                true);
-        intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT,
-                false);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ALLOWED_BY_EMBEDDER, true);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER, false);
         CustomTabIntentDataProvider provider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertFalse(provider.isCctTabSwitcherEnabled());
+        assertFalse(provider.isTabbedCctEnabled());
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT)
-    @DisableFeatures(ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT)
-    public void isCctTabSwitcherEnabled_chromeFlagEnabled_intentExtraEnabled_returnsTrue() {
+    @EnableFeatures(ChromeFeatureList.TABBED_CCT_IF_ALLOWED_BY_EMBEDDER)
+    @DisableFeatures(ChromeFeatureList.TABBED_CCT_IF_ENABLED_BY_EMBEDDER)
+    public void isTabbedCctEnabled_chromeFlagEnabled_intentExtraEnabled_returnsTrue() {
         Intent intent = new Intent();
-        intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
-                true);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ALLOWED_BY_EMBEDDER, true);
         CustomTabIntentDataProvider provider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertTrue(provider.isCctTabSwitcherEnabled());
+        assertTrue(provider.isTabbedCctEnabled());
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT)
-    @DisableFeatures(ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT)
-    public void isCctTabSwitcherEnabled_chromeFlagEnabled_intentExtraDisabled_returnsFalse() {
+    @EnableFeatures(ChromeFeatureList.TABBED_CCT_IF_ALLOWED_BY_EMBEDDER)
+    @DisableFeatures(ChromeFeatureList.TABBED_CCT_IF_ENABLED_BY_EMBEDDER)
+    public void isTabbedCctEnabled_chromeFlagEnabled_intentExtraDisabled_returnsFalse() {
         Intent intent = new Intent();
-        intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
-                false);
-        intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT,
-                true);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ALLOWED_BY_EMBEDDER, false);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER, true);
         CustomTabIntentDataProvider provider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertFalse(provider.isCctTabSwitcherEnabled());
+        assertFalse(provider.isTabbedCctEnabled());
     }
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
-        ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT
+        ChromeFeatureList.TABBED_CCT_IF_ALLOWED_BY_EMBEDDER,
+        ChromeFeatureList.TABBED_CCT_IF_ENABLED_BY_EMBEDDER
     })
-    public void isCctTabSwitcherEnabled_bothFlagsEnabled_eitherExtraEnabled_returnsTrue() {
+    public void isTabbedCctEnabled_bothFlagsEnabled_eitherExtraEnabled_returnsTrue() {
         Intent intent = new Intent();
-        intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
-                false);
-        intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT,
-                true);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ALLOWED_BY_EMBEDDER, false);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER, true);
         CustomTabIntentDataProvider provider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertTrue(provider.isCctTabSwitcherEnabled());
+        assertTrue(provider.isTabbedCctEnabled());
     }
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
-        ChromeFeatureList.CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT
+        ChromeFeatureList.TABBED_CCT_IF_ALLOWED_BY_EMBEDDER,
+        ChromeFeatureList.TABBED_CCT_IF_ENABLED_BY_EMBEDDER
     })
-    public void isCctTabSwitcherEnabled_bothFlagsEnabled_bothExtrasDisabled_returnsFalse() {
+    public void isTabbedCctEnabled_bothFlagsEnabled_bothExtrasDisabled_returnsFalse() {
         Intent intent = new Intent();
-        intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT,
-                false);
-        intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT,
-                false);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ALLOWED_BY_EMBEDDER, false);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER, false);
         CustomTabIntentDataProvider provider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertFalse(provider.isCctTabSwitcherEnabled());
+        assertFalse(provider.isTabbedCctEnabled());
     }
 
     private int getOibStateForType(int type) {

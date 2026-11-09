@@ -33,8 +33,8 @@ import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_NEW;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl.EXTRA_REQUESTED_WINDOW_FEATURES;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.sCctTabSwitcherEnabledForChromeExperiment;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.sCctTabSwitcherEnabledForEmbedderExperiment;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sTabbedCctIfAllowedByEmbedder;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sTabbedCctIfEnabledByEmbedder;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -175,10 +175,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final String EXTRA_UI_TYPE =
             "org.chromium.chrome.browser.customtabs.EXTRA_UI_TYPE";
 
-    public static final String EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT =
-            "org.chromium.chrome.browser.customtabs.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT";
-    public static final String EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT =
-            "org.chromium.chrome.browser.customtabs.EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT";
+    public static final String EXTRA_TABBED_CCT_ALLOWED_BY_EMBEDDER =
+            "androidx.browser.customtabs.extra.EXTRA_TABBED_CCT_ALLOWED_BY_EMBEDDER";
+    public static final String EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER =
+            "androidx.browser.customtabs.extra.EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER";
 
     /** Extra that defines the initial background color (RGB color stored as an integer). */
     public static final String EXTRA_INITIAL_BACKGROUND_COLOR =
@@ -702,12 +702,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             builder.setPartialTabToolbarCornerRadius(
                     getToolbarCornerRadiusFromIntent(context, intent));
 
-            builder.setCctTabSwitcherEnabledForChromeExperiment(
+            builder.setTabbedCctAllowedByEmbedder(
                     IntentUtils.safeGetBooleanExtra(
-                            intent, EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_CHROME_EXPERIMENT, false));
-            builder.setCctTabSwitcherEnabledForEmbedderExperiment(
+                            intent, EXTRA_TABBED_CCT_ALLOWED_BY_EMBEDDER, false));
+            builder.setTabbedCctEnabledByEmbedder(
                     IntentUtils.safeGetBooleanExtra(
-                            intent, EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT, false));
+                            intent, EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER, false));
             // The default behavior is that the PCCT's height is resizable.
             @ActivityHeightResizeBehavior
             int activityHeightResizeBehavior =
@@ -2039,14 +2039,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    public boolean isCctTabSwitcherEnabled() {
+    public boolean isTabbedCctEnabled() {
         boolean isEnabledForEmbedderExperiment =
-                sCctTabSwitcherEnabledForEmbedderExperiment.isEnabled()
-                        && mDataHolder.mCctTabSwitcherEnabledForEmbedderExperiment;
+                sTabbedCctIfEnabledByEmbedder.isEnabled()
+                        && mDataHolder.mTabbedCctEnabledByEmbedder;
 
         boolean isEnabledForChromeExperiment =
-                sCctTabSwitcherEnabledForChromeExperiment.isEnabled()
-                        && mDataHolder.mCctTabSwitcherEnabledForChromeExperiment;
+                sTabbedCctIfAllowedByEmbedder.isEnabled()
+                        && mDataHolder.mTabbedCctAllowedByEmbedder;
 
         return isEnabledForEmbedderExperiment || isEnabledForChromeExperiment;
     }
