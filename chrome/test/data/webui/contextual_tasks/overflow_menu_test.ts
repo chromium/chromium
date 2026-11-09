@@ -10,7 +10,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
@@ -173,6 +173,8 @@ suite('OverflowMenuTest', () => {
         isUserFeedbackAllowed: true,
         pinTooltip: 'Pin',
         unpinTooltip: 'Unpin',
+        sidePanelPinned: 'Pinned',
+        sidePanelUnpinned: 'Unpinned',
         contextualTasksEnableSpatialModelToolbarLayout: false,
         contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow:
             false,
@@ -370,6 +372,32 @@ suite('OverflowMenuTest', () => {
       await overflowMenu.updateComplete;
 
       assertFalse(overflowMenu.isPinned);
+    });
+
+    test('announces live region message on pin and unpin click', async () => {
+      const pinButton =
+          overflowMenu.shadowRoot.querySelector<HTMLElement>('#pinButton');
+      assertTrue(!!pinButton);
+
+      overflowMenu.isPinned = false;
+      await microtasksFinished();
+
+      const pinAnnouncePromise =
+          eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+      pinButton.click();
+      const pinEvent =
+          await pinAnnouncePromise as CustomEvent<{messages: string[]}>;
+      assertTrue(pinEvent.detail.messages.includes('Pinned'));
+
+      overflowMenu.isPinned = true;
+      await microtasksFinished();
+
+      const unpinAnnouncePromise =
+          eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+      pinButton.click();
+      const unpinEvent =
+          await unpinAnnouncePromise as CustomEvent<{messages: string[]}>;
+      assertTrue(unpinEvent.detail.messages.includes('Unpinned'));
     });
 
     test('pin state listener is removed on disconnect', async () => {

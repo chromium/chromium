@@ -9,6 +9,7 @@ import '//resources/cr_elements/icons.html.js';
 
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 // <if expr="not is_android">
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 // </if>
@@ -166,6 +167,13 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
   protected onPinClick_() {
     this.close();
     this.isPinned = !this.isPinned;
+    if (loadTimeData.valueExists('sidePanelPinned') &&
+        loadTimeData.valueExists('sidePanelUnpinned')) {
+      const announcement = this.isPinned ?
+          loadTimeData.getString('sidePanelPinned') :
+          loadTimeData.getString('sidePanelUnpinned');
+      getAnnouncerInstance().announce(announcement);
+    }
     if (this.isPinned) {
       recordAction('ContextualTasks.WebUI.UserAction.PinSidePanel');
       recordAction(

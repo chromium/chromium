@@ -736,6 +736,8 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
       {"protectedErrorPageTopLine",
        IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_FIRST_LINE},
       {"reopenTab", IDS_CONTEXTUAL_TASKS_REOPEN_TABS_BUTTON_TEXT},
+      {"sidePanelPinned", IDS_SIDE_PANEL_PINNED},
+      {"sidePanelUnpinned", IDS_SIDE_PANEL_UNPINNED},
       {"sourcesMenuTitle", IDS_CONTEXTUAL_TASKS_SOURCES_MENU_TITLE},
       {"stsMegaplusAutomaticallyAddTabsHeader",
        IDS_STS_MEGAPLUS_AUTOMATICALLY_ADD_TABS_HEADER},
