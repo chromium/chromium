@@ -1160,6 +1160,9 @@ public class FirstRunActivity extends FirstRunActivityBase
             mScrimManager.destroy();
             mScrimManager = null;
         }
+        if (mFirstRunFlowSequencer != null) {
+            mFirstRunFlowSequencer.destroy();
+        }
         super.onDestroy();
     }
 

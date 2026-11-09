@@ -109,6 +109,8 @@ import org.chromium.components.policy.EnterpriseInfo;
 import org.chromium.components.policy.test.FakeEnterpriseInfo;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.signin.AccountManagerFacadeImpl;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -1021,6 +1023,24 @@ public class FirstRunIntegrationTest {
         // a crash.
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, TEST_URL);
         mContext.startActivity(intent);
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures({SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE})
+    public void testDestroyWithPendingAccountsPromise() {
+        AccountManagerFacadeProvider.setInstanceForTests(null);
+        CriteriaHelper.pollUiThread(
+                () -> AccountManagerFacadeProvider.getInstance().getAccounts().isFulfilled());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ((AccountManagerFacadeImpl) AccountManagerFacadeProvider.getInstance())
+                            .resetAccountsForTesting();
+                    Assert.assertFalse(
+                            AccountManagerFacadeProvider.getInstance().getAccounts().isFulfilled());
+                });
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+        ApplicationTestUtils.finishActivity(firstRunActivity);
     }
 
     @Test

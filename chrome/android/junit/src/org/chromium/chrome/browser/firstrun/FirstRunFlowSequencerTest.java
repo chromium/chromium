@@ -84,11 +84,19 @@ public class FirstRunFlowSequencerTest {
 
         public TestFirstRunFlowSequencer(
                 Activity activity, OneshotSupplier<ProfileProvider> profileSupplier) {
-            super(
+            this(
+                    activity,
                     profileSupplier,
                     new ChildAccountStatusSupplier(
                             AccountManagerFacadeProvider.getInstance(),
                             new AppRestrictionSupplier()));
+        }
+
+        public TestFirstRunFlowSequencer(
+                Activity activity,
+                OneshotSupplier<ProfileProvider> profileSupplier,
+                OneshotSupplier<Boolean> childAccountStatusSupplier) {
+            super(profileSupplier, childAccountStatusSupplier);
         }
 
         @Override
@@ -335,5 +343,46 @@ public class FirstRunFlowSequencerTest {
         assertTrue(
                 FirstRunFlowSequencer.checkIfFirstRunIsNecessary(
                         /* preferLightweightFre= */ false, /* isCct= */ false));
+    }
+
+    @Test
+    @Feature({"FirstRun"})
+    public void testDestroyCancelsPendingAccountFetchCallback() {
+        setDelegateFactory(false);
+        TestFirstRunFlowSequencer sequencer;
+        try (var ignored = mAccountManagerTestRule.blockGetAccountsUpdate()) {
+            sequencer = new TestFirstRunFlowSequencer(mActivity, mProfileSupplier);
+            sequencer.start();
+            RobolectricUtil.runAllBackgroundAndUi();
+            assertFalse(sequencer.calledOnFlowIsKnown);
+
+            sequencer.destroy();
+        }
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // After destroy(), fulfilling the pending getAccounts() promise must not invoke
+        // onFlowIsKnown().
+        assertFalse(sequencer.calledOnFlowIsKnown);
+    }
+
+    @Test
+    @Feature({"FirstRun"})
+    public void testDestroyCancelsPendingChildAccountStatusCallback() {
+        setDelegateFactory(false);
+        OneshotSupplierImpl<Boolean> childAccountStatusSupplier = new OneshotSupplierImpl<>();
+        TestFirstRunFlowSequencer sequencer =
+                new TestFirstRunFlowSequencer(
+                        mActivity, mProfileSupplier, childAccountStatusSupplier);
+        sequencer.start();
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertFalse(sequencer.calledOnFlowIsKnown);
+
+        sequencer.destroy();
+        childAccountStatusSupplier.set(false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // After destroy(), fulfilling the pending childAccountStatusSupplier must not invoke
+        // onFlowIsKnown().
+        assertFalse(sequencer.calledOnFlowIsKnown);
     }
 }
