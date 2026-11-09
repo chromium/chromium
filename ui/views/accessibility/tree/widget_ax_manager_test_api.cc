@@ -4,6 +4,7 @@
 
 #include "ui/views/accessibility/tree/widget_ax_manager_test_api.h"
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 
@@ -94,7 +95,8 @@ void WidgetAXManagerTestApi::WaitForNextSerialization() {
   CHECK(manager_);
   base::RunLoop run_loop;
   CHECK(!waiting_run_loop_);
-  waiting_run_loop_ = &run_loop;
+  base::AutoReset<raw_ptr<base::RunLoop>> reset_run_loop(&waiting_run_loop_,
+                                                         &run_loop);
   run_loop.Run();
 }
 
