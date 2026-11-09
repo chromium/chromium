@@ -123,7 +123,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DoNotRevive;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -731,7 +730,6 @@ public class TabGridDialogTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/391655333
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/578245446
-    @DoNotRevive(reason = "Hangs the batch on desktop, crbug.com/578245446")
     public void testDialogSelectionEditor_BookmarkSingleTabView() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = cta.getSnackbarManager();
@@ -775,7 +773,6 @@ public class TabGridDialogTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/391655333
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/578245446
-    @DoNotRevive(reason = "Hangs the batch on desktop, crbug.com/578245446")
     public void testDialogSelectionEditor_BookmarkTabsView() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = cta.getSnackbarManager();

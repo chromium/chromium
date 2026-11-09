@@ -17,6 +17,7 @@ package androidx.test.espresso.base;
 
 import static androidx.test.espresso.util.Throwables.throwIfUnchecked;
 
+import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
@@ -99,7 +100,9 @@ class ViewHierarchyExceptionHandler<T extends Throwable & RootViewException>
     }
 
     AtomicReference<T> ret = new AtomicReference<>();
-    e.getRootView().post(() -> {
+    // Post to the main looper rather than the root view: a detached root view queues the
+    // runnable until it is attached again, which may never happen.
+    new Handler(Looper.getMainLooper()).post(() -> {
       ret.set(func.get());
       synchronized (ret) {
         ret.notifyAll();
