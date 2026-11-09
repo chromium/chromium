@@ -127,28 +127,6 @@ void Canvas2DResourceProvider::SetResourceRecyclingEnabled(bool value) {
   }
 }
 
-base::ByteSize Canvas2DResourceProvider::EstimatedSizeInBytes() const {
-  base::ByteSize result;
-  if (resource_) {
-    result += resource_->GetSharedImage()->EstimatedSizeInBytes() *
-              num_inflight_resources_;
-  }
-  return result;
-}
-
-void Canvas2DResourceProvider::OnMemoryDump(
-    base::trace_event::ProcessMemoryDump* pmd) {
-  std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
-                                        reinterpret_cast<uintptr_t>(this));
-
-  if (resource()) {
-    resource()->OnMemoryDump(pmd, path);
-  }
-
-  std::string cached_path = path + "/cached";
-  image_pool_->OnMemoryDump(pmd, cached_path);
-}
-
 Canvas2DResourceProvider::Canvas2DResourceProvider(
     gfx::Size size,
     viz::SharedImageFormat format,

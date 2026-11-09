@@ -294,8 +294,11 @@ bool BaseRenderingContext2D::Is2DCanvasAccelerated() const {
 
 base::ByteSize BaseRenderingContext2D::AllocatedBufferSize() const {
   base::ByteSize result;
-  if (shared_image_provider_) {
-    result += shared_image_provider_->EstimatedSizeInBytes();
+  if (shared_image_provider_ && shared_image_provider_->resource_) {
+    result +=
+        shared_image_provider_->resource_->GetSharedImage()
+            ->EstimatedSizeInBytes() *
+        shared_image_provider_->num_inflight_resources_;
   }
   if (surface_) {
     result += base::ByteSize(
@@ -554,7 +557,13 @@ void BaseRenderingContext2D::OnMemoryDump(
   // while `HasBacking()` is true.
   CHECK(HasBacking());
   if (shared_image_provider_) {
-    shared_image_provider_->OnMemoryDump(pmd);
+    std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
+                                          reinterpret_cast<uintptr_t>(this));
+    if (shared_image_provider_->resource()) {
+      shared_image_provider_->resource()->OnMemoryDump(pmd, path);
+    }
+    std::string cached_path = path + "/cached";
+    shared_image_provider_->image_pool_->OnMemoryDump(pmd, cached_path);
   }
   if (!surface_) {
     return;
@@ -755,7 +764,7 @@ void BaseRenderingContext2D::EnsureResourceReadyForDraw() {
           old_resource_shared_image->acquire_sync_token(),
           shared_image_provider_->resource()->GetSharedImage(),
           shared_image_provider_->resource()->acquire_sync_token(),
-          gfx::Rect(shared_image_provider_->Size()), gfx::Point(0, 0));
+          gfx::Rect(Host()->Size()), gfx::Point(0, 0));
       old_resource_shared_image->SetReleaseSyncToken(src_token);
       shared_image_provider_->resource_->SetReleaseSyncToken(dst_token);
     } else {
@@ -999,9 +1008,8 @@ bool BaseRenderingContext2D::WritePixelsToBacking(const SkImageInfo& orig_info,
     // If the overdraw optimization kicked in, we need to indicate that the
     // pixels do not need to be cleared, otherwise the subsequent
     // rasterizations will clobber canvas contents.
-    if (x <= 0 && y <= 0 &&
-        orig_info.width() >= shared_image_provider_->Size().width() &&
-        orig_info.height() >= shared_image_provider_->Size().height()) {
+    if (x <= 0 && y <= 0 && orig_info.width() >= Host()->Size().width() &&
+        orig_info.height() >= Host()->Size().height()) {
       is_cleared_ = true;
     }
 

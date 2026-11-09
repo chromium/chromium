@@ -119,11 +119,8 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   }
 
   int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
-  base::ByteSize EstimatedSizeInBytes() const;
 
   void SetResourceRecyclingEnabled(bool value);
-
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd);
 
   CanvasResourceSharedImage* resource() {
     return static_cast<CanvasResourceSharedImage*>(resource_.get());
@@ -136,7 +133,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   friend class BaseRenderingContext2D;
 
   void ClearUnusedResources();
-  gfx::Size Size() const { return image_pool_->GetImageInfo().size; }
 
   void OnResourceRefReturned(
       scoped_refptr<CanvasResourceSharedImage>&& resource) override;
