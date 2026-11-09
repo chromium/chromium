@@ -4277,6 +4277,7 @@
     "ChildProcessSecurityPolicyRust": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",
