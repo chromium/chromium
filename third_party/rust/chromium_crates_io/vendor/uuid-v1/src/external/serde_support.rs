@@ -307,10 +307,92 @@ pub mod compact {
         Ok(crate::Uuid::from_bytes(bytes))
     }
 
+    /// Serialize and deserialize an optional [`Uuid`](crate::Uuid) as an optional `[u8; 16]`.
+    pub mod option {
+        /// Serialize an optional [`Uuid`](crate::Uuid) as an optional `[u8; 16]`.
+        pub fn serialize<S>(u: &Option<crate::Uuid>, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde_core::Serializer,
+        {
+            match u {
+                Some(u) => serializer.serialize_some(u.as_bytes()),
+                None => serializer.serialize_none(),
+            }
+        }
+
+        /// Deserialize an optional `[u8; 16]` as an optional [`Uuid`](crate::Uuid).
+        pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<crate::Uuid>, D::Error>
+        where
+            D: serde_core::Deserializer<'de>,
+        {
+            <Option<[u8; 16]> as serde_core::Deserialize>::deserialize(deserializer)
+                .map(|bytes| bytes.map(crate::Uuid::from_bytes))
+        }
+    }
+
     #[cfg(test)]
     mod tests {
         use serde_derive::*;
-        use serde_test::Configure;
+        use serde_test::{Configure, Token};
+
+        use crate::Uuid;
+
+        const BYTES: [u8; 16] = [
+            0xf9, 0x16, 0x8c, 0x5e, 0xce, 0xb2, 0x4f, 0xaa, 0xb6, 0xbf, 0x32, 0x9b, 0xf3, 0x9f,
+            0xa1, 0xe4,
+        ];
+
+        #[test]
+        fn test_compact_option() {
+            #[derive(Debug, PartialEq, Serialize, Deserialize)]
+            struct Field {
+                #[serde(with = "crate::serde::compact::option")]
+                id: Option<Uuid>,
+            }
+
+            let present = Field {
+                id: Some(Uuid::from_bytes(BYTES)),
+            };
+            let absent = Field { id: None };
+            let tokens = [
+                Token::Struct {
+                    name: "Field",
+                    len: 1,
+                },
+                Token::Str("id"),
+                Token::Some,
+                Token::Tuple { len: 16 },
+                Token::U8(BYTES[0]),
+                Token::U8(BYTES[1]),
+                Token::U8(BYTES[2]),
+                Token::U8(BYTES[3]),
+                Token::U8(BYTES[4]),
+                Token::U8(BYTES[5]),
+                Token::U8(BYTES[6]),
+                Token::U8(BYTES[7]),
+                Token::U8(BYTES[8]),
+                Token::U8(BYTES[9]),
+                Token::U8(BYTES[10]),
+                Token::U8(BYTES[11]),
+                Token::U8(BYTES[12]),
+                Token::U8(BYTES[13]),
+                Token::U8(BYTES[14]),
+                Token::U8(BYTES[15]),
+                Token::TupleEnd,
+                Token::StructEnd,
+            ];
+            serde_test::assert_tokens(&present, &tokens);
+            let none_tokens = [
+                Token::Struct {
+                    name: "Field",
+                    len: 1,
+                },
+                Token::Str("id"),
+                Token::None,
+                Token::StructEnd,
+            ];
+            serde_test::assert_tokens(&absent, &none_tokens);
+        }
 
         #[test]
         fn test_serialize_compact() {
@@ -385,6 +467,26 @@ pub mod compact {
 pub mod bytes {
     use super::*;
 
+    struct ByteUuid(crate::Uuid);
+
+    impl serde_core::Serialize for ByteUuid {
+        fn serialize<S: serde_core::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+            serializer.serialize_bytes(self.0.as_bytes())
+        }
+    }
+
+    impl<'de> serde_core::Deserialize<'de> for ByteUuid {
+        fn deserialize<D: serde_core::Deserializer<'de>>(
+            deserializer: D,
+        ) -> Result<Self, D::Error> {
+            deserializer
+                .deserialize_bytes(UuidBytesVisitor {
+                    _marker: PhantomData::<crate::Uuid>,
+                })
+                .map(Self)
+        }
+    }
+
     /// Serialize from a [`Uuid`] as a byte string.
     ///
     /// [`Uuid`]: ../../struct.Uuid.html
@@ -392,7 +494,7 @@ pub mod bytes {
     where
         S: serde_core::Serializer,
     {
-        serializer.serialize_bytes(u.as_bytes())
+        ByteUuid(*u).serialize(serializer)
     }
 
     /// Deserialize a byte string as a [`Uuid`].
@@ -402,14 +504,79 @@ pub mod bytes {
     where
         D: serde_core::Deserializer<'de>,
     {
-        deserializer.deserialize_bytes(UuidBytesVisitor {
-            _marker: PhantomData::<crate::Uuid>,
-        })
+        ByteUuid::deserialize(deserializer).map(|u| u.0)
+    }
+
+    /// Serialize and deserialize an optional [`Uuid`](crate::Uuid) as an optional byte string.
+    pub mod option {
+        use super::*;
+
+        /// Serialize an optional [`Uuid`](crate::Uuid) as an optional byte string.
+        pub fn serialize<S>(u: &Option<crate::Uuid>, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde_core::Serializer,
+        {
+            match u {
+                Some(u) => serializer.serialize_some(&ByteUuid(*u)),
+                None => serializer.serialize_none(),
+            }
+        }
+
+        /// Deserialize an optional byte string as an optional [`Uuid`](crate::Uuid).
+        pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<crate::Uuid>, D::Error>
+        where
+            D: serde_core::Deserializer<'de>,
+        {
+            Option::<ByteUuid>::deserialize(deserializer).map(|u| u.map(|u| u.0))
+        }
     }
 
     #[cfg(test)]
     mod tests {
         use serde_derive::*;
+
+        use crate::Uuid;
+        use serde_test::Token;
+
+        const BYTES: [u8; 16] = [
+            0xf9, 0x16, 0x8c, 0x5e, 0xce, 0xb2, 0x4f, 0xaa, 0xb6, 0xbf, 0x32, 0x9b, 0xf3, 0x9f,
+            0xa1, 0xe4,
+        ];
+
+        #[test]
+        fn test_bytes_option() {
+            #[derive(Debug, PartialEq, Serialize, Deserialize)]
+            struct Field {
+                #[serde(with = "crate::serde::bytes::option")]
+                id: Option<Uuid>,
+            }
+
+            let present = Field {
+                id: Some(Uuid::from_bytes(BYTES)),
+            };
+            let absent = Field { id: None };
+            let present_tokens = [
+                Token::Struct {
+                    name: "Field",
+                    len: 1,
+                },
+                Token::Str("id"),
+                Token::Some,
+                Token::Bytes(&BYTES),
+                Token::StructEnd,
+            ];
+            let none_tokens = [
+                Token::Struct {
+                    name: "Field",
+                    len: 1,
+                },
+                Token::Str("id"),
+                Token::None,
+                Token::StructEnd,
+            ];
+            serde_test::assert_tokens(&present, &present_tokens);
+            serde_test::assert_tokens(&absent, &none_tokens);
+        }
 
         #[test]
         fn test_serialize_bytes() {
@@ -500,6 +667,30 @@ pub mod simple {
         Ok(Simple::deserialize(deserializer)?.into())
     }
 
+    /// Serialize and deserialize an optional [`Uuid`](crate::Uuid) in the simple format.
+    pub mod option {
+        use super::*;
+
+        /// Serialize an optional [`Uuid`](crate::Uuid) in the simple format.
+        pub fn serialize<S>(u: &Option<Uuid>, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde_core::Serializer,
+        {
+            match u {
+                Some(u) => serializer.serialize_some(u.as_simple()),
+                None => serializer.serialize_none(),
+            }
+        }
+
+        /// Deserialize an optional simple string as an optional [`Uuid`](crate::Uuid).
+        pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<Uuid>, D::Error>
+        where
+            D: serde_core::Deserializer<'de>,
+        {
+            Option::<Simple>::deserialize(deserializer).map(|u| u.map(Into::into))
+        }
+    }
+
     #[cfg(test)]
     mod tests {
         use serde::de::{self, Error};
@@ -509,6 +700,42 @@ pub mod simple {
 
         const HYPHENATED_UUID_STR: &str = "f9168c5e-ceb2-4faa-b6bf-329bf39fa1e4";
         const SIMPLE_UUID_STR: &str = "f9168c5eceb24faab6bf329bf39fa1e4";
+
+        #[test]
+        fn test_simple_option() {
+            #[derive(Debug, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+            struct Field {
+                #[serde(with = "crate::serde::simple::option")]
+                id: Option<Uuid>,
+            }
+
+            let present = Field {
+                id: Some(HYPHENATED_UUID_STR.parse().unwrap()),
+            };
+            let absent = Field { id: None };
+            let present_tokens = [
+                Token::Struct {
+                    name: "Field",
+                    len: 1,
+                },
+                Token::Str("id"),
+                Token::Some,
+                Token::Str(SIMPLE_UUID_STR),
+                Token::StructEnd,
+            ];
+            let absent_tokens = [
+                Token::Struct {
+                    name: "Field",
+                    len: 1,
+                },
+                Token::Str("id"),
+                Token::None,
+                Token::StructEnd,
+            ];
+
+            serde_test::assert_tokens(&present, &present_tokens);
+            serde_test::assert_tokens(&absent, &absent_tokens);
+        }
 
         #[test]
         fn test_serialize_as_simple() {
@@ -627,6 +854,30 @@ pub mod braced {
         Ok(Braced::deserialize(deserializer)?.into())
     }
 
+    /// Serialize and deserialize an optional [`Uuid`](crate::Uuid) in the braced format.
+    pub mod option {
+        use super::*;
+
+        /// Serialize an optional [`Uuid`](crate::Uuid) in the braced format.
+        pub fn serialize<S>(u: &Option<Uuid>, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde_core::Serializer,
+        {
+            match u {
+                Some(u) => serializer.serialize_some(u.as_braced()),
+                None => serializer.serialize_none(),
+            }
+        }
+
+        /// Deserialize an optional braced string as an optional [`Uuid`](crate::Uuid).
+        pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<Uuid>, D::Error>
+        where
+            D: serde_core::Deserializer<'de>,
+        {
+            Option::<Braced>::deserialize(deserializer).map(|u| u.map(Into::into))
+        }
+    }
+
     #[cfg(test)]
     mod tests {
 
@@ -637,6 +888,42 @@ pub mod braced {
 
         const HYPHENATED_UUID_STR: &str = "f9168c5e-ceb2-4faa-b6bf-329bf39fa1e4";
         const BRACED_UUID_STR: &str = "{f9168c5e-ceb2-4faa-b6bf-329bf39fa1e4}";
+
+        #[test]
+        fn test_braced_option() {
+            #[derive(Debug, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+            struct Field {
+                #[serde(with = "crate::serde::braced::option")]
+                id: Option<Uuid>,
+            }
+
+            let present = Field {
+                id: Some(HYPHENATED_UUID_STR.parse().unwrap()),
+            };
+            let absent = Field { id: None };
+            let present_tokens = [
+                Token::Struct {
+                    name: "Field",
+                    len: 1,
+                },
+                Token::Str("id"),
+                Token::Some,
+                Token::Str(BRACED_UUID_STR),
+                Token::StructEnd,
+            ];
+            let absent_tokens = [
+                Token::Struct {
+                    name: "Field",
+                    len: 1,
+                },
+                Token::Str("id"),
+                Token::None,
+                Token::StructEnd,
+            ];
+
+            serde_test::assert_tokens(&present, &present_tokens);
+            serde_test::assert_tokens(&absent, &absent_tokens);
+        }
 
         #[test]
         fn test_serialize_as_braced() {
@@ -756,6 +1043,30 @@ pub mod hyphenated {
         Ok(Hyphenated::deserialize(deserializer)?.into())
     }
 
+    /// Serialize and deserialize an optional [`Uuid`](crate::Uuid) in the hyphenated format.
+    pub mod option {
+        use super::*;
+
+        /// Serialize an optional [`Uuid`](crate::Uuid) in the hyphenated format.
+        pub fn serialize<S>(u: &Option<Uuid>, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde_core::Serializer,
+        {
+            match u {
+                Some(u) => serializer.serialize_some(u.as_hyphenated()),
+                None => serializer.serialize_none(),
+            }
+        }
+
+        /// Deserialize an optional hyphenated string as an optional [`Uuid`](crate::Uuid).
+        pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<Uuid>, D::Error>
+        where
+            D: serde_core::Deserializer<'de>,
+        {
+            Option::<Hyphenated>::deserialize(deserializer).map(|u| u.map(Into::into))
+        }
+    }
+
     #[cfg(test)]
     mod tests {
 
@@ -766,6 +1077,42 @@ pub mod hyphenated {
 
         const HYPHENATED_UUID_STR: &str = "f9168c5e-ceb2-4faa-b6bf-329bf39fa1e4";
         const BRACED_UUID_STR: &str = "{f9168c5e-ceb2-4faa-b6bf-329bf39fa1e4}";
+
+        #[test]
+        fn test_hyphenated_option() {
+            #[derive(Debug, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+            struct Field {
+                #[serde(with = "crate::serde::hyphenated::option")]
+                id: Option<Uuid>,
+            }
+
+            let present = Field {
+                id: Some(HYPHENATED_UUID_STR.parse().unwrap()),
+            };
+            let absent = Field { id: None };
+            let present_tokens = [
+                Token::Struct {
+                    name: "Field",
+                    len: 1,
+                },
+                Token::Str("id"),
+                Token::Some,
+                Token::Str(HYPHENATED_UUID_STR),
+                Token::StructEnd,
+            ];
+            let absent_tokens = [
+                Token::Struct {
+                    name: "Field",
+                    len: 1,
+                },
+                Token::Str("id"),
+                Token::None,
+                Token::StructEnd,
+            ];
+
+            serde_test::assert_tokens(&present, &present_tokens);
+            serde_test::assert_tokens(&absent, &absent_tokens);
+        }
 
         #[test]
         fn test_serialize_as_hyphenated() {
@@ -884,6 +1231,30 @@ pub mod urn {
         Ok(Urn::deserialize(deserializer)?.into())
     }
 
+    /// Serialize and deserialize an optional [`Uuid`](crate::Uuid) in the URN format.
+    pub mod option {
+        use super::*;
+
+        /// Serialize an optional [`Uuid`](crate::Uuid) in the URN format.
+        pub fn serialize<S>(u: &Option<Uuid>, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde_core::Serializer,
+        {
+            match u {
+                Some(u) => serializer.serialize_some(u.as_urn()),
+                None => serializer.serialize_none(),
+            }
+        }
+
+        /// Deserialize an optional URN string as an optional [`Uuid`](crate::Uuid).
+        pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<Uuid>, D::Error>
+        where
+            D: serde_core::Deserializer<'de>,
+        {
+            Option::<Urn>::deserialize(deserializer).map(|u| u.map(Into::into))
+        }
+    }
+
     #[cfg(test)]
     mod tests {
         use serde::de::{self, Error};
@@ -893,6 +1264,42 @@ pub mod urn {
 
         const HYPHENATED_UUID_STR: &str = "f9168c5e-ceb2-4faa-b6bf-329bf39fa1e4";
         const URN_UUID_STR: &str = "urn:uuid:f9168c5e-ceb2-4faa-b6bf-329bf39fa1e4";
+
+        #[test]
+        fn test_urn_option() {
+            #[derive(Debug, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
+            struct Field {
+                #[serde(with = "crate::serde::urn::option")]
+                id: Option<Uuid>,
+            }
+
+            let present = Field {
+                id: Some(HYPHENATED_UUID_STR.parse().unwrap()),
+            };
+            let absent = Field { id: None };
+            let present_tokens = [
+                Token::Struct {
+                    name: "Field",
+                    len: 1,
+                },
+                Token::Str("id"),
+                Token::Some,
+                Token::Str(URN_UUID_STR),
+                Token::StructEnd,
+            ];
+            let absent_tokens = [
+                Token::Struct {
+                    name: "Field",
+                    len: 1,
+                },
+                Token::Str("id"),
+                Token::None,
+                Token::StructEnd,
+            ];
+
+            serde_test::assert_tokens(&present, &present_tokens);
+            serde_test::assert_tokens(&absent, &absent_tokens);
+        }
 
         #[test]
         fn test_serialize_as_urn() {
