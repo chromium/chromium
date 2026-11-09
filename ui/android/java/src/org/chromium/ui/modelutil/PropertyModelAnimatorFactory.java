@@ -42,8 +42,8 @@ public class PropertyModelAnimatorFactory {
      * @param model PropertyModel object to write changes to the given key to.
      * @param key Key of the property to change.
      * @param values A set of color values that the animation will animate between over time. A
-     *     single value implies that that value is the target value, and the start value is the
-     *     default color of the current ColorStateList in the model (or Color.TRANSPARENT if unset).
+     *     single value implies the value is the target value, and the start value is the default
+     *     color of the current ColorStateList in the model (or Color.TRANSPARENT if unset).
      * @return An Animator that when run, will animate the property, setting a ColorStateList value
      *     on each update.
      */
