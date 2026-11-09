@@ -964,7 +964,7 @@
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> kendisini güncel tutamayabilir</translation>
 <translation id="1735983780784385591">Linux'tan içe aktarıldı</translation>
 <translation id="173628468822554835">Anladım. Varsayılan olarak ziyaret ettiğiniz yeni siteler bildirim göndermeyecek.</translation>
-<translation id="1737228213718001685">Göreviniz üzerinde çalışıyorum</translation>
+<translation id="1737228213718001685">Göreviniz üzerinde çalışılıyor</translation>
 <translation id="1737968601308870607">Hata bildir</translation>
 <translation id="1740414789702358061"><ph name="SITE_ACCESS" />. Site izinlerini değiştirmek için seçin</translation>
 <translation id="1741190788710022490">Uyarlanabilir şarj</translation>
@@ -2257,7 +2257,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2727712005121231835">Gerçek Boyut</translation>
 <translation id="2729310339366257582">Sekmeleri daralt</translation>
 <translation id="2729577602370119849">Yazıcılara kolayca erişin ve bunları yönetin</translation>
-<translation id="2729940704980595903">Gemini Uygulamaları Etkinliğinizi görüntüleyin ve yönetin</translation>
+<translation id="2729940704980595903">Gemini Uygulamaları Etkinliğinizi görüntüleyin ve yönetin.</translation>
 <translation id="2730550884708194161">İş profilleri hakkında</translation>
 <translation id="2730596696987224099">Kendinizinkini Seçin</translation>
 <translation id="2730647855013151888">Tüm kişisel bilgileri dahil edin</translation>
@@ -3444,7 +3444,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> taranıyor.</translation>
 <translation id="3615596877979647433">Tuş eksik. Özelleştirmek istediğiniz klavye tuşuna basın</translation>
 <translation id="3616113530831147358">Ses</translation>
-<translation id="3616658341000358527">Gemini'ın web'de sizin adınıza görevleri tamamlaması için otomatik olarak oturum açmasına izin verin</translation>
+<translation id="3616658341000358527">Gemini'ın web'de sizin adınıza görevleri tamamlaması için otomatik olarak oturum açmasına izin verin.</translation>
 <translation id="3617062258679844578">Tıklamak için dokunmatik alana basmak yerine dokunun</translation>
 <translation id="3617891479562106823">Arka planlar kullanılamıyor. Daha sonra tekrar deneyin.</translation>
 <translation id="3618647122592024084"><ph name="RECIPIENT_NAME" />, artık Google Şifre Yöneticisi üzerinden sizin kullanıcı adınızı ve şifrenizi kullanabilir. <ph name="WEBSITE" /> adresine gidip oturum açmasını söyleyin.</translation>
@@ -3473,7 +3473,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3634652306074934350">İzin isteğinin süresi doldu</translation>
 <translation id="3635353578505343390">Google'a geri bildirim gönder</translation>
 <translation id="3635960017746711110">Crostini USB tercihleri</translation>
-<translation id="3636538438330991674">Gemini'ın hangi uygulamalara bağlanacağını yönetin</translation>
+<translation id="3636538438330991674">Gemini'ın hangi uygulamalara bağlanacağını yönetin.</translation>
 <translation id="3636766455281737684">%<ph name="PERCENTAGE" /> - <ph name="TIME" /> kaldı</translation>
 <translation id="3636940436873918441">Tercih edilen diller</translation>
 <translation id="3637203148990213388">Ek hesaplar</translation>
@@ -3886,7 +3886,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3919798653937160644">Bu pencerede görüntülediğiniz sayfalar, tarama geçmişinde görünmez ve açık olan tüm Misafir pencerelerini kapattığınızda bilgisayarda çerez gibi başka izler bırakmaz. Ancak indirdiğiniz dosyalar saklanır.</translation>
 <translation id="3920909973552939961">Ödeme işleyici yüklemesine izin verilmeyenler</translation>
 <translation id="3920938867981797493">Güncelleyici politikaları</translation>
-<translation id="3921132130819999051">Chrome'un sizin için göz atmasına izin verin</translation>
+<translation id="3921132130819999051">Chrome'un sizin adınıza gezinmesine izin verin</translation>
 <translation id="3922823422695198027">Diğer uygulamalar <ph name="APP_NAME" /> ile aynı bağlantıları açacak şekilde ayarlandı. Bu işlemden sonra <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> ve <ph name="APP_NAME_4" /> uygulamaları desteklenen bağlantıları açamayacak.</translation>
 <translation id="3923184630988645767">Veri kullanımı</translation>
 <translation id="3923494859158167397">Kurulu mobil ağ yok</translation>
@@ -6774,7 +6774,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6181218116951226898">Uygulamalar bazen marka öğelerini günceller. Güncelleme yapmadan önce tüm değişiklikleri inceleyerek bunların sizin için uygun olduğundan emin olun.</translation>
 <translation id="6181431612547969857">İndirme engellendi</translation>
 <translation id="6183369864942961155">Otomatik açık/koyu tema</translation>
-<translation id="6183773856988300112">Chrome'da Gemini, sekmelerinizde çalışmak ve verdiğiniz görevleri tamamlamak için otomatik göz atma özelliğini kullanır. <ph name="LINK_BEGIN" />Daha fazla bilgi edinin<ph name="LINK_END" />.</translation>
+<translation id="6183773856988300112">Chrome'da Gemini, sekmelerinizde çalışmak ve verdiğiniz görevleri tamamlamak için otomatik gezinme özelliğini kullanır. <ph name="LINK_BEGIN" />Daha fazla bilgi edinin<ph name="LINK_END" />.</translation>
 <translation id="6184099524311454384">Sekme Ara</translation>
 <translation id="6185151644843671709">Geçiş anahtarı kaydedildi ve PIN oluşturuldu</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 şifre ve diğer öğeler yalnızca bu cihaza kayıtlı. Diğer cihazlarınızda kullanmak için Google Hesabınıza kaydedin. Bu işlem, kopya öğeleri de temizler.}other{{PASSWORD_COUNT} şifre ve diğer öğeler yalnızca bu cihaza kayıtlı. Diğer cihazlarınızda kullanmak için Google Hesabınıza kaydedin. Bu işlem, kopya öğeleri de temizler.}}</translation>
@@ -8681,7 +8681,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7650677314924139716">Mevcut veri kullanımı, yalnızca kablosuz ağ olarak ayarlı</translation>
 <translation id="7651182181030187705">Bu yer işaretini tüm cihazlarınızda kullanmak için kimliğinizi doğrulayın</translation>
 <translation id="7651400349472467012">Anında hotspot kullanılabilir</translation>
-<translation id="7651754152638505879">Görev Duraklatıldı</translation>
+<translation id="7651754152638505879">Görev duraklatıldı</translation>
 <translation id="7651784568388208829">Telefon Merkezi görev devamı</translation>
 <translation id="7652954539215530680">PIN oluşturun</translation>
 <translation id="7653354650639364202">{0,plural, =1{Yalıtılmış pencereyi kapat}other{Yalıtılmış pencereleri kapat (# pencere)}}</translation>
@@ -10454,7 +10454,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="8991694323904646277">Kamera yok</translation>
 <translation id="8991766915726096402">Yerel verileri kurtar</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Bellek kullanımı - <ph name="MEMORY_VALUE" /></translation>
-<translation id="8993030412405061612">Görev Tamamlandı</translation>
+<translation id="8993030412405061612">Görev tamamlandı</translation>
 <translation id="8993198843374358393"><ph name="CERT_NAME" /> sertifika karmasını kopyala</translation>
 <translation id="8993737615451556423">Okuma sesini hızlandırma, yavaşlatma ve duraklatma kontrollerini sağlar</translation>
 <translation id="8993787625629280252">Chrome, şifrelerinizden birinin herkese açık bir veri ihlalinde yer aldığını tespit ederse ve oturumunuz açıksa şifrenizi sizin için değiştirmeyi önerebilir</translation>

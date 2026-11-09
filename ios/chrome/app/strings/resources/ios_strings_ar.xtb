@@ -196,7 +196,7 @@
 <translation id="1558391695376153246">إغلاق علامات تبويب التصفح المتخفي</translation>
 <translation id="1560153516220021659">زر شريط الأدوات الثانوي المُصغَّر</translation>
 <translation id="1562601408588733317">‏يمكنك إدارة ملء المعلومات والعثور عليها باستخدام Gemini</translation>
-<translation id="1565371473877914088">علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
+<translation id="1565371473877914088">علامة تبويب جديدة للتصفّح المتخفي</translation>
 <translation id="1567960978791353852">عرض "وضع القراءة"</translation>
 <translation id="1571780780926010134">علامات التبويب في وضع التصفّح المتخفي</translation>
 <translation id="1580715474678097352">الحماية من المواقع الإلكترونية الضارّة</translation>
@@ -2368,7 +2368,7 @@
 <translation id="8370929854657845191">التوسيع إلى "ارتفاع متوسط"</translation>
 <translation id="8371494817541821097">‏تم إنشاء مفتاح المرور في ‎<ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{حذف العنوان}zero{حذف العناوين}two{حذف العنوانَين}few{حذف العناوين}many{حذف العناوين}other{حذف العناوين}}</translation>
-<translation id="8378714024927312812">بإدارة مؤسستك</translation>
+<translation id="8378714024927312812">تحت إدارة مؤسستك</translation>
 <translation id="8385363453480067273">‏البحث باستخدام "عدسة Google" عن المحتوى الظاهر على الشاشة</translation>
 <translation id="8386068868580335421">إعادة ضبط</translation>
 <translation id="8393700583063109961">إرسال رسالة</translation>

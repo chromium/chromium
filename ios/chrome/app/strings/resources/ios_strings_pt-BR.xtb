@@ -115,7 +115,7 @@
 <translation id="1333455942675373522">Teclado</translation>
 <translation id="1333669029961409292">A ação "Verificar suas senhas" foi concluída!</translation>
 <translation id="1334485477792811969">Serviços da Web</translation>
-<translation id="1335767868357998043">Escolha a posição da barra de endereço</translation>
+<translation id="1335767868357998043">Posição da barra de endereço</translation>
 <translation id="1347468774581902829">Gerenciar atividade</translation>
 <translation id="1348596747084433075">https://www.amazon.com.br/s?k=presentes+para+a+esposa&amp;sprefix=presentes+esposa</translation>
 <translation id="1353169676553627502">Desativar atualizações de progresso</translation>
@@ -473,7 +473,7 @@
 <translation id="2408318953009664750">Permitir uma vez</translation>
 <translation id="2410754283952462441">Escolher uma conta</translation>
 <translation id="2422174748424038845">Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />" e ele será excluído de todos os dispositivos.</translation>
-<translation id="2424805048070062787">Continuar nesta guia</translation>
+<translation id="2424805048070062787">Continuar com esta guia</translation>
 <translation id="2426805022920575512">Escolher outra conta</translation>
 <translation id="2428543302546523788">Mostrar links quando o modo de leitura estiver ativado</translation>
 <translation id="243275146591958220">Cancelar download</translation>
@@ -491,7 +491,7 @@
 <translation id="2473876017985765807">Você já salvou uma senha em <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Você pode definir um lembrete para rever esta página mais tarde</translation>
 <translation id="2476554421818031422">Você está ajudando a melhorar o preenchimento automático aprimorado</translation>
-<translation id="2479148705183875116">Acessar as configurações</translation>
+<translation id="2479148705183875116">Ir para configurações</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2484459871750294497">Como posso ativar esse recurso?</translation>
 <translation id="2485534095078940149">Arquivo anexado {título}</translation>
@@ -2069,7 +2069,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="7482823403440483089">Preenchimento automático aprimorado</translation>
 <translation id="7484645889979462775">Nunca para este site</translation>
 <translation id="7486006552035434095">Manter os dispositivos sincronizados</translation>
-<translation id="7491131399623468277">Acessar as configurações…</translation>
+<translation id="7491131399623468277">Ir para configurações…</translation>
 <translation id="7491161827858509164">Para ver os arquivos que você já baixou, abra <ph name="BEGIN_LINK" />Arquivos<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Continuar editando</translation>
 <translation id="7498557042323380380">Defina um visual sazonal para a página Nova guia</translation>
@@ -2365,7 +2365,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="8367705492654390392">Pergunte o que quiser</translation>
 <translation id="8368001212524806591">Monitorar preço</translation>
 <translation id="8368198938968349418">Ativar o preenchimento automático…</translation>
-<translation id="8370406443343902172">Acessar as configurações…</translation>
+<translation id="8370406443343902172">Ir para configurações…</translation>
 <translation id="8370929854657845191">Abrir em tamanho médio</translation>
 <translation id="8371494817541821097">Chave de acesso criada em <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Excluir endereço}one{Excluir endereço}other{Excluir endereços}}</translation>
