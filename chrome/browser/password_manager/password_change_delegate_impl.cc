@@ -89,12 +89,13 @@ std::unique_ptr<BrowserSavePasswordProgressLogger> GetLoggerIfAvailable(
   return nullptr;
 }
 
-PasswordChangeDelegate::CoarseFinalPasswordChangeState GetCoarseState(
+PasswordChangeDelegateImpl::CoarseFinalPasswordChangeState GetCoarseState(
     PasswordChangeDelegate::State state) {
   switch (state) {
     case PasswordChangeDelegate::State::kWaitingForAgreement:
     case PasswordChangeDelegate::State::kOfferingPasswordChange:
-      return PasswordChangeDelegate::CoarseFinalPasswordChangeState::kOffered;
+      return PasswordChangeDelegateImpl::CoarseFinalPasswordChangeState::
+          kOffered;
 
     case PasswordChangeDelegate::State::kCanceled:
     // Password change is "ongoing", but since the metric is recorded on
@@ -103,21 +104,23 @@ PasswordChangeDelegate::CoarseFinalPasswordChangeState GetCoarseState(
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
     case PasswordChangeDelegate::State::kChangingPassword:
     case PasswordChangeDelegate::State::kLoginFormDetected:
-      return PasswordChangeDelegate::CoarseFinalPasswordChangeState::kCanceled;
+      return PasswordChangeDelegateImpl::CoarseFinalPasswordChangeState::
+          kCanceled;
 
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
-      return PasswordChangeDelegate::CoarseFinalPasswordChangeState::
+      return PasswordChangeDelegateImpl::CoarseFinalPasswordChangeState::
           kSuccessful;
 
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
-      return PasswordChangeDelegate::CoarseFinalPasswordChangeState::kFailed;
+      return PasswordChangeDelegateImpl::CoarseFinalPasswordChangeState::
+          kFailed;
 
     case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
-      return PasswordChangeDelegate::CoarseFinalPasswordChangeState::
+      return PasswordChangeDelegateImpl::CoarseFinalPasswordChangeState::
           kFormNotDetected;
 
     case PasswordChangeDelegate::State::kOtpDetected:
-      return PasswordChangeDelegate::CoarseFinalPasswordChangeState::
+      return PasswordChangeDelegateImpl::CoarseFinalPasswordChangeState::
           kOtpDetected;
     case PasswordChangeDelegate::State::kNoState:
       NOTREACHED();

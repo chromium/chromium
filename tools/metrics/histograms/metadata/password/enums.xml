@@ -344,7 +344,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="OTP detected"/>
 </enum>
 
-<!-- LINT.ThenChange(/chrome/browser/password_manager/password_change_delegate.h) -->
+<!-- LINT.ThenChange(/chrome/browser/password_manager/password_change_delegate_impl.h:CoarseFinalPasswordChangeState) -->
 
 <!-- LINT.IfChange(CredentialManagerAndroidGetResult) -->
 
