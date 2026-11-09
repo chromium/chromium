@@ -591,10 +591,14 @@ function getChildFrameRemoteToken(frame: HTMLIFrameElement|null): string|null {
   if (!frame) {
     return null;
   }
-  // Either register a new token when in the isolated world or read the last
-  // registered token from the page content world.
-  return registerChildFrame(frame) ??
-      frame.getAttribute(fillConstants.CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE);
+  // Only register child frames when executing in the isolated world (where the
+  // 'autofill' API is registered). When called from the page content world
+  // (e.g., during programmatic form submission), read the token previously
+  // stored in the DOM by the isolated world.
+  if (gCrWeb.hasRegisteredApi('autofill')) {
+    return registerChildFrame(frame);
+  }
+  return frame.getAttribute(fillConstants.CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE);
 }
 
 /**

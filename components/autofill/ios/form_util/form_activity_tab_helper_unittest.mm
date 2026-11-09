@@ -5,6 +5,7 @@
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 
 #import <optional>
+#import <vector>
 
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
@@ -24,6 +25,7 @@
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/common/autofill_optimization_features.h"
 #import "components/autofill/ios/common/features.h"
+#import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
@@ -55,6 +57,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 using test::FormDataEq;
 using test::kTrackFormMutationsDelayInMs;
 using test::WithoutUnserializedData;
+using ::testing::_;
 using ::testing::Each;
 using ::testing::ElementsAre;
 using ::testing::Field;
@@ -1352,22 +1355,32 @@ class FormSubmittedHookTest : public FormActivityTabHelperTest {
   }
 
  protected:
-  // Runs the form extraction script and returns true if the script ran
-  // successfully.
-  bool FetchForms() {
+  // Runs the form extraction script in the isolated world and returns the
+  // extracted forms.
+  std::optional<std::vector<FormData>> FetchForms() {
     WebFrame* main_frame = WaitForMainFrame();
     if (!main_frame) {
-      return false;
+      return std::nullopt;
     }
     __block bool finished = false;
+    __block NSString* forms_json = nil;
     AutofillJavaScriptFeature::GetInstance()->FetchForms(
         main_frame, base::BindOnce(^(NSString* result) {
+          forms_json = [result copy];
           finished = true;
         }));
 
-    return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-      return finished;
-    });
+    if (!WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+          return finished;
+        })) {
+      return std::nullopt;
+    }
+    return ExtractFormsData(
+        forms_json, /*form_name_filter=*/std::nullopt,
+        web_state()->GetLastCommittedURL(), main_frame->GetSecurityOrigin(),
+        main_frame->GetUrl(),
+        *FieldDataManagerFactoryIOS::GetRetainable(main_frame),
+        main_frame->GetFrameId());
   }
 
  private:
@@ -1431,7 +1444,9 @@ TEST_F(FormSubmittedHookTest, TestFormSubmittedHookAcrossIframes) {
   // Trigger form extraction so child frame tokens are set in the isolated
   // world. Page scripts will be able to access the tokens through the fallback
   // stored in the DOM.
-  FetchForms();
+  std::optional<std::vector<FormData>> extracted_forms = FetchForms();
+  ASSERT_TRUE(extracted_forms.has_value());
+  ASSERT_THAT(*extracted_forms, ElementsAre(_));
 
   ASSERT_FALSE(observer_->submit_document_info());
 
@@ -1444,10 +1459,15 @@ TEST_F(FormSubmittedHookTest, TestFormSubmittedHookAcrossIframes) {
   ASSERT_TRUE(observer_->submit_document_info());
   const FormData& submitted_form = observer_->submit_document_info()->form_data;
   // Make sure child frames are populated.
-
+  EXPECT_THAT(submitted_form.child_frames(), SizeIs(2));
   EXPECT_THAT(submitted_form.child_frames(),
               Each(Field(&FrameTokenWithPredecessor::token,
                          VariantWith<RemoteFrameToken>(IsTrue()))));
+  // Verify that the submitted form's child frame tokens match the tokens
+  // originally generated in the isolated world (and were not overwritten by
+  // the page content world).
+  EXPECT_EQ(submitted_form.child_frames(),
+            extracted_forms->at(0).child_frames());
 }
 
 }  // namespace autofill
