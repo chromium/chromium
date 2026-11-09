@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/sri_message_signatures.h"
 
 #include <algorithm>
+#include <array>
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
@@ -35,14 +36,20 @@ const size_t kEd25519KeyLength = 32;
 const size_t kEd25519SigLength = 64;
 constexpr std::string_view kAcceptSignature = "accept-signature";
 
-constexpr std::array<std::string_view, 9u> kDerivedComponents = {
-    "@authority", "@query-param", "@query",  "@method",
-    "@path",      "@scheme",      "@status", "@target-uri",
+constexpr auto kDerivedComponents = std::to_array<std::string_view>({
+    "@authority",
+    "@query-param",
+    "@query",
+    "@method",
+    "@path",
+    "@scheme",
+    "@status",
+    "@target-uri",
     // TODO(383409584): We should support the remaining derived components from
     // https://www.rfc-editor.org/rfc/rfc9421.html#name-derived-components:
     //
     // "@request-target"
-};
+});
 
 ParameterType ParamNameToType(std::string_view name) {
   if (name == "name") {

@@ -404,6 +404,12 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputComponents) {
       // Components that are valid per-spec, but aren't quite constrained enough
       // for SRI's initial implementation. We'll eventually treat these as valid
       // headers, but they're parse errors for now.
+      {"signature=(\"\")",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidComponentName},
+      {"signature=(\"unencoded-digest\";sf \"\";req)",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidComponentName},
       {"signature=(\"invalid header names\")",
        mojom::SRIMessageSignatureError::
            kSignatureInputHeaderInvalidComponentName},
