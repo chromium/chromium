@@ -107,6 +107,7 @@ source_set("task_manager") {
       "providers/web_contents/guest_tag.h",
       "providers/web_contents/guest_task.h",
       "providers/web_contents/guest_task_mparch.h",
+      "task_manager_prefs.h",
     ]
     public_deps += [
       "//extensions/browser",
@@ -242,6 +243,7 @@ source_set("impl") {
     sources += [
       "providers/web_contents/background_contents_tag.cc",
       "providers/web_contents/background_contents_task.cc",
+      "task_manager_prefs.cc",
     ]
   }
   if (enable_guest_view) {

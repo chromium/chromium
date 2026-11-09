@@ -8,12 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
-#include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
 
@@ -22,20 +17,6 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace task_manager {
-
-// static
-void TaskManagerInterface::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(prefs::kTaskManagerWindowPlacement);
-  registry->RegisterIntegerPref(prefs::kTaskManagerCategory, 1);
-  registry->RegisterDictionaryPref(prefs::kTaskManagerColumnVisibility);
-  registry->RegisterBooleanPref(prefs::kTaskManagerEndProcessEnabled, true);
-}
-
-// static
-bool TaskManagerInterface::IsEndProcessEnabled() {
-  PrefService* state = g_browser_process->local_state();
-  return !state || state->GetBoolean(prefs::kTaskManagerEndProcessEnabled);
-}
 
 // static
 TaskManagerInterface* TaskManagerInterface::GetTaskManager() {

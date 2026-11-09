@@ -24,8 +24,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/child_process_id.h"
 
-class PrefRegistrySimple;
-
 namespace content {
 class WebContents;
 }  // namespace content
@@ -39,12 +37,6 @@ class TaskManagerInterface {
  public:
   TaskManagerInterface(const TaskManagerInterface&) = delete;
   TaskManagerInterface& operator=(const TaskManagerInterface&) = delete;
-
-  // Registers the task manager related prefs.
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  // Returns true if the user is allowed to end processes.
-  static bool IsEndProcessEnabled();
 
   // Gets the existing instance of the task manager if any, otherwise it will
   // create it first. Must be called on the UI thread.

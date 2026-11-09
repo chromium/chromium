@@ -325,7 +325,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/speech/speech_recognition_small_expert_model_installer.h"
-#include "chrome/browser/task_manager/task_manager_interface.h"
+#include "chrome/browser/task_manager/task_manager_prefs.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
@@ -1901,7 +1901,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   speech::SpeechRecognitionSmallExpertModelInstaller::RegisterLocalStatePrefs(
       registry);
   StartupBrowserCreator::RegisterLocalStatePrefs(registry);
-  task_manager::TaskManagerInterface::RegisterPrefs(registry);
+  task_manager::RegisterPrefs(registry);
   UpgradeDetector::RegisterPrefs(registry);
   registry->RegisterIntegerPref(prefs::kLastWhatsNewVersion, 0);
 #endif  // BUILDFLAG(IS_ANDROID)

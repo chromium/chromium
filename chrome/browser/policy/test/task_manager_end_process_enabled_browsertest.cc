@@ -4,7 +4,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/browser/task_manager/task_manager_interface.h"
+#include "chrome/browser/task_manager/task_manager_prefs.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -12,11 +12,11 @@
 
 namespace policy {
 
-// Test that TaskManagerInterface::IsEndProcessEnabled is controlled by
+// Test that task_manager::IsEndProcessEnabled is controlled by
 // TaskManagerEndProcessEnabled policy
 IN_PROC_BROWSER_TEST_F(PolicyTest, TaskManagerEndProcessEnabled) {
   // By default it's allowed to end tasks.
-  EXPECT_TRUE(task_manager::TaskManagerInterface::IsEndProcessEnabled());
+  EXPECT_TRUE(task_manager::IsEndProcessEnabled());
 
   // Disabling ending tasks in task manager by policy
   PolicyMap policies1;
@@ -26,7 +26,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, TaskManagerEndProcessEnabled) {
   UpdateProviderPolicy(policies1);
 
   // Policy should not allow ending tasks anymore.
-  EXPECT_FALSE(task_manager::TaskManagerInterface::IsEndProcessEnabled());
+  EXPECT_FALSE(task_manager::IsEndProcessEnabled());
 
   // Enabling ending tasks in task manager by policy
   PolicyMap policies2;
@@ -36,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, TaskManagerEndProcessEnabled) {
   UpdateProviderPolicy(policies2);
 
   // Policy should allow ending tasks again.
-  EXPECT_TRUE(task_manager::TaskManagerInterface::IsEndProcessEnabled());
+  EXPECT_TRUE(task_manager::IsEndProcessEnabled());
 }
 
 }  // namespace policy
