@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/bubble_manager_impl.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
@@ -158,6 +159,9 @@ BubbleManagerImpl::BubbleManagerImpl(tabs::TabInterface* tab)
       &BubbleManagerImpl::TabWillEnterBackground, base::Unretained(this))));
   tab_subscriptions_.push_back(tab->RegisterDidActivate(base::BindRepeating(
       &BubbleManagerImpl::TabDidEnterForeground, base::Unretained(this))));
+  tab_subscriptions_.push_back(
+      tab->RegisterWillDiscardContents(base::BindRepeating(
+          &BubbleManagerImpl::WillDiscardContents, base::Unretained(this))));
 }
 
 BubbleManagerImpl::~BubbleManagerImpl() {
@@ -439,6 +443,27 @@ void BubbleManagerImpl::TabDidEnterForeground(
   } else if (!active_bubble_controller_->IsShowingBubble()) {
     // This can happen if a tab created in background becomes visible.
     active_bubble_controller_->ShowBubble();
+  }
+}
+
+void BubbleManagerImpl::WillDiscardContents(
+    tabs::TabInterface* tab_interface,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  const std::set<PendingRequest> pending_queue =
+      std::exchange(pending_bubbles_queue_, {});
+  if (const base::WeakPtr<BubbleControllerBase> active_controller =
+          std::exchange(active_bubble_controller_, nullptr)) {
+    active_controller->OnBubbleDiscarded();
+    if (active_controller && active_controller->IsShowingBubble()) {
+      active_controller->HideBubble(/*initiated_by_bubble_manager=*/true);
+    }
+  }
+
+  for (const PendingRequest& request : pending_queue) {
+    if (request.controller) {
+      request.controller->OnBubbleDiscarded();
+    }
   }
 }
 

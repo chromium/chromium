@@ -62,8 +62,9 @@ class BubbleControllerBase {
   // the bubble is still alive.
   virtual void HideBubble(bool initiated_by_bubble_manager) = 0;
 
-  // Instructs the controller that its pending request to show has been
-  // discarded and will not be shown. This can happen on timeout or teardown.
+  // Instructs the controller that its active or pending bubble has been
+  // discarded and will not be shown again (e.g., on timeout, when it can no
+  // longer be reshown, on tab discard, or on teardown).
   virtual void OnBubbleDiscarded() = 0;
 
   // Returns the corresponding `BubbleType` for the controller.

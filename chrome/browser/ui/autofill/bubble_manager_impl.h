@@ -18,6 +18,10 @@ namespace base {
 class CallbackListSubscription;
 }  // namespace base
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
@@ -84,6 +88,9 @@ class BubbleManagerImpl : public BubbleManager {
   // tabs::TabInterface related overrides:
   void TabWillEnterBackground(tabs::TabInterface* tab_interface);
   void TabDidEnterForeground(tabs::TabInterface* tab_interface);
+  void WillDiscardContents(tabs::TabInterface* tab_interface,
+                           content::WebContents* old_contents,
+                           content::WebContents* new_contents);
 
   // Currently active controller that is shown.
   base::WeakPtr<BubbleControllerBase> active_bubble_controller_ = nullptr;

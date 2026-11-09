@@ -33,9 +33,12 @@ class FakeTabInterface : public tabs::MockTabInterface {
       base::RepeatingCallback<void(TabInterface*)> cb) override;
   base::CallbackListSubscription RegisterWillDeactivate(
       base::RepeatingCallback<void(TabInterface*)> cb) override;
+  base::CallbackListSubscription RegisterWillDiscardContents(
+      WillDiscardContentsCallback cb) override;
   content::WebContents* GetContents() const override { return web_contents_; }
   void Activate();
   void Deactivate();
+  void DiscardContents();
   bool IsActivated() const override { return is_activated_; }
 
  private:
@@ -46,6 +49,9 @@ class FakeTabInterface : public tabs::MockTabInterface {
   bool is_activated_ = false;
   base::RepeatingCallbackList<void(TabInterface*)> activation_callbacks_;
   base::RepeatingCallbackList<void(TabInterface*)> deactivation_callbacks_;
+  base::RepeatingCallbackList<
+      void(TabInterface*, content::WebContents*, content::WebContents*)>
+      will_discard_contents_callbacks_;
 };
 
 FakeTabInterface::FakeTabInterface(TestingProfile* testing_profile) {
@@ -65,6 +71,11 @@ base::CallbackListSubscription FakeTabInterface::RegisterWillDeactivate(
   return deactivation_callbacks_.Add(cb);
 }
 
+base::CallbackListSubscription FakeTabInterface::RegisterWillDiscardContents(
+    WillDiscardContentsCallback cb) {
+  return will_discard_contents_callbacks_.Add(cb);
+}
+
 void FakeTabInterface::Activate() {
   is_activated_ = true;
   activation_callbacks_.Notify(this);
@@ -73,6 +84,14 @@ void FakeTabInterface::Activate() {
 void FakeTabInterface::Deactivate() {
   is_activated_ = false;
   deactivation_callbacks_.Notify(this);
+}
+
+void FakeTabInterface::DiscardContents() {
+  content::WebContents* const new_contents =
+      web_contents_factory_->CreateWebContents(
+          web_contents_->GetBrowserContext());
+  will_discard_contents_callbacks_.Notify(this, web_contents_, new_contents);
+  web_contents_ = new_contents;
 }
 
 // A mock implementation of BubbleControllerBase to use in tests.
@@ -1069,6 +1088,40 @@ TEST_F(BubbleManagerImplTest, TabHide_BubbleNotQueuedIfReshowFalse) {
 
   // Expect bubble NOT to be reshown.
   EXPECT_FALSE(controller->IsShowingBubble());
+}
+
+// Tests that tab discard evicts both active and queued bubbles.
+TEST_F(BubbleManagerImplTest,
+       WillDiscardContents_HidesActiveAndDiscardsPendingBubbles) {
+  std::unique_ptr<MockBubbleController> card_controller =
+      CreateController(BubbleType::kSaveUpdateCard);
+  std::unique_ptr<MockBubbleController> address_controller =
+      CreateController(BubbleType::kSaveUpdateAddress);
+
+  EXPECT_CALL(*card_controller, ShowBubble());
+  bubble_manager().RequestShowController(*card_controller,
+                                         /*force_show=*/false);
+  bubble_manager().RequestShowController(*address_controller,
+                                         /*force_show=*/false);
+  ASSERT_TRUE(card_controller->IsShowingBubble());
+  ASSERT_TRUE(bubble_manager().HasConflictingPendingBubble(
+      BubbleType::kSaveUpdateAddress));
+
+  {
+    InSequence sequence;
+    EXPECT_CALL(*card_controller, OnBubbleDiscarded());
+    EXPECT_CALL(*card_controller,
+                HideBubble(/*initiated_by_bubble_manager=*/true));
+  }
+  EXPECT_CALL(*address_controller, ShowBubble()).Times(0);
+  EXPECT_CALL(*address_controller, OnBubbleDiscarded());
+
+  tab_interface()->DiscardContents();
+
+  EXPECT_FALSE(card_controller->IsShowingBubble());
+  EXPECT_FALSE(address_controller->IsShowingBubble());
+  EXPECT_FALSE(bubble_manager().HasConflictingPendingBubble(
+      BubbleType::kSaveUpdateAddress));
 }
 
 }  // namespace autofill
