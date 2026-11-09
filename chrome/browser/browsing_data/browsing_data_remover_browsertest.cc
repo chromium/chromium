@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -21,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -1671,6 +1673,9 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // RuleMetaData below.
   base::SimpleTestClock test_clock;
   settings_map->SetClockForTesting(&test_clock);
+  base::ScopedClosureRunner reset_clock(base::BindOnce(
+      &HostContentSettingsMap::SetClockForTesting,
+      base::Unretained(settings_map), base::DefaultClock::GetInstance()));
   test_clock.SetNow(base::Time::Now());
 
   // Expected setting for the default grant.

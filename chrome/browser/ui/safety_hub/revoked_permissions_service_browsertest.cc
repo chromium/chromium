@@ -6,7 +6,9 @@
 
 #include <algorithm>
 
+#include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -91,6 +93,21 @@ class RevokedPermissionsServiceBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
+  [[nodiscard]] base::ScopedClosureRunner SetClockForTesting(
+      base::Clock* clock) {
+    auto* map =
+        HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
+    auto* service = RevokedPermissionsServiceFactory::GetForProfile(
+        browser()->GetProfile());
+    map->SetClockForTesting(clock);
+    service->SetClockForTesting(clock);
+    return base::ScopedClosureRunner(
+        base::BindLambdaForTesting([map, service]() {
+          map->SetClockForTesting(base::DefaultClock::GetInstance());
+          service->SetClockForTesting(base::DefaultClock::GetInstance());
+        }));
+  }
+
   ContentSettingsForOneType GetRevokedUnusedPermissions(
       HostContentSettingsMap* hcsm) {
     return hcsm->GetSettingsForOneType(
@@ -115,8 +132,7 @@ IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
   base::Time past(now - base::Days(20));
   base::SimpleTestClock clock;
   clock.SetNow(past);
-  map->SetClockForTesting(&clock);
-  service->SetClockForTesting(&clock);
+  base::ScopedClosureRunner reset_clock = SetClockForTesting(&clock);
   content_settings::ContentSettingConstraints constraints;
   constraints.set_track_last_visit_for_autoexpiration(true);
   map->SetContentSettingDefaultScope(url, url, ContentSettingsType::GEOLOCATION,
@@ -145,8 +161,6 @@ IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
   EXPECT_GE(info.metadata.last_visited(),
             now - content_settings::GetCoarseVisitedTimePrecision());
   EXPECT_LE(info.metadata.last_visited(), now);
-
-  map->SetClockForTesting(base::DefaultClock::GetInstance());
 }
 
 // Test that navigations work fine in incognito mode.
@@ -172,8 +186,7 @@ IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
   base::Time past(now - base::Days(20));
   base::SimpleTestClock clock;
   clock.SetNow(past);
-  map->SetClockForTesting(&clock);
-  service->SetClockForTesting(&clock);
+  base::ScopedClosureRunner reset_clock = SetClockForTesting(&clock);
   content_settings::ContentSettingConstraints constraints;
   constraints.set_track_last_visit_for_autoexpiration(true);
   map->SetContentSettingDefaultScope(url, url, ContentSettingsType::GEOLOCATION,
@@ -221,8 +234,7 @@ IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
   ASSERT_TRUE(base::Time::FromString("2022-09-07 13:00", &time));
   base::SimpleTestClock clock;
   clock.SetNow(time);
-  map->SetClockForTesting(&clock);
-  service->SetClockForTesting(&clock);
+  base::ScopedClosureRunner reset_clock = SetClockForTesting(&clock);
 
   GURL url = embedded_test_server()->GetURL("/title1.html");
   base::HistogramTester histogram_tester;
@@ -413,8 +425,7 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
     base::Time past(now - base::Days(20));
     base::SimpleTestClock clock;
     clock.SetNow(past);
-    map->SetClockForTesting(&clock);
-    service->SetClockForTesting(&clock);
+    base::ScopedClosureRunner reset_clock = SetClockForTesting(&clock);
     content_settings::ContentSettingConstraints constraints;
     constraints.set_track_last_visit_for_autoexpiration(true);
     map->SetContentSettingDefaultScope(unused_url, unused_url,
@@ -484,8 +495,7 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
     base::Time past(now - base::Days(20));
     base::SimpleTestClock clock;
     clock.SetNow(past);
-    map->SetClockForTesting(&clock);
-    service->SetClockForTesting(&clock);
+    base::ScopedClosureRunner reset_clock = SetClockForTesting(&clock);
     content_settings::ContentSettingConstraints constraints;
     constraints.set_track_last_visit_for_autoexpiration(true);
     map->SetContentSettingDefaultScope(unused_url, unused_url,
@@ -598,8 +608,7 @@ IN_PROC_BROWSER_TEST_F(DisruptiveNotificationPermissionsRevocationBrowserTest,
   GURL url = embedded_test_server()->GetURL("/title1.html");
 
   base::SimpleTestClock clock;
-  hcsm->SetClockForTesting(&clock);
-  service->SetClockForTesting(&clock);
+  base::ScopedClosureRunner reset_clock = SetClockForTesting(&clock);
   clock.SetNow(base::Time::Now());
 
   // Force for the initial safety check to be complete before setting up a
@@ -667,8 +676,7 @@ IN_PROC_BROWSER_TEST_F(
   base::Time past(now - base::Days(20));
   base::SimpleTestClock clock;
   clock.SetNow(past);
-  hcsm->SetClockForTesting(&clock);
-  service->SetClockForTesting(&clock);
+  base::ScopedClosureRunner reset_clock = SetClockForTesting(&clock);
   content_settings::ContentSettingConstraints constraints;
   constraints.set_track_last_visit_for_autoexpiration(true);
   hcsm->SetContentSettingDefaultScope(url, url,
