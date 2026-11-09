@@ -122,7 +122,7 @@ String IntegrityAlgorithmToString(IntegrityAlgorithm algorithm) {
 }
 
 String IntegrityAlgorithmsForConsole() {
-  return "'sha256', 'sha384', 'sha512', or 'ed21159'";
+  return "'sha256', 'sha384', 'sha512', or 'ed25519'";
 }
 
 String HashAlgorithmToString(HashAlgorithm algorithm) {
