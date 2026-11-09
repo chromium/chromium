@@ -171,6 +171,8 @@ public class PopupCreatorImplUnitTest {
 
     @Before
     public void setup() {
+        Profile profile = mock(Profile.class);
+        Profile.setProfileFromWebContentsForTesting(profile);
         mActivity = Robolectric.buildActivity(TestCustomTabActivity.class).get();
         mPopupCreator = new PopupCreatorImpl();
         DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
@@ -959,6 +961,18 @@ public class PopupCreatorImplUnitTest {
         // New right = 210 + 200 = 410
         // New bottom = 320 + 200 = 520
         assertEquals(new Rect(10, 20, 410, 520), targetBounds);
+    }
+
+    @Test
+    public void testDocPip_rejectsNonPrimaryOtrProfile() {
+        Profile profile = mock(Profile.class);
+        doReturn(true).when(profile).isOffTheRecord();
+        doReturn(false).when(profile).isPrimaryOtrProfile();
+        Profile.setProfileFromWebContentsForTesting(profile);
+        assertFalse(
+                mPopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
+                        null, mWebContents, new PictureInPictureWindowOptions()));
+        verify(mWebContents, never()).getDocumentPictureInPictureOpener();
     }
 
     private void setupMocksForAdjustWindowBounds(

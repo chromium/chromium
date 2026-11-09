@@ -266,6 +266,15 @@ public class PopupCreatorImpl implements PopupCreator {
             return sMoveToNewDocumentPiPWindowResultForTesting;
         }
 
+        // Match the popup paths above: only the primary OTR profile may open new windows.
+        // Non-primary OTR profiles (e.g. Incognito CCT) are owned by and destroyed with their
+        // hosting activity, so a DocPiP window would outlive the profile its WebContents
+        // belongs to.
+        Profile profile = Profile.fromWebContents(webContents);
+        if (profile != null && profile.isOffTheRecord() && !profile.isPrimaryOtrProfile()) {
+            return false;
+        }
+
         WebContents opener = webContents.getDocumentPictureInPictureOpener();
         AutoPictureInPictureTabHelper helper =
                 opener != null ? AutoPictureInPictureTabHelper.fromWebContents(opener) : null;

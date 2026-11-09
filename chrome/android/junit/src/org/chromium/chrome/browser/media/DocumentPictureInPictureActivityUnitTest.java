@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -41,6 +42,8 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
@@ -98,6 +101,7 @@ public class DocumentPictureInPictureActivityUnitTest {
     @Mock private AppTask mAppTask;
     @Mock private DisplayAndroidManager mDisplayAndroidManager;
     @Mock private DocumentPictureInPictureActivity.Natives mMockActivityNatives;
+    @Mock private Profile mProfile;
 
     private TestDocumentPictureInPictureActivity mActivity;
     private FrameLayout mContentLayout;
@@ -110,6 +114,8 @@ public class DocumentPictureInPictureActivityUnitTest {
         DisplayAndroid.setNonMultiDisplayForTesting(mDisplayAndroid);
         PictureInPictureBoundsCacheBridgeJni.setInstanceForTesting(mMockNatives);
         DocumentPictureInPictureActivityJni.setInstanceForTesting(mMockActivityNatives);
+
+        Profile.setProfileFromWebContentsForTesting(mProfile);
 
         // Common Display setup
         when(mDisplayAndroid.getDipScale()).thenReturn(1.0f);
@@ -506,5 +512,35 @@ public class DocumentPictureInPictureActivityUnitTest {
         when(openerFrame.getLastCommittedOrigin()).thenReturn(Origin.create(url));
 
         Assert.assertTrue(mActivity.verifyOpenerOrigin(intent, parentWebContents));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testProfileDestroyed_destroysWebContentsSynchronously() {
+        when(mMockActivityNatives.registerJavaActivity(any(), any())).thenReturn(false);
+        WebContents webContents = mock(WebContents.class);
+        when(webContents.isDestroyed()).thenReturn(false);
+        DocumentPictureInPictureActivity.setWebContentsForTesting(webContents);
+
+        mActivity.performPreInflationStartup();
+
+        ProfileManager.onProfileDestroyed(mProfile);
+
+        verify(webContents).destroy();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testProfileAlreadyShuttingDown_destroysWebContentsAndFinishes() {
+        when(mProfile.shutdownStarted()).thenReturn(true);
+        WebContents webContents = mock(WebContents.class);
+        when(webContents.isDestroyed()).thenReturn(false);
+        DocumentPictureInPictureActivity.setWebContentsForTesting(webContents);
+
+        mActivity.performPreInflationStartup();
+
+        verify(webContents).destroy();
+        Assert.assertTrue(mActivity.isFinishing());
+        verify(mMockActivityNatives, never()).registerJavaActivity(any(), any());
     }
 }
