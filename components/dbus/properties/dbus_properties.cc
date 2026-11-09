@@ -4,6 +4,7 @@
 
 #include "components/dbus/properties/dbus_properties.h"
 
+#include <dbus/dbus-protocol.h>
 #include <dbus/dbus-shared.h>
 
 #include "base/functional/bind.h"
@@ -170,21 +171,37 @@ void DbusProperties::OnGetProperty(
   std::string interface;
   std::string property_name;
 
-  if (reader.PopString(&interface) && reader.PopString(&property_name)) {
-    if (auto it = properties_.find(interface); it != properties_.end()) {
-      if (auto variant_it = it->second.find(property_name);
-          variant_it != it->second.end()) {
-        std::unique_ptr<dbus::Response> response =
-            dbus::Response::FromMethodCall(method_call);
-        dbus::MessageWriter writer(response.get());
-        variant_it->second.Write(writer);
-        std::move(response_sender).Run(std::move(response));
-        return;
-      }
-    }
+  if (!reader.PopString(&interface) || !reader.PopString(&property_name)) {
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(
+            method_call, DBUS_ERROR_INVALID_ARGS,
+            "Expected interface and property names"));
+    return;
   }
 
-  std::move(response_sender).Run(nullptr);
+  auto it = properties_.find(interface);
+  if (it == properties_.end()) {
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(
+            method_call, DBUS_ERROR_UNKNOWN_INTERFACE,
+            "No such interface: " + interface));
+    return;
+  }
+
+  auto variant_it = it->second.find(property_name);
+  if (variant_it == it->second.end()) {
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(
+            method_call, DBUS_ERROR_UNKNOWN_PROPERTY,
+            "No such property: " + property_name));
+    return;
+  }
+
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method_call);
+  dbus::MessageWriter writer(response.get());
+  variant_it->second.Write(writer);
+  std::move(response_sender).Run(std::move(response));
 }
 
 void DbusProperties::OnSetProperty(

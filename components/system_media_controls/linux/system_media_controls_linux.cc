@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/functional/bind.h"
@@ -25,6 +26,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/version_info/nix/version_extra_utils.h"
 #include "components/dbus/properties/dbus_properties.h"
 #include "components/dbus/properties/success_barrier_callback.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
@@ -133,6 +135,17 @@ std::string GetSanitizedUTF8FromUTF16(const std::u16string& value) {
     return output;
   }
   return RemoveNonCharacters(output);
+}
+
+// Returns the desktop entry name of the browser (the basename of its .desktop
+// file without the extension), e.g. "google-chrome" or "chromium-browser".
+std::string GetDesktopEntry() {
+  std::unique_ptr<base::Environment> env = base::Environment::Create();
+  std::string desktop_name = version_info::nix::GetDesktopName(*env);
+  if (auto base_name = base::RemoveSuffix(desktop_name, ".desktop")) {
+    return std::string(*base_name);
+  }
+  return desktop_name;
 }
 
 }  // namespace
@@ -290,6 +303,7 @@ void SystemMediaControlsLinux::InitializeProperties() {
   SetProperty<"b">("HasTrackList", false);
 
   SetProperty<"s">("Identity", product_name_);
+  SetProperty<"s">("DesktopEntry", GetDesktopEntry());
   SetProperty<"as">("SupportedUriSchemes", {});
   SetProperty<"as">("SupportedMimeTypes", {});
 

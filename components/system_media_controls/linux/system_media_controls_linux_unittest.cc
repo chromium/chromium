@@ -4,14 +4,19 @@
 
 #include "components/system_media_controls/linux/system_media_controls_linux.h"
 
+#include <dbus/dbus-protocol.h>
+
 #include <memory>
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/version_info/nix/version_extra_utils.h"
 #include "components/system_media_controls/system_media_controls_observer.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -149,6 +154,30 @@ class SystemMediaControlsLinuxTest : public testing::Test,
     return position;
   }
 
+  // Calls org.freedesktop.DBus.Properties.Get and returns the response.
+  std::unique_ptr<dbus::Response> CallPropertiesGet(
+      const std::string& interface_name,
+      const std::string& property_name) {
+    base::RunLoop wait_loop;
+
+    // A serial is required or the test will crash.
+    dbus::MethodCall method_call(DBUS_INTERFACE_PROPERTIES, "Get");
+    method_call.SetSerial(kFakeSerial);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(interface_name);
+    writer.AppendString(property_name);
+
+    std::unique_ptr<dbus::Response> result;
+    properties_interface_exported_methods_["Get"].Run(
+        &method_call, base::BindLambdaForTesting(
+                          [&](std::unique_ptr<dbus::Response> response) {
+                            result = std::move(response);
+                            wait_loop.Quit();
+                          }));
+    wait_loop.Run();
+    return result;
+  }
+
   SystemMediaControlsLinux* GetService() { return service_.get(); }
 
   dbus::MockExportedObject* GetExportedObject() {
@@ -248,6 +277,40 @@ TEST_F(SystemMediaControlsLinuxTest, ObserverNotifiedOfServiceReadyWhenAdded) {
   MockSystemMediaControlsObserver observer;
   EXPECT_CALL(observer, OnServiceReady());
   AddObserver(&observer);
+}
+
+TEST_F(SystemMediaControlsLinuxTest, DesktopEntryProperty) {
+  std::unique_ptr<dbus::Response> response =
+      CallPropertiesGet(kMprisAPIInterfaceName, "DesktopEntry");
+  ASSERT_TRUE(response);
+  ASSERT_EQ(dbus::Message::MESSAGE_METHOD_RETURN, response->GetMessageType());
+
+  dbus::MessageReader reader(response.get());
+  std::string desktop_entry;
+  ASSERT_TRUE(reader.PopVariantOfString(&desktop_entry));
+
+  // The value is the desktop file name without the ".desktop" extension.
+  std::unique_ptr<base::Environment> env = base::Environment::Create();
+  EXPECT_EQ(desktop_entry + ".desktop",
+            version_info::nix::GetDesktopName(*env));
+  EXPECT_FALSE(desktop_entry.empty());
+}
+
+TEST_F(SystemMediaControlsLinuxTest, GetUnknownPropertyReturnsError) {
+  std::unique_ptr<dbus::Response> response =
+      CallPropertiesGet(kMprisAPIInterfaceName, "NoSuchProperty");
+  ASSERT_TRUE(response);
+  EXPECT_EQ(dbus::Message::MESSAGE_ERROR, response->GetMessageType());
+  EXPECT_EQ(DBUS_ERROR_UNKNOWN_PROPERTY, response->GetErrorName());
+}
+
+TEST_F(SystemMediaControlsLinuxTest,
+       GetPropertyOfUnknownInterfaceReturnsError) {
+  std::unique_ptr<dbus::Response> response =
+      CallPropertiesGet("org.example.NoSuchInterface", "Identity");
+  ASSERT_TRUE(response);
+  EXPECT_EQ(dbus::Message::MESSAGE_ERROR, response->GetMessageType());
+  EXPECT_EQ(DBUS_ERROR_UNKNOWN_INTERFACE, response->GetErrorName());
 }
 
 TEST_F(SystemMediaControlsLinuxTest, ObserverNotifiedOfNextCalls) {
