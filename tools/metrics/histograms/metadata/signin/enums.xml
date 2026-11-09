@@ -560,6 +560,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="ShownLimitReached"/>
   <int value="5" label="CooldownActive"/>
   <int value="6" label="AlreadyShownAfterDismissalLimitReached"/>
+  <int value="7" label="ProfileTypeNotEligible"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/signin/cross_device_signin_promo_manager.h:CrossDeviceSigninPromoShouldShowResult) -->

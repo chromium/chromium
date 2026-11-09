@@ -399,6 +399,11 @@ bool IsFeatureEnabledForEntryPoint(
 CrossDeviceSigninPromoShouldShowResult CheckPromoPrerequisites(
     CrossDeviceSigninPromoEntryPoint entry_point,
     Profile* profile) {
+  // Non-regular (incognito, guest, system) profiles can never see the promo.
+  // Report them separately so they don't inflate `kNotSignedIn`.
+  if (!profile->IsRegularProfile()) {
+    return CrossDeviceSigninPromoShouldShowResult::kProfileTypeNotEligible;
+  }
   // 1. General eligibility: Signed in with no errors, and (except for What's
   // New) has NO mobile device.
   if (!IsUserSignedInWithNoError(profile)) {
@@ -439,7 +444,14 @@ CrossDeviceSigninPromoShouldShowResult CheckPromoPrerequisites(
 bool ShouldStartShowingCrossDeviceSigninPromo(
     CrossDeviceSigninPromoEntryPoint entry_point,
     Profile* profile) {
-  if (!IsFeatureEnabledForEntryPoint(entry_point)) {
+  // The result is recorded even if the entry point is disabled, so that study
+  // arms can be compared on the same trigger. Evaluating it has no side
+  // effects.
+  const bool is_entry_point_enabled =
+      IsFeatureEnabledForEntryPoint(entry_point);
+  if (!is_entry_point_enabled &&
+      !base::FeatureList::IsEnabled(
+          switches::kCrossDeviceSigninPromoEligibilityLogging)) {
     return false;
   }
 
@@ -454,7 +466,8 @@ bool ShouldStartShowingCrossDeviceSigninPromo(
   }
 
   RecordShouldShowResult(entry_point, result);
-  return result == CrossDeviceSigninPromoShouldShowResult::kCanShow;
+  return is_entry_point_enabled &&
+         result == CrossDeviceSigninPromoShouldShowResult::kCanShow;
 }
 
 bool ShouldKeepShowingCrossDeviceSigninPromo(

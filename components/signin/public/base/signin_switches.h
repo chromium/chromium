@@ -267,6 +267,13 @@ BASE_DECLARE_FEATURE(kCrossDeviceSigninFromDesktopFollowup);
 // the What's New page.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<bool> kCrossDeviceSigninFromDesktopWhatsNew;
+
+// Kill switch for recording the cross-device sign-in promo eligibility
+// (`Signin.CrossDeviceSigninPromo.ShouldShowResult.*`) even when the entry
+// point is disabled by its feature flags. Enabled by default; disabling it
+// removes that logging and leaves the promo behavior unchanged.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kCrossDeviceSigninPromoEligibilityLogging);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

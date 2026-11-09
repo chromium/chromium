@@ -281,6 +281,9 @@ BASE_FEATURE(kCrossDeviceSigninFromDesktopFollowup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kCrossDeviceSigninFromDesktopWhatsNew{
     &kCrossDeviceSigninFromDesktopFollowup, "whats_new", true};
+
+BASE_FEATURE(kCrossDeviceSigninPromoEligibilityLogging,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
