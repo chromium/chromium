@@ -104,12 +104,8 @@ class SessionServiceMock : public SessionService {
                SignedRefreshChallenge signed_refresh_challenge),
               (override));
   MOCK_METHOD(bool,
-              SigningQuotaExceeded,
-              (const SchemefulSite& site),
-              (override));
-  MOCK_METHOD(void,
-              AddSigningOccurrence,
-              (const SchemefulSite& site),
+              TryConsumeSigningQuota,
+              (const SchemefulSite& site, SigningQuotaOperation operation),
               (override));
   MOCK_METHOD(void,
               HandleResponseHeaders,

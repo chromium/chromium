@@ -79,6 +79,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_service_impl.h:RegistrationType) -->
 
+<!-- LINT.IfChange(SigningQuotaOperation) -->
+
+<variants name="DeviceBoundSessionSigningQuotaOperation">
+  <variant name="AttestedRegistration"
+      summary="attested session registration (aik_required, which is only
+               parsed with the DeviceBoundSessionsForSingleSignOn feature)"/>
+  <variant name="Refresh" summary="session refresh"/>
+  <variant name="Registration" summary="non-attested session registration"/>
+</variants>
+
+<!-- LINT.ThenChange(//net/device_bound_sessions/session_service.h:SigningQuotaOperation) -->
+
 <variants name="DnsOverHttpsSecure">
   <variant name="Insecure" summary="DoH is not enabled"/>
   <variant name="Secure" summary="DoH is enabled"/>
@@ -2381,15 +2393,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.DeviceBoundSessions.SigningQuotaExceededLastResult"
+<histogram name="Net.DeviceBoundSessions.SigningQuotaExceededLastResult2"
     enum="DeviceBoundSessionError" expires_after="2027-03-07">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This records the last outcome of refreshing a Device Bound Session
     (https://github.com/w3c/webappsec-dbsc/blob/main/README.md#refresh-procedure)
-    when we reject a signing due to exceeding the signing quota.
+    when we reject a signing due to exceeding the signing quota. Only the first
+    rejected signing on a site is recorded until one of that site's earlier
+    signings ages out of the 9-minute quota window, so this counts out-of-quota
+    episodes rather than retries.
   </summary>
+</histogram>
+
+<histogram name="Net.DeviceBoundSessions.SigningQuotaUnitsNeeded.{Operation}"
+    units="units" expires_after="2027-10-21">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Recorded when the per-site Device Bound Sessions signing quota (6 units per
+    9 minutes, shared by all operations on a site) is checked for an operation
+    of type {Operation}. Records how many units the site would have used in the
+    last 9 minutes after charging this operation: the units already in use plus
+    the operation's cost (3 for attested registration, 1 otherwise). 1-6 means
+    the operation fit and was charged, 7-9 means it was refused and nothing was
+    charged. Only the first refused operation on a site is recorded until one of
+    that site's earlier signings ages out of the 9-minute window, so refusals
+    count out-of-quota episodes rather than retries. Not recorded when the quota
+    is disabled by field trial, when a refresh reuses a cached signed challenge,
+    or when a session prewarm is skipped up front because the site has no quota
+    left.
+  </summary>
+  <token key="Operation" variants="DeviceBoundSessionSigningQuotaOperation"/>
 </histogram>
 
 <histogram name="Net.DeviceBoundSessions.TotalRequestDeferredDuration"

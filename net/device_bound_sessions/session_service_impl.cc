@@ -54,8 +54,9 @@ namespace net::device_bound_sessions {
 
 namespace {
 
-// Parameters for the signing quota. We currently allow 6 signings in 9
-// minutes per site. Reasoning:
+// Parameters for the signing quota. We currently allow 6 units in 9 minutes
+// per site, where a unit is one hardware operation (see
+// `GetSigningQuotaCost()`). Reasoning:
 // 1. This allows sites to refresh on average every 5 minutes, accounting for
 //    proactive refreshes 2 minutes before expiry, and with some error tolerance
 //    (e.g. a failed refresh or user cookie clearing) and tolerance for new
@@ -64,8 +65,41 @@ namespace {
 //    registrations.
 // 3. The spec notes that user agents should include quotas on registration
 //    attempts to prevent identity linking for federated sessions.
+// An attested registration takes half the quota, which leaves little room:
+// after one, refreshes every ~3 minutes leave about one unit of headroom, and
+// two failed attested registrations block refreshes for every session on the
+// site for up to 9 minutes. We accept this until
+// `Net.DeviceBoundSessions.SigningQuotaUnitsNeeded.{Operation}` shows that
+// legitimate sites hit the limit.
+// If these values or `GetSigningQuotaCost()` change, rename
+// `Net.DeviceBoundSessions.SigningQuotaUnitsNeeded.{Operation}`, since its
+// buckets change meaning.
 constexpr size_t kSigningQuota = 6;
 constexpr base::TimeDelta kSigningQuotaInterval = base::Minutes(9);
+
+constexpr size_t GetSigningQuotaCost(SigningQuotaOperation operation) {
+  switch (operation) {
+    case SigningQuotaOperation::kRegistration:
+    case SigningQuotaOperation::kRefresh:
+      return 1;
+    case SigningQuotaOperation::kAttestedRegistration:
+      // Inner JWT sign, AIK certification, and outer JWT sign.
+      return 3;
+  }
+  NOTREACHED();
+}
+
+// The highest `GetSigningQuotaCost()` of any operation, which bounds
+// `Net.DeviceBoundSessions.SigningQuotaUnitsNeeded.{Operation}`. Keep it in
+// sync when costs change.
+constexpr size_t kMaxSigningQuotaCost =
+    GetSigningQuotaCost(SigningQuotaOperation::kAttestedRegistration);
+
+// Returns whether `operation` fits in the signing quota when `units_in_use`
+// units of it are already in use.
+bool FitsInSigningQuota(size_t units_in_use, SigningQuotaOperation operation) {
+  return units_in_use + GetSigningQuotaCost(operation) <= kSigningQuota;
+}
 
 constexpr base::TimeDelta kProactiveRefreshThreshold = base::Seconds(120);
 
@@ -298,11 +332,6 @@ void SessionServiceImpl::OnGetCookiesForPrewarm(
       continue;
     }
 
-    if (SigningQuotaExceeded(session_key.site)) {
-      barrier.Run({.result = RefreshResult::kSigningQuotaExceeded});
-      continue;
-    }
-
     if (std::optional<base::Time> refresh_time = GetFutureRefreshTime(
             session->MinimumBoundCookieLifetime(cookies))) {
       barrier.Run({.result = RefreshResult::kInScopeRefreshNotYetNeeded,
@@ -311,7 +340,20 @@ void SessionServiceImpl::OnGetCookiesForPrewarm(
     }
 
     // Refresh needed (either missing cookie or expiring cookie below
-    // threshold).
+    // threshold). If no refresh is in flight to join, don't start one when the
+    // site has no quota left: `RegistrationFetcher` would refuse to sign it,
+    // and the failed proactive refresh would block later proactive refreshes.
+    // A refresh that could reuse a cached signed challenge is rare enough to
+    // be refused conservatively here. This is best effort: nothing is
+    // reserved, so the quota can still run out before the refresh signs.
+    const bool refresh_in_flight = proactive_requests_.contains(session_key) ||
+                                   deferred_requests_.contains(session_key);
+    if (!refresh_in_flight &&
+        !HasSigningQuota(session_key.site, SigningQuotaOperation::kRefresh)) {
+      barrier.Run({.result = RefreshResult::kSigningQuotaExceeded});
+      continue;
+    }
+
     auto [it, inserted] = proactive_requests_.try_emplace(session_key);
     it->second.completion_callbacks.push_back(barrier);
     if (inserted && !deferred_requests_.contains(session_key)) {
@@ -1769,40 +1811,72 @@ void SessionServiceImpl::RefreshSessionInternal(
   // `fetcher_raw` may be deleted.
 }
 
-bool SessionServiceImpl::SigningQuotaExceeded(const SchemefulSite& site) {
+bool SessionServiceImpl::TryConsumeSigningQuota(
+    const SchemefulSite& site,
+    SigningQuotaOperation operation) {
   if (ignore_signing_quota_) {
+    return true;
+  }
+
+  const size_t units_in_use = PruneAndGetSigningCount(site);
+  const bool fits = FitsInSigningQuota(units_in_use, operation);
+  SiteSigningQuota& quota = signing_quota_[site];
+  // Record every allowed operation, but only the first refusal until one of
+  // the site's signings ages out, so refusals don't scale with the site's
+  // traffic.
+  const bool first_refusal =
+      !fits && !std::exchange(quota.refusal_recorded, true);
+  if (fits || first_refusal) {
+    base::UmaHistogramExactLinear(
+        absl::StrFormat("Net.DeviceBoundSessions.SigningQuotaUnitsNeeded.%v",
+                        operation),
+        units_in_use + GetSigningQuotaCost(operation),
+        kSigningQuota + kMaxSigningQuotaCost + 1);
+  }
+  if (first_refusal) {
+    if (const SessionError* last_result =
+            base::FindOrNull(refresh_last_result_, site)) {
+      base::UmaHistogramEnumeration(
+          "Net.DeviceBoundSessions.SigningQuotaExceededLastResult2",
+          last_result->type);
+    }
+  }
+  if (!fits) {
     return false;
   }
 
-  auto it = signing_times_.find(site);
-  if (it == signing_times_.end()) {
-    return false;
+  // Add one timestamp per unit, e.g. 3 for an attested registration.
+  quota.signing_times.append_range(
+      std::vector(GetSigningQuotaCost(operation), base::Time::Now()));
+  return true;
+}
+
+bool SessionServiceImpl::HasSigningQuota(const SchemefulSite& site,
+                                         SigningQuotaOperation operation) {
+  return ignore_signing_quota_ ||
+         FitsInSigningQuota(PruneAndGetSigningCount(site), operation);
+}
+
+size_t SessionServiceImpl::PruneAndGetSigningCount(const SchemefulSite& site) {
+  auto it = signing_quota_.find(site);
+  if (it == signing_quota_.end()) {
+    return 0;
   }
+  SiteSigningQuota& quota = it->second;
 
   // This also discards "future" signings since `base::Time` can decrease.
   const base::Time now = base::Time::Now();
-  std::erase_if(it->second, [now](base::Time time) {
-    return time > now || now - time >= kSigningQuotaInterval;
-  });
+  if (std::erase_if(quota.signing_times, [now](base::Time time) {
+        return time > now || now - time >= kSigningQuotaInterval;
+      }) > 0) {
+    quota.refusal_recorded = false;
+  }
 
-  size_t sign_count = it->second.size();
+  size_t sign_count = quota.signing_times.size();
   if (sign_count == 0) {
-    signing_times_.erase(it);
+    signing_quota_.erase(it);
   }
-
-  bool is_exceeded = sign_count >= kSigningQuota;
-  if (auto result_it = refresh_last_result_.find(site);
-      is_exceeded && result_it != refresh_last_result_.end()) {
-    base::UmaHistogramEnumeration(
-        "Net.DeviceBoundSessions.SigningQuotaExceededLastResult",
-        result_it->second.type);
-  }
-
-  return is_exceeded;
-}
-
-void SessionServiceImpl::AddSigningOccurrence(const SchemefulSite& site) {
-  signing_times_[site].push_back(base::Time::Now());
+  return sign_count;
 }
 
 void SessionServiceImpl::RemoveFetcher(RegistrationFetcher* fetcher) {

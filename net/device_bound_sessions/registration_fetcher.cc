@@ -538,6 +538,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     callback_ = std::move(callback);
     CHECK(callback_);
 
+    // TODO(crbug.com/578130078): Check the signing quota before generating
+    // keys.
     const bool aik_required =
         registration_params.attestation_mode() == AttestationMode::kRequired;
     if (aik_required) {
@@ -829,17 +831,15 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       }
     }
 
-    // Now, right before signing, we check whether the signing quota is
-    // exceeded. Note this callback is intentionally different from the one
-    // defined above.
-    if (session_service_->SigningQuotaExceeded(site)) {
+    // Now, right before signing, charge the signing quota. Note this callback
+    // is intentionally different from the one defined above.
+    if (!session_service_->TryConsumeSigningQuota(site,
+                                                  GetSigningQuotaOperation())) {
       RunCallback(CreateErrorRegistrationResult(
           SessionError(SessionError::kSigningQuotaExceeded)));
       // `this` may be deleted.
       return;
     }
-    // Track a new signing attempt.
-    session_service_->AddSigningOccurrence(site);
 
     if (attestation_key_id_.has_value()) {
       // AIK attestation is strictly supported for registration requests, not
@@ -1202,6 +1202,16 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   // Returns true if we're fetching for a refresh request. False means this is
   // for a registration request.
   bool IsForRefreshRequest() const { return session_identifier_.has_value(); }
+
+  // Returns the operation to charge against the signing quota.
+  SigningQuotaOperation GetSigningQuotaOperation() const {
+    if (IsForRefreshRequest()) {
+      return SigningQuotaOperation::kRefresh;
+    }
+    return attestation_key_id_.has_value()
+               ? SigningQuotaOperation::kAttestedRegistration
+               : SigningQuotaOperation::kRegistration;
+  }
 
   // Returns true if we're fetching for a federated registration request.
   bool IsForFederatedRegistration() const { return !provider_url_.is_empty(); }

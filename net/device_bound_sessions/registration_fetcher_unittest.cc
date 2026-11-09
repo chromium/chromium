@@ -314,6 +314,47 @@ class RegistrationTest : public TestWithTaskEnvironment {
     }));
   }
 
+  void VerifyRegistrationSigningQuotaExceeded(
+      AttestationMode attestation_mode,
+      SigningQuotaOperation expected_operation) {
+    crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+    server_.RegisterRequestHandler(
+        base::BindRepeating([](const test_server::HttpRequest& request)
+                                -> std::unique_ptr<test_server::HttpResponse> {
+          ADD_FAILURE() << "Refused registration reached the server: "
+                        << request.relative_url;
+          return nullptr;
+        }));
+    ASSERT_TRUE(server_.Start());
+
+    EXPECT_CALL(
+        session_service(),
+        TryConsumeSigningQuota(SchemefulSite(GetBaseURL()), expected_operation))
+        .WillOnce(Return(false));
+
+    TestRegistrationCallback callback;
+    auto param = RegistrationRequestParam::CreateForTesting(
+        GetBaseURL(), /*session_identifier=*/std::nullopt,
+        std::string(kChallenge), /*authorization=*/std::nullopt,
+        attestation_mode);
+    std::unique_ptr<RegistrationFetcher> fetcher =
+        RegistrationFetcher::CreateFetcher(
+            param, session_service(), unexportable_key_service(),
+            context_.get(),
+            IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+            SiteForCookies(),
+            /*net_log_source=*/std::nullopt,
+            /*original_request_initiator=*/std::nullopt,
+            unexportable_keys::BackgroundTaskPriority::kBestEffort);
+    fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                      callback.callback());
+    callback.WaitForCall();
+
+    ASSERT_NE(callback.outcome().SessionErrorForTesting(), nullptr);
+    EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
+              SessionError::kSigningQuotaExceeded);
+  }
+
   test_server::EmbeddedTestServer server_;
   std::unique_ptr<URLRequestContext> context_;
   // `session_service_` and `network_delegate_` are owned by `context_` so they
@@ -867,6 +908,12 @@ TEST_F(RegistrationTest, AttestationKeyGenerationSuccess) {
         return ReturnResponse(HTTP_OK, kBasicValidJson, request);
       }));
   ASSERT_TRUE(server_.Start());
+
+  EXPECT_CALL(
+      session_service(),
+      TryConsumeSigningQuota(SchemefulSite(GetBaseURL()),
+                             SigningQuotaOperation::kAttestedRegistration))
+      .WillOnce(Return(true));
 
   RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
@@ -2922,13 +2969,13 @@ TEST_F(RegistrationTest, RefreshCachesSignedChallenge) {
   // No cached challenge initially.
   EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge(_))
       .WillOnce(Return(nullptr));
-  // Expect a signing occurrence and the new signed challenge to be cached.
-  EXPECT_CALL(session_service(), AddSigningOccurrence(_)).Times(1);
+  // Expect quota to be consumed and the new signed challenge to be cached.
+  EXPECT_CALL(session_service(),
+              TryConsumeSigningQuota(SchemefulSite(GetBaseURL()),
+                                     SigningQuotaOperation::kRefresh))
+      .WillOnce(Return(true));
   EXPECT_CALL(session_service(), SetLatestSignedRefreshChallenge(_, _))
       .Times(1);
-  // Quota check should return false to allow signing.
-  EXPECT_CALL(session_service(), SigningQuotaExceeded(_))
-      .WillOnce(Return(false));
 
   RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
@@ -2970,8 +3017,7 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeUsed) {
   EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge(_))
       .WillOnce(Return(&cached_challenge));
   // There should be no signing or quota checking since that's skipped.
-  EXPECT_CALL(session_service(), AddSigningOccurrence(_)).Times(0);
-  EXPECT_CALL(session_service(), SigningQuotaExceeded(_)).Times(0);
+  EXPECT_CALL(session_service(), TryConsumeSigningQuota).Times(0);
 
   RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
@@ -3008,11 +3054,12 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeDoesNotMatch) {
   cached_challenge.signed_challenge = "mock_signed_challenge";
   EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge(_))
       .WillOnce(Return(&cached_challenge));
-  EXPECT_CALL(session_service(), AddSigningOccurrence(_)).Times(1);
+  EXPECT_CALL(session_service(),
+              TryConsumeSigningQuota(SchemefulSite(GetBaseURL()),
+                                     SigningQuotaOperation::kRefresh))
+      .WillOnce(Return(true));
   EXPECT_CALL(session_service(), SetLatestSignedRefreshChallenge(_, _))
       .Times(1);
-  EXPECT_CALL(session_service(), SigningQuotaExceeded(_))
-      .WillOnce(Return(false));
 
   RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
@@ -3035,11 +3082,10 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeDoesNotMatch) {
   callback.outcome().SessionForTesting();
 }
 
-TEST_F(RegistrationTest, RegistrationTriggersSigningOccurrence) {
-  // Expect the signing checks are done only when the feature is enabled.
-  EXPECT_CALL(session_service(), AddSigningOccurrence(_)).Times(1);
-  EXPECT_CALL(session_service(), SigningQuotaExceeded(_))
-      .WillOnce(Return(false));
+TEST_F(RegistrationTest, RegistrationConsumesSigningQuota) {
+  EXPECT_CALL(session_service(),
+              TryConsumeSigningQuota(_, SigningQuotaOperation::kRegistration))
+      .WillOnce(Return(true));
 
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
@@ -3065,6 +3111,16 @@ TEST_F(RegistrationTest, RegistrationTriggersSigningOccurrence) {
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
   callback.WaitForCall();
+}
+
+TEST_F(RegistrationTest, RegistrationSigningQuotaExceeded) {
+  VerifyRegistrationSigningQuotaExceeded(AttestationMode::kNone,
+                                         SigningQuotaOperation::kRegistration);
+}
+
+TEST_F(RegistrationTest, AttestedRegistrationSigningQuotaExceeded) {
+  VerifyRegistrationSigningQuotaExceeded(
+      AttestationMode::kRequired, SigningQuotaOperation::kAttestedRegistration);
 }
 
 TEST_F(RegistrationTest, RefreshWithNewSessionIdFails) {
@@ -4584,10 +4640,11 @@ TEST_F(RegistrationTest, RefreshRetryTransientErrorOnSecondRoundtrip) {
 
   EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge)
       .WillRepeatedly(Return(nullptr));
-  EXPECT_CALL(session_service(), AddSigningOccurrence).Times(1);
+  EXPECT_CALL(session_service(),
+              TryConsumeSigningQuota(SchemefulSite(GetBaseURL()),
+                                     SigningQuotaOperation::kRefresh))
+      .WillOnce(Return(true));
   EXPECT_CALL(session_service(), SetLatestSignedRefreshChallenge).Times(1);
-  EXPECT_CALL(session_service(), SigningQuotaExceeded)
-      .WillRepeatedly(Return(false));
 
   TestRegistrationCallback callback;
   auto param = RegistrationRequestParam::CreateForTesting(
@@ -4664,10 +4721,11 @@ TEST_F(RegistrationTest, RefreshRetryTransientErrorOnBothRoundtrips) {
 
   EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge)
       .WillRepeatedly(Return(nullptr));
-  EXPECT_CALL(session_service(), AddSigningOccurrence).Times(1);
+  EXPECT_CALL(session_service(),
+              TryConsumeSigningQuota(SchemefulSite(GetBaseURL()),
+                                     SigningQuotaOperation::kRefresh))
+      .WillOnce(Return(true));
   EXPECT_CALL(session_service(), SetLatestSignedRefreshChallenge).Times(1);
-  EXPECT_CALL(session_service(), SigningQuotaExceeded)
-      .WillRepeatedly(Return(false));
 
   TestRegistrationCallback callback;
   auto param = RegistrationRequestParam::CreateForTesting(

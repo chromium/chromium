@@ -153,8 +153,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void SetLatestSignedRefreshChallenge(
       SessionKey session_key,
       SignedRefreshChallenge signed_refresh_challenge) override;
-  bool SigningQuotaExceeded(const SchemefulSite& site) override;
-  void AddSigningOccurrence(const SchemefulSite& site) override;
+  bool TryConsumeSigningQuota(const SchemefulSite& site,
+                              SigningQuotaOperation operation) override;
   void HandleResponseHeaders(DbscRequest& request,
                              HttpResponseHeaders* headers) override;
   void SelectClientCertificate(
@@ -207,6 +207,18 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
     // Measures end-to-end refresh latency for histograms, starting from struct
     // construction, which matches the refresh start.
     base::ElapsedTimer timer_since_start;
+  };
+
+  // Per-site signing quota usage.
+  // TODO(crbug.com/576136417): Move signing quota tracking into a helper
+  // class.
+  struct SiteSigningQuota {
+    // One timestamp per unit charged, so an attested registration adds 3.
+    std::vector<base::Time> signing_times;
+    // Whether a refusal was recorded since a signing last aged out of the
+    // quota window, so that only the first refusal of an out-of-quota episode
+    // is recorded.
+    bool refusal_recorded = false;
   };
 
   // The key is the site (eTLD+1) of the session's origin and the
@@ -498,6 +510,16 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void NotifyIfEventCallbackListeners(
       base::FunctionRef<SessionEvent()> event_creator);
 
+  // Returns whether `operation` currently fits in `site`'s signing quota,
+  // without consuming anything. Always true when the quota is disabled.
+  bool HasSigningQuota(const SchemefulSite& site,
+                       SigningQuotaOperation operation);
+
+  // Prunes expired or future signing timestamps for `site` (erasing its map
+  // entry if empty) and returns the remaining active signing count. Pruning
+  // any timestamp ends `site`'s out-of-quota episode.
+  size_t PruneAndGetSigningCount(const SchemefulSite& site);
+
   // Whether we are waiting on the initial load of saved sessions to
   // complete.
   bool pending_initialization_ = false;
@@ -515,8 +537,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   std::vector<SchemefulSite> restricted_sites_;
   const SelectClientCertificateHandler client_cert_handler_;
 
-  // When true, the signing quota is not enforced. This is only ever set to
-  // true for testing purposes.
+  // When true, the signing quota is not enforced. Set in the constructor from
+  // the `RefreshQuota` feature param (`kDeviceBoundSessionsSigningQuota`).
   bool ignore_signing_quota_ = false;
 
   // Deferred requests are stored by session key.
@@ -547,8 +569,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // `base::TimeTicks` pauses during system sleep on macOS
   // (crbug.com/489704854), which would prevent the quota from decaying
   // overnight.
-  absl::flat_hash_map<net::SchemefulSite, std::vector<base::Time>>
-      signing_times_;
+  absl::flat_hash_map<net::SchemefulSite, SiteSigningQuota> signing_quota_;
 
   // The latest signed challenges per session.
   LatestSignedRefreshChallengesMap latest_signed_refresh_challenges_;

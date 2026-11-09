@@ -6,7 +6,9 @@
 
 namespace net::device_bound_sessions {
 
-SessionServiceMock::SessionServiceMock() = default;
+SessionServiceMock::SessionServiceMock() {
+  ON_CALL(*this, TryConsumeSigningQuota).WillByDefault(testing::Return(true));
+}
 SessionServiceMock::~SessionServiceMock() = default;
 
 }  // namespace net::device_bound_sessions

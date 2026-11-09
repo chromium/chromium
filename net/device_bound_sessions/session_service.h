@@ -47,6 +47,34 @@ struct NET_EXPORT SessionPrewarmResult {
   bool operator==(const SessionPrewarmResult&) const = default;
 };
 
+// Identifies a DBSC operation that performs hardware key signing or
+// certification, for per-site signing quota accounting.
+// LINT.IfChange(SigningQuotaOperation)
+enum class SigningQuotaOperation {
+  // Standard session registration.
+  kRegistration,
+  // Attested session registration (inner sign, AIK certify, outer sign).
+  kAttestedRegistration,
+  // Session refresh.
+  kRefresh,
+};
+
+template <typename Sink>
+void AbslStringify(Sink& sink, SigningQuotaOperation operation) {
+  switch (operation) {
+    case SigningQuotaOperation::kRegistration:
+      sink.Append("Registration");
+      return;
+    case SigningQuotaOperation::kAttestedRegistration:
+      sink.Append("AttestedRegistration");
+      return;
+    case SigningQuotaOperation::kRefresh:
+      sink.Append("Refresh");
+      return;
+  }
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/histograms.xml:SigningQuotaOperation)
+
 // Callback invoked when a client certificate selection has finished.
 // `cert` and `key` are the selected certificate and its private key. Both are
 // null if no certificate was selected or the request was cancelled.
@@ -257,10 +285,14 @@ class NET_EXPORT SessionService {
       SessionKey session_key,
       SignedRefreshChallenge signed_refresh_challenge) = 0;
 
-  // Whether the `site` has exceeded its signing quota.
-  virtual bool SigningQuotaExceeded(const SchemefulSite& site) = 0;
-  // Increments signing usage for this `site`.
-  virtual void AddSigningOccurrence(const SchemefulSite& site) = 0;
+  // Charges `operation`'s signing cost against `site`'s quota if all of it
+  // fits, otherwise consumes nothing and returns false. Records
+  // `Net.DeviceBoundSessions.SigningQuotaUnitsNeeded.{Operation}` for every
+  // allowed operation, but for refusals only the first one until one of
+  // `site`'s earlier signings ages out of the quota window. When the quota is
+  // disabled, returns true without recording or consuming anything.
+  virtual bool TryConsumeSigningQuota(const SchemefulSite& site,
+                                      SigningQuotaOperation operation) = 0;
 
   // Helper function to handle the registration and challenge headers provided
   // in `headers` on the response to `request`.

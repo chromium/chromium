@@ -2030,12 +2030,20 @@ TEST_F(SessionServiceImplTest, SessionSigningQuota) {
   }
 
   // The first 6 signings don't exceed the signing quota.
+  base::HistogramTester histogram_tester;
   for (size_t i = 0; i < 6; i++) {
-    EXPECT_FALSE(service().SigningQuotaExceeded(session_key.site));
-    service().AddSigningOccurrence(session_key.site);
+    EXPECT_TRUE(service().TryConsumeSigningQuota(
+        session_key.site, SigningQuotaOperation::kRefresh));
   }
   // The next signing exceeds the signing quota.
-  EXPECT_TRUE(service().SigningQuotaExceeded(session_key.site));
+  EXPECT_FALSE(service().TryConsumeSigningQuota(
+      session_key.site, SigningQuotaOperation::kRefresh));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Net.DeviceBoundSessions.SigningQuotaUnitsNeeded.Refresh"),
+      BucketsAre(base::Bucket(1, 1), base::Bucket(2, 1), base::Bucket(3, 1),
+                 base::Bucket(4, 1), base::Bucket(5, 1), base::Bucket(6, 1),
+                 base::Bucket(7, 1)));
 
   // This affects other sessions on the same site, but not other sessions on a
   // different site.
@@ -2043,12 +2051,132 @@ TEST_F(SessionServiceImplTest, SessionSigningQuota) {
                           Session::Id(kSessionId2)};
   SessionKey session_key3{SchemefulSite(GURL(kRefreshUrlString2)),
                           Session::Id(kSessionId3)};
-  EXPECT_TRUE(service().SigningQuotaExceeded(session_key2.site));
-  EXPECT_FALSE(service().SigningQuotaExceeded(session_key3.site));
+  EXPECT_FALSE(service().TryConsumeSigningQuota(
+      session_key2.site, SigningQuotaOperation::kRefresh));
+  EXPECT_TRUE(service().TryConsumeSigningQuota(
+      session_key3.site, SigningQuotaOperation::kRefresh));
 
   // After 9 minutes, the quota is restored.
   FastForwardBy(base::Minutes(9));
-  EXPECT_FALSE(service().SigningQuotaExceeded(session_key.site));
+  EXPECT_TRUE(service().TryConsumeSigningQuota(
+      session_key.site, SigningQuotaOperation::kRefresh));
+
+  // Both refusals on `session_key.site` happened in the same out-of-quota
+  // episode, so only the first one is recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.SigningQuotaExceededLastResult2",
+      SessionError::kSuccess, 1);
+}
+
+TEST_F(SessionServiceImplTest, SessionSigningQuotaAttestedRegistration) {
+  const SchemefulSite site{GURL(kRefreshUrlString)};
+  base::HistogramTester histogram_tester;
+
+  // Each attested registration costs 3 units out of the 6-unit quota.
+  EXPECT_TRUE(service().TryConsumeSigningQuota(
+      site, SigningQuotaOperation::kAttestedRegistration));
+  EXPECT_TRUE(service().TryConsumeSigningQuota(
+      site, SigningQuotaOperation::kAttestedRegistration));
+  EXPECT_FALSE(service().TryConsumeSigningQuota(
+      site, SigningQuotaOperation::kAttestedRegistration));
+  EXPECT_FALSE(
+      service().TryConsumeSigningQuota(site, SigningQuotaOperation::kRefresh));
+
+  // The refused refresh is in the same out-of-quota episode as the refused
+  // attested registration, so it isn't recorded.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Net.DeviceBoundSessions.SigningQuotaUnitsNeeded."
+          "AttestedRegistration"),
+      BucketsAre(base::Bucket(3, 1), base::Bucket(6, 1), base::Bucket(9, 1)));
+  histogram_tester.ExpectTotalCount(
+      "Net.DeviceBoundSessions.SigningQuotaUnitsNeeded.Refresh", 0);
+
+  FastForwardBy(base::Minutes(9));
+  EXPECT_TRUE(service().TryConsumeSigningQuota(
+      site, SigningQuotaOperation::kAttestedRegistration));
+  EXPECT_TRUE(service().TryConsumeSigningQuota(
+      site, SigningQuotaOperation::kAttestedRegistration));
+  EXPECT_FALSE(service().TryConsumeSigningQuota(
+      site, SigningQuotaOperation::kAttestedRegistration));
+
+  // The earlier signings aged out, so the refusal in the new window starts a
+  // new out-of-quota episode and is recorded again.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Net.DeviceBoundSessions.SigningQuotaUnitsNeeded."
+          "AttestedRegistration"),
+      BucketsAre(base::Bucket(3, 2), base::Bucket(6, 2), base::Bucket(9, 2)));
+}
+
+TEST_F(SessionServiceImplTest,
+       SessionSigningQuotaEpisodeEndsWhenSigningsAgeOut) {
+  const SchemefulSite site{GURL(kRefreshUrlString)};
+  base::HistogramTester histogram_tester;
+
+  EXPECT_TRUE(
+      service().TryConsumeSigningQuota(site, SigningQuotaOperation::kRefresh));
+  EXPECT_TRUE(
+      service().TryConsumeSigningQuota(site, SigningQuotaOperation::kRefresh));
+  FastForwardBy(base::Minutes(5));
+  for (size_t i = 0; i < 4; ++i) {
+    EXPECT_TRUE(service().TryConsumeSigningQuota(
+        site, SigningQuotaOperation::kRefresh));
+  }
+  EXPECT_FALSE(service().TryConsumeSigningQuota(
+      site, SigningQuotaOperation::kAttestedRegistration));
+  EXPECT_FALSE(service().TryConsumeSigningQuota(
+      site, SigningQuotaOperation::kAttestedRegistration));
+
+  // The first two refreshes age out, freeing 2 units. That ends the episode
+  // even though the site is still out of quota for an attested registration.
+  FastForwardBy(base::Minutes(4));
+  EXPECT_FALSE(service().TryConsumeSigningQuota(
+      site, SigningQuotaOperation::kAttestedRegistration));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Net.DeviceBoundSessions.SigningQuotaUnitsNeeded."
+                  "AttestedRegistration"),
+              BucketsAre(base::Bucket(7, 1), base::Bucket(9, 1)));
+}
+
+TEST_F(SessionServiceImplTest, SessionSigningQuotaNoPartialConsumption) {
+  const SchemefulSite site{GURL(kRefreshUrlString)};
+  base::HistogramTester histogram_tester;
+
+  // Consume 4 units, leaving 2 units in the quota.
+  EXPECT_TRUE(service().TryConsumeSigningQuota(
+      site, SigningQuotaOperation::kAttestedRegistration));
+  EXPECT_TRUE(service().TryConsumeSigningQuota(
+      site, SigningQuotaOperation::kRegistration));
+
+  // An attested registration (cost 3) does not fit and must not consume the
+  // remaining 2 units.
+  EXPECT_FALSE(service().TryConsumeSigningQuota(
+      site, SigningQuotaOperation::kAttestedRegistration));
+
+  // Two cost-1 operations still succeed before the quota is exhausted.
+  EXPECT_TRUE(service().TryConsumeSigningQuota(
+      site, SigningQuotaOperation::kRegistration));
+  EXPECT_TRUE(
+      service().TryConsumeSigningQuota(site, SigningQuotaOperation::kRefresh));
+  EXPECT_FALSE(
+      service().TryConsumeSigningQuota(site, SigningQuotaOperation::kRefresh));
+
+  // Operations that fit don't end the out-of-quota episode that the refused
+  // attested registration started, so the final refused refresh isn't
+  // recorded.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Net.DeviceBoundSessions.SigningQuotaUnitsNeeded."
+                  "AttestedRegistration"),
+              BucketsAre(base::Bucket(3, 1), base::Bucket(7, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Net.DeviceBoundSessions.SigningQuotaUnitsNeeded.Registration"),
+      BucketsAre(base::Bucket(4, 1), base::Bucket(5, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Net.DeviceBoundSessions.SigningQuotaUnitsNeeded.Refresh"),
+              BucketsAre(base::Bucket(6, 1)));
 }
 
 class SessionServiceImplSystemTimeTest : public SessionServiceImplTest {
@@ -2068,13 +2196,15 @@ TEST_F(SessionServiceImplSystemTimeTest, PrunesFutureSignings) {
   {
     base::subtle::ScopedTimeClockOverrides time_override(
         [] { return base::Time::Max(); }, nullptr, nullptr);
-    for (size_t i = 0; i < 10; ++i) {
-      service().AddSigningOccurrence(session_key.site);
+    for (size_t i = 0; i < 6; ++i) {
+      EXPECT_TRUE(service().TryConsumeSigningQuota(
+          session_key.site, SigningQuotaOperation::kRefresh));
     }
   }
 
   // Back to present time, verify these future signings are discarded.
-  EXPECT_FALSE(service().SigningQuotaExceeded(session_key.site));
+  EXPECT_TRUE(service().TryConsumeSigningQuota(
+      session_key.site, SigningQuotaOperation::kRefresh));
 }
 
 TEST_F(SessionServiceImplTest, LatestSignedRefreshChallenges) {
@@ -2119,6 +2249,20 @@ TEST_F(SessionServiceImplNoRefreshQuotaTest, SessionRefreshQuotaDisabled) {
         future.GetCallback());
     EXPECT_EQ(future.Take(), RefreshResult::kRefreshed);
   }
+}
+
+TEST_F(SessionServiceImplNoRefreshQuotaTest, SigningQuotaDisabled) {
+  const SchemefulSite site{GURL(kRefreshUrlString)};
+  base::HistogramTester histogram_tester;
+
+  // Three attested registrations (9 units) fit because the quota is disabled.
+  for (size_t i = 0; i < 3; i++) {
+    EXPECT_TRUE(service().TryConsumeSigningQuota(
+        site, SigningQuotaOperation::kAttestedRegistration));
+  }
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Net.DeviceBoundSessions.SigningQuotaUnitsNeeded."),
+              IsEmpty());
 }
 
 TEST_F(SessionServiceImplTest, SessionBackoff) {
@@ -5191,18 +5335,163 @@ TEST_F(SessionServiceImplTest, PrewarmSessionsForUrl_NotifiesObserver) {
 
 TEST_F(SessionServiceImplTest, PrewarmSessionsForUrl_SigningQuotaExceeded) {
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  // Complete one refresh first, so that a refused prewarm would have a last
+  // result to record in `SigningQuotaExceededLastResult2`.
+  {
+    auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+        kSessionId, kRefreshUrlString, kOrigin);
+    base::test::TestFuture<SessionPrewarmResult> refresh_future;
+    service().PrewarmSessionsForUrl(kTestUrl, refresh_future.GetCallback());
+    EXPECT_THAT(refresh_future.Get().results,
+                testing::ElementsAre(RefreshResult::kRefreshed));
+  }
 
   for (size_t i = 0; i < 6; i++) {
-    service().AddSigningOccurrence(SchemefulSite(GURL(kOrigin)));
+    EXPECT_TRUE(service().TryConsumeSigningQuota(
+        SchemefulSite(GURL(kOrigin)), SigningQuotaOperation::kRefresh));
   }
-  EXPECT_TRUE(service().SigningQuotaExceeded(SchemefulSite(GURL(kOrigin))));
 
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<SessionPrewarmResult> future;
   service().PrewarmSessionsForUrl(kTestUrl, future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_THAT(future.Get().results,
               testing::ElementsAre(RefreshResult::kSigningQuotaExceeded));
   EXPECT_TRUE(future.Get().earliest_next_refresh_time.is_max());
+  // A prewarm refused up front doesn't record any signing quota histogram.
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Net.DeviceBoundSessions.SigningQuota"),
+              IsEmpty());
+}
+
+TEST_F(SessionServiceImplTest,
+       PrewarmSessionsForUrl_SigningQuotaExceededWithFreshCookies) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  CookieInclusionStatus status;
+  auto cookie = CanonicalCookie::Create(
+      kTestUrl, "test_cookie=v; Secure; Max-Age=500", base::Time::Now(),
+      std::nullopt, std::nullopt, CookieSourceType::kHTTP, &status);
+  ASSERT_TRUE(cookie);
+  base::test::TestFuture<CookieAccessResult> cookie_future;
+  context()->cookie_store()->SetCanonicalCookieAsync(
+      std::move(cookie), kTestUrl, CookieOptions::MakeAllInclusive(),
+      cookie_future.GetCallback(), std::nullopt);
+  ASSERT_TRUE(cookie_future.Get().status.IsInclude());
+  for (size_t i = 0; i < 6; i++) {
+    EXPECT_TRUE(service().TryConsumeSigningQuota(
+        SchemefulSite(GURL(kOrigin)), SigningQuotaOperation::kRefresh));
+  }
+
+  // No refresh is needed yet, so the exhausted quota doesn't matter.
+  base::test::TestFuture<SessionPrewarmResult> future;
+  service().PrewarmSessionsForUrl(kTestUrl, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_THAT(future.Get().results,
+              testing::ElementsAre(RefreshResult::kInScopeRefreshNotYetNeeded));
+  EXPECT_FALSE(future.Get().earliest_next_refresh_time.is_max());
+}
+
+TEST_F(SessionServiceImplTest,
+       PrewarmSessionsForUrl_SigningQuotaExceededJoinsRefreshInFlight) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  RefreshTracker tracker;
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher(base::BindRepeating(
+      &RefreshTracker::Refresh, base::Unretained(&tracker)));
+
+  base::test::TestFuture<SessionPrewarmResult> future1;
+  service().PrewarmSessionsForUrl(kTestUrl, future1.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return tracker.num_pending_refreshes() == 1u; }));
+
+  // Exhaust the quota while the refresh is in flight.
+  for (size_t i = 0; i < 6; i++) {
+    EXPECT_TRUE(service().TryConsumeSigningQuota(
+        SchemefulSite(GURL(kOrigin)), SigningQuotaOperation::kRefresh));
+  }
+
+  // The second prewarm joins the refresh in flight instead of being refused.
+  base::test::TestFuture<SessionPrewarmResult> future2;
+  service().PrewarmSessionsForUrl(kTestUrl, future2.GetCallback());
+  // Wait for the cookie store query for `future2` to finish processing.
+  base::test::TestFuture<const CookieList&> cookie_future;
+  context()->cookie_store()->GetAllCookiesAsync(cookie_future.GetCallback());
+  ASSERT_TRUE(cookie_future.Wait());
+  EXPECT_EQ(tracker.num_pending_refreshes(), 1u);
+  EXPECT_FALSE(future2.IsReady());
+
+  tracker.ResolvePendingRefresh(
+      RegistrationResult(RegistrationResult::NoSessionConfigChange(),
+                         CookieAndLineAccessResultList()));
+  ASSERT_TRUE(future1.Wait());
+  ASSERT_TRUE(future2.Wait());
+  EXPECT_THAT(future2.Get().results,
+              testing::ElementsAre(RefreshResult::kRefreshed));
+}
+
+TEST_F(SessionServiceImplTest,
+       PrewarmSessionsForUrl_SigningQuotaExceededJoinsDeferredRefresh) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  RefreshTracker tracker;
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher(base::BindRepeating(
+      &RefreshTracker::Refresh, base::Unretained(&tracker)));
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  DbscRequest dbsc_request(request.get());
+  base::test::TestFuture<RefreshResult> deferred_future;
+  service().DeferRequestForRefresh(
+      dbsc_request, SessionService::DeferralParams(Session::Id(kSessionId)),
+      deferred_future.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return tracker.num_pending_refreshes() == 1u; }));
+
+  // Exhaust the quota while the deferred refresh is in flight.
+  for (size_t i = 0; i < 6; ++i) {
+    EXPECT_TRUE(service().TryConsumeSigningQuota(
+        SchemefulSite(GURL(kOrigin)), SigningQuotaOperation::kRefresh));
+  }
+
+  // The prewarm joins the deferred refresh instead of being refused.
+  base::test::TestFuture<SessionPrewarmResult> future;
+  service().PrewarmSessionsForUrl(kTestUrl, future.GetCallback());
+  // Wait for the cookie store query for `future` to finish processing.
+  base::test::TestFuture<const CookieList&> cookie_future;
+  context()->cookie_store()->GetAllCookiesAsync(cookie_future.GetCallback());
+  ASSERT_TRUE(cookie_future.Wait());
+  EXPECT_EQ(tracker.num_pending_refreshes(), 1u);
+  EXPECT_FALSE(future.IsReady());
+
+  tracker.ResolvePendingRefresh(
+      RegistrationResult(RegistrationResult::NoSessionConfigChange(),
+                         CookieAndLineAccessResultList()));
+  EXPECT_EQ(deferred_future.Get(), RefreshResult::kRefreshed);
+  ASSERT_TRUE(future.Wait());
+  EXPECT_THAT(future.Get().results,
+              testing::ElementsAre(RefreshResult::kRefreshed));
+}
+
+TEST_F(SessionServiceImplTest,
+       PrewarmSessionsForUrl_SigningQuotaOneUnitLeftStartsRefresh) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kRefreshUrlString, kOrigin);
+
+  // Use 5 of the 6 units, so exactly one refresh still fits.
+  for (size_t i = 0; i < 5; ++i) {
+    EXPECT_TRUE(service().TryConsumeSigningQuota(
+        SchemefulSite(GURL(kOrigin)), SigningQuotaOperation::kRefresh));
+  }
+
+  base::test::TestFuture<SessionPrewarmResult> future;
+  service().PrewarmSessionsForUrl(kTestUrl, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_THAT(future.Get().results,
+              testing::ElementsAre(RefreshResult::kRefreshed));
 }
 
 TEST_F(SessionServiceImplTest,
