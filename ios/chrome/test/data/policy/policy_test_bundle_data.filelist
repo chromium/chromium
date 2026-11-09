@@ -100,6 +100,7 @@
 //ios/chrome/test/data/policy/pref_mapping/SafeBrowsingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/SafeBrowsingProtectionLevel.json
 //ios/chrome/test/data/policy/pref_mapping/SafeBrowsingProxiedRealTimeChecksAllowed.json
+//ios/chrome/test/data/policy/pref_mapping/SafeSitesFilterBehavior.json
 //ios/chrome/test/data/policy/pref_mapping/SavingBrowserHistoryDisabled.json
 //ios/chrome/test/data/policy/pref_mapping/SearchContentSharingSettings.json
 //ios/chrome/test/data/policy/pref_mapping/SearchSuggestEnabled.json

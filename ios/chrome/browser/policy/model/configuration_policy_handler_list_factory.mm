@@ -216,6 +216,9 @@ constexpr auto kSimplePolicyMap = std::to_array<PolicyToPreferenceMapEntry>({
   { policy::key::kEnableProxyOverrideRulesForAllUsers,
     proxy_config::prefs::kEnableProxyOverrideRulesForAllUsers,
     base::Value::Type::INTEGER },
+  { policy::key::kSafeSitesFilterBehavior,
+    policy::policy_prefs::kSafeSitesFilterBehavior,
+    base::Value::Type::INTEGER },
 });
 // clang-format on
 

@@ -24,7 +24,7 @@ items:
   name: SafeSitesFilterEnabled
   value: 1
 owners:
-- michaelpg@chromium.org
+- ydago@chromium.org
 - ftirelo@chromium.org
 schema:
   enum:
@@ -35,6 +35,7 @@ supported_on:
 - android:116-
 - chrome.*:69-
 - chrome_os:69-
+- ios:159-
 tags:
 - filtering
 - google-sharing

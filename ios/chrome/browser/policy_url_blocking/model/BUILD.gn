@@ -4,10 +4,16 @@
 
 source_set("model") {
   sources = [
+    "features.h",
+    "features.mm",
     "policy_url_blocking_service_factory.h",
     "policy_url_blocking_service_factory.mm",
     "policy_url_blocking_tab_helper.h",
     "policy_url_blocking_tab_helper.mm",
+    "safe_search_service.h",
+    "safe_search_service.mm",
+    "safe_search_service_factory.h",
+    "safe_search_service_factory.mm",
   ]
   deps = [
     ":util",
@@ -15,11 +21,18 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/policy/core/browser",
     "//components/policy/core/common",
+    "//components/prefs",
+    "//components/safe_search_api",
+    "//components/safe_search_api:safe_search_client",
+    "//components/url_matcher",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/web/public",
     "//ios/web/public/navigation",
     "//net",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//url",
   ]
 }
 
@@ -32,6 +45,33 @@ source_set("util") {
     "//components/policy/core/browser",
     "//ios/net",
     "//net",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "policy_url_blocking_tab_helper_unittest.mm" ]
+  deps = [
+    ":model",
+    ":util",
+    "//base/test:test_support",
+    "//components/policy/core/browser",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//components/safe_search_api",
+    "//components/safe_search_api:test_support",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/net",
+    "//ios/web/public/navigation",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//net",
+    "//testing/gtest",
+    "//ui/base",
+    "//url",
   ]
 }
 

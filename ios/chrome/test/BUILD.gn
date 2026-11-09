@@ -538,6 +538,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/photos/model:unit_tests",
     "//ios/chrome/browser/policy/model:unit_tests",
     "//ios/chrome/browser/policy/ui_bundled/idle:unit_tests",
+    "//ios/chrome/browser/policy_url_blocking/model:unit_tests",
     "//ios/chrome/browser/popup_menu/coordinator:unit_tests",
     "//ios/chrome/browser/popup_menu/overflow_menu/coordinator:unit_tests",
     "//ios/chrome/browser/popup_menu/overflow_menu/model:unit_tests",
