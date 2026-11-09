@@ -16,7 +16,6 @@ components/contextual_cueing_strings.grdp
 components/contextual_tasks_strings.grdp
 components/crash_strings.grdp
 components/dialog_strings.grdp
-components/dom_distiller_strings.grdp
 components/enterprise_strings.grdp
 components/error_page_strings.grdp
 components/external_intents_strings.grdp
@@ -147,5 +146,6 @@ components/user_data_importer_strings.grdp
 components/user_education_strings.grdp
 components/version_ui_strings.grdp
 components/wallet_strings.grdp
+components/web_distiller_strings.grdp
 components/webapps_strings.grdp
 components/webxr_strings.grdp

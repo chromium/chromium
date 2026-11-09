@@ -60,8 +60,6 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.prefs.PrefService;
@@ -69,6 +67,8 @@ import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtilsJni;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
@@ -98,7 +98,7 @@ public class ReaderModeManagerTest {
     @Mock private TabDistillabilityProvider mDistillabilityProvider;
     @Mock private NavigationController mNavController;
     @Mock private ReaderModeTabUtils.Natives mDistillerTabUtilsJniMock;
-    @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
+    @Mock private WebDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
     @Mock private NavigationHandle mNavigationHandle;
     @Mock private MessageDispatcher mMessageDispatcher;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
@@ -128,7 +128,7 @@ public class ReaderModeManagerTest {
     public void setUp() throws TimeoutException {
         GlicEnabling.setEnabledForTesting(false);
         ReaderModeTabUtilsJni.setInstanceForTesting(mDistillerTabUtilsJniMock);
-        DomDistillerUrlUtilsJni.setInstanceForTesting(mDistillerUrlUtilsJniMock);
+        WebDistillerUrlUtilsJni.setInstanceForTesting(mDistillerUrlUtilsJniMock);
         ReaderModeTabUtils.setDistillerHeuristicsForTesting(DistillerHeuristicsType.ADABOOST_MODEL);
         UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
 

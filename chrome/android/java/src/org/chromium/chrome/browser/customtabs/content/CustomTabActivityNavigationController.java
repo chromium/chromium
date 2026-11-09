@@ -57,7 +57,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.OnSystemNavigationObserver;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
@@ -363,8 +363,8 @@ public class CustomTabActivityNavigationController
 
         boolean openedInBrowser = true;
         GURL gurl = tab.getUrl();
-        if (DomDistillerUrlUtils.isDistilledPage(gurl)) {
-            gurl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(gurl);
+        if (WebDistillerUrlUtils.isDistilledPage(gurl)) {
+            gurl = WebDistillerUrlUtils.getOriginalUrlFromDistillerUrl(gurl);
         }
         String url = gurl.getSpec();
         if (TextUtils.isEmpty(url)) url = mIntentDataProvider.getUrlToLoad();

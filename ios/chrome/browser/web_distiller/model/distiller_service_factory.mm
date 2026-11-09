@@ -6,8 +6,8 @@
 
 #import <utility>
 
-#import "components/dom_distiller/core/distiller.h"
-#import "components/dom_distiller/core/distiller_options.h"
+#import "components/web_distiller/core/distiller.h"
+#import "components/web_distiller/core/distiller_options.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/web_distiller/model/constants.h"
 #import "ios/chrome/browser/web_distiller/model/distiller_service.h"
@@ -20,9 +20,9 @@ DistillerServiceFactory::DistillerServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService> DistillerServiceFactory::BuildServiceInstanceFor(
     ProfileIOS& profile) const {
-  dom_distiller::DistillerOptions options;
+  web_distiller::DistillerOptions options;
   options.allowed_video_regex = kAllowedVideoRegex;
   return std::make_unique<DistillerService>(
-      std::make_unique<dom_distiller::DistillerFactoryImpl>(std::move(options)),
+      std::make_unique<web_distiller::DistillerFactoryImpl>(std::move(options)),
       profile.GetPrefs());
 }

@@ -247,22 +247,22 @@ int PermissionDisclaimerMessageID(PageActionMenuFeatureType feature_type,
 
 #pragma mark - ReaderModeOptionsConsumer
 
-- (void)setSelectedFontFamily:(dom_distiller::mojom::FontFamily)fontFamily {
+- (void)setSelectedFontFamily:(web_distiller::mojom::FontFamily)fontFamily {
   std::u16string fontFamilyString;
   switch (fontFamily) {
-    case dom_distiller::mojom::FontFamily::kSansSerif:
+    case web_distiller::mojom::FontFamily::kSansSerif:
       fontFamilyString = l10n_util::GetStringUTF16(
           IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SANS_SERIF_LABEL);
       break;
-    case dom_distiller::mojom::FontFamily::kSerif:
+    case web_distiller::mojom::FontFamily::kSerif:
       fontFamilyString = l10n_util::GetStringUTF16(
           IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SERIF_LABEL);
       break;
-    case dom_distiller::mojom::FontFamily::kMonospace:
+    case web_distiller::mojom::FontFamily::kMonospace:
       fontFamilyString = l10n_util::GetStringUTF16(
           IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_MONOSPACE_LABEL);
       break;
-    case dom_distiller::mojom::FontFamily::kLexend:
+    case web_distiller::mojom::FontFamily::kLexend:
       fontFamilyString = l10n_util::GetStringUTF16(
           IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_LEXEND_LABEL);
       break;
@@ -271,8 +271,8 @@ int PermissionDisclaimerMessageID(PageActionMenuFeatureType feature_type,
       IDS_IOS_AI_HUB_READER_MODE_OPTIONS_FONT_LABEL, fontFamilyString);
 }
 
-- (void)setSelectedTheme:(dom_distiller::mojom::Theme)theme
-              fromSource:(dom_distiller::ThemeSettingsUpdateSource)source {
+- (void)setSelectedTheme:(web_distiller::mojom::Theme)theme
+              fromSource:(web_distiller::ThemeSettingsUpdateSource)source {
   // Nothing to do.
 }
 

@@ -3,7 +3,6 @@ per-file android_system_error_page_resources.grdp=file://components/android_syst
 per-file autofill*=file://components/autofill/OWNERS
 per-file commerce*=file://components/commerce/OWNERS
 per-file crash_*=file://components/crash/OWNERS
-per-file dom_distiller*=file://components/dom_distiller/OWNERS
 per-file flags_ui*=file://components/webui/flags/OWNERS
 per-file gcm_driver_resources.grdp=peter@chromium.org
 per-file neterror*=mmenke@chromium.org
@@ -21,6 +20,7 @@ per-file security_interstitials_resources.grdp=file://components/security_inters
 per-file supervised_user_resources.grdp=file://components/supervised_user/OWNERS
 per-file sync_driver_resources.grdp=file://components/sync/OWNERS
 per-file translate_resources.grdp=file://components/translate/OWNERS
+per-file web_distiller*=file://components/web_distiller/OWNERS
 
 # For refactorings or mechanical horizontal changes only.
 per-file BUILD.gn=file://ui/webui/PLATFORM_OWNERS

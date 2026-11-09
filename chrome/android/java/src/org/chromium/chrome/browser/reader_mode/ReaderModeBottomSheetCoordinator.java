@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
-import org.chromium.components.dom_distiller.core.DomDistillerService;
+import org.chromium.components.web_distiller.core.WebDistillerService;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -62,7 +62,7 @@ public class ReaderModeBottomSheetCoordinator {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mDestroyChecker = new DestroyChecker();
-        DomDistillerService service = ReaderModeServiceFactory.getForProfile(profile);
+        WebDistillerService service = ReaderModeServiceFactory.getForProfile(profile);
         mThemeColorProvider = themeColorProvider;
 
         mReaderModeBottomSheetView =

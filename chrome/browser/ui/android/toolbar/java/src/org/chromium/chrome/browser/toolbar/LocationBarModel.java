@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
@@ -61,6 +60,7 @@ import org.chromium.components.omnibox.SecurityStatusIcon;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
@@ -505,9 +505,9 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             String formattedUrl = getFormattedFullUrl();
             if (mTab.isFrozen()) return buildUrlBarData(gurl, isOfflinePage, formattedUrl);
 
-            if (DomDistillerUrlUtils.isDistilledPage(url)) {
+            if (WebDistillerUrlUtils.isDistilledPage(url)) {
                 GURL originalUrl =
-                        DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(new GURL(url));
+                        WebDistillerUrlUtils.getOriginalUrlFromDistillerUrl(new GURL(url));
                 return buildUrlBarData(originalUrl, isOfflinePage);
             }
 

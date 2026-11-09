@@ -17,8 +17,8 @@ import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -39,11 +39,11 @@ public class SiteSettingsHelper {
                 tab != null && tab.getNativePage() != null && tab.getNativePage().isPdf();
         boolean isOfflinePage = OfflinePageUtils.getOfflinePage(webContents) != null;
         // TODO(crbug.com/40663204): dedupe the
-        // DomDistillerUrlUtils#getOriginalUrlFromDistillerUrl()
+        // WebDistillerUrlUtils#getOriginalUrlFromDistillerUrl()
         // calls.
         GURL url =
                 webContents != null
-                        ? DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(
+                        ? WebDistillerUrlUtils.getOriginalUrlFromDistillerUrl(
                                 webContents.getVisibleUrl())
                         : null;
         return !isPdfPage && !isOfflinePage && url != null && UrlUtilities.isHttpOrHttps(url);

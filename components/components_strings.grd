@@ -294,7 +294,6 @@
       <part file="compose_strings.grdp" />
       <part file="crash_strings.grdp" />
       <part file="dialog_strings.grdp" />
-      <part file="dom_distiller_strings.grdp" />
       <part file="enterprise_strings.grdp" />
       <part file="error_page_strings.grdp" />
       <part file="find_in_page_strings.grdp" />
@@ -340,6 +339,7 @@
       <part file="user_data_importer_strings.grdp" />
       <part file="user_education_strings.grdp" />
       <part file="version_ui_strings.grdp" />
+      <part file="web_distiller_strings.grdp" />
       <part file="webapps_strings.grdp" />
       <part file="wallet_strings.grdp" />
       <part file="collaboration_strings.grdp" />

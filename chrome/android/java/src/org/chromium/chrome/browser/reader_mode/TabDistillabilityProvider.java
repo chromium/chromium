@@ -14,9 +14,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.components.dom_distiller.content.DistillablePageUtils;
-import org.chromium.components.dom_distiller.content.DistillablePageUtils.PageDistillableDelegate;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
+import org.chromium.components.web_distiller.content.DistillablePageUtils;
+import org.chromium.components.web_distiller.content.DistillablePageUtils.PageDistillableDelegate;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -266,9 +266,9 @@ public class TabDistillabilityProvider implements TabObserver, PageDistillableDe
         if (mDistillationResultUrl != null) {
             if (mDistillationResultUrl.equalsIgnoringRef(tab.getUrl())) {
                 return;
-            } else if (DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
+            } else if (WebDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
                 GURL originalUrl =
-                        DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(tab.getUrl());
+                        WebDistillerUrlUtils.getOriginalUrlFromDistillerUrl(tab.getUrl());
                 if (originalUrl != null && mDistillationResultUrl.equalsIgnoringRef(originalUrl)) {
                     return;
                 }

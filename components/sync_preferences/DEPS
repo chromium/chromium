@@ -25,7 +25,6 @@ specific_include_rules = {
     "+components/content_settings",
     "+components/contextual_search",
     "+components/desktop_to_mobile_promos",
-    "+components/dom_distiller",
     "+components/language",
     "+components/metrics",
     "+components/ntp_tiles",
@@ -41,6 +40,7 @@ specific_include_rules = {
     "+components/subscription_eligibility",
     "+components/translate",
     "+components/variations",
+    "+components/web_distiller",
     "+components/sync_preferences/cross_device_pref_tracker",
   ]
 }

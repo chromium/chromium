@@ -39,9 +39,9 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.Snackbar
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.share.ShareParams;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.offline_items_collection.LaunchLocation;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetworkChangeNotifier;
@@ -715,9 +715,9 @@ public class OfflinePageUtils {
         OfflinePageItem offlinePage = getOfflinePage(webContents);
         if (OfflinePageUtils.isShowingTrustedOfflinePage(webContents) || offlinePage == null) {
             // TODO(crbug.com/40663204): dedupe the
-            // DomDistillerUrlUtils#getOriginalUrlFromDistillerUrl() calls.
+            // WebDistillerUrlUtils#getOriginalUrlFromDistillerUrl() calls.
             String distilledUrl =
-                    DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(webContents.getVisibleUrl())
+                    WebDistillerUrlUtils.getOriginalUrlFromDistillerUrl(webContents.getVisibleUrl())
                             .getSpec();
             // If current page is an offline page, reload it with custom behavior defined in extra
             // header respected.

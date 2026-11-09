@@ -38,7 +38,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
+import org.chromium.components.web_distiller.core.WebDistillerFeatures;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -51,7 +51,7 @@ import org.chromium.ui.widget.ChromeImageButton;
 @Features.DisableFeatures({
     ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2,
     ContentFeatureList.SMART_ZOOM,
-    DomDistillerFeatures.READER_MODE_TOGGLE_LINKS,
+    WebDistillerFeatures.READER_MODE_TOGGLE_LINKS,
 })
 public class AccessibilitySettingsPageZoomTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

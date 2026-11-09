@@ -22,13 +22,13 @@
 #include "chrome/browser/ui/views/page_info/page_info_merchant_trust_coordinator.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
-#include "components/dom_distiller/core/url_constants.h"
-#include "components/dom_distiller/core/url_utils.h"
 #include "components/page_info/core/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
+#include "components/web_distiller/core/url_constants.h"
+#include "components/web_distiller/core/url_utils.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -79,7 +79,7 @@ bool IsExtensionPageInfoBubble(const GURL& url,
 bool ShouldRouteToInternalBubble(const GURL& url,
                                  content::WebContents* web_contents) {
   if (PageInfo::IsFileOrInternalPage(url) ||
-      url.SchemeIs(dom_distiller::kDomDistillerScheme)) {
+      url.SchemeIs(web_distiller::kWebDistillerScheme)) {
     return true;
   }
   return IsExtensionPageInfoBubble(url, web_contents);
@@ -134,8 +134,8 @@ InternalPageInfoBubbleView::InternalPageInfoBubbleView(
     text = IDS_PAGE_INFO_FILE_PAGE;
   } else if (url.SchemeIs(content::kChromeDevToolsScheme)) {
     text = IDS_PAGE_INFO_DEVTOOLS_PAGE;
-  } else if (url.SchemeIs(dom_distiller::kDomDistillerScheme)) {
-    if (dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(url).SchemeIs(
+  } else if (url.SchemeIs(web_distiller::kWebDistillerScheme)) {
+    if (web_distiller::url_utils::GetOriginalUrlFromDistillerUrl(url).SchemeIs(
             url::kHttpsScheme)) {
       text = IDS_PAGE_INFO_READER_MODE_PAGE_SECURE;
     } else {

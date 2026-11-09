@@ -30,7 +30,6 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/values.h"
-#include "components/dom_distiller/core/url_constants.h"
 #include "components/sessions/core/live_tab.h"
 #include "components/sessions/core/live_tab_context.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
@@ -45,6 +44,7 @@
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/web_distiller/core/url_constants.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 
@@ -104,7 +104,7 @@ void AddSerializedNavigationEntries(
     // using a button in the omnibox, so it does not show up in recently closed
     // tabs, session sync, or chrome://history. Remove Reader Mode pages from
     // the navigations.
-    if (entry.virtual_url().SchemeIs(dom_distiller::kDomDistillerScheme)) {
+    if (entry.virtual_url().SchemeIs(web_distiller::kWebDistillerScheme)) {
       continue;
     }
 

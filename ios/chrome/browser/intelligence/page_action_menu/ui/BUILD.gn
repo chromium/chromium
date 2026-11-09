@@ -51,7 +51,7 @@ source_set("unit_tests") {
     ":ui",
     "//base",
     "//base/test:test_support",
-    "//components/dom_distiller/core/mojom",
+    "//components/web_distiller/core/mojom",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/page_action_menu/utils",

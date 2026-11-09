@@ -94,7 +94,6 @@ import org.chromium.chrome.browser.ui.lens.LensOverlayTabHelper;
 import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuImageFormat;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
@@ -107,6 +106,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.WebContents;
@@ -621,7 +621,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                 Item.READING_MODE,
                                 /* showInProductHelp= */ false,
                                 !isChromeOrNativePage
-                                        && !DomDistillerUrlUtils.isDistilledPage(
+                                        && !WebDistillerUrlUtils.isDistilledPage(
                                                 mParams.getPageUrl())));
                 groupedItems.add(pageGroup);
 

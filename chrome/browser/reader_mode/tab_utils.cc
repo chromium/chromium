@@ -19,13 +19,13 @@
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
-#include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
-#include "components/dom_distiller/core/distiller_page.h"
-#include "components/dom_distiller/core/dom_distiller_service.h"
-#include "components/dom_distiller/core/extraction_utils.h"
-#include "components/dom_distiller/core/task_tracker.h"
-#include "components/dom_distiller/core/url_constants.h"
-#include "components/dom_distiller/core/url_utils.h"
+#include "components/web_distiller/content/browser/distiller_page_web_contents.h"
+#include "components/web_distiller/core/distiller_page.h"
+#include "components/web_distiller/core/extraction_utils.h"
+#include "components/web_distiller/core/task_tracker.h"
+#include "components/web_distiller/core/url_constants.h"
+#include "components/web_distiller/core/url_utils.h"
+#include "components/web_distiller/core/web_distiller_service.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -41,14 +41,14 @@
 
 namespace {
 
-using dom_distiller::DistilledArticleProto;
-using dom_distiller::DistillerPage;
-using dom_distiller::DomDistillerService;
-using dom_distiller::SourcePageHandle;
-using dom_distiller::SourcePageHandleWebContents;
-using dom_distiller::ViewerHandle;
-using dom_distiller::ViewRequestDelegate;
 using reader_mode::ReaderModeServiceFactory;
+using web_distiller::DistilledArticleProto;
+using web_distiller::DistillerPage;
+using web_distiller::SourcePageHandle;
+using web_distiller::SourcePageHandleWebContents;
+using web_distiller::ViewerHandle;
+using web_distiller::ViewRequestDelegate;
+using web_distiller::WebDistillerService;
 
 // An no-op ViewRequestDelegate which holds a ViewerHandle and deletes itself
 // if the WebContents navigates or goes away as well as if the distillation
@@ -156,8 +156,8 @@ void SelfDeletingRequestDelegate::SetCallback(
 // Start loading the viewer URL of the current page in |web_contents|.
 void StartNavigationToDistillerViewer(content::WebContents* web_contents,
                                       const GURL& url) {
-  GURL viewer_url = dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
-      dom_distiller::kDomDistillerScheme, url,
+  GURL viewer_url = web_distiller::url_utils::GetDistillerViewUrlFromUrl(
+      web_distiller::kWebDistillerScheme, url,
       base::UTF16ToUTF8(web_contents->GetTitle()),
       (base::TimeTicks::Now() - base::TimeTicks()).InMilliseconds());
   content::NavigationController::LoadURLParams params(viewer_url);
@@ -172,7 +172,7 @@ void MaybeStartDistillation(
       source_page_handle->web_contents()->GetLastCommittedURL();
   // For non-distillable URLs, return an empty article so the request is
   // fulfilled and the delegate is deleted.
-  if (!dom_distiller::url_utils::IsUrlDistillable(last_committed_url)) {
+  if (!web_distiller::url_utils::IsUrlDistillable(last_committed_url)) {
     view_request_delegate->OnArticleReady(nullptr);
     return;
   }
@@ -188,7 +188,7 @@ void MaybeStartDistillation(
 
   // Start distillation using |source_page_handle|, and ensure ViewerHandle
   // stays around until the viewer requests distillation.
-  DomDistillerService* service = ReaderModeServiceFactory::GetForBrowserContext(
+  WebDistillerService* service = ReaderModeServiceFactory::GetForBrowserContext(
       source_page_handle->web_contents()->GetBrowserContext());
   std::unique_ptr<DistillerPage> distiller_page =
       service->CreateDefaultDistillerPageWithHandle(
@@ -256,7 +256,7 @@ void DistillAndView(content::WebContents* source_web_contents,
 
 void RunHeuristicsOnWebContents(content::WebContents* web_contents,
                                 base::OnceCallback<void(bool)> callback) {
-  std::string script = dom_distiller::GetDistillerTriggeringScript();
+  std::string script = web_distiller::GetDistillerTriggeringScript();
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptInIsolatedWorld(
       base::UTF8ToUTF16(script),
       base::BindOnce(OnHeuristicResult,

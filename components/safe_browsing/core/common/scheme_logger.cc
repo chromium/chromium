@@ -50,7 +50,7 @@ void LogScheme(const GURL& url, const std::string& enum_histogram_name) {
           // From android_webview/common/url_constants.cc
           {"android-webview-video-poster",
            UrlScheme::kAndroidWebviewVideoPoster},
-          // From components/dom_distiller/core/url_constants.cc
+          // From components/web_distiller/core/url_constants.cc
           {"chrome-distiller", UrlScheme::kChromeDistiller},
           // From extensions/common/constants.cc
           {"chrome-extension", UrlScheme::kChromeExtension},

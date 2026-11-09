@@ -90,11 +90,11 @@ grit("components_resources") {
 
   deps = [
     ":about_credits",
-    "//components/dom_distiller/core:dom_distiller_viewer_js",
     "//components/neterror/resources:bundle_js",
     "//components/private_insights/endorsement_options:contextual_cues_endorsement_options_binpb",
     "//components/security_interstitials/content/resources:build_ts",
     "//components/security_interstitials/core/browser/resources:bundle_js",
+    "//components/web_distiller/core:web_distiller_viewer_js",
   ]
 
   if (enable_supervised_users) {

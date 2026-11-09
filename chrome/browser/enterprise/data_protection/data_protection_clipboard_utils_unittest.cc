@@ -16,14 +16,14 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/dom_distiller/core/url_constants.h"
-#include "components/dom_distiller/core/url_utils.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/data_controls/content/browser/last_replaced_clipboard_data.h"
 #include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/web_distiller/core/url_constants.h"
+#include "components/web_distiller/core/url_utils.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -208,8 +208,8 @@ class DataProtectionClipboardDistilledURLTest
 
     const GURL article_url("https://source.com/article.html");
     const GURL distiller_url =
-        dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
-            dom_distiller::kDomDistillerScheme, article_url, "title");
+        web_distiller::url_utils::GetDistillerViewUrlFromUrl(
+            web_distiller::kWebDistillerScheme, article_url, "title");
 
     content::WebContentsTester::For(test_web_contents_.get())
         ->NavigateAndCommit(distiller_url);

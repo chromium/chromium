@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_mediator.h"
 
-#import "components/dom_distiller/core/distilled_page_prefs.h"
+#import "components/web_distiller/core/distilled_page_prefs.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
@@ -21,7 +21,7 @@
 @implementation ReaderModeMediator {
   raw_ptr<WebStateList> _webStateList;
   raw_ptr<GeminiService> _geminiService;
-  raw_ptr<dom_distiller::DistilledPagePrefs> _distilledPagePrefs;
+  raw_ptr<web_distiller::DistilledPagePrefs> _distilledPagePrefs;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
   // WebState whose view is currently being shown in the consumer. It is
   // necessary to keep track of it so `WasHidden()` can be called when another
@@ -35,7 +35,7 @@
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                        geminiService:(GeminiService*)geminiService
                   distilledPagePrefs:
-                      (dom_distiller::DistilledPagePrefs*)distilledPagePrefs {
+                      (web_distiller::DistilledPagePrefs*)distilledPagePrefs {
   self = [super init];
   if (self) {
     CHECK(webStateList);
@@ -51,13 +51,13 @@
 
 #pragma mark - Properties
 
-- (dom_distiller::DistilledPagePrefs*)distilledPagePrefs {
+- (web_distiller::DistilledPagePrefs*)distilledPagePrefs {
   return _distilledPagePrefs;
 }
 
 #pragma mark - ReaderModeMutator
 
-- (void)setDefaultTheme:(dom_distiller::mojom::Theme)theme {
+- (void)setDefaultTheme:(web_distiller::mojom::Theme)theme {
   if (_distilledPagePrefs) {
     _distilledPagePrefs->SetDefaultTheme(theme);
   }

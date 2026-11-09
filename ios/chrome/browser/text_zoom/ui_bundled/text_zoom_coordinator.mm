@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_coordinator.h"
 
-#import "components/dom_distiller/core/distilled_page_prefs.h"
+#import "components/web_distiller/core/distilled_page_prefs.h"
 #import "ios/chrome/browser/presenters/ui_bundled/contained_presenter_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

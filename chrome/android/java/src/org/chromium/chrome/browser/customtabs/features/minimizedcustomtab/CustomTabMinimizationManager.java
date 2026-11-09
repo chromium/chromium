@@ -43,8 +43,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.Toast;
@@ -310,7 +310,7 @@ public class CustomTabMinimizationManager
             Tab tab = mTabProvider.get();
             if (tab == null) return;
             GURL url =
-                    DomDistillerUrlUtils.isDistilledPage(tab.getUrl())
+                    WebDistillerUrlUtils.isDistilledPage(tab.getUrl())
                             ? tab.getOriginalUrl()
                             : tab.getUrl();
             String host = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(url);

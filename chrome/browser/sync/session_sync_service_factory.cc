@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/sync/browser_synced_window_delegates_getter.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
-#include "components/dom_distiller/core/url_constants.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/sync/model/data_type_store_service.h"
 #include "components/sync_device_info/device_info.h"
@@ -29,6 +28,7 @@
 #include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/session_sync_service_impl.h"
 #include "components/sync_sessions/sync_sessions_client.h"
+#include "components/web_distiller/core/url_constants.h"
 #include "content/public/common/url_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -40,7 +40,7 @@ namespace {
 bool ShouldSyncURLImpl(const GURL& url) {
   return url.is_valid() && !content::HasWebUIScheme(url) &&
          !url.SchemeIs(chrome::kChromeNativeScheme) && !url.SchemeIsFile() &&
-         !url.SchemeIs(dom_distiller::kDomDistillerScheme);
+         !url.SchemeIs(web_distiller::kWebDistillerScheme);
 }
 
 // Chrome implementation of SyncSessionsClient.

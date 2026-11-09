@@ -38,8 +38,8 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
-import org.chromium.components.dom_distiller.core.DomDistillerService;
+import org.chromium.components.web_distiller.core.DistilledPagePrefs;
+import org.chromium.components.web_distiller.core.WebDistillerService;
 
 /** Unit tests for {@link ReaderModeBottomSheetCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -48,7 +48,7 @@ public class ReaderModeBottomSheetCoordinatorTest {
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ReaderModeServiceFactoryJni mReaderModeServiceFactoryJni;
-    @Mock private DomDistillerService mDomDistillerService;
+    @Mock private WebDistillerService mWebDistillerService;
     @Mock private DistilledPagePrefs mDistilledPagePrefs;
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
@@ -66,8 +66,8 @@ public class ReaderModeBottomSheetCoordinatorTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        when(mDomDistillerService.getDistilledPagePrefs()).thenReturn(mDistilledPagePrefs);
-        when(mReaderModeServiceFactoryJni.getForProfile(any())).thenReturn(mDomDistillerService);
+        when(mWebDistillerService.getDistilledPagePrefs()).thenReturn(mDistilledPagePrefs);
+        when(mReaderModeServiceFactoryJni.getForProfile(any())).thenReturn(mWebDistillerService);
         ReaderModeServiceFactoryJni.setInstanceForTesting(mReaderModeServiceFactoryJni);
         mCoordinator =
                 new ReaderModeBottomSheetCoordinator(

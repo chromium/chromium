@@ -859,7 +859,7 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   auto* db_provider = GetDefaultStoragePartition()->GetProtoDatabaseProvider();
   key_->SetProtoDatabaseProvider(db_provider);
 
-  // The DomDistillerViewerSource is not a normal WebUI so it must be registered
+  // The WebDistillerViewerSource is not a normal WebUI so it must be registered
   // as a URLDataSource early.
   reader_mode::RegisterViewerSource(this);
 

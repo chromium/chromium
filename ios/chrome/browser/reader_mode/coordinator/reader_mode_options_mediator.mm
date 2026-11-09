@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_options_mediator.h"
 
-#import "components/dom_distiller/core/distilled_page_prefs.h"
-#import "components/dom_distiller/ios/distilled_page_prefs_observer_bridge.h"
+#import "components/web_distiller/core/distilled_page_prefs.h"
+#import "components/web_distiller/ios/distilled_page_prefs_observer_bridge.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_font_size_utils.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_consumer.h"
@@ -15,11 +15,11 @@
 
 @implementation ReaderModeOptionsMediator {
   std::unique_ptr<DistilledPagePrefsObserverBridge> _prefsObserverBridge;
-  raw_ptr<dom_distiller::DistilledPagePrefs> _distilledPagePrefs;
+  raw_ptr<web_distiller::DistilledPagePrefs> _distilledPagePrefs;
 }
 
 - (instancetype)initWithDistilledPagePrefs:
-    (dom_distiller::DistilledPagePrefs*)distilledPagePrefs {
+    (web_distiller::DistilledPagePrefs*)distilledPagePrefs {
   self = [super init];
   if (self) {
     _distilledPagePrefs = distilledPagePrefs;
@@ -48,7 +48,7 @@
 
 #pragma mark - ReaderModeOptionsMutator
 
-- (void)setFontFamily:(dom_distiller::mojom::FontFamily)fontFamily {
+- (void)setFontFamily:(web_distiller::mojom::FontFamily)fontFamily {
   _distilledPagePrefs->SetFontFamily(fontFamily);
 }
 
@@ -60,16 +60,16 @@
   DecreaseReaderModeFontSize(_distilledPagePrefs);
 }
 
-- (void)setTheme:(dom_distiller::mojom::Theme)theme {
-  dom_distiller::ThemeSettingsUpdateSource currentSource =
+- (void)setTheme:(web_distiller::mojom::Theme)theme {
+  web_distiller::ThemeSettingsUpdateSource currentSource =
       _distilledPagePrefs->GetThemeSettingsUpdateSource();
 
   switch (currentSource) {
-    case dom_distiller::ThemeSettingsUpdateSource::kSystem: {
+    case web_distiller::ThemeSettingsUpdateSource::kSystem: {
       _distilledPagePrefs->SetUserPrefTheme(theme);
       break;
     }
-    case dom_distiller::ThemeSettingsUpdateSource::kUserPreference: {
+    case web_distiller::ThemeSettingsUpdateSource::kUserPreference: {
       if (_distilledPagePrefs->GetTheme() == theme) {
         _distilledPagePrefs->ClearUserPrefTheme();
       } else {
@@ -93,12 +93,12 @@
 
 #pragma mark - DistilledPagePrefsObserving
 
-- (void)onChangeFontFamily:(dom_distiller::mojom::FontFamily)font {
+- (void)onChangeFontFamily:(web_distiller::mojom::FontFamily)font {
   [self.consumer setSelectedFontFamily:font];
 }
 
-- (void)onChangeTheme:(dom_distiller::mojom::Theme)theme
-           withSource:(dom_distiller::ThemeSettingsUpdateSource)source {
+- (void)onChangeTheme:(web_distiller::mojom::Theme)theme
+           withSource:(web_distiller::ThemeSettingsUpdateSource)source {
   [self.consumer setSelectedTheme:theme fromSource:source];
 }
 

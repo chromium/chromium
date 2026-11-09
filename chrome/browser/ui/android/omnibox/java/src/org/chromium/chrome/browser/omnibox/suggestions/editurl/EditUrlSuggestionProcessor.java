@@ -24,13 +24,13 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -196,7 +196,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Copy");
         Tab tab = assumeNonNull(mTabSupplier.get());
         HistoryClustersTabHelper.onCurrentTabUrlCopied(tab.getWebContents());
-        GURL cleanUrl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(suggestion.getUrl());
+        GURL cleanUrl = WebDistillerUrlUtils.getOriginalUrlFromDistillerUrl(suggestion.getUrl());
         Clipboard.getInstance().copyUrlToClipboard(cleanUrl);
     }
 

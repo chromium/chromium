@@ -14,9 +14,9 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
-#include "components/dom_distiller/core/dom_distiller_features.h"
-#include "components/dom_distiller/core/url_constants.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/web_distiller/core/url_constants.h"
+#include "components/web_distiller/core/web_distiller_features.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -42,8 +42,8 @@ bool IsSrpNavigation(TemplateURLService* template_url_service,
 }
 
 bool IsReaderModeNavigation(const GURL& url, const GURL& last_committed_url) {
-  return url.SchemeIs(dom_distiller::kDomDistillerScheme) ||
-         last_committed_url.SchemeIs(dom_distiller::kDomDistillerScheme);
+  return url.SchemeIs(web_distiller::kWebDistillerScheme) ||
+         last_committed_url.SchemeIs(web_distiller::kWebDistillerScheme);
 }
 
 }  // namespace
@@ -93,14 +93,14 @@ bool ChromeWebContentsViewDelegateAndroid::ShouldShowBlurTransitionAnimation(
     // show Reading Mode navigation.
     if (IsReaderModeNavigation(url, last_committed_url) &&
         base::FeatureList::IsEnabled(
-            dom_distiller::kReaderModeBlurTransitionAnimation)) {
+            web_distiller::kReaderModeBlurTransitionAnimation)) {
       return true;
     }
     return false;
   }
 
   if (base::FeatureList::IsEnabled(
-          dom_distiller::kReaderModeBlurTransitionAnimation)) {
+          web_distiller::kReaderModeBlurTransitionAnimation)) {
     return IsReaderModeNavigation(url, last_committed_url);
   }
 

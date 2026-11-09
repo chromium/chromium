@@ -56,13 +56,13 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
-import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.web_distiller.core.DistilledPagePrefs;
+import org.chromium.components.web_distiller.core.WebDistillerFeatures;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -319,7 +319,7 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @EnableFeatures(DomDistillerFeatures.READER_MODE_TOGGLE_LINKS)
+    @EnableFeatures(WebDistillerFeatures.READER_MODE_TOGGLE_LINKS)
     public void testReaderEnableLinksPreferenceChange() {
         when(mDistilledPagePrefsMock.getLinksEnabled()).thenReturn(true);
         launchPreferenceUI();
@@ -344,7 +344,7 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @EnableFeatures(DomDistillerFeatures.READER_MODE_TOGGLE_LINKS)
+    @EnableFeatures(WebDistillerFeatures.READER_MODE_TOGGLE_LINKS)
     public void testReaderEnableLinksObserver() {
         when(mDistilledPagePrefsMock.getLinksEnabled()).thenReturn(true);
         launchPreferenceUI();
@@ -370,7 +370,7 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @EnableFeatures(DomDistillerFeatures.READER_MODE_TOGGLE_LINKS)
+    @EnableFeatures(WebDistillerFeatures.READER_MODE_TOGGLE_LINKS)
     public void testReaderEnableLinksObserver_unregisterObserverOnDestroy() {
         when(mDistilledPagePrefsMock.getLinksEnabled()).thenReturn(true);
         launchPreferenceUI();
@@ -383,7 +383,7 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @EnableFeatures(DomDistillerFeatures.READER_MODE_TOGGLE_LINKS)
+    @EnableFeatures(WebDistillerFeatures.READER_MODE_TOGGLE_LINKS)
     public void testReaderEnableLinksInitialState_Disabled() {
         when(mDistilledPagePrefsMock.getLinksEnabled()).thenReturn(false);
         launchPreferenceUI();

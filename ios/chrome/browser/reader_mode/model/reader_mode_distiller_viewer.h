@@ -9,8 +9,8 @@
 #include <string>
 
 #import "base/scoped_observation.h"
-#import "components/dom_distiller/core/distilled_page_prefs.h"
-#import "components/dom_distiller/core/dom_distiller_request_view_base.h"
+#import "components/web_distiller/core/distilled_page_prefs.h"
+#import "components/web_distiller/core/web_distiller_request_view_base.h"
 #import "ios/chrome/browser/web_distiller/model/distiller_service.h"
 #import "ios/web/public/web_state.h"
 
@@ -19,7 +19,7 @@ class GURL;
 // An implementation of the DistillerViewer for pages that will update the
 // Reader Mode UI surface (e.g. fonts, themes) dynamically.
 class ReaderModeDistillerViewer
-    : public dom_distiller::DomDistillerRequestViewBase {
+    : public web_distiller::WebDistillerRequestViewBase {
  public:
   using DistillationFinishedCallback =
       base::OnceCallback<void(const GURL& url,
@@ -33,7 +33,7 @@ class ReaderModeDistillerViewer
   // containing the distilled page.
   ReaderModeDistillerViewer(web::WebState* web_state,
                             DistillerService* distiller_service,
-                            std::unique_ptr<dom_distiller::DistillerPage> page,
+                            std::unique_ptr<web_distiller::DistillerPage> page,
                             const GURL& url,
                             DistillationFinishedCallback callback);
 
@@ -43,10 +43,10 @@ class ReaderModeDistillerViewer
 
   ~ReaderModeDistillerViewer() override;
 
-  // dom_distiller::DomDistillerRequestViewBase implementation:
+  // web_distiller::WebDistillerRequestViewBase implementation:
   // Called by the distiller service when article is ready.
   void OnArticleReady(
-      const dom_distiller::DistilledArticleProto* article_proto) override;
+      const web_distiller::DistilledArticleProto* article_proto) override;
   void SendJavaScript(const std::string& buffer) override;
 
  private:
@@ -55,8 +55,8 @@ class ReaderModeDistillerViewer
 
   // Called by the distiller when article is ready.
   void OnDistillerFinished(
-      std::unique_ptr<dom_distiller::DistilledArticleProto> distilled_article,
-      dom_distiller::DistillationParseResult result);
+      std::unique_ptr<web_distiller::DistilledArticleProto> distilled_article,
+      web_distiller::DistillationParseResult result);
 
   // The url of the distilled page.
   const GURL url_;
@@ -75,8 +75,8 @@ class ReaderModeDistillerViewer
   std::string buffer_;
 
   raw_ptr<web::WebState> web_state_;
-  base::ScopedObservation<dom_distiller::DistilledPagePrefs,
-                          dom_distiller::DistilledPagePrefs::Observer>
+  base::ScopedObservation<web_distiller::DistilledPagePrefs,
+                          web_distiller::DistilledPagePrefs::Observer>
       observation_{this};
   base::WeakPtrFactory<ReaderModeDistillerViewer> weak_ptr_factory_{this};
 };

@@ -9,7 +9,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
-#import "components/dom_distiller/core/distilled_page_prefs.h"
+#import "components/web_distiller/core/distilled_page_prefs.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 
 namespace base {
@@ -21,10 +21,10 @@ class WebState;
 }
 
 class ReaderModeMetricsHelper
-    : public dom_distiller::DistilledPagePrefs::Observer {
+    : public web_distiller::DistilledPagePrefs::Observer {
  public:
   ReaderModeMetricsHelper(web::WebState* web_state,
-                          dom_distiller::DistilledPagePrefs* prefs);
+                          web_distiller::DistilledPagePrefs* prefs);
   ~ReaderModeMetricsHelper() override;
 
   // Records histograms for the Reading Mode heuristic event.
@@ -64,11 +64,10 @@ class ReaderModeMetricsHelper
   // Records the last state of Reading Mode events.
   void Flush(ReaderModeDeactivationReason reason);
 
-  // dom_distiller::DistilledPagePrefs::Observer implementation.
-  void OnChangeFontFamily(dom_distiller::mojom::FontFamily font) override;
-  void OnChangeTheme(
-      dom_distiller::mojom::Theme theme,
-      dom_distiller::ThemeSettingsUpdateSource source) override;
+  // web_distiller::DistilledPagePrefs::Observer implementation.
+  void OnChangeFontFamily(web_distiller::mojom::FontFamily font) override;
+  void OnChangeTheme(web_distiller::mojom::Theme theme,
+                     web_distiller::ThemeSettingsUpdateSource source) override;
   void OnChangeFontScaling(float scaling) override;
   void OnChangeLinksEnabled(bool enabled) override;
 
@@ -87,9 +86,9 @@ class ReaderModeMetricsHelper
   // Access point used to trigger Reading Mode distillation.
   std::optional<ReaderModeAccessPoint> reader_mode_distilled_access_point_;
   raw_ptr<web::WebState> web_state_;
-  raw_ptr<dom_distiller::DistilledPagePrefs> distilled_page_prefs_;
-  base::ScopedObservation<dom_distiller::DistilledPagePrefs,
-                          dom_distiller::DistilledPagePrefs::Observer>
+  raw_ptr<web_distiller::DistilledPagePrefs> distilled_page_prefs_;
+  base::ScopedObservation<web_distiller::DistilledPagePrefs,
+                          web_distiller::DistilledPagePrefs::Observer>
       scoped_observation_{this};
 };
 

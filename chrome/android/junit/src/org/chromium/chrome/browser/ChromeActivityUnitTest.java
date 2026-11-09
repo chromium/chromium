@@ -84,11 +84,11 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.policy.EnterpriseInfo;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtilsJni;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -115,7 +115,7 @@ public class ChromeActivityUnitTest {
     @Mock PictureInPictureUiState mPictureInPictureUiState;
     @Mock EnterpriseInfo mEnterpriseInfo;
     @Mock UkmRecorder.Natives mUkmRecorderJniMock;
-    @Mock DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
+    @Mock WebDistillerUrlUtilsJni mWebDistillerUrlUtilsJni;
     @Mock private TabStateThemeResourceProvider mThemeResourceProvider;
     @Mock LayoutManagerImpl mLayoutManagerMock;
     @Captor ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
@@ -246,7 +246,7 @@ public class ChromeActivityUnitTest {
     @Before
     public void setup() {
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
-        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
+        WebDistillerUrlUtilsJni.setInstanceForTesting(mWebDistillerUrlUtilsJni);
     }
 
     @Test
@@ -362,7 +362,7 @@ public class ChromeActivityUnitTest {
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mActivityTab.getUserDataHost()).thenReturn(userDataHost);
         when(mActivityTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(false);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(false);
 
         assertTrue(
                 chromeActivity.onMenuOrKeyboardAction(
@@ -382,7 +382,7 @@ public class ChromeActivityUnitTest {
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mActivityTab.getUserDataHost()).thenReturn(userDataHost);
         when(mActivityTab.getUrl()).thenReturn(JUnitTestGURLs.CHROME_DISTILLER_EXAMPLE_URL);
-        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
 
         assertTrue(
                 chromeActivity.onMenuOrKeyboardAction(

@@ -4139,7 +4139,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerAutomationTest,
   ui_test_utils::NavigateToURLWithDisposition(
       browser(),
       GURL(
-          embedded_test_server()->GetURL("/dom_distiller/simple_article.html")),
+          embedded_test_server()->GetURL("/web_distiller/simple_article.html")),
       ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
@@ -4171,7 +4171,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
   ui_test_utils::NavigateToURLWithDisposition(
       browser(),
       GURL(
-          embedded_test_server()->GetURL("/dom_distiller/simple_article.html")),
+          embedded_test_server()->GetURL("/web_distiller/simple_article.html")),
       ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 

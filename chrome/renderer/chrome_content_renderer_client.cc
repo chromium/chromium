@@ -85,11 +85,6 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/continuous_search/renderer/search_result_extractor_impl.h"
 #include "components/country_codes/country_codes.h"
-#include "components/dom_distiller/content/renderer/distillability_agent.h"
-#include "components/dom_distiller/content/renderer/distiller_js_render_frame_observer.h"
-#include "components/dom_distiller/core/dom_distiller_features.h"
-#include "components/dom_distiller/core/dom_distiller_switches.h"
-#include "components/dom_distiller/core/url_constants.h"
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/localized_error.h"
 #include "components/facilitated_payments/content/renderer/facilitated_payments_agent.h"
@@ -132,6 +127,11 @@
 #include "components/wallet/content/renderer/image_extractor.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "components/web_cache/renderer/web_cache_impl.h"
+#include "components/web_distiller/content/renderer/distillability_agent.h"
+#include "components/web_distiller/content/renderer/distiller_js_render_frame_observer.h"
+#include "components/web_distiller/core/url_constants.h"
+#include "components/web_distiller/core/web_distiller_features.h"
+#include "components/web_distiller/core/web_distiller_switches.h"
 #include "components/webapps/renderer/web_page_metadata_agent.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
@@ -584,10 +584,10 @@ void ChromeContentRendererClient::RenderThreadStarted() {
     WebSecurityPolicy::RegisterURLSchemeAsDisplayIsolated(chrome_search_scheme);
   }
 
-  WebString dom_distiller_scheme(
-      WebString::FromAscii(dom_distiller::kDomDistillerScheme));
+  WebString web_distiller_scheme(
+      WebString::FromAscii(web_distiller::kWebDistillerScheme));
   // TODO(nyquist): Add test to ensure this happens when the flag is set.
-  WebSecurityPolicy::RegisterURLSchemeAsDisplayIsolated(dom_distiller_scheme);
+  WebSecurityPolicy::RegisterURLSchemeAsDisplayIsolated(web_distiller_scheme);
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
@@ -739,13 +739,13 @@ void ChromeContentRendererClient::RenderFrameCreated(
   }
 
   // Set up a render frame observer to test if this page is a distiller page.
-  new dom_distiller::DistillerJsRenderFrameObserver(
+  new web_distiller::DistillerJsRenderFrameObserver(
       render_frame, ISOLATED_WORLD_ID_CHROME_INTERNAL);
 
-  if (dom_distiller::ShouldStartDistillabilityService()) {
+  if (web_distiller::ShouldStartDistillabilityService()) {
     // Create DistillabilityAgent to send distillability updates to
     // DistillabilityDriver in the browser process.
-    new dom_distiller::DistillabilityAgent(render_frame, DCHECK_IS_ON());
+    new web_distiller::DistillabilityAgent(render_frame, DCHECK_IS_ON());
   }
 
   blink::AssociatedInterfaceRegistry* associated_interfaces =

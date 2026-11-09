@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reader_mode/reader_mode_service_factory.h"
-#include "components/dom_distiller/core/dom_distiller_service_android.h"
+#include "components/web_distiller/core/web_distiller_service_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ReaderModeServiceFactory_jni.h"
@@ -20,10 +20,10 @@ namespace reader_mode::android {
 ScopedJavaLocalRef<jobject> ReaderModeServiceFactoryAndroid::GetForProfile(
     JNIEnv* env,
     Profile* profile) {
-  dom_distiller::DomDistillerService* service =
+  web_distiller::WebDistillerService* service =
       reader_mode::ReaderModeServiceFactory::GetForBrowserContext(profile);
-  dom_distiller::android::DomDistillerServiceAndroid* service_android =
-      new dom_distiller::android::DomDistillerServiceAndroid(service);
+  web_distiller::android::WebDistillerServiceAndroid* service_android =
+      new web_distiller::android::WebDistillerServiceAndroid(service);
   return ScopedJavaLocalRef<jobject>(service_android->java_ref_);
 }
 

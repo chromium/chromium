@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 
 #import "base/values.h"
-#import "components/dom_distiller/core/distillable_page_detector.h"
-#import "components/dom_distiller/core/page_features.h"
+#import "components/web_distiller/core/distillable_page_detector.h"
+#import "components/web_distiller/core/page_features.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
@@ -79,12 +79,12 @@ void ReaderModeJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const dom_distiller::DistillablePageDetector* detector =
-      dom_distiller::DistillablePageDetector::GetNewModel();
+  const web_distiller::DistillablePageDetector* detector =
+      web_distiller::DistillablePageDetector::GetNewModel();
   double page_score =
       detector->Score(result.value()) - detector->GetThreshold();
-  const dom_distiller::DistillablePageDetector* long_page_detector =
-      dom_distiller::DistillablePageDetector::GetLongPageModel();
+  const web_distiller::DistillablePageDetector* long_page_detector =
+      web_distiller::DistillablePageDetector::GetLongPageModel();
   double long_page_score = long_page_detector->Score(result.value()) -
                            long_page_detector->GetThreshold();
 
@@ -143,7 +143,7 @@ ReaderModeJavaScriptFeature::TransformToDerivedFeatures(
     return std::nullopt;
   }
 
-  return dom_distiller::CalculateDerivedFeatures(
+  return web_distiller::CalculateDerivedFeatures(
       true, request_url, opt_num_elements.value(), opt_num_elements.value(),
       opt_num_forms.value(), opt_moz_score.value(), opt_moz_sqrt.value(),
       opt_moz_linear.value());

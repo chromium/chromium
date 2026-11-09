@@ -43,10 +43,10 @@ import org.chromium.chrome.test.transit.reader_mode.ReaderModeBottomSheetPeekFac
 import org.chromium.chrome.test.transit.reader_mode.ReaderModeConditions.TabBackgroundColorCondition;
 import org.chromium.chrome.test.transit.reader_mode.ReaderModeConditions.TabFontSizeCondition;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
-import org.chromium.components.dom_distiller.core.DomDistillerService;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.web_distiller.core.DistilledPagePrefs;
+import org.chromium.components.web_distiller.core.WebDistillerService;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -72,7 +72,7 @@ public class ReaderModeTest {
 
     private static final String TEST_PAGE = "/chrome/test/data/reader_mode/simple_article.html";
     // Suffix added to page titles, string is defined as IDS_DOM_DISTILLER_VIEWER_TITLE_SUFFIX in
-    // dom_distiller_strings.grdp.
+    // web_distiller_strings.grdp.
     private static final String TITLE_SUFFIX = " - Reading Mode";
     private static final String PAGE_TITLE = "Test Page Title" + TITLE_SUFFIX;
     private static final String CONTENT = "Lorem ipsum";
@@ -247,10 +247,10 @@ public class ReaderModeTest {
         AtomicReference<DistilledPagePrefs> prefs = new AtomicReference<>();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    DomDistillerService domDistillerService =
+                    WebDistillerService webDistillerService =
                             ReaderModeServiceFactory.getForProfile(
                                     ProfileManager.getLastUsedRegularProfile());
-                    prefs.set(domDistillerService.getDistilledPagePrefs());
+                    prefs.set(webDistillerService.getDistilledPagePrefs());
                 });
         return prefs.get();
     }

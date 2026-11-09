@@ -15,8 +15,8 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.reader_mode.ReaderModeManager.EntryPoint;
 import org.chromium.chrome.browser.reader_mode.ReaderModeManager.EntryPointTabType;
-import org.chromium.dom_distiller.mojom.FontFamily;
-import org.chromium.dom_distiller.mojom.Theme;
+import org.chromium.web_distiller.mojom.FontFamily;
+import org.chromium.web_distiller.mojom.Theme;
 
 /** Tests for the {@link ReaderModeMetrics} class. */
 @RunWith(BaseRobolectricTestRunner.class)

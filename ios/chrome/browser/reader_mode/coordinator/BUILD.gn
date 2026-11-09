@@ -59,8 +59,8 @@ source_set("options") {
   ]
   deps = [
     "//base",
-    "//components/dom_distiller/ios",
     "//components/feature_engagement/public",
+    "//components/web_distiller/ios",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/reader_mode/ui:constants",
@@ -85,8 +85,8 @@ source_set("unit_tests") {
     ":coordinator",
     ":options",
     "//base/test:test_support",
-    "//components/dom_distiller/core",
-    "//components/dom_distiller/core/mojom",
+    "//components/web_distiller/core",
+    "//components/web_distiller/core/mojom",
     "//ios/chrome/browser/intelligence/bwg/model:gemini_service",
     "//ios/chrome/browser/intelligence/bwg/model:gemini_service_factory",
     "//ios/chrome/browser/reader_mode/ui",

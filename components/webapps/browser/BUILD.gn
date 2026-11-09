@@ -183,7 +183,6 @@ source_set("browser") {
 
     deps += [
       "//base",
-      "//components/dom_distiller/core",
       "//components/feature_engagement",
       "//components/messages/android",
       "//components/messages/android:feature_flags",
@@ -192,6 +191,7 @@ source_set("browser") {
       "//components/url_formatter",
       "//components/version_info",
       "//components/version_info/android:channel_getter",
+      "//components/web_distiller/core",
       "//components/webapk:proto",
       "//components/webapps/common:mojo_bindings",
       "//services/device/public/mojom",

@@ -11,7 +11,7 @@ static_library("content") {
   public_deps = [ "//components/security_state/core" ]
 
   deps = [
-    "//components/dom_distiller/core",
+    "//components/web_distiller/core",
     "//content/public/browser",
     "//content/public/common",
   ]

@@ -68,11 +68,6 @@ if (is_ios) {
     filelist_name = "data/custom_handlers/unit_tests_bundle_data.filelist"
   }
 
-  bundle_data_from_filelist("dom_distiller_test_bundle_data") {
-    testonly = true
-    filelist_name = "data/dom_distiller/unit_tests_bundle_data.filelist"
-  }
-
   bundle_data_from_filelist("dom_label_test_bundle_data") {
     testonly = true
     filelist_name = "data/autofill/label-doms/unit_tests_bundle_data.filelist"
@@ -177,6 +172,11 @@ if (is_ios) {
   bundle_data_from_filelist("web_database_test_bundle_data") {
     testonly = true
     filelist_name = "data/web_database/unit_tests_bundle_data.filelist"
+  }
+
+  bundle_data_from_filelist("web_distiller_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/web_distiller/unit_tests_bundle_data.filelist"
   }
 
   bundle_data_from_filelist("webcrypto_test_bundle_data") {

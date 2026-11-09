@@ -1,5 +1,5 @@
 include_rules = [
-  "+components/dom_distiller/core",
+  "+components/web_distiller/core",
   "+content/public/browser",
   "+content/public/common",
   "+content/public/test",

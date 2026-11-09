@@ -5,7 +5,7 @@
 # Ignore the following files from SVG optimization checks.
 BLOCKLIST = [
   # Ignore since it holds documentation comments.
-  "components/dom_distiller/core/images/dom_distiller_material_spinner.svg",
+  "components/web_distiller/core/images/web_distiller_material_spinner.svg",
 ]
 
 

@@ -7,15 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
-namespace dom_distiller::mojom {
+namespace web_distiller::mojom {
 enum class Theme;
-}  // namespace dom_distiller::mojom
+}  // namespace web_distiller::mojom
 
 // Mutator for the Reader Mode.
 @protocol ReaderModeMutator
 
 // Sets the default theme for the distilled page.
-- (void)setDefaultTheme:(dom_distiller::mojom::Theme)theme;
+- (void)setDefaultTheme:(web_distiller::mojom::Theme)theme;
 
 @end
 

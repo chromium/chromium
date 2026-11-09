@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <include name="IDR_WEB_DISTILLER_VIEWER_HTML" file="../web_distiller/core/html/web_distiller_viewer.html" type="BINDATA" preprocess="true"/>
+  <include name="IDR_WEB_DISTILLER_VIEWER_JS" file="${root_gen_dir}/components/web_distiller/core/javascript/web_distiller_viewer.js" use_base_dir="false" type="BINDATA" />
+  <include name="IDR_DISTILLER_CSS" file="../web_distiller/core/css/distilledpage.css" type="BINDATA" preprocess="true"/>
+  <include name="IDR_DISTILLER_COMMON_CSS" file="../web_distiller/core/css/distilledpage_common.css" type="BINDATA" preprocess="true"/>
+  <include name="IDR_DISTILLER_DESKTOP_CSS" file="../web_distiller/core/css/distilledpage_desktop.css" type="BINDATA" />
+  <include name="IDR_DISTILLER_LOADING_IMAGE" file="../web_distiller/core/images/web_distiller_material_spinner.svg" type="BINDATA" />
+  <include name="IDR_DISTILLER_NEW_CSS" file="../web_distiller/core/css/distilledpage_new.css" type="BINDATA" preprocess="true"/>
+  <include name="IDR_EXTRACT_PAGE_FEATURES_JS" file="../web_distiller/core/javascript/extract_features.js" type="BINDATA" />
+  <include name="IDR_DISTILLABLE_PAGE_SERIALIZED_MODEL_NEW" file="../web_distiller/core/data/distillable_page_model_new.bin" type="BINDATA" compress="gzip" />
+  <include name="IDR_LONG_PAGE_SERIALIZED_MODEL" file="../web_distiller/core/data/long_page_model.bin" type="BINDATA" compress="gzip" />
+  <include name="IDR_WEB_DISTILLER_JS" file="../web_distiller/core/javascript/web_distiller.js" flattenhtml="true" type="BINDATA" />
+  <include name="IDR_WEB_DISTILLER_TRIGGERING_JS" file="../web_distiller/core/javascript/web_distiller_triggering.js" flattenhtml="true" type="BINDATA" />
+</grit-part>

@@ -27,7 +27,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.share.ShareParams;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -84,13 +84,13 @@ public class ShareUrlTest {
     @Test
     @SmallTest
     public void testDistilledUrl() {
-        final String domDistillerScheme = "chrome-distiller";
+        final String webDistillerScheme = "chrome-distiller";
         String distilledHttpUrl =
-                DomDistillerUrlUtils.getDistillerViewUrlFromUrl(
-                        domDistillerScheme, HTTP_URL, "Title");
+                WebDistillerUrlUtils.getDistillerViewUrlFromUrl(
+                        webDistillerScheme, HTTP_URL, "Title");
         String distilledHttpsUrl =
-                DomDistillerUrlUtils.getDistillerViewUrlFromUrl(
-                        domDistillerScheme, HTTPS_URL, "Title");
+                WebDistillerUrlUtils.getDistillerViewUrlFromUrl(
+                        webDistillerScheme, HTTPS_URL, "Title");
 
         assertCorrectUrl(HTTP_URL, distilledHttpUrl);
         assertCorrectUrl(HTTPS_URL, distilledHttpsUrl);

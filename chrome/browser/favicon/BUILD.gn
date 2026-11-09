@@ -41,11 +41,11 @@ source_set("impl") {
     "//chrome/browser/ui/webui:chrome_web_ui_controller_factory",
     "//chrome/common",
     "//chrome/common:constants",
-    "//components/dom_distiller/core",
     "//components/favicon/core:history_implementation",
     "//components/image_fetcher/core",
     "//components/password_manager/content/common",
     "//components/search_engines",
+    "//components/web_distiller/core",
     "//ui/native_theme",
     "//ui/resources",
   ]

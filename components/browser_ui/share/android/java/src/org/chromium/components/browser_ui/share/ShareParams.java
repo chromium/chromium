@@ -14,7 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.TriState;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
@@ -388,7 +388,7 @@ public class ShareParams {
          */
         public ShareParams build() {
             if (!TextUtils.isEmpty(mUrl) && !mBypassFixingDomDistillerUrl) {
-                mUrl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(mUrl);
+                mUrl = WebDistillerUrlUtils.getOriginalUrlFromDistillerUrl(mUrl);
             }
             return new ShareParams(
                     mWindow,

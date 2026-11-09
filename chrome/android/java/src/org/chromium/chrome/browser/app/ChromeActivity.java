@@ -265,7 +265,6 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubbleBackPressHandler;
 import org.chromium.components.cached_flags.CachedFlagsSafeMode;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -277,6 +276,7 @@ import org.chromium.components.policy.EnterpriseInfo;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.components.webxr.XrDelegateProvider;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -3019,7 +3019,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         ReaderModeManager readerModeManager =
                 currentTab.getUserDataHost().getUserData(ReaderModeManager.class);
         if (readerModeManager == null) return;
-        if (DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl())) {
+        if (WebDistillerUrlUtils.isDistilledPage(currentTab.getUrl())) {
             // Hide Reading Mode menu option is visible.
             readerModeManager.hideReaderMode();
             RecordUserAction.record("MobileMenuHideReaderMode");

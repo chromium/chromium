@@ -34,9 +34,9 @@ source_set("impl") {
     "//chrome/browser/reading_list",
     "//chrome/browser/signin",
     "//chrome/browser/undo",
-    "//components/dom_distiller/core",
     "//components/query_parser",
     "//components/undo",
+    "//components/web_distiller/core",
   ]
 }
 

@@ -8,8 +8,8 @@
 
 #import "base/barrier_callback.h"
 #import "base/run_loop.h"
-#import "components/dom_distiller/core/distiller_page.h"
-#import "components/dom_distiller/core/proto/distilled_article.pb.h"
+#import "components/web_distiller/core/distiller_page.h"
+#import "components/web_distiller/core/proto/distilled_article.pb.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web_distiller/model/distiller_service_factory.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -26,7 +26,7 @@ base::OnceCallback<void(T)> CaptureArgument(T* output) {
                         base::Unretained(output));
 }
 
-class TestDistillerPage : public dom_distiller::DistillerPage {
+class TestDistillerPage : public web_distiller::DistillerPage {
  public:
   void DistillPageImpl(const GURL& url, const std::string& script) override {
     base::Value empty_result;
@@ -38,7 +38,7 @@ class TestDistillerPage : public dom_distiller::DistillerPage {
 
 class DistillerServiceTest : public PlatformTest {
  public:
-  using Article = std::unique_ptr<dom_distiller::DistilledArticleProto>;
+  using Article = std::unique_ptr<web_distiller::DistilledArticleProto>;
 
   DistillerServiceTest() : profile_(TestProfileIOS::Builder().Build()) {
     distiller_service_ = DistillerServiceFactory::GetForProfile(profile_.get());
@@ -58,7 +58,7 @@ class DistillerServiceTest : public PlatformTest {
           base::BindOnce(
               [](base::RepeatingCallback<void(Article)> barrier,
                  Article article,
-                 dom_distiller::DistillationParseResult /*result*/) {
+                 web_distiller::DistillationParseResult /*result*/) {
                 barrier.Run(std::move(article));
               },
               barrier));

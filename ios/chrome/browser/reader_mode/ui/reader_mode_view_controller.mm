@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_view_controller.h"
 
-#import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
+#import "components/web_distiller/core/mojom/distilled_page_prefs.mojom.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
@@ -126,9 +126,9 @@
 
 - (void)updateTheme {
   if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-    [self.mutator setDefaultTheme:dom_distiller::mojom::Theme::kDark];
+    [self.mutator setDefaultTheme:web_distiller::mojom::Theme::kDark];
   } else {
-    [self.mutator setDefaultTheme:dom_distiller::mojom::Theme::kLight];
+    [self.mutator setDefaultTheme:web_distiller::mojom::Theme::kLight];
   }
 }
 

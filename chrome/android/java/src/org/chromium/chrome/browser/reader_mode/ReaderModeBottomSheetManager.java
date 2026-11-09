@@ -22,8 +22,8 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
+import org.chromium.components.web_distiller.core.WebDistillerFeatures;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.content_public.browser.NavigationHandle;
 
 /** Manages the lifespan of the {@link ReaderModeBottomSheetCoordinator}. */
@@ -169,7 +169,7 @@ public class ReaderModeBottomSheetManager implements Destroyable {
         cancelDelayedBottomSheetPeekTask();
         Tab activeTab = mActiveTab;
         if (shouldShowBottomSheet(activeTab)) {
-            if (!DomDistillerFeatures.sReaderModeDelayBottomSheetPeek.isEnabled()
+            if (!WebDistillerFeatures.sReaderModeDelayBottomSheetPeek.isEnabled()
                     || sBottomSheetPeekDelay == 0) {
                 assert activeTab != null;
                 show(activeTab, /* isShowOnScroll= */ false);
@@ -197,7 +197,7 @@ public class ReaderModeBottomSheetManager implements Destroyable {
     private boolean shouldShowBottomSheet(@Nullable Tab tab) {
         return tab != null
                 && tab.getWebContents() != null
-                && DomDistillerUrlUtils.isDistilledPage(tab.getUrl());
+                && WebDistillerUrlUtils.isDistilledPage(tab.getUrl());
     }
 
     // Aborts the pending delayed peek by setting the task to null.

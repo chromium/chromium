@@ -68,10 +68,10 @@ import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtilsJni;
 import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -116,7 +116,7 @@ public class ShareDelegateImplUnitTest {
     @Mock SnackbarManager mSnackbarManager;
 
     @Mock private DataProtectionBridge.Natives mDataProtectionBridgeMock;
-    @Mock private DomDistillerUrlUtils.Natives mDomDistillerUrlUtilsJniMock;
+    @Mock private WebDistillerUrlUtils.Natives mWebDistillerUrlUtilsJniMock;
 
     private Activity mActivity;
 
@@ -181,9 +181,9 @@ public class ShareDelegateImplUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).get();
         Mockito.doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
         DataProtectionBridge.setInstanceForTesting(mDataProtectionBridgeMock);
-        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJniMock);
+        WebDistillerUrlUtilsJni.setInstanceForTesting(mWebDistillerUrlUtilsJniMock);
         doAnswer(invocation -> new GURL((String) invocation.getArgument(0)))
-                .when(mDomDistillerUrlUtilsJniMock)
+                .when(mWebDistillerUrlUtilsJniMock)
                 .getOriginalUrlFromDistillerUrl(anyString());
         doReturn("org.chromium.chrome").when(mContext).getPackageName();
 

@@ -37,8 +37,8 @@ import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordin
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtilsJni;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -57,7 +57,7 @@ public class ShareSheetUsageRankingHelperTest {
     private static final String MOCK_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
+    @Mock private WebDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ShareSheetBottomSheetContent mBottomSheet;
     @Mock private ShareSheetPropertyModelBuilder mPropertyModelBuilder;
@@ -75,7 +75,7 @@ public class ShareSheetUsageRankingHelperTest {
 
     @Before
     public void setUp() {
-        DomDistillerUrlUtilsJni.setInstanceForTesting(mDistillerUrlUtilsJniMock);
+        WebDistillerUrlUtilsJni.setInstanceForTesting(mDistillerUrlUtilsJniMock);
 
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         when(mWindow.getActivity()).thenReturn(new WeakReference<>(mActivity));

@@ -7,10 +7,10 @@
 #import <algorithm>
 #import <vector>
 
-#import "components/dom_distiller/core/distilled_page_prefs.h"
+#import "components/web_distiller/core/distilled_page_prefs.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 
-void IncreaseReaderModeFontSize(dom_distiller::DistilledPagePrefs* prefs) {
+void IncreaseReaderModeFontSize(web_distiller::DistilledPagePrefs* prefs) {
   double current_scale = prefs->GetFontScaling();
   std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
   auto it =
@@ -20,7 +20,7 @@ void IncreaseReaderModeFontSize(dom_distiller::DistilledPagePrefs* prefs) {
   }
 }
 
-void DecreaseReaderModeFontSize(dom_distiller::DistilledPagePrefs* prefs) {
+void DecreaseReaderModeFontSize(web_distiller::DistilledPagePrefs* prefs) {
   double current_scale = prefs->GetFontScaling();
   std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
   auto it =
@@ -30,22 +30,22 @@ void DecreaseReaderModeFontSize(dom_distiller::DistilledPagePrefs* prefs) {
   }
 }
 
-void ResetReaderModeFontSize(dom_distiller::DistilledPagePrefs* prefs) {
+void ResetReaderModeFontSize(web_distiller::DistilledPagePrefs* prefs) {
   prefs->SetUserPrefFontScaling(1.0);
 }
 
-bool CanIncreaseReaderModeFontSize(dom_distiller::DistilledPagePrefs* prefs) {
+bool CanIncreaseReaderModeFontSize(web_distiller::DistilledPagePrefs* prefs) {
   double current_scale = prefs->GetFontScaling();
   std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
   return current_scale < multipliers.back();
 }
 
-bool CanDecreaseReaderModeFontSize(dom_distiller::DistilledPagePrefs* prefs) {
+bool CanDecreaseReaderModeFontSize(web_distiller::DistilledPagePrefs* prefs) {
   double current_scale = prefs->GetFontScaling();
   std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
   return current_scale > multipliers.front();
 }
 
-bool CanResetReaderModeFontSize(dom_distiller::DistilledPagePrefs* prefs) {
+bool CanResetReaderModeFontSize(web_distiller::DistilledPagePrefs* prefs) {
   return prefs->GetFontScaling() != 1.0;
 }

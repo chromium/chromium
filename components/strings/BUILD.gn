@@ -40,7 +40,6 @@ grit_strings("components_strings") {
     "../contextual_tasks_strings.grdp",
     "../crash_strings.grdp",
     "../dialog_strings.grdp",
-    "../dom_distiller_strings.grdp",
     "../enterprise_strings.grdp",
     "../error_page_strings.grdp",
     "../external_intents_strings.grdp",
@@ -90,6 +89,7 @@ grit_strings("components_strings") {
     "../user_education_strings.grdp",
     "../version_ui_strings.grdp",
     "../wallet_strings.grdp",
+    "../web_distiller_strings.grdp",
     "../webapps_strings.grdp",
     "../webxr_strings.grdp",
   ]

@@ -141,7 +141,6 @@ specific_include_rules = {
 
     "-components",
     "+components/android_autofill/browser/java/src/org/chromium/components/autofill",
-    "+components/dom_distiller/core/android/java/src/org/chromium/components/dom_distiller/core/DomDistillerUrlUtils.java",
     "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/contextmenu",
     "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/delegate",
     "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/util",
@@ -155,6 +154,7 @@ specific_include_rules = {
     "+components/sensitive_content/android/java/src/org/chromium/components/sensitive_content/SensitiveContentClient.java",
     "+components/user_prefs/android/java/src/org/chromium/components/user_prefs/UserPrefs.java",
     "+components/version_info/android",
+    "+components/web_distiller/core/android/java/src/org/chromium/components/web_distiller/core/WebDistillerUrlUtils.java",
   ],
   'PageContentProtoViewStructureBuilder\\.java':[
     "+components/optimization_guide/content/browser/android/java/src/org/chromium/components/optimization_guide/content/PageContentProtoProviderBridge.java",

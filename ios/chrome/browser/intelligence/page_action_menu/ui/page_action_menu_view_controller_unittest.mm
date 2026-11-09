@@ -6,7 +6,7 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
+#import "components/web_distiller/core/mojom/distilled_page_prefs.mojom.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_feature.h"
@@ -190,7 +190,7 @@ TEST_F(PageActionMenuViewControllerTest, SetSelectedFontFamily) {
   [view_controller_ loadViewIfNeeded];
 
   [view_controller_
-      setSelectedFontFamily:dom_distiller::mojom::FontFamily::kSerif];
+      setSelectedFontFamily:web_distiller::mojom::FontFamily::kSerif];
   NSString* expectedSubstring = l10n_util::GetNSString(
       IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SERIF_LABEL);
 
@@ -199,7 +199,7 @@ TEST_F(PageActionMenuViewControllerTest, SetSelectedFontFamily) {
   EXPECT_TRUE([subtitleLabel.text containsString:expectedSubstring]);
 
   [view_controller_
-      setSelectedFontFamily:dom_distiller::mojom::FontFamily::kSansSerif];
+      setSelectedFontFamily:web_distiller::mojom::FontFamily::kSansSerif];
   expectedSubstring = l10n_util::GetNSString(
       IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SANS_SERIF_LABEL);
   EXPECT_TRUE([subtitleLabel.text containsString:expectedSubstring]);

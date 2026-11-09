@@ -15,8 +15,8 @@ import org.chromium.chrome.browser.reader_mode.ReaderModeServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.web_distiller.core.DistilledPagePrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** The Chrome implementation of AccessibilitySettingsDelegate. */

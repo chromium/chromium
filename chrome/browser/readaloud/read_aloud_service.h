@@ -18,8 +18,8 @@
 #include "chrome/browser/readaloud/read_aloud_playback_session.h"
 #include "chrome/browser/readaloud/read_aloud_voice_catalog.h"
 #include "chrome/common/readaloud/read_aloud.mojom.h"
-#include "components/dom_distiller/core/task_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/web_distiller/core/task_tracker.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -43,7 +43,7 @@ class VoicePreviewController;
 // Chrome, which allows users to listen to web page content.
 //
 // Manages Read Aloud audio playback of distilled web page content by
-// coordinating page distillation (via `DomDistillerService`), audio synthesis
+// coordinating page distillation (via `WebDistillerService`), audio synthesis
 // in the utility process, and UI state synchronization via `Delegate`.
 //
 // Instantiated per-Profile by `ReadAloudServiceFactory`. Observes the target
@@ -54,7 +54,7 @@ class VoicePreviewController;
 // user switches focus to a different tab.
 class ReadAloudService
     : public KeyedService,
-      public dom_distiller::ViewRequestDelegate,
+      public web_distiller::ViewRequestDelegate,
       public read_aloud::mojom::ReadAloudPlaybackControllerClient,
       public content::WebContentsObserver {
  public:
@@ -250,7 +250,7 @@ class ReadAloudService
   void Initialize(content::WebContents* web_contents);
 
   // TODO(b/553612030): Refactor out GetViewerHandleForTesting().
-  dom_distiller::ViewerHandle* GetViewerHandleForTesting() const {
+  web_distiller::ViewerHandle* GetViewerHandleForTesting() const {
     return viewer_handle_.get();
   }
 
@@ -269,14 +269,14 @@ class ReadAloudService
           RequestSpeechSynthesisCallback callback) override;
 
  private:
-  // Triggers distillation of a webpage using DomDistillerService.
+  // Triggers distillation of a webpage using WebDistillerService.
   void DistillPage(content::WebContents* web_contents);
 
-  // dom_distiller::ViewRequestDelegate:
+  // web_distiller::ViewRequestDelegate:
   void OnArticleReady(
-      const dom_distiller::DistilledArticleProto* article_proto) override;
+      const web_distiller::DistilledArticleProto* article_proto) override;
   void OnDistillationFailed(
-      dom_distiller::DistillationParseResult reason) override;
+      web_distiller::DistillationParseResult reason) override;
 
   // Sends page title and publisher metadata to the UI delegate.
   void ProvideInitialMetadata();
@@ -322,7 +322,7 @@ class ReadAloudService
   PlaybackControllerBinder controller_binder_;
   ReadAloudPlaybackSession::MediaSessionGetter media_session_getter_;
   std::unique_ptr<ReadAloudAudioBroker> audio_broker_;
-  std::unique_ptr<dom_distiller::ViewerHandle> viewer_handle_;
+  std::unique_ptr<web_distiller::ViewerHandle> viewer_handle_;
   std::unique_ptr<Delegate> delegate_;
   base::TimeTicks distillation_start_time_;
   base::TimeTicks overview_generation_start_time_;

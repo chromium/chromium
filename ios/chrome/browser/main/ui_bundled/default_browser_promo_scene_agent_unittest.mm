@@ -254,7 +254,7 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
   DefaultBrowserPromoSceneAgent* agent_ = nil;
   web::FakeWebState web_state_;
   std::unique_ptr<ReaderModeMetricsHelper> metrics_helper_;
-  raw_ptr<dom_distiller::DistilledPagePrefs> distilled_page_prefs_ = nullptr;
+  raw_ptr<web_distiller::DistilledPagePrefs> distilled_page_prefs_ = nullptr;
   static base::Time now_override_;
 };
 

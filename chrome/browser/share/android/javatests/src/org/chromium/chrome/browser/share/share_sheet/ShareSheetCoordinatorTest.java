@@ -44,9 +44,9 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtilsJni;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -69,7 +69,7 @@ public final class ShareSheetCoordinatorTest {
 
     private final TestProfile mProfile = TestProfile.createRegular();
 
-    @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
+    @Mock private WebDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private BottomSheetController mController;
     @Mock private ShareParams.TargetChosenCallback mTargetChosenCallback;
@@ -89,7 +89,7 @@ public final class ShareSheetCoordinatorTest {
 
     @Before
     public void setUp() {
-        DomDistillerUrlUtilsJni.setInstanceForTesting(mDistillerUrlUtilsJniMock);
+        WebDistillerUrlUtilsJni.setInstanceForTesting(mDistillerUrlUtilsJniMock);
 
         Context context = ContextUtils.getApplicationContext();
         mShadowPackageManager = Shadows.shadowOf(context.getPackageManager());

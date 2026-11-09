@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "components/dom_distiller/core/url_constants.h"
 #include "components/security_state/core/security_state.h"
+#include "components/web_distiller/core/url_constants.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
@@ -33,7 +33,7 @@ GetSecurityStateForNavigationEntry(content::NavigationEntry* entry) {
   state->is_devtools =
       entry->GetVirtualURL().SchemeIs(content::kChromeDevToolsScheme);
   state->is_reader_mode =
-      entry->GetURL().SchemeIs(dom_distiller::kDomDistillerScheme);
+      entry->GetURL().SchemeIs(web_distiller::kWebDistillerScheme);
   state->url = entry->GetURL();
 
   if (!entry->GetSSL().initialized) {

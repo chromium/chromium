@@ -6,12 +6,12 @@
 
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/dom_distiller/core/dom_distiller_features.h"
-#import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
-#import "components/dom_distiller/core/pref_names.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/translate/core/browser/translate_pref_names.h"
+#import "components/web_distiller/core/mojom/distilled_page_prefs.mojom.h"
+#import "components/web_distiller/core/pref_names.h"
+#import "components/web_distiller/core/web_distiller_features.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
@@ -64,7 +64,7 @@ id<GREYMatcher> ReaderModeBadge() {
 
 // Base font size for Reader Mode, in pixels. This is the font size that is
 // multiplied by the font scale multipliers. This value is defined in
-// components/dom_distiller/core/javascript/font_size_slider.js.
+// components/web_distiller/core/javascript/font_size_slider.js.
 constexpr double kReaderModeBaseFontSize = 16.0;
 
 // Return the number of links on the page.
@@ -470,8 +470,8 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
 
   ExpectBodyHasThemeAndFont("light", "sans-serif");
 
-  [ChromeEarlGrey setIntegerValue:(int)dom_distiller::mojom::Theme::kDark
-                      forUserPref:dom_distiller::prefs::kTheme];
+  [ChromeEarlGrey setIntegerValue:(int)web_distiller::mojom::Theme::kDark
+                      forUserPref:web_distiller::prefs::kTheme];
 
   ExpectBodyHasThemeAndFont("dark", "sans-serif");
 }
@@ -486,8 +486,8 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
       @"Reader mode content could not be loaded");
 
   // Set the user-selected preference to Dark theme.
-  [ChromeEarlGrey setIntegerValue:(int)dom_distiller::mojom::Theme::kDark
-                      forUserPref:dom_distiller::prefs::kTheme];
+  [ChromeEarlGrey setIntegerValue:(int)web_distiller::mojom::Theme::kDark
+                      forUserPref:web_distiller::prefs::kTheme];
 
   // Open Reading Mode options view.
   [self openReaderModeCustomizationOptions];
@@ -550,8 +550,8 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
 
   // Change the font family to Monospace.
   [ChromeEarlGrey
-      setIntegerValue:(int)dom_distiller::mojom::FontFamily::kMonospace
-          forUserPref:dom_distiller::prefs::kFont];
+      setIntegerValue:(int)web_distiller::mojom::FontFamily::kMonospace
+          forUserPref:web_distiller::prefs::kFont];
   ExpectBodyHasThemeAndFont("light", "monospace");
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ButtonWithAccessibilityLabelId(
@@ -559,8 +559,8 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
       assertWithMatcher:grey_notNil()];
 
   // Change the font family to Serif.
-  [ChromeEarlGrey setIntegerValue:(int)dom_distiller::mojom::FontFamily::kSerif
-                      forUserPref:dom_distiller::prefs::kFont];
+  [ChromeEarlGrey setIntegerValue:(int)web_distiller::mojom::FontFamily::kSerif
+                      forUserPref:web_distiller::prefs::kFont];
   ExpectBodyHasThemeAndFont("light", "serif");
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ButtonWithAccessibilityLabelId(
@@ -607,8 +607,8 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
                  VisibleContextMenuItem(
                      IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SERIF_LABEL)]
       performAction:grey_tap()];
-  GREYAssertEqual([ChromeEarlGrey userIntegerPref:dom_distiller::prefs::kFont],
-                  static_cast<int>(dom_distiller::mojom::FontFamily::kSerif),
+  GREYAssertEqual([ChromeEarlGrey userIntegerPref:web_distiller::prefs::kFont],
+                  static_cast<int>(web_distiller::mojom::FontFamily::kSerif),
                   @"Pref should be updated to Serif");
   ExpectBodyHasThemeAndFont("light", "serif");
 
@@ -622,8 +622,8 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
                      IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_MONOSPACE_LABEL)]
       performAction:grey_tap()];
   GREYAssertEqual(
-      [ChromeEarlGrey userIntegerPref:dom_distiller::prefs::kFont],
-      static_cast<int>(dom_distiller::mojom::FontFamily::kMonospace),
+      [ChromeEarlGrey userIntegerPref:web_distiller::prefs::kFont],
+      static_cast<int>(web_distiller::mojom::FontFamily::kMonospace),
       @"Pref should be updated to Monospace");
   ExpectBodyHasThemeAndFont("light", "monospace");
 
@@ -637,8 +637,8 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
                      IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SANS_SERIF_LABEL)]
       performAction:grey_tap()];
   GREYAssertEqual(
-      [ChromeEarlGrey userIntegerPref:dom_distiller::prefs::kFont],
-      static_cast<int>(dom_distiller::mojom::FontFamily::kSansSerif),
+      [ChromeEarlGrey userIntegerPref:web_distiller::prefs::kFont],
+      static_cast<int>(web_distiller::mojom::FontFamily::kSansSerif),
       @"Pref should be updated to Sans-Serif");
   ExpectBodyHasThemeAndFont("light", "sans-serif");
 }
@@ -647,7 +647,7 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
 - (void)testChangeReaderModeFontSizeFromOptionsView {
   std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
   [ChromeEarlGrey setDoubleValue:multipliers[0]
-                     forUserPref:dom_distiller::prefs::kFontScale];
+                     forUserPref:web_distiller::prefs::kFontScale];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
 
@@ -675,7 +675,7 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
                 kReaderModeOptionsIncreaseFontSizeButtonAccessibilityIdentifier)]
         performAction:grey_tap()];
     GREYAssertEqual(
-        [ChromeEarlGrey userDoublePref:dom_distiller::prefs::kFontScale],
+        [ChromeEarlGrey userDoublePref:web_distiller::prefs::kFontScale],
         multipliers[i], @"Pref should be updated to next multiplier");
     ExpectFontSize(multipliers[i] * kReaderModeBaseFontSize);
     // Decrease button should be enabled.
@@ -701,7 +701,7 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
                 kReaderModeOptionsDecreaseFontSizeButtonAccessibilityIdentifier)]
         performAction:grey_tap()];
     GREYAssertEqual(
-        [ChromeEarlGrey userDoublePref:dom_distiller::prefs::kFontScale],
+        [ChromeEarlGrey userDoublePref:web_distiller::prefs::kFontScale],
         multipliers[i], @"Pref should be updated to previous multiplier");
     ExpectFontSize(multipliers[i] * kReaderModeBaseFontSize);
     // Increase button should be enabled.
@@ -715,8 +715,8 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
 
 // Tests that color theme can be changed from the options view.
 - (void)testChangeReaderModeThemeFromOptionsView {
-  [ChromeEarlGrey setIntegerValue:(int)dom_distiller::mojom::Theme::kLight
-                      forUserPref:dom_distiller::prefs::kTheme];
+  [ChromeEarlGrey setIntegerValue:(int)web_distiller::mojom::Theme::kLight
+                      forUserPref:web_distiller::prefs::kTheme];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
 
@@ -734,8 +734,8 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
                  grey_accessibilityID(
                      kReaderModeOptionsDarkThemeButtonAccessibilityIdentifier)]
       performAction:grey_tap()];
-  GREYAssertEqual([ChromeEarlGrey userIntegerPref:dom_distiller::prefs::kTheme],
-                  static_cast<int>(dom_distiller::mojom::Theme::kDark),
+  GREYAssertEqual([ChromeEarlGrey userIntegerPref:web_distiller::prefs::kTheme],
+                  static_cast<int>(web_distiller::mojom::Theme::kDark),
                   @"Pref should be updated to dark");
   ExpectBodyHasThemeAndFont("dark", "sans-serif");
 
@@ -744,8 +744,8 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
                  grey_accessibilityID(
                      kReaderModeOptionsSepiaThemeButtonAccessibilityIdentifier)]
       performAction:grey_tap()];
-  GREYAssertEqual([ChromeEarlGrey userIntegerPref:dom_distiller::prefs::kTheme],
-                  static_cast<int>(dom_distiller::mojom::Theme::kSepia),
+  GREYAssertEqual([ChromeEarlGrey userIntegerPref:web_distiller::prefs::kTheme],
+                  static_cast<int>(web_distiller::mojom::Theme::kSepia),
                   @"Pref should be updated to sepia");
   ExpectBodyHasThemeAndFont("sepia", "sans-serif");
 
@@ -754,8 +754,8 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
                  grey_accessibilityID(
                      kReaderModeOptionsLightThemeButtonAccessibilityIdentifier)]
       performAction:grey_tap()];
-  GREYAssertEqual([ChromeEarlGrey userIntegerPref:dom_distiller::prefs::kTheme],
-                  static_cast<int>(dom_distiller::mojom::Theme::kLight),
+  GREYAssertEqual([ChromeEarlGrey userIntegerPref:web_distiller::prefs::kTheme],
+                  static_cast<int>(web_distiller::mojom::Theme::kLight),
                   @"Pref should be updated to light");
   ExpectBodyHasThemeAndFont("light", "sans-serif");
 }
@@ -1052,7 +1052,7 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
 
   std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
   [ChromeEarlGrey setDoubleValue:multipliers[2]
-                     forUserPref:dom_distiller::prefs::kFontScale];
+                     forUserPref:web_distiller::prefs::kFontScale];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
 
@@ -1077,7 +1077,7 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
           grey_accessibilityID(kTextZoomIncreaseButtonAccessibilityIdentifier)]
       performAction:grey_tap()];
   GREYAssertEqual(
-      [ChromeEarlGrey userDoublePref:dom_distiller::prefs::kFontScale],
+      [ChromeEarlGrey userDoublePref:web_distiller::prefs::kFontScale],
       multipliers[3], @"Pref should be updated to next multiplier");
   ExpectFontSize(multipliers[3] * kReaderModeBaseFontSize);
 
@@ -1087,7 +1087,7 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
           grey_accessibilityID(kTextZoomDecreaseButtonAccessibilityIdentifier)]
       performAction:grey_tap()];
   GREYAssertEqual(
-      [ChromeEarlGrey userDoublePref:dom_distiller::prefs::kFontScale],
+      [ChromeEarlGrey userDoublePref:web_distiller::prefs::kFontScale],
       multipliers[2], @"Pref should be updated to previous multiplier");
   ExpectFontSize(multipliers[2] * kReaderModeBaseFontSize);
 
@@ -1097,7 +1097,7 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
                                    kTextZoomResetButtonAccessibilityIdentifier)]
       performAction:grey_tap()];
   GREYAssertEqual(
-      [ChromeEarlGrey userDoublePref:dom_distiller::prefs::kFontScale], 1.0,
+      [ChromeEarlGrey userDoublePref:web_distiller::prefs::kFontScale], 1.0,
       @"Pref should be updated to 1.0");
   ExpectFontSize(1.0 * kReaderModeBaseFontSize);
 }

@@ -9,7 +9,6 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/time/time.h"
-#import "components/dom_distiller/core/url_constants.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/sync/model/data_type_store_service.h"
 #import "components/sync/service/sync_service.h"
@@ -22,6 +21,7 @@
 #import "components/sync_sessions/session_sync_service_impl.h"
 #import "components/sync_sessions/sync_sessions_client.h"
 #import "components/sync_sessions/synced_window_delegates_getter.h"
+#import "components/web_distiller/core/url_constants.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -49,7 +49,7 @@ const char kChromeNativeScheme[] = "chrome-native";
 bool ShouldSyncURLImpl(const GURL& url) {
   return url.is_valid() && !url.SchemeIs(kChromeUIScheme) &&
          !url.SchemeIs(kChromeNativeScheme) && !url.SchemeIsFile() &&
-         !url.SchemeIs(dom_distiller::kDomDistillerScheme);
+         !url.SchemeIs(web_distiller::kWebDistillerScheme);
 }
 
 // iOS implementation of SyncSessionsClient. Needs to be in a separate class

@@ -93,8 +93,8 @@ class FakeDistillerService : public DistillerService {
 
   // Does not perform any action on page distillation.
   void DistillPage(const GURL& url,
-                   std::unique_ptr<dom_distiller::DistillerPage> distiller_page,
-                   dom_distiller::Distiller::DistillationFinishedCallback
+                   std::unique_ptr<web_distiller::DistillerPage> distiller_page,
+                   web_distiller::Distiller::DistillationFinishedCallback
                        finished_cb) override {}
 };
 

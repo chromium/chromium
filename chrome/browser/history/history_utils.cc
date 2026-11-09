@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/common/url_constants.h"
-#include "components/dom_distiller/core/url_constants.h"
+#include "components/web_distiller/core/url_constants.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -29,8 +29,9 @@ bool CanAddURLToHistory(const GURL& url) {
       url.SchemeIs(content::kViewSourceScheme) ||
       url.SchemeIs(chrome::kChromeNativeScheme) ||
       url.SchemeIs(chrome::kChromeSearchScheme) ||
-      url.SchemeIs(dom_distiller::kDomDistillerScheme))
+      url.SchemeIs(web_distiller::kWebDistillerScheme)) {
     return false;
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
   // Isolated Web Apps are isolated applications and must not be registered in

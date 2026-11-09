@@ -53,10 +53,6 @@
 #include "components/captive_portal/core/buildflags.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/custom_handlers/protocol_handler_navigation_throttle.h"
-#include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
-#include "components/dom_distiller/content/browser/distiller_referrer_throttle.h"
-#include "components/dom_distiller/core/url_constants.h"
-#include "components/dom_distiller/core/url_utils.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/history/content/browser/visited_link_navigation_throttle.h"
@@ -74,6 +70,10 @@
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/web_distiller/content/browser/distiller_page_web_contents.h"
+#include "components/web_distiller/content/browser/distiller_referrer_throttle.h"
+#include "components/web_distiller/core/url_constants.h"
+#include "components/web_distiller/core/url_utils.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
@@ -634,10 +634,10 @@ void CreateAndAddChromeThrottlesForNavigation(
 
   actor::ActorNavigationThrottle::MaybeCreateAndAdd(registry);
 
-  dom_distiller::DistillerPageWebContents::MaybeCreateAndAddNavigationThrottle(
+  web_distiller::DistillerPageWebContents::MaybeCreateAndAddNavigationThrottle(
       registry);
 
-  dom_distiller::DistillerReferrerThrottle::MaybeCreateAndAdd(registry);
+  web_distiller::DistillerReferrerThrottle::MaybeCreateAndAdd(registry);
 
   webapps::WebAppUrlLoader::MaybeCreateAndAddNavigationThrottle(registry);
 

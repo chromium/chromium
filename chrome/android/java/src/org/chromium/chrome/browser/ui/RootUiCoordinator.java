@@ -242,7 +242,6 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -254,6 +253,7 @@ import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -1506,7 +1506,7 @@ public class RootUiCoordinator
 
     private void initReaderModeBottomSheetLazyObserver() {
         Tab currentTab = mActivityTabProvider.get();
-        if (currentTab != null && DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl())) {
+        if (currentTab != null && WebDistillerUrlUtils.isDistilledPage(currentTab.getUrl())) {
             initReaderModeBottomSheetManager();
             return;
         }
@@ -1520,13 +1520,13 @@ public class RootUiCoordinator
                                     Tab tab, NavigationHandle navigationHandle) {
                                 if (navigationHandle.hasCommitted()
                                         && navigationHandle.isInPrimaryMainFrame()
-                                        && DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
+                                        && WebDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
                                     initReaderModeBottomSheetManager();
                                 }
                             }
                         },
                         (@Nullable Tab tab) -> {
-                            if (tab != null && DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
+                            if (tab != null && WebDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
                                 initReaderModeBottomSheetManager();
                             }
                         });

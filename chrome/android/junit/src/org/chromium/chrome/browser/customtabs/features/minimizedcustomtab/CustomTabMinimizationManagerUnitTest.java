@@ -57,8 +57,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.toolbar.top.ResourceFactory;
 import org.chromium.chrome.browser.toolbar.top.ResourceFactoryJni;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtilsJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -89,7 +89,7 @@ public class CustomTabMinimizationManagerUnitTest {
     @Mock private BrowserServicesIntentDataProvider mIntentData;
     @Mock private CustomTabsConnection mConnection;
     @Mock private Runnable mCloseTabRunnable;
-    @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
+    @Mock private WebDistillerUrlUtilsJni mWebDistillerUrlUtilsJni;
     @Mock private ResourceFactory.Natives mResourceFactoryNatives;
     @Mock private CustomTabMinimizeDelegate.Observer mMinimizationObserver;
     @Mock private CustomTabMinimizeDelegate mOtherMinimizeDelegate;
@@ -101,7 +101,7 @@ public class CustomTabMinimizationManagerUnitTest {
 
     @Before
     public void setUp() {
-        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
+        WebDistillerUrlUtilsJni.setInstanceForTesting(mWebDistillerUrlUtilsJni);
         ResourceFactoryJni.setInstanceForTesting(mResourceFactoryNatives);
 
         mActivityScenario = ActivityScenario.launch(CustomTabActivity.class);
@@ -185,7 +185,7 @@ public class CustomTabMinimizationManagerUnitTest {
         String distillerUrl = "chrome-distiller://url/";
         // Simulate having a distiller URL in the tab.
         when(mTab.getUrl()).thenReturn(new GURL(distillerUrl));
-        when(mDomDistillerUrlUtilsJni.isDistilledPage(distillerUrl)).thenReturn(true);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage(distillerUrl)).thenReturn(true);
         when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
 
         mManager.minimize();

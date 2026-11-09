@@ -26,8 +26,8 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_translate_observer.h"
 #include "chrome/common/read_anything/distillation_evaluator.mojom.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
-#include "components/dom_distiller/core/task_tracker.h"
 #include "components/translate/core/browser/translate_client.h"
+#include "components/web_distiller/core/task_tracker.h"
 #include "content/public/browser/tts_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -463,7 +463,7 @@ class ReadAnythingUntrustedPageHandler :
   // Called by the ReadabilityDistillerDelegate with the result of a
   // Readability distillation.
   void ProcessDistilledArticle(
-      const dom_distiller::DistilledArticleProto* article_proto);
+      const web_distiller::DistilledArticleProto* article_proto);
 
   // Tells the page that Readability distillation produced no content, so it
   // can update from showing loading to showing no content. No-op when
@@ -499,7 +499,7 @@ class ReadAnythingUntrustedPageHandler :
   // contained.
   std::unique_ptr<ReadAnythingWebContentsObserver> pdf_observer_;
 
-  // Private implementation for dom_distiller::ViewRequestDelegate, not part of
+  // Private implementation for web_distiller::ViewRequestDelegate, not part of
   // the public API.
   class ReadabilityDistillerDelegate;
   std::unique_ptr<ReadabilityDistillerDelegate> distiller_delegate_;

@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_font_size_utils.h"
 
 #import "base/test/task_environment.h"
-#import "components/dom_distiller/core/distilled_page_prefs.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "components/web_distiller/core/distilled_page_prefs.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -14,14 +14,14 @@
 class ReaderModeFontSizeUtilsTest : public PlatformTest {
  protected:
   ReaderModeFontSizeUtilsTest() {
-    dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(prefs_.registry());
+    web_distiller::DistilledPagePrefs::RegisterProfilePrefs(prefs_.registry());
     distilled_page_prefs_ =
-        std::make_unique<dom_distiller::DistilledPagePrefs>(&prefs_);
+        std::make_unique<web_distiller::DistilledPagePrefs>(&prefs_);
   }
 
   base::test::TaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  std::unique_ptr<dom_distiller::DistilledPagePrefs> distilled_page_prefs_;
+  std::unique_ptr<web_distiller::DistilledPagePrefs> distilled_page_prefs_;
 };
 
 // Tests that IncreaseReaderModeFontSize increases the font size.

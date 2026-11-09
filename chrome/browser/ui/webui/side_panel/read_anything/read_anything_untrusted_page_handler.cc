@@ -42,11 +42,6 @@
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
-#include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
-#include "components/dom_distiller/core/distiller_page.h"
-#include "components/dom_distiller/core/dom_distiller_service.h"
-#include "components/dom_distiller/core/task_tracker.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
@@ -57,6 +52,11 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/common/translate_features.h"
+#include "components/web_distiller/content/browser/distiller_javascript_utils.h"
+#include "components/web_distiller/content/browser/distiller_page_web_contents.h"
+#include "components/web_distiller/core/distiller_page.h"
+#include "components/web_distiller/core/task_tracker.h"
+#include "components/web_distiller/core/web_distiller_service.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -113,25 +113,25 @@ using read_anything::mojom::UntrustedPageHandler;
 using read_anything::mojom::VoicePackInstallationState;
 
 // A helper class that orchestrates Readability page distillation using the
-// DomDistillerService.
+// WebDistillerService.
 //
 // It triggers distillation via StartDistillation() and implements the
-// dom_distiller::ViewRequestDelegate interface to receive the results.
+// web_distiller::ViewRequestDelegate interface to receive the results.
 //
-// It holds a dom_distiller::ViewerHandle to manage the lifetime of the active
+// It holds a web_distiller::ViewerHandle to manage the lifetime of the active
 // distillation request. Resetting or replacing this handle cancels any
 // outstanding request, ensuring that only one distillation request is active
 // at any given time. Once distillation completes, it forwards the resulting
 // article to the enclosing ReadAnythingUntrustedPageHandler.
 class ReadAnythingUntrustedPageHandler::ReadabilityDistillerDelegate
-    : public dom_distiller::ViewRequestDelegate {
+    : public web_distiller::ViewRequestDelegate {
  public:
   explicit ReadabilityDistillerDelegate(
       ReadAnythingUntrustedPageHandler* handler)
       : handler_(handler) {}
   ~ReadabilityDistillerDelegate() override = default;
 
-  void StartDistillation(dom_distiller::DomDistillerService* service,
+  void StartDistillation(web_distiller::WebDistillerService* service,
                          content::WebContents* contents) {
     start_time_ = base::TimeTicks::Now();
     // If existing distillation request, cancel it. This removes delegate as
@@ -141,7 +141,7 @@ class ReadAnythingUntrustedPageHandler::ReadabilityDistillerDelegate
     viewer_handle_ = service->ViewUrlIgnoreCache(
         this,
         service->CreateDefaultDistillerPageWithHandle(
-            std::make_unique<dom_distiller::SourcePageHandleWebContents>(
+            std::make_unique<web_distiller::SourcePageHandleWebContents>(
                 contents, /*owned=*/false)),
         url);
   }
@@ -154,9 +154,9 @@ class ReadAnythingUntrustedPageHandler::ReadabilityDistillerDelegate
     start_time_ = base::TimeTicks();
   }
 
-  // dom_distiller::ViewRequestDelegate:
+  // web_distiller::ViewRequestDelegate:
   void OnArticleReady(
-      const dom_distiller::DistilledArticleProto* article_proto) override {
+      const web_distiller::DistilledArticleProto* article_proto) override {
     CHECK(!start_time_.is_null());
     base::UmaHistogramMediumTimes(
         "Accessibility.ReadAnything.TimeFromStartDistillationToOnArticleReady",
@@ -167,7 +167,7 @@ class ReadAnythingUntrustedPageHandler::ReadabilityDistillerDelegate
 
  private:
   raw_ptr<ReadAnythingUntrustedPageHandler> handler_;
-  std::unique_ptr<dom_distiller::ViewerHandle> viewer_handle_;
+  std::unique_ptr<web_distiller::ViewerHandle> viewer_handle_;
   base::TimeTicks start_time_;
 };
 
@@ -539,8 +539,8 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 
   if (features::IsReadAnythingWithReadabilityEnabled()) {
     // Set the JavaScript world ID.
-    if (!dom_distiller::DistillerJavaScriptWorldIdIsSet()) {
-      dom_distiller::SetDistillerJavaScriptWorldId(
+    if (!web_distiller::DistillerJavaScriptWorldIdIsSet()) {
+      web_distiller::SetDistillerJavaScriptWorldId(
           ISOLATED_WORLD_ID_CHROME_INTERNAL);
     }
 
@@ -1927,16 +1927,16 @@ bool ReadAnythingUntrustedPageHandler::MaybeStartReadabilityDistillation(
     return false;
   }
 
-  dom_distiller::DomDistillerService* dom_distiller_service =
+  web_distiller::WebDistillerService* web_distiller_service =
       reader_mode::ReaderModeServiceFactory::GetForBrowserContext(
           content->GetBrowserContext());
-  CHECK(dom_distiller_service, base::NotFatalUntil::M162);
+  CHECK(web_distiller_service, base::NotFatalUntil::M162);
   if (!features::IsReadAnythingDistillerRefactorEnabled()) {
     page_->OnReadabilityDistillationStateChanged(
         read_anything::mojom::ReadAnythingDistillationState::
             kDistillationInProgress);
   }
-  distiller_delegate_->StartDistillation(dom_distiller_service, content);
+  distiller_delegate_->StartDistillation(web_distiller_service, content);
   return true;
 }
 
@@ -1996,7 +1996,7 @@ void ReadAnythingUntrustedPageHandler::RecordDistillationSchemeHistogram(
 }
 
 void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(
-    const dom_distiller::DistilledArticleProto* article_proto) {
+    const web_distiller::DistilledArticleProto* article_proto) {
   CHECK(features::IsReadAnythingWithReadabilityEnabled() &&
         !is_pdf_with_frame_);
   if (article_proto && article_proto->pages_size() > 0) {

@@ -22,7 +22,6 @@ source_set("model") {
     "//base",
     "//components/bookmarks/browser",
     "//components/browser_sync",
-    "//components/dom_distiller/core",
     "//components/history/core/browser",
     "//components/history/core/common",
     "//components/history/ios/browser",
@@ -31,6 +30,7 @@ source_set("model") {
     "//components/prefs",
     "//components/sync",
     "//components/version_info",
+    "//components/web_distiller/core",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
@@ -57,7 +57,7 @@ source_set("utils") {
     "history_utils.h",
   ]
   deps = [
-    "//components/dom_distiller/core",
+    "//components/web_distiller/core",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/components/webui:url_constants",
     "//url",

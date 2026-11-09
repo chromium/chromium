@@ -21,13 +21,13 @@
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
-#include "components/dom_distiller/core/url_constants.h"
-#include "components/dom_distiller/core/url_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/web_distiller/core/url_constants.h"
+#include "components/web_distiller/core/url_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
@@ -150,9 +150,9 @@ GURL GetURLToBookmark(content::WebContents* web_contents) {
   }
   // Users cannot bookmark Reader Mode pages directly, so the bookmark
   // interaction is as if it were with the original page.
-  if (dom_distiller::url_utils::IsDistilledPage(
+  if (web_distiller::url_utils::IsDistilledPage(
           web_contents->GetVisibleURL())) {
-    return dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
+    return web_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
         web_contents->GetVisibleURL());
   }
   return web_contents->GetVisibleURL();
@@ -166,12 +166,12 @@ bool GetURLAndTitleToBookmark(content::WebContents* web_contents,
     return false;
   }
   *url = u;
-  if (dom_distiller::url_utils::IsDistilledPage(
+  if (web_distiller::url_utils::IsDistilledPage(
           web_contents->GetVisibleURL())) {
     // Users cannot bookmark Reader Mode pages directly. Instead, a bookmark
     // is added for the original page and original title.
     *title =
-        base::UTF8ToUTF16(dom_distiller::url_utils::GetTitleFromDistillerUrl(
+        base::UTF8ToUTF16(web_distiller::url_utils::GetTitleFromDistillerUrl(
             web_contents->GetVisibleURL()));
   } else {
     *title = web_contents->GetTitle();

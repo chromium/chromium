@@ -9,13 +9,13 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/contextual_tasks/public/features.h"
-#include "components/dom_distiller/core/url_constants.h"
-#include "components/dom_distiller/core/url_utils.h"
 #include "components/omnibox/browser/location_bar_model_delegate.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/web_distiller/core/url_constants.h"
+#include "components/web_distiller/core/url_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
@@ -157,11 +157,11 @@ TEST_F(LocationBarModelImplTest, FormatsReaderModeUrls) {
   EXPECT_EQ(u"www.example.com/article.html/TestSuffix",
             originalFormattedFullUrl);
 
-  GURL distilled = dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
-      dom_distiller::kDomDistillerScheme, http_url, "title");
+  GURL distilled = web_distiller::url_utils::GetDistillerViewUrlFromUrl(
+      web_distiller::kWebDistillerScheme, http_url, "title");
   // Ensure the test is set up properly by checking the reader mode URL has
   // the reader mode scheme.
-  EXPECT_EQ(dom_distiller::kDomDistillerScheme, distilled.GetScheme());
+  EXPECT_EQ(web_distiller::kWebDistillerScheme, distilled.GetScheme());
   delegate()->SetURL(distilled);
 
   // The user should see the same URL seen for the original article.
@@ -171,8 +171,8 @@ TEST_F(LocationBarModelImplTest, FormatsReaderModeUrls) {
   // Similarly, https scheme should also be hidden, except from
   // GetFormattedFullURL, because kFormatUrlOmitDefaults does not omit https.
   const GURL https_url("https://www.example.com/article.html");
-  distilled = dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
-      dom_distiller::kDomDistillerScheme, https_url, "title");
+  distilled = web_distiller::url_utils::GetDistillerViewUrlFromUrl(
+      web_distiller::kWebDistillerScheme, https_url, "title");
   delegate()->SetURL(distilled);
   EXPECT_EQ(originalDisplayUrl, model()->GetURLForDisplay());
   EXPECT_EQ(u"https://www.example.com/article.html/TestSuffix",

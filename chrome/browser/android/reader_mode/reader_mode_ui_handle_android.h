@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ANDROID_READER_MODE_READER_MODE_UI_HANDLE_ANDROID_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/dom_distiller/core/distiller_ui_handle.h"
+#include "components/web_distiller/core/distiller_ui_handle.h"
 
 namespace content {
 class RenderFrameHost;
@@ -14,7 +14,7 @@ class RenderFrameHost;
 
 namespace reader_mode::android {
 
-class ReaderModeUIHandleAndroid : public dom_distiller::DistillerUIHandle {
+class ReaderModeUIHandleAndroid : public web_distiller::DistillerUIHandle {
  public:
   ReaderModeUIHandleAndroid() = default;
 

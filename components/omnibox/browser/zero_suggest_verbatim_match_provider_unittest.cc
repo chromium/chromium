@@ -12,8 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/android_buildflags.h"
-#include "components/dom_distiller/core/url_constants.h"
-#include "components/dom_distiller/core/url_utils.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
@@ -22,6 +20,8 @@
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engines_test_environment.h"
+#include "components/web_distiller/core/url_constants.h"
+#include "components/web_distiller/core/url_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/device_form_factor.h"
@@ -355,8 +355,8 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
        UpdateFillIntoEditWhenUrlIsDistilledPage) {
   GURL original_url("https://www.wired.com/article");
 
-  GURL distilled_url = dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
-      dom_distiller::kDomDistillerScheme, original_url, "");
+  GURL distilled_url = web_distiller::url_utils::GetDistillerViewUrlFromUrl(
+      web_distiller::kWebDistillerScheme, original_url, "");
 
   AutocompleteInput input(std::u16string(), GetParam(), TestSchemeClassifier());
   input.set_current_title(u"title");
@@ -364,7 +364,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
   GURL extracted_original_url =
-      dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(distilled_url);
+      web_distiller::url_utils::GetOriginalUrlFromDistillerUrl(distilled_url);
 
   ASSERT_TRUE(extracted_original_url.is_valid());
 

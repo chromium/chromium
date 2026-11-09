@@ -95,9 +95,9 @@ import org.chromium.components.commerce.core.IdentifierType;
 import org.chromium.components.commerce.core.ManagementType;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.SubscriptionType;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -324,7 +324,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @Contract("null -> false")
     public boolean isReaderModeShowing(@Nullable Tab currentTab) {
-        return currentTab != null && DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl());
+        return currentTab != null && WebDistillerUrlUtils.isDistilledPage(currentTab.getUrl());
     }
 
     /** Construct the reader mode menu item. */
@@ -334,7 +334,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                         mContext,
                         mAppMenuItemTheme,
                         R.id.reader_mode_menu_id,
-                        DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl())
+                        WebDistillerUrlUtils.isDistilledPage(currentTab.getUrl())
                                 ? R.string.hide_reading_mode_text
                                 : R.string.show_reading_mode_text,
                         showIcon ? R.drawable.ic_mobile_friendly_24dp : 0,

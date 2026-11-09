@@ -948,12 +948,12 @@ if (_is_default_toolchain) {
 
     deps = [
       ":concatenate_resources_allowlists",
-      "//components/dom_distiller/core:dom_distiller_viewer_js",
       "//components/neterror/resources:bundle_js",
       "//components/resources:about_credits",
       "//components/resources/ssl/ssl_error_assistant:make_ssl_error_assistant_protobuf",
       "//components/security_interstitials/content/resources:build_ts",
       "//components/security_interstitials/core/browser/resources:bundle_js",
+      "//components/web_distiller/core:web_distiller_viewer_js",
     ]
 
     if (enable_supervised_users) {

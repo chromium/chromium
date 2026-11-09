@@ -43,9 +43,9 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
-import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
-import org.chromium.components.dom_distiller.core.DomDistillerService;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
+import org.chromium.components.web_distiller.core.DistilledPagePrefs;
+import org.chromium.components.web_distiller.core.WebDistillerService;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtilsJni;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
@@ -61,9 +61,9 @@ public class ReaderModeToolbarButtonControllerTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ReaderModeManager mMockReaderModeManager;
     @Mock private ModalDialogManager mMockModalDialogManager;
-    @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
+    @Mock private WebDistillerUrlUtilsJni mWebDistillerUrlUtilsJni;
     @Mock private Profile mProfile;
-    @Mock private DomDistillerService mDomDistillerService;
+    @Mock private WebDistillerService mWebDistillerService;
     @Mock private ReaderModeServiceFactoryJni mReaderModeServiceFactoryJni;
     @Mock private DistilledPagePrefs mDistilledPagePrefs;
     @Mock private ManagedBottomSheetController mBottomSheetController;
@@ -100,10 +100,10 @@ public class ReaderModeToolbarButtonControllerTest {
         mUserDataHost.setUserData(ReaderModeManager.USER_DATA_KEY, mMockReaderModeManager);
         mReaderModeIphControllerSupplier.set(mReaderModeIphController);
 
-        when(mDomDistillerService.getDistilledPagePrefs()).thenReturn(mDistilledPagePrefs);
-        when(mReaderModeServiceFactoryJni.getForProfile(any())).thenReturn(mDomDistillerService);
+        when(mWebDistillerService.getDistilledPagePrefs()).thenReturn(mDistilledPagePrefs);
+        when(mReaderModeServiceFactoryJni.getForProfile(any())).thenReturn(mWebDistillerService);
         ReaderModeServiceFactoryJni.setInstanceForTesting(mReaderModeServiceFactoryJni);
-        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
+        WebDistillerUrlUtilsJni.setInstanceForTesting(mWebDistillerUrlUtilsJni);
     }
 
     private ReaderModeToolbarButtonController createController() {
@@ -129,7 +129,7 @@ public class ReaderModeToolbarButtonControllerTest {
         ReaderModeToolbarButtonController controller = createController();
 
         when(mMockTab.getUrl()).thenReturn(new GURL("chrome-distiller://test"));
-        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
 
         ButtonData readerModeButton = controller.get(mMockTab);
         readerModeButton.getButtonSpec().getOnClickListener().onClick(null);
@@ -149,7 +149,7 @@ public class ReaderModeToolbarButtonControllerTest {
 
         // Simulate the url changing to reader mode, and verify that the button was swapped.
         when(mMockTab.getUrl()).thenReturn(new GURL("chrome-distiller://test"));
-        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
         controller.getTabSupplierObserverForTesting().onUrlUpdated(mMockTab);
         assertEquals(
                 "Hide Reading mode",
@@ -161,7 +161,7 @@ public class ReaderModeToolbarButtonControllerTest {
 
         // Simulate the url changing to something else, and verify that the button was swapped back.
         when(mMockTab.getUrl()).thenReturn(new GURL("http://test.com"));
-        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(false);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(false);
         controller.getTabSupplierObserverForTesting().onUrlUpdated(mMockTab);
         assertEquals(
                 R.string.reader_mode_cpa_button_text,
@@ -169,7 +169,7 @@ public class ReaderModeToolbarButtonControllerTest {
 
         // Flip it back
         when(mMockTab.getUrl()).thenReturn(new GURL("chrome-distiller://test"));
-        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
         controller.getTabSupplierObserverForTesting().onUrlUpdated(mMockTab);
         assertEquals(
                 "Hide Reading mode",
@@ -188,7 +188,7 @@ public class ReaderModeToolbarButtonControllerTest {
         ReaderModeToolbarButtonController controller = createController();
 
         when(mMockTab.getUrl()).thenReturn(new GURL("chrome-distiller://test"));
-        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
         controller.getTabSupplierObserverForTesting().onUrlUpdated(mMockTab);
         assertTrue(controller.shouldShowButton(mMockTab));
 
@@ -228,11 +228,11 @@ public class ReaderModeToolbarButtonControllerTest {
     @Test
     public void testExitFromDistilledPage_suppressesButton() {
         ReaderModeToolbarButtonController controller = createController();
-        when(mDomDistillerUrlUtilsJni.isDistilledPage("chrome-distiller://test")).thenReturn(true);
-        when(mDomDistillerUrlUtilsJni.isDistilledPage("chrome-distiller://test/")).thenReturn(true);
-        when(mDomDistillerUrlUtilsJni.isDistilledPage("http://test.com")).thenReturn(false);
-        when(mDomDistillerUrlUtilsJni.isDistilledPage("http://test.com/")).thenReturn(false);
-        when(mDomDistillerUrlUtilsJni.getOriginalUrlFromDistillerUrl(any()))
+        when(mWebDistillerUrlUtilsJni.isDistilledPage("chrome-distiller://test")).thenReturn(true);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage("chrome-distiller://test/")).thenReturn(true);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage("http://test.com")).thenReturn(false);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage("http://test.com/")).thenReturn(false);
+        when(mWebDistillerUrlUtilsJni.getOriginalUrlFromDistillerUrl(any()))
                 .thenReturn(new GURL("http://test.com"));
 
         when(mMockTab.getUrl()).thenReturn(new GURL("http://test.com"));
@@ -254,12 +254,12 @@ public class ReaderModeToolbarButtonControllerTest {
     @Test
     public void testExitFromDistilledPage_navigatingToDifferentUrl_doesNotSuppressButton() {
         ReaderModeToolbarButtonController controller = createController();
-        when(mDomDistillerUrlUtilsJni.isDistilledPage("chrome-distiller://test")).thenReturn(true);
-        when(mDomDistillerUrlUtilsJni.isDistilledPage("chrome-distiller://test/")).thenReturn(true);
-        when(mDomDistillerUrlUtilsJni.isDistilledPage("http://test.com")).thenReturn(false);
-        when(mDomDistillerUrlUtilsJni.isDistilledPage("http://test.com/")).thenReturn(false);
-        when(mDomDistillerUrlUtilsJni.isDistilledPage("http://other.com")).thenReturn(false);
-        when(mDomDistillerUrlUtilsJni.getOriginalUrlFromDistillerUrl(any()))
+        when(mWebDistillerUrlUtilsJni.isDistilledPage("chrome-distiller://test")).thenReturn(true);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage("chrome-distiller://test/")).thenReturn(true);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage("http://test.com")).thenReturn(false);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage("http://test.com/")).thenReturn(false);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage("http://other.com")).thenReturn(false);
+        when(mWebDistillerUrlUtilsJni.getOriginalUrlFromDistillerUrl(any()))
                 .thenReturn(new GURL("http://test.com"));
 
         when(mMockTab.getUrl()).thenReturn(new GURL("http://test.com"));

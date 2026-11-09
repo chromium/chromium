@@ -10,13 +10,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/contextual_tasks/public/features.h"
-#include "components/dom_distiller/core/url_constants.h"
-#include "components/dom_distiller/core/url_utils.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/location_bar_model_util.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/web_distiller/core/url_constants.h"
+#include "components/web_distiller/core/url_utils.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -182,8 +182,8 @@ void AdjustTextForCopy(
     // Don't let users copy Reader Mode page URLs.
     // We display the original article's URL in the omnibox, so users will
     // expect that to be what is copied to the clipboard.
-    if (dom_distiller::url_utils::IsDistilledPage(*url_from_text)) {
-      *url_from_text = dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
+    if (web_distiller::url_utils::IsDistilledPage(*url_from_text)) {
+      *url_from_text = web_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
           *url_from_text);
     }
     // Don't let users copy Contextual Task URLs. We should let them copy the

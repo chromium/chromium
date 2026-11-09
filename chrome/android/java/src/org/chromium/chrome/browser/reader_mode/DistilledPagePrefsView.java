@@ -27,9 +27,9 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
-import org.chromium.dom_distiller.mojom.FontFamily;
-import org.chromium.dom_distiller.mojom.Theme;
+import org.chromium.components.web_distiller.core.DistilledPagePrefs;
+import org.chromium.web_distiller.mojom.FontFamily;
+import org.chromium.web_distiller.mojom.Theme;
 
 import java.text.NumberFormat;
 import java.util.HashMap;
@@ -115,7 +115,7 @@ public class DistilledPagePrefsView extends LinearLayout
 
     private void initFontFamilySpinner() {
         // These must be kept in sync (and in-order) with
-        // components/dom_distiller/core/font_family_list.h
+        // components/web_distiller/core/font_family_list.h
         // TODO(wychen): fix getStringArray issue (https://crbug.com/40558544#comment3)
         String[] fonts = {
             getResources().getString(R.string.sans_serif),

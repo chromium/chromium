@@ -6,8 +6,8 @@
 
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
-#import "components/dom_distiller/core/distilled_page_prefs.h"
-#import "components/dom_distiller/ios/distilled_page_prefs_observer_bridge.h"
+#import "components/web_distiller/core/distilled_page_prefs.h"
+#import "components/web_distiller/ios/distilled_page_prefs_observer_bridge.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -41,12 +41,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @end
 
 @implementation ReaderModeSettingsTableViewController {
-  raw_ptr<dom_distiller::DistilledPagePrefs> _distilledPagePrefs;
+  raw_ptr<web_distiller::DistilledPagePrefs> _distilledPagePrefs;
   std::unique_ptr<DistilledPagePrefsObserverBridge> _observerBridge;
 }
 
 - (instancetype)initWithDistilledPagePrefs:
-                    (dom_distiller::DistilledPagePrefs*)distilledPagePrefs
+                    (web_distiller::DistilledPagePrefs*)distilledPagePrefs
                                prefService:(PrefService*)prefService {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {

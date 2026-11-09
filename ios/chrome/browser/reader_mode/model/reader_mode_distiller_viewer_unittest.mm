@@ -5,8 +5,8 @@
 #import <string>
 
 #import "base/test/ios/wait_util.h"
-#import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
-#import "components/dom_distiller/core/viewer.h"
+#import "components/web_distiller/core/mojom/distilled_page_prefs.mojom.h"
+#import "components/web_distiller/core/viewer.h"
 #import "ios/chrome/test/ios_chrome_test_with_web_state.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -39,9 +39,9 @@ TEST_F(ReaderModeDistillerViewerTest,
                       web_state());
 
   // Generate article template HTML with the CSP nonce.
-  std::string html = dom_distiller::viewer::GetArticleTemplateHtml(
-      dom_distiller::mojom::Theme::kLight,
-      dom_distiller::mojom::FontFamily::kSansSerif, csp_nonce);
+  std::string html = web_distiller::viewer::GetArticleTemplateHtml(
+      web_distiller::mojom::Theme::kLight,
+      web_distiller::mojom::FontFamily::kSansSerif, csp_nonce);
 
   // Embed an inline event handler on an image that fails to load (surviving
   // distillation), an un-nonced script, and a valid nonced script representing
@@ -101,9 +101,9 @@ TEST_F(ReaderModeDistillerViewerTest,
                       web_state());
 
   // Generate article template HTML without a CSP nonce.
-  std::string html = dom_distiller::viewer::GetArticleTemplateHtml(
-      dom_distiller::mojom::Theme::kLight,
-      dom_distiller::mojom::FontFamily::kSansSerif,
+  std::string html = web_distiller::viewer::GetArticleTemplateHtml(
+      web_distiller::mojom::Theme::kLight,
+      web_distiller::mojom::FontFamily::kSansSerif,
       /*csp_nonce=*/"");
 
   html += "<div id='content'>";

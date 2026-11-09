@@ -7,8 +7,8 @@
 #import <memory>
 
 #import "base/strings/utf_string_conversions.h"
-#import "components/dom_distiller/core/distiller_options.h"
-#import "components/dom_distiller/core/extraction_utils.h"
+#import "components/web_distiller/core/distiller_options.h"
+#import "components/web_distiller/core/extraction_utils.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -22,7 +22,7 @@ class ReaderModeDistillerPageTest : public PlatformTest {
     distiller_page_ = std::make_unique<ReaderModeDistillerPage>(&web_state_);
 
     distiller_script_ =
-        dom_distiller::GetDistillerScript(dom_distiller::DistillerOptions());
+        web_distiller::GetDistillerScript(web_distiller::DistillerOptions());
 
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     web_frames_manager_ = frames_manager.get();

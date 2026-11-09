@@ -7,13 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
-#import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
+#import "components/web_distiller/core/mojom/distilled_page_prefs.mojom.h"
 
 // Mutator protocol for Reader mode options.
 @protocol ReaderModeOptionsMutator <NSObject>
 
 // Sets the font family for Reader mode.
-- (void)setFontFamily:(dom_distiller::mojom::FontFamily)fontFamily;
+- (void)setFontFamily:(web_distiller::mojom::FontFamily)fontFamily;
 
 // Increases the font size.
 - (void)increaseFontSize;
@@ -22,7 +22,7 @@
 - (void)decreaseFontSize;
 
 // Sets the theme for the Reader mode page.
-- (void)setTheme:(dom_distiller::mojom::Theme)theme;
+- (void)setTheme:(web_distiller::mojom::Theme)theme;
 
 // Hides Reader mode.
 - (void)hideReaderMode;

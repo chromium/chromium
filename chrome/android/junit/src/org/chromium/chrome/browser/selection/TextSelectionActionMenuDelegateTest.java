@@ -50,10 +50,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.reader_mode.ReaderModeManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.MockTab;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtilsJni;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionMenuItem.ItemGroupOffset;
@@ -72,7 +72,7 @@ public class TextSelectionActionMenuDelegateTest {
     @Mock private ReaderModeManager mReaderModeManager;
     @Mock private WebContents mWebContents;
     @Mock private RenderFrameHost mRenderFrameHost;
-    @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
+    @Mock private WebDistillerUrlUtilsJni mWebDistillerUrlUtilsJni;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private TemplateUrl mTemplateUrl;
     @Mock private GlicKeyedService mGlicKeyedService;
@@ -100,8 +100,8 @@ public class TextSelectionActionMenuDelegateTest {
         FeatureOverrides.disable(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU);
         FeatureOverrides.disable(ChromeFeatureList.COPY_LINK_TO_HIGHLIGHT);
 
-        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
-        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(false);
+        WebDistillerUrlUtilsJni.setInstanceForTesting(mWebDistillerUrlUtilsJni);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(false);
         when(mWebContents.getFocusedFrame()).thenReturn(mRenderFrameHost);
 
         GlicMetricsJni.setInstanceForTesting(mGlicMetricsJni);
@@ -185,7 +185,7 @@ public class TextSelectionActionMenuDelegateTest {
     public void testGetAdditionalMenuItems_distilledPage() {
         GURL url = new GURL(UrlConstants.DISTILLER_SCHEME + "://example.com");
         mTab.setUrl(url);
-        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
 
         List<SelectionMenuItem> items =
                 mDelegate.getAdditionalMenuItems(

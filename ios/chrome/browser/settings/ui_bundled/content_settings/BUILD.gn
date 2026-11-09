@@ -74,8 +74,8 @@ source_set("ui") {
   ]
   deps = [
     "//base",
-    "//components/dom_distiller/core",
-    "//components/dom_distiller/ios",
+    "//components/web_distiller/core",
+    "//components/web_distiller/ios",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/reader_mode/ui:constants",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
@@ -103,10 +103,10 @@ source_set("unit_tests") {
     ":ui",
     "//base/test:test_support",
     "//components/content_settings/core/browser",
-    "//components/dom_distiller/core",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
     "//components/prefs:test_support",
+    "//components/web_distiller/core",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",

@@ -35,12 +35,12 @@
 #include "chrome/grit/common_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crash/core/common/crash_key.h"
-#include "components/dom_distiller/core/url_constants.h"
 #include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
 #include "components/heap_profiling/in_process/child_process_snapshot_controller.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/heap_profiling/in_process/mojom/snapshot_controller.mojom.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/web_distiller/core/url_constants.h"
 #include "content/public/common/buildflags.h"
 #include "content/public/common/cdm_info.h"
 #include "content/public/common/content_constants.h"
@@ -196,7 +196,7 @@ static const char* const kChromeStandardURLSchemes[] = {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
     chrome::kChromeNativeScheme,        chrome::kChromeSearchScheme,
-    dom_distiller::kDomDistillerScheme,
+    web_distiller::kWebDistillerScheme,
 #if BUILDFLAG(IS_ANDROID)
     content::kAndroidAppScheme,
 #endif
@@ -208,7 +208,7 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
 
 #if BUILDFLAG(IS_ANDROID)
   schemes->referrer_schemes.push_back(content::kAndroidAppScheme);
-  schemes->referrer_schemes.push_back(dom_distiller::kDomDistillerScheme);
+  schemes->referrer_schemes.push_back(web_distiller::kWebDistillerScheme);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -226,7 +226,7 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->savable_schemes.push_back(extensions::kExtensionScheme);
 #endif
   schemes->savable_schemes.push_back(chrome::kChromeSearchScheme);
-  schemes->savable_schemes.push_back(dom_distiller::kDomDistillerScheme);
+  schemes->savable_schemes.push_back(web_distiller::kWebDistillerScheme);
 
   // chrome-search: resources shouldn't trigger insecure content warnings.
   schemes->secure_schemes.push_back(chrome::kChromeSearchScheme);

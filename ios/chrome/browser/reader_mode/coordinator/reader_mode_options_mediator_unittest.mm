@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_options_mediator.h"
 
 #import "base/test/task_environment.h"
-#import "components/dom_distiller/core/distilled_page_prefs.h"
+#import "components/web_distiller/core/distilled_page_prefs.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web_distiller/model/distiller_service.h"

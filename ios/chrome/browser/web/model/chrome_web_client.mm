@@ -25,7 +25,6 @@
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/programmatic_form_submission_handler_java_script_feature.h"
-#import "components/dom_distiller/core/url_constants.h"
 #import "components/enterprise/connectors/core/features.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/google/core/common/google_util.h"
@@ -42,6 +41,7 @@
 #import "components/sync/base/features.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
 #import "components/version_info/version_info.h"
+#import "components/web_distiller/core/url_constants.h"
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
@@ -410,7 +410,7 @@ scoped_refptr<base::RefCountedMemory> ChromeWebClient::GetDataResourceBytes(
 
 void ChromeWebClient::GetAdditionalWebUISchemes(
     std::vector<std::string>* additional_schemes) {
-  additional_schemes->push_back(dom_distiller::kDomDistillerScheme);
+  additional_schemes->push_back(web_distiller::kWebDistillerScheme);
 }
 
 void ChromeWebClient::PostBrowserURLRewriterCreation(

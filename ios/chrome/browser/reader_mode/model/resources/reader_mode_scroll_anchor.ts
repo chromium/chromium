@@ -54,7 +54,7 @@ function findScrollAnchor(): void {
   if (savedAnchor) {
     const pText = savedAnchor.paragraph.innerText;
     // The hashing method must be consistent with `scrollToParagraphByHash` in
-    // `components/dom_distiller/core/javascript/dom_distiller_viewer_main.js`.
+    // `components/web_distiller/core/javascript/web_distiller_viewer_main.js`.
     const hashCode = (s: string) =>
         s.split('').reduce((a, b) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0);
     sendWebKitMessage('ReaderModeScrollAnchorMessageHandler', {

@@ -7,9 +7,9 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
-namespace dom_distiller {
+namespace web_distiller {
 class DistilledPagePrefs;
-}  // namespace dom_distiller
+}  // namespace web_distiller
 
 class PrefService;
 
@@ -20,7 +20,7 @@ class PrefService;
 // The designated initializer. `distilledPagePrefs` and `prefService` must not
 // be null.
 - (instancetype)initWithDistilledPagePrefs:
-                    (dom_distiller::DistilledPagePrefs*)distilledPagePrefs
+                    (web_distiller::DistilledPagePrefs*)distilledPagePrefs
                                prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 

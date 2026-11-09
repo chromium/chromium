@@ -11,7 +11,7 @@ source_set("coordinator") {
   ]
   deps = [
     ":ui",
-    "//components/dom_distiller/core",
+    "//components/web_distiller/core",
     "//ios/chrome/browser/presenters/ui_bundled",
     "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/reader_mode/ui:constants",

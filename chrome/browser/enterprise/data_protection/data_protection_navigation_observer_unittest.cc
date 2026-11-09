@@ -29,8 +29,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/dom_distiller/core/url_constants.h"
-#include "components/dom_distiller/core/url_utils.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
@@ -50,6 +48,8 @@
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/web_distiller/core/url_constants.h"
+#include "components/web_distiller/core/url_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -538,8 +538,8 @@ TEST_F(DataProtectionNavigationObserverTest,
   NavigateAndCommit(GURL("https://previous.com/"));
   const GURL original_url("https://example.com/article");
   const GURL distilled_url =
-      dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
-          dom_distiller::kDomDistillerScheme, original_url, "Article Title");
+      web_distiller::url_utils::GetDistillerViewUrlFromUrl(
+          web_distiller::kWebDistillerScheme, original_url, "Article Title");
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   base::RunLoop run_loop;
@@ -575,8 +575,8 @@ TEST_F(DataProtectionNavigationObserverTest,
   scoped_feature_list.InitAndDisableFeature(kEnterpriseTabTitleReporting);
   const GURL original_url("https://example.com/article");
   const GURL distilled_url =
-      dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
-          dom_distiller::kDomDistillerScheme, original_url, "Article Title");
+      web_distiller::url_utils::GetDistillerViewUrlFromUrl(
+          web_distiller::kWebDistillerScheme, original_url, "Article Title");
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   base::RunLoop run_loop;
@@ -1697,8 +1697,8 @@ TEST_F(DataProtectionNavigationObserverTest,
       )"});
 
   GURL original_url("https://example.com/article");
-  GURL distilled_url = dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
-      dom_distiller::kDomDistillerScheme, original_url, "Article Title");
+  GURL distilled_url = web_distiller::url_utils::GetDistillerViewUrlFromUrl(
+      web_distiller::kWebDistillerScheme, original_url, "Article Title");
 
   auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
       distilled_url, web_contents());
@@ -1726,8 +1726,8 @@ TEST_F(DataProtectionNavigationObserverTest,
 TEST_F(DataProtectionNavigationObserverTest,
        TestScreenshotUpdated_RTLookup_DistillerUrl_BlockScreenshot) {
   GURL original_url("https://example.com/article");
-  GURL distilled_url = dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
-      dom_distiller::kDomDistillerScheme, original_url, "Article Title");
+  GURL distilled_url = web_distiller::url_utils::GetDistillerViewUrlFromUrl(
+      web_distiller::kWebDistillerScheme, original_url, "Article Title");
 
   lookup_service_.set_should_block_screenshot(true);
   lookup_service_.SetShouldHaveMatchedRule(true);

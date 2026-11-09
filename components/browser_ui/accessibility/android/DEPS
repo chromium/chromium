@@ -1,5 +1,5 @@
 include_rules = [
+  "+components/web_distiller",
   "+content/public/test/android",
-  "+components/dom_distiller",
   "+ui/accessibility",
 ]

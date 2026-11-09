@@ -1669,7 +1669,7 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Content Too Short"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/dom_distiller/core/distiller_page.h:DistillationParseResult) -->
+<!-- LINT.ThenChange(//components/web_distiller/core/distiller_page.h:DistillationParseResult) -->
 
 <!-- LINT.IfChange(DistillationResult)-->
 
@@ -2533,7 +2533,7 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Lexend"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/dom_distiller/core/mojom/distilled_page_prefs.mojom:ReaderModePrefsFontFamily) -->
+<!-- LINT.ThenChange(//components/web_distiller/core/mojom/distilled_page_prefs.mojom:ReaderModePrefsFontFamily) -->
 
 <!-- LINT.IfChange(ReaderModePrefsTheme) -->
 
@@ -2543,7 +2543,7 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Sepia"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/dom_distiller/core/mojom/distilled_page_prefs.mojom:ReaderModePrefsTheme) -->
+<!-- LINT.ThenChange(//components/web_distiller/core/mojom/distilled_page_prefs.mojom:ReaderModePrefsTheme) -->
 
 <!-- LINT.IfChange(SodaLanguageCode) -->
 

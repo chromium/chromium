@@ -9,8 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
-#include "components/dom_distiller/core/dom_distiller_service.h"
-#include "components/dom_distiller/core/task_tracker.h"
+#include "components/web_distiller/core/task_tracker.h"
+#include "components/web_distiller/core/web_distiller_service.h"
 
 class Profile;
 
@@ -19,7 +19,7 @@ namespace reader_mode {
 // A class which helps with lazy instantiation of the distiller service, using
 // the BrowserContextKeyedServiceFactory for it. This class is owned by Profile.
 class LazyReaderModeService
-    : public dom_distiller::DomDistillerServiceInterface,
+    : public web_distiller::WebDistillerServiceInterface,
       public base::SupportsUserData::Data {
  public:
   // Creates and returns an instance for |profile|. This does not pass ownership
@@ -31,28 +31,28 @@ class LazyReaderModeService
 
   ~LazyReaderModeService() override;
 
-  // dom_distiller::DomDistillerServiceInterface implementation:
-  std::unique_ptr<dom_distiller::ViewerHandle> ViewUrl(
-      dom_distiller::ViewRequestDelegate* delegate,
-      std::unique_ptr<dom_distiller::DistillerPage> distiller_page,
+  // web_distiller::WebDistillerServiceInterface implementation:
+  std::unique_ptr<web_distiller::ViewerHandle> ViewUrl(
+      web_distiller::ViewRequestDelegate* delegate,
+      std::unique_ptr<web_distiller::DistillerPage> distiller_page,
       const GURL& url) override;
-  std::unique_ptr<dom_distiller::ViewerHandle> ViewUrlIgnoreCache(
-      dom_distiller::ViewRequestDelegate* delegate,
-      std::unique_ptr<dom_distiller::DistillerPage> distiller_page,
+  std::unique_ptr<web_distiller::ViewerHandle> ViewUrlIgnoreCache(
+      web_distiller::ViewRequestDelegate* delegate,
+      std::unique_ptr<web_distiller::DistillerPage> distiller_page,
       const GURL& url) override;
-  std::unique_ptr<dom_distiller::DistillerPage> CreateDefaultDistillerPage(
+  std::unique_ptr<web_distiller::DistillerPage> CreateDefaultDistillerPage(
       const gfx::Size& render_view_size) override;
-  std::unique_ptr<dom_distiller::DistillerPage>
+  std::unique_ptr<web_distiller::DistillerPage>
   CreateDefaultDistillerPageWithHandle(
-      std::unique_ptr<dom_distiller::SourcePageHandle> handle) override;
-  dom_distiller::DistilledPagePrefs* GetDistilledPagePrefs() override;
-  dom_distiller::DistillerUIHandle* GetDistillerUIHandle() override;
+      std::unique_ptr<web_distiller::SourcePageHandle> handle) override;
+  web_distiller::DistilledPagePrefs* GetDistilledPagePrefs() override;
+  web_distiller::DistillerUIHandle* GetDistillerUIHandle() override;
 
  private:
   explicit LazyReaderModeService(Profile* profile);
 
   // Accessor method for the backing service instance.
-  dom_distiller::DomDistillerServiceInterface* GetImpl() const;
+  web_distiller::WebDistillerServiceInterface* GetImpl() const;
 
   // The Profile to use when retrieving the service and also the profile to
   // listen for destruction of.

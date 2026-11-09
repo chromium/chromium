@@ -30,9 +30,9 @@ import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.security_state.SecurityStateModel;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -144,7 +144,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
                             mKeepHiddenNavigationIds.add(navigation.getNavigationId());
                             return;
                         }
-                        boolean safe = DomDistillerUrlUtils.isDistilledPage(navigation.getUrl());
+                        boolean safe = WebDistillerUrlUtils.isDistilledPage(navigation.getUrl());
                         updateWaitingForLoad(!safe);
                     }
 

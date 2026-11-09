@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -64,6 +63,7 @@ import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtilsJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.ClipboardImpl;
@@ -105,7 +105,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
     @Mock private BookmarkState mBookmarkState;
     @Mock private OmniboxActionDelegate mActionDelegate;
     @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
-    @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
+    @Mock private WebDistillerUrlUtilsJni mWebDistillerUrlUtilsJni;
     @Mock private SadTab mSadTab;
     @Captor private ArgumentCaptor<ClipData> mClipDataCaptor;
 
@@ -168,9 +168,9 @@ public final class EditUrlSuggestionProcessorUnitTest {
         lenient().doReturn(TAB_TITLE).when(mTab).getTitle();
         lenient().doReturn(mTabUserData).when(mTab).getUserDataHost();
         lenient().doReturn(true).when(mTab).isInitialized();
-        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
+        WebDistillerUrlUtilsJni.setInstanceForTesting(mWebDistillerUrlUtilsJni);
         lenient()
-                .when(mDomDistillerUrlUtilsJni.getOriginalUrlFromDistillerUrl(anyString()))
+                .when(mWebDistillerUrlUtilsJni.getOriginalUrlFromDistillerUrl(anyString()))
                 .thenReturn(SEARCH_URL_1);
 
         mProcessor.onOmniboxSessionStateChange(true);
@@ -393,7 +393,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     @Test
     public void copyButton_click_chromeDistillerUrl() {
-        when(mDomDistillerUrlUtilsJni.getOriginalUrlFromDistillerUrl(anyString()))
+        when(mWebDistillerUrlUtilsJni.getOriginalUrlFromDistillerUrl(anyString()))
                 .thenReturn(CHROME_DISTILLER_ORIGINAL_URL);
 
         mProcessor.populateModel(mInput, mChromeDistillerMatch, mModel, 0);

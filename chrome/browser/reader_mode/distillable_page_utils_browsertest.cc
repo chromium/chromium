@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/dom_distiller/content/browser/distillable_page_utils.h"
+#include "components/web_distiller/content/browser/distillable_page_utils.h"
 
 #include <array>
 #include <cstring>
@@ -22,7 +22,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/dom_distiller/core/dom_distiller_switches.h"
+#include "components/web_distiller/core/web_distiller_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -33,11 +33,6 @@
 namespace reader_mode {
 namespace {
 
-using dom_distiller::AddObserver;
-using dom_distiller::DistillabilityObserver;
-using dom_distiller::DistillabilityResult;
-using dom_distiller::GetLatestResult;
-using dom_distiller::RemoveObserver;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Field;
@@ -46,6 +41,11 @@ using ::testing::Not;
 using ::testing::Optional;
 using ::testing::Pointee;
 using ::testing::SizeIs;
+using web_distiller::AddObserver;
+using web_distiller::DistillabilityObserver;
+using web_distiller::DistillabilityResult;
+using web_distiller::GetLatestResult;
+using web_distiller::RemoveObserver;
 
 const char kSimpleArticlePath[] = "/reader_mode/simple_article.html";
 const char kSimpleArticleIFramePath[] =
@@ -85,7 +85,7 @@ template <const char Option[]>
 class TestOption : public InProcessBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kEnableDomDistiller);
+    command_line->AppendSwitch(switches::kEnableWebDistiller);
     command_line->AppendSwitchASCII(switches::kReaderModeHeuristics, Option);
     command_line->AppendSwitch(switches::kEnableDistillabilityService);
   }

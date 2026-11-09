@@ -1,0 +1,189 @@
+# Copyright 2014 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("prefs") {
+  sources = [ "pref_names.h" ]
+}
+
+component("web_distiller_features") {
+  defines = [ "IS_WEB_DISTILLER_FEATURES_IMPL" ]
+
+  sources = [
+    "web_distiller_features.cc",
+    "web_distiller_features.h",
+    "web_distiller_switches.cc",
+    "web_distiller_switches.h",
+  ]
+
+  deps = [
+    ":prefs",
+    "//base",
+  ]
+
+  if (is_android) {
+    deps += [ "//components/web_distiller/core/android:jni_headers" ]
+  }
+}
+
+action("web_distiller_viewer_js") {
+  script = "//mojo/public/tools/bindings/concatenate-files.py"
+  sources = [
+    "javascript/content_processing.js",
+    "javascript/font_size_slider.js",
+    "javascript/image_classifier.js",
+    "javascript/list_classifier.js",
+    "javascript/pinch_handler.js",
+    "javascript/settings_dialog.js",
+    "javascript/web_distiller_viewer_main.js",
+  ]
+  outputs = [ "$target_gen_dir/javascript/web_distiller_viewer.js" ]
+  args = rebase_path(sources, root_build_dir) +
+         rebase_path(outputs, root_build_dir)
+}
+
+static_library("core") {
+  sources = [
+    "article_entry.cc",
+    "article_entry.h",
+    "distillable_page_detector.cc",
+    "distillable_page_detector.h",
+    "distilled_content_store.cc",
+    "distilled_content_store.h",
+    "distilled_page_prefs.cc",
+    "distilled_page_prefs.h",
+    "distiller.cc",
+    "distiller.h",
+    "distiller_options.cc",
+    "distiller_options.h",
+    "distiller_page.cc",
+    "distiller_page.h",
+    "distiller_ui_handle.h",
+    "experiments.cc",
+    "experiments.h",
+    "extraction_utils.cc",
+    "extraction_utils.h",
+    "page_features.cc",
+    "page_features.h",
+    "task_tracker.cc",
+    "task_tracker.h",
+    "url_constants.h",
+    "url_utils.cc",
+    "url_utils.h",
+    "viewer.cc",
+    "viewer.h",
+    "web_distiller_constants.cc",
+    "web_distiller_constants.h",
+    "web_distiller_request_view_base.cc",
+    "web_distiller_request_view_base.h",
+    "web_distiller_service.cc",
+    "web_distiller_service.h",
+  ]
+
+  public_deps = [
+    ":prefs",
+    "//components/web_distiller/core:web_distiller_features",
+    "//components/web_distiller/core/proto",
+    "//net",
+  ]
+  deps = [
+    ":web_distiller_viewer_js",
+    "//base",
+    "//build:blink_buildflags",
+    "//components/leveldb_proto",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/resources",
+    "//components/strings",
+    "//components/variations",
+    "//components/web_distiller/core/mojom",
+    "//skia",
+    "//third_party/re2",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (is_android) {
+    sources += [
+      "distilled_page_prefs_android.cc",
+      "distilled_page_prefs_android.h",
+      "url_utils_android.cc",
+      "web_distiller_service_android.cc",
+      "web_distiller_service_android.h",
+    ]
+    deps += [ "//components/web_distiller/core/android:jni_headers" ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "fake_distiller.cc",
+    "fake_distiller.h",
+    "fake_distiller_page.cc",
+    "fake_distiller_page.h",
+    "test_request_view_handle.h",
+  ]
+
+  deps = [
+    ":core",
+    "//base",
+    "//components/leveldb_proto:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+bundle_data("unit_tests_bundle_data") {
+  visibility = [ ":unit_tests" ]
+  testonly = true
+  sources = [
+    "//components/test/data/web_distiller/core_features.json",
+    "//components/test/data/web_distiller/derived_features.json",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "article_entry_unittest.cc",
+    "distillable_page_detector_unittest.cc",
+    "distilled_content_store_unittest.cc",
+    "distilled_page_prefs_unittest.cc",
+    "distiller_page_unittest.cc",
+    "distiller_unittest.cc",
+    "extraction_utils_unittest.cc",
+    "page_features_unittest.cc",
+    "task_tracker_unittest.cc",
+    "url_utils_unittest.cc",
+    "viewer_unittest.cc",
+    "web_distiller_request_view_base_unittest.cc",
+    "web_distiller_service_unittest.cc",
+  ]
+
+  deps = [
+    ":core",
+    ":test_support",
+    ":unit_tests_bundle_data",
+    "//base",
+    "//components/leveldb_proto:test_support",
+    "//components/resources",
+    "//components/strings",
+    "//components/sync_preferences:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  java_cpp_enum("distiller_type_java") {
+    sources = [ "experiments.h" ]
+  }
+}

@@ -8,7 +8,7 @@
 
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
-#import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
+#import "components/web_distiller/core/mojom/distilled_page_prefs.mojom.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_mutator.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -78,30 +78,30 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(2);
 
 #pragma mark - ReaderModeOptionsConsumer
 
-- (void)setSelectedFontFamily:(dom_distiller::mojom::FontFamily)fontFamily {
+- (void)setSelectedFontFamily:(web_distiller::mojom::FontFamily)fontFamily {
   _fontFamilyButton.menu =
       [self createFontFamilyMenuWithSelectedFamily:fontFamily];
 }
 
-- (void)setSelectedTheme:(dom_distiller::mojom::Theme)theme
-              fromSource:(dom_distiller::ThemeSettingsUpdateSource)source {
+- (void)setSelectedTheme:(web_distiller::mojom::Theme)theme
+              fromSource:(web_distiller::ThemeSettingsUpdateSource)source {
   BOOL systemSelected =
-      source == dom_distiller::ThemeSettingsUpdateSource::kSystem;
+      source == web_distiller::ThemeSettingsUpdateSource::kSystem;
   _lightThemeButton.configuration = [self
       createLightThemeButtonConfigurationSelected:
-          theme == dom_distiller::mojom::Theme::kLight && !systemSelected];
+          theme == web_distiller::mojom::Theme::kLight && !systemSelected];
   _lightThemeButton.selected =
-      theme == dom_distiller::mojom::Theme::kLight && !systemSelected;
+      theme == web_distiller::mojom::Theme::kLight && !systemSelected;
   _sepiaThemeButton.configuration = [self
       createSepiaThemeButtonConfigurationSelected:
-          theme == dom_distiller::mojom::Theme::kSepia && !systemSelected];
+          theme == web_distiller::mojom::Theme::kSepia && !systemSelected];
   _sepiaThemeButton.selected =
-      theme == dom_distiller::mojom::Theme::kSepia && !systemSelected;
+      theme == web_distiller::mojom::Theme::kSepia && !systemSelected;
   _darkThemeButton.configuration =
       [self createDarkThemeButtonConfigurationSelected:
-                theme == dom_distiller::mojom::Theme::kDark && !systemSelected];
+                theme == web_distiller::mojom::Theme::kDark && !systemSelected];
   _darkThemeButton.selected =
-      theme == dom_distiller::mojom::Theme::kDark && !systemSelected;
+      theme == web_distiller::mojom::Theme::kDark && !systemSelected;
 }
 
 - (void)setDecreaseFontSizeButtonEnabled:(BOOL)enabled {
@@ -141,17 +141,17 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(2);
 
 // Select the light theme using the mutator.
 - (void)selectLightTheme:(id)sender {
-  [self.mutator setTheme:dom_distiller::mojom::Theme::kLight];
+  [self.mutator setTheme:web_distiller::mojom::Theme::kLight];
 }
 
 // Select the sepia theme using the mutator.
 - (void)selectSepiaTheme:(id)sender {
-  [self.mutator setTheme:dom_distiller::mojom::Theme::kSepia];
+  [self.mutator setTheme:web_distiller::mojom::Theme::kSepia];
 }
 
 // Select the dark theme using the mutator.
 - (void)selectDarkTheme:(id)sender {
-  [self.mutator setTheme:dom_distiller::mojom::Theme::kDark];
+  [self.mutator setTheme:web_distiller::mojom::Theme::kDark];
 }
 
 #pragma mark - Stacks creation helpers
@@ -256,29 +256,29 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(2);
       kReaderModeOptionsFontFamilyButtonAccessibilityIdentifier;
   // By default show Sans-Serif as the selected font family.
   button.menu = [self createFontFamilyMenuWithSelectedFamily:
-                          dom_distiller::mojom::FontFamily::kSansSerif];
+                          web_distiller::mojom::FontFamily::kSansSerif];
   return button;
 }
 
 // Returns the font family selection menu.
 - (UIMenu*)createFontFamilyMenuWithSelectedFamily:
-    (dom_distiller::mojom::FontFamily)selectedFontFamily {
+    (web_distiller::mojom::FontFamily)selectedFontFamily {
   UIAction* sansSerifAction = [self createSansSerifAction];
   UIAction* serifAction = [self createSerifAction];
   UIAction* monospaceAction = [self createMonospaceAction];
   UIAction* lexendAction = [self createLexendAction];
 
   switch (selectedFontFamily) {
-    case dom_distiller::mojom::FontFamily::kSansSerif:
+    case web_distiller::mojom::FontFamily::kSansSerif:
       sansSerifAction.state = UIMenuElementStateOn;
       break;
-    case dom_distiller::mojom::FontFamily::kSerif:
+    case web_distiller::mojom::FontFamily::kSerif:
       serifAction.state = UIMenuElementStateOn;
       break;
-    case dom_distiller::mojom::FontFamily::kMonospace:
+    case web_distiller::mojom::FontFamily::kMonospace:
       monospaceAction.state = UIMenuElementStateOn;
       break;
-    case dom_distiller::mojom::FontFamily::kLexend:
+    case web_distiller::mojom::FontFamily::kLexend:
       lexendAction.state = UIMenuElementStateOn;
       break;
   }
@@ -301,7 +301,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(2);
            identifier:nil
               handler:^(UIAction* action) {
                 [self.mutator
-                    setFontFamily:dom_distiller::mojom::FontFamily::kSansSerif];
+                    setFontFamily:web_distiller::mojom::FontFamily::kSansSerif];
               }];
 }
 
@@ -314,7 +314,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(2);
            identifier:nil
               handler:^(UIAction* action) {
                 [self.mutator
-                    setFontFamily:dom_distiller::mojom::FontFamily::kSerif];
+                    setFontFamily:web_distiller::mojom::FontFamily::kSerif];
               }];
   return serifAction;
 }
@@ -329,7 +329,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(2);
            identifier:nil
               handler:^(UIAction* action) {
                 [self.mutator
-                    setFontFamily:dom_distiller::mojom::FontFamily::kMonospace];
+                    setFontFamily:web_distiller::mojom::FontFamily::kMonospace];
               }];
   return monospaceAction;
 }
@@ -343,7 +343,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(2);
            identifier:nil
               handler:^(UIAction* action) {
                 [self.mutator
-                    setFontFamily:dom_distiller::mojom::FontFamily::kLexend];
+                    setFontFamily:web_distiller::mojom::FontFamily::kLexend];
               }];
 }
 

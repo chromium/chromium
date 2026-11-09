@@ -1,0 +1,98 @@
+// Copyright 2014 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_WEB_DISTILLER_CORE_VIEWER_H_
+#define COMPONENTS_WEB_DISTILLER_CORE_VIEWER_H_
+
+#include <memory>
+#include <string>
+#include <string_view>
+
+#include "base/compiler_specific.h"
+#include "base/values.h"
+#include "components/web_distiller/core/distilled_page_prefs.h"
+#include "ui/gfx/geometry/size.h"
+#include "url/gurl.h"
+
+namespace web_distiller {
+
+class DistilledArticleProto;
+class WebDistillerServiceInterface;
+class ViewerHandle;
+class ViewRequestDelegate;
+
+namespace viewer {
+
+// Assembles a platform-specific HTML template page based on the given
+// parameters. Information from the original article has not yet been inserted,
+// so the returned HTML should be safe.
+std::string GetArticleTemplateHtml(mojom::Theme theme,
+                                   mojom::FontFamily font_family,
+                                   const std::string& csp_nonce);
+
+// Returns the JavaScript to place a full article's HTML on the page. The
+// returned HTML should be considered unsafe, so callers must ensure
+// rendering it does not compromise Chrome.
+std::string GetUnsafeArticleContentJs(
+    const DistilledArticleProto* article_proto);
+
+// Returns the JavaScript to set the title of the distilled article page.
+std::string GetSetTitleJs(std::string_view title);
+
+// Return the JavaScript to set the text direction of the distiller page.
+std::string GetSetTextDirectionJs(std::string_view direction);
+
+// Returns a JavaScript blob for updating a view request with error page
+// contents.
+std::string GetErrorPageJs();
+
+// Returns a JavaScript blob with unsafe content converted to a JavaScript
+// string that adds it to the page.
+std::string GetAddToPageJs(std::string_view unsafe_content);
+
+// Returns the CSS to use for a viewer.
+std::string GetCss();
+
+// Returns the animated SVG loading image for a viewer.
+std::string GetLoadingImage();
+
+// Returns the default JS to be used for a viewer.
+std::string GetJavaScript();
+
+// Based on the given path, calls into the WebDistillerServiceInterface for
+// viewing distilled content based on the |path|.
+std::unique_ptr<ViewerHandle> CreateViewRequest(
+    WebDistillerServiceInterface* web_distiller_service,
+    const GURL& url,
+    ViewRequestDelegate* view_request_delegate,
+    const gfx::Size& render_view_size);
+
+// Returns JavaScript corresponding to setting the font family.
+std::string GetDistilledPageFontFamilyJs(mojom::FontFamily font);
+
+// Returns JavaScript corresponding to setting a specific theme.
+std::string GetDistilledPageThemeJs(mojom::Theme theme);
+
+// Returns JavaScript corresponding to setting whether links are enabled.
+std::string GetDistilledPageLinksEnabledJs(bool enabled);
+
+/**
+ * Generates a JavaScript snippet to apply font scaling.
+ *
+ * @param scaling The desired font scaling factor.
+ * @param restoreCenter If true, the generated JavaScript will attempt to keep
+ * the same content in the center of the viewport after scaling to prevent the
+ * user from losing their place. We do not want this to be true on initial page
+ * load, since it will give the illusion of partial scrolling.
+ * @return JavaScript corresponding to setting the font scaling.
+ */
+std::string GetDistilledPageFontScalingJs(float scaling, bool restoreCenter);
+
+// Returns JavaScript corresponding to setting the base font size.
+std::string SetDistilledPageBaseFontSize(float baseFontSize);
+
+}  // namespace viewer
+}  // namespace web_distiller
+
+#endif  // COMPONENTS_WEB_DISTILLER_CORE_VIEWER_H_

@@ -234,7 +234,7 @@ void OffTheRecordProfileImpl::Init() {
   extensions::ProcessManager::Get(this);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
-  // The DomDistillerViewerSource is not a normal WebUI so it must be registered
+  // The WebDistillerViewerSource is not a normal WebUI so it must be registered
   // as a URLDataSource early.
   reader_mode::RegisterViewerSource(this);
 

@@ -29,8 +29,6 @@
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
-#include "components/dom_distiller/core/url_constants.h"
-#include "components/dom_distiller/core/url_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -40,6 +38,8 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
+#include "components/web_distiller/core/url_constants.h"
+#include "components/web_distiller/core/url_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -182,8 +182,8 @@ TEST_F(BookmarkTest, BookmarkBarOnCustomNTP) {
 
 TEST_F(BookmarkTest, BookmarkReaderModePageActuallyBookmarksOriginal) {
   GURL original("https://www.example.com/article.html");
-  GURL distilled = dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
-      dom_distiller::kDomDistillerScheme, original, "Article title");
+  GURL distilled = web_distiller::url_utils::GetDistillerViewUrlFromUrl(
+      web_distiller::kWebDistillerScheme, original, "Article title");
 
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);

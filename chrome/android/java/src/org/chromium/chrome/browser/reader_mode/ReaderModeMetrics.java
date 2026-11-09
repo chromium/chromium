@@ -12,8 +12,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.reader_mode.ReaderModeManager.EntryPoint;
 import org.chromium.chrome.browser.reader_mode.ReaderModeManager.EntryPointTabType;
-import org.chromium.dom_distiller.mojom.FontFamily;
-import org.chromium.dom_distiller.mojom.Theme;
+import org.chromium.web_distiller.mojom.FontFamily;
+import org.chromium.web_distiller.mojom.Theme;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

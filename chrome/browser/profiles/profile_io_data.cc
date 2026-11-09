@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/url_constants.h"
-#include "components/dom_distiller/core/url_constants.h"
+#include "components/web_distiller/core/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/net_buildflags.h"
 #include "url/gurl.h"
@@ -39,7 +39,7 @@ bool ProfileIOData::IsHandledProtocol(std::string_view scheme) {
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
       url::kFileScheme,
       content::kChromeDevToolsScheme,
-      dom_distiller::kDomDistillerScheme,
+      web_distiller::kWebDistillerScheme,
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       extensions::kExtensionScheme,
 #endif

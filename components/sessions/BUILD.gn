@@ -149,7 +149,6 @@ source_set("shared") {
 
   deps = [
     "//base",
-    "//components/dom_distiller/core",
     "//components/history/core/common",
     "//components/keyed_service/core",
     "//components/os_crypt/browser",
@@ -157,6 +156,7 @@ source_set("shared") {
     "//components/split_tabs",
     "//components/tab_groups",
     "//components/variations",
+    "//components/web_distiller/core",
     "//skia",
     "//ui/base",
     "//ui/gfx",

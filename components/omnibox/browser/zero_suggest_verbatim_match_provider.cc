@@ -9,7 +9,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/android_buildflags.h"
-#include "components/dom_distiller/core/url_utils.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
@@ -24,6 +23,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
+#include "components/web_distiller/core/url_utils.h"
 #include "ui/base/device_form_factor.h"
 
 namespace {
@@ -211,9 +211,9 @@ void ZeroSuggestVerbatimMatchProvider::CreateVerbatimMatch(
       // URL suggestion here does not come from the default search engine.
       // Ensure that distilled URL is transformed to original URL for
       // fill_into_edit and contents fields of the suggestion.
-      if (dom_distiller::url_utils::IsDistilledPage(match.destination_url)) {
+      if (web_distiller::url_utils::IsDistilledPage(match.destination_url)) {
         GURL original_url =
-            dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
+            web_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
                 match.destination_url);
         match.fill_into_edit = base::UTF8ToUTF16(original_url.spec());
         match.contents = url_formatter::FormatUrl(

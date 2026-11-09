@@ -16,29 +16,29 @@
 
 namespace {
 
-// Converts dom_distiller::mojom::FontFamily to Reader mode metric type.
+// Converts web_distiller::mojom::FontFamily to Reader mode metric type.
 ReaderModeFontFamily ConvertMojomFontFamily(
-    dom_distiller::mojom::FontFamily font_family) {
+    web_distiller::mojom::FontFamily font_family) {
   switch (font_family) {
-    case dom_distiller::mojom::FontFamily::kSansSerif:
+    case web_distiller::mojom::FontFamily::kSansSerif:
       return ReaderModeFontFamily::kSansSerif;
-    case dom_distiller::mojom::FontFamily::kSerif:
+    case web_distiller::mojom::FontFamily::kSerif:
       return ReaderModeFontFamily::kSerif;
-    case dom_distiller::mojom::FontFamily::kMonospace:
+    case web_distiller::mojom::FontFamily::kMonospace:
       return ReaderModeFontFamily::kMonospace;
-    case dom_distiller::mojom::FontFamily::kLexend:
+    case web_distiller::mojom::FontFamily::kLexend:
       return ReaderModeFontFamily::kLexend;
   }
 }
 
-// Converts dom_distiller::mojom::Theme to Reader mode metric type.
-ReaderModeTheme ConvertMojomTheme(dom_distiller::mojom::Theme theme) {
+// Converts web_distiller::mojom::Theme to Reader mode metric type.
+ReaderModeTheme ConvertMojomTheme(web_distiller::mojom::Theme theme) {
   switch (theme) {
-    case dom_distiller::mojom::Theme::kDark:
+    case web_distiller::mojom::Theme::kDark:
       return ReaderModeTheme::kDark;
-    case dom_distiller::mojom::Theme::kLight:
+    case web_distiller::mojom::Theme::kLight:
       return ReaderModeTheme::kLight;
-    case dom_distiller::mojom::Theme::kSepia:
+    case web_distiller::mojom::Theme::kSepia:
       return ReaderModeTheme::kSepia;
   }
 }
@@ -130,7 +130,7 @@ ReaderModeTranslationPageEventState GetReaderModeTranslationPageEventState(
 
 ReaderModeMetricsHelper::ReaderModeMetricsHelper(
     web::WebState* web_state,
-    dom_distiller::DistilledPagePrefs* distilled_page_prefs)
+    web_distiller::DistilledPagePrefs* distilled_page_prefs)
     : web_state_(web_state), distilled_page_prefs_(distilled_page_prefs) {
   scoped_observation_.Observe(distilled_page_prefs);
 }
@@ -265,7 +265,7 @@ void ReaderModeMetricsHelper::Flush(ReaderModeDeactivationReason reason) {
 }
 
 void ReaderModeMetricsHelper::OnChangeFontFamily(
-    dom_distiller::mojom::FontFamily font) {
+    web_distiller::mojom::FontFamily font) {
   base::UmaHistogramEnumeration(kReaderModeCustomizationHistogram,
                                 ReaderModeCustomizationType::kFontFamily);
   base::UmaHistogramEnumeration(kReaderModeFontFamilyCustomizationHistogram,
@@ -273,12 +273,12 @@ void ReaderModeMetricsHelper::OnChangeFontFamily(
 }
 
 void ReaderModeMetricsHelper::OnChangeTheme(
-    dom_distiller::mojom::Theme theme,
-    dom_distiller::ThemeSettingsUpdateSource source) {
+    web_distiller::mojom::Theme theme,
+    web_distiller::ThemeSettingsUpdateSource source) {
   switch (source) {
-    case dom_distiller::ThemeSettingsUpdateSource::kSystem:
+    case web_distiller::ThemeSettingsUpdateSource::kSystem:
       break;
-    case dom_distiller::ThemeSettingsUpdateSource::kUserPreference: {
+    case web_distiller::ThemeSettingsUpdateSource::kUserPreference: {
       base::UmaHistogramEnumeration(kReaderModeCustomizationHistogram,
                                     ReaderModeCustomizationType::kTheme);
       base::UmaHistogramEnumeration(kReaderModeThemeCustomizationHistogram,

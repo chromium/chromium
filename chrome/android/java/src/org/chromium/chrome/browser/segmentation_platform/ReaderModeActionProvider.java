@@ -24,9 +24,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
@@ -148,14 +148,14 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
 
         // If we're on a reading mode page, always show the button to give users a way to exit
         // outside of a "back" navigation.
-        if (DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
+        if (WebDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
             mLastSeenUrl = tab.getUrl();
             signalAccumulator.setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
             return;
         }
 
         boolean isExitingReaderMode =
-                isSameTab && DomDistillerUrlUtils.isExitingReaderMode(mLastSeenUrl, tab.getUrl());
+                isSameTab && WebDistillerUrlUtils.isExitingReaderMode(mLastSeenUrl, tab.getUrl());
         mLastSeenUrl = tab.getUrl();
 
         if (isExitingReaderMode) {
@@ -186,7 +186,7 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
         }
 
         // When on a distilled page, don't count the action as shown and return immediately.
-        if (DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
+        if (WebDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
             return;
         }
 

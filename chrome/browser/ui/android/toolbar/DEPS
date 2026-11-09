@@ -11,10 +11,10 @@ include_rules = [
   "+components/browser_ui/settings/android",
   "+components/browser_ui/styles/android",
   "+components/browser_ui/widget/android",
-  "+components/dom_distiller/core/android",
   "+components/embedder_support/android",
   "+components/omnibox/browser/android",
   "+components/security_state/content/android",
+  "+components/web_distiller/core/android",
   "+content/public/android",
   "+ui/edge_to_edge",
 ]

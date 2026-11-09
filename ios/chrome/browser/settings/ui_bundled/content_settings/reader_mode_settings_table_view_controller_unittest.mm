@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/reader_mode_settings_table_view_controller.h"
 
-#import "components/dom_distiller/core/distilled_page_prefs.h"
+#import "components/web_distiller/core/distilled_page_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -18,7 +18,7 @@ class ReaderModeSettingsTableViewControllerTest
  protected:
   ReaderModeSettingsTableViewControllerTest() {
     profile_ = TestProfileIOS::Builder().Build();
-    distilled_page_prefs_ = std::make_unique<dom_distiller::DistilledPagePrefs>(
+    distilled_page_prefs_ = std::make_unique<web_distiller::DistilledPagePrefs>(
         profile_->GetPrefs());
   }
 
@@ -31,7 +31,7 @@ class ReaderModeSettingsTableViewControllerTest
  private:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
-  std::unique_ptr<dom_distiller::DistilledPagePrefs> distilled_page_prefs_;
+  std::unique_ptr<web_distiller::DistilledPagePrefs> distilled_page_prefs_;
 };
 
 // Tests that the Reading Mode settings model is correctly loaded.

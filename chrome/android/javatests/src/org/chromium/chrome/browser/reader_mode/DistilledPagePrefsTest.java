@@ -20,11 +20,11 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
-import org.chromium.components.dom_distiller.core.DomDistillerService;
+import org.chromium.components.web_distiller.core.DistilledPagePrefs;
+import org.chromium.components.web_distiller.core.WebDistillerService;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.dom_distiller.mojom.FontFamily;
-import org.chromium.dom_distiller.mojom.Theme;
+import org.chromium.web_distiller.mojom.FontFamily;
+import org.chromium.web_distiller.mojom.Theme;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -67,10 +67,10 @@ public class DistilledPagePrefsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // TODO (https://crbug.com/40680929):  Add incognito mode tests.
-                    DomDistillerService domDistillerService =
+                    WebDistillerService webDistillerService =
                             ReaderModeServiceFactory.getForProfile(
                                     ProfileManager.getLastUsedRegularProfile());
-                    mDistilledPagePrefs = domDistillerService.getDistilledPagePrefs();
+                    mDistilledPagePrefs = webDistillerService.getDistilledPagePrefs();
                 });
     }
 

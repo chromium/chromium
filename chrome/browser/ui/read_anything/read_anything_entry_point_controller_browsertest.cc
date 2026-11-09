@@ -837,7 +837,7 @@ IN_PROC_BROWSER_TEST_F(
     CheckIfShouldSuggestReadingMode_AutomationEnabledIsNotCandidate) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("/dom_distiller/simple_article.html")));
+      embedded_test_server()->GetURL("/web_distiller/simple_article.html")));
 
   bool is_good_candidate = true;
   base::RunLoop run_loop;

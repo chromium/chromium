@@ -10,14 +10,14 @@
 #import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "components/dom_distiller/core/distiller_options.h"
-#import "components/dom_distiller/core/extraction_utils.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/language/ios/browser/language_detection_java_script_feature.h"
 #import "components/optimization_guide/proto/hints.pb.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
+#import "components/web_distiller/core/distiller_options.h"
+#import "components/web_distiller/core/extraction_utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/overlays/fake_infobar_overlay_request_factory.h"
@@ -164,14 +164,14 @@ void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,
 
   // Set up the fake web frame to return a custom result after executing
   // the distiller JavaScript.
-  dom_distiller::DistillerOptions options;
+  web_distiller::DistillerOptions options;
   options.allowed_video_regex = kAllowedVideoRegex;
   std::u16string distiller_script =
-      base::UTF8ToUTF16(dom_distiller::GetDistillerScript(options));
+      base::UTF8ToUTF16(web_distiller::GetDistillerScript(options));
   base::DictValue distiller_result;
-  distiller_result.Set(dom_distiller::kDistilledContentKey, distilled_content);
-  distiller_result.Set(dom_distiller::kDistilledTitleKey, "fake title");
-  distiller_result.Set(dom_distiller::kDistilledTextContentKey,
+  distiller_result.Set(web_distiller::kDistilledContentKey, distilled_content);
+  distiller_result.Set(web_distiller::kDistilledTitleKey, "fake title");
+  distiller_result.Set(web_distiller::kDistilledTextContentKey,
                        distilled_content);
   distiller_result_values_.push_back(
       std::make_unique<base::Value>(std::move(distiller_result)));
@@ -241,7 +241,7 @@ void ReaderModeTest::OnDomFeaturesRetrieved(
 void ReaderModeTest::AddHeuristicResultToFrame(ReaderModeHeuristicResult result,
                                                web::FakeWebFrame* web_frame) {
   std::u16string heuristic_script =
-      base::UTF8ToUTF16(dom_distiller::GetDistillerTriggeringScript());
+      base::UTF8ToUTF16(web_distiller::GetDistillerTriggeringScript());
   switch (result) {
     case ReaderModeHeuristicResult::kReaderModeEligible:
     case ReaderModeHeuristicResult::

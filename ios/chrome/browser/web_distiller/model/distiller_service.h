@@ -10,10 +10,10 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
-#import "components/dom_distiller/core/distilled_page_prefs.h"
-#import "components/dom_distiller/core/distiller.h"
-#import "components/dom_distiller/core/distiller_page.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "components/web_distiller/core/distilled_page_prefs.h"
+#import "components/web_distiller/core/distiller.h"
+#import "components/web_distiller/core/distiller_page.h"
 #import "url/gurl.h"
 
 class PrefService;
@@ -23,7 +23,7 @@ class PrefService;
 class DistillerService : public KeyedService {
  public:
   DistillerService(
-      std::unique_ptr<dom_distiller::DistillerFactory> distiller_factory,
+      std::unique_ptr<web_distiller::DistillerFactory> distiller_factory,
       PrefService* pref_service);
   ~DistillerService() override;
 
@@ -32,12 +32,12 @@ class DistillerService : public KeyedService {
   // result containing the simplified html, page, and image information.
   virtual void DistillPage(
       const GURL& url,
-      std::unique_ptr<dom_distiller::DistillerPage> distiller_page,
-      dom_distiller::Distiller::DistillationFinishedCallback finished_cb);
+      std::unique_ptr<web_distiller::DistillerPage> distiller_page,
+      web_distiller::Distiller::DistillationFinishedCallback finished_cb);
 
   // Returns the cross-platform customization preferences for viewing
   // distillation output.
-  dom_distiller::DistilledPagePrefs* GetDistilledPagePrefs();
+  web_distiller::DistilledPagePrefs* GetDistilledPagePrefs();
 
   // KeyedService implementation.
   void Shutdown() override;
@@ -47,12 +47,12 @@ class DistillerService : public KeyedService {
   // request (i.e. when `distiller_` is non null).
   struct Request {
     GURL url;
-    std::unique_ptr<dom_distiller::DistillerPage> distiller_page;
-    dom_distiller::Distiller::DistillationFinishedCallback finished_cb;
+    std::unique_ptr<web_distiller::DistillerPage> distiller_page;
+    web_distiller::Distiller::DistillationFinishedCallback finished_cb;
 
     Request(GURL url,
-            std::unique_ptr<dom_distiller::DistillerPage> distiller_page,
-            dom_distiller::Distiller::DistillationFinishedCallback finished_cb);
+            std::unique_ptr<web_distiller::DistillerPage> distiller_page,
+            web_distiller::Distiller::DistillationFinishedCallback finished_cb);
 
     Request(Request&&);
     Request& operator=(Request&&);
@@ -68,13 +68,13 @@ class DistillerService : public KeyedService {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::unique_ptr<dom_distiller::DistillerFactory> distiller_factory_;
-  std::unique_ptr<dom_distiller::DistilledPagePrefs> distilled_page_prefs_;
+  std::unique_ptr<web_distiller::DistillerFactory> distiller_factory_;
+  std::unique_ptr<web_distiller::DistilledPagePrefs> distilled_page_prefs_;
 
   // The distiller is created when processing a distillation request, and
   // then destroyed when the request has completed. If another request is
   // received while the distiller is non-null, then it is queued.
-  std::unique_ptr<dom_distiller::Distiller> distiller_;
+  std::unique_ptr<web_distiller::Distiller> distiller_;
   std::deque<Request> pending_requests_;
 
   base::WeakPtrFactory<DistillerService> weak_ptr_factory_{this};

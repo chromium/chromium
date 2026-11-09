@@ -18,9 +18,9 @@
 -DistillerPageWebContentsTest.UsingCurrentWebContentsReadyForDistillation
 -DistillerPageWebContentsTest.UsingCurrentWebContentsWrongUrl
 -DistillerPageWebContentsTest.VisibilityDetection
--DomDistillerDistillablePageUtilsTest.TestIsDistillablePage
--DomDistillerDistillablePageUtilsTest.TestIsNotDistillablePage
 -ViewerJsTest.SanitizeLinks
+-WebDistillerDistillablePageUtilsTest.TestIsDistillablePage
+-WebDistillerDistillablePageUtilsTest.TestIsNotDistillablePage
 
 # These tests are hitting a NOTREACHED() in WebContentsImpl::GetSize().
 -All/PageContentProtoProviderBrowserTestMultiProcess.*

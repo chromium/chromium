@@ -17,7 +17,6 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/desktop_to_mobile_promos/pref_names.h"
-#include "components/dom_distiller/core/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -36,6 +35,7 @@
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/variations/service/google_groups_manager_prefs.h"
+#include "components/web_distiller/core/pref_names.h"
 
 namespace sync_preferences {
 
@@ -622,7 +622,7 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           syncer::PRIORITY_PREFERENCES,
           PrefSensitivity::kExemptFromUserControlWhileSignedIn,
           MergeBehavior::kNone, WriteBehavior::kWriteToBoth}},
-        {dom_distiller::prefs::kReaderForAccessibility,
+        {web_distiller::prefs::kReaderForAccessibility,
          {syncable_prefs_ids::kReaderForAccessibility, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone,
           WriteBehavior::kWriteToBoth}},

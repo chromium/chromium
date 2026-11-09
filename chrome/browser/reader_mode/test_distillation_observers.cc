@@ -4,7 +4,7 @@
 
 #include "chrome/browser/reader_mode/test_distillation_observers.h"
 
-#include "components/dom_distiller/core/url_constants.h"
+#include "components/web_distiller/core/url_constants.h"
 #include "content/public/browser/navigation_entry.h"
 #include "url/gurl.h"
 
@@ -22,7 +22,7 @@ void DistilledPageObserver::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
   if (!render_frame_host->GetParent() &&
-      validated_url.GetScheme() == dom_distiller::kDomDistillerScheme) {
+      validated_url.GetScheme() == web_distiller::kWebDistillerScheme) {
     loaded_distiller_page_ = true;
     MaybeNotifyLoaded();
   }

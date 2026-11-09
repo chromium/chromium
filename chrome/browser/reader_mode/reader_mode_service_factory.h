@@ -10,10 +10,10 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
-#include "components/dom_distiller/core/distilled_page_prefs.h"
-#include "components/dom_distiller/core/distiller_ui_handle.h"
-#include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/web_distiller/core/distilled_page_prefs.h"
+#include "components/web_distiller/core/distiller_ui_handle.h"
+#include "components/web_distiller/core/web_distiller_service.h"
 
 namespace content {
 class BrowserContext;
@@ -24,14 +24,14 @@ namespace reader_mode {
 // A simple wrapper for the distiller service to expose it as a KeyedService.
 class ReaderModeContextKeyedService
     : public KeyedService,
-      public dom_distiller::DomDistillerService {
+      public web_distiller::WebDistillerService {
  public:
   ReaderModeContextKeyedService(
-      std::unique_ptr<dom_distiller::DistillerFactory> distiller_factory,
-      std::unique_ptr<dom_distiller::DistillerPageFactory>
+      std::unique_ptr<web_distiller::DistillerFactory> distiller_factory,
+      std::unique_ptr<web_distiller::DistillerPageFactory>
           distiller_page_factory,
-      std::unique_ptr<dom_distiller::DistilledPagePrefs> distilled_page_prefs,
-      std::unique_ptr<dom_distiller::DistillerUIHandle> distiller_ui_handle,
+      std::unique_ptr<web_distiller::DistilledPagePrefs> distilled_page_prefs,
+      std::unique_ptr<web_distiller::DistillerUIHandle> distiller_ui_handle,
       base::CallbackListSubscription distilled_page_prefs_subscription);
 
   ReaderModeContextKeyedService(const ReaderModeContextKeyedService&) = delete;

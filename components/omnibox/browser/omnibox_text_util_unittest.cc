@@ -17,8 +17,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/contextual_tasks/public/features.h"
-#include "components/dom_distiller/core/url_constants.h"
-#include "components/dom_distiller/core/url_utils.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -26,6 +24,8 @@
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/url_formatter/url_fixer.h"
+#include "components/web_distiller/core/url_constants.h"
+#include "components/web_distiller/core/url_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -339,8 +339,8 @@ TEST_F(OmniboxTextUtilTest, AdjustTextForCopy) {
 TEST_F(OmniboxTextUtilTest, AdjustTextForCopyReaderMode) {
   const GURL article_url("https://www.example.com/article.html");
   const GURL distiller_url =
-      dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
-          dom_distiller::kDomDistillerScheme, article_url, "title");
+      web_distiller::url_utils::GetDistillerViewUrlFromUrl(
+          web_distiller::kWebDistillerScheme, article_url, "title");
   // In ReaderMode, the URL is chrome-distiller://<hash>,
   // but the user should only see the original URL minus the scheme.
   location_bar_model()->set_url(distiller_url);

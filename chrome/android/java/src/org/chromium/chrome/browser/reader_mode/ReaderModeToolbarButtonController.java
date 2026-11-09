@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
@@ -88,7 +88,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
                         GURL currentUrl = tab == null ? null : tab.getUrl();
                         if (Objects.equals(currentUrl, mTabLastUrlSeen)) return;
                         boolean isExitingReaderMode =
-                                DomDistillerUrlUtils.isExitingReaderMode(
+                                WebDistillerUrlUtils.isExitingReaderMode(
                                         mTabLastUrlSeen, currentUrl);
                         mTabLastUrlSeen = currentUrl;
 
@@ -140,7 +140,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
                 currentTab.getUserDataHost().getUserData(ReaderModeManager.class);
         if (readerModeManager == null) return;
 
-        if (DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl())) {
+        if (WebDistillerUrlUtils.isDistilledPage(currentTab.getUrl())) {
             readerModeManager.hideReaderMode();
             return;
         }
@@ -187,7 +187,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
         mCallbackController.destroy();
         mCallbackController = new CallbackController();
 
-        if (tab != null && DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
+        if (tab != null && WebDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
             mButtonData.setButtonSpec(mExitPointSpec);
             setCanShowButton(true);
         } else {

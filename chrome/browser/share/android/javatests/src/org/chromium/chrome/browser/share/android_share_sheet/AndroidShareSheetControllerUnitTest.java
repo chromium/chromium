@@ -81,11 +81,11 @@ import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtilsJni;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.Clipboard;
@@ -117,7 +117,7 @@ public class AndroidShareSheetControllerUnitTest {
     @Mock SendTabToSelfAndroidBridgeJni mMockSendTabToSelfAndroidBridge;
     @Mock UserPrefsJni mMockUserPrefsJni;
     @Mock FaviconHelperJni mMockFaviconHelperJni;
-    @Mock DomDistillerUrlUtilsJni mMockDomDistillerUrlUtilsJni;
+    @Mock WebDistillerUrlUtilsJni mMockWebDistillerUrlUtilsJni;
     @Mock DataProtectionBridge.Natives mMockDataProtectionBridgeNatives;
     @Mock BottomSheetController mBottomSheetController;
     @Mock TabModelSelector mTabModelSelector;
@@ -164,10 +164,10 @@ public class AndroidShareSheetControllerUnitTest {
                                 ? TEST_WEB_FAVICON_PREVIEW_URI
                                 : TEST_FALLBACK_FAVICON_PREVIEW_URI);
         setFaviconToFetchForTest(mTestWebFavicon);
-        // Set up mMockDomDistillerUrlUtilsJni. Needed for link-to-text sharing.
-        DomDistillerUrlUtilsJni.setInstanceForTesting(mMockDomDistillerUrlUtilsJni);
+        // Set up mMockWebDistillerUrlUtilsJni. Needed for link-to-text sharing.
+        WebDistillerUrlUtilsJni.setInstanceForTesting(mMockWebDistillerUrlUtilsJni);
         doAnswer(invocation -> new GURL(invocation.getArgument(0)))
-                .when(mMockDomDistillerUrlUtilsJni)
+                .when(mMockWebDistillerUrlUtilsJni)
                 .getOriginalUrlFromDistillerUrl(anyString());
 
         DataProtectionBridge.setInstanceForTesting(mMockDataProtectionBridgeNatives);

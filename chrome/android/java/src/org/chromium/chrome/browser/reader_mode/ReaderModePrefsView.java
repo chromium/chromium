@@ -34,12 +34,12 @@ import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
-import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
-import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
-import org.chromium.dom_distiller.mojom.FontFamily;
-import org.chromium.dom_distiller.mojom.Theme;
+import org.chromium.components.web_distiller.core.DistilledPagePrefs;
+import org.chromium.components.web_distiller.core.WebDistillerFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.text.DownloadableFontTextAppearanceSpan;
+import org.chromium.web_distiller.mojom.FontFamily;
+import org.chromium.web_distiller.mojom.Theme;
 
 import java.text.NumberFormat;
 import java.util.HashMap;
@@ -136,7 +136,7 @@ public class ReaderModePrefsView extends LinearLayout
         ViewGroup bottomContainer = findViewById(R.id.bottom_container);
         LayoutInflater.from(getContext())
                 .inflate(
-                        DomDistillerFeatures.sReaderModeToggleLinks.isEnabled()
+                        WebDistillerFeatures.sReaderModeToggleLinks.isEnabled()
                                 ? R.layout.reader_mode_prefs_bottom_content_with_toggle_links
                                 : R.layout.reader_mode_prefs_bottom_content,
                         bottomContainer,

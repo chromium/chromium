@@ -22,10 +22,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "components/dom_distiller/core/url_utils.h"
 #include "components/favicon/content/large_icon_service_getter.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/web_distiller/core/url_utils.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/android/webapps_utils.h"
 #include "components/webapps/browser/features.h"
@@ -52,7 +52,7 @@ namespace {
 // visible URL may be a distilled article which is not appropriate for a home
 // screen shortcut.
 GURL GetShortcutUrl(content::WebContents* web_contents) {
-  return dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
+  return web_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
       web_contents->GetLastCommittedURL());
 }
 

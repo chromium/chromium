@@ -33,7 +33,6 @@ include_rules = [
   "+components/contextual_search/android/java/src/org/chromium/components/contextual_search",
   "+components/data_sharing/test_support/android/java/src/org/chromium/components/data_sharing",
   "+components/data_sharing/public/android/java/src/org/chromium/components/data_sharing",
-  "+components/dom_distiller",
   "+components/fcm/android/java",
   "+components/feature_engagement/public/android",
   "+components/gcm_driver/android/java",
@@ -52,6 +51,7 @@ include_rules = [
   "+components/sync/test",
   "+components/saved_tab_groups/public/android",
   "+components/ukm/android",
+  "+components/web_distiller",
   "+components/webauthn/android",
   "+components/browser_ui/device_lock/android",
 

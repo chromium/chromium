@@ -15,7 +15,6 @@ dev_ui_components_resources.grd.
     <includes>
       <part file="about_ui_resources.grdp" />
       <part file="commerce_resources.grdp" />
-      <part file="dom_distiller_resources.grdp" />
       <part file="neterror_resources.grdp" />
       <part file="notifications_global_cache_list.grdp" />
       <part file="ntp_tiles_resources.grdp" />
@@ -25,6 +24,7 @@ dev_ui_components_resources.grd.
       <part file="site_isolation.grdp" />
       <part file="translate_resources.grdp" />
       <part file="web_app_error_page.grdp" />
+      <part file="web_distiller_resources.grdp" />
       <part file="enterprise_proxy_error_page_resources.grdp" />
 
       <if expr="is_android">

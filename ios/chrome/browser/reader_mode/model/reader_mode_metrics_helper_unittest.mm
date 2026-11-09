@@ -44,7 +44,7 @@ class ReaderModeMetricsHelperTest : public PlatformTest {
   void TearDown() override { test_ukm_recorder_.Purge(); }
 
   ReaderModeMetricsHelper* metrics_helper() { return metrics_helper_.get(); }
-  dom_distiller::DistilledPagePrefs* distilled_page_prefs() {
+  web_distiller::DistilledPagePrefs* distilled_page_prefs() {
     return distilled_page_prefs_;
   }
 
@@ -74,7 +74,7 @@ class ReaderModeMetricsHelperTest : public PlatformTest {
   web::FakeWebState web_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<ReaderModeMetricsHelper> metrics_helper_;
-  raw_ptr<dom_distiller::DistilledPagePrefs> distilled_page_prefs_;
+  raw_ptr<web_distiller::DistilledPagePrefs> distilled_page_prefs_;
 };
 
 // Tests that recording a heuristic trigger updates the recorded Reading mode
@@ -123,7 +123,7 @@ TEST_F(ReaderModeMetricsHelperTest, OnFontFamilyChanged) {
   histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
 
   distilled_page_prefs()->SetFontFamily(
-      dom_distiller::mojom::FontFamily::kMonospace);
+      web_distiller::mojom::FontFamily::kMonospace);
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kReaderModeCustomizationHistogram),
@@ -153,7 +153,7 @@ TEST_F(ReaderModeMetricsHelperTest, OnFontScaleChanged) {
 TEST_F(ReaderModeMetricsHelperTest, OnThemeChanged) {
   histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
 
-  distilled_page_prefs()->SetUserPrefTheme(dom_distiller::mojom::Theme::kDark);
+  distilled_page_prefs()->SetUserPrefTheme(web_distiller::mojom::Theme::kDark);
   task_environment_.RunUntilIdle();
 
   EXPECT_THAT(
@@ -191,9 +191,9 @@ TEST_F(ReaderModeMetricsHelperTest, OnLinksEnabledChanged) {
 TEST_F(ReaderModeMetricsHelperTest, OnDefaultThemeChangedMultipleTimes) {
   histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
 
-  distilled_page_prefs()->SetDefaultTheme(dom_distiller::mojom::Theme::kLight);
-  distilled_page_prefs()->SetDefaultTheme(dom_distiller::mojom::Theme::kDark);
-  distilled_page_prefs()->SetDefaultTheme(dom_distiller::mojom::Theme::kDark);
+  distilled_page_prefs()->SetDefaultTheme(web_distiller::mojom::Theme::kLight);
+  distilled_page_prefs()->SetDefaultTheme(web_distiller::mojom::Theme::kDark);
+  distilled_page_prefs()->SetDefaultTheme(web_distiller::mojom::Theme::kDark);
   task_environment_.RunUntilIdle();
 
   histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
@@ -205,8 +205,8 @@ TEST_F(ReaderModeMetricsHelperTest, OnDefaultThemeChangedMultipleTimes) {
 TEST_F(ReaderModeMetricsHelperTest, OnUserPrefThemeChangedMultipleTimes) {
   histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
 
-  distilled_page_prefs()->SetUserPrefTheme(dom_distiller::mojom::Theme::kDark);
-  distilled_page_prefs()->SetUserPrefTheme(dom_distiller::mojom::Theme::kDark);
+  distilled_page_prefs()->SetUserPrefTheme(web_distiller::mojom::Theme::kDark);
+  distilled_page_prefs()->SetUserPrefTheme(web_distiller::mojom::Theme::kDark);
   task_environment_.RunUntilIdle();
 
   EXPECT_THAT(

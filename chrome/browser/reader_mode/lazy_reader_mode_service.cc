@@ -9,9 +9,9 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reader_mode/reader_mode_service_factory.h"
-#include "components/dom_distiller/core/distilled_page_prefs.h"
-#include "components/dom_distiller/core/distiller_page.h"
-#include "components/dom_distiller/core/dom_distiller_service.h"
+#include "components/web_distiller/core/distilled_page_prefs.h"
+#include "components/web_distiller/core/distiller_page.h"
+#include "components/web_distiller/core/web_distiller_service.h"
 
 namespace reader_mode {
 
@@ -32,40 +32,40 @@ LazyReaderModeService* LazyReaderModeService::Create(Profile* profile) {
 
 LazyReaderModeService::~LazyReaderModeService() = default;
 
-std::unique_ptr<dom_distiller::ViewerHandle> LazyReaderModeService::ViewUrl(
-    dom_distiller::ViewRequestDelegate* delegate,
-    std::unique_ptr<dom_distiller::DistillerPage> distiller_page,
+std::unique_ptr<web_distiller::ViewerHandle> LazyReaderModeService::ViewUrl(
+    web_distiller::ViewRequestDelegate* delegate,
+    std::unique_ptr<web_distiller::DistillerPage> distiller_page,
     const GURL& url) {
   return GetImpl()->ViewUrl(delegate, std::move(distiller_page), url);
 }
 
-std::unique_ptr<dom_distiller::ViewerHandle>
+std::unique_ptr<web_distiller::ViewerHandle>
 LazyReaderModeService::ViewUrlIgnoreCache(
-    dom_distiller::ViewRequestDelegate* delegate,
-    std::unique_ptr<dom_distiller::DistillerPage> distiller_page,
+    web_distiller::ViewRequestDelegate* delegate,
+    std::unique_ptr<web_distiller::DistillerPage> distiller_page,
     const GURL& url) {
   return GetImpl()->ViewUrlIgnoreCache(delegate, std::move(distiller_page),
                                        url);
 }
 
-std::unique_ptr<dom_distiller::DistillerPage>
+std::unique_ptr<web_distiller::DistillerPage>
 LazyReaderModeService::CreateDefaultDistillerPage(
     const gfx::Size& render_view_size) {
   return GetImpl()->CreateDefaultDistillerPage(render_view_size);
 }
 
-std::unique_ptr<dom_distiller::DistillerPage>
+std::unique_ptr<web_distiller::DistillerPage>
 LazyReaderModeService::CreateDefaultDistillerPageWithHandle(
-    std::unique_ptr<dom_distiller::SourcePageHandle> handle) {
+    std::unique_ptr<web_distiller::SourcePageHandle> handle) {
   return GetImpl()->CreateDefaultDistillerPageWithHandle(std::move(handle));
 }
 
-dom_distiller::DistilledPagePrefs*
+web_distiller::DistilledPagePrefs*
 LazyReaderModeService::GetDistilledPagePrefs() {
   return GetImpl()->GetDistilledPagePrefs();
 }
 
-dom_distiller::DistillerUIHandle*
+web_distiller::DistillerUIHandle*
 LazyReaderModeService::GetDistillerUIHandle() {
   return GetImpl()->GetDistillerUIHandle();
 }
@@ -75,7 +75,7 @@ LazyReaderModeService::LazyReaderModeService(Profile* profile)
 
 // This will create an object and schedule work the first time it's called
 // and just return an existing object after that.
-dom_distiller::DomDistillerServiceInterface* LazyReaderModeService::GetImpl()
+web_distiller::WebDistillerServiceInterface* LazyReaderModeService::GetImpl()
     const {
   return ReaderModeServiceFactory::GetInstance()->GetForBrowserContext(
       profile_);

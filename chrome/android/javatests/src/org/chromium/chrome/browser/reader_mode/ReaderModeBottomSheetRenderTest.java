@@ -38,9 +38,9 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.dom_distiller.mojom.Theme;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule.Component;
+import org.chromium.web_distiller.mojom.Theme;
 
 import java.io.IOException;
 import java.util.List;

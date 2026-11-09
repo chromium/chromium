@@ -13,8 +13,8 @@ source_set("reader_mode") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/zoom",
-    "//components/dom_distiller/core",
     "//components/keyed_service/core",
+    "//components/web_distiller/core",
   ]
 
   if (is_android) {
@@ -39,7 +39,7 @@ source_set("impl") {
     "//chrome/common",
     "//chrome/common:non_code_constants",
     "//components/back_forward_cache",
-    "//components/dom_distiller/content/browser",
+    "//components/web_distiller/content/browser",
   ]
 
   if (is_android) {
@@ -82,15 +82,15 @@ if (!is_android) {
       "//chrome/test/base:in_process_browser_test",
       "//chrome/test/base:ui_test_utils",
       "//components/back_forward_cache",
-      "//components/dom_distiller/content/browser",
-      "//components/dom_distiller/content/browser:test_support",
-      "//components/dom_distiller/core",
-      "//components/dom_distiller/core:test_support",
       "//components/favicon/content",
       "//components/favicon/core",
       "//components/security_state/content",
       "//components/security_state/core",
       "//components/strings:components_strings",
+      "//components/web_distiller/content/browser",
+      "//components/web_distiller/content/browser:test_support",
+      "//components/web_distiller/core",
+      "//components/web_distiller/core:test_support",
       "//content/public/common",
       "//content/test:test_support",
       "//net",

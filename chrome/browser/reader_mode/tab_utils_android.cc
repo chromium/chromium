@@ -12,9 +12,9 @@
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/dom_distiller/core/experiments.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/url_formatter/url_formatter.h"
+#include "components/web_distiller/core/experiments.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
 #include "url/android/gurl_android.h"
@@ -76,7 +76,7 @@ JNI_ReaderModeTabUtils_GetFormattedUrlFromOriginalDistillerUrl(
 }
 
 static int32_t JNI_ReaderModeTabUtils_GetDistillerHeuristics(JNIEnv* env) {
-  return static_cast<int32_t>(dom_distiller::GetDistillerHeuristicsType());
+  return static_cast<int32_t>(web_distiller::GetDistillerHeuristicsType());
 }
 
 static void JNI_ReaderModeTabUtils_SetInterceptNavigationDelegate(

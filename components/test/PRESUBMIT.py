@@ -22,9 +22,6 @@ def CheckChange(input_api, output_api):
             input_api, output_api, 'data/custom_handlers/unit_tests_bundle_data'
         )
         results += presubmit_support.CheckBundleData(
-            input_api, output_api, 'data/dom_distiller/unit_tests_bundle_data'
-        )
-        results += presubmit_support.CheckBundleData(
             input_api,
             output_api,
             'data/autofill/label-doms/unit_tests_bundle_data',
@@ -98,6 +95,9 @@ def CheckChange(input_api, output_api):
         )
         results += presubmit_support.CheckBundleData(
             input_api, output_api, 'data/web_database/unit_tests_bundle_data'
+        )
+        results += presubmit_support.CheckBundleData(
+            input_api, output_api, 'data/web_distiller/unit_tests_bundle_data'
         )
         results += presubmit_support.CheckBundleData(
             input_api, output_api, 'data/webcrypto/unit_tests_bundle_data'

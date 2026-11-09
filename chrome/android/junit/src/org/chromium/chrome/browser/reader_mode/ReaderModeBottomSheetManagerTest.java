@@ -40,10 +40,10 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
-import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
-import org.chromium.components.dom_distiller.core.DomDistillerService;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
+import org.chromium.components.web_distiller.core.DistilledPagePrefs;
+import org.chromium.components.web_distiller.core.WebDistillerFeatures;
+import org.chromium.components.web_distiller.core.WebDistillerService;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtilsJni;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -63,10 +63,10 @@ public class ReaderModeBottomSheetManagerTest {
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private NavigationHandle mNavigationHandle;
-    @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
+    @Mock private WebDistillerUrlUtilsJni mWebDistillerUrlUtilsJni;
     @Mock private ReaderModeServiceFactoryJni mReaderModeServiceFactoryJni;
     @Mock private DistilledPagePrefs mDistilledPagePrefs;
-    @Mock private DomDistillerService mDomDistillerService;
+    @Mock private WebDistillerService mWebDistillerService;
     @Mock private ThemeColorProvider mThemeColorProvider;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -95,11 +95,11 @@ public class ReaderModeBottomSheetManagerTest {
         when(mNavigationHandle.isInPrimaryMainFrame()).thenReturn(true);
 
         ReaderModeServiceFactoryJni.setInstanceForTesting(mReaderModeServiceFactoryJni);
-        when(mDomDistillerService.getDistilledPagePrefs()).thenReturn(mDistilledPagePrefs);
-        when(mReaderModeServiceFactoryJni.getForProfile(any())).thenReturn(mDomDistillerService);
+        when(mWebDistillerService.getDistilledPagePrefs()).thenReturn(mDistilledPagePrefs);
+        when(mReaderModeServiceFactoryJni.getForProfile(any())).thenReturn(mWebDistillerService);
 
-        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
-        when(mDomDistillerUrlUtilsJni.isDistilledPage(DISTILLED_URL)).thenReturn(true);
+        WebDistillerUrlUtilsJni.setInstanceForTesting(mWebDistillerUrlUtilsJni);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage(DISTILLED_URL)).thenReturn(true);
     }
 
     @After
@@ -123,7 +123,7 @@ public class ReaderModeBottomSheetManagerTest {
     }
 
     @Test
-    @EnableFeatures(DomDistillerFeatures.READER_MODE_DELAY_BOTTOM_SHEET_PEEK)
+    @EnableFeatures(WebDistillerFeatures.READER_MODE_DELAY_BOTTOM_SHEET_PEEK)
     public void testDelayBottomSheetPeekOnInitialLoad() {
         ReaderModeBottomSheetManager.setBottomSheetPeekDelayForTesting(2000);
         createManagerAndGetTabObserver();
@@ -141,7 +141,7 @@ public class ReaderModeBottomSheetManagerTest {
     }
 
     @Test
-    @EnableFeatures(DomDistillerFeatures.READER_MODE_DELAY_BOTTOM_SHEET_PEEK)
+    @EnableFeatures(WebDistillerFeatures.READER_MODE_DELAY_BOTTOM_SHEET_PEEK)
     public void testCancelDelayedPeekOnHide() {
         ReaderModeBottomSheetManager.setBottomSheetPeekDelayForTesting(2000);
         createManagerAndGetTabObserver();
@@ -156,7 +156,7 @@ public class ReaderModeBottomSheetManagerTest {
     }
 
     @Test
-    @EnableFeatures(DomDistillerFeatures.READER_MODE_DELAY_BOTTOM_SHEET_PEEK)
+    @EnableFeatures(WebDistillerFeatures.READER_MODE_DELAY_BOTTOM_SHEET_PEEK)
     public void testCancelDelayedPeekOnNewNavigation() {
         ReaderModeBottomSheetManager.setBottomSheetPeekDelayForTesting(2000);
         createManagerAndGetTabObserver();
@@ -245,7 +245,7 @@ public class ReaderModeBottomSheetManagerTest {
     public void testShowOnControlsCompletelyShown() {
         updateUrl(DISTILLED_URL);
         createManagerAndGetTabObserver();
-        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
+        when(mWebDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
         verify(mBrowserControlsVisibilityManager)
                 .addObserver(mBrowserControlsObserverCaptor.capture());
         when(mBrowserControlsVisibilityManager.getBrowserControlHiddenRatio()).thenReturn(0f);

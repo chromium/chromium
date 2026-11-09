@@ -46,8 +46,6 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
-import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -56,16 +54,18 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.components.web_distiller.core.DistilledPagePrefs;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.dom_distiller.mojom.Theme;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
+import org.chromium.web_distiller.mojom.Theme;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -284,7 +284,7 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
             setDistillabilityObserver(shownTab);
         }
 
-        if (DomDistillerUrlUtils.isDistilledPage(shownTab.getUrl()) && !mIsViewingReaderModePage) {
+        if (WebDistillerUrlUtils.isDistilledPage(shownTab.getUrl()) && !mIsViewingReaderModePage) {
             onStartedReaderMode();
         }
 
@@ -348,7 +348,7 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
         mIsReaderModeButtonShowingOnToolbar = false;
         // If the content change was because of distiller switching web contents or Reader Mode has
         // already been dismissed for this tab do nothing.
-        if (mIsDismissed && !DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) return;
+        if (mIsDismissed && !WebDistillerUrlUtils.isDistilledPage(tab.getUrl())) return;
 
         // If the tab state already existed, only reset the relevant data. Things like view duration
         // need to be preserved.
@@ -358,7 +358,7 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
         if (tab.getWebContents() != null) {
             mWebContentsObserver = createWebContentsObserver();
             setDefaultThemeAsBrowserTheme(tab.getWebContents());
-            if (DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
+            if (WebDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
                 mDistillationStatus = DistillationStatus.STARTED;
                 mReaderModePageUrl = tab.getUrl();
             }
@@ -421,7 +421,7 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
                 int index = controller.getLastCommittedEntryIndex();
                 NavigationEntry entry = controller.getEntryAtIndex(index);
 
-                if (entry != null && DomDistillerUrlUtils.isDistilledPage(entry.getUrl())) {
+                if (entry != null && WebDistillerUrlUtils.isDistilledPage(entry.getUrl())) {
                     mShouldRemovePreviousNavigation = true;
                     mLastDistillerPageIndex = index;
                 }
@@ -429,7 +429,7 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
                 if (mIsDestroyed) return;
 
                 mDistillerUrl = navigation.getUrl();
-                if (DomDistillerUrlUtils.isDistilledPage(navigation.getUrl())) {
+                if (WebDistillerUrlUtils.isDistilledPage(navigation.getUrl())) {
                     mDistillationStatus = DistillationStatus.STARTED;
                     mReaderModePageUrl = navigation.getUrl();
                 }
@@ -459,7 +459,7 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
                         || !navigation
                                 .getUrl()
                                 .equals(
-                                        DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(
+                                        WebDistillerUrlUtils.getOriginalUrlFromDistillerUrl(
                                                 mReaderModePageUrl))) {
                     mDistillationStatus = DistillationStatus.NOT_POSSIBLE;
                     mIsCurrentPageDistillationStatusDetermined = false;
@@ -490,7 +490,7 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
                 mShowPromptRecorded = false;
 
                 if (mTab != null
-                        && !DomDistillerUrlUtils.isDistilledPage(mTab.getUrl())
+                        && !WebDistillerUrlUtils.isDistilledPage(mTab.getUrl())
                         && mIsViewingReaderModePage) {
                     onExitReaderMode();
                 }

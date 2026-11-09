@@ -21,11 +21,11 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_prompt_chip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
-#include "components/dom_distiller/core/url_constants.h"
 #include "components/permissions/permission_indicators_tab_data.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/web_distiller/core/url_constants.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -590,7 +590,7 @@ void PermissionDashboardController::OnIndicatorsChipButtonPressed(
 
   if (PageInfo::IsFileOrInternalPage(url) ||
       url.SchemeIs(content_settings::kExtensionScheme) ||
-      url.SchemeIs(dom_distiller::kDomDistillerScheme)) {
+      url.SchemeIs(web_distiller::kWebDistillerScheme)) {
     ShowBubble();
   } else {
     ShowPageInfoDialog(is_pointer_interaction);

@@ -36,7 +36,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
@@ -44,6 +43,7 @@ import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.Visibility;
@@ -191,12 +191,12 @@ public class PageInfoController
         mSubpageControllers = new ArrayList<>();
         // Work out the URL and connection message and status visibility.
         // TODO(crbug.com/40663204): dedupe the
-        // DomDistillerUrlUtils#getOriginalUrlFromDistillerUrl()
+        // WebDistillerUrlUtils#getOriginalUrlFromDistillerUrl()
         // calls.
         String url =
                 mDelegate.isShowingOfflinePage()
                         ? mDelegate.getOfflinePageUrl()
-                        : DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(
+                        : WebDistillerUrlUtils.getOriginalUrlFromDistillerUrl(
                                         webContents.getVisibleUrl())
                                 .getSpec();
 

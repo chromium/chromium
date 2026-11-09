@@ -7,23 +7,23 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/task/sequenced_task_runner.h"
-#import "components/dom_distiller/core/distilled_page_prefs.h"
-#import "components/dom_distiller/core/distiller.h"
 #import "components/prefs/pref_service.h"
+#import "components/web_distiller/core/distilled_page_prefs.h"
+#import "components/web_distiller/core/distiller.h"
 
 DistillerService::DistillerService(
-    std::unique_ptr<dom_distiller::DistillerFactory> distiller_factory,
+    std::unique_ptr<web_distiller::DistillerFactory> distiller_factory,
     PrefService* pref_service)
     : distiller_factory_(std::move(distiller_factory)),
       distilled_page_prefs_(
-          std::make_unique<dom_distiller::DistilledPagePrefs>(pref_service)) {}
+          std::make_unique<web_distiller::DistilledPagePrefs>(pref_service)) {}
 
 DistillerService::~DistillerService() = default;
 
 void DistillerService::DistillPage(
     const GURL& url,
-    std::unique_ptr<dom_distiller::DistillerPage> distiller_page,
-    dom_distiller::Distiller::DistillationFinishedCallback finished_cb) {
+    std::unique_ptr<web_distiller::DistillerPage> distiller_page,
+    web_distiller::Distiller::DistillationFinishedCallback finished_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (distiller_) {
     // There is already a distillation in progress, enqueue the request.
@@ -40,7 +40,7 @@ void DistillerService::DistillPage(
                                weak_ptr_factory_.GetWeakPtr())));
 }
 
-dom_distiller::DistilledPagePrefs* DistillerService::GetDistilledPagePrefs() {
+web_distiller::DistilledPagePrefs* DistillerService::GetDistilledPagePrefs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return distilled_page_prefs_.get();
 }
@@ -81,8 +81,8 @@ void DistillerService::ProcessNextDistillation() {
 
 DistillerService::Request::Request(
     GURL url,
-    std::unique_ptr<dom_distiller::DistillerPage> distiller_page,
-    dom_distiller::Distiller::DistillationFinishedCallback finished_cb)
+    std::unique_ptr<web_distiller::DistillerPage> distiller_page,
+    web_distiller::Distiller::DistillationFinishedCallback finished_cb)
     : url(std::move(url)),
       distiller_page(std::move(distiller_page)),
       finished_cb(std::move(finished_cb)) {}

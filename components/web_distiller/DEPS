@@ -1,0 +1,23 @@
+include_rules = [
+  "+components/grit/components_resources.h",
+  "+components/leveldb_proto",
+  "+components/pref_registry",
+  "+components/prefs",
+  "+components/strings/grit/components_strings.h",
+  "+components/sync_preferences",
+  "+components/variations",
+  "+crypto", # For sha256
+  "+google", # For third_party/protobuf.
+  "+third_party/re2",
+  "+net/base",
+  "+ui/base/l10n",
+  "+ui/base/resource",
+  "+ui/base/template_expressions.h",
+  "+ui/gfx",
+
+  # The web distiller is a layered component; subdirectories must explicitly
+  # introduce the ability to use the content layer as appropriate.
+  # http://www.chromium.org/developers/design-documents/layered-components-design
+  "-components/web_distiller",
+  "+components/web_distiller/core",
+]

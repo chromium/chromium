@@ -13,7 +13,7 @@
 
 class GeminiService;
 @protocol ReaderModeConsumer;
-namespace dom_distiller {
+namespace web_distiller {
 class DistilledPagePrefs;
 }
 
@@ -22,13 +22,13 @@ class DistilledPagePrefs;
 
 @property(nonatomic, weak) id<ReaderModeConsumer> consumer;
 @property(nonatomic, readonly)
-    dom_distiller::DistilledPagePrefs* distilledPagePrefs;
+    web_distiller::DistilledPagePrefs* distilledPagePrefs;
 
 // Designated initializer. `webStateList` must not be null.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                        geminiService:(GeminiService*)geminiService
                   distilledPagePrefs:
-                      (dom_distiller::DistilledPagePrefs*)distilledPagePrefs
+                      (web_distiller::DistilledPagePrefs*)distilledPagePrefs
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

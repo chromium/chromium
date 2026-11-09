@@ -24,18 +24,18 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
-#include "components/dom_distiller/content/browser/distillable_page_utils.h"
-#include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
-#include "components/dom_distiller/content/browser/test_distillability_observer.h"
-#include "components/dom_distiller/core/dom_distiller_features.h"
-#include "components/dom_distiller/core/dom_distiller_service.h"
-#include "components/dom_distiller/core/dom_distiller_switches.h"
-#include "components/dom_distiller/core/task_tracker.h"
-#include "components/dom_distiller/core/url_constants.h"
-#include "components/dom_distiller/core/url_utils.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/security_state/core/security_state.h"
+#include "components/web_distiller/content/browser/distillable_page_utils.h"
+#include "components/web_distiller/content/browser/distiller_javascript_utils.h"
+#include "components/web_distiller/content/browser/test_distillability_observer.h"
+#include "components/web_distiller/core/task_tracker.h"
+#include "components/web_distiller/core/url_constants.h"
+#include "components/web_distiller/core/url_utils.h"
+#include "components/web_distiller/core/web_distiller_features.h"
+#include "components/web_distiller/core/web_distiller_service.h"
+#include "components/web_distiller/core/web_distiller_switches.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -63,11 +63,11 @@
 namespace reader_mode {
 namespace {
 
-using dom_distiller::DistillabilityResult;
-using dom_distiller::DistillerJavaScriptWorldIdIsSet;
-using dom_distiller::kDomDistillerScheme;
-using dom_distiller::SetDistillerJavaScriptWorldId;
-using dom_distiller::TestDistillabilityObserver;
+using web_distiller::DistillabilityResult;
+using web_distiller::DistillerJavaScriptWorldIdIsSet;
+using web_distiller::kWebDistillerScheme;
+using web_distiller::SetDistillerJavaScriptWorldId;
+using web_distiller::TestDistillabilityObserver;
 
 const char* kSimpleArticlePath = "/reader_mode/simple_article.html";
 const char* kOriginalArticleTitle = "Test Page Title";
@@ -140,7 +140,7 @@ class ReaderModeTabUtilsBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kEnableDomDistiller);
+    command_line->AppendSwitch(switches::kEnableWebDistiller);
   }
 
   net::EmbeddedTestServer& server() { return *https_server_.get(); }
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(ReaderModeTabUtilsBrowserTest,
 
   // Verify the destination WebContents is showing distilled content.
   EXPECT_TRUE(destination_web_contents->GetLastCommittedURL().SchemeIs(
-      kDomDistillerScheme));
+      kWebDistillerScheme));
   EXPECT_EQ(kExpectedDocumentTitle, GetDocumentTitle(destination_web_contents));
   EXPECT_EQ(kExpectedArticleHeading,
             GetArticleHeading(destination_web_contents));
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(ReaderModeTabUtilsBrowserTest,
   EXPECT_EQ(web_contents, browser()->tab_strip_model()->GetActiveWebContents());
   // On success, the function will navigate to the distillation viewer.
   EXPECT_TRUE(
-      web_contents->GetLastCommittedURL().SchemeIs(kDomDistillerScheme));
+      web_contents->GetLastCommittedURL().SchemeIs(kWebDistillerScheme));
   EXPECT_EQ(kExpectedDocumentTitle, GetDocumentTitle(web_contents));
   EXPECT_EQ(kExpectedArticleHeading, GetArticleHeading(web_contents));
 }
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(web_contents, browser()->tab_strip_model()->GetActiveWebContents());
   // On failure, the function won't navigate to the distillation viewer.
   EXPECT_FALSE(
-      web_contents->GetLastCommittedURL().SchemeIs(kDomDistillerScheme));
+      web_contents->GetLastCommittedURL().SchemeIs(kWebDistillerScheme));
   EXPECT_FALSE(web_contents->IsLoading());
   content::RunAllTasksUntilIdle();
 }

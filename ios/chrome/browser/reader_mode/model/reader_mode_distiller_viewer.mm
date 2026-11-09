@@ -11,11 +11,11 @@
 #import "base/functional/bind.h"
 #import "base/rand_util.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/dom_distiller/core/distilled_page_prefs.h"
-#import "components/dom_distiller/core/distiller.h"
-#import "components/dom_distiller/core/dom_distiller_request_view_base.h"
-#import "components/dom_distiller/core/proto/distilled_article.pb.h"
-#import "components/dom_distiller/core/viewer.h"
+#import "components/web_distiller/core/distilled_page_prefs.h"
+#import "components/web_distiller/core/distiller.h"
+#import "components/web_distiller/core/proto/distilled_article.pb.h"
+#import "components/web_distiller/core/viewer.h"
+#import "components/web_distiller/core/web_distiller_request_view_base.h"
 #import "ios/chrome/browser/web_distiller/model/distiller_service.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -23,10 +23,10 @@
 ReaderModeDistillerViewer::ReaderModeDistillerViewer(
     web::WebState* web_state,
     DistillerService* distiller_service,
-    std::unique_ptr<dom_distiller::DistillerPage> page,
+    std::unique_ptr<web_distiller::DistillerPage> page,
     const GURL& url,
     DistillationFinishedCallback callback)
-    : dom_distiller::DomDistillerRequestViewBase(
+    : web_distiller::WebDistillerRequestViewBase(
           distiller_service->GetDistilledPagePrefs()),
       url_(url),
       csp_nonce_(base::Base64Encode(base::RandBytesAsVector(16))),
@@ -47,19 +47,19 @@ ReaderModeDistillerViewer::ReaderModeDistillerViewer(
 ReaderModeDistillerViewer::~ReaderModeDistillerViewer() {}
 
 void ReaderModeDistillerViewer::OnDistillerFinished(
-    std::unique_ptr<dom_distiller::DistilledArticleProto> distilled_article,
-    dom_distiller::DistillationParseResult /*result*/) {
+    std::unique_ptr<web_distiller::DistilledArticleProto> distilled_article,
+    web_distiller::DistillationParseResult /*result*/) {
   OnArticleReady(distilled_article.get());
 }
 
 void ReaderModeDistillerViewer::OnArticleReady(
-    const dom_distiller::DistilledArticleProto* article_proto) {
+    const web_distiller::DistilledArticleProto* article_proto) {
   DCHECK(!callback_.is_null());
-  DomDistillerRequestViewBase::OnArticleReady(article_proto);
+  WebDistillerRequestViewBase::OnArticleReady(article_proto);
   bool is_empty = article_proto->pages_size() == 0 ||
                   article_proto->pages(0).html().empty();
   if (!is_empty) {
-    const std::string html = dom_distiller::viewer::GetArticleTemplateHtml(
+    const std::string html = web_distiller::viewer::GetArticleTemplateHtml(
         distilled_page_prefs_->GetTheme(),
         distilled_page_prefs_->GetFontFamily(), csp_nonce_);
     std::string html_and_script(html);

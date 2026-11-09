@@ -25,7 +25,6 @@ per-file compose_strings.grdp=file://components/compose_strings_grdp/OWNERS
 per-file contextual_cueing_strings.grdp=file://components/contextual_cueing/OWNERS
 per-file contextual_tasks_strings.grdp=file://components/contextual_tasks/OWNERS
 per-file crash_strings.grdp=file://components/crash/OWNERS
-per-file dom_distiller_strings.grdp=file://components/dom_distiller/OWNERS
 per-file enterprise_strings.grdp=file://components/enterprise_strings_grdp/OWNERS
 per-file error_page_strings.grdp=file://components/error_page/OWNERS
 per-file facilitated_payments_strings.grdp=file://components/facilitated_payments/OWNERS
@@ -75,6 +74,7 @@ per-file user_education_strings.grdp=file://components/user_education/OWNERS
 per-file version_ui_strings.grdp=file://components/webui/version/OWNERS
 per-file wallet_strings.grdp=file://components/wallet/OWNERS
 per-file web_contents_delegate_android_strings.grdp=file://components/embedder_support/android/delegate/OWNERS
+per-file web_distiller_strings.grdp=file://components/web_distiller/OWNERS
 per-file webxr_strings.grdp=file://components/webxr/OWNERS
 
 # For web_dev_style related changes.

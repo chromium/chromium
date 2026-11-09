@@ -8,8 +8,8 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/dom_distiller/core/extraction_utils.h"
 #import "components/google/core/common/google_util.h"
+#import "components/web_distiller/core/extraction_utils.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
@@ -175,7 +175,7 @@ void ReaderModeEligibilityDecider::TriggerReaderModeHeuristic(const GURL& url) {
   metrics_helper_->RecordReaderHeuristicTriggered();
   eligibility_heuristic_url_ = url;
   main_frame->ExecuteJavaScript(
-      base::UTF8ToUTF16(dom_distiller::GetDistillerTriggeringScript()),
+      base::UTF8ToUTF16(web_distiller::GetDistillerTriggeringScript()),
       base::BindOnce(&GetReaderModeHeuristicResult)
           .Then(base::BindOnce(
               &ReaderModeEligibilityDecider::HandleReaderModeHeuristicResult,
