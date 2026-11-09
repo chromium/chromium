@@ -872,6 +872,12 @@ void LayerTreeHost::SetNeedsAnimateIfNotInsideMainFrame() {
     SetNeedsAnimate();
 }
 
+void LayerTreeHost::NotifyOutOfBandFrame() {
+  DCHECK(IsMainThread());
+  has_out_of_band_frame_for_testing_ = true;
+  proxy_->NotifyOutOfBandFrame();
+}
+
 DISABLE_CFI_PERF
 void LayerTreeHost::SetNeedsUpdateLayers() {
   DCHECK(IsMainThread());

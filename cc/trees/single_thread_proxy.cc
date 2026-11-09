@@ -200,6 +200,13 @@ void SingleThreadProxy::SetLayerTreeFrameSink(
   }
 }
 
+void SingleThreadProxy::NotifyOutOfBandFrame() {
+  DCHECK(task_runner_provider_->IsMainThread());
+  if (scheduler_on_impl_thread_) {
+    scheduler_on_impl_thread_->NotifyOutOfBandFrame();
+  }
+}
+
 void SingleThreadProxy::SetNeedsAnimate(BeginMainFrameReason, bool urgent) {
   TRACE_EVENT0("cc", "SingleThreadProxy::SetNeedsAnimate");
   DCHECK(task_runner_provider_->IsMainThread());

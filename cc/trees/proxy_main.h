@@ -130,6 +130,7 @@ class CC_EXPORT ProxyMain : public Proxy {
   void SetNeedsUpdateLayers() override;
   void SetNeedsCommit(bool urgent) override;
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override;
+  void NotifyOutOfBandFrame() override;
   void SetTargetLocalSurfaceId(
       const viz::LocalSurfaceId& target_local_surface_id) override;
   void SetMemoryPolicy(const ManagedMemoryPolicy& policy) override;

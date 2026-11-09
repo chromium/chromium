@@ -727,6 +727,7 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
       dirty_rect_.Intersect(src_rect);
       frame_dispatcher_->DispatchFrame(std::move(exported_resource),
                                        dirty_rect_, IsOpaque());
+      NotifyOutOfBandFrame();
       dirty_rect_ = gfx::Rect();
     }
   }
@@ -1148,6 +1149,16 @@ bool HTMLCanvasElement::PaintsIntoCanvasBuffer() const {
     return false;
 
   return true;
+}
+
+void HTMLCanvasElement::NotifyOutOfBandFrame() {
+  cc::Layer* cc_layer = ContentsCcLayer();
+  if (!cc_layer) {
+    return;
+  }
+  if (cc::LayerTreeHost* host = cc_layer->layer_tree_host()) {
+    host->NotifyOutOfBandFrame();
+  }
 }
 
 void HTMLCanvasElement::NotifyListenersCanvasChanged() {
@@ -2065,6 +2076,7 @@ void HTMLCanvasElement::SetOffscreenCanvasResource(
     scoped_refptr<ExportedCanvasResource>&& image) {
   OffscreenCanvasPlaceholder::SetOffscreenCanvasResource(std::move(image));
   SetSize(OffscreenCanvasFrame()->Size());
+  NotifyOutOfBandFrame();
   NotifyListenersCanvasChanged();
 
   if (accessibility_manager_ &&

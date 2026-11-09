@@ -331,6 +331,15 @@ class CC_EXPORT LayerTreeHost : public MutatorHostDelegate {
   // Calls SetNeedsAnimate() if there is no main frame already in progress.
   void SetNeedsAnimateIfNotInsideMainFrame();
 
+  // Notifies that we received a frame that did not go through the main thread
+  // commit, such as from an offscreen canvas. This is used to make sure we do
+  // not throttle such frames.
+  void NotifyOutOfBandFrame();
+
+  bool TakeHasOutOfBandFrameForTesting() {
+    return std::exchange(has_out_of_band_frame_for_testing_, false);
+  }
+
   // Requests a main frame update and also ensure that the host pulls layer
   // updates from the client, even if no content might have changed, without
   // forcing a full commit synchronization.
@@ -1218,6 +1227,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostDelegate {
   bool in_composite_for_test_ = false;
 
   bool syncing_deltas_for_test_ = false;
+  bool has_out_of_band_frame_for_testing_ = false;
 
   std::unique_ptr<PropertyTreeDelegate> owned_property_tree_delegate_;
   raw_ptr<PropertyTreeDelegate> property_tree_delegate_;

@@ -205,6 +205,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // main thread updates are completed to signal it is ready for the commmit.
   void NotifyReadyToCommit(std::unique_ptr<BeginMainFrameMetrics> details);
   void BeginMainFrameAborted(CommitEarlyOutReason reason);
+  void NotifyOutOfBandFrame() { state_machine_->NotifyOutOfBandFrame(); }
 
   // In the PrepareTiles step, compositor thread divides the layers into tiles
   // to reduce cost of raster large layers. Then, each tile is rastered by a

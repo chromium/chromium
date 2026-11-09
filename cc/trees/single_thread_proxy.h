@@ -57,6 +57,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void ReleaseLayerTreeFrameSink() override;
   void SetVisible(bool visible) override;
   void SetShouldWarmUp() override;
+  void NotifyOutOfBandFrame() override;
   void SetNeedsAnimate(BeginMainFrameReason, bool urgent) override;
   void SetNeedsUpdateLayers() override;
   void SetNeedsCommit(bool urgent) override;

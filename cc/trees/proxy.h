@@ -51,6 +51,8 @@ class CC_EXPORT Proxy {
   virtual void SetVisible(bool visible) = 0;
   virtual void SetShouldWarmUp() = 0;
 
+  virtual void NotifyOutOfBandFrame() = 0;
+
   virtual void SetNeedsAnimate(BeginMainFrameReason reason, bool urgent) = 0;
   void SetNeedsAnimate(bool urgent = false) {
     SetNeedsAnimate(BeginMainFrameReason::kOther, urgent);

@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <atomic>
+
 #include "base/time/time.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/cc_export.h"
@@ -266,6 +268,12 @@ class CC_EXPORT SchedulerStateMachine {
   // Notifies that we have received an input event. This is used for
   // unthrottling.
   void NotifyInputEvent();
+
+  // Notifies that a frame was produced outside the main-thread commit (e.g.
+  // OffscreenCanvas or low-latency canvas). May be called from any thread.
+  void NotifyOutOfBandFrame() {
+    has_out_of_band_damage_.store(true, std::memory_order_relaxed);
+  }
 
   // Indicates that a new begin main frame flow needs to be performed, either
   // to pull updates from the main thread to the impl, or to push deltas from
@@ -555,6 +563,8 @@ class CC_EXPORT SchedulerStateMachine {
   bool waiting_for_scroll_event_ = false;
 
   uint64_t high_framerate_requests_count_ = 0;
+
+  std::atomic<bool> has_out_of_band_damage_{false};
 };
 
 }  // namespace cc

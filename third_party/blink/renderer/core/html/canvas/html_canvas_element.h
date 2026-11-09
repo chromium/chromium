@@ -412,6 +412,10 @@ class CORE_EXPORT HTMLCanvasElement final
   void RemovedFrom(ContainerNode& insertion_point) override;
 
  private:
+  // Notifies the `cc::LayerTreeHost` that a canvas frame was dispatched
+  // directly (bypassing the main-thread commit).
+  void NotifyOutOfBandFrame();
+
   void Dispose();
 
   void ColorSchemeMayHaveChanged();

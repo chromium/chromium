@@ -614,7 +614,8 @@ bool SchedulerStateMachine::ShouldThrottleSendBeginMainFrame() const {
   bool result = false;
   auto throttled_interval = MainFrameThrottledInterval();
 
-  if (throttle_repeated_no_damage_frames_) {
+  if (throttle_repeated_no_damage_frames_ &&
+      !has_out_of_band_damage_.load(std::memory_order_relaxed)) {
     throttled_interval =
         std::max(throttled_interval,
                  main_frame_consecutive_no_damage_throttled_interval_);
@@ -899,7 +900,11 @@ bool SchedulerStateMachine::CheckWillCommit() const {
 }
 
 void SchedulerStateMachine::WillCommit(bool commit_has_no_updates) {
-  if (commit_has_no_updates) {
+  const bool has_out_of_band_damage =
+      (commit_has_no_updates ||
+       next_begin_main_frame_state_ == BeginMainFrameState::IDLE) &&
+      has_out_of_band_damage_.exchange(false, std::memory_order_relaxed);
+  if (commit_has_no_updates && !has_out_of_band_damage) {
     consecutive_no_damage_main_frames_++;
   } else {
     consecutive_no_damage_main_frames_ = 0;
@@ -1705,6 +1710,11 @@ void SchedulerStateMachine::BeginMainFrameAborted(CommitEarlyOutReason reason) {
         break;
       case CommitEarlyOutReason::kFinishedNoUpdates:
         commit_count_++;
+        if (has_out_of_band_damage_.exchange(false,
+                                             std::memory_order_relaxed)) {
+          consecutive_no_damage_main_frames_ = 0;
+          UpdateConsecutiveNoDamageThrottlingInterval();
+        }
         break;
       case CommitEarlyOutReason::kNoEarlyOut:
         // Not a real case, only used for metrics.

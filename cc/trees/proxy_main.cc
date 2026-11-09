@@ -716,6 +716,11 @@ void ProxyMain::SetShouldWarmUp() {
                                 base::Unretained(proxy_impl_.get())));
 }
 
+void ProxyMain::NotifyOutOfBandFrame() {
+  DCHECK(IsMainThread());
+  proxy_impl_->NotifyOutOfBandFrameOnMain();
+}
+
 void ProxyMain::SetNeedsAnimate(BeginMainFrameReason reason, bool urgent) {
   DCHECK(IsMainThread());
   needs_begin_main_frame_ = true;

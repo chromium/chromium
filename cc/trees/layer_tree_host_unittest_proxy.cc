@@ -884,4 +884,46 @@ class LayerTreeHostProxyTestMainFrameBeforeCommitBlockedByImplSidePendingTree
 MULTI_THREAD_TEST_F(
     LayerTreeHostProxyTestMainFrameBeforeCommitBlockedByImplSidePendingTree);
 
+class LayerTreeHostProxyTestNotifyOutOfBandFrame
+    : public LayerTreeHostProxyTest {
+ protected:
+  LayerTreeHostProxyTestNotifyOutOfBandFrame() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kThrottleRepeatedNoDamageFrames);
+  }
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void DidCommit() override {
+    if (layer_tree_host()->SourceFrameNumber() == 1) {
+      // Trigger an animate-only BeginMainFrame with no layer updates so it
+      // aborts with kFinishedNoUpdates.
+      proxy()->SetNeedsAnimate();
+    }
+  }
+
+  void BeginMainFrame(const viz::BeginFrameArgs& args) override {
+    if (layer_tree_host()->SourceFrameNumber() == 1) {
+      layer_tree_host()->NotifyOutOfBandFrame();
+    }
+  }
+
+  void BeginMainFrameAbortedOnThread(
+      LayerTreeHostImpl* host_impl,
+      CommitEarlyOutReason reason,
+      bool scroll_and_viewport_changes_synced) override {
+    EXPECT_EQ(CommitEarlyOutReason::kFinishedNoUpdates, reason);
+    EndTest();
+  }
+
+  void AfterTest() override {
+    EXPECT_TRUE(layer_tree_host()->TakeHasOutOfBandFrameForTesting());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostProxyTestNotifyOutOfBandFrame);
+
 }  // namespace cc

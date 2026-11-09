@@ -31,6 +31,7 @@ class FakeProxy : public Proxy {
   void ReleaseLayerTreeFrameSink() override {}
   void SetShouldWarmUp() override {}
   void SetVisible(bool visible) override {}
+  void NotifyOutOfBandFrame() override {}
   void SetNeedsAnimate(BeginMainFrameReason, bool urgent) override {}
   void SetNeedsUpdateLayers() override {}
   void SetNeedsCommit(bool urgent) override {}
