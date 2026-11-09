@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "crypto/obsolete/sha1.h"
@@ -41,7 +40,7 @@ std::vector<uint8_t> SECItemToBytes(const crypto::ScopedSECItem& id) {
   if (!id || id->len == 0) {
     return {};
   }
-  return std::vector<uint8_t>(id->data, UNSAFE_TODO(id->data + id->len));
+  return base::ToVector(net::x509_util::SECItemAsSpan(*id));
 }
 
 std::vector<uint8_t> MakePkcs11IdForEcKey(base::span<const uint8_t> key_data) {
