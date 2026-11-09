@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/core/ad_tracker/script_initiation_monitor.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
@@ -128,6 +129,21 @@ JSModuleScript* JSModuleScript::Create(
 
       // <spec step="9.1.3">Return script.</spec>
       return script;
+    }
+  }
+
+  // Inform the ScriptAncestryTracker that there is a new script id, and it will
+  // mark the AsyncTaskContext if any of its clients are interested in it.
+  if (ExecutionContext* execution_context =
+          ExecutionContext::From(script_state)) {
+    script->AsyncTaskContext()->Schedule(execution_context, "JSModuleScript");
+    if (auto* monitor =
+            ScriptInitiationMonitor::FromExecutionContext(execution_context)) {
+      monitor->DidCompileModuleScript(
+          *execution_context, V8ScriptId(result->ScriptId()),
+          params.SourceURL().GetString(),
+          params.SourceLocationType() == ScriptSourceLocationType::kInline,
+          script->AsyncTaskContext());
     }
   }
 

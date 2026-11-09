@@ -76,7 +76,7 @@ class CORE_EXPORT ModuleTreeLinker final : public SingleModuleClient {
   void AdvanceState(State);
 
   void NotifyModuleLoadFinished(ModuleScript*, v8::ModuleImportPhase) override;
-  void FetchDescendants(const ModuleScript*);
+  void FetchDescendants(ModuleScript*);
 
   // Completion of [FD].
   void FinalizeFetchDescendantsForOneModuleScript();

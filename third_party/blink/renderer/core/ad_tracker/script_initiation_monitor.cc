@@ -149,6 +149,22 @@ void ScriptInitiationMonitor::DidRegisterDynamicScript(V8ScriptId script_id) {
   }
 }
 
+void ScriptInitiationMonitor::DidCompileModuleScript(
+    ExecutionContext& execution_context,
+    V8ScriptId script_id,
+    const String& script_url,
+    bool is_inline,
+    probe::AsyncTaskContext* task_context) {
+  v8::Isolate* isolate = execution_context.GetIsolate();
+  LazyStackTrace stack_trace(isolate);
+  for (auto& observer : observers_) {
+    if (observer) {
+      observer->DidCompileModuleScript(execution_context, script_id, script_url,
+                                       is_inline, task_context, stack_trace);
+    }
+  }
+}
+
 void ScriptInitiationMonitor::DidCreateLocalFrame(LocalFrame* frame) {
   v8::Isolate* isolate = GetIsolate();
   LazyStackTrace stack_trace(isolate);

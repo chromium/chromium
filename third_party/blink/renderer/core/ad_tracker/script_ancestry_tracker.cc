@@ -65,28 +65,14 @@ void ScriptAncestryTracker::WillExecuteScript(
     return;
   }
 
-  // We're executing a script's top-level. This is our first time seeing the
-  // script id for the given url.
   // Note: V8 occasionally reports the document's URL instead of an empty string
   // for inline scripts or evals. We check for both to accurately identify them
   // as inline, ensuring they are assigned a synthetic ID and correctly linked
   // to their initiating parent in the compilation graph.
   bool is_inline_script =
       script_url.empty() || script_url == execution_context.Url().GetString();
-  String url =
-      is_inline_script ? GenerateFakeUrlFromScriptId(script_id) : script_url;
-
-  std::optional<V8ScriptId> marked_script_id = GetMarkedScriptInStack(
-      stack_trace,
-      /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild);
-
-  OnScriptRegistered(execution_context, script_id, url, marked_script_id);
-
-  if (IsMarkedScript(script_id) && !GetScriptMetadata(script_id)) {
-    v8_inspector::V8DebuggerId debugger_id =
-        GetDebuggerIdForCurrentContext(execution_context.GetIsolate());
-    script_metadata_.insert(script_id, ScriptMetadata{debugger_id, url});
-  }
+  RegisterScriptWithUrl(execution_context, script_id, script_url,
+                        is_inline_script, stack_trace);
 
   MaybeSetBottomMostScript(execution_context, script_id);
 }
@@ -117,6 +103,23 @@ void ScriptAncestryTracker::DidRegisterDynamicScript(
   }
 
   RegisterScript(script_id, marked_script_id);
+}
+
+void ScriptAncestryTracker::DidCompileModuleScript(
+    ExecutionContext& execution_context,
+    V8ScriptId script_id,
+    const String& script_url,
+    bool is_inline,
+    probe::AsyncTaskContext* task_context,
+    LazyStackTrace& stack_trace) {
+  if (script_id.value() <= 0) {
+    return;
+  }
+  RegisterScriptWithUrl(execution_context, script_id, script_url, is_inline,
+                        stack_trace);
+  if (task_context && IsMarkedScript(script_id)) {
+    task_context->SetMarkedScript(GetTrackerType(), script_id);
+  }
 }
 
 void ScriptAncestryTracker::WillCallFunction(
@@ -406,6 +409,32 @@ void ScriptAncestryTracker::RegisterScript(
         GetDebuggerIdForCurrentContext(isolate);
     script_metadata_.insert(script_id,
                             ScriptMetadata{debugger_id, script_name});
+  }
+}
+
+void ScriptAncestryTracker::RegisterScriptWithUrl(
+    ExecutionContext& execution_context,
+    V8ScriptId script_id,
+    const String& script_url,
+    bool is_inline_script,
+    LazyStackTrace& stack_trace) {
+  if (script_id.value() <= 0) {
+    return;
+  }
+
+  String url =
+      is_inline_script ? GenerateFakeUrlFromScriptId(script_id) : script_url;
+
+  std::optional<V8ScriptId> marked_script_id = GetMarkedScriptInStack(
+      stack_trace,
+      /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild);
+
+  OnScriptRegistered(execution_context, script_id, url, marked_script_id);
+
+  if (IsMarkedScript(script_id) && !GetScriptMetadata(script_id)) {
+    v8_inspector::V8DebuggerId debugger_id =
+        GetDebuggerIdForCurrentContext(execution_context.GetIsolate());
+    script_metadata_.insert(script_id, ScriptMetadata{debugger_id, url});
   }
 }
 

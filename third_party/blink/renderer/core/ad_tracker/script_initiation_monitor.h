@@ -58,6 +58,18 @@ class CORE_EXPORT ScriptInitiationMonitor
     virtual void DidRegisterDynamicScript(V8ScriptId script_id,
                                           LazyStackTrace& stack_trace) = 0;
 
+    // Called when an ES module script is compiled. `is_inline` indicates
+    // whether the module came from an inline `<script type="module">` element
+    // rather than an external file. `task_context` is the module script's own
+    // AsyncTaskContext, which will be activated when fetching its static import
+    // descendants.
+    virtual void DidCompileModuleScript(ExecutionContext& execution_context,
+                                        V8ScriptId script_id,
+                                        const String& script_url,
+                                        bool is_inline,
+                                        probe::AsyncTaskContext* task_context,
+                                        LazyStackTrace& stack_trace) {}
+
     // Called before a JS function is called (e.g., event listener callbacks).
     virtual void WillCallFunction(ExecutionContext& execution_context,
                                   V8ScriptId script_id,
@@ -110,6 +122,11 @@ class CORE_EXPORT ScriptInitiationMonitor
   void DidFinishAsyncTask(probe::AsyncTaskContext*);
 
   void DidRegisterDynamicScript(V8ScriptId script_id);
+  void DidCompileModuleScript(ExecutionContext& execution_context,
+                              V8ScriptId script_id,
+                              const String& script_url,
+                              bool is_inline,
+                              probe::AsyncTaskContext* task_context);
 
   // Returns the V8 isolate for this monitor's local root, falling back to the
   // current thread isolate if the window is unavailable.

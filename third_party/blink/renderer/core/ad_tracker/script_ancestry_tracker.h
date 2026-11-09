@@ -85,6 +85,26 @@ class CORE_EXPORT ScriptAncestryTracker
   void DidExecuteScript(V8ScriptId script_id) override;
   void DidRegisterDynamicScript(V8ScriptId script_id,
                                 LazyStackTrace& stack_trace) override;
+  // Tracks ES module graphs at compile time (`JSModuleScript::Create`), since
+  // `V8ScriptRunner::EvaluateModule` only invokes `WillExecuteScript` for the
+  // root module and V8 evaluates static imports internally. Provenance is
+  // propagated across the module graph using two alternating
+  // `AsyncTaskContext`s:
+  // 1. `ModuleScriptLoader::async_task_context_` captures the initiating script
+  //    (or parent module) in `FetchInternal` and restores it in
+  //    `NotifyFetchFinishedSuccess` when `JSModuleScript::Create` compiles the
+  //    module and calls `DidCompileModuleScript`.
+  // 2. If the compiled module is marked, `DidCompileModuleScript` records its
+  //    `V8ScriptId` on `ModuleScript::async_task_context_` (`task_context`),
+  //    which `ModuleTreeLinker::FetchDescendants` activates via
+  //    `probe::AsyncTask` when starting descendant `ModuleScriptLoader`
+  //    fetches.
+  void DidCompileModuleScript(ExecutionContext& execution_context,
+                              V8ScriptId script_id,
+                              const String& script_url,
+                              bool is_inline,
+                              probe::AsyncTaskContext* task_context,
+                              LazyStackTrace& stack_trace) override;
   void WillCallFunction(ExecutionContext& execution_context,
                         V8ScriptId script_id,
                         bool is_nested,
@@ -189,6 +209,11 @@ class CORE_EXPORT ScriptAncestryTracker
   v8::Isolate* GetIsolate() const;
 
  private:
+  void RegisterScriptWithUrl(ExecutionContext& execution_context,
+                             V8ScriptId script_id,
+                             const String& script_url,
+                             bool is_inline_script,
+                             LazyStackTrace& stack_trace);
   // Helper for `ignore_monkey_patch` heuristic. Tracks the API call within
   // the current synchronous task and returns true if it is the first time the
   // API is being called. This method is not const because it modifies

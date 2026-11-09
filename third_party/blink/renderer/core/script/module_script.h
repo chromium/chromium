@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
@@ -66,6 +67,8 @@ class CORE_EXPORT ModuleScript : public Script {
   virtual bool IsWasmModuleRecord() const { return false; }
   virtual Vector<ModuleRequest> GetModuleRecordRequests() const;
   virtual ScriptValue Instantiate() const;
+
+  probe::AsyncTaskContext* AsyncTaskContext() { return &async_task_context_; }
 
   [[nodiscard]] ScriptEvaluationResult RunScriptOnScriptStateAndReturnValue(
       ScriptState*,
@@ -148,6 +151,12 @@ class CORE_EXPORT ModuleScript : public Script {
   WorldSafeV8Reference<v8::Value> error_to_rethrow_;
 
   mutable HashMap<String, KURL> specifier_to_url_cache_;
+
+  // Carries this module's marked `V8ScriptId` (recorded on compilation in
+  // `JSModuleScript::Create` via `DidCompileModuleScript`) to
+  // `ModuleTreeLinker::FetchDescendants`, so descendant static import fetches
+  // inherit this module's provenance in `ScriptAncestryTracker`.
+  probe::AsyncTaskContext async_task_context_;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const ModuleScript&);

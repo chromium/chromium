@@ -250,6 +250,10 @@ void ModuleScriptLoader::FetchInternal(
     options.initiator_info.position = module_request.GetReferrerPosition();
   }
 
+  async_task_context_.Schedule(
+      ExecutionContext::From(modulator_->GetScriptState()),
+      "ModuleScriptLoader", probe::AsyncTaskContext::StackOptions::kScan);
+
   // Note: |options| should not be modified after here.
   FetchParameters fetch_params(std::move(resource_request), options);
   fetch_params.SetModuleScript();
@@ -408,7 +412,7 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
             CreateCSSWrapperSyntheticModuleScript(params, modulator_);
       }
       break;
-    case ResolvedModuleType::kJavaScript:
+    case ResolvedModuleType::kJavaScript: {
       // <spec step="13.7.2">If mimeType is a JavaScript MIME type and
       // moduleType is "javascript-or-wasm", then set moduleScript to the result
       // of creating a JavaScript module script given sourceText,
@@ -443,8 +447,12 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
             modulator_->TaskRunner());
         return;
       }
+      probe::AsyncTask async_task(
+          ExecutionContext::From(modulator_->GetScriptState()),
+          &async_task_context_);
       module_script_ = JSModuleScript::Create(params, modulator_, options_);
       break;
+    }
     case ResolvedModuleType::kWasm: {
       // <spec step="13.6">If mimeType's essence is "application/wasm" and
       // moduleType is "javascript-or-wasm", then set moduleScript to the result
@@ -490,6 +498,9 @@ void ModuleScriptLoader::NotifyCacheConsumeFinished() {
     AdvanceState(State::kFinished);
     return;
   }
+  probe::AsyncTask async_task(
+      ExecutionContext::From(modulator_->GetScriptState()),
+      &async_task_context_);
   module_script_ = JSModuleScript::Create(params, modulator_, options_);
   AdvanceState(State::kFinished, params.GetModuleImportPhase());
 }

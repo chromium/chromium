@@ -382,7 +382,7 @@ void ModuleTreeLinker::NotifyModuleLoadFinished(
 // href="https://html.spec.whatwg.org/C/#fetch-the-descendants-of-a-module-script">
 // See also https://github.com/whatwg/html/pull/5658/ which adds ModuleRequest
 // and module type to the HTML spec.
-void ModuleTreeLinker::FetchDescendants(const ModuleScript* module_script) {
+void ModuleTreeLinker::FetchDescendants(ModuleScript* module_script) {
   DCHECK(module_script);
 
   if (AbortBeforeFinalizingIfNecessary(module_script)) {
@@ -443,6 +443,12 @@ void ModuleTreeLinker::FetchDescendants(const ModuleScript* module_script) {
   // <spec step="8">... These invocations of the internal module script graph
   // fetching procedure should be performed in parallel to each other.
   // ...</spec>
+  // Activate `module_script`'s `AsyncTaskContext` so each descendant's
+  // `ModuleScriptLoader::FetchInternal` captures this module as its initiating
+  // script in `ScriptAncestryTracker`.
+  probe::AsyncTask async_task(
+      ExecutionContext::From(modulator_->GetScriptState()),
+      module_script->AsyncTaskContext(), "FetchDescendants");
   for (const auto& module_request : module_requests) {
     // <spec
     // href="https://html.spec.whatwg.org/C/#descendant-script-fetch-options">
