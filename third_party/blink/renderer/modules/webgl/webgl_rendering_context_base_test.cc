@@ -56,12 +56,8 @@ class WebGLTestPlatform : public GpuCompositingTestPlatform {
     if (gl_info) {
       gl_info->using_gpu_compositing = true;
     }
-    auto provider = std::make_unique<WebGraphicsContext3DProviderForTests>(
+    return std::make_unique<WebGraphicsContext3DProviderForTests>(
         std::make_unique<testing::NiceMock<GLES2InterfaceForTests>>());
-    provider->GetMutableGpuFeatureInfo()
-        .enabled_gpu_driver_bug_workarounds.push_back(
-            gpu::DISABLE_GL_RGB_FORMAT);
-    return provider;
   }
 };
 

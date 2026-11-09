@@ -68,11 +68,9 @@ class BufferManagerTestBase : public GpuServiceTest {
     if (!buffer->CheckRange(offset, size)) {
       return false;
     }
-    if (!buffer->IsClientSideArray()) {
-      EXPECT_CALL(*gl_, BufferSubData(target, offset, size, _))
-          .Times(1)
-          .RetiresOnSaturation();
-    }
+    EXPECT_CALL(*gl_, BufferSubData(target, offset, size, _))
+        .Times(1)
+        .RetiresOnSaturation();
     manager_->DoBufferSubData(buffer, target, offset, size, data);
     return true;
   }
@@ -250,20 +248,6 @@ class BufferManagerMemoryTrackerTest : public BufferManagerTestBase {
   scoped_refptr<StrictMock<MockMemoryTracker>> mock_memory_tracker_;
 };
 
-class BufferManagerClientSideArraysTest : public BufferManagerTestBase {
- protected:
-  void SetUp() override {
-    GpuDriverBugWorkarounds gpu_driver_bug_workarounds;
-    gpu_driver_bug_workarounds.use_client_side_arrays_for_stream_buffers = true;
-    GpuFeatureInfo gpu_feature_info;
-    feature_info_ = base::MakeRefCounted<FeatureInfo>(
-        gpu_driver_bug_workarounds, gpu_feature_info);
-    SetUpBase(nullptr, feature_info_.get(), "");
-  }
-
-  scoped_refptr<FeatureInfo> feature_info_;
-};
-
 #define EXPECT_MEMORY_ALLOCATION_CHANGE(old_size, new_size)    \
   EXPECT_CALL(*mock_memory_tracker_,                           \
               TrackMemoryAllocatedChange(new_size - old_size)) \
@@ -285,7 +269,6 @@ TEST_F(BufferManagerTest, Basic) {
   EXPECT_EQ(0, buffer1->size());
   EXPECT_EQ(static_cast<GLenum>(GL_STATIC_DRAW), buffer1->usage());
   EXPECT_FALSE(buffer1->IsDeleted());
-  EXPECT_FALSE(buffer1->IsClientSideArray());
   EXPECT_EQ(kServiceBuffer1Id, buffer1->service_id());
   GLuint client_id = 0;
   EXPECT_TRUE(manager_->GetClientId(buffer1->service_id(), &client_id));
@@ -445,26 +428,6 @@ TEST_F(BufferManagerTest, UseDeletedBuffer) {
       .Times(1)
       .RetiresOnSaturation();
   buffer = nullptr;
-}
-
-// Test buffers get shadowed when they are supposed to be.
-TEST_F(BufferManagerClientSideArraysTest, StreamBuffersAreShadowed) {
-  const GLenum kTarget = GL_ARRAY_BUFFER;
-  const GLuint kClientBufferId = 1;
-  const GLuint kServiceBufferId = 11;
-  static const uint32_t data[] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-  manager_->CreateBuffer(kClientBufferId, kServiceBufferId);
-  Buffer* buffer = manager_->GetBuffer(kClientBufferId);
-  ASSERT_TRUE(buffer != nullptr);
-  manager_->SetTarget(buffer, kTarget);
-  DoBufferData(
-      buffer, kTarget, sizeof(data), GL_STREAM_DRAW, data, GL_NO_ERROR);
-  EXPECT_TRUE(buffer->IsClientSideArray());
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(data, buffer->GetRange(0, sizeof(data)), sizeof(data))));
-  DoBufferData(
-      buffer, kTarget, sizeof(data), GL_DYNAMIC_DRAW, data, GL_NO_ERROR);
-  EXPECT_FALSE(buffer->IsClientSideArray());
 }
 
 TEST_F(BufferManagerTest, MaxValueCacheClearedCorrectly) {

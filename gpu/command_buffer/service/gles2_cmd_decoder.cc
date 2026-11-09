@@ -3330,8 +3330,7 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
   GLint alpha_bits = 0;
 
   if (offscreen) {
-    offscreen_target_color_format_ =
-        workarounds().disable_gl_rgb_format ? GL_RGBA : GL_RGB;
+    offscreen_target_color_format_ = GL_RGB;
 
     max_offscreen_framebuffer_size_ =
         std::min(renderbuffer_manager()->max_renderbuffer_size(),
@@ -3513,8 +3512,7 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
   caps.disable_mac_swangle_rgbx =
       feature_info_->feature_flags().disable_mac_swangle_rgbx;
   caps.texture_format_etc1_npot =
-      feature_info_->feature_flags().oes_compressed_etc1_rgb8_texture &&
-      !workarounds().etc1_power_of_two_only;
+      feature_info_->feature_flags().oes_compressed_etc1_rgb8_texture;
   caps.sync_query = feature_info_->feature_flags().chromium_sync_query;
 
   // Only query the kEnableMSAAOnNewIntelGPUs feature flag if the host device
@@ -5371,7 +5369,7 @@ void GLES2DecoderImpl::ClearAllAttributes() const {
 }
 
 void GLES2DecoderImpl::RestoreAllAttributes() const {
-  state_.RestoreVertexAttribs(nullptr);
+  state_.RestoreVertexAttribs();
 }
 
 void GLES2DecoderImpl::SetIgnoreCachedStateForTest(bool ignore) {
@@ -10162,15 +10160,6 @@ ALWAYS_INLINE error::Error GLES2DecoderImpl::DoMultiDrawElements(
     if (!ValidateAndAdjustDrawBuffers(function_name)) {
       return error::kNoError;
     }
-    // TODO(gman): Refactor to hide these details in BufferManager or
-    // VertexAttribManager.
-    // There must be no early return between unbinding the element array buffer
-    // here and rebinding it after the draw loop.
-    bool used_client_side_array = false;
-    if (element_array_buffer->IsClientSideArray()) {
-      used_client_side_array = true;
-      api()->glBindBufferFn(GL_ELEMENT_ARRAY_BUFFER, 0);
-    }
     if (state_.enable_flags.primitive_restart_fixed_index &&
         feature_info_->feature_flags().emulate_primitive_restart_fixed_index) {
       api()->glEnableFn(GL_PRIMITIVE_RESTART);
@@ -10190,9 +10179,6 @@ ALWAYS_INLINE error::Error GLES2DecoderImpl::DoMultiDrawElements(
         continue;
       }
       const GLvoid* indices = reinterpret_cast<const GLvoid*>(offset);
-      if (used_client_side_array) {
-        indices = element_array_buffer->GetRange(offset, 0);
-      }
       if (draw_id_location >= 0) {
         api()->glUniform1iFn(draw_id_location, draw_id);
       }
@@ -10219,10 +10205,6 @@ ALWAYS_INLINE error::Error GLES2DecoderImpl::DoMultiDrawElements(
     if (state_.enable_flags.primitive_restart_fixed_index &&
         feature_info_->feature_flags().emulate_primitive_restart_fixed_index) {
       api()->glDisableFn(GL_PRIMITIVE_RESTART);
-    }
-    if (used_client_side_array) {
-      api()->glBindBufferFn(GL_ELEMENT_ARRAY_BUFFER,
-                            element_array_buffer->service_id());
     }
     std::move(restore_textures).Invoke();
     // only reset base vertex and base instance shader variable when it's

@@ -813,13 +813,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
     feature_flags_.native_vertex_array_object = true;
   }
 
-  // If we're using client_side_arrays we have to emulate
-  // vertex array objects since vertex array objects do not work
-  // with client side arrays.
-  if (workarounds_.use_client_side_arrays_for_stream_buffers) {
-    feature_flags_.native_vertex_array_object = false;
-  }
-
   if (gl_version_info_->is_es3 ||
       gfx::HasExtension(extensions, "GL_OES_element_index_uint")) {
     AddExtensionString("GL_OES_element_index_uint");

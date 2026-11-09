@@ -564,7 +564,7 @@ void ContextState::RestoreVertexAttribArrays(
   }
 }
 
-void ContextState::RestoreVertexAttribs(const ContextState* prev_state) const {
+void ContextState::RestoreVertexAttribs() const {
   // Restore Vertex Attrib Arrays
   DCHECK(vertex_attrib_manager.get());
   // Restore VAOs.
@@ -581,14 +581,6 @@ void ContextState::RestoreVertexAttribs(const ContextState* prev_state) const {
     if (curr_vao_service_id != 0)
       api()->glBindVertexArrayOESFn(curr_vao_service_id);
   } else {
-    if (prev_state &&
-        prev_state->feature_info_->feature_flags().native_vertex_array_object &&
-        feature_info_->workarounds()
-            .use_client_side_arrays_for_stream_buffers) {
-      // In order to use client side arrays, the driver's default VAO has to be
-      // bound.
-      api()->glBindVertexArrayOESFn(0);
-    }
     // If native VAO isn't supported, emulated VAOs are used.
     // Restore to the currently bound VAO.
     RestoreVertexAttribArrays(vertex_attrib_manager);
@@ -608,7 +600,7 @@ void ContextState::RestoreState(const ContextState* prev_state) {
   // For RasterDecoder, |vertex_attrib_manager| will be nullptr, and we don't
   // need restore vertex attribs for them.
   if (vertex_attrib_manager)
-    RestoreVertexAttribs(prev_state);
+    RestoreVertexAttribs();
   // RestoreIndexedUniformBufferBindings must be called before
   // RestoreBufferBindings. This is because setting the indexed uniform buffer
   // bindings via glBindBuffer{Base,Range} also sets the general uniform buffer

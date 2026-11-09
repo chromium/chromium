@@ -228,7 +228,6 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
 
  private:
   friend class base::RefCounted<FeatureInfo>;
-  friend class BufferManagerClientSideArraysTest;
 
   ~FeatureInfo();
 

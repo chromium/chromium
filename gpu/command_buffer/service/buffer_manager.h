@@ -80,10 +80,6 @@ class GPU_GLES2_EXPORT Buffer : public base::RefCounted<Buffer> {
     return initial_target() && !IsDeleted();
   }
 
-  bool IsClientSideArray() const {
-    return is_client_side_array_;
-  }
-
   void ClearMapping();
 
   // These maintain the reference counts for checking whether a buffer is
@@ -169,10 +165,7 @@ class GPU_GLES2_EXPORT Buffer : public base::RefCounted<Buffer> {
 
   // Sets the size, usage and initial data of a buffer.
   // If shadow is true then if data is NULL buffer will be initialized to 0.
-  void SetInfo(GLsizeiptr size,
-               GLenum usage,
-               bool use_shadow,
-               bool is_client_side_array);
+  void SetInfo(GLsizeiptr size, GLenum usage, bool use_shadow);
 
   // Clears any cache of index ranges.
   void ClearCache();
@@ -189,10 +182,6 @@ class GPU_GLES2_EXPORT Buffer : public base::RefCounted<Buffer> {
 
   // True if deleted.
   bool deleted_;
-
-  // Whether or not this Buffer is not uploaded to the GPU but just
-  // sitting in local memory.
-  bool is_client_side_array_;
 
   // Keeps track of whether this buffer is currently bound for transform
   // feedback in a WebGL context. Used as an optimization when validating WebGL
@@ -307,13 +296,6 @@ class GPU_GLES2_EXPORT BufferManager
     return memory_type_tracker_->GetMemRepresented();
   }
 
-  // Tells for a given usage if this would be a client side array.
-  bool IsUsageClientSideArray(GLenum usage);
-
-  // Tells whether a buffer that is emulated using client-side arrays should be
-  // set to a non-zero size.
-  bool UseNonZeroSizeForClientSideArrayBuffer();
-
   void SetPrimitiveRestartFixedIndexIfNecessary(GLenum type);
 
   Buffer* GetBufferInfoForTarget(ContextState* state, GLenum target) const;
@@ -402,7 +384,7 @@ class GPU_GLES2_EXPORT BufferManager
       GLsizeiptr size);
 
   // Tests whether a shadow buffer needs to be used.
-  bool UseShadowBuffer(GLenum target, GLenum usage);
+  bool UseShadowBuffer(GLenum target);
 
   // Sets the size, usage and initial data of a buffer.
   // If data is NULL buffer will be initialized to 0 if shadowed.
@@ -437,7 +419,6 @@ class GPU_GLES2_EXPORT BufferManager
   GLuint primitive_restart_fixed_index_;
 
   bool lost_context_;
-  bool use_client_side_arrays_for_stream_buffers_;
 };
 
 }  // namespace gles2

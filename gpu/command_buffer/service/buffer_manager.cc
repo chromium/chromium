@@ -40,11 +40,7 @@ BufferManager::BufferManager(scoped_refptr<MemoryTracker> memory_tracker,
       max_buffer_size_(kDefaultMaxBufferSize),
       buffer_count_(0),
       primitive_restart_fixed_index_(0),
-      lost_context_(false),
-      use_client_side_arrays_for_stream_buffers_(
-          feature_info ? feature_info->workarounds()
-                             .use_client_side_arrays_for_stream_buffers
-                       : false) {
+      lost_context_(false) {
   // When created from InProcessCommandBuffer, we won't have a |memory_tracker_|
   // so don't register a dump provider.
   if (memory_type_tracker_->memory_tracker()) {
@@ -106,7 +102,6 @@ Buffer::Buffer(BufferManager* manager, GLuint service_id)
     : manager_(manager),
       size_(0),
       deleted_(false),
-      is_client_side_array_(false),
       service_id_(service_id),
       initial_target_(0),
       usage_(GL_STATIC_DRAW) {
@@ -164,12 +159,8 @@ const GLvoid* Buffer::StageShadow(bool use_shadow,
   }
 }
 
-void Buffer::SetInfo(GLsizeiptr size,
-                     GLenum usage,
-                     bool use_shadow,
-                     bool is_client_side_array) {
+void Buffer::SetInfo(GLsizeiptr size, GLenum usage, bool use_shadow) {
   usage_ = usage;
-  is_client_side_array_ = is_client_side_array;
   ClearCache();
 
   // Shadow must have been setup already.
@@ -356,21 +347,9 @@ bool BufferManager::GetClientId(GLuint service_id, GLuint* client_id) const {
   return false;
 }
 
-bool BufferManager::IsUsageClientSideArray(GLenum usage) {
-  return usage == GL_STREAM_DRAW && use_client_side_arrays_for_stream_buffers_;
-}
-
-bool BufferManager::UseNonZeroSizeForClientSideArrayBuffer() {
-  return feature_info_.get() &&
-         feature_info_->workarounds()
-             .use_non_zero_size_for_client_side_stream_buffers;
-}
-
-bool BufferManager::UseShadowBuffer(GLenum target, GLenum usage) {
-  const bool is_client_side_array = IsUsageClientSideArray(usage);
-
+bool BufferManager::UseShadowBuffer(GLenum target) {
   // TODO(zmo): Don't shadow buffer data on ES3. crbug.com/491002.
-  return (target == GL_ELEMENT_ARRAY_BUFFER || is_client_side_array);
+  return target == GL_ELEMENT_ARRAY_BUFFER;
 }
 
 void BufferManager::SetInfo(Buffer* buffer,
@@ -380,7 +359,7 @@ void BufferManager::SetInfo(Buffer* buffer,
                             bool use_shadow) {
   DCHECK(buffer);
   memory_type_tracker_->TrackMemFree(buffer->size());
-  buffer->SetInfo(size, usage, use_shadow, IsUsageClientSideArray(usage));
+  buffer->SetInfo(size, usage, use_shadow);
   memory_type_tracker_->TrackMemAlloc(buffer->size());
 }
 
@@ -453,20 +432,15 @@ void BufferManager::DoBufferData(
     const GLvoid* data) {
   // Stage the shadow buffer first if we are using a shadow buffer so that we
   // validate what we store internally.
-  const bool use_shadow = UseShadowBuffer(buffer->initial_target(), usage);
+  const bool use_shadow = UseShadowBuffer(buffer->initial_target());
   data = buffer->StageShadow(use_shadow, size, data);
 
   ERRORSTATE_COPY_REAL_GL_ERRORS_TO_WRAPPER(error_state, "glBufferData");
-  if (IsUsageClientSideArray(usage)) {
-    GLsizei empty_size = UseNonZeroSizeForClientSideArrayBuffer() ? 1 : 0;
-    glBufferData(target, empty_size, nullptr, usage);
+  if (data || !size) {
+    glBufferData(target, size, data, usage);
   } else {
-    if (data || !size) {
-      glBufferData(target, size, data, usage);
-    } else {
-      auto zero = base::HeapArray<char>::WithSize(size);
-      glBufferData(target, size, zero.data(), usage);
-    }
+    auto zero = base::HeapArray<char>::WithSize(size);
+    glBufferData(target, size, zero.data(), usage);
   }
   GLenum error = ERRORSTATE_PEEK_GL_ERROR(error_state, "glBufferData");
   if (error != GL_NO_ERROR) {
@@ -522,13 +496,11 @@ void BufferManager::DoBufferSubData(
     const GLvoid* data) {
   buffer->SetRange(offset, size, data);
 
-  if (!buffer->IsClientSideArray()) {
-    const void* upload_data = buffer->GetRange(offset, size);
-    if (!upload_data) {
-      upload_data = data;
-    }
-    glBufferSubData(target, offset, size, upload_data);
+  const void* upload_data = buffer->GetRange(offset, size);
+  if (!upload_data) {
+    upload_data = data;
   }
+  glBufferSubData(target, offset, size, upload_data);
 }
 
 void BufferManager::ValidateAndDoCopyBufferSubData(ContextState* context_state,

@@ -319,7 +319,6 @@ TEST_F(VertexAttribManagerTest, Unbind) {
 }
 
 // TODO(gman): Test ValidateBindings
-// TODO(gman): Test ValidateBindings with client side arrays.
 
 }  // namespace gles2
 }  // namespace gpu

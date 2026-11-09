@@ -97,14 +97,6 @@ class GPU_GLES2_EXPORT VertexAttrib {
                     : max_vertex_accessed + basevertex;
   }
 
-  bool is_client_side_array() const {
-    return is_client_side_array_;
-  }
-
-  void set_is_client_side_array(bool value) {
-    is_client_side_array_ = value;
-  }
-
  private:
   friend class VertexAttribManager;
 
@@ -172,9 +164,6 @@ class GPU_GLES2_EXPORT VertexAttrib {
   GLsizei divisor_;
 
   GLboolean integer_;
-
-  // Will be true if this was assigned to a client side array.
-  bool is_client_side_array_;
 
   // The buffer bound to this attribute.
   scoped_refptr<Buffer> buffer_;

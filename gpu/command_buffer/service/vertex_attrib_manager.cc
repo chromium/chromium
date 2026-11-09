@@ -37,7 +37,6 @@ VertexAttrib::VertexAttrib()
       real_stride_(16),
       divisor_(0),
       integer_(GL_FALSE),
-      is_client_side_array_(false),
       list_(nullptr) {}
 
 VertexAttrib::VertexAttrib(const VertexAttrib& other) = default;
@@ -245,10 +244,6 @@ bool VertexAttribManager::ValidateBindings(const char* function_name,
   // true if any enabled, used divisor is zero
   bool divisor0 = false;
   bool have_enabled_active_attribs = false;
-  const GLuint kInitialBufferId = 0xFFFFFFFFU;
-  GLuint current_buffer_id = kInitialBufferId;
-  bool use_client_side_arrays_for_stream_buffers = feature_info->workarounds(
-      ).use_client_side_arrays_for_stream_buffers;
   // Validate all attribs currently enabled. If they are used by the current
   // program then check that they have enough elements to handle the draw call.
   // If they are not used by the current program check that they have a buffer
@@ -270,8 +265,7 @@ bool VertexAttribManager::ValidateBindings(const char* function_name,
     // program. (Note that since the containing loop is over
     // enabled_vertex_attribs_, not all vertex attribs, it doesn't erroneously
     // enable any attribs that should be disabled.)
-    // This is for http://crbug.com/756293 but also subsumes some workaround
-    // code for use_client_side_arrays_for_stream_buffers.
+    // This is for http://crbug.com/756293.
     SetDriverVertexAttribEnabled(attrib->index(), attrib_info != nullptr);
 
     if (attrib_info) {
@@ -289,39 +283,6 @@ bool VertexAttribManager::ValidateBindings(const char* function_name,
                 .c_str());
         return false;
       }
-      if (use_client_side_arrays_for_stream_buffers) {
-        if (buffer->IsClientSideArray()) {
-          if (current_buffer_id != 0) {
-            current_buffer_id = 0;
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-          }
-          attrib->set_is_client_side_array(true);
-          const void* ptr = buffer->GetRange(attrib->offset(), 0);
-          DCHECK(ptr);
-          glVertexAttribPointer(
-              attrib->index(),
-              attrib->size(),
-              attrib->type(),
-              attrib->normalized(),
-              attrib->gl_stride(),
-              ptr);
-        } else if (attrib->is_client_side_array()) {
-          attrib->set_is_client_side_array(false);
-          GLuint new_buffer_id = buffer->service_id();
-          if (new_buffer_id != current_buffer_id) {
-            current_buffer_id = new_buffer_id;
-            glBindBuffer(GL_ARRAY_BUFFER, current_buffer_id);
-          }
-          const void* ptr = reinterpret_cast<const void*>(attrib->offset());
-          glVertexAttribPointer(
-              attrib->index(),
-              attrib->size(),
-              attrib->type(),
-              attrib->normalized(),
-              attrib->gl_stride(),
-              ptr);
-        }
-      }
     }
   }
 
@@ -337,11 +298,6 @@ bool VertexAttribManager::ValidateBindings(const char* function_name,
         error_state, GL_INVALID_OPERATION, function_name,
         "attempt to draw with all attributes having non-zero divisors");
     return false;
-  }
-
-  if (current_buffer_id != kInitialBufferId) {
-    // Restore the buffer binding.
-    decoder->RestoreBufferBindings();
   }
 
   return true;

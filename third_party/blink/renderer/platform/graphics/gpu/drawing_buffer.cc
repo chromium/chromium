@@ -1689,20 +1689,10 @@ bool DrawingBuffer::ResizeFramebufferInternal(GLenum requested_format,
   switch (requested_format_) {
     case GL_RGB8:
       color_buffer_format_ = viz::SinglePlaneFormat::kRGBX_8888;
-      // The following workarounds are used in order of importance; the
-      // first is a correctness issue, the second a major performance
-      // issue, and the third a minor performance issue.
-      if (ContextProvider()->GetGpuFeatureInfo().IsWorkaroundEnabled(
-              gpu::DISABLE_GL_RGB_FORMAT)) {
-        // This configuration will
-        //  - allow invalid CopyTexImage to RGBA targets
-        //  - fail valid FramebufferBlit from RGB targets
-        // https://crbug.com/776269
-        color_buffer_format_ = viz::SinglePlaneFormat::kRGBA_8888;
-      } else if (WantExplicitResolve() &&
-                 ContextProvider()->GetGpuFeatureInfo().IsWorkaroundEnabled(
-                     gpu::DISABLE_WEBGL_RGB_MULTISAMPLING_USAGE)) {
-        // This configuration avoids the above issues because
+      if (WantExplicitResolve() &&
+          ContextProvider()->GetGpuFeatureInfo().IsWorkaroundEnabled(
+              gpu::DISABLE_WEBGL_RGB_MULTISAMPLING_USAGE)) {
+        // This configuration avoids the following issues:
         //  - CopyTexImage is invalid from multisample renderbuffers
         //  - FramebufferBlit is invalid to multisample renderbuffers
         color_buffer_format_ = viz::SinglePlaneFormat::kRGBA_8888;

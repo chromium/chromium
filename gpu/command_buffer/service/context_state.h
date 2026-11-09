@@ -223,7 +223,7 @@ struct GPU_GLES2_EXPORT ContextState {
   void RestoreVertexAttribValues() const;
   void RestoreVertexAttribArrays(
       const scoped_refptr<VertexAttribManager> attrib_manager) const;
-  void RestoreVertexAttribs(const ContextState* prev_state) const;
+  void RestoreVertexAttribs() const;
   void RestoreBufferBindings() const;
   void RestoreGlobalState(const ContextState* prev_state) const;
   void RestoreProgramSettings(const ContextState* prev_state,

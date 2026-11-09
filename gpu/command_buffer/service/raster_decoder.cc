@@ -1139,8 +1139,7 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   caps.max_texture_size = shared_context_state_->GetMaxTextureSize();
 
   caps.texture_format_etc1_npot =
-      feature_info()->feature_flags().oes_compressed_etc1_rgb8_texture &&
-      !feature_info()->workarounds().etc1_power_of_two_only;
+      feature_info()->feature_flags().oes_compressed_etc1_rgb8_texture;
   caps.image_ar30 = feature_info()->feature_flags().chromium_image_ar30;
   caps.image_ab30 = feature_info()->feature_flags().chromium_image_ab30;
   caps.render_buffer_format_bgra8888 =

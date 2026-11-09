@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,32 +20,30 @@
 
 namespace gpu {
 
-class GLVirtualContextsTest
-    : public testing::TestWithParam<GpuDriverBugWorkarounds> {
+class GLVirtualContextsTest : public testing::Test {
  protected:
   static const int kSize0 = 4;
   static const int kSize1 = 8;
   static const int kSize2 = 16;
 
   void SetUp() override {
-    GpuDriverBugWorkarounds workarounds = GetParam();
     GLManager::Options options;
     options.context_type = CONTEXT_TYPE_OPENGLES3;
     options.size = gfx::Size(kSize0, kSize0);
-    gl_real_.InitializeWithWorkarounds(options, workarounds);
+    gl_real_.Initialize(options);
     // If the gl_real context is not initialised, switch to ES2 context type
     // and re-initialise
     if (!gl_real_.IsInitialized()) {
       gl_real_.Reset();  // Must reset object before initializing again
       options.context_type = CONTEXT_TYPE_OPENGLES2;
-      gl_real_.InitializeWithWorkarounds(options, workarounds);
+      gl_real_.Initialize(options);
     }
-    gl_real_shared_.InitializeWithWorkarounds(options, workarounds);
+    gl_real_shared_.Initialize(options);
     options.virtual_manager = &gl_real_shared_;
     options.size = gfx::Size(kSize1, kSize1);
-    gl1_.InitializeWithWorkarounds(options, workarounds);
+    gl1_.Initialize(options);
     options.size = gfx::Size(kSize2, kSize2);
-    gl2_.InitializeWithWorkarounds(options, workarounds);
+    gl2_.Initialize(options);
   }
 
   void TearDown() override {
@@ -155,7 +152,7 @@ void TestDraw(int size) {
 }  // anonymous namespace
 
 // http://crbug.com/281565
-TEST_P(GLVirtualContextsTest, Basic) {
+TEST_F(GLVirtualContextsTest, Basic) {
   struct TestInfo {
     int size;
     uint8_t color[4];
@@ -199,7 +196,7 @@ TEST_P(GLVirtualContextsTest, Basic) {
 }
 
 // http://crbug.com/363407
-TEST_P(GLVirtualContextsTest, VertexArrayObjectRestore) {
+TEST_F(GLVirtualContextsTest, VertexArrayObjectRestore) {
   GLuint vao1 = 0, vao2 = 0;
 
   gl1_.MakeCurrent();
@@ -234,7 +231,7 @@ TEST_P(GLVirtualContextsTest, VertexArrayObjectRestore) {
 }
 
 // http://crbug.com/363407
-TEST_P(GLVirtualContextsTest, VertexArrayObjectRestoreRebind) {
+TEST_F(GLVirtualContextsTest, VertexArrayObjectRestoreRebind) {
   GLuint vao1 = 0, vao2 = 0;
 
   gl1_.MakeCurrent();
@@ -276,7 +273,7 @@ TEST_P(GLVirtualContextsTest, VertexArrayObjectRestoreRebind) {
 }
 
 // http://crbug.com/363407
-TEST_P(GLVirtualContextsTest, VertexArrayObjectRestoreDefault) {
+TEST_F(GLVirtualContextsTest, VertexArrayObjectRestoreDefault) {
   gl1_.MakeCurrent();
   // Set up red quad in default VAO.
   SetUpColoredUnitQuad(kFloatRed);
@@ -313,7 +310,7 @@ TEST_P(GLVirtualContextsTest, VertexArrayObjectRestoreDefault) {
   GLTestHelper::CheckGLError("no errors", __LINE__);
 }
 
-TEST_P(GLVirtualContextsTest, VirtualQueries) {
+TEST_F(GLVirtualContextsTest, VirtualQueries) {
   const GLenum query_targets[] = {
     GL_ANY_SAMPLES_PASSED_EXT,
     GL_ANY_SAMPLES_PASSED_CONSERVATIVE_EXT,
@@ -370,7 +367,7 @@ TEST_P(GLVirtualContextsTest, VirtualQueries) {
   }
 }
 
-TEST_P(GLVirtualContextsTest, VirtualQueriesOcclusionLeak) {
+TEST_F(GLVirtualContextsTest, VirtualQueriesOcclusionLeak) {
   // This test requires occlusion query support.
   // We use GL_ANY_SAMPLES_PASSED_EXT.
   const GLenum query_target = GL_ANY_SAMPLES_PASSED_EXT;
@@ -406,7 +403,7 @@ TEST_P(GLVirtualContextsTest, VirtualQueriesOcclusionLeak) {
   options.context_type = gl1_.GetContextType();
   options.virtual_manager = &gl_real_shared_;
   options.size = gfx::Size(kSize0, kSize0);
-  gl3.InitializeWithWorkarounds(options, GetParam());
+  gl3.Initialize(options);
 
   // Context B (gl2_) renders.
   // If gl1_'s query was not paused, gl2_'s rendering will leak into it.
@@ -436,7 +433,7 @@ TEST_P(GLVirtualContextsTest, VirtualQueriesOcclusionLeak) {
 }
 
 // http://crbug.com/930327
-TEST_P(GLVirtualContextsTest, Texture2DArrayAnd3DRestore) {
+TEST_F(GLVirtualContextsTest, Texture2DArrayAnd3DRestore) {
   // This test should only be run for ES3 or higher context
   // So if the current version is ES2, do not run this test
   if (gl1_.GetContextType() == CONTEXT_TYPE_OPENGLES2)
@@ -486,25 +483,5 @@ TEST_P(GLVirtualContextsTest, Texture2DArrayAnd3DRestore) {
   EXPECT_EQ(GL_NEAREST_MIPMAP_NEAREST, tex_3d_params);
   GLTestHelper::CheckGLError("no errors", __LINE__);
 }
-static const GpuDriverBugWorkarounds workarounds_cases[] = {
-    // No extra workarounds.
-    GpuDriverBugWorkarounds(),
-
-#if BUILDFLAG(IS_ANDROID)
-    // Regression tests for https://crbug.com/768324
-    //
-    // TODO(kainino): The #if is added because this case does not pass on Mac
-    // or Linux. My guess is that this workaround requires the backing context
-    // to be OpenGL ES (not OpenGL Core Profile).
-    GpuDriverBugWorkarounds({
-        USE_CLIENT_SIDE_ARRAYS_FOR_STREAM_BUFFERS,
-    }),
-#endif
-
-};
-
-INSTANTIATE_TEST_SUITE_P(WithWorkarounds,
-                         GLVirtualContextsTest,
-                         ::testing::ValuesIn(workarounds_cases));
 
 }  // namespace gpu
