@@ -64,7 +64,15 @@ AppShimHostBootstrap::AppShimHostBootstrap(audit_token_t audit_token)
     : audit_token_(audit_token) {}
 
 AppShimHostBootstrap::~AppShimHostBootstrap() {
-  CHECK(!shim_connected_callback_, base::NotFatalUntil::M161);
+  // `shim_connected_callback_` may still be pending if `this` is dropped
+  // before connecting to a host, e.g. when browser shutdown destroys queued
+  // profile-load or code-signature-check callbacks. Close the receiver before
+  // dropping the callback so that the shim observes a disconnect instead of
+  // Mojo reporting a dropped response callback on an open receiver.
+  if (shim_connected_callback_) {
+    host_bootstrap_receiver_.reset();
+    shim_connected_callback_.Reset();
+  }
   LogToNSLog("AppShim: Closing pid %d", GetAppShimPid());
 }
 

@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -22,6 +23,7 @@
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -40,6 +42,9 @@ class TestingAppShim : public chrome::mojom::AppShim {
   mojo::PendingReceiver<chrome::mojom::AppShimHostBootstrap>
   GetHostBootstrapReceiver() {
     return host_bootstrap_remote_.BindNewPipeAndPassReceiver();
+  }
+  mojo::Remote<chrome::mojom::AppShimHostBootstrap>& host_bootstrap_remote() {
+    return host_bootstrap_remote_;
   }
 
   chrome::mojom::AppShimLaunchResult GetLaunchResult() const {
@@ -135,6 +140,16 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
 
 const char kTestAppId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
+chrome::mojom::AppShimInfoPtr MakeAppShimInfo(
+    chrome::mojom::AppShimLaunchType launch_type) {
+  auto app_shim_info = chrome::mojom::AppShimInfo::New();
+  app_shim_info->profile_path = base::FilePath("Profile 1");
+  app_shim_info->app_id = kTestAppId;
+  app_shim_info->app_url = GURL("https://example.com");
+  app_shim_info->launch_type = launch_type;
+  return app_shim_info;
+}
+
 class AppShimHostTest : public testing::Test,
                         public AppShimHostBootstrap::Client,
                         public AppShimHost::Client {
@@ -154,16 +169,34 @@ class AppShimHostTest : public testing::Test,
   chrome::mojom::AppShimHost* GetMojoHost() { return host_remote_.get(); }
 
   void DoOnShimConnected(chrome::mojom::AppShimLaunchType launch_type) {
-    auto app_shim_info = chrome::mojom::AppShimInfo::New();
-    app_shim_info->profile_path = base::FilePath("Profile 1");
-    app_shim_info->app_id = kTestAppId;
-    app_shim_info->app_url = GURL("https://example.com");
-    app_shim_info->launch_type = launch_type;
     // Ownership of TestingAppShimHostBootstrap will be transferred to its host.
     (new TestingAppShimHostBootstrap(shim_->GetHostBootstrapReceiver()))
         ->OnShimConnected(host_remote_.BindNewPipeAndPassReceiver(),
-                          std::move(app_shim_info),
+                          MakeAppShimInfo(launch_type),
                           shim_->GetOnShimConnectedCallback());
+  }
+
+  // Sends OnShimConnected over the bootstrap mojo pipe, so that the
+  // implementation receives a real mojo reply callback.
+  void DoOnShimConnectedOverMojo(chrome::mojom::AppShimLaunchType launch_type) {
+    auto app_shim_info = MakeAppShimInfo(launch_type);
+    app_shim_info->notification_action_handler =
+        notification_action_handler_.InitWithNewPipeAndPassReceiver();
+    new TestingAppShimHostBootstrap(shim_->GetHostBootstrapReceiver());
+    shim_->host_bootstrap_remote()->OnShimConnected(
+        host_remote_.BindNewPipeAndPassReceiver(), std::move(app_shim_info),
+        shim_->GetOnShimConnectedCallback());
+  }
+
+  bool IsBootstrapRemoteConnected() {
+    return shim_->host_bootstrap_remote().is_connected();
+  }
+
+  void WaitForBootstrapRemoteDisconnect() {
+    base::RunLoop run_loop;
+    shim_->host_bootstrap_remote().set_disconnect_handler(
+        run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   chrome::mojom::AppShimLaunchResult GetLaunchResult() {
@@ -246,6 +279,8 @@ class AppShimHostTest : public testing::Test,
   std::unique_ptr<AppShimHostBootstrap> launched_bootstrap_;
 
   mojo::Remote<chrome::mojom::AppShimHost> host_remote_;
+  mojo::PendingRemote<mac_notifications::mojom::MacNotificationActionHandler>
+      notification_action_handler_;
 };
 
 }  // namespace
@@ -284,6 +319,19 @@ TEST_F(AppShimHostTest, TestNoLaunchNow) {
   EXPECT_EQ(0, focus_count_);
   EXPECT_EQ(0, close_count_);
   AppShimHostBootstrap::SetClient(nullptr);
+}
+
+// A bootstrap may be destroyed while its OnShimConnected reply callback is
+// still pending, e.g. when browser shutdown drops queued host-connection
+// callbacks. This must close the channel instead of crashing.
+TEST_F(AppShimHostTest, DestroyBootstrapWithPendingCallback) {
+  // A null client makes OnShimConnected drop the bootstrap without running
+  // its callback, as happens when the AppShimListener is destroyed at
+  // shutdown.
+  AppShimHostBootstrap::SetClient(nullptr);
+  DoOnShimConnectedOverMojo(chrome::mojom::AppShimLaunchType::kNormal);
+  WaitForBootstrapRemoteDisconnect();
+  EXPECT_FALSE(IsBootstrapRemoteConnected());
 }
 
 TEST_F(AppShimHostTest, TestFailLaunch) {
