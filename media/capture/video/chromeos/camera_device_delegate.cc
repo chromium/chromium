@@ -13,9 +13,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/compiler_specific.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/no_destructor.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -61,36 +61,31 @@ constexpr char kLibcameraStillCaptureMFNR[] = "org.libcamera.stillCaptureMFNR";
 constexpr uint8_t kIntelPowerModeLowPower = 0;
 constexpr uint8_t kIntelPowerModeHighQuality = 1;
 
-using AwbModeTemperatureMap = std::map<uint8_t, int32_t>;
-
-const AwbModeTemperatureMap& GetAwbModeTemperatureMap() {
-  // https://source.android.com/devices/camera/camera3_3Amodes#auto-wb
-  static const base::NoDestructor<AwbModeTemperatureMap> kAwbModeTemperatureMap(
-      {
-          {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
-                                    ANDROID_CONTROL_AWB_MODE_INCANDESCENT),
-           2700},
-          {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
-                                    ANDROID_CONTROL_AWB_MODE_FLUORESCENT),
-           5000},
-          {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
-                                    ANDROID_CONTROL_AWB_MODE_WARM_FLUORESCENT),
-           3000},
-          {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
-                                    ANDROID_CONTROL_AWB_MODE_DAYLIGHT),
-           5500},
-          {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
-                                    ANDROID_CONTROL_AWB_MODE_CLOUDY_DAYLIGHT),
-           6500},
-          {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
-                                    ANDROID_CONTROL_AWB_MODE_TWILIGHT),
-           15000},
-          {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
-                                    ANDROID_CONTROL_AWB_MODE_SHADE),
-           7500},
-      });
-  return *kAwbModeTemperatureMap;
-}
+// https://source.android.com/devices/camera/camera3_3Amodes#auto-wb
+constexpr auto kAwbModeTemperatureMap = base::MakeFixedFlatMap<uint8_t,
+                                                               int32_t>({
+    {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
+                              ANDROID_CONTROL_AWB_MODE_INCANDESCENT),
+     2700},
+    {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
+                              ANDROID_CONTROL_AWB_MODE_FLUORESCENT),
+     5000},
+    {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
+                              ANDROID_CONTROL_AWB_MODE_WARM_FLUORESCENT),
+     3000},
+    {static_cast<uint8_t>(
+         cros::mojom::AndroidControlAwbMode::ANDROID_CONTROL_AWB_MODE_DAYLIGHT),
+     5500},
+    {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
+                              ANDROID_CONTROL_AWB_MODE_CLOUDY_DAYLIGHT),
+     6500},
+    {static_cast<uint8_t>(
+         cros::mojom::AndroidControlAwbMode::ANDROID_CONTROL_AWB_MODE_TWILIGHT),
+     15000},
+    {static_cast<uint8_t>(
+         cros::mojom::AndroidControlAwbMode::ANDROID_CONTROL_AWB_MODE_SHADE),
+     7500},
+});
 
 std::pair<int32_t, int32_t> GetTargetFrameRateRange(
     const cros::mojom::CameraMetadataPtr& static_metadata,
@@ -126,7 +121,6 @@ std::pair<int32_t, int32_t> GetTargetFrameRateRange(
   }
   return std::make_pair(result_min, result_max);
 }
-
 
 // VideoCaptureDevice::TakePhotoCallback is given by the application and is used
 // to return the captured JPEG blob buffer.  The second base::OnceClosure is
@@ -541,7 +535,6 @@ void CameraDeviceDelegate::SetPhotoOptions(
   if (settings->has_white_balance_mode &&
       settings->white_balance_mode == mojom::MeteringMode::MANUAL &&
       settings->has_color_temperature) {
-    const AwbModeTemperatureMap& map = GetAwbModeTemperatureMap();
     cros::mojom::AndroidControlAwbMode awb_mode =
         cros::mojom::AndroidControlAwbMode::ANDROID_CONTROL_AWB_MODE_AUTO;
     auto awb_available_modes = GetMetadataEntryAsSpan<uint8_t>(
@@ -549,8 +542,8 @@ void CameraDeviceDelegate::SetPhotoOptions(
         cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AWB_AVAILABLE_MODES);
     int32_t min_diff = std::numeric_limits<int32_t>::max();
     for (const auto& mode : awb_available_modes) {
-      auto it = map.find(mode);
-      if (it == map.end()) {
+      auto it = kAwbModeTemperatureMap.find(mode);
+      if (it == kAwbModeTemperatureMap.end()) {
         continue;
       }
       // Find the nearest awb mode
@@ -1756,17 +1749,16 @@ void CameraDeviceDelegate::DoGetPhotoState(
         mojom::MeteringMode::MANUAL);
     photo_state->supported_white_balance_modes.push_back(
         mojom::MeteringMode::CONTINUOUS);
-    const AwbModeTemperatureMap& map = GetAwbModeTemperatureMap();
     int32_t current_temperature = 0;
     if (result_metadata_.awb_mode ==
-        static_cast<uint8_t>(
-            cros::mojom::AndroidControlAwbMode::ANDROID_CONTROL_AWB_MODE_AUTO))
+        static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
+                                 ANDROID_CONTROL_AWB_MODE_AUTO)) {
       photo_state->current_white_balance_mode = mojom::MeteringMode::CONTINUOUS;
-    else {
+    } else {
       // Need to find current color temperature.
       photo_state->current_white_balance_mode = mojom::MeteringMode::MANUAL;
-      auto it = map.find(result_metadata_.awb_mode.value());
-      if (it != map.end()) {
+      auto it = kAwbModeTemperatureMap.find(result_metadata_.awb_mode.value());
+      if (it != kAwbModeTemperatureMap.end()) {
         current_temperature = it->second;
       }
     }
@@ -1774,13 +1766,15 @@ void CameraDeviceDelegate::DoGetPhotoState(
     int32_t min = std::numeric_limits<int32_t>::max();
     int32_t max = std::numeric_limits<int32_t>::min();
     for (const auto& mode : awb_available_modes) {
-      auto it = map.find(mode);
-      if (it == map.end())
+      auto it = kAwbModeTemperatureMap.find(mode);
+      if (it == kAwbModeTemperatureMap.end()) {
         continue;
-      if (it->second < min)
+      }
+      if (it->second < min) {
         min = it->second;
-      else if (it->second > max)
+      } else if (it->second > max) {
         max = it->second;
+      }
     }
     photo_state->color_temperature->min = min;
     photo_state->color_temperature->max = max;
