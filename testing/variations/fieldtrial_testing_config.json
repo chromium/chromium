@@ -6132,6 +6132,21 @@
             ]
         }
     ],
+    "CoreAnimationBackdropFilter": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CoreAnimationBackdropFilter"
+                    ]
+                }
+            ]
+        }
+    ],
     "CpssUseTfliteSignatureRunnerKillSwitch": [
         {
             "platforms": [
