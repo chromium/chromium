@@ -468,7 +468,12 @@ void SSLErrorHandlerDelegateImpl::NavigateToSuggestedURL(
                                        url::Origin::Create(suggested_url))) {
       for (const GURL& redirect_url : load_params.redirect_chain) {
         if (!net::SchemefulSite::IsSameSite(redirect_url, suggested_url)) {
-          load_params.initiator_origin = url::Origin::Create(redirect_url);
+          // Use an opaque origin rather than deriving an origin from
+          // `redirect_chain` so that the new navigation is treated as
+          // cross-site without attributing initiator authority to an
+          // intermediate redirect hop.
+          load_params.initiator_origin = url::Origin();
+          load_params.initiator_base_url = std::nullopt;
           break;
         }
       }

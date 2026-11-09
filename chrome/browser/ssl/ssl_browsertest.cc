@@ -4807,6 +4807,25 @@ IN_PROC_BROWSER_TEST_F(CommonNameMismatchBrowserTest,
           observed_get_requests[request.relative_url] = request;
         }
       }));
+  const std::string bounce_after_head_path = "/bounce-after-head";
+  const std::string redirect_back_path = "/ssl/google.html?case=redirect_back";
+  https_server.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url != bounce_after_head_path) {
+          return nullptr;
+        }
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        if (request.method == net::test_server::METHOD_HEAD) {
+          response->set_code(net::HTTP_OK);
+          return response;
+        }
+        response->set_code(net::HTTP_FOUND);
+        response->AddCustomHeader(
+            "Location",
+            https_server.GetURL("other.test", redirect_back_path).spec());
+        return response;
+      }));
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
   ASSERT_TRUE(https_server.Start());
 
@@ -4928,6 +4947,47 @@ IN_PROC_BROWSER_TEST_F(CommonNameMismatchBrowserTest,
     auto site_it = headers.find("Sec-Fetch-Site");
     ASSERT_NE(site_it, headers.end());
     EXPECT_EQ("cross-site", site_it->second);
+  }
+
+  // 4. Same-site initiator bouncing through a cross-site redirect before
+  // hitting the name mismatch error, then redirecting back to that cross-site
+  // origin. Neither origin's authority should be treated as same-site
+  // initiator for the subsequent redirect.
+  const GURL other_base_url =
+      https_server.GetURL("other.test", "/ssl/google.html");
+  ASSERT_TRUE(content::SetCookie(contents->GetBrowserContext(), other_base_url,
+                                 "strict_cookie=1; SameSite=Strict; Secure"));
+  ASSERT_TRUE(content::SetCookie(contents->GetBrowserContext(), other_base_url,
+                                 "lax_cookie=1; SameSite=Lax; Secure"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server.GetURL("www.example.org", "/title1.html")));
+  const GURL mismatched_bounce_url =
+      https_server.GetURL("example.org", bounce_after_head_path);
+  const GURL redirect_via_other_url = https_server.GetURL(
+      "other.test", "/server-redirect?" + mismatched_bounce_url.spec());
+  {
+    content::TestNavigationObserver observer(contents, 1);
+    ASSERT_TRUE(content::ExecJs(
+        contents,
+        content::JsReplace("location.href = $1;", redirect_via_other_url),
+        content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    observer.Wait();
+  }
+  EXPECT_EQ(https_server.GetURL("other.test", redirect_back_path),
+            contents->GetLastCommittedURL());
+  {
+    base::AutoLock auto_lock(lock);
+    auto it = observed_get_requests.find(redirect_back_path);
+    ASSERT_NE(it, observed_get_requests.end());
+    const auto& headers = it->second.headers;
+    auto cookie_it = headers.find("Cookie");
+    ASSERT_NE(cookie_it, headers.end());
+    EXPECT_NE(cookie_it->second.find("lax_cookie=1"), std::string::npos);
+    EXPECT_EQ(cookie_it->second.find("strict_cookie=1"), std::string::npos);
+    auto site_it = headers.find("Sec-Fetch-Site");
+    ASSERT_NE(site_it, headers.end());
+    EXPECT_EQ("cross-site", site_it->second);
+    EXPECT_EQ(headers.find("Sec-Fetch-User"), headers.end());
   }
 }
 

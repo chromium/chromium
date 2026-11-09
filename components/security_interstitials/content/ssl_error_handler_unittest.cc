@@ -1525,6 +1525,7 @@ class NavigationStartCapturingObserver : public content::WebContentsObserver {
     url_ = navigation_handle->GetURL();
     is_renderer_initiated_ = navigation_handle->IsRendererInitiated();
     initiator_origin_ = navigation_handle->GetInitiatorOrigin();
+    initiator_base_url_ = navigation_handle->GetInitiatorBaseUrl();
     page_transition_ = navigation_handle->GetPageTransition();
     has_user_gesture_ = navigation_handle->HasUserGesture();
     referrer_url_ = navigation_handle->GetReferrer().url;
@@ -1536,6 +1537,9 @@ class NavigationStartCapturingObserver : public content::WebContentsObserver {
   const std::optional<url::Origin>& initiator_origin() const {
     return initiator_origin_;
   }
+  const std::optional<GURL>& initiator_base_url() const {
+    return initiator_base_url_;
+  }
   ui::PageTransition page_transition() const { return page_transition_; }
   bool has_user_gesture() const { return has_user_gesture_; }
   const GURL& referrer_url() const { return referrer_url_; }
@@ -1545,6 +1549,7 @@ class NavigationStartCapturingObserver : public content::WebContentsObserver {
   GURL url_;
   bool is_renderer_initiated_ = false;
   std::optional<url::Origin> initiator_origin_;
+  std::optional<GURL> initiator_base_url_;
   ui::PageTransition page_transition_ = ui::PAGE_TRANSITION_LINK;
   bool has_user_gesture_ = false;
   GURL referrer_url_;
@@ -1600,6 +1605,56 @@ TEST_F(SSLErrorHandlerTest, NavigateToSuggestedURLPreservesInitiatorParams) {
                                            ui::PAGE_TRANSITION_LINK));
   EXPECT_FALSE(observer.has_user_gesture());
   EXPECT_EQ(GURL("https://other.test/"), observer.referrer_url());
+  EXPECT_FALSE(SSLErrorHandler::FromWebContents(web_contents()));
+
+  CommonNameMismatchHandler::set_state_for_testing(
+      CommonNameMismatchHandler::NOT_TESTING);
+}
+
+TEST_F(SSLErrorHandlerTest,
+       NavigateToSuggestedURLUsesOpaqueInitiatorAfterCrossSiteRedirect) {
+  CommonNameMismatchHandler::set_state_for_testing(
+      CommonNameMismatchHandler::IGNORE_REQUESTS_FOR_TESTING);
+
+  net::SSLInfo ssl_info;
+  ssl_info.cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
+                                          "subjectAltName_www_example_com.pem");
+  ssl_info.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
+  ssl_info.public_key_hashes.push_back(kCertPublicKeyHashValue);
+
+  const GURL request_url("https://example.com/action");
+  const GURL suggested_url("https://www.example.com/action");
+
+  content::OpenURLParams open_url_params(
+      request_url, content::Referrer(), WindowOpenDisposition::kCurrentTab,
+      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/true);
+  open_url_params.initiator_origin =
+      url::Origin::Create(GURL("https://example.com"));
+  open_url_params.initiator_base_url = GURL("https://example.com/base");
+  open_url_params.redirect_chain = {GURL("https://other.test/redirect")};
+  open_url_params.user_gesture = false;
+
+  SSLErrorHandler::HandleSSLError(
+      web_contents(), net::ERR_CERT_COMMON_NAME_INVALID, ssl_info, request_url,
+      base::DoNothing(), /*network_time_tracker=*/nullptr,
+      /*captive_portal_service=*/nullptr, /*blocking_page_factory=*/nullptr,
+      /*user_can_proceed_past_interstitial=*/true, open_url_params);
+
+  SSLErrorHandler* handler = SSLErrorHandler::FromWebContents(web_contents());
+  ASSERT_TRUE(handler);
+
+  NavigationStartCapturingObserver observer(web_contents());
+  handler->CommonNameMismatchHandlerCallback(
+      CommonNameMismatchHandler::SuggestedUrlCheckResult::
+          SUGGESTED_URL_AVAILABLE,
+      suggested_url);
+
+  EXPECT_TRUE(observer.started());
+  EXPECT_EQ(suggested_url, observer.url());
+  EXPECT_TRUE(observer.is_renderer_initiated());
+  ASSERT_TRUE(observer.initiator_origin().has_value());
+  EXPECT_TRUE(observer.initiator_origin()->opaque());
+  EXPECT_FALSE(observer.initiator_base_url().has_value());
   EXPECT_FALSE(SSLErrorHandler::FromWebContents(web_contents()));
 
   CommonNameMismatchHandler::set_state_for_testing(

@@ -216,6 +216,9 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
                            NonPrimaryMainframeShouldNotAffectSSLErrorHandler);
   FRIEND_TEST_ALL_PREFIXES(SSLErrorHandlerTest,
                            NavigateToSuggestedURLPreservesInitiatorParams);
+  FRIEND_TEST_ALL_PREFIXES(
+      SSLErrorHandlerTest,
+      NavigateToSuggestedURLUsesOpaqueInitiatorAfterCrossSiteRedirect);
   FRIEND_TEST_ALL_PREFIXES(SSLErrorHandlerNameMismatchTest,
                            ShouldShowCustomInterstitialOnCaptivePortalResult);
   FRIEND_TEST_ALL_PREFIXES(SSLErrorHandlerNameMismatchTest,
