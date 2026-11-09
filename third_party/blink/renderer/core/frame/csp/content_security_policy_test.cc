@@ -1949,7 +1949,7 @@ TEST_F(ContentSecurityPolicyTest, AddHashReportSanitization) {
       ContentSecurityPolicySource::kHTTP, *secure_origin));
 
   HashMap<HashAlgorithm, String> hashes;
-  hashes.insert(kHashAlgorithmSha256, "some-hash");
+  hashes.insert(HashAlgorithm::kSha256, "some-hash");
 
   // An extension URL should be sanitized in the report.
   KURL extension_url("chrome-extension://abcdefghijklmnop/script.js");
@@ -2016,6 +2016,28 @@ TEST_F(ContentSecurityPolicyTest, ReportViolationBypassingScheme) {
   SchemeRegistry::
       RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicyForTest(
           "chrome-extension");
+}
+
+TEST_F(ContentSecurityPolicyTest, HashesToReport) {
+  static_assert(sizeof(HashAlgorithmSet) == 1);
+  EXPECT_TRUE(csp->HashesToReport().empty());
+
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      "script-src 'self'", ContentSecurityPolicyType::kEnforce,
+      ContentSecurityPolicySource::kHTTP, *secure_origin));
+  EXPECT_TRUE(csp->HashesToReport().empty());
+
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      "script-src 'report-sha256'", ContentSecurityPolicyType::kEnforce,
+      ContentSecurityPolicySource::kHTTP, *secure_origin));
+  EXPECT_EQ(HashAlgorithmSet({HashAlgorithm::kSha256}), csp->HashesToReport());
+
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      "default-src 'report-sha384'; script-src 'report-sha512'",
+      ContentSecurityPolicyType::kReport, ContentSecurityPolicySource::kHTTP,
+      *secure_origin));
+  EXPECT_EQ(HashAlgorithmSet({HashAlgorithm::kSha256, HashAlgorithm::kSha512}),
+            csp->HashesToReport());
 }
 
 }  // namespace blink

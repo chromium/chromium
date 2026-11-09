@@ -216,7 +216,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   std::optional<UserAgentMetadata> GetUserAgentMetadata() const;
   const network::PermissionsPolicy* GetPermissionsPolicy() const override;
   const FeatureContext* GetFeatureContext() const override;
-  HashSet<HashAlgorithm> CSPHashesToReport() const override;
+  HashAlgorithmSet CSPHashesToReport() const override;
   void AddCSPHashReport(
       const String& url,
       const HashMap<HashAlgorithm, String>& integrity_hashes) override;

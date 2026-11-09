@@ -287,7 +287,7 @@ void Resource::CheckResourceIntegrity() {
 
   HashMap<HashAlgorithm, String> integrity_hashes;
   bool is_cors_same_origin = response_.IsCorsSameOrigin();
-  HashSet<HashAlgorithm> csp_hash_reports_needed;
+  HashAlgorithmSet csp_hash_reports_needed;
   if ((type_ == ResourceType::kScript) && loader_) {
     csp_hash_reports_needed = loader_->Fetcher()->Context().CSPHashesToReport();
   }
@@ -303,11 +303,11 @@ void Resource::CheckResourceIntegrity() {
       integrity_disposition_ =
           ResourceIntegrityDisposition::kFailedIntegrityMetadata;
       // The resource was blocked so there's nothing to report.
-      csp_hash_reports_needed = HashSet<HashAlgorithm>();
+      csp_hash_reports_needed.Clear();
     }
   }
 
-  if (csp_hash_reports_needed.size()) {
+  if (!csp_hash_reports_needed.empty()) {
     if (is_cors_same_origin) {
       for (HashAlgorithm algorithm : csp_hash_reports_needed) {
         if (integrity_hashes.Contains(algorithm)) {

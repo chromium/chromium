@@ -1282,7 +1282,7 @@ const FeatureContext* FrameFetchContext::GetFeatureContext() const {
   return document_ ? document_->GetExecutionContext() : nullptr;
 }
 
-HashSet<HashAlgorithm> FrameFetchContext::CSPHashesToReport() const {
+HashAlgorithmSet FrameFetchContext::CSPHashesToReport() const {
   return GetContentSecurityPolicy()->HashesToReport();
 }
 

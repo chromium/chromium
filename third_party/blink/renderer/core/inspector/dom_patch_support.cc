@@ -447,7 +447,7 @@ DOMPatchSupport::Digest* DOMPatchSupport::CreateDigest(
     Node* node,
     UnusedNodesMap* unused_nodes_map) {
   Digest* digest = MakeGarbageCollected<Digest>(node);
-  Digestor digestor(kHashAlgorithmSha256);
+  Digestor digestor(HashAlgorithm::kSha256);
   DigestValue digest_result;
 
   Node::NodeType node_type = node->getNodeType();
@@ -466,7 +466,7 @@ DOMPatchSupport::Digest* DOMPatchSupport::CreateDigest(
 
     AttributeCollection attributes = element->AttributesWithoutUpdate();
     if (!attributes.IsEmpty()) {
-      Digestor attrs_digestor(kHashAlgorithmSha256);
+      Digestor attrs_digestor(HashAlgorithm::kSha256);
       for (auto& attribute : attributes) {
         attrs_digestor.UpdateUtf8(attribute.GetName().ToString());
         attrs_digestor.UpdateUtf8(attribute.Value().GetString());

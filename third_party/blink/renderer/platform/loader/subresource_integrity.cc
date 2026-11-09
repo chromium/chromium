@@ -127,11 +127,11 @@ String IntegrityAlgorithmsForConsole() {
 
 String HashAlgorithmToString(HashAlgorithm algorithm) {
   switch (algorithm) {
-    case kHashAlgorithmSha256:
+    case HashAlgorithm::kSha256:
       return "sha256-";
-    case kHashAlgorithmSha384:
+    case HashAlgorithm::kSha384:
       return "sha384-";
-    case kHashAlgorithmSha512:
+    case HashAlgorithm::kSha512:
       return "sha512-";
   }
 }
@@ -140,11 +140,11 @@ HashAlgorithm SubresourceIntegrity::IntegrityAlgorithmToHashAlgorithm(
     IntegrityAlgorithm algorithm) {
   switch (algorithm) {
     case IntegrityAlgorithm::kSha256:
-      return kHashAlgorithmSha256;
+      return HashAlgorithm::kSha256;
     case IntegrityAlgorithm::kSha384:
-      return kHashAlgorithmSha384;
+      return HashAlgorithm::kSha384;
     case IntegrityAlgorithm::kSha512:
-      return kHashAlgorithmSha512;
+      return HashAlgorithm::kSha512;
 
     // We'll handle signature algorithms in a different flow, and shouldn't call
     // into this function at all for any non-hashing algorithms.
@@ -176,8 +176,8 @@ bool SubresourceIntegrity::CheckUnencodedDigests(
   for (const IntegrityMetadata& digest : digests) {
     HashAlgorithm algorithm =
         IntegrityAlgorithmToHashAlgorithm(digest.algorithm);
-    DCHECK(algorithm == blink::HashAlgorithm::kHashAlgorithmSha256 ||
-           algorithm == blink::HashAlgorithm::kHashAlgorithmSha512);
+    DCHECK(algorithm == blink::HashAlgorithm::kSha256 ||
+           algorithm == blink::HashAlgorithm::kSha512);
 
     DigestValue computed_digest;
     if (!ComputeDigest(algorithm, buffer, computed_digest)) {

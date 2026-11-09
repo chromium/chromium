@@ -276,7 +276,7 @@ class CORE_EXPORT ContentSecurityPolicy final
                                ExceptionStatus,
                                const String& script_content);
 
-  HashSet<HashAlgorithm> HashesToReport() const;
+  HashAlgorithmSet HashesToReport() const;
   void AddHashReportIfNeeded(
       LocalFrame* frame,
       const String& url,
@@ -596,7 +596,7 @@ class CORE_EXPORT ContentSecurityPolicy final
   // We put the hash functions used on the policy object so that we only need
   // to calculate digests using those hashing algorithms which show up in the
   // policy.
-  HashSet<IntegrityAlgorithm> hash_algorithms_used_;
+  IntegrityAlgorithmSet hash_algorithms_used_;
 
   // State flags used to configure the environment after parsing a policy.
   network::mojom::blink::WebSandboxFlags sandbox_mask_;

@@ -5,19 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_INTEGRITY_METADATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_INTEGRITY_METADATA_H_
 
+#include "base/containers/enum_set.h"
 #include "services/network/public/cpp/integrity_metadata.h"
 #include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 using IntegrityAlgorithm = network::mojom::blink::IntegrityAlgorithm;
+using IntegrityAlgorithmSet = base::EnumSet<IntegrityAlgorithm>;
 using IntegrityMetadata = network::IntegrityMetadata;
 
 // Contains the result of SRI's "Parse Metadata" algorithm:

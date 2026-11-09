@@ -44,6 +44,7 @@
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
+#include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
@@ -276,8 +277,8 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
     NOTIMPLEMENTED();
   }
 
-  virtual HashSet<HashAlgorithm> CSPHashesToReport() const {
-    return HashSet<HashAlgorithm>();
+  virtual HashAlgorithmSet CSPHashesToReport() const {
+    return HashAlgorithmSet();
   }
   virtual void AddCSPHashReport(
       const String& url,

@@ -273,7 +273,7 @@ std::unique_ptr<SecureStringDigest> ParkableStringImpl::HashString(
     StringImpl* string) {
   DigestValue digest_result;
 
-  Digestor digestor(kHashAlgorithmSha256);
+  Digestor digestor(HashAlgorithm::kSha256);
   digestor.Update(string->RawByteSpan());
   // Also include encoding in the digest, otherwise two strings with identical
   // byte content but different encoding will be assumed equal, leading to

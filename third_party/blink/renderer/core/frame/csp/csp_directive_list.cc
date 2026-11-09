@@ -57,7 +57,7 @@ String GetRawDirectiveForMessage(
 String GetSha256String(const String& content) {
   DigestValue digest;
   StringUtf8Adaptor utf8_content(content);
-  bool digest_success = ComputeDigest(kHashAlgorithmSha256,
+  bool digest_success = ComputeDigest(HashAlgorithm::kSha256,
                                       base::as_byte_span(utf8_content), digest);
   if (!digest_success) {
     return "sha256-...";
@@ -1020,7 +1020,7 @@ String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url) {
 
 bool URLHashMatchesSourceList(
     const String& url_string,
-    const HashSet<IntegrityAlgorithm>& hash_algorithms_used,
+    IntegrityAlgorithmSet hash_algorithms_used,
     const network::mojom::blink::CSPSourceList* source_list) {
   Vector<network::IntegrityMetadata> url_hashes;
   FillInCSPHashValues(url_string, hash_algorithms_used, url_hashes);
@@ -1035,9 +1035,9 @@ bool CheckURLHash(const KURL& document_url,
   if (!source_list) {
     return false;
   }
-  HashSet<IntegrityAlgorithm> hash_algorithms_used;
+  IntegrityAlgorithmSet hash_algorithms_used;
   for (const network::IntegrityMetadata& hash : source_list->url_hashes) {
-    hash_algorithms_used.insert(hash.algorithm);
+    hash_algorithms_used.Put(hash.algorithm);
   }
   // First check the full URL, then the relative URL.
   if (URLHashMatchesSourceList(CSPStripURL(url).GetString(),
@@ -1296,19 +1296,18 @@ CSPOperativeDirective CSPDirectiveListOperativeDirective(
   return OperativeDirective(csp, type);
 }
 
-void FillInCSPHashValues(
-    const String& source,
-    const HashSet<IntegrityAlgorithm>& hash_algorithms_used,
-    Vector<network::IntegrityMetadata>& csp_hash_values) {
+void FillInCSPHashValues(const String& source,
+                         IntegrityAlgorithmSet hash_algorithms_used,
+                         Vector<network::IntegrityMetadata>& csp_hash_values) {
   // Any additions or subtractions from this struct should also modify the
   // respective entries in the kSupportedPrefixes array in
   // SourceListDirective::parseHash().
   static const struct {
     IntegrityAlgorithm csp_hash_algorithm;
     HashAlgorithm algorithm;
-  } kAlgorithmMap[] = {{IntegrityAlgorithm::kSha256, kHashAlgorithmSha256},
-                       {IntegrityAlgorithm::kSha384, kHashAlgorithmSha384},
-                       {IntegrityAlgorithm::kSha512, kHashAlgorithmSha512}};
+  } kAlgorithmMap[] = {{IntegrityAlgorithm::kSha256, HashAlgorithm::kSha256},
+                       {IntegrityAlgorithm::kSha384, HashAlgorithm::kSha384},
+                       {IntegrityAlgorithm::kSha512, HashAlgorithm::kSha512}};
 
   // Only bother normalizing the source/computing digests if there are any
   // checks to be done.
@@ -1321,7 +1320,7 @@ void FillInCSPHashValues(
 
   for (const auto& algorithm_map : kAlgorithmMap) {
     DigestValue digest;
-    if (hash_algorithms_used.Contains(algorithm_map.csp_hash_algorithm)) {
+    if (hash_algorithms_used.Has(algorithm_map.csp_hash_algorithm)) {
       bool digest_success = ComputeDigest(
           algorithm_map.algorithm, base::as_byte_span(utf8_source), digest);
       if (digest_success) {

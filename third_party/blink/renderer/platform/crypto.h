@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_CRYPTO_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_CRYPTO_H_
 
+#include "base/containers/enum_set.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -18,11 +19,15 @@ namespace blink {
 static const size_t kMaxDigestSize = 64;
 typedef Vector<uint8_t, kMaxDigestSize> DigestValue;
 
-enum HashAlgorithm {
-  kHashAlgorithmSha256,
-  kHashAlgorithmSha384,
-  kHashAlgorithmSha512
+enum class HashAlgorithm {
+  kSha256,
+  kMinValue = kSha256,
+  kSha384,
+  kSha512,
+  kMaxValue = kSha512,
 };
+
+using HashAlgorithmSet = base::EnumSet<HashAlgorithm>;
 
 PLATFORM_EXPORT bool ComputeDigest(HashAlgorithm,
                                    base::span<const uint8_t> digestable,

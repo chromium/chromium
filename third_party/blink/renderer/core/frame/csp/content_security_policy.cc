@@ -745,11 +745,12 @@ bool ContentSecurityPolicy::AllowWasmCodeGeneration(
   return is_allowed;
 }
 
-HashSet<HashAlgorithm> ContentSecurityPolicy::HashesToReport() const {
-  HashSet<HashAlgorithm> algorithms;
+HashAlgorithmSet ContentSecurityPolicy::HashesToReport() const {
+  HashAlgorithmSet algorithms;
   for (const auto& policy : policies_) {
-    if (auto algorithm = CSPDirectiveListHashToReport(*policy)) {
-      algorithms.insert(algorithm.value());
+    if (std::optional<HashAlgorithm> algorithm =
+            CSPDirectiveListHashToReport(*policy)) {
+      algorithms.Put(algorithm.value());
     }
   }
   return algorithms;
@@ -970,7 +971,7 @@ bool ContentSecurityPolicy::AllowRequest(
 }
 
 void ContentSecurityPolicy::UsesHashAlgorithm(IntegrityAlgorithm algorithm) {
-  hash_algorithms_used_.insert(algorithm);
+  hash_algorithms_used_.Put(algorithm);
 }
 
 bool ContentSecurityPolicy::AllowFromSource(

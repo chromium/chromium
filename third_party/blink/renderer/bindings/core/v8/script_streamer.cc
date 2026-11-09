@@ -608,7 +608,7 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream,
   void ComputeFinalDigest(const String& final_string) {
     // Compute the final SHA-256 digest over the contiguous string,
     // matching ParkableString's encoding-specific hash schema.
-    Digestor digestor(kHashAlgorithmSha256);
+    Digestor digestor(HashAlgorithm::kSha256);
     if (final_string.Is8Bit()) {
       digestor.Update(final_string.RawByteSpan());
     } else {

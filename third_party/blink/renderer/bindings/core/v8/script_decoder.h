@@ -88,7 +88,7 @@ class CORE_EXPORT ScriptDecoder {
   void AppendData(const String& data);
 
   std::unique_ptr<TextResourceDecoder> decoder_;
-  Digestor digestor_{kHashAlgorithmSha256};
+  Digestor digestor_{HashAlgorithm::kSha256};
   scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> decoding_task_runner_;
   StringBuilder builder_;
@@ -144,7 +144,7 @@ class CORE_EXPORT DataPipeScriptDecoder final
   scoped_refptr<base::SequencedTaskRunner> decoding_task_runner_;
 
   std::unique_ptr<mojo::DataPipeDrainer> drainer_;
-  Digestor digestor_{kHashAlgorithmSha256};
+  Digestor digestor_{HashAlgorithm::kSha256};
   DigestValue digest_value_;
   StringBuilder builder_;
 
@@ -194,7 +194,7 @@ class CORE_EXPORT ScriptDecoderWithClient {
   void AppendData(const String& data);
 
   std::unique_ptr<TextResourceDecoder> decoder_;
-  Digestor digestor_{kHashAlgorithmSha256};
+  Digestor digestor_{HashAlgorithm::kSha256};
   scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> decoding_task_runner_;
   StringBuilder builder_;

@@ -91,7 +91,7 @@ class WasmCodeCachingCallback
     {
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                    "v8.wasm.compileDigestForCreate");
-      if (!ComputeDigest(kHashAlgorithmSha256,
+      if (!ComputeDigest(HashAlgorithm::kSha256,
                          compiled_module.GetWireBytesRef(),
                          wire_bytes_digest)) {
         return;
@@ -242,7 +242,7 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
                 {
                   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                                "v8.wasm.compileDigestForConsume");
-                  CHECK(ComputeDigest(kHashAlgorithmSha256,
+                  CHECK(ComputeDigest(HashAlgorithm::kSha256,
                                       caching_interface.GetWireBytes(),
                                       wire_bytes_digest));
                 }

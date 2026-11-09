@@ -34,7 +34,7 @@ void AppendDataImpl(Digestor* digestor,
     // The hash data computed so far is invalid and must be recomputed. This can
     // only happen once per builder when it changes from 8-bit to 16-bit mode.
     DCHECK(!builder->Is8Bit());
-    *digestor = Digestor(kHashAlgorithmSha256);
+    *digestor = Digestor(HashAlgorithm::kSha256);
     digestor->Update(StringView(*builder).RawByteSpan());
   }
 }

@@ -188,10 +188,10 @@ CSPOperativeDirective CSPDirectiveListOperativeDirective(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     CSPDirectiveName type);
 
-void FillInCSPHashValues(
-    const String& source,
-    const HashSet<IntegrityAlgorithm>& hash_algorithms_used,
-    Vector<network::IntegrityMetadata>& csp_hash_values);
+CORE_EXPORT
+void FillInCSPHashValues(const String& source,
+                         IntegrityAlgorithmSet hash_algorithms_used,
+                         Vector<network::IntegrityMetadata>& csp_hash_values);
 
 // Given a document URL and a script URL, returns the relative path of the
 // script URL. Document URL is the URL of the document that contains the script.
