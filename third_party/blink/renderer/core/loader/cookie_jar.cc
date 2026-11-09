@@ -116,6 +116,7 @@ bool CookieJar::SetCookie(const String& value) {
 
 void CookieJar::OnBackendDisconnect() {
   shared_memory_version_client_.reset();
+  required_committed_writes_ = 0;
   InvalidateCache();
 }
 
@@ -244,6 +245,7 @@ void CookieJar::SetCookieManager(
     mojo::PendingRemote<network::mojom::blink::RestrictedCookieManager>
         cookie_manager) {
   backend_.reset();
+  OnBackendDisconnect();
   backend_.Bind(std::move(cookie_manager),
                 document_->GetTaskRunner(TaskType::kInternalDefault));
 }
