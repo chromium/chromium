@@ -799,7 +799,9 @@ bool TabHoverCardController::TargetTabIsValid() const {
 }
 
 void TabHoverCardController::OnCardFullyVisible() {
-  CHECK(target_tab_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/580142862): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(target_tab_);
   if (target_tab_ == hover_card_last_seen_on_tab_.get()) {
     return;
   }
