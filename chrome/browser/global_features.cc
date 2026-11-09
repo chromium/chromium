@@ -161,11 +161,13 @@ void GlobalFeatures::PostBrowserProcessInit() {
 #endif
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-  if (unexportable_keys::UnexportableKeyServiceImpl::
+  // Check the feature first. On Windows, asking for the key provider loads
+  // tbs.dll on the UI thread.
+  if (base::FeatureList::IsEnabled(
+          unexportable_keys::kUnexportableKeyDeletion) &&
+      unexportable_keys::UnexportableKeyServiceImpl::
           IsStatefulUnexportableKeyProviderSupported(
-              unexportable_keys::GetDefaultConfig()) &&
-      base::FeatureList::IsEnabled(
-          unexportable_keys::kUnexportableKeyDeletion)) {
+              unexportable_keys::GetDefaultConfig())) {
     unexportable_key_obsolete_profile_garbage_collector_ = std::make_unique<
         unexportable_keys::UnexportableKeyObsoleteProfileGarbageCollector>(
         g_browser_process->profile_manager());
