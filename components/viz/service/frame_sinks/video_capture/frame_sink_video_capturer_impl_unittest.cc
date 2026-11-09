@@ -2776,4 +2776,67 @@ INSTANTIATE_TEST_SUITE_P(
     FrameSinkVideoCapturerTest,
     testing::ValuesIn(GetFrameSinkVideoCapturerTestParams()));
 
+// Regression test for https://crbug.com/326509139. When the capture size has
+// an odd dimension, AdjustSizeForPixelFormat() rounds the I420/NV12 frame size
+// down to even. The source then no longer fits the frame exactly, and the
+// letterbox math must not leave a thin black strip on the right or bottom.
+TEST(FrameSinkVideoCapturerContentRectTest, OddCaptureSizeFillsI420Frame) {
+  struct {
+    gfx::Size source_size;
+    // The size the oracle asked for, before it was rounded down to even.
+    gfx::Size requested_size;
+    gfx::Size frame_size;
+  } const kCases[] = {
+      // Odd height: frame loses one row, letterbox used to trim two columns.
+      {gfx::Size(800, 507), gfx::Size(800, 507), gfx::Size(800, 506)},
+      {gfx::Size(1000, 701), gfx::Size(1000, 701), gfx::Size(1000, 700)},
+      // Odd width: frame loses one column, letterbox used to trim two rows.
+      {gfx::Size(801, 500), gfx::Size(801, 500), gfx::Size(800, 500)},
+      {gfx::Size(1001, 700), gfx::Size(1001, 700), gfx::Size(1000, 700)},
+      // Downscaled by the resolution chooser to an odd size, then rounded
+      // down to even.
+      {gfx::Size(1366, 768), gfx::Size(1205, 678), gfx::Size(1204, 678)},
+      {gfx::Size(2000, 1003), gfx::Size(800, 401), gfx::Size(800, 400)},
+      // Very wide sources: one row lost to rounding is several columns.
+      {gfx::Size(1000, 158), gfx::Size(700, 111), gfx::Size(700, 110)},
+      {gfx::Size(4001, 1001), gfx::Size(4001, 1001), gfx::Size(4000, 1000)},
+      // Very tall source.
+      {gfx::Size(158, 1000), gfx::Size(111, 700), gfx::Size(110, 700)},
+  };
+  for (const auto& c : kCases) {
+    for (media::VideoPixelFormat format :
+         {media::PIXEL_FORMAT_I420, media::PIXEL_FORMAT_NV12}) {
+      SCOPED_TRACE(testing::Message()
+                   << "source=" << c.source_size.ToString()
+                   << " requested=" << c.requested_size.ToString()
+                   << " frame=" << c.frame_size.ToString()
+                   << " format=" << media::VideoPixelFormatToString(format));
+      EXPECT_EQ(gfx::Rect(c.frame_size),
+                FrameSinkVideoCapturerImpl::GetContentRectangle(
+                    gfx::Rect(c.frame_size), c.source_size, format,
+                    c.requested_size));
+    }
+  }
+}
+
+// Real letterboxing must be kept, even when the bars are only two pixels
+// tall on a small frame.
+TEST(FrameSinkVideoCapturerContentRectTest, KeepsRealLetterboxing) {
+  for (media::VideoPixelFormat format :
+       {media::PIXEL_FORMAT_I420, media::PIXEL_FORMAT_NV12}) {
+    SCOPED_TRACE(media::VideoPixelFormatToString(format));
+    EXPECT_EQ(gfx::Rect(0, 2, 16, 12),
+              FrameSinkVideoCapturerImpl::GetContentRectangle(
+                  gfx::Rect(16, 16), gfx::Size(640, 478), format));
+    EXPECT_EQ(gfx::Rect(54, 0, 890, 500),
+              FrameSinkVideoCapturerImpl::GetContentRectangle(
+                  gfx::Rect(1000, 500), gfx::Size(1920, 1080), format));
+    // Fixed aspect ratio capture, such as Cast mirroring to a 16:9 receiver.
+    EXPECT_EQ(gfx::Rect(124, 0, 1030, 720),
+              FrameSinkVideoCapturerImpl::GetContentRectangle(
+                  gfx::Rect(1280, 720), gfx::Size(1000, 700), format,
+                  gfx::Size(1280, 720)));
+  }
+}
+
 }  // namespace viz

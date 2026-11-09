@@ -592,24 +592,32 @@ void FrameSinkVideoCapturerImpl::RefreshNow() {
 gfx::Rect FrameSinkVideoCapturerImpl::GetContentRectangle(
     const gfx::Rect& visible_rect,
     const gfx::Size& source_size,
-    media::VideoPixelFormat pixel_format) {
+    media::VideoPixelFormat pixel_format,
+    std::optional<gfx::Size> requested_capture_size) {
   CHECK(pixel_format == media::PIXEL_FORMAT_I420 ||
         pixel_format == media::PIXEL_FORMAT_NV12 ||
         pixel_format == media::PIXEL_FORMAT_ARGB ||
         pixel_format == media::PIXEL_FORMAT_RGBAF16);
 
+  // Decide whether to letterbox at all by looking at the size the oracle
+  // asked for, before AdjustSizeForPixelFormat() rounded it down to even for
+  // I420/NV12. If the source fits that size, fill the whole frame. Otherwise
+  // the rounding makes the source look a bit narrower or shorter than the
+  // frame, and the letterbox math leaves a thin black strip on the right or
+  // bottom edge (https://crbug.com/326509139). The media letterboxing
+  // computation also allows for off-by-one errors, so we accept those here.
+  const gfx::Rect requested_rect(
+      requested_capture_size.value_or(visible_rect.size()));
+  if (media::ComputeLetterboxRegion(requested_rect, source_size)
+          .ApproximatelyEqual(requested_rect, 1)) {
+    return visible_rect;
+  }
+
   if (pixel_format == media::PIXEL_FORMAT_I420 ||
       pixel_format == media::PIXEL_FORMAT_NV12) {
     return media::ComputeLetterboxRegionForI420(visible_rect, source_size);
-  } else {
-    const gfx::Rect content_rect =
-        media::ComputeLetterboxRegion(visible_rect, source_size);
-
-    // The media letterboxing computation explicitly allows for off-by-one
-    // errors due to computation, so we address those here.
-    return content_rect.ApproximatelyEqual(visible_rect, 1) ? visible_rect
-                                                            : content_rect;
   }
+  return media::ComputeLetterboxRegion(visible_rect, source_size);
 }
 
 void FrameSinkVideoCapturerImpl::MaybeScheduleRefreshFrame() {
@@ -897,8 +905,9 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   // Size of the video frames that we are supposed to produce. Depends on the
   // pixel format and the capture size as determined by the oracle (which in
   // turn depends on the capture constraints).
+  const gfx::Size requested_capture_size = oracle_->capture_size();
   const gfx::Size capture_size =
-      AdjustSizeForPixelFormat(oracle_->capture_size());
+      AdjustSizeForPixelFormat(requested_capture_size);
 
   // Size of the source that we are capturing.
   const gfx::Size source_size = oracle_->source_size();
@@ -1007,7 +1016,10 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   // aspect ratio does not have to be maintained, we should use a size that we
   // know would not require letterboxing).
   const gfx::Rect content_rect =
-      GetContentRectangle(frame->visible_rect(), source_size, pixel_format_);
+      GetContentRectangle(frame->visible_rect(), source_size, pixel_format_,
+                          frame->visible_rect().size() == capture_size
+                              ? std::make_optional(requested_capture_size)
+                              : std::nullopt);
   TRACE_EVENT_INSTANT("gpu.capture", "ContentRectDeterminedForCapture",
                       "content_rect", content_rect.ToString(), "source_size",
                       source_size.ToString());
