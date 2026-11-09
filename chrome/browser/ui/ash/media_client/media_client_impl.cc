@@ -464,8 +464,9 @@ void MediaClientImpl::EnableCustomMediaKeyHandler(
     ui::MediaKeysListener::Delegate* delegate) {
   auto it = media_key_delegates_.find(context);
 
-  CHECK(it == media_key_delegates_.end() || it->second == delegate,
-        base::NotFatalUntil::M162);
+  // TODO(crbug.com/580075349): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(it == media_key_delegates_.end() || it->second == delegate);
 
   media_key_delegates_.emplace(context, delegate);
 
