@@ -10,6 +10,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -1286,10 +1287,11 @@ TEST_F(CreditCardSuggestionGeneratorTest,
       form_bundle.trigger_field.origin());
   payments_data().AddVirtualCardUsageData(virtual_card_usage_data);
 
+  std::vector<std::string> four_digit_combinations_in_dom = {"4444"};
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
       *form_bundle.trigger_autofill_field, autofill_client(),
-      /*four_digit_combinations_in_dom=*/{"4444"},
+      base::span(four_digit_combinations_in_dom),
       /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
       credit_card_form_event_logger(),
       AutofillMetrics::PaymentsSigninState::kUnknown,
@@ -4811,10 +4813,11 @@ TEST_F(
            {.role = FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE,
             .origin = virtual_card_usage_data.merchant_origin()},
        }});
+  std::vector<std::string> four_digit_combinations_in_dom = {"1234"};
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
       *form_bundle.trigger_autofill_field, autofill_client(),
-      /*four_digit_combinations_in_dom=*/{"1234"},
+      base::span(four_digit_combinations_in_dom),
       /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
       credit_card_form_event_logger(),
       AutofillMetrics::PaymentsSigninState::kUnknown,
@@ -4855,10 +4858,11 @@ TEST_F(
             .origin = virtual_card_usage_data.merchant_origin()},
        }});
 
+  std::vector<std::string> four_digit_combinations_in_dom = {"1234"};
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
       *form_bundle.trigger_autofill_field, autofill_client(),
-      /*four_digit_combinations_in_dom=*/{"1234"},
+      base::span(four_digit_combinations_in_dom),
       /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
       credit_card_form_event_logger(),
       AutofillMetrics::PaymentsSigninState::kUnknown,
@@ -4868,7 +4872,7 @@ TEST_F(
   suggestions = GetSuggestionsForCreditCards(
       form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
       *form_bundle.trigger_autofill_field, autofill_client(),
-      /*four_digit_combinations_in_dom=*/{"1234"},
+      base::span(four_digit_combinations_in_dom),
       /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
       credit_card_form_event_logger(),
       AutofillMetrics::PaymentsSigninState::kUnknown,
@@ -5386,10 +5390,10 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
   trigger_autofill_field.SetTypeTo(
       AutofillType(FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE),
       AutofillPredictionSource::kHeuristics);
+  std::vector<std::string> four_digit_combinations_in_dom = {"1111", "1113"};
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(),
-      /*four_digit_combinations_in_dom=*/{"1111", "1113"},
+      autofill_client(), base::span(four_digit_combinations_in_dom),
       /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
       credit_card_form_event_logger(),
       AutofillMetrics::PaymentsSigninState::kUnknown,
@@ -5433,10 +5437,10 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       AutofillType(FieldType::CREDIT_CARD_VERIFICATION_CODE),
       AutofillPredictionSource::kHeuristics);
 
+  std::vector<std::string> four_digit_combinations_in_dom = {"1113"};
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(),
-      /*four_digit_combinations_in_dom=*/{"1113"},
+      autofill_client(), base::span(four_digit_combinations_in_dom),
       /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
       credit_card_form_event_logger(),
       AutofillMetrics::PaymentsSigninState::kUnknown,
@@ -5489,10 +5493,10 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
   trigger_autofill_field.SetTypeTo(
       AutofillType(FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE),
       AutofillPredictionSource::kHeuristics);
+  std::vector<std::string> four_digit_combinations_in_dom = {"0000", "9999"};
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(),
-      /*four_digit_combinations_in_dom=*/{"0000", "9999"},
+      autofill_client(), base::span(four_digit_combinations_in_dom),
       /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
       credit_card_form_event_logger(),
       AutofillMetrics::PaymentsSigninState::kUnknown,
@@ -5517,10 +5521,10 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
   trigger_autofill_field.SetTypeTo(
       AutofillType(FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE),
       AutofillPredictionSource::kHeuristics);
+  std::vector<std::string> four_digit_combinations_in_dom = {"1234"};
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(),
-      /*four_digit_combinations_in_dom=*/{"1234"},
+      autofill_client(), base::span(four_digit_combinations_in_dom),
       /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
       credit_card_form_event_logger(),
       AutofillMetrics::PaymentsSigninState::kUnknown,
@@ -5556,10 +5560,10 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       AutofillType(FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE),
       AutofillPredictionSource::kHeuristics);
 
+  std::vector<std::string> four_digit_combinations_in_dom = {"1234"};
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       form, FormStructure(form), trigger_field, trigger_autofill_field,
-      autofill_client(),
-      /*four_digit_combinations_in_dom=*/{"1234"},
+      autofill_client(), base::span(four_digit_combinations_in_dom),
       /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
       credit_card_form_event_logger(),
       AutofillMetrics::PaymentsSigninState::kUnknown,

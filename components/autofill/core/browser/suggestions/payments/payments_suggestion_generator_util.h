@@ -188,7 +188,7 @@ base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
 GetVirtualCreditCardsForStandaloneCvcField(
     const PaymentsDataManager& data_manager,
     const url::Origin& origin,
-    const std::vector<std::string>& four_digit_combinations_in_dom);
+    base::span<const std::string> four_digit_combinations_in_dom);
 
 // Exposes `GetOrderedCardsToSuggest` in tests.
 std::vector<CreditCard> GetOrderedCardsToSuggestForTest(

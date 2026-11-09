@@ -7,10 +7,11 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -44,7 +45,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     const FormFieldData& trigger_field,
     const AutofillField& autofill_trigger_field,
     AutofillClient& client,
-    const std::vector<std::string>& four_digit_combinations_in_dom,
+    base::span<const std::string> four_digit_combinations_in_dom,
     payments::AmountExtractionManager* amount_extraction_manager,
     payments::BnplManager* bnpl_manager,
     autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger,
@@ -77,7 +78,7 @@ std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
 class CreditCardSuggestionGenerator : public SuggestionGenerator {
  public:
   explicit CreditCardSuggestionGenerator(
-      const std::vector<std::string>& four_digit_combinations_in_dom,
+      base::span<const std::string> four_digit_combinations_in_dom,
       payments::AmountExtractionManager* amount_extraction_manager,
       payments::BnplManager* bnpl_manager,
       autofill_metrics::CreditCardFormEventLogger*
@@ -105,7 +106,7 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
       base::FunctionRef<void(ReturnedSuggestions)> callback);
 
  private:
-  raw_ref<const std::vector<std::string>> four_digit_combinations_in_dom_;
+  base::raw_span<const std::string> four_digit_combinations_in_dom_;
   raw_ptr<payments::AmountExtractionManager> amount_extraction_manager_;
   raw_ptr<payments::BnplManager> bnpl_manager_;
   raw_ptr<autofill_metrics::CreditCardFormEventLogger>

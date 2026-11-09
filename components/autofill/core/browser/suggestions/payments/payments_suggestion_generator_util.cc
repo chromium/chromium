@@ -1419,7 +1419,7 @@ base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
 GetVirtualCreditCardsForStandaloneCvcField(
     const PaymentsDataManager& data_manager,
     const url::Origin& origin,
-    const std::vector<std::string>& four_digit_combinations_in_dom) {
+    base::span<const std::string> four_digit_combinations_in_dom) {
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
       virtual_card_guid_to_last_four_map;
 
