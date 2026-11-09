@@ -1530,7 +1530,9 @@ class AXPosition {
               position->child_index() == BEFORE_TEXT
                   ? CreateTreePositionAtStartOfAnchor(*leaf_node)
                   : CreateTreePositionAtEndOfAnchor(*leaf_node);
-          CHECK(new_position->IsLeaf(), base::NotFatalUntil::M163);
+          // TODO(crbug.com/582680643): CHECK-exclusion: Convert to a CHECK once
+          // we are confident it won't be triggered.
+          DCHECK(new_position->IsLeaf());
           return new_position;
         }
 
