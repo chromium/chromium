@@ -324,6 +324,24 @@ public class HintTextUpdaterUnitTest {
     }
 
     @Test
+    public void testGetOmniboxHintText_PtmRequestType() {
+        ToolConfig ptmConfig =
+                ToolConfig.newBuilder()
+                        .setToolValue(ToolMode.TOOL_MODE_GEMINI_PRO)
+                        .setHintText("PTM Tool Hint")
+                        .build();
+        setInputState(
+                new InputStateBuilder()
+                        .withHintText("Server Default Hint")
+                        .withToolConfigs(ptmConfig)
+                        .build());
+
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.PTM);
+
+        verify(mUpdateHintTextCallback).onResult(eq("PTM Tool Hint"));
+    }
+
+    @Test
     public void testGetOmniboxHintText_NoToolMatch_UsesInputStateHintText() {
         ToolConfig imageGenConfig =
                 ToolConfig.newBuilder()

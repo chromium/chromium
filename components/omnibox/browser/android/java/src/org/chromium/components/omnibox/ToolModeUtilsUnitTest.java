@@ -23,6 +23,7 @@ public class ToolModeUtilsUnitTest {
         assertTrue(ToolModeUtils.isAimRequest(AutocompleteRequestType.IMAGE_GENERATION));
         assertTrue(ToolModeUtils.isAimRequest(AutocompleteRequestType.DEEP_SEARCH));
         assertTrue(ToolModeUtils.isAimRequest(AutocompleteRequestType.CANVAS));
+        assertTrue(ToolModeUtils.isAimRequest(AutocompleteRequestType.PTM));
 
         assertFalse(ToolModeUtils.isAimRequest(AutocompleteRequestType.SEARCH));
         assertFalse(ToolModeUtils.isAimRequest(AutocompleteRequestType.SEARCH_PREFETCH));
@@ -37,6 +38,7 @@ public class ToolModeUtilsUnitTest {
         assertFalse(ToolModeUtils.isConventionalRequest(AutocompleteRequestType.IMAGE_GENERATION));
         assertFalse(ToolModeUtils.isConventionalRequest(AutocompleteRequestType.DEEP_SEARCH));
         assertFalse(ToolModeUtils.isConventionalRequest(AutocompleteRequestType.CANVAS));
+        assertFalse(ToolModeUtils.isConventionalRequest(AutocompleteRequestType.PTM));
     }
 
     @Test
@@ -69,6 +71,15 @@ public class ToolModeUtilsUnitTest {
                         AutocompleteRequestType.CANVAS, /* hasAttachments= */ true));
 
         assertEquals(
+                ToolMode.TOOL_MODE_GEMINI_PRO,
+                ToolModeUtils.getToolModeForRequestType(
+                        AutocompleteRequestType.PTM, /* hasAttachments= */ false));
+        assertEquals(
+                ToolMode.TOOL_MODE_GEMINI_PRO,
+                ToolModeUtils.getToolModeForRequestType(
+                        AutocompleteRequestType.PTM, /* hasAttachments= */ true));
+
+        assertEquals(
                 ToolMode.TOOL_MODE_UNSPECIFIED,
                 ToolModeUtils.getToolModeForRequestType(
                         AutocompleteRequestType.SEARCH, /* hasAttachments= */ false));
@@ -80,5 +91,27 @@ public class ToolModeUtilsUnitTest {
                 ToolMode.TOOL_MODE_UNSPECIFIED,
                 ToolModeUtils.getToolModeForRequestType(
                         AutocompleteRequestType.AI_MODE, /* hasAttachments= */ false));
+    }
+
+    @Test
+    public void testGetRequestTypeForToolMode() {
+        assertEquals(
+                AutocompleteRequestType.IMAGE_GENERATION,
+                ToolModeUtils.getRequestTypeForToolMode(ToolMode.TOOL_MODE_IMAGE_GEN));
+        assertEquals(
+                AutocompleteRequestType.IMAGE_GENERATION,
+                ToolModeUtils.getRequestTypeForToolMode(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD));
+        assertEquals(
+                AutocompleteRequestType.DEEP_SEARCH,
+                ToolModeUtils.getRequestTypeForToolMode(ToolMode.TOOL_MODE_DEEP_SEARCH));
+        assertEquals(
+                AutocompleteRequestType.CANVAS,
+                ToolModeUtils.getRequestTypeForToolMode(ToolMode.TOOL_MODE_CANVAS));
+        assertEquals(
+                AutocompleteRequestType.PTM,
+                ToolModeUtils.getRequestTypeForToolMode(ToolMode.TOOL_MODE_GEMINI_PRO));
+        assertEquals(
+                AutocompleteRequestType.AI_MODE,
+                ToolModeUtils.getRequestTypeForToolMode(ToolMode.TOOL_MODE_UNSPECIFIED));
     }
 }

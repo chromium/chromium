@@ -17,7 +17,8 @@ public class ToolModeUtils {
         return requestType == AutocompleteRequestType.AI_MODE
                 || requestType == AutocompleteRequestType.IMAGE_GENERATION
                 || requestType == AutocompleteRequestType.DEEP_SEARCH
-                || requestType == AutocompleteRequestType.CANVAS;
+                || requestType == AutocompleteRequestType.CANVAS
+                || requestType == AutocompleteRequestType.PTM;
     }
 
     /** Returns whether the given request type is a conventional request. */
@@ -50,6 +51,7 @@ public class ToolModeUtils {
                             : ToolMode.TOOL_MODE_IMAGE_GEN;
             case AutocompleteRequestType.DEEP_SEARCH -> ToolMode.TOOL_MODE_DEEP_SEARCH;
             case AutocompleteRequestType.CANVAS -> ToolMode.TOOL_MODE_CANVAS;
+            case AutocompleteRequestType.PTM -> ToolMode.TOOL_MODE_GEMINI_PRO;
             default -> ToolMode.TOOL_MODE_UNSPECIFIED;
         };
     }
@@ -64,6 +66,7 @@ public class ToolModeUtils {
                     AutocompleteRequestType.IMAGE_GENERATION;
             case ToolMode.TOOL_MODE_DEEP_SEARCH -> AutocompleteRequestType.DEEP_SEARCH;
             case ToolMode.TOOL_MODE_CANVAS -> AutocompleteRequestType.CANVAS;
+            case ToolMode.TOOL_MODE_GEMINI_PRO -> AutocompleteRequestType.PTM;
             default -> AutocompleteRequestType.AI_MODE;
         };
     }

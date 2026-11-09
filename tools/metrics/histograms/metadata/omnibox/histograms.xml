@@ -2003,6 +2003,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     <variant name=".Canvas" summary="Canvas"/>
     <variant name=".DeepSearch" summary="Deep Search"/>
     <variant name=".ImageGeneration" summary="Image generation"/>
+    <variant name=".PTM" summary="PTM"/>
     <variant name=".Search" summary="Search"/>
   </token>
 </histogram>

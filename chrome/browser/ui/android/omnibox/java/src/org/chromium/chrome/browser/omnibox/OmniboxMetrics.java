@@ -311,6 +311,7 @@ public class OmniboxMetrics {
                     case AutocompleteRequestType.IMAGE_GENERATION -> ".ImageGeneration";
                     case AutocompleteRequestType.CANVAS -> ".Canvas";
                     case AutocompleteRequestType.DEEP_SEARCH -> ".DeepSearch";
+                    case AutocompleteRequestType.PTM -> ".PTM";
                     default -> ".Search";
                 };
 

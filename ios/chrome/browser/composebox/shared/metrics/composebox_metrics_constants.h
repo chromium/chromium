@@ -40,7 +40,8 @@ enum class AutocompleteRequestType {
   kImageGeneration = 3,
   kCanvas = 4,
   kDeepSearch = 5,
-  kMaxValue = kDeepSearch
+  kPTM = 6,
+  kMaxValue = kPTM
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AutocompleteRequestType)
 

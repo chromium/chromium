@@ -22,6 +22,7 @@ import java.lang.annotation.Target;
     AutocompleteRequestType.IMAGE_GENERATION,
     AutocompleteRequestType.CANVAS,
     AutocompleteRequestType.DEEP_SEARCH,
+    AutocompleteRequestType.PTM,
 })
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.TYPE_USE})
@@ -45,7 +46,10 @@ public @interface AutocompleteRequestType {
     /** Deep search. */
     int DEEP_SEARCH = 5;
 
-    int COUNT = 6;
+    /** PTM fulfillment. */
+    int PTM = 6;
+
+    int COUNT = 7;
     /* Note: account for new types in {@link FuseboxCoordinator#isConventionalFulfillmentType}. */
 }
 
