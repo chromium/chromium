@@ -670,6 +670,9 @@ ci.thin_tester(
             "telemetry_perf_unittests": targets.mixin(
                 ci_only = True,
             ),
+            "updater_tests": targets.mixin(
+                enable_rts_filtering = True,
+            ),
         },
     ),
     ssd = None,
