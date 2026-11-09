@@ -610,7 +610,16 @@ CriticalActionEntry CriticalActionDatabase::StatementToEntry(
   entry.visit_id = statement.ColumnInt64(2);
   entry.conversation_id = statement.ColumnString(3);
   entry.actor_task_id = statement.ColumnString(4);
-  entry.action_type = static_cast<ActionType>(statement.ColumnInt(5));
+  // The stored value comes from disk and may not be a valid `ActionType` value,
+  // e.g. if the row was written by a newer Chrome release that knows more
+  // types. Treat any out-of-range value as `kUnknown` so it never reaches code
+  // that expects a known `ActionType`.
+  const int raw_action_type = statement.ColumnInt(5);
+  entry.action_type =
+      (raw_action_type >= 0 &&
+       raw_action_type <= static_cast<int>(ActionType::kMaxValue))
+          ? static_cast<ActionType>(raw_action_type)
+          : ActionType::kUnknown;
   entry.metadata = statement.ColumnString(6);
   return entry;
 }

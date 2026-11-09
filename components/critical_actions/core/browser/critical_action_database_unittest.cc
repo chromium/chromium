@@ -79,6 +79,34 @@ TEST_F(CriticalActionDatabaseTest, AddAndGetEntry) {
   database.Close();
 }
 
+// Rows with an action_type unknown to this version (e.g. written by a newer
+// version, or corrupted) are read as ActionType::kUnknown.
+TEST_F(CriticalActionDatabaseTest, UnknownActionTypeReadsAsUnknown) {
+  CriticalActionDatabase database(db_path_);
+  ASSERT_TRUE(database.Init());
+
+  CriticalActionEntry newer_entry = CreateDefaultEntry();
+  newer_entry.action_type =
+      static_cast<ActionType>(static_cast<int>(ActionType::kMaxValue) + 1);
+  ASSERT_TRUE(database.AddCriticalAction(newer_entry));
+
+  CriticalActionEntry negative_entry = CreateDefaultEntry();
+  negative_entry.action_type = static_cast<ActionType>(-1);
+  ASSERT_TRUE(database.AddCriticalAction(negative_entry));
+
+  auto retrieved_newer =
+      database.GetCriticalAction(newer_entry.critical_action_id);
+  ASSERT_TRUE(retrieved_newer.has_value());
+  EXPECT_EQ(retrieved_newer->action_type, ActionType::kUnknown);
+
+  auto retrieved_negative =
+      database.GetCriticalAction(negative_entry.critical_action_id);
+  ASSERT_TRUE(retrieved_negative.has_value());
+  EXPECT_EQ(retrieved_negative->action_type, ActionType::kUnknown);
+
+  database.Close();
+}
+
 TEST_F(CriticalActionDatabaseTest, AddDuplicateEntryFails) {
   base::HistogramTester histogram_tester;
   CriticalActionDatabase database(db_path_);
