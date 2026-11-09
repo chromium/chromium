@@ -54,6 +54,7 @@ class FakeUploadChunkerDelegate : public LensUploadChunker::Delegate {
 
   void OnChunkUploadError(LensUploadChunker::ErrorType error_type) override {
     error_called_ = true;
+    ++error_count_;
     last_error_type_ = error_type;
   }
 
@@ -98,6 +99,7 @@ class FakeUploadChunkerDelegate : public LensUploadChunker::Delegate {
   lens::Payload last_payload_;
 
   bool error_called_ = false;
+  int error_count_ = 0;
   LensUploadChunker::ErrorType last_error_type_;
 
   bool progress_called_ = false;
@@ -214,10 +216,18 @@ TEST_F(LensUploadChunkerTest, HandlesNetworkErrorOnChunkUpload) {
   delegate.SimulateChunkResponse(
       0, google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR, "error");
 
-  // Verify that delegate error is dispatched.
+  // Verify that delegate error is dispatched and sibling in-flight callbacks
+  // are cancelled by `Reset()`.
   EXPECT_TRUE(delegate.error_called_);
+  EXPECT_EQ(1, delegate.error_count_);
   EXPECT_EQ(LensUploadChunker::ErrorType::kNetworkError,
             delegate.last_error_type_);
+
+  delegate.SimulateChunkProgress(1, 2, 3);
+  delegate.SimulateChunkResponse(
+      1, google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR, "error");
+  EXPECT_FALSE(delegate.progress_called_);
+  EXPECT_EQ(1, delegate.error_count_);
 }
 
 TEST_F(LensUploadChunkerTest, InterceptsMissingChunksErrorAndRetries) {
@@ -282,6 +292,270 @@ TEST_F(LensUploadChunkerTest, InterceptsMissingChunksErrorAndRetries) {
                   .content_data(0)
                   .stored_chunk_options()
                   .is_read_retry());
+}
+
+class SelfDestroyingUploadChunkerDelegate : public FakeUploadChunkerDelegate {
+ public:
+  void set_destroy_callback(base::OnceClosure destroy_callback) {
+    destroy_callback_ = std::move(destroy_callback);
+  }
+
+  void set_destroy_on_upload_chunk(bool destroy_on_upload_chunk) {
+    destroy_on_upload_chunk_ = destroy_on_upload_chunk;
+  }
+
+  void UploadChunk(
+      const lens::LensOverlayUploadChunkRequest& request,
+      base::RepeatingCallback<void(uint64_t position, uint64_t total)>
+          progress_callback,
+      base::OnceCallback<
+          void(std::unique_ptr<endpoint_fetcher::EndpointResponse>)>
+          completion_callback) override {
+    FakeUploadChunkerDelegate::UploadChunk(
+        request, std::move(progress_callback), std::move(completion_callback));
+    if (destroy_on_upload_chunk_ && destroy_callback_) {
+      std::move(destroy_callback_).Run();
+    }
+  }
+
+  void OnChunkUploadError(LensUploadChunker::ErrorType error_type) override {
+    FakeUploadChunkerDelegate::OnChunkUploadError(error_type);
+    if (destroy_callback_) {
+      std::move(destroy_callback_).Run();
+    }
+  }
+
+ private:
+  bool destroy_on_upload_chunk_ = false;
+  base::OnceClosure destroy_callback_;
+};
+
+TEST_F(LensUploadChunkerTest,
+       HandlesSynchronousDestructionOnInvalidMissingChunkId) {
+  auto delegate = std::make_unique<SelfDestroyingUploadChunkerDelegate>();
+  auto chunker = std::make_unique<LensUploadChunker>(
+      delegate.get(), task_environment_.GetMainThreadTaskRunner());
+
+  bool destroyed = false;
+  delegate->set_destroy_callback(base::BindOnce(
+      [](std::unique_ptr<LensUploadChunker>* chunker_ptr,
+         std::unique_ptr<SelfDestroyingUploadChunkerDelegate>* delegate_ptr,
+         bool* destroyed_flag) {
+        chunker_ptr->reset();
+        delegate_ptr->reset();
+        *destroyed_flag = true;
+      },
+      &chunker, &delegate, &destroyed));
+
+  lens::LensOverlayRequestId request_id;
+  request_id.set_sequence_id(1);
+  std::vector<uint8_t> page_bytes = {1, 2, 3, 4, 5, 6, 7};
+  chunker->Start(request_id, lens::MimeType::kPdf, GURL("https://example.com"),
+                 "Example Title", page_bytes);
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return delegate->uploaded_requests_.size() >= 3u; }));
+  for (size_t i = 0; i < 3; ++i) {
+    delegate->SimulateChunkResponse(i, google_apis::ApiErrorCode::HTTP_SUCCESS,
+                                    "");
+  }
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return delegate->payload_ready_called_; }));
+  delegate->uploaded_requests_.clear();
+
+  // Pass a valid chunk ID followed by an out-of-bounds chunk ID. Neither chunk
+  // should be uploaded before `OnChunkUploadError()` synchronously destroys
+  // both `chunker` and `delegate`.
+  lens::LensOverlayServerResponse server_response;
+  server_response.mutable_error()->set_error_type(
+      lens::LensOverlayServerError_ErrorType::
+          LensOverlayServerError_ErrorType_MISSING_CHUNKS);
+  auto* missing_chunks =
+      server_response.mutable_error()->mutable_missing_chunks_metadata();
+  missing_chunks->set_has_chunk_metadata(true);
+  missing_chunks->add_missing_chunk_ids(0);
+  missing_chunks->add_missing_chunk_ids(99);
+
+  EXPECT_TRUE(
+      chunker->HandlePageContentResponse(server_response.SerializeAsString()));
+  EXPECT_TRUE(destroyed);
+  EXPECT_FALSE(chunker);
+  EXPECT_FALSE(delegate);
+}
+
+TEST_F(LensUploadChunkerTest, DeduplicatesMissingChunkIdsOnRetry) {
+  FakeUploadChunkerDelegate delegate;
+  LensUploadChunker chunker(&delegate,
+                            task_environment_.GetMainThreadTaskRunner());
+
+  lens::LensOverlayRequestId request_id;
+  request_id.set_sequence_id(1);
+  std::vector<uint8_t> page_bytes = {1, 2, 3, 4, 5, 6, 7};
+  chunker.Start(request_id, lens::MimeType::kPdf, GURL("https://example.com"),
+                "Example Title", page_bytes);
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return delegate.uploaded_requests_.size() >= 3u; }));
+  for (size_t i = 0; i < 3; ++i) {
+    delegate.SimulateChunkResponse(i, google_apis::ApiErrorCode::HTTP_SUCCESS,
+                                   "");
+  }
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return delegate.payload_ready_called_; }));
+  delegate.uploaded_requests_.clear();
+  delegate.payload_ready_called_ = false;
+
+  lens::LensOverlayServerResponse server_response;
+  server_response.mutable_error()->set_error_type(
+      lens::LensOverlayServerError_ErrorType::
+          LensOverlayServerError_ErrorType_MISSING_CHUNKS);
+  auto* missing_chunks =
+      server_response.mutable_error()->mutable_missing_chunks_metadata();
+  missing_chunks->set_has_chunk_metadata(true);
+  missing_chunks->add_missing_chunk_ids(1);
+  missing_chunks->add_missing_chunk_ids(1);
+
+  EXPECT_TRUE(
+      chunker.HandlePageContentResponse(server_response.SerializeAsString()));
+  ASSERT_EQ(1u, delegate.uploaded_requests_.size());
+  EXPECT_EQ(1, delegate.uploaded_requests_[0].chunk_id());
+  EXPECT_EQ(0, delegate.error_count_);
+
+  delegate.SimulateChunkResponse(1, google_apis::ApiErrorCode::HTTP_SUCCESS,
+                                 "");
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return delegate.payload_ready_called_; }));
+}
+
+TEST_F(LensUploadChunkerTest, HandlesDestructionBeforePageContentPayloadReady) {
+  auto delegate = std::make_unique<FakeUploadChunkerDelegate>();
+  auto chunker = std::make_unique<LensUploadChunker>(
+      delegate.get(), task_environment_.GetMainThreadTaskRunner());
+
+  lens::LensOverlayRequestId request_id;
+  request_id.set_sequence_id(1);
+  std::vector<uint8_t> page_bytes = {1, 2, 3, 4, 5, 6, 7};
+  chunker->Start(request_id, lens::MimeType::kPdf, GURL("https://example.com"),
+                 "Example Title", page_bytes);
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return delegate->uploaded_requests_.size() >= 3u; }));
+
+  // Complete all chunks so `PostTaskAndReplyWithResult()` queues
+  // `CreatePageContentPayloadForChunks()` and its reply, then immediately
+  // destroy both `chunker` and `delegate` before the reply executes.
+  for (size_t i = 0; i < 3; ++i) {
+    delegate->SimulateChunkResponse(i, google_apis::ApiErrorCode::HTTP_SUCCESS,
+                                    "");
+  }
+  chunker.reset();
+  delegate.reset();
+
+  // Drain all posted tasks; the cancelled WeakPtr reply must not dereference
+  // the freed `delegate`.
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(LensUploadChunkerTest,
+       HandlesSynchronousDestructionDuringInitialChunkDispatch) {
+  auto delegate = std::make_unique<SelfDestroyingUploadChunkerDelegate>();
+  auto chunker = std::make_unique<LensUploadChunker>(
+      delegate.get(), task_environment_.GetMainThreadTaskRunner());
+
+  bool destroyed = false;
+  delegate->set_destroy_on_upload_chunk(true);
+  delegate->set_destroy_callback(base::BindOnce(
+      [](std::unique_ptr<LensUploadChunker>* chunker_ptr,
+         std::unique_ptr<SelfDestroyingUploadChunkerDelegate>* delegate_ptr,
+         bool* destroyed_flag) {
+        chunker_ptr->reset();
+        delegate_ptr->reset();
+        *destroyed_flag = true;
+      },
+      &chunker, &delegate, &destroyed));
+
+  lens::LensOverlayRequestId request_id;
+  request_id.set_sequence_id(1);
+  std::vector<uint8_t> page_bytes = {1, 2, 3, 4, 5, 6, 7};
+  chunker->Start(request_id, lens::MimeType::kPdf, GURL("https://example.com"),
+                 "Example Title", page_bytes);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() { return destroyed; }));
+  EXPECT_FALSE(chunker);
+  EXPECT_FALSE(delegate);
+}
+
+TEST_F(LensUploadChunkerTest, RejectsLarge64BitMissingChunkId) {
+  FakeUploadChunkerDelegate delegate;
+  LensUploadChunker chunker(&delegate,
+                            task_environment_.GetMainThreadTaskRunner());
+
+  lens::LensOverlayRequestId request_id;
+  request_id.set_sequence_id(1);
+  std::vector<uint8_t> page_bytes = {1, 2, 3, 4, 5, 6, 7};
+  chunker.Start(request_id, lens::MimeType::kPdf, GURL("https://example.com"),
+                "Example Title", page_bytes);
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return delegate.uploaded_requests_.size() >= 3u; }));
+  for (size_t i = 0; i < 3; ++i) {
+    delegate.SimulateChunkResponse(i, google_apis::ApiErrorCode::HTTP_SUCCESS,
+                                   "");
+  }
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return delegate.payload_ready_called_; }));
+  delegate.uploaded_requests_.clear();
+
+  lens::LensOverlayServerResponse server_response;
+  server_response.mutable_error()->set_error_type(
+      lens::LensOverlayServerError_ErrorType::
+          LensOverlayServerError_ErrorType_MISSING_CHUNKS);
+  auto* missing_chunks =
+      server_response.mutable_error()->mutable_missing_chunks_metadata();
+  missing_chunks->set_has_chunk_metadata(true);
+  // `1LL << 32` would truncate to `0` if cast to 32-bit `size_t` unchecked.
+  missing_chunks->add_missing_chunk_ids(int64_t{1} << 32);
+
+  EXPECT_TRUE(
+      chunker.HandlePageContentResponse(server_response.SerializeAsString()));
+  EXPECT_TRUE(delegate.uploaded_requests_.empty());
+  EXPECT_EQ(1, delegate.error_count_);
+  EXPECT_EQ(LensUploadChunker::ErrorType::kRetriesExhausted,
+            delegate.last_error_type_);
+}
+
+TEST_F(LensUploadChunkerTest, IgnoresPageContentResponseAfterResetOnError) {
+  FakeUploadChunkerDelegate delegate;
+  LensUploadChunker chunker(&delegate,
+                            task_environment_.GetMainThreadTaskRunner());
+
+  lens::LensOverlayRequestId request_id;
+  request_id.set_sequence_id(1);
+  std::vector<uint8_t> page_bytes = {1, 2, 3, 4, 5, 6, 7};
+  chunker.Start(request_id, lens::MimeType::kPdf, GURL("https://example.com"),
+                "Example Title", page_bytes);
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return delegate.uploaded_requests_.size() >= 3u; }));
+  delegate.SimulateChunkResponse(
+      0, google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR, "");
+  EXPECT_EQ(1, delegate.error_count_);
+  delegate.uploaded_requests_.clear();
+
+  lens::LensOverlayServerResponse server_response;
+  server_response.mutable_error()->set_error_type(
+      lens::LensOverlayServerError_ErrorType::
+          LensOverlayServerError_ErrorType_MISSING_CHUNKS);
+  auto* missing_chunks =
+      server_response.mutable_error()->mutable_missing_chunks_metadata();
+  missing_chunks->set_has_chunk_metadata(false);
+
+  EXPECT_FALSE(
+      chunker.HandlePageContentResponse(server_response.SerializeAsString()));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(delegate.payload_ready_called_);
+  EXPECT_TRUE(delegate.uploaded_requests_.empty());
+  EXPECT_EQ(1, delegate.error_count_);
 }
 
 }  // namespace

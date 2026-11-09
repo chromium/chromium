@@ -4,9 +4,14 @@
 
 #include "components/lens/lens_upload_chunker.h"
 
+#include <utility>
+#include <vector>
+
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
@@ -129,6 +134,7 @@ void LensUploadChunker::OnChunksCompressed(
   }
 
   if (compressed_chunks.empty()) {
+    Reset();
     delegate_->OnChunkUploadError(ErrorType::kCompressionFailed);
     return;
   }
@@ -143,8 +149,13 @@ void LensUploadChunker::OnChunksCompressed(
     total_upload_size_ += chunk.size();
   }
 
-  for (size_t i = 0; i < chunks_.size(); ++i) {
+  base::WeakPtr<LensUploadChunker> weak_this = weak_ptr_factory_.GetWeakPtr();
+  const size_t num_chunks = chunks_.size();
+  for (size_t i = 0; i < num_chunks; ++i) {
     FetchChunkUpload(i);
+    if (!weak_this) {
+      return;
+    }
   }
 }
 
@@ -175,6 +186,7 @@ void LensUploadChunker::OnChunkUploadResponse(
 
   if (!response ||
       response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
+    Reset();
     delegate_->OnChunkUploadError(ErrorType::kNetworkError);
     return;
   }
@@ -187,8 +199,8 @@ void LensUploadChunker::OnChunkUploadResponse(
         base::BindOnce(&CreatePageContentPayloadForChunks,
                        primary_content_type_, page_url_, page_title_,
                        chunks_.size(), is_retry_upload_),
-        base::BindOnce(&LensUploadChunker::Delegate::OnPageContentPayloadReady,
-                       base::Unretained(delegate_), request_id_));
+        base::BindOnce(&LensUploadChunker::OnPageContentPayloadCreated,
+                       weak_ptr_factory_.GetWeakPtr(), request_id_));
   }
 }
 
@@ -203,6 +215,15 @@ void LensUploadChunker::OnChunkUploadProgress(size_t chunk_index,
   }
 
   delegate_->OnUploadProgress(total_progress_, total_upload_size_);
+}
+
+void LensUploadChunker::OnPageContentPayloadCreated(
+    const lens::LensOverlayRequestId& request_id,
+    lens::Payload payload) {
+  if (request_id.sequence_id() != request_id_.sequence_id()) {
+    return;
+  }
+  delegate_->OnPageContentPayloadReady(request_id, std::move(payload));
 }
 
 bool LensUploadChunker::HandlePageContentResponse(
@@ -228,9 +249,8 @@ bool LensUploadChunker::HandlePageContentResponse(
                 base::BindOnce(&CreatePageContentPayloadForChunks,
                                primary_content_type_, page_url_, page_title_,
                                chunks_.size(), is_retry_upload_),
-                base::BindOnce(
-                    &LensUploadChunker::Delegate::OnPageContentPayloadReady,
-                    base::Unretained(delegate_), request_id_));
+                base::BindOnce(&LensUploadChunker::OnPageContentPayloadCreated,
+                               weak_ptr_factory_.GetWeakPtr(), request_id_));
         return true;
       }
 
@@ -250,12 +270,29 @@ bool LensUploadChunker::HandlePageContentResponse(
 }
 
 void LensUploadChunker::RetryChunks(const std::vector<int64_t>& chunk_ids) {
-  remaining_responses_ = chunk_ids.size();
+  std::vector<size_t> unique_chunk_ids;
+  unique_chunk_ids.reserve(chunk_ids.size());
+  std::vector<bool> seen_chunks(chunks_.size(), false);
   for (int64_t chunk_id : chunk_ids) {
-    if (static_cast<size_t>(chunk_id) < chunks_.size()) {
-      FetchChunkUpload(static_cast<size_t>(chunk_id));
-    } else {
+    if (!base::IsValueInRangeForNumericType<size_t>(chunk_id) ||
+        base::checked_cast<size_t>(chunk_id) >= chunks_.size()) {
+      // `OnChunkUploadError()` may synchronously destroy `this`.
+      Reset();
       delegate_->OnChunkUploadError(ErrorType::kRetriesExhausted);
+      return;
+    }
+    const size_t chunk_index = base::checked_cast<size_t>(chunk_id);
+    if (!seen_chunks[chunk_index]) {
+      seen_chunks[chunk_index] = true;
+      unique_chunk_ids.push_back(chunk_index);
+    }
+  }
+
+  remaining_responses_ = unique_chunk_ids.size();
+  base::WeakPtr<LensUploadChunker> weak_this = weak_ptr_factory_.GetWeakPtr();
+  for (size_t chunk_index : unique_chunk_ids) {
+    FetchChunkUpload(chunk_index);
+    if (!weak_this) {
       return;
     }
   }
@@ -269,6 +306,7 @@ void LensUploadChunker::Reset() {
   total_progress_ = 0;
   total_upload_size_ = 0;
   remaining_responses_ = 0;
+  remaining_retries_ = 0;
   is_retry_upload_ = false;
 }
 

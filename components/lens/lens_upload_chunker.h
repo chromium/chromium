@@ -44,7 +44,9 @@ class LensUploadChunker {
     // EndpointFetcher with its own NetworkTrafficAnnotationTag, and making the
     // network call. The delegate must invoke `progress_callback` to report
     // progress updates, and `completion_callback` with the response metadata
-    // once the network call returns.
+    // once the network call returns. Implementations may synchronously destroy
+    // the `LensUploadChunker` (and `Delegate`), e.g. if starting the upload
+    // triggers an observer to cancel the file.
     virtual void UploadChunk(
         const lens::LensOverlayUploadChunkRequest& request,
         base::RepeatingCallback<void(uint64_t position, uint64_t total)>
@@ -61,7 +63,8 @@ class LensUploadChunker {
         lens::Payload payload) = 0;
 
     // Invoked when a non-recoverable error occurs in the chunking or upload
-    // process.
+    // process. Implementations may synchronously destroy the
+    // `LensUploadChunker` (and `Delegate`).
     virtual void OnChunkUploadError(ErrorType error_type) = 0;
 
     // Invoked when the total upload progress (across all chunks) is updated.
@@ -87,8 +90,10 @@ class LensUploadChunker {
 
   // Invoked when the host query controller receives a response from the objects
   // request. Parses the response for missing chunk errors. If one is found and
-  // retries are available, initiates missing chunk retries and returns true
-  // (telling the host to wait). Returns false otherwise.
+  // retries are available, handles it (either by initiating missing chunk
+  // retries or, if `missing_chunk_ids` is invalid, by synchronously invoking
+  // `Delegate::OnChunkUploadError()`, which may destroy `this`) and returns
+  // true. Returns false otherwise.
   bool HandlePageContentResponse(const std::string& response_bytes);
 
   // Cancels any running compression or upload tasks and resets the internal
@@ -109,6 +114,8 @@ class LensUploadChunker {
   void OnChunkUploadProgress(size_t chunk_index,
                              uint64_t position,
                              uint64_t total);
+  void OnPageContentPayloadCreated(const lens::LensOverlayRequestId& request_id,
+                                   lens::Payload payload);
   void RetryChunks(const std::vector<int64_t>& chunk_ids);
 
   const raw_ptr<Delegate> delegate_;
