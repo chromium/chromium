@@ -1972,18 +1972,32 @@ const base::FeatureParam<base::TimeDelta>
     kTopChromeWebUIPrerenderingPaintDeadline{
         &kTopChromeWebUIPrerendering, "TopChromeWebUIPrerenderingPaintDeadline",
         base::Seconds(3)};
-// The lowest memory pressure level that skips the refill.
+// The lowest memory pressure level that skips the refill. It does not drop a
+// spare toolbar that already exists.
 constexpr base::FeatureParam<TopChromeWebUIPrerenderingMemoryPressureLevel>::
-    Option kTopChromeWebUIPrerenderingMemoryPressureLevelOptions[] = {
+    Option kTopChromeWebUIPrerenderingSkipMemoryPressureOptions[] = {
         {TopChromeWebUIPrerenderingMemoryPressureLevel::kModerate, "moderate"},
         {TopChromeWebUIPrerenderingMemoryPressureLevel::kCritical, "critical"},
 };
-const base::FeatureParam<TopChromeWebUIPrerenderingMemoryPressureLevel>
-    kTopChromeWebUIPrerenderingMemoryPressure{
-        &kTopChromeWebUIPrerendering,
-        "TopChromeWebUIPrerenderingMemoryPressure",
-        TopChromeWebUIPrerenderingMemoryPressureLevel::kCritical,
-        &kTopChromeWebUIPrerenderingMemoryPressureLevelOptions};
+BASE_FEATURE_ENUM_PARAM(
+    TopChromeWebUIPrerenderingMemoryPressureLevel,
+    kTopChromeWebUIPrerenderingSkipMemoryPressure,
+    &kTopChromeWebUIPrerendering,
+    TopChromeWebUIPrerenderingMemoryPressureLevel::kCritical,
+    &kTopChromeWebUIPrerenderingSkipMemoryPressureOptions);
+// The lowest memory pressure level that drops the spare toolbar and skips the
+// refill, or never, the default.
+constexpr base::FeatureParam<TopChromeWebUIPrerenderingMemoryPressureLevel>::
+    Option kTopChromeWebUIPrerenderingEvictMemoryPressureOptions[] = {
+        {TopChromeWebUIPrerenderingMemoryPressureLevel::kNever, "never"},
+        {TopChromeWebUIPrerenderingMemoryPressureLevel::kModerate, "moderate"},
+        {TopChromeWebUIPrerenderingMemoryPressureLevel::kCritical, "critical"},
+};
+BASE_FEATURE_ENUM_PARAM(TopChromeWebUIPrerenderingMemoryPressureLevel,
+                        kTopChromeWebUIPrerenderingEvictMemoryPressure,
+                        &kTopChromeWebUIPrerendering,
+                        TopChromeWebUIPrerenderingMemoryPressureLevel::kNever,
+                        &kTopChromeWebUIPrerenderingEvictMemoryPressureOptions);
 // Switches location bar over to a WebUI implementation.
 // See crbug.com/470042732
 BASE_FEATURE(kWebUILocationBar, base::FEATURE_DISABLED_BY_DEFAULT);

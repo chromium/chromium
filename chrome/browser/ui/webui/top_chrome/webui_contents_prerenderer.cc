@@ -16,9 +16,24 @@
 
 namespace {
 
-constexpr base::MemoryConsumerTraits kPrerenderTraits(
+// The prerenderer compares the memory limit with pressure thresholds and has
+// nothing to scale with it, so neither set of traits supports a memory limit.
+constexpr base::MemoryConsumerTraits kPassiveTraits(
     base::MemoryConsumerTraits::ConsumerType::kPassive,
+    base::MemoryConsumerTraits::SupportsMemoryLimit::kNo,
     base::MemoryConsumerTraits::InProcess::kNo);
+
+// Dropping a spare loses no user state, but building a new one loads the WebUI
+// again. Stateful, because refills are skipped at or below the evict limit, so
+// the spare stays dropped until the limit rises.
+constexpr base::MemoryConsumerTraits kEvictingTraits(
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+    base::MemoryConsumerTraits::SupportsMemoryLimit::kNo,
+    base::MemoryConsumerTraits::InProcess::kNo,
+    base::MemoryConsumerTraits::RecreateMemoryCost::kExpensive);
 
 }  // namespace
 
@@ -28,7 +43,8 @@ WebUIContentsPrerenderer::WebUIContentsPrerenderer(Delegate& delegate,
   timer_.SetTaskRunner(
       content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT}));
   memory_consumer_registration_.emplace(
-      params_.consumer_name, kPrerenderTraits, this,
+      params_.consumer_name,
+      params_.evict_memory_limit ? kEvictingTraits : kPassiveTraits, this,
       base::MemoryConsumerRegistration::CheckUnregister::kDisabled);
 }
 
@@ -84,6 +100,24 @@ void WebUIContentsPrerenderer::DidFirstVisuallyNonEmptyPaint() {
   StartDelay();
 }
 
+bool WebUIContentsPrerenderer::IsPassive() const {
+  return !params_.evict_memory_limit.has_value();
+}
+
+void WebUIContentsPrerenderer::OnReleaseMemory() {
+  // No consumer uses the spare yet, so dropping it only leaves the next take
+  // empty. `Refill()` builds no new spare until the limit rises above the
+  // evict limit.
+  if (params_.evict_memory_limit &&
+      memory_limit() <= *params_.evict_memory_limit) {
+    spare_.reset();
+  }
+}
+
+void WebUIContentsPrerenderer::OnUpdateMemoryLimit() {
+  // The limit is read when needed, in `OnReleaseMemory()` and `Refill()`.
+}
+
 void WebUIContentsPrerenderer::StartDelay() {
   Observe(nullptr);
   // Unretained is safe: `this` owns `timer_`.
@@ -93,7 +127,10 @@ void WebUIContentsPrerenderer::StartDelay() {
 }
 
 void WebUIContentsPrerenderer::Refill() {
-  if (memory_limit() <= params_.skip_memory_limit) {
+  // The evict limit also skips the refill, since it would drop the new spare.
+  if (memory_limit() <= params_.skip_memory_limit ||
+      (params_.evict_memory_limit &&
+       memory_limit() <= *params_.evict_memory_limit)) {
     return;
   }
   if (std::unique_ptr<content::WebContents> spare = delegate_->CreateSpare()) {

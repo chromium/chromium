@@ -1341,14 +1341,19 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kTopChromeWebUIPrerenderingPaintDeadline;
-// The memory pressure levels that can skip the refill.
+// The memory pressure levels that skip the refill or drop the spare toolbar.
 enum class TopChromeWebUIPrerenderingMemoryPressureLevel {
+  // No level. Only `kTopChromeWebUIPrerenderingEvictMemoryPressure` accepts it.
+  kNever,
   kModerate,
   kCritical,
 };
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<TopChromeWebUIPrerenderingMemoryPressureLevel>
-    kTopChromeWebUIPrerenderingMemoryPressure;
+BASE_DECLARE_FEATURE_PARAM(TopChromeWebUIPrerenderingMemoryPressureLevel,
+                           kTopChromeWebUIPrerenderingSkipMemoryPressure);
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE_PARAM(TopChromeWebUIPrerenderingMemoryPressureLevel,
+                           kTopChromeWebUIPrerenderingEvictMemoryPressure);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kWebUIReloadButtonMaxCrashRecoveryTimes;
 COMPONENT_EXPORT(CHROME_FEATURES)

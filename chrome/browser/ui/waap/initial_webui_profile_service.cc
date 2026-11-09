@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/waap/initial_webui_profile_service.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -22,6 +23,26 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+
+namespace {
+
+using MemoryPressureLevel =
+    features::TopChromeWebUIPrerenderingMemoryPressureLevel;
+
+// Returns the memory limit at or below which `level` applies, or nullopt for
+// `kNever`.
+std::optional<base::MemoryLimit> ToMemoryLimit(MemoryPressureLevel level) {
+  switch (level) {
+    case MemoryPressureLevel::kNever:
+      return std::nullopt;
+    case MemoryPressureLevel::kModerate:
+      return base::MemoryLimit::ModeratePressureThreshold();
+    case MemoryPressureLevel::kCritical:
+      return base::MemoryLimit::CriticalPressureThreshold();
+  }
+}
+
+}  // namespace
 
 InitialWebUIProfileService::InitialWebUIProfileService(Profile* profile)
     : profile_(profile) {
@@ -142,12 +163,11 @@ InitialWebUIProfileService::GetPrerenderParams() {
       .paint_deadline =
           features::kTopChromeWebUIPrerenderingPaintDeadline.Get(),
       .delay = features::kTopChromeWebUIPrerenderingDelay.Get(),
-      .skip_memory_limit =
-          features::kTopChromeWebUIPrerenderingMemoryPressure.Get() ==
-                  features::TopChromeWebUIPrerenderingMemoryPressureLevel::
-                      kModerate
-              ? base::MemoryLimit::ModeratePressureThreshold()
-              : base::MemoryLimit::CriticalPressureThreshold(),
+      // The skip param has no "never" option.
+      .skip_memory_limit = *ToMemoryLimit(
+          features::kTopChromeWebUIPrerenderingSkipMemoryPressure.Get()),
+      .evict_memory_limit = ToMemoryLimit(
+          features::kTopChromeWebUIPrerenderingEvictMemoryPressure.Get()),
       .consumer_name = "InitialWebUIProfileService",
   };
 }

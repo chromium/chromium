@@ -1957,4 +1957,94 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIProfilePrewarmRefillBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+class InitialWebUISharedRendererProfilePrewarmRefillBrowserTest
+    : public InitialWebUIProfilePrewarmRefillBrowserTest {
+ public:
+  InitialWebUISharedRendererProfilePrewarmRefillBrowserTest()
+      : InitialWebUIProfilePrewarmRefillBrowserTest(
+            {{features::kTopChromeWebUISharedRenderer, {}}},
+            /*disabled_features=*/{}) {}
+};
+
+// Verifies that with kTopChromeWebUISharedRenderer and prerendering enabled,
+// window 2 adopts the spare in TopChromeWebUIProfile with its user profile, and
+// a new spare appears.
+IN_PROC_BROWSER_TEST_F(
+    InitialWebUISharedRendererProfilePrewarmRefillBrowserTest,
+    SharedRendererSpareAdoptedAndRefilled) {
+  Profile* profile = browser()->GetProfile();
+  InitialWebUIProfileService* service = GetService();
+  ASSERT_TRUE(service);
+
+  // With prerendering enabled, no toolbar is built at profile creation. The
+  // startup window finds no spare, builds its own toolbar, and refill builds
+  // the first spare once that window paints or hits the deadline.
+  content::WebContents* spare = WaitForPrewarmedToolbar(service);
+  ASSERT_TRUE(spare);
+
+  // Window 2 of the same profile adopts the spare.
+  BrowserWindowInterface* second_browser = CreateBrowser(profile);
+  ASSERT_TRUE(second_browser);
+  content::WebContents* second_toolbar = GetToolbarContents(second_browser);
+  ASSERT_TRUE(second_toolbar);
+  EXPECT_EQ(spare, second_toolbar);
+  EXPECT_EQ(webui::GetTopChromeWebUIProfile(),
+            second_toolbar->GetBrowserContext());
+  EXPECT_EQ(profile, webui::GetUserProfile(second_toolbar));
+
+  // A new spare appears after window 2 adopts the previous one.
+  content::WebContents* next_spare = WaitForPrewarmedToolbar(service);
+  ASSERT_TRUE(next_spare);
+  EXPECT_NE(spare, next_spare);
+  EXPECT_EQ(webui::GetTopChromeWebUIProfile(), next_spare->GetBrowserContext());
+  EXPECT_EQ(profile, webui::GetUserProfile(next_spare));
+}
+
+// Creating and destroying a profile needs a full user session on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+// Verifies that with kTopChromeWebUISharedRenderer and prerendering enabled, a
+// window of a second regular profile never adopts the first profile's spare,
+// and that the second profile is destroyed cleanly while TopChromeWebUIProfile
+// holds its spare.
+IN_PROC_BROWSER_TEST_F(
+    InitialWebUISharedRendererProfilePrewarmRefillBrowserTest,
+    SharedRendererSpareIsolatedAcrossProfiles) {
+  InitialWebUIProfileService* service = GetService();
+  ASSERT_TRUE(service);
+  content::WebContents* spare = WaitForPrewarmedToolbar(service);
+  ASSERT_TRUE(spare);
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath secondary_path = profile_manager->user_data_dir().Append(
+      FILE_PATH_LITERAL("SecondarySharedRefill"));
+  Profile& secondary_profile =
+      profiles::testing::CreateProfileSync(profile_manager, secondary_path);
+
+  InitialWebUIProfileService* secondary_service =
+      InitialWebUIProfileServiceFactory::GetForProfile(&secondary_profile);
+  ASSERT_TRUE(secondary_service);
+
+  BrowserWindowInterface* secondary_browser = CreateBrowser(&secondary_profile);
+  ASSERT_TRUE(secondary_browser);
+  content::WebContents* secondary_toolbar =
+      GetToolbarContents(secondary_browser);
+  ASSERT_TRUE(secondary_toolbar);
+
+  // The first profile's service still holds its own spare after the second
+  // profile's window opens.
+  EXPECT_EQ(spare, service->toolbar_web_contents_for_testing());
+  EXPECT_EQ(webui::GetTopChromeWebUIProfile(),
+            secondary_toolbar->GetBrowserContext());
+  EXPECT_EQ(&secondary_profile, webui::GetUserProfile(secondary_toolbar));
+
+  // The refill builds the second profile's spare while its window is open.
+  ASSERT_TRUE(WaitForPrewarmedToolbar(secondary_service));
+  ProfileDestructionWaiter waiter(&secondary_profile);
+  CloseBrowserSynchronously(secondary_browser);
+  waiter.Wait();
+
+  EXPECT_EQ(spare, service->toolbar_web_contents_for_testing());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace waap

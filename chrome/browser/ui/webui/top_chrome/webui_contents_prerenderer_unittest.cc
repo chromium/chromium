@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_prerenderer.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_limit.h"
@@ -62,14 +63,7 @@ class WebUIContentsPrerendererTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     delegate_ = std::make_unique<FakeDelegate>(profile());
-    prerenderer_ = std::make_unique<WebUIContentsPrerenderer>(
-        *delegate_,
-        WebUIContentsPrerenderer::Params{
-            .paint_deadline = kDeadline,
-            .delay = kDelay,
-            .skip_memory_limit = base::MemoryLimit::CriticalPressureThreshold(),
-            .consumer_name = "WebUIContentsPrerendererTest",
-        });
+    CreatePrerenderer(/*evict_memory_limit=*/std::nullopt);
   }
 
   void TearDown() override {
@@ -81,6 +75,28 @@ class WebUIContentsPrerendererTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
+  // Replaces the prerenderer with one that skips refills at critical pressure
+  // and drops its spare at or below `evict_memory_limit`.
+  void CreatePrerenderer(std::optional<base::MemoryLimit> evict_memory_limit) {
+    prerenderer_.reset();
+    prerenderer_ = std::make_unique<WebUIContentsPrerenderer>(
+        *delegate_,
+        WebUIContentsPrerenderer::Params{
+            .paint_deadline = kDeadline,
+            .delay = kDelay,
+            .skip_memory_limit = base::MemoryLimit::CriticalPressureThreshold(),
+            .evict_memory_limit = evict_memory_limit,
+            .consumer_name = "WebUIContentsPrerendererTest",
+        });
+  }
+
+  // Lowers the memory limit and asks consumers to release memory, as memory
+  // pressure does.
+  void ApplyMemoryPressure(base::MemoryLimit memory_limit) {
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimit(memory_limit);
+    test_memory_consumer_registry_.NotifyReleaseMemory();
+  }
+
   std::unique_ptr<content::WebContents> CreateTestContents() {
     return content::WebContentsTester::CreateTestWebContents(
         profile(), content::SiteInstance::Create(profile()));
@@ -273,6 +289,41 @@ TEST_F(WebUIContentsPrerendererTest, RunsAboveSkipMemoryLimit) {
   task_environment()->FastForwardBy(kDeadline + kDelay);
   EXPECT_EQ(1, delegate().create_count);
   EXPECT_TRUE(prerenderer().has_spare());
+  EXPECT_FALSE(prerenderer().is_refill_pending_for_testing());
+}
+
+TEST_F(WebUIContentsPrerendererTest, KeepsSpareWithoutEvictLimit) {
+  EXPECT_TRUE(prerenderer().IsPassive());
+  Refill();
+  ApplyMemoryPressure(base::MemoryLimit::CriticalPressureThreshold());
+  EXPECT_TRUE(prerenderer().has_spare());
+}
+
+TEST_F(WebUIContentsPrerendererTest, DropsSpareAtEvictLimit) {
+  CreatePrerenderer(base::MemoryLimit::CriticalPressureThreshold());
+  EXPECT_FALSE(prerenderer().IsPassive());
+  Refill();
+  content::WebContentsDestroyedWatcher watcher(
+      prerenderer().spare_for_testing());
+
+  // Moderate pressure is above the evict limit, so the spare stays.
+  ApplyMemoryPressure(base::MemoryLimit::ModeratePressureThreshold());
+  EXPECT_TRUE(prerenderer().has_spare());
+
+  ApplyMemoryPressure(base::MemoryLimit::CriticalPressureThreshold());
+  EXPECT_FALSE(prerenderer().has_spare());
+  EXPECT_TRUE(watcher.IsDestroyed());
+}
+
+TEST_F(WebUIContentsPrerendererTest, SkipsRefillAtEvictLimit) {
+  // Moderate pressure is at the evict limit but above the critical skip limit.
+  CreatePrerenderer(base::MemoryLimit::ModeratePressureThreshold());
+  prerenderer().ScheduleRefill(nullptr);
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::MemoryLimit::ModeratePressureThreshold());
+  task_environment()->FastForwardBy(kDeadline + kDelay);
+  EXPECT_EQ(0, delegate().create_count);
+  EXPECT_FALSE(prerenderer().has_spare());
   EXPECT_FALSE(prerenderer().is_refill_pending_for_testing());
 }
 

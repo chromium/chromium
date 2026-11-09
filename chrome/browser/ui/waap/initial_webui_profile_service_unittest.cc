@@ -158,6 +158,12 @@ class InitialWebUIProfileServiceRefillTest
   raw_ptr<InitialWebUIProfileService> service_ = nullptr;
 };
 
+// Without the evict param, the prerenderer keeps its spare under any memory
+// pressure.
+TEST_F(InitialWebUIProfileServiceRefillTest, DoesNotEvictByDefault) {
+  EXPECT_TRUE(prerenderer()->IsPassive());
+}
+
 TEST_F(InitialWebUIProfileServiceRefillTest, RefillsAfterDeadlineAndDelay) {
   base::HistogramTester histogram_tester;
   // First window builds its own toolbar and schedules the first refill.
@@ -348,7 +354,8 @@ TEST_F(InitialWebUIProfileServiceNoRefillTest,
 
 class InitialWebUIProfileServiceParamsTest : public testing::Test {
  protected:
-  void InitFeatures(const std::string& memory_pressure) {
+  void InitFeatures(const std::string& skip_memory_pressure,
+                    const std::string& evict_memory_pressure) {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kInitialWebUI, {}},
          {features::kWebUIReloadButton,
@@ -358,7 +365,10 @@ class InitialWebUIProfileServiceParamsTest : public testing::Test {
          {features::kTopChromeWebUIPrerendering,
           {{"TopChromeWebUIPrerenderingDelay", "500ms"},
            {"TopChromeWebUIPrerenderingPaintDeadline", "4s"},
-           {"TopChromeWebUIPrerenderingMemoryPressure", memory_pressure}}}},
+           {"TopChromeWebUIPrerenderingSkipMemoryPressure",
+            skip_memory_pressure},
+           {"TopChromeWebUIPrerenderingEvictMemoryPressure",
+            evict_memory_pressure}}}},
         {});
   }
 
@@ -367,21 +377,25 @@ class InitialWebUIProfileServiceParamsTest : public testing::Test {
 };
 
 TEST_F(InitialWebUIProfileServiceParamsTest, ReadsCritical) {
-  InitFeatures("critical");
+  InitFeatures("critical", "moderate");
   WebUIContentsPrerenderer::Params params =
       InitialWebUIProfileService::GetPrerenderParamsForTesting();
   EXPECT_EQ(base::Seconds(4), params.paint_deadline);
   EXPECT_EQ(base::Milliseconds(500), params.delay);
   EXPECT_EQ(base::MemoryLimit::CriticalPressureThreshold(),
             params.skip_memory_limit);
+  EXPECT_EQ(base::MemoryLimit::ModeratePressureThreshold(),
+            params.evict_memory_limit);
   EXPECT_EQ("InitialWebUIProfileService", params.consumer_name);
 }
 
 TEST_F(InitialWebUIProfileServiceParamsTest, ReadsModerate) {
-  InitFeatures("moderate");
+  InitFeatures("moderate", "never");
+  WebUIContentsPrerenderer::Params params =
+      InitialWebUIProfileService::GetPrerenderParamsForTesting();
   EXPECT_EQ(base::MemoryLimit::ModeratePressureThreshold(),
-            InitialWebUIProfileService::GetPrerenderParamsForTesting()
-                .skip_memory_limit);
+            params.skip_memory_limit);
+  EXPECT_FALSE(params.evict_memory_limit.has_value());
 }
 
 }  // namespace

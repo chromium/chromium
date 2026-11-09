@@ -121,7 +121,7 @@ class InitialWebUIProfileService : public KeyedService,
 
   ToolbarInputs GetToolbarInputs() const;
 
-  // Returns the refill timing and memory pressure level that the
+  // Returns the refill timing and memory pressure levels that the
   // `TopChromeWebUIPrerendering` params set.
   static WebUIContentsPrerenderer::Params GetPrerenderParams();
 

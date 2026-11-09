@@ -34,10 +34,13 @@ class WebContents;
 // The refill runs on the UI thread at best-effort priority, yielding to input
 // and startup tasks. If the memory limit is at or below
 // `Params::skip_memory_limit` when the delay elapses, the refill is skipped,
-// to avoid competing for system resources. The delegate builds each spare and
-// decides whether what a spare read when it navigated is still current.
+// to avoid competing for system resources. With `Params::evict_memory_limit`,
+// the prerenderer also drops the spare whenever it is asked to release memory
+// at or below that limit, and skips refills there too. The delegate builds
+// each spare and decides whether what a spare read when it navigated is still
+// current.
 class WebUIContentsPrerenderer : public content::WebContentsObserver,
-                                 public base::PassiveMemoryConsumer {
+                                 public base::MemoryConsumer {
  public:
   struct Params {
     // Upper bound on how long a refill waits for the taken contents to paint
@@ -47,7 +50,13 @@ class WebUIContentsPrerenderer : public content::WebContentsObserver,
     base::TimeDelta delay;
     // The memory limit at or below which the refill is skipped.
     base::MemoryLimit skip_memory_limit;
+    // The memory limit at or below which the spare is dropped and the refill
+    // is skipped, or nullopt to keep the spare under any memory pressure.
+    std::optional<base::MemoryLimit> evict_memory_limit;
     // The name under which the prerenderer registers as a memory consumer.
+    // Instances that share it in a process must agree on whether
+    // `evict_memory_limit` is set: it selects the consumer traits, and the
+    // registry CHECKs that consumers of one name have the same traits.
     std::string_view consumer_name;
   };
 
@@ -124,7 +133,16 @@ class WebUIContentsPrerenderer : public content::WebContentsObserver,
   // content::WebContentsObserver:
   void DidFirstVisuallyNonEmptyPaint() override;
 
+  // base::MemoryConsumer:
+  // Without `Params::evict_memory_limit`, the prerenderer only reads the
+  // memory limit before each refill.
+  bool IsPassive() const override;
+
  private:
+  // base::MemoryConsumer:
+  void OnReleaseMemory() override;
+  void OnUpdateMemoryLimit() override;
+
   void StartDelay();
   void Refill();
   void CancelRefill();
