@@ -56,6 +56,21 @@ message ClientToSearchMessage {
   // OnSubmitQueryRequest. Signals that Chrome has finalized the context for
   // the query and that Search Web can issue it.
   message OnSubmitQueryResponse {
+    // Metadata for context for the turn.
+    message ContextTurnMetadata {
+      int64 context_id = 1;
+
+      message TabMetadata {
+        // Whether the tab as represented by the context_id is actively shown
+        // to the user at the time the turn was made.
+        bool is_active_tab = 1;
+      }
+
+      oneof metadata {
+        TabMetadata tab_metadata = 2;
+      }
+    }
+
     // Contexts Chrome successfully uploaded for this query, safe to attach to
     // the submitted query. A context that failed to upload, or that did not
     // finish uploading before Chrome's submission deadline, is simply omitted.
@@ -64,6 +79,12 @@ message ClientToSearchMessage {
     // Contexts that must not be attached to the query anymore, e.g. because
     // the tab was closed or navigated away.
     repeated RemovedContext removed_contexts = 2;
+
+    // Information about the context that is turn-specific.
+    // If a piece of context is not included here, then there is nothing
+    // remarkable about the context that is turn-specific. Should just use
+    // context as is.
+    repeated ContextTurnMetadata context_turn_metadata = 3;
   }
 
   // Notification sent when attached context changes to provide vsrid tokens

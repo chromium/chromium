@@ -2038,6 +2038,238 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
 
   webui::SetBrowserWindowInterface(web_contents_, nullptr);
 }
+
+TEST_F(
+    ContextualTasksWebContentsUserDataTest,
+    AppendTabContextsToOnSubmitQueryResponse_PopulatesActiveTabContextTurnMetadata) {
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, search_session_id())
+      .WillByDefault(testing::Return("test_session"));
+
+  ui::UnownedUserDataHost unowned_user_data_host;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+  testing::NiceMock<MockTabListInterface> mock_tab_list;
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      unowned_user_data_host, mock_tab_list);
+
+  content::WebContents* active_tab_contents =
+      web_contents_factory_->CreateWebContents(profile_.get());
+  sessions::SessionTabHelper::CreateForWebContents(active_tab_contents,
+                                                   base::NullCallback());
+  const SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_tab_contents);
+
+  content::WebContents* background_tab_contents =
+      web_contents_factory_->CreateWebContents(profile_.get());
+  sessions::SessionTabHelper::CreateForWebContents(background_tab_contents,
+                                                   base::NullCallback());
+  const SessionID background_tab_id =
+      sessions::SessionTabHelper::IdForTab(background_tab_contents);
+
+  tabs::MockTabInterface mock_active_tab;
+  ON_CALL(mock_active_tab, GetContents())
+      .WillByDefault(testing::Return(active_tab_contents));
+  ON_CALL(mock_tab_list, GetActiveTab())
+      .WillByDefault(testing::Return(&mock_active_tab));
+
+  webui::SetBrowserWindowInterface(web_contents_, &mock_browser_window);
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  base::UnguessableToken active_token = base::UnguessableToken::Create();
+  base::UnguessableToken background_token = base::UnguessableToken::Create();
+  mock_handle->GetUploadedContextTokensForTesting() = {active_token,
+                                                       background_token};
+  mock_handle->AttachTabPendingUpload(active_token, active_tab_id.id(),
+                                      GURL("https://example.com/active"),
+                                      "Active Tab");
+  mock_handle->AttachTabPendingUpload(background_token, background_tab_id.id(),
+                                      GURL("https://example.com/background"),
+                                      "Background Tab");
+
+  contextual_search::FileInfo active_file;
+  active_file.file_token = active_token;
+  active_file.tab_session_id = active_tab_id;
+  active_file.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  lens::LensOverlayRequestId active_req;
+  active_req.set_context_id(101);
+  active_file.request_id = active_req;
+
+  contextual_search::FileInfo background_file;
+  background_file.file_token = background_token;
+  background_file.tab_session_id = background_tab_id;
+  background_file.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  lens::LensOverlayRequestId background_req;
+  background_req.set_context_id(202);
+  background_file.request_id = background_req;
+
+  std::vector<contextual_search::FileInfo> uploaded_files = {active_file,
+                                                             background_file};
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(testing::ReturnPointee(&uploaded_files));
+
+  lens::ClientToSearchMessage response_message;
+  user_data->AppendTabContextsToOnSubmitQueryResponseForTesting(
+      &response_message, mock_handle, std::nullopt);
+
+  const auto& submit_response = response_message.on_submit_query_response();
+  EXPECT_EQ(submit_response.added_contexts_size(), 2);
+  ASSERT_EQ(submit_response.context_turn_metadata_size(), 1);
+  EXPECT_EQ(submit_response.context_turn_metadata(0).context_id(), 101);
+  EXPECT_TRUE(
+      submit_response.context_turn_metadata(0).tab_metadata().is_active_tab());
+
+  webui::SetBrowserWindowInterface(web_contents_, nullptr);
+}
+
+TEST_F(
+    ContextualTasksWebContentsUserDataTest,
+    AppendTabContextsToOnSubmitQueryResponse_PopulatesActiveTabFromSubmittedContext) {
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, search_session_id())
+      .WillByDefault(testing::Return("test_session"));
+
+  ui::UnownedUserDataHost unowned_user_data_host;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+  testing::NiceMock<MockTabListInterface> mock_tab_list;
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      unowned_user_data_host, mock_tab_list);
+
+  content::WebContents* active_tab_contents =
+      web_contents_factory_->CreateWebContents(profile_.get());
+  sessions::SessionTabHelper::CreateForWebContents(active_tab_contents,
+                                                   base::NullCallback());
+  const SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_tab_contents);
+
+  tabs::MockTabInterface mock_active_tab;
+  ON_CALL(mock_active_tab, GetContents())
+      .WillByDefault(testing::Return(active_tab_contents));
+  ON_CALL(mock_tab_list, GetActiveTab())
+      .WillByDefault(testing::Return(&mock_active_tab));
+
+  webui::SetBrowserWindowInterface(web_contents_, &mock_browser_window);
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  lens::LensOverlayRequestId submitted_req;
+  submitted_req.set_context_id(303);
+  mock_handle->SetPersistedTabs(
+      {{active_tab_id, {base::UnguessableToken::Create(), submitted_req}}});
+
+  lens::ClientToSearchMessage response_message;
+  user_data->AppendTabContextsToOnSubmitQueryResponseForTesting(
+      &response_message, mock_handle, std::nullopt);
+
+  const auto& submit_response = response_message.on_submit_query_response();
+  EXPECT_EQ(submit_response.added_contexts_size(), 0);
+  ASSERT_EQ(submit_response.context_turn_metadata_size(), 1);
+  EXPECT_EQ(submit_response.context_turn_metadata(0).context_id(), 303);
+  EXPECT_TRUE(
+      submit_response.context_turn_metadata(0).tab_metadata().is_active_tab());
+
+  webui::SetBrowserWindowInterface(web_contents_, nullptr);
+}
+
+TEST_F(
+    ContextualTasksWebContentsUserDataTest,
+    AppendTabContextsToOnSubmitQueryResponse_OmitsContextTurnMetadataWhenActiveTabNotAttached) {
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, search_session_id())
+      .WillByDefault(testing::Return("test_session"));
+
+  ui::UnownedUserDataHost unowned_user_data_host;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+  testing::NiceMock<MockTabListInterface> mock_tab_list;
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      unowned_user_data_host, mock_tab_list);
+
+  content::WebContents* active_tab_contents =
+      web_contents_factory_->CreateWebContents(profile_.get());
+  sessions::SessionTabHelper::CreateForWebContents(active_tab_contents,
+                                                   base::NullCallback());
+
+  content::WebContents* background_tab_contents =
+      web_contents_factory_->CreateWebContents(profile_.get());
+  sessions::SessionTabHelper::CreateForWebContents(background_tab_contents,
+                                                   base::NullCallback());
+  const SessionID background_tab_id =
+      sessions::SessionTabHelper::IdForTab(background_tab_contents);
+
+  tabs::MockTabInterface mock_active_tab;
+  ON_CALL(mock_active_tab, GetContents())
+      .WillByDefault(testing::Return(active_tab_contents));
+  ON_CALL(mock_tab_list, GetActiveTab())
+      .WillByDefault(testing::Return(&mock_active_tab));
+
+  webui::SetBrowserWindowInterface(web_contents_, &mock_browser_window);
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  base::UnguessableToken background_token = base::UnguessableToken::Create();
+  mock_handle->GetUploadedContextTokensForTesting() = {background_token};
+  mock_handle->AttachTabPendingUpload(background_token, background_tab_id.id(),
+                                      GURL("https://example.com/background"),
+                                      "Background Tab");
+
+  contextual_search::FileInfo background_file;
+  background_file.file_token = background_token;
+  background_file.tab_session_id = background_tab_id;
+  background_file.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  lens::LensOverlayRequestId background_req;
+  background_req.set_context_id(202);
+  background_file.request_id = background_req;
+
+  std::vector<contextual_search::FileInfo> uploaded_files = {background_file};
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(testing::ReturnPointee(&uploaded_files));
+
+  lens::ClientToSearchMessage response_message;
+  user_data->AppendTabContextsToOnSubmitQueryResponseForTesting(
+      &response_message, mock_handle, std::nullopt);
+
+  const auto& submit_response = response_message.on_submit_query_response();
+  EXPECT_EQ(submit_response.added_contexts_size(), 1);
+  EXPECT_EQ(submit_response.context_turn_metadata_size(), 0);
+
+  webui::SetBrowserWindowInterface(web_contents_, nullptr);
+}
 #endif
 
 TEST_F(ContextualTasksWebContentsUserDataTest,
