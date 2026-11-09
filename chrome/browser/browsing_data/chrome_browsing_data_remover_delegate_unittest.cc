@@ -30,7 +30,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1248,17 +1247,6 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
                                          const base::Time& delete_end,
                                          uint64_t remove_mask,
                                          bool include_protected_origins) {
-#if BUILDFLAG(IS_ANDROID)
-    // There's an Android specific race condition for x86 and x64 builds where
-    // data-clearing and the mocked services here fail to initialize bookmarks
-    // in time, which are required for history clearing.
-    // TODO(crbug.com/435317726): Revisit after launch.
-    if (remove_mask & constants::DATA_TYPE_HISTORY) {
-      bookmarks::test::WaitForBookmarkModelToLoad(
-          BookmarkModelFactory::GetForBrowserContext(GetProfile()));
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
-
     uint64_t origin_type_mask =
         content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
     if (include_protected_origins) {
@@ -1270,8 +1258,8 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
         remover_);
     remover_->RemoveAndReply(delete_begin, delete_end, remove_mask,
                              origin_type_mask, &completion_observer);
-    base::ThreadPoolInstance::Get()->FlushForTesting();
     completion_observer.BlockUntilCompletion();
+    task_environment_.RunUntilIdle();
     return completion_observer.failed_data_types();
   }
 
@@ -1301,8 +1289,8 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
         delete_begin, delete_end, remove_mask,
         content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
         std::move(filter_builder), &completion_observer);
-    base::ThreadPoolInstance::Get()->FlushForTesting();
     completion_observer.BlockUntilCompletion();
+    task_environment_.RunUntilIdle();
     return completion_observer.failed_data_types();
   }
 
