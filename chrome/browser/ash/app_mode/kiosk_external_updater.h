@@ -13,8 +13,9 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/ash/app_mode/kiosk_external_update_validator.h"
+#include "base/values.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "extensions/browser/crx_file_info.h"
 
 namespace ash {
 
@@ -22,8 +23,7 @@ class KioskExternalUpdateNotification;
 
 // Observes the disk mount/unmount events, scans the usb stick for external
 // kiosk app updates, validates the external crx, and updates the cache.
-class KioskExternalUpdater : public disks::DiskMountManager::Observer,
-                             public KioskExternalUpdateValidatorDelegate {
+class KioskExternalUpdater : public disks::DiskMountManager::Observer {
  public:
   enum class ErrorCode {
     kNone,
@@ -38,6 +38,20 @@ class KioskExternalUpdater : public disks::DiskMountManager::Observer,
   KioskExternalUpdater(const KioskExternalUpdater&) = delete;
   KioskExternalUpdater& operator=(const KioskExternalUpdater&) = delete;
   ~KioskExternalUpdater() override;
+
+  // These methods handle the result of copying and unpacking an external CRX
+  // update file: installing the validated extension into the cache on success
+  // (if eligible for update), or recording the failure error, and advancing to
+  // the next pending update.
+  // Called by KioskExternalUpdateValidator:
+  void OnExternalUpdateUnpackSuccess(const std::string& app_id,
+                                     const std::string& version,
+                                     const std::string& min_browser_version,
+                                     const base::FilePath& temp_dir,
+                                     const base::FilePath& validated_crx_path);
+  void OnExternalUpdateUnpackFailure(const std::string& app_id);
+  void OnExternalUpdateCopyFailure(const std::string& app_id,
+                                   const base::FilePath& crx_file_path);
 
  private:
   enum class UpdateStatus {
@@ -61,18 +75,6 @@ class KioskExternalUpdater : public disks::DiskMountManager::Observer,
       disks::DiskMountManager::MountEvent event,
       MountError error_code,
       const disks::DiskMountManager::MountPoint& mount_info) override;
-
-  // KioskExternalUpdateValidatorDelegate overrides:
-  void OnExternalUpdateUnpackSuccess(
-      const std::string& app_id,
-      const std::string& version,
-      const std::string& min_browser_version,
-      const base::FilePath& temp_dir,
-      const base::FilePath& validated_crx_path) override;
-  void OnExternalUpdateUnpackFailure(const std::string& app_id) override;
-  void OnExternalUpdateCopyFailure(
-      const std::string& app_id,
-      const base::FilePath& crx_file_path) override;
 
   // Processes the parsed external update manifest, check the ErrorCode in
   // `result` for any manifest parsing error.

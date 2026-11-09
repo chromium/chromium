@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_external_update_validator.h"
 
+#include <string>
+#include <utility>
+
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ash/app_mode/kiosk_external_updater.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/extension.h"
@@ -19,12 +23,12 @@ KioskExternalUpdateValidator::KioskExternalUpdateValidator(
     const scoped_refptr<base::SequencedTaskRunner>& backend_task_runner,
     const extensions::CRXFileInfo& file,
     const base::FilePath& crx_unpack_dir,
-    const base::WeakPtr<KioskExternalUpdateValidatorDelegate>& delegate)
+    base::WeakPtr<KioskExternalUpdater> updater)
     : backend_task_runner_(backend_task_runner),
       crx_file_(file),
       crx_unpack_dir_(crx_unpack_dir),
       crx_copy_path_(crx_unpack_dir.Append(crx_file_.path.BaseName())),
-      delegate_(delegate) {}
+      updater_(std::move(updater)) {}
 
 KioskExternalUpdateValidator::~KioskExternalUpdateValidator() = default;
 
@@ -33,9 +37,8 @@ void KioskExternalUpdateValidator::StartCopyAndValidationOnBackendThread() {
     LOG(ERROR) << "Failed to copy CRX from " << crx_file_.path.value();
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &KioskExternalUpdateValidatorDelegate::OnExternalUpdateCopyFailure,
-            delegate_, crx_file_.extension_id, crx_file_.path));
+        base::BindOnce(&KioskExternalUpdater::OnExternalUpdateCopyFailure,
+                       updater_, crx_file_.extension_id, crx_file_.path));
 
     return;
   }
@@ -66,9 +69,8 @@ void KioskExternalUpdateValidator::OnUnpackFailure(
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &KioskExternalUpdateValidatorDelegate::OnExternalUpdateUnpackFailure,
-          delegate_, crx_file_.extension_id));
+      base::BindOnce(&KioskExternalUpdater::OnExternalUpdateUnpackFailure,
+                     updater_, crx_file_.extension_id));
 }
 
 void KioskExternalUpdateValidator::OnUnpackSuccess(
@@ -91,10 +93,10 @@ void KioskExternalUpdateValidator::OnUnpackSuccess(
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &KioskExternalUpdateValidatorDelegate::OnExternalUpdateUnpackSuccess,
-          delegate_, crx_file_.extension_id, extension->VersionString(),
-          minimum_browser_version, temp_dir, crx_copy_path_));
+      base::BindOnce(&KioskExternalUpdater::OnExternalUpdateUnpackSuccess,
+                     updater_, crx_file_.extension_id,
+                     extension->VersionString(), minimum_browser_version,
+                     temp_dir, crx_copy_path_));
 }
 
 }  // namespace ash

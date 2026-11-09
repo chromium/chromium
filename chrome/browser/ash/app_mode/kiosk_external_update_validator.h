@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_EXTERNAL_UPDATE_VALIDATOR_H_
 
 #include <memory>
-#include <string>
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
@@ -20,24 +19,7 @@ class Extension;
 
 namespace ash {
 
-// Delegate class for KioskExternalUpdateValidator, derived class must support
-// WeakPtr.
-class KioskExternalUpdateValidatorDelegate {
- public:
-  virtual void OnExternalUpdateUnpackSuccess(
-      const std::string& app_id,
-      const std::string& version,
-      const std::string& min_browser_version,
-      const base::FilePath& temp_dir,
-      const base::FilePath& validated_crx_path) = 0;
-  virtual void OnExternalUpdateUnpackFailure(const std::string& app_id) = 0;
-  virtual void OnExternalUpdateCopyFailure(
-      const std::string& app_id,
-      const base::FilePath& crx_file_path) = 0;
-
- protected:
-  virtual ~KioskExternalUpdateValidatorDelegate() = default;
-};
+class KioskExternalUpdater;
 
 // Unpacks the crx file of the kiosk app and validates its signature.
 class KioskExternalUpdateValidator
@@ -47,7 +29,7 @@ class KioskExternalUpdateValidator
       const scoped_refptr<base::SequencedTaskRunner>& backend_task_runner,
       const extensions::CRXFileInfo& file,
       const base::FilePath& crx_unpack_dir,
-      const base::WeakPtr<KioskExternalUpdateValidatorDelegate>& delegate);
+      base::WeakPtr<KioskExternalUpdater> updater);
   KioskExternalUpdateValidator(const KioskExternalUpdateValidator&) = delete;
   KioskExternalUpdateValidator& operator=(const KioskExternalUpdateValidator&) =
       delete;
@@ -81,7 +63,7 @@ class KioskExternalUpdateValidator
   // The path to copy the crx file to before unpacking.
   const base::FilePath crx_copy_path_;
 
-  base::WeakPtr<KioskExternalUpdateValidatorDelegate> delegate_;
+  base::WeakPtr<KioskExternalUpdater> updater_;
 };
 
 }  // namespace ash
