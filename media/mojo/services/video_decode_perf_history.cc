@@ -104,7 +104,9 @@ void VideoDecodePerfHistory::InitDatabase() {
 void VideoDecodePerfHistory::OnDatabaseInit(bool success) {
   DVLOG(2) << __func__ << " " << success;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(db_init_status_, PENDING, base::NotFatalUntil::M163);
+  // TODO(crbug.com/582944090): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(db_init_status_, PENDING);
 
   db_init_status_ = success ? COMPLETE : FAILED;
 
