@@ -5,6 +5,7 @@
 #include "components/private_verification_tokens/common/private_verification_tokens_database.h"
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -30,7 +31,7 @@
 namespace {
 
 // Version number of the database.
-const int kCurrentVersionNumber = 5;
+const int kCurrentVersionNumber = 6;
 
 static constexpr char kDatabaseTag[] = "PrivateVerificationTokens";
 
@@ -43,23 +44,29 @@ static constexpr char kCreateTokensTableSql[] =
       "expiration INTEGER NOT NULL,"
       "token BLOB NOT NULL,"
       "version INTEGER NOT NULL,"
-      "creation_time INTEGER NOT NULL)";
+      "creation_time INTEGER NOT NULL,"
+      "is_proxied INTEGER NOT NULL)";
 
 static constexpr char kInsertTokenSql[] =
   "INSERT INTO tokens("
-      "issuer,key_id,expiration,token,version,creation_time) "
-      "VALUES(?,?,?,?,?,?)";
+      "issuer,key_id,expiration,token,version,creation_time,is_proxied) "
+      "VALUES(?,?,?,?,?,?,?)";
+
+static constexpr char kDeleteProxiedTokensForIssuerSql[] =
+    "DELETE FROM tokens WHERE issuer = ? AND is_proxied != 0";
 
 static constexpr char kGetTokenSql[] =
-    "SELECT id,issuer,key_id,expiration,token,version,creation_time "
-    "FROM tokens WHERE issuer = ?";
+    "SELECT id,issuer,key_id,expiration,token,version,creation_time,is_proxied "
+    "FROM tokens WHERE issuer = ? ORDER BY is_proxied ASC, id ASC LIMIT 1";
 
 static constexpr char kGetAllStoredTokensSql[] =
-    "SELECT id,issuer,key_id,expiration,token,version,creation_time "
+    "SELECT id,issuer,key_id,expiration,token,version,creation_time,is_proxied "
     "FROM tokens ORDER BY issuer, id";
 
 static constexpr char kGetTokensFromEachSql[] =
-    "SELECT id,issuer,key_id,expiration,token,version,creation_time,COUNT(*) "
+    "SELECT id,issuer,key_id,expiration,token,version,creation_time,"
+    "MIN(is_proxied),COUNT(*),"
+    "SUM(CASE WHEN is_proxied = 0 THEN 1 ELSE 0 END) "
     "FROM tokens "
     "GROUP BY issuer";
 
@@ -83,12 +90,14 @@ private_verification_tokens::TokenWithId ReadTokenFromStatement(
       statement.ColumnBlobAsVector(4);
   uint32_t version = static_cast<uint32_t>(statement.ColumnInt64(5));
   int64_t creation_time = statement.ColumnInt64(6);
+  bool is_proxied = statement.ColumnInt(7) != 0;
 
   return private_verification_tokens::TokenWithId{
-      id, private_verification_tokens::PrivateVerificationTokensToken(
-              std::move(issuer), std::move(token), key_id,
-              base::Time::UnixEpoch() + base::Seconds(expiration), version,
-              base::Time::UnixEpoch() + base::Seconds(creation_time))};
+      id,
+      private_verification_tokens::PrivateVerificationTokensToken(
+          std::move(issuer), std::move(token), key_id,
+          base::Time::UnixEpoch() + base::Seconds(expiration), version,
+          base::Time::UnixEpoch() + base::Seconds(creation_time), is_proxied)};
 }
 
 }  // namespace
@@ -105,8 +114,11 @@ TokenWithId::~TokenWithId() = default;
 
 TokensAndCounts::TokensAndCounts() = default;
 TokensAndCounts::TokensAndCounts(std::map<url::Origin, TokenWithId> tokens,
-                                 std::map<url::Origin, size_t> counts)
-    : tokens(std::move(tokens)), counts(std::move(counts)) {}
+                                 std::map<url::Origin, size_t> counts,
+                                 std::map<url::Origin, size_t> unproxied_counts)
+    : tokens(std::move(tokens)),
+      counts(std::move(counts)),
+      unproxied_counts(std::move(unproxied_counts)) {}
 TokensAndCounts::TokensAndCounts(const TokensAndCounts&) = default;
 TokensAndCounts& TokensAndCounts::operator=(const TokensAndCounts&) = default;
 TokensAndCounts::TokensAndCounts(TokensAndCounts&&) = default;
@@ -174,6 +186,25 @@ bool PrivateVerificationTokensDatabase::StoreTokens(
     return false;
   }
 
+  std::set<url::Origin> unproxied_issuers;
+  for (const auto& token : tokens) {
+    if (!token.is_proxied()) {
+      unproxied_issuers.insert(token.issuer());
+    }
+  }
+  if (!unproxied_issuers.empty()) {
+    sql::Statement delete_statement(database_->GetCachedStatement(
+        SQL_FROM_HERE, kDeleteProxiedTokensForIssuerSql));
+    DCHECK(delete_statement.is_valid());
+    for (const url::Origin& issuer : unproxied_issuers) {
+      delete_statement.Reset(true);
+      delete_statement.BindString(0, issuer.Serialize());
+      if (!delete_statement.Run()) {
+        return false;
+      }
+    }
+  }
+
   sql::Statement statement(
       database_->GetCachedStatement(SQL_FROM_HERE, kInsertTokenSql));
   DCHECK(statement.is_valid());
@@ -187,6 +218,7 @@ bool PrivateVerificationTokensDatabase::StoreTokens(
     statement.BindInt64(4, token.version());
     statement.BindInt64(
         5, (token.creation_time() - base::Time::UnixEpoch()).InSeconds());
+    statement.BindInt(6, token.is_proxied() ? 1 : 0);
     if (!statement.Run()) {
       return false;
     }
@@ -245,17 +277,22 @@ TokensAndCounts PrivateVerificationTokensDatabase::GetTokensFromEach() {
 
   std::map<url::Origin, TokenWithId> tokens;
   std::map<url::Origin, size_t> counts;
+  std::map<url::Origin, size_t> unproxied_counts;
   while (statement.Step()) {
     TokenWithId token_with_id = ReadTokenFromStatement(statement);
     url::Origin issuer = token_with_id.token.issuer();
-    int64_t count = statement.ColumnInt64(7);
+    int64_t count = statement.ColumnInt64(8);
+    int64_t unproxied_count = statement.ColumnInt64(9);
     tokens.try_emplace(issuer, std::move(token_with_id));
-    counts.emplace(std::move(issuer), static_cast<size_t>(count));
+    counts.emplace(issuer, static_cast<size_t>(count));
+    unproxied_counts.emplace(std::move(issuer),
+                             static_cast<size_t>(unproxied_count));
   }
   if (!statement.Succeeded()) {
     return {};
   }
-  return TokensAndCounts(std::move(tokens), std::move(counts));
+  return TokensAndCounts(std::move(tokens), std::move(counts),
+                         std::move(unproxied_counts));
 }
 
 bool PrivateVerificationTokensDatabase::DeleteTokens(

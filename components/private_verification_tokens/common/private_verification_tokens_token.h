@@ -23,7 +23,8 @@ class PrivateVerificationTokensToken {
                                  uint32_t key_id,
                                  base::Time expiration,
                                  uint32_t version,
-                                 base::Time creation_time = base::Time::Now());
+                                 base::Time creation_time = base::Time::Now(),
+                                 bool is_proxied = false);
   PrivateVerificationTokensToken(const PrivateVerificationTokensToken&);
   PrivateVerificationTokensToken& operator=(
       const PrivateVerificationTokensToken&);
@@ -56,6 +57,8 @@ class PrivateVerificationTokensToken {
   uint32_t version() const;
   // Creation time of the token.
   base::Time creation_time() const;
+  // Whether this token was obtained via the proxy server.
+  bool is_proxied() const;
 
   bool operator==(const PrivateVerificationTokensToken&) const = default;
 
@@ -66,6 +69,7 @@ class PrivateVerificationTokensToken {
   base::Time expiration_;
   uint32_t version_;
   base::Time creation_time_;
+  bool is_proxied_ = false;
 };
 
 }  // namespace private_verification_tokens

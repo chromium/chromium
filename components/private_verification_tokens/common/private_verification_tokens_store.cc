@@ -53,6 +53,7 @@ void PrivateVerificationTokensStore::CacheTokens(
     TokensAndCounts tokens_and_counts) {
   tokens_ = std::move(tokens_and_counts.tokens);
   token_counts_ = std::move(tokens_and_counts.counts);
+  unproxied_token_counts_ = std::move(tokens_and_counts.unproxied_counts);
 }
 
 void PrivateVerificationTokensStore::InitializeCache(
@@ -94,6 +95,7 @@ void PrivateVerificationTokensStore::DeleteAllTokens() {
                base::DoNothing());
   tokens_.clear();
   token_counts_.clear();
+  unproxied_token_counts_.clear();
 }
 
 void PrivateVerificationTokensStore::DeleteTokens(
@@ -180,6 +182,15 @@ size_t PrivateVerificationTokensStore::TokenCountForIssuer(
     const url::Origin& issuer) const {
   auto it = token_counts_.find(issuer);
   if (it == token_counts_.end()) {
+    return 0;
+  }
+  return it->second;
+}
+
+size_t PrivateVerificationTokensStore::UnproxiedTokenCountForIssuer(
+    const url::Origin& issuer) const {
+  auto it = unproxied_token_counts_.find(issuer);
+  if (it == unproxied_token_counts_.end()) {
     return 0;
   }
   return it->second;

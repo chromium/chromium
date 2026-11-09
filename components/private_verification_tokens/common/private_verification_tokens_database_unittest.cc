@@ -82,7 +82,7 @@ class PrivateVerificationTokensDatabaseTest : public testing::Test {
   std::vector<PrivateVerificationTokensToken> GetAllTokens(sql::Database& db) {
     sql::Statement statement(db.GetUniqueStatement(
         "SELECT issuer, token, key_id, "
-        "expiration, version, creation_time FROM tokens"));
+        "expiration, version, creation_time, is_proxied FROM tokens"));
     std::vector<PrivateVerificationTokensToken> tokens;
     while (statement.Step()) {
       std::string issuer_str = statement.ColumnString(0);
@@ -91,10 +91,11 @@ class PrivateVerificationTokensDatabaseTest : public testing::Test {
       int64_t expiration = statement.ColumnInt64(3);
       uint32_t version = statement.ColumnInt64(4);
       int64_t creation_time = statement.ColumnInt64(5);
+      bool is_proxied = statement.ColumnInt(6) != 0;
       tokens.emplace_back(
           url::Origin::Create(GURL(issuer_str)), std::move(token), key_id,
           base::Time::UnixEpoch() + base::Seconds(expiration), version,
-          base::Time::UnixEpoch() + base::Seconds(creation_time));
+          base::Time::UnixEpoch() + base::Seconds(creation_time), is_proxied);
     }
     return tokens;
   }
@@ -216,9 +217,9 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
 
   // meta and tokens tables
   EXPECT_EQ(2u, sql::test::CountSQLTables(&database));
-  EXPECT_EQ(5, VersionFromMetaTable(database));
+  EXPECT_EQ(6, VersionFromMetaTable(database));
 
-  EXPECT_EQ(7u, sql::test::CountTableColumns(&database, kTokenTableName));
+  EXPECT_EQ(8u, sql::test::CountTableColumns(&database, kTokenTableName));
   VerifyTableRowCount(database, kTokenTableName, 0u);
 }
 
@@ -245,8 +246,8 @@ TEST_F(PrivateVerificationTokensDatabaseTest, StoreTokens_SingleToken_Success) {
 
   // meta and tokens tables
   EXPECT_EQ(2u, sql::test::CountSQLTables(&database));
-  EXPECT_EQ(5, VersionFromMetaTable(database));
-  EXPECT_EQ(7u, sql::test::CountTableColumns(&database, kTokenTableName));
+  EXPECT_EQ(6, VersionFromMetaTable(database));
+  EXPECT_EQ(8u, sql::test::CountTableColumns(&database, kTokenTableName));
   VerifyTableRowCount(database, kTokenTableName, 1);
 }
 
@@ -274,7 +275,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   EXPECT_TRUE(base::PathExists(db_path_));
   sql::Database database(sql::test::kTestTag);
   EXPECT_TRUE(database.Open(db_path_));
-  EXPECT_EQ(7u, sql::test::CountTableColumns(&database, kTokenTableName));
+  EXPECT_EQ(8u, sql::test::CountTableColumns(&database, kTokenTableName));
   std::vector<PrivateVerificationTokensToken> got_tokens =
       GetAllTokens(database);
   EXPECT_THAT(got_tokens, testing::UnorderedElementsAreArray(tokens_to_store));
@@ -350,7 +351,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest, DeleteToken_ValidId_Success) {
 
   sql::Database database(sql::test::kTestTag);
   EXPECT_TRUE(database.Open(db_path_));
-  EXPECT_EQ(7u, sql::test::CountTableColumns(&database, kTokenTableName));
+  EXPECT_EQ(8u, sql::test::CountTableColumns(&database, kTokenTableName));
   VerifyTableRowCount(database, kTokenTableName, 3u);
   database.Close();
 }
@@ -412,7 +413,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   // database has one token.
   sql::Database database(sql::test::kTestTag);
   EXPECT_TRUE(database.Open(db_path_));
-  EXPECT_EQ(7u, sql::test::CountTableColumns(&database, kTokenTableName));
+  EXPECT_EQ(8u, sql::test::CountTableColumns(&database, kTokenTableName));
   VerifyTableRowCount(database, kTokenTableName, 1u);
 }
 
@@ -469,7 +470,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path_));
     sql::MetaTable meta_table;
-    ASSERT_TRUE(meta_table.Init(&db, 6, 6));
+    ASSERT_TRUE(meta_table.Init(&db, 7, 7));
   }
 
   CreateDatabase(db_path_);
@@ -487,7 +488,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
 
   sql::Database database(sql::test::kTestTag);
   EXPECT_TRUE(database.Open(db_path_));
-  EXPECT_EQ(7u, sql::test::CountTableColumns(&database, kTokenTableName));
+  EXPECT_EQ(8u, sql::test::CountTableColumns(&database, kTokenTableName));
   VerifyTableRowCount(database, kTokenTableName, 1u);
 }
 
@@ -848,6 +849,117 @@ TEST_F(PrivateVerificationTokensDatabaseTest, GetAllTokens) {
   EXPECT_EQ(all_tokens[1].token.token(), (SerializedToken{4, 5, 6}));
   EXPECT_EQ(all_tokens[2].token.issuer(), kOriginB);
   EXPECT_EQ(all_tokens[2].token.token(), (SerializedToken{7, 8, 9}));
+}
+
+TEST_F(PrivateVerificationTokensDatabaseTest,
+       StoreAndGetProxiedTokens_PreservesIsProxied) {
+  CreateDatabase(db_path_);
+  uint32_t key_id = 1;
+  const base::Time expiration = base::Time::UnixEpoch() + base::Seconds(100);
+  uint32_t version = 1;
+  base::Time creation_time = base::Time::UnixEpoch() + base::Seconds(10);
+
+  PrivateVerificationTokensToken proxied_token(
+      kOriginA, {1, 2, 3}, key_id, expiration, version, creation_time,
+      /*is_proxied=*/true);
+  PrivateVerificationTokensToken unproxied_token(
+      kOriginB, {4, 5, 6}, key_id, expiration, version, creation_time,
+      /*is_proxied=*/false);
+
+  EXPECT_TRUE(pvt_database_->StoreTokens({proxied_token, unproxied_token}));
+
+  auto token_a = pvt_database_->GetToken(kOriginA);
+  ASSERT_TRUE(token_a.has_value());
+  EXPECT_TRUE(token_a->token.is_proxied());
+  EXPECT_EQ(token_a->token, proxied_token);
+
+  auto token_b = pvt_database_->GetToken(kOriginB);
+  ASSERT_TRUE(token_b.has_value());
+  EXPECT_FALSE(token_b->token.is_proxied());
+  EXPECT_EQ(token_b->token, unproxied_token);
+
+  std::vector<TokenWithId> all_tokens = pvt_database_->GetAllTokens();
+  ASSERT_EQ(all_tokens.size(), 2u);
+  EXPECT_TRUE(all_tokens[0].token.is_proxied());
+  EXPECT_FALSE(all_tokens[1].token.is_proxied());
+}
+
+TEST_F(PrivateVerificationTokensDatabaseTest,
+       GetTokensFromEach_ProxiedAndUnproxiedCounts) {
+  CreateDatabase(db_path_);
+  uint32_t key_id = 1;
+  const base::Time expiration = base::Time::UnixEpoch() + base::Seconds(100);
+  uint32_t version = 1;
+  base::Time creation_time = base::Time::UnixEpoch() + base::Seconds(10);
+
+  // Store 2 proxied tokens for kOriginA and 3 unproxied tokens for kOriginB.
+  std::vector<PrivateVerificationTokensToken> tokens = {
+      PrivateVerificationTokensToken(kOriginA, {1, 2}, key_id, expiration,
+                                     version, creation_time,
+                                     /*is_proxied=*/true),
+      PrivateVerificationTokensToken(kOriginA, {3, 4}, key_id, expiration,
+                                     version, creation_time,
+                                     /*is_proxied=*/true),
+      PrivateVerificationTokensToken(kOriginB, {5, 6}, key_id, expiration,
+                                     version, creation_time,
+                                     /*is_proxied=*/false),
+      PrivateVerificationTokensToken(kOriginB, {7, 8}, key_id, expiration,
+                                     version, creation_time,
+                                     /*is_proxied=*/false),
+      PrivateVerificationTokensToken(kOriginB, {9, 10}, key_id, expiration,
+                                     version, creation_time,
+                                     /*is_proxied=*/false),
+  };
+  EXPECT_TRUE(pvt_database_->StoreTokens(tokens));
+
+  TokensAndCounts result = pvt_database_->GetTokensFromEach();
+  EXPECT_EQ(result.tokens.size(), 2u);
+  EXPECT_EQ(result.counts.at(kOriginA), 2u);
+  EXPECT_EQ(result.unproxied_counts.at(kOriginA), 0u);
+  EXPECT_TRUE(result.tokens.at(kOriginA).token.is_proxied());
+
+  EXPECT_EQ(result.counts.at(kOriginB), 3u);
+  EXPECT_EQ(result.unproxied_counts.at(kOriginB), 3u);
+  EXPECT_FALSE(result.tokens.at(kOriginB).token.is_proxied());
+}
+
+TEST_F(PrivateVerificationTokensDatabaseTest,
+       StoreUnproxiedTokens_PurgesProxiedTokensForSameIssuer) {
+  CreateDatabase(db_path_);
+  uint32_t key_id = 1;
+  const base::Time expiration = base::Time::UnixEpoch() + base::Seconds(100);
+  uint32_t version = 1;
+  base::Time creation_time = base::Time::UnixEpoch() + base::Seconds(10);
+
+  // Store proxied tokens for both kOriginA and kOriginB.
+  std::vector<PrivateVerificationTokensToken> proxied_tokens = {
+      PrivateVerificationTokensToken(kOriginA, {1, 2}, key_id, expiration,
+                                     version, creation_time,
+                                     /*is_proxied=*/true),
+      PrivateVerificationTokensToken(kOriginA, {3, 4}, key_id, expiration,
+                                     version, creation_time,
+                                     /*is_proxied=*/true),
+      PrivateVerificationTokensToken(kOriginB, {5, 6}, key_id, expiration,
+                                     version, creation_time,
+                                     /*is_proxied=*/true),
+  };
+  EXPECT_TRUE(pvt_database_->StoreTokens(proxied_tokens));
+
+  // Now store unproxied tokens for kOriginA. This should purge the proxied
+  // tokens for kOriginA while leaving kOriginB's proxied token intact.
+  PrivateVerificationTokensToken unproxied_a(kOriginA, {9, 9}, key_id,
+                                             expiration, version, creation_time,
+                                             /*is_proxied=*/false);
+  EXPECT_TRUE(pvt_database_->StoreTokens({unproxied_a}));
+
+  TokensAndCounts result = pvt_database_->GetTokensFromEach();
+  EXPECT_EQ(result.counts.at(kOriginA), 1u);
+  EXPECT_EQ(result.unproxied_counts.at(kOriginA), 1u);
+  EXPECT_EQ(result.tokens.at(kOriginA).token, unproxied_a);
+
+  EXPECT_EQ(result.counts.at(kOriginB), 1u);
+  EXPECT_EQ(result.unproxied_counts.at(kOriginB), 0u);
+  EXPECT_TRUE(result.tokens.at(kOriginB).token.is_proxied());
 }
 
 }  // namespace

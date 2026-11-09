@@ -20,7 +20,8 @@ PrivateVerificationTokensToken::PrivateVerificationTokensToken(
     uint32_t key_id,
     base::Time expiration,
     uint32_t version,
-    base::Time creation_time)
+    base::Time creation_time,
+    bool is_proxied)
     : issuer_(std::move(issuer)),
       token_(std::move(token)),
       key_id_(key_id),
@@ -28,8 +29,8 @@ PrivateVerificationTokensToken::PrivateVerificationTokensToken(
       version_(version),
       creation_time_(
           base::Time::UnixEpoch() +
-          base::Seconds(
-              (creation_time - base::Time::UnixEpoch()).InSeconds())) {
+          base::Seconds((creation_time - base::Time::UnixEpoch()).InSeconds())),
+      is_proxied_(is_proxied) {
   CHECK(!issuer_.opaque());
 }
 
@@ -69,6 +70,10 @@ uint32_t PrivateVerificationTokensToken::version() const {
 
 base::Time PrivateVerificationTokensToken::creation_time() const {
   return creation_time_;
+}
+
+bool PrivateVerificationTokensToken::is_proxied() const {
+  return is_proxied_;
 }
 
 }  // namespace private_verification_tokens

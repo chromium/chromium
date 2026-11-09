@@ -643,6 +643,56 @@ TEST_F(PrivateVerificationTokensStoreTest, TokenCountForIssuer_AfterDelete) {
   EXPECT_EQ(store()->TokenCountForIssuer(kOriginA), 0u);
 }
 
+TEST_F(PrivateVerificationTokensStoreTest,
+       UnproxiedTokenCountForIssuer_ProxiedAndUnproxied) {
+  const base::FilePath database_path = DbPath(TempDir());
+  CreateStore(database_path);
+
+  const auto expiration = base::Time::Now() + base::Hours(2);
+  const auto creation_time = base::Time::Now();
+  std::vector<PrivateVerificationTokensToken> proxied_tokens = {
+      PrivateVerificationTokensToken(kOriginA, {1, 2}, 1, expiration, 1,
+                                     creation_time, /*is_proxied=*/true),
+      PrivateVerificationTokensToken(kOriginA, {3, 4}, 1, expiration, 1,
+                                     creation_time, /*is_proxied=*/true),
+  };
+
+  base::test::TestFuture<void> store_proxied_future;
+  store()->StoreTokens(std::move(proxied_tokens),
+                       store_proxied_future.GetCallback());
+  EXPECT_TRUE(store_proxied_future.Wait());
+
+  EXPECT_EQ(store()->TokenCountForIssuer(kOriginA), 2u);
+  EXPECT_EQ(store()->UnproxiedTokenCountForIssuer(kOriginA), 0u);
+  EXPECT_TRUE(store()->tokens().at(kOriginA).token.is_proxied());
+
+  // Now store 3 unproxied tokens for kOriginA. This replaces the proxied
+  // tokens.
+  std::vector<PrivateVerificationTokensToken> unproxied_tokens = {
+      PrivateVerificationTokensToken(kOriginA, {5, 6}, 1, expiration, 1,
+                                     creation_time, /*is_proxied=*/false),
+      PrivateVerificationTokensToken(kOriginA, {7, 8}, 1, expiration, 1,
+                                     creation_time, /*is_proxied=*/false),
+      PrivateVerificationTokensToken(kOriginA, {9, 10}, 1, expiration, 1,
+                                     creation_time, /*is_proxied=*/false),
+  };
+
+  base::test::TestFuture<void> store_unproxied_future;
+  store()->StoreTokens(std::move(unproxied_tokens),
+                       store_unproxied_future.GetCallback());
+  EXPECT_TRUE(store_unproxied_future.Wait());
+
+  EXPECT_EQ(store()->TokenCountForIssuer(kOriginA), 3u);
+  EXPECT_EQ(store()->UnproxiedTokenCountForIssuer(kOriginA), 3u);
+  EXPECT_FALSE(store()->tokens().at(kOriginA).token.is_proxied());
+
+  // DeleteAllTokens clears both counts.
+  store()->DeleteAllTokens();
+  EXPECT_EQ(store()->TokenCountForIssuer(kOriginA), 0u);
+  EXPECT_EQ(store()->UnproxiedTokenCountForIssuer(kOriginA), 0u);
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+}
+
 }  // namespace
 
 }  // namespace private_verification_tokens

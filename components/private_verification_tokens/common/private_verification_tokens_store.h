@@ -40,6 +40,7 @@ class PrivateVerificationTokensStore {
 
   const std::map<url::Origin, TokenWithId>& tokens() const;
   size_t TokenCountForIssuer(const url::Origin& issuer) const;
+  size_t UnproxiedTokenCountForIssuer(const url::Origin& issuer) const;
   bool is_initialized() const { return initialized_; }
 
   void GetAllTokens(
@@ -78,6 +79,9 @@ class PrivateVerificationTokensStore {
 
   // Holds the count of tokens for each issuer.
   std::map<url::Origin, size_t> token_counts_;
+
+  // Holds the count of unproxied tokens for each issuer.
+  std::map<url::Origin, size_t> unproxied_token_counts_;
 
   bool initialized_ = false;
 

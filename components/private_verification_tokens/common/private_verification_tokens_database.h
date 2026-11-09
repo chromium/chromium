@@ -39,7 +39,8 @@ struct TokenWithId {
 struct TokensAndCounts {
   TokensAndCounts();
   TokensAndCounts(std::map<url::Origin, TokenWithId> tokens,
-                  std::map<url::Origin, size_t> counts);
+                  std::map<url::Origin, size_t> counts,
+                  std::map<url::Origin, size_t> unproxied_counts = {});
   TokensAndCounts(const TokensAndCounts&);
   TokensAndCounts& operator=(const TokensAndCounts&);
   TokensAndCounts(TokensAndCounts&&);
@@ -48,6 +49,7 @@ struct TokensAndCounts {
 
   std::map<url::Origin, TokenWithId> tokens;
   std::map<url::Origin, size_t> counts;
+  std::map<url::Origin, size_t> unproxied_counts;
 };
 
 // Implements PVT database operations. Constructor detaches the object
