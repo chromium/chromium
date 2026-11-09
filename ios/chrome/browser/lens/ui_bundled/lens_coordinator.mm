@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/lens/ui_bundled/lens_coordinator.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -343,6 +345,8 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 #pragma mark - ChromeLensControllerDelegate
 
 - (void)lensControllerDidTapDismissButton {
+  base::RecordAction(
+      base::UserMetricsAction("Mobile.LensViewFinder.DismissTapped"));
   _dismissed = YES;
   self.lensWebPageLoadTriggeredFromInputSelection = NO;
   web::WebState* loadingWebState = self.loadingWebState;
@@ -395,10 +399,13 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 }
 
 - (void)lensControllerDidGenerateImage:(UIImage*)image {
-  // NO-OP.
+  base::RecordAction(
+      base::UserMetricsAction("Mobile.LensOverlay.CameraSearch.Performed"));
 }
 
 - (void)lensControllerDidSelectURL:(NSURL*)url {
+  base::RecordAction(
+      base::UserMetricsAction("Mobile.LensViewFinder.CameraURLOpen"));
   // This method is called when the user selects a URL within the Lens UI
   // and should be treated as a link press.
   web::NavigationManager::WebLoadParams params =
