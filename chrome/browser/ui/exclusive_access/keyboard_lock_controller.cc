@@ -127,8 +127,9 @@ bool KeyboardLockController::IsKeyboardLockActive() const {
 
 void KeyboardLockController::RequestKeyboardLock(WebContents* web_contents,
                                                  bool esc_key_locked) {
-  CHECK(!exclusive_access_tab() || exclusive_access_tab() == web_contents,
-        base::NotFatalUntil::M162);
+  // TODO(crbug.com/579722464): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!exclusive_access_tab() || exclusive_access_tab() == web_contents);
   if (!base::FeatureList::IsEnabled(
           permissions::features::kKeyboardLockPrompt)) {
     LockKeyboard(web_contents->GetWeakPtr(), esc_key_locked);
