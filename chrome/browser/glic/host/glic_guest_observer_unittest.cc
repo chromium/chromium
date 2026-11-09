@@ -11,6 +11,8 @@
 #include "chrome/browser/glic/test_support/fake_web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/browser/visibility.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -185,6 +187,35 @@ TEST_F(GlicGuestObserverTest,
 
   histogram_tester.ExpectTotalCount("Glic.Contents.NavigationCommitTime", 1);
   histogram_tester.ExpectTotalCount("Glic.Contents.LoadCompleteTime", 1);
+}
+
+TEST_F(GlicGuestObserverTest,
+       HiddenWebContentsRemainsHiddenAndUncapturedAcrossNavigations) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ::features::kPopulateUnattachedAuraScreenInfo);
+
+  web_contents()->WasHidden();
+  ASSERT_EQ(web_contents()->GetVisibility(), content::Visibility::HIDDEN);
+  ASSERT_FALSE(web_contents()->IsBeingCaptured());
+
+  FakeWebContentsManager contents_manager;
+  GlicGuestObserver::CreateForWebContents(*web_contents(), contents_manager);
+  EXPECT_EQ(web_contents()->GetVisibility(), content::Visibility::HIDDEN);
+  EXPECT_FALSE(web_contents()->IsBeingCaptured());
+
+  // Cross-document navigation on hidden WebContents.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://gemini.google.com/app"));
+  EXPECT_EQ(web_contents()->GetVisibility(), content::Visibility::HIDDEN);
+  EXPECT_FALSE(web_contents()->IsBeingCaptured());
+
+  // Same-document navigation on hidden WebContents.
+  auto same_doc = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://gemini.google.com/app#hash"), main_rfh());
+  same_doc->CommitSameDocument();
+  EXPECT_EQ(web_contents()->GetVisibility(), content::Visibility::HIDDEN);
+  EXPECT_FALSE(web_contents()->IsBeingCaptured());
 }
 
 }  // namespace

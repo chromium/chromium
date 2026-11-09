@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/glic/host/glic_theme_util.h"
 #include "chrome/browser/glic/host/guest_util.h"
@@ -24,7 +25,9 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
+#include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/size.h"
+#include "url/origin.h"
 
 namespace glic {
 
@@ -41,6 +44,14 @@ enum class WebViewAutoPlayProgress {
 
 BASE_FEATURE(kGlicUpdateHiddenScreenInfo,
              FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID);
+
+bool HasEmptyScreenInfo(content::WebContents* contents) {
+  if (!contents) {
+    return false;
+  }
+  content::RenderWidgetHostView* rwhv = contents->GetRenderWidgetHostView();
+  return rwhv && rwhv->GetScreenInfo().rect.IsEmpty();
+}
 
 }  // namespace
 
@@ -133,11 +144,14 @@ void GlicGuestObserver::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
   MaybeSetBackgroundColor(render_frame_host);
 }
+
 void GlicGuestObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   GrantAutoplayPermissions(navigation_handle);
   MaybeEnableMojoJsBindings(navigation_handle);
-  if (navigation_handle->IsInPrimaryMainFrame()) {
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      navigation_handle->GetRenderFrameHost() ==
+          web_contents()->GetPrimaryMainFrame()) {
     MaybeUpdateTopLevelScreenInfo();
   }
 }
@@ -145,6 +159,15 @@ void GlicGuestObserver::ReadyToCommitNavigation(
 void GlicGuestObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   metrics_.DidFinishNavigation(navigation_handle);
+  // Cross-BrowsingInstance / COOP navigations swap in a speculative
+  // RenderWidgetHostViewAura during CommitPending(), after
+  // ReadyToCommitNavigation() has already run. Update ScreenInfo here as well
+  // so the newly committed view is populated before guest bootstrap runs.
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      navigation_handle->HasCommitted() &&
+      !navigation_handle->IsSameDocument()) {
+    MaybeUpdateTopLevelScreenInfo();
+  }
 }
 
 void GlicGuestObserver::DocumentOnLoadCompletedInPrimaryMainFrame() {
@@ -189,19 +212,23 @@ void GlicGuestObserver::MaybeUpdateTopLevelScreenInfo() {
     return;
   }
   content::WebContents* top =
-      guest_view::GuestViewBase::GetTopLevelWebContents(web_contents());
-  if (top && top->GetVisibility() == content::Visibility::HIDDEN) {
-    // TODO(b/573268718): When kPopulateUnattachedAuraScreenInfo is disabled,
-    // RenderWidgetHostViewAura::InitAsChild leaves screen_infos_ at 0x0 when a
-    // WebContents is created unattached and hidden, causing the guest's
-    // window.screen.height to be 0 during warmup. Pulsing
-    // IncrementCapturerCount(stay_hidden=true) triggers
-    // ShowWithVisibility(kHiddenButPainting) -> UpdateScreenInfo() ->
-    // Hide() while keeping the WebContents hidden.
-    std::ignore = top->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
-                                              /*stay_awake=*/false,
-                                              /*is_activity=*/false);
+      GlicKeyedService::IsNoWebviewEnabled(web_contents()->GetBrowserContext())
+          ? web_contents()
+          : guest_view::GuestViewBase::GetTopLevelWebContents(web_contents());
+  if (!top || top->GetVisibility() != content::Visibility::HIDDEN ||
+      (!HasEmptyScreenInfo(top) && !HasEmptyScreenInfo(web_contents()))) {
+    return;
   }
+  // TODO(b/573268718): When kPopulateUnattachedAuraScreenInfo is disabled,
+  // RenderWidgetHostViewAura::InitAsChild leaves screen_infos_ at 0x0 when a
+  // WebContents is created unattached and hidden (including on post-commit
+  // COOP view swaps), causing the guest's window.screen.height to be 0 during
+  // warmup. Pulsing IncrementCapturerCount(stay_hidden=true) triggers
+  // ShowWithVisibility(kHiddenButPainting) -> UpdateScreenInfo() ->
+  // Hide() while keeping the WebContents hidden.
+  std::ignore = top->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
+                                            /*stay_awake=*/false,
+                                            /*is_activity=*/false);
 }
 
 }  // namespace glic

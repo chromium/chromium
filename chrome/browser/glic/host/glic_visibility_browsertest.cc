@@ -2,20 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/glic/glic_warming_checks.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
@@ -24,13 +29,20 @@
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/test_result.h"
 #include "chrome/browser/glic/widget/glic_floating_ui.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -39,12 +51,51 @@
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
+#include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window.h"
 #endif
 
 namespace glic {
 
 namespace {
+
+constexpr char kCoopGuestPath[] = "/glic/browser_tests/coop_client.html";
+
+std::unique_ptr<net::test_server::HttpResponse> HandleCoopGuestRequest(
+    const net::test_server::HttpRequest& request) {
+  if (request.GetURL().GetPath() != kCoopGuestPath) {
+    return nullptr;
+  }
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content_type("text/html");
+  // Serve with `Cross-Origin-Opener-Policy: same-origin-allow-popups` (matching
+  // production gemini.google.com/glic) so navigating from initial `about:blank`
+  // forces a cross-BrowsingInstance speculative RenderFrameHost and
+  // RenderWidgetHostViewAura swap.
+  response->AddCustomHeader("Cross-Origin-Opener-Policy",
+                            "same-origin-allow-popups");
+  response->set_content(R"html(<!DOCTYPE html>
+<html>
+<head>
+  <link rel="modulepreload" href="./minimal_client.js">
+  <link rel="modulepreload" href="../api_boot.js">
+  <script>
+    window.addEventListener('message', function onBootstrap(event) {
+      if (event.origin === 'chrome://glic' &&
+          event.data?.type === 'glic-bootstrap') {
+        window.removeEventListener('message', onBootstrap);
+        window.screenHeightAtBootstrap = window.screen.height;
+      }
+    });
+  </script>
+</head>
+<body>
+  <script type="module" src="./minimal_client.js"></script>
+</body>
+</html>)html");
+  return response;
+}
 
 // Describes the visibility-relevant state of `instance` for inclusion in a
 // test failure message. The WebContents visibility (VISIBLE vs OCCLUDED vs
@@ -61,7 +112,7 @@ std::string DescribeVisibilityState(GlicInstanceImpl* instance) {
         &out,
         {"client.visibility=",
          base::NumberToString(static_cast<int>(contents->GetVisibility())),
-         "(0=VISIBLE,1=OCCLUDED,2=HIDDEN)"});
+         "(0=HIDDEN,1=OCCLUDED,2=VISIBLE)"});
     if (content::RenderWidgetHostView* rwhv =
             contents->GetRenderWidgetHostView()) {
       base::StrAppend(&out,
@@ -134,14 +185,37 @@ std::string DescribeVisibilityState(GlicInstanceImpl* instance) {
   if (!content::WaitForLoadStop(guest_contents)) {
     return base::unexpected("WaitForLoadStop failed for warmed guest contents");
   }
+  RETURN_IF_ERROR(RunUntilEqual(
+      [&]() {
+        return content::EvalJs(guest_contents,
+                               "typeof window.screenHeightAtBootstrap === "
+                               "'number'")
+            .ExtractBool();
+      },
+      true, "Timed out waiting for guest bootstrap message"));
 
   content::RenderWidgetHostView* rwhv =
       guest_contents->GetRenderWidgetHostView();
   if (!rwhv) {
     return base::unexpected("Warmed guest RenderWidgetHostView is null");
   }
+  if (guest_contents->GetVisibility() != content::Visibility::HIDDEN) {
+    return base::unexpected("Warmed guest visibility is not HIDDEN");
+  }
+  if (guest_contents->IsBeingCaptured()) {
+    return base::unexpected("Warmed guest is unexpectedly being captured");
+  }
+  if (rwhv->IsShowing()) {
+    return base::unexpected(
+        "Warmed guest RenderWidgetHostView is unexpectedly showing");
+  }
   if (rwhv->GetScreenInfo().rect.height() <= 0) {
     return base::unexpected("Warmed guest ScreenInfo height is <= 0");
+  }
+  if (content::EvalJs(guest_contents, "window.screenHeightAtBootstrap")
+          .ExtractInt() <= 0) {
+    return base::unexpected(
+        "Warmed guest window.screenHeightAtBootstrap is <= 0");
   }
   if (content::EvalJs(guest_contents, "window.screen.height").ExtractInt() <=
       0) {
@@ -219,6 +293,47 @@ std::string DescribeVisibilityState(GlicInstanceImpl* instance) {
   return new_instance;
 }
 
+[[nodiscard]] TestResult<> WaitForWebContentsRendered(
+    GlicInstanceImpl* instance,
+    content::WebContents* contents,
+    std::string_view label) {
+  RETURN_IF_ERROR_WITH_STATE(
+      instance, RunUntilEqual([&]() { return contents->GetVisibility(); },
+                              content::Visibility::VISIBLE,
+                              base::StrCat({label, " is not visible"})));
+  RETURN_IF_ERROR_WITH_STATE(
+      instance,
+      RunUntilNotNull([&]() { return contents->GetRenderWidgetHostView(); },
+                      base::StrCat({label, " RenderWidgetHostView is null"})));
+  content::RenderWidgetHostView* rwhv = contents->GetRenderWidgetHostView();
+  RETURN_IF_ERROR_WITH_STATE(
+      instance,
+      RunUntilEqual(
+          [&]() { return rwhv->IsShowing(); }, true,
+          base::StrCat({label, " RenderWidgetHostView is not showing"})));
+#if defined(USE_AURA)
+  RETURN_IF_ERROR_WITH_STATE(
+      instance, RunUntilNotNull([&]() { return rwhv->GetNativeView(); },
+                                base::StrCat({label, " NativeView is null"})));
+  RETURN_IF_ERROR_WITH_STATE(
+      instance,
+      RunUntilEqual([&]() { return rwhv->GetNativeView()->IsVisible(); }, true,
+                    base::StrCat({label, " NativeView is not visible"})));
+#endif
+  RETURN_IF_ERROR_WITH_STATE(
+      instance,
+      RunUntilEqual([&]() { return !rwhv->GetVisibleViewportSize().IsEmpty(); },
+                    true,
+                    base::StrCat({label, " VisibleViewportSize is empty"})));
+  RETURN_IF_ERROR_WITH_STATE(
+      instance,
+      RunUntilEqual(
+          [&]() { return rwhv->IsSurfaceAvailableForCopy(); }, true,
+          base::StrCat({label, " Surface is not available for copy"})));
+  content::WaitForCopyableViewInWebContents(contents);
+  return base::ok();
+}
+
 [[nodiscard]] TestResult<> WaitForClientViewVisible(
     GlicInstanceImpl* instance) {
   if (!instance) {
@@ -230,41 +345,12 @@ std::string DescribeVisibilityState(GlicInstanceImpl* instance) {
                       "web_client_contents is null"));
   content::WebContents* client_contents =
       instance->host().web_client_contents();
-  RETURN_IF_ERROR_WITH_STATE(
-      instance,
-      RunUntilEqual([&]() { return client_contents->GetVisibility(); },
-                    content::Visibility::VISIBLE,
-                    "client_contents is not visible"));
-  RETURN_IF_ERROR_WITH_STATE(
-      instance,
-      RunUntilNotNull(
-          [&]() { return client_contents->GetRenderWidgetHostView(); },
-          "RenderWidgetHostView is null"));
+  RETURN_IF_ERROR(
+      WaitForWebContentsRendered(instance, client_contents, "client_contents"));
+
   content::RenderWidgetHostView* rwhv =
       client_contents->GetRenderWidgetHostView();
-  RETURN_IF_ERROR_WITH_STATE(
-      instance, RunUntilEqual([&]() { return rwhv->IsShowing(); }, true,
-                              "RenderWidgetHostView is not showing"));
-#if defined(USE_AURA)
-  RETURN_IF_ERROR_WITH_STATE(
-      instance, RunUntilNotNull([&]() { return rwhv->GetNativeView(); },
-                                "NativeView is null"));
-  RETURN_IF_ERROR_WITH_STATE(
-      instance,
-      RunUntilEqual([&]() { return rwhv->GetNativeView()->IsVisible(); }, true,
-                    "NativeView is not visible"));
-#endif
-  RETURN_IF_ERROR_WITH_STATE(
-      instance,
-      RunUntilEqual([&]() { return !rwhv->GetVisibleViewportSize().IsEmpty(); },
-                    true, "VisibleViewportSize is empty"));
-  RETURN_IF_ERROR_WITH_STATE(
-      instance,
-      RunUntilEqual([&]() { return rwhv->IsSurfaceAvailableForCopy(); }, true,
-                    "Surface is not available for copy"));
-  content::WaitForCopyableViewInWebContents(client_contents);
-
-  if (rwhv->GetScreenInfo().rect.height() <= 0) {
+  if (!rwhv || rwhv->GetScreenInfo().rect.height() <= 0) {
     return base::unexpected(
         base::StrCat({"client_contents ScreenInfo height is <= 0 [",
                       DescribeVisibilityState(instance), "]"}));
@@ -278,41 +364,8 @@ std::string DescribeVisibilityState(GlicInstanceImpl* instance) {
 
   content::WebContents* webui_contents = instance->host().webui_contents();
   if (webui_contents && webui_contents != client_contents) {
-    RETURN_IF_ERROR_WITH_STATE(
-        instance,
-        RunUntilEqual([&]() { return webui_contents->GetVisibility(); },
-                      content::Visibility::VISIBLE,
-                      "webui_contents is not visible"));
-    RETURN_IF_ERROR_WITH_STATE(
-        instance,
-        RunUntilNotNull(
-            [&]() { return webui_contents->GetRenderWidgetHostView(); },
-            "webui RenderWidgetHostView is null"));
-    content::RenderWidgetHostView* webui_rwhv =
-        webui_contents->GetRenderWidgetHostView();
-    RETURN_IF_ERROR_WITH_STATE(
-        instance, RunUntilEqual([&]() { return webui_rwhv->IsShowing(); }, true,
-                                "webui RenderWidgetHostView is not showing"));
-#if defined(USE_AURA)
-    RETURN_IF_ERROR_WITH_STATE(
-        instance, RunUntilNotNull([&]() { return webui_rwhv->GetNativeView(); },
-                                  "webui NativeView is null"));
-    RETURN_IF_ERROR_WITH_STATE(
-        instance,
-        RunUntilEqual(
-            [&]() { return webui_rwhv->GetNativeView()->IsVisible(); }, true,
-            "webui NativeView is not visible"));
-#endif
-    RETURN_IF_ERROR_WITH_STATE(
-        instance,
-        RunUntilEqual(
-            [&]() { return !webui_rwhv->GetVisibleViewportSize().IsEmpty(); },
-            true, "webui VisibleViewportSize is empty"));
-    RETURN_IF_ERROR_WITH_STATE(
-        instance,
-        RunUntilEqual([&]() { return webui_rwhv->IsSurfaceAvailableForCopy(); },
-                      true, "webui Surface is not available for copy"));
-    content::WaitForCopyableViewInWebContents(webui_contents);
+    RETURN_IF_ERROR(
+        WaitForWebContentsRendered(instance, webui_contents, "webui_contents"));
   }
 
   return base::ok();
@@ -320,6 +373,16 @@ std::string DescribeVisibilityState(GlicInstanceImpl* instance) {
 
 }  // namespace
 
+// NOTE: Keep the default --disable-backgrounding-occluded-windows-for-testing
+// switch set by BrowserTestBase. On the Windows 11 browser_tests fleet the
+// session is locked / display off, and NativeWindowOcclusionTrackerWin then
+// reports every window as OCCLUDED regardless of geometry (see
+// native_window_occlusion_tracker_win.cc, "If the screen is locked or off").
+// With native occlusion active, WebContents in the floating window never
+// become VISIBLE there and the test times out deterministically. The
+// regression this test guards (ScreenInfo / window.screen.height being 0
+// during warmup, reload, conversation switch, or floaty pop-out with
+// GlicContentsInitiallyHidden) does not depend on OS occlusion tracking.
 class GlicVisibilityBrowserTest : public GlicBrowserTest,
                                   public ::testing::WithParamInterface<bool> {
  public:
@@ -327,10 +390,10 @@ class GlicVisibilityBrowserTest : public GlicBrowserTest,
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kGlicContentsInitiallyHidden, {}},
         {features::kGlicWebContentsWarming,
-         {{features::kGlicWebContentsWarmingDelay.name, "24h"}}},
+         {{features::kGlicWebContentsWarmingDelay.name, "168h"}}},
     };
     std::vector<base::test::FeatureRef> disabled_features = {
-        features::kGlicWarming};
+        features::kGlicWarming, ::features::kPopulateUnattachedAuraScreenInfo};
     if (GetParam()) {
       enabled_features.push_back({features::kGlicNoWebview, {}});
     } else {
@@ -338,22 +401,45 @@ class GlicVisibilityBrowserTest : public GlicBrowserTest,
     }
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
-  }
 
-  // NOTE: Unlike an earlier version of this test, we deliberately keep the
-  // default --disable-backgrounding-occluded-windows-for-testing switch set by
-  // BrowserTestBase. On the Windows 11 browser_tests fleet the session is
-  // locked / display off, and NativeWindowOcclusionTrackerWin then reports
-  // every window as OCCLUDED regardless of geometry (see
-  // native_window_occlusion_tracker_win.cc, "If the screen is locked or off").
-  // With native occlusion active, WebContents in the floating window never
-  // become VISIBLE there and the test times out deterministically. The
-  // regression this test guards (ScreenInfo / window.screen.height being 0
-  // after reload or conversation switch with GlicContentsInitiallyHidden) does
-  // not depend on OS occlusion tracking.
+    embedded_https_test_server().RegisterRequestHandler(
+        base::BindRepeating(&HandleCoopGuestRequest));
+    SetGlicPagePath(kCoopGuestPath);
+  }
 
   GlicWebContentsWarmingPool& pool() {
     return coordinator().GetWebContentsWarmingPoolForTesting();
+  }
+
+  void VerifySidePanelAndFloatyTransitions() {
+    ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+    ASSERT_OK(WaitForGlicClient(instance));
+    PreventDeletionOnClose(instance, "conv1");
+    EXPECT_FALSE(instance->IsDetached());
+    ASSERT_OK(WaitForClientViewVisible(instance));
+    EXPECT_GT(content::EvalJs(instance->host().web_client_contents(),
+                              "window.screenHeightAtBootstrap")
+                  .ExtractInt(),
+              0);
+
+    tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+    ASSERT_TRUE(tab);
+    instance->Detach(*tab);
+    ASSERT_TRUE(RunUntil([&]() { return instance->IsDetached(); },
+                         "Timed out waiting for instance to detach"));
+    ASSERT_OK(WaitForClientViewVisible(instance));
+
+    // Re-attach back to Side Panel.
+    instance->Attach(tab->GetHandle());
+    ASSERT_TRUE(RunUntil([&]() { return !instance->IsDetached(); },
+                         "Timed out waiting for instance to re-attach"));
+    ASSERT_OK(WaitForClientViewVisible(instance));
+
+    // Pop out to Floaty a second time.
+    instance->Detach(*tab);
+    ASSERT_TRUE(RunUntil([&]() { return instance->IsDetached(); },
+                         "Timed out waiting for instance to detach again"));
+    ASSERT_OK(WaitForClientViewVisible(instance));
   }
 
  private:
@@ -403,6 +489,17 @@ IN_PROC_BROWSER_TEST_P(GlicVisibilityBrowserTest,
       GlicInstanceImpl * instance_c,
       SwitchConversationAndWait(coordinator(), instance_b, "conv_c"));
   EXPECT_OK(WaitForClientViewVisible(instance_c));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicVisibilityBrowserTest, PopOutToFloatyRendersFrame) {
+  ASSERT_OK(WarmAndWaitForLoad(pool()));
+  VerifySidePanelAndFloatyTransitions();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicVisibilityBrowserTest,
+                       ColdPopOutToFloatyRendersFrame) {
+  ASSERT_FALSE(pool().HasWarmedContainerForTesting());
+  VerifySidePanelAndFloatyTransitions();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
