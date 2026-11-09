@@ -97,12 +97,16 @@ public class FindTest {
 
     /** Returns the FindResults text. */
     private String waitForFindResults(String expectedResult) {
+        final FindToolbar findToolbar = getFindToolbar();
         final TextView findResults =
                 (TextView) mActivityTestRule.getActivity().findViewById(R.id.find_status);
         Assert.assertNotNull(expectedResult);
         Assert.assertNotNull(findResults);
         CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(findResults.getText(), Matchers.is(expectedResult)));
+                () -> {
+                    Criteria.checkThat(findResults.getText(), Matchers.is(expectedResult));
+                    Criteria.checkThat(findToolbar.isAnimating(), Matchers.is(false));
+                });
         return findResults.getText().toString();
     }
 
@@ -238,7 +242,6 @@ public class FindTest {
     @Test
     @MediumTest
     @Feature({"FindInPage"})
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void testFindNext() {
         String query = "pitts";
         loadTestAndVerifyFindInPage(query, "1/7");
@@ -246,15 +249,14 @@ public class FindTest {
         waitForFindResults("2/7");
         for (int i = 2; i <= 7; i++) {
             onView(withId(R.id.find_next_button)).perform(click());
+            waitForFindResults(i < 7 ? (i + 1) + "/7" : "1/7");
         }
-        waitForFindResults("1/7");
     }
 
     /** Verify Find In Page Next/Previous button. */
     @Test
     @MediumTest
     @Feature({"FindInPage"})
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void testFindNextPrevious() {
         String query = "pitts";
         loadTestAndVerifyFindInPage(query, "1/7");
@@ -496,9 +498,8 @@ public class FindTest {
 
     /** Verify FIP in IncognitoTabs. */
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"FindInPage"})
-    @DisabledTest(message = "https://crbug.com/515428606")
     public void testFindNextPreviousIncognitoTab() {
         String query = "pitts";
         var incognitoPage = mPage.openNewIncognitoTabOrWindowFast();
@@ -506,18 +507,19 @@ public class FindTest {
         var prevActivity = mActivityTestRule.getActivity();
         // TODO(crbug.com/439491767): Remove this workaround in favor of accessing the activity
         // through the page.
-        mActivityTestRule.getActivityTestRule().setActivity(incognitoPage.getActivity());
-        loadTestAndVerifyFindInPage(query, "1/7");
-        // TODO(jaydeepmehta): Verify number of results and match against boxes drawn.
-        TouchCommon.singleClickView(
-                mActivityTestRule.getActivity().findViewById(R.id.find_next_button));
-        waitForFindResults("2/7");
-        TouchCommon.singleClickView(
-                mActivityTestRule.getActivity().findViewById(R.id.find_prev_button));
-        waitForFindResults("1/7");
-        if (incognitoActivity != prevActivity) {
-            ApplicationTestUtils.finishActivity(incognitoActivity);
-            mActivityTestRule.getActivityTestRule().setActivity(prevActivity);
+        mActivityTestRule.getActivityTestRule().setActivity(incognitoActivity);
+        try {
+            loadTestAndVerifyFindInPage(query, "1/7");
+            // TODO(jaydeepmehta): Verify number of results and match against boxes drawn.
+            onView(withId(R.id.find_next_button)).perform(click());
+            waitForFindResults("2/7");
+            onView(withId(R.id.find_prev_button)).perform(click());
+            waitForFindResults("1/7");
+        } finally {
+            if (incognitoActivity != prevActivity) {
+                ApplicationTestUtils.finishActivity(incognitoActivity);
+                mActivityTestRule.getActivityTestRule().setActivity(prevActivity);
+            }
         }
     }
 
