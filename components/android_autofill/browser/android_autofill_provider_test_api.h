@@ -17,6 +17,7 @@ class AndroidAutofillProviderTestApi {
   void StartNewSession(AndroidAutofillManager* manager,
                        const FormData& form,
                        const FormFieldData& field) {
+    provider_->UpdateCurrentField(manager, form, field);
     provider_->StartNewSession(manager, form, field);
   }
 

@@ -601,12 +601,18 @@ void AndroidAutofillProvider::OnFocusOnFormField(
           GetRenderFrameHost(manager, field.host_frame());
       ShouldShowCredManForField(field, rfh) &&
       ShowCredManSheet(rfh, form.global_id(), field_to_focus)) {
-    // Proactively update the current field and its origin. Because the
-    // subsequent `OnAskForValuesToFill()` IPC will be ignored while CredMan is
-    // showing (to block spoofing), we must set the correct origin now before
-    // the block takes effect, otherwise the session will retain a stale origin.
+    // Proactively update the current field for same-origin session fields,
+    // since the subsequent `OnAskForValuesToFill()` IPC will be ignored while
+    // CredMan is showing. If an active session belongs to a different origin,
+    // cancel it instead so its datasets cannot outlive the CredMan sheet
+    // (crbug.com/581907790).
     if (field_to_focus) {
       UpdateCurrentField(manager, form, field);
+    } else if (session_state_ &&
+               !session_state_->current_field.origin.IsSameOriginWith(
+                   field.origin())) {
+      session_state_.reset();
+      CancelSession();
     }
     return;  // The focus event will be completed after CredMan closes.
   }
@@ -622,6 +628,11 @@ std::optional<FieldInfo> AndroidAutofillProvider::StartFocusChange(
     return std::nullopt;  // Form may have changed or was unfocused meanwhile.
   }
   CHECK(session_state_ && session_state_->form);
+  if (!session_state_->current_field.origin.IsSameOriginWith(field.origin())) {
+    // A session is scoped to a single origin (crbug.com/578317115); do not
+    // carry an existing session across origins on focus changes.
+    return std::nullopt;
+  }
   FieldInfo field_to_focus;
   if (!session_state_->form->GetFieldByGlobalId(field, &field_to_focus.index)) {
     return std::nullopt;
