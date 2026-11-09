@@ -14,6 +14,7 @@ import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
+import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.LayoutRes;
@@ -590,18 +591,37 @@ public class BookmarkManagerCoordinator
         // RecyclerView. Since R.layout.empty_state_view is a shared layout of height match_parent,
         // displaying it alongside the search box in the RecyclerView would exceed the viewport
         // height and cause the page to scroll unnecessarily.
-        emptyStateView.addOnLayoutChangeListener(
+        OnLayoutChangeListener layoutChangeListener =
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     int parentHeight = parent.getHeight();
-                    int targetHeight = parentHeight - top - parent.getPaddingBottom();
-                    if (targetHeight > 0 && v.getLayoutParams().height != targetHeight) {
-                        v.getLayoutParams().height = targetHeight;
-                        v.post(
+                    int targetHeight =
+                            parentHeight - emptyStateView.getTop() - parent.getPaddingBottom();
+                    if (targetHeight > 0
+                            && emptyStateView.getLayoutParams().height != targetHeight) {
+                        emptyStateView.getLayoutParams().height = targetHeight;
+                        emptyStateView.post(
                                 () ->
                                         ViewUtils.requestLayout(
-                                                v,
+                                                emptyStateView,
                                                 "BookmarkManagerCoordinator"
                                                         + ".buildEmptyStateView"));
+                    }
+                };
+        emptyStateView.addOnLayoutChangeListener(layoutChangeListener);
+        emptyStateView.addOnAttachStateChangeListener(
+                new OnAttachStateChangeListener() {
+                    @Override
+                    public void onViewAttachedToWindow(View v) {
+                        parent.addOnLayoutChangeListener(layoutChangeListener);
+                        ViewUtils.requestLayout(
+                                v,
+                                "BookmarkManagerCoordinator.buildEmptyStateView"
+                                        + ".onViewAttachedToWindow");
+                    }
+
+                    @Override
+                    public void onViewDetachedFromWindow(View v) {
+                        parent.removeOnLayoutChangeListener(layoutChangeListener);
                     }
                 });
         return emptyStateView;

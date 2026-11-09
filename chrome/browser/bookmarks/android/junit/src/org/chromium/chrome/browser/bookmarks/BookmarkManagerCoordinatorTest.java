@@ -19,6 +19,7 @@ import android.view.FocusFinder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -287,6 +288,7 @@ public class BookmarkManagerCoordinatorTest {
     }
 
     @Test
+    @Config(qualifiers = "w600dp-h1200dp")
     public void testBuildEmptyStateView() {
         int parentWidth = 500;
         int parentHeight = 1000;
@@ -294,16 +296,42 @@ public class BookmarkManagerCoordinatorTest {
         int paddingBottom = 80;
         int targetHeight = parentHeight - topOffset - paddingBottom;
 
-        FrameLayout parent = new FrameLayout(mActivity);
-        parent.setPadding(0, 0, 0, paddingBottom);
-        parent.layout(0, 0, parentWidth, parentHeight);
+        FrameLayout windowRoot = new FrameLayout(mActivity);
+        mActivity.setContentView(windowRoot);
+
+        LinearLayout parent = new LinearLayout(mActivity);
+        parent.setOrientation(LinearLayout.VERTICAL);
+        parent.setPadding(/* left= */ 0, /* top= */ 0, /* right= */ 0, paddingBottom);
+        windowRoot.addView(parent, new FrameLayout.LayoutParams(parentWidth, parentHeight));
+
+        View headerView = new View(mActivity);
+        parent.addView(headerView, new LinearLayout.LayoutParams(parentWidth, topOffset));
 
         View emptyStateView = mCoordinator.buildEmptyStateView(parent);
         assertNotNull(emptyStateView);
-        emptyStateView.layout(0, topOffset, parentWidth, parentHeight - paddingBottom);
+        parent.addView(emptyStateView);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-
         assertEquals(targetHeight, emptyStateView.getLayoutParams().height);
+
+        int shrunkParentHeight = 400;
+        int shrunkTargetHeight = shrunkParentHeight - topOffset - paddingBottom;
+        parent.setLayoutParams(new FrameLayout.LayoutParams(parentWidth, shrunkParentHeight));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(shrunkTargetHeight, emptyStateView.getLayoutParams().height);
+
+        parent.setLayoutParams(new FrameLayout.LayoutParams(parentWidth, parentHeight));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(targetHeight, emptyStateView.getLayoutParams().height);
+
+        // Detaching unregisters the parent listener; re-attaching re-registers and syncs height.
+        parent.removeView(emptyStateView);
+        parent.setLayoutParams(new FrameLayout.LayoutParams(parentWidth, shrunkParentHeight));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(targetHeight, emptyStateView.getLayoutParams().height);
+
+        parent.addView(emptyStateView);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(shrunkTargetHeight, emptyStateView.getLayoutParams().height);
     }
 
     @Test
