@@ -11,4 +11,8 @@
 /// page.
 NSString* GetSafariDataEntryPointAccessibilityIdentifier();
 
+/// Returns the accessibility identifier for the instructions view on the Safari
+/// data export screen.
+NSString* GetSafariDataExportInstructionsViewAccessibilityIdentifier();
+
 #endif  // IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_PUBLIC_UTILS_H_

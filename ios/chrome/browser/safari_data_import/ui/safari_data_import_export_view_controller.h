@@ -5,10 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_UI_SAFARI_DATA_IMPORT_EXPORT_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_UI_SAFARI_DATA_IMPORT_EXPORT_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_view_controller.h"
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_with_bricks_view_controller.h"
 
 // View for displaying Safari data import/export instructions.
-@interface SafariDataImportExportViewController : AnimatedPromoViewController
+@interface SafariDataImportExportViewController
+    : AnimatedPromoWithBricksViewController
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithConfiguration:(AnimatedPromoConfiguration*)config
+    NS_UNAVAILABLE;
 
 @end
 

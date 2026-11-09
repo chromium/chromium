@@ -5,9 +5,12 @@
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_export_view_controller.h"
 
 #import "base/i18n/rtl.h"
+#import "ios/chrome/browser/safari_data_import/public/utils.h"
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_configuration.h"
+#import "ios/chrome/browser/shared/ui/brick_configurations/animation_brick_configuration.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
-#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -51,6 +54,8 @@ UIView* GetInstructionsView() {
         IDS_IOS_SAFARI_IMPORT_EXPORT_STATIC_INSTRUCTION_STEP_5),
   ]];
   instruction_view.translatesAutoresizingMaskIntoConstraints = NO;
+  instruction_view.accessibilityIdentifier =
+      GetSafariDataExportInstructionsViewAccessibilityIdentifier();
   return instruction_view;
 }
 
@@ -80,18 +85,30 @@ NSDictionary<NSString*, NSString*>* GetTextProvider() {
 
 @implementation SafariDataImportExportViewController
 
-- (void)viewDidLoad {
-  /// Sets up the safari data import item.
-  self.animationName = GetAnimationName(/*dark_mode=*/NO);
-  self.animationNameDarkMode = GetAnimationName(/*dark_mode=*/YES);
-  self.animationBackgroundColor = [UIColor colorNamed:kBlueHaloColor];
-  self.underTitleView = GetInstructionsView();
-  self.primaryActionString = l10n_util::GetNSString(
+- (instancetype)init {
+  ButtonStackConfiguration* buttonStackConfiguration =
+      [[ButtonStackConfiguration alloc] init];
+  buttonStackConfiguration.primaryActionString = l10n_util::GetNSString(
       IDS_IOS_SAFARI_IMPORT_EXPORT_BUTTON_GO_TO_SETTINGS);
-  self.secondaryActionString =
+  buttonStackConfiguration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_SAFARI_IMPORT_EXPORT_BUTTON_CONTINUE);
-  self.animationTextProvider = GetTextProvider();
-  [super viewDidLoad];
+
+  AnimationBrickConfiguration* animationConfiguration =
+      [[AnimationBrickConfiguration alloc] init];
+  animationConfiguration.animationName = GetAnimationName(/*dark_mode=*/NO);
+  animationConfiguration.darkAnimationName =
+      GetAnimationName(/*dark_mode=*/YES);
+  animationConfiguration.animationBackgroundColor =
+      [UIColor colorNamed:kBlueHaloColor];
+  animationConfiguration.animationTextProvider = GetTextProvider();
+
+  AnimatedPromoConfiguration* config = [[AnimatedPromoConfiguration alloc]
+      initWithAnimationBrickConfiguration:animationConfiguration
+                 buttonStackConfiguration:buttonStackConfiguration
+                  titleBrickConfiguration:nil
+                           underTitleView:GetInstructionsView()];
+
+  return [super initWithConfiguration:config];
 }
 
 @end

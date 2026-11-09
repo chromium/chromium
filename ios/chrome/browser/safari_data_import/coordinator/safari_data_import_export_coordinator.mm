@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_export_coordinator.h"
 
 #import "base/check_op.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_child_coordinator_delegate.h"
@@ -12,10 +13,10 @@
 #import "ios/chrome/browser/safari_data_import/public/metrics.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_export_view_controller.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/public/provider/chrome/browser/safari_data_import/safari_data_import_api.h"
 
-@interface SafariDataImportExportCoordinator () <ConfirmationAlertActionHandler,
+@interface SafariDataImportExportCoordinator () <ButtonStackActionDelegate,
                                                  UINavigationControllerDelegate>
 
 @end
@@ -32,7 +33,7 @@
 - (void)start {
   SafariDataImportExportViewController* viewController =
       [[SafariDataImportExportViewController alloc] init];
-  viewController.actionHandler = self;
+  viewController.actionDelegate = self;
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:viewController];
   viewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
@@ -57,15 +58,15 @@
   _navigationController = nil;
 }
 
-#pragma mark - ConfirmationAlertActionHandler
+#pragma mark - ButtonStackActionDelegate
 
-- (void)confirmationAlertPrimaryAction {
+- (void)didTapPrimaryActionButton {
   RecordActionOnSafariExportEducationScreen(
       SafariDataImportExportEducationAction::kGoToSetting);
   ios::provider::OpenSettingsToExportDataFromSafari();
 }
 
-- (void)confirmationAlertSecondaryAction {
+- (void)didTapSecondaryActionButton {
   if (_importCoordinator) {
     return;
   }
@@ -76,6 +77,14 @@
                                browser:self.browser];
   _importCoordinator.delegate = self.delegate;
   [_importCoordinator start];
+}
+
+- (void)didTapTertiaryActionButton {
+  NOTREACHED();
+}
+
+- (void)didDismissButtonStackViewController {
+  // No-op.
 }
 
 #pragma mark - UINavigationControllerDelegate

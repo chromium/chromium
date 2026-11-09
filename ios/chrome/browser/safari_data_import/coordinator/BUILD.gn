@@ -50,7 +50,7 @@ source_set("export_coordinator") {
     "//ios/chrome/browser/safari_data_import/public:metrics",
     "//ios/chrome/browser/safari_data_import/ui",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/public/provider/chrome/browser/safari_data_import:safari_data_import_api",
   ]
 }

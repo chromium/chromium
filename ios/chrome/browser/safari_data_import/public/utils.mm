@@ -7,3 +7,7 @@
 NSString* GetSafariDataEntryPointAccessibilityIdentifier() {
   return @"SafariDataEntryPointAccessibilityIdentifier";
 }
+
+NSString* GetSafariDataExportInstructionsViewAccessibilityIdentifier() {
+  return @"SafariDataExportInstructionsViewAccessibilityIdentifier";
+}

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/data_import/public/credential_item_identifier.h"
 #import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
+#import "ios/chrome/browser/safari_data_import/public/utils.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_app_interface.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_constants.h"
@@ -216,9 +217,10 @@ id<GREYMatcher> ImportButton() {
         assertWithMatcher:grey_not(grey_sufficientlyVisible())];
     /// Verify that the user is still able to proceed in landscape mode.
     StartImportOnSafariDataImportEntryPoint();
-    [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityID(
-                       kConfirmationAlertUnderTitleViewAccessibilityIdentifier)]
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(
+                GetSafariDataExportInstructionsViewAccessibilityIdentifier())]
         assertWithMatcher:grey_minimumVisiblePercent(0.5f)];
   }
 }
@@ -229,13 +231,15 @@ id<GREYMatcher> ImportButton() {
   if (@available(iOS 18.2, *)) {
     StartImportOnSafariDataImportEntryPoint();
     /// Swipe should not be supported.
-    [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityID(
-                       kConfirmationAlertUnderTitleViewAccessibilityIdentifier)]
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(
+                GetSafariDataExportInstructionsViewAccessibilityIdentifier())]
         performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
-    [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityID(
-                       kConfirmationAlertUnderTitleViewAccessibilityIdentifier)]
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(
+                GetSafariDataExportInstructionsViewAccessibilityIdentifier())]
         assertWithMatcher:grey_minimumVisiblePercent(0.5f)];
     /// Dismiss by tapping the "Cancel" button on the top right.
     id<GREYMatcher> buttonInNavBar = grey_allOf(
