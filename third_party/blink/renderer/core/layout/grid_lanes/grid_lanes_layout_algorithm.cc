@@ -509,7 +509,8 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
       }
 
       container_builder_.SetGapGeometry(gap_accumulator->FinalizeGapGeometry(
-          grid_lanes, state, stacking_content_start, stacking_content_end));
+          grid_lanes, state, stacking_content_start, stacking_content_end,
+          container_builder_));
     }
   }
 

@@ -61,6 +61,28 @@ class CORE_EXPORT CrossGapRange {
 // more information.
 class CORE_EXPORT CrossGap {
  public:
+  // Records a real gutter or final grid-lanes item geometry. Only kGutter
+  // represents space between items; artificial types do not create gutters.
+  // Item start/end offsets are final border-box edges along the stacking axis.
+  // The enum order sets the cross-gap order at equal offsets.
+  enum class Type : uint8_t {
+    // The center of a gutter between items.
+    kGutter,
+    // A position one stacking gap before or after the final border box of an
+    // item that spans multiple lanes.
+    kSpannerBoundary,
+    // Marks where an item with alignment space starts to occupy the lane.
+    // Also records an item boundary.
+    kItemStart,
+    // Marks where an item with alignment space stops occupying the lane.
+    // Also records an item boundary.
+    kItemEnd,
+    // Marks where an item starts to occupy the lane, without an item boundary.
+    kOccupiedStart,
+    // Marks where an item stops occupying the lane, without an item boundary.
+    kOccupiedEnd,
+  };
+
   // Represents whether/how the gap borders the edge of the container. This
   // state is used by the paint code in order to paint correctly with the outset
   // property, as this property can result in different behavior at the edges.
@@ -73,11 +95,15 @@ class CORE_EXPORT CrossGap {
     kBoth = 3,
   };
 
-  CrossGap(LogicalOffset offset) : gap_logical_offset_(offset) {}
+  explicit CrossGap(LogicalOffset offset, Type type = Type::kGutter)
+      : gap_logical_offset_(offset), type_(type) {}
   CrossGap(LogicalOffset offset, EdgeIntersectionState state)
       : gap_logical_offset_(offset), edge_state_(state) {}
 
   LogicalOffset GetGapOffset() const { return gap_logical_offset_; }
+  Type GetType() const { return type_; }
+  void SetType(Type type) { type_ = type; }
+  bool IsArtificial() const { return type_ != Type::kGutter; }
 
   LayoutUnit GetGapOffset(GridTrackSizingDirection direction) const {
     return direction == kForColumns ? gap_logical_offset_.inline_offset
@@ -109,7 +135,7 @@ class CORE_EXPORT CrossGap {
 
   bool operator==(const CrossGap& other) const {
     return gap_logical_offset_ == other.gap_logical_offset_ &&
-           edge_state_ == other.edge_state_ &&
+           type_ == other.type_ && edge_state_ == other.edge_state_ &&
            gap_segment_state_ranges_ == other.gap_segment_state_ranges_;
   }
 
@@ -131,6 +157,7 @@ class CORE_EXPORT CrossGap {
 
  private:
   LogicalOffset gap_logical_offset_;
+  Type type_ = Type::kGutter;
 
   EdgeIntersectionState edge_state_ = EdgeIntersectionState::kNone;
 

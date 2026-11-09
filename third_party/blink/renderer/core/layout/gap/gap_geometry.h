@@ -179,8 +179,9 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
     return main_gaps_.back();
   }
 
-  CrossGap& AddCrossGap(LogicalOffset offset) {
-    cross_gaps_.emplace_back(offset);
+  CrossGap& AddCrossGap(LogicalOffset offset,
+                        CrossGap::Type type = CrossGap::Type::kGutter) {
+    cross_gaps_.emplace_back(offset, type);
     return cross_gaps_.back();
   }
 
