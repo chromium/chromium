@@ -506,7 +506,9 @@ void MultideviceHandler::HandleAttemptFeatureSetupConnection(
 void MultideviceHandler::HandleCancelFeatureSetupConnection(
     const base::ListValue& args) {
   CHECK(features::IsPhoneHubEnabled(), base::NotFatalUntil::M162);
-  CHECK(feature_setup_connection_operation_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/580122315): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(feature_setup_connection_operation_);
 
   feature_setup_connection_operation_.reset();
 }
