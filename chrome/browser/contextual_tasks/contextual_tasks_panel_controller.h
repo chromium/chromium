@@ -152,14 +152,6 @@ class ContextualTasksPanelController {
   // Returns the entry source of the currently active panel.
   virtual EntrySource GetActiveEntrySource() const = 0;
 
-  // Returns true if the currently active panel's open session reopened a
-  // previously collapsed panel for an existing thread via the permanently
-  // pinned or ephemeral toolbar button (rather than opening fresh from an
-  // entry point or switching threads via thread history). Used to tag queries
-  // submitted after reopening the panel from the toolbar so they can be
-  // distinguished server-side.
-  virtual bool IsActiveSessionReopenedViaToolbarButton() const = 0;
-
   // Returns true if the onboarding or Ask Google tooltip bubble is visible.
   virtual bool IsOnboardingTooltipVisible() const;
 

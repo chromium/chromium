@@ -67,6 +67,8 @@ const char* GetClientToSearchMessageName(
       return "OnContextStateChanged";
     case lens::ClientToSearchMessage::kOpenThreadsView:
       return "OpenThreadsView";
+    case lens::ClientToSearchMessage::kOnReopenedViaToolbarButton:
+      return "OnReopenedViaToolbarButton";
     case lens::ClientToSearchMessage::EVENT_MESSAGE_NOT_SET:
       return "UnknownClientToSearchMessage";
   }

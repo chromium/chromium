@@ -117,6 +117,20 @@ message ClientToSearchMessage {
 
   // Instructs Search Web to open the threads view (Thread History).
   message OpenThreadsView {}
+
+  // Notifies Search Web that an existing thread's side panel was reopened via
+  // a toolbar button.
+  message OnReopenedViaToolbarButton {
+    enum ToolbarButtonType {
+      TOOLBAR_BUTTON_TYPE_UNSPECIFIED = 0;
+      // Permanently pinned toolbar button.
+      PINNED = 1;
+      // Ephemeral toolbar button.
+      EPHEMERAL = 2;
+    }
+    ToolbarButtonType toolbar_button_type = 1;
+  }
+
   oneof event_message {
     // Initial handshake ping sent by an extension iframe upon mounting.
     HandshakePing handshake_ping = 1;
@@ -137,6 +151,10 @@ message ClientToSearchMessage {
 
     // Instructs Search Web to open the threads view.
     OpenThreadsView open_threads_view = 6;
+
+    // Fired when an existing thread's side panel is reopened via a toolbar
+    // button.
+    OnReopenedViaToolbarButton on_reopened_via_toolbar_button = 7;
   }
 }
 

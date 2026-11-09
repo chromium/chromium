@@ -74,10 +74,6 @@ class MockContextualTasksPanelController
               GetActiveEntrySource,
               (),
               (const, override));
-  MOCK_METHOD(bool,
-              IsActiveSessionReopenedViaToolbarButton,
-              (),
-              (const, override));
   MOCK_METHOD(bool, IsOnboardingTooltipVisible, (), (const, override));
   MOCK_METHOD(void, SetErrorPageVisible, (bool visible), (override));
   MOCK_METHOD(bool, IsErrorPageVisible, (), (const, override));

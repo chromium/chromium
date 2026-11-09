@@ -118,6 +118,8 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "third_party/lens_server_proto/search_communication.pb.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -668,11 +670,16 @@ void ContextualTasksSidePanelCoordinator::Show(
   // ephemeral button, which only ever reopens an existing task. Fresh
   // zero-state opens, other entry points, and threads selected from thread
   // history are excluded.
+  const bool is_reopened_via_pinned_toolbar_button =
+      is_continuing_existing_thread;
+  const bool is_reopened_via_ephemeral_toolbar_button =
+      !is_reopened_via_pinned_toolbar_button &&
+      entry_source == ContextualTasksPanelController::EntrySource::
+                          kEphemeralToolbarButton &&
+      existing_task.has_value() && !is_opening_in_zero_state_;
   const bool is_reopened_via_toolbar_button =
-      is_continuing_existing_thread ||
-      (entry_source == ContextualTasksPanelController::EntrySource::
-                           kEphemeralToolbarButton &&
-       existing_task.has_value() && !is_opening_in_zero_state_);
+      is_reopened_via_pinned_toolbar_button ||
+      is_reopened_via_ephemeral_toolbar_button;
 
   if (!existing_task) {
     // If no task is found, create a new task and associate it with the active
@@ -693,8 +700,6 @@ void ContextualTasksSidePanelCoordinator::Show(
     if (it != task_id_to_web_contents_cache_.end()) {
       it->second->entry_source = entry_source;
       it->second->entry_point = entry_point;
-      it->second->is_reopened_via_toolbar_button =
-          is_reopened_via_toolbar_button;
       it->second->last_active_time_ticks = base::TimeTicks::Now();
       it->second->open_time_ticks =
           open_time_ticks.value_or(base::TimeTicks::Now());
@@ -748,6 +753,39 @@ void ContextualTasksSidePanelCoordinator::Show(
   if (content::WebContents* active_web_contents = GetActiveWebContents()) {
     if (auto* web_ui_interface = GetWebUiInterface(active_web_contents)) {
       web_ui_interface->FocusComposebox();
+    }
+    if (is_reopened_via_toolbar_button) {
+      if (IsContextualTasksSidePanelRearchitectureEnabled()) {
+        // Skip the reopen message if the Search page has not connected yet
+        // (e.g. the WebContents was just created or rebuilt). Otherwise it
+        // would be queued on the unconnected page and dropped on commit.
+        auto* user_data = ContextualTasksWebContentsUserData::FromWebContents(
+            active_web_contents);
+        if (user_data &&
+            (user_data->IsServiceWorkerPortConnected() ||
+             user_data->GetPageSearchDebugState().is_handshake_complete)) {
+          lens::ClientToSearchMessage message;
+          message.mutable_on_reopened_via_toolbar_button()
+              ->set_toolbar_button_type(
+                  is_reopened_via_pinned_toolbar_button
+                      ? lens::ClientToSearchMessage::
+                            OnReopenedViaToolbarButton::PINNED
+                      : lens::ClientToSearchMessage::
+                            OnReopenedViaToolbarButton::EPHEMERAL);
+          user_data->PostSearchMessage(message);
+        }
+      } else if (auto* web_ui_interface =
+                     GetWebUiInterface(active_web_contents);
+                 web_ui_interface && web_ui_interface->IsInitComplete()) {
+        // The page handler may not be bound yet if the WebUI was recreated.
+        lens::ClientToAimMessage message;
+        message.mutable_on_reopened_via_toolbar_button()
+            ->set_toolbar_button_type(
+                is_reopened_via_pinned_toolbar_button
+                    ? lens::OnReopenedViaToolbarButton::PINNED
+                    : lens::OnReopenedViaToolbarButton::EPHEMERAL);
+        web_ui_interface->PostAimMessage(message);
+      }
     }
   }
   ObserveWebContentsOnActiveTab();
@@ -1276,18 +1314,6 @@ ContextualTasksSidePanelCoordinator::GetActiveEntrySource() const {
   return ContextualTasksPanelController::EntrySource::kOther;
 }
 
-bool ContextualTasksSidePanelCoordinator::
-    IsActiveSessionReopenedViaToolbarButton() const {
-  if (content::WebContents* active_web_contents = GetActiveWebContents()) {
-    for (const auto& it : task_id_to_web_contents_cache_) {
-      if (it.second->web_contents.get() == active_web_contents) {
-        return it.second->is_reopened_via_toolbar_button;
-      }
-    }
-  }
-  return false;
-}
-
 bool ContextualTasksSidePanelCoordinator::IsOnboardingTooltipVisible() const {
 #if !BUILDFLAG(IS_ANDROID)
   return onboarding_controller_->IsBubbleShowing();
@@ -1503,12 +1529,6 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
     if (it != task_id_to_web_contents_cache_.end()) {
       existing_new_task_link_clicks = it->second->link_click_count;
       MaybeDetachWebContents(it->second->web_contents.get());
-    }
-    if (old_task_id && *old_task_id != new_task_id) {
-      // Switching to a different task (e.g. picking a thread from thread
-      // history or starting a new chat in the panel) means the active session
-      // is no longer the thread that was reopened via a toolbar button.
-      cache_item->is_reopened_via_toolbar_button = false;
     }
     if (split_from_old_task) {
       cache_item->link_click_count = existing_new_task_link_clicks;

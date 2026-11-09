@@ -124,6 +124,17 @@ message ExitTool {
   ExitToolPayload payload = 1;
 }
 
+// Message from client to AIM when an existing thread's side panel is reopened
+// via a toolbar button.
+message OnReopenedViaToolbarButton {
+  enum ToolbarButtonType {
+    TOOLBAR_BUTTON_TYPE_UNSPECIFIED = 0;
+    PINNED = 1;
+    EPHEMERAL = 2;
+  }
+  ToolbarButtonType toolbar_button_type = 1;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // AIM -> Client messages
 ////////////////////////////////////////////////////////////////////////////////
@@ -145,6 +156,7 @@ message ClientToAimMessage {
     InjectedInputUpdate injected_input_update = 5;
     ExitTool exit_tool = 6;
     ActionsResult actions_result = 7;
+    OnReopenedViaToolbarButton on_reopened_via_toolbar_button = 8;
   }
 }
 

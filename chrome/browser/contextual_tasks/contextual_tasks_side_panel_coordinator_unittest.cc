@@ -24,8 +24,10 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_restore_data.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_host.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
@@ -38,6 +40,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/contextual_search/contextual_search_types.h"
@@ -68,6 +71,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/buildflags/buildflags.h"
@@ -80,6 +84,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/search_communication.pb.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/test_screen.h"
@@ -5238,6 +5243,278 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 
   user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
   webui::SetBrowserWindowInterface(panel_wc, nullptr);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       ReopenedViaToolbarButton_Rearchitecture_DispatchesSearchMessage) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksSidePanelRearchitecture,
+       kContextualTasksPinningV2},
+      {});
+
+  const SessionID active_session_id = sessions::SessionTabHelper::IdForTab(
+      tab_list_->GetActiveTab()->GetContents());
+  const base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(_))
+      .WillByDefault(Return(std::vector<SessionID>{active_session_id}));
+
+  CreateCachedWebContentsWithUrlForTesting(
+      task_id, /*is_open=*/false,
+      GURL("https://www.google.com/search?udm=50&mtid=1&q=Thread"));
+  content::WebContents* panel_wc = GetWebContentsForTaskForTesting(task_id);
+  ASSERT_NE(panel_wc, nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(panel_wc);
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+
+  std::vector<
+      lens::ClientToSearchMessage::OnReopenedViaToolbarButton::ToolbarButtonType>
+      dispatched_button_types;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindRepeating(
+      [](std::vector<lens::ClientToSearchMessage::OnReopenedViaToolbarButton::
+                         ToolbarButtonType>* out,
+         const lens::ClientToSearchMessage& message) {
+        if (message.has_on_reopened_via_toolbar_button()) {
+          out->push_back(
+              message.on_reopened_via_toolbar_button().toolbar_button_type());
+        }
+      },
+      &dispatched_button_types));
+
+  // Reopening an existing thread via the pinned toolbar button dispatches
+  // PINNED.
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON);
+  ASSERT_EQ(dispatched_button_types.size(), 1u);
+  EXPECT_EQ(dispatched_button_types[0],
+            lens::ClientToSearchMessage::OnReopenedViaToolbarButton::PINNED);
+
+  // Reopening an existing thread via the ephemeral toolbar button dispatches
+  // EPHEMERAL.
+  dispatched_button_types.clear();
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+  ASSERT_EQ(dispatched_button_types.size(), 1u);
+  EXPECT_EQ(dispatched_button_types[0],
+            lens::ClientToSearchMessage::OnReopenedViaToolbarButton::EPHEMERAL);
+
+  // Opening via a non-toolbar entry point does not dispatch the reopen event.
+  dispatched_button_types.clear();
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
+  EXPECT_TRUE(dispatched_button_types.empty());
+
+  // Switching threads (e.g. from thread history) does not dispatch the reopen
+  // event.
+  const base::Uuid history_task_id = base::Uuid::GenerateRandomV4();
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(ContextualTask(history_task_id)));
+  coordinator_->OnTaskChanged(panel_wc, history_task_id);
+  EXPECT_TRUE(dispatched_button_types.empty());
+
+  // Fresh zero-state open does not dispatch the reopen event.
+  coordinator_->OpenInZeroState();
+  EXPECT_TRUE(dispatched_button_types.empty());
+
+  user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+}
+
+// If the Search page has not connected / completed its handshake yet (e.g. the
+// panel WebContents was just created or rebuilt), reopening via the toolbar
+// button must skip the reopen message instead of queuing it on the unconnected
+// page, where it would be dropped on commit.
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       ReopenedViaToolbarButton_Rearchitecture_PageNotConnected_DoesNotQueue) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksSidePanelRearchitecture,
+       kContextualTasksPinningV2},
+      {});
+
+  const SessionID active_session_id = sessions::SessionTabHelper::IdForTab(
+      tab_list_->GetActiveTab()->GetContents());
+  const base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(_))
+      .WillByDefault(Return(std::vector<SessionID>{active_session_id}));
+
+  CreateCachedWebContentsWithUrlForTesting(
+      task_id, /*is_open=*/false,
+      GURL("https://www.google.com/search?udm=50&mtid=1&q=Thread"));
+  content::WebContents* panel_wc = GetWebContentsForTaskForTesting(task_id);
+  ASSERT_NE(panel_wc, nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(panel_wc);
+  ASSERT_NE(user_data, nullptr);
+  ASSERT_FALSE(user_data->IsServiceWorkerPortConnected());
+  ASSERT_FALSE(user_data->GetPageSearchDebugState().is_handshake_complete);
+
+  int reopen_messages_dispatched = 0;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindRepeating(
+      [](int* count, const lens::ClientToSearchMessage& message) {
+        if (message.has_on_reopened_via_toolbar_button()) {
+          ++(*count);
+        }
+      },
+      &reopen_messages_dispatched));
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON);
+  EXPECT_EQ(reopen_messages_dispatched, 0);
+
+  // Completing the handshake flushes any queued messages; the reopen message
+  // must not have been queued.
+  user_data->OnHandshakeComplete();
+  EXPECT_EQ(reopen_messages_dispatched, 0);
+
+  user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       ReopenedViaToolbarButton_Legacy_DispatchesAimMessage) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksPinningV2},
+      {kContextualTasksSidePanelRearchitecture});
+
+  content::ScopedWebUIConfigRegistration webui_registration(
+      std::make_unique<ContextualTasksUIConfig>());
+
+  const SessionID active_session_id = sessions::SessionTabHelper::IdForTab(
+      tab_list_->GetActiveTab()->GetContents());
+  const base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(_))
+      .WillByDefault(Return(std::vector<SessionID>{active_session_id}));
+
+  CreateCachedWebContentsWithUrlForTesting(
+      task_id, /*is_open=*/false, GURL(chrome::kChromeUIContextualTasksURL));
+  content::WebContents* panel_wc = GetWebContentsForTaskForTesting(task_id);
+  ASSERT_NE(panel_wc, nullptr);
+
+  auto* ui = static_cast<ContextualTasksUI*>(GetWebUiInterface(panel_wc));
+  ASSERT_NE(ui, nullptr);
+
+  NiceMock<MockContextualTasksPage> mock_page;
+  mojo::PendingRemote<contextual_tasks::mojom::PageHandler> handler_remote;
+  ui->CreatePageHandler(mock_page.BindAndGetRemote(),
+                        handler_remote.InitWithNewPipeAndPassReceiver());
+
+  std::vector<lens::OnReopenedViaToolbarButton::ToolbarButtonType>
+      dispatched_button_types;
+  ON_CALL(mock_page, PostAimMessage(_))
+      .WillByDefault([&dispatched_button_types](
+                         const std::vector<uint8_t>& serialized_message) {
+        lens::ClientToAimMessage message;
+        if (message.ParseFromArray(serialized_message.data(),
+                                   serialized_message.size()) &&
+            message.has_on_reopened_via_toolbar_button()) {
+          dispatched_button_types.push_back(
+              message.on_reopened_via_toolbar_button().toolbar_button_type());
+        }
+      });
+
+  // Reopening an existing thread via the pinned toolbar button dispatches
+  // PINNED.
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON);
+  ui->GetPageRemote().FlushForTesting();
+  ASSERT_EQ(dispatched_button_types.size(), 1u);
+  EXPECT_EQ(dispatched_button_types[0],
+            lens::OnReopenedViaToolbarButton::PINNED);
+
+  // Reopening an existing thread via the ephemeral toolbar button dispatches
+  // EPHEMERAL.
+  dispatched_button_types.clear();
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+  ui->GetPageRemote().FlushForTesting();
+  ASSERT_EQ(dispatched_button_types.size(), 1u);
+  EXPECT_EQ(dispatched_button_types[0],
+            lens::OnReopenedViaToolbarButton::EPHEMERAL);
+
+  // Opening via a non-toolbar entry point does not dispatch the reopen event.
+  dispatched_button_types.clear();
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
+  ui->GetPageRemote().FlushForTesting();
+  EXPECT_TRUE(dispatched_button_types.empty());
+
+  // Switching threads (e.g. from thread history) does not dispatch the reopen
+  // event.
+  const base::Uuid history_task_id = base::Uuid::GenerateRandomV4();
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(ContextualTask(history_task_id)));
+  coordinator_->OnTaskChanged(panel_wc, history_task_id);
+  ui->GetPageRemote().FlushForTesting();
+  EXPECT_TRUE(dispatched_button_types.empty());
+
+  // Fresh zero-state open does not dispatch the reopen event.
+  coordinator_->OpenInZeroState();
+  ui->GetPageRemote().FlushForTesting();
+  EXPECT_TRUE(dispatched_button_types.empty());
+}
+
+// If the WebUI's page handler is not bound yet (e.g. the WebUI was recreated),
+// reopening via the toolbar button must skip the reopen message instead of
+// hitting the CHECK in ContextualTasksUI::PostAimMessage().
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       ReopenedViaToolbarButton_Legacy_PageHandlerNotBound_DoesNotCrash) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksPinningV2},
+      {kContextualTasksSidePanelRearchitecture});
+
+  content::ScopedWebUIConfigRegistration webui_registration(
+      std::make_unique<ContextualTasksUIConfig>());
+
+  const SessionID active_session_id = sessions::SessionTabHelper::IdForTab(
+      tab_list_->GetActiveTab()->GetContents());
+  const base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(_))
+      .WillByDefault(Return(std::vector<SessionID>{active_session_id}));
+
+  CreateCachedWebContentsWithUrlForTesting(
+      task_id, /*is_open=*/false, GURL(chrome::kChromeUIContextualTasksURL));
+  content::WebContents* panel_wc = GetWebContentsForTaskForTesting(task_id);
+  ASSERT_NE(panel_wc, nullptr);
+
+  auto* ui = static_cast<ContextualTasksUI*>(GetWebUiInterface(panel_wc));
+  ASSERT_NE(ui, nullptr);
+  ASSERT_FALSE(ui->IsInitComplete());
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
