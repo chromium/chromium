@@ -1194,7 +1194,9 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
   }
 #endif  // BUILDFLAG(IS_MAC)
 
-  CHECK(IsMicAccessed() || IsCamAccessed(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/580529330): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(IsMicAccessed() || IsCamAccessed());
 
   int id = IDS_CAMERA_BLOCKED;
   if (IsMicBlockedOnSiteLevel() || IsCameraBlockedOnSiteLevel()) {
