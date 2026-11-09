@@ -409,8 +409,7 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsPwaClosing) {
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
   ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
-  webapps::AppId app_id =
-      StartWebAppAndDisconnect(web_contents, "/banners/no-sw-with-colors.html");
+  StartWebAppAndDisconnect(web_contents, "/banners/no-sw-with-colors.html");
 
   SyncHistograms();
   histogram()->ExpectTotalCount(kHistogramDurationShown, 0);

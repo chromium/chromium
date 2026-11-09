@@ -110,7 +110,7 @@ class InstallMigrateToAppCommandTest : public WebAppTest {
 };
 
 TEST_F(InstallMigrateToAppCommandTest, SuccessInstall) {
-  webapps::AppId source_app_id = InstallSourceApp();
+  InstallSourceApp();
   SetupTargetPageState(kTargetManifestId.value(), kSourceManifestId.value());
 
   EXPECT_EQ(ScheduleCommandAndWait(kSourceManifestId, kTargetManifestId,
@@ -130,7 +130,7 @@ TEST_F(InstallMigrateToAppCommandTest, SuccessInstall) {
 }
 
 TEST_F(InstallMigrateToAppCommandTest, SuccessUpdate) {
-  webapps::AppId source_app_id = InstallSourceApp();
+  InstallSourceApp();
   SetupTargetPageState(kTargetManifestId.value(), kSourceManifestId.value());
 
   // Pre-install the target app.
@@ -155,7 +155,7 @@ TEST_F(InstallMigrateToAppCommandTest, SuccessUpdate) {
 }
 
 TEST_F(InstallMigrateToAppCommandTest, SuccessUpdateSuggested) {
-  webapps::AppId source_app_id = InstallSourceApp();
+  InstallSourceApp();
   webapps::AppId target_app_id = GenerateAppIdFromManifestId(kTargetManifestId);
   SetupTargetPageState(kTargetManifestId.value(), kSourceManifestId.value());
 
@@ -206,7 +206,7 @@ TEST_F(InstallMigrateToAppCommandTest, SuccessUpdateSuggested) {
 }
 
 TEST_F(InstallMigrateToAppCommandTest, UrlLoadFailure) {
-  webapps::AppId source_app_id = InstallSourceApp();
+  InstallSourceApp();
   auto& page_state =
       web_contents_manager().GetOrCreatePageState(kTargetInstallUrl);
   page_state.url_load_result =
@@ -221,7 +221,7 @@ TEST_F(InstallMigrateToAppCommandTest, UrlLoadFailure) {
 }
 
 TEST_F(InstallMigrateToAppCommandTest, ManifestIdMismatch) {
-  webapps::AppId source_app_id = InstallSourceApp();
+  InstallSourceApp();
   SetupTargetPageState(GURL("https://app.com/wrong-id"), kSourceManifestId.value());
 
   EXPECT_EQ(ScheduleCommandAndWait(kSourceManifestId, kTargetManifestId,
@@ -233,7 +233,7 @@ TEST_F(InstallMigrateToAppCommandTest, ManifestIdMismatch) {
 }
 
 TEST_F(InstallMigrateToAppCommandTest, MigrateFromMismatch) {
-  webapps::AppId source_app_id = InstallSourceApp();
+  InstallSourceApp();
   SetupTargetPageState(kTargetManifestId.value(), GURL("https://app.com/wrong-source"));
 
   EXPECT_EQ(ScheduleCommandAndWait(kSourceManifestId, kTargetManifestId,

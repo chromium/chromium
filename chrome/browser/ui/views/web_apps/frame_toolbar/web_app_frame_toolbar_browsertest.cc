@@ -1998,7 +1998,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
     GTEST_SKIP();
   }
 
-  auto app_id = InstallAndLaunchFullyDraggableWebApp();
+  InstallAndLaunchFullyDraggableWebApp();
   ToggleWindowControlsOverlayAndWait();
 
   BrowserView* browser_view = helper()->browser_view();
@@ -2074,7 +2074,7 @@ IN_PROC_BROWSER_TEST_F(
   if (views::test::IsOzoneBubblesUsingPlatformWidgets()) {
     GTEST_SKIP();
   }
-  auto app_id = InstallAndLaunchFullyDraggableWebApp();
+  InstallAndLaunchFullyDraggableWebApp();
   ToggleWindowControlsOverlayAndWait();
   BrowserView* browser_view = helper()->browser_view();
   auto* app_controller =
@@ -2356,7 +2356,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 // app's window.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        DownloadIconVisibilityForAppDownload) {
-  webapps::AppId app_id = InstallAndLaunchWebApp();
+  InstallAndLaunchWebApp();
   ToggleWindowControlsOverlayAndWait();
 
   BrowserWindowInterface* non_app_browser = CreateBrowser(profile());
@@ -2395,7 +2395,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 // app's window.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        DownloadIconVisibilityForRegularDownload) {
-  webapps::AppId app_id = InstallAndLaunchWebApp();
+  InstallAndLaunchWebApp();
   ToggleWindowControlsOverlayAndWait();
 
   BrowserWindowInterface* non_app_browser = CreateBrowser(profile());
@@ -4528,7 +4528,7 @@ class WebAppFrameToolbarUninstallButtonTest
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarUninstallButtonTest, ButtonExists) {
   const GURL app_url("https://test.org");
-  webapps::AppId app_id = helper()->InstallAndLaunchWebApp(browser(), app_url);
+  helper()->InstallAndLaunchWebApp(browser(), app_url);
 
   WebAppToolbarButtonContainer* toolbar_right_container =
       helper()->web_app_frame_toolbar()->get_right_container_for_testing();

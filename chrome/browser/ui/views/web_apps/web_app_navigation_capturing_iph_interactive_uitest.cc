@@ -289,7 +289,7 @@ class WebAppNavigationCapturingIphUiTestParameterized
 
 IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
                        IPHShownOnLinkLeftClick) {
-  const webapps::AppId app_id = InstallTestWebApp(GetDestinationUrl());
+  InstallTestWebApp(GetDestinationUrl());
   RunTestSequence(
       OpenStartPage(),
       TriggerAppLaunch(kToSiteBTargetBlankNoOpener, ui_controls::LEFT),
@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
 IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
                        MAYBE_IPHShownOnLinkShiftClick) {
   const webapps::AppId app_id_a = InstallTestWebApp(GetStartUrl());
-  const webapps::AppId app_id_b = InstallTestWebApp(GetDestinationUrl());
+  InstallTestWebApp(GetDestinationUrl());
   RunTestSequence(
       OpenAppStartPage(app_id_a),
       TriggerAppLaunch(kToSiteBTargetBlankWithOpener, ui_controls::LEFT,
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
                        IPHNotShownOnAuxContext) {
   const webapps::AppId app_id_a = InstallTestWebApp(GetStartUrl());
-  const webapps::AppId app_id_b = InstallTestWebApp(GetDestinationUrl());
+  InstallTestWebApp(GetDestinationUrl());
 
   RunTestSequence(
       OpenAppStartPage(app_id_a),
@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
                        ClosingAppWindowMeasuresDismiss) {
-  const webapps::AppId app_id = InstallTestWebApp(GetDestinationUrl());
+  InstallTestWebApp(GetDestinationUrl());
 
   RunTestSequence(
       OpenStartPage(),
@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
                        AcceptingBubbleMeasuresUserAccept) {
-  const webapps::AppId app_id = InstallTestWebApp(GetDestinationUrl());
+  InstallTestWebApp(GetDestinationUrl());
   base::UserActionTester user_action_tester;
 
   RunTestSequence(
@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
                        BubbleDismissMeasuresUserDismiss) {
-  const webapps::AppId app_id = InstallTestWebApp(GetDestinationUrl());
+  InstallTestWebApp(GetDestinationUrl());
   base::UserActionTester user_action_tester;
 
   RunTestSequence(
@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
 
 IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
                        IPHShownForNavigateExistingAppInTab) {
-  webapps::AppId app_id = test::InstallWebApp(
+  test::InstallWebApp(
       browser()->GetProfile(),
       WebAppInstallInfo::CreateForTesting(
           GetDestinationUrl(), blink::mojom::DisplayMode::kBrowser,
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
 
 IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
                        IPHForAppInTabDisappearsOnNewTabOpen) {
-  webapps::AppId app_id = test::InstallWebApp(
+  test::InstallWebApp(
       browser()->GetProfile(),
       WebAppInstallInfo::CreateForTesting(
           GetDestinationUrl(), blink::mojom::DisplayMode::kBrowser,

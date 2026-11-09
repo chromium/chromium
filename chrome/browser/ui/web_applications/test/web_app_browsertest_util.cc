@@ -130,7 +130,6 @@ webapps::AppId InstallWebAppFromPage(BrowserWindowInterface* browser,
     return webapps::AppId();
   }
 
-  webapps::AppId app_id;
   base::RunLoop run_loop;
 
   auto* provider = WebAppProvider::GetForTest(browser->GetProfile());

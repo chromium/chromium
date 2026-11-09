@@ -858,10 +858,10 @@ TEST_F(FinalizeInstallOrUpdateJobTest,
 TEST_F(FinalizeInstallOrUpdateJobTest, OnWebAppManifestUpdatedTriggered) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
 
-  webapps::AppId app_id = test::InstallWebApp(
-      profile(), std::make_unique<WebAppInstallInfo>(info->Clone()),
-      /*overwrite_existing_manifest_fields=*/true,
-      webapps::WebappInstallSource::EXTERNAL_POLICY);
+  test::InstallWebApp(profile(),
+                      std::make_unique<WebAppInstallInfo>(info->Clone()),
+                      /*overwrite_existing_manifest_fields=*/true,
+                      webapps::WebappInstallSource::EXTERNAL_POLICY);
 
   FinalizeInstallResult result = AwaitFinalizeInstallOrUpdate(
       *info, FinalizeJobOptions::ForSilentUpdate());
@@ -922,10 +922,10 @@ TEST_F(FinalizeInstallOrUpdateJobTest, MigrationSourceChangeSchedulesSync) {
           {webapps::ManifestId(GURL("https://migration.foo.example/"))});
 
   // 1. Install without migration sources.
-  webapps::AppId app_id = test::InstallWebApp(
-      profile(), std::make_unique<WebAppInstallInfo>(info->Clone()),
-      /*overwrite_existing_manifest_fields=*/true,
-      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  test::InstallWebApp(profile(),
+                      std::make_unique<WebAppInstallInfo>(info->Clone()),
+                      /*overwrite_existing_manifest_fields=*/true,
+                      webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   // 2. Expect ScheduleResolveWebAppPendingMigrationInfo to be called.
   EXPECT_CALL(*mock_scheduler_, ScheduleResolveWebAppPendingMigrationInfo(_, _))

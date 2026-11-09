@@ -561,9 +561,9 @@ TEST_F(WebAppSyncBridgeTest, ApplyIncrementalSyncChanges_EmptyEntityChanges) {
 TEST_F(WebAppSyncBridgeTest, ApplyIncrementalSyncChanges_AddUpdateDelete) {
   StartWebAppProvider();
 
-  webapps::AppId app_id_to_keep = test::InstallDummyWebApp(
-      profile(), "To Keep", GURL("https://www.to_keep.com/"),
-      webapps::WebappInstallSource::SYNC);
+  test::InstallDummyWebApp(profile(), "To Keep",
+                           GURL("https://www.to_keep.com/"),
+                           webapps::WebappInstallSource::SYNC);
   webapps::AppId app_id_to_delete = test::InstallDummyWebApp(
       profile(), "To Delete", GURL("https://www.to_delete.com/"),
       webapps::WebappInstallSource::SYNC);
@@ -1030,8 +1030,6 @@ TEST_F(WebAppSyncBridgeTest, CanDeleteNonUserInstallableApps) {
 TEST_F(WebAppSyncBridgeTest,
        ApplyIncrementalSyncChanges_OnWebAppsWillBeUpdatedFromSync) {
   const GURL kStartUrl = GURL("https://www.example.com/index.html");
-  const webapps::AppId kAppId = GenerateAppIdFromManifestId(
-      GenerateManifestIdFromStartUrlOnly(kStartUrl));
 
   test::AwaitStartWebAppProviderAndSubsystems(profile());
 

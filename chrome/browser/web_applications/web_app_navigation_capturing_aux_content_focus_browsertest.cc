@@ -41,10 +41,10 @@ class WebAppNavigationCapturingAuxContentFocusBrowserTest
 #endif
 IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingAuxContentFocusBrowserTest,
                        MAYBE_NoFocusForAuxContent) {
-  webapps::AppId app_id = test::InstallWebApp(
-      profile(), WebAppInstallInfo::CreateForTesting(
-                     GetAppUrl(), blink::mojom::DisplayMode::kMinimalUi,
-                     mojom::UserDisplayMode::kStandalone, GetParam()));
+  test::InstallWebApp(profile(),
+                      WebAppInstallInfo::CreateForTesting(
+                          GetAppUrl(), blink::mojom::DisplayMode::kMinimalUi,
+                          mojom::UserDisplayMode::kStandalone, GetParam()));
 
   // Launch the app in an auxiliary browsing context (opener = true).
   content::WebContents* intermediary_tab =

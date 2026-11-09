@@ -200,7 +200,7 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
 
 TEST_F(ManifestSilentUpdateCommandTest, VerifyAppUpToDate) {
   SetupBasicInstallablePageState();
-  webapps::AppId app_id = test::InstallForWebContents(
+  test::InstallForWebContents(
       profile(), web_contents(),
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
@@ -1560,8 +1560,7 @@ TEST_F(ManifestSilentUpdateCommandTest, NoIconToIcons) {
   web_app_install_info->display_mode = DisplayMode::kStandalone;
   web_app_install_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
   web_app_install_info->is_generated_icon = true;
-  webapps::AppId app_id =
-      test::InstallWebApp(profile(), std::move(web_app_install_info));
+  test::InstallWebApp(profile(), std::move(web_app_install_info));
 
   SetupBasicInstallablePageState();
   ManifestSilentUpdateCheckResult result = RunManifestUpdateAndGetResult();
@@ -1574,8 +1573,7 @@ TEST_F(ManifestSilentUpdateCommandTest, OpenInBrowserTabUpdate) {
   web_app_install_info->title = u"A Basic Web App";
   web_app_install_info->display_mode = DisplayMode::kBrowser;
   web_app_install_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
-  webapps::AppId app_id =
-      test::InstallWebApp(profile(), std::move(web_app_install_info));
+  test::InstallWebApp(profile(), std::move(web_app_install_info));
 
   SetupBasicInstallablePageState();
   ManifestSilentUpdateCheckResult result = RunManifestUpdateAndGetResult();
@@ -1783,7 +1781,7 @@ class ManifestSilentUpdateCommandExternalAppsTest
 
 TEST_P(ManifestSilentUpdateCommandExternalAppsTest, AppUpToDate) {
   SetupBasicInstallablePageState();
-  webapps::AppId app_id = InstallExternallyManagedAppFromSource();
+  InstallExternallyManagedAppFromSource();
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppUpToDate);

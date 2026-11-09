@@ -44,7 +44,6 @@ MATCHER_P2(ForAllGetAllSamples,
                              negation)})) {
   bool success = true;
   for (const auto& histogram : histogram_list) {
-    auto result = arg.GetAllSamples(histogram);
     bool pass = testing::ExplainMatchResult(
         matcher, arg.GetAllSamples(histogram), result_listener);
     if (!pass) {

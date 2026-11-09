@@ -914,7 +914,6 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   app->allow_close = !registrar().IsPreventCloseEnabled(web_app->app_id());
 
   for (const auto& shortcut : web_app->shortcuts_menu_item_infos()) {
-    const std::string name = base::UTF16ToUTF8(shortcut.name);
     std::string shortcut_id = GenerateShortcutId();
     StoreShortcutId(shortcut_id, shortcut);
   }

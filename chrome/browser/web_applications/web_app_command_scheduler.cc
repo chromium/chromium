@@ -1033,7 +1033,6 @@ void WebAppCommandScheduler::LaunchAppWithKeepAlives(
          std::unique_ptr<ScopedKeepAlive> browser_keep_alive) {},
       std::move(profile_keep_alive), std::move(browser_keep_alive)));
 
-  webapps::AppId app_id = params.app_id;
   provider_->command_manager().ScheduleCommand(
       std::make_unique<LaunchWebAppCommand>(&profile_.get(), provider_.get(),
                                             std::move(params), launch_setting,

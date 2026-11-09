@@ -2010,7 +2010,6 @@ class PreinstalledWebAppManagerSimpleBrowserTest
       return nullptr;
     }
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    std::string destination = request.GetURL().spec() + "/redirected";
     response->set_code(net::HTTP_TEMPORARY_REDIRECT);
     response->set_content_type("text/html");
     response->AddCustomHeader("Location", GetOutOfScopeUrl().spec());

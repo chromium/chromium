@@ -227,7 +227,6 @@ webapps::AppId InstallWebAppWithoutOsIntegration(
     web_app_info->title = u"WebAppInstallInfo App Name";
   }
 
-  webapps::AppId app_id;
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       future;
   auto* provider = WebAppProvider::GetForTest(profile);

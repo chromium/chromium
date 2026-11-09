@@ -407,8 +407,6 @@ IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
 IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
                        UserAcceptsOpenDialog) {
   GURL current_doc_url = embedded_https_test_server().GetURL(kTestPageWithId);
-  const std::string manifest_id =
-      GenerateManifestId("some_id", current_doc_url).spec();
 
   base::AutoReset<web_app::InstallDialogTestResponse> auto_accept_pwa =
       web_app::SetPwaInstallationAutoRespondForTesting(
@@ -416,8 +414,7 @@ IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
   base::HistogramTester histograms;
 
   // Install current doc, wait for app browser window to appear and close it.
-  webapps::AppId app_id =
-      web_app::InstallWebAppInNewTabAndClose(browser(), current_doc_url);
+  web_app::InstallWebAppInNewTabAndClose(browser(), current_doc_url);
 
   // Navigate again to the just installed current doc in the browser window.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), current_doc_url));
@@ -459,8 +456,6 @@ IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
 IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
                        UserCancelsOpenDialog) {
   GURL current_doc_url = embedded_https_test_server().GetURL(kTestPageWithId);
-  const std::string manifest_id =
-      GenerateManifestId("some_id", current_doc_url).spec();
 
   base::AutoReset<web_app::InstallDialogTestResponse> auto_accept_pwa =
       web_app::SetPwaInstallationAutoRespondForTesting(
@@ -468,8 +463,7 @@ IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
   base::HistogramTester histograms;
 
   // Install current doc, wait for app browser window to appear and close it.
-  webapps::AppId app_id =
-      web_app::InstallWebAppInNewTabAndClose(browser(), current_doc_url);
+  web_app::InstallWebAppInNewTabAndClose(browser(), current_doc_url);
 
   // Navigate again to the just installed current doc in the browser window.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), current_doc_url));
@@ -507,8 +501,7 @@ IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
   base::HistogramTester histograms;
 
   // Install current doc, wait for app browser window to appear and close it.
-  webapps::AppId app_id =
-      web_app::InstallWebAppInNewTabAndClose(browser(), current_doc_url);
+  web_app::InstallWebAppInNewTabAndClose(browser(), current_doc_url);
 
   views::NamedWidgetShownWaiter intent_picker_bubble_shown(
       views::test::AnyWidgetTestPasskey{},

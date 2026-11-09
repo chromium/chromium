@@ -246,7 +246,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppGenericPermissionsPolicyBrowserTest,
 
   content::RenderFrameHost* const frame = OpenApp(url_info.app_id());
   ASSERT_TRUE(frame);
-  const std::string origin = url_info.origin().Serialize();
 
   EXPECT_THAT(GetAllowedFeatures(frame), IsEmpty());
 

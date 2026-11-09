@@ -660,8 +660,6 @@ TEST_F(WebAppRegistrarTest, CanFindAppWithUrlInScope) {
       GenerateAppId(/*manifest_id=*/std::nullopt, app2_scope);
   const webapps::AppId app3_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, app3_scope);
-  const webapps::AppId app4_id =
-      GenerateAppId(/*manifest_id=*/std::nullopt, app3_scope);
 
   auto app1 = test::CreateWebApp(app1_scope);
   RegisterAppUnsafe(std::move(app1));
@@ -1078,7 +1076,6 @@ TEST_F(WebAppRegistrarTest, SaveAndGetInMemoryControlledFramePartitionConfig) {
   GURL start_url(base::StrCat({webapps::kIsolatedAppScheme,
                                url::kStandardSchemeSeparator, kIwaHostname}));
   auto isolated_web_app = test::CreateWebApp(start_url);
-  const webapps::AppId app_id = isolated_web_app->app_id();
   auto url_info = IsolatedWebAppUrlInfo::Create(start_url);
   ASSERT_TRUE(url_info.has_value());
 
@@ -1364,7 +1361,6 @@ TEST_F(WebAppRegistrarTest, AppsDoNotOverlapIfNestedScope) {
       proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE);
 
   const webapps::AppId app_id1 = web_app1->app_id();
-  const webapps::AppId app_id2 = web_app2->app_id();
   RegisterAppUnsafe(std::move(web_app1));
   RegisterAppUnsafe(std::move(web_app2));
 
@@ -1558,7 +1554,6 @@ TEST_F(WebAppRegistrarTest, InnerAndOuterScopeIntentPicker) {
   auto no_match_scope_app =
       test::CreateWebApp(GURL("https://def.com/"), WebAppManagement::kSync);
   no_match_scope_app->SetName("App_No_Match");
-  const webapps::AppId no_match_scope_app_id = no_match_scope_app->app_id();
   RegisterAppUnsafe(std::move(no_match_scope_app));
 
   // This should not be considered since this app is not set to open in a new
@@ -1568,7 +1563,6 @@ TEST_F(WebAppRegistrarTest, InnerAndOuterScopeIntentPicker) {
       GURL("https://abc.com/inner/"));
   browser_mode_app->SetName("App_Browser");
   browser_mode_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
-  const webapps::AppId browser_mode_app_id = browser_mode_app->app_id();
   RegisterAppUnsafe(std::move(browser_mode_app));
 
   EXPECT_THAT(registrar().GetAllAppsControllingUrl(document_url),

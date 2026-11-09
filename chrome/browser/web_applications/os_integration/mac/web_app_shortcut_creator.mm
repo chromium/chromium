@@ -454,7 +454,6 @@ base::FilePath WebAppShortcutCreator::GetShortcutBasename() const {
     return GetFallbackBasename();
   }
 
-  std::u16string title = info_->title;
   std::optional<base::SafeBaseName> base_name =
       shortcuts::SanitizeTitleForFileName(base::UTF16ToUTF8(info_->title));
   if (!base_name.has_value()) {

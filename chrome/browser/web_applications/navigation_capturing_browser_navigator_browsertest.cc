@@ -637,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(
     MAYBE_NavigateBrowserUsedForNavigateExistingToBrowserTab) {
   // Test that the browser provided in NavigateParams is used when using a
   // browser to open a browser tab, instead of the most recently active browser.
-  const webapps::AppId& app_id = InstallTestWebApp(
+  InstallTestWebApp(
       GetAppNoManifestUrl(), mojom::UserDisplayMode::kBrowser,
       blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting);
 
@@ -703,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
                        NavigateBrowserUsedForFocusExistingToBrowserTab) {
   // Test that the browser provided in NavigateParams is used when using a
   // browser to open a browser tab, instead of the most recently active browser.
-  const webapps::AppId& app_id = InstallTestWebApp(
+  InstallTestWebApp(
       GetAppNoManifestUrl(), mojom::UserDisplayMode::kBrowser,
       blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting);
 
@@ -891,8 +891,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
                        SameDocumentSubframeNavigationDoesNotAttachLaunchData) {
   const GURL app_url = GetAppNoManifestUrl();
-  const webapps::AppId app_id =
-      InstallTestWebApp(app_url, mojom::UserDisplayMode::kStandalone);
+  InstallTestWebApp(app_url, mojom::UserDisplayMode::kStandalone);
 
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1029,10 +1028,8 @@ IN_PROC_BROWSER_TEST_F(LaunchContainerMetricMeasurementTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetFocusExistingUrl()));
 
   // Install both apps.
-  const webapps::AppId& source_app =
-      InstallWebAppInNewTabAndClose(browser(), GetFocusExistingUrl());
-  const webapps::AppId& dest_app =
-      InstallWebAppInNewTabAndClose(browser(), GetNavigateExistingUrl());
+  InstallWebAppInNewTabAndClose(browser(), GetFocusExistingUrl());
+  InstallWebAppInNewTabAndClose(browser(), GetNavigateExistingUrl());
 
   // Trigger a navigation to `kNavigateExistingUrl`. This should end up in the
   // browser tab.

@@ -219,8 +219,6 @@ TEST_F(OsIntegrationSynchronizeCommandTest, ProtocolHandlers) {
   EXPECT_THAT(protocol_handler_state.url(), testing::Eq(protocol_handler.url));
 
   apps::ProtocolHandlerInfo protocol_handler2;
-  const std::string handler_url2 =
-      std::string(kWebAppUrl.spec()) + "/testing2=%s";
   protocol_handler2.url = GURL(handler_url);
   protocol_handler2.protocol = "web+test2";
 

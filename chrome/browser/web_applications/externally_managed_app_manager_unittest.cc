@@ -1213,8 +1213,8 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlSameSourceInstallNow) {
   auto app_ids = fake_provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids, ElementsAre(app_id1));
 
-  webapps::AppId app_id2 = web_contents_manager().CreateBasicInstallPageState(
-      kInstallUrl, kManifestUrl2, kStartUrl2);
+  web_contents_manager().CreateBasicInstallPageState(kInstallUrl, kManifestUrl2,
+                                                     kStartUrl2);
 
   {
     ExternalInstallOptions options = template_options;
@@ -1259,8 +1259,8 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlTwoSourcesInstallNow) {
   auto app_ids = fake_provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids, ElementsAre(app_id1));
 
-  webapps::AppId app_id2 = web_contents_manager().CreateBasicInstallPageState(
-      kInstallUrl, kManifestUrl2, kStartUrl2);
+  web_contents_manager().CreateBasicInstallPageState(kInstallUrl, kManifestUrl2,
+                                                     kStartUrl2);
 
   {
     ExternalInstallOptions options = template_options;
@@ -1305,8 +1305,8 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlTwoSourcesSynchronize) {
   auto app_ids = fake_provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids, ElementsAre(app_id1));
 
-  webapps::AppId app_id2 = web_contents_manager().CreateBasicInstallPageState(
-      kInstallUrl, kManifestUrl2, kStartUrl2);
+  web_contents_manager().CreateBasicInstallPageState(kInstallUrl, kManifestUrl2,
+                                                     kStartUrl2);
 
   {
     SynchronizeFuture result;
