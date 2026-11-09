@@ -839,9 +839,15 @@ void AppShimManager::OnShimLaunchRequested(
 
 void AppShimManager::OnShimProcessConnected(
     std::unique_ptr<AppShimHostBootstrap> bootstrap) {
-  // TODO(crbug.com/582657474): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK(crx_file::id_util::IdIsValid(bootstrap->GetAppId()));
+  // The app id comes from the (potentially tampered-with) shim process, so
+  // reject invalid ids rather than asserting on them.
+  if (!crx_file::id_util::IdIsValid(bootstrap->GetAppId())) {
+    LOG(ERROR) << "Rejecting app shim connection with invalid app id.";
+    app_controller_mac::ResetKeepAliveWhileHidden();
+    bootstrap->OnFailedToConnectToHost(
+        chrome::mojom::AppShimLaunchResult::kFailedValidation);
+    return;
+  }
   if (app_shim_observer_) {
     app_shim_observer_->OnShimProcessConnected(bootstrap->GetAppShimPid());
   }

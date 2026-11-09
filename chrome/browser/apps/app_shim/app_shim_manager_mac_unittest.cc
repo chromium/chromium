@@ -741,6 +741,20 @@ TEST_F(AppShimManagerTest, LaunchProfileIsLocked) {
             *bootstrap_aa_result_);
 }
 
+TEST_F(AppShimManagerTest, LaunchInvalidAppIdRejected) {
+  std::optional<chrome::mojom::AppShimLaunchResult> launch_result;
+  base::WeakPtr<TestingAppShimHostBootstrap> bootstrap =
+      (new TestingAppShimHostBootstrap(profile_path_a_, "not_a_valid_crx_id",
+                                       /*is_from_bookmark=*/true,
+                                       &launch_result))
+          ->GetWeakPtr();
+  EXPECT_CALL(*delegate_, LaunchApp(_, _, _, _, _, _, _)).Times(0);
+  NormalLaunch(bootstrap, nullptr);
+  EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kFailedValidation,
+            launch_result);
+  EXPECT_FALSE(bootstrap);
+}
+
 TEST_F(AppShimManagerTest, LaunchAppNotFound) {
   // App not found.
   EXPECT_CALL(*delegate_, AppIsInstalled(&profile_a_, kTestAppIdA))
