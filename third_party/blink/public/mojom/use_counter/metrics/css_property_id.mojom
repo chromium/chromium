@@ -1047,6 +1047,7 @@ enum CSSSampleId {
     kBorderLeftRadius = 972,
     kBorderRightRadius = 973,
     kBorderTopRadius = 974,
+    kAnimationNavigationBehavior = 975,
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
     // 2. Run the src/tools/metrics/histograms/update_use_counter_css.py script

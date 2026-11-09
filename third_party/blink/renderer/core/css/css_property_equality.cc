@@ -1600,6 +1600,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAnimationFillMode:
     case CSSPropertyID::kAnimationIterationCount:
     case CSSPropertyID::kAnimationName:
+    case CSSPropertyID::kAnimationNavigationBehavior:
     case CSSPropertyID::kAnimationPlayState:
     case CSSPropertyID::kAnimationRange:
     case CSSPropertyID::kAnimationRangeEnd:

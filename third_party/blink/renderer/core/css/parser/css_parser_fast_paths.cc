@@ -1146,6 +1146,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
               value_id <= CSSValueID::kMathematical);
     case CSSPropertyID::kAll:
       return false;  // Only accepts css-wide keywords
+    case CSSPropertyID::kAnimationNavigationBehavior:
+      return value_id == CSSValueID::kAbrupt ||
+             value_id == CSSValueID::kContinuous;
     case CSSPropertyID::kBaselineSource:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kFirst ||
              value_id == CSSValueID::kLast;
@@ -1736,6 +1739,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
 CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kAlignmentBaseline,
     CSSPropertyID::kAll,
+    CSSPropertyID::kAnimationNavigationBehavior,
     CSSPropertyID::kAppearance,
     CSSPropertyID::kMixBlendMode,
     CSSPropertyID::kIsolation,

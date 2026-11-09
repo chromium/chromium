@@ -67,6 +67,12 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   const Vector<EAnimPlayState>& PlayStateList() const {
     return play_state_list_;
   }
+  EAnimationNavigationBehavior NavigationBehavior() const {
+    return navigation_behavior_;
+  }
+  void SetNavigationBehavior(EAnimationNavigationBehavior behavior) {
+    navigation_behavior_ = behavior;
+  }
   const Vector<std::optional<TimelineOffset>>& RangeStartList() const {
     return range_start_list_;
   }
@@ -178,6 +184,9 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   static Timing::FillMode InitialFillMode() { return Timing::FillMode::NONE; }
   static double InitialIterationCount() { return 1.0; }
   static EAnimPlayState InitialPlayState() { return EAnimPlayState::kPlaying; }
+  static EAnimationNavigationBehavior InitialNavigationBehavior() {
+    return EAnimationNavigationBehavior::kAbrupt;
+  }
   static std::optional<TimelineOffset> InitialRangeStart() {
     return std::nullopt;
   }
@@ -231,6 +240,8 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   HeapVector<StyleTimeline> timeline_trigger_source_list_;
 
   TriggerAttachmentsListType trigger_attachments_list_;
+  EAnimationNavigationBehavior navigation_behavior_ =
+      InitialNavigationBehavior();
 };
 
 }  // namespace blink

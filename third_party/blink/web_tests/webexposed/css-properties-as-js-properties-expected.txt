@@ -18,6 +18,7 @@ animationDuration
 animationFillMode
 animationIterationCount
 animationName
+animationNavigationBehavior
 animationPlayState
 animationRange
 animationRangeEnd

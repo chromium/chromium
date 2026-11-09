@@ -1651,6 +1651,11 @@
       status: "experimental",
     },
     {
+      name: "CSSAnimationNavigationBehavior",
+      depends_on: ["NavigateEventDeferCrossDocumentCommit"],
+      status: "experimental",
+    },
+    {
       // https://drafts.csswg.org/css-values-5/#early-resolution
       name: "CSSArgumentGrammar",
       status: "test",

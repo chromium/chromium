@@ -342,6 +342,8 @@ enum class QuoteType : unsigned { kOpen, kClose, kNoOpen, kNoClose };
 
 enum class EAnimPlayState : unsigned { kPlaying, kPaused };
 
+enum class EAnimationNavigationBehavior : unsigned { kAbrupt, kContinuous };
+
 enum class OffsetRotationType : unsigned { kAuto, kFixed };
 
 static const size_t kGridAutoFlowBits = 4;

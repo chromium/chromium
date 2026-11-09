@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Animations: parsing animation-navigation-behavior with invalid values</title>
+<meta name="assert" content="animation-navigation-behavior supports only the grammar 'abrupt | continuous'.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_invalid_value("animation-navigation-behavior", "auto");
+test_invalid_value("animation-navigation-behavior", "none");
+test_invalid_value("animation-navigation-behavior", "normal");
+test_invalid_value("animation-navigation-behavior", "0");
+test_invalid_value("animation-navigation-behavior", "abrupt continuous");
+test_invalid_value("animation-navigation-behavior", "abrupt, continuous");
+</script>
+</body>
+</html>

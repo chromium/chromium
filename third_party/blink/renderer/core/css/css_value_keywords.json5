@@ -2165,5 +2165,9 @@
     // overscroll-container-type
     // "none", "auto", "overlay" already exist above
     "push",
+
+    // animation-navigation-behavior
+    // "continuous" already exists above
+    "abrupt",
   ],
 }

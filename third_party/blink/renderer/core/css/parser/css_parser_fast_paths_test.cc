@@ -613,4 +613,44 @@ TEST(CSSParserFastPathsTest, TextDecorationSkipInk_All) {
   EXPECT_EQ(nullptr, value);
 }
 
+TEST(CSSParserFastPathsTest, ParseAnimationNavigationBehavior) {
+  ScopedCSSAnimationNavigationBehaviorForTest scoped_feature(true);
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+
+  EXPECT_TRUE(CSSParserFastPaths::IsHandledByKeywordFastPath(
+      CSSPropertyID::kAnimationNavigationBehavior));
+
+  const CSSValue* value = CSSParserFastPaths::MaybeParseValue(
+      CSSPropertyID::kAnimationNavigationBehavior, "abrupt", context);
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ(CSSValueID::kAbrupt, To<CSSIdentifierValue>(value)->GetValueID());
+  EXPECT_TRUE(CSSParser::ParseSingleValue(
+      CSSPropertyID::kAnimationNavigationBehavior, "abrupt", context));
+
+  value = CSSParserFastPaths::MaybeParseValue(
+      CSSPropertyID::kAnimationNavigationBehavior, "continuous", context);
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ(CSSValueID::kContinuous,
+            To<CSSIdentifierValue>(value)->GetValueID());
+  EXPECT_TRUE(CSSParser::ParseSingleValue(
+      CSSPropertyID::kAnimationNavigationBehavior, "continuous", context));
+
+  value = CSSParserFastPaths::MaybeParseValue(
+      CSSPropertyID::kAnimationNavigationBehavior, "CoNtInUoUs", context);
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ(CSSValueID::kContinuous,
+            To<CSSIdentifierValue>(value)->GetValueID());
+
+  for (const char* invalid : {"auto", "none", "abrupt, continuous"}) {
+    SCOPED_TRACE(invalid);
+    EXPECT_EQ(nullptr, CSSParserFastPaths::MaybeParseValue(
+                           CSSPropertyID::kAnimationNavigationBehavior, invalid,
+                           context));
+    EXPECT_EQ(nullptr, CSSParser::ParseSingleValue(
+                           CSSPropertyID::kAnimationNavigationBehavior, invalid,
+                           context));
+  }
+}
+
 }  // namespace blink

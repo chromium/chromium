@@ -8833,6 +8833,7 @@ Called by update_use_counter_css.py.-->
   <int value="972" label="border-left-radius"/>
   <int value="973" label="border-right-radius"/>
   <int value="974" label="border-top-radius"/>
+  <int value="975" label="animation-navigation-behavior"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

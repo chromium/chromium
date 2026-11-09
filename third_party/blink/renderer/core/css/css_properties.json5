@@ -1076,6 +1076,19 @@
       valid_for_keyframe: false,
     },
     {
+      name: "animation-navigation-behavior",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      style_builder_custom_functions: ["initial", "inherit", "value"],
+      runtime_flag: "CSSAnimationNavigationBehavior",
+      keywords: ["abrupt", "continuous"],
+      typedom_types: ["Keyword"],
+      valid_for_marker: true,
+      is_animation_affecting: true,
+      // Animation properties are never incremental.
+      supports_incremental_style: false,
+      valid_for_keyframe: false,
+    },
+    {
       name: "animation-play-state",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "animation",

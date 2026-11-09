@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Animations: getComputedStyle().animationNavigationBehavior</title>
+<meta name="assert" content="animation-navigation-behavior computed value is as specified, initial is abrupt, does not inherit, and is not reset by animation shorthand.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+<script src="/css/support/inheritance-testcommon.js"></script>
+</head>
+<body>
+<div id="container">
+  <div id="target"></div>
+</div>
+<script>
+'use strict';
+
+test_computed_value("animation-navigation-behavior", "abrupt");
+test_computed_value("animation-navigation-behavior", "continuous");
+
+assert_not_inherited("animation-navigation-behavior", "abrupt", "continuous");
+
+test(() => {
+  const target = document.getElementById("target");
+  target.style.animationNavigationBehavior = "continuous";
+  target.style.animation = "anim 1s";
+  assert_equals(getComputedStyle(target).animationNavigationBehavior, "continuous");
+  target.style.animation = "";
+  target.style.animationNavigationBehavior = "";
+}, "animation shorthand does not reset animation-navigation-behavior");
+</script>
+</body>
+</html>

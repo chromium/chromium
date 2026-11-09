@@ -773,6 +773,29 @@ inline CSSValueID PlatformEnumToCSSValueID(EContinue v) {
   NOTREACHED();
 }
 
+template <>
+inline EAnimationNavigationBehavior CssValueIDToPlatformEnum(CSSValueID v) {
+  switch (v) {
+    case CSSValueID::kAbrupt:
+      return EAnimationNavigationBehavior::kAbrupt;
+    case CSSValueID::kContinuous:
+      return EAnimationNavigationBehavior::kContinuous;
+    default:
+      NOTREACHED();
+  }
+}
+
+template <>
+inline CSSValueID PlatformEnumToCSSValueID(EAnimationNavigationBehavior v) {
+  switch (v) {
+    case EAnimationNavigationBehavior::kAbrupt:
+      return CSSValueID::kAbrupt;
+    case EAnimationNavigationBehavior::kContinuous:
+      return CSSValueID::kContinuous;
+  }
+  NOTREACHED();
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_ID_MAPPINGS_H_

@@ -82,6 +82,7 @@ bool CSSAnimationData::AnimationsMatchForStyleRecalc(
          fill_mode_list_ == other.fill_mode_list_ &&
          range_start_list_ == other.range_start_list_ &&
          range_end_list_ == other.range_end_list_ &&
+         navigation_behavior_ == other.navigation_behavior_ &&
          TimingMatchForStyleRecalc(other) && TriggersMatchForStyleRecalc(other);
 }
 
