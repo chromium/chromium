@@ -2080,8 +2080,7 @@ TEST_P(SQLDatabaseTest, CollectDiagnosticInfo) {
     EXPECT_TRUE(error_expecter.SawExpectedErrors());
 
     DatabaseDiagnostics diagnostics;
-    const std::string error_info =
-        db_->CollectErrorInfo(SQLITE_ERROR, &s, &diagnostics);
+    db_->CollectErrorInfo(SQLITE_ERROR, &s, &diagnostics);
     // Expect that the error message contains the table name and a column error.
     EXPECT_TRUE(diagnostics.error_message.contains("table"));
     EXPECT_TRUE(diagnostics.error_message.contains("volcano"));
