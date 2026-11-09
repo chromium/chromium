@@ -624,15 +624,6 @@ struct NetworkContextParams {
   // while DBSC is still being rolled out.
   array<SchemefulSite> device_bound_sessions_restricted_sites;
 
-  // Represents a net::handles::NetworkHandle.
-  // If != net::handles::kInvalidNetworkHandle (== -1), then the NetworkContext
-  // built out of this will own a URLRequestContext bound to that network (refer
-  // to net::UrlRequestContextBuilder::bindToNetwork documentation). This
-  // effectively means that URLLoaderFactories, returned by the NetworkContext
-  // created out of this, will perform all network request using only
-  // |bound_network|.
-  int64 bound_network = -1;
-
   // Enables usage of net::dns::StaleHostResolver. This is only available
   // as opt-in in Android. This will be used during constructing
   // the URLRequestContextOwner object in the NetworkContext.

@@ -10,7 +10,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/network_handle.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -105,12 +104,6 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
 
   mojom::DevToolsObserver* GetDevToolsObserver() const;
-
-  // Returns the network that URLLoaders, created out of this factory, will
-  // target. If == net::handles::kInvalidNetworkHandle, then no network is being
-  // targeted and the system default network will be used (see
-  // network.mojom.NetworkContextParams::bound_network for more info).
-  net::handles::NetworkHandle GetBoundNetworkForTesting() const;
 
   static constexpr int kMaxKeepaliveConnections = 2048;
   static constexpr int kMaxKeepaliveConnectionsPerTopLevelFrame = 256;

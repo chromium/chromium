@@ -16,7 +16,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "net/base/network_handle.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -81,8 +80,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrefetchMatchingURLLoaderFactory final
 
   // Methods called by NetworkContext.
   void ClearBindings();
-
-  net::handles::NetworkHandle GetBoundNetworkForTesting() const;
 
   // Methods called from CorsURLLoaderFactory.
   void DestroyURLLoaderFactory(cors::CorsURLLoaderFactory* factory);

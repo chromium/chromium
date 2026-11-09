@@ -22,7 +22,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
-#include "net/base/network_handle.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
@@ -281,21 +280,6 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
     mojo::ReportBadMessage(
         "CorsURLLoaderFactory: isolated_world_origin_lock set when "
         "ignore_isolated_world_origin is true");
-  }
-  if (context_->url_request_context()->bound_network() !=
-      net::handles::kInvalidNetworkHandle) {
-    // CorsURLLoaderFactories bound to a network allow CORS preflight load
-    // options (see CorsURLLoaderFactory::IsCorsPreflighLoadOptionAllowed for
-    // the rationale). To prevent security issues, such a factory must not be
-    // issuing CORS preflight requests itself. This is, for example, to prevent
-    // compromised renderers from using a CorsURLLoaderFactory that doesn't
-    // trigger CORS preflight requests, but also does not fail requests which
-    // represent CORS preflights. In other words, these two things are mutually
-    // exclusive and a CorsURLLoaderFactory must either:
-    // 1. Perform CORS, but fail loads that represent CORS preflight requests
-    // 2. Allow loads that represent CORS preflight requests, but do not perform
-    //    CORS
-    CHECK(disable_web_security_);
   }
   if (params->automatically_assign_isolation_info) {
     DCHECK(params->isolation_info.IsEmpty());
@@ -563,48 +547,6 @@ bool CorsURLLoaderFactory::IsValidCorsExemptHeaders(
   return true;
 }
 
-bool CorsURLLoaderFactory::IsMultiNetworkCCTWorkFlow() const {
-  return context_->url_request_context()->bound_network() !=
-         net::handles::kInvalidNetworkHandle;
-}
-
-bool CorsURLLoaderFactory::IsCorsPreflighLoadOptionAllowed() const {
-  // kURLLoadOptionAsCorsPreflight is set by CorsURLLoader itself, when
-  // starting a request, if CORS preflight request is needed.
-  // More precisely:
-  // - CorsURLLoader will create an additional request
-  // - Set kURLLoadOptionAsCorsPreflight within that one
-  // - Send that request via the network URLLoaderFactory that
-  //   CorsURLLoaderFactory is wrapping
-  // The code then makes the following assumption: the network
-  // URLLoaderFactory should not be a CorsURLLoaderFactory. As such,
-  // we should never see kURLLoadOptionAsCorsPreflight for a
-  // request going through CorsURLLoaderFactory (since they should only be sent
-  // via network URLLoaderFactories, which we're assuming are not
-  // CorsURLLoaderFactories).
-  // This is generally true, with the exception of two special scenarios:
-  // 1) PreflightControllerTest, tracked at crbug.com/40203308 and allowed via
-  //    `allow_external_preflights_for_testing_`.
-  // 2) Multi-network CCT, tracked at crbug.com/366242716 and allowed via
-  //    context_->url_request_context()->bound_network().
-  // In both scenarios, we end up with a CorsURLLoaderFactory acting as another
-  // CorsURLLoaderFactory's network URLLoaderFactory (for different reasons,
-  // see associated bugs for context). This is due to the way
-  // `URLLoaderFactoryParams.disable_web_security` works: the generated
-  // URLLoaderFactory won't create CorsURLLoaders but it will still be a
-  // CorsURLLoaderFactory. Due to that, the CORS preflight request will be
-  // flowing through the inner CorsURLLoaderFactory: here, we must not fail
-  // them, as this happening is "correct".
-  //
-  // Note: we could also just check for `disable_web_security_`. This is
-  // "simpler", but it casts a widernet : the subset of calling sites disabling
-  // web security is bigger than those creating a CorsURLLoaderFactory targeting
-  // a valid network. So, given that this config is security critical, it's best
-  // to "peek into implementation details" rather than granting this exception
-  // to a bigger group.
-  return allow_external_preflights_for_testing_ || IsMultiNetworkCCTWorkFlow();
-}
-
 bool CorsURLLoaderFactory::IsValidRequest(
     ResourceRequest& request,
     uint32_t options,
@@ -642,24 +584,8 @@ bool CorsURLLoaderFactory::IsValidRequest(
   if (request.load_flags &
       (net::LOAD_CAN_USE_SHARED_DICTIONARY |
        net::LOAD_DISABLE_SHARED_DICTIONARY_AFTER_CROSS_ORIGIN_REDIRECT)) {
-    // In the multi-network CCT workflow, when fetching the subresource, we
-    // create a nested CorsURLLoaderFactory to run the same request on a
-    // specific network. That causes this check to be invoked twice: the first
-    // invocation performs the authoritative validation, and later passes may
-    // add internal flags to the request. Re-validating here is unnecessary and
-    // can falsely reject otherwise valid requests (See
-    // CorsURLLoaderFactory::IsCorsPreflighLoadOptionAllowed for the rational).
-    // Note: Skipping this check is appropriate for subresource requests.
-    // For main page loads or navigation requests, ideally the check should
-    // still be performed as there is no nesting. However, since this is only
-    // a sanity check, skipping it here is safe.
-    // TODO(crbug.com/449098586): refactor to get rid of nested
-    // CorsURLLoaderFactory to make the design clearer.
-    if (!IsMultiNetworkCCTWorkFlow()) {
-      mojo::ReportBadMessage(
-          "CorsURLLoaderFactory: Internal load flag received");
-      return false;
-    }
+    mojo::ReportBadMessage("CorsURLLoaderFactory: Internal load flag received");
+    return false;
   }
 
   if (!process_id_.is_browser() && request.is_outermost_main_frame &&
@@ -990,7 +916,7 @@ bool CorsURLLoaderFactory::IsValidRequest(
   }
 
   if ((options & mojom::kURLLoadOptionAsCorsPreflight) &&
-      !IsCorsPreflighLoadOptionAllowed()) {
+      !allow_external_preflights_for_testing_) {
     mojo::ReportBadMessage(
         "CorsURLLoaderFactory: kURLLoadOptionAsCorsPreflight is set");
     return false;
@@ -1090,12 +1016,6 @@ mojom::SharedDictionaryAccessObserver*
 CorsURLLoaderFactory::GetSharedDictionaryAccessObserver() const {
   return shared_dictionary_observer_ ? shared_dictionary_observer_.get()
                                      : nullptr;
-}
-
-net::handles::NetworkHandle CorsURLLoaderFactory::GetBoundNetworkForTesting()
-    const {
-  CHECK(!factory_override_);
-  return network_loader_factory_->GetBoundNetworkForTesting();  // IN-TEST
 }
 
 }  // namespace network::cors

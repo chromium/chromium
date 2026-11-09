@@ -802,8 +802,7 @@ NetworkContext::NetworkContext(
       http_auth_merged_preferences_(network_service),
       ohttp_handler_(this),
       prefetch_enabled_(
-          base::FeatureList::IsEnabled(features::kNetworkContextPrefetch) &&
-          (params_->bound_network == net::handles::kInvalidNetworkHandle)),
+          base::FeatureList::IsEnabled(features::kNetworkContextPrefetch)),
       cors_non_wildcard_request_headers_support_(base::FeatureList::IsEnabled(
           features::kCorsNonWildcardRequestHeadersSupport)),
       prefetch_cache_(prefetch_enabled_ ? std::make_unique<PrefetchCache>()
@@ -883,8 +882,7 @@ NetworkContext::NetworkContext(
   url_request_context_owner_ = MakeURLRequestContext(
       std::move(url_loader_factory_for_cert_net_fetcher),
       session_cleanup_cookie_store,
-      std::move(on_url_request_context_builder_configured),
-      params_->bound_network);
+      std::move(on_url_request_context_builder_configured));
   url_request_context_ = url_request_context_owner_.url_request_context.get();
 
   cookie_manager_ = std::make_unique<CookieManager>(
@@ -1015,9 +1013,7 @@ NetworkContext::NetworkContext(
       http_auth_merged_preferences_(network_service),
       ohttp_handler_(this),
       prefetch_enabled_(
-          base::FeatureList::IsEnabled(features::kNetworkContextPrefetch) &&
-          (url_request_context_->bound_network() ==
-           net::handles::kInvalidNetworkHandle)),
+          base::FeatureList::IsEnabled(features::kNetworkContextPrefetch)),
       prefetch_cache_(prefetch_enabled_ ? std::make_unique<PrefetchCache>()
                                         : nullptr) {
   TRACE_EVENT0("loading", "NetworkContext::NetworkContext");
@@ -1207,14 +1203,6 @@ void NetworkContext::CreateURLLoaderFactoryForCertNetFetcher(
   url_loader_factory_params->process_id = OriginatingProcessId::browser();
   url_loader_factory_params->automatically_assign_isolation_info = true;
   url_loader_factory_params->is_orb_enabled = false;
-  if (url_request_context()->bound_network() !=
-      net::handles::kInvalidNetworkHandle) {
-    // This is done to maintain consistency with network-bound
-    // URLLoaderFactories used by multi-network CCT. See
-    // CorsURLLoaderFactory::IsCorsPreflighLoadOptionAllowed
-    // http://crrev.com/c/5899528.
-    url_loader_factory_params->disable_web_security = true;
-  }
   CreateURLLoaderFactory(std::move(factory_receiver),
                          std::move(url_loader_factory_params));
 }
@@ -3304,14 +3292,6 @@ WebTransport* NetworkContext::GetWebTransportForTesting() {
   return web_transports_.begin()->get();
 }
 
-size_t NetworkContext::CountURLLoaderFactoriesBoundToNetworkForTesting(
-    net::handles::NetworkHandle target_network) const {
-  return std::ranges::count_if(
-      url_loader_factories_, [target_network](const auto& factory) {
-        return factory->GetBoundNetworkForTesting() == target_network;
-      });
-}
-
 void NetworkContext::OnHttpAuthDynamicParamsChanged(
     const mojom::HttpAuthDynamicParams*
         http_auth_dynamic_network_service_params) {
@@ -3368,16 +3348,10 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         url_loader_factory_for_cert_net_fetcher,
     scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store,
     OnURLRequestContextBuilderConfiguredCallback
-        on_url_request_context_builder_configured,
-    net::handles::NetworkHandle bound_network) {
+        on_url_request_context_builder_configured) {
   URLRequestContextBuilderMojo builder;
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
-
-  bool is_network_bound = bound_network != net::handles::kInvalidNetworkHandle;
-  if (is_network_bound) {
-    builder.BindToNetwork(bound_network);
-  }
 
   std::unique_ptr<net::CertVerifier> cert_verifier;
   if (g_cert_verifier_for_testing) {
@@ -3433,15 +3407,10 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   if (network_service_) {
     net_log = network_service_->net_log();
     builder.set_net_log(net_log);
-    if (!is_network_bound) {
-      // Network bound URLRequestContexts build and configure their own special
-      // HostResolverManager and HostResolver. So, don't inject the
-      // NetworkService one even if NetworkService is enabled.
-      builder.set_host_resolver_manager(
-          network_service_->host_resolver_manager());
-      builder.set_host_resolver_factory(
-          network_service_->host_resolver_factory());
-    }
+    builder.set_host_resolver_manager(
+        network_service_->host_resolver_manager());
+    builder.set_host_resolver_factory(
+        network_service_->host_resolver_factory());
     builder.SetHttpAuthHandlerFactory(
         network_service_->CreateHttpAuthHandlerFactory(this));
     builder.set_network_quality_estimator(
@@ -3505,9 +3474,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       cache_params.type =
           net::URLRequestContextBuilder::HttpCacheParams::IN_MEMORY;
     } else {
-      // Network-bound NetworkContexts should not persist state on disk.
-      CHECK(!is_network_bound);
-
       cache_params.path = params_->file_paths->http_cache_directory->path();
       if (params_->file_paths->no_vary_search_directory) {
         cache_params.no_vary_search_path =
@@ -3598,8 +3564,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
                           &network::mojom::NetworkContextFilePaths::
                               http_server_properties_file_name,
                           http_server_properties_file_name)) {
-    // Network-bound NetworkContexts should not persist state on disk.
-    CHECK(!is_network_bound);
     scoped_refptr<JsonPrefStore> json_pref_store(new JsonPrefStore(
         http_server_properties_file_name, nullptr,
         base::ThreadPool::CreateSequencedTaskRunner(
@@ -3645,8 +3609,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
                           &network::mojom::NetworkContextFilePaths::
                               transport_security_persister_file_name,
                           transport_security_persister_file_name)) {
-    // Network-bound NetworkContexts should not persist state on disk.
-    CHECK(!is_network_bound);
     builder.set_transport_security_persister_file_path(
         transport_security_persister_file_name);
   }
@@ -3677,8 +3639,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
                               reporting_and_nel_store_database_name,
                           reporting_and_nel_store_database_name) &&
       (reporting_enabled || nel_enabled)) {
-    // Network-bound NetworkContexts should not persist state on disk.
-    CHECK(!is_network_bound);
     scoped_refptr<base::SequencedTaskRunner> client_task_runner =
         base::SingleThreadTaskRunner::GetCurrentDefault();
     scoped_refptr<base::SequencedTaskRunner> background_task_runner =
@@ -3841,8 +3801,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
                             &network::mojom::NetworkContextFilePaths::
                                 device_bound_sessions_database_name,
                             device_bound_sessions_file_path)) {
-      // Network-bound NetworkContexts should not persist state on disk.
-      CHECK(!is_network_bound);
       builder.set_device_bound_sessions_file_path(
           device_bound_sessions_file_path);
     }

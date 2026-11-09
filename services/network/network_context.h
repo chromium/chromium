@@ -779,11 +779,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return url_loader_factories_.size();
   }
 
-  // Returns how many URLLoaderFactories owned by `this` are bound to
-  // `target_network`.
-  size_t CountURLLoaderFactoriesBoundToNetworkForTesting(
-      net::handles::NetworkHandle target_network) const;
-
   GURL GetNetworkRestrictionResponseUrlForTesting(
       const base::UnguessableToken& network_restrictions_id) const;
 
@@ -932,8 +927,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
           url_loader_factory_for_cert_net_fetcher,
       scoped_refptr<SessionCleanupCookieStore>,
       OnURLRequestContextBuilderConfiguredCallback
-          on_url_request_context_builder_configured,
-      net::handles::NetworkHandle bound_network);
+          on_url_request_context_builder_configured);
   scoped_refptr<SessionCleanupCookieStore> MakeSessionCleanupCookieStore()
       const;
 
