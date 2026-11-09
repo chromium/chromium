@@ -149,6 +149,37 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
         /*window=*/7, /*storage=*/kMaxStoragePeriod));
     return config;
   }
+
+  if (kClankNewTabPageThemeCustomizationPromosGroup.name == group->name) {
+    // Shared cooldown group for Clank NTP theme customization user education
+    // surfaces (the 3-dot app menu IPH
+    // `kIPHNewTabPageThemeCustomizationFeature` and the Magic Stack card
+    // `kIPHNewTabPageThemeCustomizationMagicStackFeature`).
+    // * Session rate restrictions are delegated to each individual feature's
+    //   `FeatureConfig` (`kNoRestrictions` on the group so it does not override
+    //   the Magic Stack card's `kNoRestrictions`).
+    // * At most one promo from this group can be shown across a 7-day window.
+    GroupConfig config = GroupConfig();
+    config.valid = true;
+    config.session_rate = kNoRestrictions;
+    config.trigger = EventConfig(
+        "ntp_theme_customization_promos_group_triggered", Comparator(EQUAL, 0),
+        /*window=*/7, /*storage=*/kMaxStoragePeriod);
+    // Also block the group if either member surface's individual trigger event
+    // was recorded within the last 7 days (both for backwards compatibility
+    // with `ntp_theme_customization_iph_triggered` prior to group enrollment
+    // and in case `ntp_theme_customization_magic_stack_triggered` is recorded
+    // directly via `Tracker::NotifyEvent`).
+    config.event_configs.insert(
+        EventConfig("ntp_theme_customization_iph_triggered",
+                    Comparator(EQUAL, 0), /*window=*/7,
+                    /*storage=*/kMaxStoragePeriod));
+    config.event_configs.insert(
+        EventConfig("ntp_theme_customization_magic_stack_triggered",
+                    Comparator(EQUAL, 0), /*window=*/7,
+                    /*storage=*/kMaxStoragePeriod));
+    return config;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   if (kIPHDummyGroup.name == group->name) {

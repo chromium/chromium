@@ -1552,6 +1552,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         segmentation_platform::features::
             kNewTabPageCustomizationV2IphDisplayIntervalDays.Get(),
         /*storage=*/k10YearsInDays));
+    // Enrolled in `kClankNewTabPageThemeCustomizationPromosGroup` so that
+    // showing either this 3-dot menu IPH or the NTP theme customization promo
+    // Magic Stack card enforces a shared 7-day cooldown across both surfaces.
+    config.groups.push_back(kClankNewTabPageThemeCustomizationPromosGroup.name);
     return config;
   }
   if (kIPHNewTabPageThemeCustomizationMagicStackFeature.name == feature->name) {
@@ -1562,6 +1566,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // * Without per-session IPH rate or blocking restrictions, as card ranking
     //   and session frequency are managed by the Magic Stack and Segmentation
     //   Platform.
+    // * Only when neither this Magic Stack card nor the 3-dot menu NTP theme
+    //   customization IPH has been triggered in the last 7 days (enforced via
+    //   `kClankNewTabPageThemeCustomizationPromosGroup`).
     FeatureConfig config;
     config.valid = true;
     config.availability = kAlwaysAvailable;
@@ -1582,6 +1589,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.used =
         EventConfig("ntp_theme_customization_magic_stack_used", kAlwaysTrue,
                     /*window=*/0, /*storage=*/k10YearsInDays);
+    config.groups.push_back(kClankNewTabPageThemeCustomizationPromosGroup.name);
 
     return config;
   }

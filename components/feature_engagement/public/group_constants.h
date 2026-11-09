@@ -23,6 +23,7 @@ BASE_DECLARE_FEATURE(kiOSHomepageNewBadgesGroup);
 #endif  // BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kClankDefaultBrowserPromosGroup);
+BASE_DECLARE_FEATURE(kClankNewTabPageThemeCustomizationPromosGroup);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace feature_engagement

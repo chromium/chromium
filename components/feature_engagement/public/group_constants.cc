@@ -40,6 +40,9 @@ BASE_FEATURE(kiOSHomepageNewBadgesGroup,
 BASE_FEATURE(kClankDefaultBrowserPromosGroup,
              "IPH_ClankDefaultBrowserPromosGroup",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kClankNewTabPageThemeCustomizationPromosGroup,
+             "IPH_ClankNewTabPageThemeCustomizationPromosGroup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace feature_engagement

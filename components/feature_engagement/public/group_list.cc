@@ -24,6 +24,7 @@ const base::Feature* const kAllGroups[] = {
 #endif  // BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_ANDROID)
     &kClankDefaultBrowserPromosGroup,
+    &kClankNewTabPageThemeCustomizationPromosGroup,
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 }  // namespace
