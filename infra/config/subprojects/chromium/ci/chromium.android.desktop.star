@@ -274,12 +274,14 @@ ci.thin_tester(
                 mixins = [
                     "15-desktop-x64-emulator",
                     "emulator-8-cores",
+                    "force-desktop-android",
                 ],
             ),
             targets.bundle(
                 targets = "android_desktop_isolated_script_tests",
                 mixins = [
                     "15-desktop-x64-emulator",
+                    "android_desktop_wpt_args",
                     "emulator-8-cores",
                 ],
             ),
@@ -299,6 +301,9 @@ ci.thin_tester(
                 ),
             ),
             "chrome_public_test_apk_desktop": targets.mixin(
+                args = [
+                    "--annotation=Restriction=Desktop,Restriction=TabletOrDesktop,ImportantFormFactors=Desktop,ImportantFormFactors=TabletOrDesktop",
+                ],
                 swarming = targets.swarming(
                     shards = 6,
                 ),

@@ -80,6 +80,7 @@ ci.builder(
         mixins = [
             "15-desktop-x64-emulator",
             "emulator-8-cores",
+            "force-desktop-android",
         ],
         per_test_modifications = {
             "android_browsertests": targets.mixin(
@@ -178,6 +179,9 @@ ci.builder(
                 ),
             ),
             "chrome_public_test_apk_desktop": targets.mixin(
+                args = [
+                    "--annotation=Restriction=Desktop,Restriction=DesktopFreeform,Restriction=TabletOrDesktop,ImportantFormFactors=Desktop,ImportantFormFactors=DesktopFreeform,ImportantFormFactors=TabletOrDesktop",
+                ],
                 swarming = targets.swarming(
                     shards = 4,
                 ),

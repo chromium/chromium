@@ -339,7 +339,6 @@ targets.bundle(
         "chrome_public_test_apk",
     ],
     mixins = [
-        "force-desktop-android",
         "has_native_resultdb_integration",
         "linux-jammy",
         "x86-64",
@@ -373,7 +372,6 @@ targets.bundle(
         "video_encode_accelerator_tests",
     ],
     mixins = [
-        "force-desktop-android",
         "has_native_resultdb_integration",
         "linux-jammy",
         "x86-64",
@@ -424,7 +422,6 @@ targets.bundle(
         "android_chrome_wpt_tests",
     ],
     mixins = [
-        "android_desktop_wpt_args",
         "has_native_resultdb_integration",
         "linux-jammy",
         "x86-64",

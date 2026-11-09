@@ -616,9 +616,6 @@ targets.tests.gtest_test(
     mixins = [
         "skia_gold_test",
     ],
-    args = [
-        "--annotation=Restriction=Desktop,Restriction=TabletOrDesktop,ImportantFormFactors=Desktop,ImportantFormFactors=TabletOrDesktop",
-    ],
     binary = "chrome_public_test_apk",
 )
 

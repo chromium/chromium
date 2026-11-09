@@ -3,7 +3,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_37_desktop_x64.textpb",
           "--force-main-user",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_17.android_browsertests.filter",
@@ -56,7 +55,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--force-desktop-android",
           "--timeout-scale=2.0",
           "--avd-config=../../tools/android/avd/proto/android_37_desktop_x64.textpb",
           "--force-main-user",
@@ -114,12 +112,11 @@
       },
       {
         "args": [
-          "--annotation=Restriction=Desktop,Restriction=TabletOrDesktop,ImportantFormFactors=Desktop,ImportantFormFactors=TabletOrDesktop",
           "--git-revision=${got_revision}",
-          "--force-desktop-android",
           "--timeout-scale=2.0",
           "--avd-config=../../tools/android/avd/proto/android_37_desktop_x64.textpb",
           "--force-main-user",
+          "--annotation=Restriction=Desktop,Restriction=DesktopFreeform,Restriction=TabletOrDesktop,ImportantFormFactors=Desktop,ImportantFormFactors=DesktopFreeform,ImportantFormFactors=TabletOrDesktop",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -174,7 +171,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_37_desktop_x64.textpb",
           "--force-main-user",
           "--gs-results-bucket=chromium-result-details",
@@ -230,7 +226,6 @@
       },
       {
         "args": [
-          "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_37_desktop_x64.textpb",
           "--force-main-user",
           "--gs-results-bucket=chromium-result-details",
@@ -280,7 +275,6 @@
       },
       {
         "args": [
-          "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_37_desktop_x64.textpb",
           "--force-main-user",
           "--gtest_filter=-AAC/AACAudioEncoderTest.FullCycleEncodeDecode*",
@@ -331,7 +325,6 @@
       },
       {
         "args": [
-          "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_37_desktop_x64.textpb",
           "--force-main-user",
           "--gs-results-bucket=chromium-result-details",
@@ -382,7 +375,6 @@
       },
       {
         "args": [
-          "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_37_desktop_x64.textpb",
           "--force-main-user",
           "--gs-results-bucket=chromium-result-details",
@@ -441,7 +433,6 @@
           "reftest",
           "crashtest",
           "print-reftest",
-          "--additional-driver-flag=--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_37_desktop_x64.textpb"
         ],
         "description": "Run with android_37_desktop_x64",
