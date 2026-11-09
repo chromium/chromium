@@ -20,7 +20,9 @@
 
 std::string ChromeColorIdName(ui::ColorId color_id) {
   std::string_view css_name = ChromeColorIdToCSSColorId(color_id);
-  CHECK(!css_name.empty(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/583315848): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!css_name.empty());
   return ui::ConvertCSSColorIdToColorIdName(css_name);
 }
 
