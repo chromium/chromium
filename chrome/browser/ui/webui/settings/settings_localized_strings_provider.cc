@@ -2154,9 +2154,15 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "emailVerificationProtocolEnabled",
       base::FeatureList::IsEnabled(features::kEmailVerificationProtocol));
-  html_source->AddBoolean("autofillGmailOtpFillingEnabled",
-                          base::FeatureList::IsEnabled(
-                              features::kGlicActorAutofillOneTimePassword));
+  // The Gmail OTP filling opt-in is shared by Actor OTP filling and Autofill
+  // Gmail OTP suggestions. Show it when either feature is enabled so that the
+  // two features don't depend on each other for launch.
+  html_source->AddBoolean(
+      "autofillGmailOtpFillingEnabled",
+      base::FeatureList::IsEnabled(
+          features::kGlicActorAutofillOneTimePassword) ||
+          base::FeatureList::IsEnabled(
+              autofill::features::kAutofillShowGmailOtpSuggestions));
   html_source->AddString(
       "enableGmailOtpFillingDescription",
       l10n_util::GetStringFUTF16(
