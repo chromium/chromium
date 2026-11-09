@@ -31,6 +31,7 @@
 #include "ui/gl/ca_renderer_layer_params.h"
 
 @class AVSampleBufferDisplayLayer;
+@class CAShapeLayer;
 
 namespace ui {
 
@@ -293,6 +294,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     gfx::RRectF backdrop_filter_bounds_;
 
     CALayer* __strong ca_layer_;
+    CAShapeLayer* __strong backdrop_mask_ca_layer_;
 
     // If this layer's contents can be represented as an
     // AVSampleBufferDisplayLayer, then |ca_layer| will point to |av_layer|.

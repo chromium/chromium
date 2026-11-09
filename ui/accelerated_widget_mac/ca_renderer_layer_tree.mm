@@ -111,14 +111,6 @@ bool GetCALayerCornerRadius(const gfx::RRectF& rrect,
   return true;
 }
 
-// Returns true if `rrect` can be represented natively by CALayer
-// `cornerRadius` + `maskedCorners`. See GetCALayerCornerRadius().
-bool IsCALayerCornerRadiusCompatible(const gfx::RRectF& rrect) {
-  float corner_radius = 0.0f;
-  CACornerMask corner_mask = 0;
-  return GetCALayerCornerRadius(rrect, &corner_radius, &corner_mask);
-}
-
 // Applies hardware `cornerRadius` and `maskedCorners` to `layer` if `rrect` can
 // be represented natively by CALayer. Returns false (leaving `layer` unchanged)
 // otherwise. See GetCALayerCornerRadius().
@@ -156,6 +148,64 @@ void ClipCALayerToRRectF(CALayer* layer,
       -dip_rounded_corner_bounds.x(), -dip_rounded_corner_bounds.y(), 0);
 
   CHECK(ApplyCornerRadiusToCALayer(layer, rrect, scale_factor));
+}
+
+base::apple::ScopedCFTypeRef<CGPathRef> CreatePathForRRect(gfx::RRectF rrect,
+                                                           float scale_factor) {
+  if (scale_factor > 0.0f && scale_factor != 1.0f) {
+    rrect.Scale(1.0f / scale_factor);
+  }
+  const CGFloat w = rrect.rect().width();
+  const CGFloat h = rrect.rect().height();
+
+  base::apple::ScopedCFTypeRef<CGMutablePathRef> path(CGPathCreateMutable());
+  if (rrect.GetType() == gfx::RRectF::Type::kOval) {
+    CGPathAddEllipseInRect(path.get(), nullptr, CGRectMake(0, 0, w, h));
+    return base::apple::ScopedCFTypeRef<CGPathRef>(path.release());
+  }
+
+  const auto ul = rrect.GetCornerRadii(gfx::RRectF::Corner::kUpperLeft);
+  const auto ur = rrect.GetCornerRadii(gfx::RRectF::Corner::kUpperRight);
+  const auto lr = rrect.GetCornerRadii(gfx::RRectF::Corner::kLowerRight);
+  const auto ll = rrect.GetCornerRadii(gfx::RRectF::Corner::kLowerLeft);
+
+  // Magic constant for cubic Bezier approximation of a quarter ellipse.
+  // k = 4/3 * (sqrt(2) - 1)
+  constexpr CGFloat k = 0.5522847498307933984022516322796;
+
+  // Start at upper-left corner end (beginning of top horizontal segment).
+  CGPathMoveToPoint(path.get(), nullptr, ul.x(), 0);
+
+  // Top edge and upper-right corner.
+  CGPathAddLineToPoint(path.get(), nullptr, w - ur.x(), 0);
+  if (ur.x() > 0 && ur.y() > 0) {
+    CGPathAddCurveToPoint(path.get(), nullptr, w - (1.0 - k) * ur.x(), 0, w,
+                          (1.0 - k) * ur.y(), w, ur.y());
+  }
+
+  // Right edge and lower-right corner.
+  CGPathAddLineToPoint(path.get(), nullptr, w, h - lr.y());
+  if (lr.x() > 0 && lr.y() > 0) {
+    CGPathAddCurveToPoint(path.get(), nullptr, w, h - (1.0 - k) * lr.y(),
+                          w - (1.0 - k) * lr.x(), h, w - lr.x(), h);
+  }
+
+  // Bottom edge and lower-left corner.
+  CGPathAddLineToPoint(path.get(), nullptr, ll.x(), h);
+  if (ll.x() > 0 && ll.y() > 0) {
+    CGPathAddCurveToPoint(path.get(), nullptr, (1.0 - k) * ll.x(), h, 0,
+                          h - (1.0 - k) * ll.y(), 0, h - ll.y());
+  }
+
+  // Left edge and upper-left corner.
+  CGPathAddLineToPoint(path.get(), nullptr, 0, ul.y());
+  if (ul.x() > 0 && ul.y() > 0) {
+    CGPathAddCurveToPoint(path.get(), nullptr, 0, (1.0 - k) * ul.y(),
+                          (1.0 - k) * ul.x(), 0, ul.x(), 0);
+  }
+
+  CGPathCloseSubpath(path.get());
+  return base::apple::ScopedCFTypeRef<CGPathRef>(path.release());
 }
 
 class ComparatorSkColor4f {
@@ -454,9 +504,6 @@ bool CARendererLayerTree::ScheduleCALayer(const CARendererLayerParams& params) {
     // backdrop behind the group. Viz overlay promotion must reject non-unit
     // opacity before reaching here.
     CHECK_EQ(params.opacity, 1.0f);
-    if (params.backdrop_filter_bounds.has_value()) {
-      CHECK(IsCALayerCornerRadiusCompatible(*params.backdrop_filter_bounds));
-    }
   }
   return root_layer_.AddContentLayer(params);
 }
@@ -961,6 +1008,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(
 
 CARendererLayerTree::ContentLayer::~ContentLayer() {
   [ca_layer_ removeFromSuperlayer];
+  ca_layer_.mask = nil;
   [update_indicator_layer_ removeFromSuperlayer];
 }
 
@@ -1224,6 +1272,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
     CHECK(old_layer_->ca_layer_, base::NotFatalUntil::M163);
     std::swap(ca_layer_, old_layer_->ca_layer_);
     std::swap(av_layer_, old_layer_->av_layer_);
+    std::swap(backdrop_mask_ca_layer_, old_layer_->backdrop_mask_ca_layer_);
     update_contents =
         old_layer_->io_surface_ != io_surface_ ||
         old_layer_->io_surface_color_space_ != io_surface_color_space_ ||
@@ -1300,6 +1349,13 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
                          update_ca_filter || update_backdrop_filter_bounds ||
                          update_backdrop_filter;
 
+  if (update_rect) {
+    gfx::RectF dip_rect = gfx::RectF(rect_);
+    dip_rect.Scale(1 / tree()->scale_factor_);
+    ca_layer_.position = CGPointMake(dip_rect.x(), dip_rect.y());
+    ca_layer_.bounds = CGRectMake(0, 0, dip_rect.width(), dip_rect.height());
+  }
+
   if (type_ == CALayerType::kBackdropFilter) {
     CommitBackdropFilterToCA(update_backdrop_filter,
                              update_backdrop_filter_bounds);
@@ -1307,12 +1363,6 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
     CommitContentsToCA(update_contents, update_contents_rect);
   }
 
-  if (update_rect) {
-    gfx::RectF dip_rect = gfx::RectF(rect_);
-    dip_rect.Scale(1 / tree()->scale_factor_);
-    ca_layer_.position = CGPointMake(dip_rect.x(), dip_rect.y());
-    ca_layer_.bounds = CGRectMake(0, 0, dip_rect.width(), dip_rect.height());
-  }
   if (update_background_color) {
     CGFloat rgba_color_components[4] = {
         background_color_.fR,
@@ -1438,9 +1488,37 @@ void CARendererLayerTree::ContentLayer::CommitBackdropFilterToCA(
     ca_layer_.filters = backdrop_filters;
   }
   if (update_backdrop_filter_bounds) {
-    // Representability is validated in ScheduleCALayer().
-    CHECK(ApplyCornerRadiusToCALayer(ca_layer_, backdrop_filter_bounds_,
-                                     tree()->scale_factor_));
+    const gfx::RRectF& bounds = backdrop_filter_bounds_;
+    // Pure rectangles, uniform corner radii, and partial-corner uniform
+    // circular radii are clipped natively in hardware by CABackdropLayer via
+    // cornerRadius, maskedCorners, and masksToBounds = YES, avoiding expensive
+    // offscreen mask render passes in WindowServer. Only fall back to a
+    // CAShapeLayer mask when the corners are elliptical or have multiple
+    // distinct non-zero radii.
+    if (ApplyCornerRadiusToCALayer(ca_layer_, bounds, tree()->scale_factor_)) {
+      if (ca_layer_.mask) {
+        ca_layer_.mask = nil;
+      }
+      backdrop_mask_ca_layer_ = nil;
+    } else {
+      if (!backdrop_mask_ca_layer_) {
+        backdrop_mask_ca_layer_ = [[CAShapeLayer alloc] init];
+        backdrop_mask_ca_layer_.anchorPoint = CGPointZero;
+        backdrop_mask_ca_layer_.fillColor =
+            CGColorGetConstantColor(kCGColorBlack);
+      }
+      backdrop_mask_ca_layer_.position = CGPointZero;
+      backdrop_mask_ca_layer_.bounds = ca_layer_.bounds;
+      backdrop_mask_ca_layer_.contentsScale = tree()->scale_factor_;
+      base::apple::ScopedCFTypeRef<CGPathRef> path =
+          CreatePathForRRect(bounds, tree()->scale_factor_);
+      backdrop_mask_ca_layer_.path = path.get();
+      if (ca_layer_.mask != backdrop_mask_ca_layer_) {
+        ca_layer_.mask = backdrop_mask_ca_layer_;
+      }
+      ca_layer_.cornerRadius = 0.0f;
+      ca_layer_.maskedCorners = 0;
+    }
   }
 }
 

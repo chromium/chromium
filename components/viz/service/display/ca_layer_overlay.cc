@@ -272,7 +272,7 @@ bool ExtractBackdropFilter(const AggregatedRenderPassDrawQuad* quad,
     local_matrix.postScale(quad->filters_scale.x(), quad->filters_scale.y());
     auto bounds = SkPathToRRectF(
         quad->backdrop_filter_bounds->makeTransform(local_matrix));
-    if (!bounds.has_value() || !IsMaskableRRect(*bounds)) {
+    if (!bounds.has_value()) {
       return false;
     }
     // Plain rectangles can always be clipped directly to `visible_rect`.

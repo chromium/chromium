@@ -638,8 +638,7 @@ TEST_F(CALayerOverlayRPDQTest, RenderPassDrawQuadBlurBackdropFilterWithBounds) {
   EXPECT_TRUE(ca_layer_list_.back().rounded_corners.IsEmpty());
 }
 
-TEST_F(CALayerOverlayRPDQTest,
-       RenderPassDrawQuadBackdropFilterBoundsOvalRejected) {
+TEST_F(CALayerOverlayRPDQTest, RenderPassDrawQuadBackdropFilterBoundsOval) {
   SkRect oval_rect =
       SkRect::MakeXYWH(kOverlayRect.x(), kOverlayRect.y(), kOverlayRect.width(),
                        kOverlayRect.height() / 2);
@@ -647,11 +646,15 @@ TEST_F(CALayerOverlayRPDQTest,
       cc::FilterOperations({cc::FilterOperation::CreateBlurFilter(15.0f)}),
       SkPath::Oval(oval_rect));
   ProcessForOverlays();
-  EXPECT_EQ(0U, test::NumOverlaysExcludingPrimaryPlane(ca_layer_list_));
+  EXPECT_EQ(1U, test::NumOverlaysExcludingPrimaryPlane(ca_layer_list_));
+  ASSERT_TRUE(ca_layer_list_.back().backdrop_filter_params.has_value());
+  EXPECT_EQ(15.0f, ca_layer_list_.back().backdrop_filter_params->blur_radius);
+  EXPECT_EQ(gfx::RRectF(SkRRect::MakeOval(oval_rect)),
+            ca_layer_list_.back().backdrop_filter_bounds);
 }
 
 TEST_F(CALayerOverlayRPDQTest,
-       RenderPassDrawQuadBackdropFilterBoundsAsymmetricRejected) {
+       RenderPassDrawQuadBackdropFilterBoundsAsymmetric) {
   SkVector radii[4] = {
       {40.0f, 40.0f}, {10.0f, 10.0f}, {40.0f, 40.0f}, {10.0f, 10.0f}};
   SkRRect rrect;
@@ -663,7 +666,10 @@ TEST_F(CALayerOverlayRPDQTest,
       cc::FilterOperations({cc::FilterOperation::CreateBlurFilter(15.0f)}),
       SkPath::RRect(rrect));
   ProcessForOverlays();
-  EXPECT_EQ(0U, test::NumOverlaysExcludingPrimaryPlane(ca_layer_list_));
+  EXPECT_EQ(1U, test::NumOverlaysExcludingPrimaryPlane(ca_layer_list_));
+  ASSERT_TRUE(ca_layer_list_.back().backdrop_filter_params.has_value());
+  EXPECT_EQ(15.0f, ca_layer_list_.back().backdrop_filter_params->blur_radius);
+  EXPECT_EQ(gfx::RRectF(rrect), ca_layer_list_.back().backdrop_filter_bounds);
 }
 
 TEST_F(CALayerOverlayRPDQTest, RenderPassDrawQuadBackdropFilterChainRejected) {
