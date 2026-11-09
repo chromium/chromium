@@ -149,11 +149,10 @@ public final class BottomSheetType {
      *     higher precedence than {@code a}, or 0 if they have equal precedence.
      */
     public static int compare(BottomSheetType a, BottomSheetType b) {
-        int tierComparison = comparePrecedenceTier(a, b);
-        if (tierComparison != 0) {
-            return tierComparison;
+        if (a.isSuppressible() != b.isSuppressible()) {
+            return Boolean.compare(a.isSuppressible(), b.isSuppressible());
         }
-        return Boolean.compare(a.isSuppressible(), b.isSuppressible());
+        return comparePrecedenceTier(a, b);
     }
 
     private static int comparePrecedenceTier(BottomSheetType a, BottomSheetType b) {

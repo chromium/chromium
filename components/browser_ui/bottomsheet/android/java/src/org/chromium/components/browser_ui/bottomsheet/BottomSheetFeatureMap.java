@@ -24,7 +24,7 @@ public final class BottomSheetFeatureMap extends FeatureMap {
     public static final MutableFlagWithSafeDefault sBottomSheetDeferContentSwapOnHidden =
             newMutableFlagWithSafeDefault(BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN, true);
     public static final MutableFlagWithSafeDefault sBottomSheetTypes =
-            newMutableFlagWithSafeDefault(BOTTOM_SHEET_TYPES, false);
+            newMutableFlagWithSafeDefault(BOTTOM_SHEET_TYPES, true);
 
     // Do not instantiate this class.
     private BottomSheetFeatureMap() {}

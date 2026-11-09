@@ -291,13 +291,13 @@ public class BottomSheetTypeUnitTest {
                         .setSuppressible(true)
                         .build();
 
-        assertEquals(-1, BottomSheetType.compare(higherPrecedence, suppressibleUserInitiated));
-        assertEquals(-1, BottomSheetType.compare(suppressibleUserInitiated, lowerPrecedence));
         assertEquals(-1, BottomSheetType.compare(higherPrecedence, lowerPrecedence));
+        assertEquals(-1, BottomSheetType.compare(lowerPrecedence, suppressibleUserInitiated));
+        assertEquals(-1, BottomSheetType.compare(higherPrecedence, suppressibleUserInitiated));
 
-        assertEquals(-1, BottomSheetType.compare(lowerPrecedence, suppressiblePassiveModal));
-        assertEquals(-1, BottomSheetType.compare(suppressiblePassiveModal, passiveNonModal));
-        assertEquals(-1, BottomSheetType.compare(passiveNonModal, iph));
+        assertEquals(-1, BottomSheetType.compare(lowerPrecedence, passiveNonModal));
+        assertEquals(-1, BottomSheetType.compare(passiveNonModal, suppressiblePassiveModal));
+        assertEquals(-1, BottomSheetType.compare(suppressiblePassiveModal, iph));
         assertEquals(-1, BottomSheetType.compare(lowerPrecedence, iph));
         assertEquals(1, BottomSheetType.compare(iph, higherPrecedence));
         assertEquals(1, BottomSheetType.compare(iph, suppressibleUserInitiated));
