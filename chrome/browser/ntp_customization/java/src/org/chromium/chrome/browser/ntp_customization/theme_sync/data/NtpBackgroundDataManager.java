@@ -10,6 +10,7 @@ import androidx.annotation.ColorInt;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -132,32 +133,62 @@ public class NtpBackgroundDataManager {
             NtpBackgroundDataThemeCollection themeCollectionData) {
         PostTask.postTask(
                 TaskTraits.USER_VISIBLE_MAY_BLOCK,
-                () -> updateRemoteSyncDataToSharedPreferenceImpl(themeCollectionData));
+                () ->
+                        replaceBackgroundDataInPlace(
+                                themeCollectionData, themeCollectionData.getPlatformType()));
     }
 
-    private void updateRemoteSyncDataToSharedPreferenceImpl(
-            NtpBackgroundDataThemeCollection themeCollectionToUpdate) {
+    /**
+     * Replaces the entry of the {@code groupPlatformTypeToUpdate} list that is the same theme as
+     * {@code backgroundData} (see {@link NtpBackgroundDataBase#equals}) with {@code
+     * backgroundData}, at the same index and with the platform type of the replaced entry. Nothing
+     * is written if there is no such entry.
+     *
+     * @param backgroundData The background data to store in place of the existing entry.
+     * @param groupPlatformTypeToUpdate The platform type of the group list to update. It may differ
+     *     from the platform type of {@code backgroundData}, e.g. the local list is updated with a
+     *     rotated background whatever platform it carries.
+     */
+    private void replaceBackgroundDataInPlace(
+            NtpBackgroundDataBase backgroundData, @PlatformType int groupPlatformTypeToUpdate) {
         try {
-            @PlatformType int platformType = themeCollectionToUpdate.getPlatformType();
             NtpBackgroundDataGroup currentGroup =
-                    getBackgroundDataGroupFromSharedPreference(platformType);
+                    getBackgroundDataGroupFromSharedPreference(groupPlatformTypeToUpdate);
             if (currentGroup.isEmpty()) return;
 
-            int index = currentGroup.indexOf(themeCollectionToUpdate);
+            int index = currentGroup.indexOf(backgroundData);
             if (index == -1) return;
 
-            currentGroup.getList().set(index, themeCollectionToUpdate);
-            // Updates existing remote sync data.
-            writeToSharedPreference(
-                    currentGroup.toJsonArray(), themeCollectionToUpdate.getPlatformType());
+            // The entry keeps the platform it was selected from, which equals() doesn't compare:
+            // an entry of the local list selected from the history of another device carries that
+            // device's platform type, and must keep counting as the latest selection from it.
+            JSONObject json = backgroundData.toJson();
+            json.put(
+                    NtpBackgroundDataBase.PLATFORM_TYPE_KEY,
+                    currentGroup.get(index).getPlatformType());
+            JSONArray jsonArray = currentGroup.toJsonArray();
+            jsonArray.put(index, json);
+            writeToSharedPreference(jsonArray, groupPlatformTypeToUpdate);
         } catch (JSONException e) {
             Log.i(
                     TAG,
-                    "Failed to save NTP's sync background data to the SharedPreference: platform"
+                    "Failed to replace NTP's sync background data in the SharedPreference: platform"
                             + " type = %d, data type = %d.",
-                    themeCollectionToUpdate.getPlatformType(),
-                    themeCollectionToUpdate.getBackgroundType());
+                    groupPlatformTypeToUpdate,
+                    backgroundData.getBackgroundType());
         }
+    }
+
+    /**
+     * Replaces the entry of the local history list that is the same theme as {@code backgroundData}
+     * with {@code backgroundData}, at the same index. Used when a theme with daily refresh rotates
+     * on this device, so that its entry shows the rotated color or image like the current
+     * background.
+     *
+     * @param backgroundData The rotated background. Its platform type is ignored.
+     */
+    public void maybeReplaceUserSelectedBackgroundInPlace(NtpBackgroundDataBase backgroundData) {
+        replaceBackgroundDataInPlace(backgroundData, PlatformType.ANDROID);
     }
 
     /**

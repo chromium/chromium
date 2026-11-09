@@ -106,9 +106,10 @@ public class NtpBackgroundDataBase {
      * obj}.
      *
      * <p>Unlike {@link #equals}, which compares theme identity (ignoring primary color for theme
-     * collections so that color updates merge into the existing history entry), this method also
-     * checks whether the primary color matches. Callers that decide whether to re-apply a theme or
-     * recreate the activity should use this method so that color-only updates are applied.
+     * collections so that color updates merge into the existing history entry, and ignoring the
+     * rotated color ID for Chrome colors with daily refresh), this method also checks whether the
+     * color matches. Callers that decide whether to re-apply a theme or recreate the activity
+     * should use this method so that color-only updates are applied.
      *
      * <p>Neither method compares the platform type (where an entry came from) or, for theme
      * collections, the attribution string (display-only text that can differ in language and format
@@ -128,7 +129,7 @@ public class NtpBackgroundDataBase {
      * Android theme collection with a known primary color is considered the same theme. Two
      * non-null colors must still match.
      *
-     * <p>For all other background types, this is the same as {@link #hasSameThemeAndColor}.
+     * <p>For all other background types, this is the same as {@link #equals}.
      */
     public boolean hasSameThemeAndCompatibleColor(@Nullable Object obj) {
         return equals(obj);

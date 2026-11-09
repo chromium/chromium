@@ -100,17 +100,46 @@ public class NtpBackgroundDataColor extends NtpBackgroundDataBase {
         return jsonObject;
     }
 
+    /**
+     * Compares the fields that identify the Chrome color theme.
+     *
+     * <p>A Chrome color with daily refresh rotates its color ID locally on each device on its own
+     * schedule and only the setting is synced, so any two Chrome colors with daily refresh enabled
+     * are the same theme whichever color each device currently shows, like in {@code
+     * NtpCustomizationUtils#isSyncedBackgroundPersisted}. The daily refresh setting itself must
+     * still match, as turning it on or off is a change of theme.
+     */
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (obj instanceof NtpBackgroundDataColor other) {
-            return super.equals(obj) && getThemeColorId() == other.getThemeColorId();
+        if (!(obj instanceof NtpBackgroundDataColor other) || !super.equals(obj)) {
+            return false;
         }
-        return false;
+
+        if (mIsChromeColorDailyRefreshEnabled != other.mIsChromeColorDailyRefreshEnabled) {
+            return false;
+        }
+
+        return mIsChromeColorDailyRefreshEnabled || getThemeColorId() == other.getThemeColorId();
+    }
+
+    /**
+     * Unlike {@link #equals}, still compares the color ID: a rotated color ID of a Chrome color
+     * with daily refresh is a visible change even though it is the same theme.
+     */
+    @Override
+    public boolean hasSameThemeAndColor(@Nullable Object obj) {
+        return obj instanceof NtpBackgroundDataColor other
+                && equals(obj)
+                && getThemeColorId() == other.getThemeColorId();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getThemeColorId());
+        // Follows equals(): the color ID only counts for a Chrome color without daily refresh.
+        return Objects.hash(
+                super.hashCode(),
+                mIsChromeColorDailyRefreshEnabled,
+                mIsChromeColorDailyRefreshEnabled ? 0 : getThemeColorId());
     }
 
     /** Returns the NtpBackgroundDataColor object from the given JSON representation. */

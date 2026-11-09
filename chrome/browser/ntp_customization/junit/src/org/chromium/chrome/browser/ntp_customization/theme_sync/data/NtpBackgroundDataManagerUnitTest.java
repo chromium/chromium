@@ -75,19 +75,19 @@ public class NtpBackgroundDataManagerUnitTest {
                         mContext,
                         platformType,
                         NtpThemeColorId.NTP_COLORS_VIRIDIAN,
-                        /* isChromeColorDailyRefreshEnabled= */ true);
+                        /* isChromeColorDailyRefreshEnabled= */ false);
         NtpBackgroundDataColor data2 =
                 new NtpBackgroundDataColor(
                         mContext,
                         platformType,
                         NtpThemeColorId.NTP_COLORS_CITRON,
-                        /* isChromeColorDailyRefreshEnabled= */ true);
+                        /* isChromeColorDailyRefreshEnabled= */ false);
         NtpBackgroundDataColor data3 =
                 new NtpBackgroundDataColor(
                         mContext,
                         platformType,
                         NtpThemeColorId.NTP_COLORS_ORANGE,
-                        /* isChromeColorDailyRefreshEnabled= */ true);
+                        /* isChromeColorDailyRefreshEnabled= */ false);
 
         // Save first data.
         mManager.saveRemoteSyncDataToSharedPreference(data1);
@@ -177,25 +177,25 @@ public class NtpBackgroundDataManagerUnitTest {
                         mContext,
                         localPlatform,
                         NtpThemeColorId.NTP_COLORS_BLUE,
-                        /* isChromeColorDailyRefreshEnabled= */ true);
+                        /* isChromeColorDailyRefreshEnabled= */ false);
         NtpBackgroundDataColor localData2 =
                 new NtpBackgroundDataColor(
                         mContext,
                         localPlatform,
                         NtpThemeColorId.NTP_COLORS_AQUA,
-                        /* isChromeColorDailyRefreshEnabled= */ true);
+                        /* isChromeColorDailyRefreshEnabled= */ false);
         NtpBackgroundDataColor localData3 =
                 new NtpBackgroundDataColor(
                         mContext,
                         localPlatform,
                         NtpThemeColorId.NTP_COLORS_GREEN,
-                        /* isChromeColorDailyRefreshEnabled= */ true);
+                        /* isChromeColorDailyRefreshEnabled= */ false);
         NtpBackgroundDataColor localData4 =
                 new NtpBackgroundDataColor(
                         mContext,
                         localPlatform,
                         NtpThemeColorId.NTP_COLORS_VIRIDIAN,
-                        /* isChromeColorDailyRefreshEnabled= */ true);
+                        /* isChromeColorDailyRefreshEnabled= */ false);
 
         // Save local selections.
         mManager.saveUserSelectedBackgroundTypeToSharedPreference(localData1);
@@ -220,7 +220,7 @@ public class NtpBackgroundDataManagerUnitTest {
                         mContext,
                         PlatformType.IOS,
                         NtpThemeColorId.NTP_COLORS_CITRON,
-                        /* isChromeColorDailyRefreshEnabled= */ true);
+                        /* isChromeColorDailyRefreshEnabled= */ false);
         mManager.saveUserSelectedBackgroundTypeToSharedPreference(iosData);
         group = mManager.getBackgroundDataGroupFromSharedPreference(localPlatform);
         assertEquals(3, group.size());
@@ -234,7 +234,7 @@ public class NtpBackgroundDataManagerUnitTest {
                         mContext,
                         PlatformType.IOS,
                         NtpThemeColorId.NTP_COLORS_ORANGE,
-                        /* isChromeColorDailyRefreshEnabled= */ true);
+                        /* isChromeColorDailyRefreshEnabled= */ false);
         mManager.saveUserSelectedBackgroundTypeToSharedPreference(iosData2);
         group = mManager.getBackgroundDataGroupFromSharedPreference(localPlatform);
         assertEquals(3, group.size());
@@ -253,13 +253,13 @@ public class NtpBackgroundDataManagerUnitTest {
                         mContext,
                         localPlatform,
                         NtpThemeColorId.NTP_COLORS_BLUE,
-                        /* isChromeColorDailyRefreshEnabled= */ true);
+                        /* isChromeColorDailyRefreshEnabled= */ false);
         NtpBackgroundDataColor localData2 =
                 new NtpBackgroundDataColor(
                         mContext,
                         localPlatform,
                         NtpThemeColorId.NTP_COLORS_AQUA,
-                        /* isChromeColorDailyRefreshEnabled= */ true);
+                        /* isChromeColorDailyRefreshEnabled= */ false);
 
         // Save local selections.
         mManager.saveUserSelectedBackgroundTypeToSharedPreference(localData1);
@@ -307,7 +307,7 @@ public class NtpBackgroundDataManagerUnitTest {
                             mContext,
                             localPlatform,
                             NtpThemeColorId.NTP_COLORS_BLUE + i,
-                            /* isChromeColorDailyRefreshEnabled= */ true);
+                            /* isChromeColorDailyRefreshEnabled= */ false);
             mManager.saveUserSelectedBackgroundTypeToSharedPreference(colorData);
         }
 
@@ -353,7 +353,7 @@ public class NtpBackgroundDataManagerUnitTest {
                             mContext,
                             PlatformType.ANDROID,
                             NtpThemeColorId.NTP_COLORS_BLUE + i,
-                            true));
+                            /* isChromeColorDailyRefreshEnabled= */ false));
         }
         RobolectricUtil.runAllBackgroundAndUi();
         // Should be deleted because it's not in Remote List.
@@ -377,7 +377,7 @@ public class NtpBackgroundDataManagerUnitTest {
                             mContext,
                             PlatformType.ANDROID,
                             NtpThemeColorId.NTP_COLORS_ORANGE + i,
-                            true));
+                            /* isChromeColorDailyRefreshEnabled= */ false));
         }
         RobolectricUtil.runAllBackgroundAndUi();
         // Should NOT be deleted because it is still in Remote List.
@@ -939,5 +939,96 @@ public class NtpBackgroundDataManagerUnitTest {
                         .isEmpty());
         assertTrue(localUsedFile.exists());
         assertFalse(remoteUsedOnlyFile.exists());
+    }
+
+    @Test
+    public void testMaybeReplaceUserSelectedBackgroundInPlace_replacesAtSameIndex() {
+        // Each save goes to the front, so the daily refresh color ends up in the middle.
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(
+                createColorData(
+                        NtpThemeColorId.NTP_COLORS_GREEN, /* isDailyRefreshEnabled= */ false));
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(
+                createColorData(
+                        NtpThemeColorId.NTP_COLORS_BLUE, /* isDailyRefreshEnabled= */ true));
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(
+                createColorData(
+                        NtpThemeColorId.NTP_COLORS_ORANGE, /* isDailyRefreshEnabled= */ false));
+
+        mManager.maybeReplaceUserSelectedBackgroundInPlace(
+                createColorData(
+                        NtpThemeColorId.NTP_COLORS_AQUA, /* isDailyRefreshEnabled= */ true));
+
+        NtpBackgroundDataGroup group =
+                mManager.getBackgroundDataGroupFromSharedPreference(PlatformType.ANDROID);
+        assertEquals(3, group.size());
+        assertColorEntry(
+                group.get(0),
+                NtpThemeColorId.NTP_COLORS_ORANGE,
+                /* isDailyRefreshEnabled= */ false);
+        assertColorEntry(
+                group.get(1), NtpThemeColorId.NTP_COLORS_AQUA, /* isDailyRefreshEnabled= */ true);
+        assertColorEntry(
+                group.get(2), NtpThemeColorId.NTP_COLORS_GREEN, /* isDailyRefreshEnabled= */ false);
+    }
+
+    @Test
+    public void testMaybeReplaceUserSelectedBackgroundInPlace_noEqualEntry_isNoOp() {
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(
+                createColorData(
+                        NtpThemeColorId.NTP_COLORS_BLUE, /* isDailyRefreshEnabled= */ false));
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(
+                createColorData(
+                        NtpThemeColorId.NTP_COLORS_AQUA, /* isDailyRefreshEnabled= */ false));
+        String savedHistory =
+                mManager.getJsonArrayFromSharedPreferenceImpl(PlatformType.ANDROID).toString();
+
+        // A static color doesn't equal a daily refresh color of the same ID.
+        mManager.maybeReplaceUserSelectedBackgroundInPlace(
+                createColorData(
+                        NtpThemeColorId.NTP_COLORS_AQUA, /* isDailyRefreshEnabled= */ true));
+
+        assertEquals(
+                savedHistory,
+                mManager.getJsonArrayFromSharedPreferenceImpl(PlatformType.ANDROID).toString());
+    }
+
+    @Test
+    public void testMaybeReplaceUserSelectedBackgroundInPlace_keepsEntryPlatform() {
+        // A daily refresh color selected from the history entry of another device.
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(
+                new NtpBackgroundDataColor(
+                        mContext,
+                        PlatformType.DESKTOP,
+                        NtpThemeColorId.NTP_COLORS_BLUE,
+                        /* isChromeColorDailyRefreshEnabled= */ true));
+
+        // The rotation on this device is built as an Android color.
+        mManager.maybeReplaceUserSelectedBackgroundInPlace(
+                createColorData(
+                        NtpThemeColorId.NTP_COLORS_AQUA, /* isDailyRefreshEnabled= */ true));
+
+        NtpBackgroundDataGroup group =
+                mManager.getBackgroundDataGroupFromSharedPreference(PlatformType.ANDROID);
+        assertEquals(1, group.size());
+        assertEquals(PlatformType.DESKTOP, group.get(0).getPlatformType());
+        assertColorEntry(
+                group.get(0), NtpThemeColorId.NTP_COLORS_AQUA, /* isDailyRefreshEnabled= */ true);
+    }
+
+    /** Creates an Android Chrome color with the given color ID and daily refresh setting. */
+    private NtpBackgroundDataColor createColorData(
+            @NtpThemeColorId int colorId, boolean isDailyRefreshEnabled) {
+        return new NtpBackgroundDataColor(
+                mContext, PlatformType.ANDROID, colorId, isDailyRefreshEnabled);
+    }
+
+    /** Asserts that {@code entry} is a Chrome color with the given ID and daily refresh setting. */
+    private static void assertColorEntry(
+            NtpBackgroundDataBase entry,
+            @NtpThemeColorId int colorId,
+            boolean isDailyRefreshEnabled) {
+        NtpBackgroundDataColor colorEntry = (NtpBackgroundDataColor) entry;
+        assertEquals(colorId, colorEntry.getThemeColorId());
+        assertEquals(isDailyRefreshEnabled, colorEntry.isChromeColorDailyRefreshEnabled());
     }
 }

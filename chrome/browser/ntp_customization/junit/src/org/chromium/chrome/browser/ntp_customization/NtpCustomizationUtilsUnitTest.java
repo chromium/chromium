@@ -2210,7 +2210,9 @@ public class NtpCustomizationUtilsUnitTest {
                         /* syncedBackgroundData= */ null));
         assertFalse(
                 NtpCustomizationUtils.isSyncedBackgroundPersisted(
-                        createColorData(NtpThemeColorId.NTP_COLORS_BLUE)));
+                        createColorData(
+                                NtpThemeColorId.NTP_COLORS_BLUE,
+                                /* isDailyRefreshEnabled= */ false)));
         assertFalse(
                 NtpCustomizationUtils.isSyncedBackgroundPersisted(
                         createThemeCollectionCandidate(
@@ -2219,16 +2221,24 @@ public class NtpCustomizationUtilsUnitTest {
 
     @Test
     public void testIsSyncedBackgroundPersisted_chromeColor() {
-        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
-                NtpBackgroundType.CHROME_COLOR);
-        NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(NtpThemeColorId.NTP_COLORS_BLUE);
+        persistChromeColor(NtpThemeColorId.NTP_COLORS_BLUE, /* isDailyRefreshEnabled= */ false);
 
         assertTrue(
                 NtpCustomizationUtils.isSyncedBackgroundPersisted(
-                        createColorData(NtpThemeColorId.NTP_COLORS_BLUE)));
+                        createColorData(
+                                NtpThemeColorId.NTP_COLORS_BLUE,
+                                /* isDailyRefreshEnabled= */ false)));
         assertFalse(
                 NtpCustomizationUtils.isSyncedBackgroundPersisted(
-                        createColorData(NtpThemeColorId.NTP_COLORS_AQUA)));
+                        createColorData(
+                                NtpThemeColorId.NTP_COLORS_AQUA,
+                                /* isDailyRefreshEnabled= */ false)));
+        // Same color, but refreshed daily on the other device.
+        assertFalse(
+                NtpCustomizationUtils.isSyncedBackgroundPersisted(
+                        createColorData(
+                                NtpThemeColorId.NTP_COLORS_BLUE,
+                                /* isDailyRefreshEnabled= */ true)));
         assertFalse(
                 NtpCustomizationUtils.isSyncedBackgroundPersisted(
                         /* syncedBackgroundData= */ null));
@@ -2236,6 +2246,29 @@ public class NtpCustomizationUtilsUnitTest {
                 NtpCustomizationUtils.isSyncedBackgroundPersisted(
                         createThemeCollectionCandidate(
                                 createCustomBackgroundInfo(), /* primaryColor= */ null)));
+    }
+
+    @Test
+    public void testIsSyncedBackgroundPersisted_chromeColorDailyRefresh() {
+        persistChromeColor(NtpThemeColorId.NTP_COLORS_BLUE, /* isDailyRefreshEnabled= */ true);
+
+        // The daily refresh rotates the color on each device, so the color doesn't matter.
+        assertTrue(
+                NtpCustomizationUtils.isSyncedBackgroundPersisted(
+                        createColorData(
+                                NtpThemeColorId.NTP_COLORS_BLUE,
+                                /* isDailyRefreshEnabled= */ true)));
+        assertTrue(
+                NtpCustomizationUtils.isSyncedBackgroundPersisted(
+                        createColorData(
+                                NtpThemeColorId.NTP_COLORS_AQUA,
+                                /* isDailyRefreshEnabled= */ true)));
+        // Same color, but static on the other device.
+        assertFalse(
+                NtpCustomizationUtils.isSyncedBackgroundPersisted(
+                        createColorData(
+                                NtpThemeColorId.NTP_COLORS_BLUE,
+                                /* isDailyRefreshEnabled= */ false)));
     }
 
     @Test
@@ -2272,18 +2305,28 @@ public class NtpCustomizationUtilsUnitTest {
         // Different type.
         assertFalse(
                 NtpCustomizationUtils.isSyncedBackgroundPersisted(
-                        createColorData(NtpThemeColorId.NTP_COLORS_BLUE)));
+                        createColorData(
+                                NtpThemeColorId.NTP_COLORS_BLUE,
+                                /* isDailyRefreshEnabled= */ false)));
         assertFalse(
                 NtpCustomizationUtils.isSyncedBackgroundPersisted(
                         /* syncedBackgroundData= */ null));
     }
 
-    private NtpBackgroundDataColor createColorData(@NtpThemeColorId int colorId) {
+    private NtpBackgroundDataColor createColorData(
+            @NtpThemeColorId int colorId, boolean isDailyRefreshEnabled) {
         return new NtpBackgroundDataColor(
-                mContext,
-                PlatformType.ANDROID,
-                colorId,
-                /* isChromeColorDailyRefreshEnabled= */ false);
+                mContext, PlatformType.ANDROID, colorId, isDailyRefreshEnabled);
+    }
+
+    /** Persists a Chrome color with the given color ID and daily refresh setting locally. */
+    private static void persistChromeColor(
+            @NtpThemeColorId int colorId, boolean isDailyRefreshEnabled) {
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
+                NtpBackgroundType.CHROME_COLOR);
+        NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorId);
+        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(
+                isDailyRefreshEnabled);
     }
 
     private static NtpBackgroundDataThemeCollection createThemeCollectionCandidate(
