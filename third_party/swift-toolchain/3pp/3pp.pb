@@ -2,10 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(crbug.com/1340013): Have a linux section for the toolchain for
-# reclient. It likely just needs to download the .tgz on swift.org and
-# unpack it.
-
 # IMPORTANT: When changing the download URL, also be sure to update the install
 # directory in the `build` section. Otherwise the packaging bot will fail.
 
@@ -24,6 +20,20 @@ create {
   build {
     install: "install-mac.sh"
     install: "swift-6.4.0-RELEASE-osx"
+  }
+}
+
+create {
+  platform_re: "linux-amd64"
+  source {
+    url {
+      download_url: "https://download.swift.org/swift-6.4.0-release/debian13/swift-6.4.0-RELEASE/swift-6.4.0-RELEASE-debian13.tar.gz"
+      version: "6.4.0-release"
+    }
+  }
+  build {
+    install: "install-linux.sh"
+    install: "swift-6.4.0-RELEASE-debian13"
   }
 }
 
