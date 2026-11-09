@@ -767,8 +767,10 @@ void MediaSessionImpl::Suspend(SuspendType suspend_type) {
 }
 
 void MediaSessionImpl::Stop(SuspendType suspend_type) {
-  CHECK(audio_focus_state_ != State::INACTIVE, base::NotFatalUntil::M160);
-  CHECK(suspend_type != SuspendType::kContent, base::NotFatalUntil::M160);
+  // TODO(crbug.com/579677172): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(audio_focus_state_ != State::INACTIVE);
+  DCHECK(suspend_type != SuspendType::kContent);
 
   if (suspend_type == SuspendType::kUI) {
     // If the site has registered an action handle for stop then we should
