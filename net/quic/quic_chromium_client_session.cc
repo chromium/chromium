@@ -92,6 +92,9 @@ BASE_FEATURE(kQuicMigrationIgnoreDisconnectSignalDuringProbing,
              "kQuicMigrationIgnoreDisconnectSignalDuringProbing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kQuicRegisterConnectionClosePayload,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace {
@@ -1869,6 +1872,10 @@ void QuicChromiumClientSession::OnTlsHandshakeComplete() {
 }
 
 void QuicChromiumClientSession::RegisterQuicConnectionClosePayload() {
+  if (!base::FeatureList::IsEnabled(
+          features::kQuicRegisterConnectionClosePayload)) {
+    return;
+  }
   // Cannot serialize ConnectionClosePacket before handshake is confirmed.
   if (!connection()->IsHandshakeConfirmed()) {
     return;
@@ -1885,6 +1892,10 @@ void QuicChromiumClientSession::RegisterQuicConnectionClosePayload() {
 }
 
 void QuicChromiumClientSession::UnregisterQuicConnectionClosePayload() {
+  if (!base::FeatureList::IsEnabled(
+          features::kQuicRegisterConnectionClosePayload)) {
+    return;
+  }
   static_cast<QuicChromiumPacketWriter*>(connection()->writer())
       ->UnregisterQuicConnectionClosePayload();
 }
