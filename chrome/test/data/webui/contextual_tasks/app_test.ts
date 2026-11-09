@@ -478,6 +478,21 @@ suite('ContextualTasksAppTest', function() {
 
     assertTrue(appElement.hasAttribute('is-ai-page_'));
   });
+
+  test('dark mode updates toolbar button icon color token', async () => {
+    const {appElement} = await createContextualTasksAppElement(
+        /*url=*/ fixtureUrl,
+        /*setupProxy=*/ undefined,
+        /*waitForInitialLoadStart=*/ false);
+
+    appElement.toggleAttribute('dark-mode_', true);
+    await appElement.updateComplete;
+
+    const iconColor = getComputedStyle(appElement)
+                          .getPropertyValue('--toolbar-button-icon-color')
+                          .replace(/\s+/g, '');
+    assertEquals('rgba(199,199,199,1)', iconColor);
+  });
   // </if> not is_android or enable_webui_contextual_tasks_composebox
 
   // Disabled due to flakiness. See http://crbug.com/481936603.

@@ -88,6 +88,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_url_loader_factory_interceptor.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_url_loader_throttle.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/guest_opener_user_data.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/data_saver/data_saver.h"
@@ -4161,13 +4162,10 @@ GetPreferredColorScheme(const WebPreferences& web_prefs,
     GURL url = web_contents->GetVisibleURL();
     if (url.SchemeIs(content::kChromeUIScheme) &&
         url.host() == chrome::kChromeUIContextualTasksHost) {
-      std::optional<bool> is_dark_mode =
-          contextual_tasks::GetDarkModeFromUrl(url);
-      if (is_dark_mode.has_value()) {
-        preferred_color_scheme =
-            is_dark_mode.value() ? blink::mojom::PreferredColorScheme::kDark
-                                 : blink::mojom::PreferredColorScheme::kLight;
-      }
+      preferred_color_scheme =
+          contextual_tasks::ShouldUseDarkMode(web_contents, url)
+              ? blink::mojom::PreferredColorScheme::kDark
+              : blink::mojom::PreferredColorScheme::kLight;
     }
   }
   return {preferred_color_scheme, preferred_root_scrollbar_color_scheme};

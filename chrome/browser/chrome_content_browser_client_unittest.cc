@@ -2919,6 +2919,25 @@ TEST_F(ChromeContentBrowserClientAIPrefsTest,
   EXPECT_EQ(web_preferences.preferred_color_scheme,
             blink::mojom::PreferredColorScheme::kLight);
 }
+
+TEST_F(ChromeContentBrowserClientAIPrefsTest,
+       ContextualTasksScheme_NoCsParamUsesProfileDarkMode) {
+  const GURL url("chrome://contextual-tasks?task=123");
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  std::unique_ptr<content::WebContents> otr_web_contents =
+      content::WebContentsTester::CreateTestWebContents(otr_profile, nullptr);
+  content::WebContentsTester::For(otr_web_contents.get())
+      ->NavigateAndCommit(url);
+  blink::web_pref::WebPreferences web_preferences;
+  // Initialize to light mode to verify it falls back to the profile's dark
+  // mode preference when the URL has no `cs` query parameter.
+  web_preferences.preferred_color_scheme =
+      blink::mojom::PreferredColorScheme::kLight;
+  RunOverrideWebPreferences(otr_web_contents.get(), &web_preferences);
+  EXPECT_EQ(web_preferences.preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kDark);
+}
 #if BUILDFLAG(ENABLE_PDF)
 class ChromeContentBrowserClientOopifPdfTest
     : public ChromeRenderViewHostTestHarness {

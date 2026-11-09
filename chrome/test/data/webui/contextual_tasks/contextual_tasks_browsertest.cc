@@ -158,6 +158,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
           "thread')");
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       App_DarkModeUpdatesToolbarButtonIconColor) {
+  RunTest("contextual_tasks/app_test.js",
+          "runMochaTest('ContextualTasksAppTest', "
+          "'dark mode updates toolbar button icon color token')");
+}
+
 // Run each BasicMode nested suite as a separate test so each group has its own
 // per-test time budget.
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
