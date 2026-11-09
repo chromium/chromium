@@ -26,7 +26,10 @@ class ExecutionEngine;
 
 // Defers committing a page activation (e.g. BackForwardCache restoration or
 // Prerender activation) in tabs under actor control in order to evaluate
-// Origin Gating policies before the page commits.
+// Origin Gating policies before the page commits. On desktop form factors it
+// also confirms a user Back/Forward restored from the back/forward cache,
+// since back/forward cache restores skip NavigationThrottles. The
+// confirmation does not depend on origin gating.
 class ActorCommitDeferringCondition : public content::CommitDeferringCondition {
  public:
   static std::unique_ptr<content::CommitDeferringCondition> MaybeCreate(
@@ -48,10 +51,19 @@ class ActorCommitDeferringCondition : public content::CommitDeferringCondition {
   const char* TraceEventName() const override;
 
  private:
+  AggregatedJournal& GetJournal();
+
   void OnNavigationConfirmationDecision(
       base::OnceClosure resume,
       std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
       MayActOnUrlBlockReason block_reason);
+
+  // Called with the user's answer to the leave confirmation for a user
+  // Back/Forward restored from the back/forward cache.
+  void OnUserLeaveDialogDecision(
+      base::OnceClosure resume,
+      std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
+      bool may_continue);
 
   TaskId task_id_;
   base::WeakPtr<ExecutionEngine> execution_engine_;
