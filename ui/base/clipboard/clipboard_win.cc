@@ -1403,9 +1403,10 @@ void ClipboardWin::WriteToClipboard(ClipboardFormatType format, HANDLE handle) {
   UINT cf_format = format.ToFormatEtc().cfFormat;
   CHECK_NE(clipboard_owner_->hwnd(), nullptr, base::NotFatalUntil::M163);
   if (handle && !::SetClipboardData(cf_format, handle)) {
-    CHECK_NE(GetLastError(),
-             static_cast<unsigned long>(ERROR_CLIPBOARD_NOT_OPEN),
-             base::NotFatalUntil::M163);
+    // TODO(crbug.com/583027040): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_NE(GetLastError(),
+              static_cast<unsigned long>(ERROR_CLIPBOARD_NOT_OPEN));
     ::GlobalFree(handle);
   }
 }
