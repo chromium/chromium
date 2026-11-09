@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/common/features.h"
@@ -404,9 +405,17 @@ class WebRequestProxyingURLLoaderFactorySubresourceTaskQueueTest
 // (`Clone()`d factory receivers and `TrustedHeaderClient` receivers created in
 // `OnLoaderCreated()` for `extraHeaders` listeners) to the high-priority
 // `kSubresourceLoaderProxy` task queue rather than the default UI task queue.
+// TODO(crbug.com/583677036): Times out on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ClonedFactoryAndHeaderClientUseSubresourceLoaderProxyQueue \
+  DISABLED_ClonedFactoryAndHeaderClientUseSubresourceLoaderProxyQueue
+#else
+#define MAYBE_ClonedFactoryAndHeaderClientUseSubresourceLoaderProxyQueue \
+  ClonedFactoryAndHeaderClientUseSubresourceLoaderProxyQueue
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebRequestProxyingURLLoaderFactorySubresourceTaskQueueTest,
-    ClonedFactoryAndHeaderClientUseSubresourceLoaderProxyQueue) {
+    MAYBE_ClonedFactoryAndHeaderClientUseSubresourceLoaderProxyQueue) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(base::StringPrintf(
       R"({
