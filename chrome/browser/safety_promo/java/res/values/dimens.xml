@@ -18,6 +18,12 @@ found in the LICENSE file.
     <dimen name="safety_fre_logo_size">48dp</dimen>
     <dimen name="safety_fre_title_margin_bottom">36dp</dimen>
 
+    <!-- Safety FRE animated illustration dimensions -->
+    <dimen name="safety_fre_animated_illustration_width">238dp</dimen>
+    <dimen name="safety_fre_animated_illustration_height">232dp</dimen>
+    <dimen name="safety_fre_animated_illustration_icon_size">40dp</dimen>
+    <dimen name="safety_fre_animated_illustration_logo_size">120dp</dimen>
+
     <!-- Safety FRE carousel portrait dimensions -->
     <dimen name="safety_fre_carousel_portrait_icon_margin_top">64dp</dimen>
     <dimen name="safety_fre_carousel_portrait_title_margin_bottom">8dp</dimen>

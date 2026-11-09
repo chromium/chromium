@@ -31,18 +31,16 @@ found in the LICENSE file.
           android:layout_height="0dp"
           android:layout_weight="3" />
 
-      <!-- Center Chrome Logo Placeholder -->
       <ImageView
-          android:id="@+id/fre_icon"
-          android:layout_width="@dimen/fre_illustration_size"
-          android:layout_height="@dimen/fre_illustration_size"
+          android:id="@+id/safety_promo_illustration"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
           android:layout_gravity="center"
           android:layout_marginTop="@dimen/fre_spacing"
           android:layout_marginBottom=
               "@dimen/fre_illustration_to_content_margin"
           android:scaleType="fitCenter"
           android:adjustViewBounds="true"
-          android:src="@drawable/fre_product_logo"
           android:importantForAccessibility="no" />
 
       <org.chromium.ui.widget.TextViewWithLeading

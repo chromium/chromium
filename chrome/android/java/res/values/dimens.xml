@@ -136,7 +136,6 @@ found in the LICENSE file.
     <dimen name="fre_loading_spinner_size">48dp</dimen>
     <dimen name="fre_policy_privacy_disclaimer_icon_size">18dp</dimen>
     <dimen name="fre_policy_privacy_disclaimer_icon_padding">8dp</dimen>
-    <dimen name="fre_illustration_size">120dp</dimen>
     <dimen name="fre_spacing">24dp</dimen>
     <dimen name="fre_illustration_to_content_margin">48dp</dimen>
     <dimen name="fre_subtitle_top_padding">8dp</dimen>

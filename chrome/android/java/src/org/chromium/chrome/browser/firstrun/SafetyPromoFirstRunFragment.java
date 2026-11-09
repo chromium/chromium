@@ -92,6 +92,8 @@ public class SafetyPromoFirstRunFragment extends Fragment implements FirstRunFra
                         state.setSelectedItem(item);
                         pageDelegate.advanceToNextPage();
                     });
+        } else if (arm == SafetyFrePromoArm.ANIMATED_ILLUSTRATION) {
+            view.setUpAnimatedIllustration();
         }
 
         view.getContinueButtonView()

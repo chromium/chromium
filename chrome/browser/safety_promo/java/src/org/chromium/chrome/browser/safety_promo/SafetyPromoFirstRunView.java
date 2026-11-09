@@ -58,6 +58,13 @@ public class SafetyPromoFirstRunView extends RelativeLayout {
         }
     }
 
+    /** Sets the safety illustration on the {@code safety_promo_illustration} view. */
+    public void setUpAnimatedIllustration() {
+        ImageView illustrationView = findViewById(R.id.safety_promo_illustration);
+        illustrationView.setImageDrawable(
+                SafetyPromoAnimatedIllustrationDrawable.create(getContext()));
+    }
+
     private static void bindCard(View cardView, SafetyPromoItem item, CardClickListener listener) {
         ImageView iconView = cardView.findViewById(R.id.card_icon);
         TextView titleView = cardView.findViewById(R.id.card_title);

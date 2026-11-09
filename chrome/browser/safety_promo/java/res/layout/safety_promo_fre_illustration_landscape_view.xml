@@ -24,13 +24,12 @@ found in the LICENSE file.
         android:paddingEnd="@dimen/fre_illustration_to_content_margin">
 
       <ImageView
-          android:id="@+id/fre_icon"
-          android:layout_width="@dimen/fre_illustration_size"
-          android:layout_height="@dimen/fre_illustration_size"
+          android:id="@+id/safety_promo_illustration"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
           android:layout_gravity="center"
           android:scaleType="fitCenter"
           android:adjustViewBounds="true"
-          android:src="@drawable/fre_product_logo"
           android:importantForAccessibility="no" />
     </FrameLayout>
 
