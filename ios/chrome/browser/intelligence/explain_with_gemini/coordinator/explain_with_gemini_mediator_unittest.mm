@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/web_selection/model/web_selection_response.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/providers/intelligence/proto_wrappers/test_page_context_wrapper_api.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -35,10 +36,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
-
-namespace ios::provider {
-void SetMockProtectedUrl(bool is_protected);
-}
 
 @interface WebSelectionResponse (Testing)
 - (instancetype)initWithSelectedText:(NSString*)selectedText
@@ -104,7 +101,7 @@ class ExplainWithGeminiMediatorTest : public PlatformTest {
   }
 
   void TearDown() override {
-    ios::provider::SetMockProtectedUrl(false);
+    ios::provider::test::SetProtectedUrlForTesting(false);
     mediator_ = nil;
     PlatformTest::TearDown();
   }
@@ -373,12 +370,12 @@ TEST_F(ExplainWithGeminiMediatorTest, CanPerformExplain_ProtectedURL) {
   web_state_->SetCurrentURL(GURL("https://example.com"));
 
   // Ensure Explain With Gemini is available on unprotected URLs.
-  ios::provider::SetMockProtectedUrl(false);
+  ios::provider::test::SetProtectedUrlForTesting(false);
   EXPECT_TRUE(
       [mediator_ canPerformExplainWithGeminiInWebState:web_state_.get()]);
 
   // Ensure Explain With Gemini is not available on protected URLs.
-  ios::provider::SetMockProtectedUrl(true);
+  ios::provider::test::SetProtectedUrlForTesting(true);
   EXPECT_FALSE(
       [mediator_ canPerformExplainWithGeminiInWebState:web_state_.get()]);
 }

@@ -6,17 +6,10 @@
 
 namespace ios::provider {
 
-// Script to check whether PageContext should be detached from the request.
-constexpr const char16_t* kShouldDetachPageContextScript = u"return false;";
-
 void ConfigureWithStartupConfiguration(
     GeminiStartupConfiguration* gemini_startup_configuration) {}
 
 void StartGeminiOverlay(GeminiConfiguration* gemini_configuration) {}
-
-const std::u16string GetPageContextShouldDetachScript() {
-  return kShouldDetachPageContextScript;
-}
 
 id<BWGGatewayProtocol> CreateGeminiGateway() {
   return nil;
@@ -37,10 +30,6 @@ void UpdatePromptAction(gemini::EntryPoint entry_point,
 void UpdatePromptAction(gemini::InputType input_type,
                         NSString* prepopulated_prompt,
                         bool should_auto_submit) {}
-
-bool IsProtectedUrl(std::string url) {
-  return false;
-}
 
 void UpdateActivePageContext(GeminiPageContext* gemini_page_context,
                              NSArray<GeminiPageContext*>* shared_tabs) {}

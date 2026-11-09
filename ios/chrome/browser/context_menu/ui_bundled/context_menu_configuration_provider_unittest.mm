@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/providers/intelligence/proto_wrappers/test_page_context_wrapper_api.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -64,7 +65,6 @@
 #import "url/origin.h"
 
 namespace ios::provider {
-void SetMockProtectedUrl(bool is_protected);
 void SetMockFeatureModeDisabledByQuota(bool disabled);
 void SetMockRefillDateForFeatureMode(NSDate* date);
 }
@@ -202,7 +202,7 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
   }
 
   void TearDown() final {
-    ios::provider::SetMockProtectedUrl(false);
+    ios::provider::test::SetProtectedUrlForTesting(false);
     ios::provider::SetMockFeatureModeDisabledByQuota(false);
     ios::provider::SetMockRefillDateForFeatureMode(nil);
     [configuration_provider_ stop];
@@ -640,7 +640,7 @@ TEST_F(ContextMenuConfigurationProviderTest, GeminiImageRemix_ProtectedURL) {
   web_state->SetCurrentURL(GURL("https://example.com"));
 
   // Verify that the action is added to the context menu on an unprotected URL.
-  ios::provider::SetMockProtectedUrl(false);
+  ios::provider::test::SetProtectedUrlForTesting(false);
   web::ContextMenuParams params = GetContextMenuParamsWithImageUrl(kImageUrl);
   UIMenu* menu = GetContextMenuForParams(params);
 
@@ -652,7 +652,7 @@ TEST_F(ContextMenuConfigurationProviderTest, GeminiImageRemix_ProtectedURL) {
   EXPECT_NE(indexOfGeminiAction, (NSUInteger)NSNotFound);
 
   // Verify that the action is not added to the context menu on a protected URL.
-  ios::provider::SetMockProtectedUrl(true);
+  ios::provider::test::SetProtectedUrlForTesting(true);
   UIMenu* protected_menu = GetContextMenuForParams(params);
 
   NSUInteger indexOfProtectedGeminiAction = [protected_menu.children
@@ -697,7 +697,7 @@ TEST_F(ContextMenuConfigurationProviderTest,
       l10n_util::GetNSString(IDS_IOS_GEMINI_IMAGE_CONTEXT_MENU_ENTRY_POINT);
   web_state->SetCurrentURL(GURL("https://example.com"));
 
-  ios::provider::SetMockProtectedUrl(false);
+  ios::provider::test::SetProtectedUrlForTesting(false);
   ios::provider::SetMockFeatureModeDisabledByQuota(true);
 
   NSDate* mock_date =

@@ -206,10 +206,6 @@ void ConfigureWithStartupConfiguration(
 // Starts the overlay experience with the given configuration.
 void StartGeminiOverlay(GeminiConfiguration* gemini_configuration);
 
-// Gets the portion of the PageContext script that checks whether PageContext
-// should be detached from the request.
-const std::u16string GetPageContextShouldDetachScript();
-
 // Creates a Gemini gateway object for relaying internal protocols.
 id<BWGGatewayProtocol> CreateGeminiGateway();
 
@@ -234,9 +230,6 @@ void UpdatePromptAction(gemini::EntryPoint entry_point,
 void UpdatePromptAction(gemini::InputType input_type,
                         NSString* prepopulated_prompt,
                         bool should_auto_submit = false);
-
-// Returns true if a URL is protected.
-bool IsProtectedUrl(std::string url);
 
 // Updates the floaty's active page context and shared tabs, if any.
 void UpdateActivePageContext(GeminiPageContext* gemini_page_context,

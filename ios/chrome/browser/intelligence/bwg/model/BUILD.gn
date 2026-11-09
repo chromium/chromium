@@ -196,6 +196,7 @@ source_set("tab_helper") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/public/provider/chrome/browser/bwg:gemini_api",
+    "//ios/public/provider/chrome/browser/intelligence/proto_wrappers:proto_wrappers_api",
     "//ios/web/public",
     "//mojo/public/cpp/bindings",
   ]
@@ -475,6 +476,7 @@ source_set("unit_tests") {
     "//ios/chrome/common/app_group",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/app:test_support",
+    "//ios/chrome/test/providers/intelligence/proto_wrappers",
     "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/find_in_page",
     "//ios/web/public/js_messaging",

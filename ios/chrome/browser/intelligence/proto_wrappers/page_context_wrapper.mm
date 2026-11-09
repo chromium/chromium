@@ -47,7 +47,7 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_metrics.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
-#import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
+#import "ios/public/provider/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_api.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -778,7 +778,7 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
       PopulateAutofillInformation(_webState.get(), autofillInformation);
     }
 
-    if (ios::provider::IsProtectedUrl(mainFrame->GetUrl().spec())) {
+    if (ios::provider::IsProtectedUrl(mainFrame->GetUrl())) {
       _forceDetachPageContext = YES;
       annotatedPageContentBarrier.Run();
     } else {
@@ -791,7 +791,7 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
     // Execute the JavaScript on each other WebFrame and pass in the callback
     // (which executes the barrier when run).
     for (web::WebFrame* webFrame : webFrames) {
-      if (ios::provider::IsProtectedUrl(webFrame->GetUrl().spec())) {
+      if (ios::provider::IsProtectedUrl(webFrame->GetUrl())) {
         _forceDetachPageContext = YES;
       }
 
@@ -846,7 +846,7 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
     // If the page is not protected, execute the JavaScript on the main
     // WebFrame first and pass in the callback (which executes the barrier
     // when run).
-    if (ios::provider::IsProtectedUrl(mainFrame->GetUrl().spec())) {
+    if (ios::provider::IsProtectedUrl(mainFrame->GetUrl())) {
       _forceDetachPageContext = YES;
       annotatedPageContentBarrier.Run();
     } else {
@@ -861,7 +861,7 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
     // Execute the JavaScript on each other WebFrame and pass in the callback
     // (which executes the barrier when run).
     for (web::WebFrame* webFrame : webFrames) {
-      if (ios::provider::IsProtectedUrl(webFrame->GetUrl().spec())) {
+      if (ios::provider::IsProtectedUrl(webFrame->GetUrl())) {
         _forceDetachPageContext = YES;
       }
 

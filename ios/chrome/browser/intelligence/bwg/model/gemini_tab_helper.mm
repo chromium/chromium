@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
+#import "ios/public/provider/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_api.h"
 #import "ios/web/public/content_type_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
@@ -361,7 +362,7 @@ bool GeminiTabHelper::IsGeminiAvailableForWebState() {
 bool GeminiTabHelper::IsContextualEntryPointAllowed() {
   // Block context-based entry points on protected URLs.
   if (web_state_ &&
-      ios::provider::IsProtectedUrl(web_state_->GetLastCommittedURL().spec())) {
+      ios::provider::IsProtectedUrl(web_state_->GetLastCommittedURL())) {
     return false;
   }
   return true;
