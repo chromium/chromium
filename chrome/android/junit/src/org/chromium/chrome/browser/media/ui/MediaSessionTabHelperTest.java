@@ -4,21 +4,29 @@
 
 package org.chromium.chrome.browser.media.ui;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Intent;
+import android.media.AudioManager;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -28,6 +36,8 @@ import org.chromium.content.browser.MediaSessionImpl;
 import org.chromium.content.browser.MediaSessionImplJni;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for {@link MediaSessionTabHelper} lazy-initialization and cleanup. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -55,6 +65,7 @@ public class MediaSessionTabHelperTest {
 
     @After
     public void tearDown() {
+        RobolectricUtil.runAllBackgroundAndUi();
         AudioBecomingNoisyReceiver.resetForTesting();
     }
 
@@ -212,25 +223,51 @@ public class MediaSessionTabHelperTest {
     @Test
     public void testAudioBecomingNoisyReceiver_UnregistersWhenNoObservers() {
         AudioBecomingNoisyReceiver receiver = AudioBecomingNoisyReceiver.getInstance();
-        org.junit.Assert.assertFalse(receiver.isRegisteredForTesting());
+        assertFalse(receiver.isRegisteredForTesting());
 
-        AudioBecomingNoisyReceiver.AudioBecomingNoisyObserver observer1 = () -> {};
-        AudioBecomingNoisyReceiver.AudioBecomingNoisyObserver observer2 = () -> {};
+        AtomicInteger observer1Calls = new AtomicInteger();
+        AtomicInteger observer2Calls = new AtomicInteger();
+        AudioBecomingNoisyReceiver.AudioBecomingNoisyObserver observer1 =
+                observer1Calls::incrementAndGet;
+        AudioBecomingNoisyReceiver.AudioBecomingNoisyObserver observer2 =
+                observer2Calls::incrementAndGet;
 
-        // Adding first observer registers the receiver.
+        // Adding first observer registers the receiver asynchronously; drain and verify delivery.
         AudioBecomingNoisyReceiver.addObserver(observer1);
-        org.junit.Assert.assertTrue(receiver.isRegisteredForTesting());
+        assertTrue(receiver.isRegisteredForTesting());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        ContextUtils.getApplicationContext()
+                .sendBroadcast(new Intent(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(1, observer1Calls.get());
+        assertEquals(0, observer2Calls.get());
 
         // Adding second observer keeps it registered.
         AudioBecomingNoisyReceiver.addObserver(observer2);
-        org.junit.Assert.assertTrue(receiver.isRegisteredForTesting());
+        assertTrue(receiver.isRegisteredForTesting());
 
         // Removing one observer keeps it registered.
         AudioBecomingNoisyReceiver.removeObserver(observer1);
-        org.junit.Assert.assertTrue(receiver.isRegisteredForTesting());
+        assertTrue(receiver.isRegisteredForTesting());
+        RobolectricUtil.runAllBackgroundAndUi();
 
-        // Removing last observer unregisters the receiver.
+        ContextUtils.getApplicationContext()
+                .sendBroadcast(new Intent(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(1, observer1Calls.get());
+        assertEquals(1, observer2Calls.get());
+
+        // Removing last observer unregisters the receiver asynchronously; drain and verify no
+        // further broadcasts are delivered.
         AudioBecomingNoisyReceiver.removeObserver(observer2);
-        org.junit.Assert.assertFalse(receiver.isRegisteredForTesting());
+        assertFalse(receiver.isRegisteredForTesting());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        ContextUtils.getApplicationContext()
+                .sendBroadcast(new Intent(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(1, observer1Calls.get());
+        assertEquals(1, observer2Calls.get());
     }
 }

@@ -17,6 +17,9 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskRunner;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 
 /** Android implementation details for device::TimeZoneMonitorAndroid. */
@@ -26,6 +29,8 @@ class TimeZoneMonitor {
     private static final String TAG = "TimeZoneMonitor";
 
     private final IntentFilter mFilter = new IntentFilter(Intent.ACTION_TIMEZONE_CHANGED);
+    private final TaskRunner mTaskRunner =
+            PostTask.createSequencedTaskRunner(TaskTraits.BEST_EFFORT);
     private final BroadcastReceiver mBroadcastReceiver =
             new BroadcastReceiver() {
                 @Override
@@ -40,6 +45,7 @@ class TimeZoneMonitor {
                         Log.e(TAG, "Received null timezone string");
                         return;
                     }
+                    if (mNativePtr == 0) return;
                     TimeZoneMonitorJni.get().timeZoneChangedFromJava(mNativePtr, newTimeZone);
                 }
             };
@@ -48,15 +54,19 @@ class TimeZoneMonitor {
 
     /**
      * Start listening for intents.
+     *
      * @param nativePtr The native device::TimeZoneMonitorAndroid to notify of time zone changes.
      */
     private TimeZoneMonitor(long nativePtr) {
         mNativePtr = nativePtr;
-        ContextUtils.registerProtectedBroadcastReceiver(
-                ContextUtils.getApplicationContext(),
-                mBroadcastReceiver,
-                mFilter,
-                ThreadUtils.getUiThreadHandler());
+        mTaskRunner.execute(
+                () -> {
+                    ContextUtils.registerProtectedBroadcastReceiver(
+                            ContextUtils.getApplicationContext(),
+                            mBroadcastReceiver,
+                            mFilter,
+                            ThreadUtils.getUiThreadHandler());
+                });
     }
 
     @CalledByNative
@@ -67,8 +77,11 @@ class TimeZoneMonitor {
     /** Stop listening for intents. */
     @CalledByNative
     void stop() {
-        ContextUtils.getApplicationContext().unregisterReceiver(mBroadcastReceiver);
         mNativePtr = 0;
+        mTaskRunner.execute(
+                () -> {
+                    ContextUtils.getApplicationContext().unregisterReceiver(mBroadcastReceiver);
+                });
     }
 
     @NativeMethods

@@ -29,6 +29,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -52,6 +53,7 @@ public class TimeZoneMonitorTest {
 
     @After
     public void tearDown() {
+        ThreadUtils.clearUiThreadForTesting();
         if (mUiThread != null) {
             mUiThread.quitSafely();
         }
@@ -74,6 +76,7 @@ public class TimeZoneMonitorTest {
                 .timeZoneChangedFromJava(NATIVE_PTR, TEST_TIME_ZONE);
 
         TimeZoneMonitor monitor = TimeZoneMonitor.getInstance(NATIVE_PTR);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         Intent intent = new Intent(Intent.ACTION_TIMEZONE_CHANGED);
         intent.putExtra(Intent.EXTRA_TIMEZONE, TEST_TIME_ZONE);
@@ -89,12 +92,14 @@ public class TimeZoneMonitorTest {
         assertEquals(mUiThread.getLooper(), callbackLooper.get());
 
         monitor.stop();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test
     public void testStopUnregistersReceiver() {
         TimeZoneMonitor monitor = TimeZoneMonitor.getInstance(NATIVE_PTR);
         monitor.stop();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         Intent intent = new Intent(Intent.ACTION_TIMEZONE_CHANGED);
         intent.putExtra(Intent.EXTRA_TIMEZONE, TEST_TIME_ZONE);
