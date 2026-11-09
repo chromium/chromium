@@ -3,21 +3,20 @@
 // found in the LICENSE file.
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import './site_favicon.js';
 import './searchable_label.js';
-import './shared_style.css.js';
 import './dialogs/move_passwords_dialog.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {htmlEscape} from 'chrome://resources/js/util.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './password_list_item.html.js';
+import {getCss} from './password_list_item.css.js';
+import {getHtml} from './password_list_item.html.js';
 import {PasswordManagerImpl, PasswordViewPageInteractions} from './password_manager_proxy.js';
 import {Page, Router, UrlParam} from './router.js';
 
@@ -28,62 +27,73 @@ export interface PasswordListItemElement {
     seePasswordDetails: HTMLElement,
   };
 }
-const PasswordListItemElementBase = I18nMixin(PolymerElement);
+const PasswordListItemElementBase = I18nMixinLit(CrLitElement);
 
 export class PasswordListItemElement extends PasswordListItemElementBase {
   static get is() {
     return 'password-list-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      item: {
-        type: Object,
-        observer: 'onItemChanged_',
-      },
-
-      isAccountStoreUser: Boolean,
-
-      first: Boolean,
-
-      searchTerm: String,
-
-      showMovePasswordDialog_: Boolean,
+      item: {type: Object},
+      isAccountStoreUser: {type: Boolean},
+      first: {type: Boolean},
+      searchTerm: {type: String},
+      showMovePasswordDialog_: {type: Boolean},
 
       /**
        * The number of accounts in a group as a formatted string.
        */
-      numberOfAccounts_: String,
+      numberOfAccounts_: {type: String},
 
-      tooltipText_: String,
-      deviceOnlyCredentialsAccessibilityLabelText_: String,
+      tooltipText_: {type: String},
+      deviceOnlyCredentialsAccessibilityLabelText_: {type: String},
     };
   }
 
-  declare item: chrome.passwordsPrivate.CredentialGroup;
-  declare isAccountStoreUser: boolean;
-  declare first: boolean;
-  declare searchTerm: string;
-  declare private numberOfAccounts_: string;
-  declare private tooltipText_: string;
-  declare private deviceOnlyCredentialsAccessibilityLabelText_: string;
-  declare private showMovePasswordDialog_: boolean;
+  accessor item: chrome.passwordsPrivate.CredentialGroup;
+  accessor isAccountStoreUser: boolean = false;
+  accessor first: boolean = false;
+  accessor searchTerm: string = '';
+  protected accessor numberOfAccounts_: string = '';
+  protected accessor tooltipText_: string = '';
+  private accessor deviceOnlyCredentialsAccessibilityLabelText_: string = '';
+  protected accessor showMovePasswordDialog_: boolean = false;
 
-  private getElementClass_(): string {
-    return this.first ? 'flex-centered' : 'flex-centered hr';
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('item') && this.item.entries.length > 1) {
+      PluralStringProxyImpl.getInstance()
+          .getPluralString('numberOfAccounts', this.item.entries.length)
+          .then(count => {
+            this.numberOfAccounts_ = count;
+          });
+    }
+    if (changedProperties.has('item') ||
+        changedProperties.has('isAccountStoreUser')) {
+      this.onItemChanged_();
+    }
   }
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.addEventListener('click', this.onRowClick_);
   }
 
   override focus() {
     this.$.seePasswordDetails.focus();
+  }
+
+  protected getElementClass_(): string {
+    return this.first ? '' : 'hr';
   }
 
   private onRowClick_() {
@@ -100,9 +110,7 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
             iconUrl: this.item.iconUrl,
             entries: entries,
           };
-          this.dispatchEvent(new CustomEvent(
-              'password-details-shown',
-              {bubbles: true, composed: true, detail: this}));
+          this.fire('password-details-shown', this);
           // Keep current search query.
           Router.getInstance().navigateTo(
               Page.PASSWORD_DETAILS, group,
@@ -119,12 +127,6 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
   }
 
   private async onItemChanged_() {
-    if (this.item.entries.length > 1) {
-      this.numberOfAccounts_ =
-          await PluralStringProxyImpl.getInstance().getPluralString(
-              'numberOfAccounts', this.item.entries.length);
-    }
-
     if (this.hasUploadablePasswords_()) {
       this.deviceOnlyCredentialsAccessibilityLabelText_ =
           await PluralStringProxyImpl.getInstance()
@@ -143,11 +145,11 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
     }
   }
 
-  private showNumberOfAccounts_(): boolean {
+  protected showNumberOfAccounts_(): boolean {
     return !this.searchTerm && this.item.entries.length > 1;
   }
 
-  private getTitle_() {
+  protected getTitle_() {
     const term = this.searchTerm.trim().toLowerCase();
     if (!term) {
       return this.item.name;
@@ -176,31 +178,32 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
     return this.item.name;
   }
 
-  private getCredentialsOnDevice_(): chrome.passwordsPrivate.PasswordUiEntry[] {
+  protected getCredentialsOnDevice_():
+      chrome.passwordsPrivate.PasswordUiEntry[] {
     return this.item.entries.filter(
         entry =>
             entry.storedIn === chrome.passwordsPrivate.PasswordStoreSet.DEVICE);
   }
 
-  private hasOnlyOneDeviceCredential_(): boolean {
+  protected hasOnlyOneDeviceCredential_(): boolean {
     return this.getCredentialsOnDevice_().length === this.item.entries.length &&
         this.getCredentialsOnDevice_().length === 1;
   }
 
-  private hasUploadablePasswords_(): boolean {
+  protected hasUploadablePasswords_(): boolean {
     return this.isAccountStoreUser &&
         (this.getCredentialsOnDevice_().length > 0);
   }
 
-  private onMovePasswordDialogClose_(): void {
+  protected onMovePasswordDialogClose_(): void {
     this.showMovePasswordDialog_ = false;
   }
 
-  private onUploadButtonClick_(): void {
+  protected onUploadButtonClick_(): void {
     this.showMovePasswordDialog_ = true;
   }
 
-  private getAriaLabel_(): string {
+  protected getAriaLabel_(): string {
     if (this.hasUploadablePasswords_()) {
       return this.deviceOnlyCredentialsAccessibilityLabelText_;
     }

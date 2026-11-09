@@ -2,161 +2,103 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '/strings.m.js';
 import './password_list_item.js';
 import './dialogs/add_password_dialog.js';
 import './dialogs/auth_timed_out_dialog.js';
-import './user_utils_mixin.js';
 import './notification_cards/notification_card.js';
 import './notification_cards/notification_cards_browser_proxy.js';
 
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {htmlEscape} from 'chrome://resources/js/util.js';
-import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {FocusConfig} from './focus_config.js';
 import {NotificationCardId} from './notification_cards/notification_card.js';
 import type {NotificationCard} from './notification_cards/notification_cards_browser_proxy.js';
 import {NotificationCardsProxyImpl} from './notification_cards/notification_cards_browser_proxy.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
-import {getTemplate} from './passwords_section.html.js';
+import {getCss} from './passwords_section.css.js';
+import {getHtml} from './passwords_section.html.js';
 import {isSavingNewPasswordsBlockedByMandatoryPolicy} from './prefs/policy_utils.js';
 import type {Route} from './router.js';
-import {Page, RouteObserverMixin, Router, UrlParam} from './router.js';
-import {UserUtilMixin} from './user_utils_mixin.js';
+import {Page, RouteObserverMixinLit, Router, UrlParam} from './router.js';
+import {UserUtilMixinLit} from './user_utils_mixin_lit.js';
 
 export interface PasswordsSectionElement {
   $: {
     addPasswordButton: CrButtonElement,
     descriptionLabel: HTMLElement,
-    passwordsList: IronListElement,
+    passwords: HTMLElement,
     noPasswordsFound: HTMLElement,
-    movePasswords: HTMLElement,
     importPasswords: HTMLElement,
     trustedVaultUnlock: HTMLElement,
   };
 }
 
-const PasswordsSectionElementBase = PrefServiceObserverMixin(
-    UserUtilMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
+const PasswordsSectionElementBase = PrefServiceObserverMixinLit(
+    UserUtilMixinLit(RouteObserverMixinLit(I18nMixinLit(CrLitElement))));
 
 export class PasswordsSectionElement extends PasswordsSectionElementBase {
   static get is() {
     return 'passwords-section';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      focusConfig: {
-        type: Object,
-        observer: 'focusConfigChanged_',
-      },
+      focusConfig: {type: Object},
 
       /**
        * Password groups displayed in the UI.
        */
-      groups_: {
-        type: Array,
-        value: null,
-        observer: 'onGroupsChanged_',
-      },
+      groups_: {type: Array},
+      filteredGroups_: {type: Array},
 
       /** Filter on the saved passwords and exceptions. */
-      searchTerm_: {
-        type: String,
-        value: '',
-      },
+      searchTerm_: {type: String},
 
-      shownGroupsCount_: {
-        type: Number,
-        value: 0,
-        observer: 'announceSearchResults_',
-      },
-
-      showAddPasswordDialog_: Boolean,
-      showAuthTimedOutDialog_: Boolean,
-
-      movePasswordsText_: String,
-
-      importPasswordsText_: {
-        type: String,
-        computed: 'computeImportPasswordsText_(isAccountStoreUser, ' +
-            'isSyncingPasswords, accountEmail)',
-      },
-
-      passwordsOnDevice_: {
-        type: Array,
-        computed: 'computePasswordsOnDevice_(groups_)',
-      },
-
-      showPasswordsDescription_: {
-        type: Boolean,
-        computed: 'computeShowPasswordsDescription_(groups_, ' +
-            'searchTerm_)',
-      },
-
-      notificationCard_: {
-        type: Object,
-        value: null,
-      },
-
-      passwordSavingBlockedByPolicy_: {
-        type: Boolean,
-        value: false,
-      },
-
-      shouldShowNotificationCard_: {
-        type: Boolean,
-        computed: 'computeShouldShowNotificationCard_(' +
-            'notificationCard_, isAccountStoreUser, accountEmail, ' +
-            'passwordsOnDevice_)',
-      },
-
-      /**
-       * The element to return focus to, when moving from details page to
-       * passwords page.
-       */
-      activeListItem_: {type: Object, value: null},
+      showAddPasswordDialog_: {type: Boolean},
+      showAuthTimedOutDialog_: {type: Boolean},
+      notificationCard_: {type: Object},
+      passwordSavingBlockedByPolicy_: {type: Boolean},
     };
   }
 
-  declare focusConfig: FocusConfig;
+  accessor focusConfig: FocusConfig;
+  private accessor groups_: chrome.passwordsPrivate.CredentialGroup[]|null =
+      null;
+  protected accessor filteredGroups_:
+      chrome.passwordsPrivate.CredentialGroup[] = [];
+  protected accessor searchTerm_: string = '';
+  protected accessor showAddPasswordDialog_: boolean = false;
+  protected accessor showAuthTimedOutDialog_: boolean = false;
+  protected accessor notificationCard_: NotificationCard|null = null;
+  protected accessor passwordSavingBlockedByPolicy_: boolean = false;
 
-  declare private groups_: chrome.passwordsPrivate.CredentialGroup[]|null;
-  declare private searchTerm_: string;
-  declare private shownGroupsCount_: number;
-  declare private showAddPasswordDialog_: boolean;
-  declare private showAuthTimedOutDialog_: boolean;
-  declare private importPasswordsText_: TrustedHTML;
-  // TODO(crbug.com/410001569): This should check for localPasswordCount
-  // instead, coming from the SyncHandler that queries the batch uploader. This
-  // is needed to align the showing of the trigger and the content (which now
-  // uses the BatchUpload data).
-  declare private passwordsOnDevice_: chrome.passwordsPrivate.PasswordUiEntry[];
-  declare private showPasswordsDescription_: boolean;
-  declare private movePasswordsText_: string;
-  declare private notificationCard_: NotificationCard|null;
-  declare private passwordSavingBlockedByPolicy_: boolean;
-  declare private shouldShowNotificationCard_: boolean;
-  declare private activeListItem_: HTMLElement|null;
-
+  private shownGroupsCount_: number = 0;
+  /**
+   * The element to return focus to, when moving from details page to
+   * passwords page.
+   */
+  private activeListItem_: HTMLElement|null = null;
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
-  private authTimedOutListener_: (() => void)|null;
+  private authTimedOutListener_: (() => void)|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -201,6 +143,27 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.authTimedOutListener_ = null;
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('focusConfig')) {
+      this.focusConfigChanged_(
+          this.focusConfig, changedProperties.get('focusConfig'));
+    }
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('groups_') ||
+        changedPrivateProperties.has('searchTerm_')) {
+      this.filteredGroups_ = this.computeFilteredGroups_();
+      const count = this.filteredGroups_.length;
+      if (count !== this.shownGroupsCount_) {
+        this.shownGroupsCount_ = count;
+        this.announceSearchResults_();
+      }
+    }
+  }
+
   override currentRouteChanged(newRoute: Route): void {
     const searchTerm = newRoute.queryParameters.get(UrlParam.SEARCH_TERM) || '';
     if (searchTerm !== this.searchTerm_) {
@@ -213,17 +176,23 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       // If search term is empty don't do anything.
       return;
     }
-    const result = this.shadowRoot!.querySelector('password-list-item');
+    const result = this.shadowRoot.querySelector('password-list-item');
     if (result) {
       result.focus();
     }
   }
 
-  private hideGroupsList_(): boolean {
-    if (this.groups_ === null) {
-      return true;
+  private computeFilteredGroups_(): chrome.passwordsPrivate.CredentialGroup[] {
+    if (!this.groups_) {
+      return [];
     }
-    return this.groups_.filter(this.groupFilter_()).length === 0;
+    const filtered = this.groups_.filter(this.groupFilter_());
+    const sortFn = this.computeSortFunction_(this.searchTerm_);
+    return sortFn ? filtered.sort(sortFn) : filtered;
+  }
+
+  protected hideGroupsList_(): boolean {
+    return this.filteredGroups_.length === 0;
   }
 
   private groupFilter_():
@@ -250,13 +219,13 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     getAnnouncerInstance().announce(searchResult);
   }
 
-  private onAddPasswordClick_() {
+  protected onAddPasswordClick_() {
     this.executeIfTrustedVaultUnlocked(() => {
       this.showAddPasswordDialog_ = true;
     });
   }
 
-  private onAddPasswordDialogClose_() {
+  protected onAddPasswordDialogClose_() {
     this.showAddPasswordDialog_ = false;
   }
 
@@ -264,10 +233,14 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.showAuthTimedOutDialog_ = true;
   }
 
-  private onAuthTimedOutDialogClose_() {
+  protected onAuthTimedOutDialogClose_() {
     this.showAuthTimedOutDialog_ = false;
   }
 
+  // TODO(crbug.com/410001569): This should check for localPasswordCount
+  // instead, coming from the SyncHandler that queries the batch uploader. This
+  // is needed to align the showing of the trigger and the content (which now
+  // uses the BatchUpload data).
   private computePasswordsOnDevice_():
       chrome.passwordsPrivate.PasswordUiEntry[] {
     if (this.groups_ === null) {
@@ -282,17 +255,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         .filter(entry => localStorage.includes(entry.storedIn));
   }
 
-  private async onGroupsChanged_() {
-    this.movePasswordsText_ =
-        await PluralStringProxyImpl.getInstance().getPluralString(
-            'movePasswords', this.computePasswordsOnDevice_().length);
-  }
-
-  private getMovePasswordsText_(): TrustedHTML {
-    return sanitizeInnerHtml(this.movePasswordsText_);
-  }
-
-  private showImportPasswordsOption_(): boolean {
+  protected showImportPasswordsOption_(): boolean {
     if (this.groups_ === null || this.actionableError === null ||
         this.passwordSavingBlockedByPolicy_) {
       return false;
@@ -300,14 +263,14 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     return this.groups_.length === 0 && !this.isTrustedVaultKeyNeeded();
   }
 
-  private showTrustedVaultUnlockOption_(): boolean {
+  protected showTrustedVaultUnlockOption_(): boolean {
     if (this.groups_ === null || this.actionableError === null) {
       return false;
     }
     return this.groups_.length === 0 && this.isTrustedVaultKeyNeeded();
   }
 
-  private computeImportPasswordsText_(): TrustedHTML {
+  protected computeImportPasswordsText_(): TrustedHTML {
     if (this.isAccountStoreUser) {
       return this.i18nAdvanced('emptyStateImportAccountStore');
     }
@@ -322,7 +285,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     return this.i18nAdvanced('emptyStateImportDevice');
   }
 
-  private onTrustedVaultUnlockClick_(e: Event) {
+  protected onTrustedVaultUnlockClick_(e: Event) {
     const target = e.target as HTMLElement;
     if (target.tagName === 'A') {
       e.preventDefault();
@@ -330,7 +293,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     }
   }
 
-  private onImportPasswordsClick_(e: Event) {
+  protected onImportPasswordsClick_(e: Event) {
     const target = e.target as HTMLElement;
     if (target.tagName === 'A') {
       e.preventDefault();
@@ -340,25 +303,26 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     }
   }
 
-  private onCardClosed_() {
+  protected onCardClosed_() {
     this.notificationCard_ = null;
   }
 
-  private computeShowPasswordsDescription_(): boolean {
+  protected computeShowPasswordsDescription_(): boolean {
     return this.groups_ !== null && !this.searchTerm_ &&
         this.groups_.length > 0;
   }
 
-  private showNoPasswordsFound_(): boolean {
+  protected showNoPasswordsFound_(): boolean {
     return this.groups_ !== null && this.hideGroupsList_() &&
         this.groups_.length > 0;
   }
 
-  private onPasswordDetailsShown_(e: CustomEvent) {
+  protected onPasswordDetailsShown_(e: CustomEvent<HTMLElement>) {
     this.activeListItem_ = e.detail;
   }
 
-  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
+  private focusConfigChanged_(
+      _newConfig: FocusConfig, oldConfig?: FocusConfig) {
     // focusConfig is set only once on the parent, so this observer should
     // only fire once.
     assert(!oldConfig);
@@ -394,7 +358,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     };
   }
 
-  private computeShouldShowNotificationCard_(): boolean {
+  protected computeShouldShowNotificationCard_(): boolean {
     if (!this.notificationCard_) {
       return false;
     }

@@ -25,8 +25,9 @@ function validatePasswordsSubsection(
     section: PasswordsSectionElement,
     expectedGroups: chrome.passwordsPrivate.CredentialGroup[],
     searchTerm: string) {
+  assertEquals(expectedGroups.length > 0, isVisible(section.$.passwords));
   const listItemElements =
-      section.shadowRoot!.querySelectorAll('password-list-item');
+      section.shadowRoot.querySelectorAll('password-list-item');
   assertEquals(listItemElements.length, expectedGroups.length);
 
   for (let index = 0; index < expectedGroups.length; ++index) {
@@ -126,7 +127,7 @@ suite('PasswordsSectionTest', function() {
     const section = await createPasswordsSection();
 
     // PasswordsList is hidden as there are no passwords.
-    assertFalse(isVisible(section.$.passwordsList));
+    assertFalse(isVisible(section.$.passwords));
   });
 
   test('clicking group navigates to details page', async function() {
@@ -144,7 +145,7 @@ suite('PasswordsSectionTest', function() {
     const section = await createPasswordsSection();
 
     const listEntry =
-        section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
+        section.shadowRoot.querySelector<HTMLElement>('password-list-item');
     assertTrue(!!listEntry);
     listEntry.click();
     assertEquals(
@@ -169,7 +170,7 @@ suite('PasswordsSectionTest', function() {
     const section = await createPasswordsSection();
 
     const listEntry =
-        section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
+        section.shadowRoot.querySelector<HTMLElement>('password-list-item');
     assertTrue(!!listEntry);
     listEntry.click();
     // Without setRequestCredentialsDetailsResponse auth is considered failed.
@@ -202,7 +203,7 @@ suite('PasswordsSectionTest', function() {
     await flushTasks();
 
     const listEntries =
-        section.shadowRoot!.querySelectorAll<PasswordListItemElement>(
+        section.shadowRoot.querySelectorAll<PasswordListItemElement>(
             'password-list-item');
     assertEquals(2, listEntries.length);
 
@@ -336,7 +337,7 @@ suite('PasswordsSectionTest', function() {
     await eventToPromise('cr-dialog-open', section);
 
     const addDialog =
-        section.shadowRoot!.querySelector<AddPasswordDialogElement>(
+        section.shadowRoot.querySelector<AddPasswordDialogElement>(
             'add-password-dialog');
     assertTrue(!!addDialog);
     assertTrue(addDialog.$.dialog.open);
@@ -397,7 +398,7 @@ suite('PasswordsSectionTest', function() {
     await eventToPromise('cr-dialog-open', section);
 
     const addDialog =
-        section.shadowRoot!.querySelector<AuthTimedOutDialogElement>(
+        section.shadowRoot.querySelector<AuthTimedOutDialogElement>(
             'auth-timed-out-dialog');
     assertTrue(!!addDialog);
     assertTrue(addDialog.$.dialog.open);
@@ -597,8 +598,8 @@ suite('PasswordsSectionTest', function() {
 
         const section = await createPasswordsSection();
 
-        const listEntry = section.shadowRoot!.querySelector<HTMLElement>(
-            'password-list-item');
+        const listEntry =
+            section.shadowRoot.querySelector<HTMLElement>('password-list-item');
         assertTrue(!!listEntry);
         listEntry.click();
         assertEquals(
@@ -626,10 +627,10 @@ suite('PasswordsSectionTest', function() {
 
     const section = await createPasswordsSection();
     const listEntry =
-        section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
+        section.shadowRoot.querySelector<HTMLElement>('password-list-item');
     assertTrue(!!listEntry);
     assertFalse(isVisible(
-        section.shadowRoot!.querySelector<HTMLElement>('#cloudUploadButton')));
+        section.shadowRoot.querySelector<HTMLElement>('#cloudUploadButton')));
   });
 
   test(
@@ -644,10 +645,10 @@ suite('PasswordsSectionTest', function() {
         })];
 
         const section = await createPasswordsSection();
-        const listEntry = section.shadowRoot!.querySelector<HTMLElement>(
-            'password-list-item');
+        const listEntry =
+            section.shadowRoot.querySelector('password-list-item');
         assertTrue(!!listEntry);
-        assertFalse(isVisible(listEntry.shadowRoot!.querySelector<HTMLElement>(
+        assertFalse(isVisible(listEntry.shadowRoot.querySelector<HTMLElement>(
             '#cloudUploadButton')));
       });
 
@@ -661,11 +662,10 @@ suite('PasswordsSectionTest', function() {
     })];
 
     const section = await createPasswordsSection();
-    const listEntry =
-        section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
+    const listEntry = section.shadowRoot.querySelector('password-list-item');
     assertTrue(!!listEntry);
-    assertTrue(isVisible(listEntry.shadowRoot!.querySelector<HTMLElement>(
-        '#cloudUploadButton')));
+    assertTrue(isVisible(
+        listEntry.shadowRoot.querySelector<HTMLElement>('#cloudUploadButton')));
   });
 
   test('Clicking upload icon opens dialog', async function() {
@@ -680,25 +680,24 @@ suite('PasswordsSectionTest', function() {
         passwordManager.data.groups[0]!.entries.slice());
 
     const section = await createPasswordsSection();
-    const listEntry =
-        section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
+    const listEntry = section.shadowRoot.querySelector('password-list-item');
     assertTrue(!!listEntry);
 
     // Initially, the dialog should not exist.
     assertFalse(
-        !!listEntry.shadowRoot!.querySelector<MovePasswordsDialogElement>(
+        !!listEntry.shadowRoot.querySelector<MovePasswordsDialogElement>(
             '#movePasswordsDialog'));
 
     // Click the button to open the dialog.
     const cloudUploadButton =
-        listEntry.shadowRoot!.querySelector<HTMLElement>('#cloudUploadButton');
+        listEntry.shadowRoot.querySelector<HTMLElement>('#cloudUploadButton');
     assertTrue(!!cloudUploadButton);
     cloudUploadButton.click();
     await flushTasks();
 
     // Now the dialog should have opened.
     const movePasswordsDialog =
-        listEntry.shadowRoot!.querySelector<MovePasswordsDialogElement>(
+        listEntry.shadowRoot.querySelector<MovePasswordsDialogElement>(
             '#movePasswordsDialog');
     assertTrue(!!movePasswordsDialog);
     assertTrue(movePasswordsDialog.$.dialog.open);
@@ -718,20 +717,19 @@ suite('PasswordsSectionTest', function() {
     pluralString.text = 'Save $1 password in your Google Account';
 
     const section = await createPasswordsSection();
-    const listEntry =
-        section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
+    const listEntry = section.shadowRoot.querySelector('password-list-item');
     assertTrue(!!listEntry);
 
     await flushTasks();
 
     assertEquals(
         'Save bar.com password in your Google Account',
-        listEntry.shadowRoot!.querySelector<HTMLElement>(
-                                 'cr-tooltip')!.innerHTML.trim());
+        listEntry.shadowRoot.querySelector<HTMLElement>(
+                                'cr-tooltip')!.textContent.trim());
     assertEquals(
         'Save bar.com password in your Google Account',
-        listEntry.shadowRoot!.querySelector<HTMLElement>(
-                                 '#cloudUploadButton')!.ariaLabel);
+        listEntry.shadowRoot.querySelector<HTMLElement>(
+                                '#cloudUploadButton')!.ariaLabel);
   });
 
   test('Dialog closes when account storage is disabled', async function() {
@@ -747,24 +745,23 @@ suite('PasswordsSectionTest', function() {
         passwordManager.data.groups[0]!.entries.slice());
 
     const section = await createPasswordsSection();
-    const listEntry =
-        section.shadowRoot!.querySelector<PasswordListItemElement>(
-            'password-list-item');
+    const listEntry = section.shadowRoot.querySelector<PasswordListItemElement>(
+        'password-list-item');
     assertTrue(!!listEntry);
 
     // Initially, the dialog should not exist.
     assertFalse(
-        !!listEntry.shadowRoot!.querySelector<MovePasswordsDialogElement>(
+        !!listEntry.shadowRoot.querySelector<MovePasswordsDialogElement>(
             '#movePasswordsDialog'));
 
     // Click the button to open the dialog.
-    listEntry.shadowRoot!.querySelector<HTMLElement>(
-                             '#cloudUploadButton')!.click();
+    listEntry.shadowRoot.querySelector<HTMLElement>(
+                            '#cloudUploadButton')!.click();
     await flushTasks();
 
     // Now the dialog should have opened.
     const movePasswordsDialog =
-        listEntry.shadowRoot!.querySelector<MovePasswordsDialogElement>(
+        listEntry.shadowRoot.querySelector<MovePasswordsDialogElement>(
             '#movePasswordsDialog');
     assertTrue(!!movePasswordsDialog);
     assertTrue(movePasswordsDialog.$.dialog.open);
@@ -782,7 +779,7 @@ suite('PasswordsSectionTest', function() {
 
     // The dialog should no longer exist.
     assertFalse(
-        !!listEntry.shadowRoot!.querySelector<MovePasswordsDialogElement>(
+        !!listEntry.shadowRoot.querySelector<MovePasswordsDialogElement>(
             '#movePasswordsDialog'));
   });
 
@@ -804,6 +801,6 @@ suite('PasswordsSectionTest', function() {
         assertTrue(!!addButton);
         addButton.click();
         await eventPromise;
-        assertFalse(!!section.shadowRoot!.querySelector('add-password-dialog'));
+        assertFalse(!!section.shadowRoot.querySelector('add-password-dialog'));
       });
 });

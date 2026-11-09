@@ -58,13 +58,15 @@ suite('PasswordManagerAppTest', function() {
     assertEquals(app.shadowRoot!.activeElement, app.$.toolbar);
 
     app.$.toolbar.searchField.setValue('.org');
+    await microtasksFinished();
     keyDownOn(app.$.toolbar.searchField, 0, [], 'Enter');
 
     const firstMatch =
-        app.$.passwords.shadowRoot!.querySelector('password-list-item');
+        app.$.passwords.shadowRoot.querySelector('password-list-item');
     assertTrue(!!firstMatch);
+    assertEquals('bbc.org', firstMatch.item.name);
     assertEquals(app.shadowRoot!.activeElement, app.$.passwords);
-    assertEquals(app.$.passwords.shadowRoot!.activeElement, firstMatch);
+    assertEquals(app.$.passwords.shadowRoot.activeElement, firstMatch);
   });
 
   test(
@@ -88,7 +90,7 @@ suite('PasswordManagerAppTest', function() {
 
 
         const passwordListItem =
-            app.$.passwords.shadowRoot!.querySelector('password-list-item');
+            app.$.passwords.shadowRoot.querySelector('password-list-item');
         assertTrue(!!passwordListItem);
         passwordListItem.click();
         await flushTasks();
@@ -114,7 +116,7 @@ suite('PasswordManagerAppTest', function() {
         assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
         assertEquals(app.shadowRoot!.activeElement, app.$.passwords);
         assertEquals(
-            app.$.passwords.shadowRoot!.activeElement, passwordListItem);
+            app.$.passwords.shadowRoot.activeElement, passwordListItem);
       });
 
   [CheckupSubpage.COMPROMISED, CheckupSubpage.REUSED, CheckupSubpage.WEAK]

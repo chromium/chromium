@@ -1,74 +1,26 @@
-<style include="shared-style cr-shared-style cr-spinner-style">
-  #blockedSitesTitle, #actorLoginPermissionsTitle {
-    margin-top: 28px;
-  }
-
-  .site-content {
-    border-top: var(--cr-separator-line);
-    flex: 1;
-    min-height: var(--section-min-height);
-  }
-
-  .site-content[first] {
-    border-top: none;
-  }
-
-  .favicon,
-  #blockedSitesHeader,
-  #actorLoginPermissionsHeader {
-    margin-inline-end: 20px;
-    margin-inline-start: 20px;
-  }
-
-  .flex-spacer {
-    flex: 1;
-  }
-
-  .site-username {
-    margin-inline-start: 8px;
-  }
-
-  cr-icon-button {
-    --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-margin-start: 0px;
-    --cr-icon-button-margin-end: 10px;
-  }
-
-  @media all and (display-mode: standalone) {
-    #addShortcutBanner {
-      display: none;
-    }
-  }
-
-  /* Hide the default icon element.*/
-  cr-link-row[hide-icon]::part(icon) {
-    display: none;
-  }
-</style>
 <h2 class="page-title">$i18n{settings}</h2>
 <div class="card">
   <pref-toggle-button id="passwordToggle" no-extension-indicator
       label="$i18n{savePasswordsLabel}"
       pref-key="credentials_enable_service">
   </pref-toggle-button>
-  <template is="dom-if"
-        if="[[credentialsEnableServicePref_.extensionId]]">
+  ${this.credentialsEnableServicePref_?.extensionId ? html`
     <div class="cr-row continuation">
       <extension-controlled-indicator
           id="passwordsExtensionIndicator"
-          extension-id="[[credentialsEnableServicePref_.extensionId]]"
-          extension-name="[[
-              credentialsEnableServicePref_.controlledByName]]"
-          extension-can-be-disabled="[[
-              credentialsEnableServicePref_.extensionCanBeDisabled]]">
+          .extensionId="${this.credentialsEnableServicePref_.extensionId}"
+          .extensionName="${this.
+              credentialsEnableServicePref_.controlledByName || ''}"
+          .extensionCanBeDisabled="${!!this.
+              credentialsEnableServicePref_.extensionCanBeDisabled}">
       </extension-controlled-indicator>
     </div>
-  </template>
+  ` : ''}
   <pref-toggle-button id="passkeyUpgradeToggle"
       label="$i18n{passkeyUpgradeSettingsToggleLabel}"
       sub-label="$i18n{passkeyUpgradeSettingsToggleSubLabel}"
       pref-key="credentials_enable_automatic_passkey_upgrades"
-      hidden="[[!credentialsEnableServicePref_.value]]">
+      ?hidden="${!this.credentialsEnableServicePref_?.value}">
   </pref-toggle-button>
   <pref-toggle-button id="autosigninToggle" class="hr"
       label="$i18n{autosigninLabel}"
@@ -76,98 +28,92 @@
       pref-key="credentials_enable_autosignin">
   </pref-toggle-button>
   <if expr="is_win or is_macosx or is_chromeos">
-    <template is="dom-if"
-        if="[[isBiometricAuthenticationForFillingToggleVisible_]]">
+    ${this.isBiometricAuthenticationForFillingToggleVisible_ ? html`
       <pref-toggle-button id="biometricAuthenticationToggle" class="hr"
           label="$i18n{biometricAuthenticationForFillingLabel}"
           sub-label="$i18n{biometricAuthenticationForFillingSubLabel}"
           pref-key="password_manager.biometric_authentication_filling"
           change-requires-validation
-          on-validate-and-change-pref="switchBiometricAuthBeforeFillingState_">
+          @validate-and-change-pref="${this.onValidateAndChangePref_}">
       </pref-toggle-button>
-    </template>
+    ` : ''}
   </if>
-  <template is="dom-if"
-      if="[[shouldShowMovePasswordsEntry_(isAccountStoreUser,
-            passwordsOnDevice_, localPasswordCount_)]]"
-      restamp>
-    <cr-link-row class="cr-row" non-clickable label="[[movePasswordsLabel_]]"
+  ${this.shouldShowMovePasswordsEntry_() ? html`
+    <cr-link-row class="cr-row" non-clickable label="${this.movePasswordsLabel_}"
         sub-label="$i18n{movePasswordsInSettingsSubLabel}" hide-icon
         aria-show-label aria-show-sublabel>
-      <cr-button id="movePasswordsButton" on-click="onMovePasswordsClicked_"
-          aria-description="[[getAriaDescriptionMovePasswordsButton_(movePasswordsLabel_)]]">
+      <cr-button id="movePasswordsButton" @click="${this.onMovePasswordsClick_}"
+          aria-description="${this.getAriaDescriptionMovePasswordsButton_()}">
         $i18n{moveSinglePasswordButton}
       </cr-button>
     </cr-link-row>
-  </template>
-  <template is="dom-if" if="[[isAutomatedPasswordChangeVisible_]]">
+  ` : ''}
+  ${this.isAutomatedPasswordChangeVisible_ ? html`
     <cr-link-row id="automatedPasswordChange"
         class="cr-row settings-cr-link-row"
         label="$i18n{automatedPasswordChangeTitle}"
         sub-label="$i18n{automatedPasswordChangeDescription}"
-        aria-label="[[getAriaLabelForAutomatedPasswordChange_()]]"
-        on-click="onAutomatedPasswordChangeClick_">
+        aria-label="${this.getAriaLabelForAutomatedPasswordChange_()}"
+        @click="${this.onAutomatedPasswordChangeClick_}">
     </cr-link-row>
-  </template>
+  ` : ''}
   <cr-link-row id="trustedVaultBanner" class="cr-row"
-      label="[[getTrustedVaultBannerTitle_(trustedVaultBannerState_)]]"
-      sub-label="[[getTrustedVaultBannerDescription_(trustedVaultBannerState_)]]"
-      hidden$="[[shouldHideTrustedVaultBanner_(trustedVaultBannerState_)]]"
+      label="${this.getTrustedVaultBannerTitle_()}"
+      sub-label="${this.getTrustedVaultBannerDescription_()}"
+      ?hidden="${this.shouldHideTrustedVaultBanner_()}"
       button-aria-description="$i18n{opensInNewTab}"
-      on-click="onTrustedVaultBannerClick_" external>
+      @click="${this.onTrustedVaultBannerClick_}" external>
   </cr-link-row>
-  <template is="dom-if" if="[[!passwordSavingBlockedByPolicy_]]" restamp>
+  ${!this.isPasswordSavingBlockedByPolicy_() ? html`
     <passwords-importer></passwords-importer>
-  </template>
-  <template is="dom-if" if="[[hasPasswordsToExport_]]" restamp>
+  ` : ''}
+  ${this.hasPasswordsToExport_ ? html`
     <passwords-exporter></passwords-exporter>
-  </template>
-  <template is="dom-if" if="[[canAddShortcut_]]"
-      on-dom-change="onShortcutBannerDomChanged_" restamp>
+  ` : ''}
+  ${this.canAddShortcut_ ? html`
     <cr-link-row id="addShortcutBanner" class="cr-row settings-cr-link-row"
-        on-click="onAddShortcutClick_" label="$i18n{addShortcut}"
+        @click="${this.onAddShortcutClick_}" label="$i18n{addShortcut}"
         sub-label="$i18n{addShortcutDescription}" role-description="button">
     </cr-link-row>
-  </template>
-  <template is="dom-if" if="[[isConnectedToCloudAuthenticator_]]" restamp>
+  ` : ''}
+  ${this.isConnectedToCloudAuthenticator_ ? html`
     <cr-link-row id="disconnectCloudAuthenticatorRow"
         class="cr-row settings-cr-link-row"
         label="$i18n{disconnectCloudAuthenticatorTitle}"
         sub-label="$i18n{disconnectCloudAuthenticatorDescription}"
         hide-icon non-clickable aria-show-label aria-show-sublabel>
-      <template is="dom-if"
-          if="[[!isDisconnectCloudAuthenticatorInProgress_]]" restamp>
+      ${!this.isDisconnectCloudAuthenticatorInProgress_ ? html`
         <cr-button id="disconnectCloudAuthenticatorButton"
             class="cr-row-action-button"
-            aria-description="[[getAriaDescriptionForCloudAuthenticatorButton_()]]"
-            on-click="onDisconnectCloudAuthenticatorClick_">
+            aria-description="${this.getAriaDescriptionForCloudAuthenticatorButton_()}"
+            @click="${this.onDisconnectCloudAuthenticatorClick_}">
           $i18n{disconnectCloudAuthenticatorButton}
         </cr-button>
-      </template>
+      ` : ''}
       <div class="spinner"
-          hidden$="[[!isDisconnectCloudAuthenticatorInProgress_]]"></div>
+          ?hidden="${!this.isDisconnectCloudAuthenticatorInProgress_}"></div>
     </cr-link-row>
-  </template>
-  <template is="dom-if" if="[[isPasswordManagerPinAvailable_]]" restamp>
+  ` : ''}
+  ${this.isPasswordManagerPinAvailable_ ? html`
     <cr-link-row id="changePasswordManagerPinRow"
         class="cr-row settings-cr-link-row"
         label="$i18n{changePasswordManagerPin}"
-        on-click="onChangePasswordManagerPinRowClick_">
+        @click="${this.onChangePasswordManagerPinRowClick_}">
     </cr-link-row>
-  </template>
+  ` : ''}
   <if expr="is_win or is_macosx">
-    <template is="dom-if" if="[[hasPasskeys_]]" restamp>
+    ${this.hasPasskeys_ ? html`
       <cr-link-row id="managePasskeysRow" external
-          class="cr-row settings-cr-link-row" on-click="onManagePasskeysClick_"
+          class="cr-row settings-cr-link-row" @click="${this.onManagePasskeysClick_}"
           label="$i18n{managePasskeysLabel}">
       </cr-link-row>
-    </template>
+    ` : ''}
   </if>
-  <full-data-reset is-account-store-user="[[isAccountStoreUser]]"
-      is-syncing-passwords="[[isSyncingPasswords]]">
+  <full-data-reset ?is-account-store-user="${this.isAccountStoreUser}"
+      ?is-syncing-passwords="${this.isSyncingPasswords}">
   </full-data-reset>
 </div>
-<template is="dom-if" if="[[shouldShowActorLoginPermissions_]]" restamp>
+${this.shouldShowActorLoginPermissions_() ? html`
   <h3 id="actorLoginPermissionsTitle"
       class="page-title">$i18n{actorLoginPermissionsTitle}</h3>
   <div class="card" id="actorLoginPermissions">
@@ -177,32 +123,33 @@
       </div>
     </div>
     <div id="actorLoginPermissionsList" class="hr">
-      <template is="dom-repeat" items="[[actorLoginPermissions_]]">
+      ${this.actorLoginPermissions_.map((item, index) => html`
         <div class="flex-centered">
-          <site-favicon class="favicon" domain="[[item.domainInfo.url]]"
-              url="[[item.faviconUrl.url]]">
+          <site-favicon class="favicon" domain="${item.domainInfo.url}"
+              url="${item.faviconUrl}">
           </site-favicon>
           <div class="site-content flex-centered"
-              first$="[[!index]]">
-            <div class="label">[[item.domainInfo.humanReadableName]]</div>
+              ?first="${!index}">
+            <div class="label">${item.domainInfo.humanReadableName}</div>
             <div class="label site-username cr-secondary-text">
-              [[item.username]]
+              ${item.username}
             </div>
             <div class="flex-spacer"></div>
             <cr-icon-button class="icon-clear"
                 id="removeActorLoginPermissionValueButton"
-                on-click="onRemoveActorLoginPermissionClick_"
+                data-index="${index}"
+                @click="${this.onRemoveActorLoginPermissionClick_}"
                 title="$i18n{deletePassword}"
-                aria-label="[[i18n('removeBlockedAriaDescription',
-                    item.domainInfo.humanReadableName)]]">
+                aria-label="${this.i18n('removeBlockedAriaDescription',
+                    item.domainInfo.humanReadableName)}">
             </cr-icon-button>
           </div>
         </div>
-      </template>
+      `)}
     </div>
   </div>
-</template>
-<div hidden="[[!blockedSites_.length]]">
+` : ''}
+<div ?hidden="${!this.blockedSites_.length}">
   <h3 id="blockedSitesTitle" class="page-title">$i18n{blockedSitesTitle}</h3>
   <div class="card" id="blockedSites">
     <div class="flex-centered single-line-label">
@@ -211,38 +158,39 @@
       </div>
     </div>
     <div id="blockedSitesList" class="hr">
-      <template is="dom-repeat" items="[[blockedSites_]]">
+      ${this.blockedSites_.map((item, index) => html`
         <div class="flex-centered">
-          <site-favicon class="favicon" domain="[[item.urls.link]]">
+          <site-favicon class="favicon" domain="${item.urls.link}">
           </site-favicon>
-          <div class="site-content flex-centered" first$="[[!index]]">
-            <div class="label">[[item.urls.shown]]</div>
+          <div class="site-content flex-centered" ?first="${!index}">
+            <div class="label">${item.urls.shown}</div>
             <div class="flex-spacer"></div>
             <cr-icon-button class="icon-clear" id="removeBlockedValueButton"
-                on-click="onRemoveBlockedSiteClick_"
+                data-id="${item.id}"
+                @click="${this.onRemoveBlockedSiteClick_}"
                 title="$i18n{deletePassword}"
-                aria-label="[[getAriaLabelForBlockedSite_(item)]]">
+                aria-label="${this.getAriaLabelForBlockedSite_(item)}">
             </cr-icon-button>
           </div>
         </div>
-      </template>
+      `)}
     </div>
   </div>
 </div>
-<template is="dom-if" if="[[showDisconnectCloudAuthenticatorDialog_]]" restamp>
+${this.showDisconnectCloudAuthenticatorDialog_ ? html`
   <disconnect-cloud-authenticator-dialog id="disconnectCloudAuthenticatorDialog"
-      on-close="onCloseDisconnectCloudAuthenticatorDialog_"
-      on-disconnect-cloud-authenticator="onDisconnectCloudAuthenticator_">
+      @close="${this.onDisconnectCloudAuthenticatorDialogClose_}"
+      @disconnect-cloud-authenticator="${this.onDisconnectCloudAuthenticator_}">
   </disconnect-cloud-authenticator-dialog>
-</template>
-<template is="dom-if" if="[[removeActorLoginPermissionSite_]]" restamp>
+` : ''}
+${this.removeActorLoginPermissionSite_ ? html`
   <remove-actor-login-permission-dialog
       id="removeActorLoginPermissionDialog"
-      origin="[[removeActorLoginPermissionSite_.domain_info.humanReadableName]]"
-      on-close="onCloseRemoveActorLoginPermissionDialog_"
-      on-remove-actor-login-permission-click="onRemoveActorLoginPermission_">
+      origin="${this.removeActorLoginPermissionSite_.domainInfo.humanReadableName}"
+      @close="${this.onRemoveActorLoginPermissionDialogClose_}"
+      @remove-actor-login-permission-click="${this.onDialogRemoveActorLoginPermissionClick_}">
   </remove-actor-login-permission-dialog>
-</template>
+` : ''}
 <cr-toast id="toast" duration="5000">
-  <span id="toast-message">[[toastMessage_]]</span>
+  <span id="toast-message">${this.toastMessage_}</span>
 </cr-toast>

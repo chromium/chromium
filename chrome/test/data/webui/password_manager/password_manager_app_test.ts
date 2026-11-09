@@ -297,14 +297,10 @@ suite('PasswordManagerAppTest', function() {
     const settingsSection = app.shadowRoot!.querySelector('settings-section');
     assertTrue(!!settingsSection);
     await flushTasks();
-    settingsSection.dispatchEvent(new CustomEvent('passwords-moved', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        accountEmail: testEmail,
-        numberOfPasswords: 1,
-      },
-    }));
+    settingsSection.fire('passwords-moved', {
+      accountEmail: testEmail,
+      numberOfPasswords: 1,
+    });
     await flushTasks();
     assertTrue(app.$.toast.open);
     const button = app.shadowRoot!.querySelector<HTMLElement>('#undo');
@@ -332,14 +328,10 @@ suite('PasswordManagerAppTest', function() {
     const passwordsSection = app.shadowRoot!.querySelector('passwords-section');
     assertTrue(!!passwordsSection);
 
-    passwordsSection.dispatchEvent(new CustomEvent('passwords-moved', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        accountEmail: testEmail,
-        numberOfPasswords: 1,
-      },
-    }));
+    passwordsSection.fire('passwords-moved', {
+      accountEmail: testEmail,
+      numberOfPasswords: 1,
+    });
     await flushTasks();
     assertTrue(app.$.toast.open);
     const button = app.shadowRoot!.querySelector<HTMLElement>('#undo');
@@ -373,7 +365,7 @@ suite('PasswordManagerAppTest', function() {
     await flushTasks();
 
     const importer =
-        settingsSection.shadowRoot!.querySelector('passwords-importer');
+        settingsSection.shadowRoot.querySelector('passwords-importer');
     assertTrue(!!importer);
 
     const spinner = importer.shadowRoot.querySelector('.spinner');

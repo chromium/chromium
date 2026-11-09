@@ -4,9 +4,7 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import './cr_spinner_style.css.js';
 import './dialogs/disconnect_cloud_authenticator_dialog.js';
 import './dialogs/remove_actor_login_permission_dialog.js';
 import './full_data_reset.js';
@@ -14,22 +12,20 @@ import './passwords_exporter.js';
 import './passwords_importer.js';
 import './prefs/pref_toggle_button.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
-import './shared_style.css.js';
 import './site_favicon.js';
-import './user_utils_mixin.js';
 
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
-import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
-import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
+import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 // <if expr="is_win or is_macosx">
 import {PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
@@ -41,16 +37,16 @@ import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {isSavingNewPasswordsBlockedByMandatoryPolicy} from './prefs/policy_utils.js';
 import type {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 import type {Route} from './router.js';
-import {Page, RouteObserverMixin, Router, UrlParam} from './router.js';
-import {getTemplate} from './settings_section.html.js';
+import {Page, RouteObserverMixinLit, Router, UrlParam} from './router.js';
+import {getCss} from './settings_section.css.js';
+import {getHtml} from './settings_section.html.js';
 import {BatchUploadPasswordsEntryPoint, SyncBrowserProxyImpl, TrustedVaultBannerState} from './sync_browser_proxy.js';
-import {UserUtilMixin} from './user_utils_mixin.js';
+import {UserUtilMixinLit} from './user_utils_mixin_lit.js';
 
 export interface SettingsSectionElement {
   $: {
     autosigninToggle: PrefToggleButtonElement,
     blockedSitesList: HTMLElement,
-    passkeyUpgradeToggle: PrefToggleButtonElement,
     passwordToggle: PrefToggleButtonElement,
     toast: CrToastElement,
     trustedVaultBanner: CrLinkRowElement,
@@ -63,192 +59,94 @@ const PASSWORD_MANAGER_ADD_SHORTCUT_CUSTOM_EVENT_ID =
     'PasswordManagerUI::kAddShortcutCustomEventId';
 
 const SettingsSectionElementBase =
-    HelpBubbleMixin(RouteObserverMixin(PrefServiceObserverMixin(
-        UserUtilMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))));
+    HelpBubbleMixinLit(RouteObserverMixinLit(PrefServiceObserverMixinLit(
+        UserUtilMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement))))));
 
 export class SettingsSectionElement extends SettingsSectionElementBase {
   static get is() {
     return 'settings-section';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /** An array of blocked sites to display. */
-      blockedSites_: {
-        type: Array,
-        value: () => [],
-      },
+      blockedSites_: {type: Array},
 
       /** An array of sites with permissions for actor login. */
-      actorLoginPermissions_: {
-        type: Array,
-        value: () => [],
-      },
+      actorLoginPermissions_: {type: Array},
 
-      isActorLoginPermissionsEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableActorLoginPermissions');
-        },
-      },
-
-      isFedCmEmbedderInitiatedLoginEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('fedCmEmbedderInitiatedLoginEnabled');
-        },
-      },
-
-      shouldShowActorLoginPermissions_: {
-        type: Boolean,
-        computed: 'computeShouldShowActorLoginPermissions_(' +
-            'actorLoginPermissions_.length, isActorLoginPermissionsEnabled_, ' +
-            'isFedCmEmbedderInitiatedLoginEnabled_)',
-      },
+      isActorLoginPermissionsEnabled_: {type: Boolean},
+      isFedCmEmbedderInitiatedLoginEnabled_: {type: Boolean},
 
       // <if expr="is_win or is_macosx or is_chromeos">
-      isBiometricAuthenticationForFillingToggleVisible_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'biometricAuthenticationForFillingToggleVisible');
-        },
-      },
+      isBiometricAuthenticationForFillingToggleVisible_: {type: Boolean},
       // </if>
 
-      isAutomatedPasswordChangeVisible_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('passwordChangeAvailable');
-        },
-      },
-
-      hasPasswordsToExport_: {
-        type: Boolean,
-        value: false,
-      },
-
-      hasPasskeys_: {
-        type: Boolean,
-        value: false,
-      },
-
-      credentialsEnableServicePref_: Object,
-
-      passwordSavingBlockedByPolicy_: {
-        type: Boolean,
-        computed: 'computePasswordSavingBlockedByPolicy_(' +
-            'credentialsEnableServicePref_)',
-      },
+      isAutomatedPasswordChangeVisible_: {type: Boolean},
+      hasPasswordsToExport_: {type: Boolean},
+      hasPasskeys_: {type: Boolean},
+      credentialsEnableServicePref_: {type: Object},
 
       /** The visibility state of the trusted vault banner. */
-      trustedVaultBannerState_: {
-        type: Object,
-        value: TrustedVaultBannerState.NOT_SHOWN,
-      },
+      trustedVaultBannerState_: {type: Number},
 
-      movePasswordsLabel_: {
-        type: String,
-        value: '',
-      },
-
-      canAddShortcut_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('canAddShortcut');
-        },
-      },
-
-      isPasswordManagerPinAvailable_: {
-        type: Boolean,
-        value: false,
-      },
-
-      isConnectedToCloudAuthenticator_: {
-        type: Boolean,
-        value: false,
-      },
-
-      isDisconnectCloudAuthenticatorInProgress_: {
-        type: Boolean,
-        value: false,
-      },
-
-      toastMessage_: {
-        type: String,
-        value: '',
-      },
-
-      showDisconnectCloudAuthenticatorDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
-      removeActorLoginPermissionSite_: {
-        type: Object,
-      },
-
-      localPasswordCount_: {
-        type: Number,
-        value: 0,
-      },
+      movePasswordsLabel_: {type: String},
+      canAddShortcut_: {type: Boolean},
+      isPasswordManagerPinAvailable_: {type: Boolean},
+      isConnectedToCloudAuthenticator_: {type: Boolean},
+      isDisconnectCloudAuthenticatorInProgress_: {type: Boolean},
+      toastMessage_: {type: String},
+      showDisconnectCloudAuthenticatorDialog_: {type: Boolean},
+      removeActorLoginPermissionSite_: {type: Object},
+      localPasswordCount_: {type: Number},
     };
   }
 
-  static get observers() {
-    return [
-      'updateIsPasswordManagerPinAvailable_(' +
-          'isSyncingPasswords, isAccountStoreUser)',
-      'updateIsCloudAuthenticatorConnected_(' +
-          'isSyncingPasswords, isAccountStoreUser)',
-      'updateTrustedVaultBannerState_(actionableError)',
-    ];
-  }
-
-  declare private blockedSites_: BlockedSite[];
-  declare private actorLoginPermissions_: ActorLoginPermission[];
-  declare private isActorLoginPermissionsEnabled_: boolean;
-  declare private isFedCmEmbedderInitiatedLoginEnabled_: boolean;
-  declare private shouldShowActorLoginPermissions_: boolean;
+  protected accessor blockedSites_: BlockedSite[] = [];
+  protected accessor actorLoginPermissions_: ActorLoginPermission[] = [];
+  private accessor isActorLoginPermissionsEnabled_: boolean =
+      loadTimeData.getBoolean('enableActorLoginPermissions');
+  private accessor isFedCmEmbedderInitiatedLoginEnabled_: boolean =
+      loadTimeData.getBoolean('fedCmEmbedderInitiatedLoginEnabled');
   // <if expr="is_win or is_macosx or is_chromeos">
-  declare private isBiometricAuthenticationForFillingToggleVisible_: boolean;
+  protected accessor isBiometricAuthenticationForFillingToggleVisible_:
+      boolean = loadTimeData.getBoolean(
+          'biometricAuthenticationForFillingToggleVisible');
   // </if>
-  declare private hasPasskeys_: boolean;
-  declare private credentialsEnableServicePref_:
+  protected accessor hasPasskeys_: boolean = false;
+  protected accessor credentialsEnableServicePref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
-  declare private passwordSavingBlockedByPolicy_: boolean;
-  declare private hasPasswordsToExport_: boolean;
-  declare private isAutomatedPasswordChangeVisible_: boolean;
-  declare private canAddShortcut_: boolean;
-  declare private trustedVaultBannerState_: TrustedVaultBannerState;
-  declare private movePasswordsLabel_: string;
-  declare private isPasswordManagerPinAvailable_: boolean;
-  declare private isConnectedToCloudAuthenticator_: boolean;
-  declare private isDisconnectCloudAuthenticatorInProgress_: boolean;
-  declare private toastMessage_: string;
-  declare private showDisconnectCloudAuthenticatorDialog_: boolean;
-  declare private removeActorLoginPermissionSite_: ActorLoginPermission|
+  protected accessor hasPasswordsToExport_: boolean = false;
+  protected accessor isAutomatedPasswordChangeVisible_: boolean =
+      loadTimeData.getBoolean('passwordChangeAvailable');
+  protected accessor canAddShortcut_: boolean =
+      loadTimeData.getBoolean('canAddShortcut');
+  private accessor trustedVaultBannerState_: TrustedVaultBannerState =
+      TrustedVaultBannerState.NOT_SHOWN;
+  protected accessor movePasswordsLabel_: string = '';
+  protected accessor isPasswordManagerPinAvailable_: boolean = false;
+  protected accessor isConnectedToCloudAuthenticator_: boolean = false;
+  protected accessor isDisconnectCloudAuthenticatorInProgress_: boolean = false;
+  protected accessor toastMessage_: string = '';
+  protected accessor showDisconnectCloudAuthenticatorDialog_: boolean = false;
+  protected accessor removeActorLoginPermissionSite_: ActorLoginPermission|
       undefined;
   // This variable depend on the sync service API, which the Batch Upload Dialog
   // uses.
-  declare private localPasswordCount_: number;
+  private accessor localPasswordCount_: number = 0;
 
   private setBlockedSitesListListener_: BlockedSitesListChangedListener|null =
       null;
   private setCredentialsChangedListener_: CredentialsChangedListener|null =
       null;
-
-  override ready() {
-    super.ready();
-
-    chrome.metricsPrivate.recordBoolean(
-        'PasswordManager.OpenedAsShortcut',
-        window.matchMedia('(display-mode: standalone)').matches);
-  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -308,13 +206,6 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         trustedVaultStateChanged);
     this.addWebUiListener(
         'trusted-vault-banner-state-changed', trustedVaultStateChanged);
-    // TODO(crbug.com/331611435): add listener for enclave availability and
-    // trigger `updateIsPasswordManagerPinAvailable_`.
-    this.updateIsPasswordManagerPinAvailable_();
-    // Checks if the Chrome client is connected to / registered with the
-    // Cloud Authenticator. If the client is connected, then a button to
-    // disconnect the client is displayed.
-    this.updateIsCloudAuthenticatorConnected_();
 
     // <if expr="is_win or is_macosx">
     PasskeysBrowserProxyImpl.getInstance().hasPasskeys().then(hasPasskeys => {
@@ -338,13 +229,45 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     this.$.toast.hide();
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('isSyncingPasswords') ||
+        changedProperties.has('isAccountStoreUser')) {
+      // TODO(crbug.com/331611435): add listener for enclave availability and
+      // trigger `updateIsPasswordManagerPinAvailable_`.
+      this.updateIsPasswordManagerPinAvailable_();
+      // Checks if the Chrome client is connected to / registered with the
+      // Cloud Authenticator. If the client is connected, then a button to
+      // disconnect the client is displayed.
+      this.updateIsCloudAuthenticatorConnected_();
+    }
+
+    if (changedProperties.has('actionableError')) {
+      this.updateTrustedVaultBannerState_(this.actionableError);
+    }
+  }
+
+  override firstUpdated() {
+    chrome.metricsPrivate.recordBoolean(
+        'PasswordManager.OpenedAsShortcut',
+        window.matchMedia('(display-mode: standalone)').matches);
+
+    const addShortcutBanner =
+        this.shadowRoot.querySelector<HTMLElement>('#addShortcutBanner');
+    if (addShortcutBanner) {
+      this.registerHelpBubble(
+          PASSWORD_MANAGER_ADD_SHORTCUT_ELEMENT_ID, addShortcutBanner);
+    }
+  }
+
   override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
     if (newRoute.page === Page.SETTINGS &&
         oldRoute?.page === Page.PASSWORD_CHANGE &&
         this.isAutomatedPasswordChangeVisible_) {
       setTimeout(() => {
         const automatedPasswordChangeRow =
-            this.shadowRoot!.querySelector<HTMLElement>(
+            this.shadowRoot.querySelector<HTMLElement>(
                 '#automatedPasswordChange');
         if (automatedPasswordChangeRow) {
           automatedPasswordChangeRow.focus();
@@ -355,7 +278,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     const triggerImportParam =
         newRoute.queryParameters.get(UrlParam.START_IMPORT) || '';
     if (triggerImportParam === 'true') {
-      const importer = this.shadowRoot!.querySelector('passwords-importer');
+      const importer = this.shadowRoot.querySelector('passwords-importer');
       assert(importer);
       importer.launchImport();
       const params = new URLSearchParams();
@@ -363,15 +286,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     }
   }
 
-  private onShortcutBannerDomChanged_() {
-    const addShortcutBanner = this.root!.querySelector('#addShortcutBanner');
-    if (addShortcutBanner) {
-      this.registerHelpBubble(
-          PASSWORD_MANAGER_ADD_SHORTCUT_ELEMENT_ID, addShortcutBanner);
-    }
-  }
-
-  private onAddShortcutClick_() {
+  protected onAddShortcutClick_() {
     this.notifyHelpBubbleAnchorCustomEvent(
         PASSWORD_MANAGER_ADD_SHORTCUT_ELEMENT_ID,
         PASSWORD_MANAGER_ADD_SHORTCUT_CUSTOM_EVENT_ID,
@@ -385,21 +300,21 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   /**
    * Fires an event that should delete the blocked password entry.
    */
-  private onRemoveBlockedSiteClick_(
-      event: DomRepeatEvent<chrome.passwordsPrivate.ExceptionEntry>) {
-    PasswordManagerImpl.getInstance().removeBlockedSite(event.model.item.id);
+  protected onRemoveBlockedSiteClick_(e: Event) {
+    const id = Number((e.currentTarget as HTMLElement).dataset['id']);
+    PasswordManagerImpl.getInstance().removeBlockedSite(id);
   }
 
-  private onRemoveActorLoginPermissionClick_(
-      event: DomRepeatEvent<ActorLoginPermission>) {
-    this.removeActorLoginPermissionSite_ = event.model.item;
+  protected onRemoveActorLoginPermissionClick_(e: Event) {
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    this.removeActorLoginPermissionSite_ = this.actorLoginPermissions_[index];
   }
 
-  private onCloseRemoveActorLoginPermissionDialog_() {
+  protected onRemoveActorLoginPermissionDialogClose_() {
     this.removeActorLoginPermissionSite_ = undefined;
   }
 
-  private onRemoveActorLoginPermission_() {
+  protected onDialogRemoveActorLoginPermissionClick_() {
     assert(this.removeActorLoginPermissionSite_);
     PasswordManagerImpl.getInstance().revokeActorLoginPermission(
         this.removeActorLoginPermissionSite_);
@@ -407,7 +322,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   }
 
   // <if expr="is_win or is_macosx or is_chromeos">
-  private switchBiometricAuthBeforeFillingState_(e: Event) {
+  protected onValidateAndChangePref_(e: Event) {
     const biometricAuthenticationForFillingToggle =
         e.target as PrefToggleButtonElement;
     assert(biometricAuthenticationForFillingToggle);
@@ -415,7 +330,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   }
   // </if>
 
-  private onTrustedVaultBannerClick_() {
+  protected onTrustedVaultBannerClick_() {
     switch (this.trustedVaultBannerState_) {
       case TrustedVaultBannerState.OPTED_IN:
         OpenWindowProxyImpl.getInstance().openUrl(
@@ -431,7 +346,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     }
   }
 
-  private getTrustedVaultBannerTitle_(): string {
+  protected getTrustedVaultBannerTitle_(): string {
     switch (this.trustedVaultBannerState_) {
       case TrustedVaultBannerState.OPTED_IN:
         return this.i18n('trustedVaultBannerLabelOptedIn');
@@ -444,7 +359,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     }
   }
 
-  private getTrustedVaultBannerDescription_(): string {
+  protected getTrustedVaultBannerDescription_(): string {
     switch (this.trustedVaultBannerState_) {
       case TrustedVaultBannerState.OPTED_IN:
         return this.i18n('trustedVaultBannerSubLabelOptedIn');
@@ -457,52 +372,51 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     }
   }
 
-  private shouldHideTrustedVaultBanner_(): boolean {
+  protected shouldHideTrustedVaultBanner_(): boolean {
     return this.trustedVaultBannerState_ === TrustedVaultBannerState.NOT_SHOWN;
   }
 
-  private getAriaLabelForBlockedSite_(
+  protected getAriaLabelForBlockedSite_(
       blockedSite: chrome.passwordsPrivate.ExceptionEntry): string {
     return this.i18n('removeBlockedAriaDescription', blockedSite.urls.shown);
   }
 
   // <if expr="is_win or is_macosx">
-  private onManagePasskeysClick_() {
+  protected onManagePasskeysClick_() {
     PasskeysBrowserProxyImpl.getInstance().managePasskeys();
   }
   // </if>
 
-  private computePasswordSavingBlockedByPolicy_(): boolean {
-    assert(this.credentialsEnableServicePref_);
+  protected isPasswordSavingBlockedByPolicy_(): boolean {
+    if (!this.credentialsEnableServicePref_) {
+      return false;
+    }
     return isSavingNewPasswordsBlockedByMandatoryPolicy(
         this.credentialsEnableServicePref_);
   }
 
-  private computeShouldShowActorLoginPermissions_(
-      actorLoginPermissionsLength: number,
-      isActorLoginPermissionsEnabled: boolean,
-      isFedCmEmbedderInitiatedLoginEnabled: boolean): boolean {
-    return actorLoginPermissionsLength > 0 && isActorLoginPermissionsEnabled &&
-        !isFedCmEmbedderInitiatedLoginEnabled;
+  protected shouldShowActorLoginPermissions_(): boolean {
+    return this.actorLoginPermissions_.length > 0 &&
+        this.isActorLoginPermissionsEnabled_ &&
+        !this.isFedCmEmbedderInitiatedLoginEnabled_;
   }
 
-  private onMovePasswordsClicked_(e: Event) {
+  protected onMovePasswordsClick_(e: Event) {
     e.preventDefault();
     SyncBrowserProxyImpl.getInstance().openBatchUpload(
         BatchUploadPasswordsEntryPoint.PASSWORD_MANAGER);
   }
 
-  private shouldShowMovePasswordsEntry_(): boolean {
+  protected shouldShowMovePasswordsEntry_(): boolean {
     // Only show the move password entry if there are passwords returned from
     // the sync service API. This is needed to be consistent with the
     // availability of data in the dialog which uses the same API.
     return this.localPasswordCount_ > 0;
   }
 
-  private getAriaDescriptionMovePasswordsButton_(movePasswordsLabel: string):
-      string {
+  protected getAriaDescriptionMovePasswordsButton_(): string {
     return [
-      movePasswordsLabel,
+      this.movePasswordsLabel_,
       this.i18n('movePasswordsInSettingsSubLabel'),
     ].join('. ');
   }
@@ -522,7 +436,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
             available && (this.isSyncingPasswords || this.isAccountStoreUser));
   }
 
-  private onChangePasswordManagerPinRowClick_() {
+  protected onChangePasswordManagerPinRowClick_() {
     PasswordManagerImpl.getInstance().changePasswordManagerPin().then(
         this.showToastForPasswordChange_.bind(this));
   }
@@ -534,7 +448,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   }
 
   private updateTrustedVaultBannerState_(
-      error: PasswordManagerActionableError) {
+      error: PasswordManagerActionableError|null) {
     if (error === PasswordManagerActionableError.kTrustedVaultKeyNeeded) {
       this.trustedVaultBannerState_ = TrustedVaultBannerState.OPTED_IN;
     } else if (
@@ -545,15 +459,16 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     }
   }
 
-  private onDisconnectCloudAuthenticatorClick_() {
+  protected onDisconnectCloudAuthenticatorClick_() {
     this.showDisconnectCloudAuthenticatorDialog_ = true;
   }
 
-  private onCloseDisconnectCloudAuthenticatorDialog_(): void {
+  protected onDisconnectCloudAuthenticatorDialogClose_(): void {
     this.showDisconnectCloudAuthenticatorDialog_ = false;
   }
 
-  private onDisconnectCloudAuthenticator_(e: CustomEvent): void {
+  protected onDisconnectCloudAuthenticator_(e: CustomEvent<{success: boolean}>):
+      void {
     this.isDisconnectCloudAuthenticatorInProgress_ = false;
     this.updateIsCloudAuthenticatorConnected_();
     this.updateIsPasswordManagerPinAvailable_();
@@ -567,7 +482,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     this.$.toast.show();
   }
 
-  private getAriaDescriptionForCloudAuthenticatorButton_(): string {
+  protected getAriaDescriptionForCloudAuthenticatorButton_(): string {
     return [
       this.i18n('disconnectCloudAuthenticatorTitle'),
       this.i18n('disconnectCloudAuthenticatorDescription'),
@@ -582,11 +497,11 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     this.$.toast.show();
   }
 
-  private onAutomatedPasswordChangeClick_() {
+  protected onAutomatedPasswordChangeClick_() {
     Router.getInstance().navigateTo(Page.PASSWORD_CHANGE);
   }
 
-  private getAriaLabelForAutomatedPasswordChange_(): string {
+  protected getAriaLabelForAutomatedPasswordChange_(): string {
     return [
       this.i18n('automatedPasswordChangeTitle'),
       this.i18n('automatedPasswordChangeDescription'),
