@@ -323,7 +323,9 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             int position,
             @Nullable Intent intent,
             boolean copyHistory) {
-        if (mTabModel == null || mOrderController == null) return null;
+        if (mTabModel == null || mTabModel instanceof StubTabModel || mOrderController == null) {
+            return null;
+        }
         // Measure tab creation duration for different launch types to understand tab creation
         // performance.
         try (TraceEvent te = TraceEvent.scoped("ChromeTabCreator.createNewTab");
@@ -512,7 +514,9 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             @TabLaunchType int type,
             int suggestedPosition,
             CompletableFuture<Boolean> futureAddTabToModel) {
-        if (mTabModel == null || mOrderController == null) return null;
+        if (mTabModel == null || mTabModel instanceof StubTabModel || mOrderController == null) {
+            return null;
+        }
         assert webContents != null;
 
         // The parent tab was already closed. Do not open child tabs.
@@ -700,7 +704,9 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
 
     @Override
     public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
-        if (mTabModel == null || mOrderController == null) return null;
+        if (mTabModel == null || mTabModel instanceof StubTabModel || mOrderController == null) {
+            return null;
+        }
         TabModelSelector selector = mTabModelSelectorSupplier.get();
         TabResolver resolver =
                 (tabId) -> {

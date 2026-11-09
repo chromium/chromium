@@ -53,13 +53,16 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /** Unit tests for {@link ChromeTabCreator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -103,6 +106,43 @@ public class ChromeTabCreatorJUnitTest {
                         new LoadUrlParams("about:blank"),
                         TabLaunchType.FROM_CHROME_UI,
                         /* parent= */ null));
+    }
+
+    @Test
+    public void testCreateNewTab_StubTabModel_ReturnsNull() {
+        mTabCreator.setTabModel(new StubTabModel(/* isIncognito= */ true, /* profile= */ null));
+        mTabCreator.setTabModelOrderController(mock(TabModelOrderController.class));
+
+        assertNull(
+                mTabCreator.createNewTab(
+                        new LoadUrlParams("about:blank"),
+                        TabLaunchType.FROM_CHROME_UI,
+                        /* parent= */ null));
+    }
+
+    @Test
+    public void testCreateTabWithWebContents_StubTabModel_ReturnsNull() {
+        mTabCreator.setTabModel(new StubTabModel(/* isIncognito= */ true, /* profile= */ null));
+        mTabCreator.setTabModelOrderController(mock(TabModelOrderController.class));
+
+        assertNull(
+                mTabCreator.createTabWithWebContents(
+                        /* parent= */ null,
+                        /* shouldPin= */ false,
+                        mock(WebContents.class),
+                        TabLaunchType.FROM_CHROME_UI,
+                        TabModel.INVALID_TAB_INDEX,
+                        CompletableFuture.completedFuture(true)));
+    }
+
+    @Test
+    public void testCreateFrozenTab_StubTabModel_ReturnsNull() {
+        mTabCreator.setTabModel(new StubTabModel(/* isIncognito= */ true, /* profile= */ null));
+        mTabCreator.setTabModelOrderController(mock(TabModelOrderController.class));
+
+        assertNull(
+                mTabCreator.createFrozenTab(
+                        new TabState(), /* id= */ 1, TabModel.INVALID_TAB_INDEX));
     }
 
     @Test
