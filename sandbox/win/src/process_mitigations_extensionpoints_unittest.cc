@@ -6,7 +6,8 @@
 
 #include <psapi.h>
 
-#include "base/compiler_specific.h"
+#include <string_view>
+
 #include "base/scoped_native_library.h"
 #include "base/win/registry.h"
 #include "base/win/startup_information.h"
@@ -312,7 +313,8 @@ void TestWin8ExtensionPointAppInitWrapper(bool is_success_test) {
         wchar_t name[MAX_PATH] = {};
         if (::GetModuleFileNameExW(proc_info.hProcess, module, name,
                                    MAX_PATH) &&
-            UNSAFE_TODO(::wcsstr(name, hooking_dll::g_hook_dll_file))) {
+            std::wstring_view(name).find(hooking_dll::g_hook_dll_file) !=
+                std::wstring_view::npos) {
           // Found it.
           dll_loaded = true;
           break;
