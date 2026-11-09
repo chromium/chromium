@@ -39,7 +39,8 @@ namespace dictation {
 
 // Tab-scoped controller that shows the dictation IPH next to a medium or large
 // editable field when the user focuses it with the mouse or keyboard. Users who
-// have already completed dictation onboarding never see it.
+// have already completed dictation onboarding or have no microphone never see
+// it.
 //
 // The IPH is anchored to a `views::ViewSubregionAnchor` over the focused field
 // in the tab's `ContentsWebView`. The IPH is closed as "ignored" when the user
