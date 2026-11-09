@@ -170,6 +170,7 @@ class QuicSessionPool::AsyncDnsJob
   void UpdatePriority(RequestPriority old_priority,
                       RequestPriority new_priority) override;
   void PopulateNetErrorDetails(NetErrorDetails* details) const override;
+  void OnSessionActivatedForIp(const IPEndPoint& peer_address) override;
 
   // QuicSessionAttempt::Delegate implementation.
   std::vector<IPEndPoint> GetResolvedIpEndpoints() const override;
@@ -438,6 +439,8 @@ class QuicSessionPool::AsyncDnsJob
 
   // Set before every successful completion.
   SuccessSource success_source_ = SuccessSource::kNone;
+  // True when `OnSessionActivatedForIp()` matched via cross-origin IP pooling.
+  bool pooled_proactively_ = false;
   // The most recently failed attempt of either connector. The job's failure
   // is reported from here.
   std::optional<AttemptFailure> last_attempt_failure_;

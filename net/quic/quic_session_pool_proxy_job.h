@@ -45,6 +45,7 @@ class QuicSessionPool::ProxyJob : public QuicSessionPool::Job {
   int Run(CompletionOnceCallback callback) override;
   void SetRequestExpectations(QuicSessionRequest* request) override;
   void PopulateNetErrorDetails(NetErrorDetails* details) const override;
+  void OnSessionActivatedForIp(const IPEndPoint& peer_address) override;
 
   // QuicSessionAttempt::Delegate implementation.
   std::vector<IPEndPoint> GetResolvedIpEndpoints() const override;

@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
@@ -42,12 +43,17 @@ namespace net {
 namespace {
 
 enum SpdySessionGetTypes {
-  CREATED_NEW                 = 0,
-  FOUND_EXISTING              = 1,
+  CREATED_NEW = 0,
+  FOUND_EXISTING = 1,
   FOUND_EXISTING_FROM_IP_POOL = 2,
-  IMPORTED_FROM_SOCKET        = 3,
-  SPDY_SESSION_GET_MAX        = 4
+  IMPORTED_FROM_SOCKET = 3,
+  SPDY_SESSION_GET_MAX = 4
 };
+
+void RecordSpdyIpPoolDomainMatch(bool matched) {
+  base::UmaHistogramExactLinear("Net.SpdyIPPoolDomainMatch", matched ? 1 : 0,
+                                2);
+}
 
 bool IsEndpointEligibleForH2(const ConnectionEndpointMetadata& metadata) {
   // If there are no associated ALPN protocols, the endpoint is TCP-based and
@@ -85,8 +91,9 @@ SpdySessionPool::SpdySessionRequest::SpdySessionRequest(
       spdy_session_pool_(spdy_session_pool) {}
 
 SpdySessionPool::SpdySessionRequest::~SpdySessionRequest() {
-  if (spdy_session_pool_)
+  if (spdy_session_pool_) {
     spdy_session_pool_->RemoveRequestForSpdySession(this);
+  }
 }
 
 void SpdySessionPool::SpdySessionRequest::OnRemovedFromPool() {
@@ -135,10 +142,12 @@ SpdySessionPool::SpdySessionPool(
       network_quality_estimator_(network_quality_estimator),
       cleanup_sessions_on_ip_address_changed_(
           cleanup_sessions_on_ip_address_changed) {
-  if (cleanup_sessions_on_ip_address_changed_)
+  if (cleanup_sessions_on_ip_address_changed_) {
     NetworkChangeNotifier::AddIPAddressObserver(this);
-  if (ssl_client_context_)
+  }
+  if (ssl_client_context_) {
     ssl_client_context_->AddObserver(this);
+  }
 }
 
 SpdySessionPool::~SpdySessionPool() {
@@ -161,10 +170,12 @@ SpdySessionPool::~SpdySessionPool() {
     RemoveUnavailableSession((*sessions_.begin())->GetWeakPtr());
   }
 
-  if (ssl_client_context_)
+  if (ssl_client_context_) {
     ssl_client_context_->RemoveObserver(this);
-  if (cleanup_sessions_on_ip_address_changed_)
+  }
+  if (cleanup_sessions_on_ip_address_changed_) {
     NetworkChangeNotifier::RemoveIPAddressObserver(this);
+  }
 }
 
 int SpdySessionPool::CreateAvailableSessionFromSocketHandle(
@@ -371,7 +382,9 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
   }
 
   if (base::FeatureList::IsEnabled(
-          features::kPostHandshakeIpPoolingAllEndpoints)) {
+          features::kPostHandshakeIpPoolingAllEndpoints) ||
+      base::FeatureList::IsEnabled(
+          features::kProactiveIpPoolingForInFlightJobs)) {
     req_it->second.ip_endpoints.clear();
     for (const auto& endpoint : endpoint_results) {
       if (IsEndpointEligibleForH2(endpoint.metadata)) {
@@ -424,7 +437,9 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
   }
 
   if (base::FeatureList::IsEnabled(
-          features::kPostHandshakeIpPoolingAllEndpoints)) {
+          features::kPostHandshakeIpPoolingAllEndpoints) ||
+      base::FeatureList::IsEnabled(
+          features::kProactiveIpPoolingForInFlightJobs)) {
     req_it->second.ip_endpoints.clear();
     for (const auto& endpoint : endpoint_results) {
       if (IsEndpointEligibleForH2(endpoint.metadata)) {
@@ -552,8 +567,9 @@ void SpdySessionPool::OnSSLConfigForServersChanged(
   WeakSessionList current_sessions = GetCurrentSessions();
   for (base::WeakPtr<SpdySession>& session : current_sessions) {
     bool session_matches = false;
-    if (!session)
+    if (!session) {
       continue;
+    }
 
     // If the destination for this session is invalidated, or any of the proxy
     // hops along the way, make the session go away.
@@ -620,8 +636,9 @@ SpdySessionPool::RequestInfoForKey::~RequestInfoForKey() = default;
 bool SpdySessionPool::IsSessionAvailable(
     const base::WeakPtr<SpdySession>& session) const {
   for (const auto& available_session : available_sessions_) {
-    if (available_session.second.get() == session.get())
+    if (available_session.second.get() == session.get()) {
       return true;
+    }
   }
   return false;
 }
@@ -639,8 +656,7 @@ void SpdySessionPool::MapKeyToAvailableSession(
 }
 
 SpdySessionPool::AvailableSessionMap::iterator
-SpdySessionPool::LookupAvailableSessionByKey(
-    const SpdySessionKey& key) {
+SpdySessionPool::LookupAvailableSessionByKey(const SpdySessionKey& key) {
   return available_sessions_.find(key);
 }
 
@@ -678,14 +694,17 @@ void SpdySessionPool::CloseCurrentSessionsHelper(Error error,
                                                  bool idle_only) {
   WeakSessionList current_sessions = GetCurrentSessions();
   for (base::WeakPtr<SpdySession>& session : current_sessions) {
-    if (!session)
+    if (!session) {
       continue;
+    }
 
-    if (idle_only && session->is_active())
+    if (idle_only && session->is_active()) {
       continue;
+    }
 
-    if (session->IsDraining())
+    if (session->IsDraining()) {
       continue;
+    }
 
     session->CloseSessionOnError(error, description);
 
@@ -761,30 +780,37 @@ base::expected<base::WeakPtr<SpdySession>, int> SpdySessionPool::InsertSession(
   // potentially be pooled with this one. Because GetPeerAddress()
   // reports the proxy's address instead of the origin server, check
   // to see if this is a direct connection.
+  std::optional<IPEndPoint> peer_address;
   if (key.proxy_chain().is_direct()) {
     IPEndPoint address;
     if (available_session->GetPeerAddress(&address) == OK) {
       aliases_.insert(AliasMap::value_type(address, key));
+      peer_address = address;
     }
   }
 
-  if (!perform_post_insertion_checks) {
-    return available_session;
+  if (perform_post_insertion_checks) {
+    if (!available_session->HasAcceptableTransportSecurity()) {
+      available_session->CloseSessionOnError(
+          ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY, "");
+      NotifyOnConnectionFailure(key);
+      return base::unexpected(ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY);
+    }
+
+    int rv = available_session->ParseAlps();
+    if (rv != OK) {
+      DCHECK_NE(ERR_IO_PENDING, rv);
+      // ParseAlps() already closed the connection on error.
+      NotifyOnConnectionFailure(key);
+      return base::unexpected(rv);
+    }
   }
 
-  if (!available_session->HasAcceptableTransportSecurity()) {
-    available_session->CloseSessionOnError(
-        ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY, "");
-    NotifyOnConnectionFailure(key);
-    return base::unexpected(ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY);
-  }
-
-  int rv = available_session->ParseAlps();
-  if (rv != OK) {
-    DCHECK_NE(ERR_IO_PENDING, rv);
-    // ParseAlps() already closed the connection on error.
-    NotifyOnConnectionFailure(key);
-    return base::unexpected(rv);
+  if (peer_address.has_value() && available_session &&
+      IsSessionAvailable(available_session) &&
+      base::FeatureList::IsEnabled(
+          features::kProactiveIpPoolingForInFlightJobs)) {
+    PoolPendingRequestsToSession(key, *peer_address, available_session);
   }
 
   return available_session;
@@ -806,8 +832,9 @@ void SpdySessionPool::UpdatePendingRequests(const SpdySessionKey& key) {
       // queue (Order by priority first, then FIFO within same priority).
       // Unclear that it matters here.
       auto iter = spdy_session_request_map_.find(key);
-      if (iter == spdy_session_request_map_.end())
+      if (iter == spdy_session_request_map_.end()) {
         break;
+      }
       RequestSet* request_set = &iter->second.request_set;
       // Find a request that can use the socket, if any.
       RequestSet::iterator request;
@@ -815,16 +842,18 @@ void SpdySessionPool::UpdatePendingRequests(const SpdySessionKey& key) {
            ++request) {
         // If the request is for use with websockets, and the session doesn't
         // support websockets, skip over the request.
-        if ((*request)->is_websocket() && !new_session->support_websocket())
+        if ((*request)->is_websocket() && !new_session->support_websocket()) {
           continue;
+        }
         // Don't use IP pooled session if not allowed.
         if (!(*request)->enable_ip_based_pooling_for_h2() && is_pooled) {
           continue;
         }
         break;
       }
-      if (request == request_set->end())
+      if (request == request_set->end()) {
         break;
+      }
 
       SpdySessionRequest::Delegate* delegate = (*request)->delegate();
       RemoveRequestInternal(iter, request);
@@ -845,8 +874,9 @@ void SpdySessionPool::UpdatePendingRequests(const SpdySessionKey& key) {
 
   // Delete the RequestMap if there are no SpdySessionRequests, and no deferred
   // requests.
-  if (iter->second.request_set.empty())
+  if (iter->second.request_set.empty()) {
     spdy_session_request_map_.erase(iter);
+  }
 
   // Resume any deferred requests. This needs to be after the
   // OnSpdySessionAvailable() calls, to prevent requests from calling into the
@@ -965,6 +995,47 @@ void SpdySessionPool::NotifyOnConnectionFailure(
   }
 }
 
+void SpdySessionPool::PoolPendingRequestsToSession(
+    const SpdySessionKey& key,
+    const IPEndPoint& peer_address,
+    const base::WeakPtr<SpdySession>& available_session) {
+  for (const auto& [pending_key, request_info] : spdy_session_request_map_) {
+    if (pending_key == key ||
+        LookupAvailableSessionByKey(pending_key) != available_sessions_.end()) {
+      continue;
+    }
+    if (!std::ranges::contains(request_info.ip_endpoints, peer_address)) {
+      continue;
+    }
+    const bool has_eligible_request = std::ranges::any_of(
+        request_info.request_set, [&](const SpdySessionRequest* request) {
+          return request->enable_ip_based_pooling_for_h2() &&
+                 (!request->is_websocket() ||
+                  available_session->support_websocket());
+        });
+    if (!has_eligible_request) {
+      continue;
+    }
+    SpdySessionKey::CompareForAliasingResult compare_result =
+        key.CompareForAliasing(pending_key);
+    if (!compare_result.is_potentially_aliasable ||
+        !compare_result.is_socket_tag_match) {
+      continue;
+    }
+    if (!available_session->VerifyDomainAuthentication(
+            pending_key.host_port_pair().host())) {
+      continue;
+    }
+    RecordSpdyIpPoolDomainMatch(true);
+    MapKeyToAvailableSession(pending_key, available_session,
+                             request_info.dns_aliases);
+    available_session->AddPooledAlias(pending_key);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&SpdySessionPool::UpdatePendingRequests,
+                                  weak_ptr_factory_.GetWeakPtr(), pending_key));
+  }
+}
+
 bool SpdySessionPool::TryPoolToExistingIpSession(
     const SpdySessionKey& key,
     bool is_websocket,
@@ -1016,12 +1087,12 @@ bool SpdySessionPool::TryPoolToExistingIpSession(
       if (!available_session->VerifyDomainAuthentication(
               key.host_port_pair().host())) {
         if (log_domain_match_failure) {
-          UMA_HISTOGRAM_ENUMERATION("Net.SpdyIPPoolDomainMatch", 0, 2);
+          RecordSpdyIpPoolDomainMatch(false);
         }
         continue;
       }
 
-      UMA_HISTOGRAM_ENUMERATION("Net.SpdyIPPoolDomainMatch", 1, 2);
+      RecordSpdyIpPoolDomainMatch(true);
 
       bool adding_pooled_alias = true;
 

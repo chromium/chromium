@@ -1175,5 +1175,8 @@ BASE_FEATURE(kHttpChunkedDecoderInRust, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPostHandshakeIpPoolingAllEndpoints,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kProactiveIpPoolingForInFlightJobs,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features
 

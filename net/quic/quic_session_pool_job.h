@@ -5,7 +5,9 @@
 #ifndef NET_QUIC_QUIC_SESSION_POOL_JOB_H_
 #define NET_QUIC_QUIC_SESSION_POOL_JOB_H_
 
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/load_timing_internal_info.h"
 #include "net/base/net_error_details.h"
@@ -64,6 +66,12 @@ class QuicSessionPool::Job : public QuicSessionAttempt::Delegate {
   // the run has completed.
   virtual void PopulateNetErrorDetails(NetErrorDetails* details) const = 0;
 
+  // Called asynchronously after a session is activated for `peer_address` so
+  // non-proxied in-flight jobs (`DirectJob` and `AsyncDnsJob`) can pool to it
+  // and cancel redundant connection attempts. Note: this method may
+  // synchronously complete and delete `this` via `OnJobComplete()`.
+  virtual void OnSessionActivatedForIp(const IPEndPoint& peer_address) = 0;
+
   const QuicSessionAliasKey& key() const { return key_; }
   const NetLogWithSource& net_log() const { return net_log_; }
   const std::set<raw_ptr<QuicSessionRequest, SetExperimental>>& requests() {
@@ -101,6 +109,15 @@ class QuicSessionPool::Job : public QuicSessionAttempt::Delegate {
   // Update the priority of any ongoing work in this job.
   virtual void UpdatePriority(RequestPriority old_priority,
                               RequestPriority new_priority);
+
+  // Invokes `notify` for each associated request over a reentrancy-safe
+  // WeakPtr snapshot.
+  void NotifyRequests(base::WeakPtr<Job> weak_this,
+                      base::FunctionRef<void(QuicSessionRequest&)> notify);
+
+  // Notifies associated requests of `OnQuicSessionCreationComplete(rv)` over a
+  // reentrancy-safe WeakPtr snapshot.
+  void NotifyRequestsOfSessionCreation(base::WeakPtr<Job> weak_this, int rv);
 
   const raw_ptr<QuicSessionPool> pool_;
   const QuicSessionAliasKey key_;

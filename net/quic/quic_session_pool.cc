@@ -2637,6 +2637,42 @@ void QuicSessionPool::ActivateSession(const QuicSessionAliasKey& key,
   ip_aliases_[peer_address].insert(session);
   DCHECK(!session_peer_ip_.contains(session));
   session_peer_ip_[session] = peer_address;
+
+  if (!active_jobs_.empty() &&
+      base::FeatureList::IsEnabled(
+          features::kProactiveIpPoolingForInFlightJobs)) {
+    // Post asynchronously so the activating job (if in `active_jobs_` with
+    // `DoConfirmConnection()` / `OnTlsHandshakeComplete()` on the stack)
+    // finishes `OnJobComplete()` first, and synchronous request callbacks on
+    // pooled jobs cannot reentrantly close `session` or destroy `this`
+    // mid-activation.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&QuicSessionPool::NotifyActiveJobsOfSessionActivation,
+                       weak_factory_.GetWeakPtr(), peer_address));
+  }
+}
+
+void QuicSessionPool::NotifyActiveJobsOfSessionActivation(
+    const IPEndPoint& peer_address) {
+  if (active_jobs_.empty()) {
+    return;
+  }
+  std::vector<QuicSessionKey> job_keys;
+  job_keys.reserve(active_jobs_.size());
+  for (const auto& [job_key, job] : active_jobs_) {
+    job_keys.push_back(job_key);
+  }
+  base::WeakPtr<QuicSessionPool> weak_this = weak_factory_.GetWeakPtr();
+  for (const QuicSessionKey& job_key : job_keys) {
+    if (!weak_this) {
+      return;
+    }
+    auto it = active_jobs_.find(job_key);
+    if (it != active_jobs_.end()) {
+      it->second->OnSessionActivatedForIp(peer_address);
+    }
+  }
 }
 
 void QuicSessionPool::MarkAllActiveSessionsGoingAway(
@@ -2898,15 +2934,17 @@ void QuicSessionPool::ProcessGoingAwaySession(
   }
 
   // A session closed by a local cancellation, such as the loser of a
-  // connection race, says nothing about the path. Keep the stats recorded by
-  // earlier sessions.
+  // connection race or an attempt cancelled for proactive IP pooling, says
+  // nothing about the path. Keep the stats recorded by earlier sessions.
   if (record_network_stats && !session->WasClosedByLocalCancellation()) {
     http_server_properties_->ClearServerNetworkStats(
         server, session->quic_session_key().network_anonymization_key());
   }
 
-  UMA_HISTOGRAM_COUNTS_1M("Net.QuicHandshakeNotConfirmedNumPacketsReceived",
-                          stats.packets_received);
+  if (!session->ShouldSkipUnconfirmedHandshakeMetrics()) {
+    UMA_HISTOGRAM_COUNTS_1M("Net.QuicHandshakeNotConfirmedNumPacketsReceived",
+                            stats.packets_received);
+  }
 
   if (!session_was_active) {
     return;

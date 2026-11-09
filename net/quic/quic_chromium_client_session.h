@@ -684,10 +684,18 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool was_ever_used_to_create_streams() const;
 
   // Returns true if this side closed the connection with
-  // QUIC_CONNECTION_CANCELLED, e.g. because the session attempt that owned it
-  // was cancelled. Unlike error(), this is already set while the pool is
-  // notified that the session is going away.
+  // QUIC_CONNECTION_CANCELLED or cancelled it for proactive IP pooling. Unlike
+  // error(), this is already set while the pool is notified that the session is
+  // going away.
   bool WasClosedByLocalCancellation() const;
+
+  // Returns true if unconfirmed-handshake failure histograms should be skipped
+  // because the owning session attempt was cancelled for proactive IP pooling.
+  bool ShouldSkipUnconfirmedHandshakeMetrics() const;
+
+  void MarkClosedByProactiveIpPooling() {
+    closed_by_proactive_ip_pooling_ = true;
+  }
 
   const QuicConnectionReuseDetails& quic_connection_reuse_details() const {
     return quic_connection_reuse_details_;
@@ -1293,6 +1301,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // Connection close error. Set together with `source_`, before the pool is
   // notified, whereas quic::QuicSession::error() is set only afterwards.
   quic::QuicErrorCode connection_close_error_ = quic::QUIC_NO_ERROR;
+  bool closed_by_proactive_ip_pooling_ = false;
   // True when the session receives a go away from server due to port migration.
   bool port_migration_detected_ = false;
   bool quic_connection_migration_attempted_ = false;

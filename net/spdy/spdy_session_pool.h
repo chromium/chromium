@@ -399,9 +399,9 @@ class NET_EXPORT SpdySessionPool
     std::list<base::RepeatingClosure> deferred_callbacks;
 
     // HTTP/2-eligible IP endpoints and DNS aliases from the most recent host
-    // resolution for this key, used for post-handshake IP pooling when a
-    // concurrent session to another resolved IP is established while this key's
-    // connection attempt is in flight.
+    // resolution for this key, used for proactive and post-handshake IP pooling
+    // when a concurrent session to another resolved IP is established while
+    // this key's connection attempt is in flight.
     std::vector<IPEndPoint> ip_endpoints;
     base::flat_set<std::string> dns_aliases;
   };
@@ -495,6 +495,15 @@ class NET_EXPORT SpdySessionPool
   void NotifyOnSessionClosed(const SpdySessionKey& session_key,
                              bool was_ever_used_to_create_streams);
   void NotifyOnConnectionFailure(const SpdySessionKey& session_key);
+
+  // Proactively aliases eligible in-flight session requests in
+  // `spdy_session_request_map_` whose resolved HTTP/2 endpoints contain
+  // `peer_address` onto `available_session`, posting `UpdatePendingRequests()`
+  // for each matched pending key.
+  void PoolPendingRequestsToSession(
+      const SpdySessionKey& key,
+      const IPEndPoint& peer_address,
+      const base::WeakPtr<SpdySession>& available_session);
 
   // Checks if any of `ip_endpoints` (with `metadata`) matches an existing
   // available session that can serve `key`, and if so, maps `key` to that

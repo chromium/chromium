@@ -800,6 +800,10 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                        QuicChromiumClientSession* session,
                        base::flat_set<std::string> dns_aliases);
 
+  // Notifies active jobs that a session was activated for `peer_address` so
+  // matching in-flight jobs can pool to it and cancel redundant attempts.
+  void NotifyActiveJobsOfSessionActivation(const IPEndPoint& peer_address);
+
   // Go away all active sessions. May disable session's connectivity monitoring
   // based on the |reason|.
   void MarkAllActiveSessionsGoingAway(AllActiveSessionsGoingAwayReason reason);

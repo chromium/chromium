@@ -121,6 +121,15 @@ void QuicSessionPool::EndpointConnector::OnSuperseded() {
   attempt_->Cancel();
 }
 
+void QuicSessionPool::EndpointConnector::CancelForPooling() {
+  if (!attempt_in_flight_) {
+    return;
+  }
+  RecordAttemptTime("IpPooled");
+  attempt_in_flight_ = false;
+  attempt_->CancelForProactiveIpPooling();
+}
+
 QuicSessionPool* QuicSessionPool::EndpointConnector::GetQuicSessionPool() {
   return job_->pool();
 }

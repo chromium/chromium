@@ -241,6 +241,25 @@ void QuicSessionPool::AsyncDnsJob::PopulateNetErrorDetails(
   }
 }
 
+void QuicSessionPool::AsyncDnsJob::OnSessionActivatedForIp(
+    const IPEndPoint& peer_address) {
+  if (callback_.is_null() || !service_endpoint_request_ ||
+      no_matching_alpn_signaled_ ||
+      !service_endpoint_request_->EndpointsCryptoReady()) {
+    return;
+  }
+  if (!pool_->HasActiveSession(key_.session_key()) &&
+      !IsEndpointInFreshList(peer_address)) {
+    return;
+  }
+  if (!MaybePoolToExistingSession()) {
+    return;
+  }
+  pooled_proactively_ = (success_source_ == SuccessSource::kIpPooling);
+  MaybeSetDnsResolutionEndTime();
+  MaybeNotifyHostResolutionAndComplete(OK);
+}
+
 void QuicSessionPool::AsyncDnsJob::OnServiceEndpointsUpdated() {
   usable_endpoints_.reset();
 
@@ -314,6 +333,17 @@ void QuicSessionPool::AsyncDnsJob::MaybeNotifyHostResolutionAndComplete(
 }
 
 void QuicSessionPool::AsyncDnsJob::CompleteJob(int rv) {
+  if (rv == OK && pooled_proactively_) {
+    for (EndpointConnector* connector :
+         {fresh_state_.primary_connector.get(),
+          fresh_state_.secondary_connector.get(),
+          stale_state_.primary_connector.get(),
+          stale_state_.secondary_connector.get()}) {
+      if (connector) {
+        connector->CancelForPooling();
+      }
+    }
+  }
   fresh_state_.slow_timer.Stop();
   fresh_state_.primary_connector.reset();
   fresh_state_.secondary_connector.reset();
@@ -560,11 +590,9 @@ void QuicSessionPool::AsyncDnsJob::NotifyRequestsOfSessionCreation(int rv) {
           QUIC_SESSION_POOL_ASYNC_DNS_JOB_SESSION_CREATION_SIGNALED,
       "net_error", rv);
 
-  // Requests added mid-notification are not promised this signal because the
-  // connector's attempt has already finished creating its session.
-  NotifyRequests([rv](QuicSessionRequest& request) {
-    request.OnQuicSessionCreationComplete(rv);
-  });
+  // Requests added mid-notification are not promised this signal because
+  // `session_creation_notified_` is already set above.
+  Job::NotifyRequestsOfSessionCreation(weak_factory_.GetWeakPtr(), rv);
 }
 
 void QuicSessionPool::AsyncDnsJob::NotifyRequestsOfAttemptFailure() {
@@ -590,27 +618,7 @@ bool QuicSessionPool::AsyncDnsJob::AllPromisedSignalsDelivered() const {
 
 void QuicSessionPool::AsyncDnsJob::NotifyRequests(
     base::FunctionRef<void(QuicSessionRequest&)> notify) {
-  // A notified request may reenter the pool and add or remove requests on
-  // this job, or destroy the job. Iterate over a snapshot of WeakPtrs, and
-  // skip requests that were removed or destroyed.
-  auto weak_this = weak_factory_.GetWeakPtr();
-  std::vector<base::WeakPtr<QuicSessionRequest>> snapshot;
-  snapshot.reserve(requests().size());
-  for (QuicSessionRequest* request : requests()) {
-    snapshot.push_back(request->GetWeakPtr());
-  }
-  for (const auto& weak_request : snapshot) {
-    if (!weak_this) {
-      return;
-    }
-    if (!weak_request) {
-      continue;
-    }
-    if (!weak_this->requests().contains(weak_request.get())) {
-      continue;
-    }
-    notify(*weak_request);
-  }
+  Job::NotifyRequests(weak_factory_.GetWeakPtr(), notify);
 }
 
 void QuicSessionPool::AsyncDnsJob::OnConnectorComplete(
@@ -1091,6 +1099,13 @@ bool QuicSessionPool::AsyncDnsJob::IsStaleConnector(
 
 bool QuicSessionPool::AsyncDnsJob::IsEndpointInFreshList(
     const IPEndPoint& endpoint) const {
+  // `GetUsableEndpoints()` returns stale cached endpoints while refreshing.
+  // Reject them here because `OnSessionActivatedForIp()` must only pool on
+  // fresh DNS results, not stale cached ones.
+  if (!service_endpoint_request_ ||
+      service_endpoint_request_->IsStaleWhileRefreshing()) {
+    return false;
+  }
   for (const UsableEndpoint& usable : GetUsableEndpoints()) {
     if (std::ranges::contains(usable.endpoint.ipv4_endpoints, endpoint) ||
         std::ranges::contains(usable.endpoint.ipv6_endpoints, endpoint)) {

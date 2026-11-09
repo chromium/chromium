@@ -1164,6 +1164,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kHttpChunkedDecoderInRust);
 // connection attempts complete.
 NET_EXPORT BASE_DECLARE_FEATURE(kPostHandshakeIpPoolingAllEndpoints);
 
+// Enables proactively pooling and cancelling in-flight HTTP/2 and QUIC
+// connection attempts when a concurrent session activates on one of their
+// resolved IP endpoints.
+NET_EXPORT BASE_DECLARE_FEATURE(kProactiveIpPoolingForInFlightJobs);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

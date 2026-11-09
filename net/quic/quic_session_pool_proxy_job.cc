@@ -107,6 +107,11 @@ void QuicSessionPool::ProxyJob::PopulateNetErrorDetails(
   }
 }
 
+void QuicSessionPool::ProxyJob::OnSessionActivatedForIp(
+    const IPEndPoint& peer_address) {
+  // Proxied QUIC jobs tunnel through a proxy and do not pool by destination IP.
+}
+
 std::vector<IPEndPoint> QuicSessionPool::ProxyJob::GetResolvedIpEndpoints()
     const {
   // Proxied QUIC jobs tunnel through a proxy and do not resolve destination IPs

@@ -7,6 +7,8 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -128,6 +130,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
   // asynchronous session creation is still in flight, the completion path
   // closes any session it creates instead of handing it to this attempt.
   void Cancel();
+  void CancelForProactiveIpPooling();
 
   bool session_creation_finished() const { return session_creation_finished_; }
 
@@ -150,16 +153,24 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
     kConfirmConnection,
   };
 
+  enum class CancelReason {
+    kCancelled,
+    kProactiveIpPooling,
+  };
+
   // Static so this callback still runs after the attempt is destroyed. It
   // forwards the result while the attempt is alive and otherwise silently
   // closes any session that was created.
   static void HandleCreateSessionResult(
       base::WeakPtr<QuicSessionAttempt> attempt,
+      scoped_refptr<base::RefCountedData<CancelReason>> cancel_reason,
       base::expected<CreateSessionResult, int> result);
 
   QuicSessionPool* pool() { return delegate_->GetQuicSessionPool(); }
   const QuicSessionAliasKey& key() { return delegate_->GetKey(); }
   const NetLogWithSource& net_log() { return delegate_->GetNetLog(); }
+
+  void CancelInternal(CancelReason reason);
 
   int DoLoop(int rv);
 
@@ -207,6 +218,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
   raw_ptr<QuicChromiumClientSession> session_ = nullptr;
   bool session_creation_finished_ = false;
   bool connection_retried_ = false;
+  scoped_refptr<base::RefCountedData<CancelReason>> cancel_reason_;
 
   // Used to populate NetErrorDetails after we reset `session_`.
   HttpConnectionInfo connection_info_ = HttpConnectionInfo::kUNKNOWN;

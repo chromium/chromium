@@ -56,6 +56,7 @@ class QuicSessionPool::DirectJob : public QuicSessionPool::Job {
   void UpdatePriority(RequestPriority old_priority,
                       RequestPriority new_priority) override;
   void PopulateNetErrorDetails(NetErrorDetails* details) const override;
+  void OnSessionActivatedForIp(const IPEndPoint& peer_address) override;
 
   // QuicSessionAttempt::Delegate implementation.
   std::vector<IPEndPoint> GetResolvedIpEndpoints() const override;
@@ -92,6 +93,7 @@ class QuicSessionPool::DirectJob : public QuicSessionPool::Job {
   const int cert_verify_flags_;
   const bool retry_on_alternate_network_before_handshake_;
   bool host_resolution_finished_ = false;
+  bool session_creation_notified_ = false;
   HostResolverEndpointResult endpoint_result_;
   CompletionOnceCallback callback_;
   std::unique_ptr<HostResolver::ResolveHostRequest> resolve_host_request_;

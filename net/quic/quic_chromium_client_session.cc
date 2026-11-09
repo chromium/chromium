@@ -1499,8 +1499,13 @@ bool QuicChromiumClientSession::was_ever_used_to_create_streams() const {
 }
 
 bool QuicChromiumClientSession::WasClosedByLocalCancellation() const {
-  return source_ == quic::ConnectionCloseSource::FROM_SELF &&
-         connection_close_error_ == quic::QUIC_CONNECTION_CANCELLED;
+  return (source_ == quic::ConnectionCloseSource::FROM_SELF &&
+          connection_close_error_ == quic::QUIC_CONNECTION_CANCELLED) ||
+         closed_by_proactive_ip_pooling_;
+}
+
+bool QuicChromiumClientSession::ShouldSkipUnconfirmedHandshakeMetrics() const {
+  return closed_by_proactive_ip_pooling_;
 }
 
 QuicChromiumClientStream*
@@ -2290,7 +2295,7 @@ void QuicChromiumClientSession::OnConnectionClosed(
       base::UmaHistogramEnumeration(
           "Net.QuicSession.KeyUpdate.Success." + suffix, value);
     }
-  } else {
+  } else if (!ShouldSkipUnconfirmedHandshakeMetrics()) {
     if (error == quic::QUIC_PUBLIC_RESET) {
       RecordHandshakeFailureReason(HANDSHAKE_FAILURE_PUBLIC_RESET);
     } else if (connection()->GetStats().packets_received == 0) {

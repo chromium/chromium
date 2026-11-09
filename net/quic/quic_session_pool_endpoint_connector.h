@@ -97,8 +97,12 @@ class QuicSessionPool::EndpointConnector : public QuicSessionAttempt::Delegate {
   void PopulateNetErrorDetails(NetErrorDetails* details) const;
 
   // Cancels the attempt in flight, if any, because another connector settled
-  // the job.
+  // the job (other than via cross-origin IP pooling).
   void OnSuperseded();
+
+  // Cancels the attempt in flight, if any, because the job pooled to an
+  // existing session with a matching IP.
+  void CancelForPooling();
 
   // QuicSessionAttempt::Delegate implementation.
   QuicSessionPool* GetQuicSessionPool() override;

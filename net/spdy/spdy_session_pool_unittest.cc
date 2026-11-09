@@ -2730,4 +2730,92 @@ TEST_F(SpdySessionPoolTest,
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+TEST_F(SpdySessionPoolTest, ProactiveIpPoolingSkipsIneligiblePendingRequests) {
+  base::test::ScopedFeatureList feature_list(
+      features::kProactiveIpPoolingForInFlightJobs);
+
+  constexpr int kTestPort = 443;
+  session_deps_.host_resolver->set_synchronous_mode(true);
+  // `spdy_pooling.pem` (used by `AddSSLSocketData()`) covers `www.example.org`,
+  // `mail.example.org`, and `mail.example.com`.
+  session_deps_.host_resolver->rules()->AddIPLiteralRule(
+      "www.example.org", "192.168.0.1", /*canonical_name=*/std::string());
+  session_deps_.host_resolver->rules()->AddIPLiteralRule(
+      "mail.example.org", "192.168.0.1", /*canonical_name=*/std::string());
+  session_deps_.host_resolver->rules()->AddIPLiteralRule(
+      "mail.example.com", "192.168.0.1", /*canonical_name=*/std::string());
+
+  SpdySessionKey key_active(HostPortPair("www.example.org", kTestPort),
+                            PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                            SessionUsage::kDestination, SocketTag(),
+                            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                            /*disable_cert_verification_network_fetches=*/false,
+                            handles::kInvalidNetworkHandle);
+  SpdySessionKey key_ip_pooling_disabled(
+      HostPortPair("mail.example.org", kTestPort), PRIVACY_MODE_DISABLED,
+      ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_verification_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
+  SpdySessionKey key_websocket(
+      HostPortPair("mail.example.com", kTestPort), PRIVACY_MODE_DISABLED,
+      ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_verification_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
+
+  MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING)};
+  StaticSocketDataProvider data(reads, base::span<MockWrite>());
+  data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+
+  HostResolverEndpointResult endpoint_result;
+  endpoint_result.ip_endpoints.emplace_back(
+      *IPAddress::FromIPLiteral("192.168.0.1"), kTestPort);
+
+  // Pending request 1: `enable_ip_based_pooling_for_h2 = false`.
+  TestOnRequestDeletedCallback deleted_cb1;
+  TestRequestDelegate delegate1;
+  std::unique_ptr<SpdySessionPool::SpdySessionRequest> request1;
+  bool is_first1 = false;
+  EXPECT_FALSE(spdy_session_pool_->RequestSession(
+      key_ip_pooling_disabled, /*enable_ip_based_pooling_for_h2=*/false,
+      /*is_websocket=*/false, NetLogWithSource(), deleted_cb1.Callback(),
+      &delegate1, &request1, &is_first1));
+  EXPECT_EQ(OnHostResolutionCallbackResult::kContinue,
+            spdy_session_pool_->OnHostResolutionComplete(
+                key_ip_pooling_disabled, /*is_websocket=*/false,
+                {endpoint_result}, /*aliases=*/{}));
+
+  // Pending request 2: `is_websocket = true` while the newly inserted session
+  // has not received SETTINGS_ENABLE_CONNECT_PROTOCOL (`!support_websocket()`).
+  TestOnRequestDeletedCallback deleted_cb2;
+  TestRequestDelegate delegate2;
+  std::unique_ptr<SpdySessionPool::SpdySessionRequest> request2;
+  bool is_first2 = false;
+  EXPECT_FALSE(spdy_session_pool_->RequestSession(
+      key_websocket, /*enable_ip_based_pooling_for_h2=*/true,
+      /*is_websocket=*/true, NetLogWithSource(), deleted_cb2.Callback(),
+      &delegate2, &request2, &is_first2));
+  EXPECT_EQ(OnHostResolutionCallbackResult::kContinue,
+            spdy_session_pool_->OnHostResolutionComplete(
+                key_websocket, /*is_websocket=*/true, {endpoint_result},
+                /*aliases=*/{}));
+
+  // Insert `session_active` on `192.168.0.1` (`support_websocket() == false`).
+  // Neither `key_ip_pooling_disabled` nor `key_websocket` has an eligible
+  // request, so `PoolPendingRequestsToSession()` must skip both.
+  base::WeakPtr<SpdySession> session_active =
+      CreateSpdySession(http_session_.get(), key_active, NetLogWithSource());
+  ASSERT_TRUE(session_active);
+  ASSERT_FALSE(session_active->support_websocket());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(HasSpdySession(spdy_session_pool_, key_ip_pooling_disabled));
+  EXPECT_FALSE(HasSpdySession(spdy_session_pool_, key_websocket));
+}
+
 }  // namespace net

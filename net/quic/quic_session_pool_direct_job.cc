@@ -7,10 +7,12 @@
 #include <algorithm>
 
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ech_mode.h"
+#include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
@@ -86,7 +88,8 @@ void QuicSessionPool::DirectJob::SetRequestExpectations(
   // kAsyncQuicSession flag is not set because session creation will be fully
   // synchronous, so no need to call ExpectQuicSessionCreation.
   const bool session_creation_finished =
-      session_attempt_ && session_attempt_->session_creation_finished();
+      session_creation_notified_ ||
+      (session_attempt_ && session_attempt_->session_creation_finished());
   if (base::FeatureList::IsEnabled(net::features::kAsyncQuicSession) &&
       !session_creation_finished) {
     request->ExpectQuicSessionCreation();
@@ -108,6 +111,56 @@ void QuicSessionPool::DirectJob::PopulateNetErrorDetails(
     NetErrorDetails* details) const {
   if (session_attempt_) {
     session_attempt_->PopulateNetErrorDetails(details);
+  }
+}
+
+void QuicSessionPool::DirectJob::OnSessionActivatedForIp(
+    const IPEndPoint& peer_address) {
+  if (!host_resolution_finished_ || !session_attempt_ || callback_.is_null()) {
+    return;
+  }
+
+  bool matched = pool_->HasActiveSession(key_.session_key());
+  bool pooled_proactively = false;
+  if (!matched) {
+    std::vector<IPEndPoint> ip_endpoints = GetResolvedIpEndpoints();
+    if (std::ranges::contains(ip_endpoints, peer_address) &&
+        pool_->HasMatchingIpSession(key_, ip_endpoints,
+                                    resolve_host_request_->GetDnsAliasResults(),
+                                    use_dns_aliases_,
+                                    /*log_negative_result=*/false)) {
+      LogConnectionIpPooling(true);
+      matched = true;
+      pooled_proactively = true;
+    }
+  }
+  if (!matched) {
+    return;
+  }
+
+  const bool need_session_creation_notification =
+      base::FeatureList::IsEnabled(net::features::kAsyncQuicSession) &&
+      !session_creation_notified_ &&
+      !session_attempt_->session_creation_finished();
+
+  if (pooled_proactively) {
+    session_attempt_->CancelForProactiveIpPooling();
+  } else {
+    session_attempt_->Cancel();
+  }
+  session_attempt_.reset();
+
+  if (need_session_creation_notification) {
+    session_creation_notified_ = true;
+    auto weak_this = GetWeakPtr();
+    NotifyRequestsOfSessionCreation(weak_this, OK);
+    if (!weak_this) {
+      return;
+    }
+  }
+
+  if (!callback_.is_null()) {
+    std::move(callback_).Run(OK);
   }
 }
 
