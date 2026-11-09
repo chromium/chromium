@@ -20,11 +20,13 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
+#include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/devtools_external_agent_proxy.h"
 #include "content/public/browser/devtools_external_agent_proxy_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_content_browser_client.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/test_render_view_host.h"
@@ -119,14 +121,28 @@ class RecordingDevToolsManagerDelegate : public DevToolsManagerDelegate {
     }
   }
 
+  bool AllowInspectingRenderFrameHost(RenderFrameHost* rfh) override {
+    return rfh->GetBrowserContext() != not_inspectable_browser_context_;
+  }
+
   DevToolsAgentHostClient* last_attached_client() const {
     return last_attached_client_;
   }
   DevToolsAgentHost* last_attached_host() const { return last_attached_host_; }
 
+  void set_not_inspectable_browser_context(BrowserContext* browser_context) {
+    not_inspectable_browser_context_ = browser_context;
+  }
+
  private:
   raw_ptr<DevToolsAgentHostClient> last_attached_client_ = nullptr;
   raw_ptr<DevToolsAgentHost> last_attached_host_ = nullptr;
+  raw_ptr<BrowserContext> not_inspectable_browser_context_ = nullptr;
+};
+
+class ForceCreationObserver : public DevToolsAgentHostObserver {
+ public:
+  bool ShouldForceDevToolsAgentHostCreation() override { return true; }
 };
 
 RecordingDevToolsManagerDelegate*
@@ -463,6 +479,40 @@ TEST_F(DevToolsAgentHostImplTest,
   EXPECT_EQ(connector_metadata.peer_address, kPeerAddress);
 
   root_client.Close();
+}
+
+// Agent hosts aren't created to list or discover targets for pages that
+// can't be inspected, since clients can't attach to them.
+TEST_F(DevToolsAgentHostImplTest, NoImplicitHostsForNotInspectablePages) {
+  DevToolsManager::GetInstance();
+  ASSERT_TRUE(RecordingDevToolsManagerDelegate::last_instance);
+  TestBrowserContext not_inspectable_context;
+  RecordingDevToolsManagerDelegate::last_instance
+      ->set_not_inspectable_browser_context(&not_inspectable_context);
+
+  std::unique_ptr<WebContents> not_inspectable =
+      TestWebContents::Create(&not_inspectable_context, nullptr);
+  DevToolsAgentHost::GetOrCreateAll();
+  EXPECT_FALSE(DevToolsAgentHost::HasFor(not_inspectable.get()));
+  EXPECT_TRUE(DevToolsAgentHost::HasFor(web_contents()));
+
+  // While targets are discovered, hosts are created only for new WebContents
+  // that can be inspected. They are created once a WebContents gets a
+  // delegate.
+  ForceCreationObserver observer;
+  DevToolsAgentHost::AddObserver(&observer);
+  TestWebContentsDelegate delegate;
+  std::unique_ptr<WebContents> new_not_inspectable =
+      TestWebContents::Create(&not_inspectable_context, nullptr);
+  new_not_inspectable->SetDelegate(&delegate);
+  std::unique_ptr<WebContents> new_inspectable =
+      TestWebContents::Create(browser_context(), nullptr);
+  new_inspectable->SetDelegate(&delegate);
+  EXPECT_FALSE(DevToolsAgentHost::HasFor(new_not_inspectable.get()));
+  EXPECT_TRUE(DevToolsAgentHost::HasFor(new_inspectable.get()));
+  new_not_inspectable->SetDelegate(nullptr);
+  new_inspectable->SetDelegate(nullptr);
+  DevToolsAgentHost::RemoveObserver(&observer);
 }
 
 }  // namespace content

@@ -1,0 +1,2 @@
+Tests that targets that can't be inspected aren't listed.
+Listed pages on a.test: /protocol/inspector-protocol-page.html

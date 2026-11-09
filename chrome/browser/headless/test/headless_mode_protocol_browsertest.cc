@@ -593,6 +593,10 @@ HEADLESS_MODE_PROTOCOL_TEST_F(
     OopifSameDocumentNavigationBlocklist,
     "target/oopif-same-document-navigation-blocklist.js")
 
+HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeDevToolsPolicyBlocklistProtocolTest,
+                              NotInspectableTargetNotListed,
+                              "target/not-inspectable-target-not-listed.js")
+
 class HeadlessModeDevToolsPolicyAllowlistProtocolTest
     : public HeadlessModeProtocolBrowserTest {
  public:

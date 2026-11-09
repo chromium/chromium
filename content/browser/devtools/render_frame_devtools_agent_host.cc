@@ -71,6 +71,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_frame_host.h"
@@ -233,6 +234,13 @@ bool RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(
 }
 
 // static
+bool RenderFrameDevToolsAgentHost::IsInspectable(RenderFrameHost* rfh) {
+  DevToolsManagerDelegate* delegate =
+      DevToolsManager::GetInstance()->delegate();
+  return !delegate || delegate->AllowInspectingRenderFrameHost(rfh);
+}
+
+// static
 scoped_refptr<RenderFrameDevToolsAgentHost>
 RenderFrameDevToolsAgentHost::CreateForLocalRootOrEmbeddedPageNavigation(
     NavigationRequest* request) {
@@ -298,6 +306,11 @@ void RenderFrameDevToolsAgentHost::AddAllAgentHosts(
     // TODO(crbug.com/40202416): Remove this after migration is complete.
     if (wc->GetOutermostWebContents() != wc)
       continue;
+    // Don't create agent hosts for pages that can't be inspected, since
+    // clients can't attach to them.
+    if (!IsInspectable(wc->GetPrimaryMainFrame())) {
+      continue;
+    }
     wc->GetPrimaryMainFrame()->ForEachRenderFrameHostImpl(
         [result](RenderFrameHostImpl* render_frame_host) {
           FrameTreeNode* node = FrameTreeNode::From(render_frame_host);
@@ -311,7 +324,8 @@ void RenderFrameDevToolsAgentHost::AddAllAgentHosts(
 // static
 void RenderFrameDevToolsAgentHost::AttachToWebContents(
     WebContents* web_contents) {
-  if (ShouldForceCreation()) {
+  if (ShouldForceCreation() &&
+      IsInspectable(web_contents->GetPrimaryMainFrame())) {
     // Force agent hosts.
     DevToolsAgentHost::GetOrCreateForTab(web_contents);
     DevToolsAgentHost::GetOrCreateFor(web_contents);

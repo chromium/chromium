@@ -72,6 +72,11 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   // whether DevToolsAgentHost has actually been created.
   static bool ShouldCreateDevToolsForHost(RenderFrameHostImpl* rfh);
 
+  // Whether the embedder allows inspecting `rfh`. Agent hosts aren't created
+  // implicitly, i.e. to list or discover targets, for pages whose main frame
+  // can't be inspected, since clients can't attach to them.
+  static bool IsInspectable(RenderFrameHost* rfh);
+
   // This method is called when new frame is created for an embedded page
   // (fenced frame) or local root navigation.
   static scoped_refptr<RenderFrameDevToolsAgentHost>
