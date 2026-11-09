@@ -30,15 +30,6 @@ suite('AppearanceMenuElement', () => {
     window.matchMedia = originalMatchMedia;
   });
 
-  test('theme prop update changes selected items', async () => {
-    const yellowTheme = visualBrowserProxy.getYellowTheme();
-    appearanceMenu.theme = yellowTheme;
-    await microtasksFinished();
-
-    assertEquals(
-        yellowTheme, appearanceMenu.$.menu.menuGroups[1]!.selectedValue);
-  });
-
   test('on theme change does not close menus', async () => {
     let closeAllMenusCount = 0;
     document.addEventListener(

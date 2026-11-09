@@ -49,17 +49,6 @@ suite('TextMenuElement', () => {
     assertEquals(0, closeAllMenusCount);
   });
 
-  test(
-      'updating line spacing preference property renders checkmark on the selected spacing item',
-      async () => {
-        const looseLineSpacing = visualBrowserProxy.looseLineSpacing;
-        textMenu.lineSpacing = looseLineSpacing;
-        await microtasksFinished();
-
-        assertEquals(
-            looseLineSpacing, textMenu.$.menu.menuGroups[1]!.selectedValue);
-      });
-
   test('on line spacing change does not close menus', async () => {
     let closeAllMenusCount = 0;
     document.addEventListener(

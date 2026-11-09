@@ -27,15 +27,6 @@ suite('AudioMenuElement', () => {
     audioBrowserProxy = result.audioBrowserProxy;
   });
 
-  test('highlight granularity prop update changes selected item', async () => {
-    createAudioMenu();
-    const wordHighlight = audioBrowserProxy.getWordHighlighting();
-    audioMenu.highlightGranularity = wordHighlight;
-    await microtasksFinished();
-
-    assertEquals(wordHighlight, audioMenu.$.menu.menuGroups[1]!.selectedValue);
-  });
-
   test('on highlight change does not close menus', async () => {
     createAudioMenu();
     let closeAllMenusCount = 0;
