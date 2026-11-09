@@ -15,7 +15,6 @@
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager.h"
-#include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -31,9 +30,6 @@ void HeadlessPlatformDelegate::Initialize(
 void HeadlessPlatformDelegate::Start() {
   DCHECK(aura::Env::GetInstance());
   ui::DeviceDataManager::CreateInstance();
-  // This suppresses mousemove events from WindowEventDispatcher, which
-  // matches Mac and Windows behavior.
-  ui::PlatformEventSource::SetIgnoreNativePlatformEvents(true);
 }
 
 void HeadlessPlatformDelegate::InitializeWebContents(
