@@ -600,10 +600,14 @@ void WaylandConnection::OnGlobalRemove(void* data,
     self->output_manager_->RemoveWaylandOutput(name);
   }
 
-  if (self->fixes_ && wl::get_version_of_object(self->fixes_.get()) >=
-                          WL_FIXES_ACK_GLOBAL_REMOVE_SINCE_VERSION) {
+  if (self->SupportsAckGlobalRemove()) {
     wl_fixes_ack_global_remove(self->fixes_.get(), registry, name);
   }
+}
+
+bool WaylandConnection::SupportsAckGlobalRemove() const {
+  return fixes_ && wl::get_version_of_object(fixes_.get()) >=
+                       WL_FIXES_ACK_GLOBAL_REMOVE_SINCE_VERSION;
 }
 
 // static

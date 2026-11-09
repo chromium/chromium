@@ -31,6 +31,10 @@ void WaylandConnectionTestApi::SyncDisplay() {
   run_loop.Run();
 }
 
+int WaylandConnectionTestApi::GetDisplayError() {
+  return wl_display_get_error(impl_->display());
+}
+
 void WaylandConnectionTestApi::EnableLinuxDrmSyncobj() {
   impl_->enable_linux_drm_syncobj_for_testing_ = true;
 }

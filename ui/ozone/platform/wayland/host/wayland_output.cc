@@ -42,18 +42,12 @@ void WaylandOutput::Instantiate(WaylandConnection* connection,
     return;
   }
 
-  auto output =
-      wl::Bind<wl_output>(registry, name, std::min(version, kMaxVersion));
-  if (!output) {
-    LOG(ERROR) << "Failed to bind to wl_output global";
-    return;
-  }
-
   if (!connection->output_manager_) {
     connection->output_manager_ =
         std::make_unique<WaylandOutputManager>(connection);
   }
-  connection->output_manager_->AddWaylandOutput(name, output.release());
+  connection->output_manager_->AddOutputGlobal(registry, name,
+                                               std::min(version, kMaxVersion));
 }
 
 Metrics::Metrics() = default;

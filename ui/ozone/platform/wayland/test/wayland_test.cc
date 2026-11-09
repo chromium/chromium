@@ -133,6 +133,12 @@ void WaylandTestBase::PostToServerAndWait(base::OnceClosure closure,
     // Wait for server thread to complete running posted tasks.
     server_.FlushForTesting();
 
+    // Round-trip twice so server events and any requests sent while handling
+    // them (e.g. the wl_display.sync used before binding wl_output) are
+    // dispatched before flushing non-delayed tasks.
+    connection_->RoundTripQueue();
+    connection_->RoundTripQueue();
+
     // Flush all non-delayed tasks.
     task_environment_.RunUntilIdle();
   } else {
@@ -143,6 +149,7 @@ void WaylandTestBase::PostToServerAndWait(base::OnceClosure closure,
 
     // Sync with the display to ensure server's events are received and
     // processed
+    SyncDisplay();
     SyncDisplay();
   }
 }

@@ -34,6 +34,10 @@ class WaylandConnectionTestApi {
   // events have been handled.
   void SyncDisplay();
 
+  // Returns the last error that occurred on the display (see
+  // wl_display_get_error()), or 0 if none.
+  int GetDisplayError();
+
   std::unique_ptr<ExtIdleNotifier> TakeExtIdleNotifier();
 
  private:

@@ -153,7 +153,8 @@ void WaylandScreen::OnOutputAddedOrUpdated(
 }
 
 void WaylandScreen::OnOutputRemoved(WaylandOutput::Id output_id) {
-  CHECK(display_id_map_.contains(output_id), base::NotFatalUntil::M163);
+  // The compositor may remove an output before it has sent wl_output.done for
+  // it, in which case the output has never been added to the screen.
   auto iter = display_id_map_.find(output_id);
   if (iter == display_id_map_.end()) {
     return;

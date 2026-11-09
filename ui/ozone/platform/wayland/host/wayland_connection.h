@@ -134,6 +134,11 @@ class WaylandConnection {
     return xdg_output_manager_.get();
   }
 
+  // Returns true if the compositor supports wl_fixes.ack_global_remove, which
+  // means it does not destroy a removed global until the client acknowledges
+  // the removal.
+  bool SupportsAckGlobalRemove() const;
+
   wp_fractional_scale_manager_v1* fractional_scale_manager_v1() const {
     return fractional_scale_manager_v1_.get();
   }
