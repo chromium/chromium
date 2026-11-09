@@ -241,7 +241,7 @@ bool CanvasRenderingContext2D::IsComposited() const {
     return false;
   }
 
-  if (!GetSharedImageProvider()) {
+  if (!HasSharedImageBacking()) {
     return false;
   }
 
@@ -829,9 +829,7 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
 
   // If the canvas is backed by a SharedImage resource provider, toggle
   // whether resource recycling is enabled based on page visibility.
-  if (GetSharedImageProvider()) {
-    GetSharedImageProvider()->SetResourceRecyclingEnabled(page_is_visible);
-  }
+  SetResourceRecyclingEnabled(page_is_visible);
 
   // Conserve memory.
   SetAggressivelyFreeSharedGpuContextResourcesIfPossible(!page_is_visible);
@@ -1112,7 +1110,7 @@ void CanvasRenderingContext2D::CreateBacking() {
     // the SW compositor.
     CreateSharedImageProviderForSoftwareCompositor();
   }
-  if (!GetSharedImageProvider()) {
+  if (!HasBacking()) {
     // The final fallback is to raster into a bitmap that will then either be
     // uploaded into GPU memory (for GPU compositing) or copied into the Viz
     // process (for software compositing).
@@ -1135,7 +1133,7 @@ bool CanvasRenderingContext2D::IsBackingValid() const {
 }
 
 bool CanvasRenderingContext2D::IsBackingAccelerated() const {
-  return GetSharedImageProvider() && GetSharedImageProvider()->IsAccelerated();
+  return BaseRenderingContext2D::IsBackingAccelerated();
 }
 
 bool CanvasRenderingContext2D::HasBacking() const {

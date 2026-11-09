@@ -220,9 +220,36 @@ const MemoryManagedPaintRecorder* BaseRenderingContext2D::Recorder() const {
   return recorder_.get();
 }
 
-Canvas2DResourceProvider* BaseRenderingContext2D::GetSharedImageProvider()
+bool BaseRenderingContext2D::HasSharedImageBacking() const {
+  return shared_image_provider_ != nullptr;
+}
+
+void BaseRenderingContext2D::SetResourceRecyclingEnabled(bool value) {
+  if (shared_image_provider_) {
+    shared_image_provider_->SetResourceRecyclingEnabled(value);
+  }
+}
+
+bool BaseRenderingContext2D::IsSingleBuffered() const {
+  return shared_image_provider_ && shared_image_provider_->IsSingleBuffered();
+}
+
+int BaseRenderingContext2D::NumInflightResourcesForTesting() const {
+  return shared_image_provider_
+             ? shared_image_provider_->NumInflightResourcesForTesting()
+             : 0;
+}
+
+bool BaseRenderingContext2D::HasUnusedResourcesForTesting() const {
+  return shared_image_provider_ &&
+         shared_image_provider_->HasUnusedResourcesForTesting();
+}
+
+bool BaseRenderingContext2D::UnusedResourcesReclaimTimerIsRunningForTesting()
     const {
-  return shared_image_provider_.get();
+  return shared_image_provider_ &&
+         shared_image_provider_
+             ->unused_resources_reclaim_timer_is_running_for_testing();
 }
 
 bool BaseRenderingContext2D::HasBacking() const {
@@ -239,6 +266,10 @@ bool BaseRenderingContext2D::IsBackingValid() const {
     return !IsGpuContextLost();
   }
   return surface_ != nullptr;
+}
+
+bool BaseRenderingContext2D::IsBackingAccelerated() const {
+  return shared_image_provider_ && shared_image_provider_->IsAccelerated();
 }
 
 void BaseRenderingContext2D::ResetBacking() {
@@ -281,7 +312,7 @@ bool BaseRenderingContext2D::IsPaintable() const {
 
 bool BaseRenderingContext2D::Is2DCanvasAccelerated() const {
   if (shared_image_provider_) {
-    return shared_image_provider_->IsAccelerated();
+    return IsBackingAccelerated();
   }
   if (surface_) {
     return false;

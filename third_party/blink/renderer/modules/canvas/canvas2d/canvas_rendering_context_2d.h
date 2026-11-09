@@ -86,7 +86,6 @@ class ImageDataSettings;
 class MemoryManagedPaintCanvas;
 class Path2D;
 class SVGResource;
-class Canvas2DResourceProvider;
 enum class FlushReason;
 enum class PredefinedColorSpace;
 

@@ -247,7 +247,7 @@ bool OffscreenCanvasRenderingContext2D::InitializeBacking() {
     CreateSharedImageProviderForSoftwareCompositor();
   }
 
-  if (!GetSharedImageProvider()) {
+  if (!HasBacking()) {
     // Last resort fallback is to use a software surface. Using this
     // path is normal for software-rendered OffscreenCanvases that have no
     // placeholder canvas. If there is a placeholder, its content will not be

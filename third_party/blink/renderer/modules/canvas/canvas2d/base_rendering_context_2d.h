@@ -184,7 +184,9 @@ class MODULES_EXPORT BaseRenderingContext2D
   virtual bool InitializeBacking() = 0;
   bool HasBacking() const;
   virtual bool IsBackingValid() const;
+  bool IsBackingAccelerated() const;
   virtual void ResetBacking();
+  bool IsSingleBuffered() const;
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override = 0;
 
@@ -321,9 +323,9 @@ class MODULES_EXPORT BaseRenderingContext2D
     on_restore_failed_callback_for_testing_ = std::move(callback);
   }
   SkSurface* GetSoftwareSurfaceForTesting() const { return surface_.get(); }
-  Canvas2DResourceProvider* GetSharedImageProviderForTesting() const {
-    return GetSharedImageProvider();
-  }
+  int NumInflightResourcesForTesting() const;
+  bool HasUnusedResourcesForTesting() const;
+  bool UnusedResourcesReclaimTimerIsRunningForTesting() const;
 
   HeapTaskRunnerTimer<BaseRenderingContext2D>
       dispatch_context_lost_event_timer_;
@@ -389,7 +391,8 @@ class MODULES_EXPORT BaseRenderingContext2D
                                  bool clear_frame,
                                  FlushReason reason) {}
 
-  Canvas2DResourceProvider* GetSharedImageProvider() const;
+  bool HasSharedImageBacking() const;
+  void SetResourceRecyclingEnabled(bool value);
   void CreateSharedImageProvider(
       RasterMode raster_mode,
       gpu::SharedImageUsageSet shared_image_usage_flags);
