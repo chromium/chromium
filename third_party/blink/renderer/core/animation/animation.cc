@@ -2973,6 +2973,10 @@ void Animation::UpdateAutoAlignedStartTime() {
 }
 
 bool Animation::OnValidateSnapshot(bool snapshot_changed) {
+  if (!timeline_) {
+    return true;
+  }
+  AnimationTimeline* initial_timeline = timeline_;
   bool needs_update = snapshot_changed;
 
   // Track a change in duration and update hold time if required.
@@ -3002,15 +3006,36 @@ bool Animation::OnValidateSnapshot(bool snapshot_changed) {
     if (keyframe_effect->target()) {
       if (style_dependent_range_start_) {
         DCHECK(range_start_);
-        range_changed |= range_start_->UpdateOffset(
-            keyframe_effect->target(), style_dependent_range_start_);
+        TimelineOffset range_start = *range_start_;
+        CSSValue* range_start_css = style_dependent_range_start_;
+        bool updated = range_start.UpdateOffset(keyframe_effect->target(),
+                                                range_start_css);
+        if (timeline_ == initial_timeline && range_start_ &&
+            style_dependent_range_start_ == range_start_css) {
+          range_start_ = range_start;
+          range_changed |= updated;
+        }
       }
-      if (style_dependent_range_end_) {
+      // Updating a style-dependent offset may synchronously recalculate slot
+      // assignments and run script that detaches the animation or modifies its
+      // effect or range offsets.
+      if (style_dependent_range_end_ && timeline_ == initial_timeline &&
+          effect() == keyframe_effect && keyframe_effect->target()) {
         DCHECK(range_end_);
-        range_changed |= range_end_->UpdateOffset(keyframe_effect->target(),
-                                                  style_dependent_range_end_);
+        TimelineOffset range_end = *range_end_;
+        CSSValue* range_end_css = style_dependent_range_end_;
+        bool updated =
+            range_end.UpdateOffset(keyframe_effect->target(), range_end_css);
+        if (timeline_ == initial_timeline && range_end_ &&
+            style_dependent_range_end_ == range_end_css) {
+          range_end_ = range_end;
+          range_changed |= updated;
+        }
       }
     }
+  }
+  if (timeline_ != initial_timeline) {
+    return true;
   }
 
   bool needs_new_start_time = false;

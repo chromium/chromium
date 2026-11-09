@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
+#include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
@@ -20,9 +21,13 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -66,6 +71,92 @@ Animation* CreateCompositableTestAnimation(Element* target,
   return MakeGarbageCollected<Animation>(
       timeline->GetDocument()->GetExecutionContext(), timeline, effect);
 }
+
+class ManualSlottingHostElement final : public HTMLDivElement {
+ public:
+  explicit ManualSlottingHostElement(Document& document)
+      : HTMLDivElement(document) {
+    ShadowRoot& root = EnsureUserAgentShadowRoot(SlotAssignmentMode::kManual);
+    slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
+    root.AppendChild(slot_);
+  }
+
+  void DetachAnimationsOnNextAssign(
+      const HeapVector<Member<Animation>>& animations,
+      Animation* animation_to_move_to_doc_timeline = nullptr,
+      KeyframeEffect* effect_to_clear = nullptr,
+      AnimationTimeline* timeline_for_rehash = nullptr) {
+    animations_to_detach_ = animations;
+    animation_to_move_to_doc_timeline_ = animation_to_move_to_doc_timeline;
+    effect_to_clear_ = effect_to_clear;
+    timeline_for_rehash_ = timeline_for_rehash;
+    did_assign_slots_ = false;
+  }
+
+  bool DidAssignSlots() const { return did_assign_slots_; }
+
+  void ManuallyAssignSlots() override {
+    HeapVector<Member<Node>> nodes;
+    for (Node& child : NodeTraversal::ChildrenOf(*this)) {
+      if (child.IsSlotable()) {
+        nodes.push_back(&child);
+      }
+    }
+    if (!effect_to_clear_) {
+      slot_->Assign(nodes);
+    } else {
+      slot_->Assign({});
+      for (Node* node : nodes) {
+        node->remove();
+      }
+    }
+    did_assign_slots_ = true;
+    HeapVector<Member<Animation>> to_detach = std::move(animations_to_detach_);
+    for (Animation* animation : to_detach) {
+      if (effect_to_clear_) {
+        animation->SetRangeStartInternal(std::nullopt);
+        animation->SetRangeEndInternal(std::nullopt);
+      }
+      animation->setTimeline(nullptr);
+    }
+    if (animation_to_move_to_doc_timeline_) {
+      animation_to_move_to_doc_timeline_->setTimeline(
+          &GetDocument().Timeline());
+      animation_to_move_to_doc_timeline_ = nullptr;
+    }
+    if (effect_to_clear_) {
+      effect_to_clear_->setTarget(nullptr);
+      effect_to_clear_ = nullptr;
+    }
+    if (timeline_for_rehash_) {
+      AnimationTimeline* timeline = timeline_for_rehash_.Release();
+      HeapVector<Member<Animation>> extra_animations;
+      for (int i = 0; i < 64; ++i) {
+        extra_animations.push_back(CreateTestAnimation(timeline));
+      }
+      for (Animation* extra : extra_animations) {
+        extra->setTimeline(nullptr);
+      }
+    }
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(slot_);
+    visitor->Trace(animations_to_detach_);
+    visitor->Trace(animation_to_move_to_doc_timeline_);
+    visitor->Trace(effect_to_clear_);
+    visitor->Trace(timeline_for_rehash_);
+    HTMLDivElement::Trace(visitor);
+  }
+
+ private:
+  Member<HTMLSlotElement> slot_;
+  HeapVector<Member<Animation>> animations_to_detach_;
+  Member<Animation> animation_to_move_to_doc_timeline_;
+  Member<KeyframeEffect> effect_to_clear_;
+  Member<AnimationTimeline> timeline_for_rehash_;
+  bool did_assign_slots_ = false;
+};
 
 }  // namespace
 
@@ -1273,6 +1364,126 @@ TEST_F(ScrollTimelineTest, AutofillPreviewBlocksPseudoElementScroller) {
   timeline->UpdateSnapshotForTesting();
 
   EXPECT_FALSE(timeline->IsActive());
+}
+
+TEST_F(ScrollTimelineTest, UpdateSnapshotHandlesReentrantAnimationDetach) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller { overflow: scroll; width: 100px; height: 100px; }
+      #spacer { width: 200px; height: 400px; }
+      #target { font-size: 20px; width: 50px; height: 50px; }
+    </style>
+    <div id='scroller'>
+      <div id='spacer'></div>
+    </div>
+  )HTML");
+
+  auto* host = MakeGarbageCollected<ManualSlottingHostElement>(GetDocument());
+  auto* target = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  target->SetIdAttribute(AtomicString("target"));
+  host->AppendChild(target);
+  GetDocument().body()->AppendChild(host);
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
+  ASSERT_TRUE(scroller);
+  PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
+  ASSERT_TRUE(scrollable_area);
+
+  auto* scroll_timeline = MakeGarbageCollected<TestScrollTimeline>(
+      &GetDocument(), GetElementById("scroller"));
+
+  HeapVector<Member<Animation>> siblings;
+  for (int i = 0; i < 11; ++i) {
+    Animation* sibling = CreateTestAnimation(scroll_timeline);
+    sibling->play();
+    siblings.push_back(sibling);
+  }
+
+  Timing timing;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(0.1);
+  auto* range_effect = MakeGarbageCollected<KeyframeEffect>(
+      target,
+      MakeGarbageCollected<StringKeyframeEffectModel>(StringKeyframeVector()),
+      timing);
+  Animation* range_animation =
+      Animation::Create(range_effect, scroll_timeline, ASSERT_NO_EXCEPTION);
+  range_animation->SetRangeStartInternal(TimelineOffset(
+      TimelineOffset::NamedRange::kNone, Length::Fixed(10), "1em"));
+  range_animation->play();
+  ASSERT_EQ(12u, scroll_timeline->GetAnimations().size());
+
+  // Dirty slot assignment so resolving the style-dependent range offset during
+  // UpdateSnapshot recalculates slots, detaches 7 sibling animations, and
+  // moves 1 sibling animation to the document timeline, shrinking the
+  // timeline's animations set while it is being iterated.
+  HeapVector<Member<Animation>> to_detach;
+  for (wtf_size_t i = 0; i < 7; ++i) {
+    to_detach.push_back(siblings[i]);
+  }
+  host->DetachAnimationsOnNextAssign(to_detach, siblings[7]);
+  host->UserAgentShadowRoot()->SetNeedsAssignmentRecalc();
+
+  scroll_timeline->UpdateSnapshotForTesting();
+  EXPECT_TRUE(host->DidAssignSlots());
+  EXPECT_EQ(4u, scroll_timeline->GetAnimations().size());
+
+  // Detached animations must not remain on the timeline or have a deferred
+  // start time initialized by the scroll timeline snapshot.
+  for (wtf_size_t i = 0; i < 7; ++i) {
+    EXPECT_EQ(nullptr, siblings[i]->timeline());
+    EXPECT_FALSE(siblings[i]->StartTimeInternal().has_value());
+  }
+  EXPECT_EQ(&GetDocument().Timeline(), siblings[7]->TimelineInternal());
+  // Remaining animations must still be attached and validated, and the
+  // style-dependent rangeStart (1em at 20px font-size) must be updated.
+  for (wtf_size_t i = 8; i < siblings.size(); ++i) {
+    EXPECT_EQ(scroll_timeline, siblings[i]->timeline());
+    EXPECT_TRUE(siblings[i]->StartTimeInternal().has_value());
+  }
+  EXPECT_EQ(scroll_timeline, range_animation->timeline());
+  ASSERT_TRUE(range_animation->GetRangeStartInternal().has_value());
+  EXPECT_EQ(Length::Fixed(20),
+            range_animation->GetRangeStartInternal()->offset);
+  EXPECT_TRUE(range_animation->StartTimeInternal().has_value());
+
+  // Also verify that detaching the currently validating animation itself,
+  // resetting its range offsets, clearing its effect target, detaching the
+  // target element's layout tree, and rehashing the timeline's animation set
+  // during range_start_ resolution (with a style-dependent range_end_ also
+  // present) is handled safely.
+  range_animation->SetRangeStartInternal(TimelineOffset(
+      TimelineOffset::NamedRange::kNone, Length::Fixed(10), "calc(10% + 1em)"));
+  range_animation->SetRangeEndInternal(TimelineOffset(
+      TimelineOffset::NamedRange::kNone, Length::Fixed(50), "2em"));
+  // Resolve calc(10% + 1em) once so range_start_->offset holds a kCalculated
+  // Length when the next UpdateSnapshot runs.
+  scroll_timeline->UpdateSnapshotForTesting();
+  ASSERT_TRUE(range_animation->GetRangeStartInternal().has_value());
+  ASSERT_TRUE(range_animation->GetRangeStartInternal()->offset.IsCalculated());
+
+  host->DetachAnimationsOnNextAssign({range_animation}, nullptr, range_effect,
+                                     scroll_timeline);
+  host->UserAgentShadowRoot()->SetNeedsAssignmentRecalc();
+
+  scroll_timeline->UpdateSnapshotForTesting();
+  EXPECT_TRUE(host->DidAssignSlots());
+  EXPECT_EQ(nullptr, range_animation->timeline());
+  EXPECT_FALSE(range_animation->GetRangeStartInternal().has_value());
+  EXPECT_FALSE(range_animation->GetRangeEndInternal().has_value());
+  EXPECT_EQ(nullptr, target->GetComputedStyle());
+  EXPECT_EQ(3u, scroll_timeline->GetAnimations().size());
+
+  // Verify remaining attached animations continue to update on scroll.
+  scrollable_area->SetScrollOffset(ScrollOffset(0, 150),
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kNone);
+  SimulateFrame();
+  for (wtf_size_t i = 8; i < siblings.size(); ++i) {
+    EXPECT_EQ(V8AnimationPlayState::Enum::kRunning, siblings[i]->playState());
+    EXPECT_CURRENT_TIME_AS_PERCENT_NEAR(50.0, siblings[i]);
+  }
 }
 
 }  //  namespace blink
