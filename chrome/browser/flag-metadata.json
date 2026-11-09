@@ -3306,7 +3306,7 @@
   {
     "name": "document-picture-in-picture-animate-resize",
     "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 171
   },
   {
     "name": "dom-storage-sqlite",
