@@ -101,7 +101,7 @@
     }
 
     BrowserWindowInterface* browser = CreateBrowserWindow(
-        BrowserWindowCreateParams(aProfile, /*user_gesture=*/false));
+        BrowserWindowCreateParams(aProfile, /*from_user_gesture=*/false));
     // TODO(crbug.com/452431839): Make a new NewTabTypes enum value
     // for new tabs made with AppleScript requests.
     chrome::NewTab(browser, NewTabTypes::kNewTabCommand);
@@ -148,27 +148,28 @@
     return nil;
   }
 
-  // Note: AppleScript is 1-based, that is lists begin with index 1.
-  int activeTabIndex = _browser->GetTabStripModel()->active_index() + 1;
-  if (!activeTabIndex) {
+  int activeTabIndex = _browser->GetTabStripModel()->active_index();
+  if (activeTabIndex == TabStripModel::kNoTab) {
     return nil;
   }
-  return @(activeTabIndex);
+  // Note: AppleScript is 1-based, that is lists begin with index 1.
+  return @(activeTabIndex + 1);
 }
 
 - (void)setActiveTabIndex:(NSNumber*)anActiveTabIndex {
   if (!_browser) {
     return;
   }
+  TabStripModel* tabStrip = _browser->GetTabStripModel();
 
   // Note: AppleScript is 1-based, that is lists begin with index 1.
   int atIndex = anActiveTabIndex.intValue - 1;
-  if (atIndex >= 0 && atIndex < _browser->GetTabStripModel()->count()) {
-    _browser->GetTabStripModel()->ActivateTabAt(
+  if (atIndex >= 0 && atIndex < tabStrip->count()) {
+    tabStrip->ActivateTabAt(
         atIndex, TabStripUserGestureDetails(
                      TabStripUserGestureDetails::GestureType::kOther));
   } else {
-    AppleScript::SetError(AppleScript::Error::kInvalidTabIndex);
+    AppleScript::SetError(AppleScript::Error::kInvalidTab);
   }
 }
 
@@ -218,6 +219,22 @@
       initWithWebContents:_browser->GetTabStripModel()->GetActiveWebContents()];
   [currentTab setContainer:self property:AppleScript::kTabsProperty];
   return currentTab;
+}
+
+- (void)setActiveTab:(TabAppleScript*)aTab {
+  if (!_browser) {
+    return;
+  }
+  TabStripModel* tabStrip = _browser->GetTabStripModel();
+
+  int tabIndex = tabStrip->GetIndexOfWebContents(aTab.webContents);
+  if (tabIndex != TabStripModel::kNoTab) {
+    tabStrip->ActivateTabAt(
+        tabIndex, TabStripUserGestureDetails(
+                      TabStripUserGestureDetails::GestureType::kOther));
+  } else {
+    AppleScript::SetError(AppleScript::Error::kInvalidTab);
+  }
 }
 
 - (NSArray<TabAppleScript*>*)tabs {

@@ -24,8 +24,8 @@ class WebContents;
 // Does not create a new tab but uses an existing one.
 - (instancetype)initWithWebContents:(content::WebContents*)webContents;
 
-// Assigns a tab, sets its unique ID and also copies temporary values.
-- (void)setWebContents:(content::WebContents*)webContents;
+// Returns/sets the WebContents contained by this tab.
+@property(nonatomic, readwrite) content::WebContents* webContents;
 
 // Returns/sets the URL currently visible to the user in the location bar.
 @property(copy) NSString* URL;

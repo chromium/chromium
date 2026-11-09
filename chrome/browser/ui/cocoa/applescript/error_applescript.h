@@ -24,8 +24,8 @@ enum class Error {
   kInvalidSaveType,
   // Error when invalid browser mode is entered.
   kInvalidMode,
-  // Error when tab index is out of bounds.
-  kInvalidTabIndex,
+  // Error when the specified tab or tab index is out of bounds.
+  kInvalidTab,
   // Error when mode is set after browser window is created.
   kSetMode,
   // Error when index of browser window is out of bounds.

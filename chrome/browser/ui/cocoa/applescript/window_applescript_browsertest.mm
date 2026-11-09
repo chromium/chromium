@@ -11,6 +11,7 @@
 #import "chrome/browser/app_controller_mac.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/profiles/profile.h"
+#import "chrome/browser/ui/cocoa/applescript/applescript_test_utils.h"
 #import "chrome/browser/ui/cocoa/applescript/constants_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/error_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/tab_applescript.h"
@@ -20,6 +21,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "url/gurl.h"
+
+namespace AppleScript {
+
+namespace {
 
 using WindowAppleScriptTest = InProcessBrowserTest;
 
@@ -149,13 +154,62 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, NSWindowTest) {
   EXPECT_FALSE([[window valueForKey:@"miniaturized"] boolValue]);
 }
 
-// Getting and setting the active tab.
-IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, ActiveTab) {
+// Getting and setting the active tab via index.
+IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, ActiveTabViaIndex) {
   WindowAppleScript* window =
       [[WindowAppleScript alloc] initWithBrowser:browser()];
   [window insertInTabs:[[TabAppleScript alloc] init]];
-  [window setActiveTabIndex:@2];
   EXPECT_EQ(2, window.activeTabIndex.intValue);
+
+  TabAppleScript* tab1 = window.tabs[0];
   TabAppleScript* tab2 = window.tabs[1];
-  EXPECT_NSEQ(window.activeTab.uniqueID, tab2.uniqueID);
+
+  // Switch to tab 1, verify.
+  window.activeTabIndex = @1;
+  EXPECT_EQ(1, window.activeTabIndex.intValue);
+  EXPECT_NSEQ(window.activeTab, tab1);
+
+  // Switch to tab 2, verify.
+  window.activeTabIndex = @2;
+  EXPECT_EQ(2, window.activeTabIndex.intValue);
+  EXPECT_NSEQ(window.activeTab, tab2);
+
+  // Switch to bogus tab, verify.
+  FakeScriptCommand* fake_script_command = [[FakeScriptCommand alloc] init];
+  window.activeTabIndex = @100;
+  EXPECT_EQ(std::to_underlying(Error::kInvalidTab),
+            fake_script_command.scriptErrorNumber);
 }
+
+// Getting and setting the active tab via object.
+IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, ActiveTabViaObject) {
+  WindowAppleScript* window =
+      [[WindowAppleScript alloc] initWithBrowser:browser()];
+  [window insertInTabs:[[TabAppleScript alloc] init]];
+  EXPECT_EQ(2, window.activeTabIndex.intValue);
+
+  TabAppleScript* tab1 = window.tabs[0];
+  TabAppleScript* tab2 = window.tabs[1];
+
+  // Switch to tab 1, verify.
+  window.activeTab = tab1;
+  EXPECT_EQ(1, window.activeTabIndex.intValue);
+  EXPECT_NSEQ(window.activeTab, tab1);
+
+  // Switch to tab 2, verify.
+  window.activeTab = tab2;
+  EXPECT_EQ(2, window.activeTabIndex.intValue);
+  EXPECT_NSEQ(window.activeTab, tab2);
+
+  // Switch to bogus tab, verify.
+  WindowAppleScript* window2 =
+      [[WindowAppleScript alloc] initWithBrowser:CreateBrowser(GetProfile())];
+  FakeScriptCommand* fake_script_command = [[FakeScriptCommand alloc] init];
+  window.activeTab = window2.tabs[0];
+  EXPECT_EQ(std::to_underlying(Error::kInvalidTab),
+            fake_script_command.scriptErrorNumber);
+}
+
+}  // namespace
+
+}  // namespace AppleScript

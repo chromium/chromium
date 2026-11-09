@@ -134,6 +134,10 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   }
 }
 
+- (content::WebContents*)webContents {
+  return _webContents.get();
+}
+
 - (NSString*)URL {
   if (!_webContents) {
     return nil;

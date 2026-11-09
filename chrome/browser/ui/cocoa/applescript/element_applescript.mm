@@ -32,4 +32,15 @@
   self.containerProperty = property;
 }
 
+- (BOOL)isEqual:(id)object {
+  if ([self class] != [object class]) {
+    return NO;
+  }
+  return [self.uniqueID isEqualToString:[object uniqueID]];
+}
+
+- (NSUInteger)hash {
+  return self.uniqueID.hash;
+}
+
 @end

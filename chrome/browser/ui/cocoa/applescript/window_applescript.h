@@ -29,15 +29,15 @@ class Profile;
 // this is intended for use by AppleScript.
 @property(copy) NSNumber* activeTabIndex;
 
-// Sets and get the given name of a window.
+// Sets and gets the given name of a window.
 @property(copy) NSString* givenName;
 
 // Mode refers to whether a window is a normal window or an incognito window
 // it can be set only once while creating the window.
 @property(copy) NSString* mode;
 
-// Returns the currently selected tab.
-@property(readonly) TabAppleScript* activeTab;
+// Sets and gets the currently selected tab.
+@property(strong) TabAppleScript* activeTab;
 
 // Tab manipulation functions.
 // The tabs inside the window.

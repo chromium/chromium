@@ -70,7 +70,7 @@
       <property name="zoomed" code="pzum" description="Whether the window is currently zoomed." type="boolean">
         <cocoa key="isZoomed"/>
       </property>
-      <property name="active tab" code="acTa" description="Returns the currently selected tab" type="tab" access="r">
+      <property name="active tab" code="acTa" description="The active tab." type="tab">
         <cocoa key="activeTab"/>
       </property>
       <property name="mode" code="mode" description="Represents the mode of the window which can be &apos;normal&apos; or &apos;incognito&apos;, can be set only once during creation of the window." type="text">

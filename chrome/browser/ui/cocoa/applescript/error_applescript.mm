@@ -51,7 +51,7 @@ void SetError(Error error_code) {
       error_string =
           l10n_util::GetNSString(IDS_INVALID_MODE_ERROR_APPLESCRIPT_MAC);
       break;
-    case Error::kInvalidTabIndex:
+    case Error::kInvalidTab:
       error_string =
           l10n_util::GetNSString(IDS_INVALID_TAB_INDEX_APPLESCRIPT_MAC);
       break;
