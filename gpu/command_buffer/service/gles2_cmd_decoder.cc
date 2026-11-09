@@ -4024,7 +4024,9 @@ void GLES2DecoderImpl::DeleteBuffersHelper(GLsizei n,
 
 void GLES2DecoderImpl::FlushQueriesBeforeDeletingOrUnbindingFboWorkaround() {
   if (workarounds().flush_queries_before_deleting_or_unbinding_fbo &&
-      HasPendingQueries()) {
+      query_manager_ &&
+      (query_manager_->HaveActiveQueries() ||
+       query_manager_->HavePendingQueries())) {
     GLsync sync = api()->glFenceSyncFn(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     if (sync) {
       api()->glClientWaitSyncFn(sync, GL_SYNC_FLUSH_COMMANDS_BIT, 0);
