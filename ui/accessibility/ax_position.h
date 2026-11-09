@@ -5810,7 +5810,9 @@ class AXPosition {
       if (index_in_parent + 1 < parent_position->AnchorChildCount()) {
         AXPositionInstance next_sibling =
             parent_position->CreateChildPositionAt(index_in_parent + 1);
-        CHECK(!next_sibling->IsNullPosition(), base::NotFatalUntil::M163);
+        // TODO(crbug.com/582685981): CHECK-exclusion: Convert to a CHECK once
+        // we are confident it won't be triggered.
+        DCHECK(!next_sibling->IsNullPosition());
 
         if (abort_predicate.Run(*current_position, *next_sibling,
                                 AXMoveType::kSibling,
