@@ -214,12 +214,15 @@ void HTMLMeterElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 }
 
 void HTMLMeterElement::UpdateValueAppearance(double percentage) {
-  DEFINE_STATIC_LOCAL(AtomicString, optimum_pseudo_id,
-                      ("-webkit-meter-optimum-value"));
-  DEFINE_STATIC_LOCAL(AtomicString, suboptimum_pseudo_id,
-                      ("-webkit-meter-suboptimum-value"));
-  DEFINE_STATIC_LOCAL(AtomicString, even_less_good_pseudo_id,
-                      ("-webkit-meter-even-less-good-value"));
+  DEFINE_STATIC_LOCAL(
+      AtomicString, optimum_pseudo_id,
+      (AtomicString::FromLiteral<"-webkit-meter-optimum-value">()));
+  DEFINE_STATIC_LOCAL(
+      AtomicString, suboptimum_pseudo_id,
+      (AtomicString::FromLiteral<"-webkit-meter-suboptimum-value">()));
+  DEFINE_STATIC_LOCAL(
+      AtomicString, even_less_good_pseudo_id,
+      (AtomicString::FromLiteral<"-webkit-meter-even-less-good-value">()));
 
   value_->SetInlineStyleProperty(CSSPropertyID::kInlineSize, percentage,
                                  CSSPrimitiveValue::UnitType::kPercentage);

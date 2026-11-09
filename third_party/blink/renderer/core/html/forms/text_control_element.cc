@@ -779,8 +779,10 @@ unsigned TextControlElement::selectionEnd() const {
 
 static const AtomicString& DirectionString(
     TextFieldSelectionDirection direction) {
-  DEFINE_STATIC_LOCAL(const AtomicString, forward, ("forward"));
-  DEFINE_STATIC_LOCAL(const AtomicString, backward, ("backward"));
+  DEFINE_STATIC_LOCAL(const AtomicString, forward,
+                      (AtomicString::FromLiteral<"forward">()));
+  DEFINE_STATIC_LOCAL(const AtomicString, backward,
+                      (AtomicString::FromLiteral<"backward">()));
 
   switch (direction) {
     case kSelectionHasNoDirection:

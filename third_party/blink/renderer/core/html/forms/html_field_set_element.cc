@@ -202,7 +202,8 @@ FormControlType HTMLFieldSetElement::FormControlType() const {
 }
 
 const AtomicString& HTMLFieldSetElement::FormControlTypeAsString() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, fieldset, ("fieldset"));
+  DEFINE_STATIC_LOCAL(const AtomicString, fieldset,
+                      (AtomicString::FromLiteral<"fieldset">()));
   return fieldset;
 }
 

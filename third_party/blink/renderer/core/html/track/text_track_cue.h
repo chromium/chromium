@@ -46,7 +46,8 @@ class CORE_EXPORT TextTrackCue : public EventTarget {
 
  public:
   static const AtomicString& CueShadowPseudoId() {
-    DEFINE_STATIC_LOCAL(const AtomicString, cue, ("cue"));
+    DEFINE_STATIC_LOCAL(const AtomicString, cue,
+                        (AtomicString::FromLiteral<"cue">()));
     return cue;
   }
 

@@ -37,32 +37,38 @@ void AudioTrack::setEnabled(bool enabled, ChangeSource source) {
 }
 
 const AtomicString& AudioTrack::AlternativeKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword, ("alternative"));
+  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
+                      (AtomicString::FromLiteral<"alternative">()));
   return keyword;
 }
 
 const AtomicString& AudioTrack::DescriptionsKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword, ("descriptions"));
+  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
+                      (AtomicString::FromLiteral<"descriptions">()));
   return keyword;
 }
 
 const AtomicString& AudioTrack::MainKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword, ("main"));
+  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
+                      (AtomicString::FromLiteral<"main">()));
   return keyword;
 }
 
 const AtomicString& AudioTrack::MainDescriptionsKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword, ("main-desc"));
+  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
+                      (AtomicString::FromLiteral<"main-desc">()));
   return keyword;
 }
 
 const AtomicString& AudioTrack::TranslationKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword, ("translation"));
+  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
+                      (AtomicString::FromLiteral<"translation">()));
   return keyword;
 }
 
 const AtomicString& AudioTrack::CommentaryKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword, ("commentary"));
+  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
+                      (AtomicString::FromLiteral<"commentary">()));
   return keyword;
 }
 

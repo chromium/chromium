@@ -51,7 +51,8 @@ FormControlType HTMLOutputElement::FormControlType() const {
 }
 
 const AtomicString& HTMLOutputElement::FormControlTypeAsString() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, output, ("output"));
+  DEFINE_STATIC_LOCAL(const AtomicString, output,
+                      (AtomicString::FromLiteral<"output">()));
   return output;
 }
 

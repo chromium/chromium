@@ -265,10 +265,8 @@ String BuildElementErrorMessage(const String& error) {
   // collection and aggregation of UA-specific-error codes from
   // MediaError.message by web apps. WebMediaPlayer::GetErrorMessage() should
   // similarly conform to this format.
-  DEFINE_STATIC_LOCAL(const String, element_error_prefix,
-                      ("MEDIA_ELEMENT_ERROR: "));
   StringBuilder builder;
-  builder.Append(element_error_prefix);
+  builder.Append(String::FromLiteral<"MEDIA_ELEMENT_ERROR: ">());
   builder.Append(error);
   return builder.ToString();
 }

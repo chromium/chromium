@@ -178,7 +178,8 @@ FormControlType HTMLTextAreaElement::FormControlType() const {
 }
 
 const AtomicString& HTMLTextAreaElement::FormControlTypeAsString() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, textarea, ("textarea"));
+  DEFINE_STATIC_LOCAL(const AtomicString, textarea,
+                      (AtomicString::FromLiteral<"textarea">()));
   return textarea;
 }
 

@@ -57,7 +57,8 @@ const AtomicString& SVGStyleElement::type() const {
   if (RuntimeEnabledFeatures::SvgStyleElementReflectTypeAndMediaEnabled()) {
     return getAttribute(svg_names::kTypeAttr);
   }
-  DEFINE_STATIC_LOCAL(const AtomicString, default_value, ("text/css"));
+  DEFINE_STATIC_LOCAL(const AtomicString, default_value,
+                      (AtomicString::FromLiteral<"text/css">()));
   const AtomicString& n = getAttribute(svg_names::kTypeAttr);
   return n.IsNull() ? default_value : n;
 }

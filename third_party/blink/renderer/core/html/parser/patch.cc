@@ -91,10 +91,14 @@ Patch* Patch::Prepare(ContainerNode* scope,
       scope = scope->GetDocument().documentElement();
     }
 
-    DEFINE_STATIC_LOCAL(AtomicString, kNamePseudoAttr, ("name"));
-    DEFINE_STATIC_LOCAL(AtomicString, kMarkerTarget, ("marker"));
-    DEFINE_STATIC_LOCAL(AtomicString, kStartTarget, ("start"));
-    DEFINE_STATIC_LOCAL(AtomicString, kEndTarget, ("end"));
+    DEFINE_STATIC_LOCAL(AtomicString, kNamePseudoAttr,
+                        (AtomicString::FromLiteral<"name">()));
+    DEFINE_STATIC_LOCAL(AtomicString, kMarkerTarget,
+                        (AtomicString::FromLiteral<"marker">()));
+    DEFINE_STATIC_LOCAL(AtomicString, kStartTarget,
+                        (AtomicString::FromLiteral<"start">()));
+    DEFINE_STATIC_LOCAL(AtomicString, kEndTarget,
+                        (AtomicString::FromLiteral<"end">()));
 
     for (Node& descendant : NodeTraversal::DescendantsOf(*scope)) {
       auto* processing_instruction =

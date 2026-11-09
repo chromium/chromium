@@ -113,8 +113,10 @@ FormControlType HTMLSelectElement::FormControlType() const {
 }
 
 const AtomicString& HTMLSelectElement::FormControlTypeAsString() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, select_multiple, ("select-multiple"));
-  DEFINE_STATIC_LOCAL(const AtomicString, select_one, ("select-one"));
+  DEFINE_STATIC_LOCAL(const AtomicString, select_multiple,
+                      (AtomicString::FromLiteral<"select-multiple">()));
+  DEFINE_STATIC_LOCAL(const AtomicString, select_one,
+                      (AtomicString::FromLiteral<"select-one">()));
   return is_multiple_ ? select_multiple : select_one;
 }
 

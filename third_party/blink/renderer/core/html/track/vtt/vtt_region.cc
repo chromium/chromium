@@ -260,7 +260,7 @@ void VTTRegion::ParseSettingValue(RegionSetting setting, VTTScanner& input) {
 const AtomicString& VTTRegion::TextTrackCueContainerScrollingClass() {
   DEFINE_STATIC_LOCAL(const AtomicString,
                       track_region_cue_container_scrolling_class,
-                      ("scrolling"));
+                      (AtomicString::FromLiteral<"scrolling">()));
 
   return track_region_cue_container_scrolling_class;
 }

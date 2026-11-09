@@ -96,8 +96,9 @@ bool ChooserOnlyTemporalInputTypeView::IsPickerVisible() const {
 }
 
 void ChooserOnlyTemporalInputTypeView::CreateShadowSubtree() {
-  DEFINE_STATIC_LOCAL(AtomicString, value_container_pseudo,
-                      ("-webkit-date-and-time-value"));
+  DEFINE_STATIC_LOCAL(
+      AtomicString, value_container_pseudo,
+      (AtomicString::FromLiteral<"-webkit-date-and-time-value">()));
 
   auto* value_container =
       MakeGarbageCollected<HTMLDivElement>(GetElement().GetDocument());

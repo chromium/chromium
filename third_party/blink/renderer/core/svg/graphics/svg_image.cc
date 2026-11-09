@@ -955,7 +955,8 @@ String SVGImage::FilenameExtension() const {
 }
 
 const AtomicString& SVGImage::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, svg_mime_type, ("image/svg+xml"));
+  DEFINE_STATIC_LOCAL(const AtomicString, svg_mime_type,
+                      (AtomicString::FromLiteral<"image/svg+xml">()));
   return svg_mime_type;
 }
 

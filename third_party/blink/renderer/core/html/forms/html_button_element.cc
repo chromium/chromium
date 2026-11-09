@@ -86,18 +86,12 @@ FormControlType HTMLButtonElement::FormControlType() const {
 
 const AtomicString& HTMLButtonElement::FormControlTypeAsString() const {
   switch (type_) {
-    case Type::kButton: {
-      DEFINE_STATIC_LOCAL(const AtomicString, button, (keywords::kButton));
-      return button;
-    }
-    case Type::kSubmit: {
-      DEFINE_STATIC_LOCAL(const AtomicString, submit, (keywords::kSubmit));
-      return submit;
-    }
-    case Type::kReset: {
-      DEFINE_STATIC_LOCAL(const AtomicString, reset, (keywords::kReset));
-      return reset;
-    }
+    case Type::kButton:
+      return keywords::kButton;
+    case Type::kSubmit:
+      return keywords::kSubmit;
+    case Type::kReset:
+      return keywords::kReset;
   }
   NOTREACHED();
 }

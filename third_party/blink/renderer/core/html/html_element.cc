@@ -2666,9 +2666,10 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
   if (transition_behavior ==
       HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions) {
     // Fire the "closing" beforetoggle event.
-    auto* event = ToggleEvent::Create(
-        event_type_names::kBeforetoggle, Event::Cancelable::kNo,
-        /*old_state*/ keywords::kOpen, /*new_state*/ keywords::kClosed, invoker);
+    auto* event = ToggleEvent::Create(event_type_names::kBeforetoggle,
+                                      Event::Cancelable::kNo,
+                                      /*old_state*/ keywords::kOpen,
+                                      /*new_state*/ keywords::kClosed, invoker);
     if (invoker && RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
                        invoker->GetExecutionContext())) {
       event->SetComposed(true);
@@ -3696,9 +3697,12 @@ CommandEventType HTMLElement::GetCommandEventType(
 }
 
 const AtomicString& HTMLElement::autocapitalize() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, kCharacters, ("characters"));
-  DEFINE_STATIC_LOCAL(const AtomicString, kWords, ("words"));
-  DEFINE_STATIC_LOCAL(const AtomicString, kSentences, ("sentences"));
+  DEFINE_STATIC_LOCAL(const AtomicString, kCharacters,
+                      (AtomicString::FromLiteral<"characters">()));
+  DEFINE_STATIC_LOCAL(const AtomicString, kWords,
+                      (AtomicString::FromLiteral<"words">()));
+  DEFINE_STATIC_LOCAL(const AtomicString, kSentences,
+                      (AtomicString::FromLiteral<"sentences">()));
 
   const AtomicString& value = FastGetAttribute(html_names::kAutocapitalizeAttr);
   if (value.empty())
@@ -3894,8 +3898,10 @@ void HTMLElement::setTranslate(bool enable) {
 // default).
 // http://www.whatwg.org/specs/web-apps/current-work/multipage/common-dom-interfaces.html#limited-to-only-known-values
 static inline const AtomicString& ToValidDirValue(const AtomicString& value) {
-  DEFINE_STATIC_LOCAL(const AtomicString, ltr_value, ("ltr"));
-  DEFINE_STATIC_LOCAL(const AtomicString, rtl_value, ("rtl"));
+  DEFINE_STATIC_LOCAL(const AtomicString, ltr_value,
+                      (AtomicString::FromLiteral<"ltr">()));
+  DEFINE_STATIC_LOCAL(const AtomicString, rtl_value,
+                      (AtomicString::FromLiteral<"rtl">()));
 
   if (EqualIgnoringAsciiCase(value, ltr_value)) {
     return ltr_value;

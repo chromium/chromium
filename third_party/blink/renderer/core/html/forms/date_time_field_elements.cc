@@ -48,8 +48,9 @@ DateTimeAMPMFieldElement::DateTimeAMPMFieldElement(
                                    ampm_labels,
                                    0,
                                    1) {
-  DEFINE_STATIC_LOCAL(AtomicString, ampm_pseudo_id,
-                      ("-webkit-datetime-edit-ampm-field"));
+  DEFINE_STATIC_LOCAL(
+      AtomicString, ampm_pseudo_id,
+      (AtomicString::FromLiteral<"-webkit-datetime-edit-ampm-field">()));
   Initialize(ampm_pseudo_id, QueryString(IDS_AX_AM_PM_FIELD_TEXT));
 }
 
@@ -87,8 +88,9 @@ DateTimeDayFieldElement::DateTimeDayFieldElement(Document& document,
                                   range,
                                   Range(1, 31),
                                   placeholder.empty() ? "--" : placeholder) {
-  DEFINE_STATIC_LOCAL(AtomicString, day_pseudo_id,
-                      ("-webkit-datetime-edit-day-field"));
+  DEFINE_STATIC_LOCAL(
+      AtomicString, day_pseudo_id,
+      (AtomicString::FromLiteral<"-webkit-datetime-edit-day-field">()));
   Initialize(day_pseudo_id, QueryString(IDS_AX_DAY_OF_MONTH_FIELD_TEXT));
 }
 
@@ -135,8 +137,9 @@ DateTimeHourFieldElementBase::DateTimeHourFieldElementBase(
                                   step) {}
 
 void DateTimeHourFieldElementBase::Initialize() {
-  DEFINE_STATIC_LOCAL(AtomicString, hour_pseudo_id,
-                      ("-webkit-datetime-edit-hour-field"));
+  DEFINE_STATIC_LOCAL(
+      AtomicString, hour_pseudo_id,
+      (AtomicString::FromLiteral<"-webkit-datetime-edit-hour-field">()));
   DateTimeNumericFieldElement::Initialize(hour_pseudo_id,
                                           QueryString(IDS_AX_HOUR_FIELD_TEXT));
 }
@@ -415,8 +418,9 @@ DateTimeMillisecondFieldElement::DateTimeMillisecondFieldElement(
                                   Range(0, 999),
                                   "---",
                                   step) {
-  DEFINE_STATIC_LOCAL(AtomicString, millisecond_pseudo_id,
-                      ("-webkit-datetime-edit-millisecond-field"));
+  DEFINE_STATIC_LOCAL(
+      AtomicString, millisecond_pseudo_id,
+      (AtomicString::FromLiteral<"-webkit-datetime-edit-millisecond-field">()));
   Initialize(millisecond_pseudo_id, QueryString(IDS_AX_MILLISECOND_FIELD_TEXT));
 }
 
@@ -460,8 +464,9 @@ DateTimeMinuteFieldElement::DateTimeMinuteFieldElement(Document& document,
                                   Range(0, 59),
                                   "--",
                                   step) {
-  DEFINE_STATIC_LOCAL(AtomicString, minute_pseudo_id,
-                      ("-webkit-datetime-edit-minute-field"));
+  DEFINE_STATIC_LOCAL(
+      AtomicString, minute_pseudo_id,
+      (AtomicString::FromLiteral<"-webkit-datetime-edit-minute-field">()));
   Initialize(minute_pseudo_id, QueryString(IDS_AX_MINUTE_FIELD_TEXT));
 }
 
@@ -503,8 +508,9 @@ DateTimeMonthFieldElement::DateTimeMonthFieldElement(Document& document,
                                   range,
                                   Range(1, 12),
                                   placeholder.empty() ? "--" : placeholder) {
-  DEFINE_STATIC_LOCAL(AtomicString, month_pseudo_id,
-                      ("-webkit-datetime-edit-month-field"));
+  DEFINE_STATIC_LOCAL(
+      AtomicString, month_pseudo_id,
+      (AtomicString::FromLiteral<"-webkit-datetime-edit-month-field">()));
   Initialize(month_pseudo_id, QueryString(IDS_AX_MONTH_FIELD_TEXT));
 }
 
@@ -547,8 +553,9 @@ DateTimeSecondFieldElement::DateTimeSecondFieldElement(Document& document,
                                   Range(0, 59),
                                   "--",
                                   step) {
-  DEFINE_STATIC_LOCAL(AtomicString, second_pseudo_id,
-                      ("-webkit-datetime-edit-second-field"));
+  DEFINE_STATIC_LOCAL(
+      AtomicString, second_pseudo_id,
+      (AtomicString::FromLiteral<"-webkit-datetime-edit-second-field">()));
   Initialize(second_pseudo_id, QueryString(IDS_AX_SECOND_FIELD_TEXT));
 }
 
@@ -592,8 +599,9 @@ DateTimeSymbolicMonthFieldElement::DateTimeSymbolicMonthFieldElement(
                                    labels,
                                    minimum,
                                    maximum) {
-  DEFINE_STATIC_LOCAL(AtomicString, month_pseudo_id,
-                      ("-webkit-datetime-edit-month-field"));
+  DEFINE_STATIC_LOCAL(
+      AtomicString, month_pseudo_id,
+      (AtomicString::FromLiteral<"-webkit-datetime-edit-month-field">()));
   Initialize(month_pseudo_id, QueryString(IDS_AX_MONTH_FIELD_TEXT));
 }
 
@@ -638,8 +646,9 @@ DateTimeWeekFieldElement::DateTimeWeekFieldElement(Document& document,
                                   Range(DateComponents::kMinimumWeekNumber,
                                         DateComponents::kMaximumWeekNumber),
                                   "--") {
-  DEFINE_STATIC_LOCAL(AtomicString, week_pseudo_id,
-                      ("-webkit-datetime-edit-week-field"));
+  DEFINE_STATIC_LOCAL(
+      AtomicString, week_pseudo_id,
+      (AtomicString::FromLiteral<"-webkit-datetime-edit-week-field">()));
   Initialize(week_pseudo_id, QueryString(IDS_AX_WEEK_OF_YEAR_FIELD_TEXT));
 }
 
@@ -687,8 +696,9 @@ DateTimeYearFieldElement::DateTimeYearFieldElement(
   DCHECK_GE(parameters.minimum_year, DateComponents::MinimumYear());
   DCHECK_LE(parameters.maximum_year, DateComponents::MaximumYear());
 
-  DEFINE_STATIC_LOCAL(AtomicString, year_pseudo_id,
-                      ("-webkit-datetime-edit-year-field"));
+  DEFINE_STATIC_LOCAL(
+      AtomicString, year_pseudo_id,
+      (AtomicString::FromLiteral<"-webkit-datetime-edit-year-field">()));
   Initialize(year_pseudo_id, QueryString(IDS_AX_YEAR_FIELD_TEXT));
 }
 

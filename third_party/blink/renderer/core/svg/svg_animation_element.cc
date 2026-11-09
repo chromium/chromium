@@ -341,10 +341,14 @@ AnimationMode SVGAnimationElement::CalculateAnimationMode() {
 }
 
 void SVGAnimationElement::SetCalcMode(const AtomicString& calc_mode) {
-  DEFINE_STATIC_LOCAL(const AtomicString, discrete, ("discrete"));
-  DEFINE_STATIC_LOCAL(const AtomicString, linear, ("linear"));
-  DEFINE_STATIC_LOCAL(const AtomicString, paced, ("paced"));
-  DEFINE_STATIC_LOCAL(const AtomicString, spline, ("spline"));
+  DEFINE_STATIC_LOCAL(const AtomicString, discrete,
+                      (AtomicString::FromLiteral<"discrete">()));
+  DEFINE_STATIC_LOCAL(const AtomicString, linear,
+                      (AtomicString::FromLiteral<"linear">()));
+  DEFINE_STATIC_LOCAL(const AtomicString, paced,
+                      (AtomicString::FromLiteral<"paced">()));
+  DEFINE_STATIC_LOCAL(const AtomicString, spline,
+                      (AtomicString::FromLiteral<"spline">()));
   if (calc_mode == discrete) {
     UseCounter::Count(GetDocument(), WebFeature::kSVGCalcModeDiscrete);
     SetCalcMode(kCalcModeDiscrete);
@@ -380,13 +384,15 @@ String SVGAnimationElement::FromValue() const {
 }
 
 bool SVGAnimationElement::IsAdditive() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, sum, ("sum"));
+  DEFINE_STATIC_LOCAL(const AtomicString, sum,
+                      (AtomicString::FromLiteral<"sum">()));
   const AtomicString& value = FastGetAttribute(svg_names::kAdditiveAttr);
   return value == sum;
 }
 
 bool SVGAnimationElement::IsAccumulated() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, sum, ("sum"));
+  DEFINE_STATIC_LOCAL(const AtomicString, sum,
+                      (AtomicString::FromLiteral<"sum">()));
   const AtomicString& value = FastGetAttribute(svg_names::kAccumulateAttr);
   return value == sum;
 }

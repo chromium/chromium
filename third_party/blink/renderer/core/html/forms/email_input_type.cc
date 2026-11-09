@@ -45,9 +45,6 @@
 
 namespace {
 
-// http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#valid-e-mail-address
-const char kLocalPartCharacters[] =
-    "abcdefghijklmnopqrstuvwxyz0123456789!#$%&'*+/=?^_`{|}~.-";
 const char kEmailPattern[] =
     "[a-z0-9!#$%&'*+/=?^_`{|}~.-]+"  // local part
     "@"
@@ -137,7 +134,9 @@ static bool IsInvalidLocalPartCharacter(UChar ch) {
   if (!IsAscii(ch)) {
     return true;
   }
-  DEFINE_STATIC_LOCAL(const String, valid_characters, (kLocalPartCharacters));
+  // http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#valid-e-mail-address
+  const String valid_characters = String::FromLiteral<
+      "abcdefghijklmnopqrstuvwxyz0123456789!#$%&'*+/=?^_`{|}~.-">();
   return !valid_characters.contains(ToAsciiLower(ch));
 }
 

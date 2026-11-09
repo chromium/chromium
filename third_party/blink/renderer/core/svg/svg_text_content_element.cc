@@ -292,7 +292,8 @@ void SVGTextContentElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     HeapVector<CSSPropertyValue, 8>& style) {
   if (name.Matches(xml_names::kSpaceAttr)) {
-    DEFINE_STATIC_LOCAL(const AtomicString, preserve_string, ("preserve"));
+    DEFINE_STATIC_LOCAL(const AtomicString, preserve_string,
+                        (AtomicString::FromLiteral<"preserve">()));
 
     if (value == preserve_string) {
       UseCounter::Count(GetDocument(), WebFeature::kWhiteSpacePreFromXMLSpace);

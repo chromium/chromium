@@ -187,8 +187,10 @@ void SVGAnimateMotionElement::ParseAttribute(
 
 SVGAnimateMotionElement::RotateMode SVGAnimateMotionElement::GetRotateMode()
     const {
-  DEFINE_STATIC_LOCAL(const AtomicString, auto_val, ("auto"));
-  DEFINE_STATIC_LOCAL(const AtomicString, auto_reverse, ("auto-reverse"));
+  DEFINE_STATIC_LOCAL(const AtomicString, auto_val,
+                      (AtomicString::FromLiteral<"auto">()));
+  DEFINE_STATIC_LOCAL(const AtomicString, auto_reverse,
+                      (AtomicString::FromLiteral<"auto-reverse">()));
   const AtomicString& rotate = getAttribute(svg_names::kRotateAttr);
   if (rotate == auto_val)
     return kRotateAuto;

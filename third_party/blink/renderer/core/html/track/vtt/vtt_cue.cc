@@ -90,14 +90,12 @@ static_assert(std::size(kDisplayAlignmentMap) == V8AlignSetting::kEnumSize,
               "displayAlignmentMap should have the same number of elements as "
               "VTTCue::NumberOfAlignments");
 
-const String& VerticalGrowingLeftKeyword() {
-  DEFINE_STATIC_LOCAL(const String, verticalrl, ("rl"));
-  return verticalrl;
+String VerticalGrowingLeftKeyword() {
+  return String::FromLiteral<"rl">();
 }
 
-const String& VerticalGrowingRightKeyword() {
-  DEFINE_STATIC_LOCAL(const String, verticallr, ("lr"));
-  return verticallr;
+String VerticalGrowingRightKeyword() {
+  return String::FromLiteral<"lr">();
 }
 
 bool IsInvalidPercentage(double value) {

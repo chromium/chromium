@@ -44,27 +44,32 @@ namespace blink {
 static const int kInvalidTrackIndex = -1;
 
 const AtomicString& TextTrack::SubtitlesKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, subtitles, ("subtitles"));
+  DEFINE_STATIC_LOCAL(const AtomicString, subtitles,
+                      (AtomicString::FromLiteral<"subtitles">()));
   return subtitles;
 }
 
 const AtomicString& TextTrack::CaptionsKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, captions, ("captions"));
+  DEFINE_STATIC_LOCAL(const AtomicString, captions,
+                      (AtomicString::FromLiteral<"captions">()));
   return captions;
 }
 
 const AtomicString& TextTrack::DescriptionsKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, descriptions, ("descriptions"));
+  DEFINE_STATIC_LOCAL(const AtomicString, descriptions,
+                      (AtomicString::FromLiteral<"descriptions">()));
   return descriptions;
 }
 
 const AtomicString& TextTrack::ChaptersKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, chapters, ("chapters"));
+  DEFINE_STATIC_LOCAL(const AtomicString, chapters,
+                      (AtomicString::FromLiteral<"chapters">()));
   return chapters;
 }
 
 const AtomicString& TextTrack::MetadataKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, metadata, ("metadata"));
+  DEFINE_STATIC_LOCAL(const AtomicString, metadata,
+                      (AtomicString::FromLiteral<"metadata">()));
   return metadata;
 }
 

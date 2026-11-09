@@ -158,7 +158,8 @@ AnimatedPropertyType AnimatedPropertyTypeForCSSAttribute(
 
 AnimatedPropertyValueType PropertyValueType(bool is_css_property,
                                             const String& value) {
-  DEFINE_STATIC_LOCAL(const AtomicString, inherit, ("inherit"));
+  DEFINE_STATIC_LOCAL(const AtomicString, inherit,
+                      (AtomicString::FromLiteral<"inherit">()));
   if (!is_css_property || value.empty() || value != inherit) {
     return kRegularPropertyValue;
   }

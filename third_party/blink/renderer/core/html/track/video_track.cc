@@ -35,32 +35,38 @@ void VideoTrack::setSelected(bool selected, ChangeSource source) {
 }
 
 const AtomicString& VideoTrack::AlternativeKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword, ("alternative"));
+  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
+                      (AtomicString::FromLiteral<"alternative">()));
   return keyword;
 }
 
 const AtomicString& VideoTrack::CaptionsKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword, ("captions"));
+  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
+                      (AtomicString::FromLiteral<"captions">()));
   return keyword;
 }
 
 const AtomicString& VideoTrack::MainKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword, ("main"));
+  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
+                      (AtomicString::FromLiteral<"main">()));
   return keyword;
 }
 
 const AtomicString& VideoTrack::SignKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword, ("sign"));
+  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
+                      (AtomicString::FromLiteral<"sign">()));
   return keyword;
 }
 
 const AtomicString& VideoTrack::SubtitlesKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword, ("subtitles"));
+  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
+                      (AtomicString::FromLiteral<"subtitles">()));
   return keyword;
 }
 
 const AtomicString& VideoTrack::CommentaryKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword, ("commentary"));
+  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
+                      (AtomicString::FromLiteral<"commentary">()));
   return keyword;
 }
 

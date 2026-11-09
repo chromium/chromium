@@ -503,7 +503,8 @@ SMILTime SVGSMILElement::ParseClockValue(const StringView& data) {
 
   StringView parse = data.StripWhiteSpace();
 
-  DEFINE_STATIC_LOCAL(const AtomicString, indefinite_value, ("indefinite"));
+  DEFINE_STATIC_LOCAL(const AtomicString, indefinite_value,
+                      (AtomicString::FromLiteral<"indefinite">()));
   if (parse == indefinite_value)
     return SMILTime::Indefinite();
 
