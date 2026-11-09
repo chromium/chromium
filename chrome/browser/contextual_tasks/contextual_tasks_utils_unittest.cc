@@ -9,11 +9,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/aim_message_poster.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#endif
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -594,6 +599,29 @@ TEST_F(ContextualTasksUtilsTest, ShouldUseDarkMode_IncognitoProfile) {
   EXPECT_TRUE(
       ShouldUseDarkMode(otr_web_contents.get(), GURL("https://example.com")));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualTasksUtilsTest,
+       ShouldUseDarkMode_GuestProfileFollowsThemeService) {
+  TestingProfile::Builder guest_builder;
+  guest_builder.SetGuestSession();
+  std::unique_ptr<TestingProfile> guest_profile = guest_builder.Build();
+  Profile* guest_otr_profile =
+      guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(guest_otr_profile->IsGuestSession());
+  ASSERT_FALSE(guest_otr_profile->IsIncognitoProfile());
+
+  ThemeService* theme_service =
+      ThemeServiceFactory::GetForProfile(guest_otr_profile);
+  ASSERT_NE(theme_service, nullptr);
+  theme_service->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kLight);
+  EXPECT_FALSE(ShouldUseDarkModeForProfile(guest_otr_profile));
+
+  theme_service->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kDark);
+  EXPECT_TRUE(ShouldUseDarkModeForProfile(guest_otr_profile));
+}
+#endif
 
 class MockAimMessagePoster : public AimMessagePoster {
  public:

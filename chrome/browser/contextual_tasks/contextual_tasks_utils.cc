@@ -977,7 +977,7 @@ bool ShouldUseDarkModeForProfile(Profile* profile) {
   }
 
   // Always use dark mode in incognito.
-  if (profile->IsOffTheRecord()) {
+  if (profile->IsIncognitoProfile()) {
     return true;
   }
 
