@@ -13,8 +13,9 @@
 
 :host {
   color-scheme: light;
-  display: block;
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  height: max-content;
   width: 100%;
 
   --tab-picker-item-color: var(--color-composebox-file-chip-text, #1f1f1f);
@@ -76,7 +77,7 @@
   font-size: 14px;
   font-weight: 400;
   gap: 0;
-  height: 100%;
+  height: 38px;
   justify-content: flex-start;
   line-height: 18px;
   min-height: 38px;
