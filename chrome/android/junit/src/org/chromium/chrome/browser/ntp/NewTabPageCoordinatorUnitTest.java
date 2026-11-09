@@ -137,6 +137,7 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -206,6 +207,8 @@ public class NewTabPageCoordinatorUnitTest {
     private NewTabPageLayout mNewTabPageLayout;
     private NewTabPageCoordinator mCoordinator;
     private BrowserStateBrowserControlsVisibilityDelegate mVisibilityDelegate;
+    private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
+
     private final OneshotSupplierImpl<ModuleRegistry> mModuleRegistrySupplier =
             new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier =
@@ -287,6 +290,9 @@ public class NewTabPageCoordinatorUnitTest {
 
     @After
     public void tearDown() {
+        if (mEdgeToEdgeStateProvider != null) {
+            mEdgeToEdgeStateProvider.detach();
+        }
         mCoordinator.destroy();
     }
 
@@ -2346,7 +2352,7 @@ public class NewTabPageCoordinatorUnitTest {
     private NtpCustomizationCoordinator setUpThemeTipTrigger() {
         mCoordinator.destroy();
         createCoordinator(/* isLff= */ false);
-        NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
+        mEdgeToEdgeStateProvider = NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
         ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(true);
         ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.setForTesting(true);
         NtpCustomizationPromoManager.setEnableForTesting(true);
