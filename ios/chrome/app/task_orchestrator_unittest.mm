@@ -623,3 +623,89 @@ TEST_F(TaskOrchestratorTest, TestClearTasksForSceneDuringProfileSwitch) {
   EXPECT_TRUE(base::test::RunUntil([&]() { return task_was_executed; }));
   EXPECT_FALSE(scene_state.hasPendingIntent);
 }
+
+namespace {
+
+// Google One deep link opened by the task requiring an account switch.
+NSString* const kGoogleOneDeepLinkURL = @"https://one.google.com/deeplink";
+
+// Adds a Google One deep link task requiring an account switch to
+// `orchestrator`, then reaches `TaskExecutionUIReady`. Returns the handler that
+// received the resulting `ChangeProfileCommands` call.
+FakeChangeProfileCommandsHandler* SwitchProfileForGoogleOneDeepLinkTask(
+    TaskOrchestrator* orchestrator) {
+  IOSChromeScopedTestingLocalState scoped_testing_local_state;
+  TestProfileManagerIOS profile_manager;
+
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
+                            AuthenticationServiceFactory::GetDefaultFactory());
+  builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                            base::BindRepeating(&CreateTestSyncService));
+  TestProfileIOS* profile =
+      profile_manager.AddProfileWithBuilder(std::move(builder));
+
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentityManager::FromSystemIdentityManager(
+      GetApplicationContext()->GetSystemIdentityManager())
+      ->AddIdentity(identity);
+
+  CommandDispatcher* dispatcher = [[CommandDispatcher alloc] init];
+  FakeChangeProfileCommandsHandler* change_profile_handler =
+      [[FakeChangeProfileCommandsHandler alloc] init];
+  [dispatcher startDispatchingToTarget:change_profile_handler
+                           forProtocol:@protocol(ChangeProfileCommands)];
+
+  id mock_app_state = OCMClassMock([AppState class]);
+  OCMStub([mock_app_state initStage]).andReturn(AppInitStage::kFinal);
+  OCMStub([mock_app_state appCommandDispatcher]).andReturn(dispatcher);
+
+  ProfileState* profile_state =
+      [[ProfileState alloc] initWithAppState:mock_app_state];
+  profile_state.profile = profile;
+
+  SceneState* scene_state = CreateFakeSceneState(@"scene_google_one");
+  scene_state.profileState = profile_state;
+
+  TaskRequest* task = [TaskRequest
+      taskForTestingWithScene:scene_state.scene
+                       gaiaID:identity.gaiaId.ToNSString()
+                          URL:[NSURL URLWithString:kGoogleOneDeepLinkURL]];
+  task.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
+
+  [orchestrator addTaskRequest:task];
+  [orchestrator updateToStage:TaskExecutionStage::TaskExecutionUIReady
+                     forScene:scene_state];
+
+  return change_profile_handler;
+}
+
+}  // namespace
+
+// Tests that a Google One deep link task requiring an account switch triggers
+// `ChangeProfileCommands` with `ChangeProfileReason::kForGoogleOneSettings`.
+TEST_F(TaskOrchestratorTest, TestProfileSwitchForGoogleOneDeepLink) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSupportGoogleOneDeepLink);
+
+  FakeChangeProfileCommandsHandler* change_profile_handler =
+      SwitchProfileForGoogleOneDeepLinkTask(orchestrator_);
+
+  EXPECT_TRUE(change_profile_handler.changeProfileCalled);
+  EXPECT_EQ(ChangeProfileReason::kForGoogleOneSettings,
+            change_profile_handler.reason);
+}
+
+// Tests that a task with a Google One deep link URL and a `gaiaID` does not use
+// `ChangeProfileReason::kForGoogleOneSettings` when the feature is disabled.
+TEST_F(TaskOrchestratorTest, TestProfileSwitchForGoogleOneDeepLinkDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kSupportGoogleOneDeepLink);
+
+  FakeChangeProfileCommandsHandler* change_profile_handler =
+      SwitchProfileForGoogleOneDeepLinkTask(orchestrator_);
+
+  EXPECT_TRUE(change_profile_handler.changeProfileCalled);
+  EXPECT_EQ(ChangeProfileReason::kSwitchAccountsFromWidget,
+            change_profile_handler.reason);
+}

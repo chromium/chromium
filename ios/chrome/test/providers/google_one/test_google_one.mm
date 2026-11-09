@@ -19,6 +19,13 @@
   return [[url host] isEqualToString:@"one.google.com"];
 }
 - (NSString*)emailFromURL:(NSURL*)url {
+  NSURLComponents* components = [NSURLComponents componentsWithURL:url
+                                           resolvingAgainstBaseURL:NO];
+  for (NSURLQueryItem* item in components.queryItems) {
+    if ([item.name isEqualToString:@"email"]) {
+      return item.value;
+    }
+  }
   return nil;
 }
 @end

@@ -18,6 +18,12 @@
 + (instancetype)taskForTestingWithScene:(UIScene*)scene
                            executeBlock:(ProceduralBlock)block;
 
+// Returns a task for `scene` associated with `gaiaID` and `URL`, whose
+// execution does nothing.
++ (instancetype)taskForTestingWithScene:(UIScene*)scene
+                                 gaiaID:(NSString*)gaiaID
+                                    URL:(NSURL*)URL;
+
 @end
 
 #endif  // IOS_CHROME_APP_TASK_REQUEST_TESTING_H_

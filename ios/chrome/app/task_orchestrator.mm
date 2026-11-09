@@ -27,6 +27,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/task_scheduling_outcome.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_authentication_continuation.h"
+#import "ios/chrome/browser/google_one/shared/google_one_deep_link_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/url_context.h"
@@ -39,7 +40,9 @@
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "net/base/apple/url_conversions.h"
 #import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#import "url/gurl.h"
 
 namespace {
 struct SceneInfo {
@@ -295,10 +298,15 @@ SceneState* GetSceneStateForScene(UIScene* scene) {
     return NO;
   }
 
-  ChangeProfileReason reason =
-      gaiaTask.isFromShareExtension
-          ? ChangeProfileReason::kSwitchAccountsFromShareExtension
-          : ChangeProfileReason::kSwitchAccountsFromWidget;
+  ChangeProfileReason reason;
+  if (IsGoogleOneDeepLinkEnabled() &&
+      IsGoogleOneDeepLinkURL(net::GURLWithNSURL(gaiaTask.URL), nullptr)) {
+    reason = ChangeProfileReason::kForGoogleOneSettings;
+  } else if (gaiaTask.isFromShareExtension) {
+    reason = ChangeProfileReason::kSwitchAccountsFromShareExtension;
+  } else {
+    reason = ChangeProfileReason::kSwitchAccountsFromWidget;
+  }
 
   AccountSwitchType switchType =
       shouldSignOut ? AccountSwitchType::kSignOut : AccountSwitchType::kSignIn;

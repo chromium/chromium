@@ -14,6 +14,7 @@
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
@@ -29,6 +30,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -38,6 +40,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -1274,4 +1278,49 @@ TEST_F(TaskRequestForURLContextTest, TestAppGroupCommandExecutedOnce) {
   EXPECT_TRUE(ExecuteAppGroupCommandRequest().completionActionExecuted);
 
   EXPECT_FALSE(ExecuteAppGroupCommandRequest().completionActionExecuted);
+}
+
+// Tests that Google One deep links with an email parameter resolve the matching
+// device identity's gaiaID when kSupportGoogleOneDeepLink is enabled.
+TEST_F(TaskRequestForURLContextTest, TestGoogleOneDeepLinkGaiaID) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSupportGoogleOneDeepLink);
+
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentityManager::FromSystemIdentityManager(
+      GetApplicationContext()->GetSystemIdentityManager())
+      ->AddIdentity(identity);
+
+  NSString* matching_url_string = [NSString
+      stringWithFormat:@"%s://one.google.com/deeplink?email=%@",
+                       BUILDFLAG(SECURE_CUSTOM_SCHEME), identity.userEmail];
+  UIOpenURLContext* matching_context =
+      CreateMockURLContext([NSURL URLWithString:matching_url_string]);
+  TaskRequestForURLContext* matching_request =
+      [TaskRequestForURLContext taskRequestWithURLContext:matching_context
+                                               sceneState:scene_state_
+                                              isColdStart:YES];
+  ASSERT_NE(matching_request, nil);
+  EXPECT_NSEQ(identity.gaiaId.ToNSString(), matching_request.gaiaID);
+
+  // Unknown email returns nil gaiaID.
+  NSURL* unknown_email_url = [NSURL
+      URLWithString:@"https://one.google.com/deeplink?email=unknown@test.com"];
+  UIOpenURLContext* unknown_context = CreateMockURLContext(unknown_email_url);
+  TaskRequestForURLContext* unknown_request =
+      [TaskRequestForURLContext taskRequestWithURLContext:unknown_context
+                                               sceneState:scene_state_
+                                              isColdStart:YES];
+  ASSERT_NE(unknown_request, nil);
+  EXPECT_NSEQ(nil, unknown_request.gaiaID);
+
+  // Disabled feature returns nil gaiaID even for a matching device identity.
+  base::test::ScopedFeatureList disabled_feature_list;
+  disabled_feature_list.InitAndDisableFeature(kSupportGoogleOneDeepLink);
+  TaskRequestForURLContext* disabled_request =
+      [TaskRequestForURLContext taskRequestWithURLContext:matching_context
+                                               sceneState:scene_state_
+                                              isColdStart:YES];
+  ASSERT_NE(disabled_request, nil);
+  EXPECT_NSEQ(nil, disabled_request.gaiaID);
 }

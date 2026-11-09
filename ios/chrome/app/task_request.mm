@@ -41,24 +41,22 @@
 
 @end
 
-@interface TaskRequest () {
+@interface TaskRequest ()
+@property(nonatomic, strong, readwrite) NSURL* URL;
+@end
+
+@implementation TaskRequest {
   __weak UIScene* _scene;
   BOOL _isColdStart;
   __weak SceneState* _sceneState;
 }
-@end
-
-@implementation TaskRequest
 
 @synthesize minimumStage = _minimumStage;
 @synthesize gaiaID = _gaiaID;
+@synthesize URL = _URL;
 
 - (UIScene*)scene {
   return _scene;
-}
-
-- (NSURL*)URL {
-  return nil;
 }
 
 - (BOOL)isFromShareExtension {
@@ -95,6 +93,18 @@
 + (instancetype)taskForTestingWithScene:(UIScene*)scene
                            executeBlock:(ProceduralBlock)block {
   return [[TaskRequestForTesting alloc] initWithScene:scene executeBlock:block];
+}
+
+// Factory used for tests.
++ (instancetype)taskForTestingWithScene:(UIScene*)scene
+                                 gaiaID:(NSString*)gaiaID
+                                    URL:(NSURL*)URL {
+  TaskRequest* task = [self taskForTestingWithScene:scene
+                                       executeBlock:^{
+                                       }];
+  task.gaiaID = gaiaID;
+  task.URL = URL;
+  return task;
 }
 
 - (instancetype)initWithSceneState:(SceneState*)sceneState

@@ -259,6 +259,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/variations",
     "//components/variations/service",
+    "//google_apis",
     "//ios/chrome/app:enterprise_app_agent",
     "//ios/chrome/app/application_delegate",
     "//ios/chrome/app/application_delegate:app_init_stage",
