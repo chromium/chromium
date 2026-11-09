@@ -283,12 +283,9 @@ void VideoFrameAcceleratedSnapshotPool::OnResourceReleased(
     scoped_refptr<CanvasResourceSharedImage> resource,
     const gpu::SyncToken& sync_token,
     bool is_lost) {
+  CHECK(!is_lost);
   resource->WaitSyncToken(sync_token);
-  if (is_lost) {
-    resource->NotifyResourceLost();
-  }
-  if (!resource->IsLost() && resource->HasOneRef() && pool &&
-      pool->image_pool_) {
+  if (resource->HasOneRef() && pool && pool->image_pool_) {
     pool->image_pool_->ReleaseImage(std::move(resource));
   }
 }
@@ -328,11 +325,6 @@ VideoFrameAcceleratedSnapshotPool::NewOrRecycledResource() {
 
 bool VideoFrameAcceleratedSnapshotPool::ShouldReplaceTargetBuffer(
     PaintImage::ContentId content_id) {
-  // If the resource was lost, we can not use it for writes again.
-  if (resource_->IsLost()) {
-    return true;
-  }
-
   // We have the only ref to the resource which implies there are no active
   // readers.
   if (resource_->HasOneRef()) {
