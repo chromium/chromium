@@ -100,13 +100,16 @@ public class NativeMessagingConnection implements ServiceConnection {
                     TaskTraits.UI_DEFAULT,
                     () -> {
                         if (mIsBound && mService == null) {
-                            Log.w(TAG, "Service connection timed out for package: " + mPackageName);
+                            Log.w(
+                                    TAG,
+                                    "Service connection timed out for package: %s",
+                                    mPackageName);
                             unbind(DisconnectionReason.SERVICE_CONNECTION_TIMED_OUT);
                         }
                     },
                     CONNECT_TIMEOUT_MS);
         } else {
-            Log.w(TAG, "Failed to bind to service for package: " + mPackageName);
+            Log.w(TAG, "Failed to bind to service for package: %s", mPackageName);
         }
     }
 
@@ -208,19 +211,19 @@ public class NativeMessagingConnection implements ServiceConnection {
         // - unless the app proactively saves messaging "sessions" as they
         //   happen it will not retain any state.
         // Therefore it's cleaner to just unbind.
-        Log.i(TAG, "Service disconnected for package: " + mPackageName);
+        Log.i(TAG, "Service disconnected for package: %s", mPackageName);
         unbind(DisconnectionReason.SERVICE_DISCONNECTED);
     }
 
     @Override
     public void onBindingDied(@Nullable ComponentName name) {
-        Log.w(TAG, "Binding died for package: " + mPackageName);
+        Log.w(TAG, "Binding died for package: %s", mPackageName);
         unbind(DisconnectionReason.BINDING_DIED);
     }
 
     @Override
     public void onNullBinding(@Nullable ComponentName name) {
-        Log.w(TAG, "Null binding for package: " + mPackageName);
+        Log.w(TAG, "Null binding for package: %s", mPackageName);
         unbind(DisconnectionReason.NULL_BINDING);
     }
 
@@ -383,7 +386,7 @@ public class NativeMessagingConnection implements ServiceConnection {
                 return;
             }
 
-            Log.w(TAG, "Failed to connect extension session for " + mExtensionId + ": " + error);
+            Log.w(TAG, "Failed to connect extension session for %s: %s", mExtensionId, error);
 
             // We need to ensure the "connection rejected" message is identical to the "app not
             // found" or other error cases. The extension shouldn't be able to glean any
@@ -459,7 +462,7 @@ public class NativeMessagingConnection implements ServiceConnection {
         private void onConnectPortError(NativeMessageAndroidPort port, String error) {
             ThreadUtils.assertOnUiThread();
             if (mActivePorts.remove(port)) {
-                Log.w(TAG, "Failed to connect port for " + mExtensionId + ": " + error);
+                Log.w(TAG, "Failed to connect port for %s: %s", mExtensionId, error);
                 port.closeChannel("Could not connect port to " + mConnection.mPackageName + ".");
                 if (mPendingPorts.isEmpty() && mActivePorts.isEmpty()) {
                     maybeScheduleIdleDisconnect();
@@ -499,7 +502,7 @@ public class NativeMessagingConnection implements ServiceConnection {
                 try {
                     service.closeConnection();
                 } catch (RemoteException e) {
-                    Log.w(TAG, "Failed to call closeConnection() for " + mExtensionId, e);
+                    Log.w(TAG, "Failed to call closeConnection() for %s", mExtensionId, e);
                 }
             }
         }
@@ -512,7 +515,7 @@ public class NativeMessagingConnection implements ServiceConnection {
             // OnServiceDisconnected). Rejected connection errors are already logged in
             // onConnectExtensionError.
             if (errorMessage != null && mState == ConnectionState.CONNECTED) {
-                Log.w(TAG, "Disconnecting session for " + mExtensionId + ": " + errorMessage);
+                Log.w(TAG, "Disconnecting session for %s: %s", mExtensionId, errorMessage);
             }
             mExtensionService = null;
             mState = ConnectionState.DISCONNECTED;
