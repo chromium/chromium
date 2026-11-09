@@ -685,6 +685,7 @@
 <translation id="1523279371236772909">נצפה בחודש האחרון</translation>
 <translation id="1523978563989812243">‏מנוע המרת טקסט לדיבור (TTS)</translation>
 <translation id="1524563461097350801">לא, תודה</translation>
+<translation id="1524903662136734524">‏הוספה מ-Drive</translation>
 <translation id="1525740877599838384">‏קביעת מיקום רק באמצעות Wi-Fi</translation>
 <translation id="1526274304859009691">כדי לקבל את התוספים ופריטים נוספים ממכשיר <ph name="DEVICE" />, צריך להיכנס לחשבון</translation>
 <translation id="1526560967942511387">מסמך ללא שם</translation>
@@ -2702,6 +2703,7 @@
 <translation id="3032204772252313646">כתוביות אוטומטיות</translation>
 <translation id="3032272345862007156">‏עיצוב מהזמן אחרון שנוצר באמצעות AI‏ <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">מצב 'נא לא להפריע' פועל</translation>
+<translation id="3034219227076811559">‏חיפוש Google ב-Chrome</translation>
 <translation id="3036546437875325427">‏הפעלת Flash</translation>
 <translation id="3036602651971781493">כדי להפעיל תוכן שמוגן בזכויות יוצרים או כדי לבדוק באיזה דפדפן נעשה שימוש, יכול להיות שאתרים ישתמשו בשירות להגנת תוכן.</translation>
 <translation id="3036907164806060573">חלום</translation>
@@ -3219,6 +3221,7 @@
 <translation id="3436118221454753036">‏מצב AI: רוצה לשאול משהו?</translation>
 <translation id="3437397693214267762">‏הצגת Outlook Calendar וקובצי SharePoint ו-OneDrive</translation>
 <translation id="3437494162908353428">‏אסור להשתמש בכלי הפיתוח בכתובת ה-URL הזו.</translation>
+<translation id="3437498061222607130">‏נכנסת לחיפוש Google עם החשבון <ph name="USER_EMAIL" /></translation>
 <translation id="3438633801274389918">נינג'ה</translation>
 <translation id="3439153939049640737">לאפשר תמיד ל-<ph name="HOST" /> לגשת למיקרופון שלך</translation>
 <translation id="3439970425423980614">‏פתיחת PDF בתצוגה מקדימה</translation>
@@ -5051,6 +5054,7 @@
 <translation id="4823484602432206655">קריאה ושינוי של הגדרות המשתמש והמכשיר</translation>
 <translation id="4824037980212326045">‏גיבוי ושחזור ב-Linux</translation>
 <translation id="4824263260587281352">שינוי שילוב המקשים <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">‏חשבון Google: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">לבטל את הסנכרון?</translation>
 <translation id="4825462365587146530">‏מידע נוסף על Chrome Root Store שייפתח בכרטיסייה חדשה.</translation>
 <translation id="4825532258163983651">אי אפשר למחוק את מפתח הגישה</translation>
@@ -7920,6 +7924,7 @@
 <translation id="7030304022046916278">‏שליחת כתובות URL לבדיקה על ידי 'גלישה בטוחה'</translation>
 <translation id="7030695672997239647">לוחצים לחיצה ימנית על הכרטיסייה ובוחרים באפשרות 'הוספת כרטיסייה לקבוצה' ואז באפשרות 'קבוצה חדשה'</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - מחובר ליציאה טורית</translation>
+<translation id="7032334023419126809">‏חשבון Google‏: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">הקלט חייב להכיל עד 62 תווים</translation>
 <translation id="7033731598469029604">פעולות אוטומטיות בדפדפן</translation>
 <translation id="70356134210715500">למפתחות הגישה</translation>
@@ -8900,7 +8905,7 @@
 <translation id="7777624210360383048">קיצור דרך <ph name="SHORTCUT" /> עבור <ph name="EXTENSION_NAME" /></translation>
 <translation id="777852709704682967">&amp;פתיחת ניהול הסימניות</translation>
 <translation id="7779840061887151693">מסך</translation>
-<translation id="7780992949171378848">שליחת בקשה לאתרים לבטל את ההסכמה לשימוש בנתונים האישיים שלך</translation>
+<translation id="7780992949171378848">דרישה שאתרים לא ישתמשו בנתונים האישיים שלך</translation>
 <translation id="7782102568078991263">‏אין יותר הצעות מ-Google</translation>
 <translation id="7782717250816686129">אחסון נתונים קבועים במסך ההתחברות והזנה אוטומטית של פרטי הכניסה בסשן.</translation>
 <translation id="7782885970382585765">כדי לקבל את רשימת הקריאה ופריטים נוספים בכל המכשירים, אפשר להיכנס לחשבון</translation>
@@ -9451,6 +9456,7 @@
 <translation id="8199300056570174101">מאפייני רשת (שירות) ומכשיר</translation>
 <translation id="8200772114523450471">חידוש</translation>
 <translation id="8202827109322349110">פתיחה בכלי לעריכה בסיסית</translation>
+<translation id="8203105157044679380">‏החלונית של חיפוש Google</translation>
 <translation id="8203152941016626022">הגדרת שם המכשיר לשיתוף מהיר</translation>
 <translation id="8203732864715032075">המערכת שולחת לך התראות ומגדירה את המחשב הזה כברירת מחדל לשליחת ההודעות. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">לחיצה ימנית</translation>
@@ -10265,6 +10271,7 @@
 <translation id="8818152010000655963">טפט</translation>
 <translation id="8818988764764862764">החלון הועבר שמאלה</translation>
 <translation id="8819510664278523111">‏ה-EID של המכשיר הוא <ph name="EID_NUMBER" />, ה-IMEI של המכשיר הוא <ph name="IMEI_NUMBER" /> והמספר הסידורי של המכשיר הוא <ph name="SERIAL_NUMBER" />. המספרים האלה יכולים לשמש להפעלת השירות.</translation>
+<translation id="8819762137851963556">איתור הסמן של העכבר</translation>
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="8821045908425223359">‏הגדרת כתובת IP באופן אוטומטי</translation>
 <translation id="8821206216942230957">‏לחשבון שלך אין גישה ל-Gemini ב-Chrome</translation>

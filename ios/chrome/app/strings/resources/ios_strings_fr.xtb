@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">Vous pouvez revenir ici plus tard pour rouvrir les onglets que vous avez récemment fermés</translation>
 <translation id="1016495303386450659">Élément mis à jour</translation>
 <translation id="1018804590490383958">Scanner et saisir automatiquement</translation>
-<translation id="1019990162050689579">Activité dans les applications Gemini</translation>
 <translation id="102471647093736603">Appuyer de manière prolongée pour déplacer</translation>
 <translation id="102645702181682900">Tâche lancée</translation>
 <translation id="102916930470544692">Clé d'accès</translation>
@@ -101,7 +100,6 @@
 <translation id="1291506870746876680">Les autorisations du site <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> seront désactivées quand vous le quitterez.</translation>
 <translation id="1293491796138057740">Vos informations sont enregistrées dans Google Wallet pour <ph name="USER_EMAIL" />. Vous pouvez les utiliser dans tous les produits Google pour remplir des formulaires plus rapidement.</translation>
 <translation id="1293556467332435079">Fichiers</translation>
-<translation id="1294703224699789269">Nos <ph name="BEGIN_LINK" />Conditions d'utilisation<ph name="END_LINK" />, nos <ph name="BEGIN_LINK" />Conditions d'utilisation de la localisation pour la Corée<ph name="END_LINK" /> et notre <ph name="BEGIN_LINK" />Avis de confidentialité<ph name="END_LINK" /> s'appliquent. Les discussions sont examinées et utilisées pour entraîner les modèles d'IA générative. Gemini est une IA et peut faire des erreurs, y compris sur des personnes. Certains contenus ne sont peut-être pas adaptés à tous les publics. Vous pouvez <ph name="BEGIN_LINK" />gérer votre historique<ph name="END_LINK" />, y compris les informations sur votre position. <ph name="BEGIN_LINK" />Découvrez les options qui s'offrent à vous.<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">Récemment fermés</translation>
 <translation id="1296581780163690620">Télécharger le fichier ? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">Tâche "Rechercher avec le Mode IA" terminée.</translation>
@@ -386,7 +384,6 @@
 <translation id="2104436223719117661">Recherches populaires</translation>
 <translation id="21133533946938348">Épingler l'onglet</translation>
 <translation id="2117650889962717098">Protégez la confidentialité de votre navigation en passant en mode navigation privée</translation>
-<translation id="2119126821484134587">Pour vous fournir une aide personnalisée, Gemini partage certaines de vos données (comme des extraits de vos discussions, votre position et d'autres informations utiles) avec d'autres services Google, comme Maps et Vols. Ces services pourront utiliser ces informations pour s'améliorer, même si vous supprimez votre historique des applications Gemini par la suite. Pour en savoir plus, consultez le <ph name="BEGIN_LINK" />Guide sur la confidentialité dans les applications Gemini<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Ouvrir dans…</translation>
 <translation id="2119962645034852864">Certains services ne sont pas disponibles pour votre compte</translation>
 <translation id="2120553909046681540">Votre organisation a désactivé la navigation privée.</translation>
@@ -1202,7 +1199,6 @@
 <translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4764612367328936189">Votre organisation ne vous autorise à vous connecter qu'avec certains comptes. Ceux qui ne sont pas autorisés sont masqués. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">Vous permet d'accéder à vos clés d'accès enregistrées sur n'importe quel appareil</translation>
-<translation id="476946043193006313">Votre activité permet d'entraîner l'IA générative</translation>
 <translation id="4782952780741793211">Code de confirmation :</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Ouvrir en navigation privée ?</translation>
@@ -1334,6 +1330,7 @@
 <translation id="5128788795241319992">Découvrez le nouveau menu</translation>
 <translation id="5132942445612118989">Synchronisez vos mots de passe, votre historique et plus encore sur tous les appareils</translation>
 <translation id="5137568953923142260">Une seule fois</translation>
+<translation id="5139344197062265975">Utilisez votre micro pour discuter avec Gemini. Lorsque vous parlez à Gemini, l'audio est stocké dans l'historique Gemini (s'il est activé). Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="5141363746588976328">Masquer la carte de baisses de prix dans vos onglets</translation>
 <translation id="514154868070499296">Police : <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Quitter le sélecteur d'onglets</translation>
@@ -1604,6 +1601,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6000893618966378846">Tâche "Supprimer les données de navigation" terminée.</translation>
 <translation id="6004988584831654445">Vous avez terminé ! Recevez une notification lorsque de nouvelles tâches arrivent.</translation>
 <translation id="6006672969046233841">Nouvel onglet</translation>
+<translation id="6006758170939001741">Nos <ph name="BEGIN_LINK" />Conditions d'utilisation<ph name="END_LINK" />, nos <ph name="BEGIN_LINK" />Conditions d'utilisation de la localisation pour la Corée<ph name="END_LINK" /> et notre <ph name="BEGIN_LINK" />Avis de confidentialité<ph name="END_LINK" /> s'appliquent. Les discussions sont examinées et utilisées pour entraîner les modèles d'IA générative. Gemini est une IA et peut faire des erreurs, y compris sur des personnes. Certains contenus ne sont peut-être pas adaptés à tous les publics. Vous pouvez <ph name="BEGIN_LINK" />gérer votre historique<ph name="END_LINK" />, y compris les <ph name="BEGIN_LINK" />informations sur votre position<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Découvrez les options qui s'offrent à vous.<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
 <translation id="6012140227487808125">Chiffrement…</translation>
 <translation id="6014801569448771146">Vérifier vos mots de passe</translation>
@@ -1700,7 +1698,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="628251768213143684">Vous pouvez gérer ce qui est enregistré dans votre compte Google à tout moment</translation>
 <translation id="6284652193729350524">Proposer de traduire la langue suivante : <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Pour activer la navigation sécurisée, ouvrez <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /> et appuyez sur "Navigation sécurisée".</translation>
-<translation id="6295140892595702619">Utilisez votre micro pour discuter avec Gemini. Lorsque vous parlez à Gemini, l'audio est stocké dans l'Activité dans les applications Gemini (si elle est activée). Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="6295751040240588413">Pseudo incorrect associé à la carte</translation>
 <translation id="629730747756840877">Compte</translation>
 <translation id="6301104306974789820">Recevoir des notifications sur le suivi des prix</translation>
@@ -1728,7 +1725,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6347953390226388422">{count,plural, =1{Cette adresse sera supprimée de votre compte Google (<ph name="USER_EMAIL" />) et de cet appareil.}one{Cette adresse sera supprimée de votre compte Google (<ph name="USER_EMAIL" />) et de cet appareil.}other{Ces adresses seront supprimées de votre compte Google (<ph name="USER_EMAIL" />) et de cet appareil.}}</translation>
 <translation id="634878792104344809">Synchronisez vos mots de passe, votre historique et plus sur tous vos appareils</translation>
 <translation id="6350745006329795504">Gérer vos appareils</translation>
-<translation id="6351000590398820964">Gemini est une IA et peut faire des erreurs, y compris sur des personnes. Certains contenus ne sont peut-être pas adaptés à tous les publics. Les discussions sont examinées et utilisées pour entraîner les modèles d'IA générative. <ph name="BEGIN_LINK" />Découvrez les options qui s'offrent à vous.<ph name="END_LINK" /> Nos <ph name="BEGIN_LINK" />Conditions d'utilisation<ph name="END_LINK" /> et notre <ph name="BEGIN_LINK" />Avis de confidentialité<ph name="END_LINK" /> s'appliquent.</translation>
 <translation id="6351147166808964033">Lancer le sélecteur d'onglets</translation>
 <translation id="63519665078626091">Pour utiliser l'inspecteur Web, connectez-vous à Safari sur votre ordinateur à l'aide d'un câble et accédez à votre iPad depuis le menu Développement. Vous pouvez activer ce menu dans la section "Avancé" de Safari sur votre ordinateur.</translation>
 <translation id="6354695695659930684">Saisie du mot de passe…</translation>
@@ -2137,6 +2133,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Fermer {COUNT} onglet inactif ?}one{Fermer {COUNT} onglet inactif ?}other{Fermer {COUNT} onglets inactifs ?}}</translation>
 <translation id="7598439272585186139">Renforcez la sécurité</translation>
 <translation id="7600965453749440009">Ne jamais traduire les pages rédigées en <ph name="LANGUAGE" /> </translation>
+<translation id="760230853074995500">Les discussions sont examinées et utilisées pour entraîner les modèles d'IA générative. Vous pouvez <ph name="BEGIN_LINK" />gérer votre historique<ph name="END_LINK" />, y compris les <ph name="BEGIN_LINK" />informations sur votre position<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Découvrez les options qui s'offrent à vous.<ph name="END_LINK" /></translation>
 <translation id="7603308509262646847">Saisir automatiquement le titulaire de la carte <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Pop-up bloqués (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">La synchronisation ne fonctionne pas</translation>
@@ -2534,7 +2531,6 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="8750037785291841318">Vos onglets s'afficheront ici</translation>
 <translation id="8751126814549746156">Votre historique est automatiquement supprimé au bout de 18 mois. Vous pouvez modifier cette période dans les paramètres. Les discussions examinées par des fournisseurs de services sont dissociées de votre compte et conservées jusqu'à trois ans. Vous pouvez <ph name="BEGIN_LINK" />désactiver<ph name="END_LINK" /> le paramètre Historique à tout moment.</translation>
 <translation id="8756969031206844760">Mettre à jour le mot de passe ?</translation>
-<translation id="8762190205387442931">Les discussions sont examinées et utilisées pour entraîner les modèles d'IA générative. Vous pouvez <ph name="BEGIN_LINK" />gérer votre historique<ph name="END_LINK" />, y compris les informations sur votre position. <ph name="BEGIN_LINK" />Découvrez les options qui s'offrent à vous.<ph name="END_LINK" /></translation>
 <translation id="8763613688786959833">Accéder au dernier onglet</translation>
 <translation id="8766790350274092814">Les mots de passe pour <ph name="WEBSITE" /> et <ph name="SECOND_WEBSITE" /> seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="8775144690796719618">URL non valide.</translation>
@@ -2632,6 +2628,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="9066097352053395362">Masquer "Modifier le favori"</translation>
 <translation id="9070824521421603770">Vous allez être déconnecté et les onglets seront fermés</translation>
 <translation id="9072837124205571418">Groupes d'onglets de tous les appareils</translation>
+<translation id="9073322251019919253">Gemini est une IA et peut faire des erreurs, y compris sur des personnes. Certains contenus ne sont peut-être pas adaptés à tous les publics. Les discussions sont examinées et utilisées pour entraîner les modèles d'IA générative. Vous pouvez <ph name="BEGIN_LINK" />gérer votre historique<ph name="END_LINK" />, y compris les <ph name="BEGIN_LINK" />informations sur votre position<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Découvrez les options qui s'offrent à vous.<ph name="END_LINK" /> Nos <ph name="BEGIN_LINK" />Conditions d'utilisation<ph name="END_LINK" /> et notre <ph name="BEGIN_LINK" />Avis de confidentialité<ph name="END_LINK" /> s'appliquent.</translation>
 <translation id="9081058212938299310">Changer le mot de passe pour <ph name="USERNAME" /> ?</translation>
 <translation id="908365381820697818">Vous pouvez désormais trouver et saisir des informations depuis Gmail et bien plus</translation>
 <translation id="9083838294503912307">Activez la synchronisation pour accéder à vos données et les personnaliser sur tous vos appareils.</translation>

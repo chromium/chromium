@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">በቅርብ ጊዜ የዘጓቸውን ትሮች መልሰው ለመክፈት ወደዚህ ተመልሰው መምጣት ይችላሉ</translation>
 <translation id="1016495303386450659">ንጥል ተዘምኗል</translation>
 <translation id="1018804590490383958">ቃኝ እና በራስ-ሙላ</translation>
-<translation id="1019990162050689579">የGemini መተግበሪያ እንቅስቃሴ</translation>
 <translation id="102471647093736603">ለማንቀሳቀስ ተጭነው ይያዙ</translation>
 <translation id="102645702181682900">ተግባር ተጀምሯል</translation>
 <translation id="102916930470544692">የይለፍ ቁልፍ</translation>
@@ -101,7 +100,6 @@
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />«<ph name="SITE_NAME" />»<ph name="END_BOLD" /> ፈቃዶች እርስዎ ከዚህ ጣቢያ ሲወጡ ዳግም ይጀመራሉ።</translation>
 <translation id="1293491796138057740">መረጃዎ ለ<ph name="USER_EMAIL" /> Google Wallet ላይ ይቀመጣል። ቅጾችን በፍጥነት ለመሙላት በመላው የGoogle ምርቶች ላይ ሊጠቀሙበት ይችላሉ።</translation>
 <translation id="1293556467332435079">ፋይሎች</translation>
-<translation id="1294703224699789269">የእኛ <ph name="BEGIN_LINK" />ደንቦች<ph name="END_LINK" />፣ <ph name="BEGIN_LINK" />የኮሪያ አካባቢ ደንቦች<ph name="END_LINK" /> እና <ph name="BEGIN_LINK" />የግላዊነት ማስታወቂያ<ph name="END_LINK" /> ይተገበራሉ። ውይይቶች ይገመገማሉ እና ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሠልጠን ጥቅም ላይ ይውላሉ Gemini ሰው ሠራሽ አስተውሎት ነው እና ስለ ሰዎች ጨምሮ ስህተቶችን ሊሠራ ይችላል። አንዳንድ ይዘት ለሁሉም ሰው ተስማሚ ላይሆን ይችላል። ስለ አካባቢዎ መረጃን ጨምሮ <ph name="BEGIN_LINK" />ታሪክዎን ማስተዳደር<ph name="END_LINK" /> ይችላሉ። <ph name="BEGIN_LINK" />ስለ ምርጫዎችዎ የበለጠ ይወቁ<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">በቅርብ ጊዜ የተዘጉ</translation>
 <translation id="1296581780163690620">ፋይል ይውረድ? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">«በሰው ሠራሽ አስተውሎት ሁነታ ፈልግ» ተጠናቅቋል!</translation>
@@ -386,7 +384,6 @@
 <translation id="2104436223719117661">በመታየት ላይ ያሉ ፍለጋዎች</translation>
 <translation id="21133533946938348">ትር አጣብቅ</translation>
 <translation id="2117650889962717098">ወደ ማንነት የማያሳውቅ ሁነታ በመቀየር አሳሽዎን የግል አድርገው ያቆዩ</translation>
-<translation id="2119126821484134587">ብጁ የሆነ እገዛን ለማቅረብ Gemini የተወሰነ ውሂብዎን (እንደ የውይይቶችዎ ክፍሎች፣ አካባቢ እና ሌሎች አግባብነት ያላቸው መረጃዎች) እንደ ካርታዎች እና በረራዎች ካሉ ሌሎች የGoogle አገልግሎቶች ጋር ያጋራል። እርስዎ በኋላ ላይ የእርስዎን Gemini የመተግበሪያ ታሪክ ቢሰርዙ እንኳን እነዚህ አገልግሎቶች ያንን መረጃ ለማሻሻል ሊጠቀሙ ይችላሉ። በ<ph name="BEGIN_LINK" />Gemini መተግበሪያዎች የግላዊነት ማዕከል<ph name="END_LINK" /> ውስጥ የበለጠ ይወቁ።</translation>
 <translation id="2119636449201577317">ክፈት በ…</translation>
 <translation id="2119962645034852864">አንዳንድ አገልግሎቶች ለመለያዎ አይገኙም</translation>
 <translation id="2120553909046681540">የእርስዎ ድርጅት የግል አሰሳን አጥፍቷል።</translation>
@@ -1202,7 +1199,6 @@
 <translation id="4759238208242260848">የወረዱ</translation>
 <translation id="4764612367328936189">በተወሰኑ መለያዎች አማካኝነት ብቻ እንዲገቡ ድርጅትዎ ይፈቅድልዎታል። ያልተፈቀዱ መለያዎች ተደብቀዋል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">በማንኛውም መሣሪያ ላይ የተቀመጡ ማናቸውንም የይለፍ ቁልፎች ለመድረስ ያግዝዎታል</translation>
-<translation id="476946043193006313">የእርስዎ እንቅስቃሴ ሰው ሠራሽ አስተውሎት አመንጪን ለማሠልጠን ያግዛል</translation>
 <translation id="4782952780741793211">የማረጋገጫ ኮድ፦</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />፣ <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">በማንነትን የማያሳውቅ ይከፈት?</translation>
@@ -1334,6 +1330,7 @@
 <translation id="5128788795241319992">አዲሱን ምናሌ ያስሱ</translation>
 <translation id="5132942445612118989">የእርስዎን የይለፍ ቃላት፣ ታሪክ እና ተጨማሪ ነገሮች በሁሉም መሣሪያዎች ላይ ያስምሩ</translation>
 <translation id="5137568953923142260">አንድ ጊዜ ፍቀድ</translation>
+<translation id="5139344197062265975">ከGemini ጋር ለመወያየት የእርስዎን ማይክሮፎን ይጠቀሙ። ከGemini ጋር ሲነጋገሩ ኦዲዮ የGemini ታሪክ (ከበራ) ውስጥ ይቀመጣል። ውሂብዎ ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ጥቅም ላይ አይውልም</translation>
 <translation id="5141363746588976328">በትሮች ካርድዎ ላይ የዋጋ ቅነሳዎችን ደብቅ</translation>
 <translation id="514154868070499296">ቅርጸ ቁምፊ፦ <ph name="FONT" /></translation>
 <translation id="5145331760738811130">ከትር መቀያየሪያ ውጣ</translation>
@@ -1604,6 +1601,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6000893618966378846">«የአሰሳ ውሂብን ሰርዝ» ተጠናቅቋል!</translation>
 <translation id="6004988584831654445">ጨርሰዋል! አዲስ ተግባራት ሲደርሱ ማሳወቂያ ያግኙ።</translation>
 <translation id="6006672969046233841">አዲስ ትር</translation>
+<translation id="6006758170939001741">የእኛ <ph name="BEGIN_LINK" />ደንቦች<ph name="END_LINK" />፣ <ph name="BEGIN_LINK" />የኮሪያ አካባቢ ደንቦች<ph name="END_LINK" /> እና <ph name="BEGIN_LINK" />የግላዊነት ማስታወቂያ<ph name="END_LINK" /> ይተገበራሉ። ውይይቶች ይገመገማሉ እና ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሰልጠን ጥቅም ላይ ይውላሉ። Gemini ሰው ሠራሽ አስተውሎት ነው እና ስለ ሰዎች ጨምሮ ስህተቶችን ሊሠራ ይችላል። አንዳንድ ይዘት ለሁሉም ሰው ተስማሚ ላይሆን ይችላል። <ph name="BEGIN_LINK" />ስለ አካባቢዎ መረጃ<ph name="END_LINK" /> ጨምሮ <ph name="BEGIN_LINK" />ታሪክዎን ማስተዳደር<ph name="END_LINK" /> ይችላሉ። <ph name="BEGIN_LINK" />ስለ ምርጫዎችዎ የበለጠ ይወቁ<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">የፍለጋ አስተያየት ጥቆማዎችን ያሻሽሉ</translation>
 <translation id="6012140227487808125">በመመስጠር ላይ…</translation>
 <translation id="6014801569448771146">የእርስዎን የይለፍ ቃላት ይፈትሹ</translation>
@@ -1700,7 +1698,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="628251768213143684">በGoogle መለያዎ ውስጥ የተቀመጠውን ማንኛውንም ነገር ማስተዳደር ይችላሉ</translation>
 <translation id="6284652193729350524">ወደ <ph name="LANGUAGE" /> ለመተርጎም ሐሳብ ያቅርቡ</translation>
 <translation id="6293101329759844770">ደህንነቱ የተጠበቀ አሰሳን ለማብራት <ph name="BEGIN_LINK" />የGoogle አገልግሎቶች<ph name="END_LINK" />ን ይክፈቱ እና የጥንቃቄ አሰሳን መታ ያድርጉ።</translation>
-<translation id="6295140892595702619">ከGemini ጋር ለመወያየት የእርስዎን ማይክሮፎን ይጠቀሙ። ከGemini ጋር ሲነጋገሩ ኦዲዮ የGemini መተግበሪያ እንቅስቃሴ (ከበራ) ውስጥ ይከማቻል። ውሂብዎ ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ጥቅም ላይ አይውልም</translation>
 <translation id="6295751040240588413">ልክ ያልሆነ ቅጽል ስም</translation>
 <translation id="629730747756840877">መለያ</translation>
 <translation id="6301104306974789820">የዋጋ ክትትል ማሳወቂያዎችን ያግኙ</translation>
@@ -1728,7 +1725,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6347953390226388422">{count,plural, =1{ይህ አድራሻ ከGoogle መለያዎ (<ph name="USER_EMAIL" />) እና ከዚህ መሣሪያ ይሰረዛል።}one{ይህ አድራሻ ከGoogle መለያዎ (<ph name="USER_EMAIL" />) እና ከዚህ መሣሪያ ይሰረዛል።}other{እነዚህ አድራሻዎች ከGoogle መለያዎ (<ph name="USER_EMAIL" />) እና ከዚህ መሣሪያ ይሰረዛሉ።}}</translation>
 <translation id="634878792104344809">የእርስዎን የይለፍ ቃላት፣ ታሪክ እና ተጨማሪ ነገሮች በሁሉም መሣሪያዎችዎ ላይ ያስምሩ</translation>
 <translation id="6350745006329795504">የእርስዎን መሣሪያዎች ያስተዳድሩ</translation>
-<translation id="6351000590398820964">Gemini ሰው ሠራሽ አስተውሎት ነው እና ስለ ሰዎች ጨምሮ ስህተቶችን ሊሠራ ይችላል። አንዳንድ ይዘት ለሁሉም ሰው ተስማሚ ላይሆን ይችላል። ውይይቶች ይገመገማሉ እና ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሠልጠን ጥቅም ላይ ይውላሉ <ph name="BEGIN_LINK" />ስለ ምርጫዎችዎ ይወቁ<ph name="END_LINK" />። የእኛ <ph name="BEGIN_LINK" />ደንቦች<ph name="END_LINK" /> እና <ph name="BEGIN_LINK" />የግላዊነት ማስታወቂያ<ph name="END_LINK" /> ይተገበራሉ።</translation>
 <translation id="6351147166808964033">የትር መቀያየሪያን ያስገቡ</translation>
 <translation id="63519665078626091">የድር አጣሪውን ለመጠቀም ገመድ በመጠቀም በኮምፒውተርዎ ላይ ከSafari ጋር ይገናኙ እና ከገንባ ምናሌው የእርስዎን iPad ይድረሱ። በኮምፒውተርዎ ላይ በSafari ቅንብሮች የላቀ ክፍል ውስጥ የገንባ ምናሌውን ማንቃት ይችላሉ።</translation>
 <translation id="6354695695659930684">የይለፍ ቃል በመሙላት ላይ</translation>
@@ -2137,6 +2133,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT} ገቢር ያልሆነ ትር ይዘጋ?}one{{COUNT} ገቢር ያልሆኑ ትሮች ይዘጉ?}other{{COUNT} ገቢር ያልሆኑ ትሮች ይዘጉ?}}</translation>
 <translation id="7598439272585186139">ተጨማሪ ደኅንነት ያግኙ</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />ን በጭራሽ አትተርጉም</translation>
+<translation id="760230853074995500">ውይይቶች ይገመገማሉ እና ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሰልጠን ጥቅም ላይ ይውላሉ። <ph name="BEGIN_LINK" />ስለ አካባቢዎ መረጃ<ph name="END_LINK" /> ጨምሮ <ph name="BEGIN_LINK" />ታሪክዎን ማስተዳደር<ph name="END_LINK" /> ይችላሉ። <ph name="BEGIN_LINK" />ስለ ምርጫዎችዎ የበለጠ ይወቁ<ph name="END_LINK" />።</translation>
 <translation id="7603308509262646847">ካርድ ያዢውን <ph name="NAME" /> በራስ-ሙላ</translation>
 <translation id="7603852183842204213">ብቅ-ባዮች ታግደዋል (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">ስምረት እየሠራ አይደለም</translation>
@@ -2534,7 +2531,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8750037785291841318">ትሮችዎን እዚህ ያገኛሉ</translation>
 <translation id="8751126814549746156">የእርስዎ ታሪክ ከ18 ወራት በኋላ በራስ-ሰር ይሰረዛል። ይህን የጊዜ ወቅት በቅንብሮች ውስጥ መለወጥ ይችላሉ። በአገልግሎት አቅራቢዎች የተገመገሙ ውይይቶች ከመለያዎ ተለይተው እስከ 3 ዓመታት ድረስ ይቀመጣሉ። የታሪክ ቅንብርዎን በማንኛውም ጊዜ <ph name="BEGIN_LINK" />ማጥፋት<ph name="END_LINK" /> ይችላሉ።</translation>
 <translation id="8756969031206844760">የይለፍ ቃል ይዘምን?</translation>
-<translation id="8762190205387442931">ውይይቶች ይገመገማሉ እና ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሠልጠን ጥቅም ላይ ይውላሉ ስለ አካባቢዎ መረጃን ጨምሮ <ph name="BEGIN_LINK" />ታሪክዎን ማስተዳደር<ph name="END_LINK" /> ይችላሉ። <ph name="BEGIN_LINK" />ስለ ምርጫዎችዎ የበለጠ ይወቁ<ph name="END_LINK" />።</translation>
 <translation id="8763613688786959833">ወደ መጨረሻ ትር ሂድ</translation>
 <translation id="8766790350274092814">የ<ph name="WEBSITE" /> እና <ph name="SECOND_WEBSITE" /> የይለፍ ቃላት ይሰረዛሉ። መለያዎችዎ አይሰረዙም።</translation>
 <translation id="8775144690796719618">ልክ ያልሆነ ዩአርኤል</translation>
@@ -2632,6 +2628,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9066097352053395362">እልባት አርትዕን ደብቅ</translation>
 <translation id="9070824521421603770">እርስዎ ዘግተው እንዲወጡ ይደረጋሉ እና ትሮች ይዘጋሉ</translation>
 <translation id="9072837124205571418">ከሁሉም መሣሪያዎች የትር ቡድኖች</translation>
+<translation id="9073322251019919253">Gemini ሰው ሠራሽ አስተውሎት ነው እና ስለ ሰዎች ጨምሮ ስህተቶችን ሊሠራ ይችላል። አንዳንድ ይዘት ለሁሉም ሰው ተስማሚ ላይሆን ይችላል። ውይይቶች ይገመገማሉ እና ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሰልጠን ጥቅም ላይ ይውላሉ። <ph name="BEGIN_LINK" />ስለ አካባቢዎ መረጃ<ph name="END_LINK" /> ጨምሮ <ph name="BEGIN_LINK" />ታሪክዎን ማስተዳደር<ph name="END_LINK" /> ይችላሉ። <ph name="BEGIN_LINK" />ስለ ምርጫዎችዎ ይወቁ<ph name="END_LINK" />። የእኛ <ph name="BEGIN_LINK" />ደንቦች<ph name="END_LINK" /> እና <ph name="BEGIN_LINK" />የግላዊነት ማስታወቂያ<ph name="END_LINK" /> ይተገበራሉ።</translation>
 <translation id="9081058212938299310">የ<ph name="USERNAME" /> ይለፍ ቃል ይዘመን?</translation>
 <translation id="908365381820697818">አሁን ከGmail እና ሌሎችም መረጃ ማግኘት እና መሙላት ይችላሉ</translation>
 <translation id="9083838294503912307">በመላ መሣሪያዎች ላይ ለማስመር እና ግላዊነትን ለማላበስ ስምረትን ያብሩ።</translation>

@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">Você pode voltar aqui para abrir guias que acabou de fechar</translation>
 <translation id="1016495303386450659">Item atualizado</translation>
 <translation id="1018804590490383958">Digitalizar e preencher automaticamente</translation>
-<translation id="1019990162050689579">Atividade nos apps do Gemini</translation>
 <translation id="102471647093736603">Toque e pressione para mover</translation>
 <translation id="102645702181682900">Tarefa iniciada</translation>
 <translation id="102916930470544692">Chave de acesso</translation>
@@ -101,7 +100,6 @@
 <translation id="1291506870746876680">As permissões de <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> serão redefinidas como desativadas quando você sair desse site.</translation>
 <translation id="1293491796138057740">Suas informações são salvas na Carteira do Google de <ph name="USER_EMAIL" />. Você pode usá-las nos produtos do Google para preencher formulários com mais rapidez.</translation>
 <translation id="1293556467332435079">Arquivos</translation>
-<translation id="1294703224699789269">Nossos <ph name="BEGIN_LINK" />Termos<ph name="END_LINK" />, os <ph name="BEGIN_LINK" />Termos de Localização da Coreia<ph name="END_LINK" /> e o <ph name="BEGIN_LINK" />Aviso de privacidade<ph name="END_LINK" /> se aplicam. As conversas são analisadas e usadas para treinar modelos de IA generativa. O Gemini é uma IA e pode cometer erros, inclusive sobre pessoas. Alguns conteúdos podem não ser adequados para todo mundo. Você pode <ph name="BEGIN_LINK" />gerenciar seu histórico<ph name="END_LINK" />, incluindo informações sobre sua localização. <ph name="BEGIN_LINK" />Saiba mais sobre suas opções<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">Fechadas recentemente</translation>
 <translation id="1296581780163690620">Baixar o arquivo? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">Tarefa "Pesquisar com o Modo IA" concluída!</translation>
@@ -118,7 +116,7 @@
 <translation id="132969855425874290">Fechar "Encontrar e preencher"</translation>
 <translation id="1333455942675373522">Teclado</translation>
 <translation id="1334485477792811969">Serviços da Web</translation>
-<translation id="1335767868357998043">Escolha a posição da barra de endereço</translation>
+<translation id="1335767868357998043">Posição da barra de endereço</translation>
 <translation id="1347468774581902829">Gerenciar atividade</translation>
 <translation id="1348596747084433075">https://www.amazon.com.br/s?k=presentes+para+a+esposa&amp;sprefix=presentes+esposa</translation>
 <translation id="1353169676553627502">Desativar atualizações de progresso</translation>
@@ -386,7 +384,6 @@
 <translation id="2104436223719117661">Pesquisas em alta</translation>
 <translation id="21133533946938348">Fixar guia</translation>
 <translation id="2117650889962717098">Mude para o modo de navegação anônima e proteja sua privacidade</translation>
-<translation id="2119126821484134587">Para oferecer ajuda personalizada, o Gemini compartilha alguns dos seus dados (como partes das suas conversas, sua localização e outras informações relevantes) com outros Serviços do Google, como o Maps e o Voos. Esses serviços podem usar as informações para fins de aperfeiçoamento, mesmo que você exclua seu histórico dos apps do Gemini depois. Saiba mais na <ph name="BEGIN_LINK" />Central de privacidade dos apps do Gemini<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Abrir em…</translation>
 <translation id="2119962645034852864">Alguns serviços não estão disponíveis para sua conta</translation>
 <translation id="2120553909046681540">Sua organização desativou a navegação anônima.</translation>
@@ -483,7 +480,7 @@
 <translation id="2403129868389095715">Não foi possível entregar seu pacote</translation>
 <translation id="2410754283952462441">Escolher uma conta</translation>
 <translation id="2422174748424038845">Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />" e ele será excluído de todos os dispositivos.</translation>
-<translation id="2424805048070062787">Continuar nesta guia</translation>
+<translation id="2424805048070062787">Continuar com esta guia</translation>
 <translation id="2426805022920575512">Escolher outra conta</translation>
 <translation id="2428543302546523788">Mostrar links quando o modo de leitura estiver ativado</translation>
 <translation id="243275146591958220">Cancelar download</translation>
@@ -500,7 +497,7 @@
 <translation id="2473876017985765807">Você já salvou uma senha em <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Você pode definir um lembrete para rever esta página mais tarde</translation>
 <translation id="2476554421818031422">Você está ajudando a melhorar o preenchimento automático aprimorado</translation>
-<translation id="2479148705183875116">Acessar as configurações</translation>
+<translation id="2479148705183875116">Ir para configurações</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2484459871750294497">Como posso ativar esse recurso?</translation>
 <translation id="2485534095078940149">Arquivo anexado {título}</translation>
@@ -1202,7 +1199,6 @@
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4764612367328936189">Sua organização permite que você faça login apenas com determinadas contas. As contas que não têm permissão para fazer login ficam ocultas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">Ajuda você a acessar as chaves de acesso salvas em qualquer dispositivo</translation>
-<translation id="476946043193006313">Sua atividade ajuda a treinar a IA generativa</translation>
 <translation id="4782952780741793211">Código de confirmação:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Abrir na navegação anônima?</translation>
@@ -1334,6 +1330,7 @@
 <translation id="5128788795241319992">Conhecer o novo menu</translation>
 <translation id="5132942445612118989">Sincronize suas senhas, seu histórico e muito mais em todos os dispositivos</translation>
 <translation id="5137568953923142260">Permitir 1 vez</translation>
+<translation id="5139344197062265975">Use o microfone para conversar com o Gemini. Quando você fala com o Gemini, o áudio é armazenado no histórico (se ativado). Seus dados não são usados para aprimorar os modelos de IA generativa</translation>
 <translation id="5141363746588976328">Ocultar o card "Redução dos preços mostrados nas suas guias"</translation>
 <translation id="514154868070499296">Fonte: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Sair do seletor guias</translation>
@@ -1604,6 +1601,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6000893618966378846">A ação "Excluir dados de navegação" foi concluída!</translation>
 <translation id="6004988584831654445">Tudo pronto! Receba notificações quando novas tarefas chegarem.</translation>
 <translation id="6006672969046233841">Nova guia</translation>
+<translation id="6006758170939001741">Nossos <ph name="BEGIN_LINK" />Termos<ph name="END_LINK" />, os <ph name="BEGIN_LINK" />Termos de Localização da Coreia<ph name="END_LINK" /> e o <ph name="BEGIN_LINK" />Aviso de privacidade<ph name="END_LINK" /> se aplicam. As conversas são analisadas e usadas para treinar modelos de IA generativa. O Gemini é uma IA e pode cometer erros, inclusive sobre pessoas. Alguns conteúdos podem não ser adequados para todos. Você pode <ph name="BEGIN_LINK" />gerenciar seu histórico<ph name="END_LINK" />, incluindo <ph name="BEGIN_LINK" />informações sobre sua localização<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Saiba mais sobre suas opções<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">Melhorar as sugestões de pesquisa</translation>
 <translation id="6012140227487808125">Criptografando…</translation>
 <translation id="6014801569448771146">Verificar suas senhas</translation>
@@ -1700,7 +1698,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="628251768213143684">Você pode gerenciar quando quiser o que é salvo na sua Conta do Google</translation>
 <translation id="6284652193729350524">Oferecer a opção de traduzir o <ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">Acesse <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" /> e toque em "Navegação segura" para ativar esse recurso.</translation>
-<translation id="6295140892595702619">Use o microfone para conversar com o Gemini. Quando você fala com o Gemini, o áudio é armazenado na Atividade nos Apps do Gemini (se ativada). Seus dados não são usados para aprimorar os modelos de IA generativa</translation>
 <translation id="6295751040240588413">Apelido do cartão inválido</translation>
 <translation id="629730747756840877">Conta</translation>
 <translation id="6301104306974789820">Receber notificações de monitoramento de preço</translation>
@@ -1728,7 +1725,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6347953390226388422">{count,plural, =1{Esse endereço será excluído da sua Conta do Google (<ph name="USER_EMAIL" />) e deste dispositivo.}one{Esse endereço será excluído da sua Conta do Google (<ph name="USER_EMAIL" />) e deste dispositivo.}other{Esses endereços serão excluídos da sua Conta do Google (<ph name="USER_EMAIL" />) e deste dispositivo.}}</translation>
 <translation id="634878792104344809">Sincronize senhas, histórico e muito mais em todos os seus dispositivos</translation>
 <translation id="6350745006329795504">Gerenciar seus dispositivos</translation>
-<translation id="6351000590398820964">O Gemini é uma IA e pode cometer erros, inclusive sobre pessoas. Alguns conteúdos podem não ser adequados para todo mundo. As conversas são analisadas e usadas para treinar modelos de IA generativa. <ph name="BEGIN_LINK" />Saiba mais sobre suas opções<ph name="END_LINK" />. Sujeito aos nossos <ph name="BEGIN_LINK" />Termos<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />Aviso de Privacidade<ph name="END_LINK" />.</translation>
 <translation id="6351147166808964033">Entrar no Seletor de guias</translation>
 <translation id="63519665078626091">Para usar o Web Inspector, conecte-se ao Safari no computador usando um cabo e acesse o iPad no menu de desenvolvimento. Você pode ativar o menu de desenvolvimento na seção "Avançado" das configurações do Safari no computador.</translation>
 <translation id="6354695695659930684">Preenchendo senha</translation>
@@ -2036,6 +2032,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="728025568708172005">Mostrar a região</translation>
 <translation id="7280980607183752256">Não é possível importar este arquivo</translation>
 <translation id="7282197670900591579">Tema limão</translation>
+<translation id="7283937415134849498">Para oferecer ajuda personalizada, o Gemini compartilha alguns dos seus dados (como partes das suas conversas, sua localização e outras informações relevantes) com outros Serviços do Google, como o Maps e o Voos. Esses serviços podem usar as informações para fins de aperfeiçoamento, mesmo que você exclua seu histórico do Gemini depois. Saiba mais na <ph name="BEGIN_LINK" />Central de privacidade dos apps do Gemini<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Selecionar idioma</translation>
 <translation id="72961285530871072">Isso vai excluir permanentemente seu progresso no Level Up, e os dados de uso do recurso pelo seu perfil não serão mais enviados ao Google.
 
@@ -2101,7 +2098,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="7482823403440483089">Preenchimento automático aprimorado</translation>
 <translation id="7484645889979462775">Nunca para este site</translation>
 <translation id="7486006552035434095">Manter os dispositivos sincronizados</translation>
-<translation id="7491131399623468277">Acessar as configurações…</translation>
+<translation id="7491131399623468277">Ir para configurações…</translation>
 <translation id="7491161827858509164">Para ver os arquivos que você já baixou, abra <ph name="BEGIN_LINK" />Arquivos<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Continuar editando</translation>
 <translation id="7500244509706269886">Preencher formulário automaticamente</translation>
@@ -2137,6 +2134,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Fechar {COUNT} guia inativa?}one{Fechar {COUNT} guia inativa?}other{Fechar {COUNT} guias inativas?}}</translation>
 <translation id="7598439272585186139">Aumente a segurança</translation>
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>
+<translation id="760230853074995500">As conversas são analisadas e usadas para treinar modelos de IA generativa. Você pode <ph name="BEGIN_LINK" />gerenciar seu histórico<ph name="END_LINK" />, incluindo <ph name="BEGIN_LINK" />informações sobre sua localização<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Saiba mais sobre suas escolhas<ph name="END_LINK" />.</translation>
 <translation id="7603308509262646847">Preencher automaticamente o titular do cartão <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Pop-ups bloqueados (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">A sincronização não está funcionando</translation>
@@ -2398,7 +2396,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="8367705492654390392">Pergunte o que quiser</translation>
 <translation id="8368001212524806591">Monitorar preço</translation>
 <translation id="8368198938968349418">Ativar o preenchimento automático…</translation>
-<translation id="8370406443343902172">Acessar as configurações…</translation>
+<translation id="8370406443343902172">Ir para configurações…</translation>
 <translation id="8370929854657845191">Abrir em tamanho médio</translation>
 <translation id="8371494817541821097">Chave de acesso criada em <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Excluir endereço}one{Excluir endereço}other{Excluir endereços}}</translation>
@@ -2534,7 +2532,6 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="8750037785291841318">Suas guias aparecem aqui</translation>
 <translation id="8751126814549746156">Seu histórico é excluído de forma automática depois de 18 meses. Você pode mudar esse período nas Configurações. As conversas revisadas por provedores de serviços são separadas da sua conta e mantidas por até 3 anos. Você pode <ph name="BEGIN_LINK" />desativar<ph name="END_LINK" /> a configuração do Histórico quando quiser.</translation>
 <translation id="8756969031206844760">Atualizar senha?</translation>
-<translation id="8762190205387442931">As conversas são analisadas e usadas para treinar modelos de IA generativa. Você pode <ph name="BEGIN_LINK" />gerenciar seu histórico<ph name="END_LINK" />, incluindo informações sobre sua localização. <ph name="BEGIN_LINK" />Saiba mais sobre suas escolhas<ph name="END_LINK" />.</translation>
 <translation id="8763613688786959833">Ir para a última guia</translation>
 <translation id="8766790350274092814">As senhas de <ph name="WEBSITE" /> e <ph name="SECOND_WEBSITE" /> vão ser excluídas. Suas contas não serão excluídas.</translation>
 <translation id="8775144690796719618">URL inválido</translation>
@@ -2632,6 +2629,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="9066097352053395362">Ocultar opção "Editar favorito"</translation>
 <translation id="9070824521421603770">Sua conta será desconectada e as guias serão fechadas</translation>
 <translation id="9072837124205571418">Grupos de guias de todos os dispositivos</translation>
+<translation id="9073322251019919253">O Gemini é uma IA e pode cometer erros, inclusive sobre pessoas. Alguns conteúdos podem não ser adequados para todos. As conversas são analisadas e usadas para treinar modelos de IA generativa. Você pode <ph name="BEGIN_LINK" />gerenciar seu histórico<ph name="END_LINK" />, incluindo <ph name="BEGIN_LINK" />informações sobre sua localização<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Saiba mais sobre suas opções<ph name="END_LINK" />. Sujeito aos nossos <ph name="BEGIN_LINK" />Termos<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />Aviso de Privacidade<ph name="END_LINK" />.</translation>
 <translation id="9081058212938299310">Atualizar senha para <ph name="USERNAME" />?</translation>
 <translation id="908365381820697818">Agora você pode encontrar e preencher informações do Gmail e muito mais</translation>
 <translation id="9083838294503912307">Para sincronizar e personalizar vários dispositivos, ative a sincronização.</translation>

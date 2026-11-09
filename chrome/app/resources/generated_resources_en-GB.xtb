@@ -4153,7 +4153,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4107793386654579933">Select a shortcut for <ph name="ACTION_NAME" /> action</translation>
 <translation id="4109135793348361820">Move window to <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restore warning</translation>
-<translation id="4110984310437592352">Use your microphone to chat with Gemini. When you speak to Gemini, audio is saved in Gemini History (if it's on).</translation>
+<translation id="4110984310437592352">Use your microphone to chat with Gemini. When you speak to Gemini, audio is saved in Gemini history (if it's on).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4112282889480354965">Extensions and skills</translation>
 <translation id="4113743276555482284">File password</translation>
@@ -5321,7 +5321,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5012523644916800014">Manage passwords and passkeys</translation>
 <translation id="501394389332262641">Low battery sound</translation>
 <translation id="5014286001996333986">Replace or create new group?</translation>
-<translation id="5014385104640320445">Use your microphone to chat with Gemini. When you speak to Gemini, audio is saved in Gemini History (if it's on). Your data is not used to improve generative AI models.</translation>
+<translation id="5014385104640320445">Use your microphone to chat with Gemini. When you speak to Gemini, audio is saved in Gemini history (if it's on). Your data is not used to improve generative AI models.</translation>
 <translation id="5015344424288992913">Resolving proxy...</translation>
 <translation id="5016305686459575361">By connecting your phone, you can:</translation>
 <translation id="5016491575926936899">You can text from your computer, share your Internet connection, reply to conversation notifications and unlock your <ph name="DEVICE_TYPE" /> with your phone.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>

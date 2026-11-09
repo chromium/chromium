@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">Hier kannst du kürzlich geschlossene Tabs wieder öffnen</translation>
 <translation id="1016495303386450659">Element aktualisiert</translation>
 <translation id="1018804590490383958">Scannen und automatisch einfügen</translation>
-<translation id="1019990162050689579">Aktivitäten in Gemini-Apps</translation>
 <translation id="102471647093736603">Zum Verschieben gedrückt halten</translation>
 <translation id="102645702181682900">Aufgabe gestartet</translation>
 <translation id="102916930470544692">Passkey</translation>
@@ -101,7 +100,6 @@
 <translation id="1291506870746876680">Die Berechtigungen für <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> werden zurückgesetzt und damit deaktiviert, wenn du diese Website verlässt.</translation>
 <translation id="1293491796138057740">Deine Informationen werden im Google Wallet-Konto von <ph name="USER_EMAIL" /> gespeichert. Du kannst sie in allen Google-Produkten verwenden, um Formulare schneller auszufüllen.</translation>
 <translation id="1293556467332435079">Dateien</translation>
-<translation id="1294703224699789269">Es gelten unsere <ph name="BEGIN_LINK" />Nutzungsbedingungen<ph name="END_LINK" />, die <ph name="BEGIN_LINK" />Standortnutzungsbedingungen für Korea<ph name="END_LINK" /> und unsere <ph name="BEGIN_LINK" />Datenschutzhinweise<ph name="END_LINK" />. Chats werden geprüft und zum Trainieren generativer KI-Modelle verwendet. Gemini ist eine KI und kann Fehler machen, auch bei Informationen über Personen. Einige Inhalte sind möglicherweise nicht für alle Nutzer geeignet. Du kannst deinen <ph name="BEGIN_LINK" />Verlauf verwalten<ph name="END_LINK" />, einschließlich Informationen zu deinem Standort. <ph name="BEGIN_LINK" />Weitere Informationen zu möglichen Einstellungen<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">Kürzlich geschlossen</translation>
 <translation id="1296581780163690620">Datei herunterladen? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">„Mit KI-Modus suchen“ abgeschlossen.</translation>
@@ -386,7 +384,6 @@
 <translation id="2104436223719117661">Trends bei Suchanfragen</translation>
 <translation id="21133533946938348">Tab anpinnen</translation>
 <translation id="2117650889962717098">Im Inkognitomodus bleiben deine Browsing-Aktivitäten privat</translation>
-<translation id="2119126821484134587">Damit Gemini dich individuell unterstützen kann, werden einige deiner Daten (z. B. Teile deiner Chats, dein Standort und andere relevante Informationen) an andere Google-Dienste wie Google Maps und Google Flüge weitergegeben. Diese Informationen können zur Verbesserung dieser Dienste verwendet werden, auch wenn du deinen Verlauf in Gemini-Apps später löschst. Weitere Informationen findest du im <ph name="BEGIN_LINK" />Privacy Hub für Gemini-Apps<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Öffnen in…</translation>
 <translation id="2119962645034852864">Einige Dienste sind für dein Konto nicht verfügbar</translation>
 <translation id="2120553909046681540">Deine Organisation hat das private Surfen deaktiviert.</translation>
@@ -1202,7 +1199,6 @@
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4764612367328936189">Deine Organisation lässt die Anmeldung nur mit bestimmten Konten zu. Unzulässige Konten sind ausgeblendet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">Mit dieser PIN kannst du von jedem Gerät auf deine gespeicherten Passkeys zugreifen</translation>
-<translation id="476946043193006313">Deine Aktivitäten helfen beim Trainieren generativer KI</translation>
 <translation id="4782952780741793211">Bestätigungscode:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Im Inkognitomodus öffnen?</translation>
@@ -1700,7 +1696,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="628251768213143684">Du kannst jederzeit festlegen, was in deinem Google-Konto gespeichert werden soll</translation>
 <translation id="6284652193729350524">Übersetzung für <ph name="LANGUAGE" /> anbieten</translation>
 <translation id="6293101329759844770">Wenn du Safe Browsing aktivieren möchtest, öffne <ph name="BEGIN_LINK" />Google-Dienste<ph name="END_LINK" /> und tippe auf „Safe Browsing“.</translation>
-<translation id="6295140892595702619">Du kannst dein Mikrofon verwenden, um dich mit Gemini zu unterhalten. Wenn du mit Gemini sprichst, werden die Audiodaten im Aktivitätsverlauf in Gemini-Apps gespeichert (sofern aktiviert). Deine Daten werden nicht zur Verbesserung generativer KI-Modelle verwendet.</translation>
 <translation id="6295751040240588413">Ungültiger Kartenalias</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6301104306974789820">Benachrichtigungen zum Preis-Tracking erhalten</translation>
@@ -1728,7 +1723,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6347953390226388422">{count,plural, =1{Diese Adresse wird aus deinem Google-Konto (<ph name="USER_EMAIL" />) und von diesem Gerät gelöscht.}other{Diese Adressen werden aus deinem Google-Konto (<ph name="USER_EMAIL" />) und von diesem Gerät gelöscht.}}</translation>
 <translation id="634878792104344809">Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="6350745006329795504">Meine Geräte verwalten</translation>
-<translation id="6351000590398820964">Gemini ist eine KI und kann Fehler machen, auch bei Informationen über Personen. Einige Inhalte sind möglicherweise nicht für alle Nutzer geeignet. Chats werden geprüft und zum Trainieren generativer KI-Modelle verwendet. <ph name="BEGIN_LINK" />Hier findest du weitere Informationen zu möglichen Einstellungen.<ph name="END_LINK" /> Es gelten unsere <ph name="BEGIN_LINK" />Nutzungsbedingungen<ph name="END_LINK" /> und <ph name="BEGIN_LINK" />Datenschutzhinweise<ph name="END_LINK" />.</translation>
 <translation id="6351147166808964033">Tab-Wechsler starten</translation>
 <translation id="63519665078626091">Wenn du den Web Inspector verwenden möchtest, musst du auf einem Computer mithilfe eines Kabels eine Verbindung zu Safari herstellen und über das Menü „Entwickler“ auf das iPad zugreifen. Du kannst das Menü „Entwickler“ im Bereich „Erweitert“ in den Safari-Einstellungen auf deinem Computer aktivieren.</translation>
 <translation id="6354695695659930684">Fügt Passwort ein</translation>
@@ -2534,7 +2528,6 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="8750037785291841318">Hier werden deine Tabs angezeigt</translation>
 <translation id="8751126814549746156">Der Verlauf wird nach 18 Monaten automatisch gelöscht. Du kannst diesen Zeitraum in den Einstellungen ändern. Chats, die von Dienstleistern überprüft wurden, werden von deinem Konto getrennt und bis zu 3 Jahre lang aufbewahrt. Du kannst den Verlauf jederzeit <ph name="BEGIN_LINK" />deaktivieren<ph name="END_LINK" />.</translation>
 <translation id="8756969031206844760">Passwort aktualisieren?</translation>
-<translation id="8762190205387442931">Chats werden geprüft und zum Trainieren generativer KI-Modelle verwendet. Du kannst deinen <ph name="BEGIN_LINK" />Verlauf verwalten<ph name="END_LINK" />, einschließlich Informationen zu deinem Standort. <ph name="BEGIN_LINK" />Weitere Informationen zu möglichen Einstellungen<ph name="END_LINK" /></translation>
 <translation id="8763613688786959833">Zum letzten Tab</translation>
 <translation id="8766790350274092814">Passwörter für <ph name="WEBSITE" /> und <ph name="SECOND_WEBSITE" /> werden gelöscht. Deine Konten werden nicht gelöscht.</translation>
 <translation id="8775144690796719618">Ungültige URL</translation>

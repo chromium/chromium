@@ -1911,7 +1911,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2460150227008936698">{COUNT,plural, =0{Hết hạn hôm nay}=1{Hết hạn ngày mai}other{Hết hạn sau # ngày nữa}}</translation>
 <translation id="2460482211073772897">Trong các thư mục khác</translation>
 <translation id="2460826998961521840">Để dùng khoá truy cập đã lưu trong Tài khoản Google của bạn</translation>
-<translation id="2461457574123041923">Nếu bạn rời khỏi trang web này, tác vụ đang thực hiện sẽ kết thúc. Để tiếp tục thực hiện tác vụ trong khi bạn truy cập các trang web khác, hãy mở một thẻ mới.</translation>
+<translation id="2461457574123041923">Nếu bạn rời khỏi trang web này, nhiệm vụ sẽ kết thúc. Để nhiệm vụ vẫn được thực hiện trong khi bạn truy cập vào các trang web khác, hãy mở một thẻ mới.</translation>
 <translation id="2461550163693930491">Không cho phép các trang web cuộn và thu phóng các thẻ được chia sẻ</translation>
 <translation id="2461593638794842577">Bạn có thể tắt chế độ cài đặt này nếu chỉ muốn lưu mật khẩu trên thiết bị này</translation>
 <translation id="2462550463312552298">Tóm tắt tài liệu này</translation>
@@ -2628,7 +2628,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2990500505358145117">Chỉnh sửa lối tắt của tính năng tự động điền nâng cao</translation>
 <translation id="2990583317361835189">Không cho phép các trang web sử dụng cảm biến chuyển động</translation>
 <translation id="2991182900092497283">Vui lòng nhập lý do bạn dán dữ liệu này:</translation>
-<translation id="2992754757708650257">Rời khỏi trang web và kết thúc tác vụ?</translation>
+<translation id="2992754757708650257">Rời khỏi trang web và kết thúc nhiệm vụ?</translation>
 <translation id="2993517869960930405">Thông tin ứng dụng</translation>
 <translation id="2994495699095559601">Để cung cấp câu trả lời phù hợp hơn, Google sử dụng nội dung và URL của các thẻ được chia sẻ. Thẻ hiện tại sẽ được chia sẻ trong các cuộc trò chuyện mới. Bạn có thể thay đổi chế độ cài đặt này bất cứ lúc nào.</translation>
 <translation id="2994804273850542871">Cấp 4: CỰC CAO</translation>
@@ -3232,7 +3232,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3441824746233675597">Giữ kín danh sách các trang web bạn truy cập sao cho những người có quyền truy cập vào dữ liệu lưu lượng truy cập Internet của bạn khó biết được hơn. <ph name="PRODUCT_NAME" /> dùng một kết nối bảo mật để tra cứu địa chỉ IP của mỗi trang web trong DNS (Hệ thống tên miền).</translation>
 <translation id="3442674350323953953">Cho phép Google dùng dữ liệu phần cứng của bạn để giúp cải thiện <ph name="DEVICE_OS" />. Nếu bạn từ chối, dữ liệu này vẫn sẽ được gửi tới Google để xác định các bản cập nhật thích hợp, nhưng sẽ không được lưu trữ hoặc sử dụng cho mục đích khác.</translation>
 <translation id="3443545121847471732">Nhập mã PIN gồm 6 chữ số</translation>
-<translation id="3443702190855647469">Quản lý ứng dụng đã kết nối</translation>
+<translation id="3443702190855647469">Quản lý các ứng dụng có thể kết nối</translation>
 <translation id="3443744348829035122">Đã hết thời gian chờ dành cho <ph name="BRAND" /></translation>
 <translation id="3443754338602062261">Bạn đã có mật khẩu cho các tài khoản này trong <ph name="BRAND" />. Nếu bạn chọn nhập một trong các mật khẩu dưới đây, mật khẩu đó sẽ thay thế mật khẩu hiện tại.</translation>
 <translation id="344449859752187052">Đã chặn cookie của bên thứ ba</translation>
@@ -6721,7 +6721,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6124698108608891449">Trang web này cần các quyền khác.</translation>
 <translation id="6125202119952209826">Tham gia nhóm thẻ cùng với <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125639926370653692">Mặt trăng</translation>
-<translation id="6125649408655762488">Lấy tiêu điểm vào nhóm</translation>
+<translation id="6125649408655762488">Đặt tiêu điểm vào nhóm</translation>
 <translation id="6126601353087978360">Vui lòng nhập ý kiến phản hồi của bạn tại đây:</translation>
 <translation id="6127292407256937949">Âm lượng đang bật. Tắt âm lượng.</translation>
 <translation id="6127598727646973981">Kết nối bảo mật</translation>

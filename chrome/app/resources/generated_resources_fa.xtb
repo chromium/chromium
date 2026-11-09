@@ -2627,7 +2627,7 @@
 <translation id="2990500505358145117">ویرایش میان‌بر تکمیل خودکار بهبودیافته</translation>
 <translation id="2990583317361835189">اجازه ندادن به سایت‌ها اجازه برای استفاده از حسگرهای حرکتی</translation>
 <translation id="2991182900092497283">لطفاً دلیلی برای جای‌گذاری این داده وارد کنید:</translation>
-<translation id="2992754757708650257">از سایت خارج می‌شوید و تکلیف پایان می‌یابد؟</translation>
+<translation id="2992754757708650257">از سایت خارج می‌شوید و به تکلیف پایان می‌دهید؟</translation>
 <translation id="2993517869960930405">اطلاعات برنامه</translation>
 <translation id="2994495699095559601">‏‫Google برای ارائه پاسخ‌های مربوط‌تر، از محتوا و نشانی وب زبانه‌های هم‌رسانی‌شده استفاده می‌کند. زبانه فعلی در گپ‌های جدید هم‌رسانی می‌شود. همیشه می‌توانید این تنظیم را تغییر دهید.</translation>
 <translation id="2994804273850542871">سطح ۴: فوق‌العاده بالا</translation>
@@ -3495,7 +3495,7 @@
 <translation id="3634652306074934350">درخواست اجازه منقضی شد</translation>
 <translation id="3635353578505343390">‏ارسال بازخورد به Google</translation>
 <translation id="3635960017746711110">‏اولویت‌های USB در Crostini</translation>
-<translation id="3636538438330991674">‏مدیریت برنامه‌هایی که Gemini به آن‌ها متصل می‌شود</translation>
+<translation id="3636538438330991674">‏برنامه‌هایی را که Gemini به آن‌ها متصل می‌شود مدیریت کنید</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />٪ - <ph name="TIME" /> باقی مانده است</translation>
 <translation id="3636940436873918441">زبان‌های ترجیحی</translation>
 <translation id="3637203148990213388">حساب‌های دیگر</translation>
@@ -5389,7 +5389,7 @@
 <translation id="5068553687099139861">نمایش گذرواژه‌ها</translation>
 <translation id="506886127401228110">روشن کردن برنامه‌های وب مجزا</translation>
 <translation id="5068919226082848014">پیتزا</translation>
-<translation id="5070630163913211970">‏وقتی‌که گپ جدیدی شروع می‌کنید، زبانه فعلی با Gemini هم‌رسانی می‌شود. <ph name="LINK_BEGIN" />درباره هوش مصنوعی و حریم خصوصی بیشتر بدانید<ph name="LINK_END" /></translation>
+<translation id="5070630163913211970">‏وقتی که گپ جدیدی شروع می‌کنید، زبانه فعلی با Gemini هم‌رسانی می‌شود. <ph name="LINK_BEGIN" />درباره هوشواره و حریم خصوصی بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="5071295820492622726">برگشتن به بارگیری‌های اخیر</translation>
 <translation id="5071892329440114717">نمایش جزئیات محافظت استاندارد</translation>
 <translation id="5072500507106264618">فقط خدمات سیستم می‌تواند از مکان شما استفاده کند</translation>
@@ -7313,7 +7313,7 @@
 <translation id="6586451623538375658">جابه‌جایی دکمه اصلی موشواره</translation>
 <translation id="6588043302623806746">استفاده از ساناد امن</translation>
 <translation id="6589760925779188068">پاناکوتا</translation>
-<translation id="6589769062042696460">‏وقتی‌که گپ جدیدی شروع می‌کنید، زبانه فعلی با Gemini هم‌رسانی می‌شود. داده‌هایتان برای بهبود دادن مدل‌های هوش مصنوعی زایا استفاده نخواهند شد. <ph name="LINK_BEGIN" />درباره هوش مصنوعی و حریم خصوصی بیشتر بدانید<ph name="LINK_END" /></translation>
+<translation id="6589769062042696460">‏وقتی که گپ جدیدی شروع می‌کنید، زبانه فعلی با Gemini هم‌رسانی می‌شود. داده‌هایتان برای بهبود دادن مدل‌های هوشواره‌ای زایا استفاده نخواهند شد. <ph name="LINK_BEGIN" />درباره هوشواره و حریم خصوصی بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="6590458744723262880">تغییر نام پوشه</translation>
 <translation id="6592267180249644460">‏زمان ثبت گزارش WebRTC ‏<ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">اثرانگشت ثبت شد</translation>
@@ -8142,7 +8142,7 @@
 <translation id="7206252555702853828">کارت‌خوان‌های هوشمند شما کنترل می‌شوند</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{خروج از صفحه}one{خروج از صفحه‌ها}other{خروج از صفحه‌ها}}</translation>
 <translation id="7207631048330366454">جستجوی برنامه‌ها</translation>
-<translation id="7209958456051239069">‏وقتی مکان دقیق خود را هم‌رسانی می‌کنید، Gemini می‌تواند به سؤالات شما دقیق‌تر پاسخ دهد</translation>
+<translation id="7209958456051239069">‏وقتی که مکان دقیق خودتان را هم‌رسانی می‌کنید، Gemini می‌تواند به سؤالات شما دقیق‌تر پاسخ دهد</translation>
 <translation id="7210257969463271891">برنامه‌های وبی که نصب کرده‌اید در اینجا نشان داده می‌شود</translation>
 <translation id="7210432570808024354">حرکت دادن موارد با تک‌ضرب و کشیدن</translation>
 <translation id="7210499381659830293">چاپگرهای افزونه</translation>
@@ -8719,7 +8719,7 @@
 <translation id="7650721582841150356">راه‌اندازی مجدد در فرصتی دیگر…</translation>
 <translation id="7651182181030187705">برای دریافت این نشانک در همه دستگاه‌هایتان، هویتتان را درستی‌سنجی کنید</translation>
 <translation id="7651400349472467012">نقطه اتصال فوری دردسترس است</translation>
-<translation id="7651754152638505879">فعالیت موقتاً متوقف شد</translation>
+<translation id="7651754152638505879">تکلیف موقتاً متوقف شد</translation>
 <translation id="7651784568388208829">ادامه کار «مرکز کنترل تلفن»</translation>
 <translation id="7652954539215530680">ایجاد پین</translation>
 <translation id="7653354650639364202">{0,plural, =1{بستن «پنجره مجزا»}one{بستن (# پنجره) مجزا}other{بستن (# پنجره) مجزا}}</translation>
@@ -10498,7 +10498,7 @@
 <translation id="8991694323904646277">دوربین متصل نیست</translation>
 <translation id="8991766915726096402">بازیابی داده‌های محلی</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - استفاده از حافظه - <ph name="MEMORY_VALUE" /></translation>
-<translation id="8993030412405061612">فعالیت تکمیل شد</translation>
+<translation id="8993030412405061612">تکلیف تکمیل شد</translation>
 <translation id="8993198843374358393">کپی کردن درهم‌سازی گواهینامه <ph name="CERT_NAME" /></translation>
 <translation id="8993737615451556423">کنترل‌هایی برای افزایش سرعت، کاهش سرعت، و توقف موقت صدای خواندن ارائه می‌دهد</translation>
 <translation id="8993787625629280252">‏اگر Chrome یکی از گذرواژه‌هایتان را در سرقت عمومی اطلاعات شبکه پیدا کند، می‌تواند درصورتی‌که به سیستم وارد شده باشید پیشنهاد دهد گذرواژه را برای شما تغییر دهد</translation>

@@ -5085,7 +5085,7 @@
 <translation id="4852383141291180386">管理應用程式通知</translation>
 <translation id="4852916668365817106">游標顏色</translation>
 <translation id="4853020600495124913">在新視窗中開啟(&amp;N)</translation>
-<translation id="4853328060971905294">開啟 (啟用行焦點)</translation>
+<translation id="4853328060971905294">開啟 (啟用導讀條)</translation>
 <translation id="4854317507773910281">選擇進行審核的家長帳戶</translation>
 <translation id="4854603338816296098">地址已移除</translation>
 <translation id="485480310608090163">更多設定和權限</translation>
@@ -6024,7 +6024,7 @@
 <translation id="5576472948015790634">現在起，你可以集中管理分頁群組和 Gemini 對話，並且可隨時取消固定。</translation>
 <translation id="5578059481725149024">自動登入</translation>
 <translation id="5578387000057347457">輸入自訂提示詞或選取文字，即可生成圖像</translation>
-<translation id="557893471177655572">試用行焦點</translation>
+<translation id="557893471177655572">試用導讀條</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{這 1 個項目只會儲存在這部裝置。如要在其他裝置上使用，請<ph name="BEGIN_LINK" />儲存到 Google 帳戶<ph name="END_LINK" />。}other{這 {ITEM_COUNT} 個項目只會儲存在這部裝置。如要在其他裝置上使用，請<ph name="BEGIN_LINK" />儲存到 Google 帳戶<ph name="END_LINK" />。}}</translation>
 <translation id="5579225964082017560">從「<ph name="SECTION_HEADER" />」清單中移除 <ph name="SITE" /></translation>
 <translation id="5581031802689147441">分割畫面</translation>
@@ -8510,7 +8510,7 @@
 <translation id="7502528909759062987">暫停將分頁投放到「<ph name="DEVICE_NAME" />」</translation>
 <translation id="750275011730776314">返回 Gemini</translation>
 <translation id="7502804472671406749">可捲動及縮放已分享的分頁</translation>
-<translation id="750314150962284310">行焦點</translation>
+<translation id="750314150962284310">導讀條</translation>
 <translation id="7503191893372251637">Netscape 憑證類型</translation>
 <translation id="7503259455663961898">幫我變更</translation>
 <translation id="7503985202154027481">你的安全金鑰會保留你造訪這個網站的記錄。</translation>
@@ -10855,7 +10855,7 @@
 <translation id="987574372967138078">「<ph name="WEBSITE_ORIGIN" />」想從你的行動裝置取得資訊</translation>
 <translation id="988320949174893488">不時間斷</translation>
 <translation id="988978206646512040">通關密語欄位不得留空</translation>
-<translation id="989111665033316622">關閉 (停用行焦點)</translation>
+<translation id="989111665033316622">關閉 (停用導讀條)</translation>
 <translation id="992032470292211616">擴充功能、應用程式和主題可能會損害你的裝置，你確定要繼續嗎？</translation>
 <translation id="992256792861109788">粉紅色</translation>
 <translation id="994087375490600917">側邊面板</translation>

@@ -4063,7 +4063,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4044964245574571633">Utilise l'espace de stockage Microsoft OneDrive</translation>
 <translation id="4045196801416070837">Sons de l'appareil</translation>
 <translation id="4046013316139505482">Ces extensions n'ont pas besoin de consulter ni de modifier l'information sur ce site.</translation>
-<translation id="4046123991198612571">Chanson suivante</translation>
+<translation id="4046123991198612571">Piste suivante</translation>
 <translation id="4046655456159965535">Supprimer les données affichées?</translation>
 <translation id="4047345532928475040">S. O.</translation>
 <translation id="4047581153955375979">USB4</translation>
@@ -6231,7 +6231,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5753570386948603678">Supprimer de l'historique</translation>
 <translation id="5755101376452091923">Vous pouvez modifier votre nom dans votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /> <ph name="USERNAME" /></translation>
 <translation id="5756163054456765343">Centre d'aide</translation>
-<translation id="5757187557809630523">chanson suivante</translation>
+<translation id="5757187557809630523">piste suivante</translation>
 <translation id="5758631781033351321">Vous trouverez votre liste de lecture ici</translation>
 <translation id="5759397201362801675">Choisir une humeur</translation>
 <translation id="5759728514498647443">Les documents que vous envoyez à l'impression au moyen de <ph name="APP_NAME" /> peuvent être lus par <ph name="APP_NAME" />.</translation>

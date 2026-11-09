@@ -973,7 +973,7 @@
 <translation id="1734824808160898225">Возможно, <ph name="PRODUCT_NAME" /> не сможет обновляться автоматически.</translation>
 <translation id="1735983780784385591">Импортированные из Linux</translation>
 <translation id="173628468822554835">ОК. По умолчанию новые сайты не будут отправлять вам уведомления.</translation>
-<translation id="1737228213718001685">Выполнение задачи…</translation>
+<translation id="1737228213718001685">Выполнение задачи</translation>
 <translation id="1737968601308870607">Сообщить об ошибке</translation>
 <translation id="1740414789702358061"><ph name="SITE_ACCESS" />. Выберите, чтобы изменить разрешения для сайта</translation>
 <translation id="1741190788710022490">Адаптивная зарядка</translation>
@@ -9327,7 +9327,7 @@
 <translation id="8104088837833760645">Скачать профиль eSIM</translation>
 <translation id="8104388155778519213">Предоставьте Google Объективу доступ к информации на экране</translation>
 <translation id="8104412594956510627">Чтобы видеть историю с <ph name="DEVICE" />, синхронизируйте ее. Синхронизацию можно в любой момент отключить в настройках. Google может персонализировать Поиск и другие сервисы с учетом истории.</translation>
-<translation id="8104778744208707085">Требуется действие</translation>
+<translation id="8104778744208707085">Требуется действие.</translation>
 <translation id="8105273883928376822">Войдите в аккаунт</translation>
 <translation id="8106114112474206597">Чтобы нажать кнопку мыши, используйте клавишу I.</translation>
 <translation id="810728361871746125">Разрешение экрана</translation>

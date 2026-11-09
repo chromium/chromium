@@ -1206,6 +1206,7 @@
 <translation id="3030331669969285614">התכונות הניסיוניות האלה מונעות או מחזירות לגרסה קודמת שינוי תוכנה שעלול לגרום לכשל, והן יהיו זמינות רק למשך פרק זמן מוגבל.</translation>
 <translation id="3033200136993730761">‏כתובת המגורים יכולה לעזור לך בשירותי Google, למשל לקבל תוצאות חיפוש רלוונטיות יותר ומסלולים במפות Google. אפשר לערוך או למחוק את הכתובת <ph name="BEGIN_LINK" />בחשבון <ph name="ACCOUNT" /> ב-Google<ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">יש הרשאה זמנית להשתמש בחיישני התנועה והאור</translation>
+<translation id="3034219227076811559">‏חיפוש Google ב-Chrome</translation>
 <translation id="3034526003882782781">יש הרשאה לגלול ולשנות את מרחק התצוגה</translation>
 <translation id="3037177537145227281">המחיר במעקב</translation>
 <translation id="3037605927509011580">אוי, לא!</translation>
@@ -4330,6 +4331,7 @@ Del</translation>
 <translation id="8199437620497683918">Optical Disc (Glossy)</translation>
 <translation id="8202097416529803614">סיכום הזמנה</translation>
 <translation id="8202370299023114387">התנגשות</translation>
+<translation id="8203105157044679380">‏החלונית של חיפוש Google</translation>
 <translation id="8208363704094329105">‏300x400 מ"מ</translation>
 <translation id="8208629719488976364">‏התוכן של הדפים המודפסים ומידע על המדפסת יישלחו אל Google Cloud או לצדדים שלישיים לצורך ניתוח. לדוגמה, יכול להיות שהנתונים האלה יעברו סריקה כדי לאתר מידע אישי רגיש, וייתכן שהם יאוחסנו בהתאם למדיניות החברה ויהיו גלויים לאדמין שלך.</translation>
 <translation id="8210490490377416373">בחירת שם למדיניות</translation>

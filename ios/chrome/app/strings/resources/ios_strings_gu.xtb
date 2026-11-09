@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">તમે તાજેતરમાં બંધ કરેલા ટૅબ ફરીથી ખોલવા માટે, તમે અહીં પાછા આવી શકો છો</translation>
 <translation id="1016495303386450659">આઇટમ અપડેટ કરી</translation>
 <translation id="1018804590490383958">સ્કૅન કરો અને ઑટોમૅટિક રીતે ભરો</translation>
-<translation id="1019990162050689579">Gemini ઍપ ઍક્ટિવિટી</translation>
 <translation id="102471647093736603">ખસેડવા માટે દબાવી રાખો</translation>
 <translation id="102645702181682900">કાર્ય શરૂ થયું</translation>
 <translation id="102916930470544692">પાસકી</translation>
@@ -101,7 +100,6 @@
 <translation id="1291506870746876680">જ્યારે તમે સાઇટમાંથી બહાર નીકળી જશો, ત્યારે <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> સંબંધિત પરવાનગીઓ બંધ પર રીસેટ કરવામાં આવશે.</translation>
 <translation id="1293491796138057740"><ph name="USER_EMAIL" /> માટે તમારી માહિતી Google Walletમાં સાચવવામાં આવી છે. તમે વધુ ઝડપથી ફોર્મ ભરવા માટે Googleની બધી પ્રોડક્ટ પર તેનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="1293556467332435079">Files</translation>
-<translation id="1294703224699789269">અમારી <ph name="BEGIN_LINK" />શરતો<ph name="END_LINK" />, <ph name="BEGIN_LINK" />કોરિયન લોકેશન સેવાની શરતો<ph name="END_LINK" /> અને <ph name="BEGIN_LINK" />પ્રાઇવસી નોટિસ<ph name="END_LINK" /> લાગુ થાય છે. જનરેટિવ AI મૉડલને ટ્રેન કરવા માટે ચૅટનો રિવ્યૂ અને ઉપયોગ કરવામાં આવે છે. Gemini એ AI છે અને તે ભૂલો કરી શકે છે, જેમાં લોકો વિશેની ભૂલો શામેલ છે. અમુક કન્ટેન્ટ દરેક જણ માટે યોગ્ય ન હોય એમ બની શકે છે. તમે તમારા લોકેશન વિશેની માહિતી સહિત <ph name="BEGIN_LINK" />તમારો ઇતિહાસ મેનેજ<ph name="END_LINK" /> કરી શકો છો. <ph name="BEGIN_LINK" />તમારી પસંદગીઓ વિશે વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">તાજેતરમાં બંધ કરેલા</translation>
 <translation id="1296581780163690620">ફાઇલ ડાઉનલોડ કરીએ? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">"AI મોડ વડે શોધો" પૂર્ણ થયું!</translation>
@@ -386,7 +384,6 @@
 <translation id="2104436223719117661">વલણમાં છે એ શોધો</translation>
 <translation id="21133533946938348">ટૅબ પિન કરો</translation>
 <translation id="2117650889962717098">છૂપા મોડ પર સ્વિચ કરીને તમારા બ્રાઉઝિંગને ખાનગી રાખો</translation>
-<translation id="2119126821484134587">તમને અનુરૂપ મદદ પ્રદાન કરવા માટે, Gemini તમારો અમુક ડેટા (જેમ કે તમારી ચૅટના ભાગો, લોકેશન અને અન્ય સંબંધિત માહિતી) Maps અને Flights જેવી Googleની અન્ય સેવાઓ સાથે શેર કરે છે. તમે પછીથી તમારો Gemini ઍપનો ઇતિહાસ ડિલીટ કરી નાખો, તો પણ શક્ય છે કે બહેતર બનવા માટે આ સેવાઓ તે માહિતીનો ઉપયોગ કરે. <ph name="BEGIN_LINK" />Gemini ઍપ પ્રાઇવસી હબ<ph name="END_LINK" />માં વધુ જાણો.</translation>
 <translation id="2119636449201577317">આમાં ખોલો…</translation>
 <translation id="2119962645034852864">તમારા એકાઉન્ટ માટે કેટલીક સેવાઓ ઉપલબ્ધ નથી</translation>
 <translation id="2120553909046681540">તમારી સંસ્થાએ ખાનગી બ્રાઉઝિંગ બંધ કર્યું છે.</translation>
@@ -1202,7 +1199,6 @@
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
 <translation id="4764612367328936189">તમારી સંસ્થા માત્ર અમુક ચોક્કસ એકાઉન્ટ વડે તમને સાઇન ઇન કરવાની મંજૂરી આપે છે. મંજૂરી ન હોય એવા એકાઉન્ટને છુપાવવામાં આવે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">કોઈપણ ડિવાઇસ પર સાચવેલી પાસકી ઍક્સેસ કરવામાં તમને સહાય કરે છે</translation>
-<translation id="476946043193006313">તમારી ઍક્ટિવિટી જનરેટિવ AIને પ્રશિક્ષણ આપવામાં મદદ કરે છે</translation>
 <translation id="4782952780741793211">કન્ફર્મેશન કોડ:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">શું છૂપા મોડમાં ખોલીએ?</translation>
@@ -1334,6 +1330,7 @@
 <translation id="5128788795241319992">નવા મેનૂ વિશે શોધખોળ કરો</translation>
 <translation id="5132942445612118989">બધા ડિવાઇસ પર તમારા પાસવર્ડ, ઇતિહાસ અને વધુ સિંક કરો</translation>
 <translation id="5137568953923142260">એકવાર મંજૂરી આપો</translation>
+<translation id="5139344197062265975">Gemini સાથે ચૅટ કરવા માટે, તમારા માઇક્રોફોનનો ઉપયોગ કરો. જ્યારે તમે Gemini સાથે વાત કરો છો, ત્યારે ઑડિયો Geminiના ઇતિહાસ (જો તે ચાલુ હોય તો)માં સ્ટોર કરવામાં આવે છે. જનરેટિવ AI મૉડલને બહેતર બનાવવા માટે તમારા ડેટાનો ઉપયોગ કરવામાં આવતો નથી</translation>
 <translation id="5141363746588976328">તમારા ટૅબ કાર્ડ પર કિંમતમાં ઘટાડાની સૂચનાઓ છુપાવો</translation>
 <translation id="514154868070499296">ફૉન્ટ: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">ટૅબ સ્વિચર છોડી દો</translation>
@@ -1604,6 +1601,7 @@
 <translation id="6000893618966378846">"બ્રાઉઝિંગ ડેટા ડિલીટ કરો" પ્રક્રિયા પૂર્ણ થઈ!</translation>
 <translation id="6004988584831654445">તમે તૈયાર છો! નવા કાર્યો આવે ત્યારે નોટિફિકેશન મેળવો.</translation>
 <translation id="6006672969046233841">નવું ટૅબ</translation>
+<translation id="6006758170939001741">અમારી <ph name="BEGIN_LINK" />શરતો<ph name="END_LINK" />, <ph name="BEGIN_LINK" />કોરિયન લોકેશન સેવાની શરતો<ph name="END_LINK" /> અને <ph name="BEGIN_LINK" />પ્રાઇવસી નોટિસ<ph name="END_LINK" /> લાગુ થાય છે. જનરેટિવ AI મૉડલને ટ્રેન કરવા માટે ચૅટનો રિવ્યૂ અને ઉપયોગ કરવામાં આવે છે. Gemini એ AI છે અને તે ભૂલો કરી શકે છે, જેમાં લોકો વિશેની ભૂલો શામેલ છે. અમુક કન્ટેન્ટ દરેક જણ માટે યોગ્ય ન હોય એમ બની શકે છે. તમે <ph name="BEGIN_LINK" />તમારા લોકેશન વિશેની માહિતી<ph name="END_LINK" /> સહિત <ph name="BEGIN_LINK" />તમારો ઇતિહાસ મેનેજ<ph name="END_LINK" /> કરી શકો છો. <ph name="BEGIN_LINK" />તમારી પસંદગીઓ વિશે વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">શોધ સંબંધિત સૂચનો બહેતર બનાવો</translation>
 <translation id="6012140227487808125">એન્ક્રિપ્ટ કરી રહ્યું છે...</translation>
 <translation id="6014801569448771146">તમારા પાસવર્ડ તપાસો</translation>
@@ -1700,7 +1698,6 @@
 <translation id="628251768213143684">તમારા Google એકાઉન્ટમાં સાચવેલી દરેક બાબતો તમે હંમેશાં મેનેજ કરી જ શકો છો</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />નો અનુવાદ કરવાનું કહો</translation>
 <translation id="6293101329759844770">Safe Browsingની સુવિધા ચાલુ કરવા માટે, <ph name="BEGIN_LINK" />Google સેવાઓ<ph name="END_LINK" /> ખોલો અને Safe Browsing પર ટૅપ કરો.</translation>
-<translation id="6295140892595702619">Gemini સાથે ચૅટ કરવા માટે, તમારા માઇક્રોફોનનો ઉપયોગ કરો. જ્યારે તમે Gemini સાથે વાત કરો છો, ત્યારે ઑડિયો Gemini ઍપ ઍક્ટિવિટીમાં સ્ટોર કરવામાં આવે છે (જો તે ચાલુ હોય તો). જનરેટિવ AI મૉડલને બહેતર બનાવવા માટે તમારા ડેટાનો ઉપયોગ કરવામાં આવતો નથી</translation>
 <translation id="6295751040240588413">કાર્ડનું અમાન્ય ઉપનામ</translation>
 <translation id="629730747756840877">એકાઉન્ટ</translation>
 <translation id="6301104306974789820">કિંમત ટ્રૅક કરવા વિશે નોટિફિકેશન મેળવો</translation>
@@ -1728,7 +1725,6 @@
 <translation id="6347953390226388422">{count,plural, =1{આ સરનામું તમારા Google એકાઉન્ટ (<ph name="USER_EMAIL" />) અને આ ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.}one{આ સરનામું તમારા Google એકાઉન્ટ (<ph name="USER_EMAIL" />) અને આ ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.}other{આ સરનામા તમારા Google એકાઉન્ટ (<ph name="USER_EMAIL" />) અને આ ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.}}</translation>
 <translation id="634878792104344809">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ, ઇતિહાસ અને બીજું ઘણું સિંક કરો</translation>
 <translation id="6350745006329795504">તમારા ડિવાઇસ મેનેજ કરો</translation>
-<translation id="6351000590398820964">Gemini એ AI છે અને તે ભૂલો કરી શકે છે, જેમાં લોકો વિશેની ભૂલો શામેલ છે. અમુક કન્ટેન્ટ દરેક જણ માટે યોગ્ય ન હોય એમ બની શકે છે. જનરેટિવ AI મૉડલને ટ્રેન કરવા માટે ચૅટનો રિવ્યૂ અને ઉપયોગ કરવામાં આવે છે. <ph name="BEGIN_LINK" />તમારી પસંદગીઓ વિશે જાણો<ph name="END_LINK" />. અમારી <ph name="BEGIN_LINK" />શરતો<ph name="END_LINK" /> અને <ph name="BEGIN_LINK" />પ્રાઇવસી નોટિસ<ph name="END_LINK" /> લાગુ થાય છે.</translation>
 <translation id="6351147166808964033">ટૅબ સ્વિચરમાં દાખલ થાઓ</translation>
 <translation id="63519665078626091">વેબ ઇન્સ્પેક્ટરનો ઉપયોગ કરવા માટે, કેબલનો ઉપયોગ કરીને તમારા કમ્પ્યુટર પર Safari સાથે કનેક્ટ કરો અને ડેવલોપ મેનૂમાંથી તમારા iPadને ઍક્સેસ કરો. તમે તમારા કમ્પ્યુટર પર Safari સેટિંગના વિગતવાર વિભાગમાં ડેવલોપ મેનૂને ચાલુ કરી શકો છો.</translation>
 <translation id="6354695695659930684">પાસવર્ડ ભરી રહ્યાં છીએ</translation>
@@ -2137,6 +2133,7 @@
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT} નિષ્ક્રિય ટૅબ બંધ કરીએ?}one{{COUNT} નિષ્ક્રિય ટૅબ બંધ કરીએ?}other{{COUNT} નિષ્ક્રિય ટૅબ બંધ કરીએ?}}</translation>
 <translation id="7598439272585186139">વધુ સુરક્ષા મેળવો</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />નો ક્યારેય અનુવાદ કરશો નહીં</translation>
+<translation id="760230853074995500">જનરેટિવ AI મૉડલને ટ્રેન કરવા માટે ચૅટનો રિવ્યૂ અને ઉપયોગ કરવામાં આવે છે. તમે <ph name="BEGIN_LINK" />તમારા લોકેશન વિશેની માહિતી<ph name="END_LINK" /> સહિત <ph name="BEGIN_LINK" />તમારો ઇતિહાસ મેનેજ<ph name="END_LINK" /> કરી શકો છો. <ph name="BEGIN_LINK" />તમારી પસંદગીઓ વિશે વધુ જાણો<ph name="END_LINK" />.</translation>
 <translation id="7603308509262646847">કાર્ડધારક <ph name="NAME" /> ઑટોમૅટિક રીતે ભરાય</translation>
 <translation id="7603852183842204213">(<ph name="NUMBER_OF_BLOCKED_POPUPS" />) અવરોધિત પૉપ-અપ્સ</translation>
 <translation id="7605594153474022051">સમન્વયન કામ કરતું નથી</translation>
@@ -2534,7 +2531,6 @@
 <translation id="8750037785291841318">તમને તમારી ટૅબ અહીં મળશે</translation>
 <translation id="8751126814549746156">તમારો ઇતિહાસ 18 મહિના પછી ઑટોમૅટિક રીતે ડિલીટ કરવામાં આવે છે. તમે સેટિંગમાં જઈને આ સમયગાળો બદલી શકો છો. સેવા પ્રદાતાઓ દ્વારા રિવ્યૂ કરવામાં આવેલી ચૅટને તમારા એકાઉન્ટથી અલગ કરવામાં આવે છે અને તેને 3 વર્ષ સુધી રાખવામાં આવે છે. તમે કોઈપણ સમયે તમારા ઇતિહાસનું સેટિંગ <ph name="BEGIN_LINK" />બંધ કરી<ph name="END_LINK" /> શકો છો.</translation>
 <translation id="8756969031206844760">પાસવર્ડ અપડેટ કરીએ?</translation>
-<translation id="8762190205387442931">જનરેટિવ AI મૉડલને ટ્રેન કરવા માટે ચૅટનો રિવ્યૂ અને ઉપયોગ કરવામાં આવે છે. તમે તમારા લોકેશન વિશેની માહિતી સહિત <ph name="BEGIN_LINK" />તમારો ઇતિહાસ મેનેજ<ph name="END_LINK" /> કરી શકો છો. <ph name="BEGIN_LINK" />તમારી પસંદગીઓ વિશે વધુ જાણો<ph name="END_LINK" />.</translation>
 <translation id="8763613688786959833">છેલ્લી ટૅબ પર જાઓ</translation>
 <translation id="8766790350274092814"><ph name="WEBSITE" /> અને <ph name="SECOND_WEBSITE" /> માટેના પાસવર્ડ ડિલીટ કરવામાં આવશે. તમારા એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
 <translation id="8775144690796719618">અમાન્ય URL</translation>
@@ -2632,6 +2628,7 @@
 <translation id="9066097352053395362">'બુકમાર્કમાં ફેરફાર કરો' છુપાવો</translation>
 <translation id="9070824521421603770">તમને સાઇન આઉટ કરવામાં આવશે અને ટૅબ બંધ કરવામાં આવશે</translation>
 <translation id="9072837124205571418">બધા ડિવાઇસના ટૅબના ગ્રૂપ</translation>
+<translation id="9073322251019919253">Gemini એ AI છે અને તે ભૂલો કરી શકે છે, જેમાં લોકો વિશેની ભૂલો શામેલ છે. અમુક કન્ટેન્ટ દરેક જણ માટે યોગ્ય ન હોય એમ બની શકે છે. જનરેટિવ AI મૉડલને ટ્રેન કરવા માટે ચૅટનો રિવ્યૂ અને ઉપયોગ કરવામાં આવે છે. તમે <ph name="BEGIN_LINK" />તમારા લોકેશન વિશેની માહિતી<ph name="END_LINK" /> સહિત <ph name="BEGIN_LINK" />તમારો ઇતિહાસ મેનેજ<ph name="END_LINK" /> કરી શકો છો. <ph name="BEGIN_LINK" />તમારી પસંદગીઓ વિશે જાણો<ph name="END_LINK" />. અમારી <ph name="BEGIN_LINK" />શરતો<ph name="END_LINK" /> અને <ph name="BEGIN_LINK" />પ્રાઇવસી નોટિસ<ph name="END_LINK" /> લાગુ થાય છે.</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> માટેનો પાસવર્ડ અપડેટ કરીએ?</translation>
 <translation id="908365381820697818">હવે તમે Gmail અને વધુમાંથી માહિતી શોધી અને ભરી શકો છો</translation>
 <translation id="9083838294503912307">એકથી વધુ ડિવાઇસને સિંક અને વ્યક્તિગત કરવા માટે સિંક ચાલુ કરો.</translation>

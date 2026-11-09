@@ -9,7 +9,6 @@
 <translation id="1013952917065545813">여기에 다시 돌아와 최근에 닫았던 탭을 다시 열 수 있습니다.</translation>
 <translation id="1016495303386450659">북마크가 업데이트되었습니다.</translation>
 <translation id="1018804590490383958">스캔 및 자동 완성</translation>
-<translation id="1019990162050689579">Gemini 앱 활동</translation>
 <translation id="102471647093736603">길게 눌러 이동</translation>
 <translation id="102645702181682900">작업 시작됨</translation>
 <translation id="102916930470544692">패스키</translation>
@@ -101,7 +100,6 @@
 <translation id="1291506870746876680">사이트를 나가면 <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> 권한이 사용 안함으로 재설정됩니다.</translation>
 <translation id="1293491796138057740">정보는 <ph name="USER_EMAIL" />의 Google 월렛에 저장됩니다. Google 제품 전반에서 이 정보를 사용하여 양식을 더 빠르게 작성할 수 있습니다.</translation>
 <translation id="1293556467332435079">파일</translation>
-<translation id="1294703224699789269">Google <ph name="BEGIN_LINK" />약관<ph name="END_LINK" />, <ph name="BEGIN_LINK" />대한민국 위치 서비스 약관<ph name="END_LINK" />, <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />이 적용됩니다. 채팅은 생성형 AI 모델을 학습시키기 위해 검토되고 사용됩니다. Gemini는 AI이며 인물 등에 관한 정보 제공 시 실수를 할 수 있습니다. 일부 콘텐츠는 일부 사용자에게 적합하지 않을 수 있습니다. 사용자는 위치 정보 등의 <ph name="BEGIN_LINK" />기록을 관리<ph name="END_LINK" />할 수 있습니다. <ph name="BEGIN_LINK" />선택사항에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">최근에 닫은 탭</translation>
 <translation id="1296581780163690620">파일을 다운로드하시겠습니까? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">'AI 모드로 검색' 완료!</translation>
@@ -386,7 +384,6 @@
 <translation id="2104436223719117661">인기 급상승 검색어</translation>
 <translation id="21133533946938348">탭 고정</translation>
 <translation id="2117650889962717098">시크릿 모드로 전환하여 탐색 기록을 비공개로 유지하세요.</translation>
-<translation id="2119126821484134587">Gemini는 맞춤형 지원을 제공하기 위해 사용자의 데이터 일부(예: 채팅의 일부, 위치, 기타 관련 정보)를 지도, 항공편 검색과 같은 다른 Google 서비스와 공유합니다. 나중에 Gemini 앱 기록을 삭제하더라도 이러한 서비스에서는 서비스 개선을 위해 이 정보를 사용할 수 있습니다. <ph name="BEGIN_LINK" />Gemini 앱 개인 정보 보호 허브<ph name="END_LINK" />에서 자세히 알아보세요.</translation>
 <translation id="2119636449201577317">다음에서 열기…</translation>
 <translation id="2119962645034852864">계정에서 일부 서비스를 사용할 수 없습니다.</translation>
 <translation id="2120553909046681540">조직에서 시크릿 브라우징을 사용 중지했습니다</translation>
@@ -1202,7 +1199,6 @@
 <translation id="4759238208242260848">다운로드</translation>
 <translation id="4764612367328936189">조직에서 특정 계정으로만 로그인하도록 허용합니다. 허용되지 않는 계정은 숨겨져 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">모든 기기에서 저장된 패스키에 액세스할 수 있도록 지원합니다.</translation>
-<translation id="476946043193006313">사용자 활동은 생성형 AI 모델 학습에 사용됩니다</translation>
 <translation id="4782952780741793211">확인 코드:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">시크릿 모드에서 여시겠습니까?</translation>
@@ -1334,6 +1330,7 @@
 <translation id="5128788795241319992">새 메뉴 살펴보기</translation>
 <translation id="5132942445612118989">모든 기기의 비밀번호, 방문 기록 등 동기화</translation>
 <translation id="5137568953923142260">한 번 허용</translation>
+<translation id="5139344197062265975">마이크를 사용하여 Gemini와 대화하세요. Gemini와 대화할 때 오디오가 Gemini 기록에 저장됩니다(사용 설정된 경우). 사용자의 데이터는 생성형 AI 모델을 개선하는 데 사용되지 않습니다.</translation>
 <translation id="5141363746588976328">열려 있는 탭의 가격 인하 카드 숨기기</translation>
 <translation id="514154868070499296">글꼴: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">탭 전환 도구 종료</translation>
@@ -1604,6 +1601,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6000893618966378846">'인터넷 사용 기록 삭제'가 완료되었습니다.</translation>
 <translation id="6004988584831654445">설정을 완료했습니다. 새로운 작업이 도착하면 알림을 받습니다.</translation>
 <translation id="6006672969046233841">새 탭</translation>
+<translation id="6006758170939001741">Google <ph name="BEGIN_LINK" />약관<ph name="END_LINK" />, <ph name="BEGIN_LINK" />대한민국 위치 서비스 약관<ph name="END_LINK" />, <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />이 적용됩니다. 채팅은 생성형 AI 모델을 학습시키기 위해 검토되고 사용됩니다. Gemini는 AI이며 인물 등에 관한 정보 제공 시 실수를 할 수 있습니다. 일부 콘텐츠는 일부 사용자에게 적합하지 않을 수 있습니다. 사용자는 <ph name="BEGIN_LINK" />위치 정보<ph name="END_LINK" /> 등의 <ph name="BEGIN_LINK" />기록을 관리<ph name="END_LINK" />할 수 있습니다. <ph name="BEGIN_LINK" />선택사항에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">추천 검색어 개선</translation>
 <translation id="6012140227487808125">암호화하는 중...</translation>
 <translation id="6014801569448771146">비밀번호 확인</translation>
@@ -1700,7 +1698,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="628251768213143684">언제든지 Google 계정에 저장된 항목을 관리할 수 있습니다.</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> 번역 옵션 제공</translation>
 <translation id="6293101329759844770">세이프 브라우징을 사용 설정하려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />를 열고 세이프 브라우징을 탭하세요.</translation>
-<translation id="6295140892595702619">마이크를 사용하여 Gemini와 채팅하세요. Gemini와 대화할 때 오디오가 Gemini 앱 활동에 저장됩니다(사용 설정된 경우). 사용자의 데이터는 생성형 AI 모델을 개선하는 데 사용되지 않습니다.</translation>
 <translation id="6295751040240588413">잘못된 카드 닉네임</translation>
 <translation id="629730747756840877">계정</translation>
 <translation id="6301104306974789820">가격 추적 알림 받기</translation>
@@ -1728,7 +1725,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6347953390226388422">{count,plural, =1{Google 계정(<ph name="USER_EMAIL" />)과 이 기기에서 이 주소가 삭제됩니다.}other{Google 계정(<ph name="USER_EMAIL" />)과 이 기기에서 이 주소가 삭제됩니다.}}</translation>
 <translation id="634878792104344809">비밀번호, 방문 기록 등을 모든 기기에 동기화</translation>
 <translation id="6350745006329795504">기기 관리</translation>
-<translation id="6351000590398820964">Gemini는 AI이며 인물 등에 관한 정보 제공 시 실수를 할 수 있습니다. 일부 콘텐츠는 일부 사용자에게 적합하지 않을 수 있습니다. 채팅은 생성형 AI 모델을 학습시키기 위해 검토되고 사용됩니다. <ph name="BEGIN_LINK" />사용자의 선택권에 대해 자세히 알아보세요<ph name="END_LINK" />. Google <ph name="BEGIN_LINK" />약관<ph name="END_LINK" /> 및 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />이 적용됩니다.</translation>
 <translation id="6351147166808964033">탭 전환 도구 실행</translation>
 <translation id="63519665078626091">웹 인스펙터를 사용하려면 케이블을 사용해 컴퓨터에서 Safari에 연결한 다음 개발자용 메뉴에서 iPad에 액세스하세요. 컴퓨터에서 Safari 설정의 고급 섹션으로 가서 개발자용 메뉴를 사용 설정할 수 있습니다</translation>
 <translation id="6354695695659930684">비밀번호 입력 중</translation>
@@ -2137,6 +2133,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7596103009408415410">{COUNT,plural, =1{비활성 탭 {COUNT}개를 닫으시겠어요?}other{비활성 탭 {COUNT}개를 닫으시겠어요?}}</translation>
 <translation id="7598439272585186139">보안 강화</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> 번역 안함</translation>
+<translation id="760230853074995500">채팅은 생성형 AI 모델을 학습시키기 위해 검토되고 사용됩니다. 사용자는 <ph name="BEGIN_LINK" />위치 정보<ph name="END_LINK" /> 등의 <ph name="BEGIN_LINK" />기록을 관리<ph name="END_LINK" />할 수 있습니다. <ph name="BEGIN_LINK" />선택사항에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="7603308509262646847">카드 소지자 <ph name="NAME" /> 자동 완성</translation>
 <translation id="7603852183842204213">팝업 차단(<ph name="NUMBER_OF_BLOCKED_POPUPS" />개)</translation>
 <translation id="7605594153474022051">동기화가 작동하지 않음</translation>
@@ -2534,7 +2531,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8750037785291841318">여기에 탭이 표시됩니다</translation>
 <translation id="8751126814549746156">기록은 18개월 후에 자동으로 삭제됩니다. 설정에서 이 기간을 변경할 수 있습니다. 서비스 제공업체가 검토한 채팅은 계정에서 분리되어 최대 3년 동안 보관됩니다. 언제든지 기록 설정을 <ph name="BEGIN_LINK" />사용 중지<ph name="END_LINK" />할 수 있습니다.</translation>
 <translation id="8756969031206844760">비밀번호를 업데이트하시겠습니까?</translation>
-<translation id="8762190205387442931">채팅은 생성형 AI 모델을 학습시키기 위해 검토되고 사용됩니다. 사용자는 위치 정보 등의 <ph name="BEGIN_LINK" />기록을 관리<ph name="END_LINK" />할 수 있습니다. <ph name="BEGIN_LINK" />선택사항에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8763613688786959833">마지막 탭으로 이동</translation>
 <translation id="8766790350274092814"><ph name="WEBSITE" /> 및 <ph name="SECOND_WEBSITE" />의 비밀번호가 삭제됩니다. 계정은 삭제되지 않습니다.</translation>
 <translation id="8775144690796719618">URL이 올바르지 않습니다.</translation>
@@ -2632,6 +2628,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="9066097352053395362">북마크 수정 숨기기</translation>
 <translation id="9070824521421603770">로그아웃되고 탭이 닫힙니다</translation>
 <translation id="9072837124205571418">모든 기기의 탭 그룹</translation>
+<translation id="9073322251019919253">Gemini는 AI이며 인물 등에 관한 정보 제공 시 실수를 할 수 있습니다. 일부 콘텐츠는 일부 사용자에게 적합하지 않을 수 있습니다. 채팅은 생성형 AI 모델을 학습시키기 위해 검토되고 사용됩니다. 사용자는 <ph name="BEGIN_LINK" />위치 정보<ph name="END_LINK" /> 등의 <ph name="BEGIN_LINK" />기록을 관리<ph name="END_LINK" />할 수 있습니다. <ph name="BEGIN_LINK" />선택사항에 대해 알아보기<ph name="END_LINK" /> Google <ph name="BEGIN_LINK" />약관<ph name="END_LINK" /> 및 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />이 적용됩니다.</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" />님의 비밀번호를 업데이트하시겠습니까?</translation>
 <translation id="908365381820697818">이제 Gmail 등에서 정보를 찾고 자동으로 입력할 수 있습니다</translation>
 <translation id="9083838294503912307">모든 기기에서 동기화 및 맞춤설정하려면 동기화를 사용 설정하세요.</translation>
