@@ -162,6 +162,8 @@ class OtpCoordinator : public OtpSource::Observer {
   const raw_ref<AutofillClient> client_;
   OtpTargetFieldIdentifier target_field_identifier_;
   base::flat_map<FieldGlobalId, OtpDelivery> deliveries_;
+  base::flat_map<url::Origin, base::TimeTicks>
+      field_detection_times_per_origin_;
   base::flat_map<url::Origin, std::vector<UsedToken>> used_tokens_per_origin_;
   base::flat_set<SiteFrame> phishing_blocked_site_frames_;
   base::flat_map<SiteFrame, OtpTokenIdentity> in_flight_validations_;

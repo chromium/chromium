@@ -18,6 +18,7 @@
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -97,6 +98,8 @@ void OtpCoordinator::StartListeningForOtp(const OtpTarget& target) {
       it->second.BlockOnPhishing();
       return;
     }
+    field_detection_times_per_origin_.try_emplace(target.origin,
+                                                  base::TimeTicks::Now());
     std::optional<OtpCandidate> peer_candidate;
     bool peer_in_form_already_has_candidate = false;
     std::optional<FieldGlobalId> focused_field_in_form;
@@ -449,6 +452,17 @@ void OtpCoordinator::OnDeliveryValidated(uint64_t generation,
         .OnOtpAvailable(OtpSuggestionData(candidate.token));
   }
 
+  if (base::TimeTicks* detected_at =
+          base::FindOrNull(field_detection_times_per_origin_, target.origin);
+      candidate.token.type() == one_time_tokens::OneTimeTokenType::kGmail &&
+      !notified_form_owners.empty() && detected_at && !detected_at->is_null() &&
+      candidate.identity.on_device_arrival > *detected_at) {
+    base::UmaHistogramMediumTimes(
+        "OneTimeTokens.Gmail.FieldDetectionToOtpSuggestionReadyLatency",
+        base::TimeTicks::Now() -
+            std::exchange(*detected_at, base::TimeTicks()));
+  }
+
   if (proactive_target.has_value()) {
     TryProactiveTrigger(*proactive_target, candidate);
   }
@@ -563,6 +577,7 @@ void OtpCoordinator::StopSourcesIfNoRemainingTargets(
   if (std::ranges::none_of(deliveries_, [&](const auto& entry) {
         return entry.second.target().origin == origin;
       })) {
+    field_detection_times_per_origin_.erase(origin);
     for (auto& source : sources_) {
       source->StopListeningForOrigin(origin);
     }

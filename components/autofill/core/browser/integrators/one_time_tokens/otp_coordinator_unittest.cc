@@ -14,6 +14,7 @@
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -780,6 +781,48 @@ TEST_F(OtpCoordinatorTest, OnFrameBecameInactiveDropsDeliveries) {
   coordinator_->OnFrameBecameInactive(autofill_driver().GetFrameToken());
   EXPECT_THAT(test_api_coordinator().deliveries(), IsEmpty());
   EXPECT_THAT(coordinator_->GetAvailableTokens(target), IsEmpty());
+}
+
+TEST_F(OtpCoordinatorTest, RecordsGmailSuggestionReadyLatency) {
+  constexpr char kHistogram[] =
+      "OneTimeTokens.Gmail.FieldDetectionToOtpSuggestionReadyLatency";
+  base::HistogramTester histogram_tester;
+
+  gmail_service_->SetCachedTokens(
+      {OneTimeToken(OneTimeTokenType::kGmail, "111222", base::TimeTicks::Now(),
+                    "noreply@example.test", base::Time::Now())});
+  task_environment_.FastForwardBy(base::Seconds(2));
+
+  const std::vector<OtpTarget> targets = AddOtpForm(2);
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(coordinator_->GetAvailableTokens(targets[0]), HasValue("111222"));
+  histogram_tester.ExpectTotalCount(kHistogram, 0);
+
+  sms_otp_service_->SimulateOtpArrived(OneTimeToken(
+      OneTimeTokenType::kSmsOtp, "333444", base::TimeTicks::Now()));
+  phish_guard_delegate_->WaitForChecks();
+  histogram_tester.ExpectTotalCount(kHistogram, 0);
+
+  task_environment_.FastForwardBy(base::Milliseconds(1500));
+  SendGmailOtp("123456", base::Time::Now(), base::TimeTicks::Now());
+  phish_guard_delegate_->WaitForChecks();
+  histogram_tester.ExpectUniqueTimeSample(kHistogram, base::Milliseconds(1500),
+                                          1);
+
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  SendGmailOtp("654321", base::Time::Now(), base::TimeTicks::Now());
+  phish_guard_delegate_->WaitForChecks();
+  histogram_tester.ExpectTotalCount(kHistogram, 1);
+
+  coordinator_->StopListeningForForm(targets[0].form);
+  test_api(autofill_manager()).ClearFormStructures();
+  AddOtpForm();
+  phish_guard_delegate_->WaitForChecks(2);
+  task_environment_.FastForwardBy(base::Milliseconds(800));
+  SendGmailOtp("777888", base::Time::Now(), base::TimeTicks::Now());
+  phish_guard_delegate_->WaitForChecks();
+  histogram_tester.ExpectTotalCount(kHistogram, 2);
+  histogram_tester.ExpectBucketCount(kHistogram, 800, 1);
 }
 
 }  // namespace

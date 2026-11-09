@@ -310,6 +310,18 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="OneTimeTokens.Gmail.FieldDetectionToOtpSuggestionReadyLatency"
+    units="ms" expires_after="2027-08-01">
+  <owner>kazinova@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the latency between detecting an OTP field on a web page and the
+    Gmail OTP suggestion becoming ready to be offered. Recorded once per origin
+    listening session when the Gmail OTP push notification arrives after field
+    detection.
+  </summary>
+</histogram>
+
 <histogram name="OneTimeTokens.Gmail.OptIn.BubbleResult"
     enum="GmailOtpOptInResult" expires_after="2027-08-01">
   <owner>kazinova@google.com</owner>
