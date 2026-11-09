@@ -1291,3 +1291,10 @@ bool IsAppBarDisableLongPressEnabled() {
 
 BASE_FEATURE(kCleanupCorruptedAccountProfileMappings,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEphemeralBottomSheet, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsEphemeralBottomSheetEnabled() {
+  return IsAimCobrowseEnabled() &&
+         base::FeatureList::IsEnabled(kEphemeralBottomSheet);
+}

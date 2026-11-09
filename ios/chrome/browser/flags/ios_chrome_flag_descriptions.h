@@ -873,6 +873,10 @@ inline constexpr char kEnhancedCalendarDescription[] =
     "When enabled, the enhanced calendar flow will be available to eligible "
     "users when adding a calendar event.";
 
+inline constexpr char kEphemeralBottomSheetName[] = "Ephemeral Bottom Sheet";
+inline constexpr char kEphemeralBottomSheetDescription[] =
+    "Enables the EphemeralBottomSheet feature.";
+
 inline constexpr char kExplainGeminiEditMenuName[] =
     "Enable Explain Gemini Edit Menu";
 inline constexpr char kExplainGeminiEditMenuDescription[] =

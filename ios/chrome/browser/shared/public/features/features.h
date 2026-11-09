@@ -1055,4 +1055,10 @@ bool IsAppBarDisableLongPressEnabled();
 // crbug.com/577577623.
 BASE_DECLARE_FEATURE(kCleanupCorruptedAccountProfileMappings);
 
+// Enables the EphemeralBottomSheet feature.
+BASE_DECLARE_FEATURE(kEphemeralBottomSheet);
+
+// Returns true if the EphemeralBottomSheet feature is enabled.
+bool IsEphemeralBottomSheetEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

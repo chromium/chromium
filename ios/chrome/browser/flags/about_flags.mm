@@ -3134,6 +3134,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAutofillReshowSavePromptOnTabReturnDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAutofillReshowSavePromptOnTabReturn)},
+    {"ephemeral-bottom-sheet", flag_descriptions::kEphemeralBottomSheetName,
+     flag_descriptions::kEphemeralBottomSheetDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEphemeralBottomSheet)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
