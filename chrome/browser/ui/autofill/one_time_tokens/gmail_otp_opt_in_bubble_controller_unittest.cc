@@ -483,5 +483,47 @@ TEST_F(GmailOtpOptInBubbleControllerTest,
   EXPECT_EQ(last_shown_web_contents_, new_contents);
 }
 
+// Tests that tab discard hides a showing bubble and reports kDiscarded.
+TEST_F(
+    GmailOtpOptInBubbleControllerTest,
+    WillDiscardContents_WhenShowing_HidesBubbleAndRunsCallbackWithDiscarded) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<GmailOtpOptInResult> future;
+  controller()->SetUpAndShowBubble(u"user@gmail.com", future.GetCallback());
+  ASSERT_TRUE(controller()->IsShowingBubble());
+
+  EXPECT_CALL(mock_bubble_, Hide());
+  EXPECT_CALL(page_action_controller(), Hide(kActionGmailOtpOptIn));
+  tab_interface()->DiscardContents();
+
+  EXPECT_FALSE(controller()->IsShowingBubble());
+  EXPECT_EQ(future.Get(), GmailOtpOptInResult::kDiscarded);
+  histogram_tester.ExpectUniqueSample("OneTimeTokens.Gmail.OptIn.BubbleResult",
+                                      GmailOtpOptInResult::kDiscarded, 1);
+}
+
+// Tests that tab discard evicts a queued bubble and reports kDiscarded.
+TEST_F(GmailOtpOptInBubbleControllerTest,
+       WillDiscardContents_WhenQueued_RunsCallbackWithDiscarded) {
+  base::HistogramTester histogram_tester;
+  NiceMock<MockOtherBubbleController> password_controller(
+      BubbleType::kPassword);
+  bubble_manager()->RequestShowController(password_controller,
+                                          /*force_show=*/false);
+  ASSERT_TRUE(password_controller.IsShowingBubble());
+
+  base::test::TestFuture<GmailOtpOptInResult> future;
+  controller()->SetUpAndShowBubble(u"user@gmail.com", future.GetCallback());
+  ASSERT_FALSE(controller()->IsShowingBubble());
+  ASSERT_FALSE(future.IsReady());
+
+  tab_interface()->DiscardContents();
+
+  EXPECT_FALSE(controller()->IsShowingBubble());
+  EXPECT_EQ(future.Get(), GmailOtpOptInResult::kDiscarded);
+  histogram_tester.ExpectUniqueSample("OneTimeTokens.Gmail.OptIn.BubbleResult",
+                                      GmailOtpOptInResult::kDiscarded, 1);
+}
+
 }  // namespace
 }  // namespace autofill

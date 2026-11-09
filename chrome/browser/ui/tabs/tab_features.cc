@@ -1761,13 +1761,6 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
                 *tab, tab);
   }
 
-  if (gmail_otp_opt_in_bubble_controller_) {
-    gmail_otp_opt_in_bubble_controller_.reset();
-    gmail_otp_opt_in_bubble_controller_ =
-        GetUserDataFactory()
-            .CreateInstance<autofill::GmailOtpOptInBubbleController>(*tab, tab);
-  }
-
   if (web_payments_observer_) {
     web_payments_observer_ =
         std::make_unique<payments::WebPaymentsObserver>(new_contents);
