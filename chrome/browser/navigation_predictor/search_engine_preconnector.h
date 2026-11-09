@@ -12,6 +12,7 @@
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/navigation_predictor/search_engine_dictionary_prewarmer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/preconnect_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -181,6 +182,30 @@ class SearchEnginePreconnector
   }
 #endif
 
+  using SearchEnginePrewarmDictionaryEvent =
+      SearchEngineDictionaryPrewarmer::SearchEnginePrewarmDictionaryEvent;
+
+  bool HasPrewarmedDictionaryForTesting() const {
+    return dictionary_prewarmer_ &&
+           dictionary_prewarmer_->HasPrewarmedDictionaryForTesting();
+  }
+
+  bool IsPrewarmedDictionaryTimerRunningForTesting() const {
+    return dictionary_prewarmer_ &&
+           dictionary_prewarmer_->IsTimerRunningForTesting();
+  }
+
+  GURL GetPrewarmedDictionaryURLForTesting() const {
+    return dictionary_prewarmer_ ? dictionary_prewarmer_->prewarm_url()
+                                 : GURL();
+  }
+
+  void SimulatePrewarmedDictionaryDisconnectedForTesting() {
+    if (dictionary_prewarmer_) {
+      dictionary_prewarmer_->SimulateDisconnectForTesting();
+    }
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(
       SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
@@ -291,6 +316,13 @@ class SearchEnginePreconnector
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   std::unique_ptr<DeviceBoundSessionPrewarmer> device_bound_session_prewarmer_;
 #endif
+
+  // Prewarms compression dictionary metadata for `url` via
+  // SearchEngineDictionaryPrewarmer. Returns true if prewarming was initiated
+  // or refreshed.
+  bool MaybePrewarmDictionary(const GURL& url);
+
+  std::unique_ptr<SearchEngineDictionaryPrewarmer> dictionary_prewarmer_;
 
   base::WeakPtrFactory<SearchEnginePreconnector> weak_factory_{this};
 };

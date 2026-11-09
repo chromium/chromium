@@ -36,11 +36,11 @@
 #include "net/socket/next_proto.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/constants.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 #include "chrome/browser/net/device_bound_session_prewarmer.h"
 #include "content/public/browser/network_service_instance.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #endif
 
 namespace {
@@ -332,6 +332,7 @@ void SearchEnginePreconnector::StopPreconnecting() {
   }
 #endif
   timer_.Stop();
+  dictionary_prewarmer_.reset();
 }
 
 void SearchEnginePreconnector::StartPreconnecting(bool with_startup_delay) {
@@ -372,6 +373,9 @@ void SearchEnginePreconnector::PreconnectDSE(bool is_startup) {
     }
   };
 #endif
+  absl::Cleanup reset_dictionary_prewarmer = [this] {
+    dictionary_prewarmer_.reset();
+  };
   if (!base::FeatureList::IsEnabled(features::kPreconnectToSearch)) {
     return;
   }
@@ -435,6 +439,10 @@ void SearchEnginePreconnector::PreconnectDSE(bool is_startup) {
       std::move(reset_prewarmer).Cancel();
     }
 #endif
+
+    if (MaybePrewarmDictionary(preconnect_url)) {
+      std::move(reset_dictionary_prewarmer).Cancel();
+    }
 
     net::SchemefulSite schemeful_site(preconnect_url);
     auto network_anonymziation_key =
@@ -609,6 +617,9 @@ void SearchEnginePreconnector::OnConnectionEstablished(
 
 void SearchEnginePreconnector::OnSessionClosed(
     bool was_ever_used_to_create_streams) {
+  if (dictionary_prewarmer_) {
+    dictionary_prewarmer_->OnSessionClosed();
+  }
   bool reset_on_used = base::FeatureList::IsEnabled(
       features::kResetConnectionFailureOnSessionUsed);
   if ((reset_on_used && was_ever_used_to_create_streams) || !IsShortSession()) {
@@ -650,6 +661,9 @@ void SearchEnginePreconnector::OnNetworkEvent(net::NetworkChangeEvent event) {
 }
 
 void SearchEnginePreconnector::OnConnectionFailed() {
+  if (dictionary_prewarmer_) {
+    dictionary_prewarmer_->OnConnectionFailed();
+  }
   consecutive_connection_failure_++;
   if (RebindPreconnectReceiversEnabled() &&
       OnlyBindOnConnectionClosedOrFailed()) {
@@ -729,4 +743,21 @@ SearchEnginePreconnector::GetConnectionKeepAliveConfig() {
   }
   CHECK(config.IsValid());
   return config;
+}
+
+bool SearchEnginePreconnector::MaybePrewarmDictionary(const GURL& url) {
+  if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme) ||
+      !SearchEnginePreconnect2Enabled() ||
+      !base::FeatureList::IsEnabled(
+          features::kSearchEnginePrewarmDictionaryOnPreconnect)) {
+    return false;
+  }
+  if (dictionary_prewarmer_ && dictionary_prewarmer_->prewarm_url() == url) {
+    dictionary_prewarmer_->Refresh();
+    return true;
+  }
+  dictionary_prewarmer_ =
+      std::make_unique<SearchEngineDictionaryPrewarmer>(url, browser_context_);
+  dictionary_prewarmer_->Prewarm();
+  return true;
 }

@@ -3588,6 +3588,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="NavigationPredictor.SearchEnginePreconnector.PrewarmDictionary.Event"
+    enum="SearchEnginePrewarmDictionaryEvent" expires_after="2027-09-01">
+  <owner>suzukikeita@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records events during the Prewarm Shared Brotli Dictionary lifecycle on
+    Default Search Engine Preconnect in SearchEngineDictionaryPrewarmer (via
+    SearchEnginePreconnector), including initial prewarming, timer refreshes,
+    fallback timer expirations, socket-driven closures, Mojo disconnections, and
+    prewarmer destruction while a handle is still pinned.
+
+    Note that when prewarming is initiated, SearchEngineDictionaryPrewarmer
+    speculatively requests and pins a dictionary handle in NetworkContext before
+    knowing whether a matching dictionary actually exists on disk. Therefore,
+    kPrewarmed is recorded regardless of whether a dictionary is found.
+
+    Prewarming and its associated metrics are only emitted when the
+    kSearchEnginePrewarmDictionaryOnPreconnect feature is enabled. The emitted
+    closure event types depend on the SearchEnginePrewarmDictionaryCleanupMode
+    feature parameter (events_only, timer_only, or hybrid).
+  </summary>
+</histogram>
+
+<histogram
     name="NavigationPredictor.SearchEnginePreconnector.SessionEstablished.ConnectionInfo"
     enum="SSLNegotiatedAlpnProtocol" expires_after="2026-12-27">
   <owner>suzukikeita@google.com</owner>

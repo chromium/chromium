@@ -14,6 +14,7 @@ source_set("navigation_predictor") {
     "navigation_predictor_keyed_service_factory.h",
     "navigation_predictor_metrics_document_data.h",
     "navigation_predictor_preconnect_client.h",
+    "search_engine_dictionary_prewarmer.h",
     "search_engine_preconnector.h",
     "search_engine_preconnector_keyed_service_factory.h",
   ]
@@ -43,6 +44,7 @@ source_set("impl") {
     "navigation_predictor_keyed_service_factory.cc",
     "navigation_predictor_metrics_document_data.cc",
     "navigation_predictor_preconnect_client.cc",
+    "search_engine_dictionary_prewarmer.cc",
     "search_engine_preconnector.cc",
     "search_engine_preconnector_keyed_service_factory.cc",
   ]
