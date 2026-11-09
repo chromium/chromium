@@ -1111,6 +1111,21 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Android.AddAccountRestrictionState"
+    enum="SigninAndroidAddAccountRestrictionState" expires_after="2027-06-27">
+  <owner>mziel@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether adding accounts is blocked by the DISALLOW_MODIFY_ACCOUNTS
+    user restriction, and whether the device has any accounts.
+
+    Recorded once per browser process, when the list of accounts first loads
+    (usually at startup). Not recorded if that first load fails after all
+    retries, even if a later load succeeds, so these clients are missing from
+    this histogram.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Android.FRESigninEvents" enum="FRESigninEvents"
     expires_after="2027-04-11">
   <owner>mthiesse@chromium.org</owner>

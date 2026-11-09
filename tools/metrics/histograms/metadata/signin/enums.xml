@@ -1419,6 +1419,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/authentication/add_account_signin/add_account_signin_manager.h:SigninAddAccountToDeviceResult) -->
 
+<!-- LINT.IfChange(SigninAndroidAddAccountRestrictionState) -->
+
+<enum name="SigninAndroidAddAccountRestrictionState">
+  <int value="0" label="Allowed, no accounts"/>
+  <int value="1" label="Allowed, at least one account"/>
+  <int value="2" label="Blocked (DISALLOW_MODIFY_ACCOUNTS), no accounts"/>
+  <int value="3"
+      label="Blocked (DISALLOW_MODIFY_ACCOUNTS), at least one account"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/public/android/java/src/org/chromium/components/signin/AccountManagerFacadeImpl.java:AddAccountRestrictionState) -->
+
 <enum name="SigninAndroidAddAccountState">
   <int value="0" label="Requested"/>
   <int value="1" label="Started"/>

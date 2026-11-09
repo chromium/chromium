@@ -26,6 +26,7 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Process;
 import android.os.UserManager;
 
 import androidx.test.rule.GrantPermissionRule;
@@ -57,6 +58,7 @@ import org.chromium.components.extensions.ExtensionsBuildflags;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
+import org.chromium.components.signin.AccountManagerFacadeImpl.AddAccountRestrictionState;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -84,6 +86,8 @@ public class AccountManagerFacadeImplTest {
             "Signin.Android.SystemAccountManagerAccessTokenLatency.Success";
     private static final String SYSTEM_ACCOUNT_MANAGER_LATENCY_FAILURE =
             "Signin.Android.SystemAccountManagerAccessTokenLatency.Failure";
+    private static final String ADD_ACCOUNT_RESTRICTION_STATE_HISTOGRAM =
+            "Signin.Android.AddAccountRestrictionState";
 
     private static final AccountInfo TEST_ACCOUNT =
             new AccountInfo.Builder("test@gmail.com", new GaiaId("testGaiaId")).build();
@@ -154,6 +158,105 @@ public class AccountManagerFacadeImplTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         numberOfAccountsHistogram.assertExpected();
+    }
+
+    @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void testAddAccountRestrictionState_allowedWithAccounts() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ADD_ACCOUNT_RESTRICTION_STATE_HISTOGRAM,
+                        AddAccountRestrictionState.ALLOWED_WITH_ACCOUNTS);
+        addTestAccount("test@gmail.com");
+
+        new AccountManagerFacadeImpl(mDelegate);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void testAddAccountRestrictionState_allowedNoAccounts() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ADD_ACCOUNT_RESTRICTION_STATE_HISTOGRAM,
+                        AddAccountRestrictionState.ALLOWED_NO_ACCOUNTS);
+
+        new AccountManagerFacadeImpl(mDelegate);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void testAddAccountRestrictionState_blockedWithAccounts() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ADD_ACCOUNT_RESTRICTION_STATE_HISTOGRAM,
+                        AddAccountRestrictionState.BLOCKED_WITH_ACCOUNTS);
+        setModifyAccountsRestriction();
+        addTestAccount("test@gmail.com");
+
+        new AccountManagerFacadeImpl(mDelegate);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void testAddAccountRestrictionState_blockedNoAccounts() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ADD_ACCOUNT_RESTRICTION_STATE_HISTOGRAM,
+                        AddAccountRestrictionState.BLOCKED_NO_ACCOUNTS);
+        setModifyAccountsRestriction();
+
+        new AccountManagerFacadeImpl(mDelegate);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void testAddAccountRestrictionState_fetchFails() throws Exception {
+        doThrow(AccountManagerDelegateException.class).when(mDelegate).getAccountsSynchronous();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(ADD_ACCOUNT_RESTRICTION_STATE_HISTOGRAM)
+                        // Shows that the accounts promise was fulfilled (with the empty fallback
+                        // list), so the restriction state was skipped on purpose.
+                        .expectIntRecord("Signin.AndroidNumberOfDeviceAccounts", 0)
+                        .build();
+
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
+        // Lets all MAXIMUM_RETRIES retries run, after which the facade gives up.
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        assertFalse(facade.didAccountFetchSucceed());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void testAddAccountRestrictionState_recordedOncePerFacade() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ADD_ACCOUNT_RESTRICTION_STATE_HISTOGRAM,
+                        AddAccountRestrictionState.ALLOWED_WITH_ACCOUNTS);
+        addTestAccount("test1@gmail.com");
+        new AccountManagerFacadeImpl(mDelegate);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Later account list updates don't record the histogram again.
+        addTestAccount("test2@gmail.com");
+        mDelegate.callOnAccountsChanged();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -624,6 +727,42 @@ public class AccountManagerFacadeImplTest {
 
     @Test
     @Features.EnableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void testAddAccountRestrictionState_migrateAccountManagerDelegateEnabled() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ADD_ACCOUNT_RESTRICTION_STATE_HISTOGRAM,
+                        AddAccountRestrictionState.BLOCKED_WITH_ACCOUNTS);
+        setModifyAccountsRestriction();
+        addTestAccount("test@gmail.com");
+
+        new AccountManagerFacadeImpl(mDelegate);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Features.EnableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void testAddAccountRestrictionState_fetchFails_migrateAccountManagerDelegateEnabled()
+            throws Exception {
+        doThrow(AccountManagerDelegateException.class)
+                .when(mDelegate)
+                .getPlatformAccountsSynchronous();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(ADD_ACCOUNT_RESTRICTION_STATE_HISTOGRAM)
+                        .expectIntRecord("Signin.AndroidNumberOfDeviceAccounts", 0)
+                        .build();
+
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        assertFalse(facade.didAccountFetchSucceed());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Features.EnableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
     public void testCanonicalAccount_migrateAccountManagerDelegateEnabled() throws Exception {
         addTestAccount("test@gmail.com");
         var coreAccountInfos = mFacade.getAccounts().getResult();
@@ -1046,6 +1185,11 @@ public class AccountManagerFacadeImplTest {
         mShadowUserManager.setApplicationRestrictions(mContext.getPackageName(), restrictions);
         mContext.sendBroadcast(new Intent(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
         RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    private void setModifyAccountsRestriction() {
+        mShadowUserManager.setUserRestriction(
+                Process.myUserHandle(), UserManager.DISALLOW_MODIFY_ACCOUNTS, true);
     }
 
     private CoreAccountInfo addTestAccount(String accountEmail) {

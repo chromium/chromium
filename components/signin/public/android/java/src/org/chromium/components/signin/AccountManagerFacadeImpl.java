@@ -13,12 +13,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.os.UserManager;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
@@ -41,6 +44,8 @@ import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -53,6 +58,32 @@ import java.util.concurrent.atomic.AtomicReference;
 /** AccountManagerFacade wraps our access of AccountManager in Android. */
 @NullMarked
 public class AccountManagerFacadeImpl implements AccountManagerFacade {
+    /**
+     * Whether adding accounts is blocked by the DISALLOW_MODIFY_ACCOUNTS user restriction, and
+     * whether the device has any accounts. Recorded in Signin.Android.AddAccountRestrictionState.
+     *
+     * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused.
+     */
+    // LINT.IfChange(AddAccountRestrictionState)
+    @VisibleForTesting
+    @IntDef({
+        AddAccountRestrictionState.ALLOWED_NO_ACCOUNTS,
+        AddAccountRestrictionState.ALLOWED_WITH_ACCOUNTS,
+        AddAccountRestrictionState.BLOCKED_NO_ACCOUNTS,
+        AddAccountRestrictionState.BLOCKED_WITH_ACCOUNTS,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface AddAccountRestrictionState {
+        int ALLOWED_NO_ACCOUNTS = 0;
+        int ALLOWED_WITH_ACCOUNTS = 1;
+        int BLOCKED_NO_ACCOUNTS = 2;
+        int BLOCKED_WITH_ACCOUNTS = 3;
+        int NUM_ENTRIES = 4;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninAndroidAddAccountRestrictionState)
+
     /**
      * The maximum amount of acceptable retries (for a total of MAXIMUM_RETRIES+1 attempts). *
      *
@@ -112,6 +143,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                         accounts -> {
                             RecordHistogram.recordExactLinearHistogram(
                                     "Signin.AndroidNumberOfDeviceAccounts", accounts.size(), 50);
+                            recordAddAccountRestrictionState(!accounts.isEmpty());
                         });
     }
 
@@ -824,6 +856,44 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     public void disallowTokenRequestsForTesting() {
         ThreadUtils.assertOnUiThread();
         mDisallowTokenRequestsForTesting = true;
+    }
+
+    /**
+     * Records Signin.Android.AddAccountRestrictionState for the first account list loaded by this
+     * instance. Does nothing if loading the accounts failed, because in that case the account list
+     * is an empty fallback and must not be counted as "no accounts".
+     *
+     * @param hasAccounts Whether the loaded account list contains at least one account.
+     */
+    private void recordAddAccountRestrictionState(boolean hasAccounts) {
+        if (!mDidAccountFetchSucceed) {
+            return;
+        }
+
+        final @AddAccountRestrictionState int state;
+        if (isAddingAccountsAllowed()) {
+            state =
+                    hasAccounts
+                            ? AddAccountRestrictionState.ALLOWED_WITH_ACCOUNTS
+                            : AddAccountRestrictionState.ALLOWED_NO_ACCOUNTS;
+        } else {
+            state =
+                    hasAccounts
+                            ? AddAccountRestrictionState.BLOCKED_WITH_ACCOUNTS
+                            : AddAccountRestrictionState.BLOCKED_NO_ACCOUNTS;
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                "Signin.Android.AddAccountRestrictionState",
+                state,
+                AddAccountRestrictionState.NUM_ENTRIES);
+    }
+
+    /** Returns whether the current Android user profile allows adding accounts. */
+    private static boolean isAddingAccountsAllowed() {
+        final @Nullable UserManager userManager =
+                ContextUtils.getApplicationContext().getSystemService(UserManager.class);
+        return userManager == null
+                || !userManager.hasUserRestriction(UserManager.DISALLOW_MODIFY_ACCOUNTS);
     }
 
     private class GetAccountAsyncTask extends AsyncTask<@Nullable List<GaiaId>> {
