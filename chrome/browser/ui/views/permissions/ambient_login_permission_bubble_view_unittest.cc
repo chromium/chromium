@@ -129,7 +129,10 @@ class MockAmbientDelegate : public TestPermissionBubbleViewDelegate {
             origin, std::move(credentials),
             base::BindOnce(&MockAmbientDelegate::OnCredentialSelected,
                            base::Unretained(this)),
-            ambient_signin::AmbientLoginPermissionRequest::Options{}));
+            ambient_signin::AmbientLoginPermissionRequest::Options{
+                .bubble_dismissed_callback =
+                    base::BindOnce(&MockAmbientDelegate::OnBubbleDismissed,
+                                   base::Unretained(this))}));
     set_requests(std::move(requests));
 
     ON_CALL(*this, Accept)
@@ -139,6 +142,9 @@ class MockAmbientDelegate : public TestPermissionBubbleViewDelegate {
             request->PermissionGranted(prompt_options, /*is_one_time=*/false);
           }
         });
+    ON_CALL(*this, Dismiss).WillByDefault([this](const PromptOptions&) {
+      set_requests({});
+    });
   }
 
   GURL GetEmbeddingOrigin() const override { return embedding_origin_; }
@@ -151,9 +157,13 @@ class MockAmbientDelegate : public TestPermissionBubbleViewDelegate {
     selected_credential_index_ = index;
   }
 
+  void OnBubbleDismissed() { bubble_dismissed_ = true; }
+
   std::optional<size_t> selected_credential_index() const {
     return selected_credential_index_;
   }
+
+  bool bubble_dismissed() const { return bubble_dismissed_; }
 
   MOCK_METHOD(void, Accept, (const PromptOptions&), (override));
   MOCK_METHOD(void, Dismiss, (const PromptOptions&), (override));
@@ -161,6 +171,7 @@ class MockAmbientDelegate : public TestPermissionBubbleViewDelegate {
  private:
   GURL embedding_origin_;
   std::optional<size_t> selected_credential_index_;
+  bool bubble_dismissed_ = false;
 };
 
 class AmbientLoginPermissionBubbleViewTest : public ChromeViewsTestBase {
@@ -200,10 +211,10 @@ class AmbientLoginPermissionBubbleViewTest : public ChromeViewsTestBase {
   content::WebContents* web_contents() { return web_contents_.get(); }
 
   AmbientLoginPermissionBubbleView* CreateBubble(
-      MockAmbientDelegate* delegate) {
+      MockAmbientDelegate* delegate,
+      PermissionPromptStyle prompt_style = PermissionPromptStyle::kBubbleOnly) {
     auto* bubble = new AmbientLoginPermissionBubbleView(
-        web_contents(), delegate->GetWeakPtr(),
-        PermissionPromptStyle::kBubbleOnly);
+        web_contents(), delegate->GetWeakPtr(), prompt_style);
     bubble->set_parent_window(anchor_widget_->GetNativeView());
     views::BubbleDialogDelegateView::CreateBubble(bubble);
     bubble->GetWidget()->Show();
@@ -322,7 +333,38 @@ TEST_F(AmbientLoginPermissionBubbleViewTest, CloseButtonClickedDismisses) {
 
   EXPECT_CALL(delegate, Dismiss).Times(1);
   EXPECT_CALL(delegate, Accept).Times(0);
-  bubble->ClosingPermission();
+  bubble->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+  EXPECT_TRUE(delegate.bubble_dismissed());
+}
+
+TEST_F(AmbientLoginPermissionBubbleViewTest,
+       ChipStyleUserDismissalNotifiesRequestWithoutDismissingDelegate) {
+  {
+    MockAmbientDelegate delegate(GURL("https://example.com"),
+                                 u"bob@example.com",
+                                 u"Google Password Manager");
+    AmbientLoginPermissionBubbleView* bubble =
+        CreateBubble(&delegate, PermissionPromptStyle::kChip);
+
+    EXPECT_CALL(delegate, Dismiss).Times(0);
+    bubble->GetWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kEscKeyPressed);
+    EXPECT_TRUE(delegate.bubble_dismissed());
+  }
+
+  {
+    MockAmbientDelegate delegate(GURL("https://example.com"),
+                                 u"bob@example.com",
+                                 u"Google Password Manager");
+    AmbientLoginPermissionBubbleView* bubble =
+        CreateBubble(&delegate, PermissionPromptStyle::kChip);
+
+    EXPECT_CALL(delegate, Dismiss).Times(0);
+    bubble->GetWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
+    EXPECT_FALSE(delegate.bubble_dismissed());
+  }
 }
 
 TEST_F(AmbientLoginPermissionBubbleViewTest, FederatedCredentialsDisplay) {

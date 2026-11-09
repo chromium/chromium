@@ -45,6 +45,7 @@ AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
       federated_selected_callback_(std::move(federated_selected_callback)),
       caller_permission_decided_callback_(
           std::move(options.permission_decided_callback)),
+      bubble_dismissed_callback_(std::move(options.bubble_dismissed_callback)),
       bubble_starts_open_(options.bubble_starts_open) {}
 
 AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
@@ -72,6 +73,12 @@ void AmbientLoginPermissionRequest::SelectFederatedCredential(size_t index) {
   CHECK_LT(index, federated_credentials_.size());
   selected_federated_index_ = index;
   selected_credential_index_.reset();
+}
+
+void AmbientLoginPermissionRequest::OnBubbleDismissed() {
+  if (bubble_dismissed_callback_) {
+    std::move(bubble_dismissed_callback_).Run();
+  }
 }
 
 void AmbientLoginPermissionRequest::OnPermissionDecided(

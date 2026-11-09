@@ -98,6 +98,9 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
     // Whether the bubble opens automatically along with the chip. Otherwise,
     // only the chip is shown, and the bubble opens when the user clicks it.
     bool bubble_starts_open = true;
+    // Called when the user explicitly dismisses the bubble (e.g. via the close
+    // button or Escape key).
+    base::OnceClosure bubble_dismissed_callback = base::DoNothing();
   };
 
   // Constructor supporting both WebAuthn/password credentials and FedCM
@@ -134,6 +137,9 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
   // `federated_selected_callback_` when the permission request is accepted.
   void SelectFederatedCredential(size_t index);
 
+  // Called when the user explicitly dismisses the ambient sign-in bubble.
+  void OnBubbleDismissed();
+
   // Returns the vector icon representing a credential of the given `type`.
   // Used both for credential rows in the bubble and for the omnibox chip.
   static const gfx::VectorIcon& GetCredentialIcon(CredentialType type);
@@ -157,6 +163,7 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
   std::vector<FederatedCredential> federated_credentials_;
   FederatedCredentialSelectedCallback federated_selected_callback_;
   PermissionDecidedCallback caller_permission_decided_callback_;
+  base::OnceClosure bubble_dismissed_callback_;
   std::optional<size_t> selected_credential_index_;
   std::optional<size_t> selected_federated_index_;
   const bool bubble_starts_open_;

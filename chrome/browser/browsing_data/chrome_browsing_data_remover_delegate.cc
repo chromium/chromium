@@ -936,6 +936,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
         ContentSettingsType::INTENT_PICKER_DISPLAY, delete_begin_, delete_end_,
         website_settings_filter);
+
+    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
+        ContentSettingsType::WEBAUTHN_AMBIENT_SIGNIN_DATA, delete_begin_,
+        delete_end_, website_settings_filter);
 #endif
 
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(

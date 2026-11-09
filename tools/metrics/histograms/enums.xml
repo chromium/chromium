@@ -2379,6 +2379,7 @@ Called by update_net_error_codes.py.-->
   <int value="145" label="Add Sub Apps without prompts"/>
   <int value="146" label="Inline cue menu"/>
   <int value="147" label="Suspicious site warning data"/>
+  <int value="148" label="WebAuthn ambient sign-in data"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/content_settings/core/common/content_settings_uma_constants.h:kContentSettingsTypeToHistogramValue) -->

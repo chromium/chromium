@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_AMBIENT_AMBIENT_SIGNIN_CONTROLLER_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_AMBIENT_AMBIENT_SIGNIN_CONTROLLER_H_
 
-#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -41,6 +40,7 @@ class AmbientSigninController
   DOCUMENT_USER_DATA_KEY_DECL();
 
   void OnMechanismSelected(size_t index);
+  void OnBubbleDismissed();
   void Close();
 
   // AuthenticatorRequestDialogModel::Observer

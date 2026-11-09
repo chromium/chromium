@@ -457,5 +457,9 @@ enum ContentSettingsType {
 
   // Stores allowlist decisions for Suspicious Site Warnings.
   SUSPICIOUS_SITE_WARNING_DATA,
+
+  // Website setting which stores per-site dismissal metadata for the WebAuthn
+  // ambient sign-in prompt.
+  WEBAUTHN_AMBIENT_SIGNIN_DATA,
 };
 // LINT.ThenChange(//components/content_settings/core/common/content_settings_uma_constants.h:kContentSettingsTypeToHistogramValue)

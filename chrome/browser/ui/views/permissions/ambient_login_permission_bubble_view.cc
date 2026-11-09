@@ -464,6 +464,37 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
 
 AmbientLoginPermissionBubbleView::~AmbientLoginPermissionBubbleView() = default;
 
+AmbientLoginPermissionBubbleView::WidgetCloseObserver::WidgetCloseObserver(
+    AmbientLoginPermissionBubbleView* owner)
+    : owner_(owner) {}
+
+AmbientLoginPermissionBubbleView::WidgetCloseObserver::~WidgetCloseObserver() =
+    default;
+
+void AmbientLoginPermissionBubbleView::WidgetCloseObserver::Observe(
+    views::Widget* widget) {
+  observation_.Reset();
+  observation_.Observe(widget);
+}
+
+void AmbientLoginPermissionBubbleView::WidgetCloseObserver::OnWidgetClosing(
+    views::Widget* widget) {
+  observation_.Reset();
+  const views::Widget::ClosedReason reason = widget->closed_reason();
+  if (reason == views::Widget::ClosedReason::kCloseButtonClicked ||
+      reason == views::Widget::ClosedReason::kEscKeyPressed) {
+    if (ambient_signin::AmbientLoginPermissionRequest* ambient_request =
+            owner_->GetAmbientRequest()) {
+      ambient_request->OnBubbleDismissed();
+    }
+  }
+}
+
+void AmbientLoginPermissionBubbleView::WidgetCloseObserver::OnWidgetDestroying(
+    views::Widget* widget) {
+  observation_.Reset();
+}
+
 void AmbientLoginPermissionBubbleView::Show() {
   CHECK(GetNativeWindow());
   UpdateAnchorPosition();
@@ -474,6 +505,7 @@ void AmbientLoginPermissionBubbleView::Show() {
 
 void AmbientLoginPermissionBubbleView::AddedToWidget() {
   PermissionPromptBubbleBaseView::AddedToWidget();
+  widget_close_observer_.Observe(GetWidget());
 
   if (auto* title_label =
           views::AsViewClass<views::Label>(GetBubbleFrameView()->title())) {
