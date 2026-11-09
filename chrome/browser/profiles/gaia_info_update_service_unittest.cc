@@ -46,7 +46,6 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
-#include "components/sync/base/features.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -189,16 +188,12 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
-TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    GTEST_SKIP() << "Sync is deprecated";
-  }
-
+TEST_F(GAIAInfoUpdateServiceTest, LogInLogOut) {
   AccountInfo info =
       signin::MakeAccountAvailable(identity_manager(), "pat@example.com");
   base::RunLoop().RunUntilIdle();
   signin::SetPrimaryAccount(identity_manager(), info.GetEmail(),
-                            signin::ConsentLevel::kSync);
+                            signin::ConsentLevel::kSignin);
   info = GetValidAccountInfo(info.GetEmail(), info.GetGaiaId(), "Pat",
                              "Pat Foo", "");
   signin::UpdateAccountInfoForAccount(identity_manager(), info);
@@ -225,42 +220,6 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
   EXPECT_FALSE(entry->GetHostedDomain().has_value());
   EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kFalse);
 }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-TEST_F(GAIAInfoUpdateServiceTest, RevokeSyncConsent) {
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    GTEST_SKIP() << "RevokeSyncConsent() is no-op as Sync is deprecated";
-  }
-
-  AccountInfo info =
-      signin::MakeAccountAvailable(identity_manager(), "pat@example.com");
-  base::RunLoop().RunUntilIdle();
-  signin::SetPrimaryAccount(identity_manager(), info.GetEmail(),
-                            signin::ConsentLevel::kSync);
-  info = GetValidAccountInfo(info.GetEmail(), info.GetGaiaId(), "Pat",
-                             "Pat Foo", "");
-  signin::UpdateAccountInfoForAccount(identity_manager(), info);
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_EQ(1u, storage()->GetNumberOfProfiles());
-  ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
-  gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
-  signin::SimulateAccountImageFetch(identity_manager(), info.GetAccountId(),
-                                    "GAIA_IMAGE_URL_WITH_SIZE", gaia_picture);
-  // Revoke sync consent (stay signed in with the primary account).
-  signin::RevokeSyncConsent(identity_manager());
-  ASSERT_TRUE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  // Verify that the GAIA name and picture, and picture URL are not cleared
-  // as unconsented primary account still exists.
-  EXPECT_EQ(entry->GetGAIAGivenName(), u"Pat");
-  EXPECT_EQ(entry->GetGAIAName(), u"Pat Foo");
-  EXPECT_EQ(entry->GetHostedDomain(), "");
-  EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kFalse);
-  EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_picture, entry->GetAvatarIcon()));
-}
-
-#endif  // !BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {
   // Simulate a state where the profile entry has GAIA related information
@@ -549,11 +508,6 @@ TEST_F(GAIAInfoUpdateServiceWithGlicEnablingTest, LogInLogOut) {
       identity_manager(), email, signin::ConsentLevel::kSignin);
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    EXPECT_FALSE(
-        identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  }
 
   info = GetValidAccountInfo(info.GetEmail(), info.GetGaiaId(), "Pat",
                              "Pat Foo", "");

@@ -30,7 +30,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/sync/base/features.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
@@ -194,9 +193,7 @@ void ProfileAttributesEntry::Initialize(ProfileAttributesStorage* storage,
   }
 
   if (signin_util::IsForceSigninEnabled()) {
-    if ((!syncer::IsReplaceSyncPromosWithSignInPromosEnabled() ||
-         GetSigninState() == SigninState::kNotSignedIn) &&
-        !CanBeManaged()) {
+    if (GetSigninState() == SigninState::kNotSignedIn) {
       SetBool(kForceSigninProfileLockedKey, true);
     }
   } else {

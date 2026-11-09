@@ -164,7 +164,6 @@
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
-#include "components/sync/base/features.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/user_prefs/user_prefs.h"
@@ -1726,12 +1725,8 @@ void ProfileImpl::AckCrashForTracking() {
 bool ProfileImpl::IsSignedIn() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(this);
-  // TODO(crbug.com/348368545): Switch to ConsentLevel::kSignin on ChromeOS.
-  signin::ConsentLevel consent_level =
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? signin::ConsentLevel::kSignin
-          : signin::ConsentLevel::kSync;
-  return identity_manager && identity_manager->HasPrimaryAccount(consent_level);
+  return identity_manager &&
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 GURL ProfileImpl::GetHomePage() {

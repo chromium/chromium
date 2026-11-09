@@ -21,7 +21,6 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync/test/test_sync_service.h"
@@ -75,12 +74,11 @@ class BatchUploadServiceTest : public testing::Test {
     return *delegate_mock_;
   }
 
-  void SigninWithFullInfo(
-      signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin) {
+  void SigninWithFullInfo() {
     signin::IdentityManager* identity_manager =
         identity_test_environment_.identity_manager();
     AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-        identity_manager, "test@gmail.com", consent_level);
+        identity_manager, "test@gmail.com", signin::ConsentLevel::kSignin);
     ASSERT_FALSE(account_info.IsEmpty());
 
     account_info = AccountInfo::Builder(account_info)
@@ -146,9 +144,6 @@ TEST_F(BatchUploadServiceTest, SignedPending) {
 }
 
 TEST_F(BatchUploadServiceTest, Syncing) {
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    GTEST_SKIP() << "Sync is deprecated";
-  }
   SigninWithFullInfo();
   signin::SetPrimaryAccount(&identity_manager(), "email",
                             signin::ConsentLevel::kSync);
