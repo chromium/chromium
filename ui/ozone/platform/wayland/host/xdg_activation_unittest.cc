@@ -105,6 +105,61 @@ TEST_F(XdgActivationTest, RequestNewToken) {
   }
 }
 
+// Tests that a token requested after a click in a bubble (a wl_subsurface,
+// e.g. the profile menu) names the bubble's toplevel as the requestor surface
+// rather than the bubble's own surface, which compositors don't accept.
+TEST_F(XdgActivationTest, RequestNewTokenFromBubbleUsesToplevelSurface) {
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
+  MockWaylandPlatformWindowDelegate bubble_delegate(connection_.get());
+
+  window_.reset();
+
+  auto toplevel = CreateWaylandWindowWithParams(
+      PlatformWindowType::kWindow, kDefaultBounds, &delegate,
+      gfx::kNullAcceleratedWidget, true /*inactive*/);
+  auto bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect(10, 10, 50, 50), &bubble_delegate,
+      toplevel->GetWidget(), true /*inactive*/);
+  ASSERT_TRUE(bubble);
+  ASSERT_TRUE(bubble->AsWaylandBubble());
+  ActivateSurface(toplevel->root_surface()->get_surface_id());
+
+  // Emulate a mouse press on the bubble.
+  SetPointerFocusedWindow(bubble.get());
+  connection_->serial_tracker().UpdateSerial(wl::SerialType::kMousePress, 42);
+
+  PostToServerAndWait([toplevel_id = toplevel->root_surface()->get_surface_id(),
+                       bubble_id = bubble->root_surface()->get_surface_id()](
+                          wl::TestWaylandServerThread* server) {
+    auto* const xdg_activation = server->xdg_activation_v1();
+    auto* const toplevel_surface =
+        server->GetObject<wl::MockSurface>(toplevel_id)->resource();
+    auto* const bubble_surface =
+        server->GetObject<wl::MockSurface>(bubble_id)->resource();
+    EXPECT_CALL(*xdg_activation, TokenSetSurface(_, _, bubble_surface))
+        .Times(0);
+    EXPECT_CALL(*xdg_activation, TokenSetSurface(_, _, toplevel_surface));
+    EXPECT_CALL(*xdg_activation, TokenCommit(_, _));
+  });
+
+  ::testing::StrictMock<
+      base::MockCallback<base::nix::XdgActivationTokenCallback>>
+      callback;
+  EXPECT_CALL(callback, Run(std::string(kMockStaticTestToken)));
+  connection_->xdg_activation()->RequestNewToken(callback.Get());
+  PostToServerAndWait(
+      [](wl::TestWaylandServerThread* server) {
+        auto* const xdg_activation = server->xdg_activation_v1();
+        ASSERT_TRUE(xdg_activation);
+        ASSERT_TRUE(xdg_activation->get_token());
+        xdg_activation_token_v1_send_done(
+            xdg_activation->get_token()->resource(), kMockStaticTestToken);
+      },
+      true);
+
+  SetPointerFocusedWindow(nullptr);
+}
+
 // Tests that showing a new window automatically requests a token.
 TEST_F(XdgActivationTest, RequestOnShow) {
   MockWaylandPlatformWindowDelegate delegate(connection_.get());
