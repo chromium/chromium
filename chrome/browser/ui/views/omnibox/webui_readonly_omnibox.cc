@@ -955,7 +955,9 @@ WebUIReadOnlyOmnibox::OnKey(
 
     case ui::DomKey::ARROW_DOWN:
       CHECK(!control, base::NotFatalUntil::M162);
-      CHECK(!alt, base::NotFatalUntil::M162);
+      // TODO(crbug.com/580242268): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(!alt);
       CHECK(!shift, base::NotFatalUntil::M162);
       CHECK(!command, base::NotFatalUntil::M162);
       controller()->edit_model()->OnUpOrDownPressed(/*down=*/true,
