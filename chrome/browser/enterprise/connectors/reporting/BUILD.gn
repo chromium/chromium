@@ -100,11 +100,13 @@ source_set("impl") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/actor",
     "//chrome/browser/enterprise",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/signin",
     "//chrome/common:channel_info",
+    "//components/actor/core",
     "//components/crash/core/app",
     "//components/device_signals/core/browser",
     "//components/device_signals/core/common",
@@ -186,7 +188,12 @@ source_set("unit_tests") {
 
   if (enterprise_cloud_content_analysis && enable_extensions_core) {
     deps += [
+      "//chrome/browser/actor",
+      "//chrome/browser/actor:test_support",
       "//chrome/browser/extensions:test_support",
+      "//components/actor/core",
+      "//components/tabs:public",
+      "//components/tabs:test_support",
       "//extensions:test_support",
     ]
   }

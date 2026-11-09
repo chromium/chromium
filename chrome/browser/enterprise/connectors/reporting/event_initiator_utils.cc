@@ -10,10 +10,15 @@
 
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/version.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/glic_enums.mojom.h"
+#include "components/actor/core/task_source_info.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
@@ -48,6 +53,7 @@ namespace enterprise_connectors {
 
 namespace {
 
+using BrowserAgentInfo = chrome::cros::reporting::proto::BrowserAgentInfo;
 using EventInitiatorInfo = chrome::cros::reporting::proto::EventInitiatorInfo;
 using ExtensionInfo =
     safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo;
@@ -150,9 +156,21 @@ std::optional<EventInitiatorInfo> GetActiveEventInitiatorInfoImpl(
 
 #if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
   if (include_device_info) {
-    return CdpActorSessionTracker::GetEventInitiatorInfo(web_contents);
+    if (std::optional<EventInitiatorInfo> cdp_initiator =
+            CdpActorSessionTracker::GetEventInitiatorInfo(web_contents)) {
+      return cdp_initiator;
+    }
   }
 #endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+
+  // An in-browser agent has the lowest precedence, so it is only reported when
+  // no extension or CDP actor is attributed on the tab.
+  if (std::optional<BrowserAgentInfo> agent_info =
+          GetActiveGlicActorInitiatorInfo(web_contents)) {
+    EventInitiatorInfo initiator;
+    *initiator.mutable_browser_agent_info() = std::move(*agent_info);
+    return initiator;
+  }
   return std::nullopt;
 }
 
@@ -263,6 +281,50 @@ std::optional<ExtensionInfo> GetActiveExtensionInitiatorInfo(
         // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
+std::optional<BrowserAgentInfo> GetActiveGlicActorInitiatorInfo(
+    content::WebContents* web_contents) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!base::FeatureList::IsEnabled(kEnterpriseGlicActorAttribution) ||
+      !web_contents) {
+    return std::nullopt;
+  }
+
+  // The actor service is not created for off-the-record profiles.
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(web_contents->GetBrowserContext());
+  if (!actor_service) {
+    return std::nullopt;
+  }
+
+  // Actor tasks act on tabs, so look up the tab's WebContents when
+  // `web_contents` is embedded in it.
+  const actor::ActorTask* task =
+      actor_service->GetActingActorTaskForWebContents(
+          web_contents->GetOutermostWebContents());
+  if (!task ||
+      task->source_info().type != actor::TaskSourceInfo::Client::kGlic) {
+    return std::nullopt;
+  }
+
+  BrowserAgentInfo agent_info;
+  agent_info.set_agent_type(BrowserAgentInfo::AGENT_TYPE_GEMINI_IN_CHROME);
+  if (!task->id().is_null()) {
+    agent_info.set_task_id(base::NumberToString(task->id().value()));
+  }
+
+  // For tasks started from a Gemini in Chrome conversation, the source ID is
+  // the conversation ID. Experimental triggering stores a triggering context ID
+  // there instead, which is not reported.
+  const std::optional<std::string>& source_id = task->source_info().id;
+  if (task->feature_mode() !=
+          glic::mojom::FeatureMode::kExperimentalTriggering &&
+      source_id.has_value() && !source_id->empty()) {
+    agent_info.set_conversation_id(*source_id);
+  }
+  return agent_info;
+}
+
 std::optional<EventInitiatorInfo> GetActiveEventInitiatorInfo(
     content::WebContents* web_contents) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -282,6 +344,7 @@ std::optional<EventInitiatorInfo> GetActiveEventInitiatorInfo(
   const bool include_device_info =
       CanIncludeDeviceInfoForUrlLookup(browser_context);
   if (!base::FeatureList::IsEnabled(kEnterpriseExtensionActorAttribution) &&
+      !base::FeatureList::IsEnabled(kEnterpriseGlicActorAttribution) &&
       !include_device_info) {
     return std::nullopt;
   }

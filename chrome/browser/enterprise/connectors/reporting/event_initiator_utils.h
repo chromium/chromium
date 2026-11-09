@@ -61,10 +61,24 @@ std::optional<safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo>
 GetActiveExtensionInitiatorInfo(content::BrowserContext* browser_context,
                                 SessionID tab_id);
 
+// Returns a `BrowserAgentInfo` describing the Gemini in Chrome (Glic) actor
+// task currently acting on the tab that hosts `web_contents`.
+//
+// Returns `std::nullopt` if `web_contents` is null, the
+// `kEnterpriseGlicActorAttribution` feature is off, the profile has no actor
+// service (e.g. it is off the record), or no Glic task is acting on the tab.
+// Paused and finished tasks are not acting. `conversation_id` is only set for
+// tasks started from a Gemini in Chrome conversation.
+//
+// Must be called on the UI thread.
+std::optional<chrome::cros::reporting::proto::BrowserAgentInfo>
+GetActiveGlicActorInitiatorInfo(content::WebContents* web_contents);
+
 // Resolves `EventInitiatorInfo` for the entity currently acting on
-// `web_contents`, checking `GetActiveExtensionInitiatorInfo()` first and
-// falling back to `CdpActorSessionTracker::GetEventInitiatorInfo()`. Returns
-// `std::nullopt` if `web_contents` is null or no actor is currently attributed.
+// `web_contents`, checking `GetActiveExtensionInitiatorInfo()` first, then
+// `CdpActorSessionTracker::GetEventInitiatorInfo()`, and falling back to
+// `GetActiveGlicActorInitiatorInfo()`. Returns `std::nullopt` if
+// `web_contents` is null or no actor is currently attributed.
 //
 // Must be called on the UI thread.
 std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>
@@ -74,9 +88,10 @@ GetActiveEventInitiatorInfo(content::WebContents* web_contents);
 // callers that only know a tab's `SessionID` (e.g. the real-time URL lookup
 // service). Device-level CDP attribution (`ExternalProcessInfo` /
 // `BrowserFeatureInfo`) is included only when `browser_context`'s real-time URL
-// lookup policy scope allows device info; otherwise only extension attribution
-// is returned. Returns `std::nullopt` if `browser_context` is null, no such tab
-// exists, or no eligible actor is currently attributed.
+// lookup policy scope allows device info; otherwise only extension and Gemini
+// in Chrome attribution are returned. Returns `std::nullopt` if
+// `browser_context` is null, no such tab exists, or no eligible actor is
+// currently attributed.
 //
 // Must be called on the UI thread.
 std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>

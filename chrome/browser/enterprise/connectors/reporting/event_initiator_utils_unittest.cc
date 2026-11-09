@@ -9,25 +9,44 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
+#include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
+#include "chrome/browser/actor/ui/test_support/mock_event_dispatcher.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_actor_tracker.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/browser/extensions/test_standalone_window_controller.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/actor_webui.mojom.h"
+#include "chrome/common/glic_enums.mojom.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/actor/core/task_id.h"
+#include "components/actor/core/task_source_info.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -37,6 +56,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
@@ -53,6 +73,7 @@ namespace {
 using EventInitiatorInfo = chrome::cros::reporting::proto::EventInitiatorInfo;
 using ExtensionInfo =
     safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo;
+using chrome::cros::reporting::proto::BrowserAgentInfo;
 using extensions::mojom::ManifestLocation;
 #if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
 using chrome::cros::reporting::proto::BrowserFeatureInfo;
@@ -63,6 +84,8 @@ constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
 constexpr char kUninstalledExtensionId[] = "ponmlkjihgfedcbaponmlkjihgfedcba";
 constexpr char kExtensionName[] = "Test Extension";
 constexpr char kExtensionVersion[] = "1.2.3";
+constexpr char kConversationId[] = "test-conversation-id";
+constexpr char kTriggeringContextId[] = "test-triggering-context-id";
 
 }  // namespace
 
@@ -637,6 +660,245 @@ TEST_F(EventInitiatorUtilsTest,
                       .external_processes(0)
                       .process_nodes(0)
                       .process_id());
+}
+#endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+
+// Tests attribution to Gemini in Chrome (Glic) actor tasks. Members are
+// declared so that `policy_checker_` and `mock_tab_` outlive `profile_`, whose
+// `ActorKeyedService` refers to both.
+class EventInitiatorUtilsGlicActorTest : public testing::Test {
+ public:
+  EventInitiatorUtilsGlicActorTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kEnterpriseExtensionActorAttribution,
+                              kEnterpriseGlicActorAttribution},
+        /*disabled_features=*/{});
+    policy::SetDMTokenForTesting(
+        policy::DMToken::CreateValidToken("fake-token"));
+    test::SetOnSecurityEventReporting(profile_.GetPrefs(), /*enabled=*/true);
+
+    actor::ActorKeyedServiceFactory::GetInstance()->SetTestingFactory(
+        &profile_, base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+          return std::make_unique<actor::ActorKeyedServiceFake>(
+              Profile::FromBrowserContext(context));
+        }));
+
+    web_contents_ = web_contents_factory_.CreateWebContents(&profile_);
+    ON_CALL(mock_tab_, GetProfile).WillByDefault(testing::Return(&profile_));
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents_,
+                                                         &mock_tab_);
+    actor_service()->GetSurfaceRegistry().OnTabCreated(mock_tab_);
+  }
+
+  ~EventInitiatorUtilsGlicActorTest() override {
+    policy::SetDMTokenForTesting(policy::DMToken::CreateEmptyToken());
+  }
+
+  actor::ActorKeyedServiceFake* actor_service() {
+    return static_cast<actor::ActorKeyedServiceFake*>(
+        actor::ActorKeyedService::Get(&profile_));
+  }
+
+  // Starts a Glic task with the given source ID and feature mode, acting on
+  // `web_contents_`.
+  actor::TaskId StartGlicTask(std::optional<std::string> source_id,
+                              glic::mojom::FeatureMode feature_mode =
+                                  glic::mojom::FeatureMode::kActuation) {
+    auto options = actor::webui::mojom::TaskOptions::New();
+    options->feature_mode = feature_mode;
+    // `ActorKeyedServiceFake` hides the base class overload that takes a task
+    // source, so call it through the base class.
+    actor::ActorKeyedService* service = actor_service();
+    actor::TaskId task_id = service->CreateTaskForTesting(
+        actor::ui::NewMockUiEventDispatcher(),
+        actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
+                              std::move(source_id)),
+        &policy_checker_, std::move(options), /*delegate=*/nullptr);
+    AddTabToTask(task_id);
+    return task_id;
+  }
+
+  // Makes the task `task_id` act on `web_contents_`.
+  void AddTabToTask(actor::TaskId task_id) {
+    actor_service()->GetTask(task_id)->AddTab(
+        mock_tab_.GetHandle(), /*stop_task_on_detach=*/true, base::DoNothing());
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
+  actor::MockPolicyChecker policy_checker_{
+      actor::EnterprisePolicyChecker::UrlBlockReason::kNotBlocked};
+  tabs::MockTabInterface mock_tab_;
+  TestingProfile profile_;
+  content::TestWebContentsFactory web_contents_factory_;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
+};
+
+TEST_F(EventInitiatorUtilsGlicActorTest, ActingGlicTaskIsAttributed) {
+  actor::TaskId task_id = StartGlicTask(kConversationId);
+
+  std::optional<BrowserAgentInfo> agent_info =
+      GetActiveGlicActorInitiatorInfo(web_contents_);
+  ASSERT_TRUE(agent_info.has_value());
+  EXPECT_EQ(BrowserAgentInfo::AGENT_TYPE_GEMINI_IN_CHROME,
+            agent_info->agent_type());
+  EXPECT_EQ(base::NumberToString(task_id.value()), agent_info->task_id());
+  EXPECT_EQ(kConversationId, agent_info->conversation_id());
+
+  std::optional<EventInitiatorInfo> initiator =
+      GetActiveEventInitiatorInfo(web_contents_);
+  ASSERT_TRUE(initiator.has_value());
+  EXPECT_FALSE(initiator->has_chrome_extension());
+  EXPECT_FALSE(initiator->has_external_process_info());
+  EXPECT_FALSE(initiator->has_browser_feature_info());
+  ASSERT_TRUE(initiator->has_browser_agent_info());
+  EXPECT_EQ(BrowserAgentInfo::AGENT_TYPE_GEMINI_IN_CHROME,
+            initiator->browser_agent_info().agent_type());
+  EXPECT_EQ(base::NumberToString(task_id.value()),
+            initiator->browser_agent_info().task_id());
+  EXPECT_EQ(kConversationId, initiator->browser_agent_info().conversation_id());
+}
+
+TEST_F(EventInitiatorUtilsGlicActorTest, FeatureDisabledReturnsNullopt) {
+  StartGlicTask(kConversationId);
+
+  base::test::ScopedFeatureList disabled;
+  disabled.InitAndDisableFeature(kEnterpriseGlicActorAttribution);
+  EXPECT_FALSE(GetActiveGlicActorInitiatorInfo(web_contents_).has_value());
+  EXPECT_FALSE(GetActiveEventInitiatorInfo(web_contents_).has_value());
+}
+
+TEST_F(EventInitiatorUtilsGlicActorTest, NullWebContentsReturnsNullopt) {
+  EXPECT_FALSE(
+      GetActiveGlicActorInitiatorInfo(/*web_contents=*/nullptr).has_value());
+}
+
+TEST_F(EventInitiatorUtilsGlicActorTest, NoActingTaskReturnsNullopt) {
+  EXPECT_FALSE(GetActiveGlicActorInitiatorInfo(web_contents_).has_value());
+  EXPECT_FALSE(GetActiveEventInitiatorInfo(web_contents_).has_value());
+}
+
+TEST_F(EventInitiatorUtilsGlicActorTest, PausedTaskReturnsNullopt) {
+  actor::TaskId task_id = StartGlicTask(kConversationId);
+  actor_service()->PauseTaskForTesting(task_id, /*from_actor=*/false);
+
+  EXPECT_FALSE(GetActiveGlicActorInitiatorInfo(web_contents_).has_value());
+}
+
+TEST_F(EventInitiatorUtilsGlicActorTest, StoppedTaskReturnsNullopt) {
+  actor::TaskId task_id = StartGlicTask(kConversationId);
+  actor_service()->StopTaskForTesting(
+      task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+
+  EXPECT_FALSE(GetActiveGlicActorInitiatorInfo(web_contents_).has_value());
+}
+
+TEST_F(EventInitiatorUtilsGlicActorTest, NonGlicTaskReturnsNullopt) {
+  // `ActorKeyedServiceFake` creates tasks with the test client as the source.
+  AddTabToTask(actor_service()->CreateTaskForTesting());
+
+  EXPECT_FALSE(GetActiveGlicActorInitiatorInfo(web_contents_).has_value());
+  EXPECT_FALSE(GetActiveEventInitiatorInfo(web_contents_).has_value());
+}
+
+TEST_F(EventInitiatorUtilsGlicActorTest,
+       TaskWithoutConversationIdLeavesItUnset) {
+  actor::TaskId task_id = StartGlicTask(/*source_id=*/std::nullopt);
+
+  std::optional<BrowserAgentInfo> agent_info =
+      GetActiveGlicActorInitiatorInfo(web_contents_);
+  ASSERT_TRUE(agent_info.has_value());
+  EXPECT_EQ(base::NumberToString(task_id.value()), agent_info->task_id());
+  EXPECT_TRUE(agent_info->conversation_id().empty());
+}
+
+TEST_F(EventInitiatorUtilsGlicActorTest,
+       ExperimentalTriggeringTaskDoesNotReportSourceId) {
+  actor::TaskId task_id = StartGlicTask(
+      kTriggeringContextId, glic::mojom::FeatureMode::kExperimentalTriggering);
+
+  std::optional<BrowserAgentInfo> agent_info =
+      GetActiveGlicActorInitiatorInfo(web_contents_);
+  ASSERT_TRUE(agent_info.has_value());
+  EXPECT_EQ(BrowserAgentInfo::AGENT_TYPE_GEMINI_IN_CHROME,
+            agent_info->agent_type());
+  EXPECT_EQ(base::NumberToString(task_id.value()), agent_info->task_id());
+  EXPECT_TRUE(agent_info->conversation_id().empty());
+}
+
+TEST_F(EventInitiatorUtilsGlicActorTest, OffTheRecordProfileReturnsNullopt) {
+  content::WebContents* otr_web_contents =
+      web_contents_factory_.CreateWebContents(
+          profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true));
+
+  EXPECT_FALSE(GetActiveGlicActorInitiatorInfo(otr_web_contents).has_value());
+}
+
+TEST_F(EventInitiatorUtilsGlicActorTest, ExtensionTakesPrecedenceOverGlicTask) {
+  StartGlicTask(kConversationId);
+  ExtensionActorTracker::SetActiveActor(web_contents_, kExtensionId,
+                                        "Page.navigate");
+
+  std::optional<EventInitiatorInfo> initiator =
+      GetActiveEventInitiatorInfo(web_contents_);
+  ASSERT_TRUE(initiator.has_value());
+  ASSERT_TRUE(initiator->has_chrome_extension());
+  EXPECT_FALSE(initiator->has_browser_agent_info());
+  EXPECT_EQ(kExtensionId, initiator->chrome_extension().id());
+}
+
+TEST_F(EventInitiatorUtilsGlicActorTest,
+       TabIdIncludesGlicTaskWhenOnlyGlicAttributionIsEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{kEnterpriseGlicActorAttribution},
+      /*disabled_features=*/{kEnterpriseExtensionActorAttribution,
+                             kEventReportingCdpAttribution});
+
+  sessions::SessionTabHelper::CreateForWebContents(web_contents_,
+                                                   base::NullCallback());
+  const SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents_);
+  extensions::TestStandaloneWindowController window_controller(
+      /*base_window=*/nullptr, &profile_, SessionID::NewUnique(),
+      web_contents_);
+  actor::TaskId task_id = StartGlicTask(kConversationId);
+
+  std::optional<EventInitiatorInfo> initiator =
+      GetActiveEventInitiatorInfo(&profile_, tab_id);
+  ASSERT_TRUE(initiator.has_value());
+  ASSERT_TRUE(initiator->has_browser_agent_info());
+  EXPECT_EQ(base::NumberToString(task_id.value()),
+            initiator->browser_agent_info().task_id());
+  EXPECT_EQ(kConversationId, initiator->browser_agent_info().conversation_id());
+}
+
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+TEST_F(EventInitiatorUtilsGlicActorTest, CdpActorTakesPrecedenceOverGlicTask) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{kEventReportingCdpAttribution,
+                            kEnterpriseGlicActorAttribution},
+      /*disabled_features=*/{kEnterpriseExtensionActorAttribution});
+
+  StartGlicTask(kConversationId);
+  ProcessTree tree;
+  tree.process_nodes.emplace_back(/*process_id=*/4242,
+                                  /*parent_process_id=*/100, "/usr/bin/node",
+                                  "/tmp/agent.js");
+  TabCdpActorTracker::GetOrCreateForWebContents(web_contents_)
+      ->buffer()
+      .OnExternalActorCommandHandled(
+          ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
+          net::IPEndPoint(net::IPAddress::IPv4Localhost(), 51234),
+          std::move(tree));
+
+  std::optional<EventInitiatorInfo> initiator =
+      GetActiveEventInitiatorInfo(web_contents_);
+  ASSERT_TRUE(initiator.has_value());
+  EXPECT_TRUE(initiator->has_external_process_info());
+  EXPECT_FALSE(initiator->has_browser_agent_info());
 }
 #endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
 
