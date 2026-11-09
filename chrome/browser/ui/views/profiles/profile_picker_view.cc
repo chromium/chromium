@@ -961,7 +961,9 @@ void ProfilePickerView::InitializeFeaturePromo(Profile* system_profile) {
 
 ProfilePickerFlowController* ProfilePickerView::GetProfilePickerFlowController()
     const {
-  CHECK(IsClassicProfilePickerFlow(params_), base::NotFatalUntil::M162);
+  // TODO(crbug.com/582877335): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(IsClassicProfilePickerFlow(params_));
   return static_cast<ProfilePickerFlowController*>(flow_controller_.get());
 }
 
