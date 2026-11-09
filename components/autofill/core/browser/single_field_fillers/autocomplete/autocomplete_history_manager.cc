@@ -564,7 +564,9 @@ bool AutocompleteHistoryManager::IsFieldNameMeaningfulForAutocomplete(
 void AutocompleteHistoryManager::OnAutofillCleanupReturned(
     WebDataServiceBase::Handle current_handle,
     std::unique_ptr<WDTypedResult> result) {
-  DCHECK(result);
+  if (!result) {
+    return;
+  }
   DCHECK_EQ(AUTOFILL_CLEANUP_RESULT, result->GetType());
   if (!static_cast<const WDResult<bool>*>(result.get())->GetValue()) {
     DLOG(WARNING) << "Autofill cleanup returned false. This should not happen.";
@@ -579,7 +581,9 @@ void AutocompleteHistoryManager::OnLegacyTableDataMigrationReturned(
     int new_migration_generation,
     WebDataServiceBase::Handle current_handle,
     std::unique_ptr<WDTypedResult> migration_result) {
-  DCHECK(migration_result);
+  if (!migration_result) {
+    return;
+  }
   DCHECK_EQ(BOOL_RESULT, migration_result->GetType());
   const WDResult<bool>* bool_result =
       static_cast<const WDResult<bool>*>(migration_result.get());

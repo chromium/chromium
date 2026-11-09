@@ -1069,6 +1069,25 @@ TEST_F(AutocompleteHistoryManagerTest, Migration_PrefNotUpdatedOnFailure) {
             1);
 }
 
+// Tests that a null result from `MigrateDataFromLegacyTable` (e.g., on
+// database failure) does not crash or update the migration generation pref.
+TEST_F(AutocompleteHistoryManagerTest, Migration_NullResultDoesNotUpdatePref) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillLabelSensitiveAutocomplete,
+      {{"autocomplete_label_sensitive_migration_generation", "2"}});
+  prefs_->SetInteger(
+      prefs::kAutofillAutocompleteLabelSensitiveMigrationGeneration, 1);
+
+  EXPECT_CALL(*web_data_service_, MigrateDataFromLegacyTable)
+      .WillOnce(RunOnceCallback<0>(kTestDbQueryId, nullptr));
+  AutocompleteHistoryManager manager(web_data_service_, prefs_.get());
+
+  EXPECT_EQ(prefs_->GetInteger(
+                prefs::kAutofillAutocompleteLabelSensitiveMigrationGeneration),
+            1);
+}
+
 // Tests that autocomplete table stats are queried and logged with a delay after
 // profile startup when kAutofillRecordAutocompleteTableStats is enabled.
 TEST_F(AutocompleteHistoryManagerTest, TableStats_QueriesAndLogsOnStartup) {
@@ -1347,6 +1366,24 @@ TEST_F(AutocompleteHistoryManagerTest, EntriesCleanup_Success) {
                                           cleanup_result));
 
   EXPECT_EQ(version_info::GetMajorVersionNumberAsInt(),
+            prefs_->GetInteger(prefs::kAutocompleteLastVersionRetentionPolicy));
+}
+
+// Tests that a null result from `RemoveExpiredAutocompleteEntries` (e.g., on
+// database failure) does not crash or update the last cleaned major version
+// preference.
+TEST_F(AutocompleteHistoryManagerTest,
+       EntriesCleanup_NullResultDoesNotUpdatePref) {
+  prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy, -1);
+
+  EXPECT_CALL(*web_data_service_, RemoveExpiredAutocompleteEntries)
+      .WillOnce([](WebDataServiceRequestCallback cb) {
+        std::move(cb).Run(kTestDbQueryId, nullptr);
+        return kTestDbQueryId;
+      });
+  AutocompleteHistoryManager manager(web_data_service_, prefs_.get());
+
+  EXPECT_EQ(-1,
             prefs_->GetInteger(prefs::kAutocompleteLastVersionRetentionPolicy));
 }
 
