@@ -7,12 +7,16 @@
 #include <algorithm>
 #include <cstdint>
 #include <optional>
+#include <utility>
 #include <vector>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
@@ -54,6 +58,18 @@ inline ScopedJavaLocalRef<jobject> ToJniType(
 }  // namespace jni_zero
 
 namespace signin {
+
+using AccountPreviewPreferenceCallback = base::OnceCallback<void(
+    std::optional<AccountPreviewDataService::AccountPreviewPreference>)>;
+
+static void JNI_AccountPreviewDataService_GetPreferredAccountForSigninAsync(
+    int64_t account_preview_data_service_ptr,
+    AccountPreviewPreferenceCallback&& callback,
+    int64_t timeout_ms) {
+  reinterpret_cast<AccountPreviewDataService*>(account_preview_data_service_ptr)
+      ->GetPreferredAccountForSigninAsync(std::move(callback),
+                                          base::Milliseconds(timeout_ms));
+}
 
 static int64_t
 JNI_AccountPreviewDataService_GetPreferredAccountFREFetchTimeoutMs() {

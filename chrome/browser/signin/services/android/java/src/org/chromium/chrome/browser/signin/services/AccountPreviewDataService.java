@@ -12,6 +12,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -44,6 +45,24 @@ public class AccountPreviewDataService {
     }
 
     /**
+     * Asynchronous version of {@link #getPreferredAccountForSignin()}, which returns the stored
+     * preferred account if available, or triggers a fetch and waits for the preferred account
+     * computation to complete.
+     *
+     * <p>{@code callback} is always run asynchronously once, with the preferred account or {@code
+     * null} if unavailable or if the computation does not complete within {@code timeoutMs}
+     * milliseconds.
+     */
+    @MainThread
+    public void getPreferredAccountForSigninAsync(
+            Callback<@Nullable AccountPreviewPreference> callback, long timeoutMs) {
+        ThreadUtils.assertOnUiThread();
+        AccountPreviewDataServiceJni.get()
+                .getPreferredAccountForSigninAsync(
+                        mNativeAccountPreviewDataService, callback, timeoutMs);
+    }
+
+    /**
      * Returns the maximum duration in milliseconds the FRE waits for an ongoing preferred account
      * computation to update the selected account.
      */
@@ -66,6 +85,12 @@ public class AccountPreviewDataService {
         @JniType("std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>")
         @Nullable AccountPreviewPreference getPreferredAccountForSignin(
                 @JniType("AccountPreviewDataService*") long nativeAccountPreviewDataService);
+
+        void getPreferredAccountForSigninAsync(
+                long accountPreviewDataServicePtr,
+                @JniType("signin::AccountPreviewPreferenceCallback")
+                        Callback<@Nullable AccountPreviewPreference> callback,
+                long timeoutMs);
 
         long getPreferredAccountFREFetchTimeoutMs();
 
