@@ -92,8 +92,11 @@ namespace apps {
                    _14, _15, _16, N, ...)                                      \
   N
 #define ARG_COUNT(...)                                                       \
-  ARC_COUNT_(0, ##__VA_ARGS__, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, \
-             3, 2, 1, 0)
+  ARC_COUNT_(0 __VA_OPT__(, ) __VA_ARGS__, 16, 15, 14, 13, 12, 11, 10, 9, 8, \
+             7, 6, 5, 4, 3, 2, 1, 0)
+static_assert(ARG_COUNT() == 0);
+static_assert(ARG_COUNT(a) == 1);
+static_assert(ARG_COUNT(a, b) == 2);
 
 // Go through all items in enum to generate code for each element.
 #define DOARG1(FUNC, CLASSNAME, ELEM) FUNC(CLASSNAME, ELEM)

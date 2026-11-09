@@ -688,29 +688,13 @@ config("compiler") {
   # C11/C++11 compiler flags setup.
   # ---------------------------
   if (is_linux || is_chromeos || is_android || current_os == "aix") {
-    if (is_clang) {
-      standard_prefix = "c"
+    # Since builds use -std=c* and not -std=gnu*, _GNU_SOURCE will not be
+    # defined by the compiler.  However, lots of code relies on the
+    # non-standard features that _GNU_SOURCE enables, so define it manually.
+    defines += [ "_GNU_SOURCE" ]
+  }
 
-      # Since we build with -std=c* and not -std=gnu*, _GNU_SOURCE will not be
-      # defined by the compiler.  However, lots of code relies on the
-      # non-standard features that _GNU_SOURCE enables, so define it manually.
-      defines += [ "_GNU_SOURCE" ]
-    } else {
-      # Gcc does not support ##__VA_ARGS__ when in standards-conforming mode,
-      # but we use this feature in several places in Chromium.
-      # TODO(thomasanderson): Replace usages of ##__VA_ARGS__ with the
-      # standard-compliant __VA_OPT__ added by C++20, and switch the gcc build
-      # to -std=c*.
-      standard_prefix = "gnu"
-    }
-
-    cflags_c += [ "-std=${standard_prefix}11" ]
-    if (use_cxx23) {
-      cflags_cc += [ "-std=${standard_prefix}++23" ]
-    } else {
-      cflags_cc += [ "-std=${standard_prefix}++20" ]
-    }
-  } else if (is_win) {
+  if (is_win) {
     cflags_c += [ "/std:c11" ]
     if (use_cxx23) {
       cflags_cc += [ "/std:c++23preview" ]
