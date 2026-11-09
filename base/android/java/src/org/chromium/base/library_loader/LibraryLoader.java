@@ -23,11 +23,8 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.TimeUtils.CurrentThreadTimeMillisTimer;
-import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.LifetimeAssert;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
@@ -354,33 +351,6 @@ public class LibraryLoader {
             }
             return null;
         }
-
-        private String creationAsString() {
-            switch (mCreatedIn) {
-                case CreatedIn.MAIN:
-                    return "Browser";
-                case CreatedIn.ZYGOTE:
-                    return "Zygote";
-                case CreatedIn.CHILD_WITHOUT_ZYGOTE:
-                    return "Child";
-                default:
-                    assert false : "Must initialize as one of {Browser,Zygote,Child}";
-                    return "";
-            }
-        }
-
-        private static final String LINKER_HISTOGRAM_PREFIX = "ChromiumAndroidLinker.";
-
-        private void recordLoadTimeHistogram(long loadTimeMs) {
-            RecordHistogram.recordTimesHistogram(
-                    LINKER_HISTOGRAM_PREFIX + creationAsString() + "LoadTime2", loadTimeMs);
-        }
-
-        public void recordLoadThreadTimeHistogram(long threadLoadTimeMs) {
-            RecordHistogram.recordTimesHistogram(
-                    LINKER_HISTOGRAM_PREFIX + creationAsString() + "ThreadLoadTime",
-                    threadLoadTimeMs);
-        }
     }
 
     public final MultiProcessMediator getMediator() {
@@ -639,9 +609,6 @@ public class LibraryLoader {
             assert !mInitialized;
             assert mLibraryProcessType != LibraryProcessType.PROCESS_UNINITIALIZED || inZygote;
 
-            UptimeMillisTimer uptimeTimer = new UptimeMillisTimer();
-            CurrentThreadTimeMillisTimer threadTimeTimer = new CurrentThreadTimeMillisTimer();
-
             if (sOverrideNativeLibraryCannotBeLoadedForTesting) {
                 throw new UnsatisfiedLinkError();
             }
@@ -658,16 +625,10 @@ public class LibraryLoader {
                 loadWithSystemLinkerAlreadyLocked(appInfo);
             }
 
-            long loadTimeMs = uptimeTimer.getElapsedMillis();
-
-            if (DEBUG) Log.i(TAG, "Time to load native libraries: %d ms", loadTimeMs);
             mLoaded = true;
             if (sEnableStateForTesting) {
                 mLoadedForTesting = true;
             }
-
-            getMediator().recordLoadTimeHistogram(loadTimeMs);
-            getMediator().recordLoadThreadTimeHistogram(threadTimeTimer.getElapsedMillis());
         } catch (UnsatisfiedLinkError e) {
             if (sLoadFailedCallback != null) {
                 sLoadFailedCallback.onResult(e);
