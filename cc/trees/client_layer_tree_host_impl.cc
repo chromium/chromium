@@ -500,8 +500,9 @@ void ClientLayerTreeHostImpl::OnPaintWorkletResultsReady(
   delegate_->NotifyPaintWorkletStateChange(Scheduler::PaintWorkletState::IDLE);
 
   // The pending tree may have been force activated from the signal to the
-  // scheduler above, in which case there is no longer a tree to paint.
-  if (pending_tree_) {
+  // scheduler above, and a queued commit may have created a new pending tree
+  // that is now awaiting its own paint worklet results.
+  if (pending_tree_ && pending_tree_fully_painted_) {
     NotifyPendingTreeFullyPainted();
   }
 }

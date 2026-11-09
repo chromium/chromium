@@ -4004,8 +4004,14 @@ class ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest
       // Pretend a force activation happened.
       host_impl_->ActivateSyncTree();
       ASSERT_FALSE(host_impl_->pending_tree());
+      if (on_force_activated_) {
+        std::move(on_force_activated_).Run();
+      }
     }
   }
+
+ protected:
+  base::OnceClosure on_force_activated_;
 };
 
 INSTANTIATE_COMMIT_TO_PENDING_TREE_TEST_P(
@@ -4014,6 +4020,56 @@ INSTANTIATE_COMMIT_TO_PENDING_TREE_TEST_P(
 TEST_P(ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest,
        ForceActivationAfterPaintWorkletsFinishPainting) {
   RunPaintWorkletCommitTest();
+  EXPECT_FALSE(did_prepare_tiles_);
+}
+
+TEST_P(ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest,
+       ForceActivationAndCommitWithDirtyPaintWorklets) {
+  on_force_activated_ = base::BindLambdaForTesting([&]() {
+    // Simulate a queued commit creating a new pending tree with dirty paint
+    // worklets in the same Scheduler::ProcessScheduledActions() loop right
+    // after the previous pending tree was force-activated.
+    client_host_impl(host_impl_.get())->CreatePendingTree();
+    auto* pending_root = static_cast<PictureLayerImpl*>(
+        host_impl_->pending_tree()->root_layer());
+    pending_root->SetNeedsPushProperties();
+    pending_root->SetRasterSourceForTesting(
+        FakeRasterSource::CreateFilledWithPaintWorklet(pending_root->bounds()));
+    UpdateDrawProperties(host_impl_->pending_tree());
+    client_host_impl(host_impl_.get())->CommitComplete();
+  });
+
+  auto painter_owned = std::make_unique<TestPaintWorkletLayerPainter>();
+  TestPaintWorkletLayerPainter* painter = painter_owned.get();
+  host_impl_->SetPaintWorkletLayerPainter(std::move(painter_owned));
+
+  client_host_impl(host_impl_.get())->CreatePendingTree();
+  auto* root = SetupRootLayer<PictureLayerImpl>(host_impl_->pending_tree(),
+                                                gfx::Size(100, 100));
+  root->SetNeedsPushProperties();
+  root->SetRasterSourceForTesting(
+      FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds()));
+  UpdateDrawProperties(host_impl_->pending_tree());
+
+  did_prepare_tiles_ = false;
+  client_host_impl(host_impl_.get())->CommitComplete();
+  EXPECT_FALSE(did_prepare_tiles_);
+
+  ASSERT_EQ(root->GetPaintWorkletRecordMap().size(), 1u);
+  scoped_refptr<const PaintWorkletInput> input =
+      root->GetPaintWorkletRecordMap().begin()->first;
+  int worklet_id = input->WorkletId();
+
+  PaintWorkletJob painted_job(worklet_id, input, {});
+  painted_job.SetOutput(PaintRecord());
+  auto painted_job_vector = base::MakeRefCounted<PaintWorkletJobVector>();
+  painted_job_vector->data.push_back(std::move(painted_job));
+  PaintWorkletJobMap painted_job_map;
+  painted_job_map[worklet_id] = std::move(painted_job_vector);
+
+  std::move(painter->TakeDoneCallback()).Run(std::move(painted_job_map));
+  EXPECT_TRUE(host_impl_->pending_tree());
+  EXPECT_TRUE(painter->HasOngoingDispatch());
   EXPECT_FALSE(did_prepare_tiles_);
 }
 
