@@ -3117,6 +3117,10 @@ inline constexpr char kHeavyAdPrivacyMitigationsDescription[] =
     "Enables privacy mitigations for the heavy ad intervention. Disabling "
     "this makes the intervention deterministic. Defaults to enabled.";
 
+inline constexpr char kHistoryPageRefreshName[] = "History Page Refresh";
+inline constexpr char kHistoryPageRefreshDescription[] =
+    "Enables a visual refresh on the chrome://history page on Desktop.";
+
 inline constexpr char kTabAudioMutingName[] = "Tab audio muting UI control";
 inline constexpr char kTabAudioMutingDescription[] =
     "When enabled, the audio indicators in the tab strip double as tab audio "

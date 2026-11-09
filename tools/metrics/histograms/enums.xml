@@ -10866,6 +10866,7 @@ from previous Chrome versions.
   <int value="-1246125067" label="SearchInSettings:enabled"/>
   <int value="-1245855621" label="TabFaviconChipsToCoins:disabled"/>
   <int value="-1245617305" label="NewProfilePicker:enabled"/>
+  <int value="-1244982309" label="HistoryPageRefresh:enabled"/>
   <int value="-1244772303" label="NtpRealboxMatchOmniboxTheme:enabled"/>
   <int value="-1244267485" label="TabbedBrowserUseNewLayout:disabled"/>
   <int value="-1243870410" label="CrOSLateBootCrasProcessorWavDump:disabled"/>
@@ -16670,6 +16671,7 @@ from previous Chrome versions.
   <int value="484581911" label="ServiceWorkerSubresourceFilter:disabled"/>
   <int value="484596410" label="EnterpriseRealtimeExtensionRequest:disabled"/>
   <int value="484611531" label="AccessibilityGameFaceIntegration:enabled"/>
+  <int value="484882958" label="HistoryPageRefresh:disabled"/>
   <int value="485957747" label="finch-seed-ignore-pending-download"/>
   <int value="486667213" label="TabstripComboButton:disabled"/>
   <int value="487542146" label="Bruschetta:enabled"/>

@@ -14481,6 +14481,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kAndroidBookmarkBarUiController)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"history-page-refresh", flag_descriptions::kHistoryPageRefreshName,
+     flag_descriptions::kHistoryPageRefreshDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kHistoryPageRefresh)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

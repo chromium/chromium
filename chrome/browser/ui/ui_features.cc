@@ -148,6 +148,8 @@ BASE_FEATURE_PARAM(std::string,
                    &kChroMenuSearch,
                    "query",
                    "");
+// Enables the redesigned History page refresh features.
+BASE_FEATURE(kHistoryPageRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTabStripDeclutterEnabled() {
   return base::FeatureList::IsEnabled(kDesktopGlowUp) ||
@@ -195,6 +197,12 @@ bool IsSettingsRefresh2026Enabled() {
 bool IsSettingsSearch2026Enabled() {
   return IsSettingsRefresh2026Enabled() &&
          base::FeatureList::IsEnabled(kSettingsSearch2026);
+}
+
+bool IsHistoryPageRefreshEnabled() {
+  return (base::FeatureList::IsEnabled(kDesktopGlowUp) ||
+          base::FeatureList::IsEnabled(kWebuiRefresh2026)) &&
+         base::FeatureList::IsEnabled(kHistoryPageRefresh);
 }
 
 bool ShouldUseActionsForBrowserCommands() {

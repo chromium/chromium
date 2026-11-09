@@ -6214,6 +6214,15 @@
       "expiry_milestone": 165
     },
   {
+    "name": "history-page-refresh",
+    "owners": [
+      "azamatmz@google.com",
+      "rainhard@google.com",
+      "chrome-browser-privacy-team@google.com"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "history-pane-android",
     "owners": [ "wylieb@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 160

@@ -84,6 +84,8 @@ BASE_DECLARE_FEATURE(kSettingsSearch2026);
 // Enables search in the app Chrome menu.
 BASE_DECLARE_FEATURE(kChroMenuSearch);
 BASE_DECLARE_FEATURE_PARAM(std::string, kChroMenuSearchQuery);
+// Enables the redesigned History page refresh features.
+BASE_DECLARE_FEATURE(kHistoryPageRefresh);
 
 bool IsTabStripDeclutterEnabled();
 bool IsToolbarGlowUpEnabled();
@@ -95,6 +97,7 @@ bool IsTabGroupColorRefreshEnabled();
 bool IsWebuiRefresh2026Enabled();
 bool IsSettingsRefresh2026Enabled();
 bool IsSettingsSearch2026Enabled();
+bool IsHistoryPageRefreshEnabled();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
