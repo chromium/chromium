@@ -95,9 +95,9 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
   accessor isDebug: boolean = false;
   protected accessor hasVisibleMatches_: boolean = false;
   protected accessor result_: AutocompleteResult|null = null;
-  protected accessor webuiOmniboxPopupSelectionControlEnabled_: boolean =
+  private accessor webuiOmniboxPopupSelectionControlEnabled_: boolean =
       loadTimeData.getBoolean('webuiOmniboxPopupSelectionControlEnabled');
-  protected accessor isAimButtonVisible_: boolean = false;
+  private accessor isAimButtonVisible_: boolean = false;
 
   override get isAimButtonVisible(): boolean {
     return this.isAimButtonVisible_;

@@ -156,11 +156,11 @@ export class NtpExtensionAppElement extends NtpExtensionAppElementBase {
       loadTimeData.getBoolean('ntpRealboxNextEnabled');
   protected accessor searchboxCyclingPlaceholders_: boolean =
       loadTimeData.getBoolean('searchboxCyclingPlaceholders');
-  protected accessor ntpNextFeaturesEnabled_: boolean =
+  private accessor ntpNextFeaturesEnabled_: boolean =
       loadTimeData.getBoolean('ntpNextFeaturesEnabled');
-  protected accessor isActionChipsVisible_: boolean =
+  private accessor isActionChipsVisible_: boolean =
       loadTimeData.getBoolean('actionChipsEnabled');
-  protected accessor containerFocused_: boolean = false;
+  private accessor containerFocused_: boolean = false;
   protected accessor showScrim_: boolean = false;
   protected accessor undoToastMessage_: string = '';
   protected accessor showLensUploadDialog_: boolean = false;

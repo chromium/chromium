@@ -314,13 +314,13 @@ export class OmniboxPopupSearchboxElement extends
   private tabId_: number = 0;
   // True if the user has modified the text in the input field (e.g., typed or
   // deleted characters), as opposed to displaying permanent text set from C++.
-  protected accessor userInputInProgress_: boolean = false;
+  private accessor userInputInProgress_: boolean = false;
   // Stores the last selected autocomplete match while user input is in
   // progress. Preserved across popup closures on blur or tab switch so the
   // searchbox icon does not fall back to the default icon while editing.
   private lastSelectedMatch_: AutocompleteMatch|null = null;
-  protected accessor fullUrl_: string = '';
-  protected accessor permanentDisplayText_: string = '';
+  private accessor fullUrl_: string = '';
+  private accessor permanentDisplayText_: string = '';
   protected accessor aimButtonIconOnly_: boolean = false;
   // True during an active IME (Input Method Editor) text composition session.
   // Used to suppress intermediate selection updates until composition finishes,

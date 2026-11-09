@@ -90,8 +90,6 @@ export class OmniboxEverywhereAppElement extends
     return {
       isComposeboxMode_: {type: Boolean},
       searchboxLayoutMode_: {type: String},
-      caretAnimationsEnabled_: {type: Boolean},
-      disableComposeboxAnimation_: {type: Boolean},
       usePecApi_: {type: Boolean},
       isOblongShape_: {type: Boolean},
       contextManagementInComposeboxEnabled_: {type: Boolean},
@@ -147,10 +145,6 @@ export class OmniboxEverywhereAppElement extends
   protected accessor isPendingScreenshot_: boolean = false;
   protected accessor searchboxLayoutMode_: string =
       loadTimeData.getString('searchboxLayoutMode');
-  protected accessor caretAnimationsEnabled_: boolean =
-      loadTimeData.getBoolean('caretAnimationEnabled');
-  protected accessor disableComposeboxAnimation_: boolean =
-      loadTimeData.getBoolean('composeboxAnimationDisabled');
   protected accessor usePecApi_: boolean =
       loadTimeData.getBoolean('contextualMenuUsePecApi');
   protected accessor isOblongShape_: boolean =
@@ -177,8 +171,8 @@ export class OmniboxEverywhereAppElement extends
   protected accessor smallFont_: boolean = loadTimeData.getBoolean('smallFont');
   protected accessor hideTitle_: boolean =
       loadTimeData.getBoolean('omniboxEverywhereMostVisitedHideTitle');
-  protected accessor hasMostVisitedTiles_: boolean = false;
-  protected accessor freStage_: FreStage =
+  private accessor hasMostVisitedTiles_: boolean = false;
+  private accessor freStage_: FreStage =
       (loadTimeData.valueExists('initialFreStage') ?
            loadTimeData.getInteger('initialFreStage') :
            FreStage.kNone) as FreStage;

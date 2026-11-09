@@ -160,14 +160,14 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   override accessor disableVoiceSearchAnimation: boolean =
       !loadTimeData.getBoolean('voiceSearchCoherenceComposeboxesEnabled');
   protected accessor expanding_: boolean = true;
-  protected accessor askGComposeboxLensChipEnabled_: boolean =
+  private accessor askGComposeboxLensChipEnabled_: boolean =
       getLoadTimeBoolean('askGComposeboxLensChipEnabled', false);
   protected accessor isLensSearchChipShown_: boolean = false;
-  protected accessor isContentSharingEnabled_: boolean = false;
-  protected accessor isLensSearchEligible_: boolean = false;
-  protected accessor askGComposeboxPlaceholderEnabled_: boolean =
+  private accessor isContentSharingEnabled_: boolean = false;
+  private accessor isLensSearchEligible_: boolean = false;
+  private accessor askGComposeboxPlaceholderEnabled_: boolean =
       getLoadTimeBoolean('askGComposeboxPlaceholderEnabled', false);
-  protected accessor baseSearchboxLayoutMode_: string =
+  private accessor baseSearchboxLayoutMode_: string =
       loadTimeData.getString('searchboxLayoutMode');
   protected accessor isAimButtonShown_: boolean = false;
   protected accessor showAimButtonExitIcon_: boolean =

@@ -112,9 +112,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
-      showContextMenu_: {
-        type: Boolean,
-      },
       voiceSearchCoherenceEnabled_: {
         type: Boolean,
         reflect: true,
@@ -183,8 +180,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   protected accessor composeboxHeight_: number = 0;
   protected accessor composeboxDropdownHeight_: number = 0;
   protected accessor isComposeboxFocused_: boolean = false;
-  protected accessor showContextMenu_: boolean =
-      loadTimeData.getBoolean('composeboxShowContextMenu');
   protected accessor voiceSearchCoherenceEnabled_: boolean =
       loadTimeData.getBoolean(
           'voiceSearchCoherenceCobrowsingComposeboxEnabled');
@@ -195,7 +190,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   protected accessor enableFileHint_: boolean =
       loadTimeData.getBoolean('enableFileHint');
   protected accessor lensButtonDisabled_: boolean = false;
-  protected searchboxHandler_: SearchboxPageHandlerRemote;
+  private searchboxHandler_: SearchboxPageHandlerRemote;
   private eventTracker_: EventTracker = new EventTracker();
   private pageHandler_: PageHandlerRemote;
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;

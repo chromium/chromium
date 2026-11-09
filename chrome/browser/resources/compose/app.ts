@@ -176,7 +176,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
       showMSBBDialog_: {type: Boolean},
       outputComplete_: {type: Boolean},
       hasOutput_: {type: Boolean},
-      displayedText_: {type: String},
       modifierOptions_: {type: Array},
       webuiRoundedIconsEnabled_: {type: Boolean},
     };
@@ -202,13 +201,13 @@ export class ComposeAppElement extends ComposeAppElementBase {
   protected accessor isSubmitEnabled_: boolean = true;
   protected accessor loading_: boolean = false;
   protected accessor loadingIndicatorShown_: boolean = false;
-  protected accessor response_: ComposeResponse|null = null;
-  protected accessor partialResponse_: PartialComposeResponse|undefined =
+  private accessor response_: ComposeResponse|null = null;
+  private accessor partialResponse_: PartialComposeResponse|undefined =
       undefined;
   protected accessor showInputModes_: boolean = false;
-  protected accessor selectedInputMode_: InputMode = InputMode.kUnset;
+  private accessor selectedInputMode_: InputMode = InputMode.kUnset;
   protected accessor selectedModifier_: string = '';
-  protected accessor textSelected_: boolean = false;
+  private accessor textSelected_: boolean = false;
   protected accessor enterprise_: boolean =
       loadTimeData.getBoolean('useEnterpriseWithoutLoggingPolicy');
   protected accessor showMainAppDialog_: boolean = false;
@@ -220,7 +219,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
   protected accessor showMSBBDialog_: boolean = false;
   protected accessor outputComplete_: boolean = true;
   protected accessor hasOutput_: boolean = false;
-  protected accessor displayedText_: string = '';
   protected accessor modifierOptions_: ModifierOption[] = [
     {
       value: StyleModifier.kUnset,

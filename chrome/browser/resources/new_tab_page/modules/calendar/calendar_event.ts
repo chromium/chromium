@@ -85,7 +85,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
 
   protected accessor attachmentListClass_: string = '';
   protected accessor formattedStartTime_: string = '';
-  protected intersectionObserver_: IntersectionObserver|null = null;
+  private intersectionObserver_: IntersectionObserver|null = null;
   protected accessor timeStatus_: string = '';
 
   override willUpdate(changedProperties: PropertyValues<this>) {

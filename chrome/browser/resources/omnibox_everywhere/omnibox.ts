@@ -134,7 +134,6 @@ export class OmniboxEverywhereOmniboxElement extends
         reflect: true,
       },
       composeButtonEnabled: {type: Boolean, reflect: true},
-      profileAvatarUrl_: {type: String},
       isFuseboxEnabled: {type: Boolean, reflect: true},
       hasUserInput_: {
         type: Boolean,
@@ -144,7 +143,6 @@ export class OmniboxEverywhereOmniboxElement extends
       ntpRealboxDynamicAiModeButtonEnabled_: {type: Boolean},
       ntpRealboxDynamicAiModeButtonPreventEarlyPaint_: {type: Boolean},
       inputState_: {type: Object},
-      searchboxLayoutMode: {type: String},
       contextManagementInComposeboxEnabled: {type: Boolean},
       isDraggingFile: {
         reflect: true,
@@ -199,7 +197,7 @@ export class OmniboxEverywhereOmniboxElement extends
   protected dragAndDropHandler: DragAndDropHandler;
   protected accessor energyEffectAnimationEnabled_: boolean =
       loadTimeData.getBoolean('energyEffectAnimationEnabled');
-  protected accessor fileContextEnabled_: boolean =
+  private accessor fileContextEnabled_: boolean =
       loadTimeData.getBoolean('composeboxContextDragAndDropEnabled');
   accessor searchboxChromeRefreshTheming: boolean =
       loadTimeData.getBoolean('searchboxCr23Theming');
@@ -217,8 +215,6 @@ export class OmniboxEverywhereOmniboxElement extends
   accessor inVoiceSearchMode: boolean = false;
   protected accessor composeButtonEnabled: boolean =
       loadTimeData.getBoolean('searchboxShowComposeEntrypoint');
-  protected accessor profileAvatarUrl_: string =
-      loadTimeData.getString('profileAvatarUrl');
   protected accessor isFuseboxEnabled: boolean =
       loadTimeData.getBoolean('isFuseboxEnabled');
   protected accessor hasUserInput_: boolean = false;
@@ -227,8 +223,6 @@ export class OmniboxEverywhereOmniboxElement extends
   protected accessor ntpRealboxDynamicAiModeButtonPreventEarlyPaint_: boolean =
       loadTimeData.getBoolean('ntpRealboxDynamicAiModeButtonPreventEarlyPaint');
   protected accessor inputState_: InputState|null = null;
-  protected accessor searchboxLayoutMode: string =
-      loadTimeData.getString('searchboxLayoutMode');
 
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;

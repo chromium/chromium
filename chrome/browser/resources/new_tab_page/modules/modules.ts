@@ -119,7 +119,7 @@ export class ModulesElement extends CrLitElement {
   accessor moduleInstances_: ModuleInstance[] = [];
   accessor disabledModules_:
       {all: boolean, ids: string[]} = {all: true, ids: []};
-  protected accessor pendingAutoRemovedModules_: string[] = [];
+  private accessor pendingAutoRemovedModules_: string[] = [];
   protected accessor undoData_: {message: string, undo?: () => void}|null =
       null;
 

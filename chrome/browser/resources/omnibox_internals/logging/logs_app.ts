@@ -81,7 +81,7 @@ export class LogsAppElement extends CrLitElement {
     };
   }
 
-  protected accessor eventLogMessages_: EventLogMessage[] = [];
+  private accessor eventLogMessages_: EventLogMessage[] = [];
   protected accessor selectedTags_: string[] = [];
   protected accessor selectedSources_: string[] = [];
   protected accessor selectedProtos_: string[] = [];

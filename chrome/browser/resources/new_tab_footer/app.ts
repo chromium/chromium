@@ -110,7 +110,7 @@ export class NewTabFooterAppElement extends NewTabFooterAppElementBase {
   protected accessor showCustomizeButtons_: boolean = false;
   protected accessor showCustomizeText_: boolean = true;
   protected accessor showExtension_: boolean = false;
-  protected accessor ntpType_: NewTabPageType = NewTabPageType.kOther;
+  private accessor ntpType_: NewTabPageType = NewTabPageType.kOther;
   protected accessor backgroundAttributionText_: string|null = null;
   protected accessor backgroundAttributionLink_: Url|null = null;
   protected accessor showBackgroundAttribution_: boolean = false;

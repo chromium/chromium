@@ -279,7 +279,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   protected accessor useWebkitSearchIcons_: boolean = false;
   protected accessor hasUserInput_: boolean = false;
   protected dragAndDropHandler: DragAndDropHandler|null = null;
-  protected callbackRouter_: PageCallbackRouter;
+  private callbackRouter_: PageCallbackRouter;
 
   private placeholderCycler_: PlaceholderTextCycler|null = null;
   private dragAndDropEnabled_: boolean =
