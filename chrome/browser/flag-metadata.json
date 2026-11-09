@@ -10342,7 +10342,7 @@
   {
     "name": "web-app-short-edges-cutout-mode",
     "owners": [ "pwa-team@google.com", "helmut@januschka.com" ],
-    "expiry_milestone": 158
+    "expiry_milestone": 163
   },
   {
     "name": "web-authentication-ambient-signin",
