@@ -1574,6 +1574,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 NetFeatures.USE_DNS_HTTPS_SVCB_ADDRESS_HINTS,
                 "Enables using address hints (ipv4hint and ipv6hint) in HTTPS DNS records."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_OBSERVE_ACCESSIBILITY_STATE,
+                "When enabled, WebView starts observing for Android OS accessibility changes on"
+                        + " startup."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
