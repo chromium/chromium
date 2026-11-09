@@ -8701,6 +8701,88 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testDataProvider_OnItemUpdated_GroupMembership_UpdatesGroupCardTitle() {
+        TabGroupItem groupItem =
+                setupGroupCardInProviderMediator(
+                        TabListLayoutType.GROUPED, /* isCollapsed= */ true);
+        mTabModel.setTabGroupTitle(TAB_GROUP_ID, "");
+        Tab tab3 = mTabModel.getTabById(TAB3_ID);
+        Tab tab4 = mTabModel.getTabById(TAB4_ID);
+        assertThat(mModelList.get(1).model.get(TabProperties.TITLE), equalTo("2 tabs"));
+        // Simulates mTab2 joining the group.
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(tab3, tab4, mTab2));
+
+        mDataObserver.onItemUpdated(groupItem, PayloadType.GROUP_MEMBERSHIP);
+
+        assertThat(mModelList.get(1).model.get(TabProperties.TITLE), equalTo("3 tabs"));
+        assertEquals(2, mModelList.size());
+    }
+
+    @Test
+    public void testDataProvider_OnItemUpdated_GroupMembership_DetachesClosedMember() {
+        TabGroupItem groupItem =
+                setupGroupCardInProviderMediator(
+                        TabListLayoutType.GROUPED, /* isCollapsed= */ true);
+        Tab tab3 = mTabModel.getTabById(TAB3_ID);
+        Tab tab4 = mTabModel.getTabById(TAB4_ID);
+        // Simulates tab4 closing (pending undo): it keeps its group id but leaves the group's tabs.
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(tab3));
+        clearInvocations(mTab1, tab3, tab4);
+
+        mDataObserver.onItemUpdated(groupItem, PayloadType.GROUP_MEMBERSHIP);
+
+        verify(tab4).removeObserver(mTabObserverCaptor.getValue());
+        verify(tab3, never()).removeObserver(any());
+        verify(mTab1, never()).removeObserver(any());
+        assertEquals(2, mModelList.size());
+    }
+
+    @Test
+    public void testDataProvider_OnItemUpdated_GroupMembership_TabItem_JoinsGroup() {
+        setUpProviderMediator(TabListLayoutType.NESTED);
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+        mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID)));
+        assertEquals(1, mModelList.size());
+        assertNull(mModelList.get(0).model.get(TabProperties.TAB_GROUP_ID));
+        // Simulates mTab1 joining a group whose children stay visible in the nested layout.
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID)).thenReturn(COLOR_2);
+
+        mDataObserver.onItemUpdated(createTabItem(TAB1_ID), PayloadType.GROUP_MEMBERSHIP);
+
+        PropertyModel model = mModelList.get(0).model;
+        assertEquals(TAB_GROUP_ID, model.get(TabProperties.TAB_GROUP_ID));
+        assertThat(model.get(TabProperties.TAB_GROUP_CARD_COLOR), equalTo(COLOR_2));
+        // The child stays a tab card rather than turning into a group header.
+        assertEquals(TAB, model.get(CARD_TYPE));
+        assertNull(model.get(TabProperties.TAB_GROUP_HEADER_ID));
+        assertEquals(1, mModelList.size());
+    }
+
+    @Test
+    public void testDataProvider_OnItemUpdated_GroupMembership_TabItem_LeavesGroup() {
+        setUpProviderMediator(TabListLayoutType.NESTED);
+        mMediator.resetWithListOfTabs(
+                List.of(mTab1), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID)).thenReturn(COLOR_2);
+        mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID)));
+        assertEquals(1, mModelList.size());
+        assertEquals(TAB_GROUP_ID, mModelList.get(0).model.get(TabProperties.TAB_GROUP_ID));
+        // Simulates mTab1 moving out of the group.
+        when(mTab1.getTabGroupId()).thenReturn(null);
+
+        mDataObserver.onItemUpdated(createTabItem(TAB1_ID), PayloadType.GROUP_MEMBERSHIP);
+
+        PropertyModel model = mModelList.get(0).model;
+        assertNull(model.get(TabProperties.TAB_GROUP_ID));
+        assertNull(model.get(TabProperties.TAB_GROUP_CARD_COLOR));
+        assertEquals(TAB, model.get(CARD_TYPE));
+        assertEquals(1, mModelList.size());
+    }
+
+    @Test
     public void testDataProvider_OnItemUpdated_TabItem_NoOp() {
         setUpProviderMediator();
         mMediator.resetWithListOfTabs(

@@ -2921,12 +2921,19 @@ public class TabListMediator implements TabListNotificationHandler {
                 case PayloadType.COLLAPSED ->
                         updateTabGroupCollapsed(tabGroupId, groupItem.isCollapsed());
                 case PayloadType.TAB_GROUP_ORDER -> updateTabGroupThumbnail(tabGroupId);
+                case PayloadType.GROUP_MEMBERSHIP -> updateTabGroupMembership(groupItem);
                 default -> {}
             }
             return;
         }
-        assert item instanceof TabItem : "Unsupported TabListItem: " + item;
-        // TODO(crbug.com/562590772): Handle TabItem updates.
+        if (item instanceof TabItem tabItem) {
+            switch (payload) {
+                case PayloadType.GROUP_MEMBERSHIP -> updateTabItemGroupMembership(tabItem);
+                default -> {}
+            }
+        } else {
+            assert false : "Unsupported TabListItem: " + item;
+        }
     }
 
     /** Suppresses layout updates while applying a batch of provider changes to the model list. */
@@ -3623,6 +3630,41 @@ public class TabListMediator implements TabListNotificationHandler {
         Tab tab = indexAndTab.second;
         if (!mTabListLayoutDelegate.isChildTabRepresentedByGroupCard(tab)) return;
         updateThumbnailFetcher(mModelList.get(indexAndTab.first).model, tab.getId());
+    }
+
+    /**
+     * Refreshes the group card after tabs join or leave the group, and stops observing members that
+     * left, e.g. a closed tab pending undo.
+     */
+    private void updateTabGroupMembership(TabGroupItem groupItem) {
+        int index = mModelList.indexFromItem(groupItem);
+        if (index == TabModel.INVALID_TAB_INDEX) return;
+        TabModel tabModel = getCurrentTabModelChecked();
+        Token tabGroupId = groupItem.getTabGroupId();
+        List<Tab> groupTabs = tabModel.getTabsInGroup(tabGroupId);
+        // The observer manager returns a copy since removeObserversForTab() mutates the observed
+        // set.
+        for (Tab tab : mObserverManager.getObservedTabsInGroup(tabGroupId)) {
+            if (!groupTabs.contains(tab)) removeObserversForTab(tab);
+        }
+        addOrUpdateCardForItem(
+                tabModel, groupItem, index, /* updateInPlace= */ true, /* quickMode= */ false);
+    }
+
+    /**
+     * Updates a tab card's group properties (group id, color and header id) after the tab moves
+     * into or out of a group. Only sent in NESTED when the tab already has its own card, e.g. a row
+     * dragged out of or into an expanded group. In GTS or a collapsed group the card is added or
+     * removed instead. The group card's own refresh comes from {@link #updateTabGroupMembership}.
+     */
+    private void updateTabItemGroupMembership(TabItem tabItem) {
+        int index = mModelList.indexFromItem(tabItem);
+        if (index == TabModel.INVALID_TAB_INDEX) return;
+        Tab tab = getCurrentTabModelChecked().getTabById(tabItem.getTabId());
+        if (tab == null) return;
+        PropertyModel model = mModelList.get(index).model;
+        mTabListLayoutDelegate.setupGroupPropertiesForChildTab(tab, model);
+        bindTabActionStateProperties(mTabActionState, tab, model);
     }
 
     /**
