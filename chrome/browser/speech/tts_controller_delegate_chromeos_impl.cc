@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/singleton.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/tts_controller.h"
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom.h"
@@ -110,15 +110,15 @@ void TtsControllerDelegateChromeOSImpl::UpdateUtteranceDefaultsFromPrefs(
   // on this utterance.
   const PrefService* prefs = GetPrefService(utterance);
   if (*rate == blink::mojom::kSpeechSynthesisDoublePrefNotSet) {
-    *rate = prefs ? prefs->GetDouble(prefs::kTextToSpeechRate)
+    *rate = prefs ? prefs->GetDouble(ash::prefs::kTextToSpeechRate)
                   : blink::mojom::kSpeechSynthesisDefaultRate;
   }
   if (*pitch == blink::mojom::kSpeechSynthesisDoublePrefNotSet) {
-    *pitch = prefs ? prefs->GetDouble(prefs::kTextToSpeechPitch)
+    *pitch = prefs ? prefs->GetDouble(ash::prefs::kTextToSpeechPitch)
                    : blink::mojom::kSpeechSynthesisDefaultPitch;
   }
   if (*volume == blink::mojom::kSpeechSynthesisDoublePrefNotSet) {
-    *volume = prefs ? prefs->GetDouble(prefs::kTextToSpeechVolume)
+    *volume = prefs ? prefs->GetDouble(ash::prefs::kTextToSpeechVolume)
                     : blink::mojom::kSpeechSynthesisDefaultVolume;
   }
 }
@@ -140,7 +140,7 @@ const base::DictValue* TtsControllerDelegateChromeOSImpl::GetLangToVoicePref(
   const PrefService* prefs = GetPrefService(utterance);
   return prefs == nullptr
              ? nullptr
-             : &prefs->GetDict(prefs::kTextToSpeechLangToVoiceName);
+             : &prefs->GetDict(ash::prefs::kTextToSpeechLangToVoiceName);
 }
 
 bool TtsControllerDelegateChromeOSImpl::IsFallbackEngine(

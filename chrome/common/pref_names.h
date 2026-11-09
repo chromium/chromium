@@ -496,31 +496,6 @@ inline constexpr char kPrintingAPIExtensionsAllowlist[] =
 inline constexpr char kInsightsExtensionEnabled[] =
     "insights_extension_enabled";
 
-// A string pref that contains version where "What's new" promo was shown.
-inline constexpr char kChromeOSReleaseNotesVersion[] =
-    "settings.release_notes.version";
-
-// Dictionary preference that maps language to default voice name preferences
-// for the users's text-to-speech settings. For example, this might map
-// 'en-US' to 'Chrome OS US English'.
-inline constexpr char kTextToSpeechLangToVoiceName[] =
-    "settings.tts.lang_to_voice_name";
-
-// Double preference that controls the default text-to-speech voice rate,
-// where 1.0 is an unchanged rate, and for example, 0.5 is half as fast,
-// and 2.0 is twice as fast.
-inline constexpr char kTextToSpeechRate[] = "settings.tts.speech_rate";
-
-// Double preference that controls the default text-to-speech voice pitch,
-// where 1.0 is unchanged, and for example 0.5 is lower, and 2.0 is
-// higher-pitched.
-inline constexpr char kTextToSpeechPitch[] = "settings.tts.speech_pitch";
-
-// Double preference that controls the default text-to-speech voice volume
-// relative to the system volume, where lower than 1.0 is quieter than the
-// system volume, and higher than 1.0 is louder.
-inline constexpr char kTextToSpeechVolume[] = "settings.tts.speech_volume";
-
 // A string pref storing the path of device wallpaper image file.
 inline constexpr char kDeviceWallpaperImageFilePath[] =
     "policy.device_wallpaper_image_file_path";

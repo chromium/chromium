@@ -51,7 +51,6 @@
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
@@ -393,7 +392,7 @@ void Preferences::RegisterProfilePrefs(
   // Initially all existing users would see "What's new" for current version
   // after update.
   registry->RegisterStringPref(
-      ::prefs::kChromeOSReleaseNotesVersion, "0.0.0.0",
+      prefs::kChromeOSReleaseNotesVersion, "0.0.0.0",
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   ::disks::prefs::RegisterProfilePrefs(registry);
@@ -527,16 +526,16 @@ void Preferences::RegisterProfilePrefs(
 
   // Text-to-speech prefs.
   registry->RegisterDictionaryPref(
-      ::prefs::kTextToSpeechLangToVoiceName,
+      prefs::kTextToSpeechLangToVoiceName,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterDoublePref(
-      ::prefs::kTextToSpeechRate, blink::mojom::kSpeechSynthesisDefaultRate,
+      prefs::kTextToSpeechRate, blink::mojom::kSpeechSynthesisDefaultRate,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterDoublePref(
-      ::prefs::kTextToSpeechPitch, blink::mojom::kSpeechSynthesisDefaultPitch,
+      prefs::kTextToSpeechPitch, blink::mojom::kSpeechSynthesisDefaultPitch,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterDoublePref(
-      ::prefs::kTextToSpeechVolume, blink::mojom::kSpeechSynthesisDefaultVolume,
+      prefs::kTextToSpeechVolume, blink::mojom::kSpeechSynthesisDefaultVolume,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   registry->RegisterBooleanPref(prefs::kSyncOobeCompleted, false);

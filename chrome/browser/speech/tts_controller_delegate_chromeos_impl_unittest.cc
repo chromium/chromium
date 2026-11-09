@@ -6,11 +6,11 @@
 
 #include "chrome/browser/speech/tts_controller_delegate_chromeos_impl.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/tts_controller.h"
@@ -55,9 +55,12 @@ TEST(TtsControllerDelegateChromeOSImplTest,
   pitch = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
   volume = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
   TestingPrefServiceSimple pref_service_;
-  pref_service_.registry()->RegisterDoublePref(prefs::kTextToSpeechRate, 1.5);
-  pref_service_.registry()->RegisterDoublePref(prefs::kTextToSpeechPitch, 2.0);
-  pref_service_.registry()->RegisterDoublePref(prefs::kTextToSpeechVolume, 0.5);
+  pref_service_.registry()->RegisterDoublePref(ash::prefs::kTextToSpeechRate,
+                                               1.5);
+  pref_service_.registry()->RegisterDoublePref(ash::prefs::kTextToSpeechPitch,
+                                               2.0);
+  pref_service_.registry()->RegisterDoublePref(ash::prefs::kTextToSpeechVolume,
+                                               0.5);
   tts_controller_delegate->pref_service_ = &pref_service_;
 
   std::unique_ptr<content::TtsUtterance> utterance2 =
@@ -114,7 +117,7 @@ TEST(TtsControllerDelegateChromeOSImplTest, GetPreferredVoiceIdsForUtterance) {
           .Set("he", "{\"name\":\"Voice8\",\"extension\":\"id8\"}")
           .Set("noLanguageCode", "{\"name\":\"Android\",\"extension\":\"x\"}");
   pref_service.registry()->RegisterDictionaryPref(
-      prefs::kTextToSpeechLangToVoiceName, std::move(lang_to_voices));
+      ash::prefs::kTextToSpeechLangToVoiceName, std::move(lang_to_voices));
   delegate.pref_service_ = &pref_service;
 
   ids = delegate.GetPreferredVoiceIdsForUtterance(utterance.get());

@@ -922,11 +922,13 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kNumber;
 
   // Text to Speech.
-  (*s_allowlist)[::prefs::kTextToSpeechLangToVoiceName] =
+  (*s_allowlist)[::ash::prefs::kTextToSpeechLangToVoiceName] =
       settings_api::PrefType::kDictionary;
-  (*s_allowlist)[::prefs::kTextToSpeechRate] = settings_api::PrefType::kNumber;
-  (*s_allowlist)[::prefs::kTextToSpeechPitch] = settings_api::PrefType::kNumber;
-  (*s_allowlist)[::prefs::kTextToSpeechVolume] =
+  (*s_allowlist)[::ash::prefs::kTextToSpeechRate] =
+      settings_api::PrefType::kNumber;
+  (*s_allowlist)[::ash::prefs::kTextToSpeechPitch] =
+      settings_api::PrefType::kNumber;
+  (*s_allowlist)[::ash::prefs::kTextToSpeechVolume] =
       settings_api::PrefType::kNumber;
 
   // Guest OS
