@@ -19,8 +19,6 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -177,10 +175,10 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
               infobars::InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE)) {
         PageSpecificSiteDataDialogController::ShowCollectedCookiesInfoBar(
             web_contents_.get());
-      } else {
-        CollectedCookiesInfoBarDelegate::Create(
-            infobars::ContentInfoBarManager::FromWebContents(
-                web_contents_.get()));
+      } else if (auto* infobar_manager =
+                     infobars::ContentInfoBarManager::FromWebContents(
+                         web_contents_.get())) {
+        CollectedCookiesInfoBarDelegate::Create(infobar_manager);
       }
     }
 
@@ -321,10 +319,12 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   }
 
   void OnManageOnDeviceSiteDataClicked() {
-    BrowserWindowInterface* browser =
-        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-            web_contents_.get());
-    chrome::ShowSettingsSubPage(browser, chrome::kOnDeviceSiteDataSubpage);
+    if (!web_contents_) {
+      return;
+    }
+    chrome::ShowSettingsSubPageForProfile(
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
+        chrome::kOnDeviceSiteDataSubpage);
   }
 
   void OnRelatedApplicationLinkToAppSettings(const webapps::AppId& app_id) {
@@ -579,6 +579,7 @@ void PageSpecificSiteDataDialogTestApi::DeleteStoredObjects(
 }  // namespace test
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogRow);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogSubtitle);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogFirstPartySection);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogThirdPartySection);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogEmptyStateLabel);
@@ -606,7 +607,8 @@ views::Widget* ShowPageSpecificSiteDataDialog(
       .AddParagraph(
           ui::DialogModelLabel::CreateWithReplacement(
               IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_SUBTITLE, settings_link)
-              .set_is_secondary())
+              .set_is_secondary(),
+          /*header=*/std::u16string(), kPageSpecificSiteDataDialogSubtitle)
       .SetInternalName("PageSpecificSiteDataDialog")
       .AddOkButton(
           base::BindRepeating(&PageSpecificSiteDataDialogModelDelegate::

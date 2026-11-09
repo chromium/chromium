@@ -92,7 +92,7 @@
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
-#include "chrome/browser/ui/tab_dialogs.h"
+#include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -392,7 +392,8 @@ void ChromePageInfoDelegate::ShowSyncSettings() {
 
 void ChromePageInfoDelegate::OpenCookiesDialog() {
   FocusWebContents();
-  TabDialogs::FromWebContents(web_contents_)->ShowCollectedCookies();
+  PageSpecificSiteDataDialogController::CreateAndShowForWebContents(
+      web_contents_);
 }
 
 void ChromePageInfoDelegate::OpenCertificateDialog(

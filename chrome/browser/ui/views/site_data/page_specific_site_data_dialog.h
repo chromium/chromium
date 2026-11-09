@@ -60,6 +60,7 @@ class PageSpecificSiteDataDialogTestApi {
 }  // namespace test
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogRow);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogSubtitle);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogFirstPartySection);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogThirdPartySection);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogEmptyStateLabel);
