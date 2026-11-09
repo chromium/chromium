@@ -799,6 +799,7 @@ source_set("platform_browser_tests") {
   if (is_android) {
     deps += [
       "//chrome/browser",
+      "//chrome/browser/flags:flags_android",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui/android/tab_model:test_support",

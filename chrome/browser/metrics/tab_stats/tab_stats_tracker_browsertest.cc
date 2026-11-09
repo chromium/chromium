@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -32,11 +33,17 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/test/test_future.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/incognito/android/incognito_utils_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/test/base/android/android_browser_test.h"
+#include "ui/base/base_window.h"
 #else
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -440,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
 
   // Add a second tab in the first window: 1 window, 2 tabs.
   ASSERT_TRUE(AddTabToTabStrip(tab_strip()));
-  size_t expected_tabs_in_first_window = 2;
+  const size_t expected_tabs_in_first_window = 2;
   {
     base::HistogramTester histogram_tester;
     tab_stats_tracker_->OnHeartbeatEvent();
@@ -451,63 +458,6 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
         UmaStatsReportingDelegate::kTabCount2HistogramName,
         expected_tabs_in_first_window, 1);
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  // Open a real Incognito tab in the live ChromeTabbedActivity window. That
-  // instantiates the window's Incognito TabModel alongside its regular
-  // TabModel, inflating legacy `Tabs.WindowCount` to 2 while
-  // `Tabs.WindowCount2` deduplicates both models to 1 physical window via real
-  // `BrowserWindowInterface` / `WindowAndroid` wiring.
-  Profile* otr_profile =
-      tab_strip().GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  content::WebContents::CreateParams otr_params(otr_profile);
-  otr_params.initially_hidden = true;
-  std::unique_ptr<content::WebContents> otr_contents =
-      content::WebContents::Create(otr_params);
-  content::WebContents* raw_otr_contents = otr_contents.get();
-  ASSERT_NE(
-      tab_strip().tab_model()->CreateTab(
-          /*parent=*/nullptr, std::move(otr_contents), TabModel::kInvalidIndex,
-          TabModel::TabLaunchType::FROM_CHROME_UI,
-          /*should_pin=*/false),
-      nullptr);
-  NavigateNewTabToUrl(raw_otr_contents, GURL("about:blank"));
-  ++expected_tabs_in_first_window;
-
-  {
-    base::HistogramTester histogram_tester;
-    tab_stats_tracker_->OnHeartbeatEvent();
-
-    histogram_tester.ExpectUniqueSample(
-        UmaStatsReportingDelegate::kWindowCountHistogramName, 2, 1);
-    histogram_tester.ExpectUniqueSample(
-        UmaStatsReportingDelegate::kWindowCount2HistogramName, 1, 1);
-    histogram_tester.ExpectUniqueSample(
-        UmaStatsReportingDelegate::kTabCount2HistogramName,
-        expected_tabs_in_first_window, 1);
-  }
-
-  // Close all tabs in the active regular `TabModel` while the Incognito
-  // `TabModel` still has 1 tab. Because the active regular `TabModel` now has 0
-  // `WebContents`, deduplicating it with the Incognito `TabModel` (instead of
-  // counting it as an unassociated active window) requires the primary
-  // `SessionID` -> `BrowserWindowInterface` lookup.
-  tab_strip().CloseTabAtForTesting(1);
-  tab_strip().CloseTabAtForTesting(0);
-  expected_tabs_in_first_window = 1;
-  {
-    base::HistogramTester histogram_tester;
-    tab_stats_tracker_->OnHeartbeatEvent();
-
-    histogram_tester.ExpectUniqueSample(
-        UmaStatsReportingDelegate::kWindowCountHistogramName, 2, 1);
-    histogram_tester.ExpectUniqueSample(
-        UmaStatsReportingDelegate::kWindowCount2HistogramName, 1, 1);
-    histogram_tester.ExpectUniqueSample(
-        UmaStatsReportingDelegate::kTabCount2HistogramName,
-        expected_tabs_in_first_window, 1);
-  }
-#endif
 
   // Open a second window (starts with 1 tab): 2 active windows.
   std::unique_ptr<TabStripInterface> second_window =
@@ -537,6 +487,142 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
         expected_tabs_in_first_window, 1);
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(
+    TabStatsTrackerBrowserTest,
+    HeartbeatWindowCount2DeduplicatesMixedIncognitoTabModel) {
+  // Note: `ChromeFeatureList.sEnforceIncognitoIsolation` is a Java `CachedFlag`
+  // latched in `ChromeTabbedActivity.performPreInflationStartup()` before C++
+  // `ScopedFeatureList` runs, so it cannot be overridden per C++ test. Non-
+  // windowed Android form factors (`!ShouldOpenIncognitoAsWindow()`) continue
+  // to use mixed windows and exercise this test deterministically.
+  if (chrome::android::ShouldOpenIncognitoAsWindow() &&
+      base::FeatureList::IsEnabled(
+          chrome::android::kEnforceIncognitoIsolation)) {
+    GTEST_SKIP() << "Mixed-window Incognito TabModels do not exist when "
+                    "Incognito window isolation is enforced.";
+  }
+
+  ASSERT_TRUE(tab_stats_tracker_ != nullptr);
+  using UmaStatsReportingDelegate = TabStatsTracker::UmaStatsReportingDelegate;
+
+  ASSERT_TRUE(AddTabToTabStrip(tab_strip()));
+
+  // Open a real Incognito tab in the live ChromeTabbedActivity window. That
+  // instantiates the window's Incognito TabModel alongside its regular
+  // TabModel, inflating legacy `Tabs.WindowCount` to 2 while
+  // `Tabs.WindowCount2` deduplicates both models to 1 physical window via real
+  // `BrowserWindowInterface` / `WindowAndroid` wiring.
+  Profile* otr_profile =
+      tab_strip().GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  content::WebContents::CreateParams otr_params(otr_profile);
+  otr_params.initially_hidden = true;
+  std::unique_ptr<content::WebContents> otr_contents =
+      content::WebContents::Create(otr_params);
+  content::WebContents* raw_otr_contents = otr_contents.get();
+  ASSERT_NE(
+      tab_strip().tab_model()->CreateTab(
+          /*parent=*/nullptr, std::move(otr_contents), TabModel::kInvalidIndex,
+          TabModel::TabLaunchType::FROM_CHROME_UI,
+          /*should_pin=*/false),
+      nullptr);
+  NavigateNewTabToUrl(raw_otr_contents, GURL("about:blank"));
+
+  {
+    base::HistogramTester histogram_tester;
+    tab_stats_tracker_->OnHeartbeatEvent();
+
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kWindowCountHistogramName, 2, 1);
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kWindowCount2HistogramName, 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kTabCount2HistogramName, 3, 1);
+  }
+
+  // Close all tabs in the active regular `TabModel` while the Incognito
+  // `TabModel` still has 1 tab. Because the active regular `TabModel` now has 0
+  // `WebContents`, deduplicating it with the Incognito `TabModel` (instead of
+  // counting it as an unassociated active window) requires the primary
+  // `SessionID` -> `BrowserWindowInterface` lookup.
+  tab_strip().CloseTabAtForTesting(1);
+  tab_strip().CloseTabAtForTesting(0);
+  {
+    base::HistogramTester histogram_tester;
+    tab_stats_tracker_->OnHeartbeatEvent();
+
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kWindowCountHistogramName, 2, 1);
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kWindowCount2HistogramName, 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kTabCount2HistogramName, 1, 1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
+                       HeartbeatWindowCount2IsolatedIncognitoWindow) {
+  if (!(chrome::android::ShouldOpenIncognitoAsWindow() &&
+        base::FeatureList::IsEnabled(
+            chrome::android::kEnforceIncognitoIsolation))) {
+    GTEST_SKIP() << "Requires isolated Incognito windows.";
+  }
+
+  ASSERT_TRUE(tab_stats_tracker_ != nullptr);
+  using UmaStatsReportingDelegate = TabStatsTracker::UmaStatsReportingDelegate;
+
+  Profile* otr_profile =
+      tab_strip().GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  content::WebContents::CreateParams otr_params(otr_profile);
+  otr_params.initially_hidden = true;
+  std::unique_ptr<content::WebContents> otr_contents =
+      content::WebContents::Create(otr_params);
+
+  // Creating an OTR tab in the regular window's TabModel must be rejected
+  // without changing window or tab counts.
+  EXPECT_EQ(
+      tab_strip().tab_model()->CreateTab(
+          /*parent=*/nullptr, std::move(otr_contents), TabModel::kInvalidIndex,
+          TabModel::TabLaunchType::FROM_CHROME_UI,
+          /*should_pin=*/false),
+      nullptr);
+  {
+    base::HistogramTester histogram_tester;
+    tab_stats_tracker_->OnHeartbeatEvent();
+
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kWindowCountHistogramName, 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kWindowCount2HistogramName, 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kTabCount2HistogramName, 1, 1);
+  }
+
+  // Opening a dedicated Incognito window counts as a second physical window.
+  BrowserWindowCreateParams create_params(
+      BrowserWindowInterface::Type::TYPE_NORMAL, *otr_profile,
+      /*from_user_gesture=*/false);
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  CreateBrowserWindow(std::move(create_params), future.GetCallback());
+  BrowserWindowInterface* incognito_window = future.Get();
+  ASSERT_NE(incognito_window, nullptr);
+
+  {
+    base::HistogramTester histogram_tester;
+    tab_stats_tracker_->OnHeartbeatEvent();
+
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kWindowCountHistogramName, 2, 1);
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kWindowCount2HistogramName, 2, 1);
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kTabCount2HistogramName, 2, 1);
+  }
+
+  incognito_window->GetWindow()->Close();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/449230856): Consistently failing on Android.
 #if BUILDFLAG(IS_ANDROID)

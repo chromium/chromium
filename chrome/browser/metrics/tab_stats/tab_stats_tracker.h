@@ -102,6 +102,13 @@ class TabStatsTracker :
                            TabsAndWindowsAreCountedAccurately);
   FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
                            HeartbeatWindowAndTabCount2Metrics);
+#if BUILDFLAG(IS_ANDROID)
+  FRIEND_TEST_ALL_PREFIXES(
+      TabStatsTrackerBrowserTest,
+      HeartbeatWindowCount2DeduplicatesMixedIncognitoTabModel);
+  FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
+                           HeartbeatWindowCount2IsolatedIncognitoWindow);
+#endif
 #if BUILDFLAG(IS_WIN)
   FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
                            TestCalculateAndRecordNativeWindowVisibilities);
