@@ -143,9 +143,9 @@ void RenderFrameObserver::ReadyToCommitNavigation(
 
   v8::Local<v8::ObjectTemplate> webshell_template =
       gin::ObjectTemplateBuilder(isolate)
-          .SetMethod("allowWebviewElementRegistration",
-                     &AllowCustomElementNameRegistration)
-          .SetMethod("attachIframeGuest", &AttachIframeGuest)
+          .SetMethod<&AllowCustomElementNameRegistration>(
+              "allowWebviewElementRegistration")
+          .SetMethod<&AttachIframeGuest>("attachIframeGuest")
           .SetValue("surfaceEmbedEnabled", surface_embed_enabled)
           .Build();
 

@@ -42,101 +42,101 @@ const gin::WrapperInfo* AutomationPosition::wrapper_info() const {
 gin::ObjectTemplateBuilder AutomationPosition::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return Wrappable<AutomationPosition>::GetObjectTemplateBuilder(isolate)
-      .SetProperty("treeID", &AutomationPosition::GetTreeID)
-      .SetProperty("anchorID", &AutomationPosition::GetAnchorID)
-      .SetProperty("childIndex", &AutomationPosition::GetChildIndex)
-      .SetProperty("textOffset", &AutomationPosition::GetTextOffset)
-      .SetProperty("affinity", &AutomationPosition::GetAffinity)
-      .SetMethod("isNullPosition", &AutomationPosition::IsNullPosition)
-      .SetMethod("isTreePosition", &AutomationPosition::IsTreePosition)
-      .SetMethod("isTextPosition", &AutomationPosition::IsTextPosition)
-      .SetMethod("isLeafTextPosition", &AutomationPosition::IsLeafTextPosition)
-      .SetMethod("atStartOfAnchor", &AutomationPosition::AtStartOfAnchor)
-      .SetMethod("atEndOfAnchor", &AutomationPosition::AtEndOfAnchor)
-      .SetMethod("atStartOfWord", &AutomationPosition::AtStartOfWord)
-      .SetMethod("atEndOfWord", &AutomationPosition::AtEndOfWord)
-      .SetMethod("atStartOfLine", &AutomationPosition::AtStartOfLine)
-      .SetMethod("atEndOfLine", &AutomationPosition::AtEndOfLine)
-      .SetMethod("atStartOfParagraph", &AutomationPosition::AtStartOfParagraph)
-      .SetMethod("atEndOfParagraph", &AutomationPosition::AtEndOfParagraph)
-      .SetMethod("atStartOfPage", &AutomationPosition::AtStartOfPage)
-      .SetMethod("atEndOfPage", &AutomationPosition::AtEndOfPage)
-      .SetMethod("atStartOfFormat", &AutomationPosition::AtStartOfFormat)
-      .SetMethod("atEndOfFormat", &AutomationPosition::AtEndOfFormat)
-      .SetMethod("atStartOfContent", &AutomationPosition::AtStartOfContent)
-      .SetMethod("atEndOfContent", &AutomationPosition::AtEndOfContent)
-      .SetMethod("asTreePosition", &AutomationPosition::AsTreePosition)
-      .SetMethod("asTextPosition", &AutomationPosition::AsTextPosition)
-      .SetMethod("asLeafTextPosition", &AutomationPosition::AsLeafTextPosition)
-      .SetMethod("moveToPositionAtStartOfAnchor",
-                 &AutomationPosition::MoveToPositionAtStartOfAnchor)
-      .SetMethod("moveToPositionAtEndOfAnchor",
-                 &AutomationPosition::MoveToPositionAtEndOfAnchor)
-      .SetMethod("moveToPositionAtStartOfContent",
-                 &AutomationPosition::MoveToPositionAtStartOfContent)
-      .SetMethod("moveToPositionAtEndOfContent",
-                 &AutomationPosition::MoveToPositionAtEndOfContent)
-      .SetMethod("moveToParentPosition",
-                 &AutomationPosition::MoveToParentPosition)
-      .SetMethod("moveToNextLeafTreePosition",
-                 &AutomationPosition::MoveToNextLeafTreePosition)
-      .SetMethod("moveToPreviousLeafTreePosition",
-                 &AutomationPosition::MoveToPreviousLeafTreePosition)
-      .SetMethod("moveToNextLeafTextPosition",
-                 &AutomationPosition::MoveToNextLeafTextPosition)
-      .SetMethod("moveToPreviousLeafTextPosition",
-                 &AutomationPosition::MoveToPreviousLeafTextPosition)
-      .SetMethod("moveToNextCharacterPosition",
-                 &AutomationPosition::MoveToNextCharacterPosition)
-      .SetMethod("moveToPreviousCharacterPosition",
-                 &AutomationPosition::MoveToPreviousCharacterPosition)
-      .SetMethod("moveToNextWordStartPosition",
-                 &AutomationPosition::MoveToNextWordStartPosition)
-      .SetMethod("moveToPreviousWordStartPosition",
-                 &AutomationPosition::MoveToPreviousWordStartPosition)
-      .SetMethod("moveToNextWordEndPosition",
-                 &AutomationPosition::MoveToNextWordEndPosition)
-      .SetMethod("moveToPreviousWordEndPosition",
-                 &AutomationPosition::MoveToPreviousWordEndPosition)
-      .SetMethod("moveToNextLineStartPosition",
-                 &AutomationPosition::MoveToNextLineStartPosition)
-      .SetMethod("moveToPreviousLineStartPosition",
-                 &AutomationPosition::MoveToPreviousLineStartPosition)
-      .SetMethod("moveToNextLineEndPosition",
-                 &AutomationPosition::MoveToNextLineEndPosition)
-      .SetMethod("moveToPreviousLineEndPosition",
-                 &AutomationPosition::MoveToPreviousLineEndPosition)
-      .SetMethod("moveToPreviousFormatStartPosition",
-                 &AutomationPosition::MoveToPreviousFormatStartPosition)
-      .SetMethod("moveToNextFormatEndPosition",
-                 &AutomationPosition::MoveToNextFormatEndPosition)
-      .SetMethod("moveToNextParagraphStartPosition",
-                 &AutomationPosition::MoveToNextParagraphStartPosition)
-      .SetMethod("moveToPreviousParagraphStartPosition",
-                 &AutomationPosition::MoveToPreviousParagraphStartPosition)
-      .SetMethod("moveToNextParagraphEndPosition",
-                 &AutomationPosition::MoveToNextParagraphEndPosition)
-      .SetMethod("moveToPreviousParagraphEndPosition",
-                 &AutomationPosition::MoveToPreviousParagraphEndPosition)
-      .SetMethod("moveToNextPageStartPosition",
-                 &AutomationPosition::MoveToNextPageStartPosition)
-      .SetMethod("moveToPreviousPageStartPosition",
-                 &AutomationPosition::MoveToPreviousPageStartPosition)
-      .SetMethod("moveToNextPageEndPosition",
-                 &AutomationPosition::MoveToNextPageEndPosition)
-      .SetMethod("moveToPreviousPageEndPosition",
-                 &AutomationPosition::MoveToPreviousPageEndPosition)
-      .SetMethod("moveToNextAnchorPosition",
-                 &AutomationPosition::MoveToNextAnchorPosition)
-      .SetMethod("moveToPreviousAnchorPosition",
-                 &AutomationPosition::MoveToPreviousAnchorPosition)
-      .SetMethod("maxTextOffset", &AutomationPosition::MaxTextOffset)
-      .SetMethod("isPointingToLineBreak",
-                 &AutomationPosition::IsPointingToLineBreak)
-      .SetMethod("isInTextObject", &AutomationPosition::IsInTextObject)
-      .SetMethod("isInWhiteSpace", &AutomationPosition::IsInWhiteSpace)
-      .SetMethod("isValid", &AutomationPosition::IsValid)
-      .SetMethod("getText", &AutomationPosition::GetText);
+      .SetProperty<&AutomationPosition::GetTreeID>("treeID")
+      .SetProperty<&AutomationPosition::GetAnchorID>("anchorID")
+      .SetProperty<&AutomationPosition::GetChildIndex>("childIndex")
+      .SetProperty<&AutomationPosition::GetTextOffset>("textOffset")
+      .SetProperty<&AutomationPosition::GetAffinity>("affinity")
+      .SetMethod<&AutomationPosition::IsNullPosition>("isNullPosition")
+      .SetMethod<&AutomationPosition::IsTreePosition>("isTreePosition")
+      .SetMethod<&AutomationPosition::IsTextPosition>("isTextPosition")
+      .SetMethod<&AutomationPosition::IsLeafTextPosition>("isLeafTextPosition")
+      .SetMethod<&AutomationPosition::AtStartOfAnchor>("atStartOfAnchor")
+      .SetMethod<&AutomationPosition::AtEndOfAnchor>("atEndOfAnchor")
+      .SetMethod<&AutomationPosition::AtStartOfWord>("atStartOfWord")
+      .SetMethod<&AutomationPosition::AtEndOfWord>("atEndOfWord")
+      .SetMethod<&AutomationPosition::AtStartOfLine>("atStartOfLine")
+      .SetMethod<&AutomationPosition::AtEndOfLine>("atEndOfLine")
+      .SetMethod<&AutomationPosition::AtStartOfParagraph>("atStartOfParagraph")
+      .SetMethod<&AutomationPosition::AtEndOfParagraph>("atEndOfParagraph")
+      .SetMethod<&AutomationPosition::AtStartOfPage>("atStartOfPage")
+      .SetMethod<&AutomationPosition::AtEndOfPage>("atEndOfPage")
+      .SetMethod<&AutomationPosition::AtStartOfFormat>("atStartOfFormat")
+      .SetMethod<&AutomationPosition::AtEndOfFormat>("atEndOfFormat")
+      .SetMethod<&AutomationPosition::AtStartOfContent>("atStartOfContent")
+      .SetMethod<&AutomationPosition::AtEndOfContent>("atEndOfContent")
+      .SetMethod<&AutomationPosition::AsTreePosition>("asTreePosition")
+      .SetMethod<&AutomationPosition::AsTextPosition>("asTextPosition")
+      .SetMethod<&AutomationPosition::AsLeafTextPosition>("asLeafTextPosition")
+      .SetMethod<&AutomationPosition::MoveToPositionAtStartOfAnchor>(
+          "moveToPositionAtStartOfAnchor")
+      .SetMethod<&AutomationPosition::MoveToPositionAtEndOfAnchor>(
+          "moveToPositionAtEndOfAnchor")
+      .SetMethod<&AutomationPosition::MoveToPositionAtStartOfContent>(
+          "moveToPositionAtStartOfContent")
+      .SetMethod<&AutomationPosition::MoveToPositionAtEndOfContent>(
+          "moveToPositionAtEndOfContent")
+      .SetMethod<&AutomationPosition::MoveToParentPosition>(
+          "moveToParentPosition")
+      .SetMethod<&AutomationPosition::MoveToNextLeafTreePosition>(
+          "moveToNextLeafTreePosition")
+      .SetMethod<&AutomationPosition::MoveToPreviousLeafTreePosition>(
+          "moveToPreviousLeafTreePosition")
+      .SetMethod<&AutomationPosition::MoveToNextLeafTextPosition>(
+          "moveToNextLeafTextPosition")
+      .SetMethod<&AutomationPosition::MoveToPreviousLeafTextPosition>(
+          "moveToPreviousLeafTextPosition")
+      .SetMethod<&AutomationPosition::MoveToNextCharacterPosition>(
+          "moveToNextCharacterPosition")
+      .SetMethod<&AutomationPosition::MoveToPreviousCharacterPosition>(
+          "moveToPreviousCharacterPosition")
+      .SetMethod<&AutomationPosition::MoveToNextWordStartPosition>(
+          "moveToNextWordStartPosition")
+      .SetMethod<&AutomationPosition::MoveToPreviousWordStartPosition>(
+          "moveToPreviousWordStartPosition")
+      .SetMethod<&AutomationPosition::MoveToNextWordEndPosition>(
+          "moveToNextWordEndPosition")
+      .SetMethod<&AutomationPosition::MoveToPreviousWordEndPosition>(
+          "moveToPreviousWordEndPosition")
+      .SetMethod<&AutomationPosition::MoveToNextLineStartPosition>(
+          "moveToNextLineStartPosition")
+      .SetMethod<&AutomationPosition::MoveToPreviousLineStartPosition>(
+          "moveToPreviousLineStartPosition")
+      .SetMethod<&AutomationPosition::MoveToNextLineEndPosition>(
+          "moveToNextLineEndPosition")
+      .SetMethod<&AutomationPosition::MoveToPreviousLineEndPosition>(
+          "moveToPreviousLineEndPosition")
+      .SetMethod<&AutomationPosition::MoveToPreviousFormatStartPosition>(
+          "moveToPreviousFormatStartPosition")
+      .SetMethod<&AutomationPosition::MoveToNextFormatEndPosition>(
+          "moveToNextFormatEndPosition")
+      .SetMethod<&AutomationPosition::MoveToNextParagraphStartPosition>(
+          "moveToNextParagraphStartPosition")
+      .SetMethod<&AutomationPosition::MoveToPreviousParagraphStartPosition>(
+          "moveToPreviousParagraphStartPosition")
+      .SetMethod<&AutomationPosition::MoveToNextParagraphEndPosition>(
+          "moveToNextParagraphEndPosition")
+      .SetMethod<&AutomationPosition::MoveToPreviousParagraphEndPosition>(
+          "moveToPreviousParagraphEndPosition")
+      .SetMethod<&AutomationPosition::MoveToNextPageStartPosition>(
+          "moveToNextPageStartPosition")
+      .SetMethod<&AutomationPosition::MoveToPreviousPageStartPosition>(
+          "moveToPreviousPageStartPosition")
+      .SetMethod<&AutomationPosition::MoveToNextPageEndPosition>(
+          "moveToNextPageEndPosition")
+      .SetMethod<&AutomationPosition::MoveToPreviousPageEndPosition>(
+          "moveToPreviousPageEndPosition")
+      .SetMethod<&AutomationPosition::MoveToNextAnchorPosition>(
+          "moveToNextAnchorPosition")
+      .SetMethod<&AutomationPosition::MoveToPreviousAnchorPosition>(
+          "moveToPreviousAnchorPosition")
+      .SetMethod<&AutomationPosition::MaxTextOffset>("maxTextOffset")
+      .SetMethod<&AutomationPosition::IsPointingToLineBreak>(
+          "isPointingToLineBreak")
+      .SetMethod<&AutomationPosition::IsInTextObject>("isInTextObject")
+      .SetMethod<&AutomationPosition::IsInWhiteSpace>("isInWhiteSpace")
+      .SetMethod<&AutomationPosition::IsValid>("isValid")
+      .SetMethod<&AutomationPosition::GetText>("getText");
 }
 
 std::string AutomationPosition::GetTreeID(gin::Arguments* arguments) {
