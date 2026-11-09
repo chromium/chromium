@@ -6,10 +6,10 @@
 
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
-#include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -61,7 +61,7 @@ TEST_F(EnterpriseLoginApiUnittest,
   user_manager->LoginUser(mgs_account_id);
 
   PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kLoginExtensionApiDataForNextLoginAttempt,
+  local_state->SetString(ash::prefs::kLoginExtensionApiDataForNextLoginAttempt,
                          "hello world");
 
   RunFunction(base::MakeRefCounted<
@@ -69,7 +69,7 @@ TEST_F(EnterpriseLoginApiUnittest,
               "[]");
 
   ASSERT_EQ("", local_state->GetString(
-                    prefs::kLoginExtensionApiDataForNextLoginAttempt));
+                    ash::prefs::kLoginExtensionApiDataForNextLoginAttempt));
 }
 
 }  // namespace extensions

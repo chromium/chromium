@@ -500,11 +500,6 @@ inline constexpr char kInsightsExtensionEnabled[] =
 inline constexpr char kDeviceWallpaperImageFilePath[] =
     "policy.device_wallpaper_image_file_path";
 
-// A string pref stored in local state. Set and read by extensions using the
-// chrome.login API.
-inline constexpr char kLoginExtensionApiDataForNextLoginAttempt[] =
-    "extensions_api.login.data_for_next_login_attempt";
-
 // This boolean controls whether the first window shown on first run should be
 // unconditionally maximized, overriding the heuristic that normally chooses the
 // window size.
@@ -2492,12 +2487,6 @@ inline constexpr char kBrowserShowProfilePickerOnStartup[] =
 // Boolean which indicate if signin interception is enabled.
 inline constexpr char kSigninInterceptionEnabled[] =
     "signin.interception_enabled";
-
-#if BUILDFLAG(IS_CHROMEOS)
-// A dictionary pref of the echo offer check flag. It sets offer info when
-// an offer is checked.
-inline constexpr char kEchoCheckedOffers[] = "EchoCheckedOffers";
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // Policy that indicates how to handle animated images.

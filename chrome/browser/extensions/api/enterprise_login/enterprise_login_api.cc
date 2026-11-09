@@ -4,10 +4,10 @@
 
 #include "chrome/browser/extensions/api/enterprise_login/enterprise_login_api.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/extensions/api/enterprise_login.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 
@@ -26,7 +26,7 @@ EnterpriseLoginExitCurrentManagedGuestSessionFunction::Run() {
   }
 
   g_browser_process->local_state()->ClearPref(
-      prefs::kLoginExtensionApiDataForNextLoginAttempt);
+      ash::prefs::kLoginExtensionApiDataForNextLoginAttempt);
 
   chrome::AttemptUserExit();
   return RespondNow(NoArguments());

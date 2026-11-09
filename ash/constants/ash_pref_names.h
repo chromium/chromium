@@ -419,6 +419,15 @@ inline constexpr char kLoginDisplayPasswordButtonEnabled[] =
 inline constexpr char kLoginExtensionApiCanLockManagedGuestSession[] =
     "extensions_api.login.can_lock_managed_guest_session";
 
+// A string pref stored in local state. Set and read by extensions using the
+// chrome.login API.
+inline constexpr char kLoginExtensionApiDataForNextLoginAttempt[] =
+    "extensions_api.login.data_for_next_login_attempt";
+
+// A dictionary pref of the echo offer check flag. It sets offer info when
+// an offer is checked.
+inline constexpr char kEchoCheckedOffers[] = "EchoCheckedOffers";
+
 // Boolean value indicating the user has hidden the launcher continue section
 // (usually because they want more visual space available for apps).
 inline constexpr char kLauncherContinueSectionHidden[] =

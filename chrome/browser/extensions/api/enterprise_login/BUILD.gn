@@ -16,10 +16,10 @@ source_set("enterprise_login") {
   public_deps = [ "//extensions/browser" ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/lifetime",
-    "//chrome/common:constants",
     "//chrome/common/extensions/api",
     "//components/prefs",
     "//components/user_manager",

@@ -8,6 +8,7 @@
 #include <string_view>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/webui_url_constants.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/chromeos/extensions/echo_private/echo_private_api_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/report/utils/time_utils.h"
@@ -98,7 +98,8 @@ ExtensionFunction::ResponseAction EchoPrivateSetOfferInfoFunction::Run() {
   chromeos::echo_offer::RemoveEmptyValueDicts(dict);
 
   PrefService* local_state = g_browser_process->local_state();
-  ScopedDictPrefUpdate offer_update(local_state, prefs::kEchoCheckedOffers);
+  ScopedDictPrefUpdate offer_update(local_state,
+                                    ash::prefs::kEchoCheckedOffers);
   offer_update->Set("echo." + service_id, std::move(dict));
   return RespondNow(NoArguments());
 }
@@ -115,7 +116,7 @@ ExtensionFunction::ResponseAction EchoPrivateGetOfferInfoFunction::Run() {
   const std::string& service_id = params->id;
   PrefService* local_state = g_browser_process->local_state();
   const base::DictValue& offer_infos =
-      local_state->GetDict(prefs::kEchoCheckedOffers);
+      local_state->GetDict(ash::prefs::kEchoCheckedOffers);
 
   const base::Value* offer_info = offer_infos.Find("echo." + service_id);
   if (!offer_info || !offer_info->is_dict()) {

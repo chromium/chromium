@@ -111,7 +111,6 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
     "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:test_support",
     "//chrome/browser/ui/ash/login:test_support",
-    "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/login/auth/public:authpublic",

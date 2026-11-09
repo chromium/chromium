@@ -13,8 +13,8 @@
 namespace extensions::login_api {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kLoginExtensionApiDataForNextLoginAttempt,
-                               "");
+  registry->RegisterStringPref(
+      ash::prefs::kLoginExtensionApiDataForNextLoginAttempt, "");
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {

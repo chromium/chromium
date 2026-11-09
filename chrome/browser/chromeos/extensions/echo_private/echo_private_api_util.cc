@@ -4,13 +4,13 @@
 
 #include "chrome/browser/chromeos/extensions/echo_private/echo_private_api_util.h"
 
-#include "chrome/common/pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace chromeos::echo_offer {
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(prefs::kEchoCheckedOffers);
+  registry->RegisterDictionaryPref(ash::prefs::kEchoCheckedOffers);
 }
 
 void RemoveEmptyValueDicts(base::DictValue& dict) {

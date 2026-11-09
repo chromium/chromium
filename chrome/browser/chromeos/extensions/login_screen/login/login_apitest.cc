@@ -6,6 +6,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -275,18 +275,18 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, ExitCurrentSession) {
 
   PrefService* local_state = g_browser_process->local_state();
   EXPECT_EQ(kData, local_state->GetString(
-                       prefs::kLoginExtensionApiDataForNextLoginAttempt));
+                       ash::prefs::kLoginExtensionApiDataForNextLoginAttempt));
 }
 
 IN_PROC_BROWSER_TEST_F(LoginApitest, FetchDataForNextLoginAttempt) {
   SetTestCustomArg(kData);
   PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kLoginExtensionApiDataForNextLoginAttempt,
+  local_state->SetString(ash::prefs::kLoginExtensionApiDataForNextLoginAttempt,
                          kData);
   SetUpLoginScreenExtensionAndRunTest(kFetchDataForNextLoginAttempt);
 
   EXPECT_EQ("", local_state->GetString(
-                    prefs::kLoginExtensionApiDataForNextLoginAttempt));
+                    ash::prefs::kLoginExtensionApiDataForNextLoginAttempt));
 }
 
 IN_PROC_BROWSER_TEST_F(LoginApitest, LockManagedGuestSession) {
