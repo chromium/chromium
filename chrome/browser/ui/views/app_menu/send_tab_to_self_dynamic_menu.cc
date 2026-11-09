@@ -47,6 +47,10 @@
 #include "ui/color/color_id.h"
 #include "ui/menus/simple_menu_model.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "components/signin/public/base/signin_switches.h"
+#endif
+
 namespace {
 
 constexpr size_t kMaxDevices = 5;
@@ -107,7 +111,7 @@ bool SendTabToSelfDynamicMenu::ShouldShowSubmenu() const {
       return base::FeatureList::IsEnabled(
                  send_tab_to_self::kSendTabToSelfSubmenuSigninPromos) &&
              base::FeatureList::IsEnabled(
-                 send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode);
+                 switches::kCrossDeviceSigninFromDesktopFollowup);
 #else
       return false;
 #endif

@@ -60,6 +60,10 @@
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "components/signin/public/base/signin_switches.h"
+#endif
+
 namespace {
 
 class ActionAppMenuManagerTest : public ActionAppMenuTestBase {
@@ -969,6 +973,10 @@ TEST_F(ActionAppMenuManagerTest, AlertedElementPropagatesToSubmenu) {
 }
 #endif  // !BUILDFLAG(CHROME_FOR_TESTING)
 
+// Verifies that `kActionSendTabToSelf` populates a dynamic submenu when target
+// devices or sign-in promo states (`kOfferSignIn` and `kInformNoTargetDevice`)
+// are active, and falls back to a flat action item when no target devices are
+// available under `kOfferFeature`.
 TEST_F(ActionAppMenuManagerTest,
        SendTabToSelfEnhancedDesktopUIv2SubmenuAndPromos) {
   content::RenderViewHostTestEnabler rvh_test_enabler;
@@ -977,7 +985,7 @@ TEST_F(ActionAppMenuManagerTest,
       {send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2,
        send_tab_to_self::kSendTabToSelfSubmenuSigninPromos,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-       send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode
+       switches::kCrossDeviceSigninFromDesktopFollowup
 #endif
       },
       {});

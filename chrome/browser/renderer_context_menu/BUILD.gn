@@ -366,6 +366,7 @@ if (!is_android) {
       "//components/send_tab_to_self",
       "//components/send_tab_to_self:features",
       "//components/send_tab_to_self:test_support",
+      "//components/signin/public/base",
       "//components/spellcheck/common",
       "//components/sync/base",
       "//components/sync/model",

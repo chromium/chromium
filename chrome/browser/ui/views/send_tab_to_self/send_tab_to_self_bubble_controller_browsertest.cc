@@ -36,7 +36,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
@@ -907,12 +906,14 @@ class SendTabToSelfNoTargetDeviceQrBubbleBrowserTest
   explicit SendTabToSelfNoTargetDeviceQrBubbleBrowserTest(
       bool qr_bubble_enabled = true) {
     if (qr_bubble_enabled) {
-      feature_list_.InitWithFeatures({switches::kCrossDeviceSigninFromDesktop,
-                                      kSendTabToSelfNoTargetDeviceQrCode},
-                                     {});
+      feature_list_.InitWithFeatures(
+          {switches::kCrossDeviceSigninFromDesktop,
+           switches::kCrossDeviceSigninFromDesktopFollowup},
+          {});
     } else {
-      feature_list_.InitWithFeatures({switches::kCrossDeviceSigninFromDesktop},
-                                     {kSendTabToSelfNoTargetDeviceQrCode});
+      feature_list_.InitWithFeatures(
+          {switches::kCrossDeviceSigninFromDesktop},
+          {switches::kCrossDeviceSigninFromDesktopFollowup});
     }
   }
 
@@ -1005,8 +1006,9 @@ class SendTabToSelfNoTargetDeviceQrBubbleDisabledBrowserTest
             /*qr_bubble_enabled=*/false) {}
 };
 
-// Verifies that when `kSendTabToSelfNoTargetDeviceQrCode` is disabled,
-// `ShowBubble()` falls back to `SendTabToSelfNoTargetDeviceBubbleView`.
+// Verifies that when `switches::kCrossDeviceSigninFromDesktopFollowup` is
+// disabled, `ShowBubble()` falls back to
+// `SendTabToSelfNoTargetDeviceBubbleView`.
 IN_PROC_BROWSER_TEST_F(SendTabToSelfNoTargetDeviceQrBubbleDisabledBrowserTest,
                        FallsBackToNoTargetDeviceBubbleWhenFeatureDisabled) {
   SendTabToSelfBubbleController* controller =
