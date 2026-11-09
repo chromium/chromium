@@ -12,7 +12,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
@@ -20,6 +19,7 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpUrl;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
@@ -38,16 +38,22 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
+import org.chromium.chrome.browser.url_constants.UrlOverrideUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.BottomBarTestUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -59,6 +65,7 @@ import org.chromium.ui.test.util.ViewUtils;
 /** Tests {@link VoiceToolbarButtonController}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public final class VoiceToolbarButtonControllerTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/navigate/simple.html";
 
@@ -86,6 +93,7 @@ public final class VoiceToolbarButtonControllerTest {
 
     @Before
     public void setUp() {
+        AdaptiveToolbarStatePredictor.setToolbarStateForTesting(AdaptiveToolbarButtonVariant.VOICE);
         mPage = mActivityTestRule.startOnBlankPage();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         ((LocationBarCoordinator)
@@ -128,7 +136,12 @@ public final class VoiceToolbarButtonControllerTest {
                         isEnabled(),
                         withContentDescription(mButtonString)));
 
-        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
+        // Navigate to the New Tab Page and wait for the page transition to complete.
+        String ntpUrl =
+                UrlOverrideUtils.isWebUiNtpOverrideEnabled()
+                        ? getOriginalNtpUrl()
+                        : getOriginalNativeNtpUrl();
+        mPage.loadPageProgrammatically(ntpUrl, RegularNewTabPageStation.newBuilder());
 
         assertButtonMissingOrNonVoice(mActivityTestRule.getActivity());
     }
@@ -139,7 +152,7 @@ public final class VoiceToolbarButtonControllerTest {
         doReturn(false).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         // Reload the page so the button provider is updated based on the mock.
-        mActivityTestRule.loadUrl(mTestPageUrl);
+        mPage = mPage.loadWebPageProgrammatically(mTestPageUrl);
 
         assertButtonMissingOrNonVoice(mActivityTestRule.getActivity());
     }
@@ -199,9 +212,16 @@ public final class VoiceToolbarButtonControllerTest {
                             .showDialog(dialogModel, ModalDialogType.APP);
                 });
 
-        assertThat(
-                button,
-                allOf(isDisplayed(), not(isEnabled()), withContentDescription(mButtonString)));
+        // Wait for the button to become disabled while the modal dialog is showing.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            button,
+                            allOf(
+                                    isDisplayed(),
+                                    not(isEnabled()),
+                                    withContentDescription(mButtonString)));
+                });
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
