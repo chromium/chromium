@@ -20,9 +20,9 @@
 #include "ui/base/ui_base_features.h"
 
 // static
-void CollectedCookiesInfoBarDelegate::Create(
+infobars::InfoBar* CollectedCookiesInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager) {
-  infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+  return infobar_manager->AddInfoBar(CreateConfirmInfoBar(
       ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
       base::WrapUnique<ConfirmInfoBarDelegate>(
           new CollectedCookiesInfoBarDelegate())));

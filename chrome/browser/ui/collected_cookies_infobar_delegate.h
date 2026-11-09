@@ -9,7 +9,8 @@
 
 namespace infobars {
 class ContentInfoBarManager;
-}
+class InfoBar;
+}  // namespace infobars
 
 // This class configures an infobar shown when the collected cookies dialog
 // is closed and the settings for one or more cookies have been changed.  The
@@ -24,8 +25,10 @@ class CollectedCookiesInfoBarDelegate : public ConfirmInfoBarDelegate {
       const CollectedCookiesInfoBarDelegate&) = delete;
 
   // Creates a collected cookies infobar and delegate and adds the infobar to
-  // |infobar_manager|.
-  static void Create(infobars::ContentInfoBarManager* infobar_manager);
+  // |infobar_manager|. Returns the added infobar, or nullptr if it was not
+  // added.
+  static infobars::InfoBar* Create(
+      infobars::ContentInfoBarManager* infobar_manager);
 
  private:
   CollectedCookiesInfoBarDelegate();

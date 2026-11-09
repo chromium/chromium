@@ -36,7 +36,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
@@ -530,19 +529,7 @@ bool InfoBarInternalsHandler::PerformInfoBarActionInternal(
     }
 #endif
     case InfoBarType::kCollectedCookies: {
-      if (infobars::IsInfoBarMigrated(
-              infobars::InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE)) {
-        PageSpecificSiteDataDialogController::ShowCollectedCookiesInfoBar(
-            web_contents);
-      } else {
-        infobars::ContentInfoBarManager* infobar_manager =
-            infobars::ContentInfoBarManager::FromWebContents(web_contents);
-        if (!infobar_manager) {
-          return false;
-        }
-        CollectedCookiesInfoBarDelegate::Create(infobar_manager);
-      }
-      return true;
+      return PageSpecificSiteDataDialogController::ShowInfoBar(web_contents);
     }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     case InfoBarType::kDefaultBrowser: {

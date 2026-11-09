@@ -168,8 +168,7 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     }
 
     if (status_changed_) {
-      PageSpecificSiteDataDialogController::ShowCollectedCookiesInfoBar(
-          web_contents_.get());
+      PageSpecificSiteDataDialogController::ShowInfoBar(web_contents_.get());
     }
 
     // Reset the dialog reference in the user data. If the dialog is opened

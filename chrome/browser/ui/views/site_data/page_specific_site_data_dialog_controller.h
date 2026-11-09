@@ -33,8 +33,9 @@ class PageSpecificSiteDataDialogController
   ~PageSpecificSiteDataDialogController() override;
   static void CreateAndShowForWebContents(content::WebContents* web_contents);
 
-  // Shows the Collected Cookies reload InfoBar for `web_contents`.
-  static void ShowCollectedCookiesInfoBar(content::WebContents* web_contents);
+  // Shows the site data reload InfoBar for `web_contents`. Returns true if an
+  // InfoBar was shown.
+  static bool ShowInfoBar(content::WebContents* web_contents);
 
  private:
   friend class content::WebContentsUserData<

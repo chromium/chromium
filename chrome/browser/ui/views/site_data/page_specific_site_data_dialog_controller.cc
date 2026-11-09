@@ -93,10 +93,10 @@ views::View* PageSpecificSiteDataDialogController::GetDialogView() {
 }
 
 // static
-void PageSpecificSiteDataDialogController::ShowCollectedCookiesInfoBar(
+bool PageSpecificSiteDataDialogController::ShowInfoBar(
     content::WebContents* web_contents) {
   if (!web_contents) {
-    return;
+    return false;
   }
   if (infobars::IsInfoBarMigrated(
           infobars::InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE)) {
@@ -104,17 +104,19 @@ void PageSpecificSiteDataDialogController::ShowCollectedCookiesInfoBar(
       auto* browser_infobar_manager =
           infobars::BrowserInfoBarManager::From(g_browser_process);
       CHECK(browser_infobar_manager);
-      browser_infobar_manager->Show(
-          tab, infobars::InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE);
-      return;
+      return browser_infobar_manager->Show(
+                 tab, infobars::InfoBarDelegate::
+                          COLLECTED_COOKIES_INFOBAR_DELEGATE) != nullptr;
     }
     // TODO(crbug.com/582324173): Support non-tab WebContents in
     // BrowserInfoBarManager.
   }
-  if (auto* infobar_manager =
-          infobars::ContentInfoBarManager::FromWebContents(web_contents)) {
-    CollectedCookiesInfoBarDelegate::Create(infobar_manager);
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  if (!infobar_manager) {
+    return false;
   }
+  return CollectedCookiesInfoBarDelegate::Create(infobar_manager) != nullptr;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PageSpecificSiteDataDialogController);
