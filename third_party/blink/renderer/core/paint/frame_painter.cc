@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
@@ -17,14 +18,30 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_display_item_fragment.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
+
+bool HasSameOriginLocalParentFrame(const LocalFrame& frame) {
+  const auto* parent = DynamicTo<LocalFrame>(frame.Tree().Parent());
+  if (!parent) {
+    return false;
+  }
+  const SecurityContext* security_context = frame.GetSecurityContext();
+  const SecurityOrigin* origin =
+      security_context ? security_context->GetSecurityOrigin() : nullptr;
+  const SecurityContext* parent_context = parent->GetSecurityContext();
+  return origin && parent_context &&
+         !frame.IsCrossOriginToParentOrOuterDocument() &&
+         origin->IsSameOriginWith(parent_context->GetSecurityOrigin());
+}
 
 bool FramePainter::in_paint_contents_ = false;
 
 void FramePainter::Paint(GraphicsContext& context, PaintFlags paint_flags) {
   if ((paint_flags & PaintFlag::kReadBackAllowedRendering) &&
-      GetFrameView().GetFrame().IsCrossOriginToParentOrOuterDocument()) {
+      !HasSameOriginLocalParentFrame(GetFrameView().GetFrame())) {
     return;
   }
 

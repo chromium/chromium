@@ -5096,10 +5096,31 @@ void LocalFrameView::CrossOriginToNearestMainFrameChanged() {
 }
 
 void LocalFrameView::CrossOriginToParentFrameChanged() {
-  if (LayoutView* layout_view = GetLayoutView()) {
-    if (PaintLayer* root_layer = layout_view->Layer())
-      root_layer->SetNeedsCompositingInputsUpdate();
-  }
+  auto invalidate_subtree = [](auto& self, LocalFrameView& view) -> void {
+    if (auto* owner = view.GetFrame().OwnerLayoutObject()) {
+      if (PaintLayer* owner_layer = owner->Layer()) {
+        owner_layer->SetNeedsRepaint();
+      }
+      if (LocalFrameView* owner_view = owner->GetFrameView()) {
+        owner_view->ScheduleVisualUpdateForPaintInvalidationIfNeeded();
+      }
+    }
+    if (LayoutView* layout_view = view.GetLayoutView()) {
+      layout_view->AddSubtreePaintPropertyUpdateReason(
+          SubtreePaintPropertyUpdateReason::kPreviouslySkipped);
+      layout_view->InvalidatePaintForViewAndDescendants();
+      if (PaintLayer* root_layer = layout_view->Layer()) {
+        root_layer->SetNeedsCompositingInputsUpdate();
+      }
+      view.ScheduleVisualUpdateForPaintInvalidationIfNeeded();
+    }
+    view.ForAllChildLocalFrameViews([&self](LocalFrameView& child_view) {
+      if (HasSameOriginLocalParentFrame(child_view.GetFrame())) {
+        self(self, child_view);
+      }
+    });
+  };
+  invalidate_subtree(invalidate_subtree, *this);
 }
 
 void LocalFrameView::SetViewportIntersection(

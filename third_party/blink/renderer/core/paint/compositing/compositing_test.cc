@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/fake_remote_frame_host.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
@@ -45,6 +46,8 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 
 namespace blink {
 
@@ -4949,6 +4952,94 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayersWithScrollableDrawnElement) {
   EXPECT_FALSE(scroller_layer->main_thread_scroll_hit_test_region().IsEmpty());
   EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
             scroller_layer->main_thread_scroll_hit_test_region().bounds());
+}
+
+namespace {
+
+SkBitmap PlaybackToBitmap(const cc::PaintRecord& record,
+                          int width,
+                          int height) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(width, height);
+  bitmap.eraseColor(SK_ColorTRANSPARENT);
+  SkCanvas sk_canvas(bitmap);
+  record.Playback(&sk_canvas);
+  return bitmap;
+}
+
+}  // namespace
+
+TEST_P(CompositingSimTest, CanvasDrawElementDocumentDomainIsolation) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+  ScopedPaintUnderInvalidationCheckingForTest under_invalidation_checking(true);
+
+  SimRequest main_resource("https://a.example.com/test.html", "text/html");
+  SimRequest same_origin_sub("https://a.example.com/same.html", "text/html");
+  SimRequest cross_origin_sub("https://b.example.com/cross.html", "text/html");
+  LoadURL("https://a.example.com/test.html");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>body { margin: 0; }</style>
+    <canvas id="canvas" width="100" height="100" content=drawable>
+      <div id="target" drawable
+           style="width: 100px; height: 100px; background: rgb(0, 0, 255);">
+        <iframe id="same" src="https://a.example.com/same.html"
+                style="display: block; width: 50px; height: 50px; border: none;"></iframe>
+        <iframe id="cross" src="https://b.example.com/cross.html"
+                style="display: block; width: 50px; height: 50px; border: none;"></iframe>
+      </div>
+    </canvas>
+  )HTML");
+  same_origin_sub.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>body { margin: 0; }</style>
+    <div style="position: relative; z-index: 1; transform: translateX(1px);
+                width: 50px; height: 50px; background: rgb(255, 0, 0);"></div>
+  )HTML");
+  cross_origin_sub.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>body { margin: 0; background: rgb(0, 255, 0); }</style>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Element* target = GetElementById("target");
+  Document* same_doc =
+      To<HTMLIFrameElement>(GetElementById("same"))->contentDocument();
+  Document* cross_doc =
+      To<HTMLIFrameElement>(GetElementById("cross"))->contentDocument();
+
+  auto playback_target = [&]() {
+    auto record = paint_artifact_compositor()->GetCanvasDrawablePaintRecord(
+        target->GetDomNodeId());
+    EXPECT_TRUE(record);
+    return PlaybackToBitmap(record->record, 100, 100);
+  };
+
+  // Initially, `same` paints red while `cross` is skipped.
+  SkBitmap initial = playback_target();
+  EXPECT_EQ(initial.getColor(10, 10), SkColorSetRGB(255, 0, 0));
+  EXPECT_EQ(initial.getColor(10, 60), SkColorSetRGB(0, 0, 255));
+
+  // Relaxing `document.domain` only on the parent makes `same` cross-origin to
+  // its parent, dynamically invalidating descendant PaintLayer subsequences and
+  // omitting `same`.
+  ClassicScript::CreateUnspecifiedScript("document.domain = 'example.com';")
+      ->RunScript(GetDocument().domWindow());
+  Compositor().BeginFrame();
+  SkBitmap asymmetric = playback_target();
+  EXPECT_EQ(asymmetric.getColor(10, 10), SkColorSetRGB(0, 0, 255));
+  EXPECT_EQ(asymmetric.getColor(10, 60), SkColorSetRGB(0, 0, 255));
+
+  // Relaxing `document.domain` on both subframes restores `same`, while `cross`
+  // (`b.example.com`) remains omitted despite `document.domain` access.
+  ClassicScript::CreateUnspecifiedScript("document.domain = 'example.com';")
+      ->RunScript(same_doc->domWindow());
+  ClassicScript::CreateUnspecifiedScript("document.domain = 'example.com';")
+      ->RunScript(cross_doc->domWindow());
+  Compositor().BeginFrame();
+  SkBitmap both_relaxed = playback_target();
+  EXPECT_EQ(both_relaxed.getColor(10, 10), SkColorSetRGB(255, 0, 0));
+  EXPECT_EQ(both_relaxed.getColor(10, 60), SkColorSetRGB(0, 0, 255));
 }
 
 }  // namespace blink

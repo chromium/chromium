@@ -11,7 +11,13 @@
 namespace blink {
 
 class GraphicsContext;
+class LocalFrame;
 class LocalFrameView;
+
+// Returns true if `frame` has a local parent frame and is HTML same-origin with
+// it (ignoring `document.domain` and requiring
+// `!frame.IsCrossOriginToParentOrOuterDocument()`).
+bool HasSameOriginLocalParentFrame(const LocalFrame& frame);
 
 class FramePainter {
   STACK_ALLOCATED();
