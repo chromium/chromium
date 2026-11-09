@@ -6,17 +6,18 @@
 #define IOS_CHROME_BROWSER_FIRST_RUN_BEST_FEATURES_UI_FEATURE_HIGHLIGHT_SCREENSHOT_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
-#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_view_controller.h"
-
-@protocol ConfirmationAlertActionHandler;
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_with_bricks_view_controller.h"
 
 // View for displaying a BestFeaturesItem.
 @interface FeatureHighlightScreenshotViewController
-    : AnimatedPromoViewController <UINavigationControllerDelegate>
+    : AnimatedPromoWithBricksViewController
 
-// Creates the view with `BestFeaturesItem` and `actionHandler`.
-- (instancetype)initWithFeatureHighlightItem:
-    (BestFeaturesItem*)bestFeaturesItem;
+// Creates the view with `BestFeaturesItem`.
+- (instancetype)initWithFeatureHighlightItem:(BestFeaturesItem*)bestFeaturesItem
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithConfiguration:(AnimatedPromoConfiguration*)config
+    NS_UNAVAILABLE;
 
 @end
 

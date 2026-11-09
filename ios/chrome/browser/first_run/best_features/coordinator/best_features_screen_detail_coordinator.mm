@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/first_run/best_features/ui/best_features_carousel_view_controller.h"
 #import "ios/chrome/browser/first_run/best_features/ui/feature_highlight_screenshot_view_controller.h"
 #import "ios/chrome/browser/first_run/best_features/ui/metrics_util.h"
@@ -15,13 +16,10 @@
 #import "ios/chrome/browser/first_run/public/first_run_screen_delegate.h"
 #import "ios/chrome/browser/instructions_bottom_sheet/ui/instructions_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
-#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
-@interface BestFeaturesScreenDetailCoordinator () <
-    ConfirmationAlertActionHandler,
-    PromoStyleViewControllerDelegate>
+@interface BestFeaturesScreenDetailCoordinator () <ButtonStackActionDelegate>
 
 @end
 
@@ -94,7 +92,7 @@
     FeatureHighlightScreenshotViewController* screenshotViewController =
         [[FeatureHighlightScreenshotViewController alloc]
             initWithFeatureHighlightItem:_bestFeaturesItem];
-    screenshotViewController.actionHandler = self;
+    screenshotViewController.actionDelegate = self;
     _viewController = screenshotViewController;
 
     _baseNavigationController.navigationBarHidden = NO;
@@ -123,12 +121,27 @@
   [super stop];
 }
 
-#pragma mark - ConfirmationAlertActionHandler
+#pragma mark - ButtonStackActionDelegate
 
-// Handles taps on the primary action of
-// the`FeatureHighlightScreenshotViewController` that is presented when the
+// Handles taps on the primary action of the
+// `FeatureHighlightAnimatedViewController` that is presented when the
+// DetailScreenPresentationSource is kBestOfAppFRE, or the
+// `FeatureHighlightScreenshotViewController` that is presented when the
 // DetailScreenPresentationSource is kBestFeaturesFRE.
-- (void)confirmationAlertPrimaryAction {
+- (void)didTapPrimaryActionButton {
+  if (_source == DetailScreenPresentationSource::kBestOfAppFRE) {
+    // Update the _bestFeaturesItem before metrics logging so the correct
+    // interaction is logged.
+    BestFeaturesCarouselViewController* carouselViewController =
+        base::apple::ObjCCastStrict<BestFeaturesCarouselViewController>(
+            _viewController);
+    int index = carouselViewController.currentIndex;
+    _bestFeaturesItem = _bestFeaturesItems[index];
+
+    [self continueFRESequence];
+    return;
+  }
+
   base::UmaHistogramEnumeration(
       BestFeaturesActionHistogramForItemType(_bestFeaturesItem.type),
       BestFeaturesDetailScreenActionType::kShowMeHow);
@@ -143,25 +156,16 @@
 // Handles taps on the secondary action of
 // the`FeatureHighlightScreenshotViewController` that is presented when the
 // DetailScreenPresentationSource is kBestFeaturesFRE.
-- (void)confirmationAlertSecondaryAction {
+- (void)didTapSecondaryActionButton {
   [self continueFRESequence];
 }
 
-#pragma mark - PromoStyleViewControllerDelegate
+- (void)didTapTertiaryActionButton {
+  NOTREACHED();
+}
 
-// Handles taps on the primary action of the
-// `FeatureHighlightAnimatedViewController` that is presented when the
-// DetailScreenPresentationSource is kBestOfAppFRE.
-- (void)didTapPrimaryActionButton {
-  // Update the _bestFeaturesItem before metrics logging so the correct
-  // interaction is logged.
-  BestFeaturesCarouselViewController* carouselViewController =
-      base::apple::ObjCCastStrict<BestFeaturesCarouselViewController>(
-          _viewController);
-  int index = carouselViewController.currentIndex;
-  _bestFeaturesItem = _bestFeaturesItems[index];
-
-  [self continueFRESequence];
+- (void)didDismissButtonStackViewController {
+  NOTREACHED();
 }
 
 #pragma mark - Private

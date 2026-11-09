@@ -9,7 +9,11 @@
 #import "ios/chrome/browser/first_run/best_features/ui/metrics_util.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/first_run/public/features.h"
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_configuration.h"
+#import "ios/chrome/browser/shared/ui/brick_configurations/animation_brick_configuration.h"
+#import "ios/chrome/browser/shared/ui/brick_configurations/title_brick_configuration.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -19,7 +23,6 @@
 namespace {
 // Returns the secondary action string based on the current variation.
 NSString* ConfigureSecondaryActionString() {
-
   using enum first_run::BestFeaturesScreenVariationType;
   switch (first_run::GetBestFeaturesScreenVariationType()) {
     case kGeneralScreenAfterDBPromo:
@@ -42,10 +45,6 @@ NSString* ConfigureSecondaryActionString() {
 }
 }  // namespace
 
-@interface FeatureHighlightScreenshotViewController ()
-
-@end
-
 @implementation FeatureHighlightScreenshotViewController {
   // The item that the promo is configured to present.
   BestFeaturesItem* _bestFeaturesItem;
@@ -53,7 +52,43 @@ NSString* ConfigureSecondaryActionString() {
 
 - (instancetype)initWithFeatureHighlightItem:
     (BestFeaturesItem*)bestFeaturesItem {
-  self = [super init];
+  ButtonStackConfiguration* buttonStackConfiguration =
+      [[ButtonStackConfiguration alloc] init];
+  buttonStackConfiguration.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_SHOW_ME_HOW_FIRST_RUN_TITLE);
+  buttonStackConfiguration.secondaryActionString =
+      ConfigureSecondaryActionString();
+
+  AnimationBrickConfiguration* animationConfiguration =
+      [[AnimationBrickConfiguration alloc] init];
+  animationConfiguration.animationName = bestFeaturesItem.animationName;
+  if (bestFeaturesItem.lightModeColorProvider) {
+    animationConfiguration.useLegacyDarkMode = NO;
+    animationConfiguration.lightModeColorProvider =
+        bestFeaturesItem.lightModeColorProvider;
+    animationConfiguration.darkModeColorProvider =
+        bestFeaturesItem.darkModeColorProvider;
+  } else {
+    animationConfiguration.darkAnimationName =
+        [bestFeaturesItem.animationName stringByAppendingString:@"_darkmode"];
+  }
+  animationConfiguration.animationBackgroundColor =
+      [UIColor colorNamed:kSecondaryBackgroundColor];
+  animationConfiguration.animationTextProvider = bestFeaturesItem.textProvider;
+
+  TitleBrickConfiguration* titleConfiguration =
+      [[TitleBrickConfiguration alloc] init];
+  titleConfiguration.title = bestFeaturesItem.title;
+  titleConfiguration.subtitle = bestFeaturesItem.subtitle;
+  titleConfiguration.titleStyle = UIFontTextStyleTitle2;
+
+  AnimatedPromoConfiguration* config = [[AnimatedPromoConfiguration alloc]
+      initWithAnimationBrickConfiguration:animationConfiguration
+                 buttonStackConfiguration:buttonStackConfiguration
+                  titleBrickConfiguration:titleConfiguration
+                           underTitleView:nil];
+
+  self = [super initWithConfiguration:config];
   if (self) {
     _bestFeaturesItem = bestFeaturesItem;
   }
@@ -61,26 +96,6 @@ NSString* ConfigureSecondaryActionString() {
 }
 
 #pragma mark - UIViewController
-
-- (void)viewDidLoad {
-  self.titleString = _bestFeaturesItem.title;
-  self.subtitleString = _bestFeaturesItem.subtitle;
-  self.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_SHOW_ME_HOW_FIRST_RUN_TITLE);
-  self.secondaryActionString = ConfigureSecondaryActionString();
-  self.animationName = _bestFeaturesItem.animationName;
-  if (_bestFeaturesItem.lightModeColorProvider) {
-    self.useLegacyDarkMode = NO;
-    self.lightModeColorProvider = _bestFeaturesItem.lightModeColorProvider;
-    self.darkModeColorProvider = _bestFeaturesItem.darkModeColorProvider;
-  } else {
-    self.animationNameDarkMode =
-        [_bestFeaturesItem.animationName stringByAppendingString:@"_darkmode"];
-  }
-  self.animationTextProvider = _bestFeaturesItem.textProvider;
-  [super viewDidLoad];
-  [self.view setBackgroundColor:[UIColor colorNamed:kSecondaryBackgroundColor]];
-}
 
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];

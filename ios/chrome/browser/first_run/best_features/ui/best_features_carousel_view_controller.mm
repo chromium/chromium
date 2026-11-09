@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/first_run/best_features/ui/feature_highlight_animated_view_controller.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"

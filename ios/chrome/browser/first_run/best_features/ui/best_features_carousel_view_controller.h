@@ -8,14 +8,14 @@
 #import <UIKit/UIKit.h>
 
 @class BestFeaturesItem;
-@protocol PromoStyleViewControllerDelegate;
+@protocol ButtonStackActionDelegate;
 
 // A container view controller that manages a UIPageViewController to allow
 // swiping between different feature promo screens.
 @interface BestFeaturesCarouselViewController : UIViewController
 
 // Delegate that handles screen dismissal.
-@property(nonatomic, weak) id<PromoStyleViewControllerDelegate> delegate;
+@property(nonatomic, weak) id<ButtonStackActionDelegate> delegate;
 
 // Index of the currently presented screen. Used for accurate metrics logging.
 @property(nonatomic, assign, readonly) int currentIndex;

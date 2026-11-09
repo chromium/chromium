@@ -31,8 +31,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/promo_style",
   ]
   frameworks = [ "UIKit.framework" ]
