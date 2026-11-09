@@ -113,7 +113,10 @@ def cq_build_perf_builder(description_html, **kwargs):
     # Run the extra missing-deps check build (crbug.com/346429448) on all
     # platforms by default; builders can opt out by passing
     # enable_missing_deps_check = False in properties.
-    props = {"enable_missing_deps_check": True}
+    props = {
+        "enable_missing_deps_check": True,
+        "enable_step_weights": True,
+    }
     props.update(kwargs.pop("properties", {}))
     return ci.builder(
         description_html = description_html + "<br>Build stats are shown in <a href=\"http://shortn/_wiYV1BraSr\">http://shortn/_wiYV1BraSr</a>.",
@@ -277,6 +280,7 @@ cq_build_perf_builder(
     properties = {
         # Only the baseline clean and incremental build times matter here.
         "enable_missing_deps_check": False,
+        "enable_step_weights": False,
     },
     # Link locally on 384 vCPUs + NVMe RAID-0 instead of downloading linked
     # binaries back from CAS.
@@ -325,6 +329,7 @@ cq_build_perf_builder(
     properties = {
         # Only the baseline clean and incremental build times matter here.
         "enable_missing_deps_check": False,
+        "enable_step_weights": False,
     },
     # Link locally on 192 vCPUs + local SSDs. Leave "racing" off until Siso's
     # runStrategy honors strict_remote on clang-cl/cxx_module
@@ -483,6 +488,7 @@ def developer_build_perf_builder(description_html, **kwargs):
         # Run the extra missing-deps check build (crbug.com/346429448) on all
         # platforms.
         "enable_missing_deps_check": True,
+        "enable_step_weights": True,
     }
     return ci.builder(
         description_html = description_html + "<br>Build stats are shown in <a href=\"http://shortn/_wiYV1BraSr\">http://shortn/_wiYV1BraSr</a>." +

@@ -65,6 +65,7 @@
   },
   "builder_group": "chromium.build",
   "enable_missing_deps_check": true,
+  "enable_step_weights": true,
   "recipe": "chrome_build/build_perf_developer",
   "xcode_build_version": "27a266a"
 }
