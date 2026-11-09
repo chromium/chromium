@@ -127,22 +127,6 @@ RefcountedProfileKeyedServiceFactoryIOS::BuildServiceInstanceFor(
       CHECK_DEREF(static_cast<ProfileIOS*>(context)));
 }
 
-// TODO(crbug.com/576182342): Remove those two implementation once all
-// sub-classes have been converted to override the overload accepting
-// a ProfileIOS& instead of a ProfileIOS*.
-scoped_refptr<RefcountedKeyedService>
-RefcountedProfileKeyedServiceFactoryIOS::BuildServiceInstanceFor(
-    ProfileIOS& profile) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return BuildServiceInstanceFor(&profile);
-}
-
-scoped_refptr<RefcountedKeyedService>
-RefcountedProfileKeyedServiceFactoryIOS::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  NOTREACHED();
-}
-
 RefcountedProfileKeyedServiceFactoryIOS::
     RefcountedProfileKeyedServiceFactoryIOS(const char* name,
                                             ProfileSelection profile_selection,
