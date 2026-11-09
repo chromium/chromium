@@ -172,12 +172,6 @@ std::string GetConfiguredLocale() {
   return GetLocaleString(icu::Locale::getDefault());
 }
 
-// Convert the ICU canonicalized locale to a string.
-std::string GetCanonicalLocale(std::string_view locale) {
-  return GetLocaleString(
-      icu::Locale::createCanonical(std::string(locale).c_str()));
-}
-
 bool IsRTL() {
   return GetTextDirectionInternal() == RIGHT_TO_LEFT;
 }

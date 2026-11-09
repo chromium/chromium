@@ -232,6 +232,7 @@ static_library("screens") {
     "//ash/webui/connectivity_diagnostics",
     "//ash/webui/settings/public/constants:mojom",
     "//base",
+    "//base/i18n:language_tag",
     "//build:branding_buildflags",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",

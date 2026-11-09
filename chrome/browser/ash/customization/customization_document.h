@@ -14,6 +14,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
@@ -106,11 +107,14 @@ class StartupCustomizationDocument : public CustomizationDocument {
   // Raw value of "initial_locale" like initial_locale="en-US,sv,da,fi,no" .
   const std::string& initial_locale() const { return initial_locale_; }
 
-  // Vector of individual locale values.
-  const std::vector<std::string>& configured_locales() const;
+  // Individual locale values from initial_locale(), parsed as language tags.
+  // Legacy ICU locales are converted to BCP47 (e.g. "en_US" to "en-US"), and
+  // values that are not valid language tags are omitted.
+  const std::vector<base::i18n::LanguageTag>& configured_locales() const;
 
-  // Default locale value (first value in initial_locale list).
-  const std::string& initial_locale_default() const;
+  // Default locale value (first value in configured_locales()), or
+  // std::nullopt if there are no valid configured locales.
+  std::optional<base::i18n::LanguageTag> initial_locale_default() const;
   const std::string& initial_timezone() const { return initial_timezone_; }
   const std::string& keyboard_layout() const { return keyboard_layout_; }
 
@@ -118,6 +122,9 @@ class StartupCustomizationDocument : public CustomizationDocument {
   FRIEND_TEST_ALL_PREFIXES(StartupCustomizationDocumentTest, Basic);
   FRIEND_TEST_ALL_PREFIXES(StartupCustomizationDocumentTest, VPD);
   FRIEND_TEST_ALL_PREFIXES(StartupCustomizationDocumentTest, BadManifest);
+  FRIEND_TEST_ALL_PREFIXES(StartupCustomizationDocumentTest, ConfiguredLocales);
+  FRIEND_TEST_ALL_PREFIXES(StartupCustomizationDocumentTest,
+                           NoValidConfiguredLocales);
   FRIEND_TEST_ALL_PREFIXES(ServicesCustomizationDocumentTest, MultiLanguage);
   friend class OobeLocalizationTest;
   friend void InitStartupCustomizationDocumentForTesting(
@@ -136,7 +143,7 @@ class StartupCustomizationDocument : public CustomizationDocument {
   void Init(system::StatisticsProvider* provider);
 
   std::string initial_locale_;
-  std::vector<std::string> configured_locales_;
+  std::vector<base::i18n::LanguageTag> configured_locales_;
   std::string initial_timezone_;
   std::string keyboard_layout_;
 };

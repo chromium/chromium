@@ -20,7 +20,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/i18n/language_tag.h"
-#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/tag_converters.h"
 #include "base/location.h"
@@ -108,10 +107,10 @@ base::DictValue CreateLanguageEntry(
 // kMostRelevantLanguagesDivider is placed between the most relevant languages
 // and all others.
 base::ListValue GetLanguageList(
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const input_method::InputMethodDescriptors& descriptors,
     const std::vector<std::string>& base_language_codes,
-    const std::vector<std::string>& most_relevant_language_codes,
+    const std::vector<base::i18n::LanguageTag>& most_relevant_language_codes,
     bool insert_divider) {
   std::set<std::string> language_codes;
   // Collect the language codes from the supported input methods.
@@ -121,10 +120,11 @@ base::ListValue GetLanguageList(
     }
   }
 
-  // Language sort order.
-  std::map<std::string, int /* index */> language_index;
+  // Language sort order, keyed by the tag strings of
+  // `most_relevant_language_codes`.
+  std::map<std::string_view, int /* index */> language_index;
   for (size_t i = 0; i < most_relevant_language_codes.size(); ++i) {
-    language_index[most_relevant_language_codes[i]] = i;
+    language_index[most_relevant_language_codes[i].tag_string()] = i;
   }
 
   // Map of display name -> {language code, native_display_name}.
@@ -150,15 +150,12 @@ base::ListValue GetLanguageList(
   // base_language_codes. If there are unsupported language variants,
   // but they resolve to backup locale within base_language_codes, also
   // add them to the list.
-  for (std::map<std::string, int>::const_iterator it = language_index.begin();
-       it != language_index.end(); ++it) {
-    const std::string& language_id = it->first;
-
-    const std::string lang =
-        base::i18n::GetLanguageSubtagUsingLanguageTag(language_id);
+  for (const auto& [language_id, index] : language_index) {
+    const base::i18n::LanguageTag& language_tag =
+        most_relevant_language_codes[index];
 
     // Ignore non-specific codes.
-    if (lang.empty() || lang == language_id) {
+    if (language_tag.language_subtag() == language_id) {
       continue;
     }
 
@@ -178,14 +175,14 @@ base::ListValue GetLanguageList(
     }
 
     const std::u16string display_name =
-        l10n_util::GetDisplayNameForLocale(language_id, app_locale, true);
+        l10n_util::GetDisplayNameForLocale(language_tag, app_locale, true);
     const std::u16string native_display_name =
-        l10n_util::GetDisplayNameForLocale(language_id, language_id, true);
+        l10n_util::GetDisplayNameForLocale(language_tag, language_tag, true);
 
     language_map[display_name] =
-        std::make_pair(language_id, native_display_name);
+        std::make_pair(std::string(language_id), native_display_name);
 
-    most_relevant_locales_display_names[it->second] = display_name;
+    most_relevant_locales_display_names[index] = display_name;
     ++most_relevant_locales_count;
   }
 
@@ -197,16 +194,15 @@ base::ListValue GetLanguageList(
       continue;
     }
 
-    const std::u16string display_name =
-        l10n_util::GetDisplayNameForLocale(language_code, app_locale, true);
+    const std::u16string display_name = l10n_util::GetDisplayNameForLocale(
+        language_code, app_locale.tag_string(), true);
     const std::u16string native_display_name =
         l10n_util::GetDisplayNameForLocale(language_code, language_code, true);
 
     language_map[display_name] =
         std::make_pair(language_code, native_display_name);
 
-    const std::map<std::string, int>::const_iterator index_pos =
-        language_index.find(language_code);
+    const auto index_pos = language_index.find(language_code);
     if (index_pos != language_index.end()) {
       std::u16string& stored_display_name =
           most_relevant_locales_display_names[index_pos->second];
@@ -229,14 +225,13 @@ base::ListValue GetLanguageList(
     }
 
     std::u16string display_name = l10n_util::GetDisplayNameForLocale(
-        base_language_code, app_locale, false);
+        base_language_code, app_locale.tag_string(), false);
     std::u16string native_display_name = l10n_util::GetDisplayNameForLocale(
         base_language_code, base_language_code, false);
     language_map[display_name] =
         std::make_pair(base_language_code, native_display_name);
 
-    const std::map<std::string, int>::const_iterator index_pos =
-        language_index.find(base_language_code);
+    const auto index_pos = language_index.find(base_language_code);
     if (index_pos != language_index.end()) {
       most_relevant_locales_display_names[index_pos->second] = display_name;
       ++most_relevant_locales_count;
@@ -246,7 +241,8 @@ base::ListValue GetLanguageList(
   }
 
   // Sort display names using locale specific sorter.
-  l10n_util::SortStrings16(app_locale, &display_names);
+  l10n_util::SortStrings16(std::string(app_locale.tag_string()),
+                           &display_names);
   // Concatenate most_relevant_locales_display_names and display_names.
   // Insert special divider in between.
   std::vector<std::u16string> out_display_names;
@@ -368,7 +364,7 @@ std::string CalculateSelectedLanguage(const std::string& requested_locale,
 }
 
 void ResolveLanguageListInThreadPool(
-    const std::string& locale,
+    const base::i18n::LanguageTag& locale,
     std::unique_ptr<locale_util::LanguageSwitchResult> language_switch_result,
     const scoped_refptr<base::TaskRunner> task_runner,
     input_method::InputMethodDescriptors descriptors,
@@ -391,16 +387,18 @@ void ResolveLanguageListInThreadPool(
       selected_language = language_switch_result->loaded_locale;
     }
   } else {
-    selected_language = !locale.empty()
-                            ? locale
-                            : StartupCustomizationDocument::GetInstance()
-                                  ->initial_locale_default();
+    selected_language = locale.tag_string();
   }
-  const std::string selected_code =
-      selected_language.empty() ? locale : selected_language;
+  // TODO(crbug.com/542711615): Keep using base::i18n::LanguageTag for the
+  // locales below once GetUILanguageList() and UILanguageListResolvedCallback
+  // take it.
+  const std::string selected_code = selected_language.empty()
+                                        ? std::string(locale.tag_string())
+                                        : selected_language;
 
-  const std::string list_locale =
-      language_switch_result ? language_switch_result->loaded_locale : locale;
+  const std::string list_locale = language_switch_result
+                                      ? language_switch_result->loaded_locale
+                                      : std::string(locale.tag_string());
   base::ListValue language_list(
       GetUILanguageList(locale, nullptr, selected_code, descriptors));
 
@@ -459,8 +457,7 @@ void ResolveUILanguageList(
 
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&ResolveLanguageListInThreadPool,
-                     std::string(application_locale.tag_string()),
+      base::BindOnce(&ResolveLanguageListInThreadPool, application_locale,
                      std::move(language_switch_result),
                      base::SequencedTaskRunner::GetCurrentDefault(),
                      std::move(descriptors), std::move(callback)));
@@ -480,8 +477,8 @@ base::ListValue GetMinimalUILanguageList(std::string_view application_locale) {
 }
 
 base::ListValue GetUILanguageList(
-    const std::string& app_locale,
-    const std::vector<std::string>* most_relevant_language_codes,
+    const base::i18n::LanguageTag& app_locale,
+    const std::vector<base::i18n::LanguageTag>* most_relevant_language_codes,
     const std::string& selected,
     const input_method::InputMethodDescriptors& descriptors) {
   base::ListValue languages_list(GetLanguageList(
@@ -507,10 +504,10 @@ base::ListValue GetUILanguageList(
   return languages_list;
 }
 
-std::string FindMostRelevantLocale(
-    const std::vector<std::string>& most_relevant_language_codes,
+base::i18n::LanguageTag FindMostRelevantLocale(
+    const std::vector<base::i18n::LanguageTag>& most_relevant_language_codes,
     const base::ListValue& available_locales,
-    const std::string& fallback_locale) {
+    const base::i18n::LanguageTag& fallback_locale) {
   for (const auto& most_relevant : most_relevant_language_codes) {
     for (const auto& entry : available_locales) {
       const std::string* available_locale = nullptr;
@@ -522,7 +519,7 @@ std::string FindMostRelevantLocale(
         NOTREACHED();
       }
 
-      if (*available_locale == most_relevant) {
+      if (*available_locale == most_relevant.tag_string()) {
         return most_relevant;
       }
     }

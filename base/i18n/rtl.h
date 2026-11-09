@@ -39,9 +39,6 @@ enum TextDirection {
 // language is the 2 or 3 letter code from ISO-639.
 BASE_I18N_EXPORT std::string GetConfiguredLocale();
 
-// Canonicalize a string (eg. a POSIX locale string) to a Chrome locale name.
-BASE_I18N_EXPORT std::string GetCanonicalLocale(std::string_view locale);
-
 // Returns true if the application text direction is right-to-left.
 BASE_I18N_EXPORT bool IsRTL();
 

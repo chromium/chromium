@@ -10,7 +10,10 @@
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -22,6 +25,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -189,7 +193,11 @@ IN_PROC_BROWSER_TEST_P(CustomizationVPDTest, GetUILanguageList) {
   for (std::string& l : locales) {
     base::TrimString(l, " ", &l);
   }
-  EXPECT_EQ(locales,
+  const std::vector<base::i18n::LanguageTag> expected_locales =
+      base::ToVector(locales, [](const std::string& locale) {
+        return base::i18n::GetLanguageTagFromString(locale).value();
+      });
+  EXPECT_EQ(expected_locales,
             StartupCustomizationDocument::GetInstance()->configured_locales())
       << "Test failed for initial_locale='" << GetParam()
       << "', locales=" << Print(locales);
@@ -197,7 +205,8 @@ IN_PROC_BROWSER_TEST_P(CustomizationVPDTest, GetUILanguageList) {
   input_method::InputMethodManager& input_method_manager =
       CHECK_DEREF(input_method::InputMethodManager::Get());
   auto ui_language_list = GetUILanguageList(
-      g_browser_process->GetApplicationLocale(), nullptr, "",
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag(),
+      nullptr, "",
       CHECK_DEREF(input_method_manager.GetComponentExtensionIMEManager())
           .GetXkbIMEAsInputMethodDescriptor());
   EXPECT_GE(ui_language_list.size(), locales.size())

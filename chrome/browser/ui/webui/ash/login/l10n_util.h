@@ -45,8 +45,8 @@ extern const char kMostRelevantLanguagesDivider[];
 // entry in the resulting list, that entry will be marked as selected.
 // Safe to call from any thread.
 base::ListValue GetUILanguageList(
-    const std::string& app_locale,
-    const std::vector<std::string>* most_relevant_language_codes,
+    const base::i18n::LanguageTag& app_locale,
+    const std::vector<base::i18n::LanguageTag>* most_relevant_language_codes,
     const std::string& selected,
     const input_method::InputMethodDescriptors& descriptors);
 
@@ -68,10 +68,10 @@ base::ListValue GetMinimalUILanguageList(std::string_view application_locale);
 // Returns the most first entry of `most_relevant_language_codes` that is
 // actually available (present in `available_locales`). If none of the entries
 // are present in `available_locales`, returns the `fallback_locale`.
-std::string FindMostRelevantLocale(
-    const std::vector<std::string>& most_relevant_language_codes,
+base::i18n::LanguageTag FindMostRelevantLocale(
+    const std::vector<base::i18n::LanguageTag>& most_relevant_language_codes,
     const base::ListValue& available_locales,
-    const std::string& fallback_locale);
+    const base::i18n::LanguageTag& fallback_locale);
 
 // Return a list of input methods that can be used for `locale` on the welcome
 // screen. Each list entry is a dictionary that contains data such as an ID and

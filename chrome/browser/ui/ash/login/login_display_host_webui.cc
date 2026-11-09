@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -26,6 +27,7 @@
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -1381,7 +1383,13 @@ void ShowLoginWizard(
   // and has not been set yet. We cannot call
   // LanguageSwitchMenu::SwitchLanguage here before
   // EmitLoginPromptReady.
-  const std::string& locale = startup_manifest->initial_locale_default();
+  const std::optional<base::i18n::LanguageTag> initial_locale =
+      startup_manifest->initial_locale_default();
+  // TODO(crbug.com/542711615): Migrate the APIs below (e.g.
+  // SetInputMethodLoginDefaultFromVPD()) to take a base::i18n::LanguageTag.
+  const std::string locale = initial_locale
+                                 ? std::string(initial_locale->tag_string())
+                                 : std::string();
 
   const std::string& layout = startup_manifest->keyboard_layout();
   VLOG(1) << "Initial locale: " << locale << " keyboard layout: " << layout;

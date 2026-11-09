@@ -15,6 +15,8 @@
 #include "base/check_deref.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -40,6 +42,10 @@
 #include "url/gurl.h"
 
 namespace ash {
+
+using ::base::i18n::GetKnownLanguageTag;
+using ::base::i18n::GetLanguageTagFromString;
+using ::base::i18n::LanguageTag;
 
 namespace {
 
@@ -100,6 +106,13 @@ class L10nUtilTest : public testing::Test {
         .GetXkbIMEAsInputMethodDescriptor();
   }
 
+  const LanguageTag& GetApplicationLocale() {
+    return TestingBrowserProcess::GetGlobal()
+        ->GetFeatures()
+        ->application_locale_storage()
+        ->GetTag();
+  }
+
  protected:
   TestInputMethodManager input_manager_;
 
@@ -135,9 +148,8 @@ TEST_F(L10nUtilTest, GetUILanguageList) {
   SetInputMethods1();
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
-  auto list(GetUILanguageList(
-      TestingBrowserProcess::GetGlobal()->GetApplicationLocale(), nullptr,
-      std::string(), GetDescriptors()));
+  auto list(GetUILanguageList(GetApplicationLocale(), nullptr, std::string(),
+                              GetDescriptors()));
 
   VerifyOnlyUILanguages(list);
 }
@@ -191,21 +203,27 @@ TEST_F(L10nUtilTest, FindMostRelevantLocale) {
     available_locales.Append(base::DictValue().Set("value", locale));
   }
 
-  std::vector<std::string> most_relevant_language_codes;
-  EXPECT_EQ("en-US", FindMostRelevantLocale(most_relevant_language_codes,
-                                            available_locales, "en-US"));
+  const LanguageTag fallback_locale = GetKnownLanguageTag("en-US");
+  std::vector<LanguageTag> most_relevant_language_codes;
+  EXPECT_EQ(fallback_locale,
+            FindMostRelevantLocale(most_relevant_language_codes,
+                                   available_locales, fallback_locale));
 
-  most_relevant_language_codes.push_back("xx");
-  EXPECT_EQ("en-US", FindMostRelevantLocale(most_relevant_language_codes,
-                                            available_locales, "en-US"));
+  most_relevant_language_codes.push_back(
+      GetLanguageTagFromString("xx").value());
+  EXPECT_EQ(fallback_locale,
+            FindMostRelevantLocale(most_relevant_language_codes,
+                                   available_locales, fallback_locale));
 
-  most_relevant_language_codes.push_back("fr");
-  EXPECT_EQ("fr", FindMostRelevantLocale(most_relevant_language_codes,
-                                         available_locales, "en-US"));
+  most_relevant_language_codes.push_back(GetKnownLanguageTag("fr"));
+  EXPECT_EQ(GetKnownLanguageTag("fr"),
+            FindMostRelevantLocale(most_relevant_language_codes,
+                                   available_locales, fallback_locale));
 
-  most_relevant_language_codes.push_back("de");
-  EXPECT_EQ("fr", FindMostRelevantLocale(most_relevant_language_codes,
-                                         available_locales, "en-US"));
+  most_relevant_language_codes.push_back(GetKnownLanguageTag("de"));
+  EXPECT_EQ(GetKnownLanguageTag("fr"),
+            FindMostRelevantLocale(most_relevant_language_codes,
+                                   available_locales, fallback_locale));
 }
 
 void InitStartupCustomizationDocumentForTesting(const std::string& manifest) {
@@ -234,9 +252,8 @@ TEST_F(L10nUtilTest, GetUILanguageListMulti) {
   SetInputMethods2();
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
-  auto list(GetUILanguageList(
-      TestingBrowserProcess::GetGlobal()->GetApplicationLocale(), nullptr,
-      std::string(), GetDescriptors()));
+  auto list(GetUILanguageList(GetApplicationLocale(), nullptr, std::string(),
+                              GetDescriptors()));
 
   VerifyOnlyUILanguages(list);
 
@@ -251,15 +268,15 @@ TEST_F(L10nUtilTest, GetUILanguageListMulti) {
 }
 
 TEST_F(L10nUtilTest, GetUILanguageListWithMostRelevant) {
-  std::vector<std::string> most_relevant_language_codes;
-  most_relevant_language_codes.push_back("it");
-  most_relevant_language_codes.push_back("de");
-  most_relevant_language_codes.push_back("nonexistent");
+  const std::vector<LanguageTag> most_relevant_language_codes = {
+      GetKnownLanguageTag("it"), GetKnownLanguageTag("de"),
+      // Not an available UI language.
+      GetLanguageTagFromString("xx").value()};
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
-  auto list(GetUILanguageList(
-      TestingBrowserProcess::GetGlobal()->GetApplicationLocale(),
-      &most_relevant_language_codes, std::string(), GetDescriptors()));
+  auto list(GetUILanguageList(GetApplicationLocale(),
+                              &most_relevant_language_codes, std::string(),
+                              GetDescriptors()));
 
   VerifyOnlyUILanguages(list);
 
@@ -350,9 +367,8 @@ TEST_F(L10nUtilTestWithFjordOobe, TestLanguagesFiltered) {
   SetInputMethods1();
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
-  auto list(GetUILanguageList(
-      TestingBrowserProcess::GetGlobal()->GetApplicationLocale(), nullptr,
-      std::string(), GetDescriptors()));
+  auto list(GetUILanguageList(GetApplicationLocale(), nullptr, std::string(),
+                              GetDescriptors()));
 
   VerifyAllowlistedLanguages(list);
 }

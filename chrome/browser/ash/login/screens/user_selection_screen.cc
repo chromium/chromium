@@ -21,6 +21,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/tag_converters.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -120,12 +121,13 @@ bool GetDeviceManager(const policy::BrowserPolicyConnectorAsh& policy_connector,
 // `out_multiple_locales`: Output value indicates whether we have multiple
 // recommended locales.
 base::ListValue GetPublicSessionLocales(
-    const std::string& application_locale,
-    const std::vector<std::string>* public_session_recommended_locales,
+    const base::i18n::LanguageTag& application_locale,
+    const std::vector<base::i18n::LanguageTag>*
+        public_session_recommended_locales,
     std::string* out_selected_locale,
     bool* out_multiple_locales) {
-  std::vector<std::string> kEmptyRecommendedLocales;
-  const std::vector<std::string>& recommended_locales =
+  const std::vector<base::i18n::LanguageTag> kEmptyRecommendedLocales;
+  const std::vector<base::i18n::LanguageTag>& recommended_locales =
       public_session_recommended_locales ? *public_session_recommended_locales
                                          : kEmptyRecommendedLocales;
 
@@ -140,8 +142,10 @@ base::ListValue GetPublicSessionLocales(
 
   // Select the the first recommended locale that is actually available or the
   // current UI locale if none of them are available.
-  *out_selected_locale = FindMostRelevantLocale(
-      recommended_locales, available_locales, application_locale);
+  *out_selected_locale =
+      FindMostRelevantLocale(recommended_locales, available_locales,
+                             application_locale)
+          .tag_string();
 
   *out_multiple_locales = recommended_locales.size() >= 2;
   return available_locales;
@@ -887,8 +891,9 @@ void UserSelectionScreen::CheckForPublicSessionLocalePolicyChange(
   const policy::PolicyMap::Entry* entry =
       broker->core()->store()->policy_map().Get(policy::key::kSessionLocales);
 
-  // Parse the list of recommended locales set by policy.
-  std::vector<std::string> new_recommended_locales;
+  // Parse the list of recommended locales set by policy. Locales that are not
+  // valid language tags are ignored.
+  std::vector<base::i18n::LanguageTag> new_recommended_locales;
   if (entry && entry->level == policy::POLICY_LEVEL_RECOMMENDED &&
       entry->value(base::Value::Type::LIST)) {
     for (const auto& locale_entry :
@@ -896,11 +901,15 @@ void UserSelectionScreen::CheckForPublicSessionLocalePolicyChange(
       if (!locale_entry.is_string()) {
         NOTREACHED();
       }
-      new_recommended_locales.push_back(locale_entry.GetString());
+      std::optional<base::i18n::LanguageTag> locale =
+          base::i18n::GetLanguageTagFromString(locale_entry.GetString());
+      if (locale) {
+        new_recommended_locales.push_back(*std::move(locale));
+      }
     }
   }
 
-  std::vector<std::string>& recommended_locales =
+  std::vector<base::i18n::LanguageTag>& recommended_locales =
       public_session_recommended_locales_[account_id];
 
   if (new_recommended_locales != recommended_locales) {
@@ -934,7 +943,7 @@ void UserSelectionScreen::SetPublicSessionDisplayName(
 
 void UserSelectionScreen::SetPublicSessionLocales(
     const AccountId& account_id,
-    const std::vector<std::string>& recommended_locales) {
+    const std::vector<base::i18n::LanguageTag>& recommended_locales) {
   if (!users_loaded_) {
     return;
   }
@@ -944,16 +953,20 @@ void UserSelectionScreen::SetPublicSessionLocales(
   input_method::InputMethodManager& input_method_manager =
       CHECK_DEREF(input_method::InputMethodManager::Get());
   base::ListValue available_locales = GetUILanguageList(
-      std::string(application_locale_storage_->GetTag().tag_string()),
-      &recommended_locales, std::string(),
+      application_locale_storage_->GetTag(), &recommended_locales,
+      std::string(),
       CHECK_DEREF(input_method_manager.GetComponentExtensionIMEManager())
           .GetXkbIMEAsInputMethodDescriptor());
 
   // Set the initially selected locale to the first recommended locale that is
   // actually available or the current UI locale if none of them are available.
-  const std::string default_locale = FindMostRelevantLocale(
-      recommended_locales, available_locales,
-      std::string(application_locale_storage_->GetTag().tag_string()));
+  // TODO(crbug.com/542711615): Keep `default_locale` as a
+  // base::i18n::LanguageTag once LoginScreenModel::SetPublicSessionLocales()
+  // and RequestPublicSessionKeyboardLayouts() take one.
+  const std::string default_locale(
+      FindMostRelevantLocale(recommended_locales, available_locales,
+                             application_locale_storage_->GetTag())
+          .tag_string());
 
   // Set a flag to indicate whether the list of recommended locales contains at
   // least two entries. This is used to decide whether the public session pod
@@ -1076,17 +1089,18 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
 
       user_info.public_account_info->using_saml = user->using_saml();
 
-      const std::vector<std::string>* public_session_recommended_locales =
-          public_session_recommended_locales_.find(account_id) ==
-                  public_session_recommended_locales_.end()
-              ? nullptr
-              : &public_session_recommended_locales_[account_id];
+      const std::vector<base::i18n::LanguageTag>*
+          public_session_recommended_locales =
+              public_session_recommended_locales_.find(account_id) ==
+                      public_session_recommended_locales_.end()
+                  ? nullptr
+                  : &public_session_recommended_locales_[account_id];
       std::string selected_locale;
       bool has_multiple_locales;
-      auto available_locales = GetPublicSessionLocales(
-          std::string(application_locale_storage_->GetTag().tag_string()),
-          public_session_recommended_locales, &selected_locale,
-          &has_multiple_locales);
+      auto available_locales =
+          GetPublicSessionLocales(application_locale_storage_->GetTag(),
+                                  public_session_recommended_locales,
+                                  &selected_locale, &has_multiple_locales);
       user_info.public_account_info->available_locales =
           lock_screen_utils::FromListValueToLocaleItem(
               std::move(available_locales));

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -168,7 +169,7 @@ class UserSelectionScreen
   // of the `recommended_locales` followed by all other available locales.
   void SetPublicSessionLocales(
       const AccountId& account_id,
-      const std::vector<std::string>& recommended_locales);
+      const std::vector<base::i18n::LanguageTag>& recommended_locales);
 
   // Send an updated flag for enabling/disable full management disclosure to the
   // UI.
@@ -191,7 +192,7 @@ class UserSelectionScreen
   raw_ptr<UserBoardView> view_ = nullptr;
 
   // Map from public session account IDs to recommended locales set by policy.
-  std::map<AccountId, std::vector<std::string>>
+  std::map<AccountId, std::vector<base::i18n::LanguageTag>>
       public_session_recommended_locales_;
 
   // Whether users have been sent to the UI(WebUI or Views).

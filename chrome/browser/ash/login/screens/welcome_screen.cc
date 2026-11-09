@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -376,7 +378,13 @@ void WelcomeScreen::ShowImpl() {
     } else {
       const StartupCustomizationDocument* startup_manifest =
           StartupCustomizationDocument::GetInstance();
-      SetApplicationLocale(startup_manifest->initial_locale_default(),
+      const std::optional<base::i18n::LanguageTag> initial_locale =
+          startup_manifest->initial_locale_default();
+      // TODO(crbug.com/542711615): Make SetApplicationLocale() take a
+      // base::i18n::LanguageTag.
+      SetApplicationLocale(initial_locale
+                               ? std::string(initial_locale->tag_string())
+                               : std::string(),
                            /*is_from_ui=*/false);
     }
   }

@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ash/customization/customization_document.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -138,11 +140,15 @@ std::string GetGoodServicesManifest() {
 
 namespace ash {
 
+using ::base::i18n::GetKnownLanguageTag;
+using ::testing::_;
 using ::testing::DoAll;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::NotNull;
+using ::testing::Optional;
 using ::testing::Return;
 using ::testing::SetArgPointee;
-using ::testing::_;
 
 TEST(StartupCustomizationDocumentTest, Basic) {
   system::ScopedFakeStatisticsProvider fake_statistics_provider;
@@ -185,6 +191,33 @@ TEST(StartupCustomizationDocumentTest, BadManifest) {
   StartupCustomizationDocument customization(&fake_statistics_provider,
                                              kBadManifest);
   EXPECT_FALSE(customization.IsReady());
+}
+
+TEST(StartupCustomizationDocumentTest, ConfiguredLocales) {
+  system::ScopedFakeStatisticsProvider fake_statistics_provider;
+
+  // Legacy ICU locales are converted to BCP47, deprecated language tags are
+  // replaced, and invalid locales are dropped.
+  fake_statistics_provider.SetMachineStatistic("initial_locale",
+                                               "en_US, fr-ca ,123,,iw");
+  StartupCustomizationDocument customization(&fake_statistics_provider,
+                                             kGoodStartupManifest);
+  EXPECT_EQ("en_US, fr-ca ,123,,iw", customization.initial_locale());
+  EXPECT_THAT(
+      customization.configured_locales(),
+      ElementsAre(GetKnownLanguageTag("en-US"), GetKnownLanguageTag("fr-CA"),
+                  GetKnownLanguageTag("he")));
+  EXPECT_THAT(customization.initial_locale_default(),
+              Optional(GetKnownLanguageTag("en-US")));
+}
+
+TEST(StartupCustomizationDocumentTest, NoValidConfiguredLocales) {
+  system::ScopedFakeStatisticsProvider fake_statistics_provider;
+  fake_statistics_provider.SetMachineStatistic("initial_locale", "123,");
+  StartupCustomizationDocument customization(&fake_statistics_provider,
+                                             kBadManifest);
+  EXPECT_THAT(customization.configured_locales(), IsEmpty());
+  EXPECT_EQ(customization.initial_locale_default(), std::nullopt);
 }
 
 class TestURLLoaderFactoryInterceptor {

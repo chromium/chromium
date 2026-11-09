@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/customization/customization_document.h"
 
-#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -17,7 +16,8 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/rtl.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -403,25 +403,34 @@ void StartupCustomizationDocument::Init(
               system::kKeyboardLayoutKey)) {
     keyboard_layout_ = std::string(keyboard_statistic.value());
   }
-  configured_locales_ = base::SplitString(
-      initial_locale_, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-  // Convert ICU locale to chrome ("en_US" to "en-US", etc.).
-  std::ranges::for_each(configured_locales_, base::i18n::GetCanonicalLocale);
-
-  // Let's always have configured_locales_.front() a valid entry.
-  if (configured_locales_.size() == 0)
-    configured_locales_.push_back(std::string());
+  // Parse the configured locales as language tags, which also converts legacy
+  // ICU locales to BCP47 ("en_US" to "en-US", etc.). Invalid locales are
+  // dropped.
+  configured_locales_.clear();
+  for (std::string_view locale :
+       base::SplitStringPiece(initial_locale_, ",", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    std::optional<base::i18n::LanguageTag> tag =
+        base::i18n::GetLanguageTagFromString(locale);
+    if (!tag) {
+      LOG(WARNING) << "Ignoring invalid initial locale: " << locale;
+      continue;
+    }
+    configured_locales_.push_back(*std::move(tag));
+  }
 }
 
-const std::vector<std::string>&
+const std::vector<base::i18n::LanguageTag>&
 StartupCustomizationDocument::configured_locales() const {
   return configured_locales_;
 }
 
-const std::string& StartupCustomizationDocument::initial_locale_default()
-    const {
-  CHECK_GT(configured_locales_.size(), 0UL, base::NotFatalUntil::M160);
+std::optional<base::i18n::LanguageTag>
+StartupCustomizationDocument::initial_locale_default() const {
+  if (configured_locales_.empty()) {
+    return std::nullopt;
+  }
   return configured_locales_.front();
 }
 

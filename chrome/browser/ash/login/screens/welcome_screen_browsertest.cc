@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -447,9 +448,9 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, PRE_SelectedLanguage) {
-  EXPECT_EQ(
+  EXPECT_THAT(
       StartupCustomizationDocument::GetInstance()->initial_locale_default(),
-      "en-US");
+      testing::Optional(base::i18n::GetKnownLanguageTag("en-US")));
   test::WaitForWelcomeScreen();
   const std::string locale = "ru";
   test::LanguageReloadObserver observer(welcome_screen());

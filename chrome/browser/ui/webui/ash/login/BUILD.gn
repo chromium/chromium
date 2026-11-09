@@ -423,6 +423,7 @@ source_set("unit_tests") {
     ":login",
     "//ash",
     "//base",
+    "//base/i18n:language_tag",
     "//base/test:test_support",
     "//chrome/browser:global_features",
     "//chrome/browser/ash/customization",
