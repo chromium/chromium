@@ -29,6 +29,48 @@ bool HasGoogleChromeBranding() {
   return kPretendHasGoogleChromeBranding;
 #endif
 }
+
+bool IsBackgroundLookupEligible(SafeBrowsingState safe_browsing_state,
+                                bool are_background_lookups_allowed) {
+  // Check feature flag after ESB check so that the Finch experiment
+  // groups only include clients that can send sample pings.
+  return safe_browsing_state == SafeBrowsingState::ENHANCED_PROTECTION &&
+         are_background_lookups_allowed &&
+         base::FeatureList::IsEnabled(kHashPrefixRealTimeLookupsSamplePing);
+}
+
+struct CommonRequirements {
+  // Whether the user's browser session and country location are eligible for
+  // hash-prefix real-time lookups.
+  bool eligible_for_session_and_location;
+  // Whether the user's Safe Browsing protection state is eligible.
+  bool eligible_for_safe_browsing_state;
+  // Whether hash-prefix real-time lookups are allowed by enterprise policy.
+  bool allowed_by_policy;
+
+  // Returns true if all common requirements are met.
+  bool AreAllMet() const {
+    return eligible_for_session_and_location &&
+           eligible_for_safe_browsing_state && allowed_by_policy;
+  }
+};
+
+CommonRequirements GetCommonRequirements(
+    PrefService* prefs,
+    const std::optional<std::string>& latest_country,
+    bool eligible_for_safe_browsing_state) {
+  // All prefs used in this method must match the ones returned by
+  // |GetHashRealTimeSelectionConfiguringPrefs| so that consumers listening for
+  // changes can receive them correctly.
+  return {
+      .eligible_for_session_and_location =
+          hash_realtime_utils::IsHashRealTimeLookupEligibleInSessionAndLocation(
+              latest_country),
+      .eligible_for_safe_browsing_state = eligible_for_safe_browsing_state,
+      .allowed_by_policy =
+          safe_browsing::AreHashPrefixRealTimeLookupsAllowedByPolicy(*prefs),
+  };
+}
 }  // namespace
 
 bool CanCheckUrl(const GURL& url) {
@@ -133,28 +175,30 @@ HashRealTimeSelection DetermineHashRealTimeSelection(
   // All prefs used in this method must match the ones returned by
   // |GetHashRealTimeSelectionConfiguringPrefs| so that consumers listening for
   // changes can receive them correctly.
-  // Check feature flag after ESB check so that the Finch experiment
-  // groups only include clients that can send sample pings.
+  SafeBrowsingState safe_browsing_state =
+      safe_browsing::GetSafeBrowsingState(*prefs);
+  bool sb_state_eligible_for_foreground_lookup =
+      safe_browsing_state == SafeBrowsingState::STANDARD_PROTECTION;
   bool only_background_lookup_eligible =
-      safe_browsing::GetSafeBrowsingState(*prefs) ==
-          SafeBrowsingState::ENHANCED_PROTECTION &&
-      are_background_lookups_allowed &&
-      base::FeatureList::IsEnabled(kHashPrefixRealTimeLookupsSamplePing);
+      !sb_state_eligible_for_foreground_lookup &&
+      IsBackgroundLookupEligible(safe_browsing_state,
+                                 are_background_lookups_allowed);
+  CommonRequirements common_requirements =
+      GetCommonRequirements(prefs, latest_country,
+                            /*eligible_for_safe_browsing_state=*/
+                            sb_state_eligible_for_foreground_lookup ||
+                                only_background_lookup_eligible);
 
   struct Requirement {
     std::string failed_requirement_histogram_suffix;
     bool passes_requirement;
   } requirements[] = {
       {"IneligibleForSessionOrLocation",
-       hash_realtime_utils::IsHashRealTimeLookupEligibleInSessionAndLocation(
-           latest_country)},
+       common_requirements.eligible_for_session_and_location},
       {"OffTheRecord", !is_off_the_record},
       {"IneligibleForSafeBrowsingState",
-       safe_browsing::GetSafeBrowsingState(*prefs) ==
-               SafeBrowsingState::STANDARD_PROTECTION ||
-           only_background_lookup_eligible},
-      {"NotAllowedByPolicy",
-       safe_browsing::AreHashPrefixRealTimeLookupsAllowedByPolicy(*prefs)}};
+       common_requirements.eligible_for_safe_browsing_state},
+      {"NotAllowedByPolicy", common_requirements.allowed_by_policy}};
   bool can_do_lookup = true;
   for (const auto& requirement : requirements) {
     if (!requirement.passes_requirement) {
@@ -190,6 +234,27 @@ HashRealTimeSelection DetermineHashRealTimeSelection(
                   : HashRealTimeSelection::kHashRealTimeService)
 #endif
              : HashRealTimeSelection::kNone;
+}
+
+bool AreOhttpKeyFetchesEnabled(PrefService* prefs,
+                               std::optional<std::string> latest_country,
+                               bool are_background_lookups_allowed) {
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  // All prefs used in this method must match the ones returned by
+  // |GetHashRealTimeSelectionConfiguringPrefs| so that consumers listening for
+  // changes can receive them correctly.
+  SafeBrowsingState safe_browsing_state =
+      safe_browsing::GetSafeBrowsingState(*prefs);
+  bool eligible_for_safe_browsing_state =
+      safe_browsing_state == SafeBrowsingState::STANDARD_PROTECTION ||
+      IsBackgroundLookupEligible(safe_browsing_state,
+                                 are_background_lookups_allowed);
+  return GetCommonRequirements(prefs, latest_country,
+                               eligible_for_safe_browsing_state)
+      .AreAllMet();
+#endif
 }
 
 HashRealTimeSelectionConfiguringPrefs

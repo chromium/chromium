@@ -166,7 +166,8 @@ TEST(HashRealTimeUtilsTest,
   }
 }
 
-TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
+TEST(HashRealTimeUtilsTest,
+     TestDetermineHashRealTimeSelectionAndAreOhttpKeyFetchesEnabled) {
   hash_realtime_utils::HashRealTimeSelection enabled_selection =
 #if BUILDFLAG(IS_ANDROID)
       hash_realtime_utils::HashRealTimeSelection::kDatabaseManager;
@@ -181,6 +182,11 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
       hash_realtime_utils::HashRealTimeSelection::
           kHashRealTimeServiceBackgroundOnly;
 #endif
+#if BUILDFLAG(IS_ANDROID)
+  bool expected_ohttp_key_fetches_enabled = false;
+#else
+  bool expected_ohttp_key_fetches_enabled = true;
+#endif
   struct TestCase {
     SafeBrowsingState safe_browsing_state =
         SafeBrowsingState::STANDARD_PROTECTION;
@@ -191,6 +197,7 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
     std::optional<std::string> latest_country = std::nullopt;
     std::optional<bool> lookups_allowed_by_policy = std::nullopt;
     hash_realtime_utils::HashRealTimeSelection expected_selection;
+    bool expected_ohttp_key_fetches_enabled;
     bool are_background_lookups_allowed = false;
     bool expected_log_usage_histograms = true;
     bool expected_ineligible_for_session_or_location_log = false;
@@ -201,43 +208,63 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
     bool expected_feature_off_log = false;
     bool expected_ineligible_for_location_log = false;
   } test_cases[] = {
-      {.expected_selection = enabled_selection},
-      // Lookups disabled due to being off the record.
+      {.expected_selection = enabled_selection,
+       .expected_ohttp_key_fetches_enabled =
+           expected_ohttp_key_fetches_enabled},
+      // Lookups disabled due to being off the record. OHTTP key fetches are
+      // still enabled since they are not dependent on whether the profile is
+      // off the record.
       {.is_off_the_record = true,
        .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+       .expected_ohttp_key_fetches_enabled = expected_ohttp_key_fetches_enabled,
        .expected_off_the_record_log = true},
+      // Lookups disabled when Safe Browsing is disabled.
+      {.safe_browsing_state = SafeBrowsingState::NO_SAFE_BROWSING,
+       .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+       .expected_ohttp_key_fetches_enabled = false,
+       .expected_ineligible_for_safe_browsing_state_log = true},
       // Lookups disabled because the feature is disabled.
       {.is_feature_on = false,
        .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+       .expected_ohttp_key_fetches_enabled = false,
        .expected_ineligible_for_session_or_location_log = true,
        .expected_feature_off_log = true},
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
       // Lookups disabled because it's not a branded build.
       {.has_google_chrome_branding = false,
        .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+       .expected_ohttp_key_fetches_enabled = false,
        .expected_ineligible_for_session_or_location_log = true,
        .expected_no_google_chrome_branding_log = true},
 #endif
       // Lookups allowed for US.
-      {.latest_country = "us", .expected_selection = enabled_selection},
+      {.latest_country = "us",
+       .expected_selection = enabled_selection,
+       .expected_ohttp_key_fetches_enabled =
+           expected_ohttp_key_fetches_enabled},
       // Lookups disabled for CN.
       {.latest_country = "cn",
        .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+       .expected_ohttp_key_fetches_enabled = false,
        .expected_ineligible_for_session_or_location_log = true,
        .expected_ineligible_for_location_log = true},
       // Lookups allowed because policy allows them and nothing else prevents
       // them.
       {.lookups_allowed_by_policy = true,
-       .expected_selection = enabled_selection},
+       .expected_selection = enabled_selection,
+       .expected_ohttp_key_fetches_enabled =
+           expected_ohttp_key_fetches_enabled},
       // Lookups disabled because policy prevents them.
       {.lookups_allowed_by_policy = false,
        .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+       .expected_ohttp_key_fetches_enabled = false,
        .expected_not_allowed_by_policy_log = true},
       // Background HPRT lookups disabled even when the feature is on and the
       // are_background_lookups_allowed parameter is true for SSB users.
       {.safe_browsing_state = SafeBrowsingState::STANDARD_PROTECTION,
        .is_background_hprt_lookup_feature_on = true,
        .expected_selection = enabled_selection,
+       .expected_ohttp_key_fetches_enabled = expected_ohttp_key_fetches_enabled,
        .are_background_lookups_allowed = true},
       // The next 3 test cases test ESB lookups.
       // Background HPRT lookups enabled when the feature flag,
@@ -246,6 +273,7 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
       {.safe_browsing_state = SafeBrowsingState::ENHANCED_PROTECTION,
        .is_background_hprt_lookup_feature_on = true,
        .expected_selection = enabled_background_selection,
+       .expected_ohttp_key_fetches_enabled = expected_ohttp_key_fetches_enabled,
        .are_background_lookups_allowed = true},
       // Background HPRT lookups disabled and normal lookup is also disabled
       // when the feature flag, kHashPrefixRealTimeLookupsSamplePing, is on
@@ -253,6 +281,7 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
       {.safe_browsing_state = SafeBrowsingState::ENHANCED_PROTECTION,
        .is_background_hprt_lookup_feature_on = true,
        .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+       .expected_ohttp_key_fetches_enabled = false,
        .are_background_lookups_allowed = false,
        .expected_ineligible_for_safe_browsing_state_log = true},
       // Background HPRT lookups disabled and normal lookup is also disabled
@@ -261,6 +290,7 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
       {.safe_browsing_state = SafeBrowsingState::ENHANCED_PROTECTION,
        .is_background_hprt_lookup_feature_on = false,
        .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+       .expected_ohttp_key_fetches_enabled = false,
        .are_background_lookups_allowed = true,
        .expected_ineligible_for_safe_browsing_state_log = true},
   };
@@ -371,6 +401,10 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
     } else {
       check_no_usage_histograms(histogram_tester);
     }
+    EXPECT_EQ(hash_realtime_utils::AreOhttpKeyFetchesEnabled(
+                  &prefs, test_case.latest_country,
+                  test_case.are_background_lookups_allowed),
+              test_case.expected_ohttp_key_fetches_enabled);
   }
 }
 

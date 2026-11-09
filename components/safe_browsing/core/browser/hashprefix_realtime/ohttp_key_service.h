@@ -202,9 +202,8 @@ class OhttpKeyService : public KeyedService {
   // enabled.
   PrefChangeRegistrar local_state_pref_change_registrar_;
 
-  // Keeps track of the state of the service. It's enabled when standard
-  // protection is on and the policy kHashPrefixRealTimeChecksAllowedByPolicy
-  // isn't disabled.
+  // Keeps track of the state of the service. Whether it's enabled is determined
+  // by `hash_realtime_utils::AreOhttpKeyFetchesEnabled`.
   bool enabled_ = false;
 
   // Used to schedule async key fetch.

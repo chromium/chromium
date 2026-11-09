@@ -121,26 +121,6 @@ constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
       "default."
   )");
 
-bool IsEnabled(PrefService* pref_service,
-               std::optional<std::string> country,
-               bool are_background_lookups_allowed) {
-  // If this class has been created, it is already known that the session is not
-  // off-the-record, so |is_off_the_record| is passed through as false.
-  safe_browsing::hash_realtime_utils::HashRealTimeSelection
-      hash_realtime_selection =
-          safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
-              /*is_off_the_record=*/false, pref_service,
-              /*latest_country=*/country, /*log_usage_histograms=*/false,
-              /*are_background_lookups_allowed=*/
-              are_background_lookups_allowed);
-  return hash_realtime_selection ==
-             safe_browsing::hash_realtime_utils::HashRealTimeSelection::
-                 kHashRealTimeService ||
-         hash_realtime_selection ==
-             safe_browsing::hash_realtime_utils::HashRealTimeSelection::
-                 kHashRealTimeServiceBackgroundOnly;
-}
-
 GURL GetKeyFetchingUrl() {
   GURL url(safe_browsing::kHashPrefixRealTimeLookupsKeyFetchUrl.Get());
   std::string api_key = google_apis::GetAPIKey();
@@ -203,15 +183,15 @@ OhttpKeyService::OhttpKeyService(
                                   weak_factory_.GetWeakPtr()));
   }
 
-  SetEnabled(IsEnabled(pref_service_, country_getter_.Run(),
-                       are_background_lookups_allowed_));
+  SetEnabled(hash_realtime_utils::AreOhttpKeyFetchesEnabled(
+      pref_service_, country_getter_.Run(), are_background_lookups_allowed_));
 }
 
 OhttpKeyService::~OhttpKeyService() = default;
 
 void OhttpKeyService::OnConfiguringPrefsChanged() {
-  SetEnabled(IsEnabled(pref_service_, country_getter_.Run(),
-                       are_background_lookups_allowed_));
+  SetEnabled(hash_realtime_utils::AreOhttpKeyFetchesEnabled(
+      pref_service_, country_getter_.Run(), are_background_lookups_allowed_));
 }
 
 void OhttpKeyService::SetEnabled(bool enable) {

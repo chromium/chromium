@@ -98,9 +98,9 @@ bool IsHashRealTimeLookupEligibleInSessionAndLocation(
 
 // Returns the latest country. If |variations_service| is null, returns
 // std::nullopt. This should be used only as a helper to determine the country
-// code to pass into |IsHashRealTimeLookupEligibleInSessionAndLocation| and
-// |DetermineHashRealTimeSelection|. This is separated out into a function
-// to simplify tests.
+// code to pass into |IsHashRealTimeLookupEligibleInSessionAndLocation|,
+// |DetermineHashRealTimeSelection|, and |AreOhttpKeyFetchesEnabled|. This is
+// separated out into a function to simplify tests.
 std::optional<std::string> GetCountryCode(
     variations::VariationsService* variations_service);
 
@@ -112,6 +112,8 @@ std::optional<std::string> GetCountryCode(
 // If it's passed in as std::nullopt, the location is considered eligible.
 // |are_background_lookups_allowed| determines whether the HPRT lookup is
 // allowed to be a background lookup initiated for an eligible ESB lookup.
+// TODO(crbug.com/582417477): Remove |log_usage_histograms| now that all
+// production callers pass true.
 HashRealTimeSelection DetermineHashRealTimeSelection(
     bool is_off_the_record,
     PrefService* prefs,
@@ -119,9 +121,20 @@ HashRealTimeSelection DetermineHashRealTimeSelection(
     bool log_usage_histograms,
     bool are_background_lookups_allowed);
 
+// Based on the user's settings and session, determines whether OHTTP key
+// fetches should be enabled. |latest_country| should be determined with the
+// helper function |hash_realtime_utils::GetCountryCode|. If it's passed in as
+// std::nullopt, the location is considered eligible.
+// |are_background_lookups_allowed| determines whether background HPRT lookups
+// are allowed for an eligible ESB lookup.
+bool AreOhttpKeyFetchesEnabled(PrefService* prefs,
+                               std::optional<std::string> latest_country,
+                               bool are_background_lookups_allowed);
+
 // A helper for consumers that want to recompute
-// |DetermineHashRealTimeSelection| when there are pref changes. This returns
-// all prefs that modify the outcome of that method.
+// |DetermineHashRealTimeSelection| or |AreOhttpKeyFetchesEnabled| when there
+// are pref changes. This returns all prefs that modify the outcome of those
+// methods.
 HashRealTimeSelectionConfiguringPrefs
 GetHashRealTimeSelectionConfiguringPrefs();
 
