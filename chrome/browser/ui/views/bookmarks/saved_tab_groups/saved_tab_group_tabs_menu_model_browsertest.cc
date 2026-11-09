@@ -241,6 +241,7 @@ class SavedTabGroupTabsMenuModelFocusingBrowserTest
 IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelFocusingBrowserTest,
                        ToggleFocusGroupFromBookmarksBarContextMenu) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
   TabStripModel* const tsm = browser()->GetTabStripModel();
   TabGroupId local_id = tsm->AddToNewGroup({0});
@@ -274,6 +275,10 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelFocusingBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "TabGroups.ContextMenu.BookmarksBar.Action",
       TabGroupMenuAction::Type::FOCUS_OR_UNFOCUS_GROUP, 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_SavedTabGroups_BookmarksBar_FocusGroup"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "TabGroups_SavedTabGroups_BookmarksBar_UnfocusGroup"));
 
   // Rebuild model when group is focused; verify label updates to "Unfocus
   // group".
@@ -296,11 +301,16 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelFocusingBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "TabGroups.ContextMenu.BookmarksBar.Action",
       TabGroupMenuAction::Type::FOCUS_OR_UNFOCUS_GROUP, 2);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_SavedTabGroups_BookmarksBar_FocusGroup"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_SavedTabGroups_BookmarksBar_UnfocusGroup"));
 }
 
 IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelFocusingBrowserTest,
                        ToggleFocusGroupFromAppMenu) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
   TabStripModel* const tsm = browser()->GetTabStripModel();
   TabGroupId local_id = tsm->AddToNewGroup({0});
@@ -324,6 +334,10 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelFocusingBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "TabGroups.ContextMenu.AppMenu.Action",
       TabGroupMenuAction::Type::FOCUS_OR_UNFOCUS_GROUP, 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_SavedTabGroups_AppMenu_FocusGroup"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "TabGroups_SavedTabGroups_AppMenu_UnfocusGroup"));
 
   STGTabsMenuModel focused_model(browser(), TabGroupMenuContext::APP_MENU);
   focused_model.Build(
@@ -337,6 +351,57 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelFocusingBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "TabGroups.ContextMenu.AppMenu.Action",
       TabGroupMenuAction::Type::FOCUS_OR_UNFOCUS_GROUP, 2);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_SavedTabGroups_AppMenu_FocusGroup"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_SavedTabGroups_AppMenu_UnfocusGroup"));
+}
+
+IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelFocusingBrowserTest,
+                       ToggleFocusGroupFromOrganizerPanel) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  TabStripModel* const tsm = browser()->GetTabStripModel();
+  TabGroupId local_id = tsm->AddToNewGroup({0});
+
+  SavedTabGroup group(u"Test Group", tab_groups::TabGroupColorId::kGrey, {},
+                      std::nullopt);
+  group.SetLocalGroupId(local_id);
+  GetSyncService()->AddGroup(group);
+
+  STGTabsMenuModel model(browser(), TabGroupMenuContext::ORGANIZER_PANEL);
+  model.Build(group,
+              base::BindRepeating(
+                  &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
+                  base::Unretained(this)));
+
+  model.ActivatedAt(2);
+  ASSERT_TRUE(tsm->GetFocusedGroup().has_value());
+  EXPECT_EQ(tsm->GetFocusedGroup().value(), local_id);
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.EntryPoint",
+                                      TabGroupFocusEntryPoint::kOrganizerPanel,
+                                      1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_SavedTabGroups_OrganizerPanel_FocusGroup"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "TabGroups_SavedTabGroups_OrganizerPanel_UnfocusGroup"));
+
+  STGTabsMenuModel focused_model(browser(),
+                                 TabGroupMenuContext::ORGANIZER_PANEL);
+  focused_model.Build(
+      group, base::BindRepeating(
+                 &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
+                 base::Unretained(this)));
+  focused_model.ActivatedAt(2);
+  EXPECT_FALSE(tsm->GetFocusedGroup().has_value());
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.ExitReason",
+                                      TabGroupFocusExitReason::kOrganizerPanel,
+                                      1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_SavedTabGroups_OrganizerPanel_FocusGroup"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_SavedTabGroups_OrganizerPanel_UnfocusGroup"));
 }
 
 IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelBrowserTest,

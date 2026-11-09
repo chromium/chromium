@@ -569,6 +569,7 @@ IN_PROC_BROWSER_TEST_F(
   ShowUi("SetUp");
 
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   TabStripModel* const tsm = browser()->GetTabStripModel();
   ASSERT_TRUE(group_.has_value());
   const tab_groups::TabGroupId group_id = group_.value();
@@ -612,6 +613,10 @@ IN_PROC_BROWSER_TEST_F(
       tab_groups::saved_tab_groups::metrics::TabGroupEditorBubbleAction::
           kFocusOrUnfocusGroup,
       1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_TabGroupBubble_FocusGroup"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "TabGroups_TabGroupBubble_UnfocusGroup"));
 
   // 3. Open the editor again to unfocus.
   browser()->GetTabStripModel()->OpenTabGroupEditor(group_id);
@@ -646,6 +651,10 @@ IN_PROC_BROWSER_TEST_F(
       tab_groups::saved_tab_groups::metrics::TabGroupEditorBubbleAction::
           kFocusOrUnfocusGroup,
       2);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_TabGroupBubble_FocusGroup"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_TabGroupBubble_UnfocusGroup"));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

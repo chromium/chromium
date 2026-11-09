@@ -10,6 +10,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/i18n/test/scoped_rtl_for_testing.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_unfocus_button.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_group.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -607,6 +609,7 @@ TEST_F(TabGroupViewsTest, AnchorBoundsInFocusMode) {
 }
 
 TEST_F(TabGroupViewsTest, UnfocusButtonClickExitsFocusMode) {
+  base::UserActionTester user_action_tester;
   TabGroupHeader* header = group_views_->header();
   TabGroupUnfocusButton* unfocus_button = header->unfocus_chip_for_testing();
   ASSERT_NE(nullptr, unfocus_button);
@@ -622,4 +625,35 @@ TEST_F(TabGroupViewsTest, UnfocusButtonClickExitsFocusMode) {
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
 
   EXPECT_EQ(std::nullopt, tab_strip_controller_->GetFocusedGroup());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_TabGroupHeader_UnfocusGroupButton"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "TabGroups_TabGroupHeader_UnfocusNonGroupTabsButton"));
+}
+
+TEST_F(TabGroupViewsTest, UnfocusButtonClickOnEphemeralGroupRecordsAction) {
+  base::UserActionTester user_action_tester;
+  TabGroupHeader* header = group_views_->header();
+  TabGroupUnfocusButton* unfocus_button = header->unfocus_chip_for_testing();
+  ASSERT_NE(nullptr, unfocus_button);
+
+  TabGroup* const tab_group = tab_strip_controller_->GetTabGroup(id_);
+  ASSERT_NE(nullptr, tab_group);
+  tab_group->SetIsEphemeral(true);
+
+  tab_strip_controller_->EnterFocusMode(id_);
+  group_views_->OnGroupVisualsChanged();
+  group_views_->UpdateBounds();
+  ASSERT_EQ(id_, tab_strip_controller_->GetFocusedGroup());
+  ASSERT_TRUE(unfocus_button->GetVisible());
+
+  views::test::ButtonTestApi(unfocus_button)
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+
+  EXPECT_EQ(std::nullopt, tab_strip_controller_->GetFocusedGroup());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_TabGroupHeader_UnfocusNonGroupTabsButton"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "TabGroups_TabGroupHeader_UnfocusGroupButton"));
 }

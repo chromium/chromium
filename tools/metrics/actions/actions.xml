@@ -40399,6 +40399,44 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroups_SavedTabGroups_AppMenu_FocusGroup">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User focused a tab group by choosing 'Focus group' from the tab group
+    submenu in the app menu.
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_AppMenu_UnfocusGroup">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User unfocused the focused tab group by choosing 'Unfocus group' from the
+    tab group submenu in the app menu.
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_BookmarksBar_FocusGroup">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User focused a tab group by choosing 'Focus group' from a saved tab group
+    context menu on the bookmarks bar (either the group button's context menu or
+    the Everything menu).
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_BookmarksBar_UnfocusGroup">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User unfocused the focused tab group by choosing 'Unfocus group' from a
+    saved tab group context menu on the bookmarks bar (either the group button's
+    context menu or the Everything menu).
+  </description>
+</action>
+
 <action name="TabGroups_SavedTabGroups_Closed">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -40538,6 +40576,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroups_SavedTabGroups_OrganizerPanel_FocusGroup">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User focused a tab group by choosing 'Focus group' from a tab group context
+    menu in the organizer panel.
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_OrganizerPanel_UnfocusGroup">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User unfocused the focused tab group by choosing 'Unfocus group' from a tab
+    group context menu in the organizer panel.
+  </description>
+</action>
+
 <action name="TabGroups_SavedTabGroups_Pinned">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -40637,6 +40693,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroups_TabGroupBubble_FocusGroup">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User focused a tab group by choosing 'Focus group' from the tab group editor
+    bubble (tab group header context menu).
+  </description>
+</action>
+
 <action name="TabGroups_TabGroupBubble_GroupSaved">
   <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -40681,6 +40746,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroups_TabGroupBubble_UnfocusGroup">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User unfocused the focused tab group by choosing 'Unfocus group' from the
+    tab group editor bubble (tab group header context menu).
+  </description>
+</action>
+
 <action name="TabGroups_TabGroupBubble_Ungroup">
   <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -40705,6 +40779,24 @@ should be able to be added at any place in this file.
   <description>
     User clicked on the tab group header of a collapsed tab group to expand the
     group.
+  </description>
+</action>
+
+<action name="TabGroups_TabGroupHeader_UnfocusGroupButton">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User clicked the unfocus button on the header of a focused tab group to exit
+    focus mode.
+  </description>
+</action>
+
+<action name="TabGroups_TabGroupHeader_UnfocusNonGroupTabsButton">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User clicked the unfocus button on the header of a focused non-group
+    (ephemeral) tab group to exit focus mode and restore the loose tabs.
   </description>
 </action>
 

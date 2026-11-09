@@ -442,6 +442,9 @@ gfx::Rect TabGroupHeader::GetAnchorBoundsInScreen() const {
 }
 
 void TabGroupHeader::ExitFocusMode() {
+  base::RecordAction(base::UserMetricsAction(
+      is_ephemeral_ ? "TabGroups_TabGroupHeader_UnfocusNonGroupTabsButton"
+                    : "TabGroups_TabGroupHeader_UnfocusGroupButton"));
   tab_slot_controller_->ExitFocusMode(
       TabGroupFocusExitReason::kHeaderUnfocusButton);
 }

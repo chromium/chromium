@@ -1178,6 +1178,8 @@ void TabGroupEditorBubbleView::MoveGroupToNewWindowPressed() {
 }
 
 void TabGroupEditorBubbleView::FocusGroupPressed() {
+  base::RecordAction(
+      base::UserMetricsAction("TabGroups_TabGroupBubble_FocusGroup"));
   shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
       shared_tab_group_metrics::TabGroupEditorBubbleAction::
           kFocusOrUnfocusGroup);
@@ -1189,6 +1191,8 @@ void TabGroupEditorBubbleView::FocusGroupPressed() {
 }
 
 void TabGroupEditorBubbleView::UnfocusGroupPressed() {
+  base::RecordAction(
+      base::UserMetricsAction("TabGroups_TabGroupBubble_UnfocusGroup"));
   shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
       shared_tab_group_metrics::TabGroupEditorBubbleAction::
           kFocusOrUnfocusGroup);

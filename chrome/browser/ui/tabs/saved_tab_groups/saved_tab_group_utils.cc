@@ -110,6 +110,10 @@ GetSavedTabGroupSubmenuOpenedMetric(
   }
 }
 
+// The three mappings below must stay in sync: each TabGroupMenuContext maps to
+// one surface across the entry point histogram, exit reason histogram, and
+// user action.
+// LINT.IfChange(TabGroupMenuContextFocusSurface)
 TabGroupFocusEntryPoint GetTabGroupFocusEntryPoint(
     const tab_groups::TabGroupMenuContext& context) {
   switch (context) {
@@ -135,6 +139,33 @@ TabGroupFocusExitReason GetTabGroupFocusExitReason(
       return TabGroupFocusExitReason::kOrganizerPanel;
   }
 }
+
+// Records a per-surface user action for focusing or unfocusing a group from a
+// saved tab group menu.
+void RecordFocusToggleUserAction(const tab_groups::TabGroupMenuContext& context,
+                                 bool is_unfocus) {
+  switch (context) {
+    // Both the group button context menu and the Everything menu live on the
+    // bookmarks bar, so they share a single surface.
+    case tab_groups::TabGroupMenuContext::SAVED_TAB_GROUP_BUTTON_CONTEXT_MENU:
+    case tab_groups::TabGroupMenuContext::SAVED_TAB_GROUP_EVERYTHING_MENU:
+      base::RecordAction(base::UserMetricsAction(
+          is_unfocus ? "TabGroups_SavedTabGroups_BookmarksBar_UnfocusGroup"
+                     : "TabGroups_SavedTabGroups_BookmarksBar_FocusGroup"));
+      return;
+    case tab_groups::TabGroupMenuContext::APP_MENU:
+      base::RecordAction(base::UserMetricsAction(
+          is_unfocus ? "TabGroups_SavedTabGroups_AppMenu_UnfocusGroup"
+                     : "TabGroups_SavedTabGroups_AppMenu_FocusGroup"));
+      return;
+    case tab_groups::TabGroupMenuContext::ORGANIZER_PANEL:
+      base::RecordAction(base::UserMetricsAction(
+          is_unfocus ? "TabGroups_SavedTabGroups_OrganizerPanel_UnfocusGroup"
+                     : "TabGroups_SavedTabGroups_OrganizerPanel_FocusGroup"));
+      return;
+  }
+}
+// LINT.ThenChange(:TabGroupMenuContextFocusSurface)
 
 }  // namespace
 
@@ -935,8 +966,10 @@ void SavedTabGroupUtils::PerformTabGroupMenuAction(
 
       TabStripModel* const tab_strip_model = target_browser->GetTabStripModel();
       if (tab_strip_model->GetFocusedGroup() == local_group_id.value()) {
+        RecordFocusToggleUserAction(context, /*is_unfocus=*/true);
         tab_strip_model->ExitFocusMode(GetTabGroupFocusExitReason(context));
       } else {
+        RecordFocusToggleUserAction(context, /*is_unfocus=*/false);
         base::UmaHistogramEnumeration("TabGroups.Focus.EntryPoint",
                                       GetTabGroupFocusEntryPoint(context));
         tab_strip_model->EnterFocusMode(local_group_id.value());
