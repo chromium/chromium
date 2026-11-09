@@ -9,6 +9,7 @@ import android.view.View;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -37,12 +38,13 @@ public class LocalizationUtils {
     }
 
     @CalledByNative
-    static Locale getJavaLocaleForBcp47Tag(String bcp47tag) {
+    static Locale getJavaLocaleForBcp47Tag(@JniType("std::string_view") String bcp47tag) {
         return Locale.forLanguageTag(bcp47tag);
     }
 
     @CalledByNative
-    private static String getDisplayNameForLocale(Locale locale, Locale displayLocale) {
+    private static @JniType("std::u16string") String getDisplayNameForLocale(
+            Locale locale, Locale displayLocale) {
         return locale.getDisplayName(displayLocale);
     }
 
@@ -159,8 +161,9 @@ public class LocalizationUtils {
 
     @NativeMethods
     interface Natives {
-        int getFirstStrongCharacterDirection(String string);
+        int getFirstStrongCharacterDirection(@JniType("std::u16string") String string);
 
+        @JniType("std::string")
         String getNativeUiLocale();
 
         void invalidateLayoutRtlCacheForTesting();
