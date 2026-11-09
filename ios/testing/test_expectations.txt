@@ -618,3 +618,4 @@ crbug.com/582739898 [ iOS27 iPad Simulator ] RecentTabsTestCase/testContextMenuR
 crbug.com/583785828 GeminiFirstRunTestCase/testAcceptPromoAndConsent [ Pass Failure Crash ]
 crbug.com/583785828 GeminiFirstRunTestCase/testLightweightConvenienceFREAcceptConsent [ Pass Failure Crash ]
 crbug.com/583785828 GeminiFirstRunTestCase/testVisualRichFREAcceptConsent [ Pass Failure Crash ]
+crbug.com/583813595 [ iPhone ] PolicyTestCase/testEnterpriseBubbleInEnhancedSafeBrowsingPage [ Pass Failure ]
