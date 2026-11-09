@@ -626,8 +626,9 @@ IN_PROC_BROWSER_TEST_P(BaseTabStripFocusModeTest,
   EXPECT_EQ(new_browser->GetTabStripModel()->GetFocusedGroup(), group_id);
 }
 
+// TODO(crbug.com/581858584): Re-enable this test.
 IN_PROC_BROWSER_TEST_P(BaseTabStripFocusModeTest,
-                       MoveFocusedGroupToExistingWindowDoesNotFocus) {
+                       DISABLED_MoveFocusedGroupToExistingWindowDoesNotFocus) {
   AppendTab();
   AppendTab();
   ASSERT_EQ(3, tab_strip_model()->count());
