@@ -1123,6 +1123,7 @@ source_set("unit_tests") {
     "extension_event_histogram_value_unittest.cc",
     "extension_function_crash_keys_unittest.cc",
     "extension_function_histogram_value_unittest.cc",
+    "extension_function_unittest.cc",
     "extension_icon_image_unittest.cc",
     "extension_icon_manager_unittest.cc",
     "extension_mojo_binder_registry_unittest.cc",

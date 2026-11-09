@@ -142,6 +142,10 @@ BASE_DECLARE_FEATURE(kApiDesktopAndroidNativeMessagingBypassExtensionAllowlist);
 
 // For historical reasons, this includes some APIs. Please don't add more APIs.
 
+// When enabled, `ExtensionFunction::GetMutableArgs()` avoids cloning `args_`
+// into `original_args_`.
+BASE_DECLARE_FEATURE(kAvoidCloneMutableExtensionFunctionArgs);
+
 // Controls whether opted-in component extension frames are permitted to
 // enter BackForwardCache instead of being unconditionally disabled.
 BASE_DECLARE_FEATURE(kBackForwardCacheForComponentExtensionFrames);

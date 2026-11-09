@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
@@ -47,6 +48,7 @@
 #include "extensions/browser/service_worker/service_worker_keepalive.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_api.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
@@ -504,6 +506,7 @@ void ExtensionFunction::OnQuotaExceeded(std::string violation_error) {
 void ExtensionFunction::SetArgs(base::ListValue args) {
   DCHECK(!args_.has_value());
   args_ = std::move(args);
+  args_modified_ = false;
 }
 
 const base::ListValue* ExtensionFunction::GetResultListForTest() const {
@@ -627,9 +630,8 @@ const base::ListValue& ExtensionFunction::GetOriginalArgs() const {
     return *original_args_;
   }
 
-  // Return `args_`, which haven't been modified since they were set by
-  // SetArgs(), since GetMutableArgs() was never called.
-  DCHECK(args_.has_value());
+  CHECK(!args_modified_);
+  CHECK(args_.has_value());
   return *args_;
 }
 
@@ -726,10 +728,13 @@ void ExtensionFunction::SetTransferredBlobs(
 
 base::ListValue& ExtensionFunction::GetMutableArgs() {
   DCHECK(args_);
-  if (!original_args_.has_value()) {
+  if (!original_args_.has_value() &&
+      !base::FeatureList::IsEnabled(
+          extensions_features::kAvoidCloneMutableExtensionFunctionArgs)) {
     // Preserve original args before allowing modification of `args_`.
     original_args_ = args_->Clone();
   }
+  args_modified_ = true;
   return *args_;
 }
 

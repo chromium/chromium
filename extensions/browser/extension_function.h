@@ -451,8 +451,8 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // via `AddResponseTarget()`.
   virtual void OnResponseAck();
 
-  // Returns original args, as they were set by SetArgs() (doesn't include
-  // modifications via GetMutableArgs()).
+  // Returns original args, as they were set by `SetArgs()`. Must not be called
+  // after `GetMutableArgs()`.
   const base::ListValue& GetOriginalArgs() const;
 
   // Sets did_respond_ to true so that the function won't DCHECK if it never
@@ -606,6 +606,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
     return *args_;
   }
 
+  // Returns mutable args. `GetOriginalArgs()` must not be called after this.
   base::ListValue& GetMutableArgs();
 
   // The extension that called this function.
@@ -639,13 +640,12 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   std::optional<base::ListValue> args_;
 
   // Original arguments to the API. Populated from `args_` when GetMutableArgs()
-  // is first invoked, otherwise nullopt. This exists because an extension
-  // function may modify its args via GetMutableArgs(), but the owner of this
-  // object may need to access the original args via GetOriginalArgs() (the
-  // owner could also copy the args before passing them to the extension
-  // function, but that would result in an unnecessary copy when the extension
-  // function doesn't modify its args).
+  // is first invoked and `kAvoidCloneMutableExtensionFunctionArgs` is disabled,
+  // otherwise nullopt.
   std::optional<base::ListValue> original_args_;
+
+  // True once `GetMutableArgs()` has been called for the current `args_`.
+  bool args_modified_ = false;
 
   base::ElapsedTimer timer_;
 
