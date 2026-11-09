@@ -12,6 +12,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -86,6 +87,7 @@
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -94,6 +96,7 @@
 #include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_bubble_view.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
@@ -230,6 +233,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #endif
 
 namespace {
@@ -7760,6 +7767,69 @@ class WebUIToolbarMinimumSizeBrowserTest
         .ExtractBool();
   }
 
+  // The toolbar actions pinned by PinToolbarActions().
+  static constexpr auto kActionsToPin = std::to_array<actions::ActionId>({
+      kActionShowDownloads,
+      kActionSidePanelShowBookmarks,
+      kActionSidePanelShowReadingList,
+      kActionSidePanelShowHistoryCluster,
+      kActionPrint,
+      kActionCopyUrl,
+      kActionQrCodeGenerator,
+      kActionClearBrowsingData,
+      kActionTaskManager,
+      kActionDevTools,
+  });
+
+  // Pins all toolbar actions in `kActionsToPin`. Does not wait for them to be
+  // added to the Javascript toolbar.
+  void PinToolbarActions() {
+    auto* model = PinnedToolbarActionsModel::Get(browser()->GetProfile());
+    for (actions::ActionId action : kActionsToPin) {
+      model->UpdatePinnedState(action, true);
+    }
+  }
+
+  // Returns the number of non-divider pinned toolbar actions in the
+  // #pinnedToolbarActions element that are visible (i.e., not hidden due to
+  // overflow).
+  int GetNumVisiblePinnedActionsInJs() {
+    return content::EvalJs(GetWebUIWebContents(), R"(
+          (() => {
+            const app = document.querySelector('toolbar-app');
+            const pinned =
+                app?.shadowRoot?.querySelector('#pinnedToolbarActions');
+            if (!pinned) {
+              return 0;
+            }
+            return pinned.getActions()
+                .filter(el => !el.isDivider && el.checkVisibility())
+                .length;
+          })()
+        )")
+        .ExtractInt();
+  }
+
+  // Returns the current width of the location bar in the Javascript toolbar,
+  // rounded to the nearest integer. Returns -1 on failure.
+  int GetJsLocationBarWidth() {
+    content::EvalJsResult result = content::EvalJs(GetWebUIWebContents(), R"(
+          (() => {
+            const app = document.querySelector('toolbar-app');
+            const locationBar = app?.shadowRoot?.querySelector('#location-bar');
+            if (!locationBar) {
+              return -1;
+            }
+            return Math.round(locationBar.getBoundingClientRect().width);
+          })()
+        )");
+    if (!result.is_ok() || !result.is_int()) {
+      ADD_FAILURE() << "Failed to get JS location bar width: " << result;
+      return -1;
+    }
+    return result.ExtractInt();
+  }
+
   // Pins a number of toolbar actions, an extension, the home button
   // and the split tabs button, all of which may be overflowed by the
   // Javascript layout code. Waits until the Javascript toolbar has been updated
@@ -7772,35 +7842,45 @@ class WebUIToolbarMinimumSizeBrowserTest
     const int initial_preferred_width =
         GetWebUIToolbar()->GetPreferredSize().width();
 
-    // Load the extension first, since LoadAndPinExtension() waits for the
-    // extension's button to be visible, which may not happen if the other
-    // controls have already been pinned, due to overflow.
+    // Load and pin the extension. Not using LoadAndPinExtension(), since it
+    // waits for the extension's button to be visible, which may not happen if
+    // there's not enough room in the toolbar, due to overflow.
     ASSERT_TRUE(extension_temp_dir.CreateUniqueTempDir());
     scoped_refptr<const extensions::Extension> extension =
-        LoadAndPinExtension(extension_temp_dir);
+        LoadExtension(extension_temp_dir);
     ASSERT_TRUE(extension);
+    ToolbarActionsModel* toolbar_actions_model =
+        ToolbarActionsModel::Get(browser()->GetProfile());
+    if (!toolbar_actions_model->IsActionPinned(extension->id())) {
+      toolbar_actions_model->SetActionVisibility(extension->id(), true);
+    }
+    // Wait for the extensions menu button, which is never hidden due to
+    // overflow, to be shown, and for the extension's button to either be
+    // shown or be hidden due to overflow. Anchors are only registered once
+    // buttons finish animating in, so this also waits for any animations that
+    // would affect the toolbar's layout to complete.
+    auto* extensions_container = static_cast<WebUIToolbarExtensionsContainer*>(
+        ExtensionsContainer::From(*browser()));
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      if (!extensions_container->GetExtensionAnchor("")) {
+        return false;
+      }
+      if (extensions_container->GetExtensionAnchor(extension->id())) {
+        return true;
+      }
+      std::vector<std::string> actions =
+          base::SplitString(GetExtensionsState(), ",", base::TRIM_WHITESPACE,
+                            base::SPLIT_WANT_NONEMPTY);
+      return std::ranges::contains(actions, "!" + extension->id());
+    })) << "Extensions state: "
+        << GetExtensionsState();
 
     browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
                                                     true);
     browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton,
                                                     true);
 
-    auto* model = PinnedToolbarActionsModel::Get(browser()->GetProfile());
-    const auto kActionsToPin = std::to_array<actions::ActionId>({
-        kActionShowDownloads,
-        kActionSidePanelShowBookmarks,
-        kActionSidePanelShowReadingList,
-        kActionSidePanelShowHistoryCluster,
-        kActionPrint,
-        kActionCopyUrl,
-        kActionQrCodeGenerator,
-        kActionClearBrowsingData,
-        kActionTaskManager,
-        kActionDevTools,
-    });
-    for (actions::ActionId action : kActionsToPin) {
-      model->UpdatePinnedState(action, true);
-    }
+    PinToolbarActions();
 
     // Wait for the Javascript toolbar to have all the new controls. Some of
     // them may be overflowed, depending on window size, so don't wait for them
@@ -7808,7 +7888,9 @@ class WebUIToolbarMinimumSizeBrowserTest
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return ShouldControlBeShown(kHomeSelector) &&
              ShouldControlBeShown(kSplitTabsSelector) &&
-             GetNumPinnedActionsInJs() ==
+             // Use >=, since there may also be other pinned toolbar actions,
+             // like popped out actions with open side pannels.
+             GetNumPinnedActionsInJs() >=
                  static_cast<int>(kActionsToPin.size());
     }));
 
@@ -7846,6 +7928,168 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarMinimumSizeBrowserTest,
   ASSERT_NO_FATAL_FAILURE(PinOverflowableControls(extension_temp_dir));
   EXPECT_LT(toolbar->GetMinimumSize().width(),
             toolbar->GetPreferredSize().width());
+}
+
+// Checks that the minimum width of the WebUI toolbar is less than the minimum
+// width of the main browser contents, so the toolbar doesn't force the window
+// to be wider than it otherwise would be. Checks both in the default state, and
+// when a large number of overflowable controls are pinned.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarMinimumSizeBrowserTest,
+                       MinimumWidthLessThanMainBrowserContentsMinimumWidth) {
+  ASSERT_TRUE(WaitForToolbarInitialized());
+
+  WebUIToolbarWebView* toolbar = GetWebUIToolbar();
+  EXPECT_LT(toolbar->GetMinimumSize().width(),
+            BrowserViewLayout::kMainBrowserContentsMinimumWidth);
+
+  // Creating, writing to, and deleting the extensions' temp directories
+  // requires blocking. Declared before the ScopedTempDirs so it outlives them.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir extension_temp_dir;
+  ASSERT_NO_FATAL_FAILURE(PinOverflowableControls(extension_temp_dir));
+  EXPECT_LT(toolbar->GetMinimumSize().width(),
+            BrowserViewLayout::kMainBrowserContentsMinimumWidth);
+}
+
+// Sets the browser window to the minimum width of the main browser contents,
+// and then shows several controls that Javascript can't overflow, one at a
+// time: a popped out pinned toolbar action (by opening a side panel), the
+// extensions menu button (by installing an extension), and the avatar button
+// (by opening the profile menu, which forces it to be visible). After each
+// step, checks that all the controls shown so far are visible, and that the app
+// menu button is still entirely inside the window.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarMinimumSizeBrowserTest,
+                       NonOverflowableControlsFitInNarrowWindow) {
+  ASSERT_TRUE(WaitForToolbarInitialized());
+  InstallErrorListener();
+
+  ASSERT_TRUE(
+      SetWindowWidth(BrowserViewLayout::kMainBrowserContentsMinimumWidth));
+  // SetWindowWidth() is best effort, so make sure the toolbar actually ended
+  // up no wider than the requested width.
+  ASSERT_LE(GetWebUIToolbar()->width(),
+            BrowserViewLayout::kMainBrowserContentsMinimumWidth);
+
+  constexpr toolbar_ui_api::mojom::PinnedToolbarAction kPoppedOutAction =
+      toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowCustomizeChrome;
+
+  // Returns true if the app menu button is visible and entirely inside the
+  // window. Note that the WebUI toolbar allows the app menu to temporarily
+  // be outside the window, e.g. during animations. Since it uses a
+  // ResizeObserver in that case, which means it does layout only after things
+  // have been moved (and also it doesn't use requestAnimationFrame(), so this
+  // function may return information about a state that's never actually
+  // rendered). To mitigate this, call this function inside RunUntil() loops
+  // that wait for the expected state so these ephemeral intermediate cases are
+  // ignored.
+  auto is_app_menu_in_window = [&]() {
+    return content::EvalJs(GetWebUIWebContents(),
+                           content::JsReplace(R"(
+          (() => {
+            const app = document.querySelector('toolbar-app');
+            const appMenu = app?.shadowRoot?.querySelector($1);
+            if (!appMenu || !appMenu.checkVisibility()) {
+              return false;
+            }
+            const rect = appMenu.getBoundingClientRect();
+            return rect.width > 0 && rect.left >= 0 &&
+                rect.right <= window.innerWidth;
+          })()
+        )",
+                                              kAppMenuButtonSelector))
+        .ExtractBool();
+  };
+
+  // Returns true if the extensions menu button (the puzzle piece) is visible.
+  auto is_extensions_menu_button_visible = [&]() {
+    return content::EvalJs(GetWebUIWebContents(), R"(
+          (() => {
+            const app = document.querySelector('toolbar-app');
+            const extensions = app?.shadowRoot?.querySelector('#extensions');
+            const menuButton = extensions?.getActions().find(
+                el => !el.isDivider && el.getItemId() === '');
+            return !!menuButton && menuButton.checkVisibility();
+          })()
+        )")
+        .ExtractBool();
+  };
+
+  // Returns true if the avatar button is visible.
+  auto is_avatar_button_visible = [&]() {
+    return content::EvalJs(GetWebUIWebContents(),
+                           content::JsReplace(R"(
+          (() => {
+            const app = document.querySelector('toolbar-app');
+            const avatar = app?.shadowRoot?.querySelector($1);
+            return !!avatar && avatar.checkVisibility();
+          })()
+        )",
+                                              kAvatarSelector))
+        .ExtractBool();
+  };
+
+  // Waits until the app menu button is inside the window, and all controls
+  // that are expected to be visible are. Also checks that showing controls
+  // hasn't widened the window.
+  auto wait_for_expected_state = [&](bool popped_out_action_visible,
+                                     bool extensions_menu_button_visible,
+                                     bool avatar_button_visible) {
+    const bool reached_expected_state = base::test::RunUntil([&]() {
+      return is_app_menu_in_window() &&
+             (!popped_out_action_visible ||
+              IsPinnedActionVisible(kPoppedOutAction)) &&
+             (!extensions_menu_button_visible ||
+              is_extensions_menu_button_visible()) &&
+             (!avatar_button_visible || is_avatar_button_visible());
+    });
+    EXPECT_LE(GetWebUIToolbar()->width(),
+              BrowserViewLayout::kMainBrowserContentsMinimumWidth);
+    return reached_expected_state;
+  };
+
+  EXPECT_TRUE(wait_for_expected_state(/*popped_out_action_visible=*/false,
+                                      /*extensions_menu_button_visible=*/false,
+                                      /*avatar_button_visible=*/false));
+
+  // 1. Open a side panel, which pops out its pinned toolbar action.
+  SidePanelUI::From(browser())->Show(SidePanelEntryId::kCustomizeChrome);
+  EXPECT_TRUE(wait_for_expected_state(/*popped_out_action_visible=*/true,
+                                      /*extensions_menu_button_visible=*/false,
+                                      /*avatar_button_visible=*/false));
+
+  // 2. Install an extension (and pin a number of other overflowable controls),
+  // which shows the extensions menu button.
+  //
+  // Creating, writing to, and deleting the extensions' temp directories
+  // requires blocking. Declared before the ScopedTempDirs so it outlives them.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir extension_temp_dir;
+  ASSERT_NO_FATAL_FAILURE(PinOverflowableControls(extension_temp_dir));
+  EXPECT_TRUE(wait_for_expected_state(/*popped_out_action_visible=*/true,
+                                      /*extensions_menu_button_visible=*/true,
+                                      /*avatar_button_visible=*/false));
+
+  // 3. Open the profile menu, which forces the avatar button to be visible. The
+  // avatar button is not shown for regular ChromeOS profiles, so skip for them.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // The profile menu normally closes when it loses activation, which could
+  // happen if another test running concurrently steals focus. Once the menu
+  // closes, the avatar button would no longer be forced visible, so prevent
+  // that. This must be set before the menu is created.
+  base::AutoReset<bool> close_on_deactivate_reset(
+      &ProfileMenuView::close_on_deactivate_for_testing_, false);
+  chrome::ExecuteCommand(browser(), IDC_SHOW_AVATAR_MENU);
+  ProfileMenuCoordinator* profile_menu_coordinator =
+      ProfileMenuCoordinator::From(browser());
+  ASSERT_TRUE(profile_menu_coordinator);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return profile_menu_coordinator->IsShowing(); }));
+  EXPECT_TRUE(wait_for_expected_state(/*popped_out_action_visible=*/true,
+                                      /*extensions_menu_button_visible=*/true,
+                                      /*avatar_button_visible=*/true));
+#endif
+
+  AssertNoJsErrors();
 }
 
 // Checks that pinning a large number of controls that Javascript can overflow
@@ -7904,21 +8148,31 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarMinimumSizeBrowserTest,
   // calculations.
   constexpr int kMinWidthTolerance = 2;
 
-  // The C++ minimum width of the location bar (WebUILocationBar::MinimumSize())
-  // is 30 pixels smaller than the Javascript minimum width
-  // (LocationBarElement.LOCATION_BAR_MIN_WIDTH), so the C++ minimum width of
-  // the toolbar is expected to be 30 pixels smaller than the Javascript one.
-  //
-  // TODO(crbug.com/474060468): Remove this once the C++ and Javascript location
-  // bar sizes match.
-  constexpr int kLocationBarMinWidthDifference = 30;
-
   WebUIToolbarWebView* toolbar = GetWebUIToolbar();
+
+  // The C++ minimum width of the location bar (WebUILocationBar::MinimumSize())
+  // is intentionally larger than the Javascript minimum width
+  // (LocationBarElement.LOCATION_BAR_MIN_WIDTH, 120 pixels), so that controls
+  // that can't be overflowed can still be shown when the window is at its
+  // minimum width. The C++ minimum width of the toolbar is therefore expected
+  // to be larger than the Javascript one by the difference, which varies by
+  // platform, since the C++ value does.
+#if BUILDFLAG(IS_WIN)
+  constexpr int kLocationBarMinWidthDifference = 129 - 120;
+#elif BUILDFLAG(IS_MAC)
+  constexpr int kLocationBarMinWidthDifference = 146 - 120;
+#elif BUILDFLAG(IS_LINUX)
+  constexpr int kLocationBarMinWidthDifference = 179 - 120;
+#elif BUILDFLAG(IS_CHROMEOS)
+  constexpr int kLocationBarMinWidthDifference = 142 - 120;
+#else
+#error "Unsupported platform"
+#endif
 
   int js_min_width = GetJsMinimumWidth();
   ASSERT_GT(js_min_width, 0);
   EXPECT_NEAR(toolbar->GetMinimumSize().width(),
-              js_min_width - kLocationBarMinWidthDifference,
+              js_min_width + kLocationBarMinWidthDifference,
               kMinWidthTolerance);
 
   // Creating, writing to, and deleting the extensions' temp directories
@@ -7930,7 +8184,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarMinimumSizeBrowserTest,
   js_min_width = GetJsMinimumWidth();
   ASSERT_GT(js_min_width, 0);
   EXPECT_NEAR(toolbar->GetMinimumSize().width(),
-              js_min_width - kLocationBarMinWidthDifference,
+              js_min_width + kLocationBarMinWidthDifference,
               kMinWidthTolerance);
 
   AssertNoJsErrors();
@@ -7962,6 +8216,61 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarMinimumSizeBrowserTest,
   ASSERT_GT(js_preferred_width, 0);
   EXPECT_GT(js_preferred_width, initial_js_preferred_width);
   EXPECT_EQ(toolbar->GetPreferredSize().width(), js_preferred_width);
+
+  AssertNoJsErrors();
+}
+
+// Checks that the location bar "defends" its preferred width: When there's not
+// enough room for all pinned toolbar actions, they're overflowed rather than
+// the location bar shrinking below its preferred width. Sizes the toolbar so
+// there's room for everything at its preferred width, plus room for a few more
+// buttons, and then pins more toolbar actions than there's room for.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarMinimumSizeBrowserTest,
+                       LocationBarDefendsPreferredWidth) {
+  ASSERT_TRUE(WaitForToolbarInitialized());
+  InstallErrorListener();
+
+  // The number of extra buttons to make room for. Must be less than the number
+  // of pinned toolbar actions, so they can't all fit.
+  constexpr int kNumExtraButtons = 5;
+  static_assert(kNumExtraButtons < kActionsToPin.size());
+
+  WebUIToolbarWebView* toolbar = GetWebUIToolbar();
+  const int button_width =
+      GetLayoutConstant(LayoutConstant::kToolbarButtonHeight) +
+      GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
+  const int target_toolbar_width =
+      toolbar->GetPreferredSize().width() + kNumExtraButtons * button_width;
+
+  // SetWindowWidth() sets the width of the window, which may be wider than the
+  // toolbar, due to the window frame, so take that into account.
+  const int window_frame_width =
+      browser()->GetWindow()->GetBounds().width() - toolbar->width();
+  ASSERT_TRUE(SetWindowWidth(target_toolbar_width + window_frame_width));
+  ASSERT_EQ(toolbar->width(), target_toolbar_width);
+
+  // The location bar should be at least its preferred width.
+  const int location_bar_preferred_width =
+      toolbar->GetLocationBar()->PreferredSize().width();
+  EXPECT_GE(GetJsLocationBarWidth(), location_bar_preferred_width);
+
+  // Pin the toolbar actions, and wait until they've all been added to the
+  // Javascript toolbar, and some, but not all, of them are visible.
+  PinToolbarActions();
+  int num_visible_pinned_actions = 0;
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    num_visible_pinned_actions = GetNumVisiblePinnedActionsInJs();
+    return GetNumPinnedActionsInJs() ==
+               static_cast<int>(kActionsToPin.size()) &&
+           num_visible_pinned_actions > 0 &&
+           num_visible_pinned_actions < static_cast<int>(kActionsToPin.size());
+  })) << "Visible pinned actions: "
+      << num_visible_pinned_actions;
+
+  // The location bar should still be at least its preferred width, and the
+  // toolbar should not have been widened.
+  EXPECT_GE(GetJsLocationBarWidth(), location_bar_preferred_width);
+  EXPECT_EQ(toolbar->width(), target_toolbar_width);
 
   AssertNoJsErrors();
 }

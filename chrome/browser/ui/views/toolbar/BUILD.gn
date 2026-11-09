@@ -546,6 +546,7 @@ if (!is_android) {
 
       if (is_win || is_mac || is_linux) {
         sources += [ "webui_media_toolbar_button_browsertest.cc" ]
+        deps += [ "//chrome/browser/ui/views/profiles:profile_menu_view" ]
       }
 
       if (is_win) {
@@ -561,6 +562,7 @@ if (!is_android) {
         "//chrome/browser/ui:toolbar_controller_util",
         "//chrome/browser/ui/global_media_controls",
         "//chrome/browser/ui/views/contextual_tasks",
+        "//chrome/browser/ui/views/frame:browser_view_layout",
         "//chrome/browser/ui/views/global_media_controls",
         "//chrome/browser/ui/views/performance_controls",
         "//chrome/browser/ui/views/profiles:avatar_toolbar_button",

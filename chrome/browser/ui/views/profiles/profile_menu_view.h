@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/web_app_profile_switcher.h"
 #include "chrome/browser/signin/signin_promo_util.h"
@@ -66,6 +67,8 @@ class ProfileMenuView : public ProfileMenuViewBase {
   friend class ProfileMenuViewSignoutTest;
   friend class ProfileMenuViewSyncErrorButtonTest;
   friend class ProfileMenuInteractiveUiTest;
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarMinimumSizeBrowserTest,
+                           NonOverflowableControlsFitInNarrowWindow);
 
   BrowserWindowInterface& browser() const { return *browser_; }
 

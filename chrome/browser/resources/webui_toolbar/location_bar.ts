@@ -36,19 +36,31 @@ export interface LocationBarElement {
 
 export class LocationBarElement extends CrLitElement implements
     ResponsiveControl {
-  // The smallest allowed width of the location bar.
-  //
-  // TODO(crbug.com/474060468): This is a placeholder value. We need to do a
-  // proper calculation.
-  static readonly LOCATION_BAR_MIN_WIDTH = 330;
+  // The smallest allowed width of the location bar. Going below this value
+  // would not leave enough room for basic indicators, e.g. permissions
+  // request chips. This must be below the C++ browser-side value returned by
+  // WebUILocationBar::MinimumSize() to allow all controls to be force shown
+  // after the window has been adjusted to its minimum width.
+  static readonly LOCATION_BAR_MIN_WIDTH = 120;
   // The preferred width of the location bar. It will, based on priority order,
   // try to assume this width when ResponsiveControls are all being sized. At
   // the end of that process, expandUpToPreferredWidth() will be invoked, and it
-  // will claim any extra available width.
-  //
-  // TODO(crbug.com/474060468): This is a placeholder value. We need to do a
-  // proper calculation.
-  static readonly LOCATION_BAR_PREFERRED_WIDTH = 400;
+  // will claim any extra available width. These values match the preferred
+  // width of LocationBarView on each platform, and must match
+  // WebUILocationBar::PreferredSize() in
+  // chrome/browser/ui/views/location_bar/webui_location_bar.cc.
+  // <if expr="is_win">
+  static readonly LOCATION_BAR_PREFERRED_WIDTH = 258;
+  // </if>
+  // <if expr="is_macosx">
+  static readonly LOCATION_BAR_PREFERRED_WIDTH = 292;
+  // </if>
+  // <if expr="is_linux">
+  static readonly LOCATION_BAR_PREFERRED_WIDTH = 358;
+  // </if>
+  // <if expr="is_chromeos">
+  static readonly LOCATION_BAR_PREFERRED_WIDTH = 284;
+  // </if>
 
   static get is() {
     return 'location-bar';

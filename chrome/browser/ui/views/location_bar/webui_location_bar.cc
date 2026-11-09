@@ -610,13 +610,30 @@ gfx::Rect WebUILocationBar::BoundsInScreen() const {
 }
 
 gfx::Size WebUILocationBar::MinimumSize() const {
-  // TODO(crbug.com/474060468): Proper calculation.
-  return gfx::Size(300, 34);
+  // This matches how LocationBarView calculates it. This value must be greater
+  // than TypeScript's `LocationBarElement.LOCATION_BAR_MIN_WIDTH` so that we
+  // can still force some controls to be not overflowed even when the browser
+  // window is shrunk to its minimum width.
+  return gfx::Size(PreferredSize().width() / 2, 34);
 }
 
 gfx::Size WebUILocationBar::PreferredSize() const {
-  // TODO(crbug.com/474060468): Proper calculation.
-  return gfx::Size(400, 34);
+  // These values match the preferred width of the Views LocationBarView on each
+  // platform, and must match TypeScript's
+  // `LocationBarElement.LOCATION_BAR_PREFERRED_WIDTH` in
+  // chrome/browser/resources/webui_toolbar/location_bar.ts.
+#if BUILDFLAG(IS_WIN)
+  constexpr int kPreferredWidth = 258;
+#elif BUILDFLAG(IS_MAC)
+  constexpr int kPreferredWidth = 292;
+#elif BUILDFLAG(IS_LINUX)
+  constexpr int kPreferredWidth = 358;
+#elif BUILDFLAG(IS_CHROMEOS)
+  constexpr int kPreferredWidth = 284;
+#else
+#error "Unsupported platform"
+#endif
+  return gfx::Size(kPreferredWidth, 34);
 }
 
 void WebUILocationBar::Update(content::WebContents* contents) {
