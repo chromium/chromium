@@ -414,6 +414,52 @@ public class CustomTabIntentDataHolderUnitTest {
     }
 
     @Test
+    public void testParcelRoundTrip_remoteViewsAndSwipeUpUpdatesSurvive() {
+        Context context = ContextUtils.getApplicationContext();
+        RemoteViews initialViews =
+                new RemoteViews(context.getPackageName(), android.R.layout.list_content);
+        PendingIntent initialPi =
+                PendingIntent.getBroadcast(
+                        context, 1, new Intent("initial_rv"), PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent initialSwipePi =
+                PendingIntent.getBroadcast(
+                        context, 2, new Intent("initial_swipe"), PendingIntent.FLAG_IMMUTABLE);
+        CustomTabIntentDataHolder holder =
+                new CustomTabIntentDataHolder.Builder()
+                        .setRemoteViews(initialViews)
+                        .setClickableViewIds(new int[] {1})
+                        .setRemoteViewsPendingIntent(initialPi)
+                        .setSecondaryToolbarSwipeUpPendingIntent(initialSwipePi)
+                        .build();
+
+        RemoteViews updatedViews =
+                new RemoteViews(context.getPackageName(), android.R.layout.simple_list_item_1);
+        PendingIntent updatedPi =
+                PendingIntent.getBroadcast(
+                        context, 3, new Intent("updated_rv"), PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent updatedSwipePi =
+                PendingIntent.getBroadcast(
+                        context, 4, new Intent("updated_swipe"), PendingIntent.FLAG_IMMUTABLE);
+        holder.updateRemoteViews(updatedViews, new int[] {10, 20}, updatedPi);
+        holder.setSecondaryToolbarSwipeUpPendingIntent(updatedSwipePi);
+
+        CustomTabIntentDataHolder restored = roundTripThroughParcel(holder);
+        assertNotNull(restored.mRemoteViews);
+        assertEquals(android.R.layout.simple_list_item_1, restored.mRemoteViews.getLayoutId());
+        assertArrayEquals(new int[] {10, 20}, restored.mClickableViewIds);
+        assertEquals(updatedPi, restored.mRemoteViewsPendingIntent);
+        assertEquals(updatedSwipePi, restored.mSecondaryToolbarSwipeUpPendingIntent);
+
+        restored.updateRemoteViews(null, null, null);
+        restored.setSecondaryToolbarSwipeUpPendingIntent(null);
+        CustomTabIntentDataHolder restoredCleared = roundTripThroughParcel(restored);
+        assertNull(restoredCleared.mRemoteViews);
+        assertNull(restoredCleared.mClickableViewIds);
+        assertNull(restoredCleared.mRemoteViewsPendingIntent);
+        assertNull(restoredCleared.mSecondaryToolbarSwipeUpPendingIntent);
+    }
+
+    @Test
     public void testParcelRoundTrip_authTabSession() {
         Context context = ContextUtils.getApplicationContext();
         IBinder binder = new Binder();

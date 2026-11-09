@@ -84,10 +84,14 @@ import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.browserservices.intents.CustomTabIntentDataHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BackgroundInteractBehavior;
+import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
+import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams.VariantLayoutType;
@@ -2716,6 +2720,57 @@ public class CustomTabIntentDataProviderTest {
         assertEquals(
                 ButtonType.CCT_SHARE_BUTTON,
                 restoredAfterSmallIcon.getCustomButtonsOnToolbar().get(0).getType());
+    }
+
+    @Test
+    public void testSessionHandlerUpdateCustomButton_invalidToolbarIconDoesNotMutateParams() {
+        int iconHeight = mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_icon_height);
+        Bitmap validIcon = Bitmap.createBitmap(iconHeight, iconHeight, Bitmap.Config.ARGB_8888);
+        Bitmap invalidIcon = Bitmap.createBitmap(2, 2, Bitmap.Config.ARGB_8888);
+        PendingIntent actionPi =
+                PendingIntent.getBroadcast(
+                        mContext,
+                        1,
+                        new Intent("action"),
+                        IntentUtils.getPendingIntentMutabilityFlag(true));
+        Intent intent =
+                new CustomTabsIntent.Builder()
+                        .setActionButton(validIcon, "initial", actionPi, /* shouldTint= */ false)
+                        .build()
+                        .intent;
+
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        CustomTabIntentDataProvider provider =
+                new CustomTabIntentDataProvider(intent, activity, COLOR_SCHEME_LIGHT);
+        CustomTabToolbarCoordinator toolbarCoordinator =
+                Mockito.mock(CustomTabToolbarCoordinator.class);
+        when(toolbarCoordinator.updateCustomButton(any())).thenReturn(true);
+        CustomTabBottomBarDelegate bottomBarDelegate =
+                Mockito.mock(CustomTabBottomBarDelegate.class);
+        CustomTabSessionHandler sessionHandler =
+                new CustomTabSessionHandler(
+                        provider,
+                        Mockito.mock(CustomTabActivityTabProvider.class),
+                        () -> toolbarCoordinator,
+                        () -> bottomBarDelegate,
+                        Mockito.mock(CustomTabIntentHandler.class),
+                        activity,
+                        Mockito.mock(ActivityLifecycleDispatcher.class));
+
+        assertFalse(
+                sessionHandler.updateCustomButton(
+                        CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID, invalidIcon, "rejected"));
+        CustomButtonParams button = provider.getAllCustomButtons().get(0);
+        assertEquals("initial", button.getDescription());
+        assertTrue(button.doesIconFitToolbar(activity));
+
+        Bitmap validUpdatedIcon =
+                Bitmap.createBitmap(iconHeight * 2, iconHeight, Bitmap.Config.ARGB_8888);
+        assertTrue(
+                sessionHandler.updateCustomButton(
+                        CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID, validUpdatedIcon, "accepted"));
+        assertEquals("accepted", button.getDescription());
     }
 
     @Test

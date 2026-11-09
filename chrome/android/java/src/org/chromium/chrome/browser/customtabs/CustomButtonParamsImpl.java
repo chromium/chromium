@@ -474,7 +474,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
         mIsOnToolbar = showOnToolbar;
     }
 
-    private static boolean doesIconFitToolbar(Context context, Bitmap bitmap) {
+    static boolean doesIconFitToolbar(Context context, Bitmap bitmap) {
         int height = context.getResources().getDimensionPixelSize(R.dimen.toolbar_icon_height);
         if (bitmap.getHeight() < height) return false;
         int scaledWidth = bitmap.getWidth() / bitmap.getHeight() * height;

@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.browserservices.intents.CustomTabIntentDataHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.night_mode.RemoteViewsWithNightModeInflater;
@@ -294,13 +295,25 @@ public class CustomTabBottomBarDelegate
             hideBottomBar();
             mClickableIDs = null;
             mClickPendingIntent = null;
+            CustomTabIntentDataHolder dataHolder = mDataProvider.getCustomTabIntentDataHolder();
+            if (dataHolder != null) {
+                dataHolder.updateRemoteViews(null, null, null);
+                dataHolder.setSecondaryToolbarSwipeUpPendingIntent(null);
+            }
             return true;
         } else {
             // TODO: investigate updating the RemoteViews without replacing the entire hierarchy.
             mClickableIDs = clickableIDs;
             mClickPendingIntent = pendingIntent;
             if (getBottomBarView().getChildCount() > 1) getBottomBarView().removeViewAt(1);
-            return showRemoteViews(remoteViews);
+            boolean shown = showRemoteViews(remoteViews);
+            if (shown) {
+                CustomTabIntentDataHolder dataHolder = mDataProvider.getCustomTabIntentDataHolder();
+                if (dataHolder != null) {
+                    dataHolder.updateRemoteViews(remoteViews, clickableIDs, pendingIntent);
+                }
+            }
+            return shown;
         }
     }
 
@@ -310,12 +323,16 @@ public class CustomTabBottomBarDelegate
      * @param pendingIntent The {@link PendingIntent}.
      * @return Whether the update is successful.
      */
-    public boolean updateSwipeUpPendingIntent(PendingIntent pendingIntent) {
+    public boolean updateSwipeUpPendingIntent(@Nullable PendingIntent pendingIntent) {
         if (pendingIntent == null) {
             if (mBottomBarView == null) return false;
             stopListeningForSwipeUpGestures();
         } else {
             startListeningForSwipeUpGestures(pendingIntent);
+        }
+        CustomTabIntentDataHolder dataHolder = mDataProvider.getCustomTabIntentDataHolder();
+        if (dataHolder != null) {
+            dataHolder.setSecondaryToolbarSwipeUpPendingIntent(pendingIntent);
         }
         return true;
     }

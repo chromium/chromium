@@ -68,12 +68,12 @@ public class CustomTabIntentDataHolder implements Parcelable {
     public final boolean mIsCloseButtonEnabled;
     // Stored as a Bitmap rather than a Drawable because Drawable is not Parcelable.
     public final @Nullable Bitmap mCloseButtonIcon;
-    public final @Nullable RemoteViews mRemoteViews;
+    public @Nullable RemoteViews mRemoteViews;
     public final @ActivitySideSheetDecorationType int mSideSheetDecorationType;
     public final @ActivitySideSheetRoundedCornersPosition int mSideSheetRoundedCornersPosition;
-    public final int @Nullable [] mClickableViewIds;
-    public final @Nullable PendingIntent mRemoteViewsPendingIntent;
-    public final @Nullable PendingIntent mSecondaryToolbarSwipeUpPendingIntent;
+    public int @Nullable [] mClickableViewIds;
+    public @Nullable PendingIntent mRemoteViewsPendingIntent;
+    public @Nullable PendingIntent mSecondaryToolbarSwipeUpPendingIntent;
     public final @OpenInBrowserState int mOpenInBrowserState;
     public final @Nullable String mTranslateLanguage;
     public final @Nullable String mAutoTranslateLanguage;
@@ -316,6 +316,23 @@ public class CustomTabIntentDataHolder implements Parcelable {
         return colorScheme == CustomTabsIntent.COLOR_SCHEME_DARK
                 ? mDarkAuthTabColorSchemeParams
                 : mLightAuthTabColorSchemeParams;
+    }
+
+    /** Updates the bottom bar {@link RemoteViews} and its associated click handling parameters. */
+    public void updateRemoteViews(
+            @Nullable RemoteViews remoteViews,
+            int @Nullable [] clickableViewIds,
+            @Nullable PendingIntent pendingIntent) {
+        mRemoteViews = remoteViews;
+        mClickableViewIds = clickableViewIds;
+        mRemoteViewsPendingIntent = pendingIntent;
+    }
+
+    /**
+     * Updates the {@link PendingIntent} sent when the user swipes up from the secondary toolbar.
+     */
+    public void setSecondaryToolbarSwipeUpPendingIntent(@Nullable PendingIntent pendingIntent) {
+        mSecondaryToolbarSwipeUpPendingIntent = pendingIntent;
     }
 
     private static @Nullable TrustedWebActivityDisplayMode readTwaDisplayMode(

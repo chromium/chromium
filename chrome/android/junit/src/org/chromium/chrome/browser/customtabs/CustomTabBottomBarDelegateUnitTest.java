@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -23,6 +24,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RemoteViews;
 
@@ -105,6 +107,7 @@ public class CustomTabBottomBarDelegateUnitTest {
                         mTabProvider,
                         mCompositorContentInitializer);
         mBottomBarView = new CustomTabBottomBarView(mActivity, null);
+        new FrameLayout(mActivity).addView(mBottomBarView);
         View shadowView = new View(mActivity);
         shadowView.setId(R.id.bottombar_shadow);
         mBottomBarView.addView(shadowView);
@@ -145,7 +148,8 @@ public class CustomTabBottomBarDelegateUnitTest {
     public void testSwipeIntentAfterUpdate() throws CanceledException {
         mBottomBarDelegate.showBottomBarIfNecessary();
         var pendingIntent = Mockito.mock(PendingIntent.class);
-        mBottomBarDelegate.updateSwipeUpPendingIntent(pendingIntent);
+        assertTrue(mBottomBarDelegate.updateSwipeUpPendingIntent(pendingIntent));
+        assertEquals(pendingIntent, mIntentDataProvider.getSecondaryToolbarSwipeUpPendingIntent());
         // Simulate a swipe up gesture.
         mBottomBarDelegate.onSwipeStarted(
                 ScrollDirection.UP, MotionEvent.obtain(0, 10, MotionEvent.ACTION_MOVE, 0f, 10f, 0));
@@ -156,11 +160,44 @@ public class CustomTabBottomBarDelegateUnitTest {
     @Test
     public void testSwipeIntentAfterUpdateToNull() {
         mBottomBarDelegate.showBottomBarIfNecessary();
-        mBottomBarDelegate.updateSwipeUpPendingIntent(null);
+        assertTrue(mBottomBarDelegate.updateSwipeUpPendingIntent(null));
+        assertNull(mIntentDataProvider.getSecondaryToolbarSwipeUpPendingIntent());
         // Simulate a swipe up gesture.
         mBottomBarDelegate.onSwipeStarted(
                 ScrollDirection.UP, MotionEvent.obtain(0, 10, MotionEvent.ACTION_MOVE, 0f, 10f, 0));
         // No exception should be thrown.
+    }
+
+    @Test
+    public void testUpdateRemoteViews_updatesDataHolder() {
+        RemoteViews updatedRemoteViews = Mockito.mock(RemoteViews.class);
+        when(updatedRemoteViews.apply(any(), any())).thenReturn(new View(mActivity));
+        PendingIntent updatedPendingIntent = Mockito.mock(PendingIntent.class);
+        int[] updatedIds = new int[] {2, 3};
+
+        assertTrue(
+                mBottomBarDelegate.updateRemoteViews(
+                        updatedRemoteViews, updatedIds, updatedPendingIntent));
+        assertEquals(updatedRemoteViews, mIntentDataProvider.getBottomBarRemoteViews());
+        assertArrayEquals(updatedIds, mIntentDataProvider.getClickableViewIDs());
+        assertEquals(updatedPendingIntent, mIntentDataProvider.getRemoteViewsPendingIntent());
+
+        // Failed inflation should not overwrite the stored RemoteViews in the data holder.
+        RemoteViews invalidRemoteViews = Mockito.mock(RemoteViews.class);
+        when(invalidRemoteViews.apply(any(), any())).thenReturn(null);
+        assertFalse(
+                mBottomBarDelegate.updateRemoteViews(
+                        invalidRemoteViews, new int[] {9}, Mockito.mock(PendingIntent.class)));
+        assertEquals(updatedRemoteViews, mIntentDataProvider.getBottomBarRemoteViews());
+        assertArrayEquals(updatedIds, mIntentDataProvider.getClickableViewIDs());
+        assertEquals(updatedPendingIntent, mIntentDataProvider.getRemoteViewsPendingIntent());
+
+        // Passing null RemoteViews hides the bottom bar and clears RemoteViews and swipe-up action.
+        assertTrue(mBottomBarDelegate.updateRemoteViews(null, null, null));
+        assertNull(mIntentDataProvider.getBottomBarRemoteViews());
+        assertNull(mIntentDataProvider.getClickableViewIDs());
+        assertNull(mIntentDataProvider.getRemoteViewsPendingIntent());
+        assertNull(mIntentDataProvider.getSecondaryToolbarSwipeUpPendingIntent());
     }
 
     @Test

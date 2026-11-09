@@ -109,6 +109,10 @@ public class CustomTabSessionHandler
             return false;
         }
 
+        if (params.showOnToolbar()
+                && !CustomButtonParamsImpl.doesIconFitToolbar(mActivity, bitmap)) {
+            return false;
+        }
         params.update(bitmap, description);
         if (params.showOnToolbar()) {
             return mToolbarCoordinator.get().updateCustomButton(params);
@@ -126,7 +130,8 @@ public class CustomTabSessionHandler
     }
 
     @Override
-    public boolean updateSecondaryToolbarSwipeUpPendingIntent(PendingIntent pendingIntent) {
+    public boolean updateSecondaryToolbarSwipeUpPendingIntent(
+            @Nullable PendingIntent pendingIntent) {
         return mBottomBarDelegate.get().updateSwipeUpPendingIntent(pendingIntent);
     }
 
