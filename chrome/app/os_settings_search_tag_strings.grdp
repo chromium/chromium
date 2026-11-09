@@ -77,9 +77,6 @@
   <message name="IDS_OS_SETTINGS_TAG_CELLULAR_SIM_LOCK_ALT1" desc="Text for search result item which, when clicked, navigates the user to Cellular network settings, with the option to set up SIM lock with a PIN. Alternate phrase for: 'Cellular SIM lock'">
     Cellular SIM PIN
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_CELLULAR_APN" desc="Text for search result item which, when clicked, navigates the user to Cellular network settings, with the option to set up APNs. Alternate phrase for: 'Wi-Fi networks', 'Wireless'">
-    Cellular APN
-  </message>
   <message name="IDS_OS_SETTINGS_TAG_CELLULAR_APN_SETTINGS" desc="Text for search result item which, when clicked, navigates the user to the 'Access Point name (APN)' settings subpage of the currently active cellular network. Alternate phrase for 'Access point name (APN)'">
     Cellular APN settings
   </message>
