@@ -397,7 +397,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             if (!mDeferredInitialized) {
                 mPendingSession = session;
                 // A number of UI components, like the StatusView, depend on the FuseboxState. The
-                // FuseboxMediator will eventually control the FuseboxState, but it's is not yet
+                // FuseboxMediator will eventually control the FuseboxState, but it is not yet
                 // created here. So, we do this initial assignment to ensure that these UI
                 // components don't show any bad intermediate states in the meantime.
                 mFuseboxStateSupplier.set(
