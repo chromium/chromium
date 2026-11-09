@@ -13,12 +13,15 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
 
+#include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -93,20 +96,16 @@ using ::testing::UnorderedElementsAre;
 
 // Constructs a FormStructure with one address section and one payment section.
 std::unique_ptr<FormStructure> ConstructAddressAndCreditCardForm() {
-  TypeValuePairs a = GetDefaultProfileTypeValuePairs();
-  TypeValuePairs b = GetDefaultCreditCardTypeValuePairs();
-  a.reserve(a.size() + b.size());
-  std::ranges::move(b, std::back_inserter(a));
+  TypeValuePairs a = base::ToVector(GetDefaultProfileTypeValuePairs());
+  base::Extend(a, GetDefaultCreditCardTypeValuePairs());
   return ConstructFormStructureFromTypeValuePairs(a);
 }
 
 // Constructs a |FormData| instance with two address sections by concatenating
 // the default profile and second profile.
 FormData ConstructDefaultFormDataWithTwoAddresses() {
-  TypeValuePairs a = GetDefaultProfileTypeValuePairs();
-  TypeValuePairs b = GetSecondProfileTypeValuePairs();
-  a.reserve(a.size() + b.size());
-  std::ranges::move(b, std::back_inserter(a));
+  TypeValuePairs a = base::ToVector(GetDefaultProfileTypeValuePairs());
+  base::Extend(a, GetSecondProfileTypeValuePairs());
   return ConstructFormDataFromTypeValuePairs(a);
 }
 

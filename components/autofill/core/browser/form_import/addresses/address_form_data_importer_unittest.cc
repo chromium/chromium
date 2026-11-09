@@ -6,8 +6,11 @@
 
 #include <ostream>
 #include <sstream>
+#include <string_view>
+#include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -94,8 +97,8 @@ constexpr char kSecondGuid[] = "a21f010a-eac1-41fc-aee9-c06bbedfb293";
 
 // Same as `GetDefaultProfileTypeValuePairs()` but with the third profile
 // information.
-TypeValuePairs GetThirdProfileTypeValuePairs() {
-  return {
+constexpr TypeValuePairsSpan GetThirdProfileTypeValuePairs() {
+  static constexpr std::pair<FieldType, std::string_view> kPairs[] = {
       {NAME_FIRST, kThirdFirstName},
       {NAME_LAST, kThirdLastName},
       {EMAIL_ADDRESS, kThirdMail},
@@ -106,6 +109,7 @@ TypeValuePairs GetThirdProfileTypeValuePairs() {
       {ADDRESS_HOME_ZIP, kThirdZip},
       {ADDRESS_HOME_COUNTRY, kDefaultCountry},
   };
+  return kPairs;
 }
 
 // Wraps `GetDefaultProfileTypeValuePairs()` but replaces `kDefaultCountry` with
@@ -113,8 +117,8 @@ TypeValuePairs GetThirdProfileTypeValuePairs() {
 // empty, `ADDRESS_HOME_COUNTRY` is removed entirely. If no phone number for the
 // given country is found, remove `PHONE_HOME_WHOLE_NUMBER`.
 TypeValuePairs GetDefaultProfileTypeValuePairsWithOverriddenCountry(
-    const std::string& country) {
-  auto pairs = GetDefaultProfileTypeValuePairs();
+    std::string_view country) {
+  TypeValuePairs pairs = base::ToVector(GetDefaultProfileTypeValuePairs());
   SetValueForType(pairs, ADDRESS_HOME_COUNTRY, country);
   if (country == "DE" || country == "Germany") {
     SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneGermany);
@@ -151,7 +155,7 @@ std::unique_ptr<FormStructure> ConstructThirdProfileFormStructure() {
 // Wraps `ConstructDefaultProfile()`, but overrides ADDRESS_HOME_COUNTRY with
 // `country`.
 AutofillProfile ConstructDefaultProfileWithOverriddenCountry(
-    const std::string& country) {
+    std::string_view country) {
   return ConstructProfileFromTypeValuePairs(
       GetDefaultProfileTypeValuePairsWithOverriddenCountry(country));
 }
@@ -549,7 +553,8 @@ TEST_F(AddressFormDataImporterTest, ParseI18nPhoneNumberInCityAndNumberField) {
                                        kLocale));
 
   // Create an address form with `kInternationalNumber`.
-  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  TypeValuePairs type_value_pairs =
+      base::ToVector(GetDefaultProfileTypeValuePairs());
   SetValueForType(type_value_pairs, PHONE_HOME_WHOLE_NUMBER,
                   kInternationalNumber);
   std::unique_ptr<FormStructure> form_structure =
@@ -590,7 +595,8 @@ TEST_F(AddressFormDataImporterTest, InvalidCountry) {
 
 // Tests that invalid phone numbers are removed and importing continues.
 TEST_F(AddressFormDataImporterTest, InvalidPhoneNumber) {
-  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  TypeValuePairs type_value_pairs =
+      base::ToVector(GetDefaultProfileTypeValuePairs());
   SetValueForType(type_value_pairs, PHONE_HOME_WHOLE_NUMBER, "invalid");
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(type_value_pairs);
@@ -600,7 +606,6 @@ TEST_F(AddressFormDataImporterTest, InvalidPhoneNumber) {
   ExtractAddressProfilesAndVerifyExpectation(*form_structure,
                                              {profile_without_number});
 }
-
 
 // ImportAddressProfiles tests.
 TEST_F(AddressFormDataImporterTest, ImportStructuredNameProfile) {
@@ -1507,7 +1512,8 @@ TEST_F(AddressFormDataImporterTest, MultiStepImport) {
 // complementing the profile with additional information on further pages.
 TEST_F(AddressFormDataImporterTest, MultiStepImport_Complement) {
   // Extract the default profile without an email address.
-  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  TypeValuePairs type_value_pairs =
+      base::ToVector(GetDefaultProfileTypeValuePairs());
   SetValueForType(type_value_pairs, EMAIL_ADDRESS, "");
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(type_value_pairs);
@@ -1530,7 +1536,8 @@ TEST_F(AddressFormDataImporterTest, MultiStepImport_Complement) {
 // and the correct profile update occurs.
 TEST_F(AddressFormDataImporterTest, MultiStepImport_Complement_ExternalUpdate) {
   // Extract the default profile without an email address.
-  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  TypeValuePairs type_value_pairs =
+      base::ToVector(GetDefaultProfileTypeValuePairs());
   SetValueForType(type_value_pairs, EMAIL_ADDRESS, "");
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(type_value_pairs);
@@ -1558,7 +1565,8 @@ TEST_F(AddressFormDataImporterTest, MultiStepImport_Complement_ExternalUpdate) {
 // further updates related to it are offered.
 TEST_F(AddressFormDataImporterTest, MultiStepImport_Complement_ExternalRemove) {
   // Extract the default profile without an email address.
-  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  TypeValuePairs type_value_pairs =
+      base::ToVector(GetDefaultProfileTypeValuePairs());
   SetValueForType(type_value_pairs, EMAIL_ADDRESS, "");
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(type_value_pairs);
