@@ -644,6 +644,11 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   // |RecalcInkOverflow| using the given contents ink overflow rect.
   void RecalcInkOverflow(const PhysicalRect& contents);
 
+  PhysicalRect ComputeSelfInkOverflowForReplaced() const {
+    DCHECK(layout_object_->IsLayoutReplaced());
+    return ComputeSelfInkOverflow();
+  }
+
 #if DCHECK_IS_ON()
   void InvalidateInkOverflow();
 #if EXPENSIVE_DCHECKS_ARE_ON()
