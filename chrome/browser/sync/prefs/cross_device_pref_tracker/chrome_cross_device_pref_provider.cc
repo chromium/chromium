@@ -6,43 +6,22 @@
 
 #include <string_view>
 
-#include "base/no_destructor.h"
+#include "base/containers/flat_set.h"
 
-namespace {
-
-// Helper to return a common, static empty set.
-const base::flat_set<std::string_view>& GetEmptySet() {
-  static const base::NoDestructor<base::flat_set<std::string_view>> kEmptySet;
-  return *kEmptySet;
-}
-
-// Helper function to combine common prefs with platform-specific prefs.
-base::flat_set<std::string_view> CombinePrefs(
-    const base::flat_set<std::string_view>& common_prefs,
-    const base::flat_set<std::string_view>& platform_prefs) {
-  base::flat_set<std::string_view> combined_prefs = platform_prefs;
-  combined_prefs.insert(common_prefs.begin(), common_prefs.end());
-  return combined_prefs;
-}
-
-}  // namespace
-
-ChromeCrossDevicePrefProvider::ChromeCrossDevicePrefProvider()
-    : profile_prefs_(
-          CombinePrefs(common_cross_device_pref_provider_.GetProfilePrefs(),
-                       GetEmptySet())),
-      local_state_prefs_(
-          CombinePrefs(common_cross_device_pref_provider_.GetLocalStatePrefs(),
-                       GetEmptySet())) {}
+ChromeCrossDevicePrefProvider::ChromeCrossDevicePrefProvider() = default;
 
 ChromeCrossDevicePrefProvider::~ChromeCrossDevicePrefProvider() = default;
 
 const base::flat_set<std::string_view>&
 ChromeCrossDevicePrefProvider::GetProfilePrefs() const {
-  return profile_prefs_;
+  // If needing to add any Chrome-specific prefs, a flat_set can be created here
+  // containing the union of common and Chrome-specific prefs and wrapped in
+  // base::NoDestructor.
+
+  return common_cross_device_pref_provider_.GetProfilePrefs();
 }
 
 const base::flat_set<std::string_view>&
 ChromeCrossDevicePrefProvider::GetLocalStatePrefs() const {
-  return local_state_prefs_;
+  return common_cross_device_pref_provider_.GetLocalStatePrefs();
 }
