@@ -52,6 +52,7 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
 }  // namespace
 
 @implementation LocationBarBadgesContainerView {
+  UIStackView* _outerStackView;
   UIStackView* _containerStackView;
   UIButton* _tapOverlayButton;
   UIView* _badgeBackgroundView;
@@ -78,14 +79,26 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
   self = [super initWithFrame:CGRectZero];
 
   if (self) {
+    _outerStackView = [[UIStackView alloc] init];
+    _outerStackView.isAccessibilityElement = NO;
+    _outerStackView.axis = UILayoutConstraintAxisHorizontal;
+    _outerStackView.alignment = UIStackViewAlignmentCenter;
+    _outerStackView.translatesAutoresizingMaskIntoConstraints = NO;
+
+    [self addSubview:_outerStackView];
+    AddSameConstraints(self, _outerStackView);
+
     _containerStackView = [[UIStackView alloc] init];
     _containerStackView.isAccessibilityElement = NO;
     _containerStackView.axis = UILayoutConstraintAxisHorizontal;
     _containerStackView.alignment = UIStackViewAlignmentCenter;
     _containerStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    [self addSubview:_containerStackView];
-    AddSameConstraints(self, _containerStackView);
+    [_outerStackView addArrangedSubview:_containerStackView];
+    [_containerStackView.heightAnchor
+        constraintEqualToAnchor:_outerStackView.heightAnchor]
+        .active = YES;
+
     _placeholderViewWrapper = [[UIView alloc] init];
     _placeholderViewWrapper.translatesAutoresizingMaskIntoConstraints = NO;
     [_containerStackView addArrangedSubview:_placeholderViewWrapper];
@@ -109,6 +122,11 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
             constraintEqualToAnchor:_containerStackView.heightAnchor
                            constant:-(kSeparatorVerticalPadding * 2)],
       ]];
+
+      [self setupUnifiedBadgeBackground];
+      [self setupTapOverlay];
+      [self updateBackgroundVisibility];
+      [self updateTapOverlayButtonVisibility];
     }
   }
 
@@ -120,19 +138,21 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
 - (NSArray*)accessibilityElements {
   NSMutableArray* accessibleElements = [[NSMutableArray alloc] init];
 
+  if (self.incognitoBadgeView && !self.incognitoBadgeView.hidden) {
+    [accessibleElements addObject:self.incognitoBadgeView];
+  }
+
   if (IsProactiveSuggestionsFrameworkEnabled() && _tapOverlayButton &&
       !_tapOverlayButton.hidden) {
-    [accessibleElements addObject:_tapOverlayButton];
+    if (_tapOverlayButton.alpha > 0) {
+      [accessibleElements addObject:_tapOverlayButton];
+    }
     return accessibleElements;
   }
 
   if (self.contextualPanelEntrypointView &&
       !self.contextualPanelEntrypointView.hidden) {
     [accessibleElements addObject:self.contextualPanelEntrypointView];
-  }
-
-  if (self.incognitoBadgeView && !self.incognitoBadgeView.hidden) {
-    [accessibleElements addObject:self.incognitoBadgeView];
   }
 
   if (self.badgeView && !self.badgeView.hidden) {
@@ -218,12 +238,12 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
   _incognitoBadgeView = incognitoBadgeView;
   _incognitoBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
   _incognitoBadgeView.isAccessibilityElement = NO;
-  [_containerStackView insertArrangedSubview:_incognitoBadgeView atIndex:0];
+  [_outerStackView insertArrangedSubview:_incognitoBadgeView atIndex:0];
   SetViewHiddenIfNecessary(_incognitoBadgeView, YES);
 
   [NSLayoutConstraint activateConstraints:@[
     [_incognitoBadgeView.heightAnchor
-        constraintEqualToAnchor:_containerStackView.heightAnchor],
+        constraintEqualToAnchor:_outerStackView.heightAnchor],
   ]];
 }
 
@@ -271,9 +291,9 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
   _readerModeChipView.translatesAutoresizingMaskIntoConstraints = NO;
   _readerModeChipView.isAccessibilityElement = NO;
   SetViewHiddenIfNecessary(_readerModeChipView, YES);
-  // Reading Mode chip should be shown to the right of the incognito badge
-  // view.
-  int index = _incognitoBadgeView ? 1 : 0;
+  // Reading Mode chip should be shown to the right of
+  // `_contextualPanelEntrypointView` if present.
+  int index = _contextualPanelEntrypointView ? 1 : 0;
   [_containerStackView insertArrangedSubview:_readerModeChipView atIndex:index];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -309,30 +329,10 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
   [self updateViewsVisibility];
 }
 
-- (void)setIncognito:(BOOL)incognito {
-  _incognito = incognito;
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
-    if (!incognito || IsChromeNextIaEnabled()) {
-      if (!_badgeBackgroundView) {
-        [self setupUnifiedBadgeBackground];
-      }
-      _containerStackView.userInteractionEnabled = NO;
-      if (!_tapOverlayButton) {
-        [self setupTapOverlay];
-      }
-      _tapOverlayButton.hidden = NO;
-    } else {
-      _containerStackView.userInteractionEnabled = YES;
-      if (_tapOverlayButton) {
-        _tapOverlayButton.hidden = YES;
-      }
-      if (_badgeBackgroundView) {
-        _badgeBackgroundView.hidden = YES;
-      }
-      self.tintColor = nil;
-    }
-    [self updateBackgroundVisibility];
-  }
+- (void)updateForFullscreenAlpha:(CGFloat)alpha {
+  _containerStackView.alpha = alpha;
+  _badgeBackgroundView.alpha = alpha;
+  _tapOverlayButton.alpha = alpha;
 }
 
 #pragma mark - private
@@ -351,10 +351,9 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
   // visibility of other badges.
   incognitoBadgeViewShouldBeVisibleFinal = _incognitoBadgeViewShouldBeVisible;
   if (IsProactiveSuggestionsFrameworkEnabled()) {
-    // When framework enabled, reader mode chip visibility follows desired state
-    // directly.
-    readerModeChipShouldBeVisibleFinal = _readerModeChipShouldBeVisible &&
-                                         _incognito && !IsChromeNextIaEnabled();
+    // When framework is enabled, Reader mode uses the badge view instead of
+    // the standalone Reader mode chip.
+    readerModeChipShouldBeVisibleFinal = NO;
   } else {
     // The Reader mode chip (which wants to be visible when Reader mode is
     // active) should not be visible if the contextual panel is currently
@@ -466,11 +465,6 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
     [self updateTapOverlayButtonVisibility];
   }
 
-  if (IsProactiveSuggestionsFrameworkEnabled() && _incognito &&
-      !IsChromeNextIaEnabled()) {
-    _containerStackView.userInteractionEnabled = YES;
-  }
-
   // This is the only place where badges appear and disappear, and therefore the
   // only place where this container changes the width it needs. The setters
   // installing the badge views do not need to notify, as views are installed
@@ -497,7 +491,7 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
   // TODO(crbug.com/448422022): Remove overlay when migrating to
   // LocationBarBadgeViewController.
   [self addSubview:_tapOverlayButton];
-  AddSameConstraints(self, _tapOverlayButton);
+  AddSameConstraints(_containerStackView, _tapOverlayButton);
 }
 
 // Handles tap events on the overlay button and shows the page action menu.
@@ -530,17 +524,17 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
 
   [NSLayoutConstraint activateConstraints:@[
     [_badgeBackgroundView.leadingAnchor
-        constraintEqualToAnchor:self.leadingAnchor
+        constraintEqualToAnchor:_containerStackView.leadingAnchor
                        constant:kBackgroundHorizontalInset],
     [_badgeBackgroundView.trailingAnchor
-        constraintEqualToAnchor:self.trailingAnchor
+        constraintEqualToAnchor:_containerStackView.trailingAnchor
                        constant:-kBackgroundHorizontalInset],
 
     [_badgeBackgroundView.heightAnchor
-        constraintEqualToAnchor:self.heightAnchor
+        constraintEqualToAnchor:_containerStackView.heightAnchor
                      multiplier:kBackgroundHeightMultiplier],
     [_badgeBackgroundView.centerYAnchor
-        constraintEqualToAnchor:self.centerYAnchor],
+        constraintEqualToAnchor:_containerStackView.centerYAnchor],
   ]];
 }
 
@@ -561,12 +555,12 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
     }
   } else {
     if (hasVisibleBadges) {
-      self.tintColor = [UIColor colorNamed:kSolidWhiteColor];
+      _containerStackView.tintColor = [UIColor colorNamed:kSolidWhiteColor];
 
       _badgeBackgroundView.layer.cornerRadius =
           _badgeBackgroundView.bounds.size.height / 2.0;
     } else {
-      self.tintColor = nil;
+      _containerStackView.tintColor = nil;
     }
   }
 }

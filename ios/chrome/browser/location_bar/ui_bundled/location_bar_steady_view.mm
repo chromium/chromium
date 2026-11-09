@@ -864,7 +864,7 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
   }
 }
 
-// Propagates the incognito state to the badges container view.
+// Updates the incognito state and constraints.
 - (void)setIncognito:(BOOL)incognito {
   _incognito = incognito;
   if (_incognito && !_incognitoImageView) {
@@ -886,7 +886,6 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
     _incognitoImageView.tintColor = self.colorScheme.fontColor;
   }
 
-  self.badgesContainerView.incognito = incognito;
   [self updateContainerConstraints];
 }
 

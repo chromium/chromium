@@ -39,14 +39,16 @@
 @property(nonatomic, assign) LocationBarPlaceholderType placeholderType;
 // The injected view displaying the Reading mode chip.
 @property(nonatomic, strong) UIView* readerModeChipView;
-// Whether the browser is in incognito mode.
-@property(nonatomic, assign, getter=isIncognito) BOOL incognito;
 // Transparent overlay button for unified badge interaction.
 @property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
 // Delegate notified when the visibility of the badges changed, as this changes
 // the width needed by the location bar.
 @property(nonatomic, weak) id<LocationBarContentSizeDelegate>
     contentSizeDelegate;
+
+// Updates the alpha applied to non-Incognito badge views during fullscreen
+// transitions, leaving `incognitoBadgeView` untouched.
+- (void)updateForFullscreenAlpha:(CGFloat)alpha;
 
 @end
 

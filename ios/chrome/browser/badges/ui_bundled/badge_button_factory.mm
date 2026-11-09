@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -209,8 +208,7 @@ const CGFloat kInfobarSymbolPointSizeModifier = 4;
 
 // Returns the size of the infobar symbol image.
 - (CGFloat)infoBarSymbolPointSize {
-  if (IsProactiveSuggestionsFrameworkEnabled() &&
-      (!self.incognito || IsChromeNextIaEnabled())) {
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
     return kInfobarSymbolPointSize - kInfobarSymbolPointSizeModifier;
   }
 

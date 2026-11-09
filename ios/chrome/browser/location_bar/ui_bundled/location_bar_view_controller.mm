@@ -516,9 +516,9 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
   self.locationBarSteadyView.trailingButton.alpha = alphaValue;
   self.locationBarSteadyView.badgesContainerView.placeholderView.alpha =
       alphaValue;
-  if (IsProactiveSuggestionsFrameworkEnabled() &&
-      (!self.incognito || IsChromeNextIaEnabled())) {
-    self.locationBarSteadyView.badgesContainerView.alpha = alphaValue;
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    [self.locationBarSteadyView.badgesContainerView
+        updateForFullscreenAlpha:alphaValue];
   }
   BOOL badgeViewShouldCollapse = progress <= kFullscreenProgressThreshold;
   [self.locationBarSteadyView

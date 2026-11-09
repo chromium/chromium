@@ -261,6 +261,7 @@ source_set("unit_tests") {
     "location_bar_steady_view_unittest.mm",
   ]
   deps = [
+    ":badges",
     ":location_bar_model_delegate",
     ":ui_bundled",
     "//base",

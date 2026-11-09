@@ -1039,7 +1039,6 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   // Create button factory that wil be used by the ViewController to get
   // BadgeButtons for a BadgeType.
   BadgeButtonFactory* buttonFactory = [[BadgeButtonFactory alloc] init];
-  buttonFactory.incognito = isIncognito;
   self.badgeViewController =
       [[BadgeViewController alloc] initWithButtonFactory:buttonFactory];
   self.badgeViewController.layoutGuideCenter =

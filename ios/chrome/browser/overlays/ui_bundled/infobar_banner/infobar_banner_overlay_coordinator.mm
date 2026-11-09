@@ -91,7 +91,6 @@
          presentsModal:config->has_badge()
                   type:config->infobar_type()];
   mediator.consumer = self.bannerViewController;
-  mediator.incognito = self.isOffTheRecord;
   [mediator
       configureDependenciesWithDispatcher:self.browser->GetCommandDispatcher()];
   mediator.engagementTracker =

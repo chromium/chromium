@@ -64,8 +64,7 @@
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
   if (IsDomainLevelSitePermissionsEnabled()) {
-    if (IsPageActionMenuEnabled() &&
-        (!self.incognito || IsChromeNextIaEnabled())) {
+    if (IsPageActionMenuEnabled()) {
       id<PageActionMenuCommands> pageActionMenuHandler =
           self.pageActionMenuHandler;
       [self dismissOverlay];

@@ -9,6 +9,10 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -240,4 +244,41 @@ TEST_F(LocationBarSteadyViewTest,
       view_);
   EXPECT_NSEQ(NSStringFromCGRect(view_.locationButton.accessibilityFrame),
               NSStringFromCGRect(expected_rtl_frame));
+}
+
+// Tests that the incognito badge stays outside the Proactive Suggestions
+// Framework container and tap overlay.
+TEST_F(LocationBarSteadyViewTest,
+       IncognitoBadgeOutsideProactiveSuggestionsContainer) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kProactiveSuggestionsFramework}, {kChromeNextIa});
+
+  LocationBarBadgesContainerView* container =
+      [[LocationBarBadgesContainerView alloc] init];
+  container.incognitoBadgeView = [[UIView alloc] init];
+  container.badgeView = [[UIView alloc] init];
+
+  [container setIncognitoBadgeViewHidden:NO];
+  [container setBadgeViewHidden:YES];
+  EXPECT_NE(container.incognitoBadgeView.superview,
+            container.badgeView.superview);
+  EXPECT_NSEQ(container.accessibilityElements,
+              @[ container.incognitoBadgeView ]);
+
+  [container setBadgeViewHidden:NO];
+  EXPECT_EQ(2u, container.accessibilityElements.count);
+  EXPECT_EQ(container.incognitoBadgeView,
+            container.accessibilityElements.firstObject);
+  EXPECT_NE(container.badgeView, container.accessibilityElements[1]);
+
+  [container updateForFullscreenAlpha:0.0];
+  EXPECT_EQ(1.0, container.incognitoBadgeView.superview.alpha);
+  EXPECT_EQ(0.0, container.badgeView.superview.alpha);
+  EXPECT_NSEQ(container.accessibilityElements,
+              @[ container.incognitoBadgeView ]);
+
+  [container updateForFullscreenAlpha:1.0];
+  EXPECT_EQ(1.0, container.badgeView.superview.alpha);
+  EXPECT_EQ(2u, container.accessibilityElements.count);
 }
