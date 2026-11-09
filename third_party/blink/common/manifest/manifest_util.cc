@@ -5,10 +5,12 @@
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "net/base/mime_util.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -182,6 +184,21 @@ std::optional<mojom::ManifestLaunchHandler::ClientMode> ClientModeFromString(
     return ClientMode::kFocusExisting;
   }
   return std::nullopt;
+}
+
+bool IsValidFileHandlerMimeType(std::string_view mime_type) {
+  std::string top_level_mime_type;
+  std::string subtype;
+  // `net::ParseMimeTypeWithoutParameter()` trims leading and trailing ASCII
+  // whitespace before splitting on '/', so also verify that the parsed
+  // `top_level_mime_type` and `subtype` (plus the '/' separator) account for
+  // the entire input `mime_type` with no surrounding whitespace.
+  return net::ParseMimeTypeWithoutParameter(mime_type, &top_level_mime_type,
+                                            &subtype) &&
+         top_level_mime_type.size() + 1 + subtype.size() == mime_type.size() &&
+         net::IsValidTopLevelMimeType(top_level_mime_type) &&
+         !base::StartsWith(top_level_mime_type, "x-",
+                           base::CompareCase::INSENSITIVE_ASCII);
 }
 
 }  // namespace blink

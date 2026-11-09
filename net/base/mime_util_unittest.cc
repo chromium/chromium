@@ -567,10 +567,18 @@ TEST(MimeUtilTest, TestIsValidTopLevelMimeType) {
 
   EXPECT_TRUE(IsValidTopLevelMimeType("x-video"));
   EXPECT_TRUE(IsValidTopLevelMimeType("X-video"));
+  EXPECT_TRUE(IsValidTopLevelMimeType("x-custom"));
+  EXPECT_TRUE(IsValidTopLevelMimeType("X-Custom"));
 
   EXPECT_FALSE(IsValidTopLevelMimeType("x-"));
   EXPECT_FALSE(IsValidTopLevelMimeType("x-scheme-handler"));
   EXPECT_FALSE(IsValidTopLevelMimeType("X-Scheme-Handler"));
+  EXPECT_FALSE(IsValidTopLevelMimeType("x-content"));
+  EXPECT_FALSE(IsValidTopLevelMimeType("X-Content"));
+  EXPECT_FALSE(IsValidTopLevelMimeType("x-directory"));
+  EXPECT_FALSE(IsValidTopLevelMimeType("X-Directory"));
+  EXPECT_FALSE(IsValidTopLevelMimeType("x-special"));
+  EXPECT_FALSE(IsValidTopLevelMimeType("X-Special"));
 }
 
 TEST(MimeUtilTest, TestGetExtensionsForMimeType) {

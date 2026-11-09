@@ -846,6 +846,45 @@ TEST(ShellIntegrationTest,
     }
     {
       apps::FileHandler::AcceptEntry accept_entry;
+      // FreeDesktop pseudo-MIME types ("x-content/*", "x-directory/*",
+      // "x-special/*") and other "x-*" or non-IANA top-level MIME types must
+      // also be ignored.
+      accept_entry.mime_type = "x-content/image-dcf";
+      accept_entry.file_extensions.insert(".dcf");
+      file_handler.accept.push_back(accept_entry);
+    }
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      accept_entry.mime_type = "x-directory/normal";
+      accept_entry.file_extensions.insert(".dir");
+      file_handler.accept.push_back(accept_entry);
+    }
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      accept_entry.mime_type = "X-Directory/normal";
+      accept_entry.file_extensions.insert(".dir2");
+      file_handler.accept.push_back(accept_entry);
+    }
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      accept_entry.mime_type = "x-special/socket";
+      accept_entry.file_extensions.insert(".sock");
+      file_handler.accept.push_back(accept_entry);
+    }
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      accept_entry.mime_type = "x-custom/foo";
+      accept_entry.file_extensions.insert(".custom");
+      file_handler.accept.push_back(accept_entry);
+    }
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      accept_entry.mime_type = "inode/directory";
+      accept_entry.file_extensions.insert(".inode");
+      file_handler.accept.push_back(accept_entry);
+    }
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
       accept_entry.mime_type = "text/plain";
       accept_entry.file_extensions.insert(".txt");
       file_handler.accept.push_back(accept_entry);

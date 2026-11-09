@@ -58,6 +58,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/libxml/chromium/xml_writer.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1020,14 +1021,12 @@ std::string GetMimeTypesRegistrationFileContents(
 
   for (const auto& file_handler : file_handlers) {
     for (const auto& accept_entry : file_handler.accept) {
-      // FreeDesktop URL scheme associations use "x-scheme-handler/*"
-      // pseudo-MIME types in .desktop entries, which belong to protocol
-      // handlers rather than file handlers. Skip them here so they are
-      // filtered out from shared MIME-info registration XML files.
-      if (base::EqualsCaseInsensitiveASCII(accept_entry.mime_type,
-                                           "x-scheme-handler") ||
-          base::StartsWith(accept_entry.mime_type, "x-scheme-handler/",
-                           base::CompareCase::INSENSITIVE_ASCII)) {
+      // Only register valid standard IANA top-level MIME types. FreeDesktop
+      // pseudo-MIME types (such as "x-scheme-handler/*", "x-content/*",
+      // "x-directory/*", and "x-special/*") and other "x-*" top-level types
+      // are skipped here so they are filtered out from shared MIME-info
+      // registration XML files.
+      if (!blink::IsValidFileHandlerMimeType(accept_entry.mime_type)) {
         continue;
       }
       writer.StartElement("mime-type");

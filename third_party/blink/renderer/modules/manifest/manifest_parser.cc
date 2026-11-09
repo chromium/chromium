@@ -1734,12 +1734,10 @@ HashMap<String, Vector<String>> ManifestParser::ParseFileHandlerAccept(
   for (wtf_size_t i = 0; i < accept->size(); ++i) {
     JSONObject::Entry entry = accept->at(i);
 
-    // Validate the MIME type.
+    // Validate the MIME type. Only standard IANA top-level media types (not
+    // custom "x-*" top-level types) are permitted for file handlers.
     String& mimetype = entry.first;
-    std::string top_level_mime_type;
-    if (!net::ParseMimeTypeWithoutParameter(mimetype.Utf8(),
-                                            &top_level_mime_type, nullptr) ||
-        !net::IsValidTopLevelMimeType(top_level_mime_type)) {
+    if (!IsValidFileHandlerMimeType(mimetype.Utf8())) {
       AddErrorInfo(StrCat({"invalid MIME type: ", mimetype}));
       continue;
     }

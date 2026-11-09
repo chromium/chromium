@@ -227,10 +227,12 @@ MIME info database:
    immediately in the user's file manager.
 
 > **Note on FreeDesktop Protocol vs. File Handlers:** Under FreeDesktop
-> specifications, URL scheme associations are stored in `.desktop` entries using
-> pseudo-MIME types prefixed with `x-scheme-handler/` (e.g.
-> `x-scheme-handler/mailto`). These are exclusively protocol handlers and are
-> filtered out during file handler registration, so they never appear in
-> generated shared MIME-info XML files or file handler `.desktop` shortcuts.
-> Legitimate `x-scheme-handler/*` associations are populated solely from
-> validated `protocol_handlers`.
+> specifications, URL scheme associations and non-file OS actions (such as
+> removable media autorun or directory handlers) are stored in `.desktop`
+> entries using `x-*` top-level pseudo-MIME types (e.g.
+> `x-scheme-handler/mailto`, `x-content/*`, `x-directory/*`, `x-special/*`). All
+> `x-*` top-level MIME types are rejected in `file_handlers` and filtered out
+> during file handler registration, so they never appear in generated shared
+> MIME-info XML files or file handler `.desktop` shortcuts. Legitimate
+> `x-scheme-handler/*` associations are populated solely from validated
+> `protocol_handlers`.

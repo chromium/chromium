@@ -17,6 +17,18 @@
         "x-scheme-handler/mailto": [
           ".eml"
         ],
+        "x-content/image-dcf": [
+          ".dcf"
+        ],
+        "x-directory/normal": [
+          ".dir"
+        ],
+        "x-special/socket": [
+          ".sock"
+        ],
+        "x-custom/foo": [
+          ".custom"
+        ],
         "application/foo": [
           ".foo"
         ]

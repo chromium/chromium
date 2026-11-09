@@ -627,14 +627,20 @@ TEST_P(WebAppShortcutLinuxTest,
   locations.in_startup = true;
   locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
 
-  // Add file handler MIME types, including an unexpected x-scheme-handler
-  // entry.
+  // Add file handler MIME types, including unexpected FreeDesktop pseudo-MIME
+  // and non-standard top-level MIME types.
   shortcut_info->file_handler_mime_types.emplace("image/png");
   shortcut_info->file_handler_mime_types.emplace("text/plain");
   shortcut_info->file_handler_mime_types.emplace("x-scheme-handler/mailto");
   shortcut_info->file_handler_mime_types.emplace("x-scheme-handler");
   shortcut_info->file_handler_mime_types.emplace("X-Scheme-Handler/custom");
   shortcut_info->file_handler_mime_types.emplace("X-Scheme-Handler");
+  shortcut_info->file_handler_mime_types.emplace("x-content/image-dcf");
+  shortcut_info->file_handler_mime_types.emplace("x-directory/normal");
+  shortcut_info->file_handler_mime_types.emplace("X-Directory/normal");
+  shortcut_info->file_handler_mime_types.emplace("x-special/socket");
+  shortcut_info->file_handler_mime_types.emplace("x-custom/foo");
+  shortcut_info->file_handler_mime_types.emplace("inode/directory");
 
   // Add protocol handlers.
   shortcut_info->protocol_handlers.emplace("web+testing");

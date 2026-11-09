@@ -62,6 +62,7 @@
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 #include "url/gurl.h"
@@ -786,6 +787,13 @@ std::unique_ptr<WebApp> ParseWebAppProto(
                     << file_handler.action;
         return nullptr;
       }
+      // System Web Apps on ChromeOS (e.g. Files app) construct extension-only
+      // file handlers in C++ with an empty `mime_type` (`""`), so only validate
+      // non-empty MIME types when deserializing from the database.
+      if (!accept_entry_proto.mimetype().empty() &&
+          !blink::IsValidFileHandlerMimeType(accept_entry_proto.mimetype())) {
+        continue;
+      }
       apps::FileHandler::AcceptEntry accept_entry;
       accept_entry.mime_type = accept_entry_proto.mimetype();
       for (const auto& file_extension : accept_entry_proto.file_extensions()) {
@@ -798,6 +806,10 @@ std::unique_ptr<WebApp> ParseWebAppProto(
         accept_entry.file_extensions.insert(file_extension);
       }
       file_handler.accept.push_back(std::move(accept_entry));
+    }
+
+    if (file_handler_proto.accept_size() > 0 && file_handler.accept.empty()) {
+      continue;
     }
 
     file_handlers.push_back(std::move(file_handler));

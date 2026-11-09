@@ -1525,6 +1525,17 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/common/manifest/',
+        ],
+        'allowed': [
+            'base::CompareCase',
+            'base::StartsWith',
+            'net::IsValidTopLevelMimeType',
+            'net::ParseMimeTypeWithoutParameter',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/public/common/safe_url_pattern.h',
             'third_party/blink/public/common/safe_url_pattern_mojom_traits.h',
         ],

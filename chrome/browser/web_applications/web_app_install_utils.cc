@@ -59,9 +59,9 @@
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "net/base/mime_util.h"
 #include "net/http/http_util.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -327,10 +327,7 @@ void PopulateFileHandlerInfoFromManifest(
 
     for (const auto& it : manifest_file_handler.accept) {
       std::string mime_type = base::UTF16ToUTF8(it.first);
-      std::string top_level_mime_type;
-      if (!net::ParseMimeTypeWithoutParameter(mime_type, &top_level_mime_type,
-                                              nullptr) ||
-          !net::IsValidTopLevelMimeType(top_level_mime_type)) {
+      if (!blink::IsValidFileHandlerMimeType(mime_type)) {
         continue;
       }
       apps::FileHandler::AcceptEntry web_app_accept_entry;

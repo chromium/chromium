@@ -195,8 +195,11 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlerRegistrationLinuxBrowserTest,
   // and is completely absent from the registered file contents.
   EXPECT_EQ(xdg_commands_called[0].file_contents, expected_file_contents);
   EXPECT_EQ(xdg_commands_called[0].file_name, expected_filename);
-  EXPECT_THAT(xdg_commands_called[0].file_contents,
-              testing::Not(testing::HasSubstr("x-scheme-handler")));
+  for (const char* excluded_type : {"x-scheme-handler", "x-content",
+                                    "x-directory", "x-special", "x-custom"}) {
+    EXPECT_THAT(xdg_commands_called[0].file_contents,
+                testing::Not(testing::HasSubstr(excluded_type)));
+  }
   SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(
       UpdateMimeInfoDatabaseOnLinuxCallback());
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,

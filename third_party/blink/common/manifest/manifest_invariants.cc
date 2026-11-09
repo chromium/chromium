@@ -10,10 +10,10 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "net/base/mime_util.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/utf16.h"
@@ -142,12 +142,7 @@ std::optional<ManifestInvariantError> Manifest::ValidateInvariants() const {
       return ManifestInvariantError::kFileHandlerActionCrossOrigin;
     }
     for (const auto& [mime_type, extensions] : file_handler.accept) {
-      std::string mime_type_utf8 = base::UTF16ToUTF8(mime_type);
-      std::string top_level_mime_type;
-      if (!net::ParseMimeTypeWithoutParameter(mime_type_utf8,
-                                              &top_level_mime_type,
-                                              /*subtype=*/nullptr) ||
-          !net::IsValidTopLevelMimeType(top_level_mime_type)) {
+      if (!IsValidFileHandlerMimeType(base::UTF16ToUTF8(mime_type))) {
         return ManifestInvariantError::kFileHandlerInvalidMimeType;
       }
       if (extensions.empty()) {

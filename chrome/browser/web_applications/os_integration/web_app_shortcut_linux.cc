@@ -55,6 +55,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_util.h"
@@ -1083,15 +1084,15 @@ void CreateDesktopShortcut(const ShortcutInfo& shortcut_info,
   }
 
   std::vector<std::string> mime_types;
-  // Filter out any "x-scheme-handler/*" pseudo-MIME types from file handlers.
-  // In FreeDesktop .desktop files, "x-scheme-handler/*" entries associate URL
-  // schemes and must only originate from validated protocol_handlers below.
+  // Filter out invalid and "x-*" top-level pseudo-MIME types (such as
+  // "x-scheme-handler/*", "x-content/*", "x-directory/*", and "x-special/*")
+  // from file handlers. In FreeDesktop .desktop files, "x-scheme-handler/*"
+  // entries associate URL schemes and must only originate from validated
+  // protocol_handlers below, and other "x-*" pseudo-MIME types associate
+  // non-file OS actions (e.g. removable media autorun or directory handlers).
   for (const auto& file_handler_mime_type :
        shortcut_info.file_handler_mime_types) {
-    if (!base::EqualsCaseInsensitiveASCII(file_handler_mime_type,
-                                          "x-scheme-handler") &&
-        !base::StartsWith(file_handler_mime_type, "x-scheme-handler/",
-                          base::CompareCase::INSENSITIVE_ASCII)) {
+    if (blink::IsValidFileHandlerMimeType(file_handler_mime_type)) {
       mime_types.push_back(file_handler_mime_type);
     }
   }

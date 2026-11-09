@@ -138,4 +138,26 @@ TEST(ManifestUtilTest, IsDefaultManifest) {
       IsDefaultManifest(*default_manifest, GURL("data:text/html,Hello")));
 }
 
+TEST(ManifestUtilTest, IsValidFileHandlerMimeType) {
+  EXPECT_TRUE(IsValidFileHandlerMimeType("text/plain"));
+  EXPECT_TRUE(IsValidFileHandlerMimeType("image/png"));
+  EXPECT_TRUE(IsValidFileHandlerMimeType("application/x-custom"));
+  EXPECT_TRUE(IsValidFileHandlerMimeType("TEXT/PLAIN"));
+
+  EXPECT_FALSE(IsValidFileHandlerMimeType(""));
+  EXPECT_FALSE(IsValidFileHandlerMimeType("text"));
+  EXPECT_FALSE(IsValidFileHandlerMimeType(" text/plain"));
+  EXPECT_FALSE(IsValidFileHandlerMimeType("text/plain "));
+  EXPECT_FALSE(IsValidFileHandlerMimeType("text/plain\n"));
+  EXPECT_FALSE(IsValidFileHandlerMimeType("text/plain; charset=utf-8"));
+  EXPECT_FALSE(IsValidFileHandlerMimeType("invalid/type"));
+  EXPECT_FALSE(IsValidFileHandlerMimeType("x-custom/foo"));
+  EXPECT_FALSE(IsValidFileHandlerMimeType("X-Custom/foo"));
+  EXPECT_FALSE(IsValidFileHandlerMimeType("x-scheme-handler/http"));
+  EXPECT_FALSE(IsValidFileHandlerMimeType("x-content/unix-software"));
+  EXPECT_FALSE(IsValidFileHandlerMimeType("x-directory/normal"));
+  EXPECT_FALSE(IsValidFileHandlerMimeType("x-special/device-block"));
+  EXPECT_FALSE(IsValidFileHandlerMimeType("inode/directory"));
+}
+
 }  // namespace blink

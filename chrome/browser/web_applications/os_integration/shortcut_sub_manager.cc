@@ -198,32 +198,18 @@ void ShortcutSubManager::Execute(
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-  // Protocol handler update detection. Shortcuts need to be updated in this
-  // case on Linux & Mac because the shortcut itself includes the protocol
-  // handling metadata.
+  // Protocol and file handler update detection. Shortcuts need to be updated in
+  // these cases on Linux & Mac because the shortcut itself includes the
+  // protocol and file handling metadata.
   if (desired_state.has_protocols_handled() !=
-      current_state.has_protocols_handled()) {
-    std::move(do_update).Run();
-    return;
-  }
-  if (desired_state.has_protocols_handled() &&
-      current_state.has_protocols_handled() &&
-      desired_state.protocols_handled() != current_state.protocols_handled()) {
-    std::move(do_update).Run();
-    return;
-  }
-#endif
-
-#if BUILDFLAG(IS_MAC)
-  // Protocol handler update detection. Shortcuts need to be updated in this
-  // case on Mac because the shortcut itself includes the protocol
-  // handling metadata.
-  if (desired_state.has_file_handling() != current_state.has_file_handling()) {
-    std::move(do_update).Run();
-    return;
-  }
-  if (desired_state.has_file_handling() && current_state.has_file_handling() &&
-      desired_state.file_handling() != current_state.file_handling()) {
+          current_state.has_protocols_handled() ||
+      (desired_state.has_protocols_handled() &&
+       current_state.has_protocols_handled() &&
+       desired_state.protocols_handled() !=
+           current_state.protocols_handled()) ||
+      desired_state.has_file_handling() != current_state.has_file_handling() ||
+      (desired_state.has_file_handling() && current_state.has_file_handling() &&
+       desired_state.file_handling() != current_state.file_handling())) {
     std::move(do_update).Run();
     return;
   }

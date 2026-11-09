@@ -666,9 +666,12 @@ bool MimeUtil::IsValidTopLevelMimeType(std::string_view type_string) const {
     }
   }
 
-  // "x-scheme-handler" is a pseudo-MIME type (used e.g. for URL scheme
-  // associations), not an IANA media type.
-  if (lower_type == "x-scheme-handler") {
+  // FreeDesktop pseudo-MIME types (such as "x-scheme-handler", "x-content",
+  // "x-directory", and "x-special") are used for non-file OS associations
+  // (e.g. URL schemes, removable media autorun, directory opening, or special
+  // device nodes), not IANA media types.
+  if (lower_type == "x-scheme-handler" || lower_type == "x-content" ||
+      lower_type == "x-directory" || lower_type == "x-special") {
     return false;
   }
 

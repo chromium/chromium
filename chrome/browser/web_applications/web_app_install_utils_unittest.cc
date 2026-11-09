@@ -398,12 +398,19 @@ TEST_F(FileHandlersFromManifestTest,
 TEST_F(FileHandlersFromManifestTest, InvalidMimeTypesAndExtensions) {
   std::vector<blink::Manifest::FileHandler> manifest_file_handlers;
 
-  // Invalid MIME type: x-scheme-handler/mailto
+  // Invalid MIME types: pseudo-MIME and non-IANA top-level types
   {
     blink::Manifest::FileHandler file_handler;
     file_handler.action = MakeActionUrl(0);
     file_handler.name = u"Invalid1";
     file_handler.accept[u"x-scheme-handler/mailto"] = {u".eml"};
+    file_handler.accept[u"x-content/image-dcf"] = {u".dcf"};
+    file_handler.accept[u"x-directory/normal"] = {u".dir"};
+    file_handler.accept[u"X-Directory/normal"] = {u".dir2"};
+    file_handler.accept[u"x-special/socket"] = {u".sock"};
+    file_handler.accept[u"x-custom/foo"] = {u".custom"};
+    file_handler.accept[u"X-Custom/foo"] = {u".custom2"};
+    file_handler.accept[u"inode/directory"] = {u".inode"};
     manifest_file_handlers.push_back(std::move(file_handler));
   }
 

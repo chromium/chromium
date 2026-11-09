@@ -320,6 +320,57 @@ TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_InvalidFileHandler) {
   // Missing mimetype
   accept->add_file_extensions(".txt");
   EXPECT_THAT(ParseWebAppProto(proto4, app_id4), IsNull());
+
+  // Invalid/pseudo-MIME types in accept entries are filtered out when loading
+  // from disk while retaining valid accept entries.
+  proto::WebApp proto5;
+  webapps::AppId app_id5;
+  std::tie(proto5, app_id5) =
+      CreateWebAppProtoForTesting("Test App 5", GURL("https://example5.com/"));
+  auto* handler5 = proto5.add_file_handlers();
+  handler5->set_action("https://example5.com/handle");
+  handler5->set_launch_type(
+      proto::WebAppFileHandler::LAUNCH_TYPE_SINGLE_CLIENT);
+  for (const char* invalid_mime :
+       {"x-scheme-handler/mailto", "x-content/image-dcf", "x-directory/normal",
+        "x-special/socket", "x-custom/foo"}) {
+    auto* invalid_accept = handler5->add_accept();
+    invalid_accept->set_mimetype(invalid_mime);
+    invalid_accept->add_file_extensions(".bad");
+  }
+  auto* valid_accept = handler5->add_accept();
+  valid_accept->set_mimetype("application/foo");
+  valid_accept->add_file_extensions(".foo");
+
+  // A file handler whose accept entries are all invalid is omitted entirely.
+  auto* handler5_invalid_only = proto5.add_file_handlers();
+  handler5_invalid_only->set_action("https://example5.com/handle_invalid");
+  handler5_invalid_only->set_launch_type(
+      proto::WebAppFileHandler::LAUNCH_TYPE_SINGLE_CLIENT);
+  auto* invalid_only_accept = handler5_invalid_only->add_accept();
+  invalid_only_accept->set_mimetype("x-scheme-handler/mailto");
+  invalid_only_accept->add_file_extensions(".bad");
+
+  // An extension-only file handler with an empty mimetype (used by ChromeOS
+  // System Web Apps like the Files app) is preserved.
+  auto* handler5_extension_only = proto5.add_file_handlers();
+  handler5_extension_only->set_action("https://example5.com/mount_archive");
+  handler5_extension_only->set_launch_type(
+      proto::WebAppFileHandler::LAUNCH_TYPE_SINGLE_CLIENT);
+  auto* extension_only_accept = handler5_extension_only->add_accept();
+  extension_only_accept->set_mimetype("");
+  extension_only_accept->add_file_extensions(".zip");
+
+  std::unique_ptr<WebApp> parsed_app5 = ParseWebAppProto(proto5, app_id5);
+  ASSERT_NE(parsed_app5, nullptr);
+  ASSERT_EQ(parsed_app5->file_handlers().size(), 2u);
+  ASSERT_EQ(parsed_app5->file_handlers()[0].accept.size(), 1u);
+  EXPECT_EQ(parsed_app5->file_handlers()[0].accept[0].mime_type,
+            "application/foo");
+  ASSERT_EQ(parsed_app5->file_handlers()[1].accept.size(), 1u);
+  EXPECT_EQ(parsed_app5->file_handlers()[1].accept[0].mime_type, "");
+  EXPECT_THAT(parsed_app5->file_handlers()[1].accept[0].file_extensions,
+              testing::ElementsAre(".zip"));
 }
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_InvalidShareTarget) {

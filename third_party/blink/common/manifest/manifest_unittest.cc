@@ -346,12 +346,23 @@ TEST_F(ManifestInvariantsTest, Invariant5_FileHandlers) {
               ManifestInvariantError::kFileHandlerActionCrossOrigin);
   }
 
-  // Invalid MIME type
-  {
+  // Invalid MIME types (malformed, FreeDesktop pseudo-MIME, and non-IANA
+  // top-level types)
+  for (const std::u16string_view invalid_mime_type : {
+           u"invalid-mime",
+           u"x-scheme-handler/mailto",
+           u"x-content/image-dcf",
+           u"x-directory/normal",
+           u"x-special/socket",
+           u"x-custom/foo",
+           u"X-Custom/foo",
+           u"inode/directory",
+       }) {
+    SCOPED_TRACE(base::UTF16ToUTF8(invalid_mime_type));
     auto b = CreateValidBuilder();
     Manifest::FileHandler fh;
     fh.action = GURL("https://example.com/open");
-    fh.accept[u"invalid-mime"].push_back(u".txt");
+    fh.accept[std::u16string(invalid_mime_type)].push_back(u".txt");
     b.SetFileHandlers({fh});
     auto result = std::move(b).Build();
     ASSERT_FALSE(result.has_value());

@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -24,7 +26,10 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/sync/base/time.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -581,6 +586,125 @@ TEST_F(ShortcutSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
         fake_os_integration().IsShortcutCreated(profile(), app_id, app_name));
     EXPECT_FALSE(fake_os_integration().IsAppPinnedToTaskbar(app_id));
   }
+}
+
+TEST_F(ShortcutSubManagerExecuteTest,
+       UpdateFileHandlersUpdatesShortcutsOnLinuxAndMac) {
+  apps::FileHandler file_handler;
+  file_handler.action = GURL("https://example.com/path/open-foo");
+  file_handler.display_name = u"Foo opener";
+  apps::FileHandler::AcceptEntry accept_entry;
+  accept_entry.mime_type = "application/foo";
+  accept_entry.file_extensions.insert(".foo");
+  file_handler.accept.push_back(accept_entry);
+
+  OrderedSizeToBitmap icon_map;
+  icon_map[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+
+  std::unique_ptr<WebAppInstallInfo> info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
+  info->title = u"Test App";
+  info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
+  info->icon_bitmaps.any = icon_map;
+  info->trusted_icon_bitmaps.any = icon_map;
+  info->file_handlers.push_back(file_handler);
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_result;
+  fake_provider().scheduler().InstallFromInfoWithParams(
+      std::move(info), /*overwrite_existing_manifest_fields=*/true,
+      webapps::WebappInstallSource::EXTERNAL_POLICY,
+      install_result.GetCallback(), WebAppInstallParams());
+  ASSERT_TRUE(install_result.Wait());
+  EXPECT_EQ(install_result.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kSuccessNewInstall);
+  const webapps::AppId app_id = install_result.Get<webapps::AppId>();
+
+  auto state =
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          app_id);
+  ASSERT_TRUE(state.has_value());
+  ASSERT_TRUE(state->has_file_handling());
+
+  base::HistogramTester histogram_tester;
+
+  // 1. Disallow file handling so `has_file_handling()` changes from true to
+  // false without changing `shortcut()`.
+  {
+    base::test::TestFuture<void> future;
+    fake_provider().scheduler().PersistFileHandlersUserChoice(
+        app_id, /*allowed=*/false, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  state = fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+      app_id);
+  ASSERT_TRUE(state.has_value());
+  EXPECT_FALSE(state->has_file_handling());
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Shortcuts.Update.Result"),
+              testing::ElementsAre(base::Bucket(true, 1)));
+#else
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Shortcuts.Update.Result"),
+              testing::IsEmpty());
+#endif
+
+  // 2. Re-enable file handling so `has_file_handling()` changes from false to
+  // true.
+  {
+    base::test::TestFuture<void> future;
+    fake_provider().scheduler().PersistFileHandlersUserChoice(
+        app_id, /*allowed=*/true, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  state = fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+      app_id);
+  ASSERT_TRUE(state.has_value());
+  EXPECT_TRUE(state->has_file_handling());
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Shortcuts.Update.Result"),
+              testing::ElementsAre(base::Bucket(true, 2)));
+#else
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Shortcuts.Update.Result"),
+              testing::IsEmpty());
+#endif
+
+  // 3. Modify the file handlers in-place so `file_handling()` changes while
+  // both `current_state.has_file_handling()` and
+  // `desired_state.has_file_handling()` are true and `shortcut()` is unchanged.
+  {
+    ScopedRegistryUpdate update =
+        fake_provider().sync_bridge_unsafe().BeginUpdate();
+    WebApp* app_to_update = update->UpdateApp(app_id);
+    ASSERT_NE(app_to_update, nullptr);
+
+    apps::FileHandler updated_handler = file_handler;
+    updated_handler.accept[0].mime_type = "application/bar";
+    updated_handler.accept[0].file_extensions = {".bar"};
+    app_to_update->SetFileHandlers({updated_handler});
+  }
+  test::SynchronizeOsIntegration(profile(), app_id);
+
+  state = fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+      app_id);
+  ASSERT_TRUE(state.has_value());
+  ASSERT_TRUE(state->has_file_handling());
+  ASSERT_EQ(state->file_handling().file_handlers_size(), 1);
+  ASSERT_EQ(state->file_handling().file_handlers(0).accept_size(), 1);
+  EXPECT_EQ(state->file_handling().file_handlers(0).accept(0).mimetype(),
+            "application/bar");
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Shortcuts.Update.Result"),
+              testing::ElementsAre(base::Bucket(true, 3)));
+#else
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Shortcuts.Update.Result"),
+              testing::IsEmpty());
+#endif
 }
 
 }  // namespace
