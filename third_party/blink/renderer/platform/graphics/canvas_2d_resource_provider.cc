@@ -275,10 +275,4 @@ gpu::raster::RasterInterface* Canvas2DResourceProvider::RasterInterface()
   return ContextProviderWrapper()->ContextProvider().RasterInterface();
 }
 
-bool Canvas2DResourceProvider::IsGpuContextLost() const {
-  auto* raster_interface = RasterInterface();
-  return !raster_interface ||
-         raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
-}
-
 }  // namespace blink

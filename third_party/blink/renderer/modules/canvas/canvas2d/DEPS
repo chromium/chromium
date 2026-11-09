@@ -3,6 +3,8 @@ include_rules = [
     "+components/viz/common/gpu/raster_context_provider.h",
     "+components/viz/common/resources/shared_image_format.h",
     "+components/viz/common/resources/shared_image_format_utils.h",
+    "+gpu/GLES2/gl2extchromium.h",
+    "+gpu/command_buffer/client/raster_interface.h",
     "+gpu/command_buffer/common",
     "+gpu/config/gpu_feature_info.h",
     "+gpu/config/gpu_feature_type.h",

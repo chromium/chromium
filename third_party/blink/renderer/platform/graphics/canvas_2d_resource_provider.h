@@ -148,7 +148,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   friend class BaseRenderingContext2D;
 
   void ClearUnusedResources();
-  bool IsGpuContextLost() const;
   gfx::Size Size() const { return image_pool_->GetImageInfo().size; }
 
   void OnResourceRefReturned(

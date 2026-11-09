@@ -45,6 +45,8 @@
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -234,7 +236,7 @@ bool BaseRenderingContext2D::IsBackingValid() const {
       return shared_image_interface_provider_ &&
              shared_image_interface_provider_->SharedImageInterface();
     }
-    return !shared_image_provider_->IsGpuContextLost();
+    return !IsGpuContextLost();
   }
   return surface_ != nullptr;
 }
@@ -423,7 +425,7 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     RasterRecordToSharedImage(recorder.ReleaseMainRecording());
 
     // An error might have occurred while clearing.
-    if (shared_image_provider_->IsGpuContextLost()) {
+    if (IsGpuContextLost()) {
       shared_image_provider_.reset();
       canvas_image_provider_.reset();
       must_preserve_content_on_copy_on_write_ = true;
@@ -620,6 +622,12 @@ void BaseRenderingContext2D::NotifyGpuContextLostTask(
   }
 }
 
+bool BaseRenderingContext2D::IsGpuContextLost() const {
+  auto* raster_interface = shared_image_provider_->RasterInterface();
+  return !raster_interface ||
+         raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
+}
+
 CanvasImageProvider* BaseRenderingContext2D::GetOrCreateCanvasImageProvider() {
   if (canvas_image_provider_) {
     return canvas_image_provider_.get();
@@ -769,8 +777,7 @@ void BaseRenderingContext2D::EnsureWriteAccess() {
   DCHECK(!shared_image_provider_->resource()->is_cross_thread())
       << "Write access is only allowed on the owning thread";
 
-  if (current_resource_has_write_access_ ||
-      shared_image_provider_->IsGpuContextLost()) {
+  if (current_resource_has_write_access_ || IsGpuContextLost()) {
     return;
   }
   current_resource_has_write_access_ = true;
@@ -779,8 +786,7 @@ void BaseRenderingContext2D::EnsureWriteAccess() {
 void BaseRenderingContext2D::EndWriteAccess() {
   DCHECK(!shared_image_provider_->resource()->is_cross_thread());
 
-  if (!current_resource_has_write_access_ ||
-      shared_image_provider_->IsGpuContextLost()) {
+  if (!current_resource_has_write_access_ || IsGpuContextLost()) {
     return;
   }
 
@@ -809,7 +815,7 @@ void BaseRenderingContext2D::EndWriteAccess() {
 void BaseRenderingContext2D::RasterRecordToSharedImage(
     cc::PaintRecord last_recording) {
   CHECK(shared_image_provider_->IsAccelerated());
-  if (!shared_image_provider_->IsGpuContextLost()) {
+  if (!IsGpuContextLost()) {
     EnsureResourceReadyForDraw();
     EnsureWriteAccess();
 
@@ -965,7 +971,7 @@ bool BaseRenderingContext2D::WritePixelsToBacking(const SkImageInfo& orig_info,
                                                   int x,
                                                   int y) {
   if (shared_image_provider_ && shared_image_provider_->IsAccelerated()) {
-    if (shared_image_provider_->IsGpuContextLost()) {
+    if (IsGpuContextLost()) {
       return false;
     }
 
@@ -1050,7 +1056,7 @@ BaseRenderingContext2D::PaintRenderingResultsToResource(
     return CreateExportedResource(std::move(output_resource));
   }
 
-  if (shared_image_provider_->IsGpuContextLost()) {
+  if (IsGpuContextLost()) {
     return nullptr;
   }
 

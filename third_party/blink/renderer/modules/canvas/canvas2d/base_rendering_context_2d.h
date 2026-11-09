@@ -445,6 +445,7 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   void NotifyGpuContextLostTask(base::WeakPtr<Canvas2DResourceProvider>);
 
+  bool IsGpuContextLost() const;
   bool ShouldReplaceTargetBuffer();
   void EnsureResourceReadyForDraw();
   void EnsureWriteAccess();
