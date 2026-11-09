@@ -809,7 +809,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20261109",
                     "enable_features": [
                         "AndroidNewTabButtonTabstripWebUI"
                     ]
