@@ -344,7 +344,8 @@ class ContextHubServiceTest : public testing::Test {
             *captured_request = *request;
           }
           PostModelExecutionResult(std::move(callback), std::move(result));
-        });
+        })
+        .RetiresOnSaturation();
   }
 
   void ExpectModelExecution(
@@ -2619,6 +2620,70 @@ TEST_F(ContextHubServiceTest,
   EXPECT_EQ(prefs->GetString(prefs::kContextHubAutoTabGroupsPreferences),
             kStored);
   EXPECT_EQ(service.GetEffectiveAutoTabGroupsPreferences(), kStored);
+}
+
+TEST_F(ContextHubServiceTest, GroupTabs_SendsRawUserCommandOnly) {
+  ASSERT_TRUE(
+      service_.SetAutoTabGroupsPreferences("- Keep shopping tabs together."));
+
+  optimization_guide::proto::ContextHubRequest captured_request;
+  ExpectModelExecution(CreateSingleGroupResponse("Work", {1, 2}),
+                       &captured_request);
+
+  std::vector<TabData> input_tabs = {
+      {1, "Tab 1", GURL("https://example1.com")},
+      {2, "Tab 2", GURL("https://example2.com")}};
+  base::test::TestFuture<std::vector<TabGroupEntry>, std::vector<TabData>,
+                         std::string>
+      future;
+  service_.GroupTabs(std::move(input_tabs), "  regroup  ",
+                     future.GetCallback<std::vector<TabGroupEntry>,
+                                        std::vector<TabData>, std::string>());
+  ASSERT_TRUE(future.Wait());
+
+  // Preferences never leak into the command; they travel in their own field.
+  EXPECT_EQ(captured_request.user_command(), "regroup");
+  EXPECT_EQ(captured_request.auto_tab_groups_preferences(),
+            "- Keep shopping tabs together.");
+  const std::vector<optimization_guide::proto::ChatHistoryTurn> history =
+      service_.GetTabGroupChatHistory();
+  ASSERT_FALSE(history.empty());
+  EXPECT_EQ(history[0].message_content(), "regroup");
+}
+
+TEST_F(ContextHubServiceTest, GroupTabs_SendsPreferencesOnlyWhenStored) {
+  // Nothing stored: the defaults are shown to the user but never sent.
+  optimization_guide::proto::ContextHubRequest first_request;
+  ExpectModelExecution(CreateSingleGroupResponse("Work", {1, 2}),
+                       &first_request);
+  base::test::TestFuture<std::vector<TabGroupEntry>, std::vector<TabData>,
+                         std::string>
+      first;
+  service_.GroupTabs({{1, "Tab 1", GURL("https://example1.com")},
+                      {2, "Tab 2", GURL("https://example2.com")}},
+                     "",
+                     first.GetCallback<std::vector<TabGroupEntry>,
+                                       std::vector<TabData>, std::string>());
+  ASSERT_TRUE(first.Wait());
+  EXPECT_FALSE(first_request.has_auto_tab_groups_preferences());
+
+  ASSERT_TRUE(
+      service_.SetAutoTabGroupsPreferences("- Keep groups to at most 5 tabs."));
+
+  optimization_guide::proto::ContextHubRequest second_request;
+  ExpectModelExecution(CreateSingleGroupResponse("Work", {1, 2}),
+                       &second_request);
+  base::test::TestFuture<std::vector<TabGroupEntry>, std::vector<TabData>,
+                         std::string>
+      second;
+  service_.GroupTabs({{1, "Tab 1", GURL("https://example1.com")},
+                      {2, "Tab 2", GURL("https://example2.com")}},
+                     "",
+                     second.GetCallback<std::vector<TabGroupEntry>,
+                                        std::vector<TabData>, std::string>());
+  ASSERT_TRUE(second.Wait());
+  EXPECT_EQ(second_request.auto_tab_groups_preferences(),
+            "- Keep groups to at most 5 tabs.");
 }
 
 TEST_F(ContextHubServiceTest, DeleteAllTabGroups) {

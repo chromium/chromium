@@ -1745,6 +1745,13 @@ void ContextHubService::GenerateTabGroups(std::vector<TabData> tabs,
         optimization_guide::proto::ChatHistoryTurn::ROLE_USER, trimmed_command);
   }
 
+  // Send user/LLM generated grouping preferences.
+  if (const std::string& stored = profile_->GetPrefs()->GetString(
+          prefs::kContextHubAutoTabGroupsPreferences);
+      !stored.empty()) {
+    request.set_auto_tab_groups_preferences(stored);
+  }
+
   optimization_guide_remote_model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kContextHub, request,
       optimization_guide::ModelExecutionOptions(),
