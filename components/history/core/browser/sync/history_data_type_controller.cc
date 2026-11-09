@@ -8,7 +8,6 @@
 
 #include "base/check_is_test.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 
@@ -17,18 +16,11 @@ namespace history {
 namespace {
 
 std::unique_ptr<syncer::DataTypeControllerDelegate>
-GetDelegateFromHistoryService(HistoryService* history_service,
-                              bool for_transport_mode) {
+GetDelegateFromHistoryService(HistoryService* history_service) {
   if (!history_service) {
     return nullptr;
   }
 
-  // Transport-mode support for HISTORY requires
-  // `kReplaceSyncPromosWithSignInPromos`.
-  if (for_transport_mode &&
-      !syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    return nullptr;
-  }
   // The same delegate is used for transport mode and full-sync mode.
   return history_service->GetHistorySyncControllerDelegate();
 }
@@ -39,14 +31,11 @@ HistoryDataTypeController::HistoryDataTypeController(
     syncer::SyncService* sync_service,
     HistoryService* history_service,
     PrefService* pref_service)
-    : DataTypeController(
-          syncer::HISTORY,
-          /*delegate_for_full_sync_mode=*/
-          GetDelegateFromHistoryService(history_service,
-                                        /*for_transport_mode=*/false),
-          /*delegate_for_transport_mode=*/
-          GetDelegateFromHistoryService(history_service,
-                                        /*for_transport_mode=*/true)),
+    : DataTypeController(syncer::HISTORY,
+                         /*delegate_for_full_sync_mode=*/
+                         GetDelegateFromHistoryService(history_service),
+                         /*delegate_for_transport_mode=*/
+                         GetDelegateFromHistoryService(history_service)),
       helper_(syncer::HISTORY,
               sync_service,
               pref_service,
