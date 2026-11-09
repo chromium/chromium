@@ -284,8 +284,13 @@ class HashTrieNode : public GarbageCollected<HashTrieNode<Data>> {
 
   static unsigned GetSlot(const AtomicString& key, unsigned shift) {
 #if DCHECK_IS_ON()
+    // Static StringImpls in .rodata are only alignof(StringImpl) (4-byte)
+    // aligned, but every non-empty StringImpl is >= 16 bytes in size, so
+    // `key.Impl() >> kAlignmentBits` remains collision-free.
+    uintptr_t expected_alignment =
+        key.Impl()->IsStatic() ? alignof(StringImpl) : (1u << kAlignmentBits);
     uintptr_t alignment_bits =
-        reinterpret_cast<uintptr_t>(key.Impl()) & ((1u << kAlignmentBits) - 1);
+        reinterpret_cast<uintptr_t>(key.Impl()) & (expected_alignment - 1);
     DCHECK_EQ(0u, alignment_bits)
         << "AtomicString's Impl() was unexpectedly unaligned";
     DCHECK_LT(shift, CHAR_BIT * sizeof(uintptr_t));

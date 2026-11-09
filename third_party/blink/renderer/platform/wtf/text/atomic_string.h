@@ -70,6 +70,20 @@ class WTF_EXPORT AtomicString {
 
   // Factories ------------------------------------------------------
 
+  // Interns a compile-time `.rodata` StaticAsciiStringImpl in
+  // AtomicStringTable without allocating on the heap (unless an AtomicString
+  // with the same characters is already alive in AtomicStringTable, in which
+  // case the existing entry is reused). Intended primarily for static
+  // initialization (such as DEFINE_STATIC_LOCAL).
+  template <StaticStringLiteral Str>
+  static AtomicString FromLiteral() {
+    if constexpr (StaticAsciiLiteral<Str>::kLength == 0) {
+      return AtomicString(&StringImpl::g_global_empty, StaticAtomTag{});
+    } else {
+      return AddStaticLiteral(StaticAsciiLiteral<Str>::AtomicImpl());
+    }
+  }
+
   // AtomicString::FromUtf8 will return a null string if the input data
   // contains invalid UTF-8 sequences.
   static AtomicString FromUtf8(base::span<const uint8_t>);
@@ -89,6 +103,10 @@ class WTF_EXPORT AtomicString {
   // [string.cons] --------------------------------------------------
 
   constexpr AtomicString() = default;
+  struct StaticAtomTag {};
+  constexpr AtomicString(const StringImpl* static_impl, StaticAtomTag)
+      : string_(static_impl, String::StaticImplTag{}) {}
+  AtomicString(String string, StaticAtomTag) : string_(std::move(string)) {}
   explicit AtomicString(const char* chars) {
     if (!chars) {
       return;
@@ -322,6 +340,7 @@ class WTF_EXPORT AtomicString {
   static String AddSlowCase(String&&);
   static String AddSlowCase(StringImpl*);
   static String AddSlowCase(const StringView&);
+  static AtomicString AddStaticLiteral(const StringImpl*);
 };
 
 inline bool operator==(const AtomicString& a, const AtomicString& b) {

@@ -56,6 +56,14 @@ String AtomicString::AddSlowCase(StringImpl* string) {
   return AtomicStringTable::Instance().Add(string);
 }
 
+AtomicString AtomicString::AddStaticLiteral(const StringImpl* string) {
+  DCHECK(string->IsStatic());
+  DCHECK(string->IsAtomic());
+  return AtomicString(AtomicStringTable::Instance().AddStaticLiteral(
+                          const_cast<StringImpl*>(string)),
+                      StaticAtomTag{});
+}
+
 bool AtomicString::contains(const StringView& value) const {
   return string_.find(value) != npos;
 }

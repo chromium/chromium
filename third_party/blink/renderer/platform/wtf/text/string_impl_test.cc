@@ -407,6 +407,75 @@ TEST(StringImplTest, StaticAsciiStringImpl) {
   String short_lit = String::FromLiteral<"short-static">();
   AtomicString short_atom(short_lit);
   EXPECT_EQ(short_atom, "short-static");
+
+  // Constructing an AtomicString directly via `AtomicString::FromLiteral`
+  // interns the .rodata StaticAsciiStringImpl directly in AtomicStringTable
+  // with zero heap allocation (for both > 16 and <= 16 chars, including
+  // SmallStringCache hits).
+  AtomicString direct_atom =
+      AtomicString::FromLiteral<"direct-atomic-literal">();
+  EXPECT_EQ(direct_atom, "direct-atomic-literal");
+  EXPECT_TRUE(direct_atom.Impl()->IsStatic());
+  EXPECT_TRUE(direct_atom.Impl()->IsAtomic());
+
+  AtomicString direct_short_atom1 =
+      AtomicString::FromLiteral<"short-atom-lit">();
+  AtomicString direct_short_atom2 =
+      AtomicString::FromLiteral<"short-atom-lit">();
+  EXPECT_EQ(direct_short_atom1, "short-atom-lit");
+  EXPECT_EQ(direct_short_atom1.Impl(), direct_short_atom2.Impl());
+  EXPECT_TRUE(direct_short_atom1.Impl()->IsStatic());
+  EXPECT_TRUE(direct_short_atom1.Impl()->IsAtomic());
+
+  // If a temporary small AtomicString was created and destroyed earlier (so it
+  // is only retained by SmallStringCache), calling
+  // AtomicString::FromLiteral<"...">() should evict the cached heap entry and
+  // intern the static .rodata StringImpl.
+  {
+    AtomicString temp_dynamic(String::FromLiteral<"cached-short">().Span8());
+    EXPECT_FALSE(temp_dynamic.Impl()->IsStatic());
+  }
+  AtomicString upgraded_static = AtomicString::FromLiteral<"cached-short">();
+  EXPECT_EQ(upgraded_static, "cached-short");
+  EXPECT_TRUE(upgraded_static.Impl()->IsStatic());
+  EXPECT_TRUE(upgraded_static.Impl()->IsAtomic());
+
+  // If a dynamic AtomicString is still alive when
+  // AtomicString::FromLiteral<"...">() runs, it must reuse the existing
+  // StringImpl so pointer equality holds.
+  AtomicString live_dynamic(String::FromLiteral<"live-dyn-atom">().Span8());
+  AtomicString coexisting_static = AtomicString::FromLiteral<"live-dyn-atom">();
+  EXPECT_EQ(live_dynamic, coexisting_static);
+  EXPECT_EQ(live_dynamic.Impl(), coexisting_static.Impl());
+
+  // If a temporary small AtomicString was created and destroyed before
+  // StringImpl::CreateStatic runs, CreateStatic should evict the cached heap
+  // entry from SmallStringCache and intern the static StringImpl.
+  {
+    AtomicString temp_dynamic(String::FromLiteral<"create-static">().Span8());
+    EXPECT_FALSE(temp_dynamic.Impl()->IsStatic());
+  }
+  static constexpr auto kCreateStaticImpl =
+      MakeStaticAtomicStringImpl("create-static");
+  StringImpl* created_static =
+      StringImpl::CreateStatic(kCreateStaticImpl.AsStringImpl());
+  EXPECT_EQ(created_static, kCreateStaticImpl.AsStringImpl());
+  EXPECT_EQ(AtomicString::FromLiteral<"create-static">().Impl(),
+            created_static);
+
+  // NextStaticStringImpl should step accurately across contiguous
+  // StaticAsciiStringImpl fields in a table struct.
+  struct TestTable {
+    StaticAsciiStringImpl<1> a{"a"};
+    StaticAsciiStringImpl<8> b{"12345678"};
+    StaticAsciiStringImpl<17> c{"12345678901234567"};
+  };
+  static constexpr TestTable kTable;
+  const StringImpl* cur = reinterpret_cast<const StringImpl*>(&kTable);
+  cur = StringImpl::NextStaticStringImpl(cur);
+  EXPECT_EQ(cur, kTable.b.AsStringImpl());
+  cur = StringImpl::NextStaticStringImpl(cur);
+  EXPECT_EQ(cur, kTable.c.AsStringImpl());
 }
 
 }  // namespace blink

@@ -201,6 +201,19 @@ class WTF_EXPORT StringImpl {
   static void InitStatics();
 
   static StringImpl* CreateStatic(base::span<const char> string);
+  static StringImpl* CreateStatic(const StringImpl* static_impl);
+  static const StringImpl* NextStaticStringImpl(const StringImpl* current) {
+    DCHECK_GT(current->length(), 0u);
+    const size_t raw_size =
+        sizeof(StringImpl) + (current->length() ? current->length() : 1);
+    const size_t align = alignof(StringImpl);
+    const size_t step = (raw_size + align - 1) & ~(align - 1);
+    // SAFETY: Callers only invoke `NextStaticStringImpl` to advance across
+    // contiguous `StaticAsciiStringImpl` fields in a static table up to one
+    // past the end of the table.
+    return UNSAFE_BUFFERS(reinterpret_cast<const StringImpl*>(
+        reinterpret_cast<const uint8_t*>(current) + step));
+  }
   static void ReserveStaticStringsCapacityForSize(wtf_size_t size);
   static void FreezeStaticStrings();
   static const StaticStringsTable& AllStaticStrings();
@@ -802,6 +815,13 @@ struct alignas(StringImpl) StaticAsciiStringImpl {
 };
 
 template <size_t M>
+consteval auto MakeStaticAtomicStringImpl(const char (&str)[M]) {
+  static_assert(M > 1, "Use g_empty_atom for empty strings.");
+  return StaticAsciiStringImpl<M - 1>(
+      str, StaticAsciiStringImpl<M - 1>::Mode::kStaticAtomic);
+}
+
+template <size_t M>
 consteval auto MakeStaticStringImpl(const char (&str)[M]) {
   static_assert(M > 1, "Use g_empty_string for empty strings.");
   return StaticAsciiStringImpl<M - 1>(
@@ -839,9 +859,18 @@ struct StaticAsciiLiteral {
   }
 
  private:
+  friend class AtomicString;
+  static constexpr const StringImpl* AtomicImpl() {
+    static_assert(kLength > 0);
+    return kAtomicImpl.AsStringImpl();
+  }
+
   static constexpr StaticAsciiStringImpl<kLength> kImpl{
       base::span(Str.chars),
       StaticAsciiStringImpl<kLength>::Mode::kStaticString};
+  static constexpr StaticAsciiStringImpl<kLength> kAtomicImpl{
+      base::span(Str.chars),
+      StaticAsciiStringImpl<kLength>::Mode::kStaticAtomic};
 };
 
 // The maximum length of a 16-bit string such that its StringImpl allocation

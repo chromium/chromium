@@ -302,6 +302,40 @@ StringImpl* StringImpl::CreateStatic(base::span<const char> string) {
   return added.Impl();
 }
 
+StringImpl* StringImpl::CreateStatic(const StringImpl* static_impl) {
+#if DCHECK_IS_ON()
+  DCHECK(g_allow_creation_of_static_strings);
+#endif
+  DCHECK(static_impl);
+  DCHECK(static_impl->length());
+  DCHECK(static_impl->IsStatic());
+  DCHECK(static_impl->Is8Bit());
+  DCHECK(static_impl->IsAtomic());
+  DCHECK(static_impl->HasHash());
+
+  uint32_t hash = static_impl->ExistingHash();
+
+  StaticStringsTable::const_iterator it = StaticStrings().find(hash);
+  if (it != StaticStrings().end()) {
+    DCHECK_EQ(base::as_string_view(it->value->Span8()),
+              base::as_string_view(static_impl->Span8()));
+    return it->value;
+  }
+
+  StringImpl* impl = const_cast<StringImpl*>(static_impl);
+#if DCHECK_IS_ON()
+  impl->AssertHashIsCorrect();
+#endif
+
+  DCHECK(IsMainThread());
+  highest_static_string_length_ =
+      std::max(highest_static_string_length_, impl->length());
+  String added = AtomicStringTable::Instance().AddStaticLiteral(impl);
+  DCHECK(added.Impl()->IsStatic());
+  StaticStrings().insert(hash, added.Impl());
+  return added.Impl();
+}
+
 void StringImpl::ReserveStaticStringsCapacityForSize(wtf_size_t size) {
 #if DCHECK_IS_ON()
   DCHECK(g_allow_creation_of_static_strings);
