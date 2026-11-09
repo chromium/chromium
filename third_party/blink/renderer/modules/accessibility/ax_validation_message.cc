@@ -66,13 +66,13 @@ bool AXValidationMessage::IsVisible() const {
 
 const AtomicString& AXValidationMessage::LiveRegionStatus() const {
   DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_assertive,
-                      ("assertive"));
+                      (AtomicString::FromLiteral<"assertive">()));
   return live_region_status_assertive;
 }
 
 const AtomicString& AXValidationMessage::LiveRegionRelevant() const {
   DEFINE_STATIC_LOCAL(const AtomicString, live_region_relevant_additions,
-                      ("additions"));
+                      (AtomicString::FromLiteral<"additions">()));
   return live_region_relevant_additions;
 }
 

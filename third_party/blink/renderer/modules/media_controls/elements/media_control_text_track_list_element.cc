@@ -46,7 +46,8 @@ const QualifiedName& TrackIndexAttrName() {
 const AtomicString& CaptionSettingsShadowPseudoId() {
   DEFINE_STATIC_LOCAL(
       AtomicString, id,
-      ("-internal-media-controls-text-track-list-caption-settings"));
+      (AtomicString::FromLiteral<
+          "-internal-media-controls-text-track-list-caption-settings">()));
   return id;
 }
 

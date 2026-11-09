@@ -319,14 +319,11 @@ MediaStreamTrackImpl::MediaStreamTrackImpl(
 MediaStreamTrackImpl::~MediaStreamTrackImpl() = default;
 
 String MediaStreamTrackImpl::kind() const {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(String, audio_kind, ("audio"));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(String, video_kind, ("video"));
-
   switch (component_->GetSourceType()) {
     case MediaStreamSource::kTypeAudio:
-      return audio_kind;
+      return String::FromLiteral<"audio">();
     case MediaStreamSource::kTypeVideo:
-      return video_kind;
+      return String::FromLiteral<"video">();
   }
 
   NOTREACHED();

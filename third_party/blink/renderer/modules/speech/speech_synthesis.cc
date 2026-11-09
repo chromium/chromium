@@ -210,18 +210,16 @@ void SpeechSynthesis::WordBoundaryEventOccurred(
     SpeechSynthesisUtterance* utterance,
     unsigned char_index,
     unsigned char_length) {
-  DEFINE_STATIC_LOCAL(const String, word_boundary_string, ("word"));
   FireEvent(event_type_names::kBoundary, utterance, char_index, char_length,
-            word_boundary_string);
+            String::FromLiteral<"word">());
 }
 
 void SpeechSynthesis::SentenceBoundaryEventOccurred(
     SpeechSynthesisUtterance* utterance,
     unsigned char_index,
     unsigned char_length) {
-  DEFINE_STATIC_LOCAL(const String, sentence_boundary_string, ("sentence"));
   FireEvent(event_type_names::kBoundary, utterance, char_index, char_length,
-            sentence_boundary_string);
+            String::FromLiteral<"sentence">());
 }
 
 void SpeechSynthesis::VoicesDidChange() {

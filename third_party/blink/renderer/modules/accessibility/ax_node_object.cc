@@ -925,7 +925,8 @@ bool AXNodeObject::ShouldIncludeCustomElement() const {
   //   kept in tree to pass AutomationApiTest.LocationInWebView).
   //   Custom elements in actual web content always have a hyphenated name,
   //   and therefore <webview> in real web content cannot be a custom element.
-  DEFINE_STATIC_LOCAL(const AtomicString, web_view_tag, ("webview"));
+  DEFINE_STATIC_LOCAL(const AtomicString, web_view_tag,
+                      (AtomicString::FromLiteral<"webview">()));
   if (element->HasLocalName(web_view_tag)) {
     return true;
   }

@@ -335,7 +335,8 @@ const QualifiedName& DeprecatedAriaRowtextAttrName() {
 
 const AtomicString& AriaTokenAttributeFromValue(const QualifiedName& attribute,
                                                 const AtomicString& value) {
-  DEFINE_STATIC_LOCAL(const AtomicString, undefined_value, ("undefined"));
+  DEFINE_STATIC_LOCAL(const AtomicString, undefined_value,
+                      (AtomicString::FromLiteral<"undefined">()));
   if (IsAriaTokenAttribute(attribute) || IsAriaTokenListAttribute(attribute)) {
     // These properties support a list of tokens, and "undefined"/"" is
     // equivalent to not setting the attribute.
@@ -6085,11 +6086,11 @@ bool AXObject::IsActiveLiveRegionRoot() const {
 
 const AtomicString& AXObject::LiveRegionStatus() const {
   DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_assertive,
-                      ("assertive"));
+                      (AtomicString::FromLiteral<"assertive">()));
   DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_polite,
-                      ("polite"));
+                      (AtomicString::FromLiteral<"polite">()));
   DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_undefined,
-                      ("undefined"));
+                      (AtomicString::FromLiteral<"undefined">()));
 
   const AtomicString& live_region_status =
       AriaTokenAttribute(html_names::kAriaLiveAttr);
@@ -6118,7 +6119,7 @@ const AtomicString& AXObject::LiveRegionStatus() const {
 
 const AtomicString& AXObject::LiveRegionRelevant() const {
   DEFINE_STATIC_LOCAL(const AtomicString, default_live_region_relevant,
-                      ("additions text"));
+                      (AtomicString::FromLiteral<"additions text">()));
   const AtomicString& relevant =
       AriaTokenAttribute(html_names::kAriaRelevantAttr);
 
