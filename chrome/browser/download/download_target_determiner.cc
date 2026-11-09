@@ -926,7 +926,9 @@ bool DownloadTargetDeterminer::DetermineIfHandledSafelyHelper(
   }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-  CHECK(!mime_type.empty(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/581721899): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!mime_type.empty());
   auto* plugin_service = content::PluginService::GetInstance();
   plugin_service->GetPlugins();
   return plugin_service->HasPlugin(
