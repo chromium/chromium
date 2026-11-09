@@ -7,20 +7,40 @@
 #import <UIKit/UIKit.h>
 
 #import <map>
+#import <optional>
 #import <string>
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/startup/app_group_command_payload.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/x_callback_url.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 namespace {
+
+// Commands that a Chrome extension can request through the App Group.
+enum class AppGroupCommandType {
+  kOpenURL,
+  kOpenURLInIncognito,
+  kSearchText,
+  kIncognitoSearchText,
+  kSearchImage,
+  kIncognitoSearchImage,
+  kVoiceSearch,
+  kNewTab,
+  kFocusOmnibox,
+  kIncognitoSearch,
+  kQRScanner,
+  kLens,
+  kSearchPasswords,
+};
 
 // Maps the `poa` query parameter of the `/open` command to the post-opening
 // action to trigger once the tab is opened.
@@ -30,6 +50,112 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     return TabOpeningPostOpeningAction::SHOW_DEFAULT_BROWSER_SETTINGS;
   }
   return TabOpeningPostOpeningAction::NO_ACTION;
+}
+
+// Returns the type of the App Group `command`, or `std::nullopt` if unknown.
+std::optional<AppGroupCommandType> AppGroupCommandTypeFromString(
+    NSString* command) {
+  const struct {
+    NSString* name;
+    AppGroupCommandType type;
+  } kCommandTypes[] = {
+      {base::SysUTF8ToNSString(app_group::kChromeAppGroupOpenURLCommand),
+       AppGroupCommandType::kOpenURL},
+      {app_group::kChromeAppGroupOpenURLInIcognitoCommand,
+       AppGroupCommandType::kOpenURLInIncognito},
+      {base::SysUTF8ToNSString(app_group::kChromeAppGroupSearchTextCommand),
+       AppGroupCommandType::kSearchText},
+      {app_group::kChromeAppGroupIncognitoSearchTextCommand,
+       AppGroupCommandType::kIncognitoSearchText},
+      {base::SysUTF8ToNSString(app_group::kChromeAppGroupSearchImageCommand),
+       AppGroupCommandType::kSearchImage},
+      {app_group::kChromeAppGroupIncognitoSearchImageCommand,
+       AppGroupCommandType::kIncognitoSearchImage},
+      {base::SysUTF8ToNSString(app_group::kChromeAppGroupVoiceSearchCommand),
+       AppGroupCommandType::kVoiceSearch},
+      {base::SysUTF8ToNSString(app_group::kChromeAppGroupNewTabCommand),
+       AppGroupCommandType::kNewTab},
+      {base::SysUTF8ToNSString(app_group::kChromeAppGroupFocusOmniboxCommand),
+       AppGroupCommandType::kFocusOmnibox},
+      {base::SysUTF8ToNSString(
+           app_group::kChromeAppGroupIncognitoSearchCommand),
+       AppGroupCommandType::kIncognitoSearch},
+      {base::SysUTF8ToNSString(app_group::kChromeAppGroupQRScannerCommand),
+       AppGroupCommandType::kQRScanner},
+      {base::SysUTF8ToNSString(app_group::kChromeAppGroupLensCommand),
+       AppGroupCommandType::kLens},
+      {base::SysUTF8ToNSString(
+           app_group::kChromeAppGroupSearchPasswordsCommand),
+       AppGroupCommandType::kSearchPasswords},
+  };
+  for (const auto& command_type : kCommandTypes) {
+    if ([command isEqualToString:command_type.name]) {
+      return command_type.type;
+    }
+  }
+  return std::nullopt;
+}
+
+// Returns the http(s) URL sent in the `external_text` of an App Group command,
+// or an empty URL if it is missing or has another scheme.
+GURL HTTPURLFromAppGroupText(NSString* external_text) {
+  GURL url(base::SysNSStringToUTF8(external_text));
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    return GURL();
+  }
+  return url;
+}
+
+// Tab to open to execute an App Group command.
+struct AppGroupCommandTab {
+  GURL url;
+  ApplicationModeForTabOpening target_mode;
+  TabOpeningPostOpeningAction post_opening_action =
+      TabOpeningPostOpeningAction::NO_ACTION;
+};
+
+// Returns the tab opening the http(s) URL sent in `external_text` in
+// `target_mode`, or `std::nullopt` if there is no such URL.
+std::optional<AppGroupCommandTab> OpenURLTabForAppGroupCommand(
+    NSString* external_text,
+    ApplicationModeForTabOpening target_mode) {
+  GURL url = HTTPURLFromAppGroupText(external_text);
+  if (url.is_empty()) {
+    return std::nullopt;
+  }
+  return AppGroupCommandTab{url, target_mode};
+}
+
+// Returns the tab to open for a command of `type` carrying `external_text`, or
+// `std::nullopt` if the command must be discarded.
+std::optional<AppGroupCommandTab> TabForAppGroupCommand(
+    AppGroupCommandType type,
+    NSString* external_text) {
+  switch (type) {
+    case AppGroupCommandType::kOpenURL:
+      return OpenURLTabForAppGroupCommand(
+          external_text, ApplicationModeForTabOpening::UNDETERMINED);
+    case AppGroupCommandType::kOpenURLInIncognito:
+      return OpenURLTabForAppGroupCommand(
+          external_text, ApplicationModeForTabOpening::INCOGNITO);
+    case AppGroupCommandType::kSearchText:
+    case AppGroupCommandType::kIncognitoSearchText:
+    case AppGroupCommandType::kSearchImage:
+    case AppGroupCommandType::kIncognitoSearchImage:
+      // TODO(crbug.com/493816082): Search the text or image sent by the
+      // extension, discarding commands without one, and flag the task as
+      // opened via the share extension, as the legacy startup flow does.
+      return std::nullopt;
+    case AppGroupCommandType::kVoiceSearch:
+    case AppGroupCommandType::kNewTab:
+    case AppGroupCommandType::kFocusOmnibox:
+    case AppGroupCommandType::kIncognitoSearch:
+    case AppGroupCommandType::kQRScanner:
+    case AppGroupCommandType::kLens:
+    case AppGroupCommandType::kSearchPasswords:
+      // TODO(crbug.com/493816082): Open the tab requested by the command.
+      return std::nullopt;
+  }
 }
 
 }  // namespace
@@ -94,13 +220,41 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
 }
 
 - (void)handleCommandWithSceneState:(SceneState*)sceneState {
-  if (IsXCallbackOpenCommandPath([self.URLContext.URL path])) {
+  NSString* action = [self.URLContext.URL path];
+  if (IsXCallbackOpenCommandPath(action)) {
     [self handleOpenCommandWithSceneState:sceneState];
+  } else if (IsXCallbackAppGroupCommandPath(action)) {
+    [self handleAppGroupCommandWithSceneState:sceneState];
   }
-  // TODO(crbug.com/493816082): Handle the `/app-group-command` command.
 }
 
 #pragma mark - Private
+
+// Executes the App Group command consumed at initialization. Invalid, unknown
+// or incomplete commands are discarded.
+- (void)handleAppGroupCommandWithSceneState:(SceneState*)sceneState {
+  if (!_appGroupCommand.is_valid) {
+    return;
+  }
+  std::optional<AppGroupCommandType> type =
+      AppGroupCommandTypeFromString(_appGroupCommand.command);
+  if (!type) {
+    return;
+  }
+  std::optional<AppGroupCommandTab> tab =
+      TabForAppGroupCommand(*type, _appGroupCommand.external_text);
+  if (!tab) {
+    return;
+  }
+
+  [self openTabWithSceneState:sceneState
+                  externalURL:tab->url
+                   virtualURL:GURL()
+                   targetMode:tab->target_mode
+            postOpeningAction:tab->post_opening_action
+        postOpeningCompletion:nil
+             fromWidgetOrSiri:NO];
+}
 
 // Opens the http(s) URL passed in the `url` query parameter of the `/open`
 // command. Requests with a missing or non-http(s) URL are discarded.

@@ -174,6 +174,42 @@ class TaskRequestForURLContextTest : public PlatformTest {
                                           forKey:AppGroupCommandPreference()];
   }
 
+  // Writes a recent App Group `command` sent by `caller_app`, with an optional
+  // `external_text`, to the shared defaults.
+  void WriteRecentAppGroupCommand(NSString* command,
+                                  NSString* caller_app,
+                                  NSString* external_text) {
+    NSMutableDictionary* dictionary = [@{
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandAppPreference) :
+          caller_app,
+      base::SysUTF8ToNSString(
+          app_group::kChromeAppGroupCommandCommandPreference) : command,
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandTimePreference) :
+          [NSDate date],
+    } mutableCopy];
+    if (external_text) {
+      dictionary[base::SysUTF8ToNSString(
+          app_group::kChromeAppGroupCommandTextPreference)] = external_text;
+    }
+    WriteAppGroupCommand(dictionary);
+  }
+
+  // Creates and executes an X-Callback App Group command request, returning
+  // the tab opener that recorded the resulting tab opening, if any.
+  TaskRequestURLContextTestTabOpener* ExecuteAppGroupCommandRequest() {
+    TaskRequestForURLContext* request = [TaskRequestForURLContext
+        taskRequestWithURLContext:CreateMockURLContext(
+                                      [NSURL URLWithString:kAppGroupCommandURL])
+                       sceneState:scene_state_
+                      isColdStart:YES];
+    TaskRequestURLContextTestTabOpener* tab_opener =
+        [[TaskRequestURLContextTestTabOpener alloc]
+            initWithSceneState:scene_state_];
+    scene_state_.controller = tab_opener;
+    [request execute];
+    return tab_opener;
+  }
+
   // Returns whether an App Group command is in the shared defaults.
   bool HasAppGroupCommand() {
     return [app_group::GetGroupUserDefaults()
@@ -1097,4 +1133,128 @@ TEST_F(TaskRequestForURLContextTest, TestXCallbackInvalidCommandIgnored) {
     EXPECT_TRUE(tab_opener.urlLoadParams.web_params.url.is_empty());
     EXPECT_FALSE(tab_opener.completionActionExecuted);
   }
+}
+
+// Tests that valid App Group commands open the expected tab and trigger the
+// expected post-opening action.
+TEST_F(TaskRequestForURLContextTest, TestAppGroupCommandExecution) {
+  NSString* const kExternalURL = @"https://www.example.com/";
+  struct TestCase {
+    NSString* command;
+    NSString* external_text;
+    GURL expected_url;
+    ApplicationModeForTabOpening expected_mode;
+    TabOpeningPostOpeningAction expected_action;
+    bool expected_dismiss_omnibox;
+  } test_cases[] = {
+      {base::SysUTF8ToNSString(app_group::kChromeAppGroupOpenURLCommand),
+       kExternalURL, GURL(base::SysNSStringToUTF8(kExternalURL)),
+       ApplicationModeForTabOpening::UNDETERMINED,
+       TabOpeningPostOpeningAction::NO_ACTION, true},
+      {app_group::kChromeAppGroupOpenURLInIcognitoCommand, kExternalURL,
+       GURL(base::SysNSStringToUTF8(kExternalURL)),
+       ApplicationModeForTabOpening::INCOGNITO,
+       TabOpeningPostOpeningAction::NO_ACTION, true},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::SysNSStringToUTF8(test_case.command));
+    WriteRecentAppGroupCommand(test_case.command,
+                               app_group::kOpenCommandSourceShareExtension,
+                               test_case.external_text);
+
+    TaskRequestURLContextTestTabOpener* tab_opener =
+        ExecuteAppGroupCommandRequest();
+
+    EXPECT_EQ(tab_opener.targetMode, test_case.expected_mode);
+    EXPECT_EQ(tab_opener.urlLoadParams.web_params.url, test_case.expected_url);
+    EXPECT_TRUE(tab_opener.urlLoadParams.web_params.virtual_url.is_empty());
+    EXPECT_FALSE(tab_opener.urlLoadParams.from_widget_or_siri);
+    EXPECT_EQ(tab_opener.dismissOmnibox, test_case.expected_dismiss_omnibox);
+    EXPECT_EQ(tab_opener.completionAction, test_case.expected_action);
+    EXPECT_TRUE(tab_opener.completionActionExecuted);
+  }
+}
+
+// Tests that App Group open URL commands without an http(s) URL are discarded.
+TEST_F(TaskRequestForURLContextTest, TestAppGroupOpenURLCommandWithoutHTTPURL) {
+  NSString* const kOpenURLCommand =
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupOpenURLCommand);
+  NSString* external_texts[] = {
+      nil,
+      @"invalid",
+      @"chrome://settings",
+      @"javascript:alert(1)",
+      @"file:///path/to/file.pdf",
+  };
+
+  for (NSString* external_text : external_texts) {
+    SCOPED_TRACE(external_text ? base::SysNSStringToUTF8(external_text)
+                               : "no text");
+    WriteRecentAppGroupCommand(kOpenURLCommand,
+                               app_group::kOpenCommandSourceShareExtension,
+                               external_text);
+
+    TaskRequestURLContextTestTabOpener* tab_opener =
+        ExecuteAppGroupCommandRequest();
+
+    EXPECT_FALSE(tab_opener.completionActionExecuted);
+    EXPECT_TRUE(tab_opener.urlLoadParams.web_params.url.is_empty());
+  }
+}
+
+// Tests that unknown App Group commands, and the commands not yet supported by
+// the new startup flow, don't open a tab.
+TEST_F(TaskRequestForURLContextTest, TestUnhandledAppGroupCommandIgnored) {
+  NSString* commands[] = {
+      @"unknowncommand",
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupSearchTextCommand),
+      app_group::kChromeAppGroupIncognitoSearchTextCommand,
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupSearchImageCommand),
+      app_group::kChromeAppGroupIncognitoSearchImageCommand,
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupVoiceSearchCommand),
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupNewTabCommand),
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupFocusOmniboxCommand),
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupIncognitoSearchCommand),
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupQRScannerCommand),
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupLensCommand),
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupSearchPasswordsCommand),
+  };
+
+  for (NSString* command : commands) {
+    SCOPED_TRACE(base::SysNSStringToUTF8(command));
+    WriteRecentAppGroupCommand(
+        command, app_group::kOpenCommandSourceShareExtension, @"text");
+
+    TaskRequestURLContextTestTabOpener* tab_opener =
+        ExecuteAppGroupCommandRequest();
+
+    EXPECT_FALSE(tab_opener.completionActionExecuted);
+    EXPECT_TRUE(tab_opener.urlLoadParams.web_params.url.is_empty());
+  }
+}
+
+// Tests that an expired App Group command is discarded.
+TEST_F(TaskRequestForURLContextTest, TestExpiredAppGroupCommandIgnored) {
+  WriteShareExtensionCommand([NSDate
+      dateWithTimeIntervalSinceNow:-app_group::kAppGroupCommandTimeout - 1]);
+
+  EXPECT_FALSE(ExecuteAppGroupCommandRequest().completionActionExecuted);
+}
+
+// Tests that an App Group command without a command name is discarded.
+TEST_F(TaskRequestForURLContextTest, TestAppGroupCommandWithoutNameIgnored) {
+  WriteAppGroupCommandWithOnlyTime([NSDate date]);
+
+  EXPECT_FALSE(ExecuteAppGroupCommandRequest().completionActionExecuted);
+}
+
+// Tests that an App Group command can't be executed twice.
+TEST_F(TaskRequestForURLContextTest, TestAppGroupCommandExecutedOnce) {
+  WriteRecentAppGroupCommand(
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupOpenURLCommand),
+      app_group::kOpenCommandSourceShareExtension, @"https://www.example.com/");
+  EXPECT_TRUE(ExecuteAppGroupCommandRequest().completionActionExecuted);
+
+  EXPECT_FALSE(ExecuteAppGroupCommandRequest().completionActionExecuted);
 }

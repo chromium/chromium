@@ -546,6 +546,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   ExtensionAction action = ACTION_NO_ACTION;
   ChromeAppStartupParameters* params = nil;
 
+  // LINT.IfChange
   if ([command
           isEqualToString:base::SysUTF8ToNSString(
                               app_group::kChromeAppGroupVoiceSearchCommand)]) {
@@ -758,6 +759,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     [params setPostOpeningAction:SEARCH_PASSWORDS];
     action = ACTION_NO_ACTION;
   }
+  // LINT.ThenChange(//ios/chrome/app/task_request_for_xcallback_url_context.mm)
 
   // LINT.IfChange
   // TODO(crbug.com/462018636): This code will be soon migrated to
