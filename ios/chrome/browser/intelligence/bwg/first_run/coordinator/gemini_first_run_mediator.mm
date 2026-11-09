@@ -320,8 +320,6 @@ const CGFloat kPromoMaxImpressionCount = 3;
     [self openNewTabWithURL:GURL(kDataGovernanceManagedLinkURL)];
   } else if ([actionString isEqualToString:kGeminiActivityLinkAction]) {
     [self openNewTabWithURL:GURL(kActivityLinkURL)];
-  } else if ([actionString isEqualToString:kGeminiLocationInfoLinkAction]) {
-    [self openNewTabWithURL:GURL(kLocationInfoLinkURL)];
   } else if ([actionString isEqualToString:kGeminiChoicesLinkAction]) {
     [self openNewTabWithURL:GURL(kChoicesLinkURL)];
   } else if ([actionString

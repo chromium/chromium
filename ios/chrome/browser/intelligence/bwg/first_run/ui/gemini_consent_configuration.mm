@@ -273,12 +273,11 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
       IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_NON_MANAGED_TITLE);
   NSString* text = l10n_util::GetNSString(
       IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_NON_MANAGED_BODY);
-  NSAttributedString* body = [self
-      attributedTextForBody:text
-                    actions:@[
-                      kGeminiActivityLinkAction, kGeminiLocationInfoLinkAction,
-                      kGeminiChoicesLinkAction
-                    ]];
+  NSAttributedString* body =
+      [self attributedTextForBody:text
+                          actions:@[
+                            kGeminiActivityLinkAction, kGeminiChoicesLinkAction
+                          ]];
   GeminiConsentRow* row = [[GeminiConsentRow alloc] initWithIcon:icon
                                                            title:title
                                                             body:body];
@@ -405,7 +404,6 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
         kGeminiKoreanTermsLinkAction,
         kGeminiSecondFootnoteLinkAction,
         kGeminiActivityLinkAction,
-        kGeminiLocationInfoLinkAction,
         kGeminiChoicesLinkAction,
       ] : @[
         kGeminiFirstFootnoteLinkAction,
@@ -413,8 +411,6 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
         kGeminiSecondFootnoteLinkAction,
       ])
               : (useStrict ? @[
-                kGeminiActivityLinkAction,
-                kGeminiLocationInfoLinkAction,
                 kGeminiChoicesLinkAction,
                 kGeminiFirstFootnoteLinkAction,
                 kGeminiSecondFootnoteLinkAction,
