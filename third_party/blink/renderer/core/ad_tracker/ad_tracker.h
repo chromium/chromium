@@ -55,9 +55,7 @@ class CORE_EXPORT AdTracker : public ScriptAncestryTracker {
   static AdTracker* FromExecutionContext(ExecutionContext*);
 
   // Returns true if an ad script is currently executing in `document`.
-  static bool IsAdScriptExecutingInDocument(
-      Document* document,
-      StackType stack_type = StackType::kTopOnly);
+  static bool IsAdScriptExecutingInDocument(Document* document);
 
   AdTracker(LocalFrame*, ScriptInitiationMonitor*);
   AdTracker(const AdTracker&) = delete;
@@ -86,13 +84,9 @@ class CORE_EXPORT AdTracker : public ScriptAncestryTracker {
   // populated fields.
   AdScriptAncestry GetAncestry(V8ScriptId script_id);
 
-  // Returns true if any script in the pseudo call stack has previously been
-  // identified as an ad resource, if the current ExecutionContext is a known ad
-  // execution context, or if the script at the top of isolate's
-  // stack is ad script. Whether to look at just the bottom of the
-  // stack or the top and bottom is indicated by `stack_type`. `kTopOnly` is
-  // generally best as it catches more ads but you may want to call
-  // `kBottomOnly` if you truly only care about that frame.
+  // Returns true if the current ExecutionContext is a known ad execution
+  // context, or if the script at the top of the isolate's stack (falling back
+  // to the async stack when the sync stack is empty) is an ad script.
   //
   // When `ignore_monkey_patch` is specified, a heuristic is enabled to mitigate
   // inaccurate stack tagging caused by API monkey patching (i.e., the immediate
@@ -115,7 +109,6 @@ class CORE_EXPORT AdTracker : public ScriptAncestryTracker {
   //   triggering filterlist rule. See `AdScriptAncestry` for more details on
   //   the populated fields.
   virtual bool IsAdScriptInStack(
-      StackType stack_type,
       MonkeyPatchableApi ignore_monkey_patch = MonkeyPatchableApi::kNone,
       AdScriptAncestry* out_ad_script_ancestry = nullptr);
 

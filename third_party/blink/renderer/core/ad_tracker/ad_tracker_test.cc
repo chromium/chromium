@@ -173,10 +173,9 @@ class TestAdTracker : public AdTracker {
 
   // Test-only override for IsAdScriptInStack. Calls the base implementation
   // and caches its results for later verification in tests.
-  bool IsAdScriptInStack(StackType stack_type,
-                         MonkeyPatchableApi ignore_monkey_patch,
+  bool IsAdScriptInStack(MonkeyPatchableApi ignore_monkey_patch,
                          AdScriptAncestry* out_ad_script_ancestry) override {
-    bool result = AdTracker::IsAdScriptInStack(stack_type, ignore_monkey_patch,
+    bool result = AdTracker::IsAdScriptInStack(ignore_monkey_patch,
                                                out_ad_script_ancestry);
 
     if (sim_test_) {

@@ -192,40 +192,6 @@ TEST_F(ScriptAncestryTrackerTest, ClassicExternalMarkedScript) {
   EXPECT_TRUE(test_observer_->IsMarkedScript(script_id));
 }
 
-TEST_F(ScriptAncestryTrackerTest,
-       ClassicExternalMarkedScript_BottomMostScriptSet) {
-  SimSubresourceRequest marked_script("https://example.com/marked_script.js",
-                                      "text/javascript");
-  SimSubresourceRequest child_script("https://example.com/child.js",
-                                     "text/javascript");
-  main_resource_->Complete(
-      "<body><script src=\"marked_script.js\"></script></body>");
-  test::RunPendingTasks();
-
-  // Define a marked script that creates a dynamic script.
-  marked_script.Complete(
-      "var s = document.createElement('script');"
-      "s.src = 'child.js';"
-      "document.body.appendChild(s);");
-  test::RunPendingTasks();
-
-  child_script.Complete("console.log('child');");
-
-  V8ScriptId marked_id =
-      test_observer_->WaitAndFindScriptIdByUrl("marked_script.js");
-  V8ScriptId child_id = test_observer_->WaitAndFindScriptIdByUrl("child.js");
-
-  EXPECT_NE(V8ScriptId(), marked_id);
-  EXPECT_NE(V8ScriptId(), child_id);
-  EXPECT_TRUE(test_observer_->IsMarkedScript(marked_id));
-
-  // The child script's parent marked script ID should be set to marked_id
-  // because marked_id was set as bottom_most_script_ during WillExecuteScript.
-  const auto* child_info = test_observer_->GetRegisteredScript(child_id);
-  ASSERT_TRUE(child_info);
-  EXPECT_EQ(marked_id, child_info->marked_script_id);
-}
-
 TEST_F(ScriptAncestryTrackerTest, TransitiveExternalScript) {
   SimSubresourceRequest initial_script(
       "https://example.com/initial_marked_script.js", "text/javascript");

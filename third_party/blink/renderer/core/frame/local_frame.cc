@@ -2908,8 +2908,7 @@ void LocalFrame::SetAdEvidence(const FrameAdEvidence& ad_evidence) {
 }
 
 bool LocalFrame::IsAdScriptInStack() const {
-  return ad_tracker_ &&
-         ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kTopOnly);
+  return ad_tracker_ && ad_tracker_->IsAdScriptInStack();
 }
 
 bool LocalFrame::IsFrameCreatedByAdScript() const {

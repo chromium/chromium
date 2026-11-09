@@ -58,11 +58,10 @@ AdTracker* AdTracker::FromExecutionContext(
 }
 
 // static
-bool AdTracker::IsAdScriptExecutingInDocument(Document* document,
-                                              StackType stack_type) {
+bool AdTracker::IsAdScriptExecutingInDocument(Document* document) {
   AdTracker* ad_tracker =
       document->GetFrame() ? document->GetFrame()->GetAdTracker() : nullptr;
-  return ad_tracker && ad_tracker->IsAdScriptInStack(stack_type);
+  return ad_tracker && ad_tracker->IsAdScriptInStack();
 }
 
 AdTracker::AdTracker(LocalFrame* local_root, ScriptInitiationMonitor* monitor)
@@ -106,7 +105,7 @@ std::optional<AdProvenance> AdTracker::CalculateIfAdSubresource(
       v8::HandleScope handle_scope(isolate);
       LazyStackTrace stack_trace(isolate);
       if (std::optional<V8ScriptId> ancestor_ad_script = GetMarkedScriptInStack(
-              StackType::kTopOnly, stack_trace,
+              stack_trace,
               /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild)) {
         known_ad_provenance = AdProvenance(*ancestor_ad_script);
       }
@@ -210,8 +209,7 @@ AdTracker::AdScriptAncestry AdTracker::GetAncestry(V8ScriptId script_id) {
   return ancestry;
 }
 
-bool AdTracker::IsAdScriptInStack(StackType stack_type,
-                                  MonkeyPatchableApi ignore_monkey_patch,
+bool AdTracker::IsAdScriptInStack(MonkeyPatchableApi ignore_monkey_patch,
                                   AdScriptAncestry* out_ad_script_ancestry) {
   v8::Isolate* isolate = GetIsolate();
   std::optional<v8::HandleScope> handle_scope;
@@ -220,7 +218,7 @@ bool AdTracker::IsAdScriptInStack(StackType stack_type,
   }
   LazyStackTrace stack_trace(isolate);
   std::optional<V8ScriptId> out_ad_script =
-      GetMarkedScriptInStack(stack_type, stack_trace, ignore_monkey_patch);
+      GetMarkedScriptInStack(stack_trace, ignore_monkey_patch);
 
   if (out_ad_script_ancestry) {
     *out_ad_script_ancestry = AdScriptAncestry();

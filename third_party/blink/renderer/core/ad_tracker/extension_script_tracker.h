@@ -36,7 +36,6 @@ class CORE_EXPORT ExtensionScriptTracker : public ScriptAncestryTracker {
   // extension that injected or initiated the script, or an empty String if no
   // extension script was found.
   String ExtensionScriptInStack(
-      StackType stack_type = StackType::kTopOnly,
       MonkeyPatchableApi ignore_monkey_patch = MonkeyPatchableApi::kNone);
 
   // ScriptAncestryTracker overrides:

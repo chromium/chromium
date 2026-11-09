@@ -208,7 +208,6 @@ SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
 
         if (ad_tracker &&
             ad_tracker->IsAdScriptInStack(
-                AdTracker::StackType::kTopOnly,
                 /*ignore_monkey_patch=*/AdTracker::MonkeyPatchableApi::kNone,
                 &ad_ancestry)) {
           window->CountPermissionsPolicyUsage(

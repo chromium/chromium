@@ -61,7 +61,6 @@ ExtensionScriptTracker::ExtensionScriptTracker(LocalFrame* local_root,
 ExtensionScriptTracker::~ExtensionScriptTracker() = default;
 
 String ExtensionScriptTracker::ExtensionScriptInStack(
-    StackType stack_type,
     MonkeyPatchableApi ignore_monkey_patch) {
   v8::Isolate* isolate = GetIsolate();
   if (!isolate) {
@@ -69,7 +68,7 @@ String ExtensionScriptTracker::ExtensionScriptInStack(
   }
   LazyStackTrace stack_trace(isolate);
   std::optional<V8ScriptId> marked_script =
-      GetMarkedScriptInStack(stack_type, stack_trace, ignore_monkey_patch);
+      GetMarkedScriptInStack(stack_trace, ignore_monkey_patch);
   return GetExtensionIdForScript(marked_script);
 }
 

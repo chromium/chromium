@@ -183,7 +183,6 @@ Node::InsertionNotificationRequest HTMLVideoElement::InsertedInto(
         AdTracker::AdScriptAncestry ad_script_ancestry;
         if (!IsAdRelated() &&
             ad_tracker->IsAdScriptInStack(
-                AdTracker::StackType::kTopOnly,
                 /*ignore_monkey_patch=*/
                 AdTracker::MonkeyPatchableApi::kNodeAppendChild,
                 &ad_script_ancestry)) {

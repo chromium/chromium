@@ -1211,7 +1211,6 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     }
 
     caused_by_ad = ad_tracker->IsAdScriptInStack(
-        AdTracker::StackType::kTopOnly,
         /*ignore_monkey_patch=*/monkey_patchable_api);
   }
 
