@@ -267,11 +267,22 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "interval",
                    base::Seconds(5));
 
-BASE_FEATURE_PARAM(int,
-                   kInfiniteTabsFreezingOnMemoryPressurePercent,
-                   &kInfiniteTabsFreezingOnMemoryPressure,
-                   "percent_threshold",
-                   15);
+// On Windows, memory is swapped to disk once available physical memory drops
+// below ~10%, and swapping continues until available memory is back to 15%.
+// If available memory drops to e.g. 12%, no swapping occurs and there is no
+// reason to freeze tabs. Once it drops below 10%, Windows swaps until
+// available memory recovers to 15%, so tabs remain frozen until then.
+BASE_FEATURE_PARAM(
+    int,
+    kInfiniteTabsFreezingOnMemoryPressureEnterAvailableMemoryPercent,
+    &kInfiniteTabsFreezingOnMemoryPressure,
+    10);
+
+BASE_FEATURE_PARAM(
+    int,
+    kInfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent,
+    &kInfiniteTabsFreezingOnMemoryPressure,
+    15);
 
 BASE_FEATURE(kDisablePeriodicUnfreezeOnCriticalMemoryPressure,
              base::FEATURE_DISABLED_BY_DEFAULT);

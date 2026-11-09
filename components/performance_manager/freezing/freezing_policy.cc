@@ -1484,20 +1484,26 @@ void FreezingPolicy::CheckAvailableMemory() {
 
 void FreezingPolicy::UpdateStateFromAvailableMemoryPercent(
     int available_memory_percent) {
-  // The moderate pressure threshold value is lifted from the default logic in
-  // SystemMemoryPressureEvaluator. It was determined experimentally to ensure
-  // sufficient responsiveness of the memory pressure subsystem with minimal
-  // overhead.
-  const int freeze_threshold_percent =
-      features::kInfiniteTabsFreezingOnMemoryPressurePercent.Get();
+  const int enter_threshold_percent =
+      features::kInfiniteTabsFreezingOnMemoryPressureEnterAvailableMemoryPercent
+          .Get();
+  const int exit_threshold_percent = std::max(
+      enter_threshold_percent,
+      features::kInfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent
+          .Get());
   const int critical_threshold_percent =
       features::kDisablePeriodicUnfreezeOnCriticalMemoryPressurePercent.Get();
+
+  const bool was_active =
+      infinite_tab_freezing_status_ != InfiniteTabFreezingStatus::kInactive;
+  const int active_threshold_percent =
+      was_active ? exit_threshold_percent : enter_threshold_percent;
 
   const bool is_active =
       base::FeatureList::IsEnabled(features::kInfiniteTabsFreezing) ||
       (base::FeatureList::IsEnabled(
            features::kInfiniteTabsFreezingOnMemoryPressure) &&
-       available_memory_percent < freeze_threshold_percent);
+       available_memory_percent < active_threshold_percent);
 
   InfiniteTabFreezingStatus new_status = InfiniteTabFreezingStatus::kInactive;
   if (is_active) {

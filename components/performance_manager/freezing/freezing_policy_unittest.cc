@@ -2131,8 +2131,30 @@ class
          {features::kDisablePeriodicUnfreezeOnCriticalMemoryPressure,
           {{features::kDisablePeriodicUnfreezeOnCriticalMemoryPressurePercent
                 .name,
-            "10"}}}},
+            "8"}}}},
         {features::kInfiniteTabsFreezing});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class InfiniteTabsFreezingOnMemoryPressureInvertedUnfreezeThresholdTest
+    : public InfiniteTabsFreezingTestBase {
+ protected:
+  InfiniteTabsFreezingOnMemoryPressureInvertedUnfreezeThresholdTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kInfiniteTabsFreezingOnMemoryPressure,
+          {{features::
+                kInfiniteTabsFreezingOnMemoryPressureEnterAvailableMemoryPercent
+                    .name,
+            "20"},
+           {features::
+                kInfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent
+                    .name,
+            "15"}}}},
+        {features::kInfiniteTabsFreezing,
+         features::kDisablePeriodicUnfreezeOnCriticalMemoryPressure});
   }
 
  private:
@@ -2160,7 +2182,11 @@ TEST_F(InfiniteTabsFreezingOnMemoryPressureTest,
   ASSERT_FALSE(page->IsVisible());
 
   const int freeze_threshold =
-      features::kInfiniteTabsFreezingOnMemoryPressurePercent.Get();
+      features::kInfiniteTabsFreezingOnMemoryPressureEnterAvailableMemoryPercent
+          .Get();
+  const int unfreeze_threshold =
+      features::kInfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent
+          .Get();
 
   EXPECT_FALSE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
@@ -2173,7 +2199,7 @@ TEST_F(InfiniteTabsFreezingOnMemoryPressureTest,
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
   EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
-  policy()->UpdateStateFromAvailableMemoryPercentForTesting(freeze_threshold);
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(unfreeze_threshold);
   VerifyFreezerExpectations();
   EXPECT_FALSE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
@@ -2193,10 +2219,88 @@ TEST_F(InfiniteTabsFreezingOnMemoryPressureTest,
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
   EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(unfreeze_threshold);
+  VerifyFreezerExpectations();
+  EXPECT_FALSE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+}
+
+TEST_F(InfiniteTabsFreezingOnMemoryPressureTest,
+       AppliesHysteresisBetweenFreezeAndUnfreezeThresholds) {
+  auto [page, frame] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  ASSERT_FALSE(page->IsVisible());
+
+  const int freeze_threshold =
+      features::kInfiniteTabsFreezingOnMemoryPressureEnterAvailableMemoryPercent
+          .Get();
+  const int unfreeze_threshold =
+      features::kInfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent
+          .Get();
+  ASSERT_LT(freeze_threshold, unfreeze_threshold);
+
+  // Available memory inside the `[freeze_threshold, unfreeze_threshold)`
+  // hysteresis band does not trigger freezing when starting inactive.
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(unfreeze_threshold -
+                                                            1);
   policy()->UpdateStateFromAvailableMemoryPercentForTesting(freeze_threshold);
   VerifyFreezerExpectations();
   EXPECT_FALSE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+
+  // Dropping below `freeze_threshold` activates freezing.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(freeze_threshold -
+                                                            1);
+  VerifyFreezerExpectations();
+  EXPECT_TRUE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+
+  // Recovering into `[freeze_threshold, unfreeze_threshold)` keeps pages frozen
+  // without thrashing.
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(freeze_threshold);
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(unfreeze_threshold -
+                                                            1);
+  VerifyFreezerExpectations();
+  EXPECT_TRUE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+
+  // Reaching `unfreeze_threshold` deactivates freezing and unfreezes pages.
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(unfreeze_threshold);
+  VerifyFreezerExpectations();
+  EXPECT_FALSE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+
+  // Dipping back into `[freeze_threshold, unfreeze_threshold)` does not
+  // re-freeze pages.
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(unfreeze_threshold -
+                                                            1);
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(freeze_threshold);
+  VerifyFreezerExpectations();
+}
+
+TEST_F(InfiniteTabsFreezingOnMemoryPressureInvertedUnfreezeThresholdTest,
+       ClampsUnfreezeThresholdToFreezeThreshold) {
+  auto [page, frame] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  ASSERT_FALSE(page->IsVisible());
+
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(19);
+  VerifyFreezerExpectations();
+
+  // When `kInfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent` (15)
+  // is below `kInfiniteTabsFreezingOnMemoryPressureEnterAvailableMemoryPercent`
+  // (20), clamping prevents oscillating between frozen and unfrozen on
+  // consecutive samples in `[15, 20)`.
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(19);
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(15);
+  VerifyFreezerExpectations();
+
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(20);
+  VerifyFreezerExpectations();
 }
 
 TEST_F(InfiniteTabsFreezingOnMemoryPressureTest,
@@ -2206,7 +2310,11 @@ TEST_F(InfiniteTabsFreezingOnMemoryPressureTest,
   ASSERT_FALSE(page->IsVisible());
 
   const int freeze_threshold =
-      features::kInfiniteTabsFreezingOnMemoryPressurePercent.Get();
+      features::kInfiniteTabsFreezingOnMemoryPressureEnterAvailableMemoryPercent
+          .Get();
+  const int unfreeze_threshold =
+      features::kInfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent
+          .Get();
   const int critical_threshold =
       features::kDisablePeriodicUnfreezeOnCriticalMemoryPressurePercent.Get();
   ASSERT_LT(critical_threshold, freeze_threshold);
@@ -2219,7 +2327,7 @@ TEST_F(InfiniteTabsFreezingOnMemoryPressureTest,
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
   EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
-  policy()->UpdateStateFromAvailableMemoryPercentForTesting(freeze_threshold);
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(unfreeze_threshold);
   VerifyFreezerExpectations();
   EXPECT_FALSE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
@@ -2232,7 +2340,11 @@ TEST_F(InfiniteTabsFreezingOnMemoryPressureWithoutUnfreezeOnCriticalTest,
   ASSERT_FALSE(page->IsVisible());
 
   const int freeze_threshold =
-      features::kInfiniteTabsFreezingOnMemoryPressurePercent.Get();
+      features::kInfiniteTabsFreezingOnMemoryPressureEnterAvailableMemoryPercent
+          .Get();
+  const int unfreeze_threshold =
+      features::kInfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent
+          .Get();
   const int critical_threshold =
       features::kDisablePeriodicUnfreezeOnCriticalMemoryPressurePercent.Get();
   ASSERT_LT(critical_threshold, freeze_threshold);
@@ -2268,7 +2380,7 @@ TEST_F(InfiniteTabsFreezingOnMemoryPressureWithoutUnfreezeOnCriticalTest,
   VerifyFreezerExpectations();
 
   EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
-  policy()->UpdateStateFromAvailableMemoryPercentForTesting(freeze_threshold);
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(unfreeze_threshold);
   VerifyFreezerExpectations();
   EXPECT_FALSE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
@@ -2281,7 +2393,8 @@ TEST_F(InfiniteTabsFreezingOnMemoryPressureWithoutUnfreezeOnCriticalTest,
   ASSERT_FALSE(page->IsVisible());
 
   const int freeze_threshold =
-      features::kInfiniteTabsFreezingOnMemoryPressurePercent.Get();
+      features::kInfiniteTabsFreezingOnMemoryPressureEnterAvailableMemoryPercent
+          .Get();
   const int critical_threshold =
       features::kDisablePeriodicUnfreezeOnCriticalMemoryPressurePercent.Get();
   ASSERT_LT(critical_threshold, freeze_threshold);
@@ -2340,22 +2453,22 @@ TEST_F(
       CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
   ASSERT_FALSE(page->IsVisible());
 
-  // At 10% available memory, moderate freezing is active (< 15%) with periodic
-  // unfreezing still enabled (>= 10%).
+  // At 8% available memory, moderate freezing is active (< 10%) with periodic
+  // unfreezing still enabled (>= 8%).
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
-  policy()->UpdateStateFromAvailableMemoryPercentForTesting(10);
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(8);
   VerifyFreezerExpectations();
   EXPECT_TRUE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
-  // Dropping below the custom 10% critical threshold stops periodic unfreezing
-  // even though 9% is above the default 5% threshold.
-  policy()->UpdateStateFromAvailableMemoryPercentForTesting(9);
+  // Dropping below the custom 8% critical threshold stops periodic unfreezing
+  // even though 7% is above the default 5% threshold.
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(7);
   EXPECT_FALSE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
-  // Recovering to 10% resumes periodic unfreezing.
-  policy()->UpdateStateFromAvailableMemoryPercentForTesting(10);
+  // Recovering to 8% resumes periodic unfreezing.
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(8);
   EXPECT_TRUE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 }
@@ -2369,7 +2482,11 @@ TEST_F(InfiniteTabsFreezingBothFeaturesTest,
   VerifyFreezerExpectations();
 
   const int freeze_threshold =
-      features::kInfiniteTabsFreezingOnMemoryPressurePercent.Get();
+      features::kInfiniteTabsFreezingOnMemoryPressureEnterAvailableMemoryPercent
+          .Get();
+  const int unfreeze_threshold =
+      features::kInfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent
+          .Get();
 
   // A page that never had a reason change doesn't have a timer. Pressure
   // transitions shouldn't start one because the always-active feature already
@@ -2388,7 +2505,7 @@ TEST_F(InfiniteTabsFreezingBothFeaturesTest,
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
   EXPECT_FALSE(policy()->IsPeriodicUnfreezeTimerRunningForTesting(
       page_without_timer.get()));
-  policy()->UpdateStateFromAvailableMemoryPercentForTesting(freeze_threshold);
+  policy()->UpdateStateFromAvailableMemoryPercentForTesting(unfreeze_threshold);
   EXPECT_TRUE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
   EXPECT_FALSE(policy()->IsPeriodicUnfreezeTimerRunningForTesting(

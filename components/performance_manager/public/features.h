@@ -228,9 +228,17 @@ BASE_DECLARE_FEATURE(kInfiniteTabsFreezingOnMemoryPressure);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kInfiniteTabsFreezingOnMemoryPressureInterval);
 
-// The available physical memory percentage below which to trigger freezing when
-// enabled.
-BASE_DECLARE_FEATURE_PARAM(int, kInfiniteTabsFreezingOnMemoryPressurePercent);
+// The available physical memory percentage below which to enter freezing when
+// `kInfiniteTabsFreezingOnMemoryPressure` is enabled.
+BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kInfiniteTabsFreezingOnMemoryPressureEnterAvailableMemoryPercent);
+
+// The available physical memory percentage at or above which to exit freezing
+// when `kInfiniteTabsFreezingOnMemoryPressure` is enabled.
+BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kInfiniteTabsFreezingOnMemoryPressureExitAvailableMemoryPercent);
 
 // If enabled, periodic unfreezing of tabs is disabled while the system is under
 // critical memory pressure.
