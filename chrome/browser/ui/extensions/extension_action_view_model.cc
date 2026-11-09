@@ -759,7 +759,9 @@ void ExtensionActionViewModel::TriggerPopup(PopupShowAction show_action,
 
   content::WebContents* const web_contents = GetCurrentWebContents();
   const int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
-  CHECK(extension_action_->GetIsVisible(tab_id), base::NotFatalUntil::M162);
+  // TODO(crbug.com/580768670): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(extension_action_->GetIsVisible(tab_id));
   CHECK(extension_action_->HasPopup(tab_id), base::NotFatalUntil::M162);
 
   const GURL popup_url = extension_action_->GetPopupUrl(tab_id);
