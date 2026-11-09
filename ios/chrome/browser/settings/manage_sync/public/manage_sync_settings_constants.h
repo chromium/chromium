@@ -112,14 +112,8 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   // Personalize Google services item.
   PersonalizeGoogleServicesItemType,
   // SyncErrorsSectionIdentifier section.
-  // Sync errors.
-  PrimaryAccountMdmErrorItemType,
-  PrimaryAccountReauthErrorItemType,
-  ShowPassphraseDialogErrorItemType,
-  SyncNeedsTrustedVaultKeyErrorItemType,
-  SyncTrustedVaultRecoverabilityDegradedErrorItemType,
-  SyncDisabledByAdministratorErrorItemType,
-  BookmarksLimitExceededErrorItemType,
+  // Button to resolve the signed-in account error.
+  AccountErrorButtonItemType,
   // Indicates the errors related to the signed in account.
   AccountErrorMessageItemType,
   // BatchUploadSectionIdentifier section.

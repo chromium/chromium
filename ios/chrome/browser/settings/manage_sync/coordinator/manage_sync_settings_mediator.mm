@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/settings/manage_sync/coordinator/manage_sync_settings_mediator.h"
 
-#import <optional>
 #import <string>
 
 #import "base/apple/foundation_util.h"
@@ -17,7 +16,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
@@ -54,6 +52,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
@@ -99,8 +98,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 @property(nonatomic, strong) NSArray<TableViewItem*>* syncSwitchItems;
 // Encryption item.
 @property(nonatomic, strong) TableViewImageItem* encryptionItem;
-// Sync error item.
-@property(nonatomic, strong) TableViewItem* syncErrorItem;
 // Batch upload item.
 @property(nonatomic, strong) SettingsImageDetailTextItem* batchUploadItem;
 // Returns YES if the sync data items should be enabled.
@@ -142,6 +139,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       _subscriptionEligibilityObserver;
   // Signed-in identity. Note: may be nil while signing out.
   id<SystemIdentity> _signedInIdentity;
+  // The currently displayed account error UI info, or nil if no error is
+  // displayed.
+  AccountErrorUIInfo* _accountErrorUIInfo;
   // The currently displayed AI subscription tier.
   NSInteger _displayedAITier;
 }
@@ -209,6 +209,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   _subscriptionEligibilityObserver.reset();
   _subscriptionEligibilityService = nullptr;
   _signedInIdentity = nil;
+  _accountErrorUIInfo = nil;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -740,7 +741,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   // Batch upload option is not shown if sync is disabled by policy, if the
   // account is in a persistent error state that requires a user action, or if
   // there is no local data to offer the batch upload.
-  if (self.syncErrorItem || self.isSyncDisabledByAdministrator ||
+  if (_accountErrorUIInfo || self.isSyncDisabledByAdministrator ||
       (!_localPasswordsToUpload && !_localItemsToUpload)) {
     [self removeBatchUploadSectionNotifyConsumer:notifyConsumer];
     return;
@@ -962,13 +963,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case DataFromChromeSync:
     case ConnectedAppsItemType:
     case PersonalizeGoogleServicesItemType:
-    case PrimaryAccountMdmErrorItemType:
-    case PrimaryAccountReauthErrorItemType:
-    case ShowPassphraseDialogErrorItemType:
-    case SyncNeedsTrustedVaultKeyErrorItemType:
-    case SyncTrustedVaultRecoverabilityDegradedErrorItemType:
-    case SyncDisabledByAdministratorErrorItemType:
-    case BookmarksLimitExceededErrorItemType:
+    case AccountErrorButtonItemType:
     case SignOutItemFooterType:
     case TypesListHeaderOrFooterType:
     case AccountErrorMessageItemType:
@@ -1160,27 +1155,12 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
         [self.commandHandler openWebAppActivityDialog];
       }
       break;
-    case PrimaryAccountMdmErrorItemType: {
-      id<SystemIdentity> identity =
-          _authenticationService->GetPrimaryIdentity();
-      [self.syncErrorHandler openMDMErrorDialogWithSystemIdentity:identity];
-      break;
-    }
-    case PrimaryAccountReauthErrorItemType: {
-      [self.syncErrorHandler openPrimaryAccountReauthDialog];
-      break;
-    }
-    case ShowPassphraseDialogErrorItemType:
-      [self.syncErrorHandler openPassphraseDialogWithModalPresentation:YES];
-      break;
-    case SyncNeedsTrustedVaultKeyErrorItemType:
-      [self.syncErrorHandler openTrustedVaultReauthForFetchKeys];
-      break;
-    case SyncTrustedVaultRecoverabilityDegradedErrorItemType:
-      [self.syncErrorHandler openTrustedVaultReauthForDegradedRecoverability];
-      break;
-    case BookmarksLimitExceededErrorItemType:
-      [self.syncErrorHandler openBookmarksLimitExceededHelp];
+    case AccountErrorButtonItemType:
+      CHECK(_accountErrorUIInfo);
+      HandleIdentityErrorButtonTap(
+          _accountErrorUIInfo.errorType, _authenticationService,
+          self.syncErrorHandler,
+          syncer::IdentityErrorDisplaySurface::kSyncSettings);
       break;
     case SignOutItemType:
       [self.commandHandler signOutFromTargetRect:cellRect];
@@ -1208,7 +1188,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case ReadingListDataTypeItemType:
     case SettingsDataTypeItemType:
     case PaymentsDataTypeItemType:
-    case SyncDisabledByAdministratorErrorItemType:
     case SignOutItemFooterType:
     case TypesListHeaderOrFooterType:
     case AccountErrorMessageItemType:
@@ -1234,19 +1213,13 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   return syncErrorItem;
 }
 
-// Creates an error action button item to handle the indicated sync error type
-// for signed in users.
-- (TableViewItem*)createSyncErrorButtonItemWithItemType:(NSInteger)itemType
-                                          buttonLabelID:(int)buttonLabelID {
-  CHECK((itemType == PrimaryAccountMdmErrorItemType) ||
-        (itemType == PrimaryAccountReauthErrorItemType) ||
-        (itemType == ShowPassphraseDialogErrorItemType) ||
-        (itemType == SyncNeedsTrustedVaultKeyErrorItemType) ||
-        (itemType == SyncTrustedVaultRecoverabilityDegradedErrorItemType) ||
-        (itemType == BookmarksLimitExceededErrorItemType))
-      << "itemType: " << itemType;
+// Creates an error action button item to handle the current sync error for
+// signed in users.
+- (TableViewItem*)createSyncErrorButtonItemWithButtonLabelID:
+    (int)buttonLabelID {
   CHECK(self.accountStateSignedIn);
-  TableViewTextItem* item = [[TableViewTextItem alloc] initWithType:itemType];
+  TableViewTextItem* item =
+      [[TableViewTextItem alloc] initWithType:AccountErrorButtonItemType];
   item.text = l10n_util::GetNSString(buttonLabelID);
   item.textColor = [UIColor colorNamed:kBlueColor];
   item.accessibilityTraits = UIAccessibilityTraitButton;
@@ -1257,12 +1230,12 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 // Deletes the error section. If `notifyConsumer` is YES, the consumer is
 // notified about model changes.
 - (void)removeSyncErrorsSection:(BOOL)notifyConsumer {
+  _accountErrorUIInfo = nil;
   TableViewModel* model = self.consumer.tableViewModel;
   if (![model hasSectionForSectionIdentifier:SyncErrorsSectionIdentifier]) {
     return;
   }
   [model removeSectionWithIdentifier:SyncErrorsSectionIdentifier];
-  self.syncErrorItem = nil;
 
   // Remove the sync error section from the table view model.
   if (notifyConsumer) {
@@ -1273,8 +1246,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 // Loads the sync errors section.
 - (void)loadSyncErrorsSection {
   // The `self.consumer.tableViewModel` will be reset prior to this method.
-  // Ignore any previous value the `self.syncErrorItem` may have contained.
-  self.syncErrorItem = nil;
+  // Ignore any previous value `_accountErrorUIInfo` may have contained.
+  _accountErrorUIInfo = nil;
   [self updateSyncErrorsSectionWithNotifyConsumer:NO];
 }
 
@@ -1284,121 +1257,47 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   if (!self.accountStateSignedIn) {
     return;
   }
-  std::optional<SyncSettingsItemType> type = [self syncErrorItemType];
-  if (![self needsErrorSectionUpdate:type]) {
-    return;
-  }
-
-  TableViewModel* model = self.consumer.tableViewModel;
-  BOOL errorSectionPreviouslyExisted =
-      [model hasSectionForSectionIdentifier:SyncErrorsSectionIdentifier];
-  BOOL hasErrorNow = type.has_value();
 
   // The section is only displayed for user-actionable errors. Enterprise policy
-  // errors (`SyncDisabledByAdministratorErrorItemType`) do not show an error
-  // banner section.
-  BOOL showErrorSectionNow =
-      hasErrorNow && (type.value() != SyncDisabledByAdministratorErrorItemType);
+  // errors do not show an error banner section.
+  AccountErrorUIInfo* errorUIInfo = self.isSyncDisabledByAdministrator
+                                        ? nil
+                                        : GetAccountErrorUIInfo(_syncService);
+  if (errorUIInfo == _accountErrorUIInfo ||
+      [errorUIInfo isEqual:_accountErrorUIInfo]) {
+    return;
+  }
 
   // 1. Handle cases where the error section should not be displayed or needs to
   // be removed.
-  if (!showErrorSectionNow) {
-    if (errorSectionPreviouslyExisted) {
-      [self removeSyncErrorsSection:notifyConsumer];
-    }
-    self.syncErrorItem = nil;
+  if (!errorUIInfo) {
+    [self removeSyncErrorsSection:notifyConsumer];
     return;
   }
 
-  // 2. Fetch UI configuration info for the current sync error.
-  AccountErrorUIInfo* errorUIInfo = GetAccountErrorUIInfo(_syncService);
-  if (errorUIInfo == nil) {
-    if (errorSectionPreviouslyExisted) {
-      [self removeSyncErrorsSection:notifyConsumer];
-    } else {
-      self.syncErrorItem = nil;
-    }
-    return;
-  }
-
-  // 3. Prepare the table section structure.
-  if (errorSectionPreviouslyExisted) {
+  // 2. Prepare the table section structure.
+  TableViewModel* model = self.consumer.tableViewModel;
+  if ([model hasSectionForSectionIdentifier:SyncErrorsSectionIdentifier]) {
     [model deleteAllItemsFromSectionWithIdentifier:SyncErrorsSectionIdentifier];
   } else {
     [model insertSectionWithIdentifier:SyncErrorsSectionIdentifier atIndex:0];
   }
 
-  // 4. Construct and populate the error message and actionable button items.
+  // 3. Construct and populate the error message and actionable button items.
+  _accountErrorUIInfo = errorUIInfo;
   syncer::MaybeRecordIdentityErrorShown(
       syncer::IdentityErrorDisplaySurface::kSyncSettings,
       errorUIInfo.errorType);
-  self.syncErrorItem =
-      [self createSyncErrorButtonItemWithItemType:type.value()
-                                    buttonLabelID:errorUIInfo.buttonLabelID];
   [model addItem:[self createSyncErrorMessageItem:errorUIInfo.messageID]
       toSectionWithIdentifier:SyncErrorsSectionIdentifier];
-  [model addItem:self.syncErrorItem
+  [model addItem:[self createSyncErrorButtonItemWithButtonLabelID:
+                           errorUIInfo.buttonLabelID]
       toSectionWithIdentifier:SyncErrorsSectionIdentifier];
 
-  // 5. Batch notify the consumer of the collection updates.
+  // 4. Batch notify the consumer of the collection updates.
   if (notifyConsumer) {
     [self.consumer reloadTableData];
   }
-}
-
-// Returns the sync error item type or std::nullopt if the item
-// is not an actionable error.
-- (std::optional<SyncSettingsItemType>)syncErrorItemType {
-  if (self.isSyncDisabledByAdministrator) {
-    return SyncDisabledByAdministratorErrorItemType;
-  }
-  switch (_syncService->GetUserActionableError()) {
-    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate: {
-      BOOL isMDMError = NO;
-      if (!base::FeatureList::IsEnabled(
-              switches::kHandleMdmErrorsForDasherAccounts)) {
-        id<SystemIdentity> identity =
-            _authenticationService->GetPrimaryIdentity();
-        if (identity) {
-          isMDMError =
-              _authenticationService->HasCachedMDMErrorForIdentity(identity);
-        }
-      }
-      return isMDMError ? PrimaryAccountMdmErrorItemType
-                        : PrimaryAccountReauthErrorItemType;
-    }
-    case syncer::SyncService::UserActionableError::kDeviceManagementError:
-      return PrimaryAccountMdmErrorItemType;
-    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
-      return ShowPassphraseDialogErrorItemType;
-    case syncer::SyncService::UserActionableError::
-        kNeedsTrustedVaultKeyForPasswords:
-    case syncer::SyncService::UserActionableError::
-        kNeedsTrustedVaultKeyForEverything:
-      return SyncNeedsTrustedVaultKeyErrorItemType;
-    case syncer::SyncService::UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForPasswords:
-    case syncer::SyncService::UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForEverything:
-      return SyncTrustedVaultRecoverabilityDegradedErrorItemType;
-    case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
-      return BookmarksLimitExceededErrorItemType;
-    case syncer::SyncService::UserActionableError::kNone:
-    // UI not implemented for this case.
-    case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
-      return std::nullopt;
-  }
-  NOTREACHED();
-}
-
-// Returns whether the error state has changed since the last update.
-- (BOOL)needsErrorSectionUpdate:(std::optional<SyncSettingsItemType>)type {
-  BOOL shouldDisplayError =
-      type.has_value() && (type != SyncDisabledByAdministratorErrorItemType);
-  return (shouldDisplayError && !self.syncErrorItem) ||
-         (!shouldDisplayError && self.syncErrorItem) ||
-         (shouldDisplayError && self.syncErrorItem &&
-          type.value() != self.syncErrorItem.type);
 }
 
 // Returns YES if the given type is managed by policies (i.e. is not syncable)

@@ -532,6 +532,48 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncErrorTransition) {
           IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_MESSAGE));
 }
 
+// Tests that transitioning between two trusted vault key errors (for passwords
+// vs. for everything) updates the error message item in the error section.
+TEST_F(ManageSyncSettingsMediatorTest, SyncTrustedVaultErrorTransition) {
+  CreateManageSyncSettingsMediator();
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+  sync_service_->SetTrustedVaultKeyRequired(true);
+  sync_service_->SetIsUsingExplicitPassphrase(false);
+
+  // Loads the account settings page with kNeedsTrustedVaultKeyForPasswords.
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  ASSERT_TRUE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
+                                         SyncErrorsSectionIdentifier]);
+  NSArray* error_items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
+                                       SyncErrorsSectionIdentifier];
+  ASSERT_EQ(2UL, error_items.count);
+  EXPECT_NSEQ(
+      base::apple::ObjCCastStrict<SettingsImageDetailTextItem>(error_items[0])
+          .detailText,
+      l10n_util::GetNSString(
+          IDS_IOS_ACCOUNT_TABLE_ERROR_NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS_MESSAGE));
+
+  // Transition to kNeedsTrustedVaultKeyForEverything.
+  sync_service_->SetIsUsingExplicitPassphrase(true);
+  [mediator_ onSyncStateChanged];
+
+  ASSERT_TRUE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
+                                         SyncErrorsSectionIdentifier]);
+  error_items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
+                                       SyncErrorsSectionIdentifier];
+  ASSERT_EQ(2UL, error_items.count);
+  EXPECT_NSEQ(
+      base::apple::ObjCCastStrict<SettingsImageDetailTextItem>(error_items[0])
+          .detailText,
+      l10n_util::GetNSString(
+          IDS_IOS_ACCOUNT_TABLE_ERROR_NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING_MESSAGE));
+}
+
 // Tests that transitioning between different sync errors reloads the section
 // correctly without causing crashes, even when the view is attached to a
 // window.
