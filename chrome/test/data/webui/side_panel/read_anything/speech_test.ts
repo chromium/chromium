@@ -4,12 +4,11 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement, ContentController, NodeStore, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ContentType, playFromSelectionTimeout, SelectionController, setInstance, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentType, SelectionController, setInstance, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {emitEvent, setupAppTestEnvironment, setupBasicSpeech} from './common.js';
+import {emitEvent, playFromSelectionWithMockTimer, setupAppTestEnvironment, setupBasicSpeech} from './common.js';
 import type {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 // Integration tests for Read Aloud playback over real DOM content. Uses the
@@ -150,8 +149,6 @@ suite('Speech', () => {
   });
 
   suite('with text selected', () => {
-    let mockTimer: MockTimer;
-
     const fragment1 = ' This is a sentence';
     const fragment2 = ' that ends in the next node. ';
     const fragment3 =
@@ -187,14 +184,13 @@ suite('Speech', () => {
       select(
           anchorId, anchorOffset, focusId, focusOffset, isBackward,
           isSplitNode);
-      playFromSelection();
+      playFromSelectionWithMockTimer(app);
     }
 
     function select(
         anchorId: number, anchorOffset: number, focusId: number,
         focusOffset: number, isBackward: boolean = false,
         isSplitNode: boolean = false): void {
-      mockTimer.install();
       if (isSplitNode) {
         buildSplitNodeDOM();
       } else {
@@ -227,16 +223,7 @@ suite('Speech', () => {
           selectionController.getCurrentSelectionStart());
     }
 
-    function playFromSelection() {
-      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
-      mockTimer.tick(playFromSelectionTimeout);
-      mockTimer.uninstall();
-    }
-
-    setup(() => {
-      mockTimer = new MockTimer();
-      return microtasksFinished();
-    });
+    setup(() => microtasksFinished());
 
     test('first play starts from selected node', () => {
       selectAndPlay(5, 0, 5, 7);
@@ -273,7 +260,7 @@ suite('Speech', () => {
       speechController.setHasSpeechBeenTriggered(true);
       speech.reset();
 
-      playFromSelection();
+      playFromSelectionWithMockTimer(app);
 
       assertEquals(1, speech.getCallCount('cancel'));
       assertEquals(paragraph2[0], getSpokenText());
@@ -286,7 +273,7 @@ suite('Speech', () => {
       speechController.setHasSpeechBeenTriggered(true);
       speech.reset();
 
-      playFromSelection();
+      playFromSelectionWithMockTimer(app);
 
       assertEquals(1, speech.getCallCount('cancel'));
       assertEquals(paragraph2[0], getSpokenText());
@@ -298,7 +285,7 @@ suite('Speech', () => {
       speechController.setHasSpeechBeenTriggered(true);
       speech.reset();
 
-      playFromSelection();
+      playFromSelectionWithMockTimer(app);
 
       assertEquals(1, speech.getCallCount('cancel'));
       assertEquals(paragraph1[0], getSpokenText());

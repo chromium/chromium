@@ -6,7 +6,7 @@ import type {NodeStore, Segment, SpeechController, VoiceLanguageController, Word
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
-import {createSpeechErrorEvent, createSpeechSynthesisVoice, createWordBoundaryEvent, setContent, setupTestEnvironment} from './common.js';
+import {createSpeechErrorEvent, createSpeechSynthesisVoice, createWordBoundaryEvent, playWithMockTimer, setContent, setupTestEnvironment} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
@@ -927,18 +927,14 @@ suite('SpeechController', () => {
     const voice1 = createSpeechSynthesisVoice({lang: 'pt-pt', name: 'Donkey'});
     const voice2 = createSpeechSynthesisVoice({lang: 'pt-br', name: 'Corgi'});
     voiceLanguageController.setUserPreferredVoice(voice1);
-    let sentName = '';
-    let sentLang = '';
-    audioBrowserProxy.onVoiceChange = (name, lang) => {
-      sentName = name;
-      sentLang = lang;
-    };
+    audioBrowserProxy.resetResolver('onVoiceChange');
 
     speechController.onVoiceSelected(voice2);
 
     assertEquals(voice2, voiceLanguageController.getCurrentVoice());
-    assertEquals(voice2.name, sentName);
-    assertEquals(voice2.lang, sentLang);
+    assertDeepEquals(
+        [[voice2.name, voice2.lang]],
+        audioBrowserProxy.getArgs('onVoiceChange'));
   });
 
   test('onVoiceSelected resets word boundaries on different locale', () => {
@@ -1038,7 +1034,7 @@ suite('SpeechController', () => {
     assertEquals(0, metrics.getCallCount('recordSpeechStopSource'));
   });
 
-  test('playFromContentPosition logs selection metric', async () => {
+  test('playFromContentPosition logs selection metric', () => {
     const text = 'This is a selection.';
     setContent(text, readAloudModel);
     const node = nodeStore.getDomNode(2)!;  // setContent uses id 2
@@ -1047,11 +1043,7 @@ suite('SpeechController', () => {
     const element = document.createElement('p');
     element.textContent = text;
 
-    // Trigger play
-    speechController.onPlayPauseToggle(element);
-
-    // Wait for the setTimeout in playFromContentPosition_
-    await new Promise(resolve => setTimeout(resolve, 500));
+    playWithMockTimer(() => speechController.onPlayPauseToggle(element));
 
     assertEquals(1, metrics.getCallCount('incrementMetricCount'));
     assertEquals(
@@ -1059,7 +1051,7 @@ suite('SpeechController', () => {
         metrics.getArgs('incrementMetricCount')[0]);
   });
 
-  test('playFromContentPosition logs line focus metric', async () => {
+  test('playFromContentPosition logs line focus metric', () => {
     const text = 'Lost for kind words to say.';
     const element = document.createElement('p');
     const id = 2;
@@ -1078,11 +1070,7 @@ suite('SpeechController', () => {
     const position = document.caretPositionFromPoint(rect.left, rect.top);
     speechController.onLineFocusChange(position);
 
-    // Trigger play
-    speechController.onPlayPauseToggle(element);
-
-    // Wait for the setTimeout in playFromContentPosition_
-    await new Promise(resolve => setTimeout(resolve, 500));
+    playWithMockTimer(() => speechController.onPlayPauseToggle(element));
 
     assertEquals(1, metrics.getCallCount('incrementMetricCount'));
     assertEquals(

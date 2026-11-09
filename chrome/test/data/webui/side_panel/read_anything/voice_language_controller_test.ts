@@ -166,20 +166,14 @@ suite('VoiceLanguageController', () => {
   });
 
   test('setUserPreferredVoice', () => {
-    let sentVoiceName = '';
-    let sentLang = '';
-    audioBrowserProxy.onVoiceChange = (name, lang) => {
-      sentVoiceName = name;
-      sentLang = lang;
-    };
     const voice = createSpeechSynthesisVoice({lang: 'tr', name: 'Lion'});
 
     voiceLanguageController.setUserPreferredVoice(voice);
 
     assertTrue(onCurrentVoiceChange);
     assertEquals(voice, voiceLanguageController.getCurrentVoice());
-    assertEquals(voice.name, sentVoiceName);
-    assertEquals(voice.lang, sentLang);
+    assertArrayEquals(
+        [[voice.name, voice.lang]], audioBrowserProxy.getArgs('onVoiceChange'));
   });
 
   test('restoreFromPrefs removes unavailable languages from prefs', () => {

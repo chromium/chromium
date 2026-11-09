@@ -44,10 +44,8 @@ suite('RateMenuElement', () => {
   test('ChromeOS number of rate options correct', () => {
     // Should include 0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4
     const expectedRateOptions = 8;
-    const rateOptions =
-        rateMenu.$.menu.$.lazyMenu.get().querySelectorAll<HTMLElement>(
-            '.dropdown-item');
-    assertEquals(expectedRateOptions, rateOptions.length);
+    assertEquals(
+        expectedRateOptions, getItemsInMenu(rateMenu.$.menu.$.lazyMenu).length);
   });
   // </if>
 
@@ -55,10 +53,8 @@ suite('RateMenuElement', () => {
   test('Non-ChromeOS number of rate options correct', () => {
     // Should include 0.5, 0.8, 1, 1.2, 1.5, 2.
     const expectedRateOptions = 6;
-    const rateOptions =
-        rateMenu.$.menu.$.lazyMenu.get().querySelectorAll<HTMLElement>(
-            '.dropdown-item');
-    assertEquals(expectedRateOptions, rateOptions.length);
+    assertEquals(
+        expectedRateOptions, getItemsInMenu(rateMenu.$.menu.$.lazyMenu).length);
   });
   // </if>
 });

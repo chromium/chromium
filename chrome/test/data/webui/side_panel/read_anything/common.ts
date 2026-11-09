@@ -175,12 +175,18 @@ export function stubAnimationFrame() {
   };
 }
 
-export function playFromSelectionWithMockTimer(app: AppElement): void {
+// Runs `play` and skips the delay before playing from a selection or line
+// focus position.
+export function playWithMockTimer(play: () => void): void {
   const mockTimer = new MockTimer();
   mockTimer.install();
-  emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+  play();
   mockTimer.tick(playFromSelectionTimeout);
   mockTimer.uninstall();
+}
+
+export function playFromSelectionWithMockTimer(app: AppElement): void {
+  playWithMockTimer(() => emitEvent(app, ToolbarEvent.PLAY_PAUSE));
 }
 
 // Returns the list of items in the given dropdown menu

@@ -9,7 +9,7 @@ import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {setupTestEnvironment, stubAnimationFrame} from './common.js';
+import {getItemsInMenu, setupTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 
 suite('HighlightMenuElement', () => {
@@ -40,10 +40,8 @@ suite('HighlightMenuElement', () => {
 
     createHighlightMenu();
 
-    const menu = highlightMenu.$.menu.$.lazyMenu.get();
-    const options =
-        Array.from(menu.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
-    const titles = options.map(button => button.textContent?.trim());
+    const titles = getItemsInMenu(highlightMenu.$.menu.$.lazyMenu)
+                       .map(button => button.textContent?.trim());
     assertEquals(5, titles.length);
     assertTrue(titles.includes('Phrase'));
   });
@@ -53,10 +51,8 @@ suite('HighlightMenuElement', () => {
 
     createHighlightMenu();
 
-    const menu = highlightMenu.$.menu.$.lazyMenu.get();
-    const options =
-        Array.from(menu.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
-    const titles = options.map(button => button.textContent?.trim());
+    const titles = getItemsInMenu(highlightMenu.$.menu.$.lazyMenu)
+                       .map(button => button.textContent?.trim());
     assertEquals(4, titles.length);
     assertFalse(titles.includes('Phrase'));
   });
