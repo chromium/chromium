@@ -216,7 +216,12 @@ TestRenderFrameHost* TestRenderFrameHost::AppendChildWithPolicy(
                           {},
                           blink::mojom::DeferredFetchPolicy::kDisabled}),
       blink::mojom::FrameOwnerProperties(),
-      blink::FrameOwnerElementType::kIframe, ukm::kInvalidSourceId);
+      blink::FrameOwnerElementType::kIframe, ukm::kInvalidSourceId,
+      // The renderer always sends a sandbox origin token for new child frames
+      // (see FrameRoutingInfo), which the browser uses if the child's initial
+      // empty document is sandboxed. Do the same here.
+      std::make_unique<base::UnguessableToken>(
+          base::UnguessableToken::Create()));
   return static_cast<TestRenderFrameHost*>(
       child_creation_observer_.last_created_frame());
 }
