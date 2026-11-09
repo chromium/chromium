@@ -1098,6 +1098,20 @@ class FullWebUIOmniboxInteractiveTestBase
             "WaitForPopupWidgetActive"));
   }
 
+  // On ChromeOS, waits until immersive fullscreen has hidden top chrome. A
+  // no-op elsewhere.
+  auto WaitForImmersiveTopChromeHidden() {
+#if BUILDFLAG(IS_CHROMEOS)
+    return Steps(PollUntil(
+        [this]() {
+          return !ImmersiveModeController::From(browser())->IsRevealed();
+        },
+        "WaitForImmersiveTopChromeHidden"));
+#else
+    return Steps();
+#endif
+  }
+
   auto WaitForBrowserActive() {
     return Do([this]() {
       browser()->GetWindow()->Activate();
@@ -3226,6 +3240,77 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       CheckResult([this]() { return IsBrowserOrPopupActive(second_browser_); },
                   true, "SecondBrowserStaysActive"));
 }
+
+// Verifies that the popup stays over the location bar as the immersive reveal
+// slides top chrome out and back in.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       PopupFollowsLocationBarDuringImmersiveReveal) {
+  // The popup widget's offset from the location bar, if the popup is open.
+  auto get_popup_offset = [this]() -> std::optional<gfx::Vector2d> {
+    views::Widget* popup_widget = GetPopupWidget(browser());
+    if (!popup_widget || !popup_widget->IsVisible()) {
+      return std::nullopt;
+    }
+    const gfx::Point location_bar_origin =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetLocationBar()
+            ->BoundsInScreen()
+            .origin();
+    return popup_widget->GetWindowBoundsInScreen().origin() -
+           location_bar_origin;
+  };
+  std::optional<gfx::Vector2d> initial_offset;
+  auto is_aligned = [&]() { return get_popup_offset() == initial_offset; };
+  auto is_revealed = [this]() {
+    return ImmersiveModeController::From(browser())->IsRevealed();
+  };
+  // `IsRevealed()` is true as soon as the reveal starts, so also wait for top
+  // chrome to finish sliding in, i.e. for the location bar to stop moving.
+  std::optional<int> location_bar_y;
+  auto location_bar_settled = [&]() {
+    const int y = BrowserView::GetBrowserViewForBrowser(browser())
+                      ->GetLocationBar()
+                      ->BoundsInScreen()
+                      .y();
+    const bool settled = location_bar_y == y;
+    location_bar_y = y;
+    return settled;
+  };
+  auto reveal = [&]() {
+    return ImmersiveModeController::From(browser())->GetRevealedLock(
+        ImmersiveModeController::ANIMATE_REVEAL_YES);
+  };
+  std::unique_ptr<ImmersiveRevealedLock> revealed_lock;
+  RunTestSequence(
+      FocusOmniboxOnInitialNtp(kTab1), WaitForPopupActive(),
+      Do([&]() { initial_offset = get_popup_offset(); }),
+      CheckResult([&]() { return initial_offset.has_value(); }, true,
+                  "HasInitialOffset"),
+      ClickWebPageBody(kTab1), WaitForPopupDismissed(),
+      Do([this]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); }),
+      WaitForImmersiveTopChromeHidden(), WaitForPopupTransitionLockout(),
+      // Reveal top chrome and leave a popup open for an unfocused draft.
+      Do([&]() { revealed_lock = reveal(); }),
+      PollUntil(is_revealed, "WaitForTopChromeRevealed"),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_L,
+                   ui::EF_PLATFORM_ACCELERATOR),
+      WaitForPopupActive(), InputWebUIText("test draft"),
+      WaitForWebUIInputValue("test draft"), ClickWebPageBody(kTab1),
+      WaitForVisibleOmniboxUnfocused(),
+      CheckPopupState(OmniboxPopupState::kFull),
+      // Slide top chrome out, then back in, with the popup open.
+      Do([&]() { revealed_lock.reset(); }), WaitForImmersiveTopChromeHidden(),
+      PollUntil(is_aligned, "WaitForPopupAlignedAfterHide"),
+      CheckPopupState(OmniboxPopupState::kFull), Do([&]() {
+        location_bar_y.reset();
+        revealed_lock = reveal();
+      }),
+      PollUntil(is_revealed, "WaitForTopChromeRevealedAgain"),
+      PollUntil(location_bar_settled, "WaitForLocationBarSettled"),
+      PollUntil(is_aligned, "WaitForPopupAlignedAfterReveal"),
+      CheckPopupState(OmniboxPopupState::kFull));
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Verifies that while the popup is collapsed (no dropdown), it does not extend

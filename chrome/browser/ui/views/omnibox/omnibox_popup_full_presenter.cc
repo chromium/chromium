@@ -147,6 +147,12 @@ void OmniboxPopupFullPresenter::Show() {
         app_menu_control_observation_.Observe(
             browser_view->toolbar_button_provider()->GetAppMenuControl());
       }
+#if BUILDFLAG(IS_CHROMEOS)
+      if (browser_view->top_container() &&
+          !top_container_observation_.IsObserving()) {
+        top_container_observation_.Observe(browser_view->top_container());
+      }
+#endif
       if (auto* elements =
               BrowserElementsViews::From(browser_view->browser())) {
         for (views::View* view :
@@ -178,6 +184,9 @@ void OmniboxPopupFullPresenter::Hide() {
   }
   app_menu_control_observation_.Reset();
   occluding_view_observations_.RemoveAllObservations();
+#if BUILDFLAG(IS_CHROMEOS)
+  top_container_observation_.Reset();
+#endif
   UpdatePopupOcclusion();
 
   event_monitor_.reset();
@@ -984,11 +993,26 @@ void OmniboxPopupFullPresenter::OnViewVisibilityChanged(
 
 void OmniboxPopupFullPresenter::OnViewBoundsChanged(
     views::View* observed_view) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Keep the popup over the location bar as the immersive fullscreen reveal
+  // slides top chrome in or out.
+  if (top_container_observation_.IsObservingSource(observed_view) &&
+      IsShown()) {
+    SynchronizePopupBounds();
+  }
+#endif
   UpdatePopupOcclusion();
 }
 
 void OmniboxPopupFullPresenter::OnViewIsDeleting(views::View* observed_view) {
-  occluding_view_observations_.RemoveObservation(observed_view);
+#if BUILDFLAG(IS_CHROMEOS)
+  if (top_container_observation_.IsObservingSource(observed_view)) {
+    top_container_observation_.Reset();
+  }
+#endif
+  if (occluding_view_observations_.IsObservingSource(observed_view)) {
+    occluding_view_observations_.RemoveObservation(observed_view);
+  }
   UpdatePopupOcclusion();
 }
 

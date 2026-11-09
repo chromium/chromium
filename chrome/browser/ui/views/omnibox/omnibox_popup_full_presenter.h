@@ -12,6 +12,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "ui/events/event_observer.h"
@@ -212,6 +213,12 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // shown. See `UpdatePopupOcclusion()`.
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       occluding_view_observations_{this};
+#if BUILDFLAG(IS_CHROMEOS)
+  // Observed while shown: the immersive reveal moves the top container
+  // without resizing the location bar.
+  base::ScopedObservation<views::View, views::ViewObserver>
+      top_container_observation_{this};
+#endif
 
   // Used to determine where a click event happened to decide if the popup
   // should be deactivated.
