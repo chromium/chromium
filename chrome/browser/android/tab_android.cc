@@ -646,7 +646,8 @@ tabs::TabDestroyStatus TabAndroid::DestroyWebContents() {
   bool fast_shutdown_succeeded =
       process && process->FastShutdownIfPossible(1, false);
 
-  if (!fast_shutdown_succeeded && enable_graceful_shutdown && web_contents()) {
+  if (!fast_shutdown_succeeded && enable_graceful_shutdown && web_contents() &&
+      !web_contents()->GetBrowserContext()->ShutdownStarted()) {
     return DestroyWebContentsSlowShutdown();
   }
 
