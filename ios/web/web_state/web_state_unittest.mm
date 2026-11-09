@@ -181,13 +181,7 @@ TEST_F(WebStateTest, Snapshot) {
 }
 
 // Tests that `CreatePdf()` returns a PDF of a rendered HTML page.
-// TODO(crbug.com/433740395): Re-enable tests
-#if TARGET_OS_SIMULATOR
-#define MAYBE_CreatePdfValidUrl CreatePdfValidUrl
-#else
-#define MAYBE_CreatePdfValidUrl DISABLED_CreatePdfValidUrl
-#endif
-TEST_F(WebStateTest, MAYBE_CreatePdfValidUrl) {
+TEST_F(WebStateTest, CreatePdfValidUrl) {
   UIWindow* window = GetAnyKeyWindow();
   [window addSubview:web_state()->GetView()];
   ASSERT_TRUE(LoadHtml("<html><div style='background-color:#FF0000; width:50%; "
