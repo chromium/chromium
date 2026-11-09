@@ -2536,6 +2536,14 @@ void ContextualTasksWebContentsUserData::
               : lens::LensOverlayContextualInputUploadType::
                     CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
       added->set_contextual_input_upload_type(upload_type);
+      if (file_info.viewport_request_id.has_value()) {
+        auto* viewport_added = on_submit_response->add_added_contexts();
+        viewport_added->set_search_session_id(session_id);
+        *viewport_added->mutable_request_id() = *file_info.viewport_request_id;
+        viewport_added->mutable_request_id()->set_media_type(
+            lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+        viewport_added->set_contextual_input_upload_type(upload_type);
+      }
       const bool is_implicit =
           is_implicit_upload || upload_type !=
                                     lens::LensOverlayContextualInputUploadType::

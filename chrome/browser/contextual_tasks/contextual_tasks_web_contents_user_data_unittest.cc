@@ -834,9 +834,14 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   file3_implicit.is_implicit_upload = true;
   lens::LensOverlayRequestId req3;
   req3.set_context_id(303);
+  req3.set_media_type(lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE);
   file3_implicit.request_id = req3;
   file3_implicit.upload_status =
       contextual_search::ContextUploadStatus::kUploadSuccessful;
+  lens::LensOverlayRequestId viewport_req3;
+  viewport_req3.set_uuid(304);
+  viewport_req3.set_context_id(303);
+  file3_implicit.viewport_request_id = viewport_req3;
   file3_implicit.input_data = std::make_unique<lens::ContextualInputData>();
   file3_implicit.input_data->is_implicit_upload = true;
   file3_implicit.input_data->upload_type =
@@ -861,8 +866,19 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   user_data->AppendTabContextsToOnSubmitQueryResponseForTesting(
       &response_message, session_handle_ptr, std::nullopt);
 
-  EXPECT_EQ(response_message.on_submit_query_response().added_contexts_size(),
-            3);
+  const auto& response = response_message.on_submit_query_response();
+  ASSERT_EQ(response.added_contexts_size(), 4);
+  EXPECT_EQ(response.added_contexts(2).request_id().context_id(), 303);
+  EXPECT_EQ(response.added_contexts(2).request_id().media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE);
+  EXPECT_EQ(response.added_contexts(3).search_session_id(), "mock_session_id");
+  EXPECT_EQ(response.added_contexts(3).request_id().uuid(), 304u);
+  EXPECT_EQ(response.added_contexts(3).request_id().context_id(), 303);
+  EXPECT_EQ(response.added_contexts(3).request_id().media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  EXPECT_EQ(response.added_contexts(3).contextual_input_upload_type(),
+            lens::LensOverlayContextualInputUploadType::
+                CONTEXTUAL_INPUT_UPLOAD_TYPE_RECONTEXTUALIZATION);
   histogram_tester.ExpectUniqueSample(
       "ContextualTasks.TabCoins.AttachedCountAtSubmission", 3, 1);
   histogram_tester.ExpectUniqueSample(
