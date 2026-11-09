@@ -160,6 +160,25 @@ class FailingServiceEndpointRequestImpl
   const int error_;
 };
 
+// Similar to FailingRequestImpl, but for MdnsListener.
+class FailingMdnsListenerImpl : public HostResolver::MdnsListener {
+ public:
+  explicit FailingMdnsListenerImpl(int error) : error_(error) {}
+
+  FailingMdnsListenerImpl(const FailingMdnsListenerImpl&) = delete;
+  FailingMdnsListenerImpl& operator=(const FailingMdnsListenerImpl&) = delete;
+
+  ~FailingMdnsListenerImpl() override = default;
+
+  int Start(Delegate* delegate) override {
+    DCHECK(delegate);
+    return error_;
+  }
+
+ private:
+  const int error_;
+};
+
 void GetTimeDeltaFromDictString(const base::DictValue& args,
                                 std::string_view key,
                                 base::TimeDelta* out) {
@@ -642,6 +661,12 @@ HostResolver::CreateFailingProbeRequest(int error) {
 std::unique_ptr<HostResolver::ServiceEndpointRequest>
 HostResolver::CreateFailingServiceEndpointRequest(int error) {
   return std::make_unique<FailingServiceEndpointRequestImpl>(error);
+}
+
+// static
+std::unique_ptr<HostResolver::MdnsListener>
+HostResolver::CreateFailingMdnsListener(int error) {
+  return std::make_unique<FailingMdnsListenerImpl>(error);
 }
 
 }  // namespace net

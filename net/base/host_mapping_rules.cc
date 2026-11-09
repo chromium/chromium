@@ -5,18 +5,20 @@
 #include "net/base/host_mapping_rules.h"
 
 #include <string>
+#include <string_view>
+#include <utility>
 
 #include "base/logging.h"
 #include "base/strings/pattern.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/url_util.h"
-#include "url/gurl.h"
-#include "url/third_party/mozilla/url_parse.h"
+#include "url/scheme_host_port.h"
 #include "url/url_canon.h"
+#include "url/url_constants.h"
+#include "url/url_util.h"
 
 namespace net {
 
@@ -74,33 +76,64 @@ bool HostMappingRules::RewriteHost(HostPortPair* host_port) const {
   return false;
 }
 
-HostMappingRules::RewriteResult HostMappingRules::RewriteUrl(GURL& url) const {
-  // Must be a valid and standard URL. Otherwise, Chrome might not know how to
-  // find/replace the contained host or port.
-  DCHECK(url.is_valid());
-  DCHECK(url.IsStandard());
-  DCHECK(url.has_host());
-
-  HostPortPair host_port_pair = HostPortPair::FromURL(url);
-  if (!RewriteHost(&host_port_pair))
+HostMappingRules::RewriteResult HostMappingRules::RewriteSchemeHostPort(
+    url::SchemeHostPort& scheme_host_port) const {
+  if (!scheme_host_port.IsValid() || scheme_host_port.host().empty()) {
     return RewriteResult::kNoMatchingRule;
+  }
 
-  GURL::Replacements replacements;
-  std::string port_str = base::NumberToString(host_port_pair.port());
-  replacements.SetPortStr(port_str);
-  std::string host_str = host_port_pair.HostForURL();
-  replacements.SetHostStr(host_str);
-  GURL new_url = url.ReplaceComponents(replacements);
+  std::string canonicalized_input_host;
+  std::string_view host = scheme_host_port.host();
+  if (!url::IsStandard(scheme_host_port.scheme())) {
+    // Local non-standard schemes (url::GetLocalSchemes()) skip
+    // IsCanonicalHost in url::SchemeHostPort, so canonicalize before matching
+    // lowercased rules or constructing HostPortPair (whose HostForURL()
+    // asserts against embedded NULs and unmatched leading '[').
+    url::CanonHostInfo input_host_info;
+    canonicalized_input_host = CanonicalizeHost(host, &input_host_info);
+    if (input_host_info.family == url::CanonHostInfo::BROKEN ||
+        canonicalized_input_host.empty()) {
+      return RewriteResult::kNoMatchingRule;
+    }
+    host = canonicalized_input_host;
+  }
+  if (host.size() >= 2 && host.front() == '[' && host.back() == ']') {
+    host = host.substr(1, host.size() - 2);
+  }
 
-  if (!new_url.is_valid())
+  HostPortPair host_port_pair(host, scheme_host_port.port());
+  if (!RewriteHost(&host_port_pair)) {
+    return RewriteResult::kNoMatchingRule;
+  }
+
+  if (host_port_pair.host() == "^NOTFOUND") {
     return RewriteResult::kInvalidRewrite;
+  }
 
-  DCHECK(new_url.IsStandard());
-  DCHECK(new_url.has_host());
-  DCHECK_EQ(url.EffectiveIntPort() == url::PORT_UNSPECIFIED,
-            new_url.EffectiveIntPort() == url::PORT_UNSPECIFIED);
+  url::CanonHostInfo host_info;
+  std::string canonicalized_host =
+      scheme_host_port.scheme() == url::kFileScheme
+          ? CanonicalizeFileHost(host_port_pair.HostForURL(), &host_info)
+          : CanonicalizeHost(host_port_pair.HostForURL(), &host_info);
+  if (host_info.family == url::CanonHostInfo::BROKEN ||
+      canonicalized_host.empty()) {
+    return RewriteResult::kInvalidRewrite;
+  }
 
-  url = std::move(new_url);
+  uint16_t port = host_port_pair.port();
+  url::SchemeType scheme_type = url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
+  if (url::GetStandardSchemeType(scheme_host_port.scheme(), &scheme_type) &&
+      scheme_type == url::SCHEME_WITH_HOST) {
+    port = 0;
+  }
+
+  url::SchemeHostPort rewritten(scheme_host_port.scheme(), canonicalized_host,
+                                port);
+  if (!rewritten.IsValid()) {
+    return RewriteResult::kInvalidRewrite;
+  }
+
+  scheme_host_port = std::move(rewritten);
   return RewriteResult::kRewritten;
 }
 

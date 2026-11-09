@@ -692,6 +692,7 @@ class NET_EXPORT HostResolver {
   static std::unique_ptr<ProbeRequest> CreateFailingProbeRequest(int error);
   static std::unique_ptr<ServiceEndpointRequest>
   CreateFailingServiceEndpointRequest(int error);
+  static std::unique_ptr<MdnsListener> CreateFailingMdnsListener(int error);
 };
 
 }  // namespace net

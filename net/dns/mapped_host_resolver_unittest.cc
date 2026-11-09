@@ -28,6 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
+#include "url/url_util.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -572,6 +573,183 @@ TEST_F(MappedHostResolverTest, ServiceEndpointRequest) {
       *resolver, *mock_resolver_ptr,
       url::SchemeHostPort(url::kHttpScheme, "bad2.test", 81),
       base::unexpected(ERR_NAME_NOT_RESOLVED), /*skip_host_lookup_check=*/true);
+}
+
+TEST_F(MappedHostResolverTest, HandlesNonStandardSchemeHostPort) {
+  auto resolver_impl =
+      std::make_unique<MockHostResolver>(ERR_NAME_NOT_RESOLVED);
+  resolver_impl->rules()->AddRule("unmapped.test", "192.168.1.30");
+  resolver_impl->rules()->AddRule("remapped.test", "192.168.1.31");
+  MockHostResolver* mock_resolver_ptr = resolver_impl.get();
+
+  auto resolver =
+      std::make_unique<MappedHostResolver>(std::move(resolver_impl));
+  ASSERT_TRUE(resolver->AddRuleFromString("MAP mapped.test remapped.test"));
+
+  {
+    // Local non-standard schemes preserve host and port on `SchemeHostPort`
+    // while `GURL::IsStandard()` is false. Both `CreateRequest` and
+    // `CreateServiceEndpointRequest` must handle unmapped and mapped hosts
+    // without hitting `GURL::IsStandard()` checks.
+    url::ScopedSchemeRegistryForTests scoped_registry;
+    url::AddLocalScheme("localnonstd");
+
+    url::SchemeHostPort unmapped_shp("localnonstd", "unmapped.test", 8080);
+    ASSERT_TRUE(unmapped_shp.IsValid());
+    RunServiceEndpointTests(*resolver, *mock_resolver_ptr, unmapped_shp,
+                            MakeIPEndPoint("192.168.1.30", 8080));
+
+    url::SchemeHostPort mapped_shp("localnonstd", "mapped.test", 8081);
+    ASSERT_TRUE(mapped_shp.IsValid());
+    RunServiceEndpointTests(*resolver, *mock_resolver_ptr, mapped_shp,
+                            MakeIPEndPoint("192.168.1.31", 8081));
+
+    // Opaque-host non-standard schemes preserve uppercase ASCII in
+    // `SchemeHostPort`, which must still match lowercased `MAP` rules on the
+    // scheme-carrying `HostResolver` entry points.
+    url::SchemeHostPort uppercase_shp("localnonstd", "Mapped.TEST", 8082);
+    ASSERT_TRUE(uppercase_shp.IsValid());
+    RunServiceEndpointTestForHost(*resolver, *mock_resolver_ptr,
+                                  HostResolver::Host(uppercase_shp),
+                                  MakeIPEndPoint("192.168.1.31", 8082));
+    {
+      std::unique_ptr<HostResolver::ResolveHostRequest> request =
+          resolver->CreateRequest(uppercase_shp, NetworkAnonymizationKey(),
+                                  handles::kInvalidNetworkHandle,
+                                  NetLogWithSource(), std::nullopt);
+      TestCompletionCallback callback;
+      ASSERT_THAT(callback.GetResult(request->Start(callback.callback())),
+                  IsOk());
+      EXPECT_THAT(request->GetAddressResults(),
+                  testing::ElementsAre(MakeIPEndPoint("192.168.1.31", 8082)));
+    }
+
+    // Even with a wildcard rule, malformed non-standard hosts (e.g. from Mojo)
+    // must not match or hit `HostPortPair::HostForURL()` assertions, and must
+    // fail cleanly with `ERR_NAME_NOT_RESOLVED`.
+    ASSERT_TRUE(resolver->AddRuleFromString("MAP * remapped.test"));
+    for (const std::string& bad_host :
+         {std::string("[foo:bar"), std::string("foo\0bar", 7)}) {
+      url::SchemeHostPort broken_shp("localnonstd", bad_host, 8083);
+      ASSERT_TRUE(broken_shp.IsValid());
+
+      std::unique_ptr<HostResolver::ResolveHostRequest> request =
+          resolver->CreateRequest(broken_shp, NetworkAnonymizationKey(),
+                                  handles::kInvalidNetworkHandle,
+                                  NetLogWithSource(), std::nullopt);
+      TestCompletionCallback callback;
+      EXPECT_THAT(callback.GetResult(request->Start(callback.callback())),
+                  IsError(ERR_NAME_NOT_RESOLVED));
+
+      std::unique_ptr<HostResolver::ServiceEndpointRequest> endpoint_request =
+          resolver->CreateServiceEndpointRequest(
+              HostResolver::Host(broken_shp), NetworkAnonymizationKey(),
+              handles::kInvalidNetworkHandle, NetLogWithSource(),
+              HostResolver::ResolveHostParameters());
+      TestServiceEndpointRequestDelegate delegate(std::move(endpoint_request));
+      EXPECT_THAT(delegate.StartAndWaitForResult(),
+                  IsError(ERR_NAME_NOT_RESOLVED));
+    }
+  }
+
+  {
+    // Android WebView non-standard schemes discard host and port (`host() ==
+    // ""`) while keeping `SchemeHostPort::IsValid()` true. Both request paths
+    // must fail cleanly with `ERR_NAME_NOT_RESOLVED` without crashing.
+    url::ScopedSchemeRegistryForTests scoped_registry;
+    url::EnableNonStandardSchemesForAndroidWebView();
+
+    url::SchemeHostPort webview_shp("nonstd", "mapped.test", 8081);
+    ASSERT_TRUE(webview_shp.IsValid());
+    ASSERT_TRUE(webview_shp.host().empty());
+
+    std::unique_ptr<HostResolver::ResolveHostRequest> request =
+        resolver->CreateRequest(webview_shp, NetworkAnonymizationKey(),
+                                handles::kInvalidNetworkHandle,
+                                NetLogWithSource(), std::nullopt);
+    TestCompletionCallback callback;
+    EXPECT_THAT(callback.GetResult(request->Start(callback.callback())),
+                IsError(ERR_NAME_NOT_RESOLVED));
+
+    std::unique_ptr<HostResolver::ServiceEndpointRequest> endpoint_request =
+        resolver->CreateServiceEndpointRequest(
+            HostResolver::Host(webview_shp), NetworkAnonymizationKey(),
+            handles::kInvalidNetworkHandle, NetLogWithSource(),
+            HostResolver::ResolveHostParameters());
+    TestServiceEndpointRequestDelegate delegate(std::move(endpoint_request));
+    EXPECT_THAT(delegate.StartAndWaitForResult(),
+                IsError(ERR_NAME_NOT_RESOLVED));
+  }
+}
+
+class TestMdnsListenerDelegate : public HostResolver::MdnsListener::Delegate {
+ public:
+  void OnAddressResult(MdnsListenerUpdateType update_type,
+                       DnsQueryType query_type,
+                       IPEndPoint address) override {
+    addresses_.push_back(address);
+  }
+  void OnTextResult(MdnsListenerUpdateType update_type,
+                    DnsQueryType query_type,
+                    std::vector<std::string> text_records) override {}
+  void OnHostnameResult(MdnsListenerUpdateType update_type,
+                        DnsQueryType query_type,
+                        HostPortPair host) override {}
+  void OnUnhandledResult(MdnsListenerUpdateType update_type,
+                         DnsQueryType query_type) override {}
+
+  const std::vector<IPEndPoint>& addresses() const { return addresses_; }
+
+ private:
+  std::vector<IPEndPoint> addresses_;
+};
+
+TEST_F(MappedHostResolverTest, CreateMdnsListenerForwardsToImpl) {
+  auto resolver_impl = std::make_unique<MockHostResolver>();
+  MockHostResolver* mock_resolver_ptr = resolver_impl.get();
+  auto resolver =
+      std::make_unique<MappedHostResolver>(std::move(resolver_impl));
+  resolver->SetRulesFromString(
+      "MAP blocked.local ^NOTFOUND, "
+      "MAP *.local target.local:8080, "
+      "EXCLUDE printer.local");
+
+  // Excluded host passes through unchanged (both host and port).
+  TestMdnsListenerDelegate excluded_delegate;
+  std::unique_ptr<HostResolver::MdnsListener> excluded_listener =
+      resolver->CreateMdnsListener(HostPortPair("printer.local", 80),
+                                   DnsQueryType::A);
+  ASSERT_THAT(excluded_listener->Start(&excluded_delegate), IsOk());
+  mock_resolver_ptr->TriggerMdnsListeners(
+      HostPortPair("printer.local", 80), DnsQueryType::A,
+      MdnsListenerUpdateType::kAdded, MakeIPEndPoint("192.168.1.50", 80));
+  EXPECT_THAT(excluded_delegate.addresses(),
+              testing::ElementsAre(MakeIPEndPoint("192.168.1.50", 80)));
+
+  // Matched host rewrites both hostname and replacement port.
+  TestMdnsListenerDelegate mapped_delegate;
+  std::unique_ptr<HostResolver::MdnsListener> mapped_listener =
+      resolver->CreateMdnsListener(HostPortPair("alias.local", 80),
+                                   DnsQueryType::A);
+  ASSERT_THAT(mapped_listener->Start(&mapped_delegate), IsOk());
+  mock_resolver_ptr->TriggerMdnsListeners(
+      HostPortPair("target.local", 80), DnsQueryType::A,
+      MdnsListenerUpdateType::kAdded, MakeIPEndPoint("192.168.1.51", 80));
+  EXPECT_TRUE(mapped_delegate.addresses().empty());
+  mock_resolver_ptr->TriggerMdnsListeners(
+      HostPortPair("target.local", 8080), DnsQueryType::A,
+      MdnsListenerUpdateType::kAdded, MakeIPEndPoint("192.168.1.51", 8080));
+  EXPECT_THAT(mapped_delegate.addresses(),
+              testing::ElementsAre(MakeIPEndPoint("192.168.1.51", 8080)));
+
+  // Mapping to "^NOTFOUND" fails immediately on `Start()` with
+  // `ERR_NAME_NOT_RESOLVED` without registering an underlying listener.
+  TestMdnsListenerDelegate blocked_delegate;
+  std::unique_ptr<HostResolver::MdnsListener> blocked_listener =
+      resolver->CreateMdnsListener(HostPortPair("blocked.local", 80),
+                                   DnsQueryType::A);
+  EXPECT_THAT(blocked_listener->Start(&blocked_delegate),
+              IsError(ERR_NAME_NOT_RESOLVED));
 }
 
 }  // namespace
