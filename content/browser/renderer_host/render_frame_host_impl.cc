@@ -6151,41 +6151,34 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
       (active_sandbox_flags() & network::mojom::WebSandboxFlags::kOrigin);
 
   url::Origin new_frame_origin;
-  if (base::FeatureList::IsEnabled(
-          blink::features::kUseSandboxTokenForOriginDerivation)) {
-    if (new_frame_should_be_sandboxed) {
-      if (sandbox_origin_token) {
-        // Child iframes always receive a token during creation, so verify
-        // we are in a child iframe.
-        CHECK(parent_);
-        last_sandbox_origin_token_for_testing_ = *sandbox_origin_token;
-        new_frame_origin = content::SandboxedOpaqueOriginCreator::
-            CreateOriginForSandboxedFrame(
-                base::PassKey<RenderFrameHostImpl>(), *sandbox_origin_token,
-                creator_origin.GetTupleOrPrecursorTupleIfOpaque());
-      } else {
-        // When no sandbox origin token is provided for a sandboxed window,
-        // generate one now and use it to create the sandboxed origin. This
-        // only happens for renderer-initiated top-level windows
-        // (window.open()). Child iframes always receive a token during
-        // creation, so verify we're not in the child iframe path.
-        CHECK(!parent_);
-        auto token = std::make_unique<base::UnguessableToken>(
-            base::UnguessableToken::Create());
-        last_sandbox_origin_token_for_testing_ = *token;
-        new_frame_origin = content::SandboxedOpaqueOriginCreator::
-            CreateOriginForSandboxedFrame(
-                base::PassKey<RenderFrameHostImpl>(), *token,
-                creator_origin.GetTupleOrPrecursorTupleIfOpaque());
-        GetPage().SetSandboxOriginTokenForPopup(std::move(token));
-      }
+  if (new_frame_should_be_sandboxed) {
+    if (sandbox_origin_token) {
+      // Child iframes always receive a token during creation, so verify
+      // we are in a child iframe.
+      CHECK(parent_);
+      last_sandbox_origin_token_for_testing_ = *sandbox_origin_token;
+      new_frame_origin =
+          content::SandboxedOpaqueOriginCreator::CreateOriginForSandboxedFrame(
+              base::PassKey<RenderFrameHostImpl>(), *sandbox_origin_token,
+              creator_origin.GetTupleOrPrecursorTupleIfOpaque());
     } else {
-      new_frame_origin = creator_origin;
+      // When no sandbox origin token is provided for a sandboxed window,
+      // generate one now and use it to create the sandboxed origin. This
+      // only happens for renderer-initiated top-level windows
+      // (window.open()). Child iframes always receive a token during
+      // creation, so verify we're not in the child iframe path.
+      CHECK(!parent_);
+      auto token = std::make_unique<base::UnguessableToken>(
+          base::UnguessableToken::Create());
+      last_sandbox_origin_token_for_testing_ = *token;
+      new_frame_origin =
+          content::SandboxedOpaqueOriginCreator::CreateOriginForSandboxedFrame(
+              base::PassKey<RenderFrameHostImpl>(), *token,
+              creator_origin.GetTupleOrPrecursorTupleIfOpaque());
+      GetPage().SetSandboxOriginTokenForPopup(std::move(token));
     }
   } else {
-    new_frame_origin = new_frame_should_be_sandboxed
-                           ? creator_origin.DeriveNewOpaqueOrigin()
-                           : creator_origin;
+    new_frame_origin = creator_origin;
   }
 
   isolation_info_ = ComputeIsolationInfoInternal(
@@ -16996,17 +16989,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
       // or derived from a sandbox origin token that the browser also sends to
       // the renderer.
       bool origin_matches = params->origin == last_committed_origin_;
-      if (!origin_matches &&
-          !base::FeatureList::IsEnabled(
-              blink::features::kUseSandboxTokenForOriginDerivation)) {
-        // Without sandbox origin tokens, the browser and the renderer derive
-        // opaque origins with different nonces, so only compare precursors.
-        // TODO(crbug.com/402272788): Remove along with the feature.
-        origin_matches =
-            params->origin.opaque() && last_committed_origin_.opaque() &&
-            params->origin.GetTupleOrPrecursorTupleIfOpaque() ==
-                last_committed_origin_.GetTupleOrPrecursorTupleIfOpaque();
-      }
       if (!origin_matches && params->origin.opaque() &&
           !params->origin.GetTupleOrPrecursorTupleIfOpaque().IsValid()) {
         // Temporarily allow nonces to differ for opaque origins without a

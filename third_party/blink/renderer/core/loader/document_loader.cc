@@ -2556,27 +2556,21 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     // use `origin_to_commit_`, which is already opaque.
     scoped_refptr<SecurityOrigin> sandbox_origin;
 
-    if (base::FeatureList::IsEnabled(
-            blink::features::kUseSandboxTokenForOriginDerivation)) {
-      if (origin_to_commit_) {
-        sandbox_origin = origin_to_commit_;
-      } else {
-        // The token is only set for the initial empty document of sandboxed
-        // frames/windows, so verify we're in that state.
-        CHECK(GetFrameLoader().IsOnInitialEmptyDocument());
-        CHECK(url_.IsAboutBlankUrl() || url_.IsEmpty());
-        // Create a new opaque origin using the provided nonce token for
-        // sandboxed frames that require specific origin generation.
-        auto sandbox_origin_token = std::move(sandbox_origin_token_);
-        CHECK(sandbox_origin_token);
-        sandbox_origin =
-            SandboxedOpaqueSecurityOriginCreator::CreateOriginForSandboxedFrame(
-                base::PassKey<DocumentLoader>(), *sandbox_origin_token,
-                origin.get());
-      }
+    if (origin_to_commit_) {
+      sandbox_origin = origin_to_commit_;
     } else {
-      sandbox_origin = origin_to_commit_ ? origin_to_commit_
-                                         : origin->DeriveNewOpaqueOrigin();
+      // The token is only set for the initial empty document of sandboxed
+      // frames/windows, so verify we're in that state.
+      CHECK(GetFrameLoader().IsOnInitialEmptyDocument());
+      CHECK(url_.IsAboutBlankUrl() || url_.IsEmpty());
+      // Create a new opaque origin using the provided nonce token for
+      // sandboxed frames that require specific origin generation.
+      auto sandbox_origin_token = std::move(sandbox_origin_token_);
+      CHECK(sandbox_origin_token);
+      sandbox_origin =
+          SandboxedOpaqueSecurityOriginCreator::CreateOriginForSandboxedFrame(
+              base::PassKey<DocumentLoader>(), *sandbox_origin_token,
+              origin.get());
     }
 
     CHECK(sandbox_origin->IsOpaque());

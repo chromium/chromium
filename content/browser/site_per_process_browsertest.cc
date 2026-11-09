@@ -5253,14 +5253,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(popup_origin.opaque());
   EXPECT_EQ(url::SchemeHostPort(main_url),
             popup_origin.GetTupleOrPrecursorTupleIfOpaque());
-  if (base::FeatureList::IsEnabled(
-          blink::features::kUseSandboxTokenForOriginDerivation)) {
-    const std::optional<base::UnguessableToken> token =
-        foo_root->current_frame_host()->last_sandbox_origin_token_for_testing();
-    ASSERT_TRUE(token.has_value());
-    ASSERT_TRUE(popup_origin.GetNonceForTesting());
-    EXPECT_EQ(*token, *popup_origin.GetNonceForTesting());
-  }
+  const std::optional<base::UnguessableToken> token =
+      foo_root->current_frame_host()->last_sandbox_origin_token_for_testing();
+  ASSERT_TRUE(token.has_value());
+  ASSERT_TRUE(popup_origin.GetNonceForTesting());
+  EXPECT_EQ(*token, *popup_origin.GetNonceForTesting());
 }
 
 // Test that subresources with certificate errors get reported to the

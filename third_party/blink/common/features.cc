@@ -1804,11 +1804,6 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE(kUseAncestorRenderFrameForWorker,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable deriving sandboxed frame origins from browser-generated tokens
-// instead of renderer-calculated opaque origins.
-BASE_FEATURE(kUseSandboxTokenForOriginDerivation,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrecompileInlineScripts, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether we should composite a PLSA (paint layer scrollable area) even if it
