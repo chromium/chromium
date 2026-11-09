@@ -34,6 +34,7 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"
+#include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/contextual_search_types.h"
@@ -980,6 +981,16 @@ void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest(
     return;
   }
 
+  base::RecordAction(base::UserMetricsAction(
+      "ContextualTasks.Composebox.UserAction.QuerySubmitted"));
+  if (auto* browser = GetBrowserWindowInterface()) {
+    auto* controller = ContextualTasksPanelController::From(browser);
+    if (controller && controller->IsPanelOpenForContextualTask() &&
+        controller->GetActiveWebContents() == &GetWebContents()) {
+      controller->OnAiInteraction();
+    }
+  }
+
   // Read the Lens state now, since it may change while contextualizing.
   std::optional<base::UnguessableToken> overlay_token = GetLensOverlayToken();
   std::vector<lens::AddedContext> lens_added_contexts =
@@ -1094,6 +1105,7 @@ void ContextualTasksWebContentsUserData::MaybeFinishPendingSubmit() {
     return;
   }
   PendingSubmit submit = *std::exchange(pending_submit_, std::nullopt);
+  const size_t query_text_length = submit.query_text.size();
 
   const bool has_lens_added_context = !submit.lens_added_contexts.empty();
   lens::ClientToSearchMessage response_message;
@@ -1104,6 +1116,13 @@ void ContextualTasksWebContentsUserData::MaybeFinishPendingSubmit() {
   }
   auto* session_handle = GetOrCreateContextualSessionHandle();
   if (session_handle) {
+    if (auto* metrics_recorder = session_handle->GetMetricsRecorder()) {
+      if (metrics_recorder->source() !=
+          contextual_search::ContextualSearchSource::kContextualTasks) {
+        metrics_recorder->UpdateContextualSearchSource(
+            contextual_search::ContextualSearchSource::kContextualTasks);
+      }
+    }
     if (!submit.query_text.empty()) {
       ThreadTurn turn;
       turn.query = std::move(submit.query_text);
@@ -1129,12 +1148,8 @@ void ContextualTasksWebContentsUserData::MaybeFinishPendingSubmit() {
                                *submit.overlay_token)) {
       submitted_tokens.push_back(*submit.overlay_token);
     }
-    // The page owns the query text, so no query length metrics are recorded
-    // here. This moves the uploaded tabs into the session's persisted tabs so
-    // they are tracked across turns and are not re-added on the next
-    // submission.
     session_handle->MarkQuerySubmitted(std::move(submitted_tokens),
-                                       /*query_text_length=*/std::nullopt);
+                                       query_text_length);
   }
 
   // Submission moved the uploaded tabs into the session's persisted tabs, so

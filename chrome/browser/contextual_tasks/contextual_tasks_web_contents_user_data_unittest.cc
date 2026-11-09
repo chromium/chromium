@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
@@ -15,10 +16,12 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_controller.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_search/pref_names.h"
@@ -3162,6 +3165,73 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   ASSERT_EQ(submit_responses.size(), 1u);
 
   user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       HandleOnSubmitQueryRequest_RecordsSubmitMetricsAndPanelInteraction) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  ui::UnownedUserDataHost unowned_user_data_host;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
+      &mock_browser_window);
+  ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillByDefault(testing::Return(web_contents_));
+  webui::SetBrowserWindowInterface(web_contents_, &mock_browser_window);
+
+  auto metrics_recorder =
+      std::make_unique<contextual_search::ContextualSearchMetricsRecorder>(
+          contextual_search::ContextualSearchSource::kOmnibox);
+  metrics_recorder->NotifySessionStateChanged(
+      contextual_search::SessionState::kSessionStarted);
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, GetMetricsRecorder())
+      .WillByDefault(testing::Return(metrics_recorder.get()));
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle), nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+  user_data->SetSearchMessageDispatcherForTesting(base::DoNothing());
+
+  EXPECT_CALL(mock_panel_controller, OnAiInteraction()).Times(1);
+
+  content::WebContentsTester::For(web_contents_)
+      ->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("hello world");
+
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.Composebox.UserAction.QuerySubmitted"),
+            1);
+  EXPECT_EQ(metrics_recorder->source(),
+            contextual_search::ContextualSearchSource::kContextualTasks);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.Query.TextLength.ContextualTasks", 11, 1);
+
+  ON_CALL(*mock_handle, GetMetricsRecorder())
+      .WillByDefault(testing::Return(nullptr));
+  metrics_recorder.reset();
+  histogram_tester.ExpectTotalCount(
+      "ContextualSearch.Session.Duration.Abandoned.ContextualTasks", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualSearch.Session.Duration.QuerySubmitted.ContextualTasks", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.Session.QueryCount.ContextualTasks", 1, 1);
+
+  user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+  webui::SetBrowserWindowInterface(web_contents_, nullptr);
 }
 #endif
 
