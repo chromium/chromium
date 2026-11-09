@@ -16,27 +16,22 @@ class ProfileIOS;
 
 // Type of the callbacks that can be registered as a testing factory
 // for a ProfileKeyedServiceFactoryIOS sub-class.
-// TODO(crbug.com/576182342): Remove ByRef/ByPtr variants once tests
-// have been converted to accept the profile as ProfileIOS& (ByRef).
+using KeyedServiceTestingFactoryIOS =
+    base::OnceCallback<std::unique_ptr<KeyedService>(ProfileIOS&)>;
+
+// TODO(crbug.com/576182342): remove this definition when all tests have
+// been converted to use KeyedServiceTestingFactoryIOS instead.
 using KeyedServiceTestingFactoryIOSByPtr =
     base::OnceCallback<std::unique_ptr<KeyedService>(ProfileIOS*)>;
 
-using KeyedServiceTestingFactoryIOSByRef =
-    base::OnceCallback<std::unique_ptr<KeyedService>(ProfileIOS&)>;
-
-using KeyedServiceTestingFactoryIOS = KeyedServiceTestingFactoryIOSByRef;
-
 // Type of the callbacks that can be registered as a testing factory
 // for a RefcountedKeyedServiceFactoryIOS sub-class.
-// TODO(crbug.com/576182342): Remove ByRef/ByPtr variants once tests
-// have been converted to accept the profile as ProfileIOS& (ByRef).
-using RefcountedKeyedServiceTestingFactoryIOSByPtr =
-    base::OnceCallback<scoped_refptr<RefcountedKeyedService>(ProfileIOS*)>;
-
-using RefcountedKeyedServiceTestingFactoryIOSByRef =
+using RefcountedKeyedServiceTestingFactoryIOS =
     base::OnceCallback<scoped_refptr<RefcountedKeyedService>(ProfileIOS&)>;
 
-using RefcountedKeyedServiceTestingFactoryIOS =
-    RefcountedKeyedServiceTestingFactoryIOSByRef;
+// TODO(crbug.com/576182342): remove this definition when all tests have
+// been converted to use KeyedServiceTestingFactoryIOS instead.
+using RefcountedKeyedServiceTestingFactoryIOSByPtr =
+    base::OnceCallback<scoped_refptr<RefcountedKeyedService>(ProfileIOS*)>;
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_TEST_TESTING_FACTORIES_H_

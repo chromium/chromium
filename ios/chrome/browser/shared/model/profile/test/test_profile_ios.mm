@@ -53,31 +53,59 @@ void AssignTestingFactories(
   }
 }
 
+// Converts a `testing_factory` into a KeyedServiceTestingFactoryIOS.
+KeyedServiceTestingFactoryIOS IntoByRef(
+    KeyedServiceTestingFactoryIOSByPtr testing_factory) {
+  if (!testing_factory) {
+    return {};
+  }
+
+  return base::BindOnce(
+      [](KeyedServiceTestingFactoryIOSByPtr testing_factory,
+         ProfileIOS& profile) {
+        return std::move(testing_factory).Run(&profile);
+      },
+      std::move(testing_factory));
+}
+
+// Converts a `testing_factory` into a RefcountedKeyedServiceTestingFactoryIOS.
+RefcountedKeyedServiceTestingFactoryIOS IntoByRef(
+    RefcountedKeyedServiceTestingFactoryIOSByPtr testing_factory) {
+  if (!testing_factory) {
+    return {};
+  }
+
+  return base::BindOnce(
+      [](RefcountedKeyedServiceTestingFactoryIOSByPtr testing_factory,
+         ProfileIOS& profile) {
+        return std::move(testing_factory).Run(&profile);
+      },
+      std::move(testing_factory));
+}
+
 }  // namespace
 
 TestProfileIOS::TestingFactory::TestingFactory(
     ProfileKeyedServiceFactoryIOS* service_factory,
-    KeyedServiceTestingFactoryIOSByPtr testing_factory)
+    KeyedServiceTestingFactoryIOS testing_factory)
+    : service_factory_and_testing_factory(
+          std::make_pair(service_factory, std::move(testing_factory))) {}
+
+TestProfileIOS::TestingFactory::TestingFactory(
+    RefcountedProfileKeyedServiceFactoryIOS* service_factory,
+    RefcountedKeyedServiceTestingFactoryIOS testing_factory)
     : service_factory_and_testing_factory(
           std::make_pair(service_factory, std::move(testing_factory))) {}
 
 TestProfileIOS::TestingFactory::TestingFactory(
     ProfileKeyedServiceFactoryIOS* service_factory,
-    KeyedServiceTestingFactoryIOSByRef testing_factory)
-    : service_factory_and_testing_factory(
-          std::make_pair(service_factory, std::move(testing_factory))) {}
+    KeyedServiceTestingFactoryIOSByPtr testing_factory)
+    : TestingFactory(service_factory, IntoByRef(std::move(testing_factory))) {}
 
 TestProfileIOS::TestingFactory::TestingFactory(
     RefcountedProfileKeyedServiceFactoryIOS* service_factory,
     RefcountedKeyedServiceTestingFactoryIOSByPtr testing_factory)
-    : service_factory_and_testing_factory(
-          std::make_pair(service_factory, std::move(testing_factory))) {}
-
-TestProfileIOS::TestingFactory::TestingFactory(
-    RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-    RefcountedKeyedServiceTestingFactoryIOSByRef testing_factory)
-    : service_factory_and_testing_factory(
-          std::make_pair(service_factory, std::move(testing_factory))) {}
+    : TestingFactory(service_factory, IntoByRef(std::move(testing_factory))) {}
 
 TestProfileIOS::TestingFactory::TestingFactory(TestingFactory&&) = default;
 
@@ -338,34 +366,6 @@ TestProfileIOS::Builder& TestProfileIOS::Builder::operator=(Builder&&) =
     default;
 
 TestProfileIOS::Builder::~Builder() = default;
-
-TestProfileIOS::Builder& TestProfileIOS::Builder::AddTestingFactory(
-    ProfileKeyedServiceFactoryIOS* service_factory,
-    KeyedServiceTestingFactoryIOSByPtr testing_factory) {
-  testing_factories_.emplace_back(service_factory, std::move(testing_factory));
-  return *this;
-}
-
-TestProfileIOS::Builder& TestProfileIOS::Builder::AddTestingFactory(
-    ProfileKeyedServiceFactoryIOS* service_factory,
-    KeyedServiceTestingFactoryIOSByRef testing_factory) {
-  testing_factories_.emplace_back(service_factory, std::move(testing_factory));
-  return *this;
-}
-
-TestProfileIOS::Builder& TestProfileIOS::Builder::AddTestingFactory(
-    RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-    RefcountedKeyedServiceTestingFactoryIOSByPtr testing_factory) {
-  testing_factories_.emplace_back(service_factory, std::move(testing_factory));
-  return *this;
-}
-
-TestProfileIOS::Builder& TestProfileIOS::Builder::AddTestingFactory(
-    RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-    RefcountedKeyedServiceTestingFactoryIOSByRef testing_factory) {
-  testing_factories_.emplace_back(service_factory, std::move(testing_factory));
-  return *this;
-}
 
 TestProfileIOS::Builder& TestProfileIOS::Builder::AddTestingFactories(
     TestingFactories testing_factories) {

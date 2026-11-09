@@ -40,18 +40,21 @@ class TestProfileIOS final : public ProfileIOS {
   // AddTestingFactories(). See example call in the method's comment.
   struct TestingFactory {
     TestingFactory(ProfileKeyedServiceFactoryIOS* service_factory,
+                   KeyedServiceTestingFactoryIOS testing_factory);
+
+    TestingFactory(RefcountedProfileKeyedServiceFactoryIOS* service_factory,
+                   RefcountedKeyedServiceTestingFactoryIOS testing_factory);
+
+    // TODO(crbug.com/576182342): remove this overload when all tests have
+    // been converted to use KeyedServiceTestingFactoryIOS instead.
+    TestingFactory(ProfileKeyedServiceFactoryIOS* service_factory,
                    KeyedServiceTestingFactoryIOSByPtr testing_factory);
 
-    TestingFactory(ProfileKeyedServiceFactoryIOS* service_factory,
-                   KeyedServiceTestingFactoryIOSByRef testing_factory);
-
+    // TODO(crbug.com/576182342): remove this overload when all tests have
+    // been converted to use RefcountedKeyedServiceTestingFactoryIOS instead.
     TestingFactory(
         RefcountedProfileKeyedServiceFactoryIOS* service_factory,
         RefcountedKeyedServiceTestingFactoryIOSByPtr testing_factory);
-
-    TestingFactory(
-        RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-        RefcountedKeyedServiceTestingFactoryIOSByRef testing_factory);
 
     TestingFactory(TestingFactory&&);
     TestingFactory& operator=(TestingFactory&&);
@@ -59,13 +62,9 @@ class TestProfileIOS final : public ProfileIOS {
     ~TestingFactory();
 
     std::variant<std::pair<ProfileKeyedServiceFactoryIOS*,
-                           KeyedServiceTestingFactoryIOSByPtr>,
-                 std::pair<ProfileKeyedServiceFactoryIOS*,
-                           KeyedServiceTestingFactoryIOSByRef>,
+                           KeyedServiceTestingFactoryIOS>,
                  std::pair<RefcountedProfileKeyedServiceFactoryIOS*,
-                           RefcountedKeyedServiceTestingFactoryIOSByPtr>,
-                 std::pair<RefcountedProfileKeyedServiceFactoryIOS*,
-                           RefcountedKeyedServiceTestingFactoryIOSByRef>>
+                           RefcountedKeyedServiceTestingFactoryIOS>>
         service_factory_and_testing_factory;
   };
 
@@ -164,18 +163,13 @@ class TestProfileIOS final : public ProfileIOS {
 
     // Adds a testing factory to the TestProfileIOS. These testing factories
     // are installed before the Profile's KeyedServices are created.
-    Builder& AddTestingFactory(
-        ProfileKeyedServiceFactoryIOS* service_factory,
-        KeyedServiceTestingFactoryIOSByPtr testing_factory);
-    Builder& AddTestingFactory(
-        ProfileKeyedServiceFactoryIOS* service_factory,
-        KeyedServiceTestingFactoryIOSByRef testing_factory);
-    Builder& AddTestingFactory(
-        RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-        RefcountedKeyedServiceTestingFactoryIOSByPtr testing_factory);
-    Builder& AddTestingFactory(
-        RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-        RefcountedKeyedServiceTestingFactoryIOSByRef testing_factory);
+    template <typename ServiceFactory, typename TestingFactory>
+    Builder& AddTestingFactory(ServiceFactory* service_factory,
+                               TestingFactory testing_factory) {
+      testing_factories_.emplace_back(service_factory,
+                                      std::move(testing_factory));
+      return *this;
+    }
 
     // Adds multiple testing factories to TestProfileIOS. These testing
     // factories are installed before the Profile's KeyedServices are created.

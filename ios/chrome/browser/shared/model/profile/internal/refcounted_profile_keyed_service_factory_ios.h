@@ -69,8 +69,6 @@ class RefcountedProfileKeyedServiceFactoryIOS
   // ProfileIOS instance. This is used for testing where the test wants
   // to create a specific test double for a service.
   using TestingFactory = RefcountedKeyedServiceTestingFactoryIOS;
-  using TestingFactoryByPtr = RefcountedKeyedServiceTestingFactoryIOSByPtr;
-  using TestingFactoryByRef = RefcountedKeyedServiceTestingFactoryIOSByRef;
 
   // Constructor accepts zero or more traits.
   template <typename... Traits>
@@ -93,11 +91,7 @@ class RefcountedProfileKeyedServiceFactoryIOS
   // SetTestingFactory() are allowed; previous services will be shut down.
   void SetTestingFactory(PassKey pass_key,
                          ProfileIOS& profile,
-                         TestingFactoryByPtr testing_factory);
-
-  void SetTestingFactory(PassKey pass_key,
-                         ProfileIOS& profile,
-                         TestingFactoryByRef testing_factory);
+                         TestingFactory testing_factory);
 
  protected:
   // Helper that casts the value returned by GetKeyedServiceForProfile() to the

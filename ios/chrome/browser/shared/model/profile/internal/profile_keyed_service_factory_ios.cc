@@ -16,30 +16,15 @@
 
 namespace {
 
-// Converts a `testing_factory` into a KeyedServiceTestingFactoryIOS.
-KeyedServiceTestingFactoryIOSByRef IntoByRef(
-    KeyedServiceTestingFactoryIOSByPtr testing_factory) {
-  if (!testing_factory) {
-    return {};
-  }
-
-  return base::BindOnce(
-      [](KeyedServiceTestingFactoryIOSByPtr testing_factory,
-         ProfileIOS& profile) {
-        return std::move(testing_factory).Run(&profile);
-      },
-      std::move(testing_factory));
-}
-
 // Wraps `testing_factory` as a KeyedServiceFactory::TestingFactory.
 base::OnceCallback<std::unique_ptr<KeyedService>(void*)> WrapFactory(
-    KeyedServiceTestingFactoryIOSByRef testing_factory) {
+    KeyedServiceTestingFactoryIOS testing_factory) {
   if (!testing_factory) {
     return {};
   }
 
   return base::BindOnce(
-      [](KeyedServiceTestingFactoryIOSByRef testing_factory,
+      [](KeyedServiceTestingFactoryIOS testing_factory,
          void* context) -> std::unique_ptr<KeyedService> {
         return std::move(testing_factory)
             .Run(CHECK_DEREF(static_cast<ProfileIOS*>(context)));
@@ -52,16 +37,7 @@ base::OnceCallback<std::unique_ptr<KeyedService>(void*)> WrapFactory(
 void ProfileKeyedServiceFactoryIOS::SetTestingFactory(
     PassKey pass_key,
     ProfileIOS& profile,
-    TestingFactoryByPtr testing_factory) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  KeyedServiceFactory::SetTestingFactory(
-      &profile, WrapFactory(IntoByRef(std::move(testing_factory))));
-}
-
-void ProfileKeyedServiceFactoryIOS::SetTestingFactory(
-    PassKey pass_key,
-    ProfileIOS& profile,
-    TestingFactoryByRef testing_factory) {
+    TestingFactory testing_factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   KeyedServiceFactory::SetTestingFactory(
       &profile, WrapFactory(std::move(testing_factory)));

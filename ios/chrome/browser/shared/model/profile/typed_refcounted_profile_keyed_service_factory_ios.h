@@ -44,7 +44,7 @@
 //           std::move(key), "RefcountedFooService", ...) {}
 //
 //  private:
-//   scoped_refptr<RefcountKeyedService>
+//   scoped_refptr<RefcountedKeyedService>
 //   BuildServiceInstanceFor(ProfileIOS* profile) final {
 //     return base::MakeRefCounted<RefcountedFooService>(...);
 //   }
