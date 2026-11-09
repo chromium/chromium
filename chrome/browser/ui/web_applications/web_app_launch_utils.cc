@@ -501,7 +501,7 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
     return false;
   }
   CHECK(existing_app_host->browser);
-  CHECK(WebAppBrowserController::IsWebApp(existing_app_host->browser));
+  CHECK(AppBrowserController::IsWebApp(existing_app_host->browser));
   CHECK_NE(existing_app_host->tab_index, -1);
 
   content::WebContents* preexisting_web_contents =
@@ -979,7 +979,7 @@ void FocusAppContainer(BrowserWindowInterface* browser, int tab_index) {
   CHECK(web_contents);
   web_contents->Focus();
   // ActivateTabAt() does not work for PWA windows.
-  if (!WebAppBrowserController::IsWebApp(browser)) {
+  if (!AppBrowserController::IsWebApp(browser)) {
     // Note: This will CHECK-fail if tab_index is invalid.
     tab_strip_model->ActivateTabAt(tab_index);
   }

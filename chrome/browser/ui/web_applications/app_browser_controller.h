@@ -80,31 +80,49 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   AppBrowserController& operator=(const AppBrowserController&) = delete;
   ~AppBrowserController() override;
 
+  // Returns the AppBrowserController for `browser`, or nullptr if `browser` is
+  // not controlled by an installed app.
+  //
+  // Note: An AppBrowserController is attached to `TYPE_APP`, `TYPE_APP_POPUP`,
+  // and app-opened `TYPE_FLOATING` (Document Picture-in-Picture) windows. Do
+  // not assume `From(browser) != nullptr` (or `IsWebApp(browser)`) implies
+  // `browser->GetType() == TYPE_APP`, or that `!IsWebApp(browser)` implies
+  // `browser->GetType() == TYPE_NORMAL` (which could also be `TYPE_POPUP`,
+  // normal-tab `TYPE_FLOATING` Document PiP, or `TYPE_DEVTOOLS`). Callers that
+  // specifically require a `TYPE_APP` or `TYPE_NORMAL` window must check
+  // `browser->GetType()`.
   static const AppBrowserController* From(
       const BrowserWindowInterface* browser);
   static AppBrowserController* From(BrowserWindowInterface* browser);
 
-  // Returns whether |browser| is a web app window/pop-up.
+  // Returns whether `browser` has an `AppBrowserController` (`TYPE_APP`,
+  // `TYPE_APP_POPUP`, or app-opened `TYPE_FLOATING` Document PiP).
+  // Note: `!IsWebApp(browser)` does not imply `TYPE_NORMAL`.
   static bool IsWebApp(const BrowserWindowInterface* browser);
-  // Returns whether |browser| is an isolated web app window/pop-up.
+  // Returns whether `browser` is an isolated web app window, pop-up, or
+  // Document PiP window.
   static bool IsIsolatedWebApp(const BrowserWindowInterface* browser);
-  // Returns whether |browser| is a web app window/pop-up for |app_id|.
+  // Returns whether `browser` is a web app window, pop-up, or Document PiP
+  // window for `app_id`.
   static bool IsForWebApp(const BrowserWindowInterface* browser,
                           const webapps::AppId& app_id);
-  // Returns whether |browser| is a web app window/pop-up for
-  // |maybe_parent_app_id|.
+  // Returns whether `browser` is a web app window, pop-up, or Document PiP
+  // window for `maybe_parent_app_id`.
   static bool IsForIsolatedSubApp(
       const BrowserWindowInterface* browser,
       const std::optional<webapps::AppId>& maybe_parent_app_id = std::nullopt);
-  // Returns a BrowserWindowInterface* that is for |app_id| and |profile| if
-  // any, searches in order of last browser activation. Ignores pop-up Browsers.
+  // Returns a `TYPE_APP` BrowserWindowInterface* that is for `app_id` and
+  // `profile` if any, searching in order of last browser activation. Ignores
+  // closing browsers, pop-ups (`TYPE_APP_POPUP`), and Document PiP windows
+  // (`TYPE_FLOATING`).
   static BrowserWindowInterface* FindForWebApp(const Profile& profile,
                                                const webapps::AppId& app_id);
 
   // Returns the `browser` and `tab_index` for a tab for the given `app_id` in
   // the given `profile`, where the tab does not have an opener, and the browser
-  // is of the specified `browser_type`. Prefers more recently activated
-  // windows and tabs over less recently used ones.
+  // is a non-closing `TYPE_APP` (when `for_app_browser` is true) or
+  // `TYPE_NORMAL` (when `for_app_browser` is false) window. Prefers more
+  // recently activated windows and tabs over less recently used ones.
   struct BrowserAndTabIndex {
     raw_ptr<BrowserWindowInterface> browser = nullptr;
     int tab_index = -1;

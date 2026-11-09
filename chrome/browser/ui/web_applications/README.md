@@ -42,17 +42,18 @@ subsystem is split across distinct layers:
 ### 1. App Window Lifecycle & Controllers
 
 ```
-BrowserWindowInterface (TYPE_APP) ──► AppBrowserController (WebAppBrowserController)
-                                                   │
-                                                   ├──► Observes WebAppRegistrar (theme color, title, manifest updates)
-                                                   ├──► Observes WebAppInstallManager (install/uninstall events)
-                                                   └──► Controls BrowserView / Titlebar Frame
+BrowserWindowInterface (TYPE_APP / TYPE_APP_POPUP / app-opened TYPE_FLOATING PiP)
+    └──► AppBrowserController (WebAppBrowserController)
+              ├──► Observes WebAppRegistrar (theme color, title, manifest updates)
+              ├──► Observes WebAppInstallManager (install/uninstall events)
+              └──► Controls BrowserView / Titlebar Frame
 ```
 
 - When a `BrowserWindowInterface` instance is created for an installed web app
-  (`browser->GetType() == BrowserWindowInterface::Type::TYPE_APP` or
-  `BrowserWindowInterface::Type::TYPE_APP_POPUP`), an
-  **[`AppBrowserController`](app_browser_controller.h)** (concretely
+  (`browser->GetType() == BrowserWindowInterface::Type::TYPE_APP`,
+  `BrowserWindowInterface::Type::TYPE_APP_POPUP`, or an app-opened
+  `BrowserWindowInterface::Type::TYPE_FLOATING` Document Picture-in-Picture
+  window), an **[`AppBrowserController`](app_browser_controller.h)** (concretely
   **[`WebAppBrowserController`](web_app_browser_controller.h)**) is attached to
   the `BrowserWindowInterface` (via its `UnownedUserDataHost`).
 - **Dynamic State Synchronization:** `WebAppBrowserController` observes the
@@ -65,6 +66,30 @@ BrowserWindowInterface (TYPE_APP) ──► AppBrowserController (WebAppBrowserC
   [`WebAppTabHelper`](/chrome/browser/web_applications/web_app_tab_helper.h),
   which tracks the active `AppId`, handles badging/audio focus, and links the
   tab to the owning `WebAppBrowserController`.
+
+#### Window State & Controller Matrix
+
+| Window Kind                              | `browser->GetType()`         | `AppBrowserController::IsWebApp(b)` | `AppBrowserController::has_tab_strip()` | `WebAppTabHelper::app_id()`    | `WebAppTabHelper::window_app_id()` | Can Host General Tabs / Capture Target (`CanReparentWebContentsIntoBrowser`) |
+| :--------------------------------------- | :--------------------------- | :---------------------------------- | :-------------------------------------- | :----------------------------- | :--------------------------------- | :--------------------------------------------------------------------------- |
+| Normal tabbed browser                    | `TYPE_NORMAL`                | `false`                             | N/A                                     | Set if URL is in app scope     | `std::nullopt`                     | Yes                                                                          |
+| Standalone / minimal-ui / WCO app window | `TYPE_APP`                   | `true`                              | `false`                                 | Set if URL is in app scope     | Set (window's app)                 | Only when empty                                                              |
+| Tabbed web app window                    | `TYPE_APP`                   | `true`                              | `true`                                  | Set if URL is in app scope     | Set (window's app)                 | Yes                                                                          |
+| App popup window                         | `TYPE_APP_POPUP`             | `true`                              | `false`                                 | Set if URL is in app scope     | Set (window's app)                 | No                                                                           |
+| Browser popup window                     | `TYPE_POPUP`                 | `false`                             | N/A                                     | Set if URL is in app scope     | `std::nullopt`                     | No                                                                           |
+| Document PiP (opened from app)           | `TYPE_FLOATING` (`is_pip()`) | `true`                              | `false`                                 | `std::nullopt` (`about:blank`) | Set (opener's app)                 | No                                                                           |
+| Document PiP (opened from normal tab)    | `TYPE_FLOATING` (`is_pip()`) | `false`                             | N/A                                     | `std::nullopt` (`about:blank`) | `std::nullopt`                     | No                                                                           |
+| DevTools window                          | `TYPE_DEVTOOLS`              | `false`                             | N/A                                     | `std::nullopt`                 | `std::nullopt`                     | No                                                                           |
+
+- **When to check `AppBrowserController::IsWebApp(browser)` (or
+  `From(browser)`):** Use for **UI, styling, and frame ownership** (e.g.,
+  titlebar formatting, app theme colors, window attribution) that apply to all
+  app-controlled windows including `TYPE_APP_POPUP` and app-opened Document PiP
+  (`TYPE_FLOATING`).
+- **When to check `browser->GetType()`:** Use when distinguishing standalone or
+  tabbed app windows (`TYPE_APP`) or normal tabbed browsers (`TYPE_NORMAL`) from
+  auxiliary windows (`TYPE_POPUP`, `TYPE_APP_POPUP`, `TYPE_FLOATING`,
+  `TYPE_DEVTOOLS`). Never assume `AppBrowserController::IsWebApp(b)` implies
+  `TYPE_APP` or that `!AppBrowserController::IsWebApp(b)` implies `TYPE_NORMAL`.
 
 ### 2. Navigation Capturing & Launch Pipeline
 

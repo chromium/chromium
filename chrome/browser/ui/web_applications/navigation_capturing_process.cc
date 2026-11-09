@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/navigation_handle_user_data_forwarder.h"
-#include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
@@ -223,7 +222,8 @@ void ReparentWebContentsToTabbedBrowser(
 
   BrowserWindowInterface* existing_browser_window =
       CanReparentWebContentsIntoBrowser(navigate_params_browser) &&
-              !AppBrowserController::IsWebApp(navigate_params_browser)
+              navigate_params_browser->GetType() ==
+                  BrowserWindowInterface::TYPE_NORMAL
           ? navigate_params_browser
           : FindNormalBrowser(*source_browser->GetProfile());
 
@@ -807,13 +807,13 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
         // typical place.
         if (CanReparentWebContentsIntoBrowser(
                 navigation_params_browser_.get()) &&
-            !web_app::AppBrowserController::From(
-                navigation_params_browser_.get())) {
+            navigation_params_browser_->GetType() ==
+                BrowserWindowInterface::TYPE_NORMAL) {
           app_host_window = navigation_params_browser_.get();
         } else if (CanReparentWebContentsIntoBrowser(
                        client_mode_and_browser->browser.get()) &&
-                   !web_app::AppBrowserController::From(
-                       client_mode_and_browser->browser.get())) {
+                   client_mode_and_browser->browser->GetType() ==
+                       BrowserWindowInterface::TYPE_NORMAL) {
           app_host_window = client_mode_and_browser->browser.get();
         } else if (BrowserWindowInterface* normal_browser =
                        FindNormalBrowser(*profile_)) {
@@ -1441,7 +1441,7 @@ NavigationCapturingProcess::HandleRedirectImpl() {
     CHECK_NE(pre_existing_contents, web_contents_for_navigation);
 
     bool is_web_app_browser =
-        WebAppBrowserController::IsWebApp(client_mode_and_browser.browser);
+        AppBrowserController::IsWebApp(client_mode_and_browser.browser);
 
     if (client_mode_and_browser.effective_client_mode ==
         LaunchHandler::ClientMode::kNavigateExisting) {
@@ -1655,7 +1655,7 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
                  BrowserWindowInterface::Type::TYPE_NORMAL ||
              (navigation_params_browser_->GetType() ==
                   BrowserWindowInterface::Type::TYPE_APP &&
-              WebAppBrowserController::IsForWebApp(
+              AppBrowserController::IsForWebApp(
                   navigation_params_browser_.get(), app_id)))) {
           std::optional<int> tab_index =
               AppBrowserController::FindTabIndexForApp(
@@ -1683,8 +1683,8 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
             !IsBrowserClosing(navigation_params_browser_.get()) &&
             navigation_params_browser_->GetType() ==
                 BrowserWindowInterface::Type::TYPE_APP &&
-            WebAppBrowserController::IsForWebApp(
-                navigation_params_browser_.get(), app_id)) {
+            AppBrowserController::IsForWebApp(navigation_params_browser_.get(),
+                                              app_id)) {
           std::optional<int> tab_index =
               AppBrowserController::FindTabIndexForApp(
                   navigation_params_browser_.get(), app_id, for_focus_existing);
@@ -1763,8 +1763,8 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
       // opening two app windows and prioritizing the one that gets passed in
       // NavigateParams.
       if (CanReparentWebContentsIntoBrowser(navigation_params_browser_.get()) &&
-          WebAppBrowserController::IsForWebApp(navigation_params_browser_.get(),
-                                               app_id)) {
+          AppBrowserController::IsForWebApp(navigation_params_browser_.get(),
+                                            app_id)) {
         result.browser = navigation_params_browser_.get();
         break;
       }
@@ -2005,13 +2005,13 @@ NavigationCapturingProcess::CapturedNavigateExisting(
     CHECK(disposition_ == ui::mojom::WindowOpenDisposition::kNewForegroundTab ||
           disposition_ == ui::mojom::WindowOpenDisposition::kCurrentTab);
 
-    CHECK(WebAppBrowserController::IsWebApp(app_browser));
+    CHECK(AppBrowserController::IsWebApp(app_browser));
     initial_nav_handling_result_ =
         NavigationCapturingInitialResult::kNavigateExistingAppWindow;
   } else {
     CHECK_EQ(disposition_, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
     initial_nav_handling_result_ =
-        WebAppBrowserController::IsWebApp(app_browser)
+        AppBrowserController::IsWebApp(app_browser)
             ? NavigationCapturingInitialResult::kNavigateExistingAppWindow
             : NavigationCapturingInitialResult::kNavigateExistingAppBrowserTab;
   }
@@ -2037,7 +2037,7 @@ NavigationCapturingProcess::CapturedFocusExisting(
   FocusAppContainer(browser, browser_tab);
 
   CHECK(!time_navigation_started_.is_null());
-  bool is_current_container_window = WebAppBrowserController::IsWebApp(browser);
+  bool is_current_container_window = AppBrowserController::IsWebApp(browser);
 
   webapps::LaunchParams launch_params;
   launch_params.set_app_id(app_id);

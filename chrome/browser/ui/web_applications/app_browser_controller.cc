@@ -300,6 +300,11 @@ AppBrowserController::AppBrowserController(BrowserWindowInterface* browser,
       theme_provider_(
           ThemeService::CreateBoundThemeProvider(browser_->GetProfile(), this)),
       scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
+  CHECK(browser_->GetType() == BrowserWindowInterface::TYPE_APP ||
+        browser_->GetType() == BrowserWindowInterface::TYPE_APP_POPUP ||
+        browser_->GetType() == BrowserWindowInterface::TYPE_FLOATING);
+  CHECK(!has_tab_strip_ ||
+        browser_->GetType() == BrowserWindowInterface::TYPE_APP);
   if (browser_->GetTabStripModel()) {
     CHECK(browser_->GetTabStripModel()->empty());
     browser_->GetTabStripModel()->AddObserver(this);

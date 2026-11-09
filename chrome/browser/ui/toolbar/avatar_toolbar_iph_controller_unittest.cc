@@ -114,8 +114,8 @@ class MockAvatarToolbarButton : public AvatarToolbarButtonInterface {
 
 class MockAppBrowserController : public web_app::AppBrowserController {
  public:
-  explicit MockAppBrowserController(BrowserWindowInterface* browser)
-      : AppBrowserController(browser, "test_app") {}
+  explicit MockAppBrowserController(MockBrowserWindowInterface* browser)
+      : AppBrowserController(ConfigureAppBrowser(browser), "test_app") {}
 
   MOCK_METHOD(bool, HasMinimalUiButtons, (), (const, override));
   MOCK_METHOD(ui::ImageModel, GetWindowAppIcon, (), (const, override));
@@ -124,6 +124,14 @@ class MockAppBrowserController : public web_app::AppBrowserController {
   MOCK_METHOD(std::u16string, GetFormattedUrlOrigin, (), (const, override));
   MOCK_METHOD(const GURL&, GetAppStartUrl, (), (const, override));
   MOCK_METHOD(bool, IsUrlInAppScope, (const GURL&), (const, override));
+
+ private:
+  static MockBrowserWindowInterface* ConfigureAppBrowser(
+      MockBrowserWindowInterface* browser) {
+    ON_CALL(*browser, GetType())
+        .WillByDefault(testing::Return(BrowserWindowInterface::TYPE_APP));
+    return browser;
+  }
 };
 
 class AvatarToolbarIphControllerTest : public testing::Test {

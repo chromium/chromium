@@ -395,9 +395,10 @@ class TestHost : public AppShimHost {
 
 class MockAppBrowserController : public web_app::AppBrowserController {
  public:
-  MockAppBrowserController(BrowserWindowInterface* browser,
+  MockAppBrowserController(MockBrowserWindowInterface* browser,
                            webapps::AppId app_id)
-      : web_app::AppBrowserController(browser, std::move(app_id)) {
+      : web_app::AppBrowserController(ConfigureAppBrowser(browser),
+                                      std::move(app_id)) {
     ON_CALL(*this, HasMinimalUiButtons).WillByDefault(testing::Return(false));
     ON_CALL(*this, GetAppShortName).WillByDefault(testing::Return(u""));
     ON_CALL(*this, GetAppStartUrl)
@@ -416,6 +417,14 @@ class MockAppBrowserController : public web_app::AppBrowserController {
   MOCK_METHOD(bool, IsUrlInAppScope, (const GURL& url), (const, override));
   MOCK_METHOD(bool, CanUserUninstall, (), (const, override));
   MOCK_METHOD(bool, IsInstalled, (), (const, override));
+
+ private:
+  static MockBrowserWindowInterface* ConfigureAppBrowser(
+      MockBrowserWindowInterface* browser) {
+    ON_CALL(*browser, GetType())
+        .WillByDefault(testing::Return(BrowserWindowInterface::TYPE_APP));
+    return browser;
+  }
 };
 
 class AppShimManagerTest : public testing::Test {
