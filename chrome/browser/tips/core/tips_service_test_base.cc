@@ -18,6 +18,7 @@
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/tips/core/tips_prefs.h"
+#include "chrome/browser/tips/core/tips_utils.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 #include "components/segmentation_platform/internal/database/ukm_database.h"
 #include "components/segmentation_platform/public/features.h"
@@ -85,6 +86,7 @@ void TestDatabaseClient::ProcessFeatures(
     base::Time end_time,
     FeaturesCallback callback) {
   last_metadata_ = metadata;
+  process_features_call_count_++;
   segmentation_platform::DatabaseClient* real_client =
       real_service_ ? real_service_->GetDatabaseClient() : nullptr;
   if (!real_client || simulate_error_) {
@@ -283,6 +285,16 @@ void TipsServiceTestBase::RunDetermineBestTipTestWithOverrides(
   std::vector<std::unique_ptr<TipsFeature>> features;
 
   for (auto& config : configs) {
+#if BUILDFLAG(IS_ANDROID)
+    // Features whose tip has already been shown are not queried, so they
+    // contribute no inputs.
+    bool already_shown = pref_service_.GetBoolean(
+        GetFeatureTypePref(config.feature->GetFeatureType()));
+    if (already_shown) {
+      features.push_back(std::move(config.feature));
+      continue;
+    }
+#endif
     auto signals = config.feature->GetRequiredSignals();
     for (const auto& signal : signals) {
       float value = 0.0f;

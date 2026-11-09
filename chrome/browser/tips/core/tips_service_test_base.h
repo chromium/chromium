@@ -45,6 +45,7 @@ class TestDatabaseClient : public segmentation_platform::DatabaseClient {
   void AddEvent(const StructuredEvent& event) override;
 
   segmentation_platform::proto::SegmentationModelMetadata last_metadata_;
+  int process_features_call_count_ = 0;
   raw_ptr<segmentation_platform::SegmentationPlatformService> real_service_;
   std::optional<std::vector<float>> override_values_;
   bool simulate_error_ = false;

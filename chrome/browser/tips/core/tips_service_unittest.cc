@@ -59,6 +59,7 @@ class MockTipsFeature : public TipsFeature {
   }
   bool IsEligible(const std::map<std::string, float>& signal_values,
                   const PrefService& pref_service) const override {
+    is_eligible_call_count_++;
     last_signal_values_ = signal_values;
     return is_eligible_;
   }
@@ -70,6 +71,7 @@ class MockTipsFeature : public TipsFeature {
   }
 
   mutable std::map<std::string, float> last_signal_values_;
+  mutable int is_eligible_call_count_ = 0;
 
  private:
   TipFeatureRank rank_;
@@ -350,5 +352,64 @@ TEST_F(TipsServiceTest, DetermineBestTip_CustomSignalsForwardedToFeature) {
   EXPECT_EQ(feature_ptr->last_signal_values_["custom_signal_1"], 1.0f);
   EXPECT_EQ(feature_ptr->last_signal_values_["custom_signal_2"], 42.0f);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(TipsServiceTest, DetermineBestTip_AllTipsShown_SkipsQuery) {
+  auto feature = std::make_unique<MockTipsFeature>(
+      TipFeatureRank::kQuickDelete, TipsNotificationsFeatureType::kQuickDelete,
+      std::vector<SignalDefinition>{UserAction("SomeAction", 7)},
+      /*is_eligible=*/true);
+  MockTipsFeature* feature_ptr = feature.get();
+  pref_service_.SetBoolean(prefs::kAndroidTipNotificationShownQuickDelete,
+                           true);
+
+  std::vector<std::unique_ptr<TipsFeature>> features;
+  features.push_back(std::move(feature));
+  RunDetermineBestTipTest(std::move(features), std::nullopt);
+
+  EXPECT_EQ(test_segmentation_service_->test_database_client()
+                ->process_features_call_count_,
+            0);
+  EXPECT_EQ(feature_ptr->is_eligible_call_count_, 0);
+}
+
+TEST_F(TipsServiceTest, DetermineBestTip_SkipsShownTips) {
+  // Higher-ranked and eligible, but already shown.
+  auto shown_feature = std::make_unique<MockTipsFeature>(
+      TipFeatureRank::kQuickDelete, TipsNotificationsFeatureType::kQuickDelete,
+      std::vector<SignalDefinition>{UserAction("ShownAction", 7)},
+      /*is_eligible=*/true);
+  MockTipsFeature* shown_feature_ptr = shown_feature.get();
+  auto remaining_feature = std::make_unique<MockTipsFeature>(
+      TipFeatureRank::kGoogleLens, TipsNotificationsFeatureType::kGoogleLens,
+      std::vector<SignalDefinition>{UserAction("RemainingAction", 7)},
+      /*is_eligible=*/true);
+  MockTipsFeature* remaining_feature_ptr = remaining_feature.get();
+  pref_service_.SetBoolean(prefs::kAndroidTipNotificationShownQuickDelete,
+                           true);
+
+  std::vector<FeatureTestConfig> configs;
+  configs.push_back(FeatureTestConfig{.feature = std::move(shown_feature)});
+  configs.push_back(FeatureTestConfig{
+      .feature = std::move(remaining_feature),
+      .mock_signal_values =
+          std::map<std::string, float>{{"RemainingAction", 3.0f}},
+  });
+
+  RunDetermineBestTipTestWithOverrides(
+      std::move(configs), TipsNotificationsFeatureType::kGoogleLens);
+
+  EXPECT_EQ(test_segmentation_service_->test_database_client()
+                ->process_features_call_count_,
+            1);
+  EXPECT_EQ(shown_feature_ptr->is_eligible_call_count_, 0);
+  EXPECT_EQ(remaining_feature_ptr->is_eligible_call_count_, 1);
+  // Only the remaining feature's signal was queried, so its value lines up.
+  EXPECT_EQ(remaining_feature_ptr->last_signal_values_["RemainingAction"],
+            3.0f);
+  EXPECT_FALSE(
+      remaining_feature_ptr->last_signal_values_.contains("ShownAction"));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace tips
