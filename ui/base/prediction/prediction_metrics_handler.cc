@@ -86,7 +86,9 @@ void PredictionMetricsHandler::AddRealEvent(const gfx::PointF& pos,
       if (events_queue_[i].time_stamp == time_stamp)
         event_exists = true;
     }
-    CHECK(event_exists, base::NotFatalUntil::M163);
+    // TODO(crbug.com/582612164): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(event_exists);
     return;
   }
 
