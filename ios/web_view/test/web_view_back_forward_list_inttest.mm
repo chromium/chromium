@@ -6,6 +6,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/test/ios/wait_util.h"
+#import "ios/web_view/test/fake_cwv_navigation_delegate.h"
 #import "ios/web_view/test/observer.h"
 #import "ios/web_view/test/web_view_inttest_base.h"
 #import "ios/web_view/test/web_view_test_util.h"
@@ -13,24 +14,6 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "testing/gtest_mac.h"
 #import "url/gurl.h"
-
-@interface CWVBackForwardListTestNavigationObserver
-    : NSObject <CWVNavigationDelegate>
-
-// Whether |webViewDidFinishNavigation| has been called. Initiated as NO.
-@property(nonatomic, assign, readonly) BOOL pageLoaded;
-
-- (void)webViewDidFinishNavigation:(CWVWebView*)webView;
-
-@end
-
-@implementation CWVBackForwardListTestNavigationObserver
-
-- (void)webViewDidFinishNavigation:(CWVWebView*)webView {
-  _pageLoaded = YES;
-}
-
-@end
 
 namespace ios_web_view {
 
@@ -62,12 +45,12 @@ class WebViewBackForwardListTest : public WebViewInttestBase {
 
   // Waits until web_view_ has loaded a page.
   bool WaitUntilPageLoaded() {
-    CWVBackForwardListTestNavigationObserver* observer =
-        [[CWVBackForwardListTestNavigationObserver alloc] init];
-    web_view_.navigationDelegate = observer;
+    FakeCWVNavigationDelegate* delegate =
+        [[FakeCWVNavigationDelegate alloc] init];
+    web_view_.navigationDelegate = delegate;
     bool result = base::test::ios::WaitUntilConditionOrTimeout(
         base::test::ios::kWaitForPageLoadTimeout, ^{
-          return observer.pageLoaded;
+          return delegate.navigationFinished;
         });
     web_view_.navigationDelegate = nil;
     return result;

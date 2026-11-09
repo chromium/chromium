@@ -8,6 +8,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/common/uikit_ui_util.h"
+#import "ios/web_view/test/fake_cwv_navigation_delegate.h"
 #import "ios/web_view/test/observer.h"
 #import "ios/web_view/test/web_view_inttest_base.h"
 #import "ios/web_view/test/web_view_test_util.h"
@@ -105,17 +106,13 @@ class WebViewFromWKWebViewConfigurationTest : public WebViewInttestBase {
 }
 @end
 
-@interface NavigationFinishedObserver
-    : NSObject <CWVNavigationDelegate, WKNavigationDelegate>
+@interface NavigationFinishedObserver : NSObject <WKNavigationDelegate>
 @property(nonatomic) BOOL navigationFinished;
 @end
 
 @implementation NavigationFinishedObserver
 - (void)webView:(WKWebView*)webView
     didFinishNavigation:(WKNavigation*)navigation {
-  self.navigationFinished = YES;
-}
-- (void)webViewDidFinishNavigation:(CWVWebView*)webView {
   self.navigationFinished = YES;
 }
 @end
@@ -203,11 +200,12 @@ TEST_F(WebViewFromWKWebViewConfigurationTest, FromWKWebViewConfiguration) {
     ASSERT_TRUE(web_view_);
 
     // Waits for the page in window2 (CWVWebView *web_view_) to be loaded
-    observer.navigationFinished = NO;
-    web_view_.navigationDelegate = observer;
+    FakeCWVNavigationDelegate* delegate =
+        [[FakeCWVNavigationDelegate alloc] init];
+    web_view_.navigationDelegate = delegate;
     ASSERT_TRUE(
         base::test::ios::WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-          return observer.navigationFinished;
+          return delegate.navigationFinished;
         }));
     web_view_.navigationDelegate = nil;
 

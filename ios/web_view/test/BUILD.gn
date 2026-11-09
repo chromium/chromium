@@ -154,6 +154,8 @@ source_set("test_support") {
     "//ios/web_view/public/cwv_navigation_type.h",
     "//ios/web_view/public/cwv_web_view.h",
     "//ios/web_view/public/cwv_web_view_configuration.h",
+    "fake_cwv_navigation_delegate.h",
+    "fake_cwv_navigation_delegate.mm",
     "observer.h",
     "observer.mm",
     "test_with_locale_and_resources.cc",
