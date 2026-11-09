@@ -563,12 +563,11 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
 #endif
 
     const bool end_semaphores_empty = end_semaphores.empty();
-    auto result = scoped_output_device_paint_->Flush(vulkan_context_provider_,
+    bool result = scoped_output_device_paint_->Flush(vulkan_context_provider_,
                                                      std::move(end_semaphores),
                                                      std::move(on_finished));
 
-    if (result != GrSemaphoresSubmitted::kYes &&
-        !(begin_semaphores.empty() && end_semaphores_empty)) {
+    if (!result && !(begin_semaphores.empty() && end_semaphores_empty)) {
       if (!return_release_fence_cb.is_null()) {
         std::move(return_release_fence_cb).Run(gfx::GpuFenceHandle());
         return_release_fence_cb.Reset();
@@ -783,7 +782,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
   scoped_access->ApplyBackendSurfaceEndState();
   auto result = gr_context()->flush(surface, flush_info, nullptr);
 
-  if (result != GrSemaphoresSubmitted::kYes &&
+  if (!result.fSuccess &&
       !(begin_semaphores.empty() && end_semaphores.empty())) {
     if (!return_release_fence_cb.is_null()) {
       std::move(return_release_fence_cb).Run(gfx::GpuFenceHandle());
@@ -1180,14 +1179,13 @@ bool SkiaOutputSurfaceImplOnGpu::FlushSurface(
     flush_info.fFinishedContext = finished_context;
     gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_,
                                           &flush_info);
-    GrSemaphoresSubmitted flush_result =
+    GrDirectContext::FlushResult flush_result =
         surface ? gr_context()->flush(surface, flush_info)
                 : gr_context()->flush(flush_info);
     if (scoped_write_access) {
       scoped_write_access->ApplyBackendSurfaceEndState();
     }
-    return flush_result == GrSemaphoresSubmitted::kYes ||
-           end_semaphores.empty();
+    return flush_result.fSuccess || end_semaphores.empty();
   }
 
   CHECK(graphite_recorder());

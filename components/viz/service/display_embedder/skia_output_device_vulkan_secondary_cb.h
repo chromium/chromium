@@ -37,11 +37,10 @@ class SkiaOutputDeviceVulkanSecondaryCB final : public SkiaOutputDevice {
   void EndPaint() override;
 
   SkCanvas* GetCanvas(SkSurface* sk_surface) override;
-  GrSemaphoresSubmitted Flush(
-      SkSurface* sk_surface,
-      gpu::VulkanContextProvider* vulkan_context_provider,
-      std::vector<GrBackendSemaphore> end_semaphores,
-      base::OnceClosure on_finished) override;
+  bool Flush(SkSurface* sk_surface,
+             gpu::VulkanContextProvider* vulkan_context_provider,
+             std::vector<GrBackendSemaphore> end_semaphores,
+             base::OnceClosure on_finished) override;
   bool Wait(SkSurface* sk_surface,
             int num_semaphores,
             const GrBackendSemaphore wait_semaphores[],

@@ -960,7 +960,7 @@ bool SharedContextState::SubmitIfNecessary(
     };
     gpu::AddVulkanCleanupTaskForSkiaFlush(vk_context_provider(), &flush_info);
 
-    if (gr_context()->flush(flush_info) != GrSemaphoresSubmitted::kYes) {
+    if (!gr_context()->flush(flush_info).fSuccess) {
       return false;
     }
   }

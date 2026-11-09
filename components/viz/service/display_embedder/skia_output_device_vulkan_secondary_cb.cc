@@ -98,27 +98,27 @@ SkCanvas* SkiaOutputDeviceVulkanSecondaryCB::GetCanvas(SkSurface* sk_surface) {
   return context_provider_->GetGrSecondaryCBDrawContext()->getCanvas();
 }
 
-GrSemaphoresSubmitted SkiaOutputDeviceVulkanSecondaryCB::Flush(
+bool SkiaOutputDeviceVulkanSecondaryCB::Flush(
     SkSurface* sk_surface,
-    gpu::VulkanContextProvider* vulkan_context_provider,
+    gpu::VulkanContextProvider* vk_context_provider,
     std::vector<GrBackendSemaphore> end_semaphores,
     base::OnceClosure on_finished) {
   DCHECK(!sk_surface);
-  DCHECK_EQ(context_provider_, vulkan_context_provider);
+  DCHECK_EQ(context_provider_, vk_context_provider);
 
   std::vector<VkSemaphore> vk_end_semaphores;
   for (const GrBackendSemaphore& gr_semaphore : end_semaphores) {
     vk_end_semaphores.push_back(
         GrBackendSemaphores::GetVkSemaphore(gr_semaphore));
   }
-  vulkan_context_provider->EnqueueSecondaryCBSemaphores(
+  vk_context_provider->EnqueueSecondaryCBSemaphores(
       std::move(vk_end_semaphores));
   if (on_finished) {
-    vulkan_context_provider->EnqueueSecondaryCBPostSubmitTask(
+    vk_context_provider->EnqueueSecondaryCBPostSubmitTask(
         std::move(on_finished));
   }
-  vulkan_context_provider->GetGrSecondaryCBDrawContext()->flush();
-  return GrSemaphoresSubmitted::kYes;
+
+  return vk_context_provider->GetGrSecondaryCBDrawContext()->flush().fSuccess;
 }
 
 bool SkiaOutputDeviceVulkanSecondaryCB::Wait(

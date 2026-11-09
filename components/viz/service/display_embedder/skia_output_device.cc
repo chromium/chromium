@@ -62,7 +62,7 @@ SkCanvas* SkiaOutputDevice::ScopedPaint::GetCanvas() {
   return device_->GetCanvas(sk_surface_);
 }
 
-GrSemaphoresSubmitted SkiaOutputDevice::ScopedPaint::Flush(
+bool SkiaOutputDevice::ScopedPaint::Flush(
     gpu::VulkanContextProvider* vulkan_context_provider,
     std::vector<GrBackendSemaphore> end_semaphores,
     base::OnceClosure on_finished) {
@@ -325,7 +325,7 @@ SkCanvas* SkiaOutputDevice::GetCanvas(SkSurface* sk_surface) {
   return sk_surface->getCanvas();
 }
 
-GrSemaphoresSubmitted SkiaOutputDevice::Flush(
+bool SkiaOutputDevice::Flush(
     SkSurface* sk_surface,
     gpu::VulkanContextProvider* vulkan_context_provider,
     std::vector<GrBackendSemaphore> end_semaphores,
@@ -340,9 +340,9 @@ GrSemaphoresSubmitted SkiaOutputDevice::Flush(
     gpu::AddCleanupTaskForSkiaFlush(std::move(on_finished), &flush_info);
   if (GrDirectContext* direct_context =
           GrAsDirectContext(sk_surface->recordingContext())) {
-    return direct_context->flush(sk_surface, flush_info);
+    return direct_context->flush(sk_surface, flush_info).fSuccess;
   }
-  return {};
+  return false;
 }
 
 bool SkiaOutputDevice::Wait(SkSurface* sk_surface,

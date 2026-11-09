@@ -236,9 +236,9 @@ TEST_F(DCompImageBackingFactoryTest, CanReadDXGISwapChain) {
   EXPECT_EQ(0u, end_semaphores.size());
   GrFlushInfo flush_info;
   GrDirectContext* direct_context = context_state_->gr_context();
-  EXPECT_EQ(
-      GrSemaphoresSubmitted::kYes,
-      direct_context->flush(write_access->surface(), flush_info, nullptr));
+  EXPECT_TRUE(
+      direct_context->flush(write_access->surface(), flush_info, nullptr)
+          .fSuccess);
   skia_representation->SetCleared();
 
   std::unique_ptr<const SkImage::AsyncReadResult> readback_result;
@@ -507,9 +507,9 @@ class DCompImageBackingFactoryVisualTreeTest
     EXPECT_EQ(0u, end_semaphores.size());
     GrFlushInfo flush_info;
     GrDirectContext* direct_context = context_state_->gr_context();
-    EXPECT_EQ(
-        GrSemaphoresSubmitted::kYes,
-        direct_context->flush(write_access->surface(), flush_info, nullptr));
+    EXPECT_TRUE(
+        direct_context->flush(write_access->surface(), flush_info, nullptr)
+            .fSuccess);
 
     write_access->ApplyBackendSurfaceEndState();
     direct_context->submit(GrSyncCpu::kYes);
