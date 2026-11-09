@@ -189,6 +189,12 @@ class UserCloudPolicyStoreAshTest : public testing::Test {
     Mock::VerifyAndClearExpectations(&observer_);
   }
 
+  enterprise_management::PolicyData GetExpectedPolicyData() const {
+    enterprise_management::PolicyData expected = policy_.policy_data();
+    expected.clear_policy_value();
+    return expected;
+  }
+
   // Triggers a store_->Load() operation, handles the expected call to
   // |session_manager_client_| and sends |response|.
   void PerformPolicyLoad(const std::string& response) {
@@ -232,7 +238,7 @@ class UserCloudPolicyStoreAshTest : public testing::Test {
 
     RunLoopAndExpectLoaded();
     ASSERT_TRUE(store_->policy());
-    EXPECT_EQ(policy_.policy_data().SerializeAsString(),
+    EXPECT_EQ(GetExpectedPolicyData().SerializeAsString(),
               store_->policy()->SerializeAsString());
     VerifyPolicyMap(new_value);
     EXPECT_EQ(CloudPolicyStore::STATUS_OK, store_->status());
@@ -459,7 +465,7 @@ TEST_F(UserCloudPolicyStoreAshTest, Load) {
 
   // Verify that the policy has been loaded.
   ASSERT_TRUE(store_->policy());
-  EXPECT_EQ(policy_.policy_data().SerializeAsString(),
+  EXPECT_EQ(GetExpectedPolicyData().SerializeAsString(),
             store_->policy()->SerializeAsString());
   VerifyPolicyMap(kDefaultHomepage);
   EXPECT_EQ(CloudPolicyStore::STATUS_OK, store_->status());
@@ -532,7 +538,7 @@ TEST_F(UserCloudPolicyStoreAshTest, LoadImmediately) {
 
   // The policy should become available without having to spin any loops.
   ASSERT_TRUE(store_->policy());
-  EXPECT_EQ(policy_.policy_data().SerializeAsString(),
+  EXPECT_EQ(GetExpectedPolicyData().SerializeAsString(),
             store_->policy()->SerializeAsString());
   VerifyPolicyMap(kDefaultHomepage);
   EXPECT_EQ(CloudPolicyStore::STATUS_OK, store_->status());

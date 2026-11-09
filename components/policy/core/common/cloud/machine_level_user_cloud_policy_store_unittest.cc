@@ -215,8 +215,12 @@ TEST_F(MachineLevelUserCloudPolicyStoreTest, StorePolicy) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(store_->policy());
-  EXPECT_EQ(policy_.policy_data().SerializeAsString(),
+  enterprise_management::PolicyData expected_policy_data =
+      policy_.policy_data();
+  expected_policy_data.clear_policy_value();
+  EXPECT_EQ(expected_policy_data.SerializeAsString(),
             store_->policy()->SerializeAsString());
+  EXPECT_FALSE(store_->policy()->has_policy_value());
   EXPECT_EQ(CloudPolicyStore::STATUS_OK, store_->status());
   EXPECT_TRUE(base::PathExists(policy_path));
   EXPECT_TRUE(base::PathExists(signing_key_path));
@@ -239,8 +243,12 @@ TEST_F(MachineLevelUserCloudPolicyStoreTest, StoreThenLoadPolicy) {
 
   SetExpectedPolicyMap(POLICY_SOURCE_CLOUD);
   ASSERT_TRUE(loader->policy());
-  EXPECT_EQ(policy_.policy_data().SerializeAsString(),
+  enterprise_management::PolicyData expected_policy_data =
+      policy_.policy_data();
+  expected_policy_data.clear_policy_value();
+  EXPECT_EQ(expected_policy_data.SerializeAsString(),
             loader->policy()->SerializeAsString());
+  EXPECT_FALSE(loader->policy()->has_policy_value());
   EXPECT_TRUE(expected_policy_map_.Equals(loader->policy_map()));
   EXPECT_EQ(CloudPolicyStore::STATUS_OK, loader->status());
   loader->RemoveObserver(&observer_);

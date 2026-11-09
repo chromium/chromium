@@ -96,6 +96,10 @@ class POLICY_EXPORT CloudPolicyStore {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return policy_.get();
   }
+  size_t policy_value_hash() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return policy_value_hash_;
+  }
   bool is_managed() const;
   Status status() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -222,7 +226,12 @@ class POLICY_EXPORT CloudPolicyStore {
   // triggered by calling Load().
   bool is_initialized_ = false;
 
+  // Set when policy is installed. `policy_->policy_value()` is always absent:
+  // only the hash is useful (`policy_value_hash_`). This saves up to 2MB of RAM
+  // with no downsides.
   std::unique_ptr<enterprise_management::PolicyData> policy_;
+  // 0 for empty or absent. Set when policy is installed.
+  size_t policy_value_hash_ = 0;
 
   // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
   base::ObserverList<

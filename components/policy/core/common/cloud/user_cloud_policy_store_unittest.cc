@@ -130,6 +130,12 @@ class UserCloudPolicyStoreTest : public testing::Test {
     ASSERT_TRUE(store->policy_map().Get(key::kURLBlocklist));
   }
 
+  enterprise_management::PolicyData GetExpectedPolicyData() const {
+    enterprise_management::PolicyData expected = policy_.policy_data();
+    expected.clear_policy_value();
+    return expected;
+  }
+
   // Install an expectation on |observer_| for an error code. Return a
   // TestFuture that can wait until the error arrives.
   [[nodiscard]] TestFuture<void> ExpectError(CloudPolicyStore* store,
@@ -273,8 +279,10 @@ TEST_F(UserCloudPolicyStoreTest, Store) {
   StorePolicyAndEnsureLoaded(policy_.policy());
 
   // Policy should be decoded and stored.
-  EXPECT_EQ(policy_.policy_data().SerializeAsString(),
+  EXPECT_EQ(GetExpectedPolicyData().SerializeAsString(),
             store_->policy()->SerializeAsString());
+  EXPECT_FALSE(store_->policy()->has_policy_value());
+  EXPECT_NE(0u, store_->policy_value_hash());
   VerifyPolicyMap(store_.get());
   EXPECT_EQ(CloudPolicyStore::STATUS_OK, store_->status());
 }
@@ -375,8 +383,10 @@ TEST_F(UserCloudPolicyStoreTest, StoreTwoTimes) {
   StorePolicyAndEnsureLoaded(policy_.policy());
 
   // Policy should be decoded and stored.
-  EXPECT_EQ(policy_.policy_data().SerializeAsString(),
+  EXPECT_EQ(GetExpectedPolicyData().SerializeAsString(),
             store_->policy()->SerializeAsString());
+  EXPECT_FALSE(store_->policy()->has_policy_value());
+  EXPECT_NE(0u, store_->policy_value_hash());
   VerifyPolicyMap(store_.get());
   EXPECT_EQ(CloudPolicyStore::STATUS_OK, store_->status());
 }
@@ -400,8 +410,11 @@ TEST_F(UserCloudPolicyStoreTest, StoreThenLoad) {
   EXPECT_TRUE(error_observed.Wait());
 
   ASSERT_TRUE(store2->policy());
-  EXPECT_EQ(policy_.policy_data().SerializeAsString(),
+  EXPECT_EQ(GetExpectedPolicyData().SerializeAsString(),
             store2->policy()->SerializeAsString());
+  EXPECT_FALSE(store2->policy()->has_policy_value());
+  EXPECT_NE(0u, store2->policy_value_hash());
+  EXPECT_EQ(store_->policy_value_hash(), store2->policy_value_hash());
   VerifyPolicyMap(store2.get());
   EXPECT_EQ(CloudPolicyStore::STATUS_OK, store2->status());
   store2->RemoveObserver(&observer_);
@@ -425,8 +438,9 @@ TEST_F(UserCloudPolicyStoreTest, StoreThenLoadImmediately) {
   store2->LoadImmediately();  // Should load without running the message loop.
 
   ASSERT_TRUE(store2->policy());
-  EXPECT_EQ(policy_.policy_data().SerializeAsString(),
+  EXPECT_EQ(GetExpectedPolicyData().SerializeAsString(),
             store2->policy()->SerializeAsString());
+  EXPECT_FALSE(store2->policy()->has_policy_value());
   VerifyPolicyMap(store2.get());
   EXPECT_EQ(CloudPolicyStore::STATUS_OK, store2->status());
   store2->RemoveObserver(&observer_);

@@ -179,6 +179,13 @@ class DeviceLocalAccountPolicyServiceTest
 
   void InstallDevicePolicy() override;
 
+  enterprise_management::PolicyData GetExpectedPolicyData() const {
+    enterprise_management::PolicyData expected =
+        device_local_account_policy_.policy_data();
+    expected.clear_policy_value();
+    return expected;
+  }
+
   MockDeviceLocalAccountPolicyServiceObserver service_observer_;
 };
 
@@ -380,7 +387,7 @@ TEST_F(DeviceLocalAccountPolicyServiceTest, LoadPolicy) {
   ASSERT_TRUE(broker->core()->store());
   EXPECT_EQ(CloudPolicyStore::STATUS_OK, broker->core()->store()->status());
   ASSERT_TRUE(broker->core()->store()->policy());
-  EXPECT_EQ(device_local_account_policy_.policy_data().SerializeAsString(),
+  EXPECT_EQ(GetExpectedPolicyData().SerializeAsString(),
             broker->core()->store()->policy()->SerializeAsString());
   EXPECT_TRUE(
       expected_policy_map_.Equals(broker->core()->store()->policy_map()));
@@ -436,7 +443,7 @@ TEST_F(DeviceLocalAccountPolicyServiceTest, StorePolicy) {
 
   EXPECT_EQ(CloudPolicyStore::STATUS_OK, broker->core()->store()->status());
   ASSERT_TRUE(broker->core()->store()->policy());
-  EXPECT_EQ(device_local_account_policy_.policy_data().SerializeAsString(),
+  EXPECT_EQ(GetExpectedPolicyData().SerializeAsString(),
             broker->core()->store()->policy()->SerializeAsString());
   EXPECT_TRUE(
       expected_policy_map_.Equals(broker->core()->store()->policy_map()));
@@ -475,7 +482,7 @@ TEST_F(DeviceLocalAccountPolicyServiceTest, DuplicateAccounts) {
   ASSERT_TRUE(broker->core()->store());
   EXPECT_EQ(CloudPolicyStore::STATUS_OK, broker->core()->store()->status());
   ASSERT_TRUE(broker->core()->store()->policy());
-  EXPECT_EQ(device_local_account_policy_.policy_data().SerializeAsString(),
+  EXPECT_EQ(GetExpectedPolicyData().SerializeAsString(),
             broker->core()->store()->policy()->SerializeAsString());
   EXPECT_TRUE(
       expected_policy_map_.Equals(broker->core()->store()->policy_map()));
@@ -547,7 +554,7 @@ TEST_F(DeviceLocalAccountPolicyServiceTest, FetchPolicy) {
   ASSERT_TRUE(broker->core()->store());
   EXPECT_EQ(CloudPolicyStore::STATUS_OK, broker->core()->store()->status());
   ASSERT_TRUE(broker->core()->store()->policy());
-  EXPECT_EQ(device_local_account_policy_.policy_data().SerializeAsString(),
+  EXPECT_EQ(GetExpectedPolicyData().SerializeAsString(),
             broker->core()->store()->policy()->SerializeAsString());
   EXPECT_TRUE(
       expected_policy_map_.Equals(broker->core()->store()->policy_map()));

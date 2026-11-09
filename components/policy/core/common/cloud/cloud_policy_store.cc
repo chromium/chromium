@@ -4,7 +4,10 @@
 
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
+#include <memory>
+
 #include "base/check.h"
+#include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
@@ -87,11 +90,22 @@ void CloudPolicyStore::SetPolicy(
       << "CloudPolicyStore::SetPolicy: " << policy_data->policy_type();
   DCHECK(policy_data);
   DCHECK_EQ(policy_data->policy_type(), policy_type());
+  // CloudPolicyStore doesn't need to store `policy_value`, only its hash.
+  // `policy_value` can be pretty large (up to 2MB), so free it to save memory
+  // with no downsides.
+  policy_value_hash_ = policy_data->has_policy_value()
+                           ? base::FastHash(policy_data->policy_value())
+                           : 0;
+  // Manually release and destroy the string buffer to free heap memory, because
+  // clear_policy_value() retains capacity.
+  std::unique_ptr<std::string> discard_policy_value(
+      policy_data->release_policy_value());
   policy_ = std::move(policy_data);
 }
 
 void CloudPolicyStore::ResetPolicy() {
   policy_.reset();
+  policy_value_hash_ = 0;
 }
 
 void CloudPolicyStore::NotifyStoreError() {
@@ -123,6 +137,14 @@ void CloudPolicyStore::SetFirstPoliciesLoaded(bool loaded) {
 
 void CloudPolicyStore::set_policy_data_for_testing(
     std::unique_ptr<enterprise_management::PolicyData> policy) {
+  // See comments in SetPolicy().
+  policy_value_hash_ = policy && policy->has_policy_value()
+                           ? base::FastHash(policy->policy_value())
+                           : 0;
+  if (policy) {
+    std::unique_ptr<std::string> discard_policy_value(
+        policy->release_policy_value());
+  }
   policy_ = std::move(policy);
 }
 

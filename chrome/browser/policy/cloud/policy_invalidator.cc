@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/hash/hash.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
@@ -77,14 +76,6 @@ void RecordPolicyInvalidationMetric(const char* metric_name,
       GetInvalidationMetric(is_missing_payload, is_expired);
   base::UmaHistogramEnumeration(metric_name, policy_invalidation_type,
                                 POLICY_INVALIDATION_TYPE_SIZE);
-}
-
-size_t CalculatePolicyHash(const enterprise_management::PolicyData* policy) {
-  if (!policy || !policy->has_policy_value()) {
-    return 0;
-  }
-
-  return base::FastHash(policy->policy_value());
 }
 
 }  // namespace
@@ -188,7 +179,7 @@ PolicyInvalidator::PolicyInvalidationHandler::~PolicyInvalidationHandler() =
 void PolicyInvalidator::PolicyInvalidationHandler::HandlePolicyRefresh(
     CloudPolicyStore* store) {
   CHECK(store == core_->store());
-  const auto new_policy_hash = CalculatePolicyHash(store->policy());
+  const auto new_policy_hash = store->policy_value_hash();
 
   if (!policy_hash_value_.has_value()) {
     // On initial policy refresh only store the policy hash.
