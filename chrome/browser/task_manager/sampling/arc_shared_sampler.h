@@ -14,32 +14,26 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
+#include "chrome/browser/task_manager/sampling/vm_memory_sampler.h"
 #include "chromeos/ash/experiences/arc/mojom/process.mojom.h"
 
 namespace task_manager {
 
 // Defines sampler that will retrieve memory footprint metrics for all arc
 // processes at once. Created by TaskManagerImpl on the UI thread.
-class ArcSharedSampler {
+class ArcSharedSampler : public VmMemorySampler {
  public:
   ArcSharedSampler();
   ArcSharedSampler(const ArcSharedSampler&) = delete;
   ArcSharedSampler& operator=(const ArcSharedSampler&) = delete;
-  ~ArcSharedSampler();
+  ~ArcSharedSampler() override;
 
-  using MemoryFootprintBytes = uint64_t;
-
-  using OnSamplingCompleteCallback =
-      base::RepeatingCallback<void(std::optional<MemoryFootprintBytes>)>;
-
-  // Registers task group specific callback.
-  void RegisterCallback(base::ProcessId process_id,
-                        OnSamplingCompleteCallback on_sampling_complete);
-  // Unregisters task group specific callbacks.
-  void UnregisterCallback(base::ProcessId process_id);
-
-  // Triggers a refresh of process stats.
-  void Refresh();
+  // VmMemorySampler:
+  void RegisterCallback(
+      base::ProcessId process_id,
+      OnSamplingCompleteCallback on_sampling_complete) override;
+  void UnregisterCallback(base::ProcessId process_id) override;
+  void Refresh() override;
 
  private:
   using CallbacksMap =

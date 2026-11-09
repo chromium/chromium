@@ -53,6 +53,7 @@ source_set("task_manager") {
     "sampling/task_group.h",
     "sampling/task_group_sampler.h",
     "sampling/task_manager_impl.h",
+    "sampling/vm_memory_sampler.h",
     "task_manager_interface.h",
     "task_manager_metrics_recorder.h",
     "task_manager_observer.h",

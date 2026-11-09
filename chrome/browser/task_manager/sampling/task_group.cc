@@ -208,7 +208,7 @@ bool TaskGroup::AreBackgroundCalculationsDone() const {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void TaskGroup::SetArcSampler(ArcSharedSampler* sampler) {
+void TaskGroup::SetArcSampler(VmMemorySampler* sampler) {
   CHECK(sampler, base::NotFatalUntil::M162);
   arc_shared_sampler_ = sampler;
   arc_shared_sampler_->RegisterCallback(
@@ -304,7 +304,7 @@ void TaskGroup::OnSamplerRefreshDone(
 
 #if BUILDFLAG(IS_CHROMEOS)
 void TaskGroup::OnArcSamplerRefreshDone(
-    std::optional<ArcSharedSampler::MemoryFootprintBytes> memory_footprint) {
+    std::optional<VmMemorySampler::MemoryFootprintBytes> memory_footprint) {
   if (memory_footprint.has_value()) {
     set_footprint(base::ByteSize(memory_footprint.value()));
   }

@@ -29,7 +29,7 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/task_manager/sampling/arc_shared_sampler.h"
+#include "chrome/browser/task_manager/sampling/vm_memory_sampler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace task_manager {
@@ -195,7 +195,7 @@ class TaskManagerImpl : public TaskManagerInterface,
 #if BUILDFLAG(IS_CHROMEOS)
   // A sampler shared with all instances of TaskGroup that hold ARC tasks and
   // calculates memory footprint for all processes at once.
-  std::unique_ptr<ArcSharedSampler> arc_shared_sampler_;
+  std::unique_ptr<VmMemorySampler> arc_shared_sampler_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // This will be set to true while there are observers and the task manager is

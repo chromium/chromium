@@ -47,6 +47,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/task_manager/providers/arc/arc_process_task_provider.h"
 #include "chrome/browser/task_manager/providers/vm/vm_process_task_provider.h"
+#include "chrome/browser/task_manager/sampling/arc_shared_sampler.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/process/arc_process_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
