@@ -13,6 +13,7 @@
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"

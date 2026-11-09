@@ -8,6 +8,7 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/display/display.h"
 #include "ui/display/display_switches.h"

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

@@ -13,6 +13,7 @@
 #include "ash/system/accessibility/autoclick_menu_view.h"
 #include "base/check_op.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"

@@ -8,6 +8,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/autofill/automated_tests/cache_replayer.h"

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"

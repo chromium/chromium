@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_test_util.h"

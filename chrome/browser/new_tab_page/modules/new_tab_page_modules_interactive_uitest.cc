@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"

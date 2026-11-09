@@ -10,6 +10,7 @@
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"

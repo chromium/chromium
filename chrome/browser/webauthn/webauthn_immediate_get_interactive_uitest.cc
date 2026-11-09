@@ -6,6 +6,7 @@
 
 #include "base/base64url.h"
 #include "base/rand_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"

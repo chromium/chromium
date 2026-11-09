@@ -17,6 +17,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 
 #if BUILDFLAG(IS_MAC)

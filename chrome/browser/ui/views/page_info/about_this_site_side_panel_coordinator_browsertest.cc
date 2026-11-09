@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/escape.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"

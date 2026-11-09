@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"

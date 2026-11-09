@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 
 #include "base/command_line.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"

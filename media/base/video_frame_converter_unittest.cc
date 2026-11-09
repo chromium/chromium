@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_span.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"

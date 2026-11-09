@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"

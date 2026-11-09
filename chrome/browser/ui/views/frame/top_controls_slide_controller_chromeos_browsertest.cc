@@ -21,6 +21,7 @@
 #include "base/path_service.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"

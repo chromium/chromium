@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_PROTOCOL_HANDLER_PICKER_INTERACTVE_UITEST_CC_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_PROTOCOL_HANDLER_PICKER_INTERACTVE_UITEST_CC_
 
+#include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"

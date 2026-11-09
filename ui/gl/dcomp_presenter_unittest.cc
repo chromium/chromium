@@ -24,6 +24,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"

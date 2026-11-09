@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"

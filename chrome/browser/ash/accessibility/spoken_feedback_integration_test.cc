@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"

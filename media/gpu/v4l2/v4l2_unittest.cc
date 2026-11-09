@@ -19,6 +19,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_suite.h"

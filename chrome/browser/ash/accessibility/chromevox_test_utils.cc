@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/accessibility/chromevox_test_utils.h"
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"

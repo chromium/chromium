@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/login_manager_test.h"

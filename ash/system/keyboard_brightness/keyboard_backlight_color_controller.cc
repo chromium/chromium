@@ -18,6 +18,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/functional/bind.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/prefs/pref_registry_simple.h"

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"

@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/cross_device/logging/logging.h"
 #include "device/bluetooth/bluetooth_adapter.h"

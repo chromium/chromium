@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/uuid.h"

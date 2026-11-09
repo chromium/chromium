@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/no_destructor.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/signin/identity_manager_factory.h"

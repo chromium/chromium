@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/profiles/profile_picker.h"
+
 #include "base/check.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
@@ -13,7 +16,6 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
-#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"

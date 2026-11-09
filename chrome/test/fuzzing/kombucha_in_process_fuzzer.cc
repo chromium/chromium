@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/feedback/report_unsafe_site_dialog_views.h"
 
 #include "base/functional/callback.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"

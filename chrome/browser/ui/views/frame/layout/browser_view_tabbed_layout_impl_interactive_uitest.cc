@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"

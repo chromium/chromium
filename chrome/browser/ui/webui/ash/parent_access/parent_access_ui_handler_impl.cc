@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"

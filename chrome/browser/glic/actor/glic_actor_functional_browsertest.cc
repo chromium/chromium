@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/glic/public/features.h"

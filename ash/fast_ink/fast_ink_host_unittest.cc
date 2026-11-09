@@ -19,6 +19,7 @@
 #include "ash/test/ash_test_helper.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/quads/compositor_frame.h"

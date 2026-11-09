@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/check_deref.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"

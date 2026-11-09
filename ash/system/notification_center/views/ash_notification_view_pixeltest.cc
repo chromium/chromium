@@ -16,6 +16,7 @@
 #include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/auto_reset.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"

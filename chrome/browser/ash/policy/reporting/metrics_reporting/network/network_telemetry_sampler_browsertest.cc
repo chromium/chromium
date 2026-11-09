@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"

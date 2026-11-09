@@ -67,7 +67,16 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
+#else
+#include "base/base64.h"
+#include "base/feature_list.h"
+#include "components/variations/net/variations_command_line.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS) || \
+    (BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING))
+#include "base/strings/stringprintf.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
@@ -75,20 +84,13 @@
 #include "ui/base/win/hidden_window.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/google/google_update_win.h"
-#endif
-#endif
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #include "chrome/browser/updater/updater.h"
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "base/base64.h"
-#include "base/feature_list.h"
-#include "components/variations/net/variations_command_line.h"
 #endif
 
 namespace system_logs {

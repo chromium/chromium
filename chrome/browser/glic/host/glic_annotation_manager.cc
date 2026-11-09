@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/state_transitions.h"
 #include "base/strings/escape.h"
+#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
