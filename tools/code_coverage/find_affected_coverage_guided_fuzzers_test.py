@@ -3,10 +3,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import io
 import json
 import logging
 import os
+import pathlib
 import sys
+import tempfile
 import unittest
 from unittest import mock
 import urllib.error
@@ -17,10 +20,13 @@ from urllib.parse import urlparse
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import find_affected_coverage_guided_fuzzers
 
-MAIN_ARGV = ['script.py', '--out-dir', 'out/test', '--revision', 'abc']
 FINDIT_FILE_LINES = ['// Comment.', 'void F() {', '  if (G())', '    H();', '}']
 # make_findit_response()'s covered lines, with their hit counts.
 FINDIT_COVERED_LINES = {2: 7, 3: 7, 5: 7}
+
+
+def main_argv(out_dir):
+  return ['script.py', '--out-dir', out_dir, '--revision', 'abc']
 
 
 def make_findit_response(covered=True):
@@ -77,19 +83,11 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
 
     self.mock_subprocess_run.side_effect = fake_subprocess_run
 
-  def test_generate_gn_build_dir_default(self):
-    find_affected_coverage_guided_fuzzers.generate_gn_build_dir('out/test')
-
-    expected_args_str = (
-      find_affected_coverage_guided_fuzzers.gn_args_libfuzzer.replace('\n', ' ')
-    )
-    self.assertEqual(
-      self.get_calls_args(self.mock_subprocess_run),
-      [f'gn gen out/test --args={expected_args_str}'],
-    )
-    self.assertEqual(
-      self.mock_subprocess_run.call_args.kwargs['stdout'], sys.stderr
-    )
+  def make_out_dir(self):
+    """Returns a temporary build directory with an empty args.gn."""
+    out_dir = self.enterContext(tempfile.TemporaryDirectory())
+    pathlib.Path(out_dir, 'args.gn').touch()
+    return out_dir
 
   def test_get_modified_files(self):
     self.mock_subprocess_run.return_value.stdout = (
@@ -276,9 +274,19 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
       ['gn refs out/test --all --as=label -q //file1.cc'],
     )
 
+  def test_main_out_dir_not_generated(self):
+    out_dir = self.enterContext(tempfile.TemporaryDirectory())
+    with mock.patch('sys.argv', main_argv(out_dir)):
+      with mock.patch('sys.stderr', new_callable=io.StringIO) as mock_stderr:
+        with self.assertRaises(SystemExit) as cm:
+          find_affected_coverage_guided_fuzzers.main()
+    self.assertEqual(cm.exception.code, 2)
+    self.assertIn('has no args.gn. Generate it first.', mock_stderr.getvalue())
+    self.mock_subprocess_run.assert_not_called()
+
   def test_main_no_modified_files(self):
     self.mock_subprocess_run.return_value.stdout = ''
-    with mock.patch('sys.argv', MAIN_ARGV):
+    with mock.patch('sys.argv', main_argv(self.make_out_dir())):
       self.assertEqual(find_affected_coverage_guided_fuzzers.main(), 0)
     self.assertEqual(
       self.get_calls_args(self.mock_subprocess_run),
@@ -287,21 +295,18 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
 
   def test_main_no_fuzzers(self):
     self._set_subprocess_run_side_effect(git_diff_stdout='file1.cc\0')
+    out_dir = self.make_out_dir()
 
-    with mock.patch('sys.argv', MAIN_ARGV):
+    with mock.patch('sys.argv', main_argv(out_dir)):
       with self.assertLogs(level='WARNING') as cm:
         self.assertEqual(find_affected_coverage_guided_fuzzers.main(), 1)
     self.assertIn('No fuzzer targets found', cm.output[0])
 
-    expected_args_str = (
-      find_affected_coverage_guided_fuzzers.gn_args_libfuzzer.replace('\n', ' ')
-    )
     self.assertEqual(
       self.get_calls_args(self.mock_subprocess_run),
       [
         'git diff --name-only --diff-filter=d -z abc~ abc',
-        f'gn gen out/test --args={expected_args_str}',
-        'gn refs out/test //testing/libfuzzer:fuzzing_engine '
+        f'gn refs {out_dir} //testing/libfuzzer:fuzzing_engine '
         '--all --type=executable --as=label -q',
       ],
     )
@@ -314,8 +319,9 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
         '//file1.cc': '//fuzzer:fuzzer\n',
       },
     )
+    out_dir = self.make_out_dir()
 
-    with mock.patch('sys.argv', MAIN_ARGV):
+    with mock.patch('sys.argv', main_argv(out_dir)):
       # Redirect stdout to avoid printing during tests
       with mock.patch('sys.stdout', new_callable=mock.MagicMock) as mock_stdout:
         self.assertEqual(find_affected_coverage_guided_fuzzers.main(), 0)
@@ -329,17 +335,13 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
           output_data, {'affected_fuzzers': {'//file1.cc': ['//fuzzer:fuzzer']}}
         )
 
-    expected_args_str = (
-      find_affected_coverage_guided_fuzzers.gn_args_libfuzzer.replace('\n', ' ')
-    )
     self.assertEqual(
       self.get_calls_args(self.mock_subprocess_run),
       [
         'git diff --name-only --diff-filter=d -z abc~ abc',
-        f'gn gen out/test --args={expected_args_str}',
-        'gn refs out/test //testing/libfuzzer:fuzzing_engine '
+        f'gn refs {out_dir} //testing/libfuzzer:fuzzing_engine '
         '--all --type=executable --as=label -q',
-        'gn refs out/test --all --as=label -q //file1.cc',
+        f'gn refs {out_dir} --all --as=label -q //file1.cc',
       ],
     )
 

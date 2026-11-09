@@ -19,22 +19,6 @@ import urllib.request
 script_dir = os.path.dirname(os.path.realpath(__file__))
 chromium_src_dir = os.path.dirname(os.path.dirname(script_dir))
 
-gn_args_libfuzzer = """
-dcheck_always_on = false
-enable_mojom_fuzzer = true
-ffmpeg_branding = "ChromeOS"
-is_component_build = true
-is_debug = false
-optimize_for_fuzzing = true
-pdf_enable_xfa = true
-proprietary_codecs = true
-target_cpu = "x64"
-target_os = "linux"
-use_libfuzzer = true
-use_remoteexec = true
-use_siso = true
-"""
-
 # TODO: Support Centipede fuzzers too.
 # https://buganizer.corp.google.com/issues/522382682
 
@@ -50,28 +34,6 @@ class FinditCoverage(NamedTuple):
   file_lines: List[str]
   # Hit count of each line executed at least once, by 1-based line number.
   covered_lines: Dict[int, int]
-
-
-def generate_gn_build_dir(out_dir: str):
-  """Generates the GN graph in the output directory."""
-  logging.info('Generating GN graph in %s...', out_dir)
-
-  args_str = gn_args_libfuzzer.replace('\n', ' ')
-  command = ['gn', 'gen', out_dir, f'--args={args_str}']
-
-  try:
-    # Redirect gn gen's output to stderr so it doesn't get mixed into the
-    # JSON result this script prints to stdout.
-    subprocess.run(
-      command,
-      cwd=chromium_src_dir,
-      check=True,
-      env=os.environ,
-      stdout=sys.stderr,
-    )
-  except subprocess.CalledProcessError as e:
-    logging.error('Error running gn gen: %s', e)
-    raise
 
 
 def run_gn_command(args: List[str]) -> List[str]:
@@ -368,7 +330,9 @@ def main():
   parser.add_argument(
     '--out-dir',
     required=True,
-    help='Build directory. GN args will be replaced in this directory.',
+    help='Build directory already generated with a fuzzing engine and '
+    'sanitizer, e.g. by `tools/mb/mb.py gen -m tryserver.chromium.fuzz '
+    '-b linux-x64-libfuzzer-asan-rel-tests <dir>`.',
   )
   parser.add_argument(
     '--revision',
@@ -378,6 +342,15 @@ def main():
   )
 
   args = parser.parse_args()
+  # The fuzz_cq recipe generates --out-dir, passes it to this script and then
+  # builds and runs the fuzzers in it. The recipe picks the GN args because they
+  # set the fuzzing engine and sanitizer that the fuzzers are built and run
+  # with. The GN args also decide which fuzzers exist and which files they
+  # depend on, so this script runs gn refs on the same --out-dir to find the
+  # relevant fuzzers.
+  args_gn = os.path.join(chromium_src_dir, args.out_dir, 'args.gn')
+  if not os.path.isfile(args_gn):
+    parser.error(f'{args.out_dir} has no args.gn. Generate it first.')
   logging.basicConfig(
     level=logging.DEBUG if args.verbose else logging.INFO,
     format='%(levelname)s: %(message)s',
@@ -390,13 +363,13 @@ def main():
     logging.info('No relevant source files modified by %s.', args.revision)
     return 0
 
-  generate_gn_build_dir(args.out_dir)
-
   # Get all possible fuzzer targets
   all_fuzzers = find_all_fuzzer_targets(args.out_dir)
   if not all_fuzzers:
     logging.warning(
-      'No fuzzer targets found. Ensure "use_libfuzzer = true" in GN args.'
+      'No fuzzer targets found in %s. Was it generated with a fuzzing engine, '
+      'e.g. use_libfuzzer = true?',
+      args.out_dir,
     )
     return 1
 
