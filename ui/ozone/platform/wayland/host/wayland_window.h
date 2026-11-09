@@ -330,6 +330,11 @@ class WaylandWindow : public PlatformWindow,
   virtual gfx::Size GetSurfaceSizeInWaylandDIP(
       const PlatformWindowDelegate::State& state) const;
 
+  // Returns the origin of the window geometry in Wayland DIP for `state`, i.e.
+  // the top-left decoration insets scaled by `ui_scale`.
+  gfx::Point GetWindowGeometryOriginInWaylandDIP(
+      const PlatformWindowDelegate::State& state) const;
+
   // Tells if the surface has already been configured. This will be true after
   // the first set of configure event and ack request, meaning that wl_surface
   // can attach buffers.

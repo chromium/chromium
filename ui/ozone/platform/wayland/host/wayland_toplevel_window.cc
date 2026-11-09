@@ -867,12 +867,11 @@ void WaylandToplevelWindow::SetWindowGeometry(
   }
 
   // `geometry_size_dip` is already in Wayland DIP and excludes the decoration
-  // insets, and is never empty.
-  const auto insets_dip = delegate()->CalculateInsetsInDIP(state.window_state);
+  // insets, and is never empty. The insets are in UI DIP, so the origin must be
+  // scaled by `ui_scale`.
   last_sent_geometry_size_dip_ = state.geometry_size_dip;
-  xdg_toplevel_->SetWindowGeometry(
-      gfx::Rect(gfx::Point(insets_dip.left(), insets_dip.top()),
-                state.geometry_size_dip));
+  xdg_toplevel_->SetWindowGeometry(gfx::Rect(
+      GetWindowGeometryOriginInWaylandDIP(state), state.geometry_size_dip));
 }
 
 void WaylandToplevelWindow::AckConfigure(uint32_t serial) {

@@ -747,28 +747,32 @@ gfx::Size WaylandWindow::GeometrySizeToBoundsSizeDIP(
     const gfx::Size& geometry_size_dip,
     PlatformWindowState window_state,
     float ui_scale) const {
-  // Decoration insets are added in Wayland DIP before applying `ui_scale`.
-  gfx::Size size = geometry_size_dip;
+  // Decoration insets are in UI DIP, so they are added after applying
+  // `ui_scale`.
+  gfx::Size size = gfx::ScaleToEnclosingRectIgnoringError(
+                       gfx::Rect(geometry_size_dip), 1.f / ui_scale)
+                       .size();
   const gfx::Insets insets = delegate()->CalculateInsetsInDIP(window_state);
   size.Enlarge(insets.width(), insets.height());
-  return gfx::ScaleToEnclosingRectIgnoringError(gfx::Rect(size), 1.f / ui_scale)
-      .size();
+  return size;
 }
 
 gfx::Size WaylandWindow::BoundsSizeToGeometrySizeDIP(
     const gfx::Size& bounds_size_dip,
     PlatformWindowState window_state,
     float ui_scale) const {
+  // Decoration insets are in UI DIP, so they are removed before applying
+  // `ui_scale`.
+  gfx::Size size = bounds_size_dip;
+  const gfx::Insets insets = delegate()->CalculateInsetsInDIP(window_state);
+  size.Enlarge(-insets.width(), -insets.height());
   // Round down, since GeometrySizeToBoundsSizeDIP() rounds up. Otherwise a
   // geometry size derived from client-requested bounds could map back to
   // bounds 1 DIP larger.
-  gfx::Size size =
-      gfx::ToEnclosedRectIgnoringError(
-          gfx::ScaleRect(gfx::RectF(gfx::Rect(bounds_size_dip)), ui_scale),
-          /*error=*/0.001f)
-          .size();
-  const gfx::Insets insets = delegate()->CalculateInsetsInDIP(window_state);
-  size.Enlarge(-insets.width(), -insets.height());
+  size = gfx::ToEnclosedRectIgnoringError(
+             gfx::ScaleRect(gfx::RectF(gfx::Rect(size)), ui_scale),
+             /*error=*/0.001f)
+             .size();
   // As per spec, width and height must be greater than zero.
   size.SetToMax(gfx::Size(1, 1));
   return size;
@@ -776,11 +780,21 @@ gfx::Size WaylandWindow::BoundsSizeToGeometrySizeDIP(
 
 gfx::Size WaylandWindow::GetSurfaceSizeInWaylandDIP(
     const PlatformWindowDelegate::State& state) const {
-  gfx::Size size = state.geometry_size_dip;
-  const gfx::Insets insets =
-      delegate()->CalculateInsetsInDIP(state.window_state);
-  size.Enlarge(insets.width(), insets.height());
-  return size;
+  if (delegate()->CalculateInsetsInDIP(state.window_state).IsEmpty()) {
+    return state.geometry_size_dip;
+  }
+  // The insets are in UI DIP, so the surface size can't be derived exactly
+  // from the geometry size.
+  return gfx::ScaleToEnclosingRectIgnoringError(
+             gfx::Rect(state.bounds_dip.size()), state.ui_scale)
+      .size();
+}
+
+gfx::Point WaylandWindow::GetWindowGeometryOriginInWaylandDIP(
+    const PlatformWindowDelegate::State& state) const {
+  const gfx::Insets insets = gfx::ScaleToRoundedInsets(
+      delegate()->CalculateInsetsInDIP(state.window_state), state.ui_scale);
+  return {insets.left(), insets.top()};
 }
 
 gfx::Rect WaylandWindow::GetRestoredBoundsInDIP() const {
