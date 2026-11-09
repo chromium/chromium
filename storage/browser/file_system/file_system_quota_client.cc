@@ -125,7 +125,7 @@ void FileSystemQuotaClient::GetBucketUsage(const BucketLocator& bucket,
       base::BarrierCallback<int64_t>(
           types.size(), base::BindOnce([](std::vector<int64_t> usages) {
                           return std::accumulate(usages.begin(), usages.end(),
-                                                 0U);
+                                                 int64_t{0});
                         }).Then(std::move(callback)));
 
   for (auto type : types) {

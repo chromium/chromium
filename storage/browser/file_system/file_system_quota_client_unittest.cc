@@ -24,6 +24,7 @@
 #include "storage/browser/file_system/file_system_features.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
 #include "storage/browser/file_system/obfuscated_file_util.h"
+#include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
@@ -434,6 +435,26 @@ TEST_F(FileSystemQuotaClientTest, MultiDomainTest) {
                   file_paths_cost_persistent2,
               GetBucketUsage(quota_client, bucket2));
   }
+}
+
+TEST_F(FileSystemQuotaClientTest, UsageAbove4GiB) {
+  FileSystemQuotaClient quota_client(GetFileSystemContext());
+  InitializeOriginFiles(quota_client,
+                        {{true, "", 0, kDummyURL1, kFileSystemTypeTemporary}});
+  ASSERT_OK_AND_ASSIGN(auto bucket, GetBucket(kDummyURL1, kDefaultBucketName));
+
+  // Writing more than 4 GiB of files would be slow, so store the usage in the
+  // usage cache, which GetBucketUsage() reads while the cache is clean.
+  const int64_t kUsage = (int64_t{1} << 32) + 123;
+  SandboxFileSystemBackendDelegate* delegate =
+      GetFileSystemContext()->sandbox_delegate();
+  const base::FilePath base_dir = delegate->GetBaseDirectoryForBucketAndType(
+      bucket, kFileSystemTypeTemporary, /*create=*/false);
+  ASSERT_FALSE(base_dir.empty());
+  ASSERT_TRUE(delegate->usage_cache()->UpdateUsage(
+      base_dir.Append(FileSystemUsageCache::kUsageFileName), kUsage));
+
+  EXPECT_EQ(kUsage, GetBucketUsage(quota_client, bucket));
 }
 
 TEST_F(FileSystemQuotaClientTest, GetUsage_MultipleTasks) {
