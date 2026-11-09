@@ -398,17 +398,12 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
 #endif
 
   const SkAlphaType alpha_type = color_params_.GetAlphaType();
-  auto provider = std::make_unique<Canvas2DResourceProvider>(
+  context_provider_wrapper_ = context_provider_wrapper;
+  context_provider_wrapper_->AddObserver(this);
+  shared_image_provider_ = std::make_unique<Canvas2DResourceProvider>(
       size, format, alpha_type, color_params_.GetGfxColorSpace(),
       color_params_.GetGfxHdrMetadata(), context_provider_wrapper,
       is_accelerated, shared_image_usage_flags);
-  if (!provider->IsValid()) {
-    return;
-  }
-
-  context_provider_wrapper_ = context_provider_wrapper;
-  context_provider_wrapper_->AddObserver(this);
-  shared_image_provider_ = std::move(provider);
   if (shared_image_provider_->resource()) {
     EnsureWriteAccess();
   }
