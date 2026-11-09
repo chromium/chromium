@@ -35,9 +35,7 @@ public class FeatureList {
                 || isNativeInitialized();
     }
 
-    /**
-     * @return Whether the native FeatureList is initialized or not.
-     */
+    /** Returns whether the native FeatureList is initialized or not. */
     public static boolean isNativeInitialized() {
         if (sDisableNativeForTesting || !LibraryLoader.getInstance().isInitialized()) {
             return false;

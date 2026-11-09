@@ -525,8 +525,8 @@ public final class DeviceInfo {
     }
 
     /**
-     * @return CPU architecture name, see "arch:" in:
-     *     https://chromium.googlesource.com/chromium/src.git/+/master/docs/updater/protocol_3_1.md
+     * Returns CPU architecture name, see "arch:" in:
+     * https://chromium.googlesource.com/chromium/src.git/+/master/docs/updater/protocol_3_1.md
      */
     public static String getArch() {
         boolean is64Bit = Process.is64Bit();
@@ -538,9 +538,7 @@ public final class DeviceInfo {
         return "";
     }
 
-    /**
-     * @return The device's screen width in density-independent pixels (dp).
-     */
+    /** Returns the device's screen width in density-independent pixels (dp). */
     private static int getDeviceWidthInDp() {
         DisplayMetrics displayMetrics =
                 ContextUtils.getApplicationContext().getResources().getDisplayMetrics();

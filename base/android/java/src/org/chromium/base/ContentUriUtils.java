@@ -372,7 +372,7 @@ public abstract class ContentUriUtils {
      * @param uri the content URI to be resolved.
      * @param context {@link Context} in interest.
      * @param columnField the column field to query.
-     * @return the display name of the @code uri if present in the database or an empty string
+     * @return the display name of the {@code uri} if present in the database or an empty string
      *     otherwise.
      */
     @SuppressWarnings("NullAway") // Using broad try/catch to catch NullPointerException
@@ -501,6 +501,7 @@ public abstract class ContentUriUtils {
     /**
      * Deletes a content uri from the system.
      *
+     * @param uriString The content URI to delete.
      * @return True if the uri was deleted.
      */
     @CalledByNative

@@ -49,9 +49,7 @@ public class DiscardableReferencePool {
             mPayload = payload;
         }
 
-        /**
-         * @return The referent, or null if the pool has been drained.
-         */
+        /** Returns the referent, or null if the pool has been drained. */
         public @Nullable T get() {
             return mPayload;
         }

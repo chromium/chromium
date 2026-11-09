@@ -17,9 +17,7 @@ public class BaseFeatureMap extends FeatureMap {
     // Do not instantiate this class.
     private BaseFeatureMap() {}
 
-    /**
-     * @return the singleton UiAndroidFeatureMap.
-     */
+    /** Returns the singleton BaseFeatureMap. */
     public static BaseFeatureMap getInstance() {
         return sInstance;
     }

@@ -110,8 +110,8 @@ public class ContextUtils {
     }
 
     /**
-     * @return the default file name (without the ".xml" suffix) of the application-wide shared
-     *     preferences.
+     * Returns the default file name (without the ".xml" suffix) of the application-wide shared
+     * preferences.
      */
     public static String getDefaultSharedPreferencesName() {
         return PreferenceManager.getDefaultSharedPreferencesName(getApplicationContext());
@@ -149,18 +149,14 @@ public class ContextUtils {
         sApplicationContext = appContext;
     }
 
-    /**
-     * @return Whether the process is isolated.
-     */
+    /** Returns whether the process is isolated. */
     @SuppressWarnings("NewApi")
     public static boolean isIsolatedProcess() {
         // Was not made visible until Android P, but the method has always been there.
         return Process.isIsolated();
     }
 
-    /**
-     * @return if current process is SdkSandbox process.
-     */
+    /** Returns whether current process is SdkSandbox process. */
     public static boolean isSdkSandboxProcess() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             return Process.isSdkSandbox();
@@ -169,9 +165,7 @@ public class ContextUtils {
         }
     }
 
-    /**
-     * @return The name of the current process. E.g. "org.chromium.chrome:privileged_process0".
-     */
+    /** Returns the name of the current process. E.g. "org.chromium.chrome:privileged_process0". */
     public static String getProcessName() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             return Application.getProcessName();
@@ -186,9 +180,7 @@ public class ContextUtils {
         }
     }
 
-    /**
-     * @return Whether the current process is 64-bit.
-     */
+    /** Returns whether the current process is 64-bit. */
     public static boolean isProcess64Bit() {
         return Process.is64Bit();
     }

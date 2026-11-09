@@ -767,14 +767,14 @@ public class ApplicationStatus {
     }
 
     /**
-     * Determines the current application state as defined by {@link ApplicationState}.  This will
+     * Determines the current application state as defined by {@link ApplicationState}. This will
      * loop over all the activities and check their state to determine what the general application
      * state should be.
      *
      * @return HAS_RUNNING_ACTIVITIES if any activity is not paused, stopped, or destroyed.
-     * HAS_PAUSED_ACTIVITIES if none are running and one is paused.
-     * HAS_STOPPED_ACTIVITIES if none are running/paused and one is stopped.
-     * HAS_DESTROYED_ACTIVITIES if none are running/paused/stopped.
+     *     HAS_PAUSED_ACTIVITIES if none are running and one is paused. HAS_STOPPED_ACTIVITIES if
+     *     none are running/paused and one is stopped. HAS_DESTROYED_ACTIVITIES if none are
+     *     running/paused/stopped.
      */
     @ApplicationState
     @GuardedBy("sActivityInfo")
