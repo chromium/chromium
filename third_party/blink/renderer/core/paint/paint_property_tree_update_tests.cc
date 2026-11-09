@@ -2510,4 +2510,38 @@ TEST_P(PaintPropertyTreeUpdateTest, CanvasSubtreeScrollbarInIframe) {
   check_scrollbar_effect_in_canvas_subtree(child_scroll, true);
 }
 
+TEST_P(PaintPropertyTreeUpdateTest, SVGTransformAnimationSMILChange) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(10deg); }
+      }
+      #target {
+        transform-origin: 50% 50%;
+        animation: anim 1s infinite;
+      }
+    </style>
+    <svg width="100" height="100">
+      <rect id="other" width="100" height="100"/>
+      <rect id="target" width="100" height="100"/>
+      <set id="smil" href="#other" attributeName="fill" to="green"/>
+    </svg>
+  )HTML");
+
+  const auto* transform = PaintPropertiesForElement("target")->Transform();
+  ASSERT_TRUE(transform);
+  EXPECT_EQ(gfx::Point3F(50, 50, 0), transform->Origin());
+
+  GetElementById("smil")->setAttribute(svg_names::kHrefAttr,
+                                       AtomicString("#target"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::Point3F(), transform->Origin());
+
+  GetElementById("smil")->setAttribute(svg_names::kHrefAttr,
+                                       AtomicString("#other"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::Point3F(50, 50, 0), transform->Origin());
+}
+
 }  // namespace blink

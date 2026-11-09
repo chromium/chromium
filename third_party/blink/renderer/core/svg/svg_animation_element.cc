@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/svg/animation/element_smil_animations.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_property.h"
@@ -249,8 +250,17 @@ void SVGAnimationElement::UnregisterAnimation(
     return;
   DCHECK(targetElement());
   SVGElement* target = targetElement();
-  if (ElementSMILAnimations* smil_animations = target->GetSMILAnimations())
+  if (ElementSMILAnimations* smil_animations = target->GetSMILAnimations()) {
     smil_animations->RemoveAnimation(attribute_name, this);
+    if (!smil_animations->HasAnimations()) {
+      if (LayoutObject* layout_object = target->GetLayoutObject()) {
+        // `CompositorAnimations::CanStartTransformAnimationOnCompositorForSVG`
+        // depends on `HasSMILAnimations()`, which is used for the transform
+        // paint property.
+        layout_object->SetNeedsPaintPropertyUpdate();
+      }
+    }
+  }
   registered_animation_ = false;
 }
 
@@ -261,7 +271,16 @@ void SVGAnimationElement::RegisterAnimation(
     return;
   SVGElement* target = targetElement();
   ElementSMILAnimations& smil_animations = target->EnsureSMILAnimations();
+  const bool had_animations = smil_animations.HasAnimations();
   smil_animations.AddAnimation(attribute_name, this);
+  if (!had_animations) {
+    if (LayoutObject* layout_object = target->GetLayoutObject()) {
+      // `CompositorAnimations::CanStartTransformAnimationOnCompositorForSVG`
+      // depends on `HasSMILAnimations()`, which is used for the transform paint
+      // property.
+      layout_object->SetNeedsPaintPropertyUpdate();
+    }
+  }
   registered_animation_ = true;
 }
 
