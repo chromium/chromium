@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
@@ -59,14 +58,17 @@ bool IsRegularUserOrSupervisedChild(const user_manager::User& user) {
 // Getting started module is shown to unmanaged regular and child accounts.
 bool ShouldShowGetStarted(Profile* profile, const user_manager::User& user) {
   // TODO(crbug.com/278643115): IsChild() is redundant with UserType::kChild.
-  // Drop it and use user.is_managed() so this no longer needs the Profile.
-  // Child users return true for IsManaged. These are not EDU accounts though,
-  // should still see the getting started module.
+  // Drop it so this no longer needs the Profile.
+  // Child users are managed. These are not EDU accounts though, should still
+  // see the getting started module.
   if (profile->IsChild())
     return true;
   switch (user.GetType()) {
     case user_manager::UserType::kRegular:
-      return !profile->GetProfilePolicyConnector()->IsManaged();
+      // The user's policy status is known once its Profile has been added,
+      // which happened before the session started. If it isn't, treat the
+      // user as unmanaged, matching ProfileUserManagerController's default.
+      return !user.is_managed().value_or(false);
     default:
       return false;
   }
@@ -174,8 +176,9 @@ bool ShouldLaunchHelpApp(Profile* profile) {
   if (profile->IsChild())
     return true;
 
-  if (profile->GetProfilePolicyConnector()->IsManaged())
+  if (user.is_managed().value_or(false)) {
     return false;
+  }
 
   return true;
 }
