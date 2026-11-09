@@ -20,6 +20,7 @@
 #include "base/check_is_test.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -40,6 +41,7 @@
 #include "chrome/browser/context_hub/auto_todos/auto_todos_store.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
+#include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 #include "chrome/browser/context_hub/prefs.h"
 #include "chrome/browser/context_hub/storage/context_hub_backend.h"
 #include "chrome/browser/context_hub/tab_group_store/tab_group_entry.h"
@@ -405,12 +407,42 @@ const net::BackoffEntry::Policy* GetFirstPartyAutoTodosBackoffPolicy() {
   return &policy;
 }
 
+void AppendTrimmedPart(std::vector<std::string_view>& parts,
+                       std::string_view text) {
+  std::string_view trimmed = base::TrimWhitespaceASCII(text, base::TRIM_ALL);
+  if (!trimmed.empty()) {
+    parts.push_back(trimmed);
+  }
+}
+
+// Returns the passage to embed for an image `entry`, combining its host page
+// title and any user-provided annotations (note, collection, and tags).
+std::vector<std::string> GetPassagesForImageMemoryBankEntry(
+    const MemoryBankEntry& entry) {
+  std::vector<std::string_view> parts;
+  AppendTrimmedPart(parts, entry.tab_title);
+  if (entry.note) {
+    AppendTrimmedPart(parts, *entry.note);
+  }
+  if (entry.collection) {
+    AppendTrimmedPart(parts, *entry.collection);
+  }
+  for (const std::string& tag : entry.tags) {
+    AppendTrimmedPart(parts, tag);
+  }
+  if (parts.empty()) {
+    return {};
+  }
+  return {base::JoinString(parts, " ")};
+}
+
 // Returns the passages to embed for `entry`, mirroring the candidates that
 // `page_content_annotations::GenerateEmbeddingsCandidates()` creates for pages:
 // the text split into passages, followed by the title and the title with the
 // URL. Tab entries hold the extracted page content. Text selections are split
 // the same way so long selections fit the model input, but without a minimum
-// passage length so short selections are kept.
+// passage length so short selections are kept. Image entries are embedded as a
+// single passage combining their page title and user annotations.
 std::vector<std::string> GetPassagesForMemoryBankEntry(
     const MemoryBankEntry& entry) {
   switch (entry.type) {
@@ -436,7 +468,7 @@ std::vector<std::string> GetPassagesForMemoryBankEntry(
       return passages;
     }
     case MemoryBankType::kImage:
-      return {};
+      return GetPassagesForImageMemoryBankEntry(entry);
   }
   return {};
 }
@@ -679,6 +711,17 @@ void ContextHubService::OnMemoryBankEntryUpdated(
     const std::vector<std::string>& tags,
     const std::optional<std::string>& note,
     const std::optional<std::string>& collection) {
+  if (CanComputeMemoryBankEmbeddings()) {
+    // TODO(crbug.com/570703760): Have `UpdateMemoryBankEntryAnnotations()` pass
+    // the updated `MemoryBankEntry` to `OnMemoryBankEntryUpdated()` so
+    // recomputing embeddings does not require re-fetching the entry.
+    memory_bank_pending_annotation_update_ids_[id]++;
+    context_hub_backend_->GetMemoryBankEntriesByIds(
+        base::span_from_ref(id),
+        base::BindOnce(
+            &ContextHubService::OnMemoryBankEntriesFetchedForAnnotationUpdate,
+            weak_factory_.GetWeakPtr(), id));
+  }
   observers_.Notify(&Observer::OnMemoryBankEntryUpdated, id, tags, note,
                     collection);
 }
@@ -698,6 +741,7 @@ void ContextHubService::EmbedderMetadataUpdated(
   // Embeddings computed by a different model are not comparable, so drop any
   // in-flight jobs from a previous model version and let the backend wipe
   // stored embeddings before recomputing them below.
+  memory_bank_pending_annotation_update_ids_.clear();
   memory_bank_embedding_jobs_.clear();
   context_hub_backend_->SetMemoryBankEmbeddingsVersion(
       embedder_metadata_.model_version,
@@ -710,6 +754,7 @@ void ContextHubService::OnMemoryBankEmbeddingsVersionSet(bool success) {
     // Stored embeddings may still come from a previous model, so stop computing
     // new ones rather than mixing models. A later metadata update retries.
     embedder_metadata_ = passage_embeddings::EmbedderMetadata(0, 0);
+    memory_bank_pending_annotation_update_ids_.clear();
     memory_bank_embedding_jobs_.clear();
     return;
   }
@@ -736,13 +781,35 @@ void ContextHubService::OnMemoryBankEntriesFetchedForEmbeddings(
   }
 }
 
+void ContextHubService::OnMemoryBankEntriesFetchedForAnnotationUpdate(
+    int64_t id,
+    std::vector<MemoryBankEntry> entries) {
+  auto it = memory_bank_pending_annotation_update_ids_.find(id);
+  if (it == memory_bank_pending_annotation_update_ids_.end()) {
+    return;
+  }
+  if (--it->second == 0) {
+    memory_bank_pending_annotation_update_ids_.erase(it);
+    if (!entries.empty() && entries[0].type == MemoryBankType::kImage) {
+      ComputeMemoryBankEmbeddings(entries[0]);
+    }
+  }
+}
+
+bool ContextHubService::CanComputeMemoryBankEmbeddings() {
+  return embedder_ && context_hub_backend_ && embedder_metadata_.IsValid();
+}
+
 void ContextHubService::ComputeMemoryBankEmbeddings(
     const MemoryBankEntry& entry) {
-  if (!embedder_ || !context_hub_backend_ || !embedder_metadata_.IsValid()) {
+  if (!CanComputeMemoryBankEmbeddings()) {
     return;
   }
   std::vector<std::string> passages = GetPassagesForMemoryBankEntry(entry);
   if (passages.empty()) {
+    // TODO(crbug.com/570703760): Clear stored embeddings for the entry in
+    // `ContextHubBackend` once per-entry embedding deletion is supported.
+    memory_bank_embedding_jobs_.erase(entry.id);
     return;
   }
   // Saved entries are not time critical, so yield to user-initiated work such
@@ -1531,6 +1598,7 @@ void ContextHubService::DeleteEntries(
   // Drop in-flight embedding jobs first so a late result cannot store
   // embeddings for an entry that no longer exists.
   for (int64_t id : ids) {
+    memory_bank_pending_annotation_update_ids_.erase(id);
     memory_bank_embedding_jobs_.erase(id);
   }
   memory_bank_->DeleteEntries(ids, std::move(callback));

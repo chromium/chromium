@@ -447,6 +447,10 @@ class ContextHubService : public KeyedService,
       std::optional<page_content_annotations::ExtractedPageContentResult>
           result);
 
+  // Returns true if the passage embedder, database backend, and model metadata
+  // are ready to compute and store memory bank embeddings.
+  bool CanComputeMemoryBankEmbeddings();
+
   // Computes and stores passage embeddings for `entry` if the embedder and the
   // database backend are available. Replaces any in-flight job for the entry.
   void ComputeMemoryBankEmbeddings(const MemoryBankEntry& entry);
@@ -456,6 +460,11 @@ class ContextHubService : public KeyedService,
   void OnMemoryBankEmbeddingsVersionSet(bool success);
   void OnMemoryBankEntryIdsWithoutEmbeddingsFetched(std::vector<int64_t> ids);
   void OnMemoryBankEntriesFetchedForEmbeddings(
+      std::vector<MemoryBankEntry> entries);
+
+  // Recomputes embeddings for image entries when their user annotations change.
+  void OnMemoryBankEntriesFetchedForAnnotationUpdate(
+      int64_t id,
       std::vector<MemoryBankEntry> entries);
 
   // Handles the async response from the embedder for `entry_id`.
@@ -667,8 +676,15 @@ class ContextHubService : public KeyedService,
   base::flat_map<int64_t, passage_embeddings::Embedder::Job>
       memory_bank_embedding_jobs_;
 
-  // Declared after `context_hub_backend_` and `memory_bank_embedding_jobs_`
-  // because the provider may notify synchronously when observed.
+  // Reference counts of in-flight `GetMemoryBankEntriesByIds()` lookups
+  // triggered by `OnMemoryBankEntryUpdated()`, keyed by entry ID. Erased when
+  // the lookup completes, when the entry is deleted, or when embedder metadata
+  // changes.
+  base::flat_map<int64_t, int> memory_bank_pending_annotation_update_ids_;
+
+  // Declared after `context_hub_backend_`, `memory_bank_embedding_jobs_`, and
+  // `memory_bank_pending_annotation_update_ids_` because the provider may
+  // notify synchronously when observed.
   base::ScopedObservation<passage_embeddings::EmbedderMetadataProvider,
                           passage_embeddings::EmbedderMetadataObserver>
       embedder_metadata_observation_{this};

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/context_hub/context_hub_service.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -38,6 +39,7 @@
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/database_memory_bank.h"
 #include "chrome/browser/context_hub/memory_bank/in_memory_memory_bank.h"
+#include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 #include "chrome/browser/context_hub/prefs.h"
 #include "chrome/browser/context_hub/storage/context_hub_backend.h"
 #include "chrome/browser/context_hub/storage/context_hub_backend_impl.h"
@@ -1970,6 +1972,14 @@ class ContextHubServiceEmbeddingsTest : public ContextHubServiceTest {
     }
   }
 
+  static MemoryBankEntry MakeImageEntry(
+      std::string tab_title = "",
+      const GURL& image_url = GURL("https://example.com/photo.png")) {
+    return MemoryBankEntry(MemoryBankType::kImage, GURL("https://example.com"),
+                           std::move(tab_title), /*selected_text=*/std::nullopt,
+                           image_url);
+  }
+
   // Saves `entry` and returns its ID.
   int64_t SaveEntry(
       MemoryBankEntry entry,
@@ -2110,6 +2120,94 @@ TEST_F(ContextHubServiceEmbeddingsTest,
   mock_embedder_.CompleteHeldJob(
       passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
 
+  EXPECT_FALSE(store_embeddings_future_.IsReady());
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       SaveImage_StoresMetadataPassageEmbedding) {
+  CreateDatabaseService();
+  EXPECT_CALL(mock_embedder_,
+              ComputePassagesEmbeddings(
+                  _, ElementsAre("Page Title My note Recipes food ramen"), _));
+
+  MemoryBankEntry entry = MakeImageEntry("  Page Title  ");
+  entry.note = "  My note\n";
+  entry.collection = " Recipes ";
+  entry.tags = {" food ", "   ", "ramen"};
+  const int64_t id = SaveEntry(std::move(entry));
+
+  EXPECT_EQ(std::make_tuple(id, size_t{1}), store_embeddings_future_.Take());
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       SaveImage_EmptyTitleAndAnnotations_DoesNotStoreEmbedding) {
+  CreateDatabaseService();
+  EXPECT_CALL(mock_embedder_, ComputePassagesEmbeddings).Times(0);
+
+  MemoryBankEntry entry = MakeImageEntry("   ");
+  entry.note = " \t ";
+  entry.tags = {"  "};
+  SaveEntry(std::move(entry));
+
+  EXPECT_FALSE(store_embeddings_future_.IsReady());
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       UpdateImageAnnotations_RecomputesEmbedding) {
+  CreateDatabaseService();
+  EXPECT_CALL(mock_embedder_,
+              ComputePassagesEmbeddings(_, ElementsAre("Page Title"), _));
+  const int64_t id = SaveEntry(MakeImageEntry("Page Title"));
+  EXPECT_EQ(std::make_tuple(id, size_t{1}), store_embeddings_future_.Take());
+
+  EXPECT_CALL(
+      mock_embedder_,
+      ComputePassagesEmbeddings(
+          _,
+          ElementsAre("Page Title System overview Design diagram architecture"),
+          _));
+  base::test::TestFuture<bool> update_future;
+  database_service_->UpdateMemoryBankEntryAnnotations(
+      id, /*tags=*/{"diagram", "architecture"}, /*note=*/"System overview",
+      /*collection=*/"Design", update_future.GetCallback());
+  ASSERT_TRUE(update_future.Get());
+
+  EXPECT_EQ(std::make_tuple(id, size_t{1}), store_embeddings_future_.Take());
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       UpdateImageAnnotations_ClearedToEmpty_DropsInFlightEmbeddingJob) {
+  CreateDatabaseService();
+  EXPECT_CALL(mock_embedder_,
+              ComputePassagesEmbeddings(_, ElementsAre("Initial note"), _))
+      .WillOnce(mock_embedder_.HoldJob());
+  MemoryBankEntry entry = MakeImageEntry();
+  entry.note = "Initial note";
+  const int64_t id = SaveEntry(std::move(entry));
+
+  // Start an annotation update with non-empty text, then immediately clear all
+  // annotations so the resulting empty passage drops the in-flight embedding
+  // job without starting an intermediate embedding job.
+  EXPECT_CALL(mock_embedder_, ComputePassagesEmbeddings).Times(0);
+  base::test::TestFuture<bool> first_update_future;
+  database_service_->UpdateMemoryBankEntryAnnotations(
+      id, /*tags=*/{"tag"}, /*note=*/"Updated note",
+      /*collection=*/std::nullopt, first_update_future.GetCallback());
+  base::test::TestFuture<bool> clear_update_future;
+  database_service_->UpdateMemoryBankEntryAnnotations(
+      id, /*tags=*/{}, /*note=*/std::nullopt, /*collection=*/std::nullopt,
+      clear_update_future.GetCallback());
+  ASSERT_TRUE(first_update_future.Get());
+  ASSERT_TRUE(clear_update_future.Get());
+
+  // Ensure the second `GetMemoryBankEntriesByIds()` callback has run by
+  // executing another backend round-trip.
+  base::test::TestFuture<std::vector<MemoryBankEntry>> entries_future;
+  database_service_->GetEntriesByIds({id}, entries_future.GetCallback());
+  ASSERT_EQ(entries_future.Take().size(), 1u);
+
+  mock_embedder_.CompleteHeldJob(
+      passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
   EXPECT_FALSE(store_embeddings_future_.IsReady());
 }
 #endif
