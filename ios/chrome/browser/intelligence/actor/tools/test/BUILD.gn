@@ -73,6 +73,7 @@ source_set("eg2_tests") {
     "//components/password_manager/core/browser/features:password_features",
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/device_reauth/test:eg_test_support+eg2",
+    "//ios/chrome/browser/infobars/ui_bundled/banners:public",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/passwords/model:eg_test_support+eg2",

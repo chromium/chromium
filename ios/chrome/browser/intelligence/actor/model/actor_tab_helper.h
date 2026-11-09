@@ -22,6 +22,7 @@ class WebState;
 }  // namespace web
 
 class ActorTabHelperObserver;
+class GURL;
 
 // `ActorTabHelper` is a tab helper used to track Actor-related state that is
 // tab-bound.
@@ -69,6 +70,12 @@ class ActorTabHelper : public web::WebStateObserver,
   // Returns true if the tab is currently being actuated.
   // TODO(crbug.com/548051839): Deprecated, remove once callers are updated.
   bool IsActuating() const;
+
+  // Intercepts a request to open `url` in a new tab while the tab is
+  // `kActorControlled`, navigating the associated `WebState` in-place for valid
+  // HTTP(S) URLs and suppressing other schemes. Returns `true` if the request
+  // was handled, or `false` when the tab is not `kActorControlled`.
+  bool MaybeHandleNewTabRequest(const GURL& url);
 
   // Registers a callback to be invoked when the `ActorControlState`
   // changes. The returned subscription manages the lifetime of the

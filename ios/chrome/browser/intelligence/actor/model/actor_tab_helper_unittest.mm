@@ -5,7 +5,10 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 
 #import <memory>
+#import <optional>
 #import <sstream>
+#import <string>
+#import <string_view>
 
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
@@ -16,6 +19,7 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -23,10 +27,23 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/page_transition_types.h"
+#import "url/gurl.h"
 
 namespace {
 
 using actor::ActorControlState;
+
+constexpr char kHttpPopupUrl[] = "http://example.test/popup";
+constexpr char kHttpsPopupUrl[] = "https://example.test/popup";
+constexpr char kSecondHttpsPopupUrl[] = "https://example.test/other";
+constexpr char kEmptyUrl[] = "";
+constexpr char kInvalidNonEmptyUrl[] = "http://";
+constexpr char kAboutBlankUrl[] = "about:blank";
+constexpr char kAboutSrcdocUrl[] = "about:srcdoc";
+constexpr char kJavaScriptVoidUrl[] = "javascript:void(0)";
+constexpr char kChromeVersionUrl[] = "chrome://version";
+constexpr char kFileTestUrl[] = "file:///tmp/test.html";
 
 class FakeActorTabHelperObserver : public ActorTabHelperObserver {
  public:
@@ -102,6 +119,11 @@ class ActorTabHelperTest : public PlatformTest {
   void SetUp() override;
   void TearDown() override;
 
+  web::FakeNavigationManager* navigation_manager() {
+    return static_cast<web::FakeNavigationManager*>(
+        web_state_->GetNavigationManager());
+  }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<KeepAliveFakeWebState> web_state_;
   raw_ptr<ActorTabHelper> tab_helper_ = nullptr;
@@ -110,6 +132,8 @@ class ActorTabHelperTest : public PlatformTest {
 void ActorTabHelperTest::SetUp() {
   PlatformTest::SetUp();
   web_state_ = std::make_unique<KeepAliveFakeWebState>();
+  web_state_->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
   ActorTabHelper::CreateForWebState(web_state_.get());
   tab_helper_ = ActorTabHelper::FromWebState(web_state_.get());
 }
@@ -502,4 +526,78 @@ TEST_F(ActorTabHelperTest, SetControlStateIgnoresActorControlForTtcTaskSource) {
   EXPECT_FALSE(observer.on_control_state_changed_called_);
   EXPECT_OCMOCK_VERIFY(mock_web_view_proxy);
 }
+
+// Tests that `MaybeHandleNewTabRequest` ignores requests while `kInactive`,
+// intercepts and redirects valid HTTP(S) URLs while `kActorControlled`, and
+// stops intercepting once the tab returns to `kInactive`.
+TEST_F(ActorTabHelperTest, MaybeHandleNewTabRequestFollowsControlState) {
+  EXPECT_FALSE(tab_helper_->MaybeHandleNewTabRequest(GURL(kHttpsPopupUrl)));
+  EXPECT_FALSE(navigation_manager()->LoadURLWithParamsWasCalled());
+
+  tab_helper_->SetControlState(ActorControlState::kActorControlled);
+  EXPECT_TRUE(tab_helper_->MaybeHandleNewTabRequest(GURL(kHttpsPopupUrl)));
+  ASSERT_TRUE(navigation_manager()->LoadURLWithParamsWasCalled());
+  EXPECT_EQ(GURL(kHttpsPopupUrl),
+            navigation_manager()->GetLastLoadURLWithParams()->url);
+
+  tab_helper_->SetControlState(ActorControlState::kInactive);
+  EXPECT_FALSE(
+      tab_helper_->MaybeHandleNewTabRequest(GURL(kSecondHttpsPopupUrl)));
+  EXPECT_EQ(GURL(kHttpsPopupUrl),
+            navigation_manager()->GetLastLoadURLWithParams()->url);
+}
+
+struct NewTabUrlTestCase {
+  std::string_view test_name;
+  std::string_view url_spec;
+  bool expect_in_place_load;
+};
+
+class ActorTabHelperNewTabUrlTest
+    : public ActorTabHelperTest,
+      public testing::WithParamInterface<NewTabUrlTestCase> {};
+
+// Tests that `MaybeHandleNewTabRequest` redirects valid HTTP(S) URLs into a
+// renderer-initiated same-tab link navigation with an unset referrer, while
+// suppressing empty, invalid, and non-HTTP(S) URLs without overwriting the
+// opener `WebState`.
+TEST_P(ActorTabHelperNewTabUrlTest, HandlesNewTabRequestWhenActorControlled) {
+  tab_helper_->SetControlState(ActorControlState::kActorControlled);
+
+  const GURL target_url(GetParam().url_spec);
+  EXPECT_TRUE(tab_helper_->MaybeHandleNewTabRequest(target_url));
+
+  if (!GetParam().expect_in_place_load) {
+    EXPECT_FALSE(navigation_manager()->LoadURLWithParamsWasCalled());
+    return;
+  }
+
+  ASSERT_TRUE(navigation_manager()->LoadURLWithParamsWasCalled());
+  std::optional<web::NavigationManager::WebLoadParams> load_params =
+      navigation_manager()->GetLastLoadURLWithParams();
+  ASSERT_TRUE(load_params.has_value());
+  EXPECT_EQ(target_url, load_params->url);
+  EXPECT_TRUE(load_params->referrer.url.is_empty());
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(load_params->transition_type,
+                                           ui::PAGE_TRANSITION_LINK));
+  EXPECT_TRUE(load_params->is_renderer_initiated);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ActorTabHelperNewTabUrlTest,
+    testing::Values(NewTabUrlTestCase{"Http", kHttpPopupUrl, true},
+                    NewTabUrlTestCase{"Https", kHttpsPopupUrl, true},
+                    NewTabUrlTestCase{"Empty", kEmptyUrl, false},
+                    NewTabUrlTestCase{"InvalidNonEmpty", kInvalidNonEmptyUrl,
+                                      false},
+                    NewTabUrlTestCase{"AboutBlank", kAboutBlankUrl, false},
+                    NewTabUrlTestCase{"AboutSrcdoc", kAboutSrcdocUrl, false},
+                    NewTabUrlTestCase{"JavaScript", kJavaScriptVoidUrl, false},
+                    NewTabUrlTestCase{"ChromeWebUI", kChromeVersionUrl, false},
+                    NewTabUrlTestCase{"File", kFileTestUrl, false}),
+    [](const testing::TestParamInfo<NewTabUrlTestCase>& info) {
+      return std::string(info.param.test_name);
+    });
+
 }  // namespace

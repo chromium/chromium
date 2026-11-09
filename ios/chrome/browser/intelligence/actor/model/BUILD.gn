@@ -91,6 +91,8 @@ source_set("tab_helper") {
     "//base",
     "//ios/chrome/browser/intelligence/features",
     "//ios/web/public",
+    "//ui/base",
+    "//url",
   ]
 }
 

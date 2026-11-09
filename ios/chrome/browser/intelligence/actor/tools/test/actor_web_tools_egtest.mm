@@ -10,6 +10,7 @@
 #import "base/values.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/intelligence/actor/tools/test/actor_app_interface.h"
 #import "ios/chrome/browser/intelligence/actor/tools/test/actor_tools_base_test_case.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -278,6 +279,63 @@
   // ToolController runs both tools. This verifies that the lifetimes are
   // managed correctly and don't cause a crash.
   [self executeActions:actions];
+}
+
+// Tests that clicking an HTTP `<a target="_blank">` link via `ClickTool`
+// navigates the controlled tab in-place instead of opening a second tab or
+// presenting a blocked-popup infobar banner.
+- (void)testClickTool_redirectsTargetBlankHTTPLinkToSameTab {
+  const GURL destinationURL = self.testServer->GetURL("/destination.html");
+  const std::string linkHTML =
+      base::StringPrintf("<a id='deal' href='%s' target='_blank'>View Deal</a>",
+                         destinationURL.spec().c_str());
+  [ChromeEarlGrey loadURL:[self URLForHTML:linkHTML]];
+  [ChromeEarlGrey waitForWebStateContainingText:"View Deal"];
+
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::ClickAction* clickAction = action.mutable_click();
+  clickAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  clickAction->set_click_type(optimization_guide::proto::ClickAction::LEFT);
+  clickAction->set_click_count(optimization_guide::proto::ClickAction::SINGLE);
+  [self setCoordinatesOnTarget:clickAction->mutable_target()
+                  withSelector:"#deal"];
+
+  GREYAssertNil([self executeAction:action], @"Action execution failed.");
+
+  [ChromeEarlGrey waitForWebStateContainingText:"You've arrived"];
+  [ChromeEarlGrey waitForMainTabCount:1];
+  GREYAssertEqual(destinationURL, [ChromeEarlGrey webStateLastCommittedURL],
+                  @"Expected target=_blank link to navigate in the same tab.");
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kInfobarBannerViewIdentifier)]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that clicking an `about:blank` `<a target="_blank">` link on
+// `/window_open.html` via `ClickTool` suppresses the popup without overwriting
+// the opener document, opening a second tab, or showing a blocked-popup
+// infobar banner.
+- (void)testClickTool_suppressesTargetBlankAboutBlankLink {
+  const GURL windowOpenURL = self.testServer->GetURL("/window_open.html");
+  [ChromeEarlGrey loadURL:windowOpenURL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Expected result"];
+
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::ClickAction* clickAction = action.mutable_click();
+  clickAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  clickAction->set_click_type(optimization_guide::proto::ClickAction::LEFT);
+  clickAction->set_click_count(optimization_guide::proto::ClickAction::SINGLE);
+  [self setCoordinatesOnTarget:clickAction->mutable_target()
+                  withSelector:"#webScenarioWindowOpenRegularLink"];
+
+  GREYAssertNil([self executeAction:action], @"Action execution failed.");
+
+  [ChromeEarlGrey waitForMainTabCount:1];
+  GREYAssertEqual(windowOpenURL, [ChromeEarlGrey webStateLastCommittedURL],
+                  @"Expected opener URL to remain unchanged.");
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kInfobarBannerViewIdentifier)]
+      assertWithMatcher:grey_nil()];
 }
 
 #pragma mark - TypeTool Tests

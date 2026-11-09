@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/enterprise/proxy/model/proxy_service_controller.h"
 #import "ios/chrome/browser/enterprise/proxy/model/proxy_service_controller_factory.h"
 #import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
@@ -281,6 +282,13 @@ web::WebState* WebStateDelegateBrowserAgent::CreateNewWebState(
   }
 
   if (ShouldDropWindowRequests(web_state_list_->GetActiveWebState())) {
+    return nullptr;
+  }
+
+  // Keep actor-controlled tabs bound to their tab by redirecting new-window
+  // requests in-place instead of opening a new tab or blocking a popup.
+  ActorTabHelper* actor_helper = ActorTabHelper::FromWebState(source);
+  if (actor_helper && actor_helper->MaybeHandleNewTabRequest(url)) {
     return nullptr;
   }
 

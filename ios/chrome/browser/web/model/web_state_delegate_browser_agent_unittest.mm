@@ -22,6 +22,8 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
@@ -875,4 +877,30 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       web_state.get(), OverlayModality::kWebContentArea);
   EXPECT_EQ(0U, queue->size());
+}
+
+// Tests that `CreateNewWebState()` delegates new-tab requests to
+// `ActorTabHelper` while `kActorControlled`.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       CreateNewWebStateDelegatesToActorTabHelper) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+  web::FakeNavigationManager* raw_navigation_manager = navigation_manager.get();
+  web_state->SetNavigationManager(std::move(navigation_manager));
+  ActorTabHelper::CreateForWebState(web_state.get());
+
+  web::FakeWebState* raw_web_state = web_state.get();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
+
+  ActorTabHelper::FromWebState(raw_web_state)
+      ->SetControlState(actor::ActorControlState::kActorControlled);
+
+  EXPECT_EQ(nullptr, delegate()->CreateNewWebState(raw_web_state, GURL(kURL2),
+                                                   GURL(kURL1),
+                                                   /*initiated_by_user=*/true));
+  ASSERT_TRUE(raw_navigation_manager->LoadURLWithParamsWasCalled());
+  EXPECT_EQ(GURL(kURL2),
+            raw_navigation_manager->GetLastLoadURLWithParams()->url);
 }

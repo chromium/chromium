@@ -94,6 +94,7 @@ specific_include_rules = {
   "^web_state_delegate_browser_agent.mm": [
     "+ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h",
     "+ios/chrome/browser/dialogs/ui_bundled/nsurl_protection_space_util.h",
+    "+ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h",
   ],
 
 }
