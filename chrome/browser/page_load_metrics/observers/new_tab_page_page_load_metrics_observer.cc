@@ -77,8 +77,11 @@ NewTabPagePageLoadMetricsObserver::OnFencedFramesStart(
 void NewTabPagePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   CHECK(timing.paint_timing->first_contentful_paint);
-  PAGE_LOAD_HISTOGRAM(kNewTabPageFirstContentfulPaintHistogram,
-                      *timing.paint_timing->first_contentful_paint);
+  if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.paint_timing->first_contentful_paint, GetDelegate())) {
+    PAGE_LOAD_HISTOGRAM(kNewTabPageFirstContentfulPaintHistogram,
+                        *timing.paint_timing->first_contentful_paint);
+  }
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -103,10 +106,10 @@ void NewTabPagePageLoadMetricsObserver::RecordSessionEndHistograms(
           .GetLargestContentfulPaintHandler()
           .MergeMainFrameAndSubframes();
 
-  if (!largest_contentful_paint.ContainsValidTime()) {
-    return;
+  if (largest_contentful_paint.ContainsValidTime() &&
+      page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          largest_contentful_paint.Time(), GetDelegate())) {
+    PAGE_LOAD_HISTOGRAM(kNewTabPageLargestContentfulPaintHistogram,
+                        largest_contentful_paint.Time().value());
   }
-
-  PAGE_LOAD_HISTOGRAM(kNewTabPageLargestContentfulPaintHistogram,
-                      largest_contentful_paint.Time().value());
 }
