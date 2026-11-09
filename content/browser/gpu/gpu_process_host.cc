@@ -151,13 +151,6 @@ static_assert(RESULT_CODE_HUNG == static_cast<int>(gpu::RESULT_CODE_HUNG),
 
 namespace {
 
-#if BUILDFLAG(IS_MAC)
-// If enabled, the GPU process will not inherit the browser process's TCC
-// responsibilities (https://crbug.com/507596239).
-BASE_FEATURE(kMacDisclaimGpuTccResponsibility,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // UMA histogram names.
 constexpr char kFallbackEventCause[] = "GPU.FallbackEventCause";
 constexpr char kProcessLifetimeEventsHardwareAccelerated[] =
@@ -477,8 +470,7 @@ class GpuSandboxedProcessLauncherDelegate
   bool DisclaimResponsibility() override {
     // Disclaim the GPU process if we've inherited TCC responsibilities from a
     // different (possibly privileged) process.
-    return base::FeatureList::IsEnabled(kMacDisclaimGpuTccResponsibility) &&
-           !base::IsCurrentProcessSelfResponsible();
+    return !base::IsCurrentProcessSelfResponsible();
   }
 #endif
 
