@@ -132,8 +132,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
   base::ByteSize EstimatedSizeInBytes() const;
 
-  bool IsValid() const;
-
   void SetResourceRecyclingEnabled(bool value);
 
   gpu::raster::RasterInterface* RasterInterface() const;

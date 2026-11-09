@@ -229,7 +229,12 @@ bool BaseRenderingContext2D::HasBacking() const {
 
 bool BaseRenderingContext2D::IsBackingValid() const {
   if (shared_image_provider_) {
-    return shared_image_provider_->IsValid();
+    if (shared_image_provider_->IsSoftware()) {
+      // Software compositing (which always uses software raster).
+      return shared_image_interface_provider_ &&
+             shared_image_interface_provider_->SharedImageInterface();
+    }
+    return !shared_image_provider_->IsGpuContextLost();
   }
   return surface_ != nullptr;
 }
@@ -418,7 +423,7 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     RasterRecordToSharedImage(recorder.ReleaseMainRecording());
 
     // An error might have occurred while clearing.
-    if (!shared_image_provider_->IsValid()) {
+    if (shared_image_provider_->IsGpuContextLost()) {
       shared_image_provider_.reset();
       canvas_image_provider_.reset();
       must_preserve_content_on_copy_on_write_ = true;
@@ -891,11 +896,10 @@ BaseRenderingContext2D::UnacceleratedSnapshot() {
 }
 
 scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
+  if (!IsBackingValid()) {
+    return nullptr;
+  }
   if (shared_image_provider_ && shared_image_provider_->IsAccelerated()) {
-    if (!shared_image_provider_->IsValid()) {
-      return nullptr;
-    }
-
     if (!cached_snapshot_) {
       EndWriteAccess();
 
@@ -947,9 +951,6 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
     DCHECK(!current_resource_has_write_access_);
     cached_snapshot_->SetOriginClean(OriginClean());
     return cached_snapshot_;
-  }
-  if (!IsBackingValid()) {
-    return nullptr;
   }
   // When using CPU raster with a SharedImage provider, we do not need to end
   // write access (which uploads the CPU rendering results to the SharedImage

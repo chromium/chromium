@@ -136,16 +136,6 @@ base::ByteSize Canvas2DResourceProvider::EstimatedSizeInBytes() const {
   return result;
 }
 
-bool Canvas2DResourceProvider::IsValid() const {
-  if (IsSoftware()) {
-    // Software compositing (which always uses software raster).
-    return shared_image_interface_provider_ &&
-           shared_image_interface_provider_->SharedImageInterface();
-  }
-
-  return !IsGpuContextLost();
-}
-
 void Canvas2DResourceProvider::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,

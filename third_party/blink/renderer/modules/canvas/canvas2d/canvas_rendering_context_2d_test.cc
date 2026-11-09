@@ -656,13 +656,6 @@ bool SetUpFullAccelerationAndCcLayer(HTMLCanvasElement& canvas_element,
   return canvas_element.GetOrCreateCcLayerForCanvas2DIfNeeded() != nullptr;
 }
 
-
-// Matches an object (e.g. ContentResourceProvider) that has `IsValid()` ==
-// true.
-MATCHER(IsValid, "") {
-  return arg.IsValid();
-}
-
 TEST_P(CanvasRenderingContext2DTest, NoRecreationOfResourceProviderAfterDraw) {
   CreateContext();
   ASSERT_TRUE(Context2D()->InitializeBacking());
@@ -1833,8 +1826,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext();
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  EXPECT_THAT(Context2D()->GetSharedImageProviderForTesting(),
-              Pointee(IsValid()));
+  EXPECT_THAT(Context2D()->GetSharedImageProviderForTesting(), NotNull());
+  EXPECT_TRUE(Context2D()->IsBackingValid());
 
   // Lose the GPU context.
   EventWatcher lost_event(CanvasElement(), kContextlost);
@@ -1851,8 +1844,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     EXPECT_TRUE(restored_event.WasInvoked());
     EXPECT_FALSE(Context2D()->IsContextLost());
     EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-    EXPECT_THAT(Context2D()->GetSharedImageProviderForTesting(),
-                Pointee(IsValid()));
+    EXPECT_THAT(Context2D()->GetSharedImageProviderForTesting(), NotNull());
+    EXPECT_TRUE(Context2D()->IsBackingValid());
   }
 }
 
@@ -1864,8 +1857,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext();
   Context2D()->InitializeBacking();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  EXPECT_THAT(Context2D()->GetSharedImageProviderForTesting(),
-              Pointee(IsValid()));
+  EXPECT_THAT(Context2D()->GetSharedImageProviderForTesting(), NotNull());
+  EXPECT_TRUE(Context2D()->IsBackingValid());
 
   EventWatcher lost_event(CanvasElement(), event_type_names::kContextlost);
   LoseContext();
@@ -2356,8 +2349,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   restored_event.Wait();
   EXPECT_FALSE(Context2D()->IsContextLost());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  EXPECT_THAT(Context2D()->GetSharedImageProviderForTesting(),
-              Pointee(IsValid()));
+  EXPECT_THAT(Context2D()->GetSharedImageProviderForTesting(), NotNull());
+  EXPECT_TRUE(Context2D()->IsBackingValid());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
