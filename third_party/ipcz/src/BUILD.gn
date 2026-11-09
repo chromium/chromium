@@ -104,8 +104,6 @@ source_set("util") {
   public = [
     "util/multi_mutex_lock.h",
     "util/ref_counted.h",
-    "util/strong_alias.h",
-    "util/unique_ptr_comparator.h",
   ]
 
   sources = [ "util/ref_counted.cc" ]
@@ -309,7 +307,6 @@ source_set("tests_sources") {
     "trap_test.cc",
     "util/ref_counted_test.cc",
     "util/safe_math_test.cc",
-    "util/unique_ptr_comparator_test.cc",
   ]
 
   if (enable_multiprocess_tests) {

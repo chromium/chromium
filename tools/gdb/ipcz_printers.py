@@ -426,7 +426,7 @@ class TrapSetPrinter:
 class SublinkIdPrinter:
   """Pretty-printer for ipcz::SublinkId.
 
-  The real type is ipcz::StrongAlias<class SublinkIdTag, uint64_t>.
+  The real type is base::StrongAlias<class SublinkIdTag, uint64_t>.
   """
 
   def __init__(self, val):
@@ -489,7 +489,7 @@ _add('RemoteRouterLink', '^ipcz::RemoteRouterLink$', RemoteRouterLinkPrinter)
 _add('RouteEdge', '^ipcz::RouteEdge$', RouteEdgePrinter)
 _add('Router', '^ipcz::Router$', RouterPrinter)
 _add('RouterLinkState', '^ipcz::RouterLinkState$', RouterLinkStatePrinter)
-_add('SublinkId', '^ipcz::StrongAlias<ipcz::SublinkIdTag', SublinkIdPrinter)
+_add('SublinkId', '^base::StrongAlias<ipcz::SublinkIdTag', SublinkIdPrinter)
 _add('Sublink', '^ipcz::NodeLink::Sublink$', SublinkPrinter)
 _add('TrapConditions', '^IpczTrapConditions$', TrapConditionsPrinter)
 _add('Trap', '^ipcz::TrapSet::Trap$', TrapPrinter)

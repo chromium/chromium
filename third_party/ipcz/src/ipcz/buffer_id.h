@@ -8,15 +8,15 @@
 #include <cstdint>
 #include <ostream>
 
+#include "base/types/strong_alias.h"
 #include "ipcz/link_side.h"
-#include "util/strong_alias.h"
 
 namespace ipcz {
 
 // Identifies a shared memory buffer scoped to a NodeLink and owned by its
 // NodeLinkMemory via a BufferPool. New BufferIds are allocated atomically by
 // either side of the NodeLink.
-using BufferId = StrongAlias<class BufferIdTag, uint64_t>;
+using BufferId = base::StrongAlias<class BufferIdTag, uint64_t>;
 
 constexpr BufferId kInvalidBufferId{UINT64_MAX};
 

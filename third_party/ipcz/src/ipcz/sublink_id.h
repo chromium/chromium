@@ -8,15 +8,15 @@
 #include <cstdint>
 #include <ostream>
 
+#include "base/types/strong_alias.h"
 #include "ipcz/link_side.h"
-#include "util/strong_alias.h"
 
 namespace ipcz {
 
 // Identifies a specific subsidiary link along a NodeLink. Each sublink is a
 // path between a unique pair of Router instances, one on each linked node. New
 // SublinkIds are allocated atomically by either side of the NodeLink.
-using SublinkId = StrongAlias<class SublinkIdTag, uint64_t>;
+using SublinkId = base::StrongAlias<class SublinkIdTag, uint64_t>;
 
 inline std::ostream& operator<<(std::ostream& stream, const SublinkId& id) {
   // For better log readability, output only the numeric value of the lower bits

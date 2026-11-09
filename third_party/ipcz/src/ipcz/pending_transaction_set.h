@@ -8,9 +8,9 @@
 #include <memory>
 #include <set>
 
+#include "base/containers/unique_ptr_adapters.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/parcel.h"
-#include "util/unique_ptr_comparator.h"
 
 namespace ipcz {
 
@@ -46,7 +46,8 @@ class PendingTransactionSet {
                                          size_t num_data_bytes);
 
  private:
-  using TransactionSet = std::set<std::unique_ptr<Parcel>, UniquePtrComparator>;
+  using TransactionSet =
+      std::set<std::unique_ptr<Parcel>, base::UniquePtrComparator>;
 
   static IpczTransaction AsIpczTransaction(Parcel& parcel) {
     return reinterpret_cast<IpczTransaction>(&parcel);
