@@ -101,6 +101,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/attestation",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
     "//chromeos/ash/components/platform_keys",
+    "//components/invalidation",
     "//components/invalidation:test_support",
     "//components/session_manager/test:test_support",
     "//components/user_manager",

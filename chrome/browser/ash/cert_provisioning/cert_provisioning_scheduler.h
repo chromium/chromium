@@ -29,6 +29,7 @@ class PrefService;
 
 namespace invalidation {
 class InvalidationListener;
+class ProfileInvalidationProvider;
 }  // namespace invalidation
 
 namespace policy {
@@ -118,8 +119,12 @@ class CertProvisioningSchedulerImpl
       public NetworkStateHandlerObserver,
       public platform_keys::PlatformKeysServiceObserver {
  public:
+  // `invalidation_provider` must be non-null, and must outlive the returned
+  // object.
   static std::unique_ptr<CertProvisioningScheduler>
-  CreateUserCertProvisioningScheduler(Profile* profile);
+  CreateUserCertProvisioningScheduler(
+      Profile* profile,
+      invalidation::ProfileInvalidationProvider* invalidation_provider);
 
   // `local_state` must be non-null, and must outlive the returned object.
   static std::unique_ptr<CertProvisioningScheduler>

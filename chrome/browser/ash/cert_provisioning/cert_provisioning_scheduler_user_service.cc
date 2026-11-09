@@ -19,7 +19,9 @@ CertProvisioningSchedulerUserService::CertProvisioningSchedulerUserService(
     Profile* profile)
     : scheduler_(
           CertProvisioningSchedulerImpl::CreateUserCertProvisioningScheduler(
-              profile)) {}
+              profile,
+              invalidation::ProfileInvalidationProviderFactory::GetForProfile(
+                  profile))) {}
 
 CertProvisioningSchedulerUserService::~CertProvisioningSchedulerUserService() =
     default;

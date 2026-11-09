@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
-#include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 
@@ -91,37 +90,34 @@ void CertProvisioningInvalidator::Unregister() {
 //=============== CertProvisioningUserInvalidatorFactory =======================
 
 CertProvisioningUserInvalidatorFactory::CertProvisioningUserInvalidatorFactory(
-    Profile* profile)
-    : profile_(profile) {
-  CHECK(profile_);
+    invalidation::ProfileInvalidationProvider* invalidation_provider)
+    : invalidation_provider_(invalidation_provider) {
+  CHECK(invalidation_provider_);
 }
 
 std::unique_ptr<CertProvisioningInvalidator>
 CertProvisioningUserInvalidatorFactory::Create() {
-  return std::make_unique<CertProvisioningUserInvalidator>(profile_);
+  return std::make_unique<CertProvisioningUserInvalidator>(
+      invalidation_provider_);
 }
 
 //=============== CertProvisioningUserInvalidator ==============================
 
 CertProvisioningUserInvalidator::CertProvisioningUserInvalidator(
-    Profile* profile)
-    : profile_(profile) {
-  CHECK(profile_);
+    invalidation::ProfileInvalidationProvider* invalidation_provider)
+    : invalidation_provider_(invalidation_provider) {
+  CHECK(invalidation_provider_);
 }
 
 void CertProvisioningUserInvalidator::Register(
     const std::string& listener_type,
     OnInvalidationEventCallback on_invalidation_event_callback) {
-  invalidation::ProfileInvalidationProvider* invalidation_provider =
-      invalidation::ProfileInvalidationProviderFactory::GetForProfile(profile_);
-  CHECK(invalidation_provider);
-
   // Ensure there's no existing handler with the same `listener_type`.
   Unregister();
 
   invalidation_handler_ =
       std::make_unique<internal::CertProvisioningInvalidationHandler>(
-          invalidation_provider->GetInvalidationListener(
+          invalidation_provider_->GetInvalidationListener(
               kCertProvisioningInvalidationProjectNumber),
           listener_type, std::move(on_invalidation_event_callback));
 }

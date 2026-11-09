@@ -4,13 +4,19 @@
 
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_invalidator.h"
 
+#include <cstdint>
 #include <memory>
+#include <string>
+#include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "components/invalidation/invalidation_listener.h"
+#include "components/invalidation/profile_invalidation_provider.h"
 #include "components/invalidation/test_support/fake_invalidation_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -106,3 +112,54 @@ TEST_F(CertProvisioningInvalidationHandlerTest, ShouldHaveCorrectTypeName) {
 }
 
 }  // namespace ash::cert_provisioning::internal
+
+namespace ash::cert_provisioning {
+
+class CertProvisioningUserInvalidatorTest : public testing::Test {
+ protected:
+  CertProvisioningUserInvalidatorTest()
+      : invalidation_provider_(base::BindRepeating(
+            &CertProvisioningUserInvalidatorTest::CreateInvalidationListener,
+            base::Unretained(this))) {}
+
+  // Builds the listener the provider hands out for `project_number`. The
+  // provider owns the listener; `invalidation_listener_` only points at it.
+  std::unique_ptr<invalidation::InvalidationListener>
+  CreateInvalidationListener(int64_t project_number, std::string log_prefix) {
+    EXPECT_EQ(project_number, kCertProvisioningInvalidationProjectNumber);
+    auto listener = std::make_unique<invalidation::FakeInvalidationListener>(
+        project_number);
+    invalidation_listener_ = listener.get();
+    return listener;
+  }
+
+  base::test::SingleThreadTaskEnvironment task_environment_;
+
+  invalidation::ProfileInvalidationProvider invalidation_provider_;
+
+  raw_ptr<invalidation::FakeInvalidationListener> invalidation_listener_ =
+      nullptr;
+
+  base::test::TestFuture<InvalidationEvent> invalidation_events_;
+};
+
+TEST_F(CertProvisioningUserInvalidatorTest,
+       ShouldListenOnProviderListenerForProjectNumber) {
+  CertProvisioningUserInvalidator invalidator(&invalidation_provider_);
+  EXPECT_EQ(nullptr, invalidation_listener_);
+
+  invalidator.Register(internal::kListenerType,
+                       invalidation_events_.GetRepeatingCallback());
+  ASSERT_NE(nullptr, invalidation_listener_);
+
+  invalidation_listener_->Start();
+  EXPECT_EQ(invalidation_events_.Take(),
+            InvalidationEvent::kSuccessfullySubscribed);
+
+  invalidation_listener_->FireInvalidation(invalidation::DirectInvalidation(
+      internal::kListenerType, /*version=*/42, /*payload=*/"foo"));
+  EXPECT_EQ(invalidation_events_.Take(),
+            InvalidationEvent::kInvalidationReceived);
+}
+
+}  // namespace ash::cert_provisioning

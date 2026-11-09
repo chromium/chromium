@@ -76,7 +76,8 @@ FailedWorkerInfo& FailedWorkerInfo::operator=(const FailedWorkerInfo&) =
 // static
 std::unique_ptr<CertProvisioningScheduler>
 CertProvisioningSchedulerImpl::CreateUserCertProvisioningScheduler(
-    Profile* profile) {
+    Profile* profile,
+    invalidation::ProfileInvalidationProvider* invalidation_provider) {
   CHECK(profile);
   policy::CloudPolicyClient* cloud_policy_client =
       GetCloudPolicyClientForUser(profile);
@@ -96,7 +97,8 @@ CertProvisioningSchedulerImpl::CreateUserCertProvisioningScheduler(
       CertScope::kUser, profile, pref_service,
       std::make_unique<CertProvisioningClientImpl>(*cloud_policy_client),
       platform_keys_service, network_state_handler,
-      std::make_unique<CertProvisioningUserInvalidatorFactory>(profile));
+      std::make_unique<CertProvisioningUserInvalidatorFactory>(
+          invalidation_provider));
 }
 
 // static

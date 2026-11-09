@@ -14,7 +14,9 @@
 #include "base/sequence_checker.h"
 #include "components/invalidation/invalidation_listener.h"
 
-class Profile;
+namespace invalidation {
+class ProfileInvalidationProvider;
+}  // namespace invalidation
 
 namespace ash::cert_provisioning {
 
@@ -139,30 +141,37 @@ class CertProvisioningInvalidator {
 
 //=============== CertProvisioningUserInvalidatorFactory =======================
 
-// This factory creates CertProvisioningInvalidators that use the passed user
-// Profile's `InvalidationListener`.
+// This factory creates CertProvisioningInvalidators that use the
+// `InvalidationListener` of the passed user `ProfileInvalidationProvider`.
 class CertProvisioningUserInvalidatorFactory
     : public CertProvisioningInvalidatorFactory {
  public:
-  explicit CertProvisioningUserInvalidatorFactory(Profile* profile);
+  // `invalidation_provider` must be non-null and must outlive this factory and
+  // the invalidators it creates.
+  explicit CertProvisioningUserInvalidatorFactory(
+      invalidation::ProfileInvalidationProvider* invalidation_provider);
   std::unique_ptr<CertProvisioningInvalidator> Create() override;
 
  private:
-  raw_ptr<Profile> profile_ = nullptr;
+  const raw_ptr<invalidation::ProfileInvalidationProvider>
+      invalidation_provider_;
 };
 
 //=============== CertProvisioningUserInvalidator ==============================
 
 class CertProvisioningUserInvalidator : public CertProvisioningInvalidator {
  public:
-  explicit CertProvisioningUserInvalidator(Profile* profile);
+  // `invalidation_provider` must be non-null and must outlive this object.
+  explicit CertProvisioningUserInvalidator(
+      invalidation::ProfileInvalidationProvider* invalidation_provider);
 
   void Register(
       const std::string& listener_type,
       OnInvalidationEventCallback on_invalidation_event_callback) override;
 
  private:
-  raw_ptr<Profile> profile_ = nullptr;
+  const raw_ptr<invalidation::ProfileInvalidationProvider>
+      invalidation_provider_;
 };
 
 //=============== CertProvisioningDeviceInvalidatorFactory =====================
