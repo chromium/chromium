@@ -16,6 +16,8 @@
   --color-button-foreground-prominent: var(--color-sys-on-primary);
   --color-button-foreground: var(--color-sys-primary);
   --color-button-border: var(--color-sys-tonal-outline);
+  --color-radio-button-foreground-checked: var(--color-sys-primary);
+  --color-radio-button-foreground-unchecked: var(--color-sys-outline);
   color: var(--color-sys-on-surface);
   display: flex;
   flex-direction: column;

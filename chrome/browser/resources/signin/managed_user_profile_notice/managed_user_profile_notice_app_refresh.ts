@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import './managed_user_profile_notice_disclosure_refresh.js';
 import './managed_user_profile_notice_value_prop.js';
 import './managed_user_profile_notice_state_refresh.js';
-import './managed_user_profile_notice_data_handling.js';
+import './managed_user_profile_notice_data_handling_refresh.js';
 import './signals_disclaimer_refresh.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';

@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <optional>
+#include <string>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
@@ -11,20 +13,30 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
+#include "chrome/browser/ui/views/profiles/managed_user_profile_notice_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/widget/any_widget_observer.h"
 
 namespace {
+
+using ::managed_user_profile_notice_test::GetSelectors;
+using ::managed_user_profile_notice_test::ManagedUserProfileNoticeSelectors;
+using ::managed_user_profile_notice_test::WaitForAndClickProceedButton;
+using ::managed_user_profile_notice_test::WaitForWebContentsLoaded;
 
 enum class ScreenVersion {
   kOld,
@@ -56,6 +68,19 @@ std::string ParamToTestSuffix(
       {info.param.pixel_test_param.test_suffix, screen_version_suffix});
 }
 
+std::vector<ManagedUserProfileNoticePixelTestParam> BuildTestParams(
+    base::span<const PixelTestParam> pixel_test_params,
+    base::span<const ScreenVersion> screen_versions) {
+  std::vector<ManagedUserProfileNoticePixelTestParam> params;
+  for (const PixelTestParam& pixel_test_param : pixel_test_params) {
+    for (ScreenVersion screen_version : screen_versions) {
+      params.push_back({.pixel_test_param = pixel_test_param,
+                        .screen_version = screen_version});
+    }
+  }
+  return params;
+}
+
 std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
 CreateEnterpriseProfileCreationDialogParams(AccountInfo account_info) {
   return std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
@@ -80,17 +105,27 @@ const std::vector<ManagedUserProfileNoticePixelTestParam>& GetTestParams() {
             {.test_suffix = "SmallWindow",
              .window_size = PixelTestParam::kSmallWindowSize},
         };
+        static constexpr ScreenVersion kScreenVersions[] = {
+            ScreenVersion::kOld, ScreenVersion::kRefreshed,
+            ScreenVersion::kRevamped};
+        return BuildTestParams(kWindowTestParams, kScreenVersions);
+      }());
+  return *params;
+}
 
-        std::vector<ManagedUserProfileNoticePixelTestParam> params;
-        for (const auto& window_param : kWindowTestParams) {
-          for (ScreenVersion screen_version :
-               {ScreenVersion::kOld, ScreenVersion::kRefreshed,
-                ScreenVersion::kRevamped}) {
-            params.push_back({.pixel_test_param = window_param,
-                              .screen_version = screen_version});
-          }
-        }
-        return params;
+const std::vector<ManagedUserProfileNoticePixelTestParam>&
+GetModalTestParams() {
+  static const base::NoDestructor<
+      std::vector<ManagedUserProfileNoticePixelTestParam>>
+      params([] {
+        const PixelTestParam kModalTestParams[] = {
+            {.test_suffix = "Regular"},
+            {.test_suffix = "DarkTheme", .use_dark_theme = true},
+            {.test_suffix = "Rtl", .use_right_to_left_language = true},
+        };
+        static constexpr ScreenVersion kScreenVersions[] = {
+            ScreenVersion::kOld, ScreenVersion::kRefreshed};
+        return BuildTestParams(kModalTestParams, kScreenVersions);
       }());
   return *params;
 }
@@ -248,4 +283,70 @@ IN_PROC_BROWSER_TEST_P(ManagedUserProfileNoticeUIWindowPixelTest,
 INSTANTIATE_TEST_SUITE_P(,
                          ManagedUserProfileNoticeUIWindowPixelTest,
                          testing::ValuesIn(GetTestParams()),
+                         &ParamToTestSuffix);
+
+class ManagedUserProfileNoticeUIModalPixelTest
+    : public ProfilesPixelTestBaseT<DialogBrowserTest>,
+      public testing::WithParamInterface<
+          ManagedUserProfileNoticePixelTestParam> {
+ public:
+  ManagedUserProfileNoticeUIModalPixelTest()
+      : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{switches::kFirstRunDesktopRefresh, UseRefreshedUi()},
+         {switches::kFirstRunDesktopChoiceScreenRefresh, UseRefreshedUi()},
+         {switches::kEnterpriseSigninDialogsRefresh, UseRefreshedUi()}});
+  }
+
+  void ShowUi(const std::string& name) override {
+    gfx::ScopedAnimationDurationScaleMode disable_animation(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+    AccountInfo account_info =
+        SignInWithAccount(AccountManagementStatus::kManaged);
+
+    views::NamedWidgetShownWaiter widget_waiter(
+        views::test::AnyWidgetTestPasskey{},
+        "SigninViewControllerDelegateViews");
+    // `user_already_signed_in` makes the dialog start on the disclosure screen,
+    // and `show_link_data_option` makes proceeding from it show the browsing
+    // data handling screen.
+    SigninViewController::From(browser())->ShowModalManagedUserNoticeDialog(
+        std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+            account_info,
+            /*is_oidc_account=*/false,
+            /*user_already_signed_in=*/true,
+            /*profile_creation_required_by_policy=*/false,
+            /*show_link_data_option=*/true,
+            /*process_user_choice_callback=*/
+            signin::SigninChoiceCallback(base::DoNothing()),
+            /*done_callback=*/base::DoNothing()));
+    widget_waiter.WaitIfNeededAndGet();
+
+    content::WebContents* web_contents =
+        SigninViewController::From(browser())
+            ->GetModalDialogWebContentsForTesting();
+    const ManagedUserProfileNoticeSelectors& selectors =
+        GetSelectors(UseRefreshedUi());
+    ASSERT_TRUE(WaitForAndClickProceedButton(web_contents, selectors));
+    ASSERT_TRUE(WaitForWebContentsLoaded(web_contents, selectors.app,
+                                         "#user-data-handling"));
+  }
+
+ private:
+  bool UseRefreshedUi() const {
+    return GetParam().screen_version == ScreenVersion::kRefreshed;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ManagedUserProfileNoticeUIModalPixelTest,
+                       InvokeUi_UserDataHandling) {
+  ShowAndVerifyUi();
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ManagedUserProfileNoticeUIModalPixelTest,
+                         testing::ValuesIn(GetModalTestParams()),
                          &ParamToTestSuffix);

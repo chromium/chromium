@@ -1,0 +1,31 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import {BrowsingDataHandling} from './managed_user_profile_notice_browser_proxy.js';
+import type {ManagedUserProfileNoticeDataHandlingRefreshElement} from './managed_user_profile_notice_data_handling_refresh.js';
+
+export function getHtml(
+    this: ManagedUserProfileNoticeDataHandlingRefreshElement) {
+  return html`<!--_html_template_start_-->
+<main>
+  <img class="success-icon" alt="">
+  <div class="text-container">
+    <h1 class="title" tabindex="-1">${this.title}</h1>
+  </div>
+  <cr-radio-group .selected="${this.selectedDataHandling}"
+      @selected-changed="${this.onSelectedChanged_}">
+    <cr-radio-button name="${BrowsingDataHandling.SEPARATE}"
+        label="${this.separateDataChoiceTitle}">
+      <p>${this.separateDataChoiceDetails}</p>
+    </cr-radio-button>
+    <cr-radio-button name="${BrowsingDataHandling.MERGE}"
+        label="${this.mergeDataChoiceTitle}">
+      <p>${this.mergeDataChoiceDetails}</p>
+    </cr-radio-button>
+  </cr-radio-group>
+</main>
+<!--_html_template_end_-->`;
+}

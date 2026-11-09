@@ -36,7 +36,7 @@ export function getHtml(this: ManagedUserProfileNoticeAppRefreshElement) {
     </managed-user-profile-notice-state-refresh>
   ` : ''}
   ${this.isState_(State.USER_DATA_HANDLING) ? html`
-    <managed-user-profile-notice-data-handling id="user-data-handling"
+    <managed-user-profile-notice-data-handling-refresh id="user-data-handling"
         title="${this.i18n('separateBrowsingDataTitle')}"
         separate-data-choice-title="${
             this.i18n('separateBrowsingDataChoiceTitle')}"
@@ -48,7 +48,7 @@ export function getHtml(this: ManagedUserProfileNoticeAppRefreshElement) {
         .selectedDataHandling="${this.selectedDataHandling_}"
         @selected-data-handling-changed="${
             this.onSelectedDataHandlingChanged_}">
-    </managed-user-profile-notice-data-handling>
+    </managed-user-profile-notice-data-handling-refresh>
   ` : ''}
   ${this.isState_(State.SIGNALS_DISCLAIMER) ? html`
     <signals-disclaimer-refresh id="signals-disclaimer"
