@@ -115,7 +115,9 @@ class ScriptToFontMap {
 const AtomicString& FindMonospaceFontForScript(UScriptCode script) {
   if (script == USCRIPT_ARABIC || script == USCRIPT_ARABIC_NASTALIQ ||
       script == USCRIPT_HEBREW) {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kCourierNew, ("courier new"));
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(
+        AtomicString, kCourierNew,
+        (AtomicString::FromLiteral<"courier new">()));
     return kCourierNew;
   }
   return g_null_atom;
@@ -429,8 +431,9 @@ const AtomicString& GetFontBasedOnUnicodeBlock(UBlockCode block_code,
     case UBLOCK_ALCHEMICAL_SYMBOLS:
     case UBLOCK_DINGBATS:
     case UBLOCK_GOTHIC: {
-      DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kSymbolFont,
-                                      ("Segoe UI Symbol"));
+      DEFINE_THREAD_SAFE_STATIC_LOCAL(
+          AtomicString, kSymbolFont,
+          (AtomicString::FromLiteral<"Segoe UI Symbol">()));
       return kSymbolFont;
     }
     case UBLOCK_ARROWS:
@@ -581,7 +584,8 @@ const AtomicString& GetFallbackFamily(
   int plane = character >> 16;
   switch (plane) {
     case 1: {
-      DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane1, ("code2001"));
+      DEFINE_THREAD_SAFE_STATIC_LOCAL(
+          AtomicString, kPlane1, (AtomicString::FromLiteral<"code2001">()));
       return kPlane1;
     }
     case 2: {
@@ -589,8 +593,9 @@ const AtomicString& GetFallbackFamily(
       // GB18030-2022, these characters must be rendered using simsun-extg
       // because simsun-extg supports these newer and extended ideographs.
       if (character >= 0x2EBF0 && character <= 0x2EE5F) {
-        DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane2exti,
-                                        ("simsun-extg"));
+        DEFINE_THREAD_SAFE_STATIC_LOCAL(
+            AtomicString, kPlane2exti,
+            (AtomicString::FromLiteral<"simsun-extg">()));
         return kPlane2exti;
       }
       // Use a Traditional Chinese ExtB font if in Traditional Chinese locale.
@@ -599,12 +604,14 @@ const AtomicString& GetFallbackFamily(
       // 0213), but its coverage is rather sparse.
       // Eventually, this should be controlled by lang/xml:lang.
       if (icu::Locale::getDefault() == icu::Locale::getTraditionalChinese()) {
-        DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane2zht,
-                                        ("pmingliu-extb"));
+        DEFINE_THREAD_SAFE_STATIC_LOCAL(
+            AtomicString, kPlane2zht,
+            (AtomicString::FromLiteral<"pmingliu-extb">()));
         return kPlane2zht;
       }
-      DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane2zhs,
-                                      ("simsun-extb"));
+      DEFINE_THREAD_SAFE_STATIC_LOCAL(
+          AtomicString, kPlane2zhs,
+          (AtomicString::FromLiteral<"simsun-extb">()));
       return kPlane2zhs;
     }
     case 3:
@@ -612,13 +619,15 @@ const AtomicString& GetFallbackFamily(
       // Extension H (category HX): U+31350–U+323AF. Both are required by
       // GB18030-2022 and must be rendered using simsun-extg because simsun-extg
       // supports these newer and extended ideographs.
-      DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane3extgh,
-                                      ("simsun-extg"));
+      DEFINE_THREAD_SAFE_STATIC_LOCAL(
+          AtomicString, kPlane3extgh,
+          (AtomicString::FromLiteral<"simsun-extg">()));
       return kPlane3extgh;
   }
 
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kLastResort,
-                                  ("lucida sans unicode"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      AtomicString, kLastResort,
+      (AtomicString::FromLiteral<"lucida sans unicode">()));
   return kLastResort;
 }
 

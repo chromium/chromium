@@ -80,7 +80,8 @@ String JXLImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& JXLImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, jxl_mime_type, ("image/jxl"));
+  DEFINE_STATIC_LOCAL(const AtomicString, jxl_mime_type,
+                      (AtomicString::FromLiteral<"image/jxl">()));
   return jxl_mime_type;
 }
 

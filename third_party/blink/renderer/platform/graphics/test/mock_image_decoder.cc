@@ -30,7 +30,8 @@
 namespace blink {
 
 const AtomicString& MockImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, mock_mime_type, ("image/x-mock"));
+  DEFINE_STATIC_LOCAL(const AtomicString, mock_mime_type,
+                      (AtomicString::FromLiteral<"image/x-mock">()));
   return mock_mime_type;
 }
 

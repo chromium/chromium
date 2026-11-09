@@ -291,9 +291,8 @@ String ExceptionMessages::IndexOutsideRange(const char* name,
 }
 
 String ExceptionMessages::ReadOnly(const char* detail) {
-  DEFINE_STATIC_LOCAL(String, read_only, ("This object is read-only."));
   return detail ? StrCat({"This object is read-only, because ", detail, "."})
-                : read_only;
+                : String::FromLiteral<"This object is read-only.">();
 }
 
 String ExceptionMessages::SharedArrayBufferNotAllowed(

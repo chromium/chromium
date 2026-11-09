@@ -17,7 +17,8 @@ String PngImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& PngImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, png_mime_type, ("image/png"));
+  DEFINE_STATIC_LOCAL(const AtomicString, png_mime_type,
+                      (AtomicString::FromLiteral<"image/png">()));
   return png_mime_type;
 }
 

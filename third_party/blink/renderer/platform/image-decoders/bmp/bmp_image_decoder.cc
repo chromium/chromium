@@ -25,7 +25,8 @@ String BMPImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& BMPImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, bmp_mime_type, ("image/bmp"));
+  DEFINE_STATIC_LOCAL(const AtomicString, bmp_mime_type,
+                      (AtomicString::FromLiteral<"image/bmp">()));
   return bmp_mime_type;
 }
 

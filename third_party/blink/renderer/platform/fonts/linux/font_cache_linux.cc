@@ -95,8 +95,9 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   if (font_description.GetScriptForFont() == USCRIPT_ARABIC_NASTALIQ &&
       unicode::GetScriptBasedOnUnicodeBlock(c) == USCRIPT_ARABIC &&
       RuntimeEnabledFeatures::NastaliqScriptEnabled()) [[unlikely]] {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, kNotoNastaliqUrdu,
-                                    ("Noto Nastaliq Urdu"));
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(
+        const AtomicString, kNotoNastaliqUrdu,
+        (AtomicString::FromLiteral<"Noto Nastaliq Urdu">()));
     if (const SimpleFontData* nastaliq =
             GetFontData(font_description, kNotoNastaliqUrdu)) {
       if (nastaliq->GlyphForCharacter(c)) {

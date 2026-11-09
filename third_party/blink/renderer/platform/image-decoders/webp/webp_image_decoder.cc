@@ -184,7 +184,8 @@ String WEBPImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& WEBPImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, webp_mime_type, ("image/webp"));
+  DEFINE_STATIC_LOCAL(const AtomicString, webp_mime_type,
+                      (AtomicString::FromLiteral<"image/webp">()));
   return webp_mime_type;
 }
 void WEBPImageDecoder::Clear() {

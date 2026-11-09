@@ -206,7 +206,8 @@ String AVIFImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& AVIFImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, avif_mime_type, ("image/avif"));
+  DEFINE_STATIC_LOCAL(const AtomicString, avif_mime_type,
+                      (AtomicString::FromLiteral<"image/avif">()));
   return avif_mime_type;
 }
 

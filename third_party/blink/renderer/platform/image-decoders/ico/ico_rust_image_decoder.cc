@@ -17,7 +17,8 @@ String IcoRustImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& IcoRustImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, ico_mime_type, ("image/x-icon"));
+  DEFINE_STATIC_LOCAL(const AtomicString, ico_mime_type,
+                      (AtomicString::FromLiteral<"image/x-icon">()));
   return ico_mime_type;
 }
 

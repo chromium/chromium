@@ -833,7 +833,8 @@ String JPEGImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& JPEGImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, jpeg_mime_type, ("image/jpeg"));
+  DEFINE_STATIC_LOCAL(const AtomicString, jpeg_mime_type,
+                      (AtomicString::FromLiteral<"image/jpeg">()));
   return jpeg_mime_type;
 }
 

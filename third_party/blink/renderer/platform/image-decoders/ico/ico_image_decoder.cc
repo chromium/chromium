@@ -34,8 +34,9 @@ String ICOImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& ICOImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, ico_mime_type,
-                      ("image/vnd.microsoft.icon"));
+  DEFINE_STATIC_LOCAL(
+      const AtomicString, ico_mime_type,
+      (AtomicString::FromLiteral<"image/vnd.microsoft.icon">()));
   return ico_mime_type;
 }
 

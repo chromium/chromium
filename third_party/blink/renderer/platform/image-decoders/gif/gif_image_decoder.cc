@@ -39,7 +39,8 @@ String GIFImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& GIFImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, gif_mime_type, ("image/gif"));
+  DEFINE_STATIC_LOCAL(const AtomicString, gif_mime_type,
+                      (AtomicString::FromLiteral<"image/gif">()));
   return gif_mime_type;
 }
 

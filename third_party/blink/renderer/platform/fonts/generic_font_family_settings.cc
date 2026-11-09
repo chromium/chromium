@@ -140,8 +140,10 @@ const AtomicString& GenericFontFamilySettings::Get(GenericFontFamily family,
   const AtomicString& font = GenericFontFamilyForScript(MapFor(family), script);
 #if BUILDFLAG(IS_MAC)
   if (family == GenericFontFamily::kFixed) {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kOsaka, ("Osaka"));
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kOsakaMono, ("Osaka-Mono"));
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kOsaka,
+                                    (AtomicString::FromLiteral<"Osaka">()));
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(
+        AtomicString, kOsakaMono, (AtomicString::FromLiteral<"Osaka-Mono">()));
     if (font == kOsaka) {
       return kOsakaMono;
     }
