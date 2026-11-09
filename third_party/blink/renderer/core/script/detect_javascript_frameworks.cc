@@ -63,7 +63,8 @@ bool IsFrameworkIDUsed(Document& document, const AtomicString& framework_id) {
 
 inline void CheckIdMatches(Document& document,
                            JavaScriptFrameworkDetectionResult& result) {
-  DEFINE_STATIC_LOCAL(AtomicString, kReactId, ("react-root"));
+  DEFINE_STATIC_LOCAL(AtomicString, kReactId,
+                      (AtomicString::FromLiteral<"react-root">()));
   if (IsFrameworkIDUsed(document, AtomicString(kGatsbyId))) {
     result.detected_versions[JavaScriptFramework::kGatsby] =
         kNoFrameworkVersionDetected;
@@ -110,13 +111,18 @@ inline void CheckPropertyMatches(Element& element,
     return;
   }
 
-  DEFINE_STATIC_LOCAL(AtomicString, vue_string, ("__vue__"));
-  DEFINE_STATIC_LOCAL(AtomicString, vue_app_string, ("__vue_app__"));
-  DEFINE_STATIC_LOCAL(AtomicString, k_string, ("__k"));
+  DEFINE_STATIC_LOCAL(AtomicString, vue_string,
+                      (AtomicString::FromLiteral<"__vue__">()));
+  DEFINE_STATIC_LOCAL(AtomicString, vue_app_string,
+                      (AtomicString::FromLiteral<"__vue_app__">()));
+  DEFINE_STATIC_LOCAL(AtomicString, k_string,
+                      (AtomicString::FromLiteral<"__k">()));
   DEFINE_STATIC_LOCAL(AtomicString, reactRootContainer_string,
-                      ("_reactRootContainer"));
-  DEFINE_STATIC_LOCAL(AtomicString, reactListening_string, ("_reactListening"));
-  DEFINE_STATIC_LOCAL(AtomicString, reactFiber_string, ("__reactFiber"));
+                      (AtomicString::FromLiteral<"_reactRootContainer">()));
+  DEFINE_STATIC_LOCAL(AtomicString, reactListening_string,
+                      (AtomicString::FromLiteral<"_reactListening">()));
+  DEFINE_STATIC_LOCAL(AtomicString, reactFiber_string,
+                      (AtomicString::FromLiteral<"__reactFiber">()));
   for (uint32_t i = 0; i < property_names->Length(); ++i) {
     v8::Local<v8::Value> key;
     if (!property_names->Get(context, i).ToLocal(&key) || !key->IsString()) {

@@ -254,7 +254,8 @@ void ElementTiming::QueuePerformanceEntriesForReportingIfNeeded(
     const String& image_url = url.ProtocolIsData()
                                   ? image_string.substr(0, kInlineImageMaxChars)
                                   : image_string;
-    DEFINE_STATIC_LOCAL(const AtomicString, kImagePaint, ("image-paint"));
+    DEFINE_STATIC_LOCAL(const AtomicString, kImagePaint,
+                        (AtomicString::FromLiteral<"image-paint">()));
     element_timings_.push_back(PerformanceElementTiming::Create(
         kImagePaint, image_url, intersection_rect,
         performance_->MonotonicTimeToDOMHighResTimeStamp(load_time),
@@ -280,7 +281,8 @@ void ElementTiming::QueuePerformanceEntriesForReportingIfNeeded(
   CHECK(!element->IsInShadowTree());
 
   if (IsRegisteredForElementTiming(element)) {
-    DEFINE_STATIC_LOCAL(const AtomicString, kTextPaint, ("text-paint"));
+    DEFINE_STATIC_LOCAL(const AtomicString, kTextPaint,
+                        (AtomicString::FromLiteral<"text-paint">()));
     element_timings_.push_back(PerformanceElementTiming::Create(
         kTextPaint,
         /*url=*/g_empty_string, record.ElementTimingRect(),

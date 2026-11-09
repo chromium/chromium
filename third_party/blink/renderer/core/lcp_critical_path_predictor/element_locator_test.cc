@@ -20,7 +20,8 @@ namespace blink {
 using ElementLocatorTest = EditingTestBase;
 
 bool HasDataLocateMe(Element& element) {
-  DEFINE_STATIC_LOCAL(const AtomicString, kDataLocateMe, ("data-locate-me"));
+  DEFINE_STATIC_LOCAL(const AtomicString, kDataLocateMe,
+                      (AtomicString::FromLiteral<"data-locate-me">()));
   return element.hasAttribute(kDataLocateMe);
 }
 

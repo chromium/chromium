@@ -180,25 +180,26 @@ AtomicString GetFrameSrc(HTMLFrameOwnerElement* frame_owner) {
 }
 
 const AtomicString& SelfKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, kSelfAttribution, ("self"));
+  DEFINE_STATIC_LOCAL(const AtomicString, kSelfAttribution,
+                      (AtomicString::FromLiteral<"self">()));
   return kSelfAttribution;
 }
 
 const AtomicString& SameOriginAncestorKeyword() {
   DEFINE_STATIC_LOCAL(const AtomicString, kSameOriginAncestorAttribution,
-                      ("same-origin-ancestor"));
+                      (AtomicString::FromLiteral<"same-origin-ancestor">()));
   return kSameOriginAncestorAttribution;
 }
 
 const AtomicString& SameOriginDescendantKeyword() {
   DEFINE_STATIC_LOCAL(const AtomicString, kSameOriginDescendantAttribution,
-                      ("same-origin-descendant"));
+                      (AtomicString::FromLiteral<"same-origin-descendant">()));
   return kSameOriginDescendantAttribution;
 }
 
 const AtomicString& SameOriginKeyword() {
   DEFINE_STATIC_LOCAL(const AtomicString, kSameOriginAttribution,
-                      ("same-origin"));
+                      (AtomicString::FromLiteral<"same-origin">()));
   return kSameOriginAttribution;
 }
 
@@ -536,14 +537,15 @@ std::pair<AtomicString, DOMWindow*> WindowPerformance::SanitizedAttribution(
   if (has_multiple_contexts) {
     // Unable to attribute, multiple script execution contents were involved.
     DEFINE_STATIC_LOCAL(const AtomicString, kAmbiguousAttribution,
-                        ("multiple-contexts"));
+                        (AtomicString::FromLiteral<"multiple-contexts">()));
     return std::make_pair(kAmbiguousAttribution, nullptr);
   }
 
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(task_context);
   if (!window || !window->GetFrame()) {
     // Unable to attribute as no script was involved.
-    DEFINE_STATIC_LOCAL(const AtomicString, kUnknownAttribution, ("unknown"));
+    DEFINE_STATIC_LOCAL(const AtomicString, kUnknownAttribution,
+                        (AtomicString::FromLiteral<"unknown">()));
     return std::make_pair(kUnknownAttribution, nullptr);
   }
 
@@ -570,18 +572,20 @@ std::pair<AtomicString, DOMWindow*> WindowPerformance::SanitizedAttribution(
         last_cross_origin_frame = frame;
       }
     }
-    DEFINE_STATIC_LOCAL(const AtomicString, kCrossOriginDescendantAttribution,
-                        ("cross-origin-descendant"));
+    DEFINE_STATIC_LOCAL(
+        const AtomicString, kCrossOriginDescendantAttribution,
+        (AtomicString::FromLiteral<"cross-origin-descendant">()));
     return std::make_pair(kCrossOriginDescendantAttribution,
                           last_cross_origin_frame->DomWindow());
   }
   if (observer_frame->Tree().IsDescendantOf(culprit_frame)) {
     DEFINE_STATIC_LOCAL(const AtomicString, kCrossOriginAncestorAttribution,
-                        ("cross-origin-ancestor"));
+                        (AtomicString::FromLiteral<"cross-origin-ancestor">()));
     return std::make_pair(kCrossOriginAncestorAttribution, nullptr);
   }
-  DEFINE_STATIC_LOCAL(const AtomicString, kCrossOriginAttribution,
-                      ("cross-origin-unreachable"));
+  DEFINE_STATIC_LOCAL(
+      const AtomicString, kCrossOriginAttribution,
+      (AtomicString::FromLiteral<"cross-origin-unreachable">()));
   return std::make_pair(kCrossOriginAttribution, nullptr);
 }
 

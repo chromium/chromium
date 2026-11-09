@@ -181,7 +181,8 @@ const AtomicString& FrameLoadRequest::CleanNavigationTarget(
   if (ContainsNewLineAndLessThan(target)) {
     LogDanglingMarkupHistogram(origin_window_, target);
     if (RuntimeEnabledFeatures::RemoveDanglingMarkupInTargetEnabled()) {
-      DEFINE_STATIC_LOCAL(const AtomicString, blank, ("_blank"));
+      DEFINE_STATIC_LOCAL(const AtomicString, blank,
+                          (AtomicString::FromLiteral<"_blank">()));
       return blank;
     }
   }

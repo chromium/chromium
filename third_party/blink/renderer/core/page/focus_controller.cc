@@ -1096,7 +1096,7 @@ bool IsLikelyCaptchaIframe(const Element& element) {
   if (!iframe_element) {
     return false;
   }
-  DEFINE_STATIC_LOCAL(String, kCaptcha, ("captcha"));
+  const String kCaptcha = String::FromLiteral<"captcha">();
   return iframe_element->FastGetAttribute(html_names::kSrcAttr)
              .contains(kCaptcha) ||
          iframe_element->title().contains(kCaptcha) ||

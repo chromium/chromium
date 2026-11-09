@@ -207,9 +207,12 @@ int ComputeAutocapitalizeFlags(const Element* element) {
 
   int flags = 0;
 
-  DEFINE_STATIC_LOCAL(const AtomicString, characters, ("characters"));
-  DEFINE_STATIC_LOCAL(const AtomicString, words, ("words"));
-  DEFINE_STATIC_LOCAL(const AtomicString, sentences, ("sentences"));
+  DEFINE_STATIC_LOCAL(const AtomicString, characters,
+                      (AtomicString::FromLiteral<"characters">()));
+  DEFINE_STATIC_LOCAL(const AtomicString, words,
+                      (AtomicString::FromLiteral<"words">()));
+  DEFINE_STATIC_LOCAL(const AtomicString, sentences,
+                      (AtomicString::FromLiteral<"sentences">()));
 
   const AtomicString& autocapitalize = html_element->autocapitalize();
   if (autocapitalize == keywords::kNone) {

@@ -314,12 +314,18 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
 
   ProcessAttributesIfNeeded();
 
-  DEFINE_STATIC_LOCAL(AtomicString, kType, ("type"));
-  DEFINE_STATIC_LOCAL(AtomicString, kHref, ("href"));
-  DEFINE_STATIC_LOCAL(AtomicString, kCharset, ("charset"));
-  DEFINE_STATIC_LOCAL(AtomicString, kAlternate, ("alternate"));
-  DEFINE_STATIC_LOCAL(AtomicString, kTitle, ("title"));
-  DEFINE_STATIC_LOCAL(AtomicString, kMedia, ("media"));
+  DEFINE_STATIC_LOCAL(AtomicString, kType,
+                      (AtomicString::FromLiteral<"type">()));
+  DEFINE_STATIC_LOCAL(AtomicString, kHref,
+                      (AtomicString::FromLiteral<"href">()));
+  DEFINE_STATIC_LOCAL(AtomicString, kCharset,
+                      (AtomicString::FromLiteral<"charset">()));
+  DEFINE_STATIC_LOCAL(AtomicString, kAlternate,
+                      (AtomicString::FromLiteral<"alternate">()));
+  DEFINE_STATIC_LOCAL(AtomicString, kTitle,
+                      (AtomicString::FromLiteral<"title">()));
+  DEFINE_STATIC_LOCAL(AtomicString, kMedia,
+                      (AtomicString::FromLiteral<"media">()));
 
   AtomicString type = GetAttributeValue(kType, g_empty_atom);
 

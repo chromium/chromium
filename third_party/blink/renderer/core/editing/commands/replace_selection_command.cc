@@ -133,13 +133,12 @@ class ReplacementFragment final {
 };
 
 static bool IsInterchangeHTMLBRElement(const Node* node) {
-  DEFINE_STATIC_LOCAL(String, interchange_newline_class_string,
-                      (AppleInterchangeNewline));
   auto* html_br_element = DynamicTo<HTMLBRElement>(node);
   if (!html_br_element ||
       html_br_element->getAttribute(html_names::kClassAttr) !=
-          interchange_newline_class_string)
+          String::FromLiteral<AppleInterchangeNewline>()) {
     return false;
+  }
   UseCounter::Count(node->GetDocument(),
                     WebFeature::kEditingAppleInterchangeNewline);
   return true;

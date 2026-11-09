@@ -162,8 +162,10 @@ void CollectFeatures(Element& root,
 }
 
 bool HasOpenGraphArticle(const Element& head) {
-  DEFINE_STATIC_LOCAL(AtomicString, og_type, ("og:type"));
-  DEFINE_STATIC_LOCAL(AtomicString, property_attr, ("property"));
+  DEFINE_STATIC_LOCAL(AtomicString, og_type,
+                      (AtomicString::FromLiteral<"og:type">()));
+  DEFINE_STATIC_LOCAL(AtomicString, property_attr,
+                      (AtomicString::FromLiteral<"property">()));
   for (const Element* child = ElementTraversal::FirstChild(head); child;
        child = ElementTraversal::NextSibling(*child)) {
     auto* meta = DynamicTo<HTMLMetaElement>(child);

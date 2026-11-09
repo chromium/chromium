@@ -242,12 +242,12 @@ std::unique_ptr<protocol::CSS::Specificity> BuildSpecificity(
 }
 
 bool VerifyRuleText(Document* document, const String& rule_text) {
-  DEFINE_STATIC_LOCAL(String, bogus_property_name, ("-webkit-boguz-propertee"));
+  const String kBogusPropertyName =
+      String::FromLiteral<"-webkit-boguz-propertee">();
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
       ParserContextForDocument(document));
   CSSRuleSourceDataList source_data;
-  String text =
-      StrCat({rule_text, " div { ", bogus_property_name, ": none; }"});
+  String text = StrCat({rule_text, " div { ", kBogusPropertyName, ": none; }"});
   InspectorCSSParserObserver observer(text, document, &source_data);
   CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
                                     style_sheet, text, observer);
@@ -273,7 +273,7 @@ bool VerifyRuleText(Document* document, const String& rule_text) {
   }
 
   // Check for the property name.
-  if (property_data.at(0).name != bogus_property_name) {
+  if (property_data.at(0).name != kBogusPropertyName) {
     return false;
   }
 
@@ -404,12 +404,12 @@ bool VerifyKeyframeKeyText(Document* document, const String& key_text) {
 }
 
 bool VerifySelectorText(Document* document, const String& selector_text) {
-  DEFINE_STATIC_LOCAL(String, bogus_property_name, ("-webkit-boguz-propertee"));
+  const String kBogusPropertyName =
+      String::FromLiteral<"-webkit-boguz-propertee">();
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
       ParserContextForDocument(document));
   CSSRuleSourceDataList source_data;
-  String text =
-      StrCat({selector_text, " { ", bogus_property_name, ": none; }"});
+  String text = StrCat({selector_text, " { ", kBogusPropertyName, ": none; }"});
   InspectorCSSParserObserver observer(text, document, &source_data);
   CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
                                     style_sheet, text, observer);
@@ -429,7 +429,7 @@ bool VerifySelectorText(Document* document, const String& selector_text) {
   }
 
   // Check for the property name.
-  if (property_data.at(0).name != bogus_property_name) {
+  if (property_data.at(0).name != kBogusPropertyName) {
     return false;
   }
 
@@ -437,12 +437,13 @@ bool VerifySelectorText(Document* document, const String& selector_text) {
 }
 
 bool VerifyMediaText(Document* document, const String& media_text) {
-  DEFINE_STATIC_LOCAL(String, bogus_property_name, ("-webkit-boguz-propertee"));
+  const String kBogusPropertyName =
+      String::FromLiteral<"-webkit-boguz-propertee">();
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
       ParserContextForDocument(document));
   CSSRuleSourceDataList source_data;
   String text = StrCat(
-      {"@media ", media_text, " { div { ", bogus_property_name, ": none; } }"});
+      {"@media ", media_text, " { div { ", kBogusPropertyName, ": none; } }"});
   InspectorCSSParserObserver observer(text, document, &source_data);
   CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
                                     style_sheet, text, observer);
@@ -469,7 +470,7 @@ bool VerifyMediaText(Document* document, const String& media_text) {
   }
 
   // Check for the property name.
-  if (property_data.at(0).name != bogus_property_name) {
+  if (property_data.at(0).name != kBogusPropertyName) {
     return false;
   }
 
@@ -478,12 +479,13 @@ bool VerifyMediaText(Document* document, const String& media_text) {
 
 bool VerifyContainerQueryText(Document* document,
                               const String& container_query_text) {
-  DEFINE_STATIC_LOCAL(String, bogus_property_name, ("-webkit-boguz-propertee"));
+  const String kBogusPropertyName =
+      String::FromLiteral<"-webkit-boguz-propertee">();
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
       ParserContextForDocument(document));
   CSSRuleSourceDataList source_data;
   String text = StrCat({"@container ", container_query_text, " { div { ",
-                        bogus_property_name, ": none; } }"});
+                        kBogusPropertyName, ": none; } }"});
   InspectorCSSParserObserver observer(text, document, &source_data);
   CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
                                     style_sheet, text, observer);
@@ -513,7 +515,7 @@ bool VerifyContainerQueryText(Document* document,
   }
 
   // Check for the property name.
-  if (property_data.at(0).name != bogus_property_name) {
+  if (property_data.at(0).name != kBogusPropertyName) {
     return false;
   }
 
@@ -521,12 +523,13 @@ bool VerifyContainerQueryText(Document* document,
 }
 
 bool VerifySupportsText(Document* document, const String& supports_text) {
-  DEFINE_STATIC_LOCAL(String, bogus_property_name, ("-webkit-boguz-propertee"));
+  const String kBogusPropertyName =
+      String::FromLiteral<"-webkit-boguz-propertee">();
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
       ParserContextForDocument(document));
   CSSRuleSourceDataList source_data;
   String text = StrCat({"@supports ", supports_text, " { div { ",
-                        bogus_property_name, ": none; } }"});
+                        kBogusPropertyName, ": none; } }"});
   InspectorCSSParserObserver observer(text, document, &source_data);
   CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
                                     style_sheet, text, observer);
@@ -553,7 +556,7 @@ bool VerifySupportsText(Document* document, const String& supports_text) {
   }
 
   // Check for the property name.
-  if (property_data.at(0).name != bogus_property_name) {
+  if (property_data.at(0).name != kBogusPropertyName) {
     return false;
   }
 
@@ -561,12 +564,13 @@ bool VerifySupportsText(Document* document, const String& supports_text) {
 }
 
 bool VerifyNavigationText(Document* document, const String& navigation_text) {
-  DEFINE_STATIC_LOCAL(String, bogus_property_name, ("-webkit-boguz-propertee"));
+  const String kBogusPropertyName =
+      String::FromLiteral<"-webkit-boguz-propertee">();
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
       ParserContextForDocument(document));
   CSSRuleSourceDataList source_data;
   String text = StrCat({"@navigation ", navigation_text, " { div { ",
-                        bogus_property_name, ": none; } }"});
+                        kBogusPropertyName, ": none; } }"});
   InspectorCSSParserObserver observer(text, document, &source_data);
   CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
                                     style_sheet, text, observer);
@@ -593,7 +597,7 @@ bool VerifyNavigationText(Document* document, const String& navigation_text) {
   }
 
   // Check for the property name.
-  if (property_data.at(0).name != bogus_property_name) {
+  if (property_data.at(0).name != kBogusPropertyName) {
     return false;
   }
 
@@ -601,12 +605,13 @@ bool VerifyNavigationText(Document* document, const String& navigation_text) {
 }
 
 bool VerifyScopeText(Document* document, const String& scope_text) {
-  DEFINE_STATIC_LOCAL(String, bogus_property_name, ("-webkit-boguz-propertee"));
+  const String kBogusPropertyName =
+      String::FromLiteral<"-webkit-boguz-propertee">();
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
       ParserContextForDocument(document));
   CSSRuleSourceDataList source_data;
   String text =
-      StrCat({"@scope ", scope_text, " { ", bogus_property_name, ": none; }"});
+      StrCat({"@scope ", scope_text, " { ", kBogusPropertyName, ": none; }"});
   InspectorCSSParserObserver observer(text, document, &source_data);
   CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
                                     style_sheet, text, observer);
@@ -633,7 +638,7 @@ bool VerifyScopeText(Document* document, const String& scope_text) {
   }
 
   // Check for the property name.
-  if (property_data.at(0).name != bogus_property_name) {
+  if (property_data.at(0).name != kBogusPropertyName) {
     return false;
   }
 

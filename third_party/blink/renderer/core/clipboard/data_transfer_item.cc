@@ -39,21 +39,18 @@
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 String DataTransferItem::kind() const {
-  DEFINE_STATIC_LOCAL(const String, kind_string, ("string"));
-  DEFINE_STATIC_LOCAL(const String, kind_file, ("file"));
   if (!data_transfer_->CanReadTypes())
     return String();
   switch (item_->Kind()) {
     case DataObjectItem::kStringKind:
-      return kind_string;
+      return String::FromLiteral<"string">();
     case DataObjectItem::kFileKind:
-      return kind_file;
+      return String::FromLiteral<"file">();
   }
   NOTREACHED();
 }

@@ -378,96 +378,66 @@ enum ForcePseudoClassFlags {
 
 static unsigned ComputePseudoClassMask(
     std::unique_ptr<protocol::Array<String>> pseudo_class_array) {
-  DEFINE_STATIC_LOCAL(String, active, ("active"));
-  DEFINE_STATIC_LOCAL(String, hover, ("hover"));
-  DEFINE_STATIC_LOCAL(String, focus, ("focus"));
-  DEFINE_STATIC_LOCAL(String, focusVisible, ("focus-visible"));
-  DEFINE_STATIC_LOCAL(String, focusWithin, ("focus-within"));
-  DEFINE_STATIC_LOCAL(String, target, ("target"));
-  DEFINE_STATIC_LOCAL(String, targetCurrent, ("target-current"));
-  // Specific pseudo states
-  DEFINE_STATIC_LOCAL(String, enabled, ("enabled"));
-  DEFINE_STATIC_LOCAL(String, disabled, ("disabled"));
-  DEFINE_STATIC_LOCAL(String, valid, ("valid"));
-  DEFINE_STATIC_LOCAL(String, invalid, ("invalid"));
-  DEFINE_STATIC_LOCAL(String, userValid, ("user-valid"));
-  DEFINE_STATIC_LOCAL(String, userInvalid, ("user-invalid"));
-  DEFINE_STATIC_LOCAL(String, required, ("required"));
-  DEFINE_STATIC_LOCAL(String, optional, ("optional"));
-  DEFINE_STATIC_LOCAL(String, readOnly, ("read-only"));
-  DEFINE_STATIC_LOCAL(String, readWrite, ("read-write"));
-  DEFINE_STATIC_LOCAL(String, inRange, ("in-range"));
-  DEFINE_STATIC_LOCAL(String, outOfRange, ("out-of-range"));
-  DEFINE_STATIC_LOCAL(String, visited, ("visited"));
-  DEFINE_STATIC_LOCAL(String, checked, ("checked"));
-  DEFINE_STATIC_LOCAL(String, indeterminate, ("indeterminate"));
-  DEFINE_STATIC_LOCAL(String, placeholderShown, ("placeholder-shown"));
-  DEFINE_STATIC_LOCAL(String, autofill, ("autofill"));
-  DEFINE_STATIC_LOCAL(String, link, ("link"));
-  DEFINE_STATIC_LOCAL(String, open, ("open"));
-  DEFINE_STATIC_LOCAL(String, buffering, ("buffering"));
-  DEFINE_STATIC_LOCAL(String, stalled, ("stalled"));
-
   if (!pseudo_class_array || pseudo_class_array->empty())
     return kPseudoNone;
 
   unsigned result = kPseudoNone;
   for (const String& pseudo_class : *pseudo_class_array) {
-    if (pseudo_class == active) {
+    if (pseudo_class == String::FromLiteral<"active">()) {
       result |= kPseudoActive;
-    } else if (pseudo_class == hover) {
+    } else if (pseudo_class == String::FromLiteral<"hover">()) {
       result |= kPseudoHover;
-    } else if (pseudo_class == focus) {
+    } else if (pseudo_class == String::FromLiteral<"focus">()) {
       result |= kPseudoFocus;
-    } else if (pseudo_class == focusVisible) {
+    } else if (pseudo_class == String::FromLiteral<"focus-visible">()) {
       result |= kPseudoFocusVisible;
-    } else if (pseudo_class == focusWithin) {
+    } else if (pseudo_class == String::FromLiteral<"focus-within">()) {
       result |= kPseudoFocusWithin;
-    } else if (pseudo_class == target) {
+    } else if (pseudo_class == String::FromLiteral<"target">()) {
       result |= kPseudoTarget;
-    } else if (pseudo_class == targetCurrent) {
+    } else if (pseudo_class == String::FromLiteral<"target-current">()) {
       result |= kPseudoTargetCurrent;
-    } else if (pseudo_class == enabled) {
+    } else if (pseudo_class == String::FromLiteral<"enabled">()) {
       result |= kPseudoEnabled;
-    } else if (pseudo_class == disabled) {
+    } else if (pseudo_class == String::FromLiteral<"disabled">()) {
       result |= kPseudoDisabled;
-    } else if (pseudo_class == valid) {
+    } else if (pseudo_class == String::FromLiteral<"valid">()) {
       result |= kPseudoValid;
-    } else if (pseudo_class == invalid) {
+    } else if (pseudo_class == String::FromLiteral<"invalid">()) {
       result |= kPseudoInvalid;
-    } else if (pseudo_class == userValid) {
+    } else if (pseudo_class == String::FromLiteral<"user-valid">()) {
       result |= kPseudoUserValid;
-    } else if (pseudo_class == userInvalid) {
+    } else if (pseudo_class == String::FromLiteral<"user-invalid">()) {
       result |= kPseudoUserInvalid;
-    } else if (pseudo_class == required) {
+    } else if (pseudo_class == String::FromLiteral<"required">()) {
       result |= kPseudoRequired;
-    } else if (pseudo_class == optional) {
+    } else if (pseudo_class == String::FromLiteral<"optional">()) {
       result |= kPseudoOptional;
-    } else if (pseudo_class == readOnly) {
+    } else if (pseudo_class == String::FromLiteral<"read-only">()) {
       result |= kPseudoReadOnly;
-    } else if (pseudo_class == readWrite) {
+    } else if (pseudo_class == String::FromLiteral<"read-write">()) {
       result |= kPseudoReadWrite;
-    } else if (pseudo_class == inRange) {
+    } else if (pseudo_class == String::FromLiteral<"in-range">()) {
       result |= kPseudoInRange;
-    } else if (pseudo_class == outOfRange) {
+    } else if (pseudo_class == String::FromLiteral<"out-of-range">()) {
       result |= kPseudoOutOfRange;
-    } else if (pseudo_class == visited) {
+    } else if (pseudo_class == String::FromLiteral<"visited">()) {
       result |= kPseudoVisited;
-    } else if (pseudo_class == checked) {
+    } else if (pseudo_class == String::FromLiteral<"checked">()) {
       result |= kPseudoChecked;
-    } else if (pseudo_class == indeterminate) {
+    } else if (pseudo_class == String::FromLiteral<"indeterminate">()) {
       result |= kPseudoIndeterminate;
-    } else if (pseudo_class == placeholderShown) {
+    } else if (pseudo_class == String::FromLiteral<"placeholder-shown">()) {
       result |= kPseudoPlaceholderShown;
-    } else if (pseudo_class == autofill) {
+    } else if (pseudo_class == String::FromLiteral<"autofill">()) {
       result |= kPseudoAutofill;
-    } else if (pseudo_class == link) {
+    } else if (pseudo_class == String::FromLiteral<"link">()) {
       result |= kPseudoLink;
-    } else if (pseudo_class == open) {
+    } else if (pseudo_class == String::FromLiteral<"open">()) {
       result |= kPseudoOpen;
-    } else if (pseudo_class == buffering) {
+    } else if (pseudo_class == String::FromLiteral<"buffering">()) {
       result |= kPseudoBuffering;
-    } else if (pseudo_class == stalled) {
+    } else if (pseudo_class == String::FromLiteral<"stalled">()) {
       result |= kPseudoStalled;
     }
   }

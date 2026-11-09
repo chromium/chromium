@@ -29,12 +29,8 @@
 
 namespace blink {
 
-static String NewlineString() {
-  DEFINE_STATIC_LOCAL(const String, string, ("\n"));
-  return string;
-}
-
-LayoutBR::LayoutBR(HTMLBRElement& node) : LayoutText(&node, NewlineString()) {}
+LayoutBR::LayoutBR(HTMLBRElement& node)
+    : LayoutText(&node, String::FromLiteral<"\n">()) {}
 
 LayoutBR::~LayoutBR() = default;
 

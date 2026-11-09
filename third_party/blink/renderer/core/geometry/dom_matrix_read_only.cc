@@ -457,10 +457,9 @@ void DOMMatrixReadOnly::SetMatrixValueFromString(
     const ExecutionContext* execution_context,
     const String& input_string,
     ExceptionState& exception_state) {
-  DEFINE_STATIC_LOCAL(String, identity_matrix2d, ("matrix(1, 0, 0, 1, 0, 0)"));
   String string = input_string;
   if (string.empty())
-    string = identity_matrix2d;
+    string = String::FromLiteral<"matrix(1, 0, 0, 1, 0, 0)">();
 
   const CSSValue* value = CSSParser::ParseSingleValue(
       CSSPropertyID::kTransform, string,

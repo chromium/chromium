@@ -146,10 +146,14 @@ CSSSelector::CSSSelector(MatchType match_type,
 // static
 const AtomicString& CSSSelector::NameForInlineSelectorListPseudo(
     PseudoType pseudo_type) {
-  DEFINE_STATIC_LOCAL(const AtomicString, is_atom, ("is"));
-  DEFINE_STATIC_LOCAL(const AtomicString, where_atom, ("where"));
-  DEFINE_STATIC_LOCAL(const AtomicString, not_atom, ("not"));
-  DEFINE_STATIC_LOCAL(const AtomicString, has_atom, ("has"));
+  DEFINE_STATIC_LOCAL(const AtomicString, is_atom,
+                      (AtomicString::FromLiteral<"is">()));
+  DEFINE_STATIC_LOCAL(const AtomicString, where_atom,
+                      (AtomicString::FromLiteral<"where">()));
+  DEFINE_STATIC_LOCAL(const AtomicString, not_atom,
+                      (AtomicString::FromLiteral<"not">()));
+  DEFINE_STATIC_LOCAL(const AtomicString, has_atom,
+                      (AtomicString::FromLiteral<"has">()));
   switch (pseudo_type) {
     case kPseudoIs:
       return is_atom;

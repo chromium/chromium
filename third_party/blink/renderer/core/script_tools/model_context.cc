@@ -1237,7 +1237,8 @@ ExecutionContext* ModelContext::GetExecutionContext() const {
 }
 
 const AtomicString& ModelContext::InterfaceName() const {
-  DEFINE_STATIC_LOCAL(AtomicString, name, ("ModelContext"));
+  DEFINE_STATIC_LOCAL(AtomicString, name,
+                      (AtomicString::FromLiteral<"ModelContext">()));
   return name;
 }
 

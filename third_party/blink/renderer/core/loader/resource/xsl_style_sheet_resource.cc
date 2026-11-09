@@ -41,9 +41,11 @@ static void ApplyXSLRequestProperties(FetchParameters& params) {
   // difference between an XSL stylesheet and a CSS stylesheet, so it assumes
   // stylesheets are all CSS unless they already have an Accept: header set.
   // Should we teach the browser process the difference?
-  DEFINE_STATIC_LOCAL(const AtomicString, accept_xslt,
-                      ("text/xml, application/xml, application/xhtml+xml, "
-                       "text/xsl, application/rss+xml, application/atom+xml"));
+  DEFINE_STATIC_LOCAL(
+      const AtomicString, accept_xslt,
+      (AtomicString::FromLiteral<
+          "text/xml, application/xml, application/xhtml+xml, "
+          "text/xsl, application/rss+xml, application/atom+xml">()));
   params.MutableResourceRequest().SetHTTPAccept(accept_xslt);
 }
 

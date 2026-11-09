@@ -38,7 +38,8 @@ const AtomicString& DocumentXmlLanguage(const Document& document) {
 }
 
 bool HasNoTranslate(const Document& document) {
-  DEFINE_STATIC_LOCAL(const AtomicString, google, ("google"));
+  DEFINE_STATIC_LOCAL(const AtomicString, google,
+                      (AtomicString::FromLiteral<"google">()));
 
   HTMLHeadElement* head_element = document.head();
   if (!head_element)

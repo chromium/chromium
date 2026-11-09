@@ -170,17 +170,20 @@ class MutationRecordWithNullOldValue : public MutationRecord {
 };
 
 const AtomicString& ChildListRecord::type() {
-  DEFINE_STATIC_LOCAL(AtomicString, child_list, ("childList"));
+  DEFINE_STATIC_LOCAL(AtomicString, child_list,
+                      (AtomicString::FromLiteral<"childList">()));
   return child_list;
 }
 
 const AtomicString& AttributesRecord::type() {
-  DEFINE_STATIC_LOCAL(AtomicString, attributes, ("attributes"));
+  DEFINE_STATIC_LOCAL(AtomicString, attributes,
+                      (AtomicString::FromLiteral<"attributes">()));
   return attributes;
 }
 
 const AtomicString& CharacterDataRecord::type() {
-  DEFINE_STATIC_LOCAL(AtomicString, character_data, ("characterData"));
+  DEFINE_STATIC_LOCAL(AtomicString, character_data,
+                      (AtomicString::FromLiteral<"characterData">()));
   return character_data;
 }
 

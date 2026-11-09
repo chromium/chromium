@@ -36,13 +36,16 @@ PseudoId ScrollButtonPseudoElement::PseudoIdFromScrollButtonArgument(
   // direction keywords are ASCII case-insensitive.
   const AtomicString argument = raw_argument.ToAsciiLower();
 
-  DEFINE_STATIC_LOCAL(AtomicString, wildcard, ("*"));
-  DEFINE_STATIC_LOCAL(AtomicString, block_start, ("block-start"));
-  DEFINE_STATIC_LOCAL(AtomicString, inline_start, ("inline-start"));
-  DEFINE_STATIC_LOCAL(AtomicString, inline_end, ("inline-end"));
-  DEFINE_STATIC_LOCAL(AtomicString, block_end, ("block-end"));
+  DEFINE_STATIC_LOCAL(AtomicString, block_start,
+                      (AtomicString::FromLiteral<"block-start">()));
+  DEFINE_STATIC_LOCAL(AtomicString, inline_start,
+                      (AtomicString::FromLiteral<"inline-start">()));
+  DEFINE_STATIC_LOCAL(AtomicString, inline_end,
+                      (AtomicString::FromLiteral<"inline-end">()));
+  DEFINE_STATIC_LOCAL(AtomicString, block_end,
+                      (AtomicString::FromLiteral<"block-end">()));
 
-  if (argument == wildcard) {
+  if (argument == g_star_atom) {
     return kPseudoIdScrollButton;
   }
   if (argument == block_start) {
@@ -58,10 +61,13 @@ PseudoId ScrollButtonPseudoElement::PseudoIdFromScrollButtonArgument(
     return kPseudoIdScrollButtonBlockEnd;
   }
 
-  DEFINE_STATIC_LOCAL(AtomicString, up, ("up"));
-  DEFINE_STATIC_LOCAL(AtomicString, right, ("right"));
-  DEFINE_STATIC_LOCAL(AtomicString, down, ("down"));
-  DEFINE_STATIC_LOCAL(AtomicString, left, ("left"));
+  DEFINE_STATIC_LOCAL(AtomicString, up, (AtomicString::FromLiteral<"up">()));
+  DEFINE_STATIC_LOCAL(AtomicString, right,
+                      (AtomicString::FromLiteral<"right">()));
+  DEFINE_STATIC_LOCAL(AtomicString, down,
+                      (AtomicString::FromLiteral<"down">()));
+  DEFINE_STATIC_LOCAL(AtomicString, left,
+                      (AtomicString::FromLiteral<"left">()));
 
   if (argument != up && argument != right && argument != down &&
       argument != left) {

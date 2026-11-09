@@ -528,12 +528,14 @@ bool HasSelectInNameAttribute(Element& element) {
 }
 
 bool IsRoleCombobox(Element& element) {
-  DEFINE_STATIC_LOCAL(const AtomicString, combobox, ("combobox"));
+  DEFINE_STATIC_LOCAL(const AtomicString, combobox,
+                      (AtomicString::FromLiteral<"combobox">()));
   return element.getAttribute(html_names::kRoleAttr) == combobox;
 }
 
 bool IsAriaHasPopupListbox(Element& element) {
-  DEFINE_STATIC_LOCAL(const AtomicString, listbox, ("listbox"));
+  DEFINE_STATIC_LOCAL(const AtomicString, listbox,
+                      (AtomicString::FromLiteral<"listbox">()));
   return element.getAttribute(html_names::kAriaHaspopupAttr) == listbox;
 }
 

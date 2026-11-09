@@ -891,14 +891,18 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
                                    const AtomicString& mark_name,
                                    PerformanceMarkOptions* mark_options,
                                    ExceptionState& exception_state) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, mark_fully_loaded,
-                                  ("mark_fully_loaded"));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, mark_fully_visible,
-                                  ("mark_fully_visible"));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, mark_interactive,
-                                  ("mark_interactive"));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, mark_feature_usage,
-                                  ("mark_feature_usage"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      const AtomicString, mark_fully_loaded,
+      (AtomicString::FromLiteral<"mark_fully_loaded">()));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      const AtomicString, mark_fully_visible,
+      (AtomicString::FromLiteral<"mark_fully_visible">()));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      const AtomicString, mark_interactive,
+      (AtomicString::FromLiteral<"mark_interactive">()));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      const AtomicString, mark_feature_usage,
+      (AtomicString::FromLiteral<"mark_feature_usage">()));
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       const AtomicString, mark_parser_blocking,
       (blink::features::kHTMLParserYieldEventNameForPause.Get().c_str()));

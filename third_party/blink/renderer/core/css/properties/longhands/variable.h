@@ -25,7 +25,8 @@ class CORE_EXPORT Variable : public Longhand {
   CSSPropertyName GetCSSPropertyName() const override { NOTREACHED(); }
   const char* GetPropertyName() const override { return "variable"; }
   const AtomicString& GetPropertyNameAtomicString() const override {
-    DEFINE_STATIC_LOCAL(const AtomicString, name, ("variable"));
+    DEFINE_STATIC_LOCAL(const AtomicString, name,
+                        (AtomicString::FromLiteral<"variable">()));
     return name;
   }
 
