@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <functional>
+#include <iterator>
 #include <limits>
 #include <map>
 #include <memory>
@@ -43,6 +44,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/autofill/content/renderer/custom_form_control_util.h"
 #include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
@@ -2060,6 +2062,37 @@ bool IsLikelyCaptchaIframe(const WebElement& element) {
 }
 #endif
 
+// Converts `custom_controls` to `FormFieldData` and merges them in DOM order
+// with `fields`. `fields` is assumed to be in DOM order already.
+// `form_element` represents the form that the `fields` and `custom_controls`
+// are associated with - or null for the unowned form.
+std::vector<FormFieldData> MergeFieldsWithCustomFormControls(
+    const WebFormElement& form_element,
+    std::vector<FormFieldData> fields,
+    base::span<const CustomFormControl> custom_controls) {
+  if (custom_controls.empty()) {
+    return fields;
+  }
+  std::vector<FormFieldData> custom_fields =
+      base::ToVector(custom_controls, &CustomFormControlToFormField);
+  auto to_web_node = [](const FormFieldData& field) {
+    return WebNode::FromDomNodeId(*field.renderer_id());
+  };
+  auto is_dom_predecessor = [&](const WebNode& x, const WebNode& y) {
+    return IsDOMPredecessor(x, y, form_element);
+  };
+  // While extraction of `custom_controls` tries to find them in DOM order, it
+  // cannot always be guaranteed.
+  std::ranges::sort(custom_fields, is_dom_predecessor, to_web_node);
+  std::vector<FormFieldData> merged_fields;
+  merged_fields.reserve(fields.size() + custom_fields.size());
+  std::ranges::merge(std::views::as_rvalue(fields),
+                     std::views::as_rvalue(custom_fields),
+                     std::back_inserter(merged_fields), is_dom_predecessor,
+                     to_web_node, to_web_node);
+  return merged_fields;
+}
+
 // Extracts the `FrameTokenWithPredecessor`s of `iframe_elements` and sets
 // `child_frames[i].predecessor` to the field index of the last field in
 // `fields` that precedes the `i`th child frame.
@@ -2111,7 +2144,8 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     const WebDocument& document,
     FormRendererId form_id,
     const FieldDataManager& field_data_manager,
-    ButtonTitlesCache* button_titles_cache) {
+    ButtonTitlesCache* button_titles_cache,
+    base::span<const CustomFormControl> custom_controls) {
   WebFormElement form_element = GetFormByRendererId(form_id);
   if (form_id.is_null() != form_element.IsNull()) {
     return std::nullopt;
@@ -2126,7 +2160,8 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
 
   std::vector<WebFormControlElement> control_elements =
       GetOwnedAutofillableFormControls(document, form_element);
-  if (control_elements.size() > kMaxExtractableFields) {
+  if (control_elements.size() + custom_controls.size() >
+      kMaxExtractableFields) {
     return std::nullopt;
   }
 
@@ -2150,6 +2185,12 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
 
   // Infers field labels from other tags or <labels> without for="...".
   InferLabelForElements(fields);
+
+  // TODO(crbug.com/582617845): Label inference only works for standard form
+  // controls. Consider generalising it and calling
+  // `MergeFieldsWithCustomFormControls()` earlier.
+  fields = MergeFieldsWithCustomFormControls(form_element, std::move(fields),
+                                             custom_controls);
 
   // Extracts child frames of `form_element` (or `document` if unowned) and
   // computes their field predecessors in `fields`.
@@ -2279,10 +2320,12 @@ std::optional<FormData> ExtractFormData(
     FormRendererId form_id,
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state,
-    ButtonTitlesCache* button_titles_cache) {
+    ButtonTitlesCache* button_titles_cache,
+    base::span<const CustomFormControl> custom_controls) {
   ScopedCallTimer timer("ExtractFormData", timer_state);
   return ExtractFormDataWithFieldsAndFrames(
-      document, form_id, field_data_manager, button_titles_cache);
+      document, form_id, field_data_manager, button_titles_cache,
+      custom_controls);
 }
 
 GURL GetCanonicalActionForForm(const WebFormElement& form) {

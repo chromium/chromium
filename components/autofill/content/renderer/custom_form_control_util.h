@@ -36,9 +36,8 @@ struct CustomFormControl {
 };
 
 // Groups `controls` by their outermost ancestor `<form>` element. Unowned
-// controls are grouped under a null `blink::WebFormElement()`.
-// Assumes `controls` are in DOM order and preserves their relative order
-// within each form.
+// controls are grouped under a null `blink::WebFormElement()`. Relative order
+// of `controls` is preserved within each form.
 base::flat_map<blink::WebFormElement, std::vector<CustomFormControl>>
 GroupCustomFormControlsByForm(std::vector<CustomFormControl> controls);
 

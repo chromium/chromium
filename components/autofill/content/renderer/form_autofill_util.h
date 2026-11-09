@@ -53,6 +53,7 @@ class RectF;
 
 namespace autofill {
 
+struct CustomFormControl;
 class FieldDataManager;
 class FormData;
 class FormFieldData;
@@ -71,7 +72,10 @@ namespace form_util {
 using ButtonTitlesCache = base::flat_map<FormRendererId, ButtonTitleList>;
 
 // Extracts FormData from the form element with `form_id`, or the unowned form
-// if `form_id.is_null()`.
+// if `form_id.is_null()`. `custom_controls` are the custom form controls owned
+// by the form; they are converted to `FormFieldData` and merged with the
+// standard autofillable form controls in DOM order into the extracted
+// `FormData::fields()`.
 //
 // The document must be the one we want to extract fields from. In other words:
 // Do not blindly pass "some" WebDocument for `document`! If `form_id` is
@@ -84,7 +88,8 @@ std::optional<FormData> ExtractFormData(
     FormRendererId form_id,
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state,
-    ButtonTitlesCache* button_titles_cache);
+    ButtonTitlesCache* button_titles_cache,
+    base::span<const CustomFormControl> custom_controls = {});
 
 // Helper function to assist in getting the canonical form of the action and
 // origin. The action will properly take into account <BASE>, and both will
