@@ -42,7 +42,7 @@ export enum DragAndReleaseToolResultCode {
   // The destination element is disabled.
   TO_ELEMENT_DISABLED = 7,
 }
-// LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/drag_and_release_tool_js_unittest.mm:DragAndReleaseToolResultCode)
+// LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/drag_and_release_tool_java_script_feature.h:DragAndReleaseToolResultCode)
 
 /**
  * An element and its coordinates resolved from an ActionTarget.

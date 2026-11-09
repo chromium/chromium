@@ -16,6 +16,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/drag_and_release_tool_java_script_feature.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/javascript_test.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -27,21 +28,8 @@
 
 namespace {
 
+using actor::DragAndReleaseToolResultCode;
 using optimization_guide::proto::Coordinate;
-
-// LINT.IfChange(DragAndReleaseToolResultCode)
-// TODO(crbug.com/472287126): Move this into DragAndReleaseJavaScriptFeature.
-enum class DragAndReleaseToolResultCode {
-  kOk = 0,
-  kFromCoordinatesOutOfBounds = 1,
-  kToCoordinatesOutOfBounds = 2,
-  kFromInvalidDomNodeId = 3,
-  kToInvalidDomNodeId = 4,
-  kDragSuppressed = 5,
-  kFromElementDisabled = 6,
-  kToElementDisabled = 7,
-};
-// LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/resources/drag_and_release_tool.ts:DragAndReleaseToolResultCode)
 
 enum class CallType {
   kByCoordinate,
