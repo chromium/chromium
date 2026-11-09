@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/client/drag_drop_delegate.h"
+#include "ui/aura/env.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -29,6 +30,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/wm/wm_drag_handler.h"
 #include "ui/platform_window/wm/wm_drop_handler.h"
@@ -300,6 +302,8 @@ class DesktopDragDropClientOzoneTest : public ViewsTestBase {
     widget_.reset();
   }
 
+  Widget* widget() { return widget_.get(); }
+
   base::WeakPtr<DesktopDragDropClientOzoneTest> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -381,6 +385,28 @@ TEST_F(DesktopDragDropClientOzoneTest, StartDrag) {
   EXPECT_EQ(0, dragdrop_delegate_->num_exits());
 
   EXPECT_EQ(ui::EF_NONE, dragdrop_delegate_->last_event_flags());
+}
+
+// The platform's drag loop may consume the button release that ends the drag
+// (e.g. X11), so aura::Env must not keep reporting the button as pressed once
+// the drag is over.  See https://crbug.com/375959961.
+TEST_F(DesktopDragDropClientOzoneTest, MouseButtonReleasedAfterDrag) {
+  aura::Env* env = aura::Env::GetInstance();
+  ui::test::EventGenerator generator(
+      widget()->GetNativeWindow()->GetRootWindow());
+  generator.MoveMouseTo(widget()->GetWindowBoundsInScreen().CenterPoint());
+  generator.PressLeftButton();
+  ASSERT_TRUE(env->IsMouseButtonDown());
+  ASSERT_TRUE(widget()->IsMouseButtonDown());
+
+  // The fake platform drag loop does not dispatch the release, emulating the
+  // X11 drag loop.
+  dragdrop_delegate_->SetOperation(DragOperation::kCopy);
+  EXPECT_EQ(DragOperation::kCopy,
+            StartDragAndDrop(ui::DragDropTypes::DRAG_COPY));
+
+  EXPECT_FALSE(env->IsMouseButtonDown());
+  EXPECT_FALSE(widget()->IsMouseButtonDown());
 }
 
 TEST_F(DesktopDragDropClientOzoneTest, StartDragCtrlPressed) {

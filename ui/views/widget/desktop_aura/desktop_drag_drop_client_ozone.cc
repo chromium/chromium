@@ -15,6 +15,7 @@
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
+#include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
@@ -238,6 +239,12 @@ DragOperation DesktopDragDropClientOzone::StartDragAndDrop(
       base::BindOnce(&DesktopDragDropClientOzone::OnDragFinished,
                      weak_factory_.GetWeakPtr()),
       GetLocationDelegate());
+
+  // The platform owns the pointer during the drag and may consume the button
+  // release that ends it (e.g. the X11 drag loop), which would otherwise leave
+  // aura::Env reporting the button as held after the drag.  If the release was
+  // dispatched, this is a no-op.
+  aura::Env::GetInstance()->set_mouse_button_flags(0);
 
   if (!alive) {
     return DragOperation::kNone;
