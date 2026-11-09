@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 
+#include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -24,6 +26,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_no_target_device_bubble_view.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
@@ -53,6 +56,18 @@
 #endif
 
 namespace send_tab_to_self {
+
+namespace {
+
+bool ShouldAnchorBubbleToAvatarPill(EntryPointDisplayReason reason) {
+  if (reason != EntryPointDisplayReason::kOfferSignIn &&
+      reason != EntryPointDisplayReason::kOfferReauth) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kSendTabToSelfAnchorPromosToProfilePill);
+}
+
+}  // namespace
 
 SendTabToSelfBubbleController::~SendTabToSelfBubbleController() {
   HideBubble();
@@ -114,8 +129,11 @@ void SendTabToSelfBubbleController::ShowBubbleImpl(
   views::BubbleAnchor anchor;
   if (browser) {
     browser_weak_ptr = browser->GetWeakPtr();
-    if (PinnedToolbarActions* pinned_toolbar_actions =
-            BrowserWindow::FromBrowser(browser)->GetPinnedToolbarActions()) {
+    if (ShouldAnchorBubbleToAvatarPill(reason)) {
+      anchor = AvatarToolbarButtonInterface::GetBubbleAnchor(*browser);
+    } else if (PinnedToolbarActions* pinned_toolbar_actions =
+                   BrowserWindow::FromBrowser(browser)
+                       ->GetPinnedToolbarActions()) {
       // Show the toolbar action button.
       pinned_toolbar_actions->ShowActionEphemerallyInToolbar(
           kActionSendTabToSelf, true);
@@ -125,9 +143,10 @@ void SendTabToSelfBubbleController::ShowBubbleImpl(
                          weak_ptr_factory_.GetWeakPtr(), reason,
                          browser_weak_ptr));
       return;
+    } else {
+      anchor = ToolbarButtonProvider::From(browser)->GetBubbleAnchor(
+          kActionSendTabToSelf);
     }
-    anchor = ToolbarButtonProvider::From(browser)->GetBubbleAnchor(
-        kActionSendTabToSelf);
   }
 
   ShowBubbleWithAnchor(reason, browser_weak_ptr, std::move(anchor));
@@ -186,8 +205,12 @@ void SendTabToSelfBubbleController::ShowBubbleWithAnchor(
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
   widget_observation_.Observe(widget);
-  send_tab_to_self_bubble_view_->SetHighlightedElement(
-      kPinnedToolbarActionSendTabToSelfElementId);
+  is_bubble_anchored_to_avatar_pill_ =
+      browser && ShouldAnchorBubbleToAvatarPill(reason);
+  if (!is_bubble_anchored_to_avatar_pill_) {
+    send_tab_to_self_bubble_view_->SetHighlightedElement(
+        kPinnedToolbarActionSendTabToSelfElementId);
+  }
   // This is always triggered due to a user gesture, c.f. method
   // documentation.
   send_tab_to_self_bubble_view_->ShowForReason(
@@ -267,6 +290,14 @@ void SendTabToSelfBubbleController::OnWidgetDestroying(views::Widget* widget) {
   widget_observation_.Reset();
   send_tab_to_self_bubble_view_ = nullptr;
   entry_point_ = std::nullopt;
+  if (send_tab_to_self_action_item_) {
+    send_tab_to_self_action_item_->SetIsShowingBubble(false);
+    send_tab_to_self_action_item_ = nullptr;
+  }
+  if (is_bubble_anchored_to_avatar_pill_) {
+    is_bubble_anchored_to_avatar_pill_ = false;
+    return;
+  }
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           &GetWebContents());
@@ -281,9 +312,6 @@ void SendTabToSelfBubbleController::OnWidgetDestroying(views::Widget* widget) {
       pinned_toolbar_actions->ShowActionEphemerallyInToolbar(
           kActionSendTabToSelf, false);
     }
-  }
-  if (send_tab_to_self_action_item_) {
-    send_tab_to_self_action_item_->SetIsShowingBubble(false);
   }
 }
 

@@ -114,6 +114,7 @@ source_set("browser_tests") {
     "//google_apis",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/actions",
     "//ui/base",
     "//ui/events:events_base",
     "//ui/gfx",

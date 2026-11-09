@@ -122,6 +122,8 @@ class SendTabToSelfBubbleController
   // Weak reference. Will be nullptr if no bubble is currently shown.
   raw_ptr<LocationBarBubbleDelegateView> send_tab_to_self_bubble_view_ =
       nullptr;
+  // True if the currently shown bubble is anchored to the avatar pill.
+  bool is_bubble_anchored_to_avatar_pill_ = false;
   // True if the cross-device sign-in QR code bubble is currently shown.
   bool is_qr_bubble_showing_ = false;
 
