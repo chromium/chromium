@@ -446,6 +446,28 @@ message ScrollToAction {
   reserved 1, 2;
 }
 
+// Searches the page DOM for text and scrolls the matching element into view.
+// Next ID: 6
+message SearchInPageAction {
+  // The text, keyword, or regular expression to search for on the page.
+  string query = 1 [features = { field_presence: EXPLICIT }];
+
+  // 1-based index of the match to focus and scroll to (defaults to 1).
+  int32 match_index = 2 [features = { field_presence: EXPLICIT }];
+
+  // Whether the search should be case sensitive (defaults to false).
+  bool case_sensitive = 3 [features = { field_presence: EXPLICIT }];
+
+  // The id of the surface (tab or background WebContents) the action will be
+  // taken in. Positive values match `tab_id`; negative values identify
+  // background execution WebContents.
+  int32 surface_id = 4 [features = { field_presence: EXPLICIT }];
+
+  // Whether `query` should be evaluated as a regular expression (defaults to
+  // false).
+  bool is_regex = 5 [features = { field_presence: EXPLICIT }];
+}
+
 // Executes a script tool.
 // Next ID: 5
 message ScriptToolAction {
@@ -555,7 +577,7 @@ message ClickToUploadAction {
 
 // All of the actions that can be taken.
 // Only one of these is allowed per action.
-// Next ID: 28
+// Next ID: 29
 message Action {
 
   oneof action {
@@ -612,6 +634,8 @@ message Action {
     ClickToUploadAction click_to_upload = 26;
 
     ChangePasswordAction change_password = 27;
+
+    SearchInPageAction search_in_page = 28;
   }
 }
 
