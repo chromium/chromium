@@ -628,12 +628,13 @@ void FlexLayoutAlgorithm::SetReadingFlowNodes(
       reading_flow != EReadingFlow::kFlexFlow) {
     return;
   }
-  HeapVector<Member<blink::Node>> reading_flow_nodes;
-  reading_flow_nodes.ReserveInitialCapacity(flex_items_.size());
+  auto* reading_flow_nodes =
+      MakeGarbageCollected<GCedHeapVector<Member<blink::Node>>>();
+  reading_flow_nodes->ReserveInitialCapacity(flex_items_.size());
   // Add flex item if it is a DOM node
   auto add_item_if_needed = [&](const wtf_size_t item_index) {
     if (blink::Node* node = flex_items_[item_index].block_node.GetDOMNode()) {
-      reading_flow_nodes.push_back(node);
+      reading_flow_nodes->push_back(node);
     }
   };
   // Given CSS reading-flow, flex-flow, flex-direction; read values
@@ -654,7 +655,7 @@ void FlexLayoutAlgorithm::SetReadingFlowNodes(
       add_flex_items(line);
     }
   }
-  container_builder_.SetReadingFlowNodes(std::move(reading_flow_nodes));
+  container_builder_.SetReadingFlowNodes(reading_flow_nodes);
 }
 
 bool FlexLayoutAlgorithm::IsContainerCrossSizeDefinite() const {

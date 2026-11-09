@@ -420,7 +420,7 @@ PhysicalBoxFragment::PhysicalBoxFragment(
       inflow_bounds.has_value() + !!builder->Style().MayHaveMargin();
 
   if (rare_fields_size > 0 || !builder->table_column_geometries_.empty() ||
-      !builder->reading_flow_nodes_.empty() || builder->gap_geometry_) {
+      builder->reading_flow_nodes_ || builder->gap_geometry_) {
     rare_data_ = MakeGarbageCollected<PhysicalFragmentRareData>(
         has_scrollable_overflow ? &scrollable_overflow : nullptr, borders,
         scrollbar, padding, inflow_bounds, *builder, rare_fields_size);
@@ -1850,6 +1850,8 @@ void PhysicalBoxFragment::CheckSameForSimplifiedLayout(
   if (IsTableCell()) {
     DCHECK_EQ(TableCellColumnIndex(), other.TableCellColumnIndex());
   }
+
+  DCHECK_EQ(ReadingFlowNodes(), other.ReadingFlowNodes());
 
   DCHECK(Borders() == other.Borders());
   DCHECK(Padding() == other.Padding());

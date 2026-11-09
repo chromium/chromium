@@ -163,6 +163,8 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
     container_builder_.SetGapGeometry(gap_geometry);
   }
 
+  container_builder_.SetReadingFlowNodes(physical_fragment.ReadingFlowNodes());
+
   if (auto first_baseline = physical_fragment.FirstBaseline())
     container_builder_.SetFirstBaseline(*first_baseline);
   if (auto last_baseline = physical_fragment.LastBaseline())
