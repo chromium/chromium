@@ -1273,7 +1273,7 @@ public class StripLayoutHelperTest {
     /** Places the tab at {@code index} at {@code drawX}, marks it selected, and selects it. */
     private void selectTabAtDrawX(StripLayoutTab[] tabs, int index, float drawX) {
         when(tabs[index].getDrawX()).thenReturn(drawX);
-        when(tabs[index].getIsSelected()).thenReturn(true);
+        when(tabs[index].getIsActivated()).thenReturn(true);
         mStripLayoutHelper.tabSelected(TIMESTAMP, index, Tab.INVALID_TAB_ID);
     }
 
@@ -2325,7 +2325,7 @@ public class StripLayoutHelperTest {
 
         // Verify the closure-cancelled tab is selected.
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        assertTrue("Expected the closure-cancelled tab to be selected.", tabs[5].getIsSelected());
+        assertTrue("Expected the closure-cancelled tab to be activated.", tabs[5].getIsActivated());
     }
 
     @Test
@@ -4427,9 +4427,9 @@ public class StripLayoutHelperTest {
         // Disable the padding as changing the visible width change the existing expected fling
         // distance.
         mStripLayoutHelper.onSizeChanged(STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, 0, 0, 0);
-        // When updateLayout is called for the first time, bringSelectedTabToVisibleArea() method is
+        // When updateLayout is called for the first time, bringActiveTabToVisibleArea() method is
         // invoked. That also affects the scrollOffset value. So we call updateLayout before
-        // performing a fling so that bringSelectedTabToVisible area isn't called after the fling.
+        // performing a fling so that bringActiveTabToVisibleArea() isn't called after the fling.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         mStripLayoutHelper.setScrollOffsetForTesting(-150);
 
@@ -4464,9 +4464,9 @@ public class StripLayoutHelperTest {
         // Disable the padding as changing the visible width change the existing expected fling
         // distance.
         mStripLayoutHelper.onSizeChanged(STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, 0, 0, 0);
-        // When updateLayout is called for the first time, bringSelectedTabToVisibleArea() method is
+        // When updateLayout is called for the first time, bringActiveTabToVisibleArea() method is
         // invoked. That also affects the scrollOffset value. So we call updateLayout before
-        // performing a fling so that bringSelectedTabToVisible area isn't called after the fling.
+        // performing a fling so that bringActiveTabToVisibleArea() isn't called after the fling.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Set initial scroll offset.
@@ -4494,9 +4494,9 @@ public class StripLayoutHelperTest {
         // Arrange
         initializeTest(/* tabIndex= */ 13, /* numTabs= */ 14);
         resizeStrip(STRIP_WIDTH);
-        // When updateLayout is called for the first time, bringSelectedTabToVisibleArea() method is
+        // When updateLayout is called for the first time, bringActiveTabToVisibleArea() method is
         // invoked. That also affects the scrollOffset value. So we call updateLayout before
-        // performing a fling so that bringSelectedTabToVisible area isn't called after the fling.
+        // performing a fling so that bringActiveTabToVisibleArea() isn't called after the fling.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         mStripLayoutHelper.setScrollOffsetForTesting(-150);
 
@@ -5554,7 +5554,7 @@ public class StripLayoutHelperTest {
 
         // Assert: the 4th tab is selected.
         assertEquals(
-                "The tab selected is incorrect.", 3, mStripLayoutHelper.getSelectedStripTabIndex());
+                "The active tab is incorrect.", 3, mStripLayoutHelper.getActiveStripTabIndex());
 
         // Assert: the fourth view should be group title.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
@@ -5565,7 +5565,7 @@ public class StripLayoutHelperTest {
 
         // Assert: the previous tab is selected as there is no expanded tab towards the end.
         assertEquals(
-                "The tab selected is incorrect.", 2, mStripLayoutHelper.getSelectedStripTabIndex());
+                "The active tab is incorrect.", 2, mStripLayoutHelper.getActiveStripTabIndex());
     }
 
     @Test
@@ -5577,7 +5577,7 @@ public class StripLayoutHelperTest {
 
         // Assert: the 2nd tab is selected.
         assertEquals(
-                "The tab selected is incorrect.", 1, mStripLayoutHelper.getSelectedStripTabIndex());
+                "The active tab is incorrect.", 1, mStripLayoutHelper.getActiveStripTabIndex());
 
         // Assert: the first view should be group title.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
@@ -5588,7 +5588,7 @@ public class StripLayoutHelperTest {
 
         // Assert: the fourth tab is selected.
         assertEquals(
-                "The tab selected is incorrect.", 3, mStripLayoutHelper.getSelectedStripTabIndex());
+                "The active tab is incorrect.", 3, mStripLayoutHelper.getActiveStripTabIndex());
     }
 
     @Test
@@ -5600,7 +5600,7 @@ public class StripLayoutHelperTest {
 
         // Assert: the 4th tab is selected.
         assertEquals(
-                "The tab selected is incorrect.", 3, mStripLayoutHelper.getSelectedStripTabIndex());
+                "The active tab is incorrect.", 3, mStripLayoutHelper.getActiveStripTabIndex());
 
         // Assert: the fourth view should be group title.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
@@ -5611,7 +5611,7 @@ public class StripLayoutHelperTest {
 
         // Assert: the previous tab is selected as there is no expanded tab towards the end.
         assertEquals(
-                "The tab selected is incorrect.", 2, mStripLayoutHelper.getSelectedStripTabIndex());
+                "The active tab is incorrect.", 2, mStripLayoutHelper.getActiveStripTabIndex());
     }
 
     @Test
@@ -5623,7 +5623,7 @@ public class StripLayoutHelperTest {
 
         // Assert: the 4th tab is selected.
         assertEquals(
-                "The tab selected is incorrect.", 3, mStripLayoutHelper.getSelectedStripTabIndex());
+                "The active tab is incorrect.", 3, mStripLayoutHelper.getActiveStripTabIndex());
 
         // Assert: the first view should be group title.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();

@@ -492,8 +492,8 @@ public class StripLayoutUtils {
      * Get the x and y coordinates of the position of the hover card, in px.
      *
      * @param hoverCardView The {@link TabHoverCardView} being positioned.
-     * @param isSelectedTab Whether the tab is the selected tab, {@code true} if the hovered tab is
-     *     also the selected tab, {@code false} otherwise.
+     * @param isActiveTab Whether the tab is the active tab, {@code true} if the hovered tab is also
+     *     the active tab, {@code false} otherwise.
      * @param tabX The tab x-position to compute hover card positioning.
      * @param tabWidth The tab width to compute hover card positioning.
      * @param height The height of the strip stack, to determine the y position of the card.
@@ -504,7 +504,7 @@ public class StripLayoutUtils {
     @VisibleForTesting
     public static float[] getHoverCardPosition(
             TabHoverCardView hoverCardView,
-            boolean isSelectedTab,
+            boolean isActiveTab,
             float tabX,
             float tabWidth,
             float height,
@@ -525,7 +525,7 @@ public class StripLayoutUtils {
                 LocalizationUtils.isLayoutRtl() ? (tabX - (hoverCardWidthDp - tabWidth)) : tabX;
         // Adjust the inactive folio tab hover card to align with the tab container
         // edge.
-        if (!isSelectedTab) {
+        if (!isActiveTab) {
             hoverCardXDp +=
                     MathUtils.flipSignIf(
                             context.getResources()

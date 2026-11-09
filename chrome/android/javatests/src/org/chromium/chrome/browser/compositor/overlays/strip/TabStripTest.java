@@ -1412,13 +1412,13 @@ public class TabStripTest {
         if (ThreadUtils.runOnUiThreadBlocking(() -> TabModelUtils.getCurrentTab(model)) == tab
                 && mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected()
                         == incognito) {
-            int selectedTabIndex = ThreadUtils.runOnUiThreadBlocking(() -> model.indexOf(tab));
-            int selectedStripTabIndex =
-                    ThreadUtils.runOnUiThreadBlocking(() -> tabStrip.getSelectedStripTabIndex());
+            int activeTabIndex = ThreadUtils.runOnUiThreadBlocking(() -> model.indexOf(tab));
+            int activeStripTabIndex =
+                    ThreadUtils.runOnUiThreadBlocking(() -> tabStrip.getActiveStripTabIndex());
             Assert.assertEquals(
-                    "ChromeTab is not in the proper selection state",
-                    selectedTabIndex,
-                    selectedStripTabIndex);
+                    "ChromeTab is not in the proper activation state",
+                    activeTabIndex,
+                    activeStripTabIndex);
         }
 
         // TODO(dtrainor): Compare favicon bitmaps?  Only compare a few pixels.

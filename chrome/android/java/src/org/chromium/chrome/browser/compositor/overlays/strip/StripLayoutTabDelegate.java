@@ -43,8 +43,8 @@ public class StripLayoutTabDelegate {
         VisualState.HOVERED,
         VisualState.MULTISELECT,
         VisualState.MULTISELECT_HOVERED,
-        VisualState.SELECTED,
-        VisualState.SELECTED_HOVERED,
+        VisualState.ACTIVATED,
+        VisualState.ACTIVATED_HOVERED,
         VisualState.NON_DRAG_REORDERING
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -55,7 +55,7 @@ public class StripLayoutTabDelegate {
         /** A temporary state for a tab that is waiting for its data to be loaded on startup. */
         int PLACEHOLDER = 1;
 
-        /** The state when a pointer is hovering over an unselected tab. */
+        /** The state when a pointer is hovering over an inactive tab. */
         int HOVERED = 2;
 
         /** The state for a tab that is part of a multi-selection, but is not active or hovered. */
@@ -67,10 +67,10 @@ public class StripLayoutTabDelegate {
         int MULTISELECT_HOVERED = 4;
 
         /** The state for the currently active tab. */
-        int SELECTED = 5;
+        int ACTIVATED = 5;
 
         /** The state when a pointer is hovering over the currently active tab. */
-        int SELECTED_HOVERED = 6;
+        int ACTIVATED_HOVERED = 6;
 
         /** The state when the tab is reordering for a non-drag operation. */
         int NON_DRAG_REORDERING = 7;
@@ -108,7 +108,7 @@ public class StripLayoutTabDelegate {
             TintedCompositorButton newTabButton,
             boolean isFirstLayoutPass) {
         // A tab's close button is hidden if the tab is too narrow, or if it is partially obscured
-        // by the edge of the screen, unless it is also the selected tab.
+        // by the edge of the screen, unless it is also the activated tab.
         boolean isFullyVisible =
                 isFullyVisible(
                         tab,
@@ -123,11 +123,11 @@ public class StripLayoutTabDelegate {
         boolean canShow =
                 !tab.getIsPinned()
                         && (tab.getWidth() >= TAB_WIDTH_MEDIUM
-                                || (tab.getIsSelected() && isFullyVisible));
+                                || (tab.getIsActivated() && isFullyVisible));
 
-        // A dying tab that is not selected should not show its close button.
+        // A dying tab that is not activated should not show its close button.
         // TODO(crbug.com/419843587): Await UX direction for close button appearance
-        if (tab.isDying() && !tab.getIsSelected()) {
+        if (tab.isDying() && !tab.getIsActivated()) {
             canShow = false;
             tab.setCanShowCloseButton(canShow, false);
         } else {
@@ -137,13 +137,13 @@ public class StripLayoutTabDelegate {
     }
 
     /**
-     * Sets the selected state for this tab and updates its visual appearance instantly.
+     * Sets whether the tab is activated and updates its visual state.
      *
-     * @param tab The {@link StripLayoutTab} the to modify.
-     * @param isSelected Whether the tab is selected.
+     * @param tab The {@link StripLayoutTab} to modify.
+     * @param isActivated Whether the tab is activated.
      */
-    public void setIsTabSelected(StripLayoutTab tab, boolean isSelected) {
-        tab.setIsSelected(isSelected);
+    public void setIsTabActivated(StripLayoutTab tab, boolean isActivated) {
+        tab.setIsActivated(isActivated);
         updateTabVisualState(tab, false);
     }
 
@@ -282,12 +282,12 @@ public class StripLayoutTabDelegate {
         }
 
         // 2. Update the "folio" lifted effect.
-        // It should only apply to non-selected tabs.
-        if (!tab.getIsSelected()) {
+        // It should only apply to non-activated tabs.
+        if (!tab.getIsActivated()) {
             tab.setFolioAttached(/* folioAttached= */ false);
             tab.setBottomMargin(FOLIO_DETACHED_BOTTOM_MARGIN_DP);
         } else {
-            // Ensure selected tabs are "attached".
+            // Ensure activated tabs are "attached".
             tab.setFolioAttached(/* folioAttached= */ true);
             tab.setBottomMargin(FOLIO_ATTACHED_BOTTOM_MARGIN_DP);
         }
@@ -339,14 +339,14 @@ public class StripLayoutTabDelegate {
     }
 
     /**
-     * Determines the visual state of a tab based on several properties (e.g. selected, hovered,
+     * Determines the visual state of a tab based on several properties (e.g. activated, hovered,
      * multi-selected, placeholder, non-drag-reordering, etc.).
      */
     private static @VisualState int calculateVisualState(StripLayoutTab tab) {
-        if (tab.getIsSelected() && tab.getIsHovered()) {
-            return VisualState.SELECTED_HOVERED;
-        } else if (tab.getIsSelected()) {
-            return VisualState.SELECTED;
+        if (tab.getIsActivated() && tab.getIsHovered()) {
+            return VisualState.ACTIVATED_HOVERED;
+        } else if (tab.getIsActivated()) {
+            return VisualState.ACTIVATED;
         } else if (tab.getIsNonDragReordering()) {
             return VisualState.NON_DRAG_REORDERING;
         } else if (tab.getIsMultiSelected() && tab.getIsHovered()) {

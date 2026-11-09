@@ -201,7 +201,7 @@ public class StripLayoutTab extends StripLayoutView {
     private final Size mCloseButtonSize;
     private TintedCompositorButton mCloseButton;
 
-    private boolean mIsSelected;
+    private boolean mIsActivated;
     private boolean mIsPinned;
     private boolean mIsHovered;
     private boolean mIsMultiSelected;
@@ -319,17 +319,17 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     /**
-     * Sets the selected state for this tab.
+     * Sets the activated state for this tab.
      *
-     * @param isSelected Whether the tab is selected.
+     * @param isActivated Whether the tab is activated.
      */
-    public void setIsSelected(boolean isSelected) {
-        mIsSelected = isSelected;
+    public void setIsActivated(boolean isActivated) {
+        mIsActivated = isActivated;
     }
 
-    /** Gets the selected state for this tab. */
-    public boolean getIsSelected() {
-        return mIsSelected;
+    /** Gets the activated state for this tab. */
+    public boolean getIsActivated() {
+        return mIsActivated;
     }
 
     /**
@@ -552,7 +552,7 @@ public class StripLayoutTab extends StripLayoutView {
     public void getVirtualViews(List<VirtualView> views) {
         if (isCollapsed() || isDying()) return;
         super.getVirtualViews(views);
-        if (mShowingCloseButton || mIsSelected) mCloseButton.getVirtualViews(views);
+        if (mShowingCloseButton || mIsActivated) mCloseButton.getVirtualViews(views);
     }
 
     @Override
@@ -677,9 +677,9 @@ public class StripLayoutTab extends StripLayoutView {
      */
     public @ColorInt int getTint() {
         switch (mVisualState) {
-            case VisualState.SELECTED_HOVERED:
+            case VisualState.ACTIVATED_HOVERED:
                 return TabUiThemeUtil.getTabStripSelectedTabColor(mContext, isIncognito());
-            case VisualState.SELECTED:
+            case VisualState.ACTIVATED:
                 return TabUiThemeUtil.getTabStripSelectedTabColor(mContext, isIncognito());
             case VisualState.NON_DRAG_REORDERING:
                 return TabUiThemeUtil.getTabStripBackgroundColor(mContext, isIncognito());
@@ -787,7 +787,7 @@ public class StripLayoutTab extends StripLayoutView {
 
     /** Returns {@code true} if the tab should be visible. */
     public boolean shouldBeVisible() {
-        return mIsSelected || mIsPlaceholder || mIsMultiSelected || getIsNonDragReordering();
+        return mIsActivated || mIsPlaceholder || mIsMultiSelected || getIsNonDragReordering();
     }
 
     /**
@@ -1095,7 +1095,7 @@ public class StripLayoutTab extends StripLayoutView {
         if (mButtonOpacityAnimator != null) mButtonOpacityAnimator.end();
     }
 
-    // TODO(dtrainor): Don't animate this if we're selecting or deselecting this tab.
+    // TODO(dtrainor): Don't animate this if we're activating or deactivating this tab.
     private void checkCloseButtonVisibility(boolean animate) {
         boolean shouldShow = mCanShowCloseButton && !mIsPlaceholder;
 

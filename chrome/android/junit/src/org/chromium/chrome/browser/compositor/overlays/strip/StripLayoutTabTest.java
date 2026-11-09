@@ -62,7 +62,7 @@ public class StripLayoutTabTest {
         @ColorInt int expectedColor;
 
         // Normal active tab color.
-        mNormalTab.setVisualState(VisualState.SELECTED);
+        mNormalTab.setVisualState(VisualState.ACTIVATED);
         expectedColor = ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ false);
         assertEquals(
                 "Normal active folio should match the Surface-0 color.",
@@ -90,7 +90,7 @@ public class StripLayoutTabTest {
                 expectedColor, mNormalTab.getTint());
 
         // Incognito active tab color.
-        mIncognitoTab.setVisualState(VisualState.SELECTED);
+        mIncognitoTab.setVisualState(VisualState.ACTIVATED);
         expectedColor = mContext.getColor(R.color.toolbar_background_primary_dark);
         assertEquals(
                 "Incognito active folio should match the baseline color.",
@@ -127,7 +127,7 @@ public class StripLayoutTabTest {
         mIncognitoTab.setIsPlaceholder(true);
 
         // Normal active tab color.
-        mNormalTab.setVisualState(VisualState.SELECTED);
+        mNormalTab.setVisualState(VisualState.ACTIVATED);
         expectedColor = ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ false);
         assertEquals(
                 "Normal active should match the regular foreground color.",
@@ -143,7 +143,7 @@ public class StripLayoutTabTest {
                 mNormalTab.getTint());
 
         // Incognito active tab color.
-        mIncognitoTab.setVisualState(VisualState.SELECTED);
+        mIncognitoTab.setVisualState(VisualState.ACTIVATED);
         expectedColor = ChromeColors.getDefaultThemeColor(mContext, true);
         assertEquals(
                 "Incognito active should match the regular foreground color.",
@@ -414,5 +414,19 @@ public class StripLayoutTabTest {
                 20f,
                 desktopTab.getCloseButton().getWidth(),
                 0.0001f);
+    }
+
+    @Test
+    public void testIsActivated() {
+        assertFalse(mNormalTab.getIsActivated());
+        assertFalse(mNormalTab.shouldBeVisible());
+
+        mNormalTab.setIsActivated(true);
+        assertTrue(mNormalTab.getIsActivated());
+        assertTrue(mNormalTab.shouldBeVisible());
+
+        mNormalTab.setIsActivated(false);
+        assertFalse(mNormalTab.getIsActivated());
+        assertFalse(mNormalTab.shouldBeVisible());
     }
 }

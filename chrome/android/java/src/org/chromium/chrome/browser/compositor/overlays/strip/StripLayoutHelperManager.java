@@ -978,13 +978,13 @@ public class StripLayoutHelperManager
     private void pushAndUpdateStrip(float yOffsetDp, float visibleHeightDp) {
         if (mResourceManager == null) return;
 
-        Tab selectedTab =
+        Tab activeTab =
                 mTabModelSelector == null
                         ? null
                         : mTabModelSelector
                                 .getCurrentModel()
                                 .getTabAt(mTabModelSelector.getCurrentModel().index());
-        int selectedTabId = selectedTab == null ? TabModel.INVALID_TAB_INDEX : selectedTab.getId();
+        int activeTabId = activeTab == null ? TabModel.INVALID_TAB_INDEX : activeTab.getId();
 
         // When tab strip is hiding, animation will trigger the toolbar moving up and tab strip
         // fade-out in place. We use the visible height to decide the transition progress then
@@ -1005,7 +1005,7 @@ public class StripLayoutHelperManager
                 getActiveStripLayoutHelper().getStripLayoutTabsToRender(),
                 getActiveStripLayoutHelper().getStripLayoutGroupTitlesToRender(),
                 yOffsetDp,
-                selectedTabId,
+                activeTabId,
                 getStripTransitionScrimColor(),
                 mStripTransitionScrimOpacity,
                 getActiveStripLayoutHelper().getLeftPaddingToDraw(),
