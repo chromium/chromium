@@ -8,7 +8,6 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import {browserProxyFactory as userEducationProxyFactory} from '//resources/mojo/components/user_education/webui/user_education.mojom-webui.js';
 
 import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
 import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
@@ -177,11 +176,6 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
 
   close() {
     this.$.menu.close();
-    if (this.lineFocusEnabled) {
-      this.proxy = userEducationProxyFactory;
-      userEducationProxyFactory.getInstance().handler.notifyNewBadgeFeatureUsed(
-          LINE_FOCUS_FEATURE_NAME);
-    }
   }
 
 }

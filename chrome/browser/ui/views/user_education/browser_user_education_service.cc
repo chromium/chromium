@@ -2997,12 +2997,6 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
           "Show the new badge on Send to your device context menu items.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kReadAnythingLineFocus,
-      user_education::Metadata(
-          153, "kristislee@google.com",
-          "Shown on the Line Focus menu item in Reading Mode settings menu.")));
-
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
       dictation::kDictation,
       user_education::Metadata(153, "amyasinghal@google.com",
                                "Shown on the Dictation context menu item.")));

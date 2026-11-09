@@ -4,14 +4,13 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {KEYBOARD_NAV_CLASS, LINE_FOCUS_FEATURE_NAME, MENU_SHOW_DELAY_MS, SUBMENU_SHOW_DELAY_MS, userEducationProxyFactory} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {KEYBOARD_NAV_CLASS, MENU_SHOW_DELAY_MS, SUBMENU_SHOW_DELAY_MS} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {ReadAnythingSettingsAction, SettingsOption, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
-import {TestUserEducationMixedTrustHandler} from 'chrome-untrusted://webui-test/test_user_education_mixed_trust_handler.js';
 import {eventToPromise, microtasksFinished, whenAttributeIs} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {setupTestEnvironment} from './common.js';
@@ -23,7 +22,6 @@ suite('SettingsMenuElement', () => {
   let settingsMenu: SettingsMenuElement;
   let contentBrowserProxy: TestContentBrowserProxy;
   let metrics: TestMetricsBrowserProxy;
-  let userEducationHandler: TestUserEducationMixedTrustHandler;
   let visualBrowserProxy: TestVisualBrowserProxy;
 
   function queryLinksToggle(): HTMLButtonElement|null {
@@ -53,8 +51,6 @@ suite('SettingsMenuElement', () => {
     contentBrowserProxy = result.contentBrowserProxy;
     metrics = result.metrics;
     visualBrowserProxy = result.visualBrowserProxy;
-    userEducationHandler = new TestUserEducationMixedTrustHandler();
-    userEducationProxyFactory.setInstance({handler: userEducationHandler});
     await createSettingsMenu();
   });
 
@@ -784,52 +780,4 @@ suite('SettingsMenuElement', () => {
 
         loadTimeData.overrideValues({canShowFeedback: true});
       });
-
-  test(
-      'line focus item shows new badge when showLineFocusNewBadge is true',
-      async () => {
-        settingsMenu.showLineFocusNewBadge = true;
-        await microtasksFinished();
-
-        const actionMenu = settingsMenu.$.lazyMenu.get();
-        const lineFocusItem = actionMenu.querySelector<HTMLButtonElement>(
-            `#${SettingsOption.LINE_FOCUS}`);
-        assertTrue(!!lineFocusItem);
-
-        const badge = lineFocusItem.querySelector('new-badge');
-        assertTrue(!!badge);
-      });
-
-  test(
-      'line focus item hides new badge when showLineFocusNewBadge is false',
-      async () => {
-        settingsMenu.showLineFocusNewBadge = false;
-        await microtasksFinished();
-
-        const actionMenu = settingsMenu.$.lazyMenu.get();
-        const lineFocusItem = actionMenu.querySelector<HTMLButtonElement>(
-            `#${SettingsOption.LINE_FOCUS}`);
-        assertTrue(!!lineFocusItem);
-
-        const badge = lineFocusItem.querySelector('new-badge');
-        assertFalse(!!badge);
-      });
-
-  test('requests line focus new badge on open', async () => {
-    settingsMenu.close();
-    await microtasksFinished();
-    userEducationHandler.setNewBadgeResponse(LINE_FOCUS_FEATURE_NAME, true);
-    // Since setup creates a menu, clear out the number of requests.
-    userEducationHandler.reset();
-    const anchor = document.createElement('div');
-    document.body.appendChild(anchor);
-    assertEquals(0, userEducationHandler.getCallCount('maybeShowNewBadgeFor'));
-    settingsMenu.open(anchor);
-    await microtasksFinished();
-    assertEquals(1, userEducationHandler.getCallCount('maybeShowNewBadgeFor'));
-    assertDeepEquals(
-        [LINE_FOCUS_FEATURE_NAME],
-        userEducationHandler.getArgs('maybeShowNewBadgeFor'));
-    assertTrue(settingsMenu.showLineFocusNewBadge);
-  });
 });

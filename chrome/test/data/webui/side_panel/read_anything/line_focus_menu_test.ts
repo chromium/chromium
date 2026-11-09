@@ -5,23 +5,18 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {LineFocusMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {LINE_FOCUS_FEATURE_NAME, LineFocusMovement, LineFocusStyle, ToolbarEvent, userEducationProxyFactory} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {LineFocusMovement, LineFocusStyle, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {TestUserEducationMixedTrustHandler} from 'chrome-untrusted://webui-test/test_user_education_mixed_trust_handler.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {setupTestEnvironment, stubAnimationFrame} from './common.js';
 
 suite('LineFocusMenuElement', () => {
   let lineFocusMenu: LineFocusMenuElement;
-  let userEducationHandler: TestUserEducationMixedTrustHandler;
 
   setup(() => {
     setupTestEnvironment();
-    userEducationHandler = new TestUserEducationMixedTrustHandler();
-    userEducationProxyFactory.setInstance({handler: userEducationHandler});
-
     lineFocusMenu = document.createElement('line-focus-menu');
     document.body.appendChild(lineFocusMenu);
   });
@@ -41,22 +36,6 @@ suite('LineFocusMenuElement', () => {
     assertEquals(
         `${expectedLabel} (${expectedShortcut})`,
         group.getAttribute('aria-label'));
-  });
-
-  test('notifies of feature use if enabled on close', async () => {
-    lineFocusMenu.close();
-    assertEquals(
-        0, userEducationHandler.getCallCount('notifyNewBadgeFeatureUsed'));
-
-    lineFocusMenu.lineFocusEnabled = true;
-    await microtasksFinished();
-    lineFocusMenu.close();
-    assertEquals(userEducationProxyFactory, lineFocusMenu.proxy);
-    assertEquals(
-        1, userEducationHandler.getCallCount('notifyNewBadgeFeatureUsed'));
-    assertDeepEquals(
-        [LINE_FOCUS_FEATURE_NAME],
-        userEducationHandler.getArgs('notifyNewBadgeFeatureUsed'));
   });
 
   test('line focus style prop update changes selected items', async () => {
