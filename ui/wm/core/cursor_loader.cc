@@ -16,7 +16,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
-#include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/display/display.h"
@@ -67,20 +66,12 @@ bool CursorLoader::SetDisplay(const display::Display& display) {
   return true;
 }
 
-void CursorLoader::SetSize(ui::CursorSize size) {
-  if (size_ == size)
-    return;
-
-  size_ = size;
-  UnloadCursors();
-}
-
-void CursorLoader::SetLargeCursorSizeInDip(int large_cursor_size_in_dip) {
-  if (large_cursor_size_in_dip_ == large_cursor_size_in_dip) {
+void CursorLoader::SetCustomCursorSize(std::optional<int> custom_cursor_size) {
+  if (custom_cursor_size_ == custom_cursor_size) {
     return;
   }
 
-  large_cursor_size_in_dip_ = large_cursor_size_in_dip;
+  custom_cursor_size_ = custom_cursor_size;
   UnloadCursors();
 }
 
@@ -118,7 +109,7 @@ std::optional<ui::CursorData> CursorLoader::GetCursorData(
     auto cursor_data =
         ui::CursorData({cursor.custom_bitmap()}, cursor.custom_hotspot(),
                        cursor.image_scale_factor());
-    ApplyColorAndLargeSize(cursor_data);
+    ApplyColorAndSize(cursor_data);
     return cursor_data;
   }
 
@@ -129,21 +120,15 @@ std::optional<ui::CursorData> CursorLoader::GetCursorData(
       // `CursorFactory::GetCursorData`, or relying on having called
       // `CursorFactory::SetDeviceScaleFactor`, instead of setting it here.
       cursor_data->scale_factor = scale_;
-      ApplyColorAndLargeSize(cursor_data.value());
+      ApplyColorAndSize(cursor_data.value());
       return cursor_data;
     }
   }
 
-  const int large_cursor_size_in_px =
-      ConvertDipToPixel(large_cursor_size_in_dip_, scale_);
-
   // TODO(crbug.com/40175364): use the actual `rotation_` if that makes
   // sense for the current use cases of `GetCursorData` (e.g. Chrome Remote
   // Desktop, WebRTC and VideoRecordingWatcher).
-  return wm::GetCursorData(type, scale_,
-                           size_ == ui::CursorSize::kLarge
-                               ? std::make_optional(large_cursor_size_in_px)
-                               : std::nullopt,
+  return wm::GetCursorData(type, scale_, GetCustomCursorSizeInPixels(),
                            display::Display::ROTATE_0, color_);
 }
 
@@ -151,22 +136,20 @@ void CursorLoader::UnloadCursors() {
   image_cursors_.clear();
 }
 
-void CursorLoader::ApplyColorAndLargeSize(
-    ui::CursorData& data_in_and_out) const {
+void CursorLoader::ApplyColorAndSize(ui::CursorData& data_in_and_out) const {
   if (color_ != ui::kDefaultCursorColor) {
     std::for_each(data_in_and_out.bitmaps.begin(),
                   data_in_and_out.bitmaps.end(), [&](SkBitmap& bitmap) {
                     bitmap = wm::GetColorAdjustedBitmap(bitmap, color_);
                   });
   }
-  if (size_ == ui::CursorSize::kLarge) {
-    const int large_cursor_size_in_px =
-        ConvertDipToPixel(large_cursor_size_in_dip_, scale_);
-    const gfx::Size cursor_size_in_px =
+  if (const std::optional<int> custom_cursor_size_in_px =
+          GetCustomCursorSizeInPixels()) {
+    const gfx::Size bitmap_size_in_px =
         gfx::SkISizeToSize(data_in_and_out.bitmaps[0].dimensions());
-    if (large_cursor_size_in_px != cursor_size_in_px.height()) {
-      const float rescale = static_cast<float>(large_cursor_size_in_px) /
-                            static_cast<float>(cursor_size_in_px.height());
+    if (*custom_cursor_size_in_px != bitmap_size_in_px.height()) {
+      const float rescale = static_cast<float>(*custom_cursor_size_in_px) /
+                            static_cast<float>(bitmap_size_in_px.height());
       std::for_each(data_in_and_out.bitmaps.begin(),
                     data_in_and_out.bitmaps.end(), [&](SkBitmap& bitmap) {
                       wm::ScaleAndRotateCursorBitmapAndHotpoint(
@@ -176,6 +159,13 @@ void CursorLoader::ApplyColorAndLargeSize(
       data_in_and_out.scale_factor *= rescale;
     }
   }
+}
+
+std::optional<int> CursorLoader::GetCustomCursorSizeInPixels() const {
+  if (!custom_cursor_size_) {
+    return std::nullopt;
+  }
+  return ConvertDipToPixel(*custom_cursor_size_, scale_);
 }
 
 scoped_refptr<ui::PlatformCursor> CursorLoader::CursorFromType(
@@ -212,11 +202,7 @@ scoped_refptr<ui::PlatformCursor> CursorLoader::CursorFromType(
 scoped_refptr<ui::PlatformCursor> CursorLoader::LoadCursorFromAsset(
     CursorType type) {
   std::optional<ui::CursorData> cursor_data = wm::GetCursorData(
-      type, scale_,
-      size_ == ui::CursorSize::kLarge ? std::make_optional(ConvertDipToPixel(
-                                            large_cursor_size_in_dip_, scale_))
-                                      : std::nullopt,
-      rotation_, color_);
+      type, scale_, GetCustomCursorSizeInPixels(), rotation_, color_);
   if (!cursor_data) {
     return nullptr;
   }

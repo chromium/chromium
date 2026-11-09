@@ -13,7 +13,6 @@
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
-#include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/display/display.h"
@@ -47,11 +46,12 @@ TEST(CursorLoaderTest, GetCursorDataForDefaultCursors) {
     SCOPED_TRACE(testing::Message() << "scale " << scale);
     display.set_device_scale_factor(scale);
     cursor_loader.SetDisplay(display);
-    for (const ui::CursorSize cursor_size :
-         {ui::CursorSize::kNormal, ui::CursorSize::kLarge}) {
+    for (const std::optional<int> custom_cursor_size :
+         {std::optional<int>(),
+          std::make_optional(ui::kDefaultLargeCursorSize)}) {
       SCOPED_TRACE(testing::Message()
-                   << "size " << static_cast<int>(cursor_size));
-      cursor_loader.SetSize(cursor_size);
+                   << "size " << custom_cursor_size.value_or(0));
+      cursor_loader.SetCustomCursorSize(custom_cursor_size);
 
       const ui::Cursor invisible_cursor = CursorType::kNone;
       std::optional<ui::CursorData> cursor_loader_data =
@@ -71,13 +71,10 @@ TEST(CursorLoaderTest, GetCursorDataForDefaultCursors) {
           cursor_loader_data = cursor_loader.GetCursorData(cursor);
           ASSERT_TRUE(cursor_loader_data);
 
-          // `cursor_loader.large_cursor_size_in_dip()` only takes into effect
-          // when cursor size is large.
-          auto target_cursor_size_in_px =
-              cursor_size == ui::CursorSize::kNormal
-                  ? std::nullopt
-                  : std::make_optional(
-                        cursor_loader.large_cursor_size_in_dip() * scale);
+          const std::optional<int> target_cursor_size_in_px =
+              custom_cursor_size ? std::make_optional(static_cast<int>(
+                                       *custom_cursor_size * scale))
+                                 : std::nullopt;
           const auto cursor_data =
               GetCursorData(cursor.type(), scale, target_cursor_size_in_px,
                             display.panel_rotation(), cursor_color);
@@ -98,19 +95,18 @@ TEST(CursorLoaderTest, GetCursorDataForDefaultCursors) {
 TEST(CursorLoaderTest, GetCursorDataForCustomCursors) {
   CursorLoader cursor_loader(/*use_platform_cursors=*/false);
 
-  static constexpr int large_cursor_size_in_dip = 50;
-  cursor_loader.SetLargeCursorSizeInDip(large_cursor_size_in_dip);
+  static constexpr int kCustomCursorSize = 50;
   display::Display display = display::Display::GetDefaultDisplay();
 
   for (const float scale : {0.8f, 1.0f, 1.25f, 1.5f, 2.0f, 3.0f}) {
     SCOPED_TRACE(testing::Message() << "scale " << scale);
     display.set_device_scale_factor(scale);
     cursor_loader.SetDisplay(display);
-    for (const ui::CursorSize cursor_size :
-         {ui::CursorSize::kNormal, ui::CursorSize::kLarge}) {
+    for (const std::optional<int> custom_cursor_size :
+         {std::optional<int>(), std::make_optional(kCustomCursorSize)}) {
       SCOPED_TRACE(testing::Message()
-                   << "size " << static_cast<int>(cursor_size));
-      cursor_loader.SetSize(cursor_size);
+                   << "size " << custom_cursor_size.value_or(0));
+      cursor_loader.SetCustomCursorSize(custom_cursor_size);
 
       // Custom cursor.
       const SkBitmap custom_bitmap = gfx::test::CreateBitmap(50, 50);
@@ -120,12 +116,11 @@ TEST(CursorLoaderTest, GetCursorDataForCustomCursors) {
           ui::Cursor::NewCustom(custom_bitmap, custom_hotspot, custom_scale);
 
       // The bitmap pixels of a custom cursor will only update if
-      // (1) the cursor size is large cursor and needs to be scaled,
+      // (1) the custom cursor size is set and needs to be scaled,
       // (2) the cursor color is changed to a non-default value.
-      if (cursor_size == ui::CursorSize::kNormal ||
-          (cursor_size == ui::CursorSize::kLarge &&
-           static_cast<int>(large_cursor_size_in_dip * scale) ==
-               custom_bitmap.dimensions().height())) {
+      if (!custom_cursor_size ||
+          static_cast<int>(*custom_cursor_size * scale) ==
+              custom_bitmap.dimensions().height()) {
         // Cursor doesn't need to be scaled.
         cursor_loader.SetColor(ui::kDefaultCursorColor);
         std::optional<ui::CursorData> cursor_data =
@@ -151,11 +146,11 @@ TEST(CursorLoaderTest, GetCursorDataForCustomCursors) {
             cursor_loader.GetCursorData(custom_cursor);
         ASSERT_TRUE(cursor_data);
 
-        int large_cursor_size_in_px = large_cursor_size_in_dip * scale;
-        float rescale = static_cast<float>(large_cursor_size_in_px) /
+        int custom_cursor_size_in_px = *custom_cursor_size * scale;
+        float rescale = static_cast<float>(custom_cursor_size_in_px) /
                         static_cast<float>(custom_bitmap.dimensions().height());
         EXPECT_EQ(cursor_data->bitmaps[0].dimensions().height(),
-                  large_cursor_size_in_px);
+                  custom_cursor_size_in_px);
         EXPECT_EQ(cursor_data->hotspot,
                   gfx::ScaleToFlooredPoint(custom_hotspot, rescale));
       }

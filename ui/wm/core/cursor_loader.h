@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
-#include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 #include "ui/display/display.h"
 
@@ -43,18 +43,10 @@ class COMPONENT_EXPORT(UI_WM) CursorLoader
   // Returns true if the cursor needs to be reset.
   bool SetDisplay(const display::Display& display);
 
-  // Sets the size of the mouse cursor icon.
-  void SetSize(ui::CursorSize size);
-
-  // Returns the size of the currently loaded cursor.
-  ui::CursorSize size() const { return size_; }
-
-  // Sets the large cursor size in dip. Only used when
-  // `size` is `ui::CursorSize::kLarge`.
-  void SetLargeCursorSizeInDip(int large_cursor_size_in_dip);
-
-  // Returns the large cursor size in dip.
-  int large_cursor_size_in_dip() const { return large_cursor_size_in_dip_; }
+  // Sets the size of the mouse cursor icon in dip. Cursors are scaled
+  // uniformly so that their height matches the size. If `std::nullopt`, the
+  // default size of the cursor assets is used.
+  void SetCustomCursorSize(std::optional<int> custom_cursor_size);
 
   // Sets the color of the cursor.
   void SetColor(SkColor color);
@@ -69,7 +61,9 @@ class COMPONENT_EXPORT(UI_WM) CursorLoader
  private:
   // Resets the cursor cache.
   void UnloadCursors();
-  void ApplyColorAndLargeSize(ui::CursorData& data_in_and_out) const;
+  void ApplyColorAndSize(ui::CursorData& data_in_and_out) const;
+  // Returns `custom_cursor_size_` in pixels, if any.
+  std::optional<int> GetCustomCursorSizeInPixels() const;
   scoped_refptr<ui::PlatformCursor> CursorFromType(ui::mojom::CursorType type);
   scoped_refptr<ui::PlatformCursor> LoadCursorFromAsset(
       ui::mojom::CursorType type);
@@ -90,11 +84,9 @@ class COMPONENT_EXPORT(UI_WM) CursorLoader
   // The current rotation of the mouse cursor icon.
   display::Display::Rotation rotation_ = display::Display::ROTATE_0;
 
-  // The preferred size of the mouse cursor icon.
-  ui::CursorSize size_ = ui::CursorSize::kNormal;
-
-  // The target cursor size in dip for large cursor.
-  int large_cursor_size_in_dip_ = ui::kDefaultLargeCursorSize;
+  // The size of the mouse cursor icon in dip. If `std::nullopt`, the default
+  // size of the cursor assets is used.
+  std::optional<int> custom_cursor_size_;
 
   // The current color set to the mouse cursor icon.
   SkColor color_ = ui::kDefaultCursorColor;

@@ -7,6 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/cursor_size.h"
 #include "ui/display/display.h"
 #include "ui/wm/core/cursor_loader.h"
 #include "ui/wm/core/native_cursor_manager.h"
@@ -56,10 +58,17 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
  private:
   friend class CursorManagerTestApi;
 
+  // Updates the custom cursor size of `cursor_loader_` based on
+  // `cursor_size_` and `large_cursor_size_in_dip_`.
+  void UpdateCursorLoaderSize();
+
   // The cursor location where the cursor was disabled.
   gfx::Point disabled_cursor_location_;
 
   bool native_cursor_enabled_;
+
+  ui::CursorSize cursor_size_ = ui::CursorSize::kNormal;
+  int large_cursor_size_in_dip_ = ui::kDefaultLargeCursorSize;
 
   wm::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
 };

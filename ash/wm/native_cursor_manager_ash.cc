@@ -4,6 +4,8 @@
 
 #include "ash/wm/native_cursor_manager_ash.h"
 
+#include <optional>
+
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
@@ -111,7 +113,8 @@ void NativeCursorManagerAsh::SetCursor(
 void NativeCursorManagerAsh::SetCursorSize(
     ui::CursorSize cursor_size,
     ::wm::NativeCursorManagerDelegate* delegate) {
-  cursor_loader_.SetSize(cursor_size);
+  cursor_size_ = cursor_size;
+  UpdateCursorLoaderSize();
   delegate->CommitCursorSize(cursor_size);
 
   // Sets the cursor to reflect the scale change immediately.
@@ -127,7 +130,8 @@ void NativeCursorManagerAsh::SetCursorSize(
 void NativeCursorManagerAsh::SetLargeCursorSizeInDip(
     int large_cursor_size_in_dip,
     ::wm::NativeCursorManagerDelegate* delegate) {
-  cursor_loader_.SetLargeCursorSizeInDip(large_cursor_size_in_dip);
+  large_cursor_size_in_dip_ = large_cursor_size_in_dip;
+  UpdateCursorLoaderSize();
   delegate->CommitLargeCursorSizeInDip(large_cursor_size_in_dip);
 
   // Sets the cursor to reflect the large cursor size change immediately.
@@ -185,6 +189,13 @@ void NativeCursorManagerAsh::SetCursorColor(
       ->window_tree_host_manager()
       ->cursor_window_controller()
       ->SetCursorColor(color);
+}
+
+void NativeCursorManagerAsh::UpdateCursorLoaderSize() {
+  cursor_loader_.SetCustomCursorSize(
+      cursor_size_ == ui::CursorSize::kLarge
+          ? std::make_optional(large_cursor_size_in_dip_)
+          : std::nullopt);
 }
 
 }  // namespace ash
