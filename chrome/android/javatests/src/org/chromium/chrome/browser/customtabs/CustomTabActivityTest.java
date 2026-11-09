@@ -200,6 +200,7 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.PrefetchTestUtil;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.net.NetError;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.AcceleratorManager;
@@ -1698,13 +1699,11 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/572881868")
     public void testParallelRequest() throws Exception {
-        String url = mTestServer.getURL("/echoheader?Cookie");
         Uri requestUri = Uri.parse(mTestServer.getURL("/set-cookie?acookie"));
 
         final Context context = ApplicationProvider.getApplicationContext();
-        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
         final var token =
                 SessionHolder.of(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
 
@@ -1721,16 +1720,22 @@ public class CustomTabActivityTest {
                             CustomTabsService.RELATION_USE_AS_ORIGIN);
                 });
 
+        // The detached parallel request runs concurrently with the main-frame navigation, so wait
+        // for the detached request to finish before reading the cookie jar via document.cookie.
+        HistogramWatcher finalStatusWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.DetachedResourceRequest.FinalStatus", NetError.OK);
         intent.putExtra(CustomTabsConnection.PARALLEL_REQUEST_URL_KEY, requestUri);
         intent.putExtra(
                 CustomTabsConnection.PARALLEL_REQUEST_REFERRER_KEY, Uri.parse(origin.toString()));
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        finalStatusWatcher.pollInstrumentationThreadUntilSatisfied();
 
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
-        String content =
+        String cookie =
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        tab.getWebContents(), "document.body.textContent");
-        assertEquals("\"acookie\"", content);
+                        tab.getWebContents(), "document.cookie");
+        assertEquals("\"acookie\"", cookie);
     }
 
     /**
