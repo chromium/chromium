@@ -24,7 +24,9 @@ struct BitSet32 {
 
   // Gets the value associated with a particular bit index.
   static inline uint32_t value_for_bit(uint32_t n) {
-    CHECK_LE(n, 31U, base::NotFatalUntil::M163);
+    // TODO(crbug.com/583256381): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_LE(n, 31U);
     return 0x80000000 >> n;
   }
 
