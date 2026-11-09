@@ -724,12 +724,13 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
     // If we are applying a mask, first we need to exit the backdrop contents so
     // that we apply the mask to both the contents and the filtered backdrop,
     // not just the contents.
-    if (state_stack_.size() && effect.BlendMode() == SkBlendMode::kDstIn &&
-        MostRecentEffectIsChildOfBackdropFilter()) {
-      if (auto action = EndClips()) {
-        return action;
+    if (effect.BlendMode() == SkBlendMode::kDstIn) {
+      while (state_stack_.size() && MostRecentEffectIsChildOfBackdropFilter()) {
+        if (auto action = EndClips()) {
+          return action;
+        }
+        EndEffect();
       }
-      EndEffect();
     }
 
     if (auto action = SwitchToClip(effect.OutputClip()->Unalias())) {
@@ -776,13 +777,6 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
         flags.setBlendMode(effect.BlendMode());
       }
       save_layer_id = EmitBackdropFilter(effect, flags);
-      if (has_other_effects) {
-        // Skia does not apply the backdrop filter when a blend mode is also
-        // present in the flags, so save another layer for the blend.
-        cc::PaintFlags blend_flags;
-        blend_flags.setBlendMode(effect.BlendMode());
-        save_layer_id = push<cc::SaveLayerOp>(blend_flags);
-      }
     } else if (has_other_effects || has_mask) {
       cc::PaintFlags flags;
       flags.setBlendMode(effect.BlendMode());
@@ -836,14 +830,27 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
     result_.EndPaintOfUnpaired(
         chunk_to_layer_mapper_.MapVisualRect(filtered_bounds));
 
+    if (has_other_effects) {
+      // Skia does not apply the backdrop filter when a blend mode is also
+      // present in the flags, so save another layer for the blend.
+      PushState(StateEntry::kEffectContents);
+      result_.StartPaint();
+      cc::PaintFlags blend_flags;
+      blend_flags.setBlendMode(effect.BlendMode());
+      size_t blend_save_layer_id = push<cc::SaveLayerOp>(blend_flags);
+      result_.EndPaintOfPairedBegin();
+      effect_bounds_stack_.emplace_back(
+          EffectBoundsInfo{blend_save_layer_id, current_transform_});
+    }
+
     // We need to start a new saveLayer here, so that our filtered backdrop
     // isn't visible to nested mix-blend-mode or backdrop-filter.
     PushState(StateEntry::kEffectContents);
-    effect_bounds_stack_.emplace_back(
-        EffectBoundsInfo{save_layer_id, current_transform_});
     result_.StartPaint();
-    save_layer_id = push<cc::SaveLayerAlphaOp>(1.f);
+    size_t contents_save_layer_id = push<cc::SaveLayerAlphaOp>(1.f);
     result_.EndPaintOfPairedBegin();
+    effect_bounds_stack_.emplace_back(
+        EffectBoundsInfo{contents_save_layer_id, current_transform_});
   }
   return {};
 }
