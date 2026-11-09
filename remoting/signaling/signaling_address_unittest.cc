@@ -75,7 +75,6 @@ TEST(SignalingAddressTest, ParseEmptySignalingId) {
 
   std::unique_ptr<jingle_xmpp::XmlElement> message(
       jingle_xmpp::XmlElement::ForStr(kTestMessage));
-  std::string error;
 
   SignalingAddress from =
       SignalingAddress::Parse(message.get(), SignalingAddress::FROM);

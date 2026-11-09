@@ -391,7 +391,6 @@ int Me2MeHostServiceMain(int argc, char** argv) {
 
   remoting::HostService service;
   auto* current_cmdline = base::CommandLine::ForCurrentProcess();
-  std::string pid = base::NumberToString(base::Process::Current().Pid());
   if (current_cmdline->HasSwitch(remoting::kSwitchDisable)) {
     service.PrintPid();
     if (!service.Disable()) {

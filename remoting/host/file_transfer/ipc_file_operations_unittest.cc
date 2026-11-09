@@ -693,9 +693,6 @@ TEST_F(IpcFileOperationsTest, ConcurrentWriteOperationsSupported) {
       base_path.InsertBeforeExtension(FILE_PATH_LITERAL("(3)")),
       base_path.InsertBeforeExtension(FILE_PATH_LITERAL("(4)"))};
 
-  std::vector<std::uint8_t> contents =
-      ByteArrayFrom(kTestDataOne, kTestDataTwo, kTestDataThree);
-
   std::vector<std::unique_ptr<FileOperations::Writer>> writers;
   for (size_t i = 0; i < paths.size(); i++) {
     writers.emplace_back(file_operations_->CreateWriter());

@@ -524,7 +524,6 @@ TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_Success) {
 
   auto stanza =
       CreateXmlStanza(Direction::OUTGOING, signal_strategy_->GetNextId());
-  std::string stanza_string = stanza->Str();
 
   JingleMessage jingle_message;
   std::string error;

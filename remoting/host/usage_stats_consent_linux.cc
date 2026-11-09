@@ -71,8 +71,6 @@ bool GetUsageStatsConsentFromFile(const base::FilePath& path,
 }  // namespace
 
 bool GetUsageStatsConsent(bool* allowed, bool* set_by_policy) {
-  std::string consent_content;
-
   // We don't know if the host is single-process or multi-process, so we always
   // check the consent file first.
   if (base::PathExists(GetMultiProcessHostUsageStatsConsentFile())) {
