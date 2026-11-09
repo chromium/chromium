@@ -30,7 +30,9 @@ ExtensionActionDelegateDesktop::ExtensionActionDelegateDesktop(
 
 ExtensionActionDelegateDesktop::~ExtensionActionDelegateDesktop() {
   // Should have already unregistered.
-  CHECK(!action_keybinding_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/581985710): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!action_keybinding_);
 }
 
 ExtensionActionDelegateDesktop*
