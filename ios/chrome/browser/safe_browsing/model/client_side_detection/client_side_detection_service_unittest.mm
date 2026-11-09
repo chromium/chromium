@@ -22,7 +22,7 @@
 #import "components/optimization_guide/core/delivery/model_info.h"
 #import "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #import "components/prefs/pref_service.h"
-#import "components/safe_browsing/core/browser/client_side_phishing_model.h"
+#import "components/safe_browsing/core/browser/client_side_detection/client_side_phishing_model.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/phishing_classifier/phishing_classifier.h"
 #import "components/safe_browsing/core/common/phishing_classifier/phishing_image_embedder.h"

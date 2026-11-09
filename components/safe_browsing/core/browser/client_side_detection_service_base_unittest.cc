@@ -21,7 +21,7 @@
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/safe_browsing/core/browser/client_side_phishing_model.h"
+#include "components/safe_browsing/core/browser/client_side_detection/client_side_phishing_model.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/phishing_classifier/phishing_classifier.h"
 #include "components/safe_browsing/core/common/phishing_classifier/phishing_image_embedder.h"

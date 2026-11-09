@@ -1,0 +1,47 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("client_side_phishing_model") {
+  sources = [
+    "client_side_phishing_model.cc",
+    "client_side_phishing_model.h",
+    "csd_model_type.h",
+  ]
+
+  public_deps = [ "//components/safe_browsing/core/common/fbs:client_model" ]
+
+  deps = [
+    "//base",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:features",
+    "//components/safe_browsing/core/common/phishing_classifier",
+    "//components/safe_browsing/core/common/proto:client_model_proto",
+    "//crypto",
+    "//third_party/zlib/google:compression_utils",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "client_side_phishing_model_unittest.cc" ]
+  deps = [
+    ":client_side_phishing_model",
+    "//base",
+    "//base/test:test_support",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/safe_browsing/core/common:features",
+    "//components/safe_browsing/core/common/fbs:client_model",
+    "//components/safe_browsing/core/common/phishing_classifier:unit_tests_support",
+    "//components/safe_browsing/core/common/proto:client_model_proto",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  if (is_ios) {
+    deps += [ "//components/test:safe_browsing_test_bundle_data" ]
+  }
+}

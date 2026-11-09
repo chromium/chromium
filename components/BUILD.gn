@@ -917,6 +917,7 @@ test("components_unittests") {
       "//components/safe_browsing/core/browser:ping_manager_unittest",
       "//components/safe_browsing/core/browser:user_population_unittest",
       "//components/safe_browsing/core/browser:verdict_cache_manager_unittest",
+      "//components/safe_browsing/core/browser/client_side_detection:unit_tests",
       "//components/safe_browsing/core/browser/db:sb_test_util",
       "//components/safe_browsing/core/browser/db:unit_tests_local_db",
       "//components/safe_browsing/core/browser/password_protection:unit_tests",

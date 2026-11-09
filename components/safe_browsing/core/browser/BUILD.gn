@@ -87,12 +87,12 @@ source_set("client_side_detection_service_base") {
     "client_side_detection_feature_cache_base.h",
     "client_side_detection_service_base.cc",
     "client_side_detection_service_base.h",
-    "client_side_phishing_model.cc",
-    "client_side_phishing_model.h",
-    "csd_model_type.h",
   ]
 
-  public_deps = [ "//components/safe_browsing/core/common/fbs:client_model" ]
+  public_deps = [
+    "//components/safe_browsing/core/browser/client_side_detection:client_side_phishing_model",
+    "//components/safe_browsing/core/common/fbs:client_model",
+  ]
 
   deps = [
     "//base",
@@ -120,7 +120,6 @@ source_set("client_side_detection_service_base_unittest") {
     "client_side_detection_feature_cache_base_unittest.cc",
     "client_side_detection_host_base_unittest.cc",
     "client_side_detection_service_base_unittest.cc",
-    "client_side_phishing_model_unittest.cc",
     "credit_card_form_event_unittest.cc",
   ]
   deps = [

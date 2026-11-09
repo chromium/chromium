@@ -27,7 +27,7 @@
 #include "base/values.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/browser/client_side_phishing_model.h"
+#include "components/safe_browsing/core/browser/client_side_detection/client_side_phishing_model.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"

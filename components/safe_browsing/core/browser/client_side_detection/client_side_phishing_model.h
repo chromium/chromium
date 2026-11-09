@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_CLIENT_SIDE_PHISHING_MODEL_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_CLIENT_SIDE_PHISHING_MODEL_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_CLIENT_SIDE_DETECTION_CLIENT_SIDE_PHISHING_MODEL_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_CLIENT_SIDE_DETECTION_CLIENT_SIDE_PHISHING_MODEL_H_
 
 #include <memory>
 #include <vector>
@@ -19,7 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
-#include "components/safe_browsing/core/browser/csd_model_type.h"
+#include "components/safe_browsing/core/browser/client_side_detection/csd_model_type.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 
@@ -254,4 +254,4 @@ class ClientSidePhishingModel
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_CLIENT_SIDE_PHISHING_MODEL_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_CLIENT_SIDE_DETECTION_CLIENT_SIDE_PHISHING_MODEL_H_

@@ -48,6 +48,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser:suspicious_site_warning_allowlist_unittest",
     "//components/safe_browsing/core/browser:user_population_unittest",
     "//components/safe_browsing/core/browser:verdict_cache_manager_unittest",
+    "//components/safe_browsing/core/browser/client_side_detection:unit_tests",
     "//components/safe_browsing/core/browser/db:unit_tests_local_db",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:unit_tests",
