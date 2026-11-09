@@ -150,8 +150,6 @@ bool IsAnchorable(Profile* profile, bool consented) {
   return consented && GetGlicProviderSpec(profile).SupportsAnchoredEntryPoint();
 }
 
-constexpr int kExperimentalTriggeringVersion = 1;
-
 std::string_view ToString(
     syncer::DeviceInfo::GlicExperimentalTriggeringState state) {
   switch (state) {
@@ -1794,6 +1792,11 @@ GlicEnabling::GetExperimentalTriggeringState() const {
   return ComputeExperimentalTriggeringState().first;
 }
 
+ExperimentalTriggeringNotReadyReason
+GlicEnabling::GetExperimentalTriggeringNotReadyReason() const {
+  return ComputeExperimentalTriggeringState().second;
+}
+
 std::pair<syncer::DeviceInfo::GlicExperimentalTriggeringState,
           ExperimentalTriggeringNotReadyReason>
 GlicEnabling::ComputeExperimentalTriggeringState() const {
@@ -1849,7 +1852,7 @@ std::optional<int> GlicEnabling::GetExperimentalTriggeringVersion() const {
       syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable) {
     return std::nullopt;
   }
-  return kExperimentalTriggeringVersion;
+  return kExperimentalTriggeringProtocolVersion;
 }
 
 base::flat_set<std::string>

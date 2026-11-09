@@ -4,12 +4,19 @@
 
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_converters.h"
 
+#include <algorithm>
+#include <cstdint>
+#include <map>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/strings/string_number_conversions.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 
 namespace glic {
 
@@ -366,6 +373,77 @@ components_sharing_message::SharingMessage ResponseToProto(
   *message.mutable_glic_experimental_triggering() =
       ResponseToTriggeringProto(response);
   return message;
+}
+
+std::optional<std::string_view> GlicInvokeErrorToChromeErrorCode(
+    GlicInvokeError error) {
+  switch (error) {
+    case GlicInvokeError::kTimeout:
+      return kErrorCodeGlicInvokeTimeout;
+    case GlicInvokeError::kClientLoadError:
+      return kErrorCodeGlicClientLoadError;
+    case GlicInvokeError::kTabClosed:
+      return kErrorCodeGlicTabClosed;
+    case GlicInvokeError::kPanelClosed:
+      return kErrorCodeGlicPanelClosed;
+    case GlicInvokeError::kSuperseded:
+      return kErrorCodeGlicSuperseded;
+    case GlicInvokeError::kUnknown:
+    case GlicInvokeError::kInvalidConversationId:
+    case GlicInvokeError::kInvalidTab:
+    case GlicInvokeError::kInvokeInProgress:
+    case GlicInvokeError::kInvalidConfiguration:
+    case GlicInvokeError::kAdditionalContextSawNavigation:
+    case GlicInvokeError::kAdditionalContextFailedCopyPolicy:
+    case GlicInvokeError::kAdditionalContextFailedPastePolicy:
+    case GlicInvokeError::kAdditionalContextNoSourceFrame:
+    case GlicInvokeError::kAdditionalContextNoClientFrame:
+    case GlicInvokeError::kAdditionalContextNoClipboardMetadata:
+    case GlicInvokeError::kInstanceNotFound:
+    case GlicInvokeError::kProfileNotEnabled:
+    case GlicInvokeError::kCancelled:
+    case GlicInvokeError::kLiveModeActive:
+    case GlicInvokeError::kInstanceDestroyedBlankInstanceClosed:
+    case GlicInvokeError::kInstanceDestroyedUnbound:
+    case GlicInvokeError::kInstanceDestroyedArchived:
+    case GlicInvokeError::kInstanceDestroyedSignedOut:
+    case GlicInvokeError::kInstanceDestroyedShutdown:
+    case GlicInvokeError::kSignInRequired:
+      return std::nullopt;
+  }
+}
+
+std::map<std::string, std::string> BuildChromeErrorMetadata(
+    std::string_view error_code) {
+  return {{std::string(kMetadataChromeErrorCodeKey), std::string(error_code)}};
+}
+
+std::map<std::string, std::string> BuildUnavailableTriggeringMetadata(
+    const GlicEnabling& enabling) {
+  if (enabling.GetExperimentalTriggeringNotReadyReason() ==
+      ExperimentalTriggeringNotReadyReason::kCannotActOnWeb) {
+    return BuildChromeErrorMetadata(kErrorCodeEtCannotActOnWeb);
+  }
+  return {};
+}
+
+std::map<std::string, std::string> BuildInvokeErrorMetadata(
+    GlicInvokeError error,
+    std::string_view diagnostic_info) {
+  std::map<std::string, std::string> metadata;
+  if (std::optional<std::string_view> error_code =
+          GlicInvokeErrorToChromeErrorCode(error);
+      error_code.has_value()) {
+    metadata.emplace(kMetadataChromeErrorCodeKey, *error_code);
+  }
+  if (!diagnostic_info.empty()) {
+    metadata.emplace(kMetadataChromeInvokeDiagnosticsKey, diagnostic_info);
+  }
+  return metadata;
+}
+
+std::string FormatMetadataDurationMs(base::TimeDelta duration) {
+  return base::NumberToString(std::max<int64_t>(0, duration.InMilliseconds()));
 }
 
 }  // namespace glic

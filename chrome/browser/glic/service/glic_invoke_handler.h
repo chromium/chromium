@@ -144,6 +144,8 @@ class GlicInvokeHandler {
                        tabs::TabInterface::DetachReason reason);
   void OnConversationInfoChanged(const mojom::ConversationInfo& info);
   void OnActuatingChanged(bool actuating);
+  void OnShowInstanceCompleted(bool panel_opened);
+  bool WasPanelOpened() const;
   // The coordinator cancels `this` before destroying the instance.
   const base::raw_ref<GlicInstanceImpl> instance_;
   ResolvedTarget resolved_target_;
@@ -155,6 +157,7 @@ class GlicInvokeHandler {
   const bool requires_client_invoke_;
 
   bool should_wait_for_load_ = false;
+  bool panel_opened_by_show_ = false;
   std::optional<ClientLoadState> client_load_state_at_start_;
   base::CallbackListSubscription tab_destruction_subscription_;
   base::CallbackListSubscription conversation_subscription_;

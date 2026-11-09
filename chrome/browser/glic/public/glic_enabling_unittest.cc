@@ -1635,6 +1635,93 @@ TEST_F(GlicEnablingProfileEligibilityTest,
   EXPECT_FALSE(enabling.IsExperimentalTriggeringUserControlled());
 }
 
+TEST_F(GlicEnablingProfileEligibilityTest,
+       GetExperimentalTriggeringNotReadyReason_UnavailableGates) {
+  base::test::ScopedFeatureList base_features;
+  base_features.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicActor, features::kGlicRollout},
+      /*disabled_features=*/{features::kGlicShowForSignedOut,
+                             features::kGlicActorPolicyControlExemption});
+
+  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
+  profile()->GetPrefs()->SetInteger(
+      prefs::kGlicSparkPolicySettings,
+      std::to_underlying(prefs::GlicSparkPolicyState::kEnabled));
+
+  // Signed-out profile is not Glic-enabled, so `kGlicNotEnabled` takes
+  // precedence over downstream actor policy checks.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kGlicExperimentalTriggering);
+    EXPECT_EQ(enabling.GetExperimentalTriggeringNotReadyReason(),
+              ExperimentalTriggeringNotReadyReason::kGlicNotEnabled);
+  }
+
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  identity_test_env->MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+  SetGlicCapability(profile(), true);
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kGlicExperimentalTriggering);
+    EXPECT_EQ(enabling.GetExperimentalTriggeringNotReadyReason(),
+              ExperimentalTriggeringNotReadyReason::kFeatureDisabled);
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kGlicExperimentalTriggering);
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForProfile(profile()),
+        policy::EnterpriseManagementAuthority::CLOUD);
+    profile()->GetPrefs()->SetInteger(
+        prefs::kGlicSparkPolicySettings,
+        std::to_underlying(prefs::GlicSparkPolicyState::kDisabled));
+    EXPECT_EQ(enabling.GetExperimentalTriggeringNotReadyReason(),
+              ExperimentalTriggeringNotReadyReason::kDisabledBySparkPolicy);
+    profile()->GetPrefs()->SetInteger(
+        prefs::kGlicSparkPolicySettings,
+        std::to_underlying(prefs::GlicSparkPolicyState::kEnabled));
+    EXPECT_EQ(enabling.GetExperimentalTriggeringNotReadyReason(),
+              ExperimentalTriggeringNotReadyReason::kCannotActOnWeb);
+  }
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       GetExperimentalTriggeringNotReadyReason_OptInAndReady) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicExperimentalTriggering,
+                            features::kGlicActor,
+                            features::kGlicActorPolicyControlExemption,
+                            features::kGlicRollout},
+      /*disabled_features=*/{});
+
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  identity_test_env->MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+  SetGlicCapability(profile(), true);
+  profile()->GetPrefs()->SetInteger(
+      prefs::kGlicSparkPolicySettings,
+      std::to_underlying(prefs::GlicSparkPolicyState::kEnabled));
+
+  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
+  EXPECT_EQ(enabling.GetExperimentalTriggeringNotReadyReason(),
+            ExperimentalTriggeringNotReadyReason::kMissingGlicOptIn);
+  enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
+  EXPECT_EQ(enabling.GetExperimentalTriggeringNotReadyReason(),
+            ExperimentalTriggeringNotReadyReason::kMissingActuationOptIn);
+  enabling.SetUserEnabledActuationOnWeb(true);
+  EXPECT_EQ(enabling.GetExperimentalTriggeringNotReadyReason(),
+            ExperimentalTriggeringNotReadyReason::kMissingExperimentalOptIn);
+  enabling.SetExperimentalTriggeringEnabled(true);
+  EXPECT_EQ(enabling.GetExperimentalTriggeringNotReadyReason(),
+            ExperimentalTriggeringNotReadyReason::kNone);
+  EXPECT_EQ(enabling.GetExperimentalTriggeringVersion(),
+            GlicEnabling::kExperimentalTriggeringProtocolVersion);
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(GlicEnablingProfileEligibilityTest,
        ExperimentalTriggering_ProfileTeardownNoCrash) {

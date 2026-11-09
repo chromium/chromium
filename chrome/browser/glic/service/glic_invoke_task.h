@@ -166,7 +166,9 @@ class ShowInstanceTask : public GlicInvokeTask {
  public:
   std::optional<GlicTaskType> GetType() const override;
 
-  ShowInstanceTask(GlicInstanceImpl& instance, ShowOptions options);
+  ShowInstanceTask(GlicInstanceImpl& instance,
+                   ShowOptions options,
+                   base::OnceCallback<void(bool)> on_shown);
   ~ShowInstanceTask() override;
   void Start(base::OnceClosure done_callback) override;
 
@@ -175,6 +177,7 @@ class ShowInstanceTask : public GlicInvokeTask {
   // GlicInstanceCoordinatorImpl and its lifetime is tied to the instance.
   const base::raw_ref<GlicInstanceImpl> instance_;
   std::optional<ShowOptions> options_;
+  base::OnceCallback<void(bool)> on_shown_;
 };
 
 // Task that sets up the instance for a hidden panel.
@@ -280,11 +283,14 @@ class PostCallbackTask : public GlicInvokeTask {
   std::optional<GlicTaskType> GetType() const override;
 
   explicit PostCallbackTask(base::OnceClosure callback);
+  PostCallbackTask(base::OnceClosure callback,
+                   base::OnceCallback<bool()> should_post);
   ~PostCallbackTask() override;
   void Start(base::OnceClosure done_callback) override;
 
  private:
   base::OnceClosure callback_;
+  base::OnceCallback<bool()> should_post_;
 };
 
 // Task that waits for the layout to stabilize after showing the panel.

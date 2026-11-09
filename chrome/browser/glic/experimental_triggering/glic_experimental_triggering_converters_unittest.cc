@@ -7,6 +7,8 @@
 #include <variant>
 #include <vector>
 
+#include "base/time/time.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
@@ -734,6 +736,59 @@ TEST(GlicExperimentalTriggeringConvertersTest, ResponseToTriggeringProto) {
 }
 
 TEST(GlicExperimentalTriggeringConvertersTest,
+     ResponseToTriggeringProto_TaskUpdateDiagnosticMetadata) {
+  ExperimentalTriggeringResponse response;
+  response.context_id = "test_context";
+  response.task_update = TaskUpdate{
+      .state = TaskUpdate::State::kFailed,
+      .data_type = TaskUpdate::DataType::kErrorMessage,
+      .data = "Glic invocation failed: Client failed to load",
+      .metadata =
+          {
+              {"chrome_error_code", "GLIC_CLIENT_LOAD_ERROR"},
+              {"chrome_invoke_diagnostics",
+               "stage=WAIT_FOR_CLIENT_READY;load_state_at_start=ERROR;"
+               "load_error=OFFLINE"},
+              {"panel_opened", "1"},
+              {"client_connected", "0"},
+              {"t_to_panel_open_ms", "120"},
+              {"t_to_client_connected_ms", "240"},
+              {"t_to_first_response_ms", "360"},
+              {"t_to_terminal_ms", "500"},
+          },
+  };
+
+  auto triggering = ResponseToTriggeringProto(response);
+  ASSERT_TRUE(triggering.has_response());
+  ASSERT_TRUE(triggering.response().has_task_update());
+  const auto& proto_update = triggering.response().task_update();
+  EXPECT_EQ(proto_update.state(),
+            components_sharing_message::GlicExperimentalTriggering::
+                ExperimentalTriggeringResponse::TaskUpdate::FAILED);
+  EXPECT_EQ(proto_update.data(),
+            "Glic invocation failed: Client failed to load");
+  EXPECT_EQ(proto_update.metadata_size(), 8);
+  EXPECT_EQ(proto_update.metadata().at("chrome_error_code"),
+            "GLIC_CLIENT_LOAD_ERROR");
+  EXPECT_EQ(proto_update.metadata().at("chrome_invoke_diagnostics"),
+            "stage=WAIT_FOR_CLIENT_READY;load_state_at_start=ERROR;"
+            "load_error=OFFLINE");
+  EXPECT_EQ(proto_update.metadata().at("panel_opened"), "1");
+  EXPECT_EQ(proto_update.metadata().at("client_connected"), "0");
+  EXPECT_EQ(proto_update.metadata().at("t_to_panel_open_ms"), "120");
+  EXPECT_EQ(proto_update.metadata().at("t_to_client_connected_ms"), "240");
+  EXPECT_EQ(proto_update.metadata().at("t_to_first_response_ms"), "360");
+  EXPECT_EQ(proto_update.metadata().at("t_to_terminal_ms"), "500");
+
+  auto sharing_message = ResponseToProto(response);
+  const auto& sharing_update =
+      sharing_message.glic_experimental_triggering().response().task_update();
+  EXPECT_EQ(sharing_update.metadata_size(), 8);
+  EXPECT_EQ(sharing_update.metadata().at("chrome_error_code"),
+            "GLIC_CLIENT_LOAD_ERROR");
+}
+
+TEST(GlicExperimentalTriggeringConvertersTest,
      ResponseToTriggeringProto_ExecuteActionsResponse) {
   ExperimentalTriggeringResponse response;
   response.context_id = "test_context";
@@ -769,6 +824,86 @@ TEST(GlicExperimentalTriggeringTypesTest, TaskUpdateIsTerminal) {
   EXPECT_FALSE(is_terminal(TaskUpdate::State::kPaused));
   EXPECT_FALSE(is_terminal(TaskUpdate::State::kYield));
   EXPECT_FALSE(is_terminal(TaskUpdate::State::kResumed));
+}
+
+TEST(GlicExperimentalTriggeringConvertersTest,
+     GlicInvokeErrorToChromeErrorCode) {
+  const std::map<GlicInvokeError, std::string_view> kExpectedErrorCodes = {
+      {GlicInvokeError::kTimeout, "GLIC_INVOKE_TIMEOUT"},
+      {GlicInvokeError::kClientLoadError, "GLIC_CLIENT_LOAD_ERROR"},
+      {GlicInvokeError::kTabClosed, "GLIC_TAB_CLOSED"},
+      {GlicInvokeError::kPanelClosed, "GLIC_PANEL_CLOSED"},
+      {GlicInvokeError::kSuperseded, "GLIC_SUPERSEDED"},
+  };
+
+  // 0 is reserved for success in metrics, so values start at 1.
+  for (int value = 1; value <= static_cast<int>(GlicInvokeError::kMaxValue);
+       ++value) {
+    // Skip deprecated kInstanceDestroyed.
+    if (value == 6) {
+      continue;
+    }
+    const auto error = static_cast<GlicInvokeError>(value);
+    auto it = kExpectedErrorCodes.find(error);
+    if (it != kExpectedErrorCodes.end()) {
+      EXPECT_EQ(GlicInvokeErrorToChromeErrorCode(error), it->second)
+          << "Unexpected mapping for error " << value;
+    } else {
+      EXPECT_EQ(GlicInvokeErrorToChromeErrorCode(error), std::nullopt)
+          << "Unlisted error " << value << " should omit chrome_error_code";
+    }
+  }
+}
+
+TEST(GlicExperimentalTriggeringConvertersTest, BuildChromeErrorMetadata) {
+  EXPECT_THAT(BuildChromeErrorMetadata(kErrorCodeEtNoBrowserWindow),
+              testing::ElementsAre(
+                  testing::Pair("chrome_error_code", "ET_NO_BROWSER_WINDOW")));
+  EXPECT_THAT(BuildChromeErrorMetadata(kErrorCodeEtCannotActOnWeb),
+              testing::ElementsAre(
+                  testing::Pair("chrome_error_code", "ET_CANNOT_ACT_ON_WEB")));
+  EXPECT_THAT(BuildChromeErrorMetadata(kErrorCodeGlicClientDisconnected),
+              testing::ElementsAre(testing::Pair("chrome_error_code",
+                                                 "GLIC_CLIENT_DISCONNECTED")));
+  EXPECT_THAT(BuildChromeErrorMetadata(kErrorCodeGlicDestroyedBeforeCompletion),
+              testing::ElementsAre(testing::Pair(
+                  "chrome_error_code", "GLIC_DESTROYED_BEFORE_COMPLETION")));
+}
+
+TEST(GlicExperimentalTriggeringConvertersTest, BuildInvokeErrorMetadata) {
+  EXPECT_THAT(BuildInvokeErrorMetadata(
+                  GlicInvokeError::kClientLoadError,
+                  "stage=WAIT_FOR_CLIENT_READY;load_state_at_start=LOADING;"
+                  "load_error=CLIENT_LOAD_TIMEOUT"),
+              testing::UnorderedElementsAre(
+                  testing::Pair("chrome_error_code", "GLIC_CLIENT_LOAD_ERROR"),
+                  testing::Pair(
+                      "chrome_invoke_diagnostics",
+                      "stage=WAIT_FOR_CLIENT_READY;load_state_at_start=LOADING;"
+                      "load_error=CLIENT_LOAD_TIMEOUT")));
+
+  // Mapped error with empty diagnostics omits `chrome_invoke_diagnostics`.
+  EXPECT_THAT(BuildInvokeErrorMetadata(GlicInvokeError::kTimeout, ""),
+              testing::ElementsAre(
+                  testing::Pair("chrome_error_code", "GLIC_INVOKE_TIMEOUT")));
+
+  // Unlisted error with non-empty diagnostics omits `chrome_error_code` while
+  // forwarding `chrome_invoke_diagnostics`.
+  EXPECT_THAT(BuildInvokeErrorMetadata(GlicInvokeError::kInvalidConfiguration,
+                                       "stage=SEND_TO_CLIENT"),
+              testing::ElementsAre(testing::Pair("chrome_invoke_diagnostics",
+                                                 "stage=SEND_TO_CLIENT")));
+
+  // Unlisted error with empty diagnostics produces an empty map.
+  EXPECT_TRUE(BuildInvokeErrorMetadata(GlicInvokeError::kUnknown, "").empty());
+}
+
+TEST(GlicExperimentalTriggeringConvertersTest, FormatMetadataDurationMs) {
+  EXPECT_EQ(FormatMetadataDurationMs(base::Milliseconds(0)), "0");
+  EXPECT_EQ(FormatMetadataDurationMs(base::Milliseconds(245)), "245");
+  EXPECT_EQ(FormatMetadataDurationMs(base::Microseconds(1999)), "1");
+  // Negative durations (e.g. clock adjustments) are clamped to 0.
+  EXPECT_EQ(FormatMetadataDurationMs(base::Milliseconds(-50)), "0");
 }
 
 }  // namespace glic

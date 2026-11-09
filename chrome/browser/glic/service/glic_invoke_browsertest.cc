@@ -919,6 +919,99 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithOnPanelOpened) {
   EXPECT_TRUE(success_future.Wait());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    GlicInvokeBrowserTest,
+    InvokeWithWaitForPanelOpenFiresOnPanelOpenedEvenIfClosedDuringStabilization) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+
+  base::test::TestFuture<base::WeakPtr<GlicInstance>> connected_future;
+  base::test::TestFuture<void> panel_opened_future;
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.wait_for_panel_open = true;
+  options.on_client_connected = connected_future.GetCallback();
+  options.on_panel_opened = panel_opened_future.GetCallback();
+  options.on_success = success_future.GetCallback();
+
+  coordinator().Invoke(std::move(options));
+
+  auto* instance = GetInstanceForTab(tab);
+  ASSERT_TRUE(instance);
+  EXPECT_TRUE(instance->IsShowing());
+
+  // Wait for `on_client_connected` (which runs right before the 300ms
+  // `StabilizationTask` timer completes), then close the panel while
+  // stabilization is still in flight.
+  ASSERT_TRUE(connected_future.Wait());
+  EXPECT_FALSE(panel_opened_future.IsReady());
+
+  instance->CloseAllEmbedders();
+  ASSERT_OK(WaitForGlicClose(instance));
+  ASSERT_FALSE(instance->IsShowing());
+
+  // Because showing the instance did open a visible panel, `on_panel_opened`
+  // still fires once stabilization completes.
+  EXPECT_TRUE(panel_opened_future.Wait());
+  EXPECT_TRUE(success_future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeOnInactiveBackgroundTabDoesNotFireOnPanelOpened) {
+  tabs::TabInterface* background_tab = GetTabListInterface()->GetActiveTab();
+  tabs::TabInterface* foreground_tab = CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_NE(foreground_tab, background_tab);
+  ASSERT_FALSE(background_tab->IsActivated());
+
+  for (bool wait_for_panel_open : {false, true}) {
+    SCOPED_TRACE(wait_for_panel_open);
+    base::test::TestFuture<void> panel_opened_future;
+    base::test::TestFuture<void> success_future;
+    GlicInvokeOptions options(glic::Target(*background_tab),
+                              mojom::InvocationSource::kOsButton);
+    options.wait_for_panel_open = wait_for_panel_open;
+    options.on_panel_opened = panel_opened_future.GetCallback();
+    options.on_success = success_future.GetCallback();
+
+    coordinator().Invoke(std::move(options));
+
+    EXPECT_TRUE(success_future.Wait());
+    EXPECT_FALSE(panel_opened_future.IsReady());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       HiddenInvokeDoesNotFireOnPanelOpened) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  base::test::TestFuture<void> panel_opened_future;
+  base::test::TestFuture<void> success_future;
+  base::test::TestFuture<std::string> conversation_id_future;
+
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_panel_opened = panel_opened_future.GetCallback();
+  options.on_success = success_future.GetCallback();
+
+  GlicInvokeWithAutoSubmitOptions auto_submit_options;
+  auto_submit_options.on_conversation_id_ready =
+      conversation_id_future.GetCallback();
+  auto_submit_options.show_panel = false;
+
+  coordinator().InvokeWithAutoSubmit(GetPassKey(), std::move(options),
+                                     std::move(auto_submit_options));
+
+  GlicInstanceImpl* instance = coordinator().GetInstanceImplForTab(tab);
+  ASSERT_TRUE(instance);
+
+  auto info = mojom::ConversationInfo::New();
+  info->conversation_id = "hidden_test_conversation_id";
+  instance->RegisterConversation(std::move(info), base::DoNothing());
+
+  EXPECT_EQ(conversation_id_future.Get(), "hidden_test_conversation_id");
+  EXPECT_TRUE(success_future.Wait());
+  EXPECT_FALSE(panel_opened_future.IsReady());
+}
+
 // Two invocations that both require a client invoke (here, because they carry
 // prompts) cannot run simultaneously on the same instance.
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,

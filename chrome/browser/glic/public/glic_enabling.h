@@ -271,6 +271,12 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
                                SubscriptionEligibilityService::Observer {
  public:
   enum class EnablementMetricsPhase { kStartup, kSteadyState };
+
+  // Version of the Glic experimental triggering protocol implemented by this
+  // client. `GetExperimentalTriggeringVersion()` returns this value when
+  // experimental triggering is available (or `std::nullopt` when unavailable).
+  static constexpr int kExperimentalTriggeringProtocolVersion = 1;
+
   // Returns whether the global Glic feature is enabled for Chrome. This status
   // will not change at runtime.
   static bool IsEnabledByGlobalCriteria();
@@ -651,6 +657,11 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // to act on the web (see GlicActorPolicyChecker::CanActOnWeb()).
   syncer::DeviceInfo::GlicExperimentalTriggeringState
   GetExperimentalTriggeringState() const;
+
+  // Returns why `GetExperimentalTriggeringState()` is not `kReady` (or `kNone`
+  // when ready).
+  ExperimentalTriggeringNotReadyReason GetExperimentalTriggeringNotReadyReason()
+      const;
 
   // Returns the capabilities supported for Glic experimental triggering, or
   // an empty set if unavailable.

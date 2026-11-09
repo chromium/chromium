@@ -103,6 +103,7 @@ class InvokeErrorDiagnosticsPasskeyProvider {
   static PassKey GetPassKey() { return PassKey(); }
 
   friend class GlicApiTestPasskeys;
+  friend class GlicExperimentalTriggeringCoordinator;
   friend class GlicInvokeBrowserTest;
 };
 

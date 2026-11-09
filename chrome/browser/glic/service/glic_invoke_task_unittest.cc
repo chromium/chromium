@@ -234,6 +234,39 @@ TEST(GlicInvokeTaskTest, PostCallbackTask) {
   run_loop.Run();
 }
 
+TEST(GlicInvokeTaskTest, PostCallbackTaskConditionFalseSkipsPosting) {
+  base::test::TaskEnvironment task_environment;
+  base::MockCallback<base::OnceClosure> done_cb;
+  base::MockCallback<base::OnceClosure> mock_callback;
+
+  PostCallbackTask task(mock_callback.Get(),
+                        base::BindOnce([]() { return false; }));
+
+  EXPECT_CALL(mock_callback, Run()).Times(0);
+  EXPECT_CALL(done_cb, Run()).Times(1);
+
+  task.Start(done_cb.Get());
+  task_environment.RunUntilIdle();
+}
+
+TEST(GlicInvokeTaskTest, PostCallbackTaskConditionTruePosts) {
+  base::test::TaskEnvironment task_environment;
+  base::MockCallback<base::OnceClosure> done_cb;
+  base::MockCallback<base::OnceClosure> mock_callback;
+
+  PostCallbackTask task(mock_callback.Get(),
+                        base::BindOnce([]() { return true; }));
+
+  EXPECT_CALL(mock_callback, Run()).Times(0);
+  EXPECT_CALL(done_cb, Run()).Times(1);
+
+  task.Start(done_cb.Get());
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+
+  EXPECT_CALL(mock_callback, Run()).Times(1);
+  task_environment.RunUntilIdle();
+}
+
 TEST(GlicInvokeTaskTest, SequentialTaskGroupLastActiveTaskType) {
   auto task1 =
       std::make_unique<MockTask>(base::DoNothing(), /*complete_sync=*/false,

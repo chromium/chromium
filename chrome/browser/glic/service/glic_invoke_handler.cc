@@ -452,9 +452,37 @@ void GlicInvokeHandler::Invoke() {
     show_options.fre_override = options_.fre_override;
   }
 
-  if (!auto_submit_passkey_.has_value() || auto_submit_options_.show_panel) {
-    tasks.push_back(
-        std::make_unique<ShowInstanceTask>(*instance_, show_options));
+  const bool should_show_panel =
+      !auto_submit_passkey_.has_value() || auto_submit_options_.show_panel;
+  const bool wait_for_panel_stabilization =
+      should_show_panel && options_.wait_for_panel_open && IsTabTarget();
+  auto maybe_enqueue_on_panel_opened = [&]() {
+    if (!options_.on_panel_opened) {
+      return;
+    }
+    tasks.push_back(std::make_unique<PostCallbackTask>(
+        base::BindOnce(
+            [](base::WeakPtr<GlicInstanceImpl> instance, base::OnceClosure cb) {
+              if (instance) {
+                std::move(cb).Run();
+              }
+            },
+            instance_->GetWeakPtr(), std::move(options_.on_panel_opened)),
+        base::BindOnce(
+            [](base::WeakPtr<GlicInvokeHandler> self) {
+              return self && self->WasPanelOpened();
+            },
+            weak_ptr_factory_.GetWeakPtr())));
+  };
+
+  if (should_show_panel) {
+    tasks.push_back(std::make_unique<ShowInstanceTask>(
+        *instance_, show_options,
+        base::BindOnce(&GlicInvokeHandler::OnShowInstanceCompleted,
+                       weak_ptr_factory_.GetWeakPtr())));
+    if (!wait_for_panel_stabilization) {
+      maybe_enqueue_on_panel_opened();
+    }
   } else if (IsTabTarget()) {
     tasks.push_back(
         std::make_unique<SetupHiddenPanelTask>(*instance_, GetTab()));
@@ -468,7 +496,8 @@ void GlicInvokeHandler::Invoke() {
   //
   // A client stopped on the sign-in panel is the exception: an invocation
   // that only shows the panel is done at that point, while one that needs the
-  // client waits for the user to sign in (see SignInBehavior and OnTimeout()).
+  // client waits for the user to sign in while the panel is visible (see
+  // SignInBehavior and OnTimeout()).
   tasks.push_back(std::make_unique<WaitForClientReadyTask>(
       instance_->host(),
       requires_client_invoke_ ? SignInBehavior::kWaits
@@ -487,14 +516,10 @@ void GlicInvokeHandler::Invoke() {
   }
   // TODO(b/505086089): Handle client disconnects.
 
-  if (options_.wait_for_panel_open && IsTabTarget()) {
+  if (wait_for_panel_stabilization) {
     tasks.push_back(
         std::make_unique<StabilizationTask>(GetTab().GetContents()));
-  }
-
-  if (options_.on_panel_opened) {
-    tasks.push_back(std::make_unique<PostCallbackTask>(
-        std::move(options_.on_panel_opened)));
+    maybe_enqueue_on_panel_opened();
   }
 
   if (needs_clipboard_policy_check) {
@@ -591,6 +616,14 @@ void GlicInvokeHandler::OnConversationInfoChanged(
         .Run(info.conversation_id);
   }
   conversation_subscription_ = {};
+}
+
+void GlicInvokeHandler::OnShowInstanceCompleted(bool panel_opened) {
+  panel_opened_by_show_ = panel_opened;
+}
+
+bool GlicInvokeHandler::WasPanelOpened() const {
+  return panel_opened_by_show_ || instance_->IsShowing();
 }
 
 void GlicInvokeHandler::OnSuccess() {

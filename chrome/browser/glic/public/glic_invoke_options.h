@@ -449,8 +449,16 @@ struct GlicInvokeOptions {
   FreCompletionWaitMode fre_completion_wait_mode =
       FreCompletionWaitMode::kDefault;
 
-  // Browser-specific callback for when the side panel is opened (and stabilized
-  // if wait_for_panel_open is true).
+  // Browser-specific callback for when the invocation opens a visible panel.
+  // Called asynchronously. Not called for hidden invocations
+  // (`show_panel = false`) or for inactive background-tab side panels that do
+  // not open a visible panel.
+  // - When `wait_for_panel_open` is false (or for floating targets), posted
+  //   right after showing the panel, before waiting for the client to finish
+  //   loading.
+  // - When `wait_for_panel_open` is true for a tab target, posted after client
+  //   readiness and layout stabilization once showing the instance opened the
+  //   panel, even if the panel was subsequently closed or hidden.
   base::OnceClosure on_panel_opened;
 
   // Browser-specific callback for when the invocation successfully completes.

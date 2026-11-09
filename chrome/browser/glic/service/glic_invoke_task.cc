@@ -211,17 +211,25 @@ void SetTabPendingActuationTask::OnSequenceCompleted(bool success) {
 }
 
 ShowInstanceTask::ShowInstanceTask(GlicInstanceImpl& instance,
-                                   ShowOptions options)
-    : instance_(instance), options_(options) {}
+                                   ShowOptions options,
+                                   base::OnceCallback<void(bool)> on_shown)
+    : instance_(instance),
+      options_(std::move(options)),
+      on_shown_(std::move(on_shown)) {}
 
 ShowInstanceTask::~ShowInstanceTask() = default;
 
 void ShowInstanceTask::Start(base::OnceClosure done_callback) {
+  base::WeakPtr<GlicInstanceImpl> weak_instance = instance_->GetWeakPtr();
+  auto on_shown = std::move(on_shown_);
   if (options_) {
-    // Move `options_` out before `Show()`, as `Show()` can synchronously close
-    // the embedder and cancel/destroy the owning `GlicInvokeHandler` (and
-    // `this`).
+    // Move `options_` and `on_shown_` out before `Show()`, as `Show()` can
+    // synchronously close the embedder and cancel/destroy the owning
+    // `GlicInvokeHandler` (and `this`).
     instance_->Show(*std::exchange(options_, std::nullopt));
+  }
+  if (on_shown) {
+    std::move(on_shown).Run(weak_instance && weak_instance->IsShowing());
   }
   std::move(done_callback).Run();
 }
@@ -370,12 +378,16 @@ void WaitForClientReadyTask::CheckState(ClientLoadState state) {
 }
 
 PostCallbackTask::PostCallbackTask(base::OnceClosure callback)
-    : callback_(std::move(callback)) {}
+    : PostCallbackTask(std::move(callback), {}) {}
+
+PostCallbackTask::PostCallbackTask(base::OnceClosure callback,
+                                   base::OnceCallback<bool()> should_post)
+    : callback_(std::move(callback)), should_post_(std::move(should_post)) {}
 
 PostCallbackTask::~PostCallbackTask() = default;
 
 void PostCallbackTask::Start(base::OnceClosure done_callback) {
-  if (callback_) {
+  if (callback_ && (!should_post_ || std::move(should_post_).Run())) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback_));
   }

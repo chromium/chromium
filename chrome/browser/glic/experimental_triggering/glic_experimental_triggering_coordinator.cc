@@ -24,7 +24,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -185,7 +184,8 @@ ExperimentalTriggeringResponse CreateResponseMessage(
     std::optional<TaskUpdate::DataType> data_type,
     const std::string& message,
     const TaskMetadata* request_task_metadata,
-    int64_t sender_sequence_number) {
+    int64_t sender_sequence_number,
+    std::map<std::string, std::string> task_update_metadata) {
   if (data_type == TaskUpdate::DataType::kErrorMessage) {
     DLOG(WARNING) << message;
   }
@@ -195,8 +195,39 @@ ExperimentalTriggeringResponse CreateResponseMessage(
   task_update.state = state;
   task_update.data_type = data_type;
   task_update.data = message;
+  task_update.metadata = std::move(task_update_metadata);
   response.task_update = std::move(task_update);
   return response;
+}
+
+ExperimentalTriggeringResponse CreateResponseMessage(
+    const std::string& context_id,
+    TaskUpdate::State state,
+    std::optional<TaskUpdate::DataType> data_type,
+    const std::string& message,
+    const TaskMetadata* request_task_metadata,
+    int64_t sender_sequence_number) {
+  return CreateResponseMessage(context_id, state, data_type, message,
+                               request_task_metadata, sender_sequence_number,
+                               /*task_update_metadata=*/{});
+}
+
+void RejectProtoMessage(
+    const std::string& context_id,
+    const components_sharing_message::GlicExperimentalTriggering& proto,
+    ScopedIncomingMessageResultLogger& result_logger,
+    GlicExperimentalTriggeringIncomingMessageResult result,
+    const std::string& error_message,
+    GlicExperimentalTriggeringResponseCallback response_callback,
+    std::map<std::string, std::string> task_update_metadata) {
+  result_logger.set_result(result);
+  std::optional<TaskMetadata> request_metadata = ProtoToTaskMetadata(proto);
+  std::move(response_callback)
+      .Run(CreateResponseMessage(
+          context_id, TaskUpdate::State::kFailed,
+          TaskUpdate::DataType::kErrorMessage, error_message,
+          request_metadata.has_value() ? &*request_metadata : nullptr,
+          /*sender_sequence_number=*/0, std::move(task_update_metadata)));
 }
 
 void RejectProtoMessage(
@@ -206,14 +237,8 @@ void RejectProtoMessage(
     GlicExperimentalTriggeringIncomingMessageResult result,
     const std::string& error_message,
     GlicExperimentalTriggeringResponseCallback response_callback) {
-  result_logger.set_result(result);
-  std::optional<TaskMetadata> request_metadata = ProtoToTaskMetadata(proto);
-  std::move(response_callback)
-      .Run(CreateResponseMessage(
-          context_id, TaskUpdate::State::kFailed,
-          TaskUpdate::DataType::kErrorMessage, error_message,
-          request_metadata.has_value() ? &*request_metadata : nullptr,
-          /*sender_sequence_number=*/0));
+  RejectProtoMessage(context_id, proto, result_logger, result, error_message,
+                     std::move(response_callback), /*task_update_metadata=*/{});
 }
 
 // Builds a device opt-in response for synchronous request replies.
@@ -324,6 +349,22 @@ GlicExperimentalTriggeringExecutionOutcome GlicInvokeErrorToOutcome(
   }
 }
 
+bool IsChromeDiagnosticMetadataKey(std::string_view key) {
+  static_assert(kMetadataTimeToPanelOpenMsKey.starts_with("t_to_"));
+  static_assert(kMetadataTimeToClientConnectedMsKey.starts_with("t_to_"));
+  static_assert(kMetadataTimeToFirstResponseMsKey.starts_with("t_to_"));
+  static_assert(kMetadataTimeToTerminalMsKey.starts_with("t_to_"));
+  return key == kMetadataChromeErrorCodeKey ||
+         key == kMetadataChromeInvokeDiagnosticsKey ||
+         key == kMetadataPanelOpenedKey || key == kMetadataClientConnectedKey ||
+         key.starts_with("t_to_");
+}
+
+bool CanActOnWeb(GlicKeyedService& glic_service) {
+  return glic_service.HasActorPolicyChecker() &&
+         glic_service.actor_policy_checker().CanActOnWeb();
+}
+
 }  // namespace
 
 // Handles every request for one context id, and owns the session that those
@@ -356,9 +397,11 @@ class ExperimentalTriggeringUpdatesHandler
       Profile* profile,
       const std::string& context_id,
       InvokeWithAutoSubmitPasskey passkey,
+      InvokeErrorDiagnosticsPasskey error_diagnostics_passkey,
       base::WeakPtr<GlicExperimentalTriggeringCoordinator> coordinator)
       : context_id_(context_id),
         passkey_(std::move(passkey)),
+        error_diagnostics_passkey_(std::move(error_diagnostics_passkey)),
         coordinator_(std::move(coordinator)),
         receiver_(this),
         metric_reporter_(profile) {}
@@ -372,7 +415,8 @@ class ExperimentalTriggeringUpdatesHandler
             TaskUpdate::State::kFailed, TaskUpdate::DataType::kErrorMessage,
             GlicExperimentalTriggeringExecutionOutcome::
                 kDestroyedBeforeCompletion,
-            "Experimental triggering handler destroyed before completion.");
+            "Experimental triggering handler destroyed before completion.",
+            BuildChromeErrorMetadata(kErrorCodeGlicDestroyedBeforeCompletion));
       } else if (!outcome_recorded_) {
         RecordOutcome(GlicExperimentalTriggeringExecutionOutcome::
                           kDestroyedBeforeCompletion);
@@ -560,15 +604,21 @@ class ExperimentalTriggeringUpdatesHandler
                 features::kGlicStructuredYieldMetadata) &&
             update->metadata.has_value()) {
           for (auto& [key, val] : *update->metadata) {
-            metadata[key] = std::move(val);
+            if (!IsChromeDiagnosticMetadataKey(key)) {
+              metadata[key] = std::move(val);
+            }
           }
         }
         if (!first_response_received_ && is_actuation_started_) {
           first_response_received_ = true;
           CancelReconnectGrace();
+          const base::TimeTicks now = base::TimeTicks::Now();
+          if (!time_to_first_response_.has_value()) {
+            time_to_first_response_ = now - task_start_time_;
+          }
           metric_reporter_.RecordMediumTimes(
               "ExperimentalTriggering.Latency.ToFirstResponse",
-              base::TimeTicks::Now() - turn_start_time_);
+              now - turn_start_time_);
         }
         switch (update->type) {
           case mojom::ExperimentalTriggeringUpdateType::kWorklog:
@@ -676,8 +726,6 @@ class ExperimentalTriggeringUpdatesHandler
     return false;
 #endif
   }
-
- private:
   void SubscribeForTriggeringUpdates(base::WeakPtr<GlicInstance> instance) {
     instance_ = std::move(instance);
     if (!instance_ || receiver_.is_bound()) {
@@ -722,6 +770,37 @@ class ExperimentalTriggeringUpdatesHandler
         "Failed to register experimental triggering updates handler.");
   }
 
+  std::map<std::string, std::string> WithActuationDiagnosticMetadata(
+      std::map<std::string, std::string> metadata) const {
+    if (!is_actuation_started_) {
+      return metadata;
+    }
+    metadata.insert_or_assign(std::string(kMetadataPanelOpenedKey),
+                              panel_opened_ ? "1" : "0");
+    metadata.insert_or_assign(std::string(kMetadataClientConnectedKey),
+                              client_connected_ ? "1" : "0");
+    if (time_to_panel_open_.has_value()) {
+      metadata.insert_or_assign(std::string(kMetadataTimeToPanelOpenMsKey),
+                                FormatMetadataDurationMs(*time_to_panel_open_));
+    }
+    if (time_to_client_connected_.has_value()) {
+      metadata.insert_or_assign(
+          std::string(kMetadataTimeToClientConnectedMsKey),
+          FormatMetadataDurationMs(*time_to_client_connected_));
+    }
+    if (time_to_first_response_.has_value()) {
+      metadata.insert_or_assign(
+          std::string(kMetadataTimeToFirstResponseMsKey),
+          FormatMetadataDurationMs(*time_to_first_response_));
+    }
+    if (!task_start_time_.is_null()) {
+      metadata.insert_or_assign(
+          std::string(kMetadataTimeToTerminalMsKey),
+          FormatMetadataDurationMs(base::TimeTicks::Now() - task_start_time_));
+    }
+    return metadata;
+  }
+
   // Sends the terminal update for the current turn, then ends the session.
   // COMPLETE, STOPPED and FAILED are terminal: after one, the task is over for
   // the server too, and nothing more arrives for it. So Chrome must not keep
@@ -752,7 +831,7 @@ class ExperimentalTriggeringUpdatesHandler
     CleanupAsync();
     // Send last: the update callback may end this session synchronously.
     SendTaskUpdateMessage(state, data_type, std::move(data),
-                          std::move(metadata));
+                          WithActuationDiagnosticMetadata(std::move(metadata)));
   }
 
   // Stops the work that this handler started and that may still be running:
@@ -780,9 +859,10 @@ class ExperimentalTriggeringUpdatesHandler
     }
     panel_opened_ = true;
     if (is_actuation_started_) {
+      const base::TimeDelta elapsed = base::TimeTicks::Now() - task_start_time_;
+      time_to_panel_open_ = elapsed;
       metric_reporter_.RecordMediumTimes(
-          "ExperimentalTriggering.Latency.ToSidePanelOpened",
-          base::TimeTicks::Now() - task_start_time_);
+          "ExperimentalTriggering.Latency.ToSidePanelOpened", elapsed);
     }
   }
 
@@ -790,9 +870,11 @@ class ExperimentalTriggeringUpdatesHandler
     if (!client_connected_) {
       client_connected_ = true;
       if (is_actuation_started_) {
+        const base::TimeDelta elapsed =
+            base::TimeTicks::Now() - task_start_time_;
+        time_to_client_connected_ = elapsed;
         metric_reporter_.RecordMediumTimes(
-            "ExperimentalTriggering.Latency.ToClientConnected",
-            base::TimeTicks::Now() - task_start_time_);
+            "ExperimentalTriggering.Latency.ToClientConnected", elapsed);
       }
     }
     SubscribeForTriggeringUpdates(std::move(instance));
@@ -800,7 +882,9 @@ class ExperimentalTriggeringUpdatesHandler
 
   void OnInvokeSuccess(int invoke_id) { pending_invoke_ids_.erase(invoke_id); }
 
-  void OnInvokeError(int invoke_id, GlicInvokeError error) {
+  void OnInvokeError(int invoke_id,
+                     GlicInvokeError error,
+                     std::string diagnostic_info) {
     pending_invoke_ids_.erase(invoke_id);
     if (error == GlicInvokeError::kSuperseded) {
       // Handlers are shared per context id, so a continuation or reconnect
@@ -819,7 +903,8 @@ class ExperimentalTriggeringUpdatesHandler
                            TaskUpdate::DataType::kErrorMessage,
                            GlicInvokeErrorToOutcome(error, client_connected_),
                            base::StrCat({"Glic invocation failed: ",
-                                         GlicInvokeErrorToString(error)}));
+                                         GlicInvokeErrorToString(error)}),
+                           BuildInvokeErrorMetadata(error, diagnostic_info));
       return;
     }
     DLOG(WARNING) << "Glic invocation failed with error: "
@@ -828,7 +913,8 @@ class ExperimentalTriggeringUpdatesHandler
                          TaskUpdate::DataType::kErrorMessage,
                          GlicInvokeErrorToOutcome(error, client_connected_),
                          base::StrCat({"Glic invocation failed: ",
-                                       GlicInvokeErrorToString(error)}));
+                                       GlicInvokeErrorToString(error)}),
+                         BuildInvokeErrorMetadata(error, diagnostic_info));
   }
 
   void OnDisconnect() {
@@ -892,9 +978,10 @@ class ExperimentalTriggeringUpdatesHandler
     options.on_success =
         base::BindOnce(&ExperimentalTriggeringUpdatesHandler::OnInvokeSuccess,
                        weak_ptr_factory_.GetWeakPtr(), invoke_id);
-    options.on_error =
+    options.SetOnErrorWithDiagnostics(
+        error_diagnostics_passkey_,
         base::BindOnce(&ExperimentalTriggeringUpdatesHandler::OnInvokeError,
-                       weak_ptr_factory_.GetWeakPtr(), invoke_id);
+                       weak_ptr_factory_.GetWeakPtr(), invoke_id));
 
     GlicInvokeWithAutoSubmitOptions auto_submit_options;
 #if BUILDFLAG(IS_ANDROID)
@@ -979,11 +1066,12 @@ class ExperimentalTriggeringUpdatesHandler
 
   void FailClientDisconnected() {
     CancelReconnectGrace();
-    HandleTerminalUpdate(TaskUpdate::State::kFailed,
-                         TaskUpdate::DataType::kErrorMessage,
-                         GlicExperimentalTriggeringExecutionOutcome::
-                             kClientDisconnectedBeforeResponse,
-                         "Client disconnected unexpectedly.");
+    HandleTerminalUpdate(
+        TaskUpdate::State::kFailed, TaskUpdate::DataType::kErrorMessage,
+        GlicExperimentalTriggeringExecutionOutcome::
+            kClientDisconnectedBeforeResponse,
+        "Client disconnected unexpectedly.",
+        BuildChromeErrorMetadata(kErrorCodeGlicClientDisconnected));
   }
 
   // The prepared target tab closed while waiting for the reloaded guest to
@@ -995,7 +1083,7 @@ class ExperimentalTriggeringUpdatesHandler
         TaskUpdate::State::kFailed, TaskUpdate::DataType::kErrorMessage,
         GlicExperimentalTriggeringExecutionOutcome::kInvokeErrorTabClosed,
         "Target tab closed before completion.",
-        {{"chrome_error_code", "GLIC_TAB_CLOSED"}});
+        BuildChromeErrorMetadata(kErrorCodeGlicTabClosed));
   }
 
   void CleanupAsync() {
@@ -1078,7 +1166,8 @@ class ExperimentalTriggeringUpdatesHandler
           TaskUpdate::DataType::kErrorMessage,
           "User is not opted in to experimental triggering.",
           request.task_metadata.has_value() ? &*request.task_metadata : nullptr,
-          sequence_generator_.GetNext());
+          sequence_generator_.GetNext(),
+          BuildUnavailableTriggeringMetadata(glic_service->enabling()));
     }
 
     // Mirrors the guard in ProcessExecuteActionsRequest. Handlers are shared
@@ -1124,14 +1213,22 @@ class ExperimentalTriggeringUpdatesHandler
               "No browser window found for current profile.",
               request.task_metadata.has_value() ? &*request.task_metadata
                                                 : nullptr,
-              sequence_generator_.GetNext());
+              sequence_generator_.GetNext(),
+              BuildChromeErrorMetadata(kErrorCodeEtNoBrowserWindow));
         }
       }
     }
 
     GlicInvokeOptions options =
         CreateInvokeOptions(request, browser_window, prepared_tab);
-    if (!is_continuation || task_start_time_.is_null()) {
+    if (!is_continuation && pending_invoke_ids_.empty()) {
+      panel_opened_ = false;
+      client_connected_ = false;
+      time_to_panel_open_.reset();
+      time_to_client_connected_.reset();
+      time_to_first_response_.reset();
+      task_start_time_ = base::TimeTicks::Now();
+    } else if (task_start_time_.is_null()) {
       task_start_time_ = base::TimeTicks::Now();
     }
     CancelReconnectGrace();
@@ -1424,14 +1521,15 @@ class ExperimentalTriggeringUpdatesHandler
           context_id_, TaskUpdate::State::kFailed,
           TaskUpdate::DataType::kErrorMessage,
           "Failed to stop task due to missing glic instance.", request_metadata,
-          sequence_generator_.GetNext());
+          sequence_generator_.GetNext(), WithActuationDiagnosticMetadata({}));
     } else {
       instance_->GetActorTaskManager()->CancelTask();
       result_logger.set_result(
           GlicExperimentalTriggeringIncomingMessageResult::kSuccess);
       response = CreateResponseMessage(context_id_, TaskUpdate::State::kStopped,
                                        std::nullopt, "", request_metadata,
-                                       sequence_generator_.GetNext());
+                                       sequence_generator_.GetNext(),
+                                       WithActuationDiagnosticMetadata({}));
     }
 
     // If task is not yet started by glic session or is in a pending state,
@@ -1493,7 +1591,8 @@ class ExperimentalTriggeringUpdatesHandler
           context_id_, TaskUpdate::State::kFailed,
           TaskUpdate::DataType::kErrorMessage,
           "User is not opted in to experimental triggering.", task_metadata,
-          sequence_generator_.GetNext());
+          sequence_generator_.GetNext(),
+          BuildUnavailableTriggeringMetadata(glic_service->enabling()));
     }
 
     if (actions_runner_ || instance_) {
@@ -1524,15 +1623,15 @@ class ExperimentalTriggeringUpdatesHandler
     // with a URL allowlist leaves CanActOnWeb() true precisely so that
     // per-URL evaluation gets to make the decision. A profile without a policy
     // checker has no actor service backing it, so it cannot act either.
-    if (!glic_service->HasActorPolicyChecker() ||
-        !glic_service->actor_policy_checker().CanActOnWeb()) {
+    if (!CanActOnWeb(*glic_service)) {
       result_logger.set_result(
           GlicExperimentalTriggeringIncomingMessageResult::kCannotActOnWeb);
       return CreateResponseMessage(
           context_id_, TaskUpdate::State::kFailed,
           TaskUpdate::DataType::kErrorMessage,
           "Acting on the web is not allowed for this profile.", task_metadata,
-          sequence_generator_.GetNext());
+          sequence_generator_.GetNext(),
+          BuildChromeErrorMetadata(kErrorCodeEtCannotActOnWeb));
     }
 
     actor::TaskSourceInfo source_info(actor::TaskSourceInfo::Client::kGlic,
@@ -1798,8 +1897,10 @@ class ExperimentalTriggeringUpdatesHandler
       update_callback_.Run(std::move(response));
     }
   }
+
   std::string context_id_;
   InvokeWithAutoSubmitPasskey passkey_;
+  InvokeErrorDiagnosticsPasskey error_diagnostics_passkey_;
   base::WeakPtr<GlicExperimentalTriggeringCoordinator> coordinator_;
   base::WeakPtr<GlicInstance> instance_;
   base::CallbackListSubscription actuating_subscription_;
@@ -1835,6 +1936,9 @@ class ExperimentalTriggeringUpdatesHandler
   int next_invoke_id_ = 0;
   base::TimeTicks task_start_time_;
   base::TimeTicks turn_start_time_;
+  std::optional<base::TimeDelta> time_to_panel_open_;
+  std::optional<base::TimeDelta> time_to_client_connected_;
+  std::optional<base::TimeDelta> time_to_first_response_;
 
   GlicMetricReporter metric_reporter_;
 
@@ -1926,11 +2030,17 @@ void GlicExperimentalTriggeringCoordinator::OnProtoMessage(
   if (proto.has_glic_experimental_triggering_version() &&
       (!local_version.has_value() ||
        proto.glic_experimental_triggering_version() > *local_version)) {
+    std::map<std::string, std::string> metadata;
+    if (!local_version.has_value() && glic_service &&
+        proto.glic_experimental_triggering_version() <=
+            GlicEnabling::kExperimentalTriggeringProtocolVersion) {
+      metadata = BuildUnavailableTriggeringMetadata(glic_service->enabling());
+    }
     RejectProtoMessage(context_id, proto, result_logger,
                        GlicExperimentalTriggeringIncomingMessageResult::
                            kVersionMismatchOrUnavailable,
                        "Rejected: version mismatch or unavailable.",
-                       std::move(response_callback));
+                       std::move(response_callback), std::move(metadata));
     return;
   }
 
@@ -2131,6 +2241,7 @@ GlicExperimentalTriggeringCoordinator::OnRequest(
                      std::make_unique<ExperimentalTriggeringUpdatesHandler>(
                          profile_, context_id,
                          InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+                         InvokeErrorDiagnosticsPasskeyProvider::GetPassKey(),
                          weak_ptr_factory_.GetWeakPtr()))
             .first->second.get();
   }
