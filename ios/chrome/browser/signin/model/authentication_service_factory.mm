@@ -46,7 +46,7 @@ std::unique_ptr<KeyedService> BuildAuthenticationServiceForTesting(
 }  // namespace
 
 // static
-AuthenticationServiceFactory::TestingFactoryByRef
+AuthenticationServiceFactory::TestingFactory
 AuthenticationServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildAuthenticationServiceForTesting);
 }

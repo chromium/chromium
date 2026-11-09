@@ -26,7 +26,7 @@ std::unique_ptr<KeyedService> BuildPageClassificationService(
 }  // namespace
 
 // static
-PageClassificationServiceFactory::TestingFactoryByRef
+PageClassificationServiceFactory::TestingFactory
 PageClassificationServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildPageClassificationService);
 }

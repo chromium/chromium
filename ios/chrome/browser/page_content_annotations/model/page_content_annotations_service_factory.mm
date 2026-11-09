@@ -82,7 +82,7 @@ PageContentAnnotationsServiceFactory::PageContentAnnotationsServiceFactory(
 }
 
 // static
-PageContentAnnotationsServiceFactory::TestingFactoryByRef
+PageContentAnnotationsServiceFactory::TestingFactory
 PageContentAnnotationsServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildPageContentAnnotationsService);
 }

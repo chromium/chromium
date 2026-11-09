@@ -36,7 +36,7 @@ class SyncServiceFactory final
 
   // Returns the default factory, mainly for tests that want to use a real
   // SyncServiceImpl (as opposed to, say, a TestSyncService).
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.

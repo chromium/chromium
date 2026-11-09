@@ -18,7 +18,7 @@ class IOSChromeFaviconLoaderFactory final
 
   // Returns the default factory used to build FaviconLoader. Can be registered
   // with SetTestingFactory to use the FaviconService instance during testing.
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.

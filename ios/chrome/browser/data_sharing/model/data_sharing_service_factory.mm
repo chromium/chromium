@@ -54,7 +54,7 @@ DataSharingServiceFactory::DataSharingServiceFactory(PassKey key)
 }
 
 // static
-DataSharingServiceFactory::TestingFactoryByRef
+DataSharingServiceFactory::TestingFactory
 DataSharingServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildDataSharingService);
 }

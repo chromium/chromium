@@ -35,8 +35,7 @@ std::unique_ptr<KeyedService> BuildPhotosService(ProfileIOS& profile) {
 }  // namespace
 
 // static
-PhotosServiceFactory::TestingFactoryByRef
-PhotosServiceFactory::GetDefaultFactory() {
+PhotosServiceFactory::TestingFactory PhotosServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildPhotosService);
 }
 

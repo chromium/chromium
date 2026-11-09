@@ -18,7 +18,7 @@ class IOSChromeSafetyCheckManagerFactory final
           IOSChromeSafetyCheckManager> {
  public:
   explicit IOSChromeSafetyCheckManagerFactory(PassKey key);
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.

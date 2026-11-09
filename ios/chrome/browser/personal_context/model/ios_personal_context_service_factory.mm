@@ -37,7 +37,7 @@ std::unique_ptr<KeyedService> BuildPersonalContextService(ProfileIOS& profile) {
 }  // namespace
 
 // static
-IOSPersonalContextServiceFactory::TestingFactoryByRef
+IOSPersonalContextServiceFactory::TestingFactory
 IOSPersonalContextServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildPersonalContextService);
 }

@@ -91,7 +91,7 @@ std::unique_ptr<KeyedService> BuildAimEligibilityService(ProfileIOS& profile) {
 }  // namespace
 
 // static
-IOSChromeAimEligibilityServiceFactory::TestingFactoryByRef
+IOSChromeAimEligibilityServiceFactory::TestingFactory
 IOSChromeAimEligibilityServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildAimEligibilityService);
 }

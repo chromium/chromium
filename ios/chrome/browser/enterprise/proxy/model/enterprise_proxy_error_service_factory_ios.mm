@@ -30,7 +30,7 @@ std::unique_ptr<KeyedService> BuildEnterpriseProxyErrorService(
 }  // namespace
 
 // static
-EnterpriseProxyErrorServiceFactoryIOS::TestingFactoryByRef
+EnterpriseProxyErrorServiceFactoryIOS::TestingFactory
 EnterpriseProxyErrorServiceFactoryIOS::GetDefaultFactory() {
   return base::BindOnce(&BuildEnterpriseProxyErrorService);
 }

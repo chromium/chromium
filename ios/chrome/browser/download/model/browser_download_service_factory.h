@@ -17,7 +17,7 @@ class BrowserDownloadServiceFactory final
   explicit BrowserDownloadServiceFactory(PassKey key);
 
   // Returns a default testing factory.
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS overrides:

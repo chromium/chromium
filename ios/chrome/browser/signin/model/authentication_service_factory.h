@@ -24,7 +24,7 @@ class AuthenticationServiceFactory final
   explicit AuthenticationServiceFactory(PassKey key);
 
   // Returns the default factory, useful in tests.
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.

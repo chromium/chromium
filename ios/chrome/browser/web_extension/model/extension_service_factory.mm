@@ -59,7 +59,7 @@ std::unique_ptr<KeyedService> BuildExtensionService(ProfileIOS& profile) {
 }  // namespace
 
 // static
-ExtensionServiceFactory::TestingFactoryByRef
+ExtensionServiceFactory::TestingFactory
 ExtensionServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildExtensionService);
 }

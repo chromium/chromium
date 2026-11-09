@@ -41,7 +41,7 @@ PrivateInsightsServiceFactory::PrivateInsightsServiceFactory(PassKey key)
           TestingCreation::kNoServiceForTests) {}
 
 // static
-PrivateInsightsServiceFactory::TestingFactoryByRef
+PrivateInsightsServiceFactory::TestingFactory
 PrivateInsightsServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildPrivateInsightsService);
 }

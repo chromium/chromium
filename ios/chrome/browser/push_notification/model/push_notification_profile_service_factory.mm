@@ -47,7 +47,7 @@ PushNotificationProfileServiceFactory::BuildServiceInstanceFor(
 }
 
 // static
-PushNotificationProfileServiceFactory::TestingFactoryByRef
+PushNotificationProfileServiceFactory::TestingFactory
 PushNotificationProfileServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildInstance);
 }

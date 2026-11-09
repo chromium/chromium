@@ -47,7 +47,7 @@ ChildAccountServiceFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
 }
 
 // static
-ChildAccountServiceFactory::TestingFactoryByRef
+ChildAccountServiceFactory::TestingFactory
 ChildAccountServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&CreateChildAccountService);
 }

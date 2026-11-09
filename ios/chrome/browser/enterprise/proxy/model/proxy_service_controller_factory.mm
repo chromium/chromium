@@ -29,7 +29,7 @@ std::unique_ptr<KeyedService> BuildProxyServiceController(ProfileIOS& profile) {
 }  // namespace
 
 // static
-ProxyServiceControllerFactory::TestingFactoryByRef
+ProxyServiceControllerFactory::TestingFactory
 ProxyServiceControllerFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildProxyServiceController);
 }

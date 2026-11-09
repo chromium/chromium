@@ -18,7 +18,7 @@ class ProxyServiceControllerFactory final
 
   // Returns the default factory used to build `ProxyServiceController`. Can be
   // registered with `AddTestingFactory` to use real instances during testing.
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // `ProfileKeyedServiceFactoryIOS` implementation:

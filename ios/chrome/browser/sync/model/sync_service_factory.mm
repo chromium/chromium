@@ -320,8 +320,7 @@ SyncServiceFactory::GetAllSyncServices() {
 }
 
 // static
-SyncServiceFactory::TestingFactoryByRef
-SyncServiceFactory::GetDefaultFactory() {
+SyncServiceFactory::TestingFactory SyncServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildSyncService);
 }
 

@@ -118,7 +118,7 @@ OptimizationGuideServiceFactory::OptimizationGuideServiceFactory(PassKey key)
 }
 
 // static
-OptimizationGuideServiceFactory::TestingFactoryByRef
+OptimizationGuideServiceFactory::TestingFactory
 OptimizationGuideServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildOptimizationGuideService);
 }

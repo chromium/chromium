@@ -41,7 +41,7 @@ std::unique_ptr<KeyedService> BuildSendTabToSelfService(ProfileIOS& profile) {
 }  // anonymous namespace
 
 // static
-SendTabToSelfSyncServiceFactory::TestingFactoryByRef
+SendTabToSelfSyncServiceFactory::TestingFactory
 SendTabToSelfSyncServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildSendTabToSelfService);
 }

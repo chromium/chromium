@@ -34,7 +34,7 @@ std::unique_ptr<KeyedService> BuildInProcessCategoryClassificationService(
 }  // namespace
 
 // static
-InProcessCategoryClassificationServiceFactory::TestingFactoryByRef
+InProcessCategoryClassificationServiceFactory::TestingFactory
 InProcessCategoryClassificationServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildInProcessCategoryClassificationService);
 }

@@ -24,7 +24,7 @@ std::unique_ptr<KeyedService> BuildRealtimeReportingClient(
 }  // namespace
 
 // static
-IOSRealtimeReportingClientFactory::TestingFactoryByRef
+IOSRealtimeReportingClientFactory::TestingFactory
 IOSRealtimeReportingClientFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildRealtimeReportingClient);
 }

@@ -19,7 +19,7 @@ std::unique_ptr<KeyedService> BuildProfileIdService(ProfileIOS& profile) {
 }  // namespace
 
 // static
-ProfileIdServiceFactoryIOS::TestingFactoryByRef
+ProfileIdServiceFactoryIOS::TestingFactory
 ProfileIdServiceFactoryIOS::GetDefaultFactory() {
   return base::BindOnce(&BuildProfileIdService);
 }

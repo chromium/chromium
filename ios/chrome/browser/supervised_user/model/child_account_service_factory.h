@@ -16,7 +16,7 @@ class ChildAccountServiceFactory final
           supervised_user::ChildAccountService> {
  public:
   explicit ChildAccountServiceFactory(PassKey key);
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.

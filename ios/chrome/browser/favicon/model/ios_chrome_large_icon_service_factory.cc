@@ -36,7 +36,7 @@ std::unique_ptr<KeyedService> BuildLargeIconService(ProfileIOS& profile) {
 }  // namespace
 
 // static
-IOSChromeLargeIconServiceFactory::TestingFactoryByRef
+IOSChromeLargeIconServiceFactory::TestingFactory
 IOSChromeLargeIconServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildLargeIconService);
 }

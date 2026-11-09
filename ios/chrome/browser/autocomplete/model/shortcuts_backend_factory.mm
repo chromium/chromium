@@ -37,7 +37,7 @@ scoped_refptr<RefcountedKeyedService> BuildShortcutsBackend(
 }  // namespace
 
 // static
-ShortcutsBackendFactory::TestingFactoryByRef
+ShortcutsBackendFactory::TestingFactory
 ShortcutsBackendFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildShortcutsBackend);
 }

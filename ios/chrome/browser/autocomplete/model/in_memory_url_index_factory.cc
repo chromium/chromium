@@ -46,7 +46,7 @@ InMemoryURLIndexFactory::InMemoryURLIndexFactory(PassKey key)
 }
 
 // static
-InMemoryURLIndexFactory::TestingFactoryByRef
+InMemoryURLIndexFactory::TestingFactory
 InMemoryURLIndexFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildInMemoryURLIndex);
 }

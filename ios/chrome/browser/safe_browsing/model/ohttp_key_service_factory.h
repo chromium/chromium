@@ -18,7 +18,7 @@ class OhttpKeyServiceFactory final : public TypedProfileKeyedServiceFactoryIOS<
 
   // Returns the default factory. Can be used to force instantiation during
   // testing.
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.

@@ -36,7 +36,7 @@ GeminiCapabilitiesManagerFactory::GeminiCapabilitiesManagerFactory(PassKey key)
 }
 
 // static
-GeminiCapabilitiesManagerFactory::TestingFactoryByRef
+GeminiCapabilitiesManagerFactory::TestingFactory
 GeminiCapabilitiesManagerFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildGeminiCapabilitiesManager);
 }

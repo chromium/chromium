@@ -44,7 +44,7 @@ std::unique_ptr<KeyedService> BuildEnterpriseProxyService(ProfileIOS& profile) {
 }  // namespace
 
 // static
-EnterpriseProxyServiceFactoryIOS::TestingFactoryByRef
+EnterpriseProxyServiceFactoryIOS::TestingFactory
 EnterpriseProxyServiceFactoryIOS::GetDefaultFactory() {
   return base::BindOnce(&BuildEnterpriseProxyService);
 }

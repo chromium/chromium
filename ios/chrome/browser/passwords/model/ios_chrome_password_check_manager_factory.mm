@@ -46,7 +46,7 @@ IOSChromePasswordCheckManagerFactory::IOSChromePasswordCheckManagerFactory(
 }
 
 // static
-IOSChromePasswordCheckManagerFactory::TestingFactoryByRef
+IOSChromePasswordCheckManagerFactory::TestingFactory
 IOSChromePasswordCheckManagerFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildInstance);
 }

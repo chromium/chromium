@@ -27,7 +27,7 @@ std::unique_ptr<KeyedService> BuildTabRestoreService(ProfileIOS& profile) {
 }  // namespace
 
 // static
-IOSChromeTabRestoreServiceFactory::TestingFactoryByRef
+IOSChromeTabRestoreServiceFactory::TestingFactory
 IOSChromeTabRestoreServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildTabRestoreService);
 }

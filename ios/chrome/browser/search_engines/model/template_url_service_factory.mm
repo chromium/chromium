@@ -61,7 +61,7 @@ std::unique_ptr<KeyedService> BuildTemplateURLService(ProfileIOS& profile) {
 }  // namespace
 
 // static
-TemplateURLServiceFactory::TestingFactoryByRef
+TemplateURLServiceFactory::TestingFactory
 TemplateURLServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildTemplateURLService);
 }

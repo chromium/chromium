@@ -27,7 +27,7 @@ std::unique_ptr<KeyedService> BuildPlaceholderService(ProfileIOS& profile) {
 }  // namespace
 
 // static
-PlaceholderServiceFactory::TestingFactoryByRef
+PlaceholderServiceFactory::TestingFactory
 PlaceholderServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildPlaceholderService);
 }

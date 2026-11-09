@@ -24,7 +24,7 @@ class TipsManagerIOSFactory final
 
   // Returns the default factory used to build `TipsManagerIOS`. Can be
   // registered with `SetTestingFactory()` to use real instances during testing.
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // `ProfileKeyedServiceFactoryIOS` implementation.

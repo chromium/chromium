@@ -39,8 +39,7 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(ProfileIOS& profile) {
 }  // namespace
 
 // static
-BookmarkModelFactory::TestingFactoryByRef
-BookmarkModelFactory::GetDefaultFactory() {
+BookmarkModelFactory::TestingFactory BookmarkModelFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildBookmarkModel);
 }
 

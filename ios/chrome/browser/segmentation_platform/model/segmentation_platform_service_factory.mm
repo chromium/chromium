@@ -271,7 +271,7 @@ SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
 }
 
 // static
-SegmentationPlatformServiceFactory::TestingFactoryByRef
+SegmentationPlatformServiceFactory::TestingFactory
 SegmentationPlatformServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildSegmentationPlatformService);
 }

@@ -18,7 +18,7 @@ class GeminiCapabilitiesManagerFactory final
   explicit GeminiCapabilitiesManagerFactory(PassKey key);
 
   // Returns the default factory used to build GeminiCapabilitiesManager.
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.

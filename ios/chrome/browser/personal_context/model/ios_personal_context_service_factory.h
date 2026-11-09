@@ -14,7 +14,7 @@ class IOSPersonalContextServiceFactory final
           personal_context::PersonalContextService> {
  public:
   explicit IOSPersonalContextServiceFactory(PassKey key);
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS:

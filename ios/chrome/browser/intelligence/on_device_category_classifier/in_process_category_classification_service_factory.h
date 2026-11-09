@@ -18,7 +18,7 @@ class InProcessCategoryClassificationServiceFactory final
           InProcessCategoryClassificationService> {
  public:
   explicit InProcessCategoryClassificationServiceFactory(PassKey key);
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.

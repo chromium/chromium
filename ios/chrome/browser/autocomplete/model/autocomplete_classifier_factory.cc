@@ -34,7 +34,7 @@ std::unique_ptr<KeyedService> BuildAutocompleteClassifier(ProfileIOS& profile) {
 }  // namespace
 
 // static
-AutocompleteClassifierFactory::TestingFactoryByRef
+AutocompleteClassifierFactory::TestingFactory
 AutocompleteClassifierFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildAutocompleteClassifier);
 }

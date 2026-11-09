@@ -17,7 +17,7 @@ class IOSChromePasswordCheckManagerFactory final
   explicit IOSChromePasswordCheckManagerFactory(PassKey key);
 
   // Returns the default factory for tests.
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // RefcountedProfileKeyedServiceFactoryIOS implementation.

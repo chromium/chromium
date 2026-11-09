@@ -30,7 +30,7 @@ std::unique_ptr<KeyedService> BuildOnDevicePageClassificationService(
 }  // namespace
 
 // static
-OnDevicePageClassificationServiceFactory::TestingFactoryByRef
+OnDevicePageClassificationServiceFactory::TestingFactory
 OnDevicePageClassificationServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildOnDevicePageClassificationService);
 }

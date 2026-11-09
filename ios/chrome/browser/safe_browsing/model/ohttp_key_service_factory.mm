@@ -42,7 +42,7 @@ std::unique_ptr<KeyedService> BuildOhttpKeyService(ProfileIOS& profile) {
 }  // namespace
 
 // static
-OhttpKeyServiceFactory::TestingFactoryByRef
+OhttpKeyServiceFactory::TestingFactory
 OhttpKeyServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildOhttpKeyService);
 }

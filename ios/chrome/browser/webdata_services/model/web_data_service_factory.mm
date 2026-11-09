@@ -119,7 +119,7 @@ scoped_refptr<TokenWebData> WebDataServiceFactory::GetTokenWebDataForProfile(
 }
 
 // static
-WebDataServiceFactory::TestingFactoryByRef
+WebDataServiceFactory::TestingFactory
 WebDataServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildWebDataService);
 }

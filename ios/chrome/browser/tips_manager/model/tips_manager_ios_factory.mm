@@ -32,7 +32,7 @@ TipsManagerIOSFactory::TipsManagerIOSFactory(PassKey key)
           ProfileSelection::kOwnInstanceInIncognito) {}
 
 // static
-TipsManagerIOSFactory::TestingFactoryByRef
+TipsManagerIOSFactory::TestingFactory
 TipsManagerIOSFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildServiceInstance);
 }

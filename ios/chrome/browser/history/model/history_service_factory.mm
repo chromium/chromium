@@ -63,7 +63,7 @@ std::unique_ptr<KeyedService> BuildHistoryService(ProfileIOS& profile) {
 }  // namespace
 
 // static
-HistoryServiceFactory::TestingFactoryByRef
+HistoryServiceFactory::TestingFactory
 HistoryServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildHistoryService);
 }

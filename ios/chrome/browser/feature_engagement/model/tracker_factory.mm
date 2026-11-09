@@ -20,7 +20,7 @@ TrackerFactory::TrackerFactory(PassKey key)
           ProfileSelection::kRedirectedInIncognito) {}
 
 // static
-TrackerFactory::TestingFactoryByRef TrackerFactory::GetDefaultFactory() {
+TrackerFactory::TestingFactory TrackerFactory::GetDefaultFactory() {
   return base::BindOnce(&CreateFeatureEngagementTracker);
 }
 

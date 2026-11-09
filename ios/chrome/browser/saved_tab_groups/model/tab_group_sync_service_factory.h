@@ -19,7 +19,7 @@ class TabGroupSyncServiceFactory final
   explicit TabGroupSyncServiceFactory(PassKey key);
 
   // Return the default factory.
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(

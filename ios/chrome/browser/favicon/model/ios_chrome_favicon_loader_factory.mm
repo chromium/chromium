@@ -21,7 +21,7 @@ std::unique_ptr<KeyedService> BuildFaviconLoader(ProfileIOS& profile) {
 }  // namespace
 
 // static
-IOSChromeFaviconLoaderFactory::TestingFactoryByRef
+IOSChromeFaviconLoaderFactory::TestingFactory
 IOSChromeFaviconLoaderFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildFaviconLoader);
 }

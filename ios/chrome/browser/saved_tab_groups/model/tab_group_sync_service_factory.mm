@@ -89,7 +89,7 @@ std::unique_ptr<KeyedService> BuildService(
 }  // namespace
 
 // static
-TabGroupSyncServiceFactory::TestingFactoryByRef
+TabGroupSyncServiceFactory::TestingFactory
 TabGroupSyncServiceFactory::GetDefaultFactory() {
   // GetSyntheticFieldTrialHelper() returns a pointer to a singleton that is
   // never deallocated, so it is safe to use base::Unretained(...) here.

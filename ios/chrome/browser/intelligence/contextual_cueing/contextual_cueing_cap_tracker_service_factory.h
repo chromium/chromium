@@ -20,7 +20,7 @@ class ContextualCueingCapTrackerServiceFactory final
           ContextualCueingCapTrackerService> {
  public:
   explicit ContextualCueingCapTrackerServiceFactory(PassKey key);
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS:

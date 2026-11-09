@@ -18,7 +18,7 @@ class TrackerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<TrackerFactory, Tracker> {
  public:
   explicit TrackerFactory(PassKey key);
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.

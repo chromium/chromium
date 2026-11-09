@@ -25,7 +25,7 @@ std::unique_ptr<KeyedService> BuildFaviconService(ProfileIOS& profile) {
 namespace ios {
 
 // static
-FaviconServiceFactory::TestingFactoryByRef
+FaviconServiceFactory::TestingFactory
 FaviconServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildFaviconService);
 }

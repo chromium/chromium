@@ -20,7 +20,7 @@ class DeviceTrustServiceFactoryIOS final
 
   // Returns the production factory for tests that explicitly need the real
   // `DeviceTrustService` object graph.
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS:

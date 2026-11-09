@@ -19,7 +19,7 @@ class PhotosServiceFactory final
   explicit PhotosServiceFactory(PassKey key);
 
   // Returns the default factory.
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.

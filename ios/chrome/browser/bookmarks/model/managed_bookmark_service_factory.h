@@ -18,7 +18,7 @@ class ManagedBookmarkServiceFactory final
   explicit ManagedBookmarkServiceFactory(PassKey key);
 
   // Returns the default factory, useful in tests where it's null by default.
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.

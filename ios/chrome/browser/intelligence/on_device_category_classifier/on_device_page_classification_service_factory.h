@@ -18,7 +18,7 @@ class OnDevicePageClassificationServiceFactory final
           OnDevicePageClassificationService> {
  public:
   explicit OnDevicePageClassificationServiceFactory(PassKey key);
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.

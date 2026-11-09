@@ -22,7 +22,7 @@ std::unique_ptr<KeyedService> BuildBrowserDownloadService(ProfileIOS& profile) {
 }  // namespace
 
 // static
-BrowserDownloadServiceFactory::TestingFactoryByRef
+BrowserDownloadServiceFactory::TestingFactory
 BrowserDownloadServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildBrowserDownloadService);
 }

@@ -16,7 +16,7 @@ class ExtensionServiceFactory final
   explicit ExtensionServiceFactory(PassKey key);
 
   // Returns the default factory used to build `ExtensionService`.
-  static TestingFactoryByRef GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS:

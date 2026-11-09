@@ -30,7 +30,7 @@ std::unique_ptr<KeyedService> BuildEnterpriseNetworkAuthService(
 }  // namespace
 
 // static
-EnterpriseNetworkAuthServiceFactoryIOS::TestingFactoryByRef
+EnterpriseNetworkAuthServiceFactoryIOS::TestingFactory
 EnterpriseNetworkAuthServiceFactoryIOS::GetDefaultFactory() {
   return base::BindOnce(&BuildEnterpriseNetworkAuthService);
 }

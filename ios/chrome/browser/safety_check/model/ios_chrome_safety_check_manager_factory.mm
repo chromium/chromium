@@ -31,7 +31,7 @@ std::unique_ptr<KeyedService> BuildServiceInstance(ProfileIOS& profile) {
 }  // namespace
 
 // static
-IOSChromeSafetyCheckManagerFactory::TestingFactoryByRef
+IOSChromeSafetyCheckManagerFactory::TestingFactory
 IOSChromeSafetyCheckManagerFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildServiceInstance);
 }

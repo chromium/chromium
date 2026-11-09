@@ -77,7 +77,7 @@ std::unique_ptr<KeyedService> BuildManagedBookmarkModel(ProfileIOS& profile) {
 }  // namespace
 
 // static
-ManagedBookmarkServiceFactory::TestingFactoryByRef
+ManagedBookmarkServiceFactory::TestingFactory
 ManagedBookmarkServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildManagedBookmarkModel);
 }
