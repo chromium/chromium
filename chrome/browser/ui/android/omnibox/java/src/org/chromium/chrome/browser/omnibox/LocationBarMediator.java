@@ -3273,7 +3273,7 @@ public class LocationBarMediator
         assert mCurrentInput != null;
         // We set the selection to SELECT_END so that on resume, when we set the selection to
         // SELECT_ALL in @see #beginOrResumeInput(boolean), a view update actually occurs (the
-        // UrlBarMediator guards against duplicate updates.
+        // UrlBarMediator guards against duplicate updates).
         mCurrentInput
                 .commitPreviewText()
                 .setSelection(TextSelection.SELECT_END)
