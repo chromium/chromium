@@ -358,6 +358,7 @@ source_set("unit_tests") {
     "reporting/saas_usage/saas_usage_tab_helper_unittest.mm",
     "restrict_accounts_policy_handler_unittest.cc",
     "status_provider/user_cloud_policy_status_provider_unittest.mm",
+    "variations_restrict_parameter_policy_unittest.mm",
   ]
   deps = [
     ":browser_agent",
@@ -378,6 +379,7 @@ source_set("unit_tests") {
     "//components/enterprise/browser/groups:features",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/client_certificates/core",
+    "//components/metrics:test_support",
     "//components/policy:generated",
     "//components/policy/core/browser:pref_mapping_test_support",
     "//components/policy/core/browser:test_support",
@@ -392,6 +394,8 @@ source_set("unit_tests") {
     "//components/sync:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
+    "//components/variations",
+    "//components/variations/service",
     "//google_apis",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/profile",
@@ -420,6 +424,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/browser/variations/model",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//net",
@@ -428,6 +433,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
+    "//url",
   ]
 }
 

@@ -117,5 +117,6 @@
 //ios/chrome/test/data/policy/pref_mapping/UserContextAwareAccessSignalsAllowlist.json
 //ios/chrome/test/data/policy/pref_mapping/UserSecurityAuthenticatedReporting.json
 //ios/chrome/test/data/policy/pref_mapping/UserSecuritySignalsReporting.json
+//ios/chrome/test/data/policy/pref_mapping/VariationsRestrictParameter.json
 //ios/chrome/test/data/policy/pref_mapping/WatermarkStyle.json
 //ios/chrome/test/data/policy/pref_mapping/WebAnnotations.json

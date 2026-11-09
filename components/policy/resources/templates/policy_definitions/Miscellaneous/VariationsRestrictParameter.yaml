@@ -20,5 +20,6 @@ schema:
 supported_on:
 - chrome.*:27-
 - android:34-
+- ios:159-
 tags: []
 type: string

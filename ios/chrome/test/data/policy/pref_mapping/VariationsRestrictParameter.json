@@ -1,0 +1,15 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "variations_restrict_parameter",
+      "pref_location": "local_state",
+      "default_value": "",
+      "values_to_test": [
+        "restricted"
+      ]
+    }
+  }
+]

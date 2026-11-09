@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/policy/model/enterprise_policy_test_helper.h"
 
+#include "base/check.h"
+#include "base/files/file_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -35,6 +37,7 @@ EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
   scoped_refptr<PrefRegistrySimple> local_state_registry(
       new PrefRegistrySimple);
   RegisterLocalStatePrefs(local_state_registry.get());
+  CHECK(base::CreateDirectory(state_directory_path));
   local_state_ = CreateLocalState(
       state_directory_path.Append("TestLocalState"),
       base::SingleThreadTaskRunner::GetCurrentDefault().get(),

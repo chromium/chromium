@@ -33,6 +33,13 @@ specific_include_rules = {
   ],
   "^enterprise_policy_test_helper.cc": [
     "+ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h",
-  ]
+  ],
+  "^variations_restrict_parameter_policy_unittest.mm": [
+    "+components/metrics/metrics_state_manager.h",
+    "+components/metrics/test/test_enabled_state_provider.h",
+    "+components/variations/pref_names.h",
+    "+components/variations/service/variations_service.h",
+    "+ios/chrome/browser/variations/model/ios_chrome_variations_service_client.h",
+  ],
 }
 
