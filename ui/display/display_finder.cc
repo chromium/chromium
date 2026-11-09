@@ -39,7 +39,9 @@ const Display* FindDisplayNearestPoint(const Displays& displays,
 
 const Display* FindDisplayWithBiggestIntersection(const Displays& displays,
                                                   const gfx::Rect& rect) {
-  CHECK(!displays.empty(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/581819285): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!displays.empty());
   int max_area = 0;
   const Display* matching = nullptr;
   for (const auto& display : displays) {
