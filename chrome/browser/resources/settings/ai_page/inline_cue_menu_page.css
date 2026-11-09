@@ -99,27 +99,23 @@
 .preview-pill {
   align-items: center;
   background: var(--cr-card-background-color);
-  border-radius: 12px;
+  border-end-end-radius: 15px;
+  border-end-start-radius: 0;
+  border-start-end-radius: 15px;
+  border-start-start-radius: 15px;
   box-shadow:
       0 1px 3px 0.2px rgba(var(--google-blue-600-rgb), 0.4),
       0 2px 7px 0 rgba(var(--google-blue-600-rgb), 0.4);
   box-sizing: border-box;
-  color: var(--cr-primary-text-color);
   display: inline-flex;
-  gap: 7px;
-  height: 36px;
-  left: calc(anchor(right) - 4px);
-  padding-inline-end: 10px;
-  padding-inline-start: 10px;
+  height: 30px;
+  inset-inline-start: calc(anchor(end) - 4px);
+  justify-content: center;
   position: absolute;
   position-anchor: --highlight-box;
   top: calc(anchor(top) - 22px);
-  white-space: nowrap;
+  width: 30px;
   z-index: 4;
-}
-
-:host-context([dir=rtl]) .preview-pill {
-  left: calc(anchor(left) - 16px);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -130,21 +126,9 @@
   }
 }
 
-.preview-spark-icon {
-  background-image:
-      url('chrome://settings/images/gemini_spark.svg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  flex-shrink: 0;
-  height: 17px;
-  width: 17px;
-}
-
-.preview-pill-text {
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 24px;
+#previewChipIcon {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
 }
 
 .preview-cursor {

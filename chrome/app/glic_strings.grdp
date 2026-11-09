@@ -183,9 +183,6 @@
   <message name="IDS_SETTINGS_GLIC_INLINE_CUE_MENU_PREVIEW_TEXT" desc="Text displayed in the preview box with highlighted words.">
     Chrome is made possible by the Chromium open source project and other <ph name="BEGIN_HIGHLIGHT">&lt;span class="preview-highlight-box"&gt;&lt;span class="preview-highlight-text"&gt;</ph>open source<ph name="END_HIGHLIGHT">&lt;/span&gt;&lt;/span&gt;</ph> software.
   </message>
-  <message name="IDS_SETTINGS_GLIC_INLINE_CUE_MENU_PREVIEW_PILL" desc="Text inside the floating pill in the preview box.">
-    Explain
-  </message>
   <message name="IDS_SETTINGS_GLIC_INLINE_CUE_MENU_BLOCKED_EXCEPTIONS" desc="Header for the list of sites blocked from showing the inline cue menu.">
     Not allowed to show text actions
   </message>

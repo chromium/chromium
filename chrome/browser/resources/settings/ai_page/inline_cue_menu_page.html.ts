@@ -19,10 +19,9 @@ export function getHtml(this: SettingsInlineCueMenuPageElement) {
       </div>
     </div>
     <div class="preview-pill">
-      <div class="preview-spark-icon"></div>
-      <span class="preview-pill-text">
-        $i18n{siteSettingsInlineCueMenuPreviewPill}
-      </span>
+      <cr-icon id="previewChipIcon" icon="${this.previewChipIcon_}"
+          aria-hidden="true">
+      </cr-icon>
     </div>
     <cr-icon class="preview-cursor" icon="settings20:text-select-cursor"
         aria-hidden="true">

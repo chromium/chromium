@@ -24,7 +24,11 @@ suite('InlineCueMenuPage', function() {
   let page: SettingsInlineCueMenuPageElement;
 
   setup(async function() {
-    loadTimeData.overrideValues({enableQuickAnswersSelectionSuggestions: true});
+    loadTimeData.overrideValues({
+      enableQuickAnswersSelectionSuggestions: true,
+      glicAssetsV2Enabled: false,
+      inlineCueMenuUsePromptBoxIcon: false,
+    });
     const prefsBrowserProxy = new TestPrefsBrowserProxy([{
       key: EXPLAIN_PREF_KEY,
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
@@ -189,5 +193,27 @@ suite('InlineCueMenuPage', function() {
     await acceptExplainFre();
     await initPage();
     assertFalse(!!getExplainToggle());
+  });
+
+  test('PreviewChipIcon', async function() {
+    await initPage();
+    assertTrue(isVisible(page.$.previewChipIcon));
+    // <if expr="_google_chrome">
+    assertEquals('settings-internal:spark', page.$.previewChipIcon.icon);
+
+    page.remove();
+    browserProxy.reset();
+    loadTimeData.overrideValues({glicAssetsV2Enabled: true});
+    await initPage();
+    assertTrue(isVisible(page.$.previewChipIcon));
+    assertEquals('settings-internal:sparkv2', page.$.previewChipIcon.icon);
+
+    page.remove();
+    browserProxy.reset();
+    loadTimeData.overrideValues({inlineCueMenuUsePromptBoxIcon: true});
+    await initPage();
+    assertTrue(isVisible(page.$.previewChipIcon));
+    // </if>
+    assertEquals('settings20:text-analysis', page.$.previewChipIcon.icon);
   });
 });
