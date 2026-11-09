@@ -5,6 +5,7 @@
 #import "ios/web/test/fakes/fake_java_script_feature.h"
 
 #import "base/time/time.h"
+#import "ios/web/public/web_state.h"
 
 namespace web {
 
@@ -136,7 +137,7 @@ void FakeJavaScriptFeature::SetResponseToNextMessage(std::string response) {
 void FakeJavaScriptFeature::ScriptMessageReceived(
     WebState* web_state,
     const ScriptMessage& message) {
-  last_received_web_state_ = web_state;
+  last_received_web_state_ = web_state->GetWeakPtr();
   SetLastReceivedMessage(message);
   received_message_count_++;
 }
@@ -145,7 +146,7 @@ void FakeJavaScriptFeature::ScriptMessageReceivedWithReply(
     WebState* web_state,
     const ScriptMessage& message,
     ScriptMessageReplyCallback callback) {
-  last_received_web_state_ = web_state;
+  last_received_web_state_ = web_state->GetWeakPtr();
   SetLastReceivedMessage(message);
   received_message_count_++;
 

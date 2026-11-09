@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #include "base/values.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #include "ios/web/public/js_messaging/script_message.h"
@@ -64,7 +64,9 @@ class FakeJavaScriptFeature : public JavaScriptFeature {
   // Executes `feature_script` in `web_frame` on demand.
   bool ExecuteScript(WebFrame* web_frame, const FeatureScript& feature_script);
 
-  WebState* last_received_web_state() const { return last_received_web_state_; }
+  WebState* last_received_web_state() const {
+    return last_received_web_state_.get();
+  }
 
   const ScriptMessage* last_received_message() const {
     return last_received_message_.get();
@@ -94,7 +96,7 @@ class FakeJavaScriptFeature : public JavaScriptFeature {
   // Clones `message` and sets it to `last_received_message_`.
   void SetLastReceivedMessage(const ScriptMessage& message);
 
-  raw_ptr<WebState, DanglingUntriaged> last_received_web_state_ = nullptr;
+  base::WeakPtr<WebState> last_received_web_state_;
   std::unique_ptr<const ScriptMessage> last_received_message_;
   int received_message_count_ = 0;
   bool reply_to_messages_ = false;
