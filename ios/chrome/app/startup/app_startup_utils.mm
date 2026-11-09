@@ -222,7 +222,7 @@ void SaveFieldTrialValuesForGroupApp() {
         removeObjectForKey:app_group::kChromeUserIsEligibleForGeminiCapability];
   }
 
-  if (password_manager::features::RemoteActorCredentialSharingEnabled()) {
+  if (password_manager::features::RemoteActorCredentialSharingGeminiEnabled()) {
     [capabilities
         setObject:@YES
            forKey:app_group::

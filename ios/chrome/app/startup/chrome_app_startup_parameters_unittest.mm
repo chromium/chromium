@@ -1003,6 +1003,25 @@ TEST_F(AppStartupParametersTest, RemoteActorURL_FeatureDisabled) {
   EXPECT_EQ(nil, params);
 }
 
+// Tests that Remote Actor URLs are ignored when only the Search feature flag is
+// enabled and the Gemini feature flag is disabled.
+TEST_F(AppStartupParametersTest, RemoteActorURL_OnlySearchFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {password_manager::features::kRemoteActorCredentialSharingSearch},
+      {password_manager::features::kRemoteActorCredentialSharing});
+
+  RemoteActorTestData test_data = CreateRemoteActorTestData(@"chromium");
+
+  ChromeAppStartupParameters* params = [ChromeAppStartupParameters
+      startupParametersWithURL:test_data.url
+             sourceApplication:@"com.google.gemini"
+               applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+          forceApplicationMode:NO];
+
+  EXPECT_EQ(nil, params);
+}
+
 // Tests that Remote Actor URLs with missing payload or nonce return nil.
 TEST_F(AppStartupParametersTest, RemoteActorURL_MissingPayloadOrNonce) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1095,6 +1114,28 @@ TEST_F(AppStartupParametersTest, SaveFieldTrialValues_RemoteActorDisabled) {
 
   NSDictionary* capabilities =
       [defaults dictionaryForKey:app_group::kChromeCapabilitiesPreference];
+  EXPECT_NSEQ(
+      nil,
+      capabilities
+          [app_group::kChromeSupportsRemoteActorCredentialSharingCapability]);
+}
+
+// Tests that `SaveFieldTrialValuesForGroupApp()` leaves
+// `kChromeSupportsRemoteActorCredentialSharingCapability` absent when only the
+// Search feature is enabled and the Gemini feature is disabled.
+TEST_F(AppStartupParametersTest,
+       SaveFieldTrialValues_RemoteActorOnlySearchFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {password_manager::features::kRemoteActorCredentialSharingSearch},
+      {password_manager::features::kRemoteActorCredentialSharing});
+
+  SaveFieldTrialValuesForGroupApp();
+
+  NSUserDefaults* defaults = app_group::GetCommonGroupUserDefaults();
+  NSDictionary* capabilities =
+      [defaults dictionaryForKey:app_group::kChromeCapabilitiesPreference];
+  EXPECT_NE(nil, capabilities);
   EXPECT_NSEQ(
       nil,
       capabilities

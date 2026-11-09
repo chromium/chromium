@@ -24,7 +24,8 @@ IOSChromeRemoteActorCredentialSharingServiceFactory::
 std::unique_ptr<KeyedService>
 IOSChromeRemoteActorCredentialSharingServiceFactory::BuildServiceInstanceFor(
     ProfileIOS& profile) const {
-  if (!password_manager::features::RemoteActorCredentialSharingEnabled()) {
+  if (!password_manager::features::
+          RemoteActorCredentialSharingGeminiEnabled()) {
     return nullptr;
   }
   return std::make_unique<

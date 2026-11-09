@@ -1588,7 +1588,8 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 }
 
 - (void)scheduleRemoteActorAppAgent {
-  if (!password_manager::features::RemoteActorCredentialSharingEnabled()) {
+  if (!password_manager::features::
+          RemoteActorCredentialSharingGeminiEnabled()) {
     return;
   }
   __weak __typeof(self) weakSelf = self;

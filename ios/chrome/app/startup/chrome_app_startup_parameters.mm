@@ -364,7 +364,8 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                                              completeURL:(NSURL*)completeURL
                                     forceApplicationMode:
                                         (BOOL)forceApplicationMode {
-  if (!password_manager::features::RemoteActorCredentialSharingEnabled()) {
+  if (!password_manager::features::
+          RemoteActorCredentialSharingGeminiEnabled()) {
     return nil;
   }
 
