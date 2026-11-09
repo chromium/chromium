@@ -1720,7 +1720,7 @@ ListMarkerForm ClassifyNestedOnlyMarker(std::string_view text,
 
 // Returns how a list marker at `x` should be placed relative to `levels`.
 // `ordered_marker` is the marker if it is ordered, or unset if it is unordered;
-// a level of the other kind cannot accept it, so it starts a new list instead.
+// a level of another type cannot accept it, so it starts a new list instead.
 ListPlacement GetListPlacement(
     base::span<const ListLevel> levels,
     float x,
@@ -1742,11 +1742,17 @@ ListPlacement GetListPlacement(
     --target_level;
   }
 
-  // A marker can't join a level of the other kind (ordered vs. unordered), so
-  // start a new list at the same depth instead: a new top-level list, or a new
-  // sublist in the parent level's last item.
-  if (levels[target_level].last_ordered_marker.has_value() !=
-      ordered_marker.has_value()) {
+  // A marker can't join a level of another type (e.g. ordered vs. unordered,
+  // or "(1)" vs. "1."), so start a new list at the same depth instead: a new
+  // top-level list, or a new sublist in the parent level's last item.
+  const std::optional<OrderedMarker>& level_ordered_marker =
+      levels[target_level].last_ordered_marker;
+  const bool different_list_kind =
+      level_ordered_marker.has_value() != ordered_marker.has_value();
+  const bool different_ordered_type =
+      ordered_marker.has_value() && level_ordered_marker.has_value() &&
+      level_ordered_marker->type != ordered_marker->type;
+  if (different_list_kind || different_ordered_type) {
     if (target_level == 0) {
       return {.kind = ListPlacementKind::kNewList};
     }
@@ -1759,35 +1765,43 @@ ListPlacement GetListPlacement(
 }
 
 // Classifies `run_context` as a decimal ordered list marker: 1-3 digits
-// followed by one of `kOrderedMarkerDelimiters` (e.g. "1.", "12)"). On a match,
-// returns `ordered_marker` set to the marker and form `kStandalone` if the
-// marker is alone in its run with item text in the next run on the same line,
-// or `kCombined` if whitespace and item text follow it in the same run.
+// followed by one of `kOrderedMarkerDelimiters` (e.g. "1.", "12)"), or wrapped
+// in parentheses (e.g. "(1)"). On a match, returns `ordered_marker` set to the
+// marker's number and type, and form `kStandalone` if the marker is alone in
+// its run with item text in the next run on the same line, or `kCombined` if
+// whitespace and item text follow it in the same run.
 // Otherwise, returns form `kNone` with no `ordered_marker`, e.g. for years
-// ("2023."), decimals ("1.5"), or a marker with no item text after it.
+// ("2023.", "(2020)"), decimals ("1.5"), or a marker with no item text after
+// it.
 ListMarkerKind ClassifyOrderedMarker(const TextRunContext& run_context) {
   const std::string text = GetTrimmedText(run_context.chars);
   // TODO(crbug.com/525509231): Support alphabetic and roman numeral markers
   // (e.g. "a.", "B)", "iv.").
-  size_t i = 0;
+  const bool is_parenthesized = text.starts_with('(');
+  const size_t digits_start = is_parenthesized ? 1 : 0;
+  size_t i = digits_start;
   while (i < text.size() && base::IsAsciiDigit(text[i])) {
     ++i;
   }
-  if (i == 0 || i > kMaxOrderedMarkerDigits) {
+  const size_t digit_count = i - digits_start;
+  if (digit_count == 0 || digit_count > kMaxOrderedMarkerDigits) {
     return {};
   }
   // The marker ends at the first whitespace, or at the end of a standalone run.
   // This also rejects decimals such as "1.5".
   const size_t marker_size =
       std::min(text.find_first_of(base::kWhitespaceASCII), text.size());
-  if (!std::ranges::contains(kOrderedMarkerDelimiters,
-                             text.substr(i, marker_size - i))) {
+  const std::string delimiter = text.substr(i, marker_size - i);
+  if (is_parenthesized
+          ? delimiter != ")"
+          : !std::ranges::contains(kOrderedMarkerDelimiters, delimiter)) {
     return {};
   }
   int value;
-  if (!base::StringToInt(text.substr(0, i), &value)) {
+  if (!base::StringToInt(text.substr(digits_start, digit_count), &value)) {
     return {};
   }
+  const OrderedMarkerType type = {.parenthesized = is_parenthesized};
   // A run containing only the marker is a standalone marker if the item text
   // follows in the next run on the same line.
   if (marker_size == text.size()) {
@@ -1795,14 +1809,27 @@ ListMarkerKind ClassifyOrderedMarker(const TextRunContext& run_context) {
       return {};
     }
     return {.form = ListMarkerForm::kStandalone,
-            .ordered_marker = {{.value = value}}};
+            .ordered_marker = {{.value = value, .type = type}}};
   }
   // Otherwise, it is a combined run if item text follows the marker.
   if (!ContainsAlphanumeric(text.substr(marker_size))) {
     return {};
   }
   return {.form = ListMarkerForm::kCombined,
-          .ordered_marker = {{.value = value}}};
+          .ordered_marker = {{.value = value, .type = type}}};
+}
+
+// Returns whether `run_context` starts with an ordered marker of `level`'s
+// type, or a decimal marker if `level` is unordered. Markers of other types,
+// such as "(2)" in a "1." item, may be wrapped item text.
+bool StartsWithOrderedMarkerOfLevelType(const TextRunContext& run_context,
+                                        const ListLevel& level) {
+  const ListMarkerKind kind = ClassifyOrderedMarker(run_context);
+  if (kind.form == ListMarkerForm::kNone) {
+    return false;
+  }
+  return kind.ordered_marker->type ==
+         level.last_ordered_marker.value_or(OrderedMarker()).type;
 }
 
 // Records Accessibility.PdfHeuristics.OrderedListLookaheadLines unless it was
@@ -1824,7 +1851,7 @@ void RecordOrderedListLookaheadLines(
 }
 
 // Returns whether the first line after the marker run at `marker_run_index`
-// that starts with an ordered marker continues
+// that starts with an ordered marker of the same type continues
 // `marker_kind`'s numbering in the same column, within
 // `kMaxOrderedListLookaheadLines` lines. Records the lines scanned when
 // confirmed, or the overflow bucket when the limit is reached.
@@ -1851,7 +1878,11 @@ bool IsOrderedListStartConfirmed(
     }
     const TextRunContext run_context = GetTextRunContext(layout, i);
     const ListMarkerKind next_marker_kind = ClassifyOrderedMarker(run_context);
-    if (next_marker_kind.form != ListMarkerForm::kNone) {
+    // Markers of another type (e.g. "(1)" sub-items in a "1." list) are
+    // scanned past like item text.
+    if (next_marker_kind.form != ListMarkerForm::kNone &&
+        next_marker_kind.ordered_marker->type ==
+            marker_kind.ordered_marker->type) {
       if (std::abs(run.bounds.x() - marker_x) > kListIndentThreshold ||
           next_marker_kind.ordered_marker->value !=
               marker_kind.ordered_marker->value + 1) {
@@ -2103,10 +2134,10 @@ bool BreakAtListBoundary(
   // Keep out-of-sequence ordered markers from being absorbed as wrapped text.
   const TextRunContext next_run_context =
       GetTextRunContext(layout, next_run_index);
-  if (ClassifyOrderedMarker(next_run_context).form != ListMarkerForm::kNone) {
+  const ListLevel& level = list_levels.back();
+  if (StartsWithOrderedMarkerOfLevelType(next_run_context, level)) {
     return true;
   }
-  const ListLevel& level = list_levels.back();
   // A heading-styled line ends an ordered list.
   if (level.last_ordered_marker.has_value() &&
       ClassifyHeading(next_run_context, page_properties) !=
@@ -2392,7 +2423,7 @@ void RecordListStartReason(const ListMarkerKind& kind) {
 // out-of-sequence ordered marker, an outdent, or a new paragraph.
 ListEndReason GetNonMarkerListEndReason(const TextRunContext& run_context,
                                         const ListLevel& innermost) {
-  if (ClassifyOrderedMarker(run_context).form != ListMarkerForm::kNone) {
+  if (StartsWithOrderedMarkerOfLevelType(run_context, innermost)) {
     return ListEndReason::kOutOfSequenceMarker;
   }
   if (run_context.run->bounds.x() < innermost.marker_x - kListIndentThreshold) {

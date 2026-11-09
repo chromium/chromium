@@ -7052,6 +7052,200 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListDegreeDateNotList) {
                  "1° agosto 2023La reunión tuvo lugar.");
 }
 
+// Parenthesized markers with wrapped lines returning to the margin, as in
+// legal text.
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListParenthesizedMarkers) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"(1) Item one start", "Item one continuation at margin",
+       "(2) Item two start", "Item two continuation at margin",
+       "(3) Item three start", "Item three continuation at margin"},
+      {
+          gfx::RectF(50.0f, 20.0f, 100.0f, 12.0f),
+          gfx::RectF(30.0f, 35.0f, 120.0f, 12.0f),
+          gfx::RectF(50.0f, 50.0f, 100.0f, 12.0f),
+          gfx::RectF(30.0f, 65.0f, 120.0f, 12.0f),
+          gfx::RectF(50.0f, 80.0f, 100.0f, 12.0f),
+          gfx::RectF(30.0f, 95.0f, 120.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u),
+                   {"Item one startItem one continuation at margin",
+                    "Item two startItem two continuation at margin",
+                    "Item three startItem three continuation at margin"},
+                   {"(1) ", "(2) ", "(3) "});
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListStartReason",
+      ListStartReason::kDecimalStartsAtOne, 1);
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListParenthesizedStartsAboveOne) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"(2)", "Item B", "(3)", "Item C"},
+                                {
+                                    gfx::RectF(30.0f, 20.0f, 30.0f, 12.0f),
+                                    gfx::RectF(65.0f, 20.0f, 60.0f, 12.0f),
+                                    gfx::RectF(30.0f, 35.0f, 30.0f, 12.0f),
+                                    gfx::RectF(65.0f, 35.0f, 60.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u), {"Item B", "Item C"},
+                   {"(2) ", "(3) "});
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListStartReason",
+      ListStartReason::kDecimalStartsAboveOne, 1);
+}
+
+// A lone "(1)", such as an equation number, needs "(2)" to confirm a list.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListUnconfirmedParenthesizedMarker) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"(1)", "Something", "Normal paragraph line 1.",
+                                 "Normal paragraph line 2."},
+                                {
+                                    gfx::RectF(30.0f, 20.0f, 30.0f, 12.0f),
+                                    gfx::RectF(65.0f, 20.0f, 65.0f, 12.0f),
+                                    gfx::RectF(30.0f, 50.0f, 120.0f, 12.0f),
+                                    gfx::RectF(30.0f, 65.0f, 120.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "(1)Something");
+  CheckParagraph(page->GetChildAtIndex(1u), "Normal paragraph line 1.");
+  CheckParagraph(page->GetChildAtIndex(2u), "Normal paragraph line 2.");
+}
+
+// "(1)" doesn't continue a "1." list at the same indent.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListParenthesizedAfterDecimalStartsNewList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1.", "Item A", "2.", "Item B", "(1)", "Item C", "(2)", "Item D"},
+      {
+          gfx::RectF(30.0f, 20.0f, 10.0f, 12.0f),
+          gfx::RectF(65.0f, 20.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 35.0f, 10.0f, 12.0f),
+          gfx::RectF(65.0f, 35.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 50.0f, 30.0f, 12.0f),
+          gfx::RectF(65.0f, 50.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 65.0f, 30.0f, 12.0f),
+          gfx::RectF(65.0f, 65.0f, 60.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u), {"Item A", "Item B"},
+                   {"1. ", "2. "});
+  CheckOrderedList(page->GetChildAtIndex(1u), {"Item C", "Item D"},
+                   {"(1) ", "(2) "});
+}
+
+// Indented "(1)" items nest under a "1." item, and "2." resumes the outer list.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListParenthesizedNestedInDecimal) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // "1." is confirmed by "2." past the "(N)" lines, which are scanned like item
+  // text, so they use tight line spacing to avoid a paragraph gap after "1.".
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1.", "Item 1", "(1)", "Subitem 1", "(2)", "Subitem 2", "2.", "Item 2"},
+      {
+          gfx::RectF(30.0f, 40.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 40.0f, 60.0f, 12.0f),
+          gfx::RectF(50.0f, 53.0f, 30.0f, 12.0f),
+          gfx::RectF(85.0f, 53.0f, 60.0f, 12.0f),
+          gfx::RectF(50.0f, 66.0f, 30.0f, 12.0f),
+          gfx::RectF(85.0f, 66.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 79.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 79.0f, 60.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* top_list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, top_list);
+  ASSERT_EQ(2u, top_list->GetChildCount());
+  const ui::AXNode* nested_list = CheckListItemWithNestedList(
+      top_list->GetChildAtIndex(0u), "Item 1", "1. ", "ol");
+  CheckOrderedList(nested_list, {"Subitem 1", "Subitem 2"}, {"(1) ", "(2) "});
+  CheckListItem(top_list->GetChildAtIndex(1u), "Item 2", "2. ");
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListMalformedParenthesizedMarkersNotList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"(1 Item one", "(2 Item two", "(1). Item one", "(2). Item two"},
+      {
+          gfx::RectF(30.0f, 20.0f, 110.0f, 12.0f),
+          gfx::RectF(30.0f, 33.0f, 110.0f, 12.0f),
+          gfx::RectF(30.0f, 70.0f, 130.0f, 12.0f),
+          gfx::RectF(30.0f, 83.0f, 130.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "(1 Item one(2 Item two");
+  CheckParagraph(page->GetChildAtIndex(1u), "(1). Item one(2). Item two");
+}
+
+// A wrapped line starting with "(2)" stays in a "1." item.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListWrappedLineStartingWithParenthesizedNumber) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // Each test char is 10 px wide, so the item text after "1. " starts at x =
+  // 60.
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1. See section", "(2) for details", "2. Second"},
+      {
+          gfx::RectF(30.0f, 20.0f, 140.0f, 12.0f),
+          gfx::RectF(60.0f, 33.0f, 150.0f, 12.0f),
+          gfx::RectF(30.0f, 46.0f, 90.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u),
+                   {"See section(2) for details", "Second"}, {"1. ", "2. "});
+}
+
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListThreeDigitMarkers) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
