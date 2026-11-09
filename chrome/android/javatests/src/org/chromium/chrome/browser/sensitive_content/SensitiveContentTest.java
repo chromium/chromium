@@ -326,7 +326,7 @@ public class SensitiveContentTest {
         pollUiThread(() -> secondIncognitoTab.getTabHasSensitiveContent());
         // Group the incognito tabs.
         TabUiTestHelper.createTabGroup(
-                mCtaTestRule.getActivity(), true, List.of(firstIncognitoTab, secondIncognitoTab));
+                page.getActivity(), true, List.of(firstIncognitoTab, secondIncognitoTab));
         // Open the incognito tab switcher.
         final IncognitoTabSwitcherStation incognitoTabSwitcher = page.openIncognitoTabSwitcher();
         // Check that the incognito tab switcher is sensitive.
