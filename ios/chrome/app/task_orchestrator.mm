@@ -208,11 +208,9 @@ SceneState* GetSceneStateForScene(UIScene* scene) {
     return;
   }
 
-  // Initiate any required profile or account switch as early as
-  // `TaskExecutionProfileLoaded` (before `TaskExecutionUIReady` and before
-  // task execution).
-  if (sceneInfo.current_stage >=
-          TaskExecutionStage::TaskExecutionProfileLoaded &&
+  // Initiate any required profile or account switch once the scene is UI-ready
+  // (in the foreground) and before executing UI-ready tasks.
+  if (sceneInfo.current_stage >= TaskExecutionStage::TaskExecutionUIReady &&
       [self switchProfileOrAccountIfNeededForScene:sceneKey]) {
     return;
   }
