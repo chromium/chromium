@@ -25,7 +25,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/apps/app_service",
   "+chrome/browser/profiles",
-  "+chrome/grit",
 
   "+ash/shell.h",
   "+ash/shell_observer.h",

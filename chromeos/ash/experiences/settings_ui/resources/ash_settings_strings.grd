@@ -1264,6 +1264,473 @@
         Press &amp; hold keyboard keys to see accent marks and special characters. This turns off repeat key press for alphabet keys. Only available for English (US).
       </message>
 
+      <!-- Inputs page (OS settings) -->
+      <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE" desc="A page under “Languages and inputs” section in the OS settings page that users can add, remove and manage input methods.">
+        Inputs
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_METHOD_LIST_TITLE" desc="Title for the list of enabled input methods (keyboard layouts and input method editors).">
+        Input methods
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_SHORTCUT_REMINDER_TITLE" desc="Title for the reminder to the user that some shortcuts are available for this feature.">
+        Keyboard shortcut available
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_SHORTCUT_REMINDER_LAST_USED_IME_DESCRIPTION" desc="The body of the shortcut reminder for switching to the last used input method. Note that 'Ctrl' shouldn't be translated in almost all languages.">
+        To switch to the last used input method, press <ph name="BEGIN_SHORTCUT">&lt;kbd&gt;</ph><ph name="BEGIN_CTRL">&lt;kbd&gt;</ph>Ctrl<ph name="END_CTRL">&lt;/kbd&gt;</ph><ph name="SEPARATOR">+</ph><ph name="BEGIN_SPACE">&lt;kbd&gt;</ph>Space<ph name="END_SPACE">&lt;/kbd&gt;</ph><ph name="END_SHORTCUT">&lt;/kbd&gt;</ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_SHORTCUT_REMINDER_NEXT_IME_DESCRIPTION" desc="The body of the shortcut reminder for switching to the next input method. Note that 'Ctrl' shouldn't be translated in almost all languages, and 'Shift' shouldn't be translated in most languages.">
+        To switch to the next input method, press <ph name="BEGIN_SHORTCUT">&lt;kbd&gt;</ph><ph name="BEGIN_CTRL">&lt;kbd&gt;</ph>Ctrl<ph name="END_CTRL">&lt;/kbd&gt;</ph><ph name="SEPARATOR1">+</ph><ph name="BEGIN_SHIFT">&lt;kbd&gt;</ph>Shift<ph name="END_SHIFT">&lt;/kbd&gt;</ph><ph name="SEPARATOR2">+</ph><ph name="BEGIN_SPACE">&lt;kbd&gt;</ph>Space<ph name="END_SPACE">&lt;/kbd&gt;</ph><ph name="END_SHORTCUT">&lt;/kbd&gt;</ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_CUSTOMIZED_SHORTCUT_REMINDER_LAST_USED_IME_DESCRIPTION" desc="The body of the shortcut reminder for switching to the last used input method.">
+        To switch to the last used input method, press <ph name="KEY_CODES">&lt;a&gt;ctrl + space&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_CUSTOMIZED_SHORTCUT_REMINDER_NEXT_IME_DESCRIPTION" desc="The body of the shortcut reminder for switching to the next input method.">
+        To switch to the next input method, press <ph name="KEY_CODES">&lt;a&gt;ctrl + shift + space&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_OPEN_OPTIONS_PAGE_LABEL" desc="Description read by screenreader for the button to open the settings page for a input method (keyboard layout and input method editor).">
+        Open settings page for <ph name="INPUT_METHOD_NAME">$1<ex>US keyboard</ex></ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_ADD_INPUT_METHOD_LABEL" desc="Button under the list of input methods which opens a dialog that lets the user add keyboard layouts and input method editors.">
+        Add input methods
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_REMOVE_INPUT_METHOD_TOOLTIP" desc="Tooltip of the button that lets the user remove a given keyboard layout or input method editor.">
+        Remove <ph name="INPUT_METHOD_NAME">$1<ex>US keyboard</ex></ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_SUGGESTED_INPUT_METHODS_LABEL" desc="Title of the list of keyboard layouts or input method editors suggested to users.">
+        Suggested
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_ALL_INPUT_METHODS_LABEL" desc="Title of the list of all keyboard layouts or input method editors.">
+        All input methods
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_SEARCH_INPUT_METHODS_LABEL" desc="Placeholder in the input field to search keyboard layouts or input method editors, users can search by language or input method name.">
+        Search by language or input name
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_METHOD_NOT_ALLOWED" desc="Tooltip for policy icon when an keyboard layout or input method editor is not allowed.">
+        Your administrator doesn't allow this input method
+      </message>
+      <message name="IDS_OS_SETTINGS_INPUT_METHOD_LANGUAGE_PACKS_GENERAL_ERROR" desc="Generic error message when a component of an input method could not be downloaded." translateable="false">
+        Couldn't add input method
+      </message>
+      <message name="IDS_OS_SETTINGS_INPUT_METHOD_LANGUAGE_PACKS_NEEDS_REBOOT_ERROR" desc="Error message when a component of an input method could not be downloaded because the device needs to restart to update." translateable="false">
+        Please restart your device to finish installation
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_TITLE" desc="Title for the section containing all the options for spell check settings. The options include picking between using the system's spell check or using Google's web service and a list of the enabled languages which support spell checking.">
+        Spell check
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_SPELL_AND_GRAMMAR_CHECK_TITLE" desc="Title for the section containing all the options for spell and grammar check settings. The options include a list of the enabled languages which support spell checking.">
+        Spelling and grammar check
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_SPELL_AND_GRAMMAR_CHECK_DESCRIPTION" desc="Description for the spell and grammar check section.">
+        Grammar check currently available for English only
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_ENHANCED_LABEL" desc="Label for enhanced spell check toggle, the type of spell check that sends the text the user types to Google spelling service. It is important that it is communicated that the text the user types will be sent to Google.">
+        Enhanced spell check in Chrome browser (text is sent to Google for spelling suggestions)
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_LANGUAGES_LIST_TITLE" desc="Title for the list of languages that support spell check, from which users can enable or disable spell check for.">
+        Spell check languages
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_LANGUAGES_LIST_DESCRIPTION" desc="Description for the list of languages that support spell check, from which users can enable or disable spell check for.">
+        Languages for spell check are based on your language preference
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_ADD_SPELL_CHECK_LANGUAGES_TITLE" desc="Title for the dialog that allows users to select new languages to add to their list of spell check languages.">
+        Add spell check languages
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_SEARCH_SPELL_CHECK_LANGUAGES_LABEL" desc="Placeholder in the input field to search spell check languages.">
+        Search languages
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_SUGGESTED_SPELL_CHECK_LANGUAGES_LABEL" desc="Title of the list of spell check languages suggested to users.">
+        Suggested
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_ALL_SPELL_CHECK_LANGUAGES_LABEL" desc="Title of the list of all spell check languages.">
+        All languages
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_LANGUAGE_NOT_ALLOWED" desc="Tooltip for policy icon when a spell check language is not allowed.">
+        Your administrator doesn't allow this language
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_REMOVE_SPELL_CHECK_LANGUAGE_TOOLTIP" desc="Tooltip of the button that lets the user remove a given spell check language.">
+        Remove <ph name="LANGUAGE_NAME">$1<ex>English (United States)</ex></ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_FAILED" desc="Error message when spell check dictionary download fails.">
+        Couldn’t download spell check dictionary
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_RETRY_LABEL" desc="Label for the button to retry spell check dictionary download.">
+        Try again
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_RETRY_DESCRIPTION" desc="Description read by screenreader for the button to retry spell check dictionary download.">
+        Couldn’t download spell check dictionary for <ph name="LANGUAGE">$1<ex>English</ex></ph>. Try again.
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_LABEL" desc="Label for the section for users to add words that they don’t want get flagged by the spell check.">
+        Customize spell check
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY_LABEL" desc="Label for the section of the Japanese user settings which allows them to manage their custom dictionaries for Japaneses input. This is the string which appears at the top of the User dictionaries subpage.">
+        User dictionaries
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_DESCRIPTION" desc="Description for the section for users to add words that they don’t want get flagged by the spell check.">
+        Add words you want spell check to skip
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_ADD_DICTIONARY_WORD_BUTTON_LABEL" desc="Label for button to add a new word.">
+        Add word
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_ADD_DICTIONARY_WORD_DUPLICATE_ERROR" desc="Error message displayed to the user when the word is duplicated in the text input used to add a new word to the custom spell check dictionary.">
+        Word already added
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_ADD_DICTIONARY_WORD_LENGTH_ERROR" desc="Error message displayed to the user when the word is too long in the text input used to add a new word to the custom spell check dictionary.">
+        Use 99 letters or fewer for new words
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_DELETE_DICTIONARY_WORD_TOOLTIP" desc="Message shown over the button to delete a custom word.">
+        Delete word
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_NO_DICTIONARY_WORDS_LABEL" desc="Placeholder that is shown when there are no custom words in the list of saved custom words dictionary.">
+        Saved custom words will appear here
+      </message>
+      <message name="IDS_SETTINGS_LANGUAGES_INPUT_METHOD_ENABLED" desc="Label underneath the currently active input method in the list of enabled input methods.">
+        Enabled
+      </message>
+      <message name="IDS_SETTINGS_LANGUAGES_INPUT_METHODS_MANAGED_BY_POLICY" desc="Label which is shown on the manage input methods page if input methods are managed by policy.">
+        Your administrator has limited the available input methods.
+      </message>
+      <message name="IDS_SETTINGS_LANGUAGES_INPUT_METHOD_OPTIONS_TITLE" translateable="false" desc="Name of the settings sub-page which allows changing input method options.">
+        Input method options
+      </message>
+      <message name="IDS_SETTINGS_LANGUAGES_SHOW_IME_MENU" desc="The label for the toggle button controlling showing the IME menu in the shelf.">
+        Show input options in the shelf
+      </message>
+      <message name="IDS_SETTINGS_LANGUAGES_LANGUAGE_PACKS_NOTICE" desc="Privacy notice on the language and input settings page that informs users that language files are visible to all users on the device. See go/language-pack-ux slide 4 for more details.">
+        Choose which languages to install on this device. Language files are shared among users to save disk space. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+      </message>
+
+      <!-- Input Method Options Section -->
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_BASIC" desc="The label for the section in input method options page containing basic options.">
+        Basics
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_ADVANCED" desc="The label for the section in input method options page containing advanced options.">
+        Advanced
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_PHYSICAL_KEYBOARD" desc="The label for the section in input method options page containing physical keyboard options.">
+        Physical keyboard
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIRTUAL_KEYBOARD" desc="The label for the section in input method options page containing the virtual keyboard options.">
+        On-screen keyboard
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_SUGGESTIONS" desc="The label for the section in input method options page containing suggestion options.">
+        Suggestions
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_INPUT_ASSISTANCE" desc="The label for the Input Assistance section in the ChromeOS language settings options page.">
+        Input Assistance
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_USER_DICTIONARIES" desc="The label for the section in input method options page containing user dictionary settings.">
+        User Dictionaries
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_PRIVACY" desc="The label for the section in input method options page containing privacy settings.">
+        Privacy
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH" desc="The label for the input method option to enable double-space to type period (when an user types two consecutive space, it outputs a period).">
+        Automatically switch to halfwidth
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SHIFT_KEY_MODE_STYLE" desc="The label for the dropdown to set the shift key mode switch for the Japanese keyboard. This controls the behavior of typing in Japanese while holding shift. The available dropdown values are 'Off', 'Alphanumeric', or 'Katakana'. In Japanese, this string is 'シフトキーでの入力切替'.">
+        Shift key mode switch
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SHIFT_KEY_MODE_STYLE_OFF" desc="The label for the option to disable the shift key mode style.">
+        Off
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SHIFT_KEY_MODE_STYLE_ALPHANUMERIC" desc="The label for the option to set the Shift key mode style to Alphanumeric.">
+        Alphanumeric
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SHIFT_KEY_MODE_STYLE_KATAKANA" desc="The label for the option to set the Shift key mode style to Katakana.">
+        Katakana
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_USE_INPUT_HISTORY" desc="The label for the toggle to determine if the input history should be used or not for the Japanese keyboard. If enabled, the input method may suggest text that was previously typed by the user. In Japanese, this string is '入力履歴からのサジェスト自動表示を有効にする'.">
+        Use input history
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_USE_SYSTEM_DICTIONARY" desc="The label for the toggled settings to determine if the system dictionary should be used or not.">
+        Use system dictionary
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_NUMBER_OF_SUGGESTIONS" desc="The label for the setting to set the number of suggestions the Japanese input method should show.">
+        Number of suggestions
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS" desc="The label for the setting toggle to enable or disable the personalized conversions and custom user dictionaries for Japanese. The original string in Japanese is '学習機能、入力履歴からのサジェスト機能、ユーザ辞書機能を無効にする'.">
+        Disable personalized conversions and suggestions as well as user dictionary
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_DEFAULT_NAME" desc="This is the default name for a new Japanese dictionary. The number value is a number like 1,2,3,4, etc. In Japanese, this string should in the format: ユーザー辞書 1">
+        User Dictionary <ph name="number">$1</ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_NAME" desc="Label for the text box of the Japanese user settings which allows them to change the name of their custom dictionary for Japanese input.">
+        Name
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_READING" desc="Label for the text box of the Japanese user settings which allows them to change the 'reading' of their custom dictionary for Japanese input. The 'reading' is a query used to get the target Japanese text. It's typically in Hiragana (e.g. ぐーぐるけんさく). In Japanese, this text should be: よみ">
+        Reading
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_WORD" desc="Label for the text box of the Japanese user settings which allows them to change the 'word' of their custom dictionary for Japanese input. The target 'reading' text would be transformed into a 'word' that is registered by the user. (e.g. グーグル検索). In Japanese this text should be: 単語">
+        Word
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_CATEGORY" desc="Label for the text box of the Japanese user settings which allows them to change the 'category' of their custom dictionary entry for Japaneses input. The category includes grammatical categories such as Noun, Verb etc. In Japanese this text should be: 品詞">
+        Category
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_COMMENT" desc="Label for the text box of the Japanese user settings which allows them to change the 'comment' of their custom dictionary for Japaneses input. In Japanese this text should be: コメント">
+        Comment
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_IMPORT" desc="Button to import a Japanese dictionary from a file on the device. In Japanese, this text should be: インポート">
+        Import
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_EXPORT" desc="Button to export a Japanese dictionary to a file on the device. In Japanese, this text should be: エクスポート">
+        Export
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_ENTRY_DELETED" desc="This text is an announcement made to screen readers that a dictionary entry has been deleted. This occurs aftere the delete button is pressed and deletion is successful.">
+        Entry deleted
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_ENTRY_POSITION" desc="This text is mainly for screen readers to differentiate between different entries inside a dictionary, by referring to the entry and its position in the list of entries inside the dictionary. The number value will be a number like 1,2,3,etc">
+        Entry <ph name="number">$1</ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_DELETE_ENTRY" desc="Button to delete an entry into a Japanese dictionary. In Japanese, this text should be: この単語を削除">
+        Delete entry
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_NEW_ENTRY" desc="Button to add a new entry into a Japanese dictionary. In Japanese, this text should be: 単語を追加">
+        New entry
+      </message>
+      <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_ADD_DICTIONARY" desc="Button to add a new Japanese dictionary. In Japanese, this text should be: 辞書を作成">
+        Add dictionary
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_ENABLE_DOUBLE_SPACE_PERIOD" desc="The label for the input method option to enable double-space to type period (when an user types two consecutive space, it outputs a period).">
+        Double-space to type period
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_ENABLE_GESTURE_TYPING" desc="The label for the input method option to enable gesture typing.">
+        Enable glide typing
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_ENABLE_PREDICTION" desc="The label for the input method option to enable next-word prediction.">
+        Enable next-word prediction
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_ENABLE_SOUND_ON_KEYPRESS" desc="The label for the input method option to enable sound on keypress.">
+        Sound on keypress
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_ENABLE_CAPITALIZATION" desc="The label for the input method option to enable auto-capitalization.">
+        Auto-capitalization
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_AUTO_CORRECTION" desc="The label for the input method option to enable auto correction.">
+        Auto-correction
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_PREDICTIVE_WRITING" desc="The label for the input method option to enable predictive writing.">
+        Predictive writing
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_DIACRITICS_ON_PHYSICAL_KEYBOARD_LONGPRESS" desc="The label for the input method option to enable showing diacritics and other character variants of a key when the key is held down.">
+        Show accent marks and special characters
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_DIACRITICS_ON_PHYSICAL_KEYBOARD_LONGPRESS_SUBTITLE" desc="The subtitle for the input method option to enable showing diacritics and other character variants of a key when the key is held down.">
+        Press &amp; hold keyboard keys to see accent marks and special characters
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_XKB_LAYOUT" desc="The label for the input method option to let the users choose their keyboard layout.">
+        Keyboard layout
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_EDIT_USER_DICT" desc="The label for the input method option to let the users edit their personal dictionary.">
+        Edit dictionary entries
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_ZHUYIN_KEYBOARD_LAYOUT">
+        Physical keyboard layout
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_ZHUYIN_SELECT_KEYS">
+        Selection keys
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_ZHUYIN_PAGE_SIZE">
+        Number of candidates to display per page
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_KOREAN_LAYOUT">
+        Korean keyboard layout
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_KOREAN_SYLLABLE_INPUT">
+        Input a syllable at a time
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_CLEAR_PERSONALIZATION_DATA" desc="Label for a heading/button to clear persionalized data from the Japanese IME">
+        Clear personalization data
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DELETE_DICTIONARY" desc="Label for a dialog for users to confirm deletion of a user dictionary">
+        Delete this dictionary
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DELETE_DICTIONARY_DETAIL" desc="More detail confirming that the user wants to delete a particular user dictionary">
+        <ph name="dictionary">$1</ph> will be permanently deleted. This action can't be undone.
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DELETE_DICTIONARY_BUTTON_LABEL" desc="Accessible name for button that will delete user a user dictionary in the Japanese IME.">
+        Delete dictionary
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DELETE_DICTIONARY_BUTTON" desc="Button that will confirm deletion of user dictionary in Japanese IME">
+        Delete
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DELETE_ITEMS" desc="Label for a form for users to select the type of personalized data they wany to Delete">
+        Delete the following items:
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_CONVERSATION_HISTORY" desc="One of the types of personalization data that can be cleared from the Japanese IME">
+        Conversation history
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SUGGESTION_HISTORY" desc="One of the types of personalization data that can be cleared from the Japanese IME">
+        Suggestion history
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_INPUT_MODE" desc="The label for the Input Mode section of the Japanese keyboad settings. As an example, it could be set to have a value of Romaji or Kana. In Japanese, this string should be 'ローマ字入力・かな入力'.">
+        Input mode
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_INPUT_MODE_ROMAJI" desc="The label for the input method option used to set the input mode to Romaji. In Japanese, this string should be 'ローマ字入力'.">
+        Romaji
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_INPUT_MODE_KANA" desc="The label for the input mode option used to set the input mode to Kana. In Japanese, this string should be 'かな入力'.">
+        Kana
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_PUNCTUATION_STYLE" desc="The label for the dropdown used to set the Punctuation style for Japanese within the Japanese virtual and physical keyboard input settings. This controls what character is inserted when the user presses punctuation keys like comma or period. In Japanese, this string should be '句読点'.">
+        Punctuation style
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_PUNCTUATION_STYLE_TOUTEN_KUTEN" translateable="false">
+        、。
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_PUNCTUATION_STYLE_COMMA_PERIOD" translateable="false">
+        ，．
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_PUNCTUATION_STYLE_TOUTEN_PERIOD" translateable="false">
+        、．
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_PUNCTUATION_STYLE_COMMA_KUTEN" translateable="false">
+        ，。
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SYMBOL_STYLE"  desc="The label for the dropdown to set the Symbol style for the Japanese keyboard. This controls what character is inserted when the user presses symbol keys like brackets. This can be written as '記号' in Japanese.">
+        Symbol style
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SYMBOL_STYLE_CORNER_BRACKET_MIDDLE_DOT" translateable="false">
+        「」・
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SYMBOL_STYLE_SQUARE_BRACKET_SLASH" translateable="false">
+        ［］／
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SYMBOL_STYLE_CORNER_BRACKET_SLASH" translateable="false">
+        「」／
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SYMBOL_STYLE_SQUARE_BRACKET_MIDDLE_DOT" translateable="false">
+        ［］・
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SPACE_INPUT_STYLE" desc="The label for the Space input style dropdown within the Japanese keyboard settings page. It controls whether typing spaces with the Japanese keyboard will insert fullwidth or halfwidth characters. The available dropdown values are 'Follow input mode', 'Fullwidth', and 'Halfwidth'. In Japanese, this string should be 'スペースの入力'.">
+        Space input style
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SPACE_INPUT_STYLE_INPUT_MODE" desc="The label for option to set the space input style for the Japanese keyboard to Follow input mode. In Japanese, this string should be '入力モードに従う'.">
+        Follow input mode
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SPACE_INPUT_STYLE_FULLWIDTH" desc="The label for input modes option to set the space input style for the Japanese keyboard to Fullwidth mode. in Japanese, this string should be '全角'.">
+        Fullwidth
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SPACE_INPUT_STYLE_HALFWIDTH" desc="The label for input modes option to set the space input style for the Japanese keyboard to Halfwidth mode. In Japanese, this string should be '半角'.">
+        Halfwidth
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SELECTION_SHORTCUT" desc="The label for the Japanese keyboard settings dropdown to set the shortcut selection hotkeys for Japanese candidate selection. In Japanese, this string should be '候補選択ショートカット'.">
+        Selection shortcut
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SELECTION_SHORTCUT_NO_SHORTCUT" desc="The label for the Japanese keyboard settings option to set that there is no shortcut set for the Japanese keyboard candidate selection. In Japanese, this string should be 'なし'.">
+        No shortcut
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SELECTION_SHORTCUT_123456789" translateable="false">
+        1 -- 9
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SELECTION_SHORTCUT_ASDFGHJKL" translateable="false">
+        A -- L
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE" desc="The label for Japanese keyboard settings dropdown within the settings page to set the keymap style for the Japanese keyboard. The available dropdown values are 'Custom keymap', 'ATOK', 'MS-IME', 'Kotoeri', and 'ChromeOS'. In Japanese, this string should be 'キー設定の選択'.">
+        Keymap style
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_ATOK" translateable="false">
+        ATOK
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_MSIME" translateable="false">
+        MS-IME
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_KOTOERI" desc="The label for Japanese settings page to set the keymap style to Kotoeri. In Japanese, this string can be written as 'ことえり'.">
+        Kotoeri
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_CHROMEOS" translateable="false">
+        ChromeOS
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DICTIONARY" desc="Heading on the settings page where users can modify their custom user dictionary for the Japanese IME">
+        Dictionaries
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_MANAGE_USER_DICTIONARY" desc="Label on the settings page which if the user clicks on, will bring up the Japaneses dictionary management page. There are multiple dictionary which the user can modify.">
+        Manage user dictionaries
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DELETE_PERSONALIZATION_DATA" desc="The label for the button leading to the page within japanese input settings which can be used to delete personalization data for Japanese input. In Japanese, this should be '入力履歴の消去...'.">
+        Delete personalization data...
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_MANAGE_USER_DICTIONARY_SUBTITLE" desc="Subheading for the label on the settings page which if the user clicks on, will bring up the Japaneses dictionary management page. There are multiple dictionary which the user can modify.">
+        Add your own words to the user dictionaries in order to customize the conversion candidates.
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_PINYIN_CHINESE_PUNCTUATION" desc="The label for the pinyin input method option for whether to output full-width or half-with punctuation.">
+        Initial punctuation width is Full
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_PINYIN_DEFAULT_CHINESE" desc="The label for the pinyin input method option for whether to use Chinese or English as the default input language.">
+        Initial input language is Chinese
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_PINYIN_ENABLE_FUZZY" desc="The label for the pinyin input method option to enable fuzzy-pinyin.">
+        Enable Fuzzy-Pinyin mode
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_PINYIN_ENABLE_LOWER_PAGING" desc="The label for the pinyin input method option for whether to use , and . for paging candidates.">
+        Use <ph name="COMMA">,</ph> and <ph name="PERIOD">.</ph> keys to page a candidate list
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_PINYIN_ENABLE_UPPER_PAGING" desc="The label for the pinyin input method option for whether to use - and = for paging candidates.">
+        Use <ph name="MINUS">-</ph> and <ph name="EQUAL">=</ph> keys to page a candidate list
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_PINYIN_FULL_WIDTH_CHARACTER" desc="The label for the pinyin input method option for whether to output latin letters and numbers as full-width or half-width character.">
+        Initial character width is Full
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_AUTO_CORRECTION_OFF" desc="The label for the choice to disable auto correction.">
+        Off
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_AUTO_CORRECTION_MODEST" desc="The label for the choice to use modest auto correction.">
+        Modest
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_AUTO_CORRECTION_AGGRESSIVE" desc="The label for the choice to use aggressive auto correction.">
+        Aggressive
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_KEYBOARD_US" desc="The label for the choice to use US keyboard.">
+        US
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_ZHUYIN_LAYOUT_DEFAULT" desc="The label for the choice to use for Zhuyin keyboard.">
+        Default
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_ZHUYIN_LAYOUT_IBM" desc="The label for the choice to use for Zhuyin keyboard.">
+        IBM
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_ZHUYIN_LAYOUT_ETEN" desc="The label for the choice to use for Zhuyin keyboard.">
+        Eten
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_KEYBOARD_DVORAK" desc="The label for the choice to use Dvorak keyboard.">
+        Dvorak
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_KEYBOARD_COLEMAK" desc="The label for the choice to use Colemak keyboard.">
+        Colemak
+      </message>
+      <!-- Vietnamese Input Method (VNI/Telex) setting strings  -->
+      <message name="IDS_SETTINGS_INPUT_METHOD_HEADING_SHORTHAND_TYPING" desc="This is a heading for the settings option for shorthand typing features. These features allow the user to type certain diacritics via shortcut methods.">
+        Shorthand typing
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_MODERN_TONE_MARK_PLACEMENT" desc="This is a label for the settings option to use the modern (as opposed to classic) set of rules in which vowel letter to place tone marks on a Vietnamese syllable (when there are multiple vowel letters) in flexible typing mode (where tone marks don’t need to be typed immediately after the vowel). The Vietnamese writing system has tone marks that can be placed on vowel letters.">
+        Use modern tone mark placement
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_DESCRIPTION_VIETNAMESE_MODERN_TONE_MARK_PLACEMENT" desc="This is a description for the settings option to use the modern (as opposed to classic) set of rules in which vowel letter to place tone marks on a Vietnamese syllable (when there are multiple vowel letters) in flexible typing mode (where tone marks don’t need to be typed immediately after the vowel). The Vietnamese writing system has tone marks that can be placed on vowel letters. The description shows the cases where the modern tone mark placement would differ from classic placement.">
+        For example, use oà, oè, uỳ instead of òa, òe, ùy
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_FLEXIBLE_TYPING" desc="This is a label for the settings option to enable flexible typing mode in a Vietnamese input method. In flexible typing mode, users don’t need to assign diacritics immediately after the target letters, but can do so later e.g. towards or at the end of the syllable.">
+        Flexible typing
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_TELEX_FLEXIBLE_TYPING_DESCRIPTION" desc="This is a description for the settings option to enable flexible typing mode in the Vietnamese Telex input method. In flexible typing mode, users don’t need to assign diacritics immediately after the target letters, but can do so later e.g. towards or at the end of the syllable. In the example, the 'S' key is used to add the acute diacritic on the 'a' character.">
+        Allow flexible diacritic assignment. For example, you can type “anhs” or “asnh” to get “ánh”.
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_VNI_FLEXIBLE_TYPING_DESCRIPTION" desc="This is a description for the settings option to enable flexible typing mode in the Vietnamese VNI input method. In flexible typing mode, users don’t need to assign diacritics immediately after the target letters, but can do so later e.g. towards or at the end of the syllable. In the example, the '1' key is used to add the acute diacritic on the 'a' character.">
+        Allow flexible diacritic assignment. For example, you can type “anh1” or “a1nh” to get “ánh”.
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_SHOW_UNDERLINE" desc="This is a label for the settings option to allow the Vietnamese input method to show underline when typing.">
+        Show underline for composition text
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_DESCRIPTION_VIETNAMESE_SHOW_UNDERLINE" desc="This is a description for the settings option to allow the Vietnamese input method to show underline when typing. The description clarifies that the underline setting may not be supported by some applications.">
+        Not supported by some apps
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_VNI_UO_HOOK_SHORTCUT" desc="This is a label for the settings option to enable a shortcut way of typing in the Vietnamese VNI input method whereby typing keys U-O-7 gives characters ƯƠ directly, without having to type the canonical U-7-O-7. Note that the characters are U-with-horn and O-with-horn.">
+        Type "uo7" to get "ươ"
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_TELEX_UO_HOOK_SHORTCUT" desc="This is a label for the settings option to enable a shortcut way of typing in the Vietnamese Telex input method whereby typing keys U-O-W gives characters ƯƠ directly, without having to type the canonical U-W-O-W. Note that the characters are U-with-horn and O-with-horn.">
+        Type "uow" to get "ươ"
+      </message>
+      <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIETNAMESE_TELEX_W_SHORTCUT" desc="This is a label for the settings option to enable a shortcut way of typing in the Vietnamese Telex input method whereby typing the key W gives the character Ư directly, without having to type the canonical U-W. Note that the character is U-with-horn.">
+        Type "w" to get "ư"
+      </message>
+
       <part file="ash_settings_search_tag_strings.grdp" />
     </messages>
   </release>
