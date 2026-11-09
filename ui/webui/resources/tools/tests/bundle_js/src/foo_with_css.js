@@ -4,6 +4,9 @@
 
 import './foo.js';
 
+import {style} from '//resources/foo_style.css.js';
+
 import sheet from './foo.css' with {type : 'css'};
 
+console.info(style);
 document.getElementById('foo').shadowRoot.adoptedStyleSheets = [sheet];

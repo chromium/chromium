@@ -76,7 +76,7 @@ cr-tooltip::part(tooltip) {
   --cr-icon-button-fill-color: transparent;
   --cr-icon-button-icon-size: 26px;
   background-image:
-      url('//resources/cr_components/searchbox/icons/google_g_gradient.svg');
+      url(chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg);
   background-position: center;
   background-repeat: no-repeat;
   background-size: 26px;
@@ -85,6 +85,6 @@ cr-tooltip::part(tooltip) {
 @media (forced-colors: active) {
   #logoButton {
     --cr-icon-image:
-        url('//resources/cr_components/searchbox/icons/google_g_gradient.svg');
+        url(chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg);
   }
 }

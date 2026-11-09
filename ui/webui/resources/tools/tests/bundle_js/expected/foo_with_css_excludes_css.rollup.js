@@ -35,6 +35,13 @@ alert('Hello from src/foo.js');
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const style = 'url(chrome://resources/foo.svg)';
 
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+
+console.info(style);
 document.getElementById('foo').shadowRoot.adoptedStyleSheets = [sheet];
 //# sourceMappingURL=foo_with_css.rollup.js.map

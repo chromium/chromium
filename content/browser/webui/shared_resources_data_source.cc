@@ -5,12 +5,26 @@
 #include "content/browser/webui/shared_resources_data_source.h"
 
 #include <set>
+#include <string>
+#include <string_view>
+#include <utility>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
+#include "base/task/thread_pool.h"
+#include "content/browser/webui/web_ui_data_source_impl.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/content_client.h"
+#include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/resources/grit/webui_resources.h"
 #include "ui/webui/resources/grit/webui_resources_map.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/grit/ash_webui_common_resources_map.h"
@@ -44,9 +58,59 @@ void AddResources(const std::set<int>& resource_ids,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+std::string_view GetCleanPath(std::string_view path) {
+  return path.substr(0, path.find_first_of("?#"));
+}
+
+bool ShouldHandleUntrustedCssJsRequest(const WebUIDataSourceImpl* source,
+                                       const std::string& path) {
+  std::string_view clean_path = GetCleanPath(path);
+  return clean_path.ends_with(".css.js") &&
+         source->path_to_idr_map().contains(clean_path);
+}
+
+void ReadAndRewriteCssJsOnWorkerThread(
+    int resource_id,
+    WebUIDataSource::GotDataCallback callback) {
+  ContentClient* content_client = GetContentClient();
+  CHECK(content_client);
+  scoped_refptr<base::RefCountedMemory> bytes =
+      content_client->GetDataResourceBytes(resource_id);
+  if (!bytes) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  std::string_view input = base::as_string_view(*bytes);
+  constexpr std::string_view kChromeResourcesUrl = "url(chrome://resources/";
+  if (!input.contains(kChromeResourcesUrl)) {
+    std::move(callback).Run(std::move(bytes));
+    return;
+  }
+
+  std::string content(input);
+  base::ReplaceSubstringsAfterOffset(&content, 0, kChromeResourcesUrl,
+                                     "url(//resources/");
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(content)));
+}
+
+void HandleUntrustedCssJsRequest(const WebUIDataSourceImpl* source,
+                                 const std::string& path,
+                                 WebUIDataSource::GotDataCallback callback) {
+  const auto& map = source->path_to_idr_map();
+  auto it = map.find(GetCleanPath(path));
+  CHECK(it != map.end());
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()})
+      ->PostTask(FROM_HERE, base::BindOnce(&ReadAndRewriteCssJsOnWorkerThread,
+                                           it->second, std::move(callback)));
+}
+
 }  // namespace
 
-void PopulateSharedResourcesDataSource(WebUIDataSource* source) {
+void PopulateSharedResourcesDataSource(WebUIDataSourceImpl* source) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 
@@ -65,6 +129,16 @@ void PopulateSharedResourcesDataSource(WebUIDataSource* source) {
   source->AddResourcePaths(kMojoBindingsResources);
   AddResources(GetContentResourceIds(), kContentResources, source);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  if (source->GetOrigin().scheme() == kChromeUIUntrustedScheme) {
+    // base::Unretained(source) is safe because `source` owns the request filter
+    // callbacks and only invokes them from `source->StartDataRequest()`.
+    source->SetRequestFilter(
+        base::BindRepeating(&ShouldHandleUntrustedCssJsRequest,
+                            base::Unretained(source)),
+        base::BindRepeating(&HandleUntrustedCssJsRequest,
+                            base::Unretained(source)));
+  }
 }
 
 }  // namespace content

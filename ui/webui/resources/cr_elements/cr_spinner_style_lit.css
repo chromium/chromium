@@ -10,7 +10,7 @@
 
 .spinner {
   --cr-spinner-size: 28px;
-  mask-image: url(//resources/images/throbber_small.svg);
+  mask-image: url(chrome://resources/images/throbber_small.svg);
   mask-position: center;
   mask-repeat: no-repeat;
   mask-size: var(--cr-spinner-size) var(--cr-spinner-size);

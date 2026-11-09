@@ -16,7 +16,7 @@
   --md-select-text-color: inherit;
 
   -webkit-appearance: none;
-  background: url(//resources/images/arrow_down.svg)
+  background: url(chrome://resources/images/arrow_down.svg)
       calc(100% - var(--md-select-side-padding))
       center no-repeat;
   background-color: var(--md-select-bg-color);
@@ -44,7 +44,7 @@
 @media (prefers-color-scheme: dark) {
   .md-select {
     --md-select-option-bg-color: var(--google-grey-900-white-4-percent);
-    background-image: url(//resources/images/dark/arrow_down.svg);
+    background-image: url(chrome://resources/images/dark/arrow_down.svg);
   }
 }
 

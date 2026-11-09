@@ -327,8 +327,30 @@ class BundleJsTest(unittest.TestCase):
       'foo_with_css_excludes_css.rollup.js', 'foo_with_css.rollup.js'
     )
     depfile_d = self._read_out_file('depfile.d')
-    self._check_dep_file(['src/foo.js'], depfile_d)
+    self._check_dep_file(
+      ['src/foo.js', 'resources/foo_style.css.js'], depfile_d
+    )
     self.assertNotIn('src/foo.css', depfile_d)
+
+  def testBundleUntrustedCssJsRewritesUrls(self):
+    args = [
+      '--host',
+      'chrome-untrusted://fake-host',
+      '--js_module_in_files',
+      'foo_with_css.js',
+    ]
+    self._run_bundle(args)
+
+    output_js = self._read_out_file('foo_with_css.rollup.js')
+    self.assertIn(
+      'url(//resources/foo.svg)',
+      output_js,
+    )
+    self.assertNotIn('url(chrome://resources/foo.svg)', output_js)
+    depfile_d = self._read_out_file('depfile.d')
+    self._check_dep_file(
+      ['src/foo.js', 'resources/foo_style.css.js'], depfile_d
+    )
 
 
 if __name__ == '__main__':

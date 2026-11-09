@@ -5,8 +5,9 @@
 /**
  * @fileoverview Plugin for rollup to correctly resolve resources.
  */
-import * as path from 'path';
 import * as assert from 'node:assert';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 function normalizeSlashes(filepath) {
   return filepath.replace(/\\/gi, '/');
@@ -168,6 +169,14 @@ export default function plugin(
         }
       }
 
+      return null;
+    },
+
+    load(id) {
+      if (hostUrl.startsWith('chrome-untrusted://') && id.endsWith('.css.js')) {
+        const code = fs.readFileSync(id, 'utf8');
+        return code.replaceAll('url(chrome://resources/', 'url(//resources/');
+      }
       return null;
     },
   };

@@ -7,10 +7,10 @@
 
 namespace content {
 
-class WebUIDataSource;
+class WebUIDataSourceImpl;
 
 // Populates a data source for chrome(-untrusted)://resources/ URLs.
-void PopulateSharedResourcesDataSource(WebUIDataSource* source);
+void PopulateSharedResourcesDataSource(WebUIDataSourceImpl* source);
 
 }  // namespace content
 

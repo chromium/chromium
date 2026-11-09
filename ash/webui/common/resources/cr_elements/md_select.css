@@ -17,7 +17,7 @@
   --md-select-text-color: var(--cros-sys-on_surface);
 
   -webkit-appearance: none;
-  background: url(//resources/images/arrow_down.svg)
+  background: url(chrome://resources/images/arrow_down.svg)
       calc(100% - var(--md-select-side-padding))
       center no-repeat;
   background-color: var(--md-select-bg-color);
@@ -42,7 +42,7 @@
 
 @media (prefers-color-scheme: dark) {
   .md-select {
-    background-image: url(//resources/images/dark/arrow_down.svg);
+    background-image: url(chrome://resources/images/dark/arrow_down.svg);
   }
 }
 

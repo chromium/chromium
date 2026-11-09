@@ -78,7 +78,7 @@
 
 #leadingIcon {
   --cr-icon-image:
-      url(//resources/cr_components/searchbox/icons/search_spark.svg);
+      url(chrome://resources/cr_components/searchbox/icons/search_spark.svg);
   -webkit-mask-size: var(--cr-composebox-aim-button-leading-glyph-size);
   margin-inline-end: var(--cr-composebox-aim-button-icon-gap);
   mask-size: var(--cr-composebox-aim-button-leading-glyph-size);
@@ -105,12 +105,12 @@
 
 #trailingIcon.arrow-icon {
   --cr-icon-image:
-      url(//resources/cr_components/searchbox/icons/arrow_forward_old.svg);
+      url(chrome://resources/cr_components/searchbox/icons/arrow_forward_old.svg);
 }
 
 :host-context([webui-rounded-icons]) #trailingIcon.arrow-icon {
   --cr-icon-image:
-      url(//resources/cr_components/searchbox/icons/arrow_forward.svg);
+      url(chrome://resources/cr_components/searchbox/icons/arrow_forward.svg);
 }
 
 :host-context([dir='rtl']) #trailingIcon.arrow-icon {
