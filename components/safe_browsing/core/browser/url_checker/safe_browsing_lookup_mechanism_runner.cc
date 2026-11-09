@@ -21,6 +21,14 @@ void RecordRunnerTimeTaken(const std::string& performed_check_suffix,
                                         performed_check_suffix}),
                           time_taken);
 }
+
+void RecordRunnerThreatType(const std::string& performed_check_suffix,
+                            SBThreatType threat_type) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"SafeBrowsing.CheckUrl.ThreatType.", performed_check_suffix}),
+      threat_type);
+}
 }  // namespace
 
 SafeBrowsingLookupMechanismRunner::SafeBrowsingLookupMechanismRunner(
@@ -46,14 +54,14 @@ SafeBrowsingLookupMechanismRunner::Run() {
           &SafeBrowsingLookupMechanismRunner::OnCompleteCheckResult,
           weak_factory_.GetWeakPtr()));
   if (result.is_safe_synchronously) {
-    OnCheckComplete();
+    OnCheckComplete(SBThreatType::SB_THREAT_TYPE_SAFE);
   }
   return result;
 }
 
 void SafeBrowsingLookupMechanismRunner::OnCompleteCheckResult(
     std::unique_ptr<SafeBrowsingLookupMechanism::CompleteCheckResult> result) {
-  OnCheckComplete();
+  OnCheckComplete(result->threat_type);
   std::move(complete_check_callback_)
       .Run(/*timed_out=*/false, std::move(result));
   // NOTE: Invoking the callback results in the synchronous destruction of this
@@ -61,13 +69,14 @@ void SafeBrowsingLookupMechanismRunner::OnCompleteCheckResult(
 }
 
 void SafeBrowsingLookupMechanismRunner::OnTimeout() {
-  OnCheckComplete();
+  OnCheckComplete(/*threat_type=*/std::nullopt);
   std::move(complete_check_callback_).Run(/*timed_out=*/true, std::nullopt);
   // NOTE: Invoking the callback results in the synchronous destruction of this
   // object, so there is nothing safe to do here but return.
 }
 
-void SafeBrowsingLookupMechanismRunner::OnCheckComplete() {
+void SafeBrowsingLookupMechanismRunner::OnCheckComplete(
+    std::optional<SBThreatType> threat_type) {
 #if DCHECK_IS_ON()
   DCHECK(!is_check_complete_);
   is_check_complete_ = true;
@@ -75,6 +84,9 @@ void SafeBrowsingLookupMechanismRunner::OnCheckComplete() {
   timer_->Stop();
   RecordRunnerTimeTaken(performed_check_suffix_,
                         base::TimeTicks::Now() - start_lookup_time_);
+  if (threat_type.has_value()) {
+    RecordRunnerThreatType(performed_check_suffix_, threat_type.value());
+  }
   weak_factory_.InvalidateWeakPtrs();
   lookup_mechanism_.reset();
 }

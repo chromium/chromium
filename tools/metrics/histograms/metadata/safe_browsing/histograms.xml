@@ -553,14 +553,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.CheckUrl.Result.HashDatabase" enum="SBThreatType"
-    expires_after="2027-04-11">
+<histogram name="SafeBrowsing.CheckUrl.ThreatType.{CheckType}"
+    enum="SBThreatType" expires_after="2027-04-11">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    The threat type result of the Safe Browsing local blocklist check. Logged
-    each time a local browse URL check in DatabaseManagerMechanism completes.
+    The threat type result of a Safe Browsing {CheckType} lookup. Logged each
+    time this kind of check completes, unless it times out. Note: This is the
+    check that was initially attempted, even if it ended up falling back to a
+    different type of check.
   </summary>
+  <token key="CheckType">
+    <variant name="HashDatabase" summary="hash-prefix database"/>
+    <variant name="HashRealTime" summary="hash-prefix real-time"/>
+    <variant name="UrlRealTime" summary="URL real-time"/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.CheckUrl.Timeout" enum="BooleanTimedOut"

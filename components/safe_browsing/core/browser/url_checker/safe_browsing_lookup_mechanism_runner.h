@@ -27,7 +27,8 @@ class SafeBrowsingLookupMechanismRunner {
   // lookup. |complete_check_callback| is the callback that will be called if
   // the run does not complete synchronously; its |result| parameter will only
   // be populated if the run did not time out. |performed_check_suffix| is a
-  // suffix used for a metric logging how long the check took to run.
+  // suffix used for metrics logging how long the check took to run and its
+  // result.
   SafeBrowsingLookupMechanismRunner(
       std::unique_ptr<SafeBrowsingLookupMechanism> lookup_mechanism,
       const std::string& performed_check_suffix,
@@ -55,13 +56,16 @@ class SafeBrowsingLookupMechanismRunner {
   // constructor.
   void OnTimeout();
   // This performs clean up once a run is complete. It is only called once.
-  void OnCheckComplete();
+  // |threat_type| is the threat type result of the check, or std::nullopt if
+  // the check timed out.
+  void OnCheckComplete(std::optional<SBThreatType> threat_type);
 
   // The lookup mechanism responsible for running the check and returning the
   // relevant results.
   std::unique_ptr<SafeBrowsingLookupMechanism> lookup_mechanism_;
-  // Suffix used for a metric logging how long the check took to run
-  // (SafeBrowsing.CheckUrl.TimeTaken.*).
+  // Suffix used for metrics logging how long the check took to run
+  // (SafeBrowsing.CheckUrl.TimeTaken.*) and its result
+  // (SafeBrowsing.CheckUrl.ThreatType.*).
   std::string performed_check_suffix_;
   // The callback passed in through the constructor that should be called either
   // when the mechanism completes or when it times out, unless the run completes

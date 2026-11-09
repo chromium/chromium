@@ -664,7 +664,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_SafeUrl) {
                                        /*sample=*/false,
                                        /*expected_bucket_count=*/1);
   histogram_tester_.ExpectUniqueSample(
-      "SafeBrowsing.CheckUrl.Result.HashDatabase",
+      "SafeBrowsing.CheckUrl.ThreatType.HashDatabase",
       SBThreatType::SB_THREAT_TYPE_SAFE,
       /*expected_bucket_count=*/1);
   ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
@@ -693,7 +693,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_DangerousUrl) {
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   url_checker_delegate_->WaitForStartDisplayingBlockingPageHelper();
   histogram_tester_.ExpectUniqueSample(
-      "SafeBrowsing.CheckUrl.Result.HashDatabase", SB_THREAT_TYPE_URL_PHISHING,
+      "SafeBrowsing.CheckUrl.ThreatType.HashDatabase",
+      SB_THREAT_TYPE_URL_PHISHING,
       /*expected_bucket_count=*/1);
   ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
                                    /*expected_urt_log_count=*/0,
@@ -888,6 +889,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledSafeUrl) {
   histogram_tester_.ExpectUniqueSample("SafeBrowsing.CheckUrl.Timeout",
                                        /*sample=*/false,
                                        /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.ThreatType.UrlRealTime",
+      SBThreatType::SB_THREAT_TYPE_SAFE,
+      /*expected_bucket_count=*/1);
 
   // The false positive metric should not be logged, because the
   // verdict is not from cache.
@@ -1393,6 +1398,10 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 
   url_checker_delegate_->WaitForStartDisplayingBlockingPageHelper();
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.ThreatType.UrlRealTime",
+      SB_THREAT_TYPE_URL_PHISHING,
+      /*expected_bucket_count=*/1);
   CheckUrlRealTimeLocalMatchMetrics(
       /*expected_local_match_result=*/false,
       /*expect_url_lookup_service_metric_suffix=*/true);
@@ -1581,6 +1590,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnTimeout) {
         "SafeBrowsing.CheckUrl.TimeTaken.UrlRealTime",
         /*sample=*/base::Seconds(5),
         /*expected_bucket_count=*/1);
+    histograms.ExpectTotalCount("SafeBrowsing.CheckUrl.ThreatType.UrlRealTime",
+                                /*expected_count=*/0);
   }
   // Timeout for local checks should cancel the database check.
   {
@@ -1613,6 +1624,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnTimeout) {
         "SafeBrowsing.CheckUrl.TimeTaken.HashDatabase",
         /*sample=*/base::Seconds(5),
         /*expected_bucket_count=*/1);
+    histograms.ExpectTotalCount("SafeBrowsing.CheckUrl.ThreatType.HashDatabase",
+                                /*expected_count=*/0);
   }
 }
 
@@ -1757,6 +1770,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_SafeLookup) {
       .Times(0);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   callback.Wait();
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.ThreatType.HashRealTime", SB_THREAT_TYPE_SAFE,
+      /*expected_bucket_count=*/1);
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
                            /*expected_is_service_found=*/true,
                            /*expected_can_check_reputation=*/true);
@@ -1792,6 +1808,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_UnsafeLookup) {
       .Times(1);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   url_checker_delegate_->WaitForStartDisplayingBlockingPageHelper();
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.ThreatType.HashRealTime",
+      SB_THREAT_TYPE_URL_PHISHING,
+      /*expected_bucket_count=*/1);
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
                            /*expected_is_service_found=*/true,
                            /*expected_can_check_reputation=*/true);
