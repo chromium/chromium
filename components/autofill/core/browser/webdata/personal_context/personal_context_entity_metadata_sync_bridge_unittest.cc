@@ -47,6 +47,7 @@ using ::syncer::test::HasUnknownField;
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::Ne;
 using ::testing::NiceMock;
 using ::testing::Property;
@@ -259,6 +260,50 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest, InitialLoadFromStore) {
   EXPECT_TRUE(bridge().IsLoaded());
   EXPECT_EQ(GetFirstGuid(), "guid1");
   EXPECT_THAT(bridge().GetSuppressions(), ElementsAre(ToKey(entry)));
+}
+
+// Tests that duplicate records for the same suppression in the store are
+// deduplicated on load, keeping the lexicographically smaller GUID and deleting
+// the loser from the store and Sync.
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       InitialLoadFromStore_DeduplicatesMatchingEntriesWithDifferentGuids) {
+  EntitySuppressionEntry entry = CreatePassportEntry();
+  WriteToStore("guid1", entry);
+  WriteToStore("guid2", entry);
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(mock_processor(), Delete("guid2", _, _));
+  EXPECT_CALL(observer(), OnSuppressionsChanged());
+
+  CreateBridge();
+
+  EXPECT_EQ(GetFirstGuid(), "guid1");
+  EXPECT_THAT(bridge().GetSuppressions(), ElementsAre(ToKey(entry)));
+  EXPECT_THAT(ReadAllRecordsFromStore(),
+              ElementsAre(Field(&syncer::DataTypeStore::Record::id, "guid1")));
+}
+
+// Tests that post-load cleanup does not write to the store or Sync if
+// `ModelReadyToSync()` clears local state via `ApplyDisableSyncChanges()`.
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       InitialLoadFromStore_SkipsCleanupWhenSyncDisabledDuringReadyToSync) {
+  EntitySuppressionEntry entry = CreatePassportEntry();
+  WriteToStore("guid1", entry);
+  WriteToStore("guid2", entry);
+
+  EXPECT_CALL(mock_processor(), ModelReadyToSync)
+      .WillOnce([&](std::unique_ptr<syncer::MetadataBatch>) {
+        ON_CALL(mock_processor(), IsTrackingMetadata())
+            .WillByDefault(Return(false));
+        bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
+      });
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+
+  CreateBridge();
+
+  EXPECT_TRUE(bridge().GetSuppressions().empty());
+  EXPECT_TRUE(ReadAllRecordsFromStore().empty());
 }
 
 // Tests that suppression entries written to the store are encrypted.
@@ -850,19 +895,25 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
   WriteEncryptedToStore(
       "guid4",
       sync_pb::AutofillEntitySuppressionSpecifics().SerializeAsString());
+  // Specifics whose `guid` does not match the storage record ID are invalid.
+  WriteEncryptedToStore("guid5",
+                        CreateSpecificsFromEntitySuppressionKey(
+                            "other_guid", ToKey(CreateDriversLicenseEntry()),
+                            base::Time::Now(), /*base_specifics=*/{})
+                            .SerializeAsString());
   base::HistogramTester histogram_tester;
 
   CreateBridge();
 
   EXPECT_THAT(bridge().GetSuppressions(), ElementsAre(ToKey(valid_entry)));
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.Suppression.Load.DroppedRecordCount", 3, 1);
+      "Autofill.Ai.Suppression.Load.DroppedRecordCount", 4, 1);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.Ai.Suppression.Load.DropReason"),
       base::BucketsAre(
           base::Bucket(EntitySuppressionLoadDropReason::kDecryptionFailed, 1),
           base::Bucket(EntitySuppressionLoadDropReason::kParseFailed, 1),
-          base::Bucket(EntitySuppressionLoadDropReason::kInvalidEntry, 1)));
+          base::Bucket(EntitySuppressionLoadDropReason::kInvalidEntry, 2)));
 }
 
 // Tests that `TrimAllSupportedFieldsFromRemoteSpecifics()` correctly trims all

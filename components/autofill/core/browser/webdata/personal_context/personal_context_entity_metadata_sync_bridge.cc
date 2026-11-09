@@ -15,6 +15,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -308,6 +309,58 @@ PersonalContextEntityMetadataSyncBridge::CreateMetadataChangeList() {
   return syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
+// static
+PersonalContextEntityMetadataSyncBridge::EntryMetadata
+PersonalContextEntityMetadataSyncBridge::CreateEntryMetadata(
+    const sync_pb::AutofillEntitySuppressionSpecifics& specifics) {
+  return EntryMetadata{
+      .guid = specifics.guid(),
+      .creation_time = base::Time::FromDeltaSinceWindowsEpoch(
+          base::Microseconds(specifics.creation_time_windows_epoch_micros())),
+  };
+}
+
+// static
+template <typename Key>
+PersonalContextEntityMetadataSyncBridge::InsertOrResolveConflictResult
+PersonalContextEntityMetadataSyncBridge::InsertOrResolveConflict(
+    Key key,
+    EntryMetadata new_metadata,
+    base::flat_map<Key, EntryMetadata>& metadata_map) {
+  EntryMetadata* existing_metadata = base::FindOrNull(metadata_map, key);
+  if (!existing_metadata) {
+    // New entry not yet tracked in `metadata_map`.
+    metadata_map.insert_or_assign(std::move(key), std::move(new_metadata));
+    return {.entry_added = true, .kept_new_entry = true};
+  }
+
+  if (existing_metadata->guid == new_metadata.guid) {
+    // Same record (e.g. a local entry also returned by Sync during initial
+    // merge); refresh its metadata in place.
+    *existing_metadata = std::move(new_metadata);
+    return {.entry_added = false, .kept_new_entry = true};
+  }
+
+  // Two distinct records with different GUIDs map to the same `key` (e.g. two
+  // clients independently suppressed the same entity). Keep the smaller GUID so
+  // all clients converge on the same record, and evict the other.
+  if (new_metadata.guid < existing_metadata->guid) {
+    std::string guid_to_evict = std::move(existing_metadata->guid);
+    *existing_metadata = std::move(new_metadata);
+    return {
+        .entry_added = false,
+        .kept_new_entry = true,
+        .guid_to_evict = std::move(guid_to_evict),
+    };
+  }
+
+  return {
+      .entry_added = false,
+      .kept_new_entry = false,
+      .guid_to_evict = std::move(new_metadata.guid),
+  };
+}
+
 template <typename Key>
 bool PersonalContextEntityMetadataSyncBridge::ApplyRemoteEntry(
     const std::string& storage_key,
@@ -315,43 +368,27 @@ bool PersonalContextEntityMetadataSyncBridge::ApplyRemoteEntry(
     Key key,
     base::flat_map<Key, EntryMetadata>& metadata_map,
     syncer::DataTypeStore::WriteBatch& batch) {
-  const std::string encrypted_value =
-      EncryptSuppressionSpecifics(specifics, *encryptor_);
-  const base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::Microseconds(specifics.creation_time_windows_epoch_micros()));
-
-  EntryMetadata* existing_metadata = base::FindOrNull(metadata_map, key);
-  if (!existing_metadata) {
-    batch.WriteData(storage_key, encrypted_value);
-    metadata_map.insert_or_assign(
-        std::move(key),
-        EntryMetadata{.guid = storage_key, .creation_time = creation_time});
-    return true;
+  CHECK_EQ(storage_key, specifics.guid());
+  InsertOrResolveConflictResult result = InsertOrResolveConflict(
+      std::move(key), CreateEntryMetadata(specifics), metadata_map);
+  if (result.guid_to_evict) {
+    DeleteEntryFromStoreAndSync(*result.guid_to_evict, batch);
   }
-
-  if (existing_metadata->guid == storage_key) {
-    batch.WriteData(storage_key, encrypted_value);
-    existing_metadata->creation_time = creation_time;
-    return false;
+  if (result.kept_new_entry) {
+    batch.WriteData(storage_key,
+                    EncryptSuppressionSpecifics(specifics, *encryptor_));
   }
+  return result.entry_added;
+}
 
-  auto delete_entry = [&](const std::string& guid) {
-    batch.DeleteData(guid);
-    change_processor()->Delete(guid, syncer::DeletionOrigin::Unspecified(),
-                               batch.GetMetadataChangeList());
-  };
-
-  // Duplicate GUIDs for the same entry. Smaller GUID lexicographically wins.
-  if (storage_key < existing_metadata->guid) {
-    delete_entry(existing_metadata->guid);
-    batch.WriteData(storage_key, encrypted_value);
-    *existing_metadata =
-        EntryMetadata{.guid = storage_key, .creation_time = creation_time};
-  } else {
-    delete_entry(storage_key);
-  }
-
-  return false;
+void PersonalContextEntityMetadataSyncBridge::DeleteEntryFromStoreAndSync(
+    const std::string& guid,
+    syncer::DataTypeStore::WriteBatch& batch) {
+  batch.DeleteData(guid);
+  // This is a no-op for local-only keys during `MergeFullSyncData()` and
+  // before the initial sync, since the change processor doesn't track them.
+  change_processor()->Delete(guid, syncer::DeletionOrigin::Unspecified(),
+                             batch.GetMetadataChangeList());
 }
 
 template <typename Key>
@@ -386,11 +423,7 @@ bool PersonalContextEntityMetadataSyncBridge::DeleteOldestEntriesAboveLimit(
     if (!guids_to_delete.contains(guid)) {
       return false;
     }
-    batch.DeleteData(guid);
-    // This is a no-op for local-only keys during `MergeFullSyncData()` and
-    // before the initial sync, since the change processor doesn't track them.
-    change_processor()->Delete(guid, syncer::DeletionOrigin::Unspecified(),
-                               batch.GetMetadataChangeList());
+    DeleteEntryFromStoreAndSync(guid, batch);
     return true;
   });
   return true;
@@ -667,6 +700,7 @@ void PersonalContextEntityMetadataSyncBridge::OnReadAllDataAndMetadata(
     return;
   }
 
+  std::vector<std::string> guids_to_evict;
   size_t dropped_record_count = 0;
   for (const syncer::DataTypeStore::Record& record : *data_records) {
     base::expected<sync_pb::AutofillEntitySuppressionSpecifics,
@@ -679,38 +713,60 @@ void PersonalContextEntityMetadataSyncBridge::OnReadAllDataAndMetadata(
     }
     std::optional<EntitySuppressionKey> key =
         CreateEntitySuppressionKeyFromSpecifics(*specifics);
-    if (!key) {
+    // In practice, all data should be valid, but it could happen that some
+    // local disk data gets corrupted, which is why these conditions are handled
+    // gracefully here.
+    if (!key || record.id != specifics->guid()) {
       LogEntitySuppressionLoadDropReason(
           EntitySuppressionLoadDropReason::kInvalidEntry);
       ++dropped_record_count;
       continue;
     }
-    suppression_metadata_by_entry_.insert_or_assign(
-        std::move(*key),
-        EntryMetadata{
-            .guid = record.id,
-            .creation_time =
-                base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
-                    specifics->creation_time_windows_epoch_micros()))});
+    InsertOrResolveConflictResult result = InsertOrResolveConflict(
+        std::move(*key), CreateEntryMetadata(*specifics),
+        suppression_metadata_by_entry_);
+    if (result.guid_to_evict) {
+      guids_to_evict.push_back(std::move(*result.guid_to_evict));
+    }
   }
   LogEntitySuppressionLoadDroppedRecordCount(dropped_record_count);
 
   is_loaded_ = true;
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
 
-  // Builds without the limit might have stored more suppressions.
+  // Cleanup can only happen after calling `ModelReadyToSync()`.
+  ApplyPostLoadCleanup(guids_to_evict);
+  NotifySuppressionsChanged();
+}
+
+void PersonalContextEntityMetadataSyncBridge::ApplyPostLoadCleanup(
+    base::span<const std::string> guids_to_evict) {
+  if (suppression_metadata_by_entry_.empty()) {
+    // Either nothing was loaded, or `ModelReadyToSync()` cleared invalid or
+    // stopped metadata via `ApplyDisableSyncChanges()`, which wiped the store.
+    return;
+  }
+
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
-  if (DeleteOldestEntriesAboveLimit(suppression_metadata_by_entry_,
-                                    kMaxSuppressions, *batch)) {
+  bool batch_modified = false;
+
+  for (const std::string& guid : guids_to_evict) {
+    DeleteEntryFromStoreAndSync(guid, *batch);
+    batch_modified = true;
+  }
+
+  // Builds without the limit might have stored more suppressions.
+  batch_modified |= DeleteOldestEntriesAboveLimit(
+      suppression_metadata_by_entry_, kMaxSuppressions, *batch);
+
+  if (batch_modified) {
     store_->CommitWriteBatch(
         std::move(batch),
         base::BindOnce(
             &PersonalContextEntityMetadataSyncBridge::ReportErrorIfSet,
             weak_ptr_factory_.GetWeakPtr()));
   }
-
-  NotifySuppressionsChanged();
 }
 
 void PersonalContextEntityMetadataSyncBridge::ReportErrorIfSet(

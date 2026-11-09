@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -133,12 +134,33 @@ class PersonalContextEntityMetadataSyncBridge
     base::Time creation_time;
   };
 
+  static EntryMetadata CreateEntryMetadata(
+      const sync_pb::AutofillEntitySuppressionSpecifics& specifics);
+
+  // Outcome of inserting an entry into an in-memory metadata map via
+  // `InsertOrResolveConflict()`.
+  struct InsertOrResolveConflictResult {
+    // True if `key` was not already present in `metadata_map`.
+    bool entry_added = false;
+    // True if `new_metadata` was inserted or replaced the existing entry.
+    bool kept_new_entry = false;
+    // Set to the losing GUID if two distinct GUIDs mapped to the same `key`.
+    std::optional<std::string> guid_to_evict;
+  };
+
+  // Inserts `(key, new_metadata)` into `metadata_map`, resolving conflicts
+  // deterministically if an entry with the same `key` already exists under a
+  // different GUID.
+  template <typename Key>
+  static InsertOrResolveConflictResult InsertOrResolveConflict(
+      Key key,
+      EntryMetadata new_metadata,
+      base::flat_map<Key, EntryMetadata>& metadata_map);
+
   // Applies a remote entry to persistent storage and in-memory cache:
-  // Encrypts `specifics` and writes it to `batch` under `storage_key`, and
-  // indexes the parsed `key` in `metadata_map`. Resolves conflicts if an entry
-  // with the same `key` already exists under a different GUID.
-  // Returns `true` if `key` was not already in `metadata_map`, `false`
-  // otherwise.
+  // inserts `key` into `metadata_map`, deletes any evicted duplicate from
+  // `batch` and Sync, and writes encrypted `specifics` to `batch` if kept.
+  // Returns `true` if `key` was not already in `metadata_map`.
   template <typename Key>
   bool ApplyRemoteEntry(
       const std::string& storage_key,
@@ -146,6 +168,11 @@ class PersonalContextEntityMetadataSyncBridge
       Key key,
       base::flat_map<Key, EntryMetadata>& metadata_map,
       syncer::DataTypeStore::WriteBatch& batch);
+
+  // Stages the deletion of `guid` from local storage (via `batch`) and
+  // notifies Sync (via `change_processor()`).
+  void DeleteEntryFromStoreAndSync(const std::string& guid,
+                                   syncer::DataTypeStore::WriteBatch& batch);
 
   // Deletes the oldest entries from `metadata_map`, local storage (via `batch`)
   // and Sync until at most `max_entries` remain. Of entries with equal
@@ -167,6 +194,7 @@ class PersonalContextEntityMetadataSyncBridge
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::DataTypeStore::RecordList> data_records,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  void ApplyPostLoadCleanup(base::span<const std::string> guids_to_evict);
   void ReportErrorIfSet(const std::optional<syncer::ModelError>& error);
 
   // Queries all suppression data and returns it as a
