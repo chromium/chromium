@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
+#include "mojo/public/cpp/bindings/lib/pending_receiver_state.h"
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
 
 namespace mojo {
@@ -39,13 +40,6 @@ scoped_refptr<ThreadSafeProxy> InterfacePtrStateBase::CreateThreadSafeProxy(
     const base::Location& location) {
   return endpoint_client_->CreateThreadSafeProxy(std::move(target), location);
 }
-
-#if DCHECK_IS_ON()
-void InterfacePtrStateBase::SetNextCallLocation(
-    const base::Location& location) {
-  endpoint_client_->SetNextCallLocation(location);
-}
-#endif
 
 void InterfacePtrStateBase::QueryVersion(
     base::OnceCallback<void(uint32_t)> callback) {
@@ -118,6 +112,10 @@ AssociatedGroup* InterfacePtrStateBase::associated_group() {
   return endpoint_client_->associated_group();
 }
 
+void InterfacePtrStateBase::EnableTestingMode() {
+  router_->EnableTestingMode();
+}
+
 void InterfacePtrStateBase::RaiseError() {
   endpoint_client_->RaiseError();
 }
@@ -126,24 +124,78 @@ void InterfacePtrStateBase::Swap(InterfacePtrStateBase* other) {
   using std::swap;
   swap(other->router_, router_);
   swap(other->endpoint_client_, endpoint_client_);
-  handle_.swap(other->handle_);
-  runner_.swap(other->runner_);
   swap(other->version_, version_);
 }
 
-void InterfacePtrStateBase::Bind(
+MessageReceiverWithResponder* InterfacePtrStateBase::Bind(
     PendingRemoteState* remote_state,
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    bool passes_associated_kinds,
+    bool has_sync_methods,
+    bool has_uninterruptable_methods,
+    MessageValidatorFunc payload_validator,
+    const char* interface_name,
+    MessageToMethodInfoCallback method_info_callback,
+    MessageToMethodNameCallback method_name_callback) {
   DCHECK(!router_);
   DCHECK(!endpoint_client_);
-  DCHECK(!handle_.is_valid());
   DCHECK_EQ(0u, version_);
-  DCHECK(remote_state->pipe.is_valid());
+  // Handled here rather than in Remote<T>::Bind() to avoid duplicating the
+  // check across every interface template instantiation. Passing an invalid
+  // pipe (e.g. via NullRemote) is a supported no-op that returns a null
+  // responder, leaving the remote unbound.
+  if (!remote_state->pipe.is_valid()) {
+    return nullptr;
+  }
 
-  handle_ = std::move(remote_state->pipe);
   version_ = remote_state->version;
-  runner_ =
+  remote_state->version = 0;
+  auto runner =
       GetTaskRunnerToUseFromUserProvidedTaskRunner(std::move(task_runner));
+
+  MultiplexRouter::Config config =
+      (passes_associated_kinds || has_uninterruptable_methods)
+          ? MultiplexRouter::MULTI_INTERFACE
+          : (has_sync_methods
+                 ? MultiplexRouter::SINGLE_INTERFACE_WITH_SYNC_METHODS
+                 : MultiplexRouter::SINGLE_INTERFACE);
+  router_ = MultiplexRouter::Create(std::move(remote_state->pipe), config, true,
+                                    runner, interface_name);
+  endpoint_client_ = std::make_unique<InterfaceEndpointClient>(
+      router_->CreateLocalEndpointHandle(kPrimaryInterfaceId), nullptr,
+      payload_validator,
+      /* sync_method_ordinals= */ base::span<const uint32_t>(),
+      std::move(runner),
+      // The version is only queried from the client so the value passed here
+      // will not be used.
+      0u, interface_name, method_info_callback, method_name_callback);
+
+  // Note that we defer this until after attaching the endpoint. This is in case
+  // `runner` does not run tasks in the current sequence but MultiplexRouter is
+  // in SINGLE_INTERFACE mode. In that case, MultiplexRouter elides some
+  // internal synchronization, so we need to ensure that messages aren't
+  // processed by the router before the endpoint above is fully attached.
+  router_->StartReceiving();
+
+  return endpoint_client_.get();
+}
+
+MessageReceiverWithResponder* InterfacePtrStateBase::BindNewPipe(
+    PendingReceiverState* receiver_state,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    bool passes_associated_kinds,
+    bool has_sync_methods,
+    bool has_uninterruptable_methods,
+    MessageValidatorFunc payload_validator,
+    const char* interface_name,
+    MessageToMethodInfoCallback method_info_callback,
+    MessageToMethodNameCallback method_name_callback) {
+  MessagePipe pipe;
+  receiver_state->pipe = std::move(pipe.handle1);
+  PendingRemoteState remote_state(std::move(pipe.handle0), 0u);
+  return Bind(&remote_state, std::move(task_runner), passes_associated_kinds,
+              has_sync_methods, has_uninterruptable_methods, payload_validator,
+              interface_name, method_info_callback, method_name_callback);
 }
 
 PendingRemoteState InterfacePtrStateBase::Unbind() {
@@ -152,7 +204,7 @@ PendingRemoteState InterfacePtrStateBase::Unbind() {
 
 ScopedMessagePipeHandle InterfacePtrStateBase::PassMessagePipe() {
   endpoint_client_.reset();
-  return router_ ? router_->PassMessagePipe() : std::move(handle_);
+  return router_ ? router_->PassMessagePipe() : ScopedMessagePipeHandle();
 }
 
 void InterfacePtrStateBase::OnQueryVersion(
@@ -160,46 +212,6 @@ void InterfacePtrStateBase::OnQueryVersion(
     uint32_t version) {
   version_ = version;
   std::move(callback).Run(version);
-}
-
-MessageReceiverWithResponder* InterfacePtrStateBase::InitializeEndpointClient(
-    bool passes_associated_kinds,
-    bool has_sync_methods,
-    bool has_uninterruptable_methods,
-    MessageValidatorFunc payload_validator,
-    const char* interface_name,
-    MessageToMethodInfoCallback method_info_callback,
-    MessageToMethodNameCallback method_name_callback) {
-  // The object hasn't been bound.
-  if (!handle_.is_valid()) {
-    return nullptr;
-  }
-
-  MultiplexRouter::Config config =
-      (passes_associated_kinds || has_uninterruptable_methods)
-          ? MultiplexRouter::MULTI_INTERFACE
-          : (has_sync_methods
-                 ? MultiplexRouter::SINGLE_INTERFACE_WITH_SYNC_METHODS
-                 : MultiplexRouter::SINGLE_INTERFACE);
-  router_ = MultiplexRouter::Create(std::move(handle_), config, true, runner_,
-                                    interface_name);
-  endpoint_client_ = std::make_unique<InterfaceEndpointClient>(
-      router_->CreateLocalEndpointHandle(kPrimaryInterfaceId), nullptr,
-      payload_validator,
-      /* sync_method_ordinals= */ base::span<const uint32_t>(),
-      std::move(runner_),
-      // The version is only queried from the client so the value passed here
-      // will not be used.
-      0u, interface_name, method_info_callback, method_name_callback);
-
-  // Note that we defer this until after attaching the endpoint. This is in case
-  // `runner_` does not run tasks in the current sequence but MultiplexRouter is
-  // in SINGLE_INTERFACE mode. In that case, MultiplexRouter elides some
-  // internal synchronization, so we need to ensure that messages aren't
-  // processed by the router before the endpoint above is fully attached.
-  router_->StartReceiving();
-
-  return endpoint_client_.get();
 }
 
 }  // namespace internal

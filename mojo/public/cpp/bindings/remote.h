@@ -7,7 +7,6 @@
 
 #include <cstdint>
 #include <string_view>
-#include <tuple>
 #include <utility>
 
 #include "base/check.h"
@@ -20,7 +19,6 @@
 #include "mojo/public/cpp/bindings/pending_flush.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/runtime_features.h"
-#include "mojo/public/cpp/system/message_pipe.h"
 
 namespace mojo {
 
@@ -262,14 +260,16 @@ class Remote {
       scoped_refptr<base::SequencedTaskRunner> task_runner) {
     DCHECK(!is_bound()) << "Remote for " << Interface::Name_
                         << " is already bound";
-    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
-      reset();
-      return PendingReceiver<Interface>();
+    PendingReceiver<Interface> receiver;
+    if constexpr (internal::kIsRuntimeFeatureGuarded<Interface>) {
+      if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+        reset();
+        return receiver;
+      }
     }
-    MessagePipe pipe;
-    Bind(PendingRemote<Interface>(std::move(pipe.handle0), 0),
-         std::move(task_runner));
-    return PendingReceiver<Interface>(std::move(pipe.handle1));
+    internal_state_.BindNewPipe(receiver.internal_state(),
+                                std::move(task_runner));
+    return receiver;
   }
 
   // Binds this Remote by consuming |pending_remote|, which must be valid. The
@@ -292,23 +292,17 @@ class Remote {
             scoped_refptr<base::SequencedTaskRunner> task_runner) {
     DCHECK(!is_bound()) << "Remote for " << Interface::Name_
                         << " is already bound";
-    if (!pending_remote) {
-      reset();
-      return;
-    }
-    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
-      reset();
-      return;
+    // Note: For non-feature-guarded interfaces, an invalid `pending_remote` is
+    // handled out-of-line by `InterfacePtrStateBase::Bind()`.
+    if constexpr (internal::kIsRuntimeFeatureGuarded<Interface>) {
+      if (!pending_remote ||
+          !internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+        reset();
+        return;
+      }
     }
     internal_state_.Bind(pending_remote.internal_state(),
                          std::move(task_runner));
-
-    // Force the internal state to configure its proxy. Unlike InterfacePtr we
-    // do not use Remote in transit, so binding to a pipe handle can also imply
-    // binding to a SequencedTaskRunner and observing pipe handle state. This
-    // allows for e.g. |is_connected()| to be a more reliable API than
-    // |InterfacePtr::encountered_error()|.
-    std::ignore = internal_state_.instance();
   }
 
   // Unbinds this Remote, rendering it unable to issue further Interface method

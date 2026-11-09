@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
+#include "mojo/public/cpp/bindings/lib/pending_remote_state.h"
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
 
@@ -126,7 +127,7 @@ scoped_refptr<internal::MultiplexRouter> BindingStateBase::RouterForTesting() {
 }
 
 void BindingStateBase::Bind(PendingReceiverState* receiver_state,
-                            scoped_refptr<base::SequencedTaskRunner>&& runner,
+                            scoped_refptr<base::SequencedTaskRunner> runner,
                             const char* interface_name,
                             MessageValidatorFunc request_validator,
                             bool passes_associated_kinds,
@@ -137,6 +138,12 @@ void BindingStateBase::Bind(PendingReceiverState* receiver_state,
                             MessageToMethodNameCallback method_name_callback) {
   DCHECK(!is_bound()) << "Attempting to bind interface that is already bound: "
                       << interface_name;
+  // Handled here rather than in Receiver<T>::Bind() to avoid duplicating the
+  // check across every interface template instantiation.
+  if (!receiver_state->pipe.is_valid()) {
+    Close();
+    return;
+  }
 
   auto sequenced_runner =
       GetTaskRunnerToUseFromUserProvidedTaskRunner(std::move(runner));
@@ -164,6 +171,25 @@ void BindingStateBase::Bind(PendingReceiverState* receiver_state,
   MakeBindingRandomlyPaused(base::SequencedTaskRunner::GetCurrentDefault(),
                             weak_ptr_factory_.GetWeakPtr());
 #endif
+}
+
+void BindingStateBase::BindNewPipe(
+    PendingRemoteState* remote_state,
+    scoped_refptr<base::SequencedTaskRunner> runner,
+    const char* interface_name,
+    MessageValidatorFunc request_validator,
+    bool passes_associated_kinds,
+    base::span<const uint32_t> sync_method_ordinals,
+    MessageReceiverWithResponderStatus* stub,
+    uint32_t interface_version,
+    MessageToMethodInfoCallback method_info_callback,
+    MessageToMethodNameCallback method_name_callback) {
+  MessagePipe pipe;
+  remote_state->pipe = std::move(pipe.handle0);
+  PendingReceiverState receiver_state(std::move(pipe.handle1));
+  Bind(&receiver_state, std::move(runner), interface_name, request_validator,
+       passes_associated_kinds, sync_method_ordinals, stub, interface_version,
+       method_info_callback, method_name_callback);
 }
 
 ScopedMessagePipeHandle BindingStateBase::Unbind() {

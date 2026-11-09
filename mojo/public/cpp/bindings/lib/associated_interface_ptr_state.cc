@@ -101,16 +101,22 @@ void AssociatedInterfacePtrStateBase::Swap(
 }
 
 MessageReceiverWithResponder* AssociatedInterfacePtrStateBase::Bind(
-    ScopedInterfaceEndpointHandle&& handle,
+    ScopedInterfaceEndpointHandle handle,
     uint32_t version,
     MessageValidatorFunc validator,
-    scoped_refptr<base::SequencedTaskRunner>&& runner,
+    scoped_refptr<base::SequencedTaskRunner> runner,
     const char* interface_name,
     MessageToMethodInfoCallback method_info_callback,
     MessageToMethodNameCallback method_name_callback) {
   DCHECK(!endpoint_client_);
   DCHECK_EQ(0u, version_);
-  DCHECK(handle.is_valid());
+  // Handled here rather than in AssociatedRemote<T>::Bind() to avoid
+  // duplicating the check across every interface template instantiation.
+  // Passing an invalid handle (e.g. via NullAssociatedRemote) is a supported
+  // no-op that returns a null responder, leaving the remote unbound.
+  if (!handle.is_valid()) {
+    return nullptr;
+  }
 
   version_ = version;
   // The version is only queried from the client so the value passed here

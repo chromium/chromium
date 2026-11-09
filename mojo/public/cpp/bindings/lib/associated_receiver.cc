@@ -85,7 +85,12 @@ void AssociatedReceiverBase::Bind(
     const char* interface_name,
     MessageToMethodInfoCallback method_info_callback,
     MessageToMethodNameCallback method_name_callback) {
-  DCHECK(handle.is_valid());
+  // Handled here rather than in AssociatedReceiver<T>::Bind() to avoid
+  // duplicating the check across every interface template instantiation.
+  if (!handle.is_valid()) {
+    reset();
+    return;
+  }
 
   endpoint_client_ = std::make_unique<InterfaceEndpointClient>(
       std::move(handle), receiver, payload_validator, sync_method_ordinals,

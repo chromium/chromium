@@ -7,7 +7,6 @@
 
 #include <cstdint>
 #include <string_view>
-#include <tuple>
 #include <utility>
 
 #include "base/check.h"
@@ -224,25 +223,20 @@ class AssociatedRemote {
     DCHECK(!is_bound()) << "AssociatedRemote for " << Interface::Name_
                         << " is already bound";
 
-    if (!pending_remote) {
-      reset();
-      return;
-    }
-    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
-      reset();
-      return;
+    // Note: For non-feature-guarded interfaces, an invalid `pending_remote` is
+    // handled out-of-line by `AssociatedInterfacePtrStateBase::Bind()`.
+    if constexpr (internal::kIsRuntimeFeatureGuarded<Interface>) {
+      if (!pending_remote ||
+          !internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+        reset();
+        return;
+      }
     }
 
     internal_state_.Bind(
         AssociatedInterfacePtrInfo<Interface>(pending_remote.PassHandle(),
                                               pending_remote.version()),
         std::move(task_runner));
-
-    // Force the internal state to configure its proxy. Unlike InterfacePtr we
-    // do not use AssociatedRemote in transit, so binding to a pipe handle can
-    // also imply binding to a SequencedTaskRunner and observing pipe handle
-    // state.
-    std::ignore = internal_state_.instance();
   }
 
   // Binds this AssociatedRemote with the returned PendingAssociatedReceiver

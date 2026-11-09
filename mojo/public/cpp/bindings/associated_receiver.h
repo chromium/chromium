@@ -209,13 +209,14 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
             scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
     DCHECK(!is_bound()) << "AssociatedReceiver for " << Interface::Name_
                         << " is already bound";
-    if (!pending_receiver) {
-      reset();
-      return;
-    }
-    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
-      reset();
-      return;
+    // Note: For non-feature-guarded interfaces, an invalid `pending_receiver`
+    // is handled out-of-line by `AssociatedReceiverBase::Bind()`.
+    if constexpr (internal::kIsRuntimeFeatureGuarded<Interface>) {
+      if (!pending_receiver ||
+          !internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+        reset();
+        return;
+      }
     }
 
     AssociatedReceiverBase::Bind(
