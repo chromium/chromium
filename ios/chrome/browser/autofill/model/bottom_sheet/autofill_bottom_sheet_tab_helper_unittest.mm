@@ -332,28 +332,25 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
   AutofillBottomSheetTabHelperTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactories(
-        {TestProfileIOS::TestingFactory{
-             autofill::PersonalDataManagerFactory::GetInstance(),
-             base::BindOnce(
-                 [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-                   std::unique_ptr<autofill::TestPersonalDataManager> service =
-                       std::make_unique<autofill::TestPersonalDataManager>();
-                   service->SetPrefService(profile->GetPrefs());
-                   return service;
-                 })},
-         TestProfileIOS::TestingFactory{
-             IOSPersonalContextFirstRunServiceFactory::GetInstance(),
-             base::BindOnce([](ProfileIOS* profile)
-                                -> std::unique_ptr<KeyedService> {
-               return std::make_unique<FakePersonalContextFirstRunService>();
-             })},
-         TestProfileIOS::TestingFactory{
-             ios::HistoryServiceFactory::GetInstance(),
-             ios::HistoryServiceFactory::GetDefaultFactory()},
-         TestProfileIOS::TestingFactory{
-             ios::WebDataServiceFactory::GetInstance(),
-             ios::WebDataServiceFactory::GetDefaultFactory()}});
+    builder.AddTestingFactory(
+        autofill::PersonalDataManagerFactory::GetInstance(),
+        base::BindOnce(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              std::unique_ptr<autofill::TestPersonalDataManager> service =
+                  std::make_unique<autofill::TestPersonalDataManager>();
+              service->SetPrefService(profile->GetPrefs());
+              return service;
+            }));
+    builder.AddTestingFactory(
+        IOSPersonalContextFirstRunServiceFactory::GetInstance(),
+        base::BindOnce(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<FakePersonalContextFirstRunService>();
+            }));
+    builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
+                              ios::HistoryServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
+                              ios::WebDataServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
 
     web::WebState::CreateParams params(profile_.get());
