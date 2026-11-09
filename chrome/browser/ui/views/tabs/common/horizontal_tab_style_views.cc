@@ -837,7 +837,7 @@ void HorizontalTabStyleViews::PaintBackgroundStroke(
     SkColor stroke_color) const {
   if (base::FeatureList::IsEnabled(tabs::kTabStripUnification) &&
       delegate_->GetGroup().has_value() && !delegate_->IsInFocusedGroup() &&
-      !delegate_->IsDragging()) {
+      !delegate_->IsDragging() && !delegate_->GetView()->layer()) {
     return;
   }
 
