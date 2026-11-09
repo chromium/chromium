@@ -53,7 +53,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 5
+          "shards": 7
         },
         "test": "chrome_public_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
@@ -312,7 +312,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 7
         },
         "test": "android_webview_unittests",
         "test_id_prefix": "ninja://android_webview/test:android_webview_unittests/"

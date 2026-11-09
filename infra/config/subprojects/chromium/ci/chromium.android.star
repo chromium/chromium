@@ -4172,7 +4172,7 @@ ci.builder(
             # TODO(https://crbug.com/549938718): Investigate the long runtime.
             "android_webview_unittests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 4,
+                    shards = 7,
                 ),
             ),
             "base_unittests": targets.mixin(
