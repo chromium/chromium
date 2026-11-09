@@ -10457,6 +10457,28 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextualTasks.OnboardingTooltip.Accepted">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user clicks the accept button of the contextual tasks
+    onboarding tooltip, which explains that the active tab is auto-suggested as
+    context. This is the only way to explicitly dismiss the tooltip.
+  </description>
+</action>
+
+<action name="ContextualTasks.OnboardingTooltip.Shown"
+    not_user_triggered="true">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the contextual tasks onboarding tooltip, which explains that
+    the active tab is auto-suggested as context, has been shown for at least the
+    impression delay, or when the user accepts it before the delay elapses.
+    Recorded at most once per time the tooltip is shown.
+  </description>
+</action>
+
 <action
     name="ContextualTasks.PermanentToolbarButton.UserAction.OpenSidePanel.ContinueThread">
   <owner>dianaou@chromium.org</owner>

@@ -9,6 +9,9 @@
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
@@ -367,8 +370,24 @@ bool ContextualTasksOnboardingTooltipController::ShouldShowVariant(
 
 void ContextualTasksOnboardingTooltipController::OnAcceptPressed(
     ContextualTasksOnboardingBubbleView::Variant variant) {
+  const bool impression_pending = impression_delay_timer_.IsRunning();
   impression_delay_timer_.Stop();
   active_variant_.reset();
+
+  if (variant == ContextualTasksOnboardingBubbleView::Variant::kOnboarding) {
+    // Accepting before the impression delay elapsed still counts as having
+    // seen the tooltip, so that every Accepted follows a Shown.
+    if (impression_pending) {
+      base::RecordAction(
+          base::UserMetricsAction("ContextualTasks.OnboardingTooltip.Shown"));
+      base::UmaHistogramBoolean("ContextualTasks.OnboardingTooltip.Shown",
+                                true);
+    }
+    base::RecordAction(
+        base::UserMetricsAction("ContextualTasks.OnboardingTooltip.Accepted"));
+    base::UmaHistogramBoolean("ContextualTasks.OnboardingTooltip.Accepted",
+                              true);
+  }
 
   if (profile_) {
     if (PrefService* prefs = profile_->GetPrefs()) {
@@ -414,6 +433,9 @@ void ContextualTasksOnboardingTooltipController::OnImpressionTimerFired(
     ContextualTasksOnboardingBubbleView::Variant variant) {
   if (variant == ContextualTasksOnboardingBubbleView::Variant::kOnboarding) {
     onboarding_session_impression_count_++;
+    base::RecordAction(
+        base::UserMetricsAction("ContextualTasks.OnboardingTooltip.Shown"));
+    base::UmaHistogramBoolean("ContextualTasks.OnboardingTooltip.Shown", true);
   }
 }
 

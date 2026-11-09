@@ -815,6 +815,27 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ContextualTasks.OnboardingTooltip.{Interaction}"
+    enum="Boolean" expires_after="2027-06-18">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the contextual tasks onboarding tooltip, which explains that
+    the active tab is auto-suggested as context in the composebox, is
+    {Interaction}. Recorded for both the native bubble and the WebUI tooltip.
+    Always recorded as true.
+  </summary>
+  <token key="Interaction">
+    <variant name="Accepted"
+        summary="accepted by the user via its accept button, the only way to
+                 explicitly dismiss it"/>
+    <variant name="Shown"
+        summary="shown for at least the impression delay, i.e. when it counts
+                 towards the session impression cap, or accepted before the
+                 delay elapsed"/>
+  </token>
+</histogram>
+
 <histogram
     name="ContextualTasks.PageContextIneligible.{ContextualTasksUiSurface}"
     enum="Boolean" expires_after="2027-06-18">

@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -248,6 +250,8 @@ TEST_F(ContextualTasksOnboardingTooltipControllerTest,
 
 TEST_F(ContextualTasksOnboardingTooltipControllerTest,
        AcceptButtonDismissesAndUpdatesPrefsAndTracker) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   profile()->GetPrefs()->SetInteger(kContextualTasksSessionCountPostOnboarding,
                                     5);
   controller()->SetEntryPoint(
@@ -273,6 +277,113 @@ TEST_F(ContextualTasksOnboardingTooltipControllerTest,
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 kContextualTasksSessionCountPostOnboarding),
             0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.OnboardingTooltip.Accepted", true, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.OnboardingTooltip.Accepted"),
+            1);
+  // Accepted before the impression delay elapsed, so Shown is recorded too.
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OnboardingTooltip.Shown",
+                                      true, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.OnboardingTooltip.Shown"),
+            1);
+
+  // The impression timer was stopped, so Shown isn't recorded again.
+  task_environment()->FastForwardBy(base::Milliseconds(
+      GetContextualTasksOnboardingTooltipImpressionDelay() + 100));
+  histogram_tester.ExpectTotalCount("ContextualTasks.OnboardingTooltip.Shown",
+                                    1);
+}
+
+TEST_F(ContextualTasksOnboardingTooltipControllerTest,
+       AcceptAfterImpressionDelayRecordsShownOnce) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  controller()->SetEntryPoint(
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+  CreateAndShowFaviconsElement();
+  ASSERT_TRUE(controller()->IsBubbleShowing());
+  task_environment()->FastForwardBy(base::Milliseconds(
+      GetContextualTasksOnboardingTooltipImpressionDelay() + 100));
+
+  views::Widget* widget = controller()->bubble_widget_for_testing();
+  auto* bubble_view = views::AsViewClass<ContextualTasksOnboardingBubbleView>(
+      widget->widget_delegate()->GetContentsView());
+  views::test::WidgetDestroyedWaiter close_waiter(widget);
+  views::test::ButtonTestApi(bubble_view->accept_button_for_testing())
+      .NotifyDefaultMouseClick();
+  close_waiter.Wait();
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OnboardingTooltip.Shown",
+                                      true, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.OnboardingTooltip.Shown"),
+            1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.OnboardingTooltip.Accepted", true, 1);
+}
+
+TEST_F(ContextualTasksOnboardingTooltipControllerTest,
+       ShownRecordedOnlyAfterImpressionDelay) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  controller()->SetEntryPoint(
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+  CreateAndShowFaviconsElement();
+  ASSERT_TRUE(controller()->IsBubbleShowing());
+  histogram_tester.ExpectTotalCount("ContextualTasks.OnboardingTooltip.Shown",
+                                    0);
+
+  task_environment()->FastForwardBy(base::Milliseconds(
+      GetContextualTasksOnboardingTooltipImpressionDelay() + 100));
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OnboardingTooltip.Shown",
+                                      true, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.OnboardingTooltip.Shown"),
+            1);
+}
+
+TEST_F(ContextualTasksOnboardingTooltipControllerTest,
+       ShownNotRecordedIfHiddenBeforeImpressionDelay) {
+  base::HistogramTester histogram_tester;
+  controller()->SetEntryPoint(
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+  CreateAndShowFaviconsElement();
+  ASSERT_TRUE(controller()->IsBubbleShowing());
+  HideFaviconsElement();
+
+  task_environment()->FastForwardBy(base::Milliseconds(
+      GetContextualTasksOnboardingTooltipImpressionDelay() + 100));
+
+  histogram_tester.ExpectTotalCount("ContextualTasks.OnboardingTooltip.Shown",
+                                    0);
+}
+
+TEST_F(ContextualTasksOnboardingTooltipControllerTest,
+       AskGoogleVariantDoesNotRecordOnboardingMetrics) {
+  base::HistogramTester histogram_tester;
+  controller()->SetEntryPoint(
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION);
+  CreateAndShowFaviconsElement();
+  ASSERT_EQ(controller()->active_variant_for_testing(),
+            ContextualTasksOnboardingBubbleView::Variant::kAskGoogle);
+  task_environment()->FastForwardBy(base::Milliseconds(
+      GetContextualTasksOnboardingTooltipImpressionDelay() + 100));
+
+  views::Widget* widget = controller()->bubble_widget_for_testing();
+  auto* bubble_view = views::AsViewClass<ContextualTasksOnboardingBubbleView>(
+      widget->widget_delegate()->GetContentsView());
+  views::test::WidgetDestroyedWaiter close_waiter(widget);
+  views::test::ButtonTestApi(bubble_view->accept_button_for_testing())
+      .NotifyDefaultMouseClick();
+  close_waiter.Wait();
+
+  histogram_tester.ExpectTotalCount("ContextualTasks.OnboardingTooltip.Shown",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OnboardingTooltip.Accepted", 0);
 }
 
 TEST_F(ContextualTasksOnboardingTooltipControllerTest, DismissedCapRespected) {
