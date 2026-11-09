@@ -162,6 +162,22 @@ source_set("browser_tests") {
   sources = []
   deps = []
 
+  if (!is_chromeos && !is_android) {
+    sources += [ "default_browser_modal_ui_browsertest.cc" ]
+    deps += [
+      ":default_browser_modal",
+      "//base/test:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/webui/top_chrome",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//url",
+    ]
+  }
+
   if (is_win) {
     sources += [ "visual_guided_setter_ui_browsertest.cc" ]
 

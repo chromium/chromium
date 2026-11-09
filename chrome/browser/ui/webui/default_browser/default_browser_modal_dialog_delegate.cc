@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/views/web_dialogs/chrome_webui_dialog.h"
 #include "chrome/browser/ui/webui/default_browser/default_browser_modal_ui.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
@@ -50,11 +51,15 @@ std::unique_ptr<views::Widget> Show(Profile* profile,
   }
   url = net::AppendQueryParameter(url, "is_modal", "true");
 
+  // With kTopChromeWebUISharedRenderer, the modal is created in
+  // TopChromeWebUIProfile, which is shared by the windows of all profiles, for
+  // `profile`.
   auto contents_wrapper =
       std::make_unique<WebUIContentsWrapperT<DefaultBrowserModalUI>>(
-          url, profile, /*task_manager_string_id=*/0,
+          url, &webui::GetProfileForTopChromeWebUIContents(profile),
+          /*task_manager_string_id=*/0,
           /*esc_closes_ui=*/true,
-          /*supports_draggable_regions=*/false);
+          /*supports_draggable_regions=*/false, profile);
 
   constexpr int kInitialWidth = 615;
 
