@@ -5,6 +5,7 @@
 
 import argparse
 import os
+import shlex
 import stat
 
 
@@ -12,12 +13,18 @@ def generate_app_install_script(
     command: str, app: str, company: str, version: str, output: str
 ):
     with open(output, "wt") as f:
-        f.write('#/bin/bash\n\n')
+        f.write('#!/bin/bash\n\n')
         f.write('SCRIPT_DIR=$(dirname -- "${BASH_SOURCE[0]}")\n')
         f.write(
-            '"${SCRIPT_DIR}/' + f'{command}" --appid={app} --company={company} '
-            f'--product_version={version}\n'
+            f'ARGS=({shlex.quote(f"--appid={app}")} '
+            f'{shlex.quote(f"--company={company}")} '
+            f'{shlex.quote(f"--product_version={version}")})\n'
         )
+        # The macOS updater sets UPDATE_IS_MACHINE to 1 for system installs.
+        f.write('if [[ "${UPDATE_IS_MACHINE:-}" == "1" ]]; then\n')
+        f.write('  ARGS+=(--system)\n')
+        f.write('fi\n')
+        f.write('"${SCRIPT_DIR}/' + f'{command}" "${{ARGS[@]}}"\n')
     os.chmod(output, os.stat(output).st_mode | stat.S_IEXEC)
 
 

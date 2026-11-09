@@ -6,6 +6,10 @@
 # Example script that "installs" an app by writing some values to the install
 # path.
 
+# Fail on errors so that callers see a failed install instead of a silent
+# success.
+set -e
+
 declare appid=MockApp
 declare system=0
 declare company="Chromium"
@@ -34,19 +38,24 @@ for i in "$@"; do
 done
 
 declare -r install_file="app.json"
+
+# The macOS updater runs installers with a cleared environment, so HOME may be
+# unset. In that case, bash expands `~` from the password database.
+declare -r home_dir=~
+
 if [[ "${OSTYPE}" =~ ^"darwin" ]]; then
   if (( "${system}" == 1 )); then
     declare -r install_path="/Library/Application Support/${company}/${appid}"
   else
-    declare -r \
-        install_path="${HOME}/Library/Application Support/${company}/${appid}"
+    declare -r app_support="${home_dir}/Library/Application Support"
+    declare -r install_path="${app_support}/${company}/${appid}"
   fi
 else
-  declare -r lower_company=$(echo ${company} | tr '[:upper:]' '[:lower:]')
+  declare -r lower_company=$(echo "${company}" | tr '[:upper:]' '[:lower:]')
   if (( "${system}" == 1 )); then
     declare -r install_path="/opt/${lower_company}/${appid}"
   else
-    declare -r install_path="${HOME}/.local/${lower_company}/${appid}"
+    declare -r install_path="${home_dir}/.local/${lower_company}/${appid}"
   fi
 fi
 
