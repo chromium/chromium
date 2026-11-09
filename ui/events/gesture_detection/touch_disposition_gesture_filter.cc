@@ -260,8 +260,9 @@ void TouchDispositionGestureFilter::OnTouchEventAck(
       SendAckedEvents(event_latency_metadata);
   } else {
     CHECK(!Head().empty(), base::NotFatalUntil::M163);
-    CHECK_EQ(Head().front().unique_touch_event_id(), unique_touch_event_id,
-             base::NotFatalUntil::M163);
+    // TODO(crbug.com/582696857): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(Head().front().unique_touch_event_id(), unique_touch_event_id);
     Head().front().Ack(event_consumed, is_source_touch_event_set_blocking);
     SendAckedEvents(event_latency_metadata);
   }
