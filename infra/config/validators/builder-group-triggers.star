@@ -14,9 +14,6 @@ _LEGACY_CROSS_BUILDER_GROUP_TRIGGERS = {
         ("ci", "android-webview-12-x64-dbg-tests"),
         ("ci", "android-webview-13-x64-dbg-tests"),
     ],
-    ("ci", "Mac Builder (dbg)"): [
-        ("ci", "mac-osxbeta-rel"),
-    ],
     ("ci", "Win x64 Builder"): [
         ("ci", "win-network-sandbox-tester"),
     ],
