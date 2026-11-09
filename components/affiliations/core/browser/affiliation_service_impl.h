@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AFFILIATIONS_CORE_BROWSER_AFFILIATION_SERVICE_IMPL_H_
 #define COMPONENTS_AFFILIATIONS_CORE_BROWSER_AFFILIATION_SERVICE_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -42,48 +41,13 @@ BASE_DECLARE_FEATURE(kCachePSLExtensions);
 // Enables fetching patterns for change password URLs.
 BASE_DECLARE_FEATURE(kFetchChangePasswordPatterns);
 
-extern const char kGetChangePasswordURLMetricName[];
-
 // Change password info request requires branding_info enabled.
 constexpr AffiliationFetcherInterface::RequestInfo
     kChangePasswordUrlRequestInfo{.branding_info = true,
                                   .change_password_info = true};
 
-// Used to record metrics for the usage and timing of the GetChangePasswordUrl
-// call. These values are persisted to logs. Entries should not be renumbered
-// and numeric values should never be reused.
-enum class GetChangePasswordUrlMetric {
-  // Used when GetChangePasswordUrl is called before the response
-  // arrives.
-  kNotFetchedYet = 0,
-  // Used when a url was used, which corresponds to the requested site.
-  kUrlOverrideUsed = 1,
-  // Used when no override url was available.
-  kNoUrlOverrideAvailable = 2,
-
-  // Fallback to arbitrary facet causes more bugs than good.
-  // Deprecated: kGroupUrlOverrideUsed = 3,
-
-  // Used when change password info was available for the main domain only.
-  kMainDomainUsed = 4,
-  kMaxValue = kMainDomainUsed,
-};
-
 class AffiliationServiceImpl : public AffiliationService {
  public:
-  struct ChangePasswordUrlMatch {
-    ChangePasswordUrlMatch();
-    ChangePasswordUrlMatch(const ChangePasswordUrlMatch& other);
-    ChangePasswordUrlMatch(ChangePasswordUrlMatch&& other);
-    ChangePasswordUrlMatch& operator=(const ChangePasswordUrlMatch& other);
-    ChangePasswordUrlMatch& operator=(ChangePasswordUrlMatch&& other);
-    ~ChangePasswordUrlMatch();
-
-    GURL change_password_url;
-    bool main_domain_override = false;
-    std::vector<ChangePasswordPattern> patterns;
-  };
-
   explicit AffiliationServiceImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
@@ -100,13 +64,10 @@ class AffiliationServiceImpl : public AffiliationService {
   // Shutdowns the service by deleting its backend.
   void Shutdown() override;
 
-  // Fetches change password URLs and saves them to |change_password_urls_|
-  // map. Creates a unique fetcher. When fetch is finished a callback is run.
+  // Fetches the change password URL for `url` using a dedicated fetcher and
+  // invokes `callback` with the result when the fetch finishes.
   void FetchChangePasswordURL(const GURL& url,
                               base::OnceCallback<void(GURL)> callback) override;
-
-  // In case no valid URL was found, a method returns an empty URL.
-  GURL GetChangePasswordURL(const GURL& url) const override;
 
   void SetURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
@@ -166,7 +127,6 @@ class AffiliationServiceImpl : public AffiliationService {
       std::vector<std::string> psl_extensions);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::map<FacetURI, ChangePasswordUrlMatch> change_password_urls_;
   std::unique_ptr<AffiliationFetcherManager> fetcher_manager_;
   AffiliationPrefetcher prefetcher_{this};
   base::flat_set<std::string> psl_extension_list_;

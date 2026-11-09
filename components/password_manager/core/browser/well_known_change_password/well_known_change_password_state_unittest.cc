@@ -232,11 +232,7 @@ TEST_P(WellKnownChangePasswordStateTest, TimeoutTriggersOnProcessingFinished) {
 
 TEST_P(WellKnownChangePasswordStateTest,
        PrefetchCallbackTriggersOnProcessingFinished) {
-  std::vector<affiliations::FacetURI> facets;
-  auto mock_fetcher = std::make_unique<
-      testing::NiceMock<affiliations::MockAffiliationFetcher>>();
-  ON_CALL(*mock_fetcher, GetRequestedFacetURIs)
-      .WillByDefault(testing::ReturnRef(facets));
+  auto mock_fetcher = std::make_unique<affiliations::MockAffiliationFetcher>();
   auto mock_fetcher_factory =
       std::make_unique<affiliations::MockAffiliationFetcherFactory>();
   base::OnceCallback<void(

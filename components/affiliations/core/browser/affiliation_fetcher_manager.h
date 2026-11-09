@@ -36,9 +36,6 @@ class AffiliationFetcherManager {
              base::OnceCallback<void(AffiliationFetcherInterface::FetchResult)>
                  completion_callback);
 
-  // Returns all the |FacetURI|s that are currently being fetched.
-  std::vector<FacetURI> GetRequestedFacetURIs() const;
-
   // Returns whether Fetch can be scheduled.
   bool IsFetchPossible() const;
 

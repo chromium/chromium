@@ -35,9 +35,6 @@ class AffiliationService : public KeyedService {
       const GURL& url,
       base::OnceCallback<void(GURL)> callback) = 0;
 
-  // Returns a URL with change password form for a site requested.
-  virtual GURL GetChangePasswordURL(const GURL& url) const = 0;
-
   // Looks up facets affiliated with the facet identified by |facet_uri| and
   // branding information in the local cache if it's fresh. Invokes
   // |result_callback| with the results, it is guaranteed that the results will

@@ -62,10 +62,6 @@ void FakeAffiliationService::FetchChangePasswordURL(
                             base::BindOnce(std::move(callback), GURL()));
 }
 
-GURL FakeAffiliationService::GetChangePasswordURL(const GURL& url) const {
-  return GURL();
-}
-
 void FakeAffiliationService::GetAffiliationsAndBranding(
     const FacetURI& facet_uri,
     ResultCallback result_callback) {

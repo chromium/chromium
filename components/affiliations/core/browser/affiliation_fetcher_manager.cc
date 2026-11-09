@@ -56,16 +56,6 @@ void AffiliationFetcherManager::CleanUpFetcher(
   }
 }
 
-std::vector<FacetURI> AffiliationFetcherManager::GetRequestedFacetURIs() const {
-  std::vector<FacetURI> requested_facet_uris;
-  for (const auto& fetcher : fetchers_) {
-    auto facets = fetcher->GetRequestedFacetURIs();
-    requested_facet_uris.insert(requested_facet_uris.end(), facets.begin(),
-                                facets.end());
-  }
-  return requested_facet_uris;
-}
-
 bool AffiliationFetcherManager::IsFetchPossible() const {
   return fetcher_factory_->CanCreateFetcher();
 }

@@ -129,9 +129,6 @@ class ChromePasswordChangeServiceBase {
 
   ~ChromePasswordChangeServiceBase() = default;
 
-  affiliations::MockAffiliationService& affiliation_service() {
-    return mock_affiliation_service_;
-  }
   MockOptimizationGuideKeyedService& mock_optimization_service() {
     return mock_optimization_service_;
   }
@@ -360,7 +357,6 @@ TEST_F(ChromePasswordChangeServiceTest,
 
   base::HistogramTester histogram_tester;
   GURL url("https://test.com/");
-  EXPECT_CALL(affiliation_service(), GetChangePasswordURL).Times(0);
 
   EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
       CreateTestForm(url, /*is_signup_form=*/false),
@@ -378,7 +374,6 @@ TEST_F(ChromePasswordChangeServiceTest,
 
   base::HistogramTester histogram_tester;
   GURL url("https://www.test.com/");
-  EXPECT_CALL(affiliation_service(), GetChangePasswordURL).Times(0);
 
   EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
       CreateTestForm(url, /*is_signup_form=*/false),
@@ -391,8 +386,6 @@ TEST_F(ChromePasswordChangeServiceTest,
 TEST_F(ChromePasswordChangeServiceTest,
        PasswordChangeSupportedIfRuntimeOverrideProvided) {
   GURL url("https://test.com/");
-  EXPECT_CALL(affiliation_service(), GetChangePasswordURL)
-      .WillRepeatedly(testing::Return(GURL()));
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(settings_service(), IsSettingEnabled)

@@ -859,15 +859,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="PasswordManager.AffiliationService.GetChangePasswordUsage"
-    enum="GetChangePasswordUrlMetric" expires_after="2027-03-07">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
-  <summary>
-    Usage and timing of the Affiliation Service GetChangePasswordUrl call.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.ApplySyncChanges.AddLoginSyncError"
     enum="PasswordAddLoginSyncError" expires_after="2026-12-29">
   <owner>mamir@chromium.org</owner>
