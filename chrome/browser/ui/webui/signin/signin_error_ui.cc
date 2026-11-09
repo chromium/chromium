@@ -94,8 +94,9 @@ void SigninErrorUI::InitializeMessageHandlerWithBrowser(
             ->GetProfileAttributesStorage()
             .GetProfileAttributesWithPath(error.another_profile_path());
     CHECK(entry, base::NotFatalUntil::M162);
-    CHECK(entry->IsAuthenticated() || entry->CanBeManaged(),
-          base::NotFatalUntil::M162);
+    // TODO(crbug.com/582848651): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(entry->IsAuthenticated() || entry->CanBeManaged());
     handler->set_duplicate_profile_path(entry->GetPath());
     existing_name = entry->GetName();
     source->AddString("signinErrorMessage",
