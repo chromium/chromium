@@ -234,43 +234,52 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
     std::vector<SystemNotification> pending_notifications_;
   };
 
+  using AppRegistry = std::map<AppId, AppDetails>;
+
+  // Most of the methods below take the app's |entry| in |activity_registry_|
+  // instead of a separate AppId and AppDetails, so that callers which already
+  // looked up the app don't need another lookup.
+
   // OnAppReinstalled is called when an application has been uninstalled and
   // then installed again before being removed from app registry.
-  void OnAppReinstalled(const AppId& app_id);
+  void OnAppReinstalled(AppRegistry::value_type& entry);
 
   // Removes data older than |timestamp| from the registry.
   // Removes entries for uninstalled apps if there is no more relevant activity
   // data left.
   void CleanRegistry(base::Time timestamp);
 
-  // Adds an ap to the registry if it does not exist.
-  void Add(const AppId& app_id);
+  // Initializes |entry|, which has just been added to the registry.
+  void Add(AppRegistry::value_type& entry);
 
-  // Convenience methods to access state of the app identified by |app_id|.
-  // Should only be called if app exists in the registry.
-  void SetAppState(const AppId& app_id, AppState app_state);
+  // Sets the state of the app.
+  void SetAppState(AppRegistry::value_type& entry, AppState app_state);
 
-  // Notifies state observers the application identified by |app_id| has reached
-  // its set time limit.
-  void NotifyLimitReached(const AppId& app_id, bool was_active);
+  // Notifies state observers the application has reached its set time limit.
+  void NotifyLimitReached(const AppRegistry::value_type& entry,
+                          bool was_active);
 
   // Methods to set the application as active and inactive respectively.
-  void SetAppActive(const AppId& app_id, base::Time timestamp);
-  void SetAppInactive(const AppId& app_id, base::Time timestamp);
+  void SetAppActive(AppRegistry::value_type& entry, base::Time timestamp);
+  void SetAppInactive(AppRegistry::value_type& entry, base::Time timestamp);
 
-  std::optional<base::TimeDelta> GetTimeLeftForApp(const AppId& app_id) const;
+  std::optional<base::TimeDelta> GetTimeLeftForApp(
+      const AppRegistry::value_type& entry) const;
 
   // Schedules a time limit check for application when it becomes active.
-  void ScheduleTimeLimitCheckForApp(const AppId& app_id);
+  void ScheduleTimeLimitCheckForApp(AppRegistry::value_type& entry);
 
   // Checks the limit and shows notification if needed.
-  void CheckTimeLimitForApp(const AppId& app_id);
+  void CheckTimeLimitForApp(AppRegistry::value_type& entry);
+
+  // Called by |AppDetails::app_limit_timer| of the app identified by |app_id|.
+  void OnAppLimitTimerFired(const AppId& app_id);
 
   // Shows notification about time limit updates for the app if there were
   // relevant changes between |old_limit| and |new_limit|. Returns true if a
   // notification has been made.
   bool ShowLimitUpdatedNotificationIfNeeded(
-      const AppId& app_id,
+      AppRegistry::value_type& entry,
       const std::optional<AppLimit>& old_limit,
       const std::optional<AppLimit>& new_limit);
 
@@ -286,7 +295,7 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
 
   // Updates |AppActivity::active_times_| to include the current activity up to
   // |timestamp| then creates the most up to date instance of PersistedAppInfo.
-  PersistedAppInfo GetPersistedAppInfoForApp(const AppId& app_id,
+  PersistedAppInfo GetPersistedAppInfoForApp(AppRegistry::value_type& entry,
                                              base::Time timestamp);
 
   // Returns true if the last successfully reported time is earlier than 30 days
@@ -294,15 +303,20 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
   bool ShouldCleanUpStoredPref();
 
   // Sends system notification for the application.
-  void SendSystemNotificationsForApp(const AppId& app_id);
+  void SendSystemNotificationsForApp(AppRegistry::value_type& entry);
 
   // Shows notification or queues it to be shown later.
-  void MaybeShowSystemNotification(const AppId& app_id,
+  void MaybeShowSystemNotification(AppRegistry::value_type& entry,
                                    const SystemNotification& notification);
+
+  // Same as the public SetAppLimit(), for an app whose |entry| was already
+  // looked up.
+  bool SetAppLimit(AppRegistry::value_type& entry,
+                   const std::optional<AppLimit>& app_limit);
 
   // Called by AppActivityRegistry::SetAppLimit after the application's limit
   // has been updated.
-  void AppLimitUpdated(const AppId& app_id);
+  void AppLimitUpdated(AppRegistry::value_type& entry);
 
   const raw_ptr<PrefService> pref_service_;
 
@@ -315,7 +329,7 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
   // Observers to be notified about app state changes.
   base::ObserverList<AppStateObserver> app_state_observers_;
 
-  std::map<AppId, AppDetails> activity_registry_;
+  AppRegistry activity_registry_;
 
   // Newly installed applications which have not yet been added to the user
   // pref.
