@@ -208,12 +208,14 @@ TEST(ColorFunctionParserTest, RelativeColorWithColorMixWithCurrentColorBase) {
   EXPECT_TRUE(origin.IsColorMixValue());
   const cssvalue::CSSColorMixValue& origin_color =
       To<cssvalue::CSSColorMixValue>(origin);
-  EXPECT_TRUE(origin_color.Color1().IsIdentifierValue());
-  EXPECT_EQ(To<CSSIdentifierValue>(origin_color.Color1()).GetValueID(),
+  ASSERT_EQ(origin_color.Items().size(), 2u);
+  const CSSValue& color1 = *origin_color.Items()[0].color;
+  EXPECT_TRUE(color1.IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(color1).GetValueID(),
             CSSValueID::kCurrentcolor);
-  EXPECT_TRUE(origin_color.Color2().IsIdentifierValue());
-  EXPECT_EQ(To<CSSIdentifierValue>(origin_color.Color2()).GetValueID(),
-            CSSValueID::kGreen);
+  const CSSValue& color2 = *origin_color.Items()[1].color;
+  EXPECT_TRUE(color2.IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(color2).GetValueID(), CSSValueID::kGreen);
 }
 
 namespace {

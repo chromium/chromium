@@ -301,27 +301,44 @@ void StyleColor::UnresolvedAlphaColor::Trace(Visitor* visitor) const {
   visitor->Trace(alpha_);
 }
 
+StyleColor::UnresolvedColorMix::Item::Item(const StyleColor& color)
+    : color(color.color_or_unresolved_color_function_),
+      color_type(ResolveColorOperandType(color)) {}
+
 StyleColor::UnresolvedColorMix::UnresolvedColorMix(
     Color::ColorSpace color_interpolation_space,
     Color::HueInterpolationMethod hue_interpolation_method,
-    const StyleColor& c1,
-    const StyleColor& c2,
+    ItemVector items,
     double percentage,
     double alpha_multiplier)
     : UnresolvedColorFunction(UnresolvedColorFunction::Type::kColorMix),
       color_interpolation_space_(color_interpolation_space),
       hue_interpolation_method_(hue_interpolation_method),
-      color1_(c1.color_or_unresolved_color_function_),
-      color2_(c2.color_or_unresolved_color_function_),
+      items_(std::move(items)),
       percentage_(percentage),
-      alpha_multiplier_(alpha_multiplier),
-      color1_type_(ResolveColorOperandType(c1)),
-      color2_type_(ResolveColorOperandType(c2)) {}
+      alpha_multiplier_(alpha_multiplier) {
+  CHECK_EQ(items_.size(), 2u);
+}
+
+void StyleColor::UnresolvedColorMix::Trace(Visitor* visitor) const {
+  UnresolvedColorFunction::Trace(visitor);
+  visitor->Trace(items_);
+}
+
+bool StyleColor::UnresolvedColorMix::operator==(
+    const UnresolvedColorMix& other) const {
+  return color_interpolation_space_ == other.color_interpolation_space_ &&
+         hue_interpolation_method_ == other.hue_interpolation_method_ &&
+         percentage_ == other.percentage_ &&
+         alpha_multiplier_ == other.alpha_multiplier_ && items_ == other.items_;
+}
 
 Color StyleColor::UnresolvedColorMix::Resolve(
     const Color& current_color) const {
-  const Color c1 = ResolveColorOperand(color1_, color1_type_, current_color);
-  const Color c2 = ResolveColorOperand(color2_, color2_type_, current_color);
+  const Color c1 =
+      ResolveColorOperand(items_[0].color, items_[0].color_type, current_color);
+  const Color c2 =
+      ResolveColorOperand(items_[1].color, items_[1].color_type, current_color);
   return Color::FromColorMix(color_interpolation_space_,
                              hue_interpolation_method_, c1, c2, percentage_,
                              alpha_multiplier_);
@@ -336,8 +353,11 @@ CSSValue* StyleColor::UnresolvedColorMix::ToCSSValue() const {
                                      CSSPrimitiveValue::UnitType::kPercentage);
 
   return MakeGarbageCollected<cssvalue::CSSColorMixValue>(
-      ConvertColorOperandToCSSValue(color1_, color1_type_),
-      ConvertColorOperandToCSSValue(color2_, color2_type_), percent1, percent2,
+      cssvalue::CSSColorMixValue::ItemVector{
+          {ConvertColorOperandToCSSValue(items_[0].color, items_[0].color_type),
+           percent1},
+          {ConvertColorOperandToCSSValue(items_[1].color, items_[1].color_type),
+           percent2}},
       color_interpolation_space_, hue_interpolation_method_);
 }
 

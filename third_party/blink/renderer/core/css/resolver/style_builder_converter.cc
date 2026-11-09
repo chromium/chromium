@@ -2907,10 +2907,11 @@ StyleColor ResolveColorValueImpl(const CSSValue& value,
   }
 
   if (auto* color_mix_value = DynamicTo<cssvalue::CSSColorMixValue>(value)) {
-    const StyleColor style_color1 =
-        ResolveColorValueImpl(color_mix_value->Color1(), context);
-    const StyleColor style_color2 =
-        ResolveColorValueImpl(color_mix_value->Color2(), context);
+    const HeapVector<StyleColor, 2> style_colors(
+        color_mix_value->Items(),
+        [&context](const cssvalue::CSSColorMixItem& item) {
+          return ResolveColorValueImpl(*item.color, context);
+        });
     double alpha_multiplier;
     double mix_amount;
     color_mix_value->NormalizePercentages(mix_amount, alpha_multiplier,
@@ -2918,17 +2919,21 @@ StyleColor ResolveColorValueImpl(const CSSValue& value,
     const StyleColor::UnresolvedColorMix* unresolved_color_mix =
         MakeGarbageCollected<StyleColor::UnresolvedColorMix>(
             color_mix_value->ColorInterpolationSpace(),
-            color_mix_value->HueInterpolationMethod(), style_color1,
-            style_color2, mix_amount, alpha_multiplier);
+            color_mix_value->HueInterpolationMethod(),
+            StyleColor::UnresolvedColorMix::ItemVector(
+                style_colors,
+                [](const StyleColor& style_color) {
+                  return StyleColor::UnresolvedColorMix::Item(style_color);
+                }),
+            mix_amount, alpha_multiplier);
     // https://drafts.csswg.org/css-color-5/#resolving-mix
-    // If both parameters are resolvable at computed-value time, the color-mix
+    // If all parameters are resolvable at computed-value time, the color-mix
     // function should be resolved at computed-value time as well.
     // Otherwise we need to store an unresolved value on StyleColor.
-    if (style_color1.IsAbsoluteColor() && style_color2.IsAbsoluteColor()) {
+    if (std::ranges::all_of(style_colors, &StyleColor::IsAbsoluteColor)) {
       return StyleColor(unresolved_color_mix->Resolve(Color()));
-    } else {
-      return StyleColor(unresolved_color_mix);
     }
+    return StyleColor(unresolved_color_mix);
   }
 
   if (auto* relative_color_value =

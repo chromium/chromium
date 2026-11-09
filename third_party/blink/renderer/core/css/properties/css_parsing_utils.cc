@@ -2177,6 +2177,38 @@ static std::optional<ColorInterpolationSpace> ConsumeColorInterpolationSpace(
 
 namespace {
 
+// Consumes a `<color> && <percentage [0,100]>?` argument of color-mix() and
+// appends it to `items`. Returns false if the argument is invalid.
+bool ConsumeColorMixItem(CSSParserTokenStream& stream,
+                         const CSSParserContext& context,
+                         CSSParserLocalContext& local_context,
+                         const ColorParserContext& color_parser_context,
+                         cssvalue::CSSColorMixValue::ItemVector& items) {
+  CSSValue* color =
+      ConsumeColor(stream, context, local_context, color_parser_context);
+  CSSPrimitiveValue* percentage = ConsumePercent(
+      stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
+  if (!IsAllowedColorValue(percentage, color_parser_context)) {
+    return false;
+  }
+  if (!color) {
+    color = ConsumeColor(stream, context, local_context, color_parser_context);
+    if (!color) {
+      return false;
+    }
+  }
+  // Only literals are range-checked when parsing; numeric functions such as
+  // calc() are clamped later instead.
+  // https://drafts.csswg.org/css-values-4/#functional-numeric
+  if (auto* numeric = DynamicTo<CSSNumericLiteralValue>(percentage);
+      numeric && (numeric->ComputePercentage() < 0.0 ||
+                  numeric->ComputePercentage() > 100.0)) {
+    return false;
+  }
+  items.push_back(cssvalue::CSSColorMixItem{color, percentage});
+  return true;
+}
+
 // https://www.w3.org/TR/css-color-5/#color-mix
 CSSValue* ConsumeColorMixFunction(
     CSSParserTokenStream& stream,
@@ -2209,51 +2241,17 @@ CSSValue* ConsumeColorMixFunction(
       return nullptr;
     }
 
-    CSSValue* color1 =
-        ConsumeColor(stream, context, local_context, color_parser_context);
-    CSSPrimitiveValue* p1 = ConsumePercent(stream, context, local_context,
-                                           CSSPrimitiveValue::ValueRange::kAll);
-    if (!IsAllowedColorValue(p1, color_parser_context)) {
+    cssvalue::CSSColorMixValue::ItemVector items;
+    items.reserve(2);
+    if (!ConsumeColorMixItem(stream, context, local_context,
+                             color_parser_context, items)) {
       return nullptr;
     }
-    // Color can come after the percentage
-    if (!color1) {
-      color1 =
-          ConsumeColor(stream, context, local_context, color_parser_context);
-      if (!color1) {
-        return nullptr;
-      }
-    }
-    // Reject negative values and values > 100%, but not calc() values.
-    if (auto* p1_numeric = DynamicTo<CSSNumericLiteralValue>(p1);
-        p1_numeric && (p1_numeric->ComputePercentage() < 0.0 ||
-                       p1_numeric->ComputePercentage() > 100.0)) {
-      return nullptr;
-    }
-
     if (!ConsumeCommaIncludingWhitespace(stream)) {
       return nullptr;
     }
-
-    CSSValue* color2 =
-        ConsumeColor(stream, context, local_context, color_parser_context);
-    CSSPrimitiveValue* p2 = ConsumePercent(stream, context, local_context,
-                                           CSSPrimitiveValue::ValueRange::kAll);
-    if (!IsAllowedColorValue(p2, color_parser_context)) {
-      return nullptr;
-    }
-    // Color can come after the percentage
-    if (!color2) {
-      color2 =
-          ConsumeColor(stream, context, local_context, color_parser_context);
-      if (!color2) {
-        return nullptr;
-      }
-    }
-    // Reject negative values and values > 100%, but not calc() values.
-    if (auto* p2_numeric = DynamicTo<CSSNumericLiteralValue>(p2);
-        p2_numeric && (p2_numeric->ComputePercentage() < 0.0 ||
-                       p2_numeric->ComputePercentage() > 100.0)) {
+    if (!ConsumeColorMixItem(stream, context, local_context,
+                             color_parser_context, items)) {
       return nullptr;
     }
 
@@ -2263,7 +2261,7 @@ CSSValue* ConsumeColorMixFunction(
 
     guard.Release();
     result = MakeGarbageCollected<cssvalue::CSSColorMixValue>(
-        color1, color2, p1, p2, color_space, hue_interpolation_method);
+        std::move(items), color_space, hue_interpolation_method);
   }
   stream.ConsumeWhitespace();
 

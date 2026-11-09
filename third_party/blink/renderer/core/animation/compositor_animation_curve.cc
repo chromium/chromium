@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/animation/compositor_animation_curve.h"
 
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/typed_interpolation_value.h"
@@ -46,8 +48,10 @@ bool IsStyleDependent(const CSSValue* css_value) {
 
   if (css_value->IsColorMixValue()) {
     const auto* color_mix = To<cssvalue::CSSColorMixValue>(css_value);
-    return IsStyleDependent(&color_mix->Color1()) ||
-           IsStyleDependent(&color_mix->Color2());
+    return std::ranges::any_of(color_mix->Items(),
+                               [](const cssvalue::CSSColorMixItem& item) {
+                                 return IsStyleDependent(item.color.Get());
+                               });
   }
 
   return false;

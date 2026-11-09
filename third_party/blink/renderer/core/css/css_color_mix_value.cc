@@ -4,12 +4,20 @@
 
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 
+#include <algorithm>
+#include <array>
+
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink::cssvalue {
+
+void CSSColorMixItem::Trace(Visitor* visitor) const {
+  visitor->Trace(color);
+  visitor->Trace(percentage);
+}
 
 void CSSColorMixValue::NormalizePercentages(
     const CSSPrimitiveValue* percentage1,
@@ -51,9 +59,7 @@ void CSSColorMixValue::NormalizePercentages(
 }
 
 bool CSSColorMixValue::Equals(const CSSColorMixValue& other) const {
-  return *color1_ == *other.color1_ && *color2_ == *other.color2_ &&
-         base::ValuesEquivalent(percentage1_, other.percentage1_) &&
-         base::ValuesEquivalent(percentage2_, other.percentage2_) &&
+  return items_ == other.items_ &&
          color_interpolation_space_ == other.color_interpolation_space_ &&
          hue_interpolation_method_ == other.hue_interpolation_method_;
 }
@@ -106,42 +112,42 @@ String CSSColorMixValue::CustomCSSText() const {
   }
 
   auto [percentage1_value, percentage2_value] =
-      PercentageValuesForSerialization(percentage1_, percentage2_);
+      PercentageValuesForSerialization(items_[0].percentage,
+                                       items_[1].percentage);
+  const std::array<const CSSPrimitiveValue*, 2> serialized_percentages = {
+      percentage1_value, percentage2_value};
 
-  result.Append(color1_->CssText());
-  if (percentage1_value) {
-    result.Append(' ');
-    result.Append(percentage1_value->CssText());
-  }
-  result.Append(", ");
-  result.Append(color2_->CssText());
-  if (percentage2_value) {
-    result.Append(' ');
-    result.Append(percentage2_value->CssText());
+  for (wtf_size_t i = 0; i < items_.size(); ++i) {
+    if (i > 0) {
+      result.Append(", ");
+    }
+    result.Append(items_[i].color->CssText());
+    if (serialized_percentages[i]) {
+      result.Append(' ');
+      result.Append(serialized_percentages[i]->CssText());
+    }
   }
   result.Append(')');
   return result.ReleaseString();
 }
 
 bool CSSColorMixValue::HasRandomFunctions() const {
-  return (color1_ && color1_->HasRandomFunctions()) ||
-         (color2_ && color2_->HasRandomFunctions()) ||
-         (percentage1_ && percentage1_->HasRandomFunctions()) ||
-         (percentage2_ && percentage2_->HasRandomFunctions());
+  return std::ranges::any_of(items_, [](const CSSColorMixItem& item) {
+    return item.color->HasRandomFunctions() ||
+           (item.percentage && item.percentage->HasRandomFunctions());
+  });
 }
 
 bool CSSColorMixValue::IsComputationallyIndependent() const {
-  return color1_->IsComputationallyIndependent() &&
-         color2_->IsComputationallyIndependent() &&
-         (!percentage1_ || percentage1_->IsComputationallyIndependent()) &&
-         (!percentage2_ || percentage2_->IsComputationallyIndependent());
+  return std::ranges::all_of(items_, [](const CSSColorMixItem& item) {
+    return item.color->IsComputationallyIndependent() &&
+           (!item.percentage ||
+            item.percentage->IsComputationallyIndependent());
+  });
 }
 
 void CSSColorMixValue::TraceAfterDispatch(blink::Visitor* visitor) const {
-  visitor->Trace(color1_);
-  visitor->Trace(color2_);
-  visitor->Trace(percentage1_);
-  visitor->Trace(percentage2_);
+  visitor->Trace(items_);
   CSSValue::TraceAfterDispatch(visitor);
 }
 
