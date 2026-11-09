@@ -42,7 +42,7 @@ element inside its DOM. Examples include
 
 In all examples, the form control element `t` is associated with the form
 element `f`. The third example is invalid HTML but [explicitly supported by
-the HTML spec](form-element-pointer).
+the HTML spec][form-element-pointer].
 
 Form association is an HTML concept independent of Autofill. We refer to
 the spec section about form-[associated] elements for more detail.
@@ -60,15 +60,15 @@ details on DOM traversals.
 Ownership is an Autofill concept. Its objective is to go beyond HTML's form
 association in the following ways:
 
-- It transcends [node tree]s: for example, a `form` element in the [document
+- It transcends [node tree]s. For example, a `form` element in the [document
   tree] owns all form controls in [shadow tree]s hosted by descendants of the
   `form` element;
-- It gathers unowned form controls: we treat the collection of unowned form
-  controls just like another separate form;
-- It extends to contenteditables: we treat a contenteditable like a form with a
+- It gathers unassociated form controls. We treat the collection of unassociated
+  form controls just like another separate form;
+- It extends to contenteditables. We treat a contenteditable like a form with a
   single field.
 
-A form control `t` is *accessible* if it is [connected] and outside of the
+An element is *accessible* iff it is [connected] and outside of the
 [user-agent tree].
 
 A form control element `t` is *owned* by an outermost form element `f` iff
@@ -110,6 +110,19 @@ elements is unrelated to Autofill's concept of ownership.
 and form controls. A presubmit script warns when code uses the Blink-analogues
 to these functions.
 
+## Iframes
+
+For [form flattening], we extend the ownership concept to `iframe` elements:
+
+An `iframe` element is owned by an outermost form element `f` iff it is
+accessible and it is a [shadow-including] descendant of `f`.
+
+An `iframe` element is *unowned* iff it is accessible and has no
+[shadow-including] form element ancestor.
+
+Following the convention for form controls, we say that the unowned form *owns*
+the unowned `iframe` elements.
+
 [connected]: https://dom.spec.whatwg.org/#connected
 [associated]: https://html.spec.whatwg.org/#association-of-controls-and-forms
 [form owner]: https://html.spec.whatwg.org/#form-owner
@@ -123,3 +136,4 @@ to these functions.
 [shadow DOM]: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM
 [form-associated custom elements]: https://web.dev/articles/more-capable-form-controls
 [form-element-pointer]: https://html.spec.whatwg.org/multipage/parsing.html#form-element-pointer
+[form flattening]: https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/foundations/autofill_driver_router.h;l=47-116;drc=003989f43f342d7b4a1feacc0c71169e29eaf503

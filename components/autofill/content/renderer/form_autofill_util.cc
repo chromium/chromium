@@ -1701,12 +1701,7 @@ bool IsRelevantChildFrame(const WebElement& element) {
 // Returns an empty list if there are more than kMaxExtractableFields such
 // elements.
 //
-// An iframe is owned by `form_element` iff it is accessible, in the light DOM,
-// and
-// - if `form_element` is non-null:
-//   `form_element` is the iframe's outermost <form> ancestor
-// - if `form_element` is null:
-//   the iframe has no <form> ancestor.
+// See README.md for the definition of "ownership".
 std::vector<WebElement> GetIframeElements(const WebDocument& document,
                                           const WebFormElement& form_element) {
   if (base::FeatureList::IsEnabled(
