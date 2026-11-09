@@ -6,6 +6,7 @@
 
 #include <array>
 #include <cstddef>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "base/base64url.h"
@@ -300,16 +301,12 @@ std::optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromGcmHash(
   // messages to the CryptAuthFeatureType enum.
   static const base::NoDestructor<
       base::flat_map<std::string, CryptAuthFeatureType>>
-      hash_to_feature_map([] {
-        base::flat_map<std::string, CryptAuthFeatureType> hash_to_feature_map;
-        for (CryptAuthFeatureType feature_type :
-             GetAllCryptAuthFeatureTypes()) {
-          hash_to_feature_map.insert_or_assign(
-              CryptAuthFeatureTypeToGcmHash(feature_type), feature_type);
-        }
-
-        return hash_to_feature_map;
-      }());
+      hash_to_feature_map(base::MakeFlatMap<std::string, CryptAuthFeatureType>(
+          GetAllCryptAuthFeatureTypes(), /*comp=*/{},
+          [](CryptAuthFeatureType feature_type) {
+            return std::make_pair(CryptAuthFeatureTypeToGcmHash(feature_type),
+                                  feature_type);
+          }));
 
   auto it = hash_to_feature_map->find(feature_type_hash);
 
