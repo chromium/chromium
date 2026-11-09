@@ -2568,10 +2568,6 @@ ci.builder(
                     shards = 2,
                 ),
             ),
-            # TODO(https://crbug.com/549938718): Re-enable on CQ
-            "android_webview_unittests": targets.mixin(
-                ci_only = True,
-            ),
             "base_unittests_android_death_tests": targets.mixin(
                 ci_only = True,
             ),
@@ -3220,11 +3216,6 @@ ci.builder(
             "panther_on_14",
         ],
         per_test_modifications = {
-            "android_webview_unittests": targets.mixin(
-                # TODO(crbug.com/546581718): Re-enable on CQ once the high
-                # pending time is gone.
-                ci_only = True,
-            ),
             "android_browsertests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.phone.android_browsertests.filter",
@@ -4167,12 +4158,6 @@ ci.builder(
                 enable_rts_filtering = True,
                 swarming = targets.swarming(
                     shards = 4,
-                ),
-            ),
-            # TODO(https://crbug.com/549938718): Investigate the long runtime.
-            "android_webview_unittests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 7,
                 ),
             ),
             "base_unittests": targets.mixin(

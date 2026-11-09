@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "android_webview/browser/gfx/begin_frame_source_webview.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/hardware_renderer.h"
@@ -13,6 +15,7 @@
 #include "android_webview/browser/gfx/test/fake_hwui_gl_context.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 #include "base/notreached.h"
+#include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -302,6 +305,13 @@ enum class BeginFrameAckType {
   kManual
 };
 
+bool IsAndroidEmulator() {
+  const std::string hardware = base::SysInfo::GetAndroidHardware();
+  const std::string hardware_egl = base::SysInfo::GetAndroidHardwareEGL();
+  return hardware == "ranchu" || hardware == "cutf_cvm" ||
+         hardware_egl == "emulation" || hardware_egl == "swiftshader";
+}
+
 class InvalidateTest
     : public testing::TestWithParam<testing::tuple<PerFrameFlag,
                                                    PerFrameFlag,
@@ -310,8 +320,19 @@ class InvalidateTest
       public viz::ExternalBeginFrameSourceClient,
       public RootFrameSinkProxyClient {
  public:
-  InvalidateTest()
-      : task_environment_(std::make_unique<base::test::TaskEnvironment>()) {
+  InvalidateTest() = default;
+
+  void SetUp() override {
+    if (IsAndroidEmulator()) {
+      // TODO(https://crbug.com/578570265): Re-enable on emulators once ANGLE
+      // external context state sync is lazy (https://crrev.com/c/8669205,
+      // https://crrev.com/c/8669206).
+      GTEST_SKIP()
+          << "Skipping on Android emulator due to slow ANGLE external context "
+             "state sync (https://crbug.com/578570265).";
+    }
+
+    task_environment_ = std::make_unique<base::test::TaskEnvironment>();
     TaskQueueWebView::GetInstance()->ResetRenderThreadForTesting();
     begin_frame_source_ = std::make_unique<viz::ExternalBeginFrameSource>(this);
     root_frame_sink_proxy_ = std::make_unique<RootFrameSinkProxy>(
@@ -336,6 +357,9 @@ class InvalidateTest
   }
 
   ~InvalidateTest() override {
+    if (!render_thread_manager_) {
+      return;
+    }
     VizCompositorThreadRunnerWebView::GetInstance()->PostTaskAndBlock(
         FROM_HERE, base::BindOnce(
                        [](std::unique_ptr<VizClient> client) {
