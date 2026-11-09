@@ -88,7 +88,6 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/scheduled_restart_manager.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector_impl.h"
-#include "components/signin/public/base/signin_switches.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 using ::testing::_;
@@ -1573,7 +1572,7 @@ class AppMenuModelSendTabToSelfSigninPromosTest
         {kSendTabToSelfEnhancedDesktopUIv2,
          send_tab_to_self::kSendTabToSelfSubmenuSigninPromos,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-         switches::kCrossDeviceSigninFromDesktopFollowup
+         send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode
 #endif
         },
         {});
@@ -1640,9 +1639,9 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelSendTabToSelfSigninPromosTest,
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Tests that when `kInformNoTargetDevice` is returned and both
-// `kSendTabToSelfSubmenuSigninPromos` and
-// `switches::kCrossDeviceSigninFromDesktopFollowup` are enabled, the "Send to
-// your device" item in the Save and Share submenu is a submenu model.
+// `kSendTabToSelfSubmenuSigninPromos` and `kSendTabToSelfNoTargetDeviceQrCode`
+// are enabled, the "Send to your device" item in the Save and Share submenu is
+// a submenu model.
 IN_PROC_BROWSER_TEST_F(AppMenuModelSendTabToSelfSigninPromosTest,
                        SendTabToSelfSaveAndShareInformNoTargetDevice) {
   auto* sync_service = static_cast<StubSendTabToSelfSyncService*>(

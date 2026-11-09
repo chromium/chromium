@@ -74,10 +74,6 @@
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "components/signin/public/base/signin_switches.h"
-#endif
-
 class TabMenuModelBrowserTest : public MenuModelTest,
                                 public InProcessBrowserTest {
  public:
@@ -990,7 +986,7 @@ class TabMenuModelSendTabToSelfSigninPromosBrowserTest
     signin_promos_feature_list_.InitWithFeatures(
         {send_tab_to_self::kSendTabToSelfSubmenuSigninPromos,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-         switches::kCrossDeviceSigninFromDesktopFollowup
+         send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode
 #endif
         },
         {});
@@ -1057,8 +1053,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelSendTabToSelfSigninPromosBrowserTest,
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Tests that for `kInformNoTargetDevice`, the tab context menu renders Send Tab
-// to Self as a submenu when `switches::kCrossDeviceSigninFromDesktopFollowup`
-// is enabled.
+// to Self as a submenu when `kSendTabToSelfNoTargetDeviceQrCode` is enabled.
 IN_PROC_BROWSER_TEST_F(TabMenuModelSendTabToSelfSigninPromosBrowserTest,
                        SubmenuForInformNoTargetDevice) {
   auto* sync_service =

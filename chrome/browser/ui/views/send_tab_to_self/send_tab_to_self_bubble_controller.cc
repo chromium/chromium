@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_no_target_device_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -321,7 +322,7 @@ bool SendTabToSelfBubbleController::ShouldShowNoTargetDeviceQrBubble(
   if (reason != EntryPointDisplayReason::kInformNoTargetDevice || !browser ||
       !base::FeatureList::IsEnabled(switches::kCrossDeviceSigninFromDesktop) ||
       !base::FeatureList::IsEnabled(
-          switches::kCrossDeviceSigninFromDesktopFollowup)) {
+          send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode)) {
     return false;
   }
   signin::IdentityManager* identity_manager =

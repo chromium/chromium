@@ -25,14 +25,22 @@ BASE_DECLARE_FEATURE(kSendTabToSelfPropagateNavigationHistory);
 BASE_DECLARE_FEATURE(kSendTabToSelfSupportAutoOpenInTabGrid);
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// If this feature is enabled, a QR code promo is shown in the Send Tab to Self
+// bubble on desktop when no target devices are found. Guarded to Windows, Mac,
+// and Linux because it relies on `switches::kCrossDeviceSigninFromDesktopUrl`
+// in `components/signin/public/base/signin_switches.h`.
+BASE_DECLARE_FEATURE(kSendTabToSelfNoTargetDeviceQrCode);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 // If this feature is enabled, desktop entry points get submenu treatment as
 // part of the enhanced desktop UI v2.
 BASE_DECLARE_FEATURE(kSendTabToSelfEnhancedDesktopUIv2);
 
 // If this feature is enabled, desktop entry points show a submenu with a
 // sign-in promo for the signed-out, sign-in pending (reauth), and
-// no-target-device (when `switches::kCrossDeviceSigninFromDesktopFollowup` is
-// also enabled) states instead of a single command item.
+// no-target-device (when `kSendTabToSelfNoTargetDeviceQrCode` is also enabled)
+// states instead of a single command item.
 BASE_DECLARE_FEATURE(kSendTabToSelfSubmenuSigninPromos);
 
 // If this feature is enabled, Send Tab to Self promo bubbles on desktop

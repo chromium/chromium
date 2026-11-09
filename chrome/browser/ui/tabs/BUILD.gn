@@ -1010,7 +1010,6 @@ if (!is_android) {
       "//components/saved_tab_groups/test_support",
       "//components/send_tab_to_self",
       "//components/send_tab_to_self:test_support",
-      "//components/signin/public/base",
       "//components/tab_groups",
       "//components/webapps/common",
       "//content/public/browser",

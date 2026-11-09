@@ -39,10 +39,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "components/signin/public/base/signin_switches.h"
-#endif
-
 namespace send_tab_to_self {
 
 namespace {
@@ -453,8 +449,7 @@ TEST_F(SendTabToSelfSubMenuModelTest,
 // Tests that `MaybeCreateForTab` allows `kOfferFeature` unconditionally, gates
 // `kOfferSignIn` and `kOfferReauth` behind `kSendTabToSelfSubmenuSigninPromos`,
 // and requires both `kSendTabToSelfSubmenuSigninPromos` and
-// `switches::kCrossDeviceSigninFromDesktopFollowup` for
-// `kInformNoTargetDevice`.
+// `kSendTabToSelfNoTargetDeviceQrCode` for `kInformNoTargetDevice`.
 TEST_F(SendTabToSelfSubMenuModelTest, MaybeCreateForTabByDisplayReason) {
   sync_service()->SetEntryPointDisplayReason(
       EntryPointDisplayReason::kOfferFeature);
@@ -504,20 +499,9 @@ TEST_F(SendTabToSelfSubMenuModelTest, MaybeCreateForTabByDisplayReason) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   {
-    base::test::ScopedFeatureList feature_list(
-        switches::kCrossDeviceSigninFromDesktopFollowup);
-    sync_service()->SetEntryPointDisplayReason(
-        EntryPointDisplayReason::kInformNoTargetDevice);
-    EXPECT_EQ(SendTabToSelfSubMenuModel::MaybeCreateForTab(
-                  web_contents(), ShareEntryPoint::kContentMenu),
-              nullptr);
-  }
-
-  {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatures(
-        {kSendTabToSelfSubmenuSigninPromos,
-         switches::kCrossDeviceSigninFromDesktopFollowup},
+        {kSendTabToSelfSubmenuSigninPromos, kSendTabToSelfNoTargetDeviceQrCode},
         {});
     sync_service()->SetEntryPointDisplayReason(
         EntryPointDisplayReason::kInformNoTargetDevice);
@@ -532,13 +516,12 @@ class SendTabToSelfSubMenuModelSigninPromosTest
     : public SendTabToSelfSubMenuModelTest {
  public:
   SendTabToSelfSubMenuModelSigninPromosTest() {
-    feature_list_.InitWithFeatures(
-        {kSendTabToSelfSubmenuSigninPromos,
+    feature_list_.InitWithFeatures({kSendTabToSelfSubmenuSigninPromos,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-         switches::kCrossDeviceSigninFromDesktopFollowup
+                                    kSendTabToSelfNoTargetDeviceQrCode
 #endif
-        },
-        {});
+                                   },
+                                   {});
   }
 
  private:
