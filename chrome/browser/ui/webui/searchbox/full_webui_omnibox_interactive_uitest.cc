@@ -129,6 +129,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -197,6 +198,15 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/ash_element_identifiers.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
+#endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_MAC)
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"            // nogncheck
+#include "chrome/browser/profiles/profile_manager.h"    // nogncheck
+#include "chrome/browser/profiles/profile_test_util.h"  // nogncheck
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"  // nogncheck
+#include "chrome/browser/ui/signin/signin_view_controller.h"  // nogncheck
 #endif
 
 namespace {
@@ -6719,6 +6729,104 @@ INSTANTIATE_TEST_SUITE_P(All,
                          [](const testing::TestParamInfo<bool>&) {
                            return "WebUIToolbarDisabled";
                          });
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_MAC)
+// Covers the window that "Add profile" > "Stay signed out" opens for the new
+// profile: a new browser window on the New Tab Page with the window-modal
+// "Welcome!" profile customization dialog over it.
+class FullWebUIOmniboxWelcomeDialogInteractiveTest
+    : public FullWebUIOmniboxInteractiveTest {
+ protected:
+  // Opens a browser window for a new profile on the New Tab Page, which
+  // focuses the omnibox, and shows the "Welcome!" dialog over it, as
+  // `ShowLocalProfileCustomization()` does. The dialog is shown in the same
+  // task as the window, before the platform activates the window, so that the
+  // dialog takes the window's first activation. In the real flow the dialog is
+  // shown from a task posted when the browser is created, which can also run
+  // before the platform activates the window. Makes the new window the test's
+  // `browser()`.
+  void OpenNewProfileWindowWithWelcomeDialog() {
+    ProfileManager* const profile_manager =
+        g_browser_process->profile_manager();
+    Profile& profile = profiles::testing::CreateProfileSync(
+        profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+    BrowserWindowInterface* const new_browser = CreateBrowserWindow(
+        BrowserWindowCreateParams(profile, /*from_user_gesture=*/true));
+    chrome::AddTabAt(new_browser, GURL(chrome::kChromeUINewTabURL),
+                     /*index=*/-1, /*foreground=*/true);
+    new_browser->GetWindow()->Show();
+    SigninViewController::From(new_browser)
+        ->ShowModalProfileCustomizationDialog(
+            /*is_local_profile_creation=*/true);
+    SetBrowser(new_browser);
+  }
+
+  bool IsWelcomeDialogShowing() {
+    return SigninViewController::From(browser())->ShowsModalDialog();
+  }
+
+  // Enters a profile name in the "Welcome!" dialog and clicks "Done", as the
+  // user does.
+  void CompleteWelcomeDialog() {
+    content::WebContents* const dialog_contents =
+        SigninViewController::From(browser())
+            ->GetModalDialogWebContentsForTesting();
+    ASSERT_TRUE(dialog_contents);
+    ASSERT_TRUE(content::WaitForLoadStop(dialog_contents));
+    constexpr char kApp[] =
+        "document.querySelector('profile-customization-app')";
+    ASSERT_EQ(true, content::EvalJs(dialog_contents,
+                                    base::StringPrintf(R"((async () => {
+          let app;
+          while (!(app = %s)?.shadowRoot?.querySelector('#nameInput')) {
+            await new Promise(r => setTimeout(r, 50));
+          }
+          const input = app.shadowRoot.querySelector('#nameInput');
+          input.value = 'foo';
+          input.dispatchEvent(
+              new CustomEvent('value-changed', {detail: {value: 'foo'}}));
+          const done = app.shadowRoot.querySelector('#doneButton');
+          while (done.disabled) {
+            await new Promise(r => setTimeout(r, 50));
+          }
+          return true;
+        })())",
+                                                       kApp)));
+    // Clicking "Done" closes the dialog, so don't wait for the script.
+    content::ExecuteScriptAsync(dialog_contents,
+                                base::StrCat({kApp,
+                                              ".shadowRoot.querySelector("
+                                              "'#doneButton').click();"}));
+  }
+};
+
+// Verifies that when the "Welcome!" dialog takes the first activation of a new
+// profile's window, the omnibox, which the New Tab Page focused behind the
+// dialog, takes key presses once the dialog is closed with "Done".
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxWelcomeDialogInteractiveTest,
+                       OmniboxTakesKeyPressesAfterDone) {
+  ASSERT_NO_FATAL_FAILURE(OpenNewProfileWindowWithWelcomeDialog());
+  ASSERT_TRUE(IsWelcomeDialogShowing());
+
+  RunTestSequence(WaitForPopupHandlerReady(), Do([this]() {
+                    ASSERT_NO_FATAL_FAILURE(CompleteWelcomeDialog());
+                  }),
+                  PollUntil([this]() { return !IsWelcomeDialogShowing(); },
+                            "WaitForWelcomeDialogClosed"),
+                  // The popup holds activation and its input has focus, so the
+                  // caret shows and key presses reach it.
+                  WaitForPopupReady(), WaitForPopupActive(),
+                  TypeWebUITextWithKeyPresses("foo"),
+                  InAnyContext(WaitForWebUIInputValue("foo")));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FullWebUIOmniboxWelcomeDialogInteractiveTest,
+                         testing::Values(false),
+                         [](const testing::TestParamInfo<bool>&) {
+                           return "WebUIToolbarDisabled";
+                         });
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_MAC)
 
 // Fakes a Google search results page by pointing the Google base URL at an
 // HTTPS test server. The default (Google) search engine's search and suggest

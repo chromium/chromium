@@ -514,6 +514,19 @@ void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
         }
       }
 
+      // A modal transient child, e.g. a window-modal dialog shown before this
+      // widget was first activated, takes activation instead of
+      // `content_window_`, so focus wasn't restored above. As `content_window_`
+      // isn't active, it won't lose activation either, which is what normally
+      // schedules a restore (see `OnWindowActivated()`). Schedule one for when
+      // `content_window_` is activated, e.g. when the modal closes, so that a
+      // view focused while the widget is inactive (see
+      // `FocusManager::SetFocusedViewWithReason()`) gets focus then.
+      if (wm::GetModalTransient(GetWidget()->GetNativeView()) &&
+          !wm::IsActiveWindow(content_window_)) {
+        restore_focus_on_activate_ = true;
+      }
+
       // Refreshes the focus info to IMF in case that IMF cached the old info
       // about focused text input client when it was "inactive".
       GetInputMethod()->OnFocus();

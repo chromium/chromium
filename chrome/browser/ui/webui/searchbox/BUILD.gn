@@ -373,5 +373,13 @@ if (enable_webui_ntp && !is_android) {
         "//chrome/browser/ui/views/bubble",
       ]
     }
+    if (enable_dice_support && !is_mac) {
+      deps += [
+        "//chrome/browser/profiles:profile",
+        "//chrome/browser/profiles:profile_test_util",
+        "//chrome/browser/ui/browser_window:create_browser_window",
+        "//chrome/browser/ui/signin",
+      ]
+    }
   }
 }

@@ -1231,6 +1231,82 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
 }
 #endif
 
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+namespace {
+
+// Focuses `view` when its widget is first notified that it's active, like a
+// browser window restoring its initial focus (see
+// `BrowserView::OnWidgetActivationChanged()`).
+class FocusOnFirstActivationObserver : public WidgetObserver {
+ public:
+  explicit FocusOnFirstActivationObserver(View* view) : view_(view) {
+    widget_observation_.Observe(view->GetWidget());
+  }
+
+  // WidgetObserver:
+  void OnWidgetActivationChanged(Widget* widget, bool active) override {
+    if (active && !activation_observed_) {
+      activation_observed_ = true;
+      widget->GetFocusManager()->SetFocusedView(view_);
+    }
+  }
+  void OnWidgetDestroying(Widget* widget) override {
+    widget_observation_.Reset();
+  }
+
+  bool activation_observed() const { return activation_observed_; }
+
+ private:
+  raw_ptr<View> view_;
+  bool activation_observed_ = false;
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
+};
+
+}  // namespace
+
+// Tests that if a window-modal dialog is shown before its owner is first
+// activated, so that the dialog takes activation from the owner, a view that
+// the owner focuses when it's first activated gets focus once the dialog
+// closes.
+TEST_F(DesktopWidgetTestInteractive,
+       FocusRestoredWhenModalShownBeforeFirstActivationCloses) {
+  auto top_level_widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  init_params.bounds = gfx::Rect(0, 0, 500, 500);
+  top_level_widget->Init(std::move(init_params));
+  View* const focusable_view =
+      top_level_widget->GetContentsView()->AddChildView(
+          std::make_unique<View>());
+  focusable_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  FocusOnFirstActivationObserver observer(focusable_view);
+
+  // Show the owner and, in the same task, before the platform activates it,
+  // a window-modal dialog.
+  top_level_widget->Show();
+  // Declared here so that it outlives the dialog widget, which doesn't own it.
+  auto dialog_delegate = std::make_unique<DialogDelegate>();
+  dialog_delegate->SetModalType(ui::mojom::ModalType::kWindow);
+  Widget* const modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
+      dialog_delegate.get(), gfx::NativeWindow(),
+      top_level_widget->GetNativeView());
+  modal_dialog_widget->SetBounds(gfx::Rect(100, 100, 200, 200));
+  modal_dialog_widget->Show();
+  views::test::WaitForWidgetActive(modal_dialog_widget, true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&observer]() { return observer.activation_observed(); }));
+  EXPECT_FALSE(focusable_view->HasFocus());
+
+  views::test::WidgetDestroyedWaiter waiter(modal_dialog_widget);
+  modal_dialog_widget->Close();
+  waiter.Wait();
+  views::test::WaitForWidgetActive(top_level_widget.get(), true);
+  EXPECT_TRUE(focusable_view->HasFocus());
+
+  top_level_widget->CloseNow();
+}
+#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA)
+
 TEST_F(DesktopWidgetTestInteractive, CanActivateFlagIsHonored) {
   auto widget = std::make_unique<Widget>();
   Widget::InitParams init_params = CreateParams(
