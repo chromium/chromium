@@ -6,23 +6,24 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `cc-1.8.0` crate.
+# `cc-1.9.0` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "cc"
-version = "1.8.0"
+version = "1.9.0"
 
 [package.metadata.gnrt]
 is_placeholder = true
 
 [features]
+"compile-commands" = []
 "jobserver" = []
 "parallel" = []
 
 [dependencies.find-msvc-tools]
-version = "^0.1.14"
+version = "^0.1.15"
 default_features = false
 [dependencies.shlex]
 version = "^2.0.1"
