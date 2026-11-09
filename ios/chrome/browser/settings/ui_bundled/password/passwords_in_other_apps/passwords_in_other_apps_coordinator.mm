@@ -61,6 +61,7 @@
 }
 
 - (void)stop {
+  [self.mediator disconnect];
   self.mediator = nil;
   self.viewController = nil;
   [_reauthCoordinator stop];

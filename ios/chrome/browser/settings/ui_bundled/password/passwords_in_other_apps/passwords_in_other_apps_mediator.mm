@@ -20,7 +20,7 @@
   return self;
 }
 
-- (void)dealloc {
+- (void)disconnect {
   [[PasswordAutoFillStatusManager sharedManager] removeObserver:self];
 }
 

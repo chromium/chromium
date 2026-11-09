@@ -21,6 +21,10 @@
 // Consumer for the mediator that utilizes mediator properties and updates.
 @property(nonatomic, weak) id<PasswordsInOtherAppsConsumer> consumer;
 
+// Stops observing `PasswordAutoFillStatusManager`. Must be called before the
+// mediator is released.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORDS_IN_OTHER_APPS_PASSWORDS_IN_OTHER_APPS_MEDIATOR_H_

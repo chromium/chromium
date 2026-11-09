@@ -39,6 +39,11 @@ class PasswordsInOtherAppsMediatorTest : public BlockCleanupTest {
     mediator_.consumer = consumer_;
   }
 
+  void TearDown() override {
+    [mediator_ disconnect];
+    BlockCleanupTest::TearDown();
+  }
+
   PasswordsInOtherAppsMediator* mediator() { return mediator_; }
 
   FakePasswordsInOtherAppsConsumer* consumer() { return consumer_; }
