@@ -1268,17 +1268,16 @@ TEST_F(AutofillAgentTest,
   ExecuteJavaScriptForTests(R"(
     form = document.getElementById('form_id');
     button = document.createElement('button');
-    button.type = submit;
+    button.type = 'submit';
     button.id = 'submit_button';
     form.appendChild(button);
     first_input = form.querySelectorAll('input')[0];
     first_input.id = 'new_name'
   )");
-  EXPECT_TRUE(base::test::RunUntil([&] {
-    return !test_api(autofill_agent())
-                .process_forms_after_dynamic_change_timer()
-                .IsRunning();
-  }));
+  EXPECT_FALSE(test_api(autofill_agent())
+                   .process_forms_after_dynamic_change_timer()
+                   .IsRunning());
+  WaitForFormsSeen();
 
   ASSERT_EQ(num_extracted_forms(), 1u);
   // The JS changes to the ID are not reflected in the cache, meaning that the
@@ -1306,11 +1305,13 @@ TEST_F(AutofillAgentTest,
     second_input.id = 'new_field';
     form.appendChild(second_input);
   )");
-  EXPECT_TRUE(base::test::RunUntil([&] {
-    return !test_api(autofill_agent())
-                .process_forms_after_dynamic_change_timer()
-                .IsRunning();
-  }));
+  EXPECT_TRUE(test_api(autofill_agent())
+                  .process_forms_after_dynamic_change_timer()
+                  .IsRunning());
+  WaitForFormsSeen();
+  EXPECT_FALSE(test_api(autofill_agent())
+                   .process_forms_after_dynamic_change_timer()
+                   .IsRunning());
 
   ASSERT_EQ(num_extracted_forms(), 1u);
   // The added input should be visible in the cache now.
@@ -1334,11 +1335,13 @@ TEST_F(AutofillAgentTest, DynamicElementNotificationFiltering_AddForm) {
     second_form.appendChild(input);
     document.body.appendChild(second_form);
   )");
-  EXPECT_TRUE(base::test::RunUntil([&] {
-    return !test_api(autofill_agent())
-                .process_forms_after_dynamic_change_timer()
-                .IsRunning();
-  }));
+  EXPECT_TRUE(test_api(autofill_agent())
+                  .process_forms_after_dynamic_change_timer()
+                  .IsRunning());
+  WaitForFormsSeen();
+  EXPECT_FALSE(test_api(autofill_agent())
+                   .process_forms_after_dynamic_change_timer()
+                   .IsRunning());
 
   ASSERT_EQ(num_extracted_forms(), 2u);
 }
