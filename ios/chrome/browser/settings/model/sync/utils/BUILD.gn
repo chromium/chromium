@@ -44,10 +44,14 @@ source_set("identity_error_util") {
   ]
   deps = [
     "//base",
+    "//components/signin/public/base",
     "//components/sync/base",
     "//components/sync/service",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/manage_sync/public:sync_error_settings_command_handler",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:system_identity",
     "//ui/base",
   ]
   frameworks = [ "Foundation.framework" ]

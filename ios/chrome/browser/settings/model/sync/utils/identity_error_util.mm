@@ -4,17 +4,40 @@
 
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 
+#import "base/check.h"
+#import "base/feature_list.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/notreached.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "google_apis/gaia/google_service_auth_error.h"
+#import "ios/chrome/browser/settings/manage_sync/public/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// Records `account_menu_action_name` when `surface` is the Account Menu.
+void MaybeRecordErrorButtonTapUserAction(
+    syncer::IdentityErrorDisplaySurface surface,
+    const char* account_menu_action_name) {
+  switch (surface) {
+    case syncer::IdentityErrorDisplaySurface::kAccountMenu:
+      base::RecordAction(base::UserMetricsAction(account_menu_action_name));
+      break;
+    case syncer::IdentityErrorDisplaySurface::kSyncSettings:
+      // TODO(crbug.com/576654541): record a UMA
+      break;
+  }
+}
 
 // Gets the AccountErrorUIInfo data representing the kSignInNeedsUpdate error.
 AccountErrorUIInfo* GetUIInfoForAuthenticationError() {
@@ -168,4 +191,82 @@ AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
   }
 
   return nil;
+}
+
+bool HandleIdentityErrorButtonTap(
+    syncer::SyncService::UserActionableError error_type,
+    AuthenticationService* authentication_service,
+    id<SyncErrorSettingsCommandHandler> command_handler,
+    syncer::IdentityErrorDisplaySurface surface) {
+  CHECK(authentication_service);
+  id<SystemIdentity> primary_identity =
+      authentication_service->GetPrimaryIdentity();
+  CHECK(primary_identity);
+
+  switch (error_type) {
+    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate: {
+      BOOL is_mdm_error = NO;
+      if (!base::FeatureList::IsEnabled(
+              switches::kHandleMdmErrorsForDasherAccounts)) {
+        is_mdm_error = authentication_service->HasCachedMDMErrorForIdentity(
+            primary_identity);
+      }
+      if (!is_mdm_error) {
+        MaybeRecordErrorButtonTapUserAction(
+            surface, "Signin_AccountMenu_ErrorButton_Reauth");
+        [command_handler openPrimaryAccountReauthDialog];
+      } else {
+        MaybeRecordErrorButtonTapUserAction(
+            surface, "Signin_AccountMenu_ErrorButton_MDM");
+        [command_handler openMDMErrorDialogWithSystemIdentity:primary_identity];
+      }
+      return true;
+    }
+    case syncer::SyncService::UserActionableError::kDeviceManagementError:
+      MaybeRecordErrorButtonTapUserAction(surface,
+                                          "Signin_AccountMenu_ErrorButton_MDM");
+      [command_handler openMDMErrorDialogWithSystemIdentity:primary_identity];
+      return true;
+    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
+      MaybeRecordErrorButtonTapUserAction(
+          surface, "Signin_AccountMenu_ErrorButton_Passphrase");
+      [command_handler openPassphraseDialogWithModalPresentation:YES];
+      return true;
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForPasswords:
+      MaybeRecordErrorButtonTapUserAction(
+          surface, "Signin_AccountMenu_ErrorButton_TrustedVaultForPasswords");
+      [command_handler openTrustedVaultReauthForFetchKeys];
+      return false;
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForEverything:
+      MaybeRecordErrorButtonTapUserAction(
+          surface, "Signin_AccountMenu_ErrorButton_TrustedVaultForEverything");
+      [command_handler openTrustedVaultReauthForFetchKeys];
+      return false;
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForPasswords:
+      MaybeRecordErrorButtonTapUserAction(
+          surface,
+          "Signin_AccountMenu_ErrorButton_TrustedVaultDegradedForPasswords");
+      [command_handler openTrustedVaultReauthForDegradedRecoverability];
+      return false;
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForEverything:
+      MaybeRecordErrorButtonTapUserAction(
+          surface,
+          "Signin_AccountMenu_ErrorButton_TrustedVaultDegradedForEverything");
+      [command_handler openTrustedVaultReauthForDegradedRecoverability];
+      return false;
+    case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
+      MaybeRecordErrorButtonTapUserAction(
+          surface, "Signin_AccountMenu_ErrorButton_BookmarksLimitExceeded");
+      [command_handler openBookmarksLimitExceededHelp];
+      return false;
+    case syncer::SyncService::UserActionableError::kNone:
+    // TODO(crbug.com/370026230): Update this case once GetAccountErrorUIInfo()
+    // returns a non-nil value for it.
+    case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
+      NOTREACHED();
+  }
 }
