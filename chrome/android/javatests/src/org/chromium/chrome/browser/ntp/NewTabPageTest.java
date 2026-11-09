@@ -113,6 +113,7 @@ import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -339,7 +340,10 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage"})
-    @DisabledTest(message = "https://crbug.com/507770942")
+    @EnableFeatures(
+            OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT
+                    + ":show_ntp_plus_button/true/focus_fusebox_from_ntp_plus_button/true")
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testClickPlusButtonOnFakebox() {
         View plusButton = mNtp.getView().findViewById(R.id.search_box_plus_button);
         Assert.assertNotNull(plusButton);
