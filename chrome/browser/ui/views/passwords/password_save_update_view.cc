@@ -390,22 +390,18 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
       (dialog->controller_.*func)();
     };
 
-    if (GetErrorResolutionUiStrings().has_value()) {
-      SetAcceptCallbackWithClose(
-          base::BindRepeating(button_clicked, base::Unretained(this),
-                              &Controller::OnErrorResolutionClicked)
-              .Then(base::BindRepeating([]() {
-                // Closing the bubble after starting the error resolution flow:
-                return true;
-              })));
-    } else {
-      SetAcceptCallbackWithClose(
-          base::BindRepeating(button_clicked, base::Unretained(this),
-                              &Controller::OnSaveClicked)
-              .Then(base::BindRepeating(
-                  &PasswordSaveUpdateView::CloseOrReplaceWithPromo,
-                  base::Unretained(this))));
-    }
+    SetAcceptCallbackWithClose(base::BindRepeating(
+        [](PasswordSaveUpdateView* dialog) {
+          dialog->UpdateUsernameAndPasswordInModel();
+          if (dialog->GetErrorResolutionUiStrings().has_value()) {
+            dialog->controller_.OnErrorResolutionClicked();
+            // Closing the bubble after starting the error resolution flow.
+            return true;
+          }
+          dialog->controller_.OnSaveClicked();
+          return dialog->CloseOrReplaceWithPromo();
+        },
+        base::Unretained(this)));
 
     if (is_update_bubble_) {
       SetCancelCallback(base::BindOnce(button_clicked, base::Unretained(this),

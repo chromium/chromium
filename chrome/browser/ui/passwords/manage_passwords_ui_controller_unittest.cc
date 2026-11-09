@@ -797,36 +797,57 @@ TEST_F(ManagePasswordsUIControllerErrorResolutionTest,
 
 TEST_F(ManagePasswordsUIControllerErrorResolutionTest,
        OnErrorStateChangedIgnoresNonRelevantStore) {
-  std::vector<PasswordForm> best_matches;
-  std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager =
-      CreateFormManagerWithBestMatches(best_matches, &submitted_form());
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  EXPECT_CALL(*test_form_manager,
-              GetPasswordStoreForSaving(Eq(submitted_form())))
-      .WillRepeatedly(
-          Return(password_manager::PasswordForm::Store::kProfileStore));
-
-  controller()->OnPasswordSubmitted(std::move(test_form_manager));
-  EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
-            controller()->GetState());
-  EXPECT_TRUE(controller()->opened_automatic_bubble());
-
+  base::HistogramTester histogram_tester;
+  // 2 UI updates are expected:
+  // 1) On password submission (showing the pending bubble / key icon).
+  // 2) On error resolution save completion (updating icon to the saved state).
+  SetUpPendingPasswordBlockedByError(
+      /*expect_save=*/true, /*expected_ui_updates=*/Exactly(2));
   auto account_store = base::MakeRefCounted<MockPasswordStoreInterface>();
   client().SetAccountPasswordStore(account_store);
 
-  // Error state changes from non-relevant store (account store when saving to
-  // profile store) should be ignored and the bubble must remain open.
+  // Error resolution from a non-relevant store (account store when saving to
+  // profile store) must be ignored and the credential must remain pending.
   controller()->OnErrorStateChanged(
-      account_store.get(),
-      password_manager::ActionableError::kTrustedVaultKeyNeeded);
-  EXPECT_TRUE(controller()->opened_automatic_bubble());
+      account_store.get(), password_manager::ActionableError::kNoError);
+  WaitForPasswordStore();
+  EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
+            controller()->GetState());
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome", 0);
 
-  // Error state changes from the relevant store (profile store) should cause
-  // the bubble to be hidden to avoid showing stale UI.
+  // Error resolution from the relevant store (profile store) triggers
+  // automatic saving.
+  EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
+      .WillRepeatedly(Return(password_manager::ActionableError::kNoError));
+  controller()->OnErrorStateChanged(
+      client().GetProfilePasswordStore(),
+      password_manager::ActionableError::kNoError);
+  WaitForPasswordStore();
+  EXPECT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kSavedSuccessfully,
+      1);
+}
+
+TEST_F(ManagePasswordsUIControllerErrorResolutionTest,
+       SaveBubbleNotHiddenOnErrorStateChanged) {
+  auto test_form_manager =
+      CreateFormManagerWithBestMatches(/*best_matches=*/{}, &submitted_form());
+  EXPECT_CALL(*test_form_manager, GetPasswordStoreForSaving(_))
+      .WillRepeatedly(
+          Return(password_manager::PasswordForm::Store::kProfileStore));
+  controller()->OnPasswordSubmitted(std::move(test_form_manager));
+  ASSERT_TRUE(controller()->opened_automatic_bubble());
+
   controller()->OnErrorStateChanged(
       client().GetProfilePasswordStore(),
       password_manager::ActionableError::kTrustedVaultKeyNeeded);
-  EXPECT_FALSE(controller()->opened_automatic_bubble());
+  EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
+            controller()->GetState());
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
 }
 
 TEST_F(ManagePasswordsUIControllerErrorResolutionTest,
