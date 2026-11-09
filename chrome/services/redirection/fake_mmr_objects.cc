@@ -18,6 +18,11 @@ void FakeMmrSession::SendResponse(base::span<uint8_t> message) {
                                 static_cast<UINT32>(message.size()));
 }
 
+FakeMmrStream* FakeMmrSession::GetStream(UINT32 stream_id) {
+  const auto it = streams_.find(stream_id);
+  return it == streams_.end() ? nullptr : it->second.Get();
+}
+
 IFACEMETHODIMP FakeMmrSession::SetResponseHandler(
     IMMRResponseHandler* handler) {
   if (FAILED(response_handler_result_)) {
@@ -109,7 +114,15 @@ IFACEMETHODIMP FakeMmrSession::GetVideoReplacementImage(BYTE* image_data,
 
 IFACEMETHODIMP FakeMmrSession::CreateStream(UINT32 stream_id,
                                             IMMRStream** stream) {
-  return E_NOTIMPL;
+  if (FAILED(create_stream_result_)) {
+    return create_stream_result_;
+  }
+
+  auto& entry = streams_[stream_id];
+  if (!entry) {
+    entry = Microsoft::WRL::Make<FakeMmrStream>();
+  }
+  return entry.CopyTo(stream);
 }
 
 FakeMmrStream::FakeMmrStream() = default;

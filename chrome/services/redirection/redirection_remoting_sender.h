@@ -49,6 +49,10 @@ class RedirectionRemotingSender final
   // the data pipe.
   void SetStream(IMMRStream* stream);
 
+  base::WeakPtr<RedirectionRemotingSender> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   // media::mojom::RemotingDataStreamSender implementation.
   void SendFrame(media::mojom::DecoderBufferPtr buffer,

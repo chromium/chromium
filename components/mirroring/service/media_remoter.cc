@@ -40,8 +40,11 @@ void MediaRemoter::OnRpcError() {
   if (state_ != REMOTING_STARTED && state_ != STARTING_REMOTING) {
     return;
   }
+  base::WeakPtr self = weak_factory_.GetWeakPtr();
   Stop(media::mojom::RemotingStopReason::MESSAGE_SEND_FAILED);
-  state_ = REMOTING_DISABLED;
+  if (self) {
+    state_ = REMOTING_DISABLED;
+  }
 }
 
 void MediaRemoter::OnRemotingStarted() {
@@ -51,11 +54,15 @@ void MediaRemoter::OnRemotingStarted() {
 
   // A remoting streaming session started. Start RPC message transport and
   // notify the remoting source to start data streaming.
+  base::WeakPtr self = weak_factory_.GetWeakPtr();
   rpc_dispatcher_->Subscribe(
       base::BindRepeating(&MediaRemoter::OnMessageFromSink,
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(&MediaRemoter::OnRpcError,
                           weak_factory_.GetWeakPtr()));
+  if (!self || state_ != STARTING_REMOTING) {
+    return;
+  }
   state_ = REMOTING_STARTED;
   remoting_source_->OnStarted();
 }
@@ -166,8 +173,11 @@ void MediaRemoter::OnRemotingDataStreamError() {
   if (state_ != REMOTING_STARTED) {
     return;
   }
+  base::WeakPtr self = weak_factory_.GetWeakPtr();
   Stop(media::mojom::RemotingStopReason::DATA_SEND_FAILED);
-  state_ = REMOTING_DISABLED;
+  if (self) {
+    state_ = REMOTING_DISABLED;
+  }
 }
 
 }  // namespace mirroring

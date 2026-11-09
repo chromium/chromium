@@ -15,6 +15,8 @@ source_set("redirection_service") {
     "redirection_rpc_dispatcher.h",
     "redirection_service.cc",
     "redirection_service.h",
+    "redirection_session_host.cc",
+    "redirection_session_host.h",
   ]
 
   public_deps = [ "//base" ]
@@ -28,7 +30,7 @@ source_set("redirection_service") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//third_party/microsoft_multimedia_redirection:mmr",
-    "//third_party/openscreen/src/cast/streaming:remoting_proto",
+    "//third_party/openscreen/src/cast/streaming:common",
   ]
 }
 
@@ -40,6 +42,7 @@ source_set("unit_tests") {
     "fake_mmr_objects.h",
     "redirection_remoting_sender_unittest.cc",
     "redirection_rpc_dispatcher_unittest.cc",
+    "redirection_session_host_unittest.cc",
   ]
 
   deps = [

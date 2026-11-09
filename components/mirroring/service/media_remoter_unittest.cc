@@ -265,6 +265,12 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
 
   mojo::Remote<media::mojom::Remoter>& remoter() { return remoter_; }
 
+  void DestroyRemoter() { media_remoter_.reset(); }
+
+  void DisconnectAudioStream() {
+    data_stream_handles_->audio_stream_sender.reset();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   mojo::Receiver<mojom::CastMessageChannel> receiver_{this};
@@ -307,6 +313,27 @@ TEST_F(MediaRemoterTest, StartAndStopRemotingVideoOnly) {
   EXPECT_CALL(rpc_dispatcher(), Subscribe(_, _));
   RemotingStreamingStarted();
   StartDataStreams(SessionType::VIDEO_ONLY);
+  StopRemoting();
+}
+
+TEST_F(MediaRemoterTest, BrowserDataSendFailureAllowsRemotingAgain) {
+  CreateRemoter();
+  StartRemoting();
+  EXPECT_CALL(remoting_source(), OnStarted());
+  EXPECT_CALL(rpc_dispatcher(), Subscribe(_, _));
+  RemotingStreamingStarted();
+
+  EXPECT_CALL(remoting_source(),
+              OnStopped(RemotingStopReason::DATA_SEND_FAILED));
+  EXPECT_CALL(remoting_source(), OnSinkGone());
+  EXPECT_CALL(rpc_dispatcher(), Unsubscribe());
+  EXPECT_CALL(*this, RestartMirroringStreaming());
+  remoter()->Stop(RemotingStopReason::DATA_SEND_FAILED);
+  remoter().FlushForTesting();
+  remoting_source().FlushForTesting();
+
+  MirroringResumed(/*is_remoting_disabled=*/false);
+  StartRemoting();
   StopRemoting();
 }
 
@@ -420,6 +447,54 @@ TEST_F(MediaRemoterTest, RpcErrorStopsRemoting) {
 
   // Mirroring is resumed, but remoting should remain disabled.
   MirroringResumed(/* is_remoting_disabled */ true);
+}
+
+TEST_F(MediaRemoterTest, RpcErrorCanDestroyRemoter) {
+  CreateRemoter();
+  StartRemoting();
+  EXPECT_CALL(remoting_source(), OnStarted());
+  RpcDispatcher::ErrorCallback error_callback;
+  EXPECT_CALL(rpc_dispatcher(), Subscribe(_, _))
+      .WillOnce([&error_callback](RpcDispatcher::ResponseCallback,
+                                  RpcDispatcher::ErrorCallback error_cb) {
+        error_callback = std::move(error_cb);
+      });
+  RemotingStreamingStarted();
+
+  ASSERT_TRUE(error_callback);
+  EXPECT_CALL(remoting_source(),
+              OnStopped(RemotingStopReason::MESSAGE_SEND_FAILED));
+  EXPECT_CALL(remoting_source(), OnSinkGone());
+  EXPECT_CALL(rpc_dispatcher(), Unsubscribe());
+  EXPECT_CALL(*this, RestartMirroringStreaming()).WillOnce([this] {
+    DestroyRemoter();
+  });
+  error_callback.Run();
+  remoting_source().FlushForTesting();
+}
+
+TEST_F(MediaRemoterTest, DataStreamErrorDisablesRemoting) {
+  CreateRemoter();
+  StartRemoting();
+  EXPECT_CALL(remoting_source(), OnStarted());
+  EXPECT_CALL(rpc_dispatcher(), Subscribe(_, _));
+  RemotingStreamingStarted();
+  StartDataStreams(SessionType::AUDIO_ONLY);
+  remoter().FlushForTesting();
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(remoting_source(),
+              OnStopped(RemotingStopReason::DATA_SEND_FAILED));
+  EXPECT_CALL(remoting_source(), OnSinkGone());
+  EXPECT_CALL(rpc_dispatcher(), Unsubscribe());
+  EXPECT_CALL(*this, RestartMirroringStreaming()).WillOnce([&run_loop] {
+    run_loop.Quit();
+  });
+  DisconnectAudioStream();
+  run_loop.Run();
+  remoting_source().FlushForTesting();
+
+  MirroringResumed(/*is_remoting_disabled=*/true);
 }
 
 }  // namespace mirroring

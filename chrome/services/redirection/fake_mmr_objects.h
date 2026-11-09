@@ -9,6 +9,7 @@
 #include <wrl/implements.h>
 
 #include <cstdint>
+#include <map>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -20,6 +21,8 @@ template <typename... Interfaces>
 using FakeComObject = Microsoft::WRL::RuntimeClass<
     Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
     Interfaces...>;
+
+class FakeMmrStream;
 
 // Implements both session interfaces, as the real MMR session object does:
 // IMMRSessionOpenscreen is reachable only by QueryInterface from an
@@ -41,9 +44,16 @@ class FakeMmrSession final
   void set_response_handler_result(HRESULT result) {
     response_handler_result_ = result;
   }
+  void set_create_stream_result(HRESULT result) {
+    create_stream_result_ = result;
+  }
 
   // Delivers `message` to whatever handler is currently registered.
   void SendResponse(base::span<uint8_t> message);
+
+  // Returns the stream CreateStream() vended for `stream_id`, or null if none
+  // was opened for it.
+  FakeMmrStream* GetStream(UINT32 stream_id);
 
   // IMMRSession implementation.
   IFACEMETHODIMP GetSupportedCodecCount(UINT32* count) override;
@@ -79,8 +89,10 @@ class FakeMmrSession final
  private:
   std::vector<std::vector<uint8_t>> sent_messages_;
   Microsoft::WRL::ComPtr<IMMRResponseHandler> response_handler_;
+  std::map<UINT32, Microsoft::WRL::ComPtr<FakeMmrStream>> streams_;
   HRESULT send_message_result_ = S_OK;
   HRESULT response_handler_result_ = S_OK;
+  HRESULT create_stream_result_ = S_OK;
 };
 
 // Records everything written to one elementary stream.
