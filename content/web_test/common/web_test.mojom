@@ -28,9 +28,6 @@ struct WebTestRunTestConfiguration {
   // The URL of the current web test.
   url.mojom.Url test_url;
 
-  // True if tests can open external URLs.
-  bool allow_external_pages;
-
   // The expected MD5 hash of the pixel results.
   string expected_pixel_hash;
 

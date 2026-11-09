@@ -1267,13 +1267,9 @@ void WebTestControlHost::HandleNewRenderFrameHost(RenderFrameHost* frame) {
     // with other renderers.
     mojom::WebTestRunTestConfigurationPtr params =
         mojom::WebTestRunTestConfiguration::New();
-    params->allow_external_pages = false;
     params->current_working_directory = current_working_directory_;
     params->temp_path = temp_path_;
     params->test_url = test_url_;
-    params->allow_external_pages =
-        base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kAllowExternalPages);
     params->expected_pixel_hash = expected_pixel_hash_;
     params->wpt_print_mode = wpt_print_mode_;
     params->protocol_mode = protocol_mode_;

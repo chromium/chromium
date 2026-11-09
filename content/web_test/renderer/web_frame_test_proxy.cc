@@ -482,8 +482,7 @@ std::optional<blink::WebURL> WebFrameTestProxy::WillSendRequest(
         !HostIsUsedBySomeTestsToGenerateError(host) &&
         ((site_for_cookies.scheme() != url::kHttpScheme &&
           site_for_cookies.scheme() != url::kHttpsScheme) ||
-         IsLocalHost(site_for_cookies.registrable_domain())) &&
-        !test_runner_->TestConfig().allow_external_pages) {
+         IsLocalHost(site_for_cookies.registrable_domain()))) {
       GetWebTestControlHostRemote()->PrintMessage(
           std::string("Blocked access to external URL ") +
           url.possibly_invalid_spec() + "\n");

@@ -7,9 +7,6 @@
 
 namespace switches {
 
-// Allow access to external pages during web tests.
-inline constexpr char kAllowExternalPages[] = "allow-external-pages";
-
 // When specified to "enable-leak-detection" command-line option,
 // causes the leak detector to cause immediate crash when found leak.
 inline constexpr char kCrashOnFailure[] = "crash-on-failure";
