@@ -302,6 +302,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                                 windowAndroid,
                                 signinButtonStub,
                                 tabSupplier,
+                                mToolbarLayout::isShowingNtp,
                                 omniboxStubSupplier,
                                 onSigninTapped,
                                 mToolbarLayout::beginButtonTransition,

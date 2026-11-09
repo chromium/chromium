@@ -628,6 +628,27 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testSigninButton_followsToolbarNtpState() {
+        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
+        Tab tab = mActivityTestRule.getActivityTab();
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
+        CriteriaHelper.pollUiThread(() -> mToolbar.isLocationBarShownInNtp());
+        CriteriaHelper.pollUiThread(
+                () -> mToolbar.getSigninButtonCoordinatorForTesting().isShown());
+
+        // Leaving the NTP should update the signin button from the toolbar's visual state
+        // update, the same update that shows the optional button, so both change together.
+        mToolbar.setSigninButtonCoordinatorForTesting(mSigninButtonCoordinator);
+        mActivityTestRule.loadUrl("about:blank");
+        CriteriaHelper.pollUiThread(() -> !mToolbar.isLocationBarShownInNtp());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> verify(mSigninButtonCoordinator, atLeastOnce()).updateButtonVisibility());
+    }
+
+    @Test
+    @MediumTest
     public void testToolbarBackgroundChange() {
         ColorDrawable toolbarBackgroundDrawable = mToolbar.getBackgroundDrawable();
         @ColorInt

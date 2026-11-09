@@ -3170,6 +3170,15 @@ public class ToolbarPhone extends ToolbarLayout
         return mTopPaddingForEdgeToEdgeNtp;
     }
 
+    /**
+     * Uses the toolbar's visual state, rather than the tab URL, so the signin button and the
+     * optional button change visibility together when navigating to or from the NTP.
+     */
+    @Override
+    boolean isShowingNtp() {
+        return isNtpVisualState(mVisualState);
+    }
+
     /** Checks if the given visual state represents a New Tab Page. */
     private static boolean isNtpVisualState(@VisualState int visualState) {
         return visualState == VisualState.NEW_TAB_NORMAL
@@ -3388,6 +3397,11 @@ public class ToolbarPhone extends ToolbarLayout
         mLocationBar.updateVisualsForState();
 
         updateMenuButtonVisibility();
+        if (mSigninButtonCoordinator != null) {
+            // Update the signin button before the optional button so both swap in the same
+            // layout pass.
+            mSigninButtonCoordinator.updateButtonVisibility();
+        }
         updateOptionalButton(mButtonData);
         TraceEvent.end("ToolbarPhone.updateVisualsForLocationBarState");
     }

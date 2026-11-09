@@ -113,15 +113,18 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbar
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.ToastManager;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -408,6 +411,46 @@ public final class ToolbarTabletUnitTest {
 
         ttcButton.performClick();
         assertEquals(1, clicks[0]);
+    }
+
+    @Test
+    public void testIsShowingNtp_usesTabUrl() {
+        mToolbarTablet.initialize(
+                mToolbarDataProvider,
+                null,
+                mMenuButtonCoordinator,
+                mTabSwitcherButtonCoordinator,
+                null,
+                mUserEducationHelper,
+                mTrackerSupplier,
+                mProgressBar,
+                mReloadButtonCoordinator,
+                mBackButtonCoordinator,
+                mForwardButtonCoordinator,
+                mHomeButtonCoordinator,
+                mSigninButtonCoordinator,
+                mDownloadButtonCoordinator,
+                mThemeColorProvider,
+                mIncognitoStateProvider,
+                /* incognitoWindowCountSupplier= */ () -> 1,
+                mWindowAndroid,
+                mOmniboxResourceProvider);
+        assertFalse(mToolbarTablet.isShowingNtp());
+
+        Tab tab = mock(Tab.class);
+        when(mToolbarDataProvider.getTab()).thenReturn(tab);
+        when(tab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+        assertTrue(mToolbarTablet.isShowingNtp());
+
+        when(tab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        assertFalse(mToolbarTablet.isShowingNtp());
+
+        // Native NTP whose URL is not recognized as an NTP URL.
+        NativePage nativePage = mock(NativePage.class);
+        when(nativePage.getHost()).thenReturn(UrlConstants.NTP_HOST);
+        when(tab.isNativePage()).thenReturn(true);
+        when(tab.getNativePage()).thenReturn(nativePage);
+        assertTrue(mToolbarTablet.isShowingNtp());
     }
 
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)

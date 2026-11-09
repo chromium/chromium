@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar.signin_button;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.view.View;
 import android.view.ViewStub;
@@ -27,14 +25,14 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
-import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.function.BooleanSupplier;
 
 /** The coordinator for a signin button on the toolbar. Owns the SigninButton view. */
 @NullMarked
@@ -44,6 +42,7 @@ public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFo
     private final PropertyModel mModel;
     private final @Nullable ViewStub mViewStub;
     private final NullableObservableSupplier<Tab> mTabSupplier;
+    private final BooleanSupplier mIsNtpSupplier;
     private final Runnable mTransitionTrigger;
     private @Nullable SigninButtonView mView;
     private @Nullable PropertyModelChangeProcessor mPropertyModelChangeProcessor;
@@ -56,6 +55,7 @@ public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFo
             WindowAndroid windowAndroid,
             ViewStub viewStub,
             NullableObservableSupplier<Tab> tabSupplier,
+            BooleanSupplier isNtpSupplier,
             OneshotSupplier<OmniboxStub> omniboxStubSupplier,
             Runnable onSigninTapped,
             Runnable transitionTrigger,
@@ -71,6 +71,7 @@ public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFo
         super(context, themeColorProvider, incognitoStateProvider);
         mContext = context;
         mTabSupplier = tabSupplier;
+        mIsNtpSupplier = isNtpSupplier;
         mTransitionTrigger = transitionTrigger;
         mModel = new PropertyModel.Builder(SigninButtonProperties.ALL_KEYS).build();
         mMediator =
@@ -180,7 +181,7 @@ public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFo
                 tab != null
                         && !tab.isOffTheRecord()
                         && !shouldHideButtonForUrlFocus
-                        && (mShowOnAllPages || isNtp(tab));
+                        && (mShowOnAllPages || mIsNtpSupplier.getAsBoolean());
 
         // Only update signin button if it does not match the intended state.
         if (showSigninButton != isShown()) {
@@ -193,13 +194,6 @@ public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFo
             mMediator.updateButtonVisibility(showSigninButton);
             maybeInflateView();
         }
-    }
-
-    private static boolean isNtp(Tab tab) {
-        return UrlUtilities.isNtpUrl(tab.getUrl())
-                || (tab.isNativePage()
-                        && UrlConstants.NTP_HOST.equals(
-                                assumeNonNull(tab.getNativePage()).getHost()));
     }
 
     private void maybeInflateView() {
