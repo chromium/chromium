@@ -108,19 +108,8 @@ void WebComponent::CreateViewWithViewRef(
     zx::eventpair view_token_value,
     fuchsia::ui::views::ViewRefControl control_ref,
     fuchsia::ui::views::ViewRef view_ref) {
-  DCHECK(frame_);
-  if (view_is_bound_) {
-    LOG(ERROR) << "CreateView() called more than once.";
-    DestroyComponent(ZX_ERR_BAD_STATE);
-    return;
-  }
-
-  fuchsia::ui::views::ViewToken view_token;
-  view_token.value = std::move(view_token_value);
-  frame_->CreateViewWithViewRef(std::move(view_token), std::move(control_ref),
-                                std::move(view_ref));
-
-  view_is_bound_ = true;
+  LOG(ERROR) << "CreateViewWithViewRef() is no longer supported.";
+  DestroyComponent(ZX_ERR_NOT_SUPPORTED);
 }
 
 void WebComponent::CreateView2(fuchsia::ui::app::CreateView2Args view_args) {

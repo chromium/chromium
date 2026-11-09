@@ -18,7 +18,6 @@
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include <fuchsia/element/cpp/fidl.h>
-#include <fuchsia/ui/composition/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <ui/platform_window/fuchsia/view_ref_pair.h>
 #endif
@@ -85,11 +84,8 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   PlatformWindowOpacity opacity = PlatformWindowOpacity::kOpaqueWindow;
 
 #if BUILDFLAG(IS_FUCHSIA)
-  // Scenic 3D API uses `view_token` for links, whereas Flatland
-  // API uses `view_creation_token`. Therefore, at most one of these fields must
-  // be set. If `allow_null_view_token_for_test` is true, they may both be
-  // false.
-  fuchsia::ui::views::ViewToken view_token;
+  // Flatland token used to link the window's view into the scene graph. May be
+  // unset in headless mode or when `allow_null_view_token_for_test` is true.
   fuchsia::ui::views::ViewCreationToken view_creation_token;
 
   ViewRefPair view_ref_pair;

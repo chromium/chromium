@@ -1009,33 +1009,23 @@ TEST_F(HeadlessCastRunnerIntegrationTest, Headless) {
 
   component.StartCastComponentWithQueryApi();
 
-  fuchsia::ui::views::ViewToken view_token;
-  fuchsia::ui::views::ViewHolderToken view_holder_token;
-  auto status =
-      zx::eventpair::create(0u, &view_token.value, &view_holder_token.value);
-  CHECK_EQ(ZX_OK, status);
-
-  fuchsia::ui::views::ViewRefControl view_ref_control;
-  fuchsia::ui::views::ViewRef view_ref;
-  status = zx::eventpair::create(
-      /*options*/ 0u, &view_ref_control.reference, &view_ref.reference);
-  CHECK_EQ(ZX_OK, status);
-  view_ref_control.reference.replace(
-      ZX_DEFAULT_EVENTPAIR_RIGHTS & (~ZX_RIGHT_DUPLICATE),
-      &view_ref_control.reference);
-  view_ref.reference.replace(ZX_RIGHTS_BASIC, &view_ref.reference);
+  fuchsia::ui::views::ViewCreationToken view_creation_token;
+  fuchsia::ui::views::ViewportCreationToken viewport_creation_token;
+  zx_status_t status = zx::channel::create(0u, &view_creation_token.value,
+                                           &viewport_creation_token.value);
+  ZX_CHECK(status == ZX_OK, status);
 
   // Create a view.
   auto view_provider = component.exposed_by_component()
                            .Connect<fuchsia::ui::app::ViewProvider>();
-  view_provider->CreateViewWithViewRef(std::move(view_holder_token.value),
-                                       std::move(view_ref_control),
-                                       std::move(view_ref));
+  fuchsia::ui::app::CreateView2Args create_view_args;
+  create_view_args.set_view_creation_token(std::move(view_creation_token));
+  view_provider->CreateView2(std::move(create_view_args));
 
   ASSERT_TRUE(animation_finished_handler.RunUntilPortConnected());
 
-  // Verify that dropped "view" EventPair is handled properly.
-  view_token.value.reset();
+  // Verify that dropping the viewport token is handled properly.
+  viewport_creation_token.value.reset();
   ASSERT_TRUE(view_hidden_handler.RunUntilPortConnected());
 }
 

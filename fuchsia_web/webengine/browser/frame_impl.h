@@ -194,19 +194,11 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   bool OnAccessibilityError(zx_status_t error);
 
   // Creates and initializes WindowTreeHost for the view with the specified
-  // |view_token|. |view_token| may be uninitialized in headless mode.
-  void SetupWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
-                           ui::ViewRefPair view_ref_pair);
-
-  // Creates and initializes WindowTreeHost for the view with the specified
   // |view_creation_token|. |view_creation_token| may be uninitialized in
   // headless mode.
   void SetupWindowTreeHost(
       fuchsia::ui::views::ViewCreationToken view_creation_token,
       ui::ViewRefPair view_ref_pair);
-
-  // Initializes WindowTreeHost.
-  void InitWindowTreeHost();
 
   // Destroys the WindowTreeHost along with its view or other associated
   // resources.
@@ -234,11 +226,6 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   // Helper method for connecting to AccessibilityBridge on
   // |accessibility_bridge_|.
   void ConnectToAccessibilityBridge();
-
-  // Shared implementation of CreateView and CreateViewWithViewRef.
-  void CreateViewImpl(fuchsia::ui::views::ViewToken view_token,
-                      fuchsia::ui::views::ViewRefControl control_ref,
-                      fuchsia::ui::views::ViewRef view_ref);
 
   // fuchsia::web::Frame implementation.
   void CreateView(fuchsia::ui::views::ViewToken view_token) override;

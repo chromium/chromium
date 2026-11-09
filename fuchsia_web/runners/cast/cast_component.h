@@ -98,9 +98,6 @@ class CastComponent final
   void MaybeConnectPortConnector(const fuchsia::web::NavigationState& change);
 
   // fuchsia::ui::app::ViewProvider implementation.
-  void CreateViewWithViewRef(zx::eventpair view_token,
-                             fuchsia::ui::views::ViewRefControl control_ref,
-                             fuchsia::ui::views::ViewRef view_ref) override;
   void CreateView2(fuchsia::ui::app::CreateView2Args view_args) override;
 
   // fuchsia::component::runner::ComponentController implementation.
@@ -126,7 +123,7 @@ class CastComponent final
   std::unique_ptr<ApplicationControllerImpl> application_controller_;
   fidl::Client<chromium_cast::ApplicationContext> application_context_;
   fuchsia::web::FrameMediaSettings media_settings_;
-  zx::eventpair headless_view_token_;
+  zx::channel headless_view_token_;
 
   // Used by the Component Framework to control the component's lifetime.
   fidl::Binding<fuchsia::component::runner::ComponentController>

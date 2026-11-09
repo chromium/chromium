@@ -25,10 +25,6 @@ class WEB_ENGINE_EXPORT FrameWindowTreeHost final
  public:
   using OnPixelScaleUpdateCallback = base::RepeatingCallback<void(float)>;
 
-  FrameWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
-                      ui::ViewRefPair view_ref_pair,
-                      content::WebContents* web_contents,
-                      OnPixelScaleUpdateCallback on_pixel_scale_update);
   FrameWindowTreeHost(fuchsia::ui::views::ViewCreationToken view_creation_token,
                       ui::ViewRefPair view_ref_pair,
                       content::WebContents* web_contents,

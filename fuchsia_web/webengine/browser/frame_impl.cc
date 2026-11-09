@@ -865,9 +865,8 @@ void FrameImpl::CreateView(fuchsia::ui::views::ViewToken view_token) {
   TRACE_EVENT(kWebEngineFidlCategory, "fuchsia.web/Frame.CreateView",
               perfetto::Flow::FromPointer(this));
 
-  auto view_ref_pair = ui::ViewRefPair::New();
-  CreateViewImpl(std::move(view_token), std::move(view_ref_pair.control_ref),
-                 std::move(view_ref_pair.view_ref));
+  LOG(WARNING) << "CreateView() is no longer supported.";
+  CloseAndDestroyFrame(ZX_ERR_NOT_SUPPORTED);
 }
 
 void FrameImpl::CreateViewWithViewRef(
@@ -877,34 +876,8 @@ void FrameImpl::CreateViewWithViewRef(
   TRACE_EVENT(kWebEngineFidlCategory, "fuchsia.web/Frame.CreateViewWithViewRef",
               perfetto::Flow::FromPointer(this));
 
-  CreateViewImpl(std::move(view_token), std::move(control_ref),
-                 std::move(view_ref));
-}
-
-void FrameImpl::CreateViewImpl(fuchsia::ui::views::ViewToken view_token,
-                               fuchsia::ui::views::ViewRefControl control_ref,
-                               fuchsia::ui::views::ViewRef view_ref) {
-  if (IsHeadless()) {
-    LOG(WARNING) << "CreateView() called on a HEADLESS Context.";
-    CloseAndDestroyFrame(ZX_ERR_INVALID_ARGS);
-    return;
-  }
-
-  if (!view_token.value.is_valid()) {
-    LOG(WARNING) << "CreateView() called with invalid view_token.";
-    CloseAndDestroyFrame(ZX_ERR_INVALID_ARGS);
-    return;
-  }
-
-  // If a View to this Frame is already active then disconnect it.
-  DestroyWindowTreeHost();
-
-  ui::ViewRefPair view_ref_pair;
-  view_ref_pair.control_ref = std::move(control_ref);
-  view_ref_pair.view_ref = std::move(view_ref);
-  SetupWindowTreeHost(std::move(view_token), std::move(view_ref_pair));
-
-  ConnectToAccessibilityBridge();
+  LOG(WARNING) << "CreateViewWithViewRef() is no longer supported.";
+  CloseAndDestroyFrame(ZX_ERR_NOT_SUPPORTED);
 }
 
 void FrameImpl::CreateView2(fuchsia::web::CreateView2Args view_args) {
@@ -1184,7 +1157,7 @@ void FrameImpl::EnableHeadlessRendering() {
   }
 
   auto view_ref_pair = ui::ViewRefPair::New();
-  SetupWindowTreeHost(fuchsia::ui::views::ViewToken(),
+  SetupWindowTreeHost(fuchsia::ui::views::ViewCreationToken(),
                       std::move(view_ref_pair));
 
   gfx::Rect bounds(kHeadlessWindowSize);
@@ -1216,18 +1189,6 @@ void FrameImpl::DisableHeadlessRendering() {
   DestroyWindowTreeHost();
 }
 
-void FrameImpl::SetupWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
-                                    ui::ViewRefPair view_ref_pair) {
-  DCHECK(!window_tree_host_);
-
-  window_tree_host_ = std::make_unique<FrameWindowTreeHost>(
-      std::move(view_token), std::move(view_ref_pair), web_contents_.get(),
-      base::BindRepeating(&FrameImpl::OnPixelScaleUpdate,
-                          base::Unretained(this)));
-
-  InitWindowTreeHost();
-}
-
 void FrameImpl::SetupWindowTreeHost(
     fuchsia::ui::views::ViewCreationToken view_creation_token,
     ui::ViewRefPair view_ref_pair) {
@@ -1238,12 +1199,6 @@ void FrameImpl::SetupWindowTreeHost(
       web_contents_.get(),
       base::BindRepeating(&FrameImpl::OnPixelScaleUpdate,
                           base::Unretained(this)));
-
-  InitWindowTreeHost();
-}
-
-void FrameImpl::InitWindowTreeHost() {
-  DCHECK(window_tree_host_);
 
   window_tree_host_->InitHost();
   root_window()->AddPreTargetHandler(&event_filter_);

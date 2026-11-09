@@ -281,35 +281,26 @@ void CastComponent::MaybeConnectPortConnector(
       });
 }
 
-void CastComponent::CreateViewWithViewRef(
-    zx::eventpair view_token,
-    fuchsia::ui::views::ViewRefControl control_ref,
-    fuchsia::ui::views::ViewRef view_ref) {
-  TRACE_DURATION("cast_runner", "CastComponent::CreateViewWithViewRef");
-  TRACE_FLOW_STEP("cast_runner", "CastComponent", trace_flow_id_);
-
-  if (is_headless_) {
-    // For headless CastComponents, |view_token| does not actually connect to a
-    // Scenic View. It is merely used as a conduit for propagating termination
-    // signals.
-    headless_view_token_ = std::move(view_token);
-    base::CurrentIOThread::Get()->WatchZxHandle(
-        headless_view_token_.get(), false /* persistent */,
-        ZX_SOCKET_PEER_CLOSED, &headless_disconnect_watch_, this);
-
-    frame()->EnableHeadlessRendering();
-    return;
-  }
-
-  WebComponent::CreateViewWithViewRef(
-      std::move(view_token), std::move(control_ref), std::move(view_ref));
-}
-
 void CastComponent::CreateView2(fuchsia::ui::app::CreateView2Args view_args) {
   TRACE_DURATION("cast_runner", "CastComponent::CreateView2");
   TRACE_FLOW_STEP("cast_runner", "CastComponent", trace_flow_id_);
 
   if (is_headless_) {
+    // For headless CastComponents, `view_creation_token` does not actually
+    // connect to a Flatland View. It is merely used as a conduit for
+    // propagating termination signals.
+    if (!view_args.has_view_creation_token() ||
+        !view_args.view_creation_token().value.is_valid()) {
+      LOG(ERROR) << "CreateView2() called with invalid view_creation_token.";
+      DestroyComponent(ZX_ERR_INVALID_ARGS);
+      return;
+    }
+    headless_view_token_ =
+        std::move(view_args.mutable_view_creation_token()->value);
+    base::CurrentIOThread::Get()->WatchZxHandle(
+        headless_view_token_.get(), /* persistent = */ false,
+        ZX_CHANNEL_PEER_CLOSED, &headless_disconnect_watch_, this);
+
     frame()->EnableHeadlessRendering();
     return;
   }
@@ -344,7 +335,7 @@ void CastComponent::handle_unknown_method(uint64_t ordinal,
 
 void CastComponent::OnZxHandleSignalled(zx_handle_t handle,
                                         zx_signals_t signals) {
-  DCHECK_EQ(signals, ZX_SOCKET_PEER_CLOSED);
+  DCHECK_EQ(signals, ZX_CHANNEL_PEER_CLOSED);
   DCHECK(is_headless_);
 
   frame()->DisableHeadlessRendering();

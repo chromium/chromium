@@ -67,25 +67,6 @@ class FrameWindowTreeHost::WindowParentingClientImpl
 };
 
 FrameWindowTreeHost::FrameWindowTreeHost(
-    fuchsia::ui::views::ViewToken view_token,
-    ui::ViewRefPair view_ref_pair,
-    content::WebContents* web_contents,
-    OnPixelScaleUpdateCallback on_pixel_scale_update)
-    : view_ref_(DupViewRef(view_ref_pair.view_ref)),
-      web_contents_(web_contents),
-      on_pixel_scale_update_(std::move(on_pixel_scale_update)) {
-  CreateCompositor();
-
-  ui::PlatformWindowInitProperties properties =
-      CreatePlatformWindowInitProperties(std::move(view_ref_pair), this);
-  properties.view_token = std::move(view_token);
-  CreateAndSetPlatformWindow(std::move(properties));
-
-  window_parenting_client_ =
-      std::make_unique<WindowParentingClientImpl>(window());
-}
-
-FrameWindowTreeHost::FrameWindowTreeHost(
     fuchsia::ui::views::ViewCreationToken view_creation_token,
     ui::ViewRefPair view_ref_pair,
     content::WebContents* web_contents,

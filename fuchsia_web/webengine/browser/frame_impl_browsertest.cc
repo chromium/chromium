@@ -1049,21 +1049,23 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, RecreateView) {
   frame.navigation_listener().RunUntilUrlAndTitleEquals(page1_url, kPage1Title);
 }
 
-IN_PROC_BROWSER_TEST_F(FrameImplTest, CreateViewMissingArgs) {
+IN_PROC_BROWSER_TEST_F(FrameImplTest, CreateViewNotSupported) {
   auto frame = FrameForTest::Create(context(), {});
 
   // Close the NavigationEventListener to avoid a test failure resulting, when
   // it is disconnected as a result of the Frame closing.
   frame.navigation_listener_binding().Close(ZX_OK);
 
-  // Create a view with GFX, without supplying a valid view token.
   base::test::TestFuture<zx_status_t> frame_status;
   frame.ptr().set_error_handler(
       CallbackToFitFunction(frame_status.GetCallback()));
 
-  frame->CreateView({});
+  fuchsia::ui::views::ViewToken view_token;
+  zx::eventpair peer;
+  zx::eventpair::create(0, &view_token.value, &peer);
+  frame->CreateView(std::move(view_token));
 
-  EXPECT_EQ(frame_status.Get(), ZX_ERR_INVALID_ARGS);
+  EXPECT_EQ(frame_status.Get(), ZX_ERR_NOT_SUPPORTED);
 }
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, CreateView2MissingArgs) {
@@ -1073,7 +1075,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, CreateView2MissingArgs) {
   // it is disconnected as a result of the Frame closing.
   frame.navigation_listener_binding().Close(ZX_OK);
 
-  // Create a view with GFX, without supplying a valid view token.
+  // Create a view without supplying a valid view creation token.
   base::test::TestFuture<zx_status_t> frame_status;
   frame.ptr().set_error_handler(
       CallbackToFitFunction(frame_status.GetCallback()));
