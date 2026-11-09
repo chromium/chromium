@@ -1227,12 +1227,18 @@ void SourceBufferStream::PrepareRangesForNextAppend(
   // 2. Delete the buffers that |new_buffers| overlaps.
   // There may be buffers in |new_buffers| with timestamp before
   // |highest_timestamp_in_append_sequence_| that shouldn't trigger removal of
-  // stuff before |highest_timestamp_in_append_sequence_|.
+  // stuff at or before |highest_timestamp_in_append_sequence_|. Using
+  // |highest_timestamp_in_append_sequence_ + 1us| instead of
+  // |highest_buffered_end_time_in_append_sequence_| ensures that any subsequent
+  // range merged into |range_for_next_append_| (or buffered after it) starting
+  // before |highest_buffered_end_time_in_append_sequence_| is still split or
+  // overlap-removed as needed before appending |new_buffers|.
   if (highest_timestamp_in_append_sequence_ != kNoTimestamp &&
       buffers_start_timestamp < highest_timestamp_in_append_sequence_) {
     DCHECK(highest_timestamp_in_append_sequence_ <=
            highest_buffered_end_time_in_append_sequence_);
-    buffers_start_timestamp = highest_buffered_end_time_in_append_sequence_;
+    buffers_start_timestamp =
+        highest_timestamp_in_append_sequence_ + base::Microseconds(1);
   }
 
   if (new_coded_frame_group_) {

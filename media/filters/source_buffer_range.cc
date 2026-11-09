@@ -130,6 +130,8 @@ void SourceBufferRange::AppendBuffersToEnd(
     memory_usage_in_bytes_ += (*itr)->GetMemoryUsage();
 
     if ((*itr)->is_key_frame()) {
+      CHECK(keyframe_map_.empty() ||
+            (*itr)->timestamp() >= keyframe_map_.rbegin()->first);
       keyframe_map_.insert(std::make_pair(
           (*itr)->timestamp(), buffers_.size() - 1 + keyframe_map_index_base_));
     }
@@ -184,6 +186,7 @@ void SourceBufferRange::Seek(base::TimeDelta timestamp) {
 
   auto result = GetFirstKeyframeAtOrBefore(timestamp);
   next_buffer_index_ = result->second - keyframe_map_index_base_;
+  CHECK_GE(next_buffer_index_, 0);
   CHECK_LT(next_buffer_index_, static_cast<int>(buffers_.size()))
       << next_buffer_index_ << ", size = " << buffers_.size();
 }
@@ -263,6 +266,7 @@ std::unique_ptr<SourceBufferRange> SourceBufferRange::SplitRange(
   // into |removed_buffers|.
   int keyframe_index =
       new_beginning_keyframe->second - keyframe_map_index_base_;
+  CHECK_GE(keyframe_index, 0);
   CHECK_LT(keyframe_index, static_cast<int>(buffers_.size()));
   BufferQueue::iterator starting_point = buffers_.begin() + keyframe_index;
   BufferQueue removed_buffers =
@@ -333,6 +337,8 @@ size_t SourceBufferRange::DeleteGOPFromFront(BufferQueue* deleted_buffers) {
   int end_index = keyframe_map_.size() > 0
                       ? keyframe_map_.begin()->second - keyframe_map_index_base_
                       : buffers_.size();
+  CHECK_GE(end_index, 0);
+  CHECK_LE(end_index, static_cast<int>(buffers_.size()));
 
   // Delete buffers from the beginning of the buffered range up until (but not
   // including) the next keyframe.
@@ -383,6 +389,7 @@ size_t SourceBufferRange::DeleteGOPFromBack(BufferQueue* deleted_buffers) {
   // The index of the first buffer in the last GOP is equal to the new size of
   // |buffers_| after that GOP is deleted.
   size_t goal_size = back->second - keyframe_map_index_base_;
+  CHECK_LE(goal_size, buffers_.size());
   keyframe_map_.erase(back);
 
   size_t total_bytes_deleted = 0;
@@ -417,6 +424,8 @@ size_t SourceBufferRange::GetRemovalGOP(
   if (gop_itr == keyframe_map_.end())
     return 0;
   int keyframe_index = gop_itr->second - keyframe_map_index_base_;
+  CHECK_GE(keyframe_index, 0);
+  CHECK_LT(keyframe_index, static_cast<int>(buffers_.size()));
   BufferQueue::const_iterator buffer_itr = buffers_.begin() + keyframe_index;
   auto gop_end = keyframe_map_.end();
   if (end_timestamp < GetBufferedEndTimestamp())
@@ -435,6 +444,8 @@ size_t SourceBufferRange::GetRemovalGOP(
     int next_gop_index = gop_itr == keyframe_map_.end()
                              ? buffers_.size()
                              : gop_itr->second - keyframe_map_index_base_;
+    CHECK_GE(next_gop_index, 0);
+    CHECK_LE(next_gop_index, static_cast<int>(buffers_.size()));
     BufferQueue::const_iterator next_gop_start =
         buffers_.begin() + next_gop_index;
     for (; buffer_itr != next_gop_start; ++buffer_itr) {
@@ -599,6 +610,7 @@ base::TimeDelta SourceBufferRange::FindHighestBufferedTimestampAtOrBefore(
   // Scan forward in |buffers_| to find the highest frame with timestamp <=
   // |timestamp|. Stop once a frame with timestamp > |timestamp| is encountered.
   size_t key_index = key_iter->second - keyframe_map_index_base_;
+  CHECK_LT(key_index, buffers_.size());
   SourceBufferRange::BufferQueue::const_iterator search_iter =
       buffers_.begin() + key_index;
   CHECK(search_iter != buffers_.end());
@@ -833,14 +845,17 @@ size_t SourceBufferRange::GetBufferIndexAt(base::TimeDelta timestamp,
   // a GOP may not match the DTS-sorted sequence of frames within the GOP.
   DCHECK_GT(buffers_.size(), 0u);
   size_t search_index = gop_iter->second - keyframe_map_index_base_;
+  CHECK_LT(search_index, buffers_.size());
   SourceBufferRange::BufferQueue::const_iterator search_iter =
       buffers_.begin() + search_index;
   gop_iter++;
 
+  size_t next_gop_index = gop_iter == keyframe_map_.end()
+                              ? buffers_.size()
+                              : gop_iter->second - keyframe_map_index_base_;
+  CHECK_LE(next_gop_index, buffers_.size());
   SourceBufferRange::BufferQueue::const_iterator next_gop_start =
-      gop_iter == keyframe_map_.end()
-          ? buffers_.end()
-          : buffers_.begin() + (gop_iter->second - keyframe_map_index_base_);
+      buffers_.begin() + next_gop_index;
 
   while (search_iter != next_gop_start) {
     if (((*search_iter)->timestamp() > timestamp) ||
@@ -947,8 +962,10 @@ void SourceBufferRange::UpdateEndTimeUsingLastGOP() {
 
   // Iterate through the frames of the last GOP in this range, finding the
   // frame with the highest PTS.
+  size_t last_gop_index = last_gop->second - keyframe_map_index_base_;
+  CHECK_LT(last_gop_index, buffers_.size());
   for (BufferQueue::const_iterator buffer_itr =
-           buffers_.begin() + (last_gop->second - keyframe_map_index_base_);
+           buffers_.begin() + last_gop_index;
        buffer_itr != buffers_.end(); ++buffer_itr) {
     UpdateEndTime(*buffer_itr);
   }
