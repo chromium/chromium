@@ -404,4 +404,22 @@ TEST_F(ShadowControllerTest, UpdateShadowWhenAddedToParent) {
   }
 }
 
+TEST_F(ShadowControllerTest, NonUniformRoundedCorners) {
+  auto window = std::make_unique<aura::Window>(nullptr);
+  window->SetType(aura::client::WINDOW_TYPE_NORMAL);
+  window->Init(ui::LAYER_TEXTURED);
+  ParentWindow(window.get());
+  window->SetBounds(gfx::Rect(10, 20, 300, 400));
+
+  constexpr gfx::RoundedCornersF kNonUniformCorners(4.f, 12.f, 12.f, 12.f);
+  window->SetProperty(aura::client::kWindowRoundedCornersKey,
+                      kNonUniformCorners);
+  window->Show();
+
+  ui::Decoration* decoration =
+      ShadowController::GetShadowDecorationForWindow(window.get());
+  ASSERT_TRUE(decoration);
+  EXPECT_EQ(kNonUniformCorners, decoration->rounded_corners());
+}
+
 }  // namespace wm

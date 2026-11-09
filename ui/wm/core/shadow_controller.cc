@@ -327,8 +327,7 @@ void ShadowController::Impl::MaybeSetShadowRadiusForWindow(
   // unspecified radius. i.e window server may want to apply rounded corners
   // implicitly.
   if (rounded_corners) {
-    shadow_decoration->SetRoundedCorners(
-        gfx::RoundedCornersF(rounded_corners->upper_left()));
+    shadow_decoration->SetRoundedCorners(*rounded_corners);
   }
 }
 

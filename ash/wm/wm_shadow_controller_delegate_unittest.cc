@@ -37,8 +37,7 @@ TEST_F(WmShadowControllerDelegateTest,
   auto* shadow_decoration =
       shadow_controller->GetShadowDecorationForWindow(window.get());
   EXPECT_TRUE(window_rounded_corner);
-  EXPECT_EQ(shadow_decoration->rounded_corners().upper_left(),
-            window_rounded_corner->upper_left());
+  EXPECT_EQ(shadow_decoration->rounded_corners(), *window_rounded_corner);
 
   // Enter Overview, the shadow's rounded corner radius becomes 0.
   ToggleOverview();
@@ -47,8 +46,7 @@ TEST_F(WmShadowControllerDelegateTest,
   // Exit Overview, the shadow's rounded corner radius is reset to window
   // rounded corner radius.
   ToggleOverview();
-  EXPECT_EQ(shadow_decoration->rounded_corners().upper_left(),
-            window_rounded_corner->upper_left());
+  EXPECT_EQ(shadow_decoration->rounded_corners(), *window_rounded_corner);
 }
 
 TEST_F(WmShadowControllerDelegateTest,

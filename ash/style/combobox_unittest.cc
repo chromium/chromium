@@ -22,9 +22,12 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/models/combobox_model.h"
+#include "ui/decoration/decoration.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/shadow_controller.h"
 
 namespace ash {
 
@@ -64,6 +67,8 @@ class ComboboxTest : public AshTestBase {
   void ShowComboBoxDropDownMenu() { GetComboboxView()->ShowDropDownMenu(); }
 
   void CloseComboBoxDropDownMenu() { GetComboboxView()->CloseDropDownMenu(); }
+
+  views::Widget* GetMenuWidget() { return GetComboboxView()->menu_.get(); }
 
  protected:
   std::unique_ptr<views::Widget> widget_;
@@ -121,6 +126,20 @@ TEST_F(ComboboxTest, AccessibleDefaultActionVerb) {
   data = ui::AXNodeData();
   menu_option->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kClick);
+
+  CloseComboBoxDropDownMenu();
+}
+
+TEST_F(ComboboxTest, MenuShadowRoundedCorners) {
+  ShowComboBoxDropDownMenu();
+
+  views::Widget* menu_widget = GetMenuWidget();
+  ASSERT_TRUE(menu_widget);
+  ui::Decoration* shadow_decoration =
+      wm::ShadowController::GetShadowDecorationForWindow(
+          menu_widget->GetNativeWindow());
+  EXPECT_EQ(gfx::RoundedCornersF(4, 12, 12, 12),
+            shadow_decoration->rounded_corners());
 
   CloseComboBoxDropDownMenu();
 }
