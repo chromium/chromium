@@ -365,9 +365,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return ComputeScrollableOverflowFromFragments(PreviousPhysicalFragments());
   }
 
+  void RecalcVisualOverflow() override;
+
   void ClearVisualOverflow();
 
-  bool CanUseFragmentsForVisualOverflow() const;
   void CopyVisualOverflowFromFragments();
 
   virtual void UpdateAfterLayout();

@@ -654,18 +654,9 @@ TEST_F(LayoutBoxTest, VisualOverflowRectWithOverflowClipMargin) {
   EXPECT_EQ(PhysicalRect(0, 0, 110, 55), clip3->VisualOverflowRect());
 }
 
-// |InkOverflow| stopped storing visual overflow contained by |BorderBoxRect|
-// because they are not useful, and they are inconsistent when fully contained
-// and partially contained.
-// TODO(crbug.com/1144203): Change this to "if (NG)" when NG always use
-// fragment-based ink overflow. Then, remove this when legacy is gone.
-#define EXPECT_CONTENTS_VISUAL_OVERFLOW(rect, layout_box)           \
-  if (layout_box->CanUseFragmentsForVisualOverflow()) {             \
-    EXPECT_EQ(UnionRect(rect, layout_box->PhysicalBorderBoxRect()), \
-              layout_box->ContentsVisualOverflowRect());            \
-  } else {                                                          \
-    EXPECT_EQ(rect, layout_box->ContentsVisualOverflowRect());      \
-  }
+#define EXPECT_CONTENTS_VISUAL_OVERFLOW(rect, layout_box)         \
+  EXPECT_EQ(UnionRect(rect, layout_box->PhysicalBorderBoxRect()), \
+            layout_box->ContentsVisualOverflowRect());
 
 TEST_F(LayoutBoxTest, ContentsVisualOverflowPropagation) {
   SetBodyInnerHTML(R"HTML(

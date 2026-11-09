@@ -256,17 +256,12 @@ PhysicalRect LayoutReplaced::ComputeContentsVisualOverflow() const {
 
 void LayoutReplaced::RecalcVisualOverflow() {
   NOT_DESTROYED();
-  LayoutObject::RecalcVisualOverflow();
+  // Recalculate overflow from descendants. This is needed by replaced content,
+  // since children are then not part of the fragment tree. SVG needs this.
+  RecalcVisualOverflowForChildren();
 
-  PhysicalRect self_overflow;
-  if (PhysicalFragmentCount()) {
-    const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);
-    DCHECK(PhysicalFragmentCount() == 1 ||
-           fragment->GetBreakToken()->IsRepeated());
-    self_overflow = fragment->ComputeSelfInkOverflowForReplaced();
-  }
-
-  SetVisualOverflow(self_overflow, ComputeContentsVisualOverflow());
+  // Calculate overflow from the physical fragments.
+  LayoutBox::RecalcVisualOverflow();
 }
 
 std::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(

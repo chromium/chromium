@@ -580,14 +580,6 @@ FragmentItem::ContentOffsetInContainerFragmentIgnoringTextBoxTrim() const {
   return offset;
 }
 
-inline LayoutBox* FragmentItem::MutableInkOverflowOwnerBox() {
-  if (Type() == kBox) {
-    return DynamicTo<LayoutBox>(
-        const_cast<LayoutObject*>(layout_object_.Get()));
-  }
-  return nullptr;
-}
-
 PhysicalRect FragmentItem::SelfInkOverflowRect() const {
   if (const PhysicalBoxFragment* box_fragment = BoxFragment()) {
     return box_fragment->SelfInkOverflowRect();
@@ -1080,15 +1072,8 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
     }
     if (!box_fragment->IsInlineBox()) {
       DCHECK(!HasChildren());
-      if (box_fragment->CanUseFragmentsForInkOverflow()) {
-        box_fragment->GetMutableForPainting().RecalcInkOverflow();
-        *self_and_contents_rect_out = box_fragment->InkOverflowRect();
-        return;
-      }
-      LayoutBox* owner_box = MutableInkOverflowOwnerBox();
-      DCHECK(owner_box);
-      owner_box->RecalcNormalFlowChildVisualOverflowIfNeeded();
-      *self_and_contents_rect_out = owner_box->VisualOverflowRect();
+      box_fragment->GetMutableForPainting().RecalcInkOverflow();
+      *self_and_contents_rect_out = box_fragment->InkOverflowRect();
       return;
     }
 

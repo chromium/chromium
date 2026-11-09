@@ -3447,6 +3447,19 @@ void LayoutBox::SetVisualOverflow(const PhysicalRect& self,
   }
 }
 
+void LayoutBox::RecalcVisualOverflow() {
+  NOT_DESTROYED();
+  if (!PhysicalFragmentCount()) {
+    ClearVisualOverflow();
+    return;
+  }
+
+  DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*this));
+  for (const PhysicalBoxFragment& fragment : PhysicalFragments()) {
+    fragment.GetMutableForPainting().RecalcInkOverflow();
+  }
+}
+
 void LayoutBox::ClearVisualOverflow() {
   NOT_DESTROYED();
   if (overflow_)
@@ -3456,16 +3469,9 @@ void LayoutBox::ClearVisualOverflow() {
   // to store previous overflow data.
 }
 
-bool LayoutBox::CanUseFragmentsForVisualOverflow() const {
-  NOT_DESTROYED();
-  return PhysicalFragmentCount() &&
-         GetPhysicalFragment(0)->CanUseFragmentsForInkOverflow();
-}
-
 // Copy visual overflow from |PhysicalFragments()|.
 void LayoutBox::CopyVisualOverflowFromFragments() {
   NOT_DESTROYED();
-  DCHECK(CanUseFragmentsForVisualOverflow());
   const PhysicalRect previous_visual_overflow =
       VisualOverflowRectAllowingUnset();
   CopyVisualOverflowFromFragmentsWithoutInvalidations();
@@ -3477,7 +3483,6 @@ void LayoutBox::CopyVisualOverflowFromFragments() {
 
 void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
   NOT_DESTROYED();
-  DCHECK(CanUseFragmentsForVisualOverflow());
   if (!PhysicalFragmentCount()) [[unlikely]] {
     DCHECK(IsLayoutTableCol());
     ClearVisualOverflow();
@@ -3486,7 +3491,6 @@ void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
 
   if (PhysicalFragmentCount() == 1) {
     const PhysicalBoxFragment& fragment = *GetPhysicalFragment(0);
-    DCHECK(fragment.CanUseFragmentsForInkOverflow());
     if (!fragment.HasInkOverflow()) {
       ClearVisualOverflow();
       return;
@@ -3503,7 +3507,6 @@ void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
   PhysicalRect contents_rect;
   const PhysicalBoxFragment* last_fragment = nullptr;
   for (const PhysicalBoxFragment& fragment : PhysicalFragments()) {
-    DCHECK(fragment.CanUseFragmentsForInkOverflow());
     if (!fragment.HasInkOverflow()) {
       last_fragment = &fragment;
       continue;
@@ -3653,8 +3656,6 @@ void LayoutBox::CheckIsVisualOverflowComputed() const {
   return;
   /*
   if (InkOverflow::ReadUnsetAsNoneScope::IsActive())
-    return;
-  if (!CanUseFragmentsForVisualOverflow())
     return;
   // TODO(crbug.com/1203402): MathML needs some more work.
   if (IsMathML())

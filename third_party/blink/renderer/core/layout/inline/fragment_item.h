@@ -621,7 +621,6 @@ class CORE_EXPORT FragmentItem final {
   bool HasInkOverflow() const {
     return InkOverflowType() != InkOverflow::Type::kNone;
   }
-  LayoutBox* MutableInkOverflowOwnerBox();
 
   void InvalidateInkOverflow();
 

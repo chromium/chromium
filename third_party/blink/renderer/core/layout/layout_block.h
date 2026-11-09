@@ -144,8 +144,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject* parent) const override;
 
-  void RecalcVisualOverflow() override;
-
   // An example explaining layout tree structure about first-line style:
   // <style>
   //   #enclosingFirstLineStyleBlock::first-line { ... }

@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/outline_utils.h"
@@ -653,28 +654,18 @@ void PhysicalBoxFragment::SetChildrenInvalid() const {
 }
 
 PhysicalRect PhysicalBoxFragment::SelfInkOverflowRect() const {
-  if (!CanUseFragmentsForInkOverflow()) [[unlikely]] {
-    const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
-    return owner_box->SelfVisualOverflowRect();
-  }
   if (!HasInkOverflow())
     return LocalRect();
   return ink_overflow_.Self(InkOverflowType(), Size());
 }
 
 PhysicalRect PhysicalBoxFragment::ContentsInkOverflowRect() const {
-  DCHECK(CanUseFragmentsForInkOverflow());
   if (!HasInkOverflow())
     return LocalRect();
   return ink_overflow_.Contents(InkOverflowType(), Size());
 }
 
 PhysicalRect PhysicalBoxFragment::InkOverflowRect() const {
-  if (!CanUseFragmentsForInkOverflow()) [[unlikely]] {
-    const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
-    return owner_box->VisualOverflowRect();
-  }
-
   if (!HasInkOverflow())
     return LocalRect();
 
@@ -961,15 +952,22 @@ void PhysicalBoxFragment::RecalcInkOverflow(const PhysicalRect& contents) {
 }
 
 void PhysicalBoxFragment::RecalcInkOverflow() {
-  DCHECK(CanUseFragmentsForInkOverflow());
   const LayoutObject* layout_object = GetSelfOrContainerLayoutObject();
   DCHECK(layout_object);
   DCHECK(
       !DisplayLockUtilities::LockedAncestorPreventingPrePaint(*layout_object));
 
   PhysicalRect contents_rect;
-  if (!layout_object->ChildPrePaintBlockedByDisplayLock())
+  if (!layout_object->ChildPrePaintBlockedByDisplayLock()) {
     contents_rect = RecalcContentsInkOverflow();
+
+    // Replaced content generates leaf fragments in a tree, but there may be new
+    // fragment trees inside, such as SVG text.
+    if (auto* layout_replaced =
+            DynamicTo<LayoutReplaced>(GetMutableLayoutObject())) {
+      layout_replaced->RecalcVisualOverflowForChildren();
+    }
+  }
   RecalcInkOverflow(contents_rect);
 
   // Copy the computed values to the |OwnerBox| if |this| is the last fragment.
@@ -1007,6 +1005,10 @@ PhysicalRect PhysicalBoxFragment::RecalcContentsInkOverflow() {
   DCHECK(
       !GetSelfOrContainerLayoutObject()->ChildPrePaintBlockedByDisplayLock());
 
+  if (auto* layout_replaced = DynamicTo<LayoutReplaced>(layout_object_.Get())) {
+    return layout_replaced->ComputeContentsVisualOverflow();
+  }
+
   PhysicalRect contents_rect;
   if (const FragmentItems* items = Items()) {
     InlineCursor cursor(*this, *items);
@@ -1040,17 +1042,8 @@ PhysicalRect PhysicalBoxFragment::RecalcContentsInkOverflow() {
       continue;
     DCHECK(!child_fragment->IsOutOfFlowPositioned());
 
-    PhysicalRect child_rect;
-    if (child_fragment->CanUseFragmentsForInkOverflow()) {
-      child_fragment->GetMutableForPainting().RecalcInkOverflow();
-      child_rect = child_fragment->InkOverflowRect();
-    } else {
-      LayoutBox* child_layout_object = child_fragment->MutableOwnerLayoutBox();
-      DCHECK(child_layout_object);
-      DCHECK(!child_layout_object->CanUseFragmentsForVisualOverflow());
-      child_layout_object->RecalcVisualOverflow();
-      child_rect = child_layout_object->VisualOverflowRect();
-    }
+    child_fragment->GetMutableForPainting().RecalcInkOverflow();
+    PhysicalRect child_rect = child_fragment->InkOverflowRect();
     child_rect.offset += child.offset;
     contents_rect.Unite(child_rect);
   }
@@ -1074,7 +1067,6 @@ PhysicalRect PhysicalBoxFragment::ComputeSelfInkOverflow() const {
           To<LayoutTableCell>(child_fragment.GetLayoutObject());
       if (child_layout_object->ComputedRowSpan() == 1)
         continue;
-      DCHECK(child_fragment.CanUseFragmentsForInkOverflow());
       PhysicalRect child_rect = child_fragment.InkOverflowRect();
       child_rect.offset += child.offset;
       ink_overflow.Unite(child_rect);

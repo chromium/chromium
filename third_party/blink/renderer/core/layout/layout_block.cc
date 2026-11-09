@@ -536,19 +536,4 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
   return layout_block;
 }
 
-void LayoutBlock::RecalcVisualOverflow() {
-  NOT_DESTROYED();
-  if (!PhysicalFragmentCount()) {
-    ClearVisualOverflow();
-    return;
-  }
-
-  DCHECK(CanUseFragmentsForVisualOverflow());
-  DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*this));
-  for (const PhysicalBoxFragment& fragment : PhysicalFragments()) {
-    DCHECK(fragment.CanUseFragmentsForInkOverflow());
-    fragment.GetMutableForPainting().RecalcInkOverflow();
-  }
-}
-
 }  // namespace blink

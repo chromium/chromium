@@ -116,6 +116,8 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // content box.
   bool ClipsToContentBox() const;
 
+  virtual PhysicalRect ComputeContentsVisualOverflow() const;
+
  protected:
   virtual bool ShouldApplyObjectViewBox() const {
     NOT_DESTROYED();
@@ -172,8 +174,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   // ImageResourceObserver
   gfx::Size ComputeSpeculativeDecodeSize() const override;
-
-  virtual PhysicalRect ComputeContentsVisualOverflow() const;
 
  private:
   // Computes a rect, relative to the element's content's natural size, that
