@@ -1502,8 +1502,9 @@ void PopupViewViews::CreateSuggestionViews() {
       /*initial_visible_height=*/current_body_visible_height);
 
   for (; current_line_number < suggestions.size(); ++current_line_number) {
-    CHECK(IsFooterItem(suggestions, current_line_number),
-          base::NotFatalUntil::M162);
+    // TODO(crbug.com/579417414): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(IsFooterItem(suggestions, current_line_number));
     // The footer can contain either footer views or separator lines.
     if (suggestions[current_line_number].type == SuggestionType::kSeparator) {
       footer_builder.AddRow(
