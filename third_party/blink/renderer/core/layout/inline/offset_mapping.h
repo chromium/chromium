@@ -119,7 +119,7 @@ class CORE_EXPORT OffsetMapping final : public GarbageCollected<OffsetMapping> {
  public:
   using UnitVector = HeapVector<OffsetMappingUnit>;
   using RangeMap =
-      HeapHashMap<Member<const Node>, std::pair<wtf_size_t, wtf_size_t>>;
+      HeapHashMap<WeakMember<const Node>, std::pair<wtf_size_t, wtf_size_t>>;
 
   OffsetMapping(UnitVector&&, RangeMap&&, String);
   OffsetMapping(const OffsetMapping&) = delete;

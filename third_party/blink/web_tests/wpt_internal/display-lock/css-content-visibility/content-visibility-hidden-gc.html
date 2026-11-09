@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/578639450">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="direct-container"></div>
+<div id="direct-contain-container" style="contain: style layout paint size"></div>
+<div id="nested-div-container"><div id="nested-div-list"></div></div>
+<div id="nested-container"><ul id="nested-list"></ul></div>
+<ul id="direct-list-container"></ul>
+<div id="inline-container"></div>
+<div id="nested-inline-container"><div id="nested-inline-list"></div></div>
+
+<script>
+function asyncGC() {
+  return new Promise(resolve => {
+    GCController.asyncCollectAll(resolve);
+  });
+}
+
+function waitFor2rAFs() {
+  return new Promise(resolve => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(resolve);
+    });
+  });
+}
+
+async function hideWithContentVisibility(container) {
+  await waitFor2rAFs();
+  container.style.contentVisibility = 'hidden';
+  await waitFor2rAFs();
+}
+
+// Synchronous helpers ensure temporary DOM node references are not kept alive
+// in the async test function's frame across await points.
+function appendChildren(parent, tagName) {
+  const weakRefs = [];
+  for (let i = 0; i < 10; i++) {
+    const item = document.createElement(tagName);
+    item.textContent = 'Item ' + i + ' ';
+    parent.appendChild(item);
+    if (i < 5) {
+      weakRefs.push(new WeakRef(item));
+    }
+  }
+  return weakRefs;
+}
+
+function removeFirstChildren(parent, count) {
+  for (let i = 0; i < count; i++) {
+    parent.firstElementChild.remove();
+  }
+}
+
+function assertGarbageCollected(weakRefs, label) {
+  for (let i = 0; i < weakRefs.length; i++) {
+    assert_equals(weakRefs[i].deref(), undefined, `${label} ${i} should be GC'd`);
+  }
+}
+
+promise_test(async t => {
+  const container = document.getElementById('direct-container');
+  const weakRefs = appendChildren(container, 'div');
+
+  await hideWithContentVisibility(container);
+  removeFirstChildren(container, 5);
+  await asyncGC();
+  assertGarbageCollected(weakRefs, 'Direct child');
+}, 'Rendered direct block children removed under content-visibility: hidden are garbage collected');
+
+promise_test(async t => {
+  const container = document.getElementById('direct-contain-container');
+  const weakRefs = appendChildren(container, 'div');
+
+  await hideWithContentVisibility(container);
+  removeFirstChildren(container, 5);
+  await asyncGC();
+  assertGarbageCollected(weakRefs, 'Direct child');
+}, 'Rendered direct block children under pre-contained content-visibility: hidden container are garbage collected');
+
+promise_test(async t => {
+  const container = document.getElementById('nested-div-container');
+  const list = document.getElementById('nested-div-list');
+  const weakRefs = appendChildren(list, 'div');
+
+  await hideWithContentVisibility(container);
+  removeFirstChildren(list, 5);
+  await asyncGC();
+  assertGarbageCollected(weakRefs, 'Nested div item');
+
+  container.style.contentVisibility = 'visible';
+  await waitFor2rAFs();
+}, 'Rendered nested block children removed under content-visibility: hidden ancestor are garbage collected');
+
+promise_test(async t => {
+  const container = document.getElementById('direct-list-container');
+  const weakRefs = appendChildren(container, 'li');
+
+  await hideWithContentVisibility(container);
+  removeFirstChildren(container, 5);
+  await asyncGC();
+  assertGarbageCollected(weakRefs, 'Direct list item');
+}, 'Rendered direct list items removed under content-visibility: hidden are garbage collected');
+
+promise_test(async t => {
+  const container = document.getElementById('nested-container');
+  const list = document.getElementById('nested-list');
+  const weakRefs = appendChildren(list, 'li');
+
+  await hideWithContentVisibility(container);
+  removeFirstChildren(list, 5);
+  await asyncGC();
+  assertGarbageCollected(weakRefs, 'Nested list item');
+
+  container.style.contentVisibility = 'visible';
+  await waitFor2rAFs();
+}, 'Rendered nested list items removed under content-visibility: hidden ancestor are garbage collected');
+
+promise_test(async t => {
+  const container = document.getElementById('inline-container');
+  const weakRefs = appendChildren(container, 'span');
+
+  await hideWithContentVisibility(container);
+  removeFirstChildren(container, 5);
+  await asyncGC();
+  assertGarbageCollected(weakRefs, 'Inline child');
+}, 'Rendered direct inline children removed under content-visibility: hidden are garbage collected');
+
+promise_test(async t => {
+  const container = document.getElementById('nested-inline-container');
+  const list = document.getElementById('nested-inline-list');
+  const weakRefs = appendChildren(list, 'span');
+
+  await waitFor2rAFs();
+  // Force OffsetMapping computation before hiding.
+  assert_true(list.innerText.includes('Item 0'));
+
+  await hideWithContentVisibility(container);
+  removeFirstChildren(list, 5);
+  await asyncGC();
+  assertGarbageCollected(weakRefs, 'Nested inline child');
+
+  container.style.contentVisibility = 'visible';
+  await waitFor2rAFs();
+}, 'Rendered nested inline children removed under content-visibility: hidden ancestor are garbage collected');
+</script>

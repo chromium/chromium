@@ -4112,7 +4112,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   friend class LocalFrameView;
 
   Member<const ComputedStyle> style_;
-  Member<Node> node_;
+  WeakMember<Node> node_;
 
   Member<LayoutObject> parent_;
   Member<LayoutObject> previous_;
