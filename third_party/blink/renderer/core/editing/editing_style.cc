@@ -121,8 +121,7 @@ static const Vector<const CSSProperty*>& AllEditingProperties(
   if (properties.empty()) {
     properties.ReserveInitialCapacity(std::size(kStaticEditingProperties) + 2);
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
-        execution_context, kStaticEditingProperties,
-        std::size(kStaticEditingProperties), properties);
+        execution_context, kStaticEditingProperties, properties);
   }
   return properties;
 }
@@ -820,8 +819,7 @@ static const Vector<const CSSProperty*>& BlockPropertiesVector(
   DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties, ());
   if (properties.empty()) {
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
-        execution_context, kStaticBlockProperties,
-        std::size(kStaticBlockProperties), properties);
+        execution_context, kStaticBlockProperties, properties);
   }
   return properties;
 }

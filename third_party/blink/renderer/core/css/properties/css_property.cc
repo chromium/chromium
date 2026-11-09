@@ -4,13 +4,15 @@
 
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_unsupported_value.h"
 #include "third_party/blink/renderer/core/css/cssom/style_value_factory.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/longhands/variable.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -72,13 +74,12 @@ const CSSValue* CSSProperty::CSSValueFromComputedStyle(
 
 void CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
     const ExecutionContext* execution_context,
-    const CSSPropertyID* properties,
-    wtf_size_t property_count,
+    base::span<const CSSPropertyID> properties,
     Vector<const CSSProperty*>& out_vector) {
   DCHECK(out_vector.empty());
-  out_vector.reserve(property_count);
-  for (unsigned i = 0; i < property_count; i++) {
-    const CSSProperty& property = Get(UNSAFE_TODO(properties[i]));
+  out_vector.reserve(base::checked_cast<wtf_size_t>(properties.size()));
+  for (CSSPropertyID id : properties) {
+    const CSSProperty& property = Get(id);
     if (property.IsWebExposed(execution_context)) {
       out_vector.push_back(&property);
     }

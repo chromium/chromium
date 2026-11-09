@@ -105,8 +105,7 @@ CSSComputedStyleDeclaration::ComputableProperties(
   DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties, ());
   if (properties.empty()) {
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
-        execution_context, kCSSComputableProperties,
-        std::size(kCSSComputableProperties), properties);
+        execution_context, kCSSComputableProperties, properties);
   }
   return properties;
 }

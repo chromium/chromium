@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
@@ -209,8 +210,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
 
   static void FilterWebExposedCSSPropertiesIntoVector(
       const ExecutionContext*,
-      const CSSPropertyID*,
-      wtf_size_t length,
+      base::span<const CSSPropertyID>,
       Vector<const CSSProperty*>&);
 
   enum Flag : Flags {
