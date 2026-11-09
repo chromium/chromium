@@ -10,8 +10,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view_layout.h"
+#include "chrome/browser/ui/views/tabs/horizontal/tab_scroll_button_container.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -28,6 +31,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -388,4 +392,83 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripViewLayoutBrowserTest,
           << "tab index=" << i;
     }
   }
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripViewLayoutBrowserTest,
+                       NewTabButtonSpacingMatchesTabStripPadding) {
+  SetWindowWidth(800);
+  AppendTab();
+  auto* region_view = GetTabStripRegionView();
+  auto* last_tab = GetTabViewAt(1);
+  ASSERT_TRUE(region_view && region_view->new_tab_button_for_testing() &&
+              last_tab);
+
+  GetTabStripModel()->ActivateTabAt(1);
+  region_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  const int padding = GetLayoutConstant(LayoutConstant::kTabStripPadding);
+  const int last_tab_visual_right = last_tab->GetBoundsInScreen().right() -
+                                    TabStyle::Get()->GetBottomExtensionWidth();
+  EXPECT_EQ(region_view->new_tab_button_for_testing()->GetBoundsInScreen().x() -
+                last_tab_visual_right,
+            padding);
+  EXPECT_EQ(region_view->new_tab_button_for_testing()->bounds().y(), padding);
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripViewLayoutBrowserTest,
+                       NewTabButtonTrailingPaddingOnOverflowWithScrollButtons) {
+  SetWindowWidth(500);
+  auto* region_view = GetTabStripRegionView();
+  auto* scroll_buttons = GetTabStripView()
+                             ? GetTabStripView()->GetScrollButtonContainer()
+                             : nullptr;
+  ASSERT_TRUE(region_view && region_view->new_tab_button_for_testing() &&
+              scroll_buttons);
+
+  AddTabsUntilScrollable();
+
+  EXPECT_TRUE(scroll_buttons->GetVisible());
+  EXPECT_EQ(region_view->new_tab_button_for_testing()->GetBoundsInScreen().x() -
+                scroll_buttons->GetBoundsInScreen().right(),
+            GetLayoutConstant(LayoutConstant::kTabStripPadding));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    HorizontalTabStripViewLayoutBrowserTest,
+    NewTabButtonTrailingPaddingOnOverflowWithoutScrollButtons) {
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kTabScrollButtonsPinnedToTabstrip, false);
+  SetWindowWidth(500);
+  auto* region_view = GetTabStripRegionView();
+  auto* unpinned_scroll = GetTabStripView()
+                              ? GetTabStripView()->unpinned_tabs_scroll_view()
+                              : nullptr;
+  ASSERT_TRUE(region_view && region_view->new_tab_button_for_testing() &&
+              unpinned_scroll);
+
+  AddTabsUntilScrollable();
+
+  EXPECT_TRUE(unpinned_scroll->GetDrawOverflowIndicator());
+  EXPECT_EQ(region_view->new_tab_button_for_testing()->GetBoundsInScreen().x() -
+                unpinned_scroll->GetBoundsInScreen().right(),
+            GetLayoutConstant(LayoutConstant::kTabStripPadding));
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripViewLayoutBrowserTest,
+                       NewTabButtonTrailingPaddingOnPinnedOnlyOverflow) {
+  SetWindowWidth(500);
+  GetTabStripModel()->SetTabPinned(0, true);
+  auto* region_view = GetTabStripRegionView();
+  auto* pinned_scroll = GetTabStripView()
+                            ? GetTabStripView()->pinned_tabs_scroll_view()
+                            : nullptr;
+  ASSERT_TRUE(region_view && region_view->new_tab_button_for_testing() &&
+              pinned_scroll);
+
+  AddPinnedTabsUntilScrollable();
+
+  EXPECT_TRUE(pinned_scroll->GetDrawOverflowIndicator());
+  EXPECT_EQ(region_view->new_tab_button_for_testing()->GetBoundsInScreen().x() -
+                pinned_scroll->GetBoundsInScreen().right(),
+            GetLayoutConstant(LayoutConstant::kTabStripPadding));
 }

@@ -159,6 +159,7 @@ class HorizontalTabStripRegionViewNew : public BaseTabStripRegionView {
 
   bool HasLeadingButtons() const;
   TabStripComboButton* combo_button() { return combo_button_; }
+  views::Button* new_tab_button_for_testing() { return new_tab_button_; }
 
   // TabStripRegionView:
   gfx::Size GetMinimumSize() const override;

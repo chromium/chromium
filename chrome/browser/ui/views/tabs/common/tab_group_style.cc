@@ -145,12 +145,7 @@ int TabGroupStyle::GetLeadingGroupHeaderPadding() {
 
 // static
 int TabGroupStyle::GetTrailingGroupHeaderPadding() {
-  // Spacing between a trailing collapsed group header and the New Tab Button,
-  // accounting for the tab bottom extension, strip padding, and NTB margin.
-  return GetLeadingGroupHeaderPadding() -
-         TabStyle::Get()->GetBottomExtensionWidth() +
-         GetLayoutConstant(LayoutConstant::kTabStripPadding) +
-         GetLayoutConstant(LayoutConstant::kNewTabButtonLeadingMargin);
+  return GetLeadingGroupHeaderPadding();
 }
 
 // static

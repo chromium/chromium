@@ -55,6 +55,9 @@ class TabStripView final : public views::View,
   int leading_overlap() const { return leading_overlap_; }
   void SetLeadingOverlap(int leading_overlap);
 
+  int trailing_overlap() const { return trailing_overlap_; }
+  void SetTrailingOverlap(int trailing_overlap);
+
   views::ScrollView* pinned_tabs_scroll_view() const {
     return pinned_tabs_scroll_view_;
   }
@@ -160,6 +163,7 @@ class TabStripView final : public views::View,
   bool is_collapsed_ = false;
   bool are_separators_hidden_ = false;
   int leading_overlap_ = 0;
+  int trailing_overlap_ = 0;
 
   // Used for seek time metrics from the time the mouse enters the tabstrip.
   std::optional<base::TimeTicks> mouse_entered_tabstrip_time_;

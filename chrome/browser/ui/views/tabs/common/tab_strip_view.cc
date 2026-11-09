@@ -559,6 +559,13 @@ void TabStripView::SetLeadingOverlap(int leading_overlap) {
   }
 }
 
+void TabStripView::SetTrailingOverlap(int trailing_overlap) {
+  if (trailing_overlap != trailing_overlap_) {
+    trailing_overlap_ = trailing_overlap;
+    InvalidateLayout(/*avoid_propagate_during_layout=*/true);
+  }
+}
+
 void TabStripView::SetCollapsedState(bool is_collapsed) {
   if (is_collapsed != is_collapsed_) {
     is_collapsed_ = is_collapsed;

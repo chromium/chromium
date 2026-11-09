@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
 #include "chrome/browser/ui/tabs/tab_group_features.h"
@@ -1414,12 +1415,16 @@ class HorizontalTabGroupViewBrowserTest : public InProcessBrowserTest {
     EXPECT_EQ(tab_strip_view()->GetUnpinnedTabsContainer()->width() -
                   group_view->bounds().right(),
               expected_padding);
+    const int expected_ntb_spacing =
+        expected_padding - TabStyle::Get()->GetBottomExtensionWidth() +
+        GetLayoutConstant(LayoutConstant::kTabStripPadding) +
+        GetLayoutConstant(LayoutConstant::kNewTabButtonLeadingMargin);
     EXPECT_EQ(BrowserElementsViews::From(browser())
                       ->GetViewAs<views::View>(kNewTabButtonElementId)
                       ->GetBoundsInScreen()
                       .x() -
                   group_view->group_header()->GetBoundsInScreen().right(),
-              expected_padding);
+              expected_ntb_spacing);
   }
 
  private:

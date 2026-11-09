@@ -118,10 +118,15 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
 
   const bool has_unpinned = unpinned_preferred_width > 0;
   const bool is_pinned_overflowing = pinned_width < pinned_preferred_width;
+  int pinned_trailing_overflow_padding = 0;
   if (is_pinned_overflowing) {
     const int leading_overlap = tab_strip_view->leading_overlap();
+    if (!has_unpinned) {
+      pinned_trailing_overflow_padding = tab_strip_view->trailing_overlap();
+    }
     if (!override_width.has_value()) {
-      pinned_width = std::max(pinned_width - leading_overlap, 0);
+      pinned_width = std::max(
+          pinned_width - leading_overlap - pinned_trailing_overflow_padding, 0);
     }
     x += leading_overlap;
   }
@@ -205,7 +210,7 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
             std::max(available_unpinned_width - leading_overlap, 0);
         x += leading_overlap;
       }
-      overflow_padding = GetLayoutConstant(LayoutConstant::kTabStripPadding);
+      overflow_padding = tab_strip_view->trailing_overlap();
       available_unpinned_width =
           std::max(available_unpinned_width - overflow_padding, 0);
     }
@@ -251,7 +256,8 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
   x += overflow_padding;
 
   int total_host_width =
-      has_unpinned ? std::max(pinned_bounds.right(), x) : pinned_bounds.right();
+      has_unpinned ? std::max(pinned_bounds.right(), x)
+                   : pinned_bounds.right() + pinned_trailing_overflow_padding;
 
   layouts.host_size = gfx::Size(total_host_width, container_height);
   return layouts;
