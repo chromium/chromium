@@ -1316,13 +1316,7 @@ TEST_F(MDnsTest, NsecConflictRemoval) {
   EXPECT_EQ(record1, record2);
 }
 
-// TODO(crbug.com/40807339): Flaky on fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_RefreshQuery DISABLED_RefreshQuery
-#else
-#define MAYBE_RefreshQuery RefreshQuery
-#endif
-TEST_F(MDnsTest, MAYBE_RefreshQuery) {
+TEST_F(MDnsTest, RefreshQuery) {
   StrictMock<MockListenerDelegate> delegate_privet;
   std::unique_ptr<MDnsListener> listener_privet = test_client_->CreateListener(
       dns_protocol::kTypeA, "_privet._tcp.local", &delegate_privet);
@@ -1344,12 +1338,7 @@ TEST_F(MDnsTest, MAYBE_RefreshQuery) {
   RunFor(base::Seconds(6));
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_RefreshQueryMaxTTL DISABLED_RefreshQueryMaxTTL
-#else
-#define MAYBE_RefreshQueryMaxTTL RefreshQueryMaxTTL
-#endif
-TEST_F(MDnsTest, MAYBE_RefreshQueryMaxTTL) {
+TEST_F(MDnsTest, RefreshQueryMaxTTL) {
   StrictMock<MockListenerDelegate> delegate_privet;
   std::unique_ptr<MDnsListener> listener_privet = test_client_->CreateListener(
       dns_protocol::kTypeA, "_privet._tcp.local", &delegate_privet);
