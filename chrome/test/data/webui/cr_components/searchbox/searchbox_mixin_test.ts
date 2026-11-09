@@ -1945,6 +1945,22 @@ suite('SearchboxMixinTest', () => {
         assertEquals('', mockInput.inputElement.value);
       });
 
+  test('input text appears on page call from browser', async () => {
+    const input = element.getInputElement();
+    assertEquals(input.inputElement.value, '');
+
+    let textUpdatedEventCount = 0;
+    input.addEventListener('searchbox-input-text-updated', () => {
+      textUpdatedEventCount++;
+    });
+
+    testProxy.callbackRouterRemote.setInputText('Hello');
+    await microtasksFinished();
+
+    assertEquals(input.inputElement.value, 'Hello');
+    assertEquals(0, textUpdatedEventCount);
+  });
+
   test('question mark keyword entry', async () => {
     testProxy.callbackRouterRemote.setAvailableKeywordModels(
         [{

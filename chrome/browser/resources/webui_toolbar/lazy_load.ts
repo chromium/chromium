@@ -21,7 +21,6 @@ import './overflow_button.js';
 import './performance_intervention_button.js';
 import './pinned_toolbar_actions.js';
 
-export {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 export {AnimationTracker} from '/shared/animation_tracker.js';
 export {FlatEdge} from '/shared/extensions_bar_data_model.mojom-webui.js';
 export type {ExtensionActionId, ExtensionActionInfo} from '/shared/extensions_bar_data_model.mojom-webui.js';

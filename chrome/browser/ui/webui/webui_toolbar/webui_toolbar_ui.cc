@@ -15,7 +15,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
-#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,15 +23,14 @@
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
-#include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
 #include "chrome/browser/ui/webui/theme_source.h"
@@ -58,8 +56,6 @@
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
-#include "components/contextual_search/contextual_search_service.h"
-#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -384,12 +380,6 @@ void WebUIToolbarUI::BindInterface(
   help_bubble_service_.Bind(std::move(receiver));
 }
 
-void WebUIToolbarUI::BindInterface(
-    mojo::PendingReceiver<searchbox::mojom::PageHandlerFactory> receiver) {
-  searchbox_page_factory_receiver_.reset();
-  searchbox_page_factory_receiver_.Bind(std::move(receiver));
-}
-
 void WebUIToolbarUI::OnToolbarStateChanged(
     const toolbar_ui_api::mojom::ToolbarState& state) {
   if (toolbar_ui_service_) {
@@ -446,20 +436,10 @@ void WebUIToolbarUI::Init(DependencyProvider* dependency_provider) {
   InitToolbarUIService(*dependency_provider);
 
   omnibox_controller_ = dependency_provider->GetOmniboxController();
-  // The omnibox controller must be ready before Init() whenever the WebUI
-  // location bar is enabled, otherwise the searchbox handler is never bound.
-  // TODO(crbug.com/563226016): Convert to CHECK once no dumps are reported.
-  DUMP_WILL_BE_CHECK(omnibox_controller_ ||
-                     !features::IsWebUILocationBarEnabled());
-  if (delayed_searchbox_receiver_.is_valid()) {
-    CreatePageHandler(std::move(delayed_searchbox_page_),
-                      std::move(delayed_searchbox_receiver_));
-  }
 }
 
 void WebUIToolbarUI::DependenciesDestroying() {
   omnibox_controller_ = nullptr;
-  omnibox_handler_.reset();
 }
 
 void WebUIToolbarUI::InitBrowserControlsService(
@@ -597,51 +577,10 @@ void WebUIToolbarUI::FinishCreateHelpBubbleHandler(
       std::move(tracked_element_handler));
 }
 
-void WebUIToolbarUI::CreatePageHandler(
-    mojo::PendingRemote<searchbox::mojom::Page> page,
-    mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
-  if (!is_initialized_) {
-    // Init() hasn't been called yet, save the params so it can call us again.
-    delayed_searchbox_page_ = std::move(page);
-    delayed_searchbox_receiver_ = std::move(receiver);
-    return;
-  }
-  if (!omnibox_controller_) {
-    return;
-  }
-
-  MetricsReporterService* metrics_reporter_service =
-      MetricsReporterService::GetFromWebContents(web_ui()->GetWebContents());
-  omnibox_handler_ = std::make_unique<WebuiOmniboxHandler>(
-      std::move(receiver), std::move(page),
-      metrics_reporter_service->metrics_reporter(), omnibox_controller_,
-      GetUserProfile(), web_ui()->GetWebContents(),
-      base::BindRepeating(&WebUIToolbarUI::GetOrCreateContextualSessionHandle,
-                          base::Unretained(this)));
-}
-
 Profile* WebUIToolbarUI::GetUserProfile() const {
   Profile* user_profile = webui::GetUserProfile(web_ui()->GetWebContents());
   CHECK(user_profile);
   return user_profile;
-}
-
-contextual_search::ContextualSearchSessionHandle*
-WebUIToolbarUI::GetOrCreateContextualSessionHandle() {
-  if (!session_handle_) {
-    Profile* profile = GetUserProfile();
-    auto* service = ContextualSearchServiceFactory::GetForProfile(profile);
-    if (service) {
-      // TODO(http://crbug.com/529689765): This is based on what webui_browser
-      // does, and that in turn has a bunch of TODOs on its own.
-      session_handle_ = service->CreateSession(
-          omnibox::CreateQueryControllerConfigParams(),
-          contextual_search::ContextualSearchSource::kOmnibox,
-          lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
-      session_handle_->CheckSearchContentSharingSettings(profile->GetPrefs());
-    }
-  }
-  return session_handle_.get();
 }
 
 // static

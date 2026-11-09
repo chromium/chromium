@@ -12,9 +12,8 @@ import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_repor
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {KeywordType, UrlDeemphasisMode} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {AutocompleteMatch, InputKeywordModel, PageCallbackRouter, UrlEmphasis} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, InputKeywordModel, UrlEmphasis} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
-import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
 import {getCss} from './searchbox_input.css.js';
 import {getHtml} from './searchbox_input.html.js';
@@ -121,8 +120,6 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   accessor urlEmphasisEnabled: boolean = false;
   accessor urlEmphasis: UrlEmphasis|null = null;
 
-  private callbackRouter_: PageCallbackRouter;
-  private inputTextChangedListenerId_: number|null = null;
   private lastInput_: Input = {text: '', inline: ''};
   // See `InputUpdate.additionalText`. Rendered by the #mirror.
   private additionalText_: string = '';
@@ -138,16 +135,8 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   // notification can tell whether it has been superseded.
   private selectionA11yLabelGeneration_: number = 0;
 
-  constructor() {
-    super();
-    this.callbackRouter_ = SearchboxBrowserProxy.getInstance().callbackRouter;
-  }
-
   override connectedCallback() {
     super.connectedCallback();
-    this.inputTextChangedListenerId_ =
-        this.callbackRouter_.setInputText.addListener(
-            this.onSetInputText_.bind(this));
     document.addEventListener(
         'selectionchange', this.onDocumentSelectionChangeBound_);
     this.setupResizeObserver_();
@@ -156,8 +145,6 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   override disconnectedCallback() {
     super.disconnectedCallback();
 
-    assert(this.inputTextChangedListenerId_);
-    this.callbackRouter_.removeListener(this.inputTextChangedListenerId_);
     document.removeEventListener(
         'selectionchange', this.onDocumentSelectionChangeBound_);
     if (this.resizeObserver_) {
@@ -256,7 +243,7 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
 
   setInputText(text: string) {
     markOnce('SearchboxInputElement::setInputText:StartupStart');
-    this.onSetInputText_(text);
+    this.updateInput_({text, inline: ''});
     if (markOnce('SearchboxInputElement::setInputText:StartupEnd')) {
       // Records a user timing mark after the initial startup input text has
       // been painted and presented to the display.
@@ -353,14 +340,6 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     const caretNotAtEnd =
         inputEl ? inputEl.selectionStart !== input.length : false;
     return this.isDeletingInput_ || this.pastedInInput_ || caretNotAtEnd;
-  }
-
-  //============================================================================
-  // Callbacks
-  //============================================================================
-
-  private onSetInputText_(inputText: string) {
-    this.updateInput_({text: inputText, inline: ''});
   }
 
   //============================================================================

@@ -105,7 +105,6 @@
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view_test_base.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
-#include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container.h"
@@ -2132,20 +2131,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecyclePrewarmedDeferredBrowserTest,
   ASSERT_TRUE(web_ui);
   EXPECT_FALSE(web_ui->is_initialized());
 
-  // Test for searchbox CreatePageHandler request happening before this
-  // navigation completes --- see crbug.com/559041124
-  MockSearchboxPage mock_page;
-  mojo::Receiver<searchbox::mojom::Page> page(&mock_page);
-  mojo::Remote<searchbox::mojom::PageHandler> page_handler;
-  web_ui->CreatePageHandler(page.BindNewPipeAndPassRemote(),
-                            page_handler.BindNewPipeAndPassReceiver());
-
   // Wait for the deferred navigation to complete.
   observer.Wait();
   EXPECT_TRUE(observer.last_navigation_succeeded());
-
-  EXPECT_TRUE(page.is_bound());
-  EXPECT_TRUE(page_handler.is_bound());
 
   widget->CloseNow();
 }

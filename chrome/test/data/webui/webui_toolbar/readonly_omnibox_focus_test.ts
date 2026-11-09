@@ -5,9 +5,7 @@
 import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {SearchboxBrowserProxy} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import type {ReadonlyOmniboxElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import {BrowserProxyImpl, EventDispositionFlag, OmniboxTextColor} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
@@ -50,7 +48,6 @@ suite('ReadOnlyOmniboxFocus', function() {
     const browserProxy = new TestToolbarBrowserProxy();
     uiHandler = browserProxy.toolbarUIHandler;
     BrowserProxyImpl.setInstance(browserProxy);
-    SearchboxBrowserProxy.setInstance(new TestSearchboxBrowserProxy());
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     omnibox = document.createElement('readonly-omnibox');

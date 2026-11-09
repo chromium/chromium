@@ -178,11 +178,16 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     private searchboxEventTracker_: EventTracker = new EventTracker();
     private callbackRouter_: PageCallbackRouter =
         SearchboxBrowserProxy.getInstance().callbackRouter;
+    private inputTextChangedListenerId_: number|null = null;
     private keywordSpaceTriggeringListenerId_: number|null = null;
     private availableKeywordModelsListenerId_: number|null = null;
 
     override connectedCallback() {
       super.connectedCallback();
+      this.inputTextChangedListenerId_ =
+          this.callbackRouter_.setInputText.addListener((text: string) => {
+            this.getInputElement().setInput({text, inline: ''});
+          });
 
       this.keywordSpaceTriggeringListenerId_ =
           this.callbackRouter_.setKeywordSpaceTriggeringEnabled.addListener(
@@ -236,6 +241,10 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     override disconnectedCallback() {
       super.disconnectedCallback();
       this.searchboxEventTracker_.removeAll();
+      if (this.inputTextChangedListenerId_ !== null) {
+        this.callbackRouter_.removeListener(this.inputTextChangedListenerId_);
+        this.inputTextChangedListenerId_ = null;
+      }
       if (this.keywordSpaceTriggeringListenerId_ !== null) {
         this.callbackRouter_.removeListener(
             this.keywordSpaceTriggeringListenerId_);
