@@ -446,8 +446,9 @@ TEST_F(TranslatePrefsTest, RemoveFromLanguageListRemovesRemainingUnsupported) {
   std::vector<std::string> languages;
   languages = {"en", "en-US", "en-FOO"};
   accept_languages_tester_->SetLanguagePrefs(languages);
-  accept_languages_tester_->ExpectAcceptLanguagePrefs("en,en-US,en-FOO");
+  accept_languages_tester_->ExpectSelectedLanguagePrefs("en,en-US,en-FOO");
   translate_prefs_->RemoveFromLanguageList(ParseTag("en-US"));
+  accept_languages_tester_->ExpectSelectedLanguagePrefs("en");
   accept_languages_tester_->ExpectAcceptLanguagePrefs("en");
   translate_prefs_->RemoveFromLanguageList(ParseTag("en"));
   accept_languages_tester_->ExpectAcceptLanguagePrefs("");

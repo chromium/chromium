@@ -35,7 +35,9 @@ class ReduceAcceptLanguageServiceTest : public testing::Test {
     service_tester_ = std::make_unique<ReduceAcceptLanguageServiceTester>(
         settings_map(), service(), prefs());
     language::LanguagePrefs(prefs()).SetUserSelectedLanguagesList(
-        {"en", "ja", "it"});
+        {base::i18n::GetKnownLanguageTag("en"),
+         base::i18n::GetKnownLanguageTag("ja"),
+         base::i18n::GetKnownLanguageTag("it")});
   }
 
   TestingProfile* profile() { return profile_.get(); }

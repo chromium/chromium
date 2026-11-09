@@ -15,6 +15,7 @@
 
 #include "base/feature_list.h"
 #include "base/i18n/language_tag.h"
+#include "base/i18n/language_tag_list_helper.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/tag_converters.h"
 #include "base/json/values_util.h"
@@ -362,12 +363,7 @@ void TranslatePrefs::AddToLanguageList(
   // Add the language to the list.
   if (!std::ranges::contains(languages, language_tag)) {
     user_selected_languages.push_back(language_tag);
-    std::vector<std::string> user_selected_language_codes;
-    user_selected_language_codes.reserve(user_selected_languages.size());
-    for (const auto& tag : user_selected_languages) {
-      user_selected_language_codes.push_back(std::string(tag.tag_string()));
-    }
-    language_prefs_->SetUserSelectedLanguagesList(user_selected_language_codes);
+    language_prefs_->SetUserSelectedLanguagesList(user_selected_languages);
   }
 }
 
@@ -382,12 +378,7 @@ void TranslatePrefs::RemoveFromLanguageList(
   const auto& it = std::ranges::find(user_selected_languages, language_tag);
   if (it != user_selected_languages.end()) {
     user_selected_languages.erase(it);
-    std::vector<std::string> user_selected_language_codes;
-    user_selected_language_codes.reserve(user_selected_languages.size());
-    for (const auto& tag : user_selected_languages) {
-      user_selected_language_codes.push_back(std::string(tag.tag_string()));
-    }
-    language_prefs_->SetUserSelectedLanguagesList(user_selected_language_codes);
+    language_prefs_->SetUserSelectedLanguagesList(user_selected_languages);
 
     // We should unblock the language if this was the last one from the same
     // language family.
@@ -413,21 +404,23 @@ void TranslatePrefs::RearrangeLanguage(
   // Negative offset is not supported.
   DCHECK(!(offset < 1 && (where == kUp || where == kDown)));
 
-  std::vector<std::string> languages;
-  for (const auto& tag : GetUserSelectedLanguageList()) {
-    languages.push_back(std::string(tag.tag_string()));
+  std::optional<LanguageTag> language_tag = GetLanguageTagFromString(language);
+  if (!language_tag) {
+    return;
   }
 
-  auto pos = std::ranges::find(languages, language);
+  std::vector<LanguageTag> languages = GetUserSelectedLanguageList();
+  auto pos = std::ranges::find(languages, *language_tag);
   if (pos == languages.end())
     return;
 
   // Sort the vector of enabled languages for fast lookup.
-  std::vector<std::string_view> enabled(enabled_languages.begin(),
-                                        enabled_languages.end());
+  std::vector<LanguageTag> enabled =
+      base::i18n::GetLanguageTagListFromStringList(enabled_languages);
   std::sort(enabled.begin(), enabled.end());
-  if (!std::binary_search(enabled.begin(), enabled.end(), language))
+  if (!std::binary_search(enabled.begin(), enabled.end(), *language_tag)) {
     return;
+  }
 
   switch (where) {
     case kTop:
@@ -488,7 +481,8 @@ void TranslatePrefs::RearrangeLanguage(
 
 void TranslatePrefs::SetLanguageOrder(
     const std::vector<std::string>& new_order) {
-  language_prefs_->SetUserSelectedLanguagesList(new_order);
+  language_prefs_->SetUserSelectedLanguagesList(
+      base::i18n::GetLanguageTagListFromStringList(new_order));
 }
 
 // static
@@ -828,32 +822,12 @@ void TranslatePrefs::SetAppLanguagePromptShown() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 std::vector<base::i18n::LanguageTag> TranslatePrefs::GetLanguageList() const {
-  std::vector<base::i18n::LanguageTag> languages;
-  std::vector<std::string> language_codes;
-  language_prefs_->GetAcceptLanguagesList(&language_codes);
-  languages.reserve(language_codes.size());
-  for (const auto& code : language_codes) {
-    if (std::optional<base::i18n::LanguageTag> parsed_tag =
-            GetLanguageTagFromString(code)) {
-      languages.push_back(*parsed_tag);
-    }
-  }
-  return languages;
+  return language_prefs_->GetAcceptLanguagesList();
 }
 
 std::vector<base::i18n::LanguageTag>
 TranslatePrefs::GetUserSelectedLanguageList() const {
-  std::vector<base::i18n::LanguageTag> languages;
-  std::vector<std::string> language_codes;
-  language_prefs_->GetUserSelectedLanguagesList(&language_codes);
-  languages.reserve(language_codes.size());
-  for (const auto& code : language_codes) {
-    if (std::optional<base::i18n::LanguageTag> parsed_tag =
-            GetLanguageTagFromString(code)) {
-      languages.push_back(*parsed_tag);
-    }
-  }
-  return languages;
+  return language_prefs_->GetUserSelectedLanguagesList();
 }
 
 bool TranslatePrefs::ShouldForceTriggerTranslateOnEnglishPages() {

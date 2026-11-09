@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "base/i18n/language_tag_list_helper.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/strcat.h"
@@ -184,7 +185,8 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
     std::unique_ptr<language::LanguagePrefs> language_prefs =
         std::make_unique<language::LanguagePrefs>(
             browser()->GetProfile()->GetPrefs());
-    language_prefs->SetUserSelectedLanguagesList(accept_languages);
+    language_prefs->SetUserSelectedLanguagesList(
+        base::i18n::GetLanguageTagListFromStringList(accept_languages));
   }
 
  private:

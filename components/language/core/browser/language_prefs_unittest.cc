@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/i18n/language_tag.h"
+#include "base/i18n/language_tag_list_helper.h"
 #include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -24,7 +25,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::ElementsAreArray;
+using ::base::i18n::GetKnownLanguageTag;
+using ::base::i18n::LanguageTag;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 
 namespace language {
 
@@ -58,22 +62,24 @@ TEST_F(LanguagePrefsTest, UpdateLanguageList) {
   language::test::LanguagePrefTester content_languages_tester =
       language::test::LanguagePrefTester(prefs_.get());
   // Empty update.
-  std::vector<std::string> languages;
+  std::vector<LanguageTag> languages;
   language_prefs_->SetUserSelectedLanguagesList(languages);
   content_languages_tester.ExpectAcceptLanguagePrefs("");
 
   // One language.
-  languages = {"en"};
+  languages = {GetKnownLanguageTag("en")};
   language_prefs_->SetUserSelectedLanguagesList(languages);
   content_languages_tester.ExpectAcceptLanguagePrefs("en");
 
   // More than one language.
-  languages = {"en", "ja", "it"};
+  languages = {GetKnownLanguageTag("en"), GetKnownLanguageTag("ja"),
+               GetKnownLanguageTag("it")};
   language_prefs_->SetUserSelectedLanguagesList(languages);
   content_languages_tester.ExpectAcceptLanguagePrefs("en,ja,it");
 
   // Locale-specific codes.
-  languages = {"en-US", "ja", "en-CA", "fr-CA"};
+  languages = {GetKnownLanguageTag("en-US"), GetKnownLanguageTag("ja"),
+               GetKnownLanguageTag("en-CA"), GetKnownLanguageTag("fr-CA")};
   language_prefs_->SetUserSelectedLanguagesList(languages);
   content_languages_tester.ExpectAcceptLanguagePrefs("en-US,ja,en-CA,fr-CA");
 }
@@ -86,12 +92,12 @@ TEST_F(LanguagePrefsTest, UpdateForcedLanguageList) {
   language::test::LanguagePrefTester content_languages_tester =
       language::test::LanguagePrefTester(prefs_.get());
   // Empty update.
-  std::vector<std::string> languages;
+  std::vector<LanguageTag> languages;
   language_prefs_->SetUserSelectedLanguagesList(languages);
   content_languages_tester.ExpectAcceptLanguagePrefs("");
 
   // Forced languages with no duplicates.
-  languages = {"fr"};
+  languages = {GetKnownLanguageTag("fr")};
   language_prefs_->SetUserSelectedLanguagesList(languages);
   content_languages_tester.SetForcedLanguagePrefs({"en", "it"});
   content_languages_tester.ExpectSelectedLanguagePrefs("fr");
@@ -99,7 +105,8 @@ TEST_F(LanguagePrefsTest, UpdateForcedLanguageList) {
   content_languages_tester.SetForcedLanguagePrefs({});  // Reset pref
 
   // Forced languages with some duplicates.
-  languages = {"en-US", "en", "fr", "fr-CA"};
+  languages = {GetKnownLanguageTag("en-US"), GetKnownLanguageTag("en"),
+               GetKnownLanguageTag("fr"), GetKnownLanguageTag("fr-CA")};
   language_prefs_->SetUserSelectedLanguagesList(languages);
   content_languages_tester.SetForcedLanguagePrefs({"en", "it"});
   content_languages_tester.ExpectSelectedLanguagePrefs("en-US,en,fr,fr-CA");
@@ -107,7 +114,8 @@ TEST_F(LanguagePrefsTest, UpdateForcedLanguageList) {
   content_languages_tester.SetForcedLanguagePrefs({});  // Reset pref
 
   // Forced languages with full duplicates.
-  languages = {"en", "es", "fr"};
+  languages = {GetKnownLanguageTag("en"), GetKnownLanguageTag("es"),
+               GetKnownLanguageTag("fr")};
   language_prefs_->SetUserSelectedLanguagesList(languages);
   content_languages_tester.SetForcedLanguagePrefs({"en", "es", "fr"});
   content_languages_tester.ExpectSelectedLanguagePrefs("en,es,fr");
@@ -115,7 +123,7 @@ TEST_F(LanguagePrefsTest, UpdateForcedLanguageList) {
   content_languages_tester.SetForcedLanguagePrefs({});  // Reset pref
 
   // Add then remove forced languages with no duplicates.
-  languages = {"en", "fr"};
+  languages = {GetKnownLanguageTag("en"), GetKnownLanguageTag("fr")};
   language_prefs_->SetUserSelectedLanguagesList(languages);
   content_languages_tester.SetForcedLanguagePrefs({"it"});
   content_languages_tester.ExpectSelectedLanguagePrefs("en,fr");
@@ -126,7 +134,7 @@ TEST_F(LanguagePrefsTest, UpdateForcedLanguageList) {
   content_languages_tester.ExpectAcceptLanguagePrefs("en,fr");
 
   // Add then remove forced languages with some duplicates.
-  languages = {"en", "fr"};
+  languages = {GetKnownLanguageTag("en"), GetKnownLanguageTag("fr")};
   language_prefs_->SetUserSelectedLanguagesList(languages);
   content_languages_tester.SetForcedLanguagePrefs({"en", "it"});
   content_languages_tester.ExpectSelectedLanguagePrefs("en,fr");
@@ -137,7 +145,7 @@ TEST_F(LanguagePrefsTest, UpdateForcedLanguageList) {
   content_languages_tester.ExpectAcceptLanguagePrefs("en,fr");
 
   // Add then remove forced languages with full duplicates.
-  languages = {"en", "fr"};
+  languages = {GetKnownLanguageTag("en"), GetKnownLanguageTag("fr")};
   language_prefs_->SetUserSelectedLanguagesList(languages);
   content_languages_tester.SetForcedLanguagePrefs({"en", "fr"});
   content_languages_tester.ExpectSelectedLanguagePrefs("en,fr");
@@ -149,11 +157,80 @@ TEST_F(LanguagePrefsTest, UpdateForcedLanguageList) {
 #endif
 }
 
+TEST_F(LanguagePrefsTest, GetUserSelectedLanguagesList) {
+  language_prefs_->SetUserSelectedLanguagesList({});
+  EXPECT_THAT(language_prefs_->GetUserSelectedLanguagesList(), IsEmpty());
+
+  language_prefs_->SetUserSelectedLanguagesList(
+      {GetKnownLanguageTag("en-US"), GetKnownLanguageTag("ja")});
+  EXPECT_THAT(
+      language_prefs_->GetUserSelectedLanguagesList(),
+      ElementsAre(GetKnownLanguageTag("en-US"), GetKnownLanguageTag("ja")));
+
+  // Invalid languages are skipped, and the other ones are canonicalized.
+  prefs_->SetString(language::prefs::kSelectedLanguages,
+                    "EN-us, ,invalid---tag,iw");
+  EXPECT_THAT(
+      language_prefs_->GetUserSelectedLanguagesList(),
+      ElementsAre(GetKnownLanguageTag("en-US"), GetKnownLanguageTag("he")));
+}
+
+TEST_F(LanguagePrefsTest, GetAcceptLanguagesList) {
+  language_prefs_->SetUserSelectedLanguagesList(
+      {GetKnownLanguageTag("en-US"), GetKnownLanguageTag("ja")});
+  EXPECT_THAT(
+      language_prefs_->GetAcceptLanguagesList(),
+      ElementsAre(GetKnownLanguageTag("en-US"), GetKnownLanguageTag("ja")));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Policy-forced languages come first.
+  language::test::LanguagePrefTester(prefs_.get())
+      .SetForcedLanguagePrefs({"fr", "ja"});
+  EXPECT_THAT(language_prefs_->GetAcceptLanguagesList(),
+              ElementsAre(GetKnownLanguageTag("fr"), GetKnownLanguageTag("ja"),
+                          GetKnownLanguageTag("en-US")));
+#endif
+}
+
+TEST_F(LanguagePrefsTest, SetUserSelectedLanguagesListDropsNonAcceptLanguages) {
+  language::test::LanguagePrefTester content_languages_tester =
+      language::test::LanguagePrefTester(prefs_.get());
+  // "aa" (Afar) can't be an accept language.
+  language_prefs_->SetUserSelectedLanguagesList(
+      base::i18n::GetLanguageTagListFromString("en,aa,fr"));
+  content_languages_tester.ExpectSelectedLanguagePrefs("en,fr");
+  content_languages_tester.ExpectAcceptLanguagePrefs("en,fr");
+}
+
+TEST_F(LanguagePrefsTest, AcceptLanguagesPrefOnlyContainsValidLanguages) {
+  // Invalid languages are dropped, and the other ones are canonicalized.
+  prefs_->SetString(language::prefs::kSelectedLanguages,
+                    "EN-us, ,invalid---tag,iw");
+  EXPECT_EQ(prefs_->GetString(language::prefs::kAcceptLanguages), "en-US,he");
+
+  // Forced languages are deduplicated after being canonicalized.
+  language::test::LanguagePrefTester(prefs_.get())
+      .SetForcedLanguagePrefs({"en_us", "it", "EN-US", "invalid---tag"});
+  EXPECT_EQ(prefs_->GetString(language::prefs::kAcceptLanguages),
+            "en-US,it,he");
+}
+
+TEST_F(LanguagePrefsTest, IsForcedLanguage) {
+  language::test::LanguagePrefTester(prefs_.get())
+      .SetForcedLanguagePrefs({"en_US", "fr"});
+  EXPECT_TRUE(language_prefs_->IsForcedLanguage(GetKnownLanguageTag("en-US")));
+  EXPECT_TRUE(language_prefs_->IsForcedLanguage(GetKnownLanguageTag("fr")));
+  EXPECT_FALSE(language_prefs_->IsForcedLanguage(GetKnownLanguageTag("en")));
+  EXPECT_FALSE(language_prefs_->IsForcedLanguage(GetKnownLanguageTag("ja")));
+}
+
 TEST_F(LanguagePrefsTest, ResetLanguagePrefs) {
   language::test::LanguagePrefTester content_languages_tester =
       language::test::LanguagePrefTester(prefs_.get());
 
-  language_prefs_->SetUserSelectedLanguagesList({"en", "es", "fr"});
+  language_prefs_->SetUserSelectedLanguagesList({GetKnownLanguageTag("en"),
+                                                 GetKnownLanguageTag("es"),
+                                                 GetKnownLanguageTag("fr")});
   content_languages_tester.ExpectSelectedLanguagePrefs("en,es,fr");
   content_languages_tester.ExpectAcceptLanguagePrefs("en,es,fr");
 #if BUILDFLAG(IS_ANDROID)
@@ -161,12 +238,13 @@ TEST_F(LanguagePrefsTest, ResetLanguagePrefs) {
                                     base::i18n::GetKnownLanguageTag("es"),
                                     base::i18n::GetKnownLanguageTag("fr")});
   EXPECT_THAT(language_prefs_->GetULPLanguages(),
-              testing::ElementsAre("en", "es", "fr"));
+              ElementsAre(GetKnownLanguageTag("en"), GetKnownLanguageTag("es"),
+                          GetKnownLanguageTag("fr")));
 #endif
 
   ResetLanguagePrefs(prefs_.get());
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_THAT(language_prefs_->GetULPLanguages(), testing::IsEmpty());
+  EXPECT_THAT(language_prefs_->GetULPLanguages(), IsEmpty());
 #endif
   content_languages_tester.ExpectSelectedLanguagePrefs("");
   // Accept languages pref is reset to the default value, not cleared.
@@ -184,25 +262,27 @@ TEST_F(LanguagePrefsTest, ResetLanguagePrefs) {
 TEST_F(LanguagePrefsTest, ULPLanguagesPref) {
 #if BUILDFLAG(IS_ANDROID)
   // ULPLanguagesPref is initially empty.
-  EXPECT_THAT(language_prefs_->GetULPLanguages(), testing::IsEmpty());
+  EXPECT_THAT(language_prefs_->GetULPLanguages(), IsEmpty());
 
   // Set ULP Language Preference.
   language_prefs_->SetULPLanguages({base::i18n::GetKnownLanguageTag("en"),
                                     base::i18n::GetKnownLanguageTag("es"),
                                     base::i18n::GetKnownLanguageTag("fr")});
   EXPECT_THAT(language_prefs_->GetULPLanguages(),
-              testing::ElementsAre("en", "es", "fr"));
+              ElementsAre(GetKnownLanguageTag("en"), GetKnownLanguageTag("es"),
+                          GetKnownLanguageTag("fr")));
 
   // Setting ULP languages to a new list clears the old list.
   language_prefs_->SetULPLanguages({base::i18n::GetKnownLanguageTag("de"),
                                     base::i18n::GetKnownLanguageTag("pt"),
                                     base::i18n::GetKnownLanguageTag("zh")});
   EXPECT_THAT(language_prefs_->GetULPLanguages(),
-              testing::ElementsAre("de", "pt", "zh"));
+              ElementsAre(GetKnownLanguageTag("de"), GetKnownLanguageTag("pt"),
+                          GetKnownLanguageTag("zh")));
 
   // Setting ULP languages to a an empty list clears it.
   language_prefs_->SetULPLanguages({});
-  EXPECT_THAT(language_prefs_->GetULPLanguages(), testing::IsEmpty());
+  EXPECT_THAT(language_prefs_->GetULPLanguages(), IsEmpty());
 #endif
 }
 TEST_F(LanguagePrefsTest, GetIncognitoLanguageListTest) {

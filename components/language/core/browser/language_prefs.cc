@@ -10,7 +10,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/extend.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/language_tag_list_helper.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -29,6 +33,23 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace language {
+
+using ::base::i18n::GetLanguageTagListFromString;
+using ::base::i18n::GetLanguageTagListFromStringList;
+using ::base::i18n::LanguageTag;
+using ::base::i18n::LanguageTagListToString;
+
+namespace {
+
+// Returns the strings stored in the list pref `pref_name`.
+std::vector<std::string> GetListPrefStrings(const PrefService& prefs,
+                                            std::string_view pref_name) {
+  return base::ToVector(prefs.GetList(pref_name), [](const base::Value& value) {
+    return value.GetString();
+  });
+}
+
+}  // namespace
 
 void LanguagePrefs::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -71,69 +92,55 @@ LanguagePrefs::~LanguagePrefs() {
   pref_change_registrar_.RemoveAll();
 }
 
-void LanguagePrefs::GetAcceptLanguagesList(
-    std::vector<std::string>* languages) const {
-  DCHECK(languages);
-  DCHECK(languages->empty());
+std::vector<LanguageTag> LanguagePrefs::GetAcceptLanguagesList() const {
 #if BUILDFLAG(IS_CHROMEOS)
   const std::string& key = language::prefs::kPreferredLanguages;
 #else
   const std::string& key = language::prefs::kAcceptLanguages;
 #endif
 
-  *languages = base::SplitString(prefs_->GetString(key), ",",
-                                 base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  return GetLanguageTagListFromString(prefs_->GetString(key));
 }
 
-void LanguagePrefs::GetUserSelectedLanguagesList(
-    std::vector<std::string>* languages) const {
-  DCHECK(languages);
-  DCHECK(languages->empty());
-  const std::string& key = language::prefs::kSelectedLanguages;
-  *languages = base::SplitString(prefs_->GetString(key), ",",
-                                 base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+std::vector<LanguageTag> LanguagePrefs::GetUserSelectedLanguagesList() const {
+  return GetLanguageTagListFromString(
+      prefs_->GetString(language::prefs::kSelectedLanguages));
 }
 
 void LanguagePrefs::SetUserSelectedLanguagesList(
-    const std::vector<std::string>& languages) {
-  std::vector<std::string> filtered_languages =
-      l10n_util::KeepAcceptedLanguages(languages);
-  std::string languages_str = base::JoinString(filtered_languages, ",");
+    base::span<const LanguageTag> languages) {
+  std::string languages_str =
+      LanguageTagListToString(l10n_util::KeepAcceptedLanguages(languages));
   prefs_->SetString(language::prefs::kSelectedLanguages, languages_str);
 #if BUILDFLAG(IS_CHROMEOS)
   prefs_->SetString(language::prefs::kPreferredLanguages, languages_str);
 #endif
 }
 
-void LanguagePrefs::GetDeduplicatedUserLanguages(
-    std::string* deduplicated_languages_string) {
-  std::vector<std::string> deduplicated_languages;
+std::vector<LanguageTag> LanguagePrefs::GetDeduplicatedUserLanguages() {
   forced_languages_set_.clear();
 
-  // Add policy languages.
-  for (const auto& language :
-       prefs_->GetList(language::prefs::kForcedLanguages)) {
-    if (forced_languages_set_.find(language.GetString()) ==
-        forced_languages_set_.end()) {
-      deduplicated_languages.emplace_back(language.GetString());
-      forced_languages_set_.insert(language.GetString());
-    }
-  }
+  // Add policy languages, skipping duplicates.
+  std::vector<LanguageTag> deduplicated_languages =
+      GetLanguageTagListFromStringList(
+          GetListPrefStrings(*prefs_, language::prefs::kForcedLanguages),
+          [this](const LanguageTag& language) {
+            return forced_languages_set_.insert(language).second;
+          });
 
   // Add non-duplicate user-selected languages.
-  for (auto& language :
-       base::SplitString(prefs_->GetString(language::prefs::kSelectedLanguages),
-                         ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-    if (forced_languages_set_.find(language) == forced_languages_set_.end())
-      deduplicated_languages.emplace_back(std::move(language));
-  }
-  *deduplicated_languages_string =
-      base::JoinString(deduplicated_languages, ",");
+  base::Extend(deduplicated_languages,
+               GetLanguageTagListFromString(
+                   prefs_->GetString(language::prefs::kSelectedLanguages),
+                   [this](const LanguageTag& language) {
+                     return !forced_languages_set_.contains(language);
+                   }));
+  return deduplicated_languages;
 }
 
 void LanguagePrefs::UpdateAcceptLanguagesPref() {
-  std::string deduplicated_languages_string;
-  GetDeduplicatedUserLanguages(&deduplicated_languages_string);
+  std::string deduplicated_languages_string =
+      LanguageTagListToString(GetDeduplicatedUserLanguages());
   if (deduplicated_languages_string !=
       prefs_->GetString(language::prefs::kAcceptLanguages))
     prefs_->SetString(language::prefs::kAcceptLanguages,
@@ -141,12 +148,9 @@ void LanguagePrefs::UpdateAcceptLanguagesPref() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-std::vector<std::string> LanguagePrefs::GetULPLanguages() {
-  std::vector<std::string> ulp_languages;
-  for (const auto& language : prefs_->GetList(language::prefs::kULPLanguages)) {
-    ulp_languages.push_back(language.GetString());
-  }
-  return ulp_languages;
+std::vector<LanguageTag> LanguagePrefs::GetULPLanguages() const {
+  return GetLanguageTagListFromStringList(
+      GetListPrefStrings(*prefs_, language::prefs::kULPLanguages));
 }
 
 void LanguagePrefs::SetULPLanguages(
@@ -160,8 +164,8 @@ void LanguagePrefs::SetULPLanguages(
 }
 #endif
 
-bool LanguagePrefs::IsForcedLanguage(std::string_view language) {
-  return forced_languages_set_.find(language) != forced_languages_set_.end();
+bool LanguagePrefs::IsForcedLanguage(const LanguageTag& language) const {
+  return forced_languages_set_.contains(language);
 }
 
 void LanguagePrefs::InitializeSelectedLanguagesPref() {

@@ -591,11 +591,14 @@ bool IsAcceptLanguageDisplayable(std::string_view display_locale,
          l10n_util::IsLocaleNameTranslated(locale, display_locale);
 }
 
-std::vector<std::string> KeepAcceptedLanguages(
-    base::span<const std::string> languages) {
-  std::vector<std::string> filtered_languages;
-  std::ranges::copy_if(languages, std::back_inserter(filtered_languages),
-                       IsPossibleAcceptLanguage);
+std::vector<LanguageTag> KeepAcceptedLanguages(
+    base::span<const LanguageTag> languages) {
+  std::vector<LanguageTag> filtered_languages;
+  std::ranges::copy_if(
+      languages, std::back_inserter(filtered_languages),
+      [](const LanguageTag& language) {
+        return GetAcceptLanguageMatcher().Match(language).has_value();
+      });
   return filtered_languages;
 }
 

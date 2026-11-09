@@ -5,6 +5,7 @@
 #include "chrome/browser/language/android/language_bridge.h"
 
 #include "base/android/jni_string.h"
+#include "base/containers/to_vector.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
@@ -39,7 +40,11 @@ std::vector<base::i18n::LanguageTag> LanguageBridge::GetULPLanguagesFromDevice(
 static std::vector<std::string> JNI_LanguageBridge_GetULPFromPreference(
     JNIEnv* env,
     Profile* profile) {
-  return language::LanguagePrefs(profile->GetPrefs()).GetULPLanguages();
+  return base::ToVector(
+      language::LanguagePrefs(profile->GetPrefs()).GetULPLanguages(),
+      [](const base::i18n::LanguageTag& tag) {
+        return std::string(tag.tag_string());
+      });
 }
 
 DEFINE_JNI(LanguageBridge)

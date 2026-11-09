@@ -8,6 +8,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag_list_helper.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/no_destructor.h"
@@ -157,7 +158,8 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
       const std::vector<std::string>& accept_languages) {
     auto language_prefs = std::make_unique<language::LanguagePrefs>(
         browser()->GetProfile()->GetPrefs());
-    language_prefs->SetUserSelectedLanguagesList(accept_languages);
+    language_prefs->SetUserSelectedLanguagesList(
+        base::i18n::GetLanguageTagListFromStringList(accept_languages));
   }
 
  protected:

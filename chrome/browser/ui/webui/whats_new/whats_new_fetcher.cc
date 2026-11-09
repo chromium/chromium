@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -164,11 +165,11 @@ class WhatsNewFetcher {
     // Accept-Language header.
     if (auto* profile = browser->GetProfile()) {
       if (auto* prefs = profile->GetPrefs()) {
-        std::vector<std::string> languages;
-        language::LanguagePrefs(prefs).GetAcceptLanguagesList(&languages);
+        std::vector<base::i18n::LanguageTag> languages =
+            language::LanguagePrefs(prefs).GetAcceptLanguagesList();
         if (!languages.empty()) {
           request->headers.SetHeader(request->headers.kAcceptLanguage,
-                                     languages.front());
+                                     languages.front().tag_string());
         }
       }
     }

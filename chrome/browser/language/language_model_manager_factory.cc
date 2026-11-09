@@ -31,6 +31,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/to_vector.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
 #include "chrome/browser/language/android/language_bridge.h"
@@ -61,9 +62,11 @@ void RecordULPInitMetrics(
       ULPMetricsLogger::DetermineLanguageStatus(target_language,
                                                 ulp_languages));
 
-  std::vector<std::string> accept_languages;
-  language::LanguagePrefs(pref_service)
-      .GetAcceptLanguagesList(&accept_languages);
+  const std::vector<std::string> accept_languages = base::ToVector(
+      language::LanguagePrefs(pref_service).GetAcceptLanguagesList(),
+      [](const base::i18n::LanguageTag& tag) {
+        return std::string(tag.tag_string());
+      });
 
   language::ULPLanguageStatus accept_language_status =
       language::ULPLanguageStatus::kLanguageEmpty;

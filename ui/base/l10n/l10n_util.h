@@ -271,8 +271,8 @@ bool IsAcceptLanguageDisplayable(std::string_view display_locale,
 // Filters the input vector of languages. Returns only those in the
 // `kAcceptLanguageList`.
 COMPONENT_EXPORT(UI_BASE)
-std::vector<std::string> KeepAcceptedLanguages(
-    base::span<const std::string> languages);
+std::vector<base::i18n::LanguageTag> KeepAcceptedLanguages(
+    base::span<const base::i18n::LanguageTag> languages);
 
 // Returns the preferred size of the contents view of a window based on
 // designer given constraints which might dependent on the language used.

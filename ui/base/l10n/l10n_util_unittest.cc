@@ -20,6 +20,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/icubridge/supported_locales.h"
 #include "base/i18n/language_tag.h"
+#include "base/i18n/language_tag_list_helper.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/tag_converters.h"
 #include "base/i18n/test/scoped_icu_locale.h"
@@ -785,20 +786,27 @@ TEST_F(L10nUtilTest, IsAcceptLanguageDisplayable) {
 
 TEST_F(L10nUtilTest, KeepAcceptedLanguages) {
   // All valid languages.
-  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({"en", "es", "fr"}),
-            std::vector<std::string>({"en", "es", "fr"}));
-  // iw now matches he.
-  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({"en", "es", "iw"}),
-            std::vector<std::string>({"en", "es", "iw"}));
+  EXPECT_THAT(l10n_util::KeepAcceptedLanguages(
+                  base::i18n::GetLanguageTagListFromString("en,es,fr")),
+              ElementsAre(GetKnownLanguageTag("en"), GetKnownLanguageTag("es"),
+                          GetKnownLanguageTag("fr")));
+  // iw is parsed as he.
+  EXPECT_THAT(l10n_util::KeepAcceptedLanguages(
+                  base::i18n::GetLanguageTagListFromString("en,es,iw")),
+              ElementsAre(GetKnownLanguageTag("en"), GetKnownLanguageTag("es"),
+                          GetKnownLanguageTag("he")));
   // All invalid languages except iw.
-  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({"iw", "ch_ZN"}),
-            std::vector<std::string>({"iw"}));
+  EXPECT_THAT(l10n_util::KeepAcceptedLanguages(
+                  base::i18n::GetLanguageTagListFromString("iw,ch_ZN")),
+              ElementsAre(GetKnownLanguageTag("he")));
   // Empty input.
-  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({}), std::vector<std::string>{});
+  EXPECT_THAT(l10n_util::KeepAcceptedLanguages({}), testing::IsEmpty());
   // Maintain languages order.
-  EXPECT_EQ(
-      l10n_util::KeepAcceptedLanguages({"en", "aa", "es", "iw", "fr", "xx"}),
-      std::vector<std::string>({"en", "es", "iw", "fr"}));
+  EXPECT_THAT(
+      l10n_util::KeepAcceptedLanguages(
+          base::i18n::GetLanguageTagListFromString("en,aa,es,iw,fr,xx")),
+      ElementsAre(GetKnownLanguageTag("en"), GetKnownLanguageTag("es"),
+                  GetKnownLanguageTag("he"), GetKnownLanguageTag("fr")));
 }
 
 TEST_F(L10nUtilTest, FormatStringComputeCorrectOffsetInRTL) {
