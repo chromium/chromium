@@ -86,7 +86,8 @@ TEST_F(TransportServiceImplTest, RecorderStartsRecordingWhenSessionIsCreated) {
   EXPECT_EQ(recorder_factory->GetActiveRecordersCountForTesting(), 0u);
 
   // Creating the session is enough; no payload has been dispatched yet.
-  ASSERT_NE(service->CreateSession("s1"), nullptr);
+  ASSERT_NE(service->CreateSession("s1", InitIngressSource::kUnspecified),
+            nullptr);
   EXPECT_EQ(recorder_factory->GetActiveRecordersCountForTesting(), 1u);
 
   // The recorder is not a handler factory, so it does not take part in
@@ -139,7 +140,8 @@ TEST_F(
       service->GetStreamRecorderFactory();
   ASSERT_NE(recorder_factory, nullptr);
 
-  ASSERT_NE(service->CreateSession("s1"), nullptr);
+  ASSERT_NE(service->CreateSession("s1", InitIngressSource::kUnspecified),
+            nullptr);
   EXPECT_EQ(recorder_factory->GetActiveRecordersCountForTesting(), 1u);
 
   ControlCommand command;
@@ -167,7 +169,8 @@ TEST_F(TransportServiceImplTest,
   std::unique_ptr<TransportServiceImpl> service =
       CreateService(/*record_sessions=*/true);
 
-  TransportSession* session = service->CreateSession("session-before-signout");
+  TransportSession* session = service->CreateSession(
+      "session-before-signout", InitIngressSource::kUnspecified);
   ASSERT_NE(session, nullptr);
   SessionStreamRecorderFactory* recorder_factory =
       service->GetStreamRecorderFactory();
@@ -203,7 +206,8 @@ TEST_F(TransportServiceImplTest,
   std::unique_ptr<TransportServiceImpl> service =
       CreateService(/*record_sessions=*/true);
 
-  TransportSession* session = service->CreateSession("session-first-account");
+  TransportSession* session = service->CreateSession(
+      "session-first-account", InitIngressSource::kUnspecified);
   ASSERT_NE(session, nullptr);
   SessionStreamRecorderFactory* recorder_factory =
       service->GetStreamRecorderFactory();
@@ -234,9 +238,13 @@ TEST_F(TransportServiceImplTest, ShutdownTearsDownChannelBeforeDestruction) {
       service->GetStreamRecorderFactory();
   ASSERT_NE(recorder_factory, nullptr);
 
-  ASSERT_NE(service->CreateSession("session-closed"), nullptr);
+  ASSERT_NE(
+      service->CreateSession("session-closed", InitIngressSource::kUnspecified),
+      nullptr);
   service->GetChannel()->GetSessionRegistry()->DestroySession("session-closed");
-  ASSERT_NE(service->CreateSession("session-active"), nullptr);
+  ASSERT_NE(
+      service->CreateSession("session-active", InitIngressSource::kUnspecified),
+      nullptr);
   ASSERT_EQ(recorder_factory->GetActiveRecordersCountForTesting(), 1u);
 
   service->Shutdown();

@@ -63,6 +63,11 @@ inline void RecordDownstreamPayloadDropped(DownstreamPayloadDropReason reason) {
       "Browser.Actuator.Transport.Downstream.PayloadDropped", reason);
 }
 
+inline void RecordInitIngressSource(InitIngressSource ingress_source) {
+  base::UmaHistogramEnumeration("Browser.Actuator.Transport.InitIngressSource",
+                                ingress_source);
+}
+
 // Tracks and records telemetry metrics for an in-flight upstream request.
 class UpstreamRequestLog {
  public:

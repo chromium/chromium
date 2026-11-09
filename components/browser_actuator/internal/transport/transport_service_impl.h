@@ -65,7 +65,8 @@ class TransportServiceImpl : public TransportService,
 
   // TransportService:
   TransportChannel* GetChannel() override;
-  TransportSession* CreateSession(std::string_view session_id) override;
+  TransportSession* CreateSession(std::string_view session_id,
+                                  InitIngressSource ingress_source) override;
   TransportSession* GetSession(std::string_view session_id) override;
   SessionStreamRecorderFactory* GetStreamRecorderFactory() override;
 

@@ -42,6 +42,20 @@ enum class SendUpstreamMessageError {
   kChannelDisconnected,
 };
 
+// Identifies the downstream ingress channel that initialized a transport
+// session.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(InitIngressSource)
+enum class InitIngressSource {
+  kUnspecified = 0,
+  kFcmPush = 1,
+  kWatchSessionsStream = 2,
+  kLocalChromeIngest = 3,
+  kMaxValue = kLocalChromeIngest,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:BrowserActuatorSessionInitIngressSource)
+
 }  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_PUBLIC_TRANSPORT_COMMON_H_

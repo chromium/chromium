@@ -85,7 +85,9 @@ void BrowserActuatorMessageHandler::OnMessage(
         // bundled initial payloads a second time.
         browser_actuator::transport::TransportSession* session =
             IsStartSessionCommand(*payload_type, payload_bytes)
-                ? transport_service_->CreateSession(session_id)
+                ? transport_service_->CreateSession(
+                      session_id,
+                      browser_actuator::transport::InitIngressSource::kFcmPush)
                 : transport_service_->GetSession(session_id);
         if (!session) {
           break;

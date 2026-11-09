@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
@@ -104,7 +105,7 @@ TEST_F(BrowserActuatorMessageHandlerTest,
       message.mutable_actuator_downstream_message();
   bundled->set_session_id("bundled_session_123");
 
-  EXPECT_CALL(*mock_service_, CreateSession(testing::_)).Times(0);
+  EXPECT_CALL(*mock_service_, CreateSession(testing::_, testing::_)).Times(0);
   EXPECT_CALL(*mock_service_, GetSession(testing::_)).Times(0);
 
   base::test::TestFuture<
@@ -132,7 +133,10 @@ TEST_F(BrowserActuatorMessageHandlerTest,
   typed_payload->mutable_proto_payload()->set_value(serialized_command);
 
   MockTransportSession mock_session;
-  EXPECT_CALL(*mock_service_, CreateSession("bundled_session_123"))
+  EXPECT_CALL(
+      *mock_service_,
+      CreateSession("bundled_session_123",
+                    browser_actuator::transport::InitIngressSource::kFcmPush))
       .WillOnce(testing::Return(
           static_cast<browser_actuator::transport::TransportSession*>(
               &mock_session)));
@@ -168,7 +172,7 @@ TEST_F(BrowserActuatorMessageHandlerTest,
   typed_payload->mutable_proto_payload()->set_value(serialized_triggering);
 
   MockTransportSession mock_session;
-  EXPECT_CALL(*mock_service_, CreateSession(testing::_)).Times(0);
+  EXPECT_CALL(*mock_service_, CreateSession(testing::_, testing::_)).Times(0);
   EXPECT_CALL(*mock_service_, GetSession("bundled_session_123"))
       .WillOnce(testing::Return(
           static_cast<browser_actuator::transport::TransportSession*>(
@@ -232,7 +236,10 @@ TEST_F(BrowserActuatorMessageHandlerTest,
   // The second payload is a StartSession command; if it fails to create a
   // session (or if a subsequent non-StartSession payload looks up the destroyed
   // session), the loop stops without dispatching to the destroyed session.
-  EXPECT_CALL(*mock_service_, CreateSession("bundled_session_123"))
+  EXPECT_CALL(
+      *mock_service_,
+      CreateSession("bundled_session_123",
+                    browser_actuator::transport::InitIngressSource::kFcmPush))
       .WillOnce(testing::Return(nullptr));
 
   base::test::TestFuture<
@@ -268,7 +275,10 @@ TEST_F(BrowserActuatorMessageHandlerTest,
   MockTransportSession mock_session;
   auto* session = static_cast<browser_actuator::transport::TransportSession*>(
       &mock_session);
-  EXPECT_CALL(*mock_service_, CreateSession("bundled_session_123"))
+  EXPECT_CALL(
+      *mock_service_,
+      CreateSession("bundled_session_123",
+                    browser_actuator::transport::InitIngressSource::kFcmPush))
       .WillOnce(testing::Return(session));
   // First payload (`StartSession`) calls `CreateSession()`; the remaining two
   // payloads call `GetSession()`.
@@ -319,7 +329,7 @@ TEST_F(BrowserActuatorMessageHandlerTest,
   MockTransportSession mock_session;
   auto* session = static_cast<browser_actuator::transport::TransportSession*>(
       &mock_session);
-  EXPECT_CALL(*mock_service_, CreateSession(testing::_)).Times(0);
+  EXPECT_CALL(*mock_service_, CreateSession(testing::_, testing::_)).Times(0);
   EXPECT_CALL(*mock_service_, GetSession("bundled_session_123"))
       .Times(1)
       .WillRepeatedly(testing::Return(session));
@@ -442,6 +452,7 @@ class BrowserActuatorFcmIntegrationTest : public testing::Test {
 
 TEST_F(BrowserActuatorFcmIntegrationTest,
        FcmStartSessionStartsChannelAndSendsStartSessionAck) {
+  base::HistogramTester histogram_tester;
   browser_actuator::transport::FakeProtoStreamServer stream_server(
       &test_url_loader_factory_, browser_actuator::GetWatchSessionsEndPoint());
 
@@ -486,6 +497,9 @@ TEST_F(BrowserActuatorFcmIntegrationTest,
   ASSERT_TRUE(ack_cmd.ParseFromString(
       upstream_msg.typed_payloads(0).proto_payload().value()));
   EXPECT_TRUE(ack_cmd.has_start_session_ack());
+  histogram_tester.ExpectUniqueSample(
+      "Browser.Actuator.Transport.InitIngressSource",
+      browser_actuator::transport::InitIngressSource::kFcmPush, 1);
 
   browser_actuator::transport::TransportService* service =
       browser_actuator::transport::TransportServiceFactory::GetForProfile(

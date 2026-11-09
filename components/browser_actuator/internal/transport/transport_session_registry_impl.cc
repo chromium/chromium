@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/browser_actuator/internal/transport/features.h"
+#include "components/browser_actuator/internal/transport/metrics_utils.h"
 #include "components/browser_actuator/internal/transport/transport_session_impl.h"
 
 namespace browser_actuator::transport {
@@ -123,7 +124,8 @@ void TransportSessionRegistryImpl::EvictIdleSessions() {
 }
 
 TransportSessionImpl* TransportSessionRegistryImpl::CreateSession(
-    std::string_view session_id) {
+    std::string_view session_id,
+    InitIngressSource ingress_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (session_id.empty() || session_id.size() > kMaxSessionIdLength) {
     DLOG(WARNING) << "Rejecting CreateSession with invalid session_id length ("
@@ -150,6 +152,7 @@ TransportSessionImpl* TransportSessionRegistryImpl::CreateSession(
                   << ") reached. Rejecting new session.";
     return nullptr;
   }
+  RecordInitIngressSource(ingress_source);
   std::unique_ptr<TransportSessionImpl> session =
       std::make_unique<TransportSessionImpl>(session_id, channel_,
                                              on_downstream_message_);

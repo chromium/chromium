@@ -53,7 +53,9 @@ class TransportSessionRegistryImpl : public TransportSessionRegistry {
   TransportSession* GetSession(std::string_view session_id) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  TransportSessionImpl* CreateSession(std::string_view session_id) override;
+  TransportSessionImpl* CreateSession(
+      std::string_view session_id,
+      InitIngressSource ingress_source) override;
   void DestroySession(std::string_view session_id) override;
 
   // Concrete methods for session lookup and management.

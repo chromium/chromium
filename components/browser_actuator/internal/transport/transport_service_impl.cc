@@ -231,11 +231,13 @@ SessionStreamRecorderFactory* TransportServiceImpl::GetStreamRecorderFactory() {
 }
 
 TransportSession* TransportServiceImpl::CreateSession(
-    std::string_view session_id) {
+    std::string_view session_id,
+    InitIngressSource ingress_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TransportChannel* channel = GetChannel();
   if (channel && channel->GetSessionRegistry()) {
-    return channel->GetSessionRegistry()->CreateSession(session_id);
+    return channel->GetSessionRegistry()->CreateSession(session_id,
+                                                        ingress_source);
   }
   return nullptr;
 }

@@ -174,7 +174,9 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
             browser_actuator::transport::FactoryId::kActuation);
 
   browser_actuator::transport::TransportSession* session =
-      transport_service->CreateSession("enabled_session_1");
+      transport_service->CreateSession(
+          "enabled_session_1",
+          browser_actuator::transport::InitIngressSource::kUnspecified);
   ASSERT_TRUE(session);
   proto::ServerToBrowserPayload downstream;
   downstream.set_task_id("server-task-enabled");

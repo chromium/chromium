@@ -32,6 +32,7 @@
 #include "components/browser_actuator/internal/transport/transport_session_impl.h"
 #include "components/browser_actuator/internal/transport/transport_session_registry_impl.h"
 #include "components/browser_actuator/internal/transport/upstream_message_client/upstream_message_client.h"
+#include "components/browser_actuator/public/transport/common.h"
 #include "components/browser_actuator/public/transport/payload_type_mapping.h"
 #include "components/browser_actuator/public/transport/transport_handler.h"
 #include "components/browser_actuator/public/transport/transport_handler_factory.h"
@@ -232,8 +233,10 @@ class TransportChannelImplTestWithMockTime
 };
 
 TEST_F(TransportChannelImplTest, RecordsPerSessionResumePositions) {
-  GetSessionRegistryImpl()->CreateSession("s1");
-  GetSessionRegistryImpl()->CreateSession("s2");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  GetSessionRegistryImpl()->CreateSession("s2",
+                                          InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
   fake_client_->Dispatch(SerializedDownstream("s1", 2));
   fake_client_->Dispatch(SerializedDownstream("s2", 1));
@@ -254,7 +257,8 @@ TEST_F(TransportChannelImplTest, RecordsPerSessionResumePositions) {
 }
 
 TEST_F(TransportChannelImplTest, AdvanceIsMonotonicAndIgnoresNonPositive) {
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 0));  // Initial FCM wake.
   WatchSessionsRequest body = ResumeBody();
   ASSERT_EQ(body.sessions_size(), 1);
@@ -284,7 +288,8 @@ TEST_F(TransportChannelImplTest, AdvanceIsMonotonicAndIgnoresNonPositive) {
 
 TEST_F(TransportChannelImplTest,
        SessionWithoutResumePositionIsIncludedInWatchRequest) {
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
 
   const WatchSessionsRequest body = ResumeBody();
   ASSERT_EQ(body.sessions_size(), 1);
@@ -295,7 +300,8 @@ TEST_F(TransportChannelImplTest,
 TEST_F(TransportChannelImplTest, ConnectsWhenNewSessionRegisteredAndConnected) {
   fake_client_->set_connected(true);
 
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
 
   EXPECT_EQ(fake_client_->disconnect_count(), 1);
   EXPECT_EQ(fake_client_->connect_count(), 1);
@@ -304,9 +310,11 @@ TEST_F(TransportChannelImplTest, ConnectsWhenNewSessionRegisteredAndConnected) {
 TEST_F(TransportChannelImplTest,
        DoesNotReconnectWhenExistingSessionRegistered) {
   fake_client_->set_connected(true);
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
 
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
 
   EXPECT_EQ(fake_client_->disconnect_count(), 1);
   EXPECT_EQ(fake_client_->connect_count(), 1);
@@ -316,7 +324,8 @@ TEST_F(TransportChannelImplTest,
        ConnectsWhenNewSessionRegisteredAndDisconnected) {
   fake_client_->set_connected(false);
 
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
 
   EXPECT_EQ(fake_client_->disconnect_count(), 0);
   EXPECT_EQ(fake_client_->connect_count(), 1);
@@ -369,7 +378,8 @@ TEST_F(TransportChannelImplTest, RoutesPayloadTypeToHandler) {
           }));
   channel_->GetHandlerFactoryRegistry()->RegisterFactory(&factory);
 
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstreamMessage(
       "s1", 1,
       {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
@@ -394,7 +404,8 @@ TEST_F(TransportChannelImplTest, RoutesExperimentalTriggeringToHandler) {
           }));
   channel_->GetHandlerFactoryRegistry()->RegisterFactory(&factory);
 
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstreamMessage(
       "s1", 1,
       {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING,
@@ -409,7 +420,7 @@ TEST_F(TransportChannelImplTest, SessionDestructionMidLoop) {
   TransportSessionRegistryImpl* registry =
       static_cast<TransportSessionRegistryImpl*>(
           channel_->GetSessionRegistry());
-  registry->CreateSession("s1");
+  registry->CreateSession("s1", InitIngressSource::kUnspecified);
 
   ControlCommand command;
 
@@ -450,7 +461,8 @@ TEST_F(TransportChannelImplTest, ControlCommandCloseSessionDestroysSession) {
   TransportSessionRegistryImpl* registry =
       static_cast<TransportSessionRegistryImpl*>(
           channel_->GetSessionRegistry());
-  ASSERT_NE(registry->CreateSession("s1"), nullptr);
+  ASSERT_NE(registry->CreateSession("s1", InitIngressSource::kUnspecified),
+            nullptr);
 
   ControlCommand command;
   command.mutable_close_session();
@@ -466,7 +478,8 @@ TEST_F(TransportChannelImplTest, ControlCommandCloseSessionDestroysSession) {
 }
 
 TEST_F(TransportChannelImplTest, ControlCommandCloseChannelDisconnectsStream) {
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
   EXPECT_FALSE(fake_client_->disconnected_called());
 
   ControlCommand command;
@@ -485,7 +498,7 @@ TEST_F(TransportChannelImplTest, PassesSequenceNumberToSession) {
   TransportSessionRegistryImpl* registry =
       static_cast<TransportSessionRegistryImpl*>(
           channel_->GetSessionRegistry());
-  registry->CreateSession("s1");
+  registry->CreateSession("s1", InitIngressSource::kUnspecified);
 
   fake_client_->Dispatch(SerializedDownstreamMessage(
       "s1", 1,
@@ -517,7 +530,8 @@ TEST_F(TransportChannelImplTest, UnknownPayloadTypesAreIgnored) {
   ActuatorDownstreamPayloadType unknown_type =
       static_cast<ActuatorDownstreamPayloadType>(999);
 
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
   fake_client_->Dispatch(
       SerializedDownstreamMessage("s1", 1, {{unknown_type, "some_data"}}));
 
@@ -570,7 +584,8 @@ TEST_F(TransportChannelImplTest,
             DownstreamConnectionState::kDisconnected);
 }
 TEST_F(TransportChannelImplTest, SendUpstreamMessage) {
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
 
   ControlCommand command;
@@ -621,7 +636,8 @@ TEST_F(TransportChannelImplTest,
   // Even after the session has seen downstream sequence_number = 1, an
   // unsolicited upstream message (`responding_to_sequence_number = nullopt`)
   // must not implicitly populate `responding_to_sequence_number`.
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
 
   ControlCommand command;
@@ -649,7 +665,8 @@ TEST_F(TransportChannelImplTest,
 }
 
 TEST_F(TransportChannelImplTest, SendMultipleUpstreamMessagesConcurrently) {
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
   fake_client_->Dispatch(SerializedDownstream("s1", 5));
 
@@ -704,8 +721,10 @@ TEST_F(TransportChannelImplTest, SendMultipleUpstreamMessagesConcurrently) {
 }
 
 TEST_F(TransportChannelImplTest, SendUpstreamMessagesAcrossMultipleSessions) {
-  GetSessionRegistryImpl()->CreateSession("s1");
-  GetSessionRegistryImpl()->CreateSession("s2");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  GetSessionRegistryImpl()->CreateSession("s2",
+                                          InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
   fake_client_->Dispatch(SerializedDownstream("s2", 1));
   fake_client_->Dispatch(SerializedDownstream("s2", 2));
@@ -757,7 +776,8 @@ TEST_F(TransportChannelImplTest, SendUpstreamMessagesAcrossMultipleSessions) {
 
 TEST_F(TransportChannelImplTest,
        StartSessionDownstreamTriggersStartSessionAckUpstream) {
-  GetSessionRegistryImpl()->CreateSession("session_start_test");
+  GetSessionRegistryImpl()->CreateSession("session_start_test",
+                                          InitIngressSource::kUnspecified);
   WatchSessionsResponse response;
   ActuatorDownstreamMessage* downstream =
       response.mutable_actuator_downstream_message();
@@ -807,7 +827,8 @@ TEST_F(TransportChannelImplTest,
 
 TEST_F(TransportChannelImplTest,
        StartSessionWakeWithZeroSequenceNumberSendsSingleStartSessionAck) {
-  GetSessionRegistryImpl()->CreateSession("session_wake_test");
+  GetSessionRegistryImpl()->CreateSession("session_wake_test",
+                                          InitIngressSource::kUnspecified);
   WatchSessionsResponse response;
   ActuatorDownstreamMessage* downstream =
       response.mutable_actuator_downstream_message();
@@ -858,7 +879,8 @@ TEST_F(TransportChannelImplTest,
 }
 
 TEST_F(TransportChannelImplTestWithMockTime, SendUpstreamMessageHTTPError) {
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
   ControlCommand command;
   command.mutable_close_channel();
@@ -908,7 +930,8 @@ TEST_F(TransportChannelImplTest,
       observation(&observer);
   observation.Observe(channel_.get());
 
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
 
   WatchSessionsResponse response;
   ASSERT_TRUE(response.ParseFromString(SerializedDownstream("s1", 1)));
@@ -936,7 +959,8 @@ TEST_F(TransportChannelImplTest,
       observation(&observer);
   observation.Observe(channel_.get());
 
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
 
   ControlCommand command;
@@ -980,7 +1004,8 @@ TEST_F(TransportChannelImplTest, AddAndRemoveMessageObserver) {
   observation1.Observe(channel_.get());
   observation2.Observe(channel_.get());
 
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
 
   ControlCommand command;
@@ -1023,7 +1048,8 @@ TEST_F(TransportChannelImplTest,
 
   // Create the session (triggering initial connect) and dispatch sequence 1 to
   // advance `last_seen_sequence_number` to 1.
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
   EXPECT_EQ(fake_client_->connect_count(), 1);
   EXPECT_EQ(fake_client_->disconnect_count(), 0);
@@ -1091,7 +1117,7 @@ TEST_F(TransportChannelImplTest,
   observation.Observe(channel_.get());
 
   TransportSessionRegistryImpl* registry = GetSessionRegistryImpl();
-  registry->CreateSession("s1");
+  registry->CreateSession("s1", InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
   ASSERT_NE(registry->GetSession("s1"), nullptr);
 
@@ -1171,7 +1197,7 @@ TEST_F(TransportChannelImplTest,
           channel_->GetSessionRegistry());
 
   // Establish session "s1" at sequence 1.
-  registry->CreateSession("s1");
+  registry->CreateSession("s1", InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
   ASSERT_NE(registry->GetSession("s1"), nullptr);
 
@@ -1241,7 +1267,8 @@ TEST_F(TransportChannelImplTest,
       FactoryId::kExperimentalTriggering);
   channel_->GetHandlerFactoryRegistry()->RegisterFactory(&factory);
 
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstreamMessage(
       "s1", 1,
       {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING,
@@ -1262,7 +1289,8 @@ TEST_F(TransportChannelImplTest,
       observation(&observer);
   observation.Observe(channel_.get());
 
-  GetSessionRegistryImpl()->CreateSession("s1");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
   EXPECT_EQ(fake_client_->connect_count(), 1);
   EXPECT_EQ(fake_client_->disconnect_count(), 0);
@@ -1307,8 +1335,10 @@ TEST_F(TransportChannelImplTest,
 
 TEST_F(TransportChannelImplTest,
        SessionRemovalReconnectsStreamWhenOtherSessionsRemainActive) {
-  GetSessionRegistryImpl()->CreateSession("s1");
-  GetSessionRegistryImpl()->CreateSession("s2");
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  GetSessionRegistryImpl()->CreateSession("s2",
+                                          InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
   fake_client_->Dispatch(SerializedDownstream("s2", 1));
   EXPECT_EQ(fake_client_->connect_count(), 2);

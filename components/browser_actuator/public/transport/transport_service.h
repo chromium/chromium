@@ -7,6 +7,7 @@
 
 #include <string_view>
 
+#include "components/browser_actuator/public/transport/common.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace browser_actuator::transport {
@@ -38,7 +39,8 @@ class TransportService : public KeyedService {
 
   // Creates a new session for `session_id`. Returns nullptr if there is no
   // channel, the session already exists, or the session cannot be created.
-  virtual TransportSession* CreateSession(std::string_view session_id) = 0;
+  virtual TransportSession* CreateSession(std::string_view session_id,
+                                          InitIngressSource ingress_source) = 0;
 
   // Returns the session for `session_id`, or nullptr if there is none.
   virtual TransportSession* GetSession(std::string_view session_id) = 0;

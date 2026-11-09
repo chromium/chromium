@@ -27,6 +27,7 @@
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/transport_handler_factory_registry_impl.h"
 #include "components/browser_actuator/internal/transport/transport_session_registry_impl.h"
+#include "components/browser_actuator/public/transport/common.h"
 #include "components/browser_actuator/public/transport/payload_type_mapping.h"
 #include "components/browser_actuator/test_support/transport/mock_transport_channel.h"
 #include "components/browser_actuator/test_support/transport/mock_transport_handler.h"
@@ -1627,7 +1628,8 @@ TEST(TransportSessionImplTest, CloseSendsCloseSessionAndDestroysSession) {
   EXPECT_CALL(channel, GetSessionRegistry())
       .WillRepeatedly(testing::Return(&session_registry));
 
-  TransportSession* session = session_registry.CreateSession("s1");
+  TransportSession* session =
+      session_registry.CreateSession("s1", InitIngressSource::kUnspecified);
   ASSERT_NE(session, nullptr);
   EXPECT_NE(session_registry.GetSession("s1"), nullptr);
 
