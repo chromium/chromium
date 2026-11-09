@@ -12,6 +12,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/extension_interaction_provider.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
@@ -49,6 +50,27 @@ ServiceWorkerData::~ServiceWorkerData() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
+void ServiceWorkerData::Detach() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // Close all the Mojo endpoints (dropping pending responses), as destroying
+  // the object would. Clearing `proxy_` makes sure the remotes can't be
+  // rebound afterwards (the getters CHECK it).
+  proxy_ = nullptr;
+  queued_events_.clear();
+  renderer_host_.reset();
+  service_worker_host_.reset();
+  event_dispatcher_receiver_.reset();
+  event_router_remote_.reset();
+  renderer_automation_registry_remote_.reset();
+  web_request_host_.reset();
+  receiver_.reset();
+  // The bindings system isn't destroyed yet either, so do the same for the
+  // message ports it owns.
+  bindings_system_->messaging_service()->ResetWorkerPorts();
+  // Cancels pending `FlushQueuedEvents()` tasks and `OnServiceWorkerRequest()`.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 void ServiceWorkerData::OnServiceWorkerRequest(
     mojo::PendingAssociatedReceiver<mojom::ServiceWorker> receiver) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -80,6 +102,7 @@ void ServiceWorkerData::UpdatePermissions(PermissionSet active_permissions,
 mojom::ServiceWorkerHost* ServiceWorkerData::GetServiceWorkerHost() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(bindings_system_);
+  CHECK(proxy_);  // Not detached.
   if (!service_worker_host_.is_bound()) {
     proxy_->GetRemoteAssociatedInterface(
         service_worker_host_.BindNewEndpointAndPassReceiver());
@@ -90,6 +113,7 @@ mojom::ServiceWorkerHost* ServiceWorkerData::GetServiceWorkerHost() {
 mojom::EventRouter* ServiceWorkerData::GetEventRouter() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(bindings_system_);
+  CHECK(proxy_);  // Not detached.
   if (!event_router_remote_.is_bound()) {
     proxy_->GetRemoteAssociatedInterface(
         event_router_remote_.BindNewEndpointAndPassReceiver());
@@ -100,6 +124,7 @@ mojom::EventRouter* ServiceWorkerData::GetEventRouter() {
 mojom::RendererAutomationRegistry* ServiceWorkerData::GetAutomationRegistry() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(bindings_system_);
+  CHECK(proxy_);  // Not detached.
   if (!renderer_automation_registry_remote_.is_bound()) {
     proxy_->GetRemoteAssociatedInterface(
         renderer_automation_registry_remote_.BindNewEndpointAndPassReceiver());
@@ -110,6 +135,7 @@ mojom::RendererAutomationRegistry* ServiceWorkerData::GetAutomationRegistry() {
 mojom::RendererHost* ServiceWorkerData::GetRendererHost() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // We allow access to mojom::RendererHost without a `bindings_system_`.
+  CHECK(proxy_);  // Not detached.
   if (!renderer_host_.is_bound()) {
     proxy_->GetRemoteAssociatedInterface(
         renderer_host_.BindNewEndpointAndPassReceiver());
@@ -120,6 +146,7 @@ mojom::RendererHost* ServiceWorkerData::GetRendererHost() {
 mojom::WebRequestHost* ServiceWorkerData::GetWebRequestHost() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(bindings_system_);
+  CHECK(proxy_);  // Not detached.
   if (!web_request_host_.is_bound()) {
     proxy_->GetRemoteAssociatedInterface(
         web_request_host_.BindNewEndpointAndPassReceiver());
@@ -203,6 +230,10 @@ void ServiceWorkerData::DispatchEventToListeners(
 
   bindings_system()->DispatchEventInContext(params.event_name, event_args,
                                             params.filtering_info, context());
+  // Listeners can trigger worker teardown inside a nested run loop.
+  if (!script_context->is_valid()) {
+    return;
+  }
   // The worker has a single context, so one dispatch notifies every listener.
   bindings_system()->DidDispatchEvent(*params.host_id, params.event_name,
                                       event_args);

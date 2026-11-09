@@ -29,6 +29,7 @@
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace extensions {
 
@@ -947,6 +948,57 @@ TEST_F(NativeRendererMessagingServiceTest, DestroyContext) {
       FunctionFromString(context, kGetOnMessage);
   RunFunctionAndExpectError(get_on_message, context, std::size(args), args,
                             "Uncaught Error: Extension context invalidated.");
+}
+
+// Tests that resetting the worker ports resets their Mojo endpoints, as
+// destroying the messaging service would. This happens when the worker context
+// is destroyed, before the messaging service itself.
+TEST_F(NativeRendererMessagingServiceTest, ResetWorkerPorts) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  base::UnguessableToken other_context_id = base::UnguessableToken::Create();
+  const PortId port_id(other_context_id, 0, false,
+                       mojom::SerializationFormat::kJson);
+
+  MockMessagePortHost mock_message_port_host;
+  mojo::PendingAssociatedRemote<mojom::MessagePort> message_port_remote;
+  mojo::PendingAssociatedReceiver<mojom::MessagePortHost>
+      message_port_host_receiver;
+  GinPort* port = messaging_service()->CreatePortForTesting(
+      script_context(), "channel", mojom::ChannelType::kSendMessage, port_id,
+      message_port_remote, message_port_host_receiver);
+  message_port_remote.EnableUnassociatedUsage();
+  message_port_host_receiver.EnableUnassociatedUsage();
+  mock_message_port_host.BindReceiver(std::move(message_port_host_receiver));
+  mojo::AssociatedRemote<mojom::MessagePort> message_port(
+      std::move(message_port_remote));
+  EXPECT_TRUE(messaging_service()->GetMessagePortHostIfExists(script_context(),
+                                                              port_id));
+
+  // Both endpoints of the port should be reset.
+  base::RunLoop message_port_disconnected;
+  message_port.set_disconnect_handler(message_port_disconnected.QuitClosure());
+  base::RunLoop message_port_host_disconnected;
+  mock_message_port_host.set_disconnect_handler(
+      message_port_host_disconnected.QuitClosure());
+  messaging_service()->ResetWorkerPorts();
+  message_port_disconnected.Run();
+  message_port_host_disconnected.Run();
+  EXPECT_FALSE(messaging_service()->GetMessagePortHostIfExists(script_context(),
+                                                               port_id));
+
+  // Using the port from script should not crash.
+  v8::Local<v8::Object> port_object =
+      port->GetWrapper(isolate()).ToLocalChecked();
+  const char kUsePort[] =
+      "(function(port) {\n"
+      "  port.postMessage({data: 'hello'});\n"
+      "  port.disconnect();\n"
+      "})";
+  v8::Local<v8::Value> args[] = {port_object};
+  RunFunctionOnGlobal(FunctionFromString(context, kUsePort), context,
+                      std::size(args), args);
 }
 
 // Tests that a disconnected port doesn't crash when the messaging service is

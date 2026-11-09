@@ -4,11 +4,14 @@
 
 #include "extensions/renderer/worker_thread_dispatcher.h"
 
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
@@ -34,6 +37,12 @@ namespace extensions {
 namespace {
 
 constinit thread_local extensions::ServiceWorkerData* service_worker_data =
+    nullptr;
+
+// ServiceWorkerData removed by `RemoveWorkerData()`, to be destroyed when the
+// worker thread stops.
+using ServiceWorkerDataList = std::vector<std::unique_ptr<ServiceWorkerData>>;
+constinit thread_local ServiceWorkerDataList* removed_service_worker_data =
     nullptr;
 
 ServiceWorkerData* GetServiceWorkerDataChecked() {
@@ -69,7 +78,8 @@ V8SchemaRegistry* WorkerThreadDispatcher::GetV8SchemaRegistry() {
 
 // static
 ScriptContext* WorkerThreadDispatcher::GetScriptContext() {
-  return GetServiceWorkerDataChecked()->context();
+  ServiceWorkerData* data = GetServiceWorkerData();
+  return data ? data->context() : nullptr;
 }
 
 // static
@@ -133,7 +143,18 @@ void WorkerThreadDispatcher::RemoveWorkerData(
   if (service_worker_data) {
     DCHECK_EQ(service_worker_version_id,
               service_worker_data->service_worker_version_id());
-    delete service_worker_data;
+    // Blink can tear down the worker context inside a nested run loop (e.g. a
+    // DevTools pause) and then let the script resume. Defer destruction until
+    // the thread stops so C++ frames still on the stack (in `bindings_system_`
+    // or on `ServiceWorkerData` itself, such as `DispatchEvent()`) are not left
+    // with dangling pointers.
+    service_worker_data->Detach();
+    if (!removed_service_worker_data) {
+      removed_service_worker_data = new ServiceWorkerDataList();
+      content::WorkerThread::AddObserver(this);
+    }
+    removed_service_worker_data->push_back(
+        base::WrapUnique(service_worker_data));
     service_worker_data = nullptr;
   }
 
@@ -142,6 +163,12 @@ void WorkerThreadDispatcher::RemoveWorkerData(
     base::AutoLock lock(task_runner_map_lock_);
     task_runner_map_.erase(worker_thread_id);
   }
+}
+
+void WorkerThreadDispatcher::WillStopCurrentWorkerThread() {
+  content::WorkerThread::RemoveObserver(this);
+  delete removed_service_worker_data;
+  removed_service_worker_data = nullptr;
 }
 
 ScriptContextSetIterable* WorkerThreadDispatcher::GetScriptContextSet() {

@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <utility>
 
 #include "base/command_line.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,8 +21,11 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "extensions/browser/api/file_system/file_system_api.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/browsertest_util.h"
@@ -42,6 +47,8 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace extensions {
 
@@ -104,6 +111,18 @@ bool ObjectIsDefined(content::WebContents* web_contents,
                                             object_name.c_str()))
       .ExtractBool();
 }
+
+// A DevTools protocol client that can attach to any agent host, such as a
+// service worker's.
+class AgentHostDevToolsClient : public content::TestDevToolsProtocolClient {
+ public:
+  ~AgentHostDevToolsClient() override { DetachProtocolClient(); }
+
+  bool AttachToAgentHost(scoped_refptr<content::DevToolsAgentHost> host) {
+    agent_host_ = std::move(host);
+    return agent_host_->AttachClient(this);
+  }
+};
 
 }  // namespace
 
@@ -1435,6 +1454,90 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest,
         "firstListener");
     EXPECT_TRUE(response_listener.WaitUntilSatisfied());
   }
+}
+
+// Tests that stopping a service worker while it is paused in the debugger
+// inside an event listener doesn't crash once the listener returns. Blink tears
+// down the worker context inside the debugger's nested run loop, and then lets
+// the listener return to the bindings code that dispatched the event. This is a
+// regression test for `crbug.com/575315639` when run on AddressSanitizer
+// builders.
+IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest,
+                       StopServiceWorkerPausedInEventListener) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Stop paused service worker",
+           "version": "0.1",
+           "manifest_version": 3,
+           "background": {"service_worker": "background.js"}
+         })";
+
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.tabs.onCreated.addListener(() => {
+           debugger;
+         });
+         chrome.test.sendMessage('ready');)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), "<!DOCTYPE html>");
+
+  ExtensionTestMessageListener ready_listener("ready");
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  // Open an extension page, which keeps the worker's process alive after the
+  // worker stops. Otherwise the process is shut down, and a crash in it goes
+  // unnoticed.
+  content::RenderFrameHost* page = ui_test_utils::NavigateToURLWithDisposition(
+      browser(), extension->GetResourceURL("page.html"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(page);
+
+  // Attach a DevTools client to the worker and enable the debugger, so that the
+  // `debugger` statement pauses.
+  scoped_refptr<content::DevToolsAgentHost> worker_host;
+  for (const scoped_refptr<content::DevToolsAgentHost>& host :
+       content::DevToolsAgentHost::GetOrCreateAll()) {
+    if (host->GetType() == content::DevToolsAgentHost::kTypeServiceWorker &&
+        host->GetURL() == extension->GetResourceURL("background.js")) {
+      worker_host = host;
+    }
+  }
+  ASSERT_TRUE(worker_host);
+  ASSERT_EQ(page->GetProcess(), worker_host->GetProcessHost());
+  AgentHostDevToolsClient devtools_client;
+  ASSERT_TRUE(devtools_client.AttachToAgentHost(worker_host));
+  devtools_client.SendCommandSync("Debugger.enable");
+
+  // Open a tab to dispatch `tabs.onCreated`, and wait for the listener to
+  // pause.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  devtools_client.WaitForNotification("Debugger.paused",
+                                      /*allow_existing=*/true);
+
+  // Stop the worker while it's paused. Its context is torn down inside the
+  // debugger's nested run loop, and then the listener returns.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+  devtools_client.DetachProtocolClient();
+
+  // The renderer shouldn't have crashed.
+  EXPECT_EQ(2, content::EvalJs(page, "1 + 1"));
+
+  // The worker can be restarted with another event.
+  ready_listener.Reset();
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
 }
 
 }  // namespace extensions

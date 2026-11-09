@@ -6,7 +6,9 @@
 #define EXTENSIONS_RENDERER_API_MESSAGING_MOCK_MESSAGE_PORT_HOST_H_
 
 #include <optional>
+#include <utility>
 
+#include "base/functional/callback.h"
 #include "extensions/common/mojom/message_port.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -27,6 +29,10 @@ class MockMessagePortHost : public mojom::MessagePortHost {
 
   void BindReceiver(
       mojo::PendingAssociatedReceiver<mojom::MessagePortHost> receiver);
+
+  void set_disconnect_handler(base::OnceClosure handler) {
+    receiver_.set_disconnect_handler(std::move(handler));
+  }
 
  private:
   mojo::AssociatedReceiver<mojom::MessagePortHost> receiver_{this};

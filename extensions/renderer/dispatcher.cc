@@ -791,9 +791,9 @@ void Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread(
           service_worker_scope, service_worker_version_id, thread_id,
           service_worker_token);
     }
-    // Note: we have to remove the context (and thus perform invalidation on
-    // the native handlers) prior to removing the worker data, which destroys
-    // the associated bindings system.
+    // Note: Invalidate the context (and its native handlers) before detaching
+    // the worker data. Both stay alive until the worker thread stops; see
+    // `WorkerThreadDispatcher::RemoveWorkerData()`.
     g_worker_script_context_set.Get().Remove(v8_context, script_url);
     WorkerThreadDispatcher::Get()->RemoveWorkerData(service_worker_version_id);
 

@@ -50,8 +50,8 @@ class V8SchemaRegistry;
 // 2) A thread-safe version of IPC::Sender, so we can safely send IPC from
 // worker thread (this TODO formerly referred to content::ThreadSafeSender
 // which no longer exists).
-class WorkerThreadDispatcher :
-    public NativeExtensionBindingsSystem::Delegate {
+class WorkerThreadDispatcher : public NativeExtensionBindingsSystem::Delegate,
+                               public content::WorkerThread::Observer {
  public:
   WorkerThreadDispatcher();
 
@@ -64,6 +64,8 @@ class WorkerThreadDispatcher :
   static WorkerThreadDispatcher* Get();
   static NativeExtensionBindingsSystem* GetBindingsSystem();
   static V8SchemaRegistry* GetV8SchemaRegistry();
+  // Returns the ScriptContext of the current worker thread, or nullptr if
+  // there is none (e.g. if the worker context is being destroyed).
   static ScriptContext* GetScriptContext();
   static ServiceWorkerData* GetServiceWorkerData();
 
@@ -76,6 +78,9 @@ class WorkerThreadDispatcher :
       const blink::ServiceWorkerToken& service_worker_token,
       ScriptContext* script_context,
       std::unique_ptr<NativeExtensionBindingsSystem> bindings_system);
+  // Detaches the current worker thread's ServiceWorkerData and clears
+  // `GetServiceWorkerData()`, deferring destruction until the thread stops in
+  // case C++ frames using it are still on the stack.
   void RemoveWorkerData(int64_t service_worker_version_id);
 
   // Updates bindings of all Service Workers for `extension_id`, after extension
@@ -94,6 +99,9 @@ class WorkerThreadDispatcher :
  private:
   static void UpdateBindingsOnWorkerThread(
       const std::optional<ExtensionId>& extension_id);
+
+  // content::WorkerThread::Observer:
+  void WillStopCurrentWorkerThread() override;
 
   // Helper method to update bindings. If `extension_id` is non-null, updates
   // only bindings for that extension; otherwise, updates all bindings.

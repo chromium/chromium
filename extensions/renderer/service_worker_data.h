@@ -56,6 +56,12 @@ class ServiceWorkerData
   // progress.
   bool MarkListenerRegistrationComplete();
 
+  // Called when the worker context is being destroyed. Stops dispatching
+  // incoming IPCs and pending tasks to this object, closes all its Mojo
+  // endpoints, and drops any queued events. The object itself may be
+  // destroyed later, see `WorkerThreadDispatcher::RemoveWorkerData()`.
+  void Detach();
+
   V8SchemaRegistry* v8_schema_registry() { return v8_schema_registry_.get(); }
   NativeExtensionBindingsSystem* bindings_system() {
     return bindings_system_.get();
@@ -134,6 +140,8 @@ class ServiceWorkerData
 
   std::unique_ptr<V8SchemaRegistry> v8_schema_registry_;
   std::unique_ptr<NativeExtensionBindingsSystem> bindings_system_;
+
+  // The Mojo endpoints. `Detach()` must reset all of them.
   mojo::AssociatedRemote<mojom::RendererHost> renderer_host_;
   mojo::AssociatedRemote<mojom::ServiceWorkerHost> service_worker_host_;
   mojo::AssociatedReceiver<mojom::EventDispatcher> event_dispatcher_receiver_{

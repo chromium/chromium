@@ -942,6 +942,12 @@ void NativeRendererMessagingService::InvalidatePorts(ScriptContext* context) {
   }
 }
 
+void NativeRendererMessagingService::ResetWorkerPorts() {
+  // Replacing `default_scope_` closes its ports' Mojo endpoints while keeping a
+  // non-null scope for `GetMessagePortScope()` callers.
+  default_scope_ = std::make_unique<MessagePortScope>(AsSafeRef());
+}
+
 base::SafeRef<NativeRendererMessagingService>
 NativeRendererMessagingService::AsSafeRef() {
   return weak_ptr_factory_.GetSafeRef();

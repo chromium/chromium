@@ -192,6 +192,12 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   // Invalidates any ports associated with the given `context`.
   void InvalidatePorts(ScriptContext* context);
 
+  // Closes the Mojo endpoints of all worker message ports (matching what
+  // destroying `this` would do). Used when a worker context is torn down
+  // before `this` is destroyed; see
+  // `WorkerThreadDispatcher::RemoveWorkerData()`.
+  void ResetWorkerPorts();
+
  private:
   class MessagePortScope;
   class RenderFrameMessagePorts;

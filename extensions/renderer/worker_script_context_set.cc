@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/worker_thread_util.h"
@@ -36,6 +37,10 @@ ContextVector::iterator FindContext(ContextVector* contexts,
 // Implement thread safety by storing each ScriptContext in TLS.
 constinit thread_local ContextVector* contexts = nullptr;
 
+// Contexts that were removed (and invalidated), to be destroyed when the worker
+// thread stops. See `WorkerScriptContextSet::Remove()`.
+constinit thread_local ContextVector* removed_contexts = nullptr;
+
 }  // namespace
 
 WorkerScriptContextSet::WorkerScriptContextSet() = default;
@@ -48,7 +53,15 @@ void WorkerScriptContextSet::ForEach(
     const base::RepeatingCallback<void(ScriptContext*)>& callback) {
   DCHECK(!render_frame);
 
+  // Copy the list in case `callback` runs script that calls `Remove()`
+  // (matching `ScriptContextSet::ForEach()`). Removed contexts stay alive until
+  // thread stop.
+  std::vector<raw_ptr<ScriptContext>> contexts_copy;
   for (const std::unique_ptr<ScriptContext>& context : *contexts) {
+    contexts_copy.push_back(context.get());
+  }
+
+  for (ScriptContext* context : contexts_copy) {
     DCHECK(!context->GetRenderFrame());
     // Some callers assume the context is valid so don't run the callback if it
     // is not. This can happen when this callback is being run when the worker
@@ -63,13 +76,13 @@ void WorkerScriptContextSet::ForEach(
         // call should affect all extensions. See comment in dispatcher.cc
         // UpdateAllBindings().
         if (host_id.id.empty() || context->GetExtensionID() == host_id.id) {
-          ExecuteCallbackWithContext(context.get(), callback);
+          ExecuteCallbackWithContext(context, callback);
         }
         break;
 
       case mojom::HostID::HostType::kWebUi:
         DCHECK(host_id.id.empty());
-        ExecuteCallbackWithContext(context.get(), callback);
+        ExecuteCallbackWithContext(context, callback);
         break;
 
       case mojom::HostID::HostType::kControlledFrameEmbedder:
@@ -77,7 +90,7 @@ void WorkerScriptContextSet::ForEach(
         // Verify that host_id matches context->host_id.
         if (context->host_id().type == host_id.type ||
             context->host_id().id == host_id.id) {
-          ExecuteCallbackWithContext(context.get(), callback);
+          ExecuteCallbackWithContext(context, callback);
         }
         break;
     }
@@ -131,6 +144,15 @@ void WorkerScriptContextSet::Remove(v8::Local<v8::Context> v8_context,
                                        << " is not in this set";
   DCHECK_EQ(url, (*context_it)->url());
   (*context_it)->Invalidate();
+  // Like `ScriptContextSet::Remove()`, defer deletion in case C++ frames
+  // holding `ScriptContext*` are still on the stack (see
+  // `WorkerThreadDispatcher::RemoveWorkerData()`). Delete on thread stop rather
+  // than via `DeleteSoon()`, since tasks posted during worker shutdown may
+  // never run.
+  if (!removed_contexts) {
+    removed_contexts = new ContextVector();
+  }
+  removed_contexts->push_back(std::move(*context_it));
   contexts->erase(context_it);
 }
 
@@ -141,6 +163,8 @@ void WorkerScriptContextSet::WillStopCurrentWorkerThread() {
     context->Invalidate();
   delete contexts;
   contexts = nullptr;
+  delete removed_contexts;
+  removed_contexts = nullptr;
 }
 
 }  // namespace extensions

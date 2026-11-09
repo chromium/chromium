@@ -49,7 +49,8 @@ class WorkerScriptContextSet : public ScriptContextSetIterable,
   void Insert(std::unique_ptr<ScriptContext> context);
 
   // Removes the ScriptContext associated with |v8_context| which was added for
-  // `url` (used for sanity checking).
+  // `url` (used for sanity checking). The context is invalidated immediately,
+  // but only destroyed when the worker thread stops.
   void Remove(v8::Local<v8::Context> v8_context, const GURL& url);
 
  private:
