@@ -29,6 +29,7 @@ static_library("trusted_vault") {
       "command_line_switches.h",
       "download_keys_response_handler.cc",
       "download_keys_response_handler.h",
+      "enrollment_handler.h",
       "frontend_trusted_vault_connection.cc",
       "frontend_trusted_vault_connection.h",
       "legacy_standalone_trusted_vault_storage.cc",

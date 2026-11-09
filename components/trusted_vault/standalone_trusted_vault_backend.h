@@ -33,7 +33,7 @@ class AccountsInCookieJarInfo;
 
 namespace trusted_vault {
 
-class ChromeSyncEnrollmentHandler;
+class EnrollmentHandler;
 
 // Provides interfaces to store/remove keys to/from file storage.
 // This class performs expensive operations and expected to be run from
@@ -76,6 +76,25 @@ class StandaloneTrustedVaultBackend
     CreateLocalRecoveryFactors(StandaloneTrustedVaultStorage* storage,
                                TrustedVaultThrottlingConnection* connection,
                                const CoreAccountInfo& primary_account) = 0;
+  };
+
+  class EnrollmentHandlerFactory {
+   public:
+    EnrollmentHandlerFactory() = default;
+    EnrollmentHandlerFactory(const EnrollmentHandlerFactory&) = delete;
+    EnrollmentHandlerFactory& operator=(const EnrollmentHandlerFactory&) =
+        delete;
+    virtual ~EnrollmentHandlerFactory() = default;
+
+    // Creates an `EnrollmentHandler` for `security_domain` and
+    // `primary_account`, or returns null if enrollment is not supported for
+    // `security_domain`. `storage` and `connection` must not be null and must
+    // outlive the returned handler, which retains references to them.
+    virtual std::unique_ptr<EnrollmentHandler> CreateEnrollmentHandler(
+        SecurityDomainId security_domain,
+        const CoreAccountInfo& primary_account,
+        KeyStorage* storage,
+        TrustedVaultConnection* connection) = 0;
   };
 
   enum class RefreshTokenErrorState {
@@ -183,18 +202,20 @@ class StandaloneTrustedVaultBackend
       std::unique_ptr<Delegate> delegate,
       std::unique_ptr<TrustedVaultThrottlingConnection> connection,
       std::unique_ptr<LocalRecoveryFactorsFactory>
-          local_recovery_factors_factory);
+          local_recovery_factors_factory,
+      std::unique_ptr<EnrollmentHandlerFactory> enrollment_handler_factory);
 
  private:
-  // Constructor which allows specifying a TrustedVaultThrottlingConnection and
-  // a LocalRecoveryFactorsFactory.
+  // Constructor which allows specifying a `TrustedVaultThrottlingConnection`, a
+  // `LocalRecoveryFactorsFactory`, and an `EnrollmentHandlerFactory`.
   // Only used in tests.
   StandaloneTrustedVaultBackend(
       std::unique_ptr<StandaloneTrustedVaultStorage> storage,
       std::unique_ptr<Delegate> delegate,
       std::unique_ptr<TrustedVaultThrottlingConnection> connection,
       std::unique_ptr<LocalRecoveryFactorsFactory>
-          local_recovery_factors_factory);
+          local_recovery_factors_factory,
+      std::unique_ptr<EnrollmentHandlerFactory> enrollment_handler_factory);
 
   static TrustedVaultDownloadKeysStatusForUMA
   GetDownloadKeysStatusForUMAFromResponse(
@@ -333,9 +354,14 @@ class StandaloneTrustedVaultBackend
                  std::unique_ptr<TrustedVaultConnection::Request>>
       ongoing_add_recovery_method_requests_;
 
-  // Handles enrollment into the `kChromeSync` security domain for
-  // `primary_account_`. Instance changes whenever `primary_account_` changes.
-  std::unique_ptr<ChromeSyncEnrollmentHandler> chrome_sync_enrollment_handler_;
+  // Factory to create `EnrollmentHandler` instances. Can be overridden in
+  // tests.
+  const std::unique_ptr<EnrollmentHandlerFactory> enrollment_handler_factory_;
+  // Handles enrollment into supported security domains for `primary_account_`.
+  // Map entries may be null for security domains that do not support
+  // enrollment. Instances change whenever `primary_account_` changes.
+  base::flat_map<SecurityDomainId, std::unique_ptr<EnrollmentHandler>>
+      enrollment_handlers_;
 
   // Used to take care of polling the degraded recoverability state from the
   // server for the |primary_account|. Instance changes whenever
