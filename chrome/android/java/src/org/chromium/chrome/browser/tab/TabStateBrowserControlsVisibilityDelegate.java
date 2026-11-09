@@ -335,9 +335,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         // TODO(crbug.com/579544014): Cancel the slow-load reveal.
     }
 
-    /**
-     * @return The constraints that determine the visibility of the browser controls.
-     */
+    /** Returns the constraints that determine the visibility of the browser controls. */
     protected @BrowserControlsState int calculateVisibilityConstraints() {
         return enableHidingBrowserControls()
                 ? BrowserControlsState.BOTH

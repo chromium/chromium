@@ -70,7 +70,7 @@ public class TabFavicon extends TabWebContentsUserData {
     /**
      * Returns the TabFavicon object creating it if necessary.
      *
-     * @param Tab tab the tab to get or create the TabFavicon from.
+     * @param tab The tab to get or create the TabFavicon from.
      * @return The tab favicon.
      */
     @CalledByNative

@@ -107,9 +107,7 @@ class TabViewManagerImpl implements TabViewManager, Comparator<TabViewProvider> 
         }
     }
 
-    /**
-     * @return Whether the given {@link TabViewProvider} is currently being displayed.
-     */
+    /** Returns whether the given {@link TabViewProvider} is currently being displayed. */
     @Override
     public boolean isShowing(TabViewProvider tabViewProvider) {
         TabViewProvider currentTVP = mTabViewProviders.peek();

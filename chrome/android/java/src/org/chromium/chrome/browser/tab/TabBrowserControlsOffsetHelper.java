@@ -125,32 +125,32 @@ public class TabBrowserControlsOffsetHelper implements TabObserver, UserData {
         // Intentionally do nothing to prevent automatic observer removal on detachment.
     }
 
-    /** @return Top control offset */
+    /** Returns the top control offset. */
     public int topControlsOffset() {
         return mTopControlsOffset;
     }
 
-    /** @return Bottom control offset */
+    /** Returns the bottom control offset. */
     public int bottomControlsOffset() {
         return mBottomControlsOffset;
     }
 
-    /** @return Content offset */
+    /** Returns the content offset. */
     public int contentOffset() {
         return mContentOffset;
     }
 
-    /** @return Top controls min-height offset */
+    /** Returns the top controls min-height offset. */
     public int topControlsMinHeightOffset() {
         return mTopControlsMinHeightOffset;
     }
 
-    /** @return Bottom controls min-height offset */
+    /** Returns the bottom controls min-height offset. */
     public int bottomControlsMinHeightOffset() {
         return mBottomControlsMinHeightOffset;
     }
 
-    /** @return Whether the control offset is initialized by compositor. */
+    /** Returns whether the control offset is initialized by compositor. */
     public boolean offsetInitialized() {
         return mOffsetInitialized;
     }

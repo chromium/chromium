@@ -46,17 +46,13 @@ public class TabUtils {
     // Do not instantiate this class.
     private TabUtils() {}
 
-    /**
-     * @return Whether the given tab is initialized and not destroyed.
-     */
+    /** Returns whether the given tab is initialized and not destroyed. */
     @Contract("null -> false")
     public static boolean isValid(@Nullable Tab tab) {
         return tab != null && tab.isInitialized() && !tab.isDestroyed();
     }
 
-    /**
-     * @return {@link Activity} associated with the given tab.
-     */
+    /** Returns the {@link Activity} associated with the given tab. */
     public static @Nullable Activity getActivity(@Nullable Tab tab) {
         WebContents webContents = tab != null ? tab.getWebContents() : null;
         if (webContents == null || webContents.isDestroyed()) return null;
@@ -108,7 +104,6 @@ public class TabUtils {
      *
      * @param tab The tab to be switched the user agent.
      * @param switchToDesktop Whether switching the user agent to desktop.
-     * @param caller The caller of this method.
      */
     public static void switchUserAgent(Tab tab, boolean switchToDesktop) {
         final boolean reloadOnChange = !tab.isNativePage();

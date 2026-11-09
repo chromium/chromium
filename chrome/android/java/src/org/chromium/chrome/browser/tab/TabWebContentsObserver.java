@@ -86,10 +86,12 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
     }
 
     /**
-     * Adds an observer triggered when |initWebContents| is invoked.
-     * <p>A newly created tab adding this observer misses the event because
-     * |TabObserver.onContentChanged| -&gt; |TabWebContentsObserver.initWebContents|
-     * occurs before the observer is added. Manually trigger it here.
+     * Adds an observer triggered when {@code initWebContents} is invoked.
+     *
+     * <p>A newly created tab adding this observer misses the event because {@code
+     * TabObserver.onContentChanged} -&gt; {@code TabWebContentsObserver.initWebContents} occurs
+     * before the observer is added. Manually trigger it here.
+     *
      * @param observer Observer to add.
      */
     public void addInitWebContentsObserver(Callback<WebContents> observer) {

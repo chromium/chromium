@@ -760,8 +760,8 @@ class TabImpl implements Tab {
     }
 
     /**
-     * @returns Whether the tab is displaying a PDF native page, either a local file (file://,
-     *     content://) or a transiently downloaded one (http://, https://, blob:, data:).
+     * Returns whether the tab is displaying a PDF native page, either a local file (file://,
+     * content://) or a transiently downloaded one (http://, https://, blob:, data:).
      */
     @CalledByNative
     public boolean isPdf() {
@@ -769,8 +769,8 @@ class TabImpl implements Tab {
     }
 
     /**
-     * @returns The local file path or `content://` URI of the displayed PDF (for web PDFs, the
-     *     transiently downloaded file), or null if unavailable or unsafe to share.
+     * Returns the local file path or {@code content://} URI of the displayed PDF (for web PDFs, the
+     * transiently downloaded file), or null if unavailable or unsafe to share.
      */
     @CalledByNative
     public @Nullable @JniType("std::string") String getCanonicalFilepath() {
@@ -791,11 +791,11 @@ class TabImpl implements Tab {
     }
 
     /**
-     * Makes {@link NativePageFactory} create a fake PDF native page instead of a real `PdfPage` for
-     * testing. Passing an empty `url` clears the override.
+     * Makes {@link NativePageFactory} create a fake PDF native page instead of a real {@code
+     * PdfPage} for testing. Passing an empty {@code url} clears the override.
      *
      * @param url The URL of the fake PDF page.
-     * @param filepath The file path returned by the fake PDF page's `getCanonicalFilepath()`.
+     * @param filepath The file path returned by the fake PDF page's {@code getCanonicalFilepath()}.
      */
     @CalledByNativeForTesting
     private void setPdfNativePageForTesting(
@@ -1745,6 +1745,7 @@ class TabImpl implements Tab {
      * @param tabState State containing information about this Tab, if it was persisted.
      * @param initializeRenderer Determines whether or not we initialize renderer with {@link
      *     WebContents} creation.
+     * @param isPinned Whether the tab is initially pinned.
      */
     @Initializer
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -2265,9 +2266,7 @@ class TabImpl implements Tab {
 
     //////////////
 
-    /**
-     * @return Whether the renderer is currently unresponsive.
-     */
+    /** Returns whether the renderer is currently unresponsive. */
     boolean isRendererUnresponsive() {
         return mIsRendererUnresponsive;
     }
@@ -2488,9 +2487,7 @@ class TabImpl implements Tab {
         assert mNativeTabAndroid != 0;
     }
 
-    /**
-     * @return The native pointer representing the native side of this {@link TabImpl} object.
-     */
+    /** Returns the native pointer representing the native side of this {@link TabImpl} object. */
     @CalledByNative
     public long getNativePtr() {
         return mNativeTabAndroid;
@@ -3095,9 +3092,7 @@ class TabImpl implements Tab {
         }
     }
 
-    /**
-     * @return parent identifier for the {@link Tab}
-     */
+    /** Returns the parent identifier for the {@link Tab}. */
     @Override
     @CalledByNative
     public int getParentId() {
