@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -379,6 +381,149 @@ IN_PROC_BROWSER_TEST_F(
   RegisterWorker(subframe_rfh_2, WorkerType::kSharedWorker, "empty.js");
 
   cache_status_waiter.Run();
+}
+
+// Test that shared worker main script requests are partitioned in the HTTP
+// cache by the `sameSiteCookies` option (`'all'` vs `'none'`).
+IN_PROC_BROWSER_TEST_F(
+    SharedWorkerMainScriptRequestNetworkIsolationKeyBrowserTest,
+    SharedWorkerMainScriptRequestSameSiteCookies) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+
+  GURL main_script_request_url =
+      https_server()->GetURL("a.test", "/workers/empty.js");
+
+  base::Lock lock;
+  std::optional<bool> last_exists_in_cache;
+  base::OnceClosure quit_closure;
+  URLLoaderInterceptor interceptor(
+      base::BindLambdaForTesting(
+          [&](URLLoaderInterceptor::RequestParams* params) { return false; }),
+      base::BindLambdaForTesting(
+          [&](const GURL& request_url,
+              const network::URLLoaderCompletionStatus& status) {
+            if (request_url == main_script_request_url) {
+              base::AutoLock auto_lock(lock);
+              last_exists_in_cache = status.exists_in_cache;
+              if (quit_closure) {
+                std::move(quit_closure).Run();
+              }
+            }
+          }),
+      {});
+
+  NavigateToURLBlockUntilNavigationsComplete(
+      shell(), https_server()->GetURL("a.test", "/workers/frame_factory.html"),
+      1);
+  RenderFrameHost* main_rfh = shell()->web_contents()->GetPrimaryMainFrame();
+
+  auto start_worker_and_check_cache = [&](const std::string& name,
+                                          const std::string& same_site_cookies,
+                                          bool expected_in_cache) {
+    base::RunLoop cache_status_waiter;
+    {
+      base::AutoLock auto_lock(lock);
+      last_exists_in_cache.reset();
+      quit_closure = cache_status_waiter.QuitClosure();
+    }
+    EXPECT_EQ(base::Value(),
+              EvalJs(main_rfh,
+                     JsReplace("new SharedWorker('/workers/empty.js', "
+                               "{name: $1, sameSiteCookies: $2}); undefined;",
+                               name, same_site_cookies)));
+    cache_status_waiter.Run();
+    base::AutoLock auto_lock(lock);
+    ASSERT_TRUE(last_exists_in_cache.has_value());
+    EXPECT_EQ(expected_in_cache, *last_exists_in_cache);
+  };
+
+  // First 'all' worker populates the kGeneral cache partition.
+  start_worker_and_check_cache("w1", "all", /*expected_in_cache=*/false);
+  // First 'none' worker uses kSharedWorkerSameSiteCookiesNone and must not
+  // reuse the kGeneral cache entry.
+  start_worker_and_check_cache("w2", "none", /*expected_in_cache=*/false);
+  // Second 'none' worker reuses the kSharedWorkerSameSiteCookiesNone entry.
+  start_worker_and_check_cache("w3", "none", /*expected_in_cache=*/true);
+  // Second 'all' worker reuses the kGeneral entry.
+  start_worker_and_check_cache("w4", "all", /*expected_in_cache=*/true);
+}
+
+// Test that shared worker subresource requests (importScripts and fetch) are
+// partitioned in the HTTP cache by the `sameSiteCookies` option (`'all'` vs
+// `'none'`).
+IN_PROC_BROWSER_TEST_F(
+    SharedWorkerMainScriptRequestNetworkIsolationKeyBrowserTest,
+    SharedWorkerSubresourceRequestSameSiteCookies) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+
+  GURL import_script_url =
+      https_server()->GetURL("d.test", "/workers/empty.js");
+  GURL fetch_url = https_server()->GetURL("d.test", "/workers/empty.html");
+
+  base::Lock lock;
+  std::map<GURL, bool> exists_in_cache_map;
+  base::OnceClosure quit_closure;
+  URLLoaderInterceptor interceptor(
+      base::BindLambdaForTesting(
+          [&](URLLoaderInterceptor::RequestParams* params) { return false; }),
+      base::BindLambdaForTesting(
+          [&](const GURL& request_url,
+              const network::URLLoaderCompletionStatus& status) {
+            if (request_url == import_script_url || request_url == fetch_url) {
+              base::AutoLock auto_lock(lock);
+              exists_in_cache_map[request_url] = status.exists_in_cache;
+              if (exists_in_cache_map.size() == 2u && quit_closure) {
+                std::move(quit_closure).Run();
+              }
+            }
+          }),
+      {});
+
+  NavigateToURLBlockUntilNavigationsComplete(
+      shell(), https_server()->GetURL("a.test", "/workers/frame_factory.html"),
+      1);
+  RenderFrameHost* main_rfh = shell()->web_contents()->GetPrimaryMainFrame();
+
+  std::string worker_url = base::StrCat(
+      {"/workers/worker_with_import_and_fetch.js?import_script_url=",
+       import_script_url.spec(), "&fetch_url=", fetch_url.spec()});
+
+  auto start_worker_and_check_subresources =
+      [&](const std::string& name, const std::string& same_site_cookies,
+          bool expected_in_cache) {
+        base::RunLoop cache_status_waiter;
+        {
+          base::AutoLock auto_lock(lock);
+          exists_in_cache_map.clear();
+          quit_closure = cache_status_waiter.QuitClosure();
+        }
+        EXPECT_EQ(
+            base::Value(),
+            EvalJs(main_rfh,
+                   JsReplace("new SharedWorker($1, "
+                             "{name: $2, sameSiteCookies: $3}); undefined;",
+                             worker_url, name, same_site_cookies)));
+        cache_status_waiter.Run();
+        base::AutoLock auto_lock(lock);
+        ASSERT_EQ(2u, exists_in_cache_map.size());
+        EXPECT_EQ(expected_in_cache, exists_in_cache_map[import_script_url]);
+        EXPECT_EQ(expected_in_cache, exists_in_cache_map[fetch_url]);
+      };
+
+  // First 'all' worker populates the kGeneral cache partition.
+  start_worker_and_check_subresources("w1", "all", /*expected_in_cache=*/false);
+  // First 'none' worker uses kSharedWorkerSameSiteCookiesNone and must not
+  // reuse the kGeneral cache entries.
+  start_worker_and_check_subresources("w2", "none",
+                                      /*expected_in_cache=*/false);
+  // Second 'none' worker reuses the kSharedWorkerSameSiteCookiesNone entries.
+  start_worker_and_check_subresources("w3", "none", /*expected_in_cache=*/true);
+  // Second 'all' worker reuses the kGeneral entries.
+  start_worker_and_check_subresources("w4", "all", /*expected_in_cache=*/true);
 }
 
 }  // namespace content

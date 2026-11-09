@@ -1526,6 +1526,18 @@ TEST_F(StorageKeyTest, CreateFromOriginAndIsolationInfo) {
             blink::StorageKey::Create(opaque_origin, site,
                                       mojom::AncestorChainBit::kCrossSite),
         },
+        // kSharedWorkerSameSiteCookiesNone with null SiteForCookies yields a
+        // cross-site StorageKey.
+        {
+            origin,
+            net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                       origin, origin, net::SiteForCookies(),
+                                       /*nonce=*/std::nullopt,
+                                       net::NetworkIsolationPartition::
+                                           kSharedWorkerSameSiteCookiesNone),
+            blink::StorageKey::Create(origin, site,
+                                      mojom::AncestorChainBit::kCrossSite),
+        },
     };
 
     for (const auto& test_case : kTestCases) {

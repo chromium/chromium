@@ -541,10 +541,18 @@ StorageKey StorageKey::Create(const url::Origin& origin,
 StorageKey StorageKey::CreateFromOriginAndIsolationInfo(
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info) {
-  // Support for creating a StorageKey from IsolationInfos with special
-  // NetworkIsolationPartition is not implemented.
-  CHECK_EQ(isolation_info.GetNetworkIsolationPartition(),
-           net::NetworkIsolationPartition::kGeneral);
+  switch (isolation_info.GetNetworkIsolationPartition()) {
+    case net::NetworkIsolationPartition::kGeneral:
+      break;
+    case net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone:
+      CHECK(isolation_info.site_for_cookies().IsNull());
+      break;
+    case net::NetworkIsolationPartition::kFedCmUncredentialedRequests:
+    case net::NetworkIsolationPartition::kDnsOverHttps:
+      // Support for creating a StorageKey from IsolationInfos with these
+      // NetworkIsolationPartitions is not implemented.
+      NOTREACHED();
+  }
   if (isolation_info.nonce()) {
     // If the nonce is set we can use the simpler construction path.
     return CreateWithNonce(origin, *isolation_info.nonce());

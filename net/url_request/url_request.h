@@ -1131,8 +1131,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // The cookie partition key for the request. Partitioned cookies should be set
   // using this key and only partitioned cookies with this partition key should
   // be sent. The cookie partition key is nullopt if cookie partitioning is not
-  // enabled, if the NIK has no top-frame site, or the NIK has a non-general
-  // NetworkIsolationPartition.
+  // enabled, if the NIK has no top-frame site, or if the NIK has a
+  // NetworkIsolationPartition that disallows cookies.
   //
   // Unpartitioned cookies are unaffected by this field.
   std::optional<CookiePartitionKey> cookie_partition_key_ = std::nullopt;

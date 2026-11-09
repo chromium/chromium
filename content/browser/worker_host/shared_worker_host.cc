@@ -96,20 +96,6 @@ void RecordDestructionSource(SharedWorkerHostDestructionSource source) {
                                 source);
 }
 
-net::IsolationInfo ComputeIsolationInfoWithPartition(
-    const blink::StorageKey& storage_key,
-    net::NetworkIsolationPartition partition) {
-  net::IsolationInfo isolation_info = storage_key.ToPartialNetIsolationInfo();
-  if (partition != net::NetworkIsolationPartition::kGeneral &&
-      !isolation_info.IsEmpty()) {
-    return net::IsolationInfo::Create(
-        isolation_info.request_type(), *isolation_info.top_frame_origin(),
-        *isolation_info.frame_origin(), isolation_info.site_for_cookies(),
-        isolation_info.nonce(), partition);
-  }
-  return isolation_info;
-}
-
 }  // namespace
 
 namespace content {
@@ -745,7 +731,7 @@ net::IsolationInfo SharedWorkerHost::ComputeIsolationInfoForNetworkRequest(
     isolation_info = net::IsolationInfo::Create(
         isolation_info.request_type(), *isolation_info.top_frame_origin(),
         *isolation_info.frame_origin(), net::SiteForCookies(),
-        isolation_info.nonce());
+        isolation_info.nonce(), GetNetworkIsolationPartition());
   }
   return isolation_info;
 }
@@ -1008,10 +994,13 @@ base::WeakPtr<SharedWorkerHost> SharedWorkerHost::AsWeakPtr() {
 
 net::NetworkIsolationPartition SharedWorkerHost::GetNetworkIsolationPartition()
     const {
-  return instance_.same_site_cookies() ==
-                 blink::mojom::SharedWorkerSameSiteCookies::kNone
-             ? net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone
-             : net::NetworkIsolationPartition::kGeneral;
+  if (instance_.same_site_cookies() ==
+          blink::mojom::SharedWorkerSameSiteCookies::kNone &&
+      GetWorkerStorageKey().top_level_site().IsSameSiteWith(
+          GetWorkerStorageKey().origin())) {
+    return net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone;
+  }
+  return net::NetworkIsolationPartition::kGeneral;
 }
 
 net::NetworkIsolationKey SharedWorkerHost::GetNetworkIsolationKey() const {
@@ -1021,15 +1010,13 @@ net::NetworkIsolationKey SharedWorkerHost::GetNetworkIsolationKey() const {
   // different top-level sites will be able to share the same shared worker, so
   // it doesn't make sense to incorporate the top-level site into the NIK in
   // that case either.
-  return ComputeIsolationInfoWithPartition(GetWorkerStorageKey(),
-                                           GetNetworkIsolationPartition())
+  return ComputeIsolationInfoForNetworkRequest(/*is_websocket_request=*/false)
       .network_isolation_key();
 }
 
 net::NetworkAnonymizationKey SharedWorkerHost::GetNetworkAnonymizationKey()
     const {
-  return ComputeIsolationInfoWithPartition(GetWorkerStorageKey(),
-                                           GetNetworkIsolationPartition())
+  return ComputeIsolationInfoForNetworkRequest(/*is_websocket_request=*/false)
       .network_anonymization_key();
 }
 

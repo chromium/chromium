@@ -209,11 +209,22 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     // delivery agent determining that this is a V0 report, or by `StartUpload`
     // determining that this is a cross-origin case, and taking the CORS
     // preflight path). An exception to this are reports associated with a
-    // non-general NetworkIsolationPartition, since credentials should never be
-    // sent with these requests.
-    if (!eligible_for_credentials ||
-        upload->isolation_info.GetNetworkIsolationPartition() !=
-            NetworkIsolationPartition::kGeneral) {
+    // non-general NetworkIsolationPartition that disallows credentials.
+    bool partition_allows_credentials = false;
+    switch (upload->isolation_info.GetNetworkIsolationPartition()) {
+      case NetworkIsolationPartition::kGeneral:
+        partition_allows_credentials = true;
+        break;
+      case NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone:
+        CHECK(upload->isolation_info.site_for_cookies().IsNull());
+        partition_allows_credentials = true;
+        break;
+      case NetworkIsolationPartition::kFedCmUncredentialedRequests:
+      case NetworkIsolationPartition::kDnsOverHttps:
+        partition_allows_credentials = false;
+        break;
+    }
+    if (!eligible_for_credentials || !partition_allows_credentials) {
       upload->request->set_disallow_credentials();
     }
 

@@ -605,7 +605,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
           : host->instance().creator_storage_key().ToNetSiteForCookies(),
       host->instance().creator_storage_key().origin(),
       host->instance().worker_storage_key(),
-      host->instance().worker_storage_key().ToPartialNetIsolationInfo(),
+      host->ComputeIsolationInfoForNetworkRequest(
+          /*is_websocket_request=*/false),
       creator.BuildClientSecurityStateForWorkers(), credentials_mode,
       std::move(outside_fetch_client_settings_object),
       network::mojom::RequestDestination::kSharedWorker, file_url_support,

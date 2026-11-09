@@ -433,6 +433,8 @@ TEST_F(SharedWorkerHostTest, CreateNetworkFactoryParamsForSubresources) {
   EXPECT_FALSE(params->isolation_info.nonce().has_value());
   EXPECT_TRUE(
       params->isolation_info.site_for_cookies().IsFirstParty(kWorkerUrl));
+  EXPECT_EQ(params->isolation_info.GetNetworkIsolationPartition(),
+            net::NetworkIsolationPartition::kGeneral);
   EXPECT_EQ(net::CookiePartitionKey::FromNetworkIsolationKey(
                 params->isolation_info.network_isolation_key(),
                 params->isolation_info.site_for_cookies(),
@@ -466,6 +468,8 @@ TEST_F(SharedWorkerHostTest,
   // SiteForCookies must be null so that subresource requests do not derive a
   // first-party (kSameSite) CHIPS cookie partition key.
   EXPECT_TRUE(params->isolation_info.site_for_cookies().IsNull());
+  EXPECT_EQ(params->isolation_info.GetNetworkIsolationPartition(),
+            net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone);
   EXPECT_EQ(net::CookiePartitionKey::FromNetworkIsolationKey(
                 params->isolation_info.network_isolation_key(),
                 params->isolation_info.site_for_cookies(),
@@ -700,6 +704,8 @@ TEST_F(SharedWorkerHostTest, CreateWebSocketConnector_SameOrigin) {
           /*is_websocket_request=*/true);
   // SiteForCookies should NOT be null for same-origin workers.
   EXPECT_FALSE(isolation_info.site_for_cookies().IsNull());
+  EXPECT_EQ(isolation_info.GetNetworkIsolationPartition(),
+            net::NetworkIsolationPartition::kGeneral);
 
   histogram_tester.ExpectUniqueSample(
       "Content.SharedWorker.WebSocket.DoesRequireCrossSiteRequestForCookies",
@@ -741,6 +747,8 @@ TEST_F(SharedWorkerHostTest,
       host->ComputeIsolationInfoForNetworkRequest(
           /*is_websocket_request=*/true);
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
+  EXPECT_EQ(isolation_info.GetNetworkIsolationPartition(),
+            net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone);
 
   histogram_tester.ExpectUniqueSample(
       "Content.SharedWorker.WebSocket.DoesRequireCrossSiteRequestForCookies",
@@ -778,6 +786,62 @@ TEST_F(SharedWorkerHostTest, NetworkIsolationPartitionForSameSiteCookies) {
       net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone);
   EXPECT_NE(host_all->GetNetworkAnonymizationKey(),
             host_none->GetNetworkAnonymizationKey());
+
+  net::IsolationInfo isolation_info_all =
+      host_all->ComputeIsolationInfoForNetworkRequest(
+          /*is_websocket_request=*/false);
+  net::IsolationInfo isolation_info_none =
+      host_none->ComputeIsolationInfoForNetworkRequest(
+          /*is_websocket_request=*/false);
+  EXPECT_EQ(isolation_info_all.GetNetworkIsolationPartition(),
+            net::NetworkIsolationPartition::kGeneral);
+  EXPECT_EQ(isolation_info_none.GetNetworkIsolationPartition(),
+            net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone);
+  EXPECT_NE(isolation_info_all.network_isolation_key().ToCacheKeyString(),
+            isolation_info_none.network_isolation_key().ToCacheKeyString());
+
+  // When a worker with `sameSiteCookies: 'none'` is in a cross-site embed
+  // `A(B)` (where `top_level_site` and `origin` are cross-site), the NIK
+  // already captures the cross-site relationship, so it should use `kGeneral`.
+  const url::Origin kWorkerOrigin = url::Origin::Create(kWorkerUrl);
+  const net::SchemefulSite kCrossSiteTopLevel(
+      GURL("https://cross-site.example.test/"));
+  blink::StorageKey cross_site_storage_key =
+      blink::StorageKey::Create(kWorkerOrigin, kCrossSiteTopLevel,
+                                blink::mojom::AncestorChainBit::kCrossSite);
+  SharedWorkerInstance cross_site_instance(
+      kWorkerUrl, blink::mojom::ScriptType::kClassic,
+      network::mojom::CredentialsMode::kSameOrigin, "name",
+      cross_site_storage_key, cross_site_storage_key, kWorkerOrigin,
+      blink::mojom::SharedWorkerCreationContextType::kSecure,
+      blink::mojom::SharedWorkerSameSiteCookies::kNone,
+      /*extended_lifetime=*/false, network::PermissionsPolicyFeaturesBitset());
+  auto host_cross_site = std::make_unique<SharedWorkerHost>(
+      &service_, cross_site_instance, site_instance_,
+      std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+      base::MakeRefCounted<PolicyContainerHost>());
+  EXPECT_EQ(host_cross_site->GetNetworkIsolationPartition(),
+            net::NetworkIsolationPartition::kGeneral);
+
+  // In an `A(B(A))` embed (where `top_level_site` and `origin` are same-site
+  // despite a cross-site ancestor chain), it must use
+  // `kSharedWorkerSameSiteCookiesNone`.
+  blink::StorageKey aba_storage_key = blink::StorageKey::Create(
+      kWorkerOrigin, net::SchemefulSite(kWorkerOrigin),
+      blink::mojom::AncestorChainBit::kCrossSite);
+  SharedWorkerInstance aba_instance(
+      kWorkerUrl, blink::mojom::ScriptType::kClassic,
+      network::mojom::CredentialsMode::kSameOrigin, "name", aba_storage_key,
+      aba_storage_key, kWorkerOrigin,
+      blink::mojom::SharedWorkerCreationContextType::kSecure,
+      blink::mojom::SharedWorkerSameSiteCookies::kNone,
+      /*extended_lifetime=*/false, network::PermissionsPolicyFeaturesBitset());
+  auto host_aba = std::make_unique<SharedWorkerHost>(
+      &service_, aba_instance, site_instance_,
+      std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+      base::MakeRefCounted<PolicyContainerHost>());
+  EXPECT_EQ(host_aba->GetNetworkIsolationPartition(),
+            net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone);
 }
 
 TEST_F(SharedWorkerHostTest, ServiceWorkerHandleDroppedWhenCSPSandboxed) {

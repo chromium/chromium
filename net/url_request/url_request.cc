@@ -599,14 +599,28 @@ void URLRequest::set_disallow_credentials() {
 void URLRequest::Start() {
   DCHECK(delegate_);
 
-  // We do not support credentials with a non-general
-  // NetworkIsolationPartition.
-  CHECK(isolation_info_.GetNetworkIsolationPartition() ==
-            NetworkIsolationPartition::kGeneral ||
-        !allow_credentials());
+  switch (isolation_info_.GetNetworkIsolationPartition()) {
+    case NetworkIsolationPartition::kGeneral:
+      break;
+    case NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone:
+      // This partition is only used for SharedWorkers with SameSite=None cookie
+      // restrictions, so SiteForCookies must be null when credentials are
+      // allowed.
+      CHECK(!allow_credentials() ||
+            (isolation_info_.site_for_cookies().IsNull() &&
+             site_for_cookies_.IsNull()));
+      break;
+    case NetworkIsolationPartition::kFedCmUncredentialedRequests:
+    case NetworkIsolationPartition::kDnsOverHttps:
+      // Credentials are not supported with these non-general
+      // NetworkIsolationPartitions.
+      CHECK(!allow_credentials());
+      break;
+  }
 
-  if (status_ != OK)
+  if (status_ != OK) {
     return;
+  }
 
   if (context_->require_network_anonymization_key()) {
     DCHECK(!isolation_info_.IsEmpty() ||

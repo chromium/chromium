@@ -526,6 +526,38 @@ TEST_F(RequireCrossSiteRequestForCookiesCorsURLLoaderFactoryTest,
   EXPECT_EQ(net::OK, client->completion_status().error_code);
 }
 
+class SharedWorkerSameSiteCookiesNoneCorsURLLoaderFactoryTest
+    : public CorsURLLoaderFactoryTest {
+  void SetUp() override {
+    auto factory_params = network::mojom::URLLoaderFactoryParams::New();
+    const url::Origin kOrigin =
+        url::Origin::Create(GURL("https://example.test"));
+    factory_params->isolation_info = net::IsolationInfo::Create(
+        net::IsolationInfo::RequestType::kOther, kOrigin, kOrigin,
+        net::SiteForCookies(), /*nonce=*/std::nullopt,
+        net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone);
+    auto context_params = mojom::NetworkContextParams::New();
+    BaseSetup(std::move(factory_params), std::move(context_params));
+  }
+};
+
+TEST_F(SharedWorkerSameSiteCookiesNoneCorsURLLoaderFactoryTest,
+       NonNullSiteForCookiesRejected) {
+  ResourceRequest request;
+  GURL url = test_server()->GetURL("/echoall");
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = url;
+  request.request_initiator = url::Origin::Create(url);
+  request.site_for_cookies = net::SiteForCookies::FromUrl(url);
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_EQ(
+      "CorsURLLoaderFactory: all requests in this context must be cross-site",
+      bad_message_observer.WaitForBadMessage());
+}
+
 TEST_F(CorsURLLoaderFactoryTest, UntrustedCorsPreflightRequestAreFailed) {
   EXPECT_FALSE(GetCorsURLLoaderFactory()->IsCorsPreflighLoadOptionAllowed());
   ResourceRequest request;

@@ -134,11 +134,18 @@ std::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
     const SchemefulSite& request_site,
     bool main_frame_navigation) {
   // Support for creating a CookiePartitionKey from IsolationInfos with
-  // special NetworkIsolationPartition is not implemented. The original use
-  // cases for special NetworkIsolationPartitions disallow cookies.
-  if (network_isolation_key.GetNetworkIsolationPartition() !=
-      NetworkIsolationPartition::kGeneral) {
-    return std::nullopt;
+  // special NetworkIsolationPartition is only implemented for partitions that
+  // allow cookies.
+  switch (network_isolation_key.GetNetworkIsolationPartition()) {
+    case NetworkIsolationPartition::kGeneral:
+      break;
+    case NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone:
+      CHECK(site_for_cookies.IsNull());
+      CHECK(!main_frame_navigation);
+      break;
+    case NetworkIsolationPartition::kFedCmUncredentialedRequests:
+    case NetworkIsolationPartition::kDnsOverHttps:
+      return std::nullopt;
   }
 #if BUILDFLAG(IS_ANDROID)
   if (g_partitioning_disabled_in_webview_) {

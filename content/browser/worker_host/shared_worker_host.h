@@ -246,10 +246,12 @@ class CONTENT_EXPORT SharedWorkerHost
     worker_client_security_state_ = std::move(client_security_state);
   }
 
-  // Computes the IsolationInfo used for network requests from this worker. The
-  // SiteForCookies is nulled out when the worker requires cross-site request
-  // semantics for cookies (e.g. a worker in a third-party context, or one
-  // created with a first-party storage key via the Storage Access API).
+  // Computes the IsolationInfo used for network requests and code cache
+  // partitions from this worker. The SiteForCookies is nulled out when the
+  // worker requires cross-site request semantics for cookies (e.g. a worker in
+  // a third-party context, or one created with a first-party storage key via
+  // the Storage Access API), and the NetworkIsolationPartition is populated
+  // according to GetNetworkIsolationPartition().
   net::IsolationInfo ComputeIsolationInfoForNetworkRequest(
       bool is_websocket_request) const;
 

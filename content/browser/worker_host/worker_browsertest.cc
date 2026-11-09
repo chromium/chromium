@@ -1544,6 +1544,7 @@ IN_PROC_BROWSER_TEST_F(
   )"));
   const std::string expected_cookies = base::JoinString(
       {kSameSiteNoneCookie, kCrossSitePartitionedCookie}, "; ");
+  EXPECT_EQ(expected_cookies, GetReceivedCookie("/workers/worker.js"));
   EXPECT_EQ(expected_cookies, GetReceivedCookie("/workers/empty.js"));
   EXPECT_EQ(expected_cookies, GetReceivedCookie("/workers/empty.html"));
 }

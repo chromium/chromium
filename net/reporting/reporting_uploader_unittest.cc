@@ -594,6 +594,58 @@ TEST_F(ReportingUploaderTest, NonGeneralPartitionDontSendCookies) {
   EXPECT_EQ(ReportingUploader::Outcome::SUCCESS, upload_callback.outcome());
 }
 
+void CheckSameSiteNoneCookieOnly(const test_server::HttpRequest& request) {
+  auto it = request.headers.find("Cookie");
+  ASSERT_TRUE(it != request.headers.end());
+  EXPECT_EQ("samesite_none=bar", it->second);
+}
+
+TEST_F(ReportingUploaderTest,
+       SharedWorkerSameSiteCookiesNonePartitionSendSameSiteNoneCookiesOnly) {
+  server_.RegisterRequestMonitor(
+      base::BindRepeating(&CheckSameSiteNoneCookieOnly));
+  server_.RegisterRequestHandler(base::BindRepeating(&ReturnResponse, HTTP_OK));
+  ASSERT_TRUE(server_.Start());
+
+  GURL url = server_.GetURL("/");
+  {
+    ResultSavingCookieCallback<CookieAccessResult> cookie_callback;
+    auto cookie = CanonicalCookie::CreateForTesting(
+        url, "samesite_none=bar; SameSite=None; Secure;", base::Time::Now(),
+        CookieSourceType::kOther);
+    context_->cookie_store()->SetCanonicalCookieAsync(
+        std::move(cookie), url, CookieOptions::MakeAllInclusive(),
+        cookie_callback.MakeCallback(), /*cookie_access_result=*/std::nullopt);
+    cookie_callback.WaitUntilDone();
+    ASSERT_TRUE(cookie_callback.result().status.IsInclude());
+  }
+  {
+    ResultSavingCookieCallback<CookieAccessResult> cookie_callback;
+    auto cookie = CanonicalCookie::CreateForTesting(
+        url, "samesite_lax=baz; SameSite=Lax; Secure;", base::Time::Now(),
+        CookieSourceType::kOther);
+    context_->cookie_store()->SetCanonicalCookieAsync(
+        std::move(cookie), url, CookieOptions::MakeAllInclusive(),
+        cookie_callback.MakeCallback(), /*cookie_access_result=*/std::nullopt);
+    cookie_callback.WaitUntilDone();
+    ASSERT_TRUE(cookie_callback.result().status.IsInclude());
+  }
+
+  TestUploadCallback upload_callback;
+  url::Origin server_origin = url::Origin::Create(url);
+  uploader_->StartUpload(
+      server_origin, url,
+      IsolationInfo::Create(
+          IsolationInfo::RequestType::kOther, server_origin, server_origin,
+          SiteForCookies(), /*nonce=*/std::nullopt,
+          NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone),
+      kUploadBody, 0, /*eligible_for_credentials=*/true,
+      upload_callback.callback());
+  upload_callback.WaitForCall();
+
+  EXPECT_EQ(ReportingUploader::Outcome::SUCCESS, upload_callback.outcome());
+}
+
 std::unique_ptr<test_server::HttpResponse> SendSameSiteNoneCookie(
     const test_server::HttpRequest& request) {
   auto response = std::make_unique<test_server::BasicHttpResponse>();

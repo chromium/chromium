@@ -753,9 +753,16 @@ bool CorsURLLoaderFactory::IsValidRequest(
     return false;
   }
 
-  // Validate that `require_cross_site_request_for_cookies_` is respected by an
-  // empty SiteForCookies (indicating a cross-site request being made).
-  if (require_cross_site_request_for_cookies_ &&
+  // Validate that `require_cross_site_request_for_cookies_` and
+  // `kSharedWorkerSameSiteCookiesNone` are respected by an empty SiteForCookies
+  // (indicating a cross-site request being made).
+  const net::IsolationInfo& request_isolation_info =
+      request_network_isolation_info_present
+          ? request.trusted_params->isolation_info
+          : isolation_info_;
+  if ((require_cross_site_request_for_cookies_ ||
+       request_isolation_info.GetNetworkIsolationPartition() ==
+           net::NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone) &&
       !request.site_for_cookies.IsNull()) {
     mojo::ReportBadMessage(
         "CorsURLLoaderFactory: all requests in this context must be "
