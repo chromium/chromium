@@ -5,6 +5,7 @@
 #include "chrome/browser/sync/glue/synced_window_delegates_getter_android.h"
 
 #include "base/check_deref.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/sessions/core/session_id.h"
@@ -22,13 +23,11 @@ SyncedWindowDelegatesGetterAndroid::~SyncedWindowDelegatesGetterAndroid() =
 SyncedWindowDelegatesGetterAndroid::SyncedWindowDelegateMap
 SyncedWindowDelegatesGetterAndroid::GetSyncedWindowDelegates() {
   SyncedWindowDelegateMap synced_window_delegates;
-  for (const TabModel* model : TabModelList::models()) {
-    if (model->GetProfile() != &profile_.get()) {
-      continue;
-    }
+  TabModelList::ForEach(&profile_.get(), [&](TabModel* model) {
     synced_window_delegates[model->GetSyncedWindowDelegate()->GetSessionId()] =
         model->GetSyncedWindowDelegate();
-  }
+    return true;
+  });
   return synced_window_delegates;
 }
 
