@@ -4169,12 +4169,16 @@ LayoutUnit BlockLayoutAlgorithm::ComputeInitialBlockStartAnnotationSpace()
 
 void BlockLineClampData::Setup(const BlockNode& node,
                                const BoxFragmentBuilder& container_builder) {
+  if (node.IsMulticolContainer()) {
+    return;
+  }
+
   const ConstraintSpace& constraint_space =
       container_builder.GetConstraintSpace();
   const ComputedStyle& style = node.Style();
 
   // Setting up the state in the line-clamp container
-  if (style.HasLineClamp() && !node.IsMulticolContainer()) {
+  if (style.HasLineClamp()) {
     if (data.IsLineClampContext()) {
       // We're in a relayout, we keep the existing state.
       return;
@@ -4223,7 +4227,8 @@ void BlockLineClampData::Setup(const BlockNode& node,
     return;
   }
 
-  if (style.WebkitLineClamp() != 0) {
+  if (style.WebkitLineClamp() != 0 ||
+      style.Continue() == EContinue::kWebkitLegacy) {
     UseCounter::Count(node.GetDocument(),
                       WebFeature::kWebkitLineClampWithoutWebkitBox);
   }
