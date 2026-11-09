@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -36,6 +37,7 @@ class MockTtcBackend : public TtcBackend {
   MOCK_METHOD(void, Connect, (TtcBackend::Observer*), (override));
   MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(bool, is_transport_connected, (), (const, override));
+  MOCK_METHOD(std::optional<std::string>, GetSessionId, (), (const, override));
   MOCK_METHOD(void, SendAudioChunk, (base::span<const int16_t>), (override));
   MOCK_METHOD(void, SendTextInput, (const std::string&), (override));
   MOCK_METHOD(void,

@@ -751,4 +751,22 @@ TEST_F(TtcMesClientTest, SetupRequestUsesDefaultModelPreferenceWhenConfigured) {
             optimization_guide::proto::MODEL_PREFERENCE_DEFAULT);
 }
 
+TEST_F(TtcMesClientTest, GetSessionIdTracksSessionStatusAndClose) {
+  EXPECT_EQ(client().GetSessionId(), std::nullopt);
+
+  optimization_guide::proto::TtcServerFrame empty_status_frame;
+  empty_status_frame.mutable_session_status();
+  client().HandleServerFrame(empty_status_frame);
+  EXPECT_EQ(client().GetSessionId(), std::nullopt);
+
+  optimization_guide::proto::TtcServerFrame status_frame;
+  status_frame.mutable_session_status()->set_server_session_id(
+      "test-session-123");
+  client().HandleServerFrame(status_frame);
+  EXPECT_EQ(client().GetSessionId(), "test-session-123");
+
+  client().Close();
+  EXPECT_EQ(client().GetSessionId(), std::nullopt);
+}
+
 }  // namespace ttc

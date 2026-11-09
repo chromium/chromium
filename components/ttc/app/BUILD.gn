@@ -5,6 +5,7 @@
 import("//components/optimization_guide/features.gni")
 
 source_set("app") {
+  sources = [ "ttc_backend.cc" ]
   public = [
     "ttc_backend.h",
     "ttc_mes_client.h",

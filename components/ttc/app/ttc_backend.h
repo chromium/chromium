@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -96,6 +97,10 @@ class TtcBackend {
   virtual void Close() = 0;
 
   virtual bool is_transport_connected() const = 0;
+
+  // Returns the backend-assigned session ID, or std::nullopt if a session
+  // hasn't been connected yet.
+  virtual std::optional<std::string> GetSessionId() const;
 };
 
 }  // namespace ttc

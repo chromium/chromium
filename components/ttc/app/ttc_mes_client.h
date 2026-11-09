@@ -57,6 +57,7 @@ class TtcMesClient
   void ReportPlaybackStatus(int64_t last_played_sequence_number) override;
   void Close() override;
   bool is_transport_connected() const override;
+  std::optional<std::string> GetSessionId() const override;
 
   // optimization_guide::RemoteModelExecutionSession::Observer:
   void OnConnectionStateChanged(

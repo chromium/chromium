@@ -914,4 +914,11 @@ bool TtcMesClient::is_transport_connected() const {
   return is_transport_connected_;
 }
 
+std::optional<std::string> TtcMesClient::GetSessionId() const {
+  if (session_id_.empty()) {
+    return std::nullopt;
+  }
+  return session_id_;
+}
+
 }  // namespace ttc
