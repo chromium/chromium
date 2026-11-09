@@ -18,7 +18,6 @@
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
-#include "ui/views/accessibility/view_accessibility.h"
 
 namespace {
 
@@ -318,13 +317,9 @@ void RootTabCollectionNode::UpdateAccessibleTabIndices() {
   const int num_tabs = tab_strip_model_->count();
   int pos_in_set = 0;
   auto update_indices = [&](this const auto& self,
-                            const TabCollectionNode& node) -> void {
+                            TabCollectionNode& node) -> void {
     if (node.type() == TabCollectionNode::Type::TAB) {
-      ++pos_in_set;
-      if (views::View* view = node.view()) {
-        view->GetViewAccessibility().SetPosInSet(pos_in_set);
-        view->GetViewAccessibility().SetSetSize(num_tabs);
-      }
+      node.UpdateAccessibleTabIndex(++pos_in_set, num_tabs);
       return;
     }
     for (const auto& child : node.children()) {

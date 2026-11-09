@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_COLLECTION_NODE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -188,6 +189,10 @@ class TabCollectionNode {
 
   void NotifyTabSelectionChanged();
 
+  // Updates this tab node's accessible `PosInSet` and `SetSize` attributes on
+  // its view, skipping redundant updates when the values have not changed.
+  void UpdateAccessibleTabIndex(int pos_in_set, int set_size);
+
   void SetController(TabStripCollectionController* controller);
   TabStripCollectionController* GetController() {
     return tab_strip_controller_;
@@ -225,6 +230,7 @@ class TabCollectionNode {
   const Type type_;
   const tabs::TabCollectionNodeHandle handle_;
   tabs::ConstChildPtr node_data_;
+  const TabStripOrientation orientation_;
 
   // 1:1 mapping of the collections children.
   NodeChildren children_;
@@ -257,7 +263,10 @@ class TabCollectionNode {
   // Allows views to create the Tab Context Menu.
   raw_ptr<TabStripCollectionController> tab_strip_controller_ = nullptr;
 
-  const TabStripOrientation orientation_;
+  // Cached accessible position and set size for `Type::TAB` nodes to avoid
+  // redundant `ViewAccessibility` mutations and serialization notifications.
+  std::optional<int> ax_pos_in_set_;
+  std::optional<int> ax_set_size_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_COLLECTION_NODE_H_

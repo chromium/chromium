@@ -17,6 +17,7 @@
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
@@ -70,29 +71,6 @@ tabs::TabCollectionNodeHandle GetHandleFromNode(tabs::ConstChildPtr node_data) {
 }
 
 }  // anonymous namespace
-
-base::CallbackListSubscription TabCollectionNode::RegisterWillDestroyCallback(
-    base::OnceClosure callback) {
-  return on_will_destroy_callback_list_.Add(std::move(callback));
-}
-
-base::CallbackListSubscription
-TabCollectionNode::RegisterTabSelectionChangedCallback(
-    base::RepeatingClosure callback) {
-  return on_tab_selection_changed_callback_list_.Add(std::move(callback));
-}
-
-void TabCollectionNode::NotifyTabSelectionChanged() {
-  on_tab_selection_changed_callback_list_.Notify();
-}
-
-void TabCollectionNode::SetController(
-    TabStripCollectionController* controller) {
-  tab_strip_controller_ = controller;
-  for (const auto& child : children_) {
-    child->SetController(controller);
-  }
-}
 
 // static
 std::unique_ptr<views::View> TabCollectionNode::CreateViewForNode(
@@ -406,5 +384,43 @@ void TabCollectionNode::EnsureFocusOrder(size_t child_index) {
   } else if (children_.size() > 1) {
     children_[child_index]->node_view_->InsertBeforeInFocusList(
         children_[1]->node_view_);
+  }
+}
+
+base::CallbackListSubscription TabCollectionNode::RegisterWillDestroyCallback(
+    base::OnceClosure callback) {
+  return on_will_destroy_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+TabCollectionNode::RegisterTabSelectionChangedCallback(
+    base::RepeatingClosure callback) {
+  return on_tab_selection_changed_callback_list_.Add(std::move(callback));
+}
+
+void TabCollectionNode::NotifyTabSelectionChanged() {
+  on_tab_selection_changed_callback_list_.Notify();
+}
+
+void TabCollectionNode::UpdateAccessibleTabIndex(int pos_in_set, int set_size) {
+  CHECK_EQ(type_, Type::TAB);
+  if (!node_view_) {
+    return;
+  }
+  if (ax_pos_in_set_ != pos_in_set) {
+    ax_pos_in_set_ = pos_in_set;
+    node_view_->GetViewAccessibility().SetPosInSet(pos_in_set);
+  }
+  if (ax_set_size_ != set_size) {
+    ax_set_size_ = set_size;
+    node_view_->GetViewAccessibility().SetSetSize(set_size);
+  }
+}
+
+void TabCollectionNode::SetController(
+    TabStripCollectionController* controller) {
+  tab_strip_controller_ = controller;
+  for (const auto& child : children_) {
+    child->SetController(controller);
   }
 }
