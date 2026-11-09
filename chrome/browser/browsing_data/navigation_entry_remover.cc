@@ -112,17 +112,17 @@ void DeleteTabNavigationEntries(
           : base::BindRepeating(&UrlMatcherForSerializedNavigationEntry,
                                 std::cref(url_set));
 
-  for (const TabModel* tab_model : TabModelList::models()) {
-    if (tab_model->GetProfile() == profile) {
-      for (int i = 0; i < tab_model->GetTabCount(); i++) {
-        TabAndroid* tab = tab_model->GetTabAt(i);
-        tab->DeleteFrozenNavigationEntries(session_predicate);
-        content::WebContents* web_contents = tab->web_contents();
-        if (web_contents)
-          DeleteNavigationEntries(web_contents, predicate);
+  TabModelList::ForEach(profile, [&](TabModel* tab_model) {
+    for (int i = 0; i < tab_model->GetTabCount(); i++) {
+      TabAndroid* tab = tab_model->GetTabAt(i);
+      tab->DeleteFrozenNavigationEntries(session_predicate);
+      content::WebContents* web_contents = tab->web_contents();
+      if (web_contents) {
+        DeleteNavigationEntries(web_contents, predicate);
       }
     }
-  }
+    return true;
+  });
 #else
   GlobalBrowserCollection::GetInstance()->ForEach(
       [profile, &predicate](BrowserWindowInterface* browser) {

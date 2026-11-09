@@ -243,13 +243,15 @@ std::set<GURL> GetOpenedUrlsAndOngoingDownloads(Profile* profile) {
         return true;
       });
 #else
-  for (const TabModel* model : TabModelList::models()) {
+  TabModelList::ForEach(profile, [&result](TabModel* model) {
     for (int index = 0; index < model->GetTabCount(); ++index) {
       TabAndroid* tab = model->GetTabAt(index);
-      if (tab)
+      if (tab) {
         result.insert(tab->GetURL());
+      }
     }
-  }
+    return true;
+  });
 #endif
 
   download::SimpleDownloadManager::DownloadVector downloads;

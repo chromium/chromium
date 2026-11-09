@@ -25,18 +25,17 @@ void TabsCounter::Count() {
   int total_tab_count = 0;
   int total_window_count = 0;
 
-  for (TabModel* tab_model : TabModelList::models()) {
-    if (tab_model->GetProfile() != profile_ || tab_model->IsOffTheRecord()) {
-      continue;
-    }
+  if (!profile_->IsOffTheRecord()) {
+    TabModelList::ForEach(profile_, [&](TabModel* tab_model) {
+      int tab_count =
+          tab_model->GetTabCountNavigatedInTimeWindow(begin_time, end_time);
 
-    int tab_count =
-        tab_model->GetTabCountNavigatedInTimeWindow(begin_time, end_time);
-
-    if (tab_count > 0) {
-      total_window_count++;
-      total_tab_count += tab_count;
-    }
+      if (tab_count > 0) {
+        total_window_count++;
+        total_tab_count += tab_count;
+      }
+      return true;
+    });
   }
 
   TabModel* archived_tab_model = TabModelList::GetArchivedTabModel(profile_);

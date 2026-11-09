@@ -1530,12 +1530,11 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 #if BUILDFLAG(IS_ANDROID)
     base::RecordAction(UserMetricsAction("ClearBrowsingData_Tabs"));
 
-    for (TabModel* tab_model : TabModelList::models()) {
-      if (tab_model->GetProfile() != profile_ || tab_model->IsOffTheRecord()) {
-        continue;
-      }
-
-      tab_model->CloseTabsNavigatedInTimeWindow(delete_begin, delete_end);
+    if (!profile_->IsOffTheRecord()) {
+      TabModelList::ForEach(profile_, [&](TabModel* tab_model) {
+        tab_model->CloseTabsNavigatedInTimeWindow(delete_begin, delete_end);
+        return true;
+      });
     }
 
     TabModel* archived_tab_model = TabModelList::GetArchivedTabModel(profile_);
