@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/settings/manage_sync/public/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/whats_new/public/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -245,14 +244,9 @@ void ResolvePassphraseErrorFromOverflowMenu() {
                                               @"BubbleViewLabelIdentifier")];
 }
 
-
 // Tests that tapping the identity button (when signed in) opens the Account
 // Menu and records the correct user action and access point UMA metric.
 - (void)testAccountMenuFromOverflowMenu {
-  AppLaunchConfiguration config;
-  config.additional_args.push_back("--enable-features=IdentityAwareness");
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 

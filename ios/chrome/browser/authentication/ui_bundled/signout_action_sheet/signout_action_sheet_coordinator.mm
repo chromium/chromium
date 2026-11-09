@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -50,7 +49,6 @@ SnackbarMessage* CreateSignoutSnackbarMessage(
   if (show_undo_button && signed_out_identity && account_manager_service &&
       account_manager_service->GetIdentityOnDeviceWithGaiaID(
           signed_out_identity.gaiaId)) {
-    CHECK(IsIdentityAwarenessEnabled());
     SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
     action.title = l10n_util::GetNSString(IDS_IOS_SIGNIN_SNACKBAR_UNDO);
     __weak id<SceneCommands> scene_commands_handler =

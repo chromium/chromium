@@ -11,7 +11,6 @@
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/mock_callback.h"
 #import "base/test/run_until.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/test/mock_sync_service.h"
@@ -26,7 +25,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -264,7 +262,6 @@ TEST_F(SignoutActionSheetCoordinatorTest,
 // Tests that the snackbar message shown after user-initiated sign-out includes
 // an undo action, and that triggering the action records the user action.
 TEST_F(SignoutActionSheetCoordinatorTest, SignoutSnackbarMessageHasUndoAction) {
-  base::test::ScopedFeatureList feature_list(kIdentityAwareness);
   authentication_service()->SignIn(identity_,
                                    signin_metrics::AccessPoint::kStartPage);
 
@@ -320,7 +317,6 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignoutSnackbarMessageHasUndoAction) {
 // does not include an undo action.
 TEST_F(SignoutActionSheetCoordinatorTest,
        SignoutSnackbarMessageHasNoUndoActionWhenNotUserInitiated) {
-  base::test::ScopedFeatureList feature_list(kIdentityAwareness);
   authentication_service()->SignIn(identity_,
                                    signin_metrics::AccessPoint::kStartPage);
 

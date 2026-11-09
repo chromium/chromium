@@ -365,8 +365,8 @@ enum class AccessPoint : int {
   // snackbar. iOS only.
   kLevelUp = 107,
   // Triggered when the user taps the Undo action on the sign-out snackbar.
-  // The snackbar is displayed after the user signs out from the account menu,
-  // when IdentityAwareness is enabled. iOS only.
+  // The snackbar is displayed after the user signs out from the account menu.
+  // iOS only.
   kSignoutUndoSnackbar = 108,
   // Sign-in promo shown for the Composebox Drive context menu option.
   kComposeboxDriveContextMenuOptionBubble = 109,

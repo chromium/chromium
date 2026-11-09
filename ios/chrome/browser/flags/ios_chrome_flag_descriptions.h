@@ -1261,10 +1261,6 @@ inline constexpr char kIOSWebContextMenuNewTitleDescription[] =
     "Enables actions in context menu title instead of customized action for "
     "web context menu.";
 
-inline constexpr char kIdentityAwarenessName[] = "Identity Awareness";
-inline constexpr char kIdentityAwarenessDescription[] =
-    "Enables the sign-in/account menu button in the overflow menu.";
-
 inline constexpr char kIdentityConfirmationSnackbarName[] =
     "Identity Confirmation Snackbar";
 inline constexpr char kIdentityConfirmationSnackbarDescription[] =

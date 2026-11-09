@@ -1082,7 +1082,6 @@ inline LayoutStateScenePassKey PassKey() {
 }
 
 - (void)showUndoSignoutFromSnackbarForIdentity:(id<SystemIdentity>)identity {
-  CHECK(IsIdentityAwarenessEnabled());
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
   if (!accountManagerService ||

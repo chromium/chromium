@@ -891,10 +891,8 @@ void GetPresetNTPBackgroundPreview(
 
   [self logTranslateAvailability];
 
-  if (IsIdentityAwarenessEnabled()) {
-    self.identityAction = [self newIdentityAction];
-    [self updateIdentityAction];
-  }
+  self.identityAction = [self newIdentityAction];
+  [self updateIdentityAction];
 
   self.reloadAction =
       [self createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_RELOAD
@@ -1095,12 +1093,10 @@ void GetPresetNTPBackgroundPreview(
                                                : @[]
                  footer:nil];
 
-  if (IsIdentityAwarenessEnabled()) {
-    self.identityActionsGroup =
-        [[OverflowMenuActionGroup alloc] initWithGroupName:kIdentityGroupName
-                                                   actions:@[]
-                                                    footer:nil];
-  }
+  self.identityActionsGroup =
+      [[OverflowMenuActionGroup alloc] initWithGroupName:kIdentityGroupName
+                                                 actions:@[]
+                                                  footer:nil];
 
   if (IsOverflowMenuHomeCustomizationEntrypointEnabled()) {
     self.customizationActionsGroup = [[OverflowMenuActionGroup alloc]
@@ -2087,8 +2083,7 @@ void GetPresetNTPBackgroundPreview(
   NSMutableArray<OverflowMenuActionGroup*>* actionGroups =
       [[NSMutableArray alloc] init];
 
-  if (IsIdentityAwarenessEnabled() && self.authenticationService &&
-      !self.incognito) {
+  if (self.authenticationService && !self.incognito) {
     NSMutableArray<OverflowMenuAction*>* identityActions =
         [NSMutableArray array];
     if (self.authenticationService->SigninEnabled() &&

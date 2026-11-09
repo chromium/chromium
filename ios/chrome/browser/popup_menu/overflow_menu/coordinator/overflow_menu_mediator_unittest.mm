@@ -995,12 +995,8 @@ TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoShown) {
   ASSERT_TRUE(HasFamilyLinkInfoItem());
 }
 
-// Tests that the identity button is not shown when user is signed out even
-// if the IdentityAwareness feature is enabled.
+// Tests that the identity button is not shown when user is signed out.
 TEST_F(OverflowMenuMediatorTest, TestIdentityButtonHiddenWhenSignedOut) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIdentityAwareness);
-
   // Setup the mediator.
   CreateMediator(/*incognito=*/NO);
   mediator_.authenticationService =
@@ -1012,11 +1008,8 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityButtonHiddenWhenSignedOut) {
 }
 
 // Tests that the identity button is shown in its own group when user is signed
-// out and the IdentityAwareness feature is enabled.
+// in.
 TEST_F(OverflowMenuMediatorTest, TestIdentityButtonVisibleWhenSignedIn) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIdentityAwareness);
-
   // Sign in user.
   const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(identity);
@@ -1048,9 +1041,6 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityButtonVisibleWhenSignedIn) {
 // Tests that the identity button is hidden in incognito mode even when signed
 // in.
 TEST_F(OverflowMenuMediatorTest, TestIdentityButtonHiddenInIncognitoMode) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIdentityAwareness);
-
   // Sign in user.
   const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(identity);
@@ -1068,11 +1058,8 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityButtonHiddenInIncognitoMode) {
 }
 
 // Tests that the identity button is hidden when sign-in is disabled, even when
-// the user is signed in and the IdentityAwareness feature is enabled.
+// the user is signed in.
 TEST_F(OverflowMenuMediatorTest, TestIdentityButtonHiddenWhenSigninDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIdentityAwareness);
-
   // Sign in user.
   const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(identity);
@@ -1848,11 +1835,8 @@ TEST_F(OverflowMenuMediatorTest,
 // updates when the tier or sync error state changes.
 TEST_F(OverflowMenuMediatorTest,
        TestIdentityActionShowsAITierRingWhenEligibleAndNoError) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{kIdentityAwareness,
-                            kAiSubscriptionAvatarRingFollowupIOS},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList scoped_feature_list(
+      kAiSubscriptionAvatarRingFollowupIOS);
 
   personal_profile_->GetPrefs()->SetInteger(
       subscription_eligibility::prefs::kAiSubscriptionTier, 1);
