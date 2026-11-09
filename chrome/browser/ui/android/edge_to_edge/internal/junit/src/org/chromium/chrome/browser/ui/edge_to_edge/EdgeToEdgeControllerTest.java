@@ -3114,6 +3114,17 @@ public class EdgeToEdgeControllerTest {
         mockPadAdjuster.checkInsets(/* expectedTop= */ TOP_INSET, /* expectedBottom= */ 0);
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
+    public void testIsTopEdgeToEdgeEnabled_RequiresEdgeToEdgeEverywhere() {
+        ChromeFeatureList.sEdgeToEdgeTopInsetEnableTopEdgeToEdge.setForTesting(true);
+        assertFalse(
+                "isTopEdgeToEdgeEnabled() should be false when EDGE_TO_EDGE_EVERYWHERE is"
+                        + " disabled.",
+                EdgeToEdgeUtils.isTopEdgeToEdgeEnabled());
+    }
+
     // TODO: Verify that the value of the updated insets returned from the
     //  OnApplyWindowInsetsListener is correct.
 

@@ -711,10 +711,12 @@ public class EdgeToEdgeUtils {
 
     /**
      * Returns whether the top edge-to-edge feature is enabled (beyond the {@link
-     * EdgeToEdgeController} refactor). Implies {@link #isEdgeToEdgeRefactorEnabled()}.
+     * EdgeToEdgeController} refactor). Implies {@link #isEdgeToEdgeRefactorEnabled()} and {@link
+     * #isEdgeToEdgeEverywhereEnabled()}.
      */
     public static boolean isTopEdgeToEdgeEnabled() {
         return isEdgeToEdgeRefactorEnabled()
+                && isEdgeToEdgeEverywhereEnabled()
                 && ChromeFeatureList.sEdgeToEdgeTopInsetEnableTopEdgeToEdge.getValue();
     }
 
