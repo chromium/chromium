@@ -4,13 +4,14 @@
 
 #include "content/browser/back_forward_cache/back_forward_cache_impl.h"
 
-#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
-#include "base/memory_coordinator/memory_pressure_source.h"
+#include "base/memory_coordinator/memory_limit.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -34,13 +35,30 @@ GURL GetNextUrl() {
   return GURL("http://" + base::NumberToString(counter++) + ".com");
 }
 
-void SimulateMemoryPressure(base::MemoryPressureLevel memory_pressure_level) {
-  base::MemoryPressureListenerRegistry::SimulatePressureNotification(
-      memory_pressure_level);
-  // Flush the eviction tasks posted by the notification.
+// Mirrors how the MemoryPressureListenerPolicy translates a memory pressure
+// level into memory limit updates and release requests.
+void SimulateMemoryPressure(base::TestMemoryConsumerRegistry& registry,
+                            base::MemoryPressureLevel memory_pressure_level) {
+  base::MemoryLimit memory_limit;
+  switch (memory_pressure_level) {
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
+      memory_limit = base::MemoryLimit::NoPressureThreshold();
+      break;
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
+      memory_limit = base::MemoryLimit::ModeratePressureThreshold();
+      break;
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      memory_limit = base::MemoryLimit::CriticalPressureThreshold();
+      break;
+  }
+
   base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    registry.NotifyUpdateMemoryLimitAsync(memory_limit, run_loop.QuitClosure());
+  } else {
+    registry.NotifyUpdateMemoryLimitAsync(memory_limit, base::DoNothing());
+    registry.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
+  }
   run_loop.Run();
 }
 
@@ -336,9 +354,13 @@ class BackForwardCacheMemoryPressureTest
     contents()->SetDelegate(this);
   }
 
+  void SimulateMemoryPressure(base::MemoryPressureLevel memory_pressure_level) {
+    content::SimulateMemoryPressure(memory_consumer_registry_,
+                                    memory_pressure_level);
+  }
+
  private:
-  base::MemoryPressureSource memory_pressure_source_;
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
+  base::TestMemoryConsumerRegistry memory_consumer_registry_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -419,18 +441,14 @@ class BackForwardCacheMemoryPressureStatefulTest
   }
 
   void SimulateMemoryPressure(base::MemoryPressureLevel memory_pressure_level) {
-    base::MemoryPressureListenerRegistry::SimulatePressureNotification(
-        memory_pressure_level);
-    // Flush the eviction tasks posted by the notification.
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
+    content::SimulateMemoryPressure(memory_consumer_registry_,
+                                    memory_pressure_level);
   }
 
+ protected:
+  base::TestMemoryConsumerRegistry memory_consumer_registry_;
+
  private:
-  base::MemoryPressureSource memory_pressure_source_;
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -538,18 +556,12 @@ class BackForwardCacheVisibilityPressureTest
   }
 
   void SimulateMemoryPressure(base::MemoryPressureLevel memory_pressure_level) {
-    base::MemoryPressureListenerRegistry::SimulatePressureNotification(
-        memory_pressure_level);
-    // Flush the eviction tasks posted by the notification.
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
+    content::SimulateMemoryPressure(memory_consumer_registry_,
+                                    memory_pressure_level);
   }
 
  private:
-  base::MemoryPressureSource memory_pressure_source_;
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
+  base::TestMemoryConsumerRegistry memory_consumer_registry_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -619,6 +631,37 @@ TEST_F(BackForwardCacheMemoryPressureStatefulTest,
 }
 
 TEST_F(BackForwardCacheMemoryPressureStatefulTest,
+       UpdateMemoryLimitDoesNotEvictUntilReleaseMemory) {
+  // Navigate to fill cache with 3 entries. (Requires 4 navigations).
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  auto& bfcache_impl = contents()->GetController().GetBackForwardCache();
+  EXPECT_EQ(bfcache_impl.GetEntries().size(), 3u);
+
+  // Lower the limit to the moderate pressure threshold in background (target
+  // of 1). The cache size is capped at the current number of entries.
+  contents()->WasHidden();
+  memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::MemoryLimit::ModeratePressureThreshold());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(bfcache_impl.GetEntries().size(), 3u);
+  EXPECT_EQ(bfcache_impl.GetCacheSize(), 3u);
+
+  // Storing a new page doesn't grow the cache beyond that cap.
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(bfcache_impl.GetEntries().size(), 3u);
+
+  // Releasing memory prunes down to the target.
+  memory_consumer_registry_.NotifyReleaseMemory();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(bfcache_impl.GetEntries().size(), 1u);
+  EXPECT_EQ(bfcache_impl.GetCacheSize(), 1u);
+}
+
+TEST_F(BackForwardCacheMemoryPressureStatefulTest,
        InitialStateEnforcesPressureLimit) {
   // Simulate globally that we are under Critical Memory Pressure BEFORE the tab
   // is created.
@@ -628,6 +671,9 @@ TEST_F(BackForwardCacheMemoryPressureStatefulTest,
   std::unique_ptr<TestWebContents> new_contents =
       TestWebContents::Create(browser_context(), nullptr);
   new_contents->SetDelegate(this);
+  // The limit is applied as soon as the cache is created.
+  EXPECT_EQ(new_contents->GetController().GetBackForwardCache().GetCacheSize(),
+            0u);
 
   // Navigate to add entries.
   NavigationSimulator::NavigateAndCommitFromBrowser(new_contents.get(),

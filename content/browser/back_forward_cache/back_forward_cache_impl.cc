@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/traits.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
@@ -89,6 +90,17 @@ BASE_FEATURE(kBFCachePerformanceManagerPolicy,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
+
+constexpr char kMemoryConsumerName[] = "BackForwardCache";
+
+constexpr base::MemoryConsumerTraits kBackForwardCacheTraits(
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
+    // The released memory is mostly the evicted pages' renderers, freed by the
+    // OS when the process exits.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
+    base::MemoryConsumerTraits::InformationRetention::kLossy,
+    base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
+    base::MemoryConsumerTraits::IsStateful::kYes);
 
 size_t GetDefaultMaxCacheSize() {
   if (!IsBackForwardCacheEnabled()) {
@@ -723,9 +735,13 @@ BackForwardCacheImpl::BackForwardCacheImpl(WebContentsImpl& web_contents)
           CacheControlNoStoreExperimentLevel::kDoNotStore;
 
   if (base::FeatureList::IsEnabled(kBFCachePerformanceManagerPolicy)) {
-    memory_pressure_listener_registration_.emplace(
-        base::MemoryPressureListenerTag::kBackForwardCacheImpl, this);
-    if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    // The unregister check is disabled because on Android, browser tests do
+    // not run the full browser shutdown, so some WebContents (and their
+    // BackForwardCacheImpl) can outlive the MemoryConsumerRegistry.
+    memory_consumer_registration_.emplace(
+        kMemoryConsumerName, kBackForwardCacheTraits, this,
+        base::MemoryConsumerRegistration::CheckUnregister::kDisabled);
+    if (IsStatefulMemoryPressureEnabled()) {
       max_cache_size_ = GetTargetCacheSize();
     }
   }
@@ -1435,11 +1451,10 @@ void BackForwardCacheImpl::EnforceCacheSizeLimit() {
       BackForwardCacheMetrics::NotRestoredReason::kCacheLimit;
   size_t effective_limit = GetCacheSize();
   bool bypass_ack_check = false;
-  if (base::FeatureList::IsEnabled(kBFCachePerformanceManagerPolicy) &&
-      base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (IsStatefulMemoryPressureEnabled()) {
     if (effective_limit < baseline_max_cache_size_ &&
-        memory_pressure_level() != base::MEMORY_PRESSURE_LEVEL_NONE) {
-      limit_reason = GetPressureReason(memory_pressure_level());
+        memory_limit() <= base::MemoryLimit::ModeratePressureThreshold()) {
+      limit_reason = GetPressureReason(memory_limit());
       bypass_ack_check = true;
     }
   }
@@ -1542,8 +1557,7 @@ void BackForwardCacheImpl::SetEmbedderSuppliedCacheSize(
   baseline_max_cache_size_ = embedder_supplied_cache_size;
   max_foreground_cache_size_ = std::nullopt;
 
-  if (base::FeatureList::IsEnabled(kBFCachePerformanceManagerPolicy) &&
-      base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (IsStatefulMemoryPressureEnabled()) {
     max_cache_size_ = GetTargetCacheSize();
   } else {
     max_cache_size_ = embedder_supplied_cache_size;
@@ -1908,19 +1922,30 @@ void BackForwardCacheImpl::RecordEntryMatch(const GURL& new_url,
   base::UmaHistogramEnumeration("BackForwardCache.History.EntryMatch", result);
 }
 
-void BackForwardCacheImpl::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
+void BackForwardCacheImpl::OnUpdateMemoryLimit() {
   if (!IsBackForwardCacheEnabled()) {
     return;
   }
-  if (base::FeatureList::IsEnabled(kBFCachePerformanceManagerPolicy) &&
-      base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (IsStatefulMemoryPressureEnabled()) {
+    // Don't release memory here: cap at the target, but not below the current
+    // number of entries. OnReleaseMemory() will prune down to the target. The
+    // cap never grows above its previous value unless the target does.
+    max_cache_size_ = std::max(GetTargetCacheSize(),
+                               std::min(max_cache_size_, entries_.size()));
+  }
+}
+
+void BackForwardCacheImpl::OnReleaseMemory() {
+  if (!IsBackForwardCacheEnabled()) {
+    return;
+  }
+  if (IsStatefulMemoryPressureEnabled()) {
     max_cache_size_ = GetTargetCacheSize();
     EnforceMemoryPressureLimit();
     return;
   }
 
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+  if (memory_limit() > base::MemoryLimit::ModeratePressureThreshold()) {
     return;
   }
 
@@ -1930,24 +1955,9 @@ void BackForwardCacheImpl::OnMemoryPressure(
   }
 
   // Determine the cache size depending on the visibility.
-  int cache_size = -1;
-  BackForwardCache::NotRestoredReason reason;
-  switch (memory_pressure_level) {
-    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-      cache_size = IsVisible() ? ForegroundCacheSizeOnModeratePressure()
-                               : BackgroundCacheSizeOnModeratePressure();
-      reason = BackForwardCache::NotRestoredReason::
-          kCacheLimitPrunedOnModerateMemoryPressure;
-      break;
-    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      cache_size = IsVisible() ? ForegroundCacheSizeOnCriticalPressure()
-                               : BackgroundCacheSizeOnCriticalPressure();
-      reason = BackForwardCache::NotRestoredReason::
-          kCacheLimitPrunedOnCriticalMemoryPressure;
-      break;
-    default:
-      NOTREACHED();
-  }
+  int cache_size = GetConfiguredPressureLimit(memory_limit());
+  BackForwardCache::NotRestoredReason reason =
+      GetPressureReason(memory_limit());
 
   // Do not flush BFCache if cache_size is negative (such as -1).
   if (cache_size < 0) {
@@ -1978,14 +1988,18 @@ void BackForwardCacheImpl::OnMemoryPressure(
       number_of_cached_entries);
 }
 
-int BackForwardCacheImpl::GetConfiguredPressureLimit(
-    base::MemoryPressureLevel level) {
+bool BackForwardCacheImpl::IsStatefulMemoryPressureEnabled() const {
+  return base::FeatureList::IsEnabled(kBFCachePerformanceManagerPolicy) &&
+         base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName);
+}
+
+int BackForwardCacheImpl::GetConfiguredPressureLimit(base::MemoryLimit limit) {
   bool is_visible = IsVisible();
-  if (level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+  if (limit <= base::MemoryLimit::CriticalPressureThreshold()) {
     return is_visible ? ForegroundCacheSizeOnCriticalPressure()
                       : BackgroundCacheSizeOnCriticalPressure();
   }
-  if (level == base::MEMORY_PRESSURE_LEVEL_MODERATE) {
+  if (limit <= base::MemoryLimit::ModeratePressureThreshold()) {
     return is_visible ? ForegroundCacheSizeOnModeratePressure()
                       : BackgroundCacheSizeOnModeratePressure();
   }
@@ -1993,8 +2007,8 @@ int BackForwardCacheImpl::GetConfiguredPressureLimit(
 }
 
 BackForwardCacheMetrics::NotRestoredReason
-BackForwardCacheImpl::GetPressureReason(base::MemoryPressureLevel level) {
-  if (level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+BackForwardCacheImpl::GetPressureReason(base::MemoryLimit limit) {
+  if (limit <= base::MemoryLimit::CriticalPressureThreshold()) {
     return BackForwardCacheMetrics::NotRestoredReason::
         kCacheLimitPrunedOnCriticalMemoryPressure;
   }
@@ -2003,11 +2017,11 @@ BackForwardCacheImpl::GetPressureReason(base::MemoryPressureLevel level) {
 }
 
 size_t BackForwardCacheImpl::GetTargetCacheSize() {
-  if (memory_pressure_level() == base::MEMORY_PRESSURE_LEVEL_NONE) {
+  if (memory_limit() > base::MemoryLimit::ModeratePressureThreshold()) {
     return baseline_max_cache_size_;
   }
 
-  int cache_size = GetConfiguredPressureLimit(memory_pressure_level());
+  int cache_size = GetConfiguredPressureLimit(memory_limit());
   if (cache_size < 0) {
     return baseline_max_cache_size_;
   }
@@ -2016,18 +2030,18 @@ size_t BackForwardCacheImpl::GetTargetCacheSize() {
 }
 
 void BackForwardCacheImpl::EnforceMemoryPressureLimit() {
-  if (memory_pressure_level() == base::MEMORY_PRESSURE_LEVEL_NONE) {
+  if (memory_limit() > base::MemoryLimit::ModeratePressureThreshold()) {
     return;
   }
 
-  int cache_size = GetConfiguredPressureLimit(memory_pressure_level());
+  int cache_size = GetConfiguredPressureLimit(memory_limit());
   if (cache_size < 0) {
     return;
   }
 
   bool bypass_ack_check = (max_cache_size_ < baseline_max_cache_size_);
   auto reason = bypass_ack_check
-                    ? GetPressureReason(memory_pressure_level())
+                    ? GetPressureReason(memory_limit())
                     : BackForwardCacheMetrics::NotRestoredReason::kCacheLimit;
 
   size_t number_of_tabs = 0;
@@ -2058,8 +2072,7 @@ void BackForwardCacheImpl::OnVisibilityChanged(content::Visibility visibility) {
   if (!IsBackForwardCacheEnabled()) {
     return;
   }
-  if (!base::FeatureList::IsEnabled(kBFCachePerformanceManagerPolicy) ||
-      !base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (!IsStatefulMemoryPressureEnabled()) {
     return;
   }
   max_cache_size_ = GetTargetCacheSize();

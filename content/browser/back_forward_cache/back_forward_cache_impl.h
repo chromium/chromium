@@ -12,10 +12,11 @@
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/memory_coordinator/memory_consumer.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -145,7 +146,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
       public RenderProcessHostInternalObserver,
       public StoredPage::Delegate,
       public WebContentsObserver,
-      public base::MemoryPressureListener {
+      public base::MemoryConsumer {
   friend class BackForwardCacheCanStoreTreeResult;
   friend class BackForwardCacheMetrics;
 
@@ -471,9 +472,9 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // StoredPage::Delegate overrides:
   void RenderViewHostNoLongerStored(RenderViewHostImpl* rvh) override;
 
-  // base::MemoryPressureListener:
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override;
+  // base::MemoryConsumer:
+  void OnUpdateMemoryLimit() override;
+  void OnReleaseMemory() override;
 
   // Construct a tree of NotRestoredReasons for |rfh| without checking the
   // eligibility of all the documents in the frame tree. This should be only
@@ -512,9 +513,11 @@ class CONTENT_EXPORT BackForwardCacheImpl
   void OnVisibilityChanged(content::Visibility visibility) override;
 
   // Stateful memory pressure helpers:
-  int GetConfiguredPressureLimit(base::MemoryPressureLevel level);
+  // Returns true if the cache size follows the memory limit (stateful mode).
+  bool IsStatefulMemoryPressureEnabled() const;
+  int GetConfiguredPressureLimit(base::MemoryLimit limit);
   BackForwardCacheMetrics::NotRestoredReason GetPressureReason(
-      base::MemoryPressureLevel level);
+      base::MemoryLimit limit);
   size_t GetTargetCacheSize();
   void EnforceMemoryPressureLimit();
 
@@ -763,8 +766,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
   std::optional<base::TimeDelta> embedder_supplied_time_to_live_;
   std::optional<bool> embedder_supplied_cache_forward_entries_allowed_;
 
-  std::optional<base::MemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
+  std::optional<base::MemoryConsumerRegistration> memory_consumer_registration_;
 
   base::WeakPtrFactory<BackForwardCacheImpl> weak_factory_;
 
