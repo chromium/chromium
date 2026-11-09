@@ -1009,22 +1009,22 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         A new look for easy access to your essentials
       </message>
       <message name="IDS_BOTTOM_BAR_EDUCATION_TITLE_GEMINI" desc="Title of the bottom bar education bubble for the Gemini-focused variant.">
-        Gemini and your essentials on the new toolbar
+        Gemini and your essentials on the new bottom toolbar
       </message>
       <message name="IDS_BOTTOM_BAR_EDUCATION_TITLE_OPT_IN" desc="Title for the opt-in preview dialog">
         Preview Chrome&apos;s new look, built for convenience
       </message>
-      <message name="IDS_BOTTOM_BAR_EDUCATION_BODY" desc="Body of the bottom bar education bubble. The link opens Appearance settings.">
-        Chrome has a new toolbar, built for convenience. You can switch back anytime in <ph name="BEGIN_LINK">&lt;link&gt;</ph>settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+      <message name="IDS_BOTTOM_BAR_EDUCATION_BODY" desc="Body of the bottom bar education bubble for the ergonomics variant. The link opens Appearance settings.">
+        Chrome has a new bottom toolbar, built for convenience. You can switch back anytime in <ph name="BEGIN_LINK">&lt;link&gt;</ph>settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <message name="IDS_BOTTOM_BAR_EDUCATION_BODY_GEMINI" desc="Body of the bottom bar education bubble for the Gemini-focused variant. The link opens Appearance settings.">
+        Chrome has a new look, built for convenience. You can switch back anytime in <ph name="BEGIN_LINK">&lt;link&gt;</ph>settings<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_BOTTOM_BAR_EDUCATION_BODY_OPT_IN" desc="Body of the bottom bar opt-in preview dialog. The link opens Appearance settings.">
-        Your essentials, right on the toolbar. You can switch back anytime in <ph name="BEGIN_LINK">&lt;link&gt;</ph>settings<ph name="END_LINK">&lt;/link&gt;</ph>
+        Your essentials, right on the bottom toolbar. You can switch back anytime in <ph name="BEGIN_LINK">&lt;link&gt;</ph>settings<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_BOTTOM_BAR_EDUCATION_SWITCH_BACK" desc="Button text to switch back to the old layout">
         Switch back
-      </message>
-      <message name="IDS_BOTTOM_BAR_EDUCATION_SHOW_ME" desc="Button text to continue and show tooltips">
-        Show me
       </message>
       <message name="IDS_BOTTOM_BAR_EDUCATION_NOT_NOW" desc="Button text to dismiss the bottom bar opt-in preview dialog">
         Not now

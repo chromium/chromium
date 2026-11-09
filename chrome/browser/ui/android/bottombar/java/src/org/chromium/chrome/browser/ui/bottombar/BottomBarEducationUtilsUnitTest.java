@@ -193,7 +193,7 @@ public class BottomBarEducationUtilsUnitTest {
         assertTextAndLink(
                 view,
                 R.string.bottom_bar_education_title_gemini,
-                R.string.bottom_bar_education_body);
+                R.string.bottom_bar_education_body_gemini);
         assertBubbleButtons(view);
         ImageView illustration = view.findViewById(R.id.education_illustration);
         assertEquals(View.VISIBLE, illustration.getVisibility());
@@ -280,9 +280,7 @@ public class BottomBarEducationUtilsUnitTest {
         assertEquals(View.VISIBLE, view.findViewById(R.id.button_bar).getVisibility());
 
         TextView positive = view.findViewById(R.id.positive_button);
-        assertEquals(
-                mContext.getString(R.string.bottom_bar_education_show_me),
-                positive.getText().toString());
+        assertEquals(mContext.getString(R.string.got_it), positive.getText().toString());
         positive.performClick();
         verify(mOnPositiveClicked).run();
 

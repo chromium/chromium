@@ -32,7 +32,7 @@ class BottomBarEducationContentProperties {
     static final ReadableBooleanPropertyKey IS_BUTTON_BAR_VISIBLE =
             new ReadableBooleanPropertyKey();
 
-    /** Runs when the positive ("Show me") button is clicked. */
+    /** Runs when the positive ("Got it") button is clicked. */
     static final ReadableObjectPropertyKey<Runnable> ON_POSITIVE_CLICKED =
             new ReadableObjectPropertyKey<>();
 

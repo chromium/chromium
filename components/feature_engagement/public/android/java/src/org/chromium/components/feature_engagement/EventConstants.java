@@ -55,7 +55,7 @@ public final class EventConstants {
     public static final String ANDROID_BOTTOM_BAR_EDUCATION_OPT_IN_ACCEPTED =
             "android_bottom_bar_education_opt_in_accepted";
 
-    /** The user tapped "Show me" in the bottom bar education onboarding flow. */
+    /** The user accepted ("Got it" / "Try it now") the bottom bar education onboarding flow. */
     public static final String ANDROID_BOTTOM_BAR_EDUCATION_USED =
             "android_bottom_bar_education_used";
 

@@ -102,8 +102,8 @@ public final class BottomBarEducationUtils {
     }
 
     /**
-     * Creates the model for the content of the education bubble, including its own positive ("Show
-     * me") and negative ("Switch back") buttons.
+     * Creates the model for the content of the education bubble, including its own positive ("Got
+     * it") and negative ("Switch back") buttons.
      */
     static PropertyModel createBubbleContentModel(
             Context context,
@@ -116,7 +116,9 @@ public final class BottomBarEducationUtils {
                         glicFocused
                                 ? R.string.bottom_bar_education_title_gemini
                                 : R.string.bottom_bar_education_title_ergonomics,
-                        R.string.bottom_bar_education_body,
+                        glicFocused
+                                ? R.string.bottom_bar_education_body_gemini
+                                : R.string.bottom_bar_education_body,
                         getIllustrationRes(glicFocused),
                         onSettingsClicked)
                 .with(IS_BUTTON_BAR_VISIBLE, true)

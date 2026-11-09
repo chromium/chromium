@@ -426,7 +426,7 @@ public class BottomBarEducationCoordinator
                     BottomBarConfigUtils.setBottomBarUserEnabled(/* enabled= */ false);
                 };
 
-        Runnable onShowMeClicked =
+        Runnable onPositiveClicked =
                 () -> {
                     String onboardingType = mActiveBubbleOnboardingType;
                     mActiveBubbleOnboardingType = null;
@@ -451,7 +451,7 @@ public class BottomBarEducationCoordinator
                                 mContext,
                                 geminiFocused,
                                 /* onSettingsClicked= */ openSettingsAndDismiss,
-                                /* onPositiveClicked= */ onShowMeClicked,
+                                /* onPositiveClicked= */ onPositiveClicked,
                                 /* onNegativeClicked= */ dismissAndTurnOffBottomBar));
 
         // Determine the horizontal anchor target. For the default variant, the bubble and its
