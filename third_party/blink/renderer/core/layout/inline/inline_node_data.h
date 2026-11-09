@@ -18,8 +18,9 @@ class InlineItemsBuilderTemplate;
 struct CORE_EXPORT InlineNodeData final : InlineItemsData {
  public:
   InlineNodeData() : InlineItemsData(DataType::kNodeData) {}
-  // Returns true if `text_content` contains non-latin1 characters other than
-  // kObjectReplacementCharacter.
+  // Returns true if `text_content` contains 16-bit characters that may need
+  // script, emoji or bidi segmentation. See IsNonOrc16BitCharacter().
+  // TODO(crbug.com/340606789): Rename this. It is not only for ORC now.
   bool HasNonOrc16BitCharacters() const { return has_non_orc_16bit_; }
   bool IsBidiEnabled() const { return is_bidi_enabled_; }
   TextDirection BaseDirection() const {
