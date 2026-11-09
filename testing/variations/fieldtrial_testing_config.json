@@ -59,7 +59,11 @@
                         "PlusButtonMenuInFakebox"
                     ],
                     "disable_features": [
-                        "ComposeboxPlusButtonBottomSheet"
+                        "ComposeboxPlusButtonBottomSheet",
+                        "ComposeboxPlusButtonLargeCarousel",
+                        "PlusButtonMenuMoreOptionsSubmenu",
+                        "PlusButtonMenuStringUpdates",
+                        "PlusButtonMenuVerticalListView"
                     ]
                 }
             ]
