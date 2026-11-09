@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DICTATION_DICTATION_IPH_H_
 #define CHROME_BROWSER_UI_VIEWS_DICTATION_DICTATION_IPH_H_
 
+#include <optional>
+
+#include "base/time/time.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/interaction/element_identifier.h"
 
@@ -17,11 +20,19 @@ namespace ui {
 class TrackedElement;
 }  // namespace ui
 
+namespace user_education {
+struct FeaturePromoData;
+}  // namespace user_education
+
 namespace dictation {
 
 // Identifies the anchor that tracks the focused text field. The dictation IPH
 // is registered against this identifier.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kDictationIphAnchorElementId);
+
+// The dictation hotkey IPH is shown at most this many times, including the
+// times it was snoozed.
+inline constexpr int kMaxDictationHotkeyIphShows = 4;
 
 // Returns the arrow to use for a help bubble of `bubble_size` placed next to
 // `field_bounds` so that the bubble fits inside `visible_bounds`. All rects are
@@ -46,6 +57,15 @@ user_education::HelpBubbleArrow GetDictationIphArrowForBounds(
 // web contents view that hosts it.
 user_education::HelpBubbleArrow GetDictationIphArrow(
     const ui::TrackedElement* anchor_element);
+
+// Returns whether the dictation hotkey IPH may be requested at `now`, given its
+// stored `promo_data`, if it has ever been shown. User Education handles
+// dismissals and snoozes. On top of that, this caps the total number of shows
+// at `kMaxDictationHotkeyIphShows`, and waits a full snooze duration after
+// every show, so that an IPH the user ignored comes back like a snoozed one.
+bool CanRequestDictationHotkeyIph(
+    const std::optional<user_education::FeaturePromoData>& promo_data,
+    base::Time now);
 
 }  // namespace dictation
 

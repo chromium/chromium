@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "base/i18n/rtl.h"
+#include "components/user_education/common/user_education_data.h"
+#include "components/user_education/common/user_education_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -99,6 +101,22 @@ HelpBubbleArrow GetDictationIphArrow(const ui::TrackedElement* anchor_element) {
   return GetDictationIphArrowForBounds(anchor->GetScreenBounds(),
                                        visible_bounds, kEstimatedBubbleSize,
                                        base::i18n::IsRTL());
+}
+
+bool CanRequestDictationHotkeyIph(
+    const std::optional<user_education::FeaturePromoData>& promo_data,
+    base::Time now) {
+  if (!promo_data || promo_data->show_count == 0) {
+    return true;
+  }
+  if (promo_data->show_count >= kMaxDictationHotkeyIphShows) {
+    return false;
+  }
+  // User Education waits a full snooze duration after a snooze, but only
+  // `GetAbortCooldown()` (4 hours) after an IPH the user ignored. Waiting from
+  // the last show makes both wait the same.
+  return now - promo_data->last_show_time >=
+         user_education::features::GetSnoozeDuration();
 }
 
 }  // namespace dictation

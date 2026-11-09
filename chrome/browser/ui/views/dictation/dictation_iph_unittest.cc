@@ -5,10 +5,14 @@
 #include "chrome/browser/ui/views/dictation/dictation_iph.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/common/user_education_data.h"
+#include "components/user_education/common/user_education_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
@@ -141,6 +145,43 @@ TEST(DictationIphArrowTest, OtherAnchorTypesUseDefaultArrow) {
       kDictationIphAnchorElementId,
       ui::ElementContext::CreateFakeContextForTesting(1));
   EXPECT_EQ(HelpBubbleArrow::kTopLeft, GetDictationIphArrow(&element));
+}
+
+// Returns promo data for a hotkey IPH that was last shown `ago` before `now`,
+// `show_count` times in total.
+user_education::FeaturePromoData ShownPromoData(int show_count,
+                                                base::Time now,
+                                                base::TimeDelta ago) {
+  user_education::FeaturePromoData data;
+  data.show_count = show_count;
+  data.first_show_time = now - ago;
+  data.last_show_time = now - ago;
+  return data;
+}
+
+TEST(DictationHotkeyIphTest, CanRequestBeforeFirstShow) {
+  const base::Time now = base::Time::Now();
+  EXPECT_TRUE(CanRequestDictationHotkeyIph(std::nullopt, now));
+  EXPECT_TRUE(
+      CanRequestDictationHotkeyIph(user_education::FeaturePromoData(), now));
+}
+
+TEST(DictationHotkeyIphTest, WaitsASnoozeDurationAfterEachShow) {
+  const base::Time now = base::Time::Now();
+  const base::TimeDelta snooze = user_education::features::GetSnoozeDuration();
+  EXPECT_FALSE(CanRequestDictationHotkeyIph(
+      ShownPromoData(1, now, snooze - base::Minutes(1)), now));
+  EXPECT_TRUE(
+      CanRequestDictationHotkeyIph(ShownPromoData(1, now, snooze), now));
+}
+
+TEST(DictationHotkeyIphTest, StopsAfterMaxShows) {
+  const base::Time now = base::Time::Now();
+  EXPECT_TRUE(CanRequestDictationHotkeyIph(
+      ShownPromoData(kMaxDictationHotkeyIphShows - 1, now, base::Days(30)),
+      now));
+  EXPECT_FALSE(CanRequestDictationHotkeyIph(
+      ShownPromoData(kMaxDictationHotkeyIphShows, now, base::Days(30)), now));
 }
 
 }  // namespace
