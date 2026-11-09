@@ -101,14 +101,16 @@ source_set("test_support") {
   ]
   deps = [
     ":aim_availability",
-    "//base",
     "//components/keyed_service/core",
-    "//components/omnibox/browser:test_support",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//services/network/public/cpp",
     "//testing/gmock",
+  ]
+  public_deps = [
+    "//base",
+    "//components/omnibox/browser:test_support",
     "//third_party/omnibox_proto",
   ]
 }

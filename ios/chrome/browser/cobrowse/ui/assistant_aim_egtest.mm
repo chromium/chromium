@@ -104,7 +104,6 @@ void TapGrabberAndWaitForDetent(AssistantContainerDetent detent) {
 // Opens the composebox, attaches the current tab, and waits for the send button
 // to be enabled.
 void OpenCoBrowse(const GURL& url) {
-  [ComposeboxAppInterface enableAllTools];
   [ComposeboxAppInterface setFuseboxEligible:YES];
   [ComposeboxAppInterface setTabUploadAutoSucceed:YES];
   [ChromeEarlGrey setBoolValue:YES
@@ -397,7 +396,6 @@ void RemoveSharedTab(NSString* title) {
     [ChromeEarlGrey
         clearUserPrefWithName:prefs::kCobrowseTabSharingConsentAccepted];
     [ChromeEarlGrey commitPendingUserPrefsWrite];
-    [ComposeboxAppInterface setAllToolsEnabled:NO];
     [ComposeboxAppInterface setFuseboxEligible:NO];
     [ComposeboxAppInterface setTabUploadAutoSucceed:NO];
   }];
@@ -410,7 +408,6 @@ void RemoveSharedTab(NSString* title) {
   [ChromeEarlGrey commitPendingUserPrefsWrite];
 
   ResetMakeHomeSurfaceOpenImmediately();
-  [ComposeboxAppInterface enableAllTools];
   self.testServer->ServeFilesFromSourceDirectory(
       base::FilePath("ios/testing/data/http_server_files"));
   self.testServer->RegisterRequestHandler(

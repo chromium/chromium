@@ -32,6 +32,7 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "third_party/omnibox_proto/tool_mode.pb.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -218,11 +219,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
 }
 
 - (void)setUp {
-  [self addTeardownBlock:^{
-    [ComposeboxAppInterface setAllToolsEnabled:NO];
-  }];
   [super setUp];
-  [ComposeboxAppInterface enableAllTools];
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
@@ -731,8 +728,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
   config.relaunch_policy = ForceRelaunchByKilling;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
-  // Re-enable tools after restart since they are reset.
-  [ComposeboxAppInterface enableAllTools];
   [ComposeboxAppInterface setFuseboxEligible:YES];
   [ComposeboxAppInterface setTabUploadAutoSucceed:YES];
 
@@ -804,6 +799,9 @@ void RemoveAttachmentWithTitle(NSString* title) {
 @implementation ComposeboxEligiblityTestCase
 
 - (void)setUp {
+  [self addTeardownBlock:^{
+    [ComposeboxAppInterface resetDefaultTools];
+  }];
   [super setUp];
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
@@ -823,7 +821,9 @@ void RemoveAttachmentWithTitle(NSString* title) {
 // Tests that the image generation action is not available when not eligible.
 - (void)testComposeboxCreateImageNotEligible {
   [ComposeboxAppInterface setFuseboxEligible:YES];
-  [ComposeboxAppInterface setCreateImagesEligible:NO];
+  [ComposeboxAppInterface
+      setToolEnabled:NO
+         forToolMode:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI focusOmnibox];
@@ -852,7 +852,9 @@ void RemoveAttachmentWithTitle(NSString* title) {
         @"Skipped when kComposeboxServerSideState is enabled.");
   }
   [ComposeboxAppInterface setFuseboxEligible:YES];
-  [ComposeboxAppInterface setCreateImagesEligible:YES];
+  [ComposeboxAppInterface
+      setToolEnabled:YES
+         forToolMode:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN];
 
   // Add a tab and attach it.
   [ChromeEarlGrey closeAllNormalTabs];
@@ -944,7 +946,9 @@ void RemoveAttachmentWithTitle(NSString* title) {
   }
 
   [ComposeboxAppInterface setFuseboxEligible:YES];
-  [ComposeboxAppInterface setCreateImagesEligible:YES];
+  [ComposeboxAppInterface
+      setToolEnabled:YES
+         forToolMode:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI focusOmnibox];
@@ -980,7 +984,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
   }
 
   [ComposeboxAppInterface setFuseboxEligible:YES];
-  [ComposeboxAppInterface enableAllTools];
 
   // Close all normal tabs and open 10 tabs.
   [ChromeEarlGrey closeAllNormalTabs];

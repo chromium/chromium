@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/composebox/model/ios_contextual_search_service_factory.h"
 #import "ios/chrome/browser/composebox/model/mock_ios_contextual_search_service.h"
 #import "ios/chrome/browser/composebox/public/features.h"
-#import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -22,9 +21,12 @@
       .WillByDefault(testing::Return(eligible));
 }
 
-+ (void)setCreateImagesEligible:(BOOL)eligible {
-  ON_CALL(*[self mockService], IsCreateImagesEligible)
-      .WillByDefault(testing::Return(eligible));
++ (void)setToolEnabled:(BOOL)enabled forToolMode:(omnibox::ToolMode)toolMode {
+  [self mockService]->SetToolEnabled(toolMode, enabled);
+}
+
++ (void)resetDefaultTools {
+  [self mockService]->ResetDefaultTools();
 }
 
 + (void)setTabUploadAutoSucceed:(BOOL)autoSucceed {
@@ -47,14 +49,6 @@
           ->SetTabUploadAutoSucceed(autoSucceed);
     }
   }
-}
-
-+ (void)enableAllTools {
-  [ComposeboxUIInputState setAllToolsEnabled:YES];
-}
-
-+ (void)setAllToolsEnabled:(BOOL)enabled {
-  [ComposeboxUIInputState setAllToolsEnabled:enabled];
 }
 
 + (BOOL)isServerSideStateEnabled {

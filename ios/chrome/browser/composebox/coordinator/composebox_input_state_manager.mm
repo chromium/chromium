@@ -1042,10 +1042,6 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
 
 // Whether the given `model` is allowed.
 - (BOOL)isModelAllowed:(omnibox::ModelMode)model {
-  if ([ComposeboxUIInputState allToolsEnabled]) {
-    return YES;
-  }
-
   // `MODEL_MODE_UNSPECIFIED` represents having no explicit model selection
   // (e.g. when resetting on return to regular search) and is always allowed,
   // even though it is not part of `_inputState->allowed_models`.
@@ -1073,10 +1069,6 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
 
 // Whether the given `model` is disabled.
 - (BOOL)isModelDisabled:(omnibox::ModelMode)model {
-  if ([ComposeboxUIInputState allToolsEnabled]) {
-    return NO;
-  }
-
   // Models are only available from server state.
   if (!ShowComposeboxAdditionalAdvancedTools() ||
       !EnableComposeboxServerSideState()) {
