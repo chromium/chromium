@@ -1,29 +1,27 @@
-Tests the async call stacks and framework black-boxing features working together.
-
+Tests Debugger.setAsyncCallStackDepth and Debugger.setBlackboxPatterns working together.
 Set timer for test function.
 Call stack:
     0) callback2 (frameworks-with-async-callstack.js:41)
-  * 1) Framework_inner1 (framework.js:59)
+  * 1) Framework_inner1 (framework.js:48)
     [setTimeout]
-  * 0) Framework.schedule (framework.js:45)
-  * 1) Framework_willSchedule (framework.js:51)
+  * 0) Framework.schedule (framework.js:36)
+  * 1) Framework_willSchedule (framework.js:41)
     2) window.callbackFromFramework (frameworks-with-async-callstack.js:21)
-  * 3) Framework_inner2 (framework.js:63)
+  * 3) Framework_inner2 (framework.js:52)
     [setTimeout]
-  * 0) Framework.schedule (framework.js:45)
-  * 1) Framework_willSchedule (framework.js:51)
+  * 0) Framework.schedule (framework.js:36)
+  * 1) Framework_willSchedule (framework.js:41)
     [setTimeout]
-  * 0) Framework.schedule (framework.js:45)
-  * 1) Framework.doSomeAsyncChainCalls (framework.js:67)
+  * 0) Framework.schedule (framework.js:36)
+  * 1) Framework.doSomeAsyncChainCalls (framework.js:56)
     2) callback1 (frameworks-with-async-callstack.js:36)
-  * 3) Framework.safeRun (framework.js:8)
-  * 4) Framework.safeRun (framework.js:10)
+  * 3) Framework.safeRun (framework.js:12)
+  * 4) Framework.safeRun (framework.js:14)
     5) timeout1 (frameworks-with-async-callstack.js:31)
     [setTimeout]
     0) testFunction (frameworks-with-async-callstack.js:26)
     [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
+    0) (anonymous) (schedule-test-function.js:2)
 
 Printing visible call stack:
 Call stack:
@@ -36,6 +34,5 @@ Call stack:
     [setTimeout]
     0) testFunction (frameworks-with-async-callstack.js:26)
     [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
+    0) (anonymous) (schedule-test-function.js:2)
 

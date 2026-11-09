@@ -1,0 +1,9 @@
+Tests that Debugger.setBlackboxPatterns skips exceptions thrown in blackboxed scripts, including those inside V8 native scripts.
+Set timer for test function.
+Paused with reason: other
+Call stack:
+    0) testFunction (frameworks-skip-exceptions.js:27)
+Paused with reason: exception
+Call stack:
+    0) testFunction (frameworks-skip-exceptions.js:28)
+
