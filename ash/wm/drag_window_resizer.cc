@@ -24,7 +24,7 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_manager.h"
-#include "ui/wm/core/shadow_controller.h"
+#include "ui/wm/core/decoration_controller.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -36,7 +36,8 @@ DragWindowResizer::~DragWindowResizer() {
   Shell* shell = Shell::Get();
   if (window_state_) {
     window_state_->DeleteDragDetails();
-    shell->shadow_controller()->UpdateShadowForWindow(window_state_->window());
+    shell->decoration_controller()->UpdateDecorationForWindow(
+        window_state_->window());
   }
   shell->mouse_cursor_filter()->set_mouse_warp_enabled(true);
   shell->mouse_cursor_filter()->HideSharedEdgeIndicator();
@@ -98,7 +99,7 @@ DragWindowResizer::DragWindowResizer(
   mouse_cursor_filter->set_mouse_warp_enabled(ShouldAllowMouseWarp());
   if (ShouldAllowMouseWarp())
     mouse_cursor_filter->ShowSharedEdgeIndicator(GetTarget()->GetRootWindow());
-  Shell::Get()->shadow_controller()->UpdateShadowForWindow(GetTarget());
+  Shell::Get()->decoration_controller()->UpdateDecorationForWindow(GetTarget());
   instance_ = this;
 }
 

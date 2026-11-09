@@ -69,10 +69,10 @@
 #include "ui/views/widget/window_reorderer.h"
 #include "ui/wm/core/compound_event_filter.h"
 #include "ui/wm/core/cursor_manager.h"
+#include "ui/wm/core/decoration_controller.h"
+#include "ui/wm/core/decoration_controller_delegate.h"
 #include "ui/wm/core/focus_controller.h"
 #include "ui/wm/core/native_cursor_manager.h"
-#include "ui/wm/core/shadow_controller.h"
-#include "ui/wm/core/shadow_controller_delegate.h"
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/visibility_controller.h"
 #include "ui/wm/core/window_animations.h"
@@ -364,9 +364,10 @@ void DesktopNativeWidgetAura::OnHostClosed() {
     }
   }
 
-  // DesktopWindowTreeHost owns the ActivationController which ShadowController
-  // references. Make sure we destroy ShadowController early on.
-  shadow_controller_.reset();
+  // DesktopWindowTreeHost owns the ActivationController which
+  // DecorationController references. Make sure we destroy DecorationController
+  // early on.
+  decoration_controller_.reset();
   tooltip_manager_.reset();
   if (tooltip_controller_.get()) {
     host_->window()->RemovePreTargetHandler(tooltip_controller_.get());
@@ -755,7 +756,7 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   event_client_ = std::make_unique<DesktopEventClient>();
   aura::client::SetEventClient(host_->window(), event_client_.get());
 
-  shadow_controller_ = std::make_unique<wm::ShadowController>(
+  decoration_controller_ = std::make_unique<wm::DecorationController>(
       wm::GetActivationClient(host_->window()), nullptr);
 
   OnSizeConstraintsChanged();

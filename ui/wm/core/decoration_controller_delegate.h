@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_WM_CORE_SHADOW_CONTROLLER_DELEGATE_H_
-#define UI_WM_CORE_SHADOW_CONTROLLER_DELEGATE_H_
+#ifndef UI_WM_CORE_DECORATION_CONTROLLER_DELEGATE_H_
+#define UI_WM_CORE_DECORATION_CONTROLLER_DELEGATE_H_
 
 #include <cstdint>
 
@@ -15,12 +15,12 @@ class Window;
 
 namespace wm {
 
-// ShadowControllerDelegate allows a user to modify a shadow on certain windows
-// differently from the normal use case.
-class COMPONENT_EXPORT(UI_WM) ShadowControllerDelegate {
+// DecorationControllerDelegate allows a user to modify a shadow on certain
+// windows differently from the normal use case.
+class COMPONENT_EXPORT(UI_WM) DecorationControllerDelegate {
  public:
-  ShadowControllerDelegate() = default;
-  virtual ~ShadowControllerDelegate() = default;
+  DecorationControllerDelegate() = default;
+  virtual ~DecorationControllerDelegate() = default;
 
   virtual bool ShouldObserveWindow(const aura::Window* window) = 0;
 
@@ -45,4 +45,4 @@ class COMPONENT_EXPORT(UI_WM) ShadowControllerDelegate {
 
 }  // namespace wm
 
-#endif  // UI_WM_CORE_SHADOW_CONTROLLER_DELEGATE_H_
+#endif  // UI_WM_CORE_DECORATION_CONTROLLER_DELEGATE_H_

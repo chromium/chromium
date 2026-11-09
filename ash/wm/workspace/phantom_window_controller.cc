@@ -31,7 +31,6 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
-#include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace ash {

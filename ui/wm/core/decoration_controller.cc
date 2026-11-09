@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/wm/core/shadow_controller.h"
+#include "ui/wm/core/decoration_controller.h"
 
 #include <algorithm>
 #include <utility>
@@ -24,7 +24,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/wm/core/shadow_controller_delegate.h"
+#include "ui/wm/core/decoration_controller_delegate.h"
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
@@ -32,7 +32,7 @@
 using std::make_pair;
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ui::Decoration*)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::Decoration, kShadowDecorationKey)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::Decoration, kDecorationKey)
 
 namespace wm {
 
@@ -40,11 +40,13 @@ namespace {
 
 int GetShadowElevationForActiveState(aura::Window* window) {
   int elevation = window->GetProperty(kShadowElevationKey);
-  if (elevation != kShadowElevationDefault)
+  if (elevation != kShadowElevationDefault) {
     return elevation;
+  }
 
-  if (IsActiveWindow(window))
+  if (IsActiveWindow(window)) {
     return kShadowElevationActiveWindow;
+  }
 
   return GetDefaultShadowElevationForWindow(window);
 }
@@ -65,16 +67,15 @@ int GetShadowElevationForWindowLosingActive(aura::Window* losing_active,
 
 }  // namespace
 
-// ShadowController::Impl ------------------------------------------------------
+// DecorationController::Impl --------------------------------------------------
 
-// Real implementation of the ShadowController. ShadowController observes
-// ActivationChangeObserver, which are per ActivationClient, where as there is
-// only a single Impl (as it observes all window creation by way of an
+// Real implementation of the DecorationController. DecorationController
+// observes ActivationChangeObserver, which are per ActivationClient, whereas
+// there is only a single Impl (as it observes all window creation by way of an
 // EnvObserver).
-class ShadowController::Impl :
-      public aura::EnvObserver,
-      public aura::WindowObserver,
-      public base::RefCounted<Impl> {
+class DecorationController::Impl : public aura::EnvObserver,
+                                   public aura::WindowObserver,
+                                   public base::RefCounted<Impl> {
  public:
   // Returns the singleton instance for the specified Env.
   static Impl* GetInstance(aura::Env* env);
@@ -82,11 +83,11 @@ class ShadowController::Impl :
   Impl(const Impl&) = delete;
   Impl& operator=(const Impl&) = delete;
 
-  void set_delegate(std::unique_ptr<ShadowControllerDelegate> delegate) {
+  void set_delegate(std::unique_ptr<DecorationControllerDelegate> delegate) {
     delegate_ = std::move(delegate);
   }
   bool IsShadowVisibleForWindow(aura::Window* window);
-  void UpdateShadowForWindow(aura::Window* window);
+  void UpdateDecorationForWindow(aura::Window* window);
 
   // aura::EnvObserver override:
   void OnWindowInitialized(aura::Window* window) override;
@@ -106,14 +107,14 @@ class ShadowController::Impl :
 
  private:
   friend class base::RefCounted<Impl>;
-  friend class ShadowController;
+  friend class DecorationController;
 
   explicit Impl(aura::Env* env);
   ~Impl() override;
 
   static base::flat_set<Impl*>* GetInstances();
 
-  // Forwarded from ShadowController.
+  // Forwarded from DecorationController.
   void OnWindowActivated(ActivationReason reason,
                          aura::Window* gained_active,
                          aura::Window* lost_active);
@@ -121,21 +122,21 @@ class ShadowController::Impl :
   // Checks if |window| is visible and contains a property requesting a shadow.
   bool ShouldShowShadowForWindow(aura::Window* window) const;
 
-  // Sets rounded corner on the shadow for the `window`.
-  void MaybeSetShadowRadiusForWindow(aura::Window* window) const;
+  // Sets rounded corner on the decoration for the `window`.
+  void MaybeSetDecorationRadiusForWindow(aura::Window* window) const;
 
-  // Updates the shadow for windows when activation changes.
+  // Updates the decoration for windows when activation changes.
   void HandleWindowActivationChange(aura::Window* gaining_active,
                                     aura::Window* losing_active);
 
-  // Shows or hides |window|'s shadow as needed (creating the shadow if
+  // Shows or hides |window|'s decoration as needed (creating the decoration if
   // necessary).
-  void HandlePossibleShadowVisibilityChange(aura::Window* window);
+  void HandlePossibleDecorationVisibilityChange(aura::Window* window);
 
-  // Creates a new shadow for |window| and stores it with the
-  // |kShadowDecorationKey| key. The shadow's bounds are initialized and it is
+  // Creates a new decoration for |window| and stores it with the
+  // |kDecorationKey| key. The decoration's bounds are initialized and it is
   // added to the window's layer.
-  void CreateShadowForWindow(aura::Window* window);
+  void CreateDecorationForWindow(aura::Window* window);
 
   bool IsObservingWindowForTest(aura::Window* window) const;  // IN-TEST
 
@@ -143,33 +144,38 @@ class ShadowController::Impl :
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observation_manager_{this};
 
-  std::unique_ptr<ShadowControllerDelegate> delegate_;
+  std::unique_ptr<DecorationControllerDelegate> delegate_;
 };
 
 // static
-ShadowController::Impl* ShadowController::Impl::GetInstance(aura::Env* env) {
+DecorationController::Impl* DecorationController::Impl::GetInstance(
+    aura::Env* env) {
   for (Impl* impl : *GetInstances()) {
-    if (impl->env_ == env)
+    if (impl->env_ == env) {
       return impl;
+    }
   }
 
   return new Impl(env);
 }
 
-bool ShadowController::Impl::IsShadowVisibleForWindow(aura::Window* window) {
-  if (!observation_manager_.IsObservingSource(window))
+bool DecorationController::Impl::IsShadowVisibleForWindow(
+    aura::Window* window) {
+  if (!observation_manager_.IsObservingSource(window)) {
     return false;
-  ui::Decoration* shadow_decoration = GetShadowDecorationForWindow(window);
-  return shadow_decoration && shadow_decoration->layer()->visible();
+  }
+  ui::Decoration* decoration = GetDecorationForWindow(window);
+  return decoration && decoration->layer()->visible();
 }
 
-void ShadowController::Impl::UpdateShadowForWindow(aura::Window* window) {
+void DecorationController::Impl::UpdateDecorationForWindow(
+    aura::Window* window) {
   CHECK(observation_manager_.IsObservingSource(window),
         base::NotFatalUntil::M163);
-  HandlePossibleShadowVisibilityChange(window);
+  HandlePossibleDecorationVisibilityChange(window);
 }
 
-void ShadowController::Impl::OnWindowInitialized(aura::Window* window) {
+void DecorationController::Impl::OnWindowInitialized(aura::Window* window) {
   if (delegate_ && !delegate_->ShouldObserveWindow(window)) {
     return;
   }
@@ -178,25 +184,25 @@ void ShadowController::Impl::OnWindowInitialized(aura::Window* window) {
   observation_manager_.AddObservation(window);
 }
 
-void ShadowController::Impl::OnWindowHierarchyChanged(
+void DecorationController::Impl::OnWindowHierarchyChanged(
     const HierarchyChangeParams& params) {
   // Skip if the parent is null there is no need to update it during
   // destruction.
   if (!params.new_parent) {
     return;
   }
-  // Update the shadow if the observing window is visible and its parent has
+  // Update the decoration if the observing window is visible and its parent has
   // changed.
   const bool parent_changed = params.target == params.receiver &&
                               params.new_parent != params.old_parent;
   if (parent_changed && params.target->IsVisible()) {
-    HandlePossibleShadowVisibilityChange(params.target);
+    HandlePossibleDecorationVisibilityChange(params.target);
   }
 }
 
-void ShadowController::Impl::OnWindowPropertyChanged(aura::Window* window,
-                                                     const void* key,
-                                                     intptr_t old) {
+void DecorationController::Impl::OnWindowPropertyChanged(aura::Window* window,
+                                                         const void* key,
+                                                         intptr_t old) {
   bool shadow_will_change = key == kShadowElevationKey &&
                             window->GetProperty(kShadowElevationKey) != old;
 
@@ -218,15 +224,16 @@ void ShadowController::Impl::OnWindowPropertyChanged(aura::Window* window,
   // Check the target visibility. IsVisible() may return false if a parent layer
   // is hidden, but |this| only observes calls to Show()/Hide() on |window|.
   if (shadow_will_change && window->TargetVisibility()) {
-    HandlePossibleShadowVisibilityChange(window);
+    HandlePossibleDecorationVisibilityChange(window);
   }
 }
 
-void ShadowController::Impl::OnWindowVisibilityChanging(aura::Window* window,
-                                                        bool visible) {
+void DecorationController::Impl::OnWindowVisibilityChanging(
+    aura::Window* window,
+    bool visible) {
   // At the time of the first visibility change, |window| will give a correct
   // answer for whether or not it is a root window. If it is, don't bother
-  // observing: a shadow should never be added. Root windows can only have
+  // observing: a decoration should never be added. Root windows can only have
   // shadows in the WindowServer (where a corresponding aura::Window may no
   // longer be a root window). Without this check, a second shadow is added,
   // which clips to the root window bounds; filling any rounded corners the
@@ -236,49 +243,47 @@ void ShadowController::Impl::OnWindowVisibilityChanging(aura::Window* window,
     return;
   }
 
-  HandlePossibleShadowVisibilityChange(window);
+  HandlePossibleDecorationVisibilityChange(window);
 }
 
-void ShadowController::Impl::OnWindowBoundsChanged(
+void DecorationController::Impl::OnWindowBoundsChanged(
     aura::Window* window,
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
-  ui::Decoration* shadow_decoration = GetShadowDecorationForWindow(window);
-  if (shadow_decoration &&
+  ui::Decoration* decoration = GetDecorationForWindow(window);
+  if (decoration &&
       window->GetProperty(aura::client::kUseWindowBoundsForShadow)) {
-    shadow_decoration->SetContentBounds(gfx::Rect(new_bounds.size()));
+    decoration->SetContentBounds(gfx::Rect(new_bounds.size()));
   }
 }
 
-void ShadowController::Impl::OnWindowDestroyed(aura::Window* window) {
-  window->ClearProperty(kShadowDecorationKey);
+void DecorationController::Impl::OnWindowDestroyed(aura::Window* window) {
+  window->ClearProperty(kDecorationKey);
   observation_manager_.RemoveObservation(window);
 }
 
-void ShadowController::Impl::OnWindowActivated(ActivationReason reason,
-                                               aura::Window* gained_active,
-                                               aura::Window* lost_active) {
+void DecorationController::Impl::OnWindowActivated(ActivationReason reason,
+                                                   aura::Window* gained_active,
+                                                   aura::Window* lost_active) {
   if (gained_active) {
-    ui::Decoration* shadow_decoration =
-        GetShadowDecorationForWindow(gained_active);
-    if (shadow_decoration) {
-      shadow_decoration->GetSourceAs<ui::decoration::Shadow>()->SetElevation(
+    ui::Decoration* decoration = GetDecorationForWindow(gained_active);
+    if (decoration) {
+      decoration->GetSourceAs<ui::decoration::Shadow>()->SetElevation(
           GetShadowElevationForActiveState(gained_active));
     }
   }
   if (lost_active) {
-    ui::Decoration* shadow_decoration =
-        GetShadowDecorationForWindow(lost_active);
-    if (shadow_decoration && GetShadowElevationConvertDefault(lost_active) ==
-                                 kShadowElevationInactiveWindow) {
-      shadow_decoration->GetSourceAs<ui::decoration::Shadow>()->SetElevation(
+    ui::Decoration* decoration = GetDecorationForWindow(lost_active);
+    if (decoration && GetShadowElevationConvertDefault(lost_active) ==
+                          kShadowElevationInactiveWindow) {
+      decoration->GetSourceAs<ui::decoration::Shadow>()->SetElevation(
           GetShadowElevationForWindowLosingActive(lost_active, gained_active));
     }
   }
 }
 
-bool ShadowController::Impl::ShouldShowShadowForWindow(
+bool DecorationController::Impl::ShouldShowShadowForWindow(
     aura::Window* window) const {
   if (window->GetOcclusionState() == aura::Window::OcclusionState::OCCLUDED) {
     return false;
@@ -286,9 +291,10 @@ bool ShadowController::Impl::ShouldShowShadowForWindow(
 
   if (delegate_) {
     const bool should_show = delegate_->ShouldShowShadowForWindow(window);
-    if (should_show)
+    if (should_show) {
       CHECK(GetShadowElevationConvertDefault(window) > 0,
             base::NotFatalUntil::M163);
+    }
     return should_show;
   }
 
@@ -302,21 +308,22 @@ bool ShadowController::Impl::ShouldShowShadowForWindow(
   return GetShadowElevationConvertDefault(window) > 0;
 }
 
-void ShadowController::Impl::OnWindowOcclusionChanged(aura::Window* window) {
-  ui::Decoration* shadow_decoration = GetShadowDecorationForWindow(window);
-  if (!shadow_decoration) {
+void DecorationController::Impl::OnWindowOcclusionChanged(
+    aura::Window* window) {
+  ui::Decoration* decoration = GetDecorationForWindow(window);
+  if (!decoration) {
     return;
   }
-  HandlePossibleShadowVisibilityChange(window);
+  HandlePossibleDecorationVisibilityChange(window);
 }
 
-void ShadowController::Impl::MaybeSetShadowRadiusForWindow(
+void DecorationController::Impl::MaybeSetDecorationRadiusForWindow(
     aura::Window* window) const {
-  ui::Decoration* shadow_decoration = GetShadowDecorationForWindow(window);
-  CHECK(shadow_decoration);
+  ui::Decoration* decoration = GetDecorationForWindow(window);
+  CHECK(decoration);
 
   if (delegate_ && !delegate_->ShouldRoundShadowForWindow(window)) {
-    shadow_decoration->SetRoundedCorners(gfx::RoundedCornersF());
+    decoration->SetRoundedCorners(gfx::RoundedCornersF());
     return;
   }
 
@@ -327,43 +334,43 @@ void ShadowController::Impl::MaybeSetShadowRadiusForWindow(
   // unspecified radius. i.e window server may want to apply rounded corners
   // implicitly.
   if (rounded_corners) {
-    shadow_decoration->SetRoundedCorners(*rounded_corners);
+    decoration->SetRoundedCorners(*rounded_corners);
   }
 }
 
-void ShadowController::Impl::HandlePossibleShadowVisibilityChange(
+void DecorationController::Impl::HandlePossibleDecorationVisibilityChange(
     aura::Window* window) {
   const bool should_show = ShouldShowShadowForWindow(window);
-  ui::Decoration* shadow_decoration = GetShadowDecorationForWindow(window);
-  if (shadow_decoration) {
-    shadow_decoration->GetSourceAs<ui::decoration::Shadow>()->SetElevation(
+  ui::Decoration* decoration = GetDecorationForWindow(window);
+  if (decoration) {
+    decoration->GetSourceAs<ui::decoration::Shadow>()->SetElevation(
         GetShadowElevationForActiveState(window));
-    MaybeSetShadowRadiusForWindow(window);
-    if (shadow_decoration->layer()->GetTargetVisibility() != should_show) {
-      shadow_decoration->layer()->SetVisible(should_show);
+    MaybeSetDecorationRadiusForWindow(window);
+    if (decoration->layer()->GetTargetVisibility() != should_show) {
+      decoration->layer()->SetVisible(should_show);
     }
   } else if (should_show) {
-    CreateShadowForWindow(window);
+    CreateDecorationForWindow(window);
   }
 }
 
-void ShadowController::Impl::CreateShadowForWindow(aura::Window* window) {
+void DecorationController::Impl::CreateDecorationForWindow(
+    aura::Window* window) {
   CHECK(!window->IsRootWindow(), base::NotFatalUntil::M163);
   ui::decoration::Shadow::Style style =
       ui::decoration::Shadow::Style::kMaterialDesign;
 #if BUILDFLAG(IS_CHROMEOS)
   style = ui::decoration::Shadow::Style::kChromeOSSystemUI;
 #endif
-  ui::Decoration* shadow_decoration =
-      window->SetProperty(kShadowDecorationKey,
-                          ui::Decoration::CreateShadow(
-                              GetShadowElevationForActiveState(window), style));
+  ui::Decoration* decoration = window->SetProperty(
+      kDecorationKey, ui::Decoration::CreateShadow(
+                          GetShadowElevationForActiveState(window), style));
 
-  shadow_decoration->SetContentBounds(gfx::Rect(window->bounds().size()));
-  MaybeSetShadowRadiusForWindow(window);
-  shadow_decoration->layer()->SetVisible(ShouldShowShadowForWindow(window));
-  window->layer()->Add(shadow_decoration->layer());
-  window->layer()->StackAtBottom(shadow_decoration->layer());
+  decoration->SetContentBounds(gfx::Rect(window->bounds().size()));
+  MaybeSetDecorationRadiusForWindow(window);
+  decoration->layer()->SetVisible(ShouldShowShadowForWindow(window));
+  window->layer()->Add(decoration->layer());
+  window->layer()->StackAtBottom(decoration->layer());
 
   window->TrackOcclusionState();
 
@@ -372,38 +379,38 @@ void ShadowController::Impl::CreateShadowForWindow(aura::Window* window) {
   }
 }
 
-bool ShadowController::Impl::IsObservingWindowForTest(
+bool DecorationController::Impl::IsObservingWindowForTest(
     aura::Window* window) const {
   return observation_manager_.IsObservingSource(window);
 }
 
-ShadowController::Impl::Impl(aura::Env* env)
+DecorationController::Impl::Impl(aura::Env* env)
     : env_(env), observation_manager_(this) {
   GetInstances()->insert(this);
   env_->AddObserver(this);
 }
 
-ShadowController::Impl::~Impl() {
+DecorationController::Impl::~Impl() {
   env_->RemoveObserver(this);
   GetInstances()->erase(this);
 }
 
 // static
-base::flat_set<ShadowController::Impl*>*
-ShadowController::Impl::GetInstances() {
+base::flat_set<DecorationController::Impl*>*
+DecorationController::Impl::GetInstances() {
   static base::NoDestructor<base::flat_set<Impl*>> impls;
   return impls.get();
 }
 
-// ShadowController ------------------------------------------------------------
+// DecorationController --------------------------------------------------------
 
-ui::Decoration* ShadowController::GetShadowDecorationForWindow(
+ui::Decoration* DecorationController::GetDecorationForWindow(
     aura::Window* window) {
-  return window->GetProperty(kShadowDecorationKey);
+  return window->GetProperty(kDecorationKey);
 }
 
 ui::decoration::Shadow::ElevationToColorsMap
-ShadowController::GenerateShadowColorsMap(
+DecorationController::GenerateShadowColorsMap(
     const ui::ColorProvider* color_provider) {
   ui::decoration::Shadow::ElevationToColorsMap color_map;
   color_map[kShadowElevationPopup] = ui::decoration::Shadow::ElevationColors{
@@ -426,37 +433,39 @@ ShadowController::GenerateShadowColorsMap(
   return color_map;
 }
 
-ShadowController::ShadowController(
+DecorationController::DecorationController(
     ActivationClient* activation_client,
-    std::unique_ptr<ShadowControllerDelegate> delegate,
+    std::unique_ptr<DecorationControllerDelegate> delegate,
     aura::Env* env)
     : activation_client_(activation_client),
       impl_(Impl::GetInstance(env ? env : aura::Env::GetInstance())) {
   // Watch for window activation changes.
   activation_client_->AddObserver(this);
-  if (delegate)
+  if (delegate) {
     impl_->set_delegate(std::move(delegate));
+  }
 }
 
-ShadowController::~ShadowController() {
+DecorationController::~DecorationController() {
   activation_client_->RemoveObserver(this);
 }
 
-bool ShadowController::IsShadowVisibleForWindow(aura::Window* window) {
+bool DecorationController::IsShadowVisibleForWindow(aura::Window* window) {
   return impl_->IsShadowVisibleForWindow(window);
 }
 
-void ShadowController::UpdateShadowForWindow(aura::Window* window) {
-  impl_->UpdateShadowForWindow(window);
+void DecorationController::UpdateDecorationForWindow(aura::Window* window) {
+  impl_->UpdateDecorationForWindow(window);
 }
 
-void ShadowController::OnWindowActivated(ActivationReason reason,
-                                         aura::Window* gained_active,
-                                         aura::Window* lost_active) {
+void DecorationController::OnWindowActivated(ActivationReason reason,
+                                             aura::Window* gained_active,
+                                             aura::Window* lost_active) {
   impl_->OnWindowActivated(reason, gained_active, lost_active);
 }
 
-bool ShadowController::IsObservingWindowForTest(aura::Window* window) const {
+bool DecorationController::IsObservingWindowForTest(
+    aura::Window* window) const {
   return impl_->IsObservingWindowForTest(window);  // IN-TEST
 }
 

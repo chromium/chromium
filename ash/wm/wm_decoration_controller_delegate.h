@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_WM_SHADOW_CONTROLLER_DELEGATE_H_
-#define ASH_WM_WM_SHADOW_CONTROLLER_DELEGATE_H_
+#ifndef ASH_WM_WM_DECORATION_CONTROLLER_DELEGATE_H_
+#define ASH_WM_WM_DECORATION_CONTROLLER_DELEGATE_H_
 
-#include "ui/wm/core/shadow_controller_delegate.h"
+#include "ui/wm/core/decoration_controller_delegate.h"
 
 namespace aura {
 class Window;
@@ -15,13 +15,14 @@ namespace ash {
 
 // WmShadowControllerDelegate is a delegate for showing the shadow for window
 // management purposes.
-class WmShadowControllerDelegate : public wm::ShadowControllerDelegate {
+class WmDecorationControllerDelegate : public wm::DecorationControllerDelegate {
  public:
-  WmShadowControllerDelegate();
-  WmShadowControllerDelegate(const WmShadowControllerDelegate&) = delete;
-  WmShadowControllerDelegate& operator=(const WmShadowControllerDelegate&) =
+  WmDecorationControllerDelegate();
+  WmDecorationControllerDelegate(const WmDecorationControllerDelegate&) =
       delete;
-  ~WmShadowControllerDelegate() override;
+  WmDecorationControllerDelegate& operator=(
+      const WmDecorationControllerDelegate&) = delete;
+  ~WmDecorationControllerDelegate() override;
 
   // wm::ShadowControllerDelegate:
   bool ShouldObserveWindow(const aura::Window* window) override;
@@ -35,4 +36,4 @@ class WmShadowControllerDelegate : public wm::ShadowControllerDelegate {
 
 }  // namespace ash
 
-#endif  // ASH_WM_WM_SHADOW_CONTROLLER_DELEGATE_H_
+#endif  // ASH_WM_WM_DECORATION_CONTROLLER_DELEGATE_H_

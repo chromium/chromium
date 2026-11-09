@@ -96,9 +96,9 @@
 #include "ui/views/test/test_platform_native_widget.h"
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/wm/core/base_focus_rules.h"
+#include "ui/wm/core/decoration_controller.h"
+#include "ui/wm/core/decoration_controller_delegate.h"
 #include "ui/wm/core/focus_controller.h"
-#include "ui/wm/core/shadow_controller.h"
-#include "ui/wm/core/shadow_controller_delegate.h"
 #include "ui/wm/core/window_properties.h"
 #endif
 
@@ -6282,7 +6282,7 @@ class WidgetShadowTest : public WidgetTest {
 
   void TearDown() override {
 #if defined(USE_AURA) && !BUILDFLAG(ENABLE_DESKTOP_AURA)
-    shadow_controller_.reset();
+    decoration_controller_.reset();
     focus_controller_.reset();
 #endif
     WidgetTest::TearDown();
@@ -6323,12 +6323,12 @@ class WidgetShadowTest : public WidgetTest {
   void InitControllers() {
     focus_controller_ =
         std::make_unique<wm::FocusController>(new TestFocusRules);
-    shadow_controller_ = std::make_unique<wm::ShadowController>(
+    decoration_controller_ = std::make_unique<wm::DecorationController>(
         focus_controller_.get(), nullptr);
   }
 
   std::unique_ptr<wm::FocusController> focus_controller_;
-  std::unique_ptr<wm::ShadowController> shadow_controller_;
+  std::unique_ptr<wm::DecorationController> decoration_controller_;
 #endif  // !BUILDFLAG(ENABLE_DESKTOP_AURA) && !BUILDFLAG(IS_MAC)
 };
 
@@ -6351,11 +6351,12 @@ TEST_F(WidgetShadowTest, MAYBE_ShadowsInRootWindow) {
   bool top_level_window_should_have_shadow = false;
 #endif
 
-  // To start, just create a Widget. This constructs the first ShadowController
-  // which will start observing the environment for additional aura::Window
-  // initialization. The very first ShadowController in DesktopNativeWidgetAura
-  // is created after the call to aura::Window::Init(), so the ShadowController
-  // Impl class won't ever see this first Window being initialized.
+  // To start, just create a Widget. This constructs the first
+  // DecorationController which will start observing the environment for
+  // additional aura::Window initialization. The very first DecorationController
+  // in DesktopNativeWidgetAura is created after the call to
+  // aura::Window::Init(), so the DecorationController Impl class won't ever see
+  // this first Window being initialized.
   name_ = "other_top_level";
   Widget* other_top_level = CreateTopLevelNativeWidget();
 

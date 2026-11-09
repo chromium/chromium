@@ -85,8 +85,8 @@ namespace wm {
 class AcceleratorFilter;
 class ActivationClient;
 class CompoundEventFilter;
+class DecorationController;
 class FocusController;
-class ShadowController;
 class VisibilityController;
 class WindowModalityController;
 }  // namespace wm
@@ -498,6 +498,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   DarkLightModeControllerImpl* dark_light_mode_controller() {
     return dark_light_mode_controller_.get();
   }
+  ::wm::DecorationController* decoration_controller() {
+    return decoration_controller_.get();
+  }
   DesksController* desks_controller() { return desks_controller_.get(); }
   SavedDeskController* saved_desk_controller() {
     return saved_desk_controller_.get();
@@ -747,9 +750,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   FeatureDiscoveryDurationReporterImpl* feature_discover_reporter() {
     return feature_discover_reporter_.get();
-  }
-  ::wm::ShadowController* shadow_controller() {
-    return shadow_controller_.get();
   }
   ShelfConfig* shelf_config() { return shelf_config_.get(); }
   ShelfController* shelf_controller() { return shelf_controller_.get(); }
@@ -1172,7 +1172,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<GameDashboardController> game_dashboard_controller_;
   // Owned by |focus_controller_|.
   raw_ptr<AshFocusRules> focus_rules_ = nullptr;
-  std::unique_ptr<::wm::ShadowController> shadow_controller_;
+  std::unique_ptr<::wm::DecorationController> decoration_controller_;
   std::unique_ptr<::wm::VisibilityController> visibility_controller_;
   std::unique_ptr<::wm::WindowModalityController> window_modality_controller_;
   raw_ptr<PrefService> local_state_ = nullptr;

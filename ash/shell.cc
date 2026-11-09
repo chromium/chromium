@@ -240,7 +240,7 @@
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "ash/wm/wm_shadow_controller_delegate.h"
+#include "ash/wm/wm_decoration_controller_delegate.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
@@ -309,8 +309,8 @@
 #include "ui/wm/core/accelerator_filter.h"
 #include "ui/wm/core/capture_controller.h"
 #include "ui/wm/core/compound_event_filter.h"
+#include "ui/wm/core/decoration_controller.h"
 #include "ui/wm/core/focus_controller.h"
-#include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/visibility_controller.h"
 #include "ui/wm/core/window_modality_controller.h"
 
@@ -982,7 +982,7 @@ Shell::~Shell() {
   video_detector_.reset();
   color_enhancement_controller_.reset();
 
-  shadow_controller_.reset();
+  decoration_controller_.reset();
   resize_shadow_controller_.reset();
 
   // Has to happen before ~MruWindowTracker.
@@ -1719,9 +1719,9 @@ void Shell::Init(ShellInitParams init_params) {
   event_client_ = std::make_unique<EventClientImpl>();
 
   resize_shadow_controller_ = std::make_unique<ResizeShadowController>();
-  shadow_controller_ = std::make_unique<::wm::ShadowController>(
-      focus_controller_.get(), std::make_unique<WmShadowControllerDelegate>(),
-      env);
+  decoration_controller_ = std::make_unique<::wm::DecorationController>(
+      focus_controller_.get(),
+      std::make_unique<WmDecorationControllerDelegate>(), env);
 
   tasks_controller_ = std::make_unique<api::TasksController>(
       shell_delegate_->CreateTasksDelegate());

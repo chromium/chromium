@@ -18,7 +18,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/wm/core/shadow_controller.h"
+#include "ui/wm/core/decoration_controller.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace ash {
@@ -172,11 +172,11 @@ TEST_F(WindowMirrorViewTest, ExcludeShadow) {
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ::wm::SetShadowElevation(window, ::wm::kShadowElevationActiveWindow);
 
-  ui::Decoration* shadow_decoration =
-      ::wm::ShadowController::GetShadowDecorationForWindow(window);
-  ASSERT_TRUE(shadow_decoration);
-  ASSERT_EQ(2u, shadow_decoration->layer()->children().size());
-  ASSERT_EQ(2, CountNinePatchLayers(shadow_decoration->layer()));
+  ui::Decoration* decoration =
+      ::wm::DecorationController::GetDecorationForWindow(window);
+  ASSERT_TRUE(decoration);
+  ASSERT_EQ(2u, decoration->layer()->children().size());
+  ASSERT_EQ(2, CountNinePatchLayers(decoration->layer()));
 
   auto mirror_widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);

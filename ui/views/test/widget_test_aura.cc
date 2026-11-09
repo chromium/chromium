@@ -14,7 +14,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/core/shadow_controller.h"
+#include "ui/wm/core/decoration_controller.h"
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
@@ -161,7 +161,7 @@ bool WidgetTest::IsNativeWindowTransparent(gfx::NativeWindow window) {
 // static
 bool WidgetTest::WidgetHasInProcessShadow(Widget* widget) {
   aura::Window* window = widget->GetNativeWindow();
-  if (wm::ShadowController::GetShadowDecorationForWindow(window)) {
+  if (wm::DecorationController::GetDecorationForWindow(window)) {
     return true;
   }
 
@@ -169,7 +169,7 @@ bool WidgetTest::WidgetHasInProcessShadow(Widget* widget) {
   // DesktopWindowTreeHost, then giving the root window a shadow also has the
   // effect of drawing a shadow around the window.
   if (window->parent() == window->GetRootWindow()) {
-    return wm::ShadowController::GetShadowDecorationForWindow(
+    return wm::DecorationController::GetDecorationForWindow(
         window->GetRootWindow());
   }
 

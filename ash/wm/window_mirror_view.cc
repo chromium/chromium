@@ -22,7 +22,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/core/shadow_controller.h"
+#include "ui/wm/core/decoration_controller.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -238,11 +238,10 @@ void WindowMirrorView::InitLayerOwner() {
   }
 
   if (exclude_shadow_) {
-    ui::Decoration* shadow_decoration =
-        ::wm::ShadowController::GetShadowDecorationForWindow(source_);
-    ExcludeShadowContainer(
-        layer_owner_->root(),
-        shadow_decoration ? shadow_decoration->layer() : nullptr);
+    ui::Decoration* decoration =
+        ::wm::DecorationController::GetDecorationForWindow(source_);
+    ExcludeShadowContainer(layer_owner_->root(),
+                           decoration ? decoration->layer() : nullptr);
   }
 
   DeprecatedLayoutImmediately();

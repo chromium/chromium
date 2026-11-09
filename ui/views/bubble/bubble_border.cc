@@ -37,7 +37,7 @@
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/core/shadow_controller.h"
+#include "ui/wm/core/decoration_controller.h"
 
 namespace views {
 
@@ -72,7 +72,7 @@ ui::decoration::Shadow::ElevationToColorsMap ShadowElevationToColorsMap(
 #if BUILDFLAG(IS_CHROMEOS)
       case BubbleBorder::Shadow::CHROMEOS_SYSTEM_UI_SHADOW:
         colors_map =
-            wm::ShadowController::GenerateShadowColorsMap(color_provider);
+            wm::DecorationController::GenerateShadowColorsMap(color_provider);
         break;
 #endif
       default:

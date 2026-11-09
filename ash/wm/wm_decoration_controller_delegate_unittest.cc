@@ -13,43 +13,43 @@
 #include "ui/decoration/shadow.h"
 #include "ui/views/test/test_widget_builder.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/core/shadow_controller.h"
+#include "ui/wm/core/decoration_controller.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
 
 using chromeos::AppType;
 
-using WmShadowControllerDelegateTest = AshTestBase;
+using WmDecorationControllerDelegateTest = AshTestBase;
 
-TEST_F(WmShadowControllerDelegateTest,
+TEST_F(WmDecorationControllerDelegateTest,
        UpdateShadowRoundedCornersEnterExitOverview) {
   auto window = CreateWindowWithAppType();
 
   auto* window_rounded_corner =
       window->GetProperty(aura::client::kWindowRoundedCornersKey);
 
-  auto* shadow_controller = Shell::Get()->shadow_controller();
-  shadow_controller->UpdateShadowForWindow(window.get());
+  auto* decoration_controller = Shell::Get()->decoration_controller();
+  decoration_controller->UpdateDecorationForWindow(window.get());
 
   // Before entering Overview, the shadow should have a same rounded corner
   // radius with its window.
-  auto* shadow_decoration =
-      shadow_controller->GetShadowDecorationForWindow(window.get());
+  auto* decoration =
+      decoration_controller->GetDecorationForWindow(window.get());
   EXPECT_TRUE(window_rounded_corner);
-  EXPECT_EQ(shadow_decoration->rounded_corners(), *window_rounded_corner);
+  EXPECT_EQ(decoration->rounded_corners(), *window_rounded_corner);
 
   // Enter Overview, the shadow's rounded corner radius becomes 0.
   ToggleOverview();
-  EXPECT_EQ(shadow_decoration->rounded_corners(), gfx::RoundedCornersF());
+  EXPECT_EQ(decoration->rounded_corners(), gfx::RoundedCornersF());
 
   // Exit Overview, the shadow's rounded corner radius is reset to window
   // rounded corner radius.
   ToggleOverview();
-  EXPECT_EQ(shadow_decoration->rounded_corners(), *window_rounded_corner);
+  EXPECT_EQ(decoration->rounded_corners(), *window_rounded_corner);
 }
 
-TEST_F(WmShadowControllerDelegateTest,
+TEST_F(WmDecorationControllerDelegateTest,
        AlwaysOnTopWindowsDontHaveShadowsInOverview) {
   auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 300});
   auto* widget = views::Widget::GetWidgetForNativeWindow(window.get());
@@ -59,22 +59,22 @@ TEST_F(WmShadowControllerDelegateTest,
   EXPECT_TRUE(Shell::GetPrimaryRootWindow()
                   ->GetChildById(kShellWindowId_AlwaysOnTopContainer)
                   ->Contains(window.get()));
-  auto* shadow_controller = Shell::Get()->shadow_controller();
-  shadow_controller->UpdateShadowForWindow(window.get());
-  auto* shadow_decoration =
-      shadow_controller->GetShadowDecorationForWindow(window.get());
-  ASSERT_TRUE(shadow_decoration);
-  EXPECT_TRUE(shadow_decoration->layer()->visible());
+  auto* decoration_controller = Shell::Get()->decoration_controller();
+  decoration_controller->UpdateDecorationForWindow(window.get());
+  auto* decoration =
+      decoration_controller->GetDecorationForWindow(window.get());
+  ASSERT_TRUE(decoration);
+  EXPECT_TRUE(decoration->layer()->visible());
 
   EnterOverview();
-  EXPECT_FALSE(shadow_decoration->layer()->visible());
+  EXPECT_FALSE(decoration->layer()->visible());
 
   ExitOverview();
-  EXPECT_TRUE(shadow_decoration->layer()->visible());
+  EXPECT_TRUE(decoration->layer()->visible());
 }
 
-TEST_F(WmShadowControllerDelegateTest, HideShadowForOccludedWindow) {
-  auto* shadow_controller = Shell::Get()->shadow_controller();
+TEST_F(WmDecorationControllerDelegateTest, HideShadowForOccludedWindow) {
+  auto* decoration_controller = Shell::Get()->decoration_controller();
 
   constexpr gfx::Rect kBoundsA(200, 300);
   constexpr gfx::Rect kBoundsB(100, 100, 400, 300);
@@ -87,11 +87,11 @@ TEST_F(WmShadowControllerDelegateTest, HideShadowForOccludedWindow) {
   window3->SetName("w3");
 
   auto* shadow_decoration1 =
-      shadow_controller->GetShadowDecorationForWindow(window1.get());
+      decoration_controller->GetDecorationForWindow(window1.get());
   auto* shadow_decoration2 =
-      shadow_controller->GetShadowDecorationForWindow(window2.get());
+      decoration_controller->GetDecorationForWindow(window2.get());
   auto* shadow_decoration3 =
-      shadow_controller->GetShadowDecorationForWindow(window3.get());
+      decoration_controller->GetDecorationForWindow(window3.get());
 
   // window2 occludes window1
   EXPECT_FALSE(shadow_decoration1->layer()->visible());
@@ -117,20 +117,20 @@ TEST_F(WmShadowControllerDelegateTest, HideShadowForOccludedWindow) {
   EXPECT_TRUE(shadow_decoration3->layer()->visible());
 }
 
-TEST_F(WmShadowControllerDelegateTest, ContainerShouldHaveNoShadow) {
-  auto* shadow_controller = Shell::Get()->shadow_controller();
+TEST_F(WmDecorationControllerDelegateTest, ContainerShouldHaveNoShadow) {
+  auto* decoration_controller = Shell::Get()->decoration_controller();
 
   auto* primary_root = Shell::GetPrimaryRootWindow();
 
   for (int id : desks_util::GetDesksContainersIds()) {
     auto* container = Shell::GetContainer(primary_root, id);
-    EXPECT_FALSE(shadow_controller->IsShadowVisibleForWindow(container));
-    EXPECT_FALSE(shadow_controller->IsObservingWindowForTest(container));
+    EXPECT_FALSE(decoration_controller->IsShadowVisibleForWindow(container));
+    EXPECT_FALSE(decoration_controller->IsObservingWindowForTest(container));
   }
 }
 
-TEST_F(WmShadowControllerDelegateTest, ControlShouldHaveNoShadow) {
-  auto* shadow_controller = Shell::Get()->shadow_controller();
+TEST_F(WmDecorationControllerDelegateTest, ControlShouldHaveNoShadow) {
+  auto* decoration_controller = Shell::Get()->decoration_controller();
   auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 200});
 
   auto child = views::test::TestWidgetBuilder()
@@ -139,10 +139,10 @@ TEST_F(WmShadowControllerDelegateTest, ControlShouldHaveNoShadow) {
                    .BuildClientOwnsWidget();
   ASSERT_EQ(aura::client::WINDOW_TYPE_CONTROL,
             child->GetNativeWindow()->GetType());
-  EXPECT_FALSE(
-      shadow_controller->IsShadowVisibleForWindow(child->GetNativeWindow()));
-  EXPECT_FALSE(
-      shadow_controller->IsObservingWindowForTest(child->GetNativeWindow()));
+  EXPECT_FALSE(decoration_controller->IsShadowVisibleForWindow(
+      child->GetNativeWindow()));
+  EXPECT_FALSE(decoration_controller->IsObservingWindowForTest(
+      child->GetNativeWindow()));
 }
 
 }  // namespace ash

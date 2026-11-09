@@ -89,7 +89,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/wm/core/capture_controller.h"
-#include "ui/wm/core/shadow_controller.h"
+#include "ui/wm/core/decoration_controller.h"
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_properties.h"
@@ -3304,11 +3304,10 @@ TEST_F(ShellSurfaceTest, ShadowBoundsWithNegativeCoordinate) {
 
   // Shadow content bounds is relative to ExoShellSurface and should use window
   // bounds.
-  ui::Decoration* shadow_decoration =
-      wm::ShadowController::GetShadowDecorationForWindow(
-          widget->GetNativeWindow());
-  ASSERT_TRUE(shadow_decoration);
-  EXPECT_EQ(gfx::Rect(0, 0, 256, 256), shadow_decoration->content_bounds());
+  ui::Decoration* decoration = wm::DecorationController::GetDecorationForWindow(
+      widget->GetNativeWindow());
+  ASSERT_TRUE(decoration);
+  EXPECT_EQ(gfx::Rect(0, 0, 256, 256), decoration->content_bounds());
 }
 
 TEST_F(ShellSurfaceTest, ShadowBoundsWithScaleFactor) {
@@ -3351,11 +3350,10 @@ TEST_F(ShellSurfaceTest, ShadowBoundsWithScaleFactor) {
 
   // Shadow content bounds is relative to ExoShellSurface and should use window
   // bounds.
-  ui::Decoration* shadow_decoration =
-      wm::ShadowController::GetShadowDecorationForWindow(
-          widget->GetNativeWindow());
-  ASSERT_TRUE(shadow_decoration);
-  EXPECT_EQ(gfx::Rect(0, 0, 256, 256), shadow_decoration->content_bounds());
+  ui::Decoration* decoration = wm::DecorationController::GetDecorationForWindow(
+      widget->GetNativeWindow());
+  ASSERT_TRUE(decoration);
+  EXPECT_EQ(gfx::Rect(0, 0, 256, 256), decoration->content_bounds());
 }
 
 TEST_F(ShellSurfaceTest, ShadowRoundedCorners) {
@@ -3376,32 +3374,30 @@ TEST_F(ShellSurfaceTest, ShadowRoundedCorners) {
   ASSERT_TRUE(widget);
 
   aura::Window* window = widget->GetNativeWindow();
-  ui::Decoration* shadow_decoration =
-      wm::ShadowController::GetShadowDecorationForWindow(window);
-  ASSERT_TRUE(shadow_decoration);
+  ui::Decoration* decoration =
+      wm::DecorationController::GetDecorationForWindow(window);
+  ASSERT_TRUE(decoration);
 
   // Window shadow radius needs to match the window radius.
-  EXPECT_EQ(shadow_decoration->rounded_corners(), gfx::RoundedCornersF());
+  EXPECT_EQ(decoration->rounded_corners(), gfx::RoundedCornersF());
 
   // Have a window with radius of 12dp.
   shell_surface->SetWindowCornersRadii(
       gfx::RoundedCornersF(kWindowCornerRadius));
   root_surface->Commit();
 
-  shadow_decoration =
-      wm::ShadowController::GetShadowDecorationForWindow(window);
-  ASSERT_TRUE(shadow_decoration);
-  EXPECT_EQ(shadow_decoration->rounded_corners(),
+  decoration = wm::DecorationController::GetDecorationForWindow(window);
+  ASSERT_TRUE(decoration);
+  EXPECT_EQ(decoration->rounded_corners(),
             gfx::RoundedCornersF(kWindowCornerRadius));
 
   // Have a window with radius of 0dp.
   shell_surface->SetWindowCornersRadii(gfx::RoundedCornersF());
   root_surface->Commit();
 
-  shadow_decoration =
-      wm::ShadowController::GetShadowDecorationForWindow(window);
-  ASSERT_TRUE(shadow_decoration);
-  EXPECT_EQ(shadow_decoration->rounded_corners(), gfx::RoundedCornersF());
+  decoration = wm::DecorationController::GetDecorationForWindow(window);
+  ASSERT_TRUE(decoration);
+  EXPECT_EQ(decoration->rounded_corners(), gfx::RoundedCornersF());
 }
 
 TEST_F(ShellSurfaceTest, RoundedWindows) {
@@ -3505,17 +3501,17 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
   EXPECT_FALSE(widget->GetNativeWindow()->GetProperty(
       aura::client::kUseWindowBoundsForShadow));
 
-  ui::Decoration* normal_shadow_decoration =
-      wm::ShadowController::GetShadowDecorationForWindow(
+  ui::Decoration* normal_decoration =
+      wm::DecorationController::GetDecorationForWindow(
           widget->GetNativeWindow());
-  ASSERT_TRUE(normal_shadow_decoration);
+  ASSERT_TRUE(normal_decoration);
 
   // ash::ResizeShadow::InitParams set the default |thickness| to 8.
   constexpr int kResizeShadowThickness = 8;
 
   EXPECT_EQ(gfx::Size(size.width() + kResizeShadowThickness, size.height()),
             resize_shadow->GetLayerForTest()->bounds().size());
-  EXPECT_EQ(size, normal_shadow_decoration->content_bounds().size());
+  EXPECT_EQ(size, normal_decoration->content_bounds().size());
 
   constexpr gfx::Rect kNewBounds(kOrigin, {100, 100});
   uint32_t serial = 0;
@@ -3540,15 +3536,14 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
   shell_surface->AcknowledgeConfigure(serial);
   EXPECT_EQ(gfx::Size(size.width() + kResizeShadowThickness, size.height()),
             resize_shadow->GetLayerForTest()->bounds().size());
-  EXPECT_EQ(size, normal_shadow_decoration->content_bounds().size());
+  EXPECT_EQ(size, normal_decoration->content_bounds().size());
 
   // Normal and resize shadow sizes are updated after commit.
   shell_surface->root_surface()->Commit();
   EXPECT_EQ(gfx::Size(kNewBounds.width() + kResizeShadowThickness,
                       kNewBounds.height()),
             resize_shadow->GetLayerForTest()->bounds().size());
-  EXPECT_EQ(kNewBounds.size(),
-            normal_shadow_decoration->content_bounds().size());
+  EXPECT_EQ(kNewBounds.size(), normal_decoration->content_bounds().size());
 
   // Explicitly ends the drag here.
   ash::Shell::Get()->toplevel_window_event_handler()->CompleteDragForTesting(
@@ -3639,17 +3634,17 @@ TEST_F(ShellSurfaceTest, ResizeShadowDependentBounds) {
   widget->GetNativeWindow()->SetProperty(
       aura::client::kUseWindowBoundsForShadow, true);
 
-  ui::Decoration* normal_shadow_decoration =
-      wm::ShadowController::GetShadowDecorationForWindow(
+  ui::Decoration* normal_decoration =
+      wm::DecorationController::GetDecorationForWindow(
           widget->GetNativeWindow());
-  ASSERT_TRUE(normal_shadow_decoration);
+  ASSERT_TRUE(normal_decoration);
 
   // ash::ResizeShadow::InitParams set the default |thickness| to 8.
   const int kResizeShadowThickness = 8;
 
   EXPECT_EQ(gfx::Size(size.width() + kResizeShadowThickness, size.height()),
             resize_shadow->GetLayerForTest()->bounds().size());
-  EXPECT_EQ(size, normal_shadow_decoration->content_bounds().size());
+  EXPECT_EQ(size, normal_decoration->content_bounds().size());
 
   gfx::Size new_size(100, 100);
   gfx::Rect new_bounds(new_size);
@@ -3662,7 +3657,7 @@ TEST_F(ShellSurfaceTest, ResizeShadowDependentBounds) {
   EXPECT_EQ(
       gfx::Size(new_size.width() + kResizeShadowThickness, new_size.height()),
       resize_shadow->GetLayerForTest()->bounds().size());
-  EXPECT_EQ(new_size, normal_shadow_decoration->content_bounds().size());
+  EXPECT_EQ(new_size, normal_decoration->content_bounds().size());
 }
 
 TEST_F(ShellSurfaceTest, PropertyResolverTest) {

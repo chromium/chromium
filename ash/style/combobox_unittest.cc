@@ -27,7 +27,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/core/shadow_controller.h"
+#include "ui/wm/core/decoration_controller.h"
 
 namespace ash {
 
@@ -135,11 +135,9 @@ TEST_F(ComboboxTest, MenuShadowRoundedCorners) {
 
   views::Widget* menu_widget = GetMenuWidget();
   ASSERT_TRUE(menu_widget);
-  ui::Decoration* shadow_decoration =
-      wm::ShadowController::GetShadowDecorationForWindow(
-          menu_widget->GetNativeWindow());
-  EXPECT_EQ(gfx::RoundedCornersF(4, 12, 12, 12),
-            shadow_decoration->rounded_corners());
+  ui::Decoration* decoration = wm::DecorationController::GetDecorationForWindow(
+      menu_widget->GetNativeWindow());
+  EXPECT_EQ(gfx::RoundedCornersF(4, 12, 12, 12), decoration->rounded_corners());
 
   CloseComboBoxDropDownMenu();
 }

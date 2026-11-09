@@ -39,8 +39,8 @@ class WindowParentingClient;
 namespace wm {
 class CompoundEventFilter;
 class CursorManager;
+class DecorationController;
 class FocusController;
-class ShadowController;
 class VisibilityController;
 class WindowModalityController;
 }  // namespace wm
@@ -370,7 +370,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   static wm::CursorManager* cursor_manager_;
   static DesktopNativeCursorManager* native_cursor_manager_;
 
-  std::unique_ptr<wm::ShadowController> shadow_controller_;
+  std::unique_ptr<wm::DecorationController> decoration_controller_;
 
   // Reorders child windows of |window_| associated with a view based on the
   // order of the associated views in the widget's view hierarchy.

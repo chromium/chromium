@@ -153,7 +153,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_manager.h"
-#include "ui/wm/core/shadow_controller.h"
+#include "ui/wm/core/decoration_controller.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -3049,16 +3049,17 @@ TEST_P(OverviewSessionTest, ShadowDisappearsInOverview) {
   std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
 
   // Verify that the shadow is initially visible.
-  ::wm::ShadowController* shadow_controller = Shell::Get()->shadow_controller();
-  EXPECT_TRUE(shadow_controller->IsShadowVisibleForWindow(window.get()));
+  ::wm::DecorationController* decoration_controller =
+      Shell::Get()->decoration_controller();
+  EXPECT_TRUE(decoration_controller->IsShadowVisibleForWindow(window.get()));
 
   // Verify that the shadow is invisible after entering overview mode.
   ToggleOverview();
-  EXPECT_FALSE(shadow_controller->IsShadowVisibleForWindow(window.get()));
+  EXPECT_FALSE(decoration_controller->IsShadowVisibleForWindow(window.get()));
 
   // Verify that the shadow is visible again after exiting overview mode.
   ToggleOverview();
-  EXPECT_TRUE(shadow_controller->IsShadowVisibleForWindow(window.get()));
+  EXPECT_TRUE(decoration_controller->IsShadowVisibleForWindow(window.get()));
 }
 
 // Verify that PIP windows will be excluded from the overview, but not hidden.

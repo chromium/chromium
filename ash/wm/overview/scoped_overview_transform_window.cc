@@ -55,7 +55,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
-#include "ui/wm/core/shadow_controller.h"
+#include "ui/wm/core/decoration_controller.h"
 #include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_util.h"
 
@@ -241,9 +241,9 @@ void ScopedOverviewTransformWindow::RestoreWindow(bool reset_transform,
                                                   bool animate) {
   base::AutoReset<bool> restoring(&is_restoring_, true);
 
-  // Shadow controller may be null on shutdown.
-  if (auto* shadow_controller = Shell::Get()->shadow_controller()) {
-    shadow_controller->UpdateShadowForWindow(window_);
+  // Decoration controller may be null on shutdown.
+  if (auto* decoration_controller = Shell::Get()->decoration_controller()) {
+    decoration_controller->UpdateDecorationForWindow(window_);
   }
 
   // We will handle clipping here, no need to do anything in the destructor.
@@ -472,7 +472,7 @@ bool ScopedOverviewTransformWindow::IsMinimizedOrTucked() const {
 }
 
 void ScopedOverviewTransformWindow::PrepareForOverview() {
-  Shell::Get()->shadow_controller()->UpdateShadowForWindow(window_);
+  Shell::Get()->decoration_controller()->UpdateDecorationForWindow(window_);
 }
 
 void ScopedOverviewTransformWindow::EnsureVisible() {

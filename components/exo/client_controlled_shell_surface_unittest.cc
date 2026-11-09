@@ -78,7 +78,7 @@
 #include "ui/views/test/test_widget_builder.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/caption_button_types.h"
-#include "ui/wm/core/shadow_controller.h"
+#include "ui/wm/core/decoration_controller.h"
 #include "ui/wm/core/shadow_types.h"
 
 using chromeos::WindowStateType;
@@ -292,7 +292,7 @@ TEST_F(ClientControlledShellSurfaceTest, SurfaceShadow) {
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
 
   // 1) Initial state, no shadow (SurfaceFrameType is NONE);
-  EXPECT_FALSE(wm::ShadowController::GetShadowDecorationForWindow(window));
+  EXPECT_FALSE(wm::DecorationController::GetDecorationForWindow(window));
   std::unique_ptr<Display> display(new Display);
 
   // 2) Just creating a sub surface won't create a shadow.
@@ -300,18 +300,18 @@ TEST_F(ClientControlledShellSurfaceTest, SurfaceShadow) {
       test::ShellSurfaceBuilder::AddChildSurface(surface, {0, 0, 128, 128});
   surface->Commit();
 
-  EXPECT_FALSE(wm::ShadowController::GetShadowDecorationForWindow(window));
+  EXPECT_FALSE(wm::DecorationController::GetDecorationForWindow(window));
 
   // 3) Create a shadow.
   surface->SetFrame(SurfaceFrameType::SHADOW);
   shell_surface->SetShadowBounds(gfx::Rect(10, 10, 100, 100));
   surface->Commit();
-  ui::Decoration* shadow_decoration =
-      wm::ShadowController::GetShadowDecorationForWindow(window);
-  ASSERT_TRUE(shadow_decoration);
-  EXPECT_TRUE(shadow_decoration->layer()->visible());
+  ui::Decoration* decoration =
+      wm::DecorationController::GetDecorationForWindow(window);
+  ASSERT_TRUE(decoration);
+  EXPECT_TRUE(decoration->layer()->visible());
 
-  gfx::Rect before = shadow_decoration->layer()->bounds();
+  gfx::Rect before = decoration->layer()->bounds();
 
   // 4) Shadow bounds is independent of the sub surface.
   constexpr gfx::Size kNewBufferSize(256, 256);
@@ -320,7 +320,7 @@ TEST_F(ClientControlledShellSurfaceTest, SurfaceShadow) {
   child->Commit();
   surface->Commit();
 
-  EXPECT_EQ(before, shadow_decoration->layer()->bounds());
+  EXPECT_EQ(before, decoration->layer()->bounds());
 
   // 4) Updating the widget's window bounds should not change the shadow bounds.
   // TODO(oshima): The following scenario only worked with Xdg/ShellSurface,
@@ -335,14 +335,14 @@ TEST_F(ClientControlledShellSurfaceTest, SurfaceShadow) {
   surface->Commit();
 
   EXPECT_EQ(wm::kShadowElevationNone, GetShadowElevation(window));
-  EXPECT_FALSE(shadow_decoration->layer()->visible());
+  EXPECT_FALSE(decoration->layer()->visible());
 
   // 6) This should enable non surface shadow again.
   shell_surface->SetShadowBounds(gfx::Rect(10, 10, 100, 100));
   surface->Commit();
 
   EXPECT_EQ(wm::kShadowElevationDefault, GetShadowElevation(window));
-  EXPECT_TRUE(shadow_decoration->layer()->visible());
+  EXPECT_TRUE(decoration->layer()->visible());
 }
 
 TEST_F(ClientControlledShellSurfaceTest, ShadowWithStateChange) {
@@ -359,39 +359,38 @@ TEST_F(ClientControlledShellSurfaceTest, ShadowWithStateChange) {
 
   views::Widget* widget = shell_surface->GetWidget();
   aura::Window* window = widget->GetNativeWindow();
-  ui::Decoration* shadow_decoration =
-      wm::ShadowController::GetShadowDecorationForWindow(window);
+  ui::Decoration* decoration =
+      wm::DecorationController::GetDecorationForWindow(window);
 
   shell_surface->SetShadowBounds(kShadowBounds);
   surface->Commit();
   EXPECT_EQ(wm::kShadowElevationDefault, GetShadowElevation(window));
 
-  EXPECT_TRUE(shadow_decoration->layer()->visible());
+  EXPECT_TRUE(decoration->layer()->visible());
   // Origin must be in sync.
-  EXPECT_EQ(kShadowBounds.origin(),
-            shadow_decoration->content_bounds().origin());
+  EXPECT_EQ(kShadowBounds.origin(), decoration->content_bounds().origin());
 
   const gfx::Rect work_area =
       display::Screen::Get()->GetPrimaryDisplay().work_area();
   // Maximizing window hides the shadow.
   widget->Maximize();
   ASSERT_TRUE(widget->IsMaximized());
-  EXPECT_FALSE(shadow_decoration->layer()->visible());
+  EXPECT_FALSE(decoration->layer()->visible());
 
   shell_surface->SetShadowBounds(work_area);
   surface->Commit();
-  EXPECT_FALSE(shadow_decoration->layer()->visible());
+  EXPECT_FALSE(decoration->layer()->visible());
 
   // Restoring bounds will re-enable shadow. It's content size is set to work
   // area,/ thus not visible until new bounds is committed.
   widget->Restore();
-  EXPECT_TRUE(shadow_decoration->layer()->visible());
-  EXPECT_EQ(work_area, shadow_decoration->content_bounds());
+  EXPECT_TRUE(decoration->layer()->visible());
+  EXPECT_EQ(work_area, decoration->content_bounds());
 
   // The bounds is updated.
   shell_surface->SetShadowBounds(kShadowBounds);
   surface->Commit();
-  EXPECT_EQ(kShadowBounds, shadow_decoration->content_bounds());
+  EXPECT_EQ(kShadowBounds, decoration->content_bounds());
 }
 
 TEST_F(ClientControlledShellSurfaceTest, ShadowWithTransform) {
@@ -403,8 +402,8 @@ TEST_F(ClientControlledShellSurfaceTest, ShadowWithTransform) {
                            .BuildClientControlledShellSurface();
   auto* surface = shell_surface->root_surface();
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
-  ui::Decoration* shadow_decoration =
-      wm::ShadowController::GetShadowDecorationForWindow(window);
+  ui::Decoration* decoration =
+      wm::DecorationController::GetDecorationForWindow(window);
 
   // In parent coordinates.
   constexpr gfx::Rect kShadowBounds(gfx::Point(-10, -10), kContentSize);
@@ -415,8 +414,8 @@ TEST_F(ClientControlledShellSurfaceTest, ShadowWithTransform) {
   window->SetTransform(transform);
   shell_surface->SetShadowBounds(kShadowBounds);
   surface->Commit();
-  EXPECT_TRUE(shadow_decoration->layer()->visible());
-  EXPECT_EQ(gfx::Rect(-10, -10, 100, 100), shadow_decoration->content_bounds());
+  EXPECT_TRUE(decoration->layer()->visible());
+  EXPECT_EQ(gfx::Rect(-10, -10, 100, 100), decoration->content_bounds());
 }
 
 TEST_F(ClientControlledShellSurfaceTest, ShadowStartMaximized) {
@@ -430,21 +429,21 @@ TEST_F(ClientControlledShellSurfaceTest, ShadowStartMaximized) {
   aura::Window* window = widget->GetNativeWindow();
 
   // There is no shadow when started in maximized state.
-  EXPECT_FALSE(wm::ShadowController::GetShadowDecorationForWindow(window));
+  EXPECT_FALSE(wm::DecorationController::GetDecorationForWindow(window));
 
   // Sending a shadow bounds in maximized state won't create a shadow.
   shell_surface->SetShadowBounds(gfx::Rect(10, 10, 100, 100));
   surface->Commit();
-  EXPECT_FALSE(wm::ShadowController::GetShadowDecorationForWindow(window));
+  EXPECT_FALSE(wm::DecorationController::GetDecorationForWindow(window));
 
   // Restore the window and make sure the shadow is created, visible and
   // has the latest bounds.
   widget->Restore();
-  ui::Decoration* shadow_decoration =
-      wm::ShadowController::GetShadowDecorationForWindow(window);
-  ASSERT_TRUE(shadow_decoration);
-  EXPECT_TRUE(shadow_decoration->layer()->visible());
-  EXPECT_EQ(gfx::Rect(10, 10, 100, 100), shadow_decoration->content_bounds());
+  ui::Decoration* decoration =
+      wm::DecorationController::GetDecorationForWindow(window);
+  ASSERT_TRUE(decoration);
+  EXPECT_TRUE(decoration->layer()->visible());
+  EXPECT_EQ(gfx::Rect(10, 10, 100, 100), decoration->content_bounds());
 }
 
 TEST_F(ClientControlledShellSurfaceTest, Frame) {
@@ -614,26 +613,25 @@ TEST_F(ClientControlledShellSurfaceTest,
   ASSERT_TRUE(widget);
 
   aura::Window* window = widget->GetNativeWindow();
-  ui::Decoration* shadow_decoration =
-      wm::ShadowController::GetShadowDecorationForWindow(window);
-  ASSERT_TRUE(shadow_decoration);
-  EXPECT_EQ(shadow_decoration->rounded_corners().upper_left(),
+  ui::Decoration* decoration =
+      wm::DecorationController::GetDecorationForWindow(window);
+  ASSERT_TRUE(decoration);
+  EXPECT_EQ(decoration->rounded_corners().upper_left(),
             chromeos::kRoundedWindowSmallCornerRadius);
 
   shell_surface->SetPip();
   root_surface->Commit();
 
-  shadow_decoration =
-      wm::ShadowController::GetShadowDecorationForWindow(window);
-  ASSERT_TRUE(shadow_decoration);
-  EXPECT_EQ(shadow_decoration->rounded_corners().upper_left(),
+  decoration = wm::DecorationController::GetDecorationForWindow(window);
+  ASSERT_TRUE(decoration);
+  EXPECT_EQ(decoration->rounded_corners().upper_left(),
             chromeos::kPipRoundedCornerRadius);
 
   shell_surface->UnsetPip();
   root_surface->Commit();
 
-  ASSERT_TRUE(shadow_decoration);
-  EXPECT_EQ(shadow_decoration->rounded_corners().upper_left(),
+  ASSERT_TRUE(decoration);
+  EXPECT_EQ(decoration->rounded_corners().upper_left(),
             chromeos::kRoundedWindowSmallCornerRadius);
 }
 
@@ -2887,7 +2885,7 @@ TEST_F(ClientControlledShellSurfaceTest, FrameOverlap) {
   EXPECT_FALSE(frame_view->GetHeaderView()->GetVisible());
   EXPECT_FALSE(frame_view->GetFrameEnabled());
   EXPECT_FALSE(frame_view->GetFrameOverlapped());
-  EXPECT_FALSE(wm::ShadowController::GetShadowDecorationForWindow(window));
+  EXPECT_FALSE(wm::DecorationController::GetDecorationForWindow(window));
   EXPECT_EQ(kWindowBounds, widget->GetWindowBoundsInScreen());
   EXPECT_EQ(kWindowBounds,
             frame_view->GetWindowBoundsForClientBounds(kWindowBounds));
@@ -2899,7 +2897,7 @@ TEST_F(ClientControlledShellSurfaceTest, FrameOverlap) {
   EXPECT_TRUE(frame_view->GetHeaderView()->GetVisible());
   EXPECT_TRUE(frame_view->GetFrameEnabled());
   EXPECT_TRUE(frame_view->GetFrameOverlapped());
-  EXPECT_TRUE(wm::ShadowController::GetShadowDecorationForWindow(window));
+  EXPECT_TRUE(wm::DecorationController::GetDecorationForWindow(window));
   EXPECT_EQ(kWindowBounds, widget->GetWindowBoundsInScreen());
   EXPECT_EQ(kWindowBounds,
             frame_view->GetWindowBoundsForClientBounds(kClientViewBounds));
