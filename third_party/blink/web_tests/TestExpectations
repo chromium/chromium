@@ -2559,9 +2559,6 @@ crbug.com/579037499 [ Mac14 ] external/wpt/html/document-isolation-policy/naviga
 crbug.com/579037499 [ Mac15 ] external/wpt/html/document-isolation-policy/navigate-across-policies.tentative.https.html [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/582906924 external/wpt/css/CSS2/floats/float-in-block-in-inline-position-001.html [ Failure ]
-crbug.com/582906924 external/wpt/css/CSS2/floats/floats-in-inline-content-intrinsic-size-001.html [ Failure ]
-crbug.com/582906924 external/wpt/css/CSS2/normal-flow/nested-inline-boxes-around-block-in-inline-001.html [ Failure ]
 crbug.com/582898057 external/wpt/css/css-display/display-contents-text-line-height-quirks.html [ Failure ]
 crbug.com/582904061 external/wpt/css/css-flexbox/content-height-with-scrollbars.html [ Failure Pass ]
 crbug.com/582906428 external/wpt/css/css-inline/atomic-inline-intrinsic-size-001.html [ Failure ]
