@@ -378,20 +378,8 @@
     <message name="IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_GLIC" desc="Label for configuring Gemini side panel alignment.">
       Gemini
     </message>
-    <message name="IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_CONTEXTUAL_TASKS" desc="Label for configuring Google Search AI Mode side panel alignment.">
-      Google Search AI Mode
-    </message>
     <message name="IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_CONTEXTUAL_TASKS_GOOGLE_SEARCH" desc="Label for configuring Google Search side panel alignment.">
       Google Search
-    </message>
-    <message name="IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_CONTEXTUAL_TASKS_SIDE_PANEL" desc="Label for configuring Google Search side panel alignment.">
-      Google Search side panel
-    </message>
-    <message name="IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_CONTEXTUAL_TASKS_IN_SIDE_PANEL" desc="Label for configuring Google Search side panel alignment.">
-      Google Search in side panel
-    </message>
-    <message name="IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_CONTEXTUAL_TASKS_PANEL" desc="Label for configuring Google Search side panel alignment.">
-      Google Search panel
     </message>
     <message name="IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_CHROME_PANELS" desc="Label for the default Chrome Panels alignment setting.">
       Chrome Panels
@@ -4184,11 +4172,6 @@
         =1 {Removed permissions for 1 site}
         other {Removed permissions for {NUM_SITES} sites}}
     </message>
-    <message name="IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION" desc="The review notification permissions module of Safety Hub marks sites that send a lot of notifications for review by the user. This label is for the notification in Chrome's three-dot menu indicating how many sites should be reviewed.">
-      {NUM_SITES, plural,
-        =1 {Found 1 site with lots of notifications}
-        other {Found {NUM_SITES} sites with lots of notifications}}
-    </message>
     <message name="IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION" desc="The password check module of Safety Hub warns users if there is any insecure credential. This label is for the notification in Chrome's three-dot menu indicating how many passwords are compromised.">
       {NUM_SITES, plural,
         =1 {Found 1 compromised password}
@@ -4213,12 +4196,6 @@
     </message>
     <message name="IDS_SETTINGS_SAFETY_HUB_EXTENSIONS_MODULE_LOWERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the lower case version (i.e. version that comes in the middle of the sentence) for the name of extensions module.">
       extensions
-    </message>
-    <message name="IDS_SETTINGS_SAFETY_HUB_NOTIFICATIONS_MODULE_UPPERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the upper case version (i.e. version that comes first in the sentence) for the name of notifications module.">
-      Notifications
-    </message>
-    <message name="IDS_SETTINGS_SAFETY_HUB_NOTIFICATIONS_MODULE_LOWERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the lower case version (i.e. version that comes in the middle of the sentence) for the name of notifications module.">
-      notifications
     </message>
     <message name="IDS_SETTINGS_SAFETY_HUB_PERMISSIONS_MODULE_UPPERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the upper case version (i.e. version that comes first in the sentence) for the name of permissions module.">
       Permissions
@@ -4362,9 +4339,6 @@
   </message>
   <message name="IDS_SETTINGS_SKILLS_GALLERY_LABEL" desc="Label for the link row that opens the Skills Gallery.">
     View and manage your skills
-  </message>
-  <message name="IDS_SETTINGS_SYNC_GO_TO_SKILLS_BUTTON" desc="Label for the button on the Sync page that redirects the user to the Skills settings page.">
-    Go to AI Innovations
   </message>
   <message name="IDS_SETTINGS_SKILLS_WHEN_ON_BULLET_ONE" desc="First bullet point under the 'When on' column in the Skills settings page.">
     Build your own or add from the skills library
