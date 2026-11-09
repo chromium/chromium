@@ -7038,10 +7038,6 @@ inline constexpr char kReadAnythingOmniboxChipName[] =
 inline constexpr char kReadAnythingOmniboxChipDescription[] =
     "Enables the omnibox chip entry point for Reading mode";
 
-inline constexpr char kReadAnythingLineFocusName[] = "Reading Mode Line Focus";
-inline constexpr char kReadAnythingLineFocusDescription[] =
-    "Enables the experimental line focus mode for Reading mode.";
-
 inline constexpr char kImmersiveReadAnythingPrintName[] =
     "Immersive Reading Mode Print";
 inline constexpr char kImmersiveReadAnythingPrintDescription[] =

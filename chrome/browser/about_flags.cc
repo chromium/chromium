@@ -12949,13 +12949,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillAiWithDataSchemaDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillAiWithDataSchema)},
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-    {"read-anything-line-focus", flag_descriptions::kReadAnythingLineFocusName,
-     flag_descriptions::kReadAnythingLineFocusDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kReadAnythingLineFocus)},
-#endif
-
     {"verify-mtcs", flag_descriptions::kVerifyMTCsName,
      flag_descriptions::kVerifyMTCsDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(net::features::kVerifyMTCs)},

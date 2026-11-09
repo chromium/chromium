@@ -387,11 +387,6 @@ bool IsReadAnythingTranslateEntryPointEnabled() {
       ::features::kReadAnythingTranslateEntryPoint);
 }
 
-BASE_FEATURE(kReadAnythingLineFocus, base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsReadAnythingLineFocusEnabled() {
-  return base::FeatureList::IsEnabled(::features::kReadAnythingLineFocus);
-}
-
 BASE_FEATURE(kHatsReadingModeSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsHatsReadingModeSurveyEnabled() {
   return base::FeatureList::IsEnabled(::features::kHatsReadingModeSurvey);
