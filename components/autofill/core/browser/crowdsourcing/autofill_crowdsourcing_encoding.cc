@@ -475,6 +475,32 @@ void PopulateThreeBitHashedFieldMetadata(
   }
 }
 
+// Returns whether fields of `type` should be included in crowdsourcing server
+// communication (i.e., queries, vote uploads and metadata uploads).
+// Synthetic select fields are excluded because they are detected dynamically
+// via site-specific scripts and do not have stable attributes for crowdsourcing
+// signatures or metadata.
+bool IsSupportedInServerCommunication(FormControlType type) {
+  switch (type) {
+    case FormControlType::kContentEditable:
+    case FormControlType::kInputDate:
+    case FormControlType::kInputEmail:
+    case FormControlType::kInputMonth:
+    case FormControlType::kInputNumber:
+    case FormControlType::kInputPassword:
+    case FormControlType::kInputSearch:
+    case FormControlType::kInputTelephone:
+    case FormControlType::kInputText:
+    case FormControlType::kInputUrl:
+    case FormControlType::kSelectOne:
+    case FormControlType::kTextArea:
+      return true;
+    case FormControlType::kSyntheticSelectOne:
+      return false;
+  }
+  NOTREACHED();
+}
+
 // Encodes the fields of `upload_fields` in the in-out parameter `upload`.
 // Helper function for EncodeUploadRequest().
 void EncodeFormFieldsForUpload(
@@ -616,7 +642,8 @@ void EncodeFormForQuery(
         queried_form_signatures.push_back(form_signature);
 
         for (const FormFieldData& field : flattened_form.fields()) {
-          if (!necessary_condition(field)) {
+          if (!IsSupportedInServerCommunication(field.form_control_type()) ||
+              !necessary_condition(field)) {
             continue;
           }
 
@@ -1057,6 +1084,9 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
 
   std::vector<AutofillField*> upload_fields =
       base::ToVector(form.fields(), &std::unique_ptr<AutofillField>::get);
+  std::erase_if(upload_fields, [](const AutofillField* field) {
+    return !IsSupportedInServerCommunication(field->form_control_type());
+  });
   EncodeFormFieldsForUpload(form, options.encoder, options.fields,
                             upload_fields, &upload);
   std::vector<AutofillUploadContents> uploads = {std::move(upload)};

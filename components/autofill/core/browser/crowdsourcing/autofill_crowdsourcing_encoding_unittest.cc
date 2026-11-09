@@ -2151,6 +2151,30 @@ TEST_F(AutofillCrowdsourcingEncoding,
   EXPECT_EQ(upload.field_data_size(), 1);
 }
 
+// Tests that `FormControlType::kSyntheticSelectOne` fields are excluded from
+// vote uploads.
+TEST_F(AutofillCrowdsourcingEncoding,
+       EncodeUploadRequest_ExcludesSyntheticSelect) {
+  FormData form = test::GetFormData(
+      {.fields = {{.name = u"country",
+                   .form_control_type = FormControlType::kSyntheticSelectOne},
+                  {.name = u"first_name",
+                   .form_control_type = FormControlType::kInputText},
+                  {.name = u"last_name",
+                   .form_control_type = FormControlType::kInputText}}});
+  FormStructure form_structure(form);
+
+  EncodeUploadRequestOptions options;
+  std::vector<AutofillUploadContents> uploads =
+      EncodeUploadRequest(form_structure, options);
+  ASSERT_EQ(uploads.size(), 1u);
+  ASSERT_EQ(uploads[0].field_data_size(), 2);
+  EXPECT_EQ(uploads[0].field_data(0).signature(),
+            form_structure.field(1)->GetFieldSignature().value());
+  EXPECT_EQ(uploads[0].field_data(1).signature(),
+            form_structure.field(2)->GetFieldSignature().value());
+}
+
 TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillQueryPerIframeStructuralSignatures};
@@ -2526,6 +2550,28 @@ TEST_F(AutofillCrowdsourcingEncoding,
   ASSERT_EQ(encoded_signatures.size(), 1U);
   EXPECT_EQ(encoded_signatures.front(), kExpectedSignature);
   EXPECT_THAT(encoded_query, EqualsIgnoringMetadataValues(query));
+}
+
+// Tests that `FormControlType::kSyntheticSelectOne` fields are excluded from
+// queries.
+TEST_F(AutofillCrowdsourcingEncoding,
+       EncodeAutofillPageQueryRequest_ExcludesSyntheticSelect) {
+  FormData form = test::GetFormData(
+      {.fields = {{.name = u"country",
+                   .form_control_type = FormControlType::kSyntheticSelectOne},
+                  {.name = u"first_name",
+                   .form_control_type = FormControlType::kInputText},
+                  {.name = u"last_name",
+                   .form_control_type = FormControlType::kInputText}}});
+
+  auto [encoded_query, encoded_signatures] =
+      EncodeAutofillPageQueryRequest({form});
+  ASSERT_EQ(encoded_query.forms_size(), 1);
+  ASSERT_EQ(encoded_query.forms(0).fields_size(), 2);
+  EXPECT_EQ(encoded_query.forms(0).fields(0).signature(),
+            CalculateFieldSignatureForField(form.fields()[1]).value());
+  EXPECT_EQ(encoded_query.forms(0).fields(1).signature(),
+            CalculateFieldSignatureForField(form.fields()[2]).value());
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, AllowBigForms) {
