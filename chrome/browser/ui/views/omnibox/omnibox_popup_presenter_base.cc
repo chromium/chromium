@@ -312,6 +312,15 @@ void OmniboxPopupPresenterBase::OnWidgetPresented(
     base::UmaHistogramTimes(base::StrCat({GetPopupMetricPrefix(),
                                           ".ShowToPaint.Duration.FirstShow"}),
                             delta);
+    // Splits the first show in this window by whether the page was already
+    // loaded in another window.
+    if (pool_client_) {
+      base::UmaHistogramTimes(
+          base::StrCat(
+              {GetPopupMetricPrefix(), ".ShowToPaint.Duration.FirstShow.",
+               content_taken_from_other_window_ ? "Taken" : "Created"}),
+          delta);
+    }
   }
 }
 
@@ -484,10 +493,14 @@ OmniboxPopupPresenterBase::GetOrCreateWebUIContent(CreationReason reason) {
   if (pool_client_) {
     if (IsPrewarm(reason)) {
       if (pool_client_->HasSharedWebUIContent()) {
+        pool_client_->RecordContentSource(
+            OmniboxPopupWebUIPoolClient::ContentSource::kPrewarmSkipped);
         return nullptr;
       }
-    } else if (auto contents = pool_client_->TakeIdleWebUIContents()) {
-      return AdoptWebUIContents(std::move(contents));
+    } else if (auto* content = pool_client_->TakeAndAdoptIdleWebUIContents(
+                   OmniboxPopupWebUIPoolClient::ContentSource::
+                       kTakenOnDemand)) {
+      return content;
     }
   }
   // Covers `CreateWebUIContent()`, which creates the WebContents and starts
@@ -507,6 +520,10 @@ OmniboxPopupPresenterBase::GetOrCreateWebUIContent(CreationReason reason) {
     return nullptr;
   }
   SetWebUIContent(std::move(content));
+  content_taken_from_other_window_ = false;
+  if (pool_client_) {
+    pool_client_->OnWebUIContentCreated();
+  }
   return GetWebUIContent();
 }
 
@@ -547,6 +564,7 @@ OmniboxPopupWebUIBaseContent* OmniboxPopupPresenterBase::AdoptWebUIContents(
       CreateWebUIContent(std::move(contents));
   CHECK(content);
   SetWebUIContent(std::move(content));
+  content_taken_from_other_window_ = true;
   return GetWebUIContent();
 }
 

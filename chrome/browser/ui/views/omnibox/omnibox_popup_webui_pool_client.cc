@@ -9,6 +9,8 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
@@ -45,7 +47,9 @@ OmniboxPopupWebUIPoolClient::OmniboxPopupWebUIPoolClient(
     OmniboxPopupPresenterBase& presenter,
     OmniboxPopupWebUIPool& pool,
     views::Widget* browser_widget)
-    : presenter_(presenter), pool_(pool.GetWeakPtr()) {
+    : presenter_(presenter),
+      kind_(presenter.GetSharedPopupKind()),
+      pool_(pool.GetWeakPtr()) {
   pool.AddPresenter(&presenter);
   // Presenters are built after the location bar joins the browser window's
   // widget, so this is set outside unit tests.
@@ -56,7 +60,7 @@ OmniboxPopupWebUIPoolClient::OmniboxPopupWebUIPoolClient(
 
 OmniboxPopupWebUIPoolClient::~OmniboxPopupWebUIPoolClient() {
   if (pool_) {
-    pool_->RemovePresenter(&*presenter_);
+    pool_->RemovePresenter(&*presenter_, kind_);
   }
 }
 
@@ -67,6 +71,42 @@ bool OmniboxPopupWebUIPoolClient::HasSharedWebUIContent() const {
 std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>>
 OmniboxPopupWebUIPoolClient::TakeIdleWebUIContents() {
   return pool_ ? pool_->TakeIdleWebUIContents(*presenter_) : nullptr;
+}
+
+OmniboxPopupWebUIBaseContent*
+OmniboxPopupWebUIPoolClient::TakeAndAdoptIdleWebUIContents(
+    ContentSource source) {
+  const base::TimeTicks start = base::TimeTicks::Now();
+  auto contents = TakeIdleWebUIContents();
+  if (!contents) {
+    return nullptr;
+  }
+  OmniboxPopupWebUIBaseContent* content =
+      presenter_->AdoptWebUIContents(std::move(contents));
+  base::UmaHistogramMicrosecondsTimes(
+      base::StrCat(
+          {presenter_->GetPopupMetricPrefix(), ".Shared.MoveDuration"}),
+      base::TimeTicks::Now() - start);
+  RecordContentSource(source);
+  return content;
+}
+
+void OmniboxPopupWebUIPoolClient::OnWebUIContentCreated() {
+  if (pool_ && pool_->ConsumeHolderClosed(kind_)) {
+    RecordContentSource(ContentSource::kCreatedAfterHolderClosed);
+  } else if (HasSharedWebUIContent()) {
+    // The caller failed to take the other window's popup, so it was busy.
+    RecordContentSource(ContentSource::kCreatedWhileOtherBusy);
+  } else {
+    RecordContentSource(ContentSource::kCreated);
+  }
+}
+
+void OmniboxPopupWebUIPoolClient::RecordContentSource(ContentSource source) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {presenter_->GetPopupMetricPrefix(), ".Shared.ContentSource"}),
+      source);
 }
 
 void OmniboxPopupWebUIPoolClient::OnPopupHidden() {
@@ -115,13 +155,17 @@ void OmniboxPopupWebUIPoolClient::TakeIdleWebUIContentsIfNeeded() {
   if (presenter_->GetWebUIContent()) {
     return;
   }
-  if (auto contents = TakeIdleWebUIContents()) {
-    presenter_->AdoptWebUIContents(std::move(contents));
-  }
+  TakeAndAdoptIdleWebUIContents(ContentSource::kTakenOnActivation);
 }
 
 void OmniboxPopupWebUIPoolClient::DropOtherIdleWebUIContents() {
-  if (pool_ && presenter_->GetWebUIContent()) {
-    pool_->DropOtherIdleWebUIContents(*presenter_);
+  if (!pool_ || !presenter_->GetWebUIContent()) {
+    return;
+  }
+  if (const size_t dropped = pool_->DropOtherIdleWebUIContents(*presenter_)) {
+    base::UmaHistogramExactLinear(
+        base::StrCat({presenter_->GetPopupMetricPrefix(),
+                      ".Shared.CopiesDroppedOnHide"}),
+        dropped, 10);
   }
 }

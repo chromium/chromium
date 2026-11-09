@@ -8,6 +8,7 @@
 #include "base/auto_reset.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool_client.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool_factory.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/common/chrome_features.h"
@@ -621,4 +623,105 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupShareAcrossWindowsIdleTimeoutBrowserTest,
 
   EXPECT_EQ(GetPopupContents(browser()),
             KeepsActiveWindowPopup() ? contents : nullptr);
+}
+
+// Records where each window's classic popup came from and how long a move
+// took.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
+                       RecordsContentSourceAndMoveDuration) {
+  base::HistogramTester histograms;
+  OpenLoadedPopup(browser());
+  ClosePopup(browser());
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+
+  StartAutocomplete(other_browser, u"bar");
+
+  constexpr char kSource[] = "Omnibox.Popup.WebUI.Shared.ContentSource";
+  histograms.ExpectBucketCount(
+      kSource, OmniboxPopupWebUIPoolClient::ContentSource::kCreated, 1);
+  // The new window takes the popup on activation or when it shows it.
+  EXPECT_EQ(
+      histograms.GetBucketCount(
+          kSource, OmniboxPopupWebUIPoolClient::ContentSource::kTakenOnDemand) +
+          histograms.GetBucketCount(
+              kSource,
+              OmniboxPopupWebUIPoolClient::ContentSource::kTakenOnActivation),
+      1);
+  histograms.ExpectTotalCount("Omnibox.Popup.WebUI.Shared.MoveDuration", 1);
+}
+
+// A popup created while another window's popup is busy is recorded as such.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
+                       RecordsCreatedWhileOtherBusy) {
+  OpenLoadedPopup(browser());
+  ClosePopup(browser());
+  // Keeps the first window's popup busy.
+  std::unique_ptr<OmniboxPopupDeactivationBlocker> blocker =
+      GetPresenter(browser())->CreateDeactivationBlocker();
+  ASSERT_TRUE(blocker);
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+  ASSERT_FALSE(GetPresenter(other_browser)->GetWebUIContent());
+  base::HistogramTester histograms;
+
+  // Creates the content without showing it, since only its source matters.
+  ASSERT_TRUE(GetPresenter(other_browser)
+                  ->GetOrCreateWebUIContent(
+                      OmniboxPopupPresenterBase::CreationReason::kShow));
+
+  constexpr char kSource[] = "Omnibox.Popup.WebUI.Shared.ContentSource";
+  histograms.ExpectBucketCount(
+      kSource,
+      OmniboxPopupWebUIPoolClient::ContentSource::kCreatedWhileOtherBusy, 1);
+  histograms.ExpectBucketCount(
+      kSource, OmniboxPopupWebUIPoolClient::ContentSource::kCreated, 0);
+}
+
+// A popup created after the window that held the shared popup closed with it
+// is recorded as such.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
+                       RecordsCreatedAfterHolderClosed) {
+  OpenLoadedPopup(browser());
+  ClosePopup(browser());
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+  StartAutocomplete(other_browser, u"bar");
+  ClosePopup(other_browser);
+  ASSERT_FALSE(GetPresenter(browser())->GetWebUIContent());
+  // Keeps the first window from taking the popup when it becomes active as
+  // the other window closes, so the popup closes with its window.
+  std::unique_ptr<OmniboxPopupDeactivationBlocker> blocker =
+      GetPresenter(other_browser)->CreateDeactivationBlocker();
+  ASSERT_TRUE(blocker);
+  base::HistogramTester histograms;
+
+  CloseBrowserSynchronously(other_browser);
+  blocker.reset();
+  // Creates the content without showing it, since only its source matters.
+  ASSERT_TRUE(GetPresenter(browser())->GetOrCreateWebUIContent(
+      OmniboxPopupPresenterBase::CreationReason::kShow));
+
+  histograms.ExpectUniqueSample(
+      "Omnibox.Popup.WebUI.Shared.ContentSource",
+      OmniboxPopupWebUIPoolClient::ContentSource::kCreatedAfterHolderClosed, 1);
+}
+
+// Hiding a popup records how many idle copies in other windows it destroyed.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
+                       RecordsCopiesDroppedOnHide) {
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+  OpenLoadedPopup(browser());
+  OpenLoadedPopup(other_browser);
+  ClosePopup(other_browser);
+  FlushPostedTasks();
+  base::HistogramTester histograms;
+
+  ClosePopup(browser());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !GetPresenter(other_browser)->GetWebUIContent(); }));
+
+  histograms.ExpectUniqueSample(
+      "Omnibox.Popup.WebUI.Shared.CopiesDroppedOnHide", 1, 1);
 }

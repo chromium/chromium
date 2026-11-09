@@ -96,8 +96,16 @@ void OmniboxPopupWebUIPool::AddPresenter(OmniboxPopupPresenterBase* presenter) {
 }
 
 void OmniboxPopupWebUIPool::RemovePresenter(
-    OmniboxPopupPresenterBase* presenter) {
+    OmniboxPopupPresenterBase* presenter,
+    OmniboxPopupState kind) {
   std::erase(presenters_, presenter);
+  // `presenter` may be mid-destruction, so its kind is passed in.
+  if (presenter->GetWebUIContent() &&
+      std::ranges::none_of(presenters_, [&](const auto& other) {
+        return other->GetSharedPopupKind() == kind && other->GetWebUIContent();
+      })) {
+    holder_closed_kinds_.insert(kind);
+  }
 }
 
 bool OmniboxPopupWebUIPool::HasWebUIContent(
@@ -120,15 +128,22 @@ OmniboxPopupWebUIPool::TakeIdleWebUIContents(
   return nullptr;
 }
 
-void OmniboxPopupWebUIPool::DropOtherIdleWebUIContents(
+size_t OmniboxPopupWebUIPool::DropOtherIdleWebUIContents(
     const OmniboxPopupPresenterBase& presenter) {
+  size_t dropped = 0;
   for (OmniboxPopupPresenterBase* other : presenters_) {
     if (other != &presenter && IsSameKind(*other, presenter) &&
         other->CanReleaseWebUIContents()) {
       // Destroys the released WebContents.
       other->ReleaseWebUIContents();
+      ++dropped;
     }
   }
+  return dropped;
+}
+
+bool OmniboxPopupWebUIPool::ConsumeHolderClosed(OmniboxPopupState kind) {
+  return holder_closed_kinds_.erase(kind) > 0;
 }
 
 void OmniboxPopupWebUIPool::OnBrowserWindowActivated(

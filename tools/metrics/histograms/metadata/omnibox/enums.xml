@@ -543,6 +543,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.h:OmniboxPopupResultToContentReadyEarlyExitReason) -->
 
+<!-- LINT.IfChange(OmniboxPopupSharedContentSource) -->
+
+<enum name="OmniboxPopupSharedContentSource">
+  <int value="0" label="Created"/>
+  <int value="1" label="Created after holder window closed"/>
+  <int value="2" label="Taken on demand"/>
+  <int value="3" label="Taken on window activation"/>
+  <int value="4" label="Prewarm skipped"/>
+  <int value="5" label="Created while another window's popup was busy"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool_client.h:OmniboxPopupSharedContentSource) -->
+
 <enum name="OmniboxRichAutocompletionType">
   <int value="0" label="None"/>
   <int value="1" label="URL non-prefix"/>

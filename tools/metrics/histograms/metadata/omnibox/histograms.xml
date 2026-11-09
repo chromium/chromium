@@ -4184,6 +4184,52 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
 </histogram>
 
+<histogram name="Omnibox.Popup.{WebUIType}.Shared.ContentSource"
+    enum="OmniboxPopupSharedContentSource" expires_after="2027-05-02">
+  <owner>achuith@chromium.org</owner>
+  <owner>avivkiss@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records where a browser window's {WebUIType} popup content came from with
+    OmniboxWebUIPopupShareAcrossWindows: created because no other window had
+    one, because another window's was busy, or because the window that held it
+    closed; taken from another window of the profile; or not prewarmed because
+    another window had one. Recorded each time the window creates or takes the
+    content, or skips prewarming it.
+  </summary>
+  <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
+</histogram>
+
+<histogram name="Omnibox.Popup.{WebUIType}.Shared.CopiesDroppedOnHide"
+    units="copies" expires_after="2027-05-02">
+  <owner>achuith@chromium.org</owner>
+  <owner>avivkiss@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records how many idle {WebUIType} popups in other windows of the profile
+    were destroyed after a popup hid, with OmniboxWebUIPopupShareAcrossWindows.
+    Other windows create these copies while the shared popup is busy. Recorded
+    only when at least one was destroyed.
+  </summary>
+  <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
+</histogram>
+
+<histogram name="Omnibox.Popup.{WebUIType}.Shared.MoveDuration"
+    units="microseconds" expires_after="2027-05-02">
+  <owner>achuith@chromium.org</owner>
+  <owner>avivkiss@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records how long it took to move a loaded {WebUIType} popup from one browser
+    window to another with OmniboxWebUIPopupShareAcrossWindows: releasing it
+    from the old window and building its content in the new one.
+
+    Metrics are not reported on clients with low-resolution clocks.
+  </summary>
+  <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
+</histogram>
+
 <histogram name="Omnibox.Popup.{WebUIType}.ShowToPaint.Duration" units="ms"
     expires_after="2027-03-21">
   <owner>mahmadi@chromium.org</owner>
@@ -4210,6 +4256,25 @@ Keep consistent with active providers. Doesn't need to include every provider in
     first show of the popup.
   </summary>
   <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
+</histogram>
+
+<histogram
+    name="Omnibox.Popup.{WebUIType}.ShowToPaint.Duration.FirstShow.{Origin}"
+    units="ms" expires_after="2027-05-02">
+  <owner>achuith@chromium.org</owner>
+  <owner>avivkiss@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Record the time between the first request of the {WebUIType} widget to show
+    in a browser window and when the first frame is painted, for popups whose
+    page was {Origin}, with OmniboxWebUIPopupShareAcrossWindows.
+  </summary>
+  <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
+  <token key="Origin">
+    <variant name="Created" summary="created in this window"/>
+    <variant name="Taken" summary="taken from another window, already loaded"/>
+  </token>
 </histogram>
 
 <histogram name="Omnibox.ProviderTime2.{OmniboxProvider}" units="ms"

@@ -9,10 +9,12 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/memory_coordinator/memory_limit.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace views {
@@ -43,7 +45,10 @@ class OmniboxPopupWebUIPool : public KeyedService, public base::MemoryConsumer {
 
   // `presenter` must be removed before it is destroyed.
   void AddPresenter(OmniboxPopupPresenterBase* presenter);
-  void RemovePresenter(OmniboxPopupPresenterBase* presenter);
+  // `kind` is the presenter's `GetSharedPopupKind()`, which can't be read
+  // while the presenter is being destroyed.
+  void RemovePresenter(OmniboxPopupPresenterBase* presenter,
+                       OmniboxPopupState kind);
 
   // Returns whether a presenter other than `presenter`, of the same popup
   // kind, has WebUI content.
@@ -55,8 +60,12 @@ class OmniboxPopupWebUIPool : public KeyedService, public base::MemoryConsumer {
       const OmniboxPopupPresenterBase& presenter);
 
   // Destroys the idle popups of the same kind as `presenter` in other browser
-  // windows.
-  void DropOtherIdleWebUIContents(const OmniboxPopupPresenterBase& presenter);
+  // windows. Returns how many it destroyed.
+  size_t DropOtherIdleWebUIContents(const OmniboxPopupPresenterBase& presenter);
+
+  // Returns whether the last popup of `kind` was destroyed with its browser
+  // window since the last call for `kind`.
+  bool ConsumeHolderClosed(OmniboxPopupState kind);
 
   // Records the browser window of the profile that was activated last.
   void OnBrowserWindowActivated(views::Widget* browser_widget);
@@ -78,6 +87,7 @@ class OmniboxPopupWebUIPool : public KeyedService, public base::MemoryConsumer {
 
  private:
   std::vector<raw_ptr<OmniboxPopupPresenterBase>> presenters_;
+  base::flat_set<OmniboxPopupState> holder_closed_kinds_;
   base::WeakPtr<views::Widget> last_active_browser_widget_;
   std::optional<base::MemoryConsumerRegistration> memory_consumer_registration_;
   base::WeakPtrFactory<OmniboxPopupWebUIPool> weak_factory_{this};

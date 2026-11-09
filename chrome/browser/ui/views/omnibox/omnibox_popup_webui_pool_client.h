@@ -10,11 +10,13 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 class OmniboxPopupPresenterBase;
 class OmniboxPopupUI;
+class OmniboxPopupWebUIBaseContent;
 class OmniboxPopupWebUIPool;
 class Profile;
 template <typename T>
@@ -27,6 +29,27 @@ class WebUIContentsWrapperT;
 // the popup is in place before the user types.
 class OmniboxPopupWebUIPoolClient : public views::WidgetObserver {
  public:
+  // Where a presenter's content came from. Recorded in UMA as
+  // Omnibox.Popup.{WebUIType}.Shared.ContentSource. Do not renumber; keep in
+  // sync with OmniboxPopupSharedContentSource in enums.xml.
+  // LINT.IfChange(OmniboxPopupSharedContentSource)
+  enum class ContentSource {
+    // Created because no other window had a popup of the kind.
+    kCreated = 0,
+    // Created because the last popup of the kind closed with its window.
+    kCreatedAfterHolderClosed = 1,
+    // Taken from another window when this window needed it.
+    kTakenOnDemand = 2,
+    // Taken from another window when this window became active.
+    kTakenOnActivation = 3,
+    // Prewarming skipped because another window had a popup of the kind.
+    kPrewarmSkipped = 4,
+    // Created because another window's popup of the kind was busy.
+    kCreatedWhileOtherBusy = 5,
+    kMaxValue = kCreatedWhileOtherBusy,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxPopupSharedContentSource)
+
   // Returns null unless `omnibox::kOmniboxWebUIPopupShareAcrossWindows` is
   // enabled, `presenter` shares its popup kind and `profile` has a pool.
   // `browser_widget` is the browser window that hosts the popup.
@@ -52,6 +75,17 @@ class OmniboxPopupWebUIPoolClient : public views::WidgetObserver {
   std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>>
   TakeIdleWebUIContents();
 
+  // Takes an idle popup from another window and makes the presenter adopt it,
+  // recording `source` and how long the move took. Returns the presenter's new
+  // content, or null if no popup was idle.
+  OmniboxPopupWebUIBaseContent* TakeAndAdoptIdleWebUIContents(
+      ContentSource source);
+
+  // Called after the presenter created new content.
+  void OnWebUIContentCreated();
+
+  void RecordContentSource(ContentSource source);
+
   // Called after the presenter hid its shown popup. Destroys the idle popups
   // of the same kind in the profile's other windows, keeping this one, so that
   // copies that other windows created while this popup was busy do not stay
@@ -69,6 +103,8 @@ class OmniboxPopupWebUIPoolClient : public views::WidgetObserver {
   void DropOtherIdleWebUIContents();
 
   const raw_ref<OmniboxPopupPresenterBase> presenter_;
+  // `presenter_->GetSharedPopupKind()`, which the destructor can't read.
+  const OmniboxPopupState kind_;
 
   // The pool outlives the presenter in practice, since browser windows keep
   // their profile alive; the weak pointer makes the order not matter.

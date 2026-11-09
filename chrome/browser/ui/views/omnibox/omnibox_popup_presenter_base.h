@@ -503,6 +503,10 @@ class OmniboxPopupPresenterBase
   // Whether the first paint metric of the popup has been logged.
   bool has_logged_first_widget_paint_ = false;
 
+  // Whether the current content was taken from another browser window, as
+  // opposed to created by this presenter.
+  bool content_taken_from_other_window_ = false;
+
   // Overrides `CompletedFirstVisuallyNonEmptyPaint()` when set.
   std::optional<bool> completed_first_visually_non_empty_paint_for_testing_;
 
