@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -1420,7 +1421,6 @@ public class PageInfoViewTest {
     /** Tests clicking on a history item from the history page of the PageInfo UI. */
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/574600173
     public void testHistorySubpageItemClick() throws Exception {
         StubbedHistoryProvider historyProvider = new StubbedHistoryProvider();
         historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, TIMESTAMP_JUNE_4));
@@ -1446,7 +1446,11 @@ public class PageInfoViewTest {
         onView(withId(PageInfoHistoryController.HISTORY_ROW_ID)).perform(click());
         onViewWaiting(allOf(withText(containsString("Jun 4, 2021")), isDisplayed()));
         int callCount = onDidStartNavigationHelper.getCallCount();
-        onView(withText("www.example.com")).perform(click());
+        onView(
+                        allOf(
+                                withText("www.example.com"),
+                                isDescendantOfA(withId(R.id.history_page_recycler_view))))
+                .perform(click());
         onDidStartNavigationHelper.waitForCallback(callCount);
     }
 
