@@ -1557,7 +1557,7 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_TEXT_TO_SPEECH_VOLUME_MINIMUM_LABEL},
       {"ttsSettingsLinkDescription", IDS_SETTINGS_TTS_LINK_DESCRIPTION},
       {"overscrollHistoryNavigationTitle",
-       IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_TITLE},
+       IDS_OS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_TITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
