@@ -944,6 +944,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 MediaFeatures.MEDIA_CODEC_BLOCK_MODEL,
                 "Controls use of MediaCodec's LinearBlock mode."),
+        Flag.baseFeature(
+                MediaFeatures.MEDIA_CODEC_BLOCK_MODEL_ENCRYPTED,
+                "Controls use of MediaCodec's LinearBlock mode for encrypted playback."),
         Flag.baseFeature(BlinkFeatures.FETCH_LATER_API, "Enables FetchLater API."),
         Flag.baseFeature(
                 ContentFeatures.IO_THREAD_INTERACTIVE_THREAD_TYPE,

@@ -1270,6 +1270,55 @@ TEST_P(MediaCodecVideoDecoderTest, BlockModelEnabledOnSupportedVersion) {
   EXPECT_TRUE(codec_allocator_->most_recent_config->use_block_model);
 }
 
+TEST_P(MediaCodecVideoDecoderTest, BlockModelDisabledForEncryptedStream) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures({kMediaCodecBlockModel},
+                                   {kMediaCodecBlockModelEncrypted});
+  EXPECT_CALL(*device_info_, SdkVersionFull())
+      .WillRepeatedly(
+          Return(base::android::android_info::SDK_VERSION_FULL_CINNAMON_BUN_2));
+
+  CreateCdm(true, false);
+  ASSERT_TRUE(InitializeWithOverlay_OneDecodePending(
+      TestVideoConfig::NormalEncrypted(codec_)));
+  EXPECT_FALSE(codec_allocator_->most_recent_config->use_block_model);
+}
+
+TEST_P(MediaCodecVideoDecoderTest,
+       BlockModelEnabledForEncryptedStreamWithFeature) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures(
+      {kMediaCodecBlockModel, kMediaCodecBlockModelEncrypted}, {});
+  EXPECT_CALL(*device_info_, SdkVersionFull())
+      .WillRepeatedly(
+          Return(base::android::android_info::SDK_VERSION_FULL_CINNAMON_BUN_2));
+
+  CreateCdm(true, false);
+  ASSERT_TRUE(InitializeWithOverlay_OneDecodePending(
+      TestVideoConfig::NormalEncrypted(codec_)));
+  EXPECT_TRUE(codec_allocator_->most_recent_config->use_block_model);
+}
+
+// Block model follows the MediaCrypto rather than the config, since the codec
+// is kept if a clear stream turns encrypted.
+TEST_P(MediaCodecVideoDecoderTest,
+       BlockModelDisabledForClearStreamWithMediaCrypto) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures({kMediaCodecBlockModel},
+                                   {kMediaCodecBlockModelEncrypted});
+  EXPECT_CALL(*device_info_, SdkVersionFull())
+      .WillRepeatedly(
+          Return(base::android::android_info::SDK_VERSION_FULL_CINNAMON_BUN_2));
+
+  CreateCdm(true, false);
+  // Use the Large config, since a small clear VPx stream can be rejected in
+  // favor of software decode.
+  ASSERT_TRUE(
+      InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_)));
+  ASSERT_TRUE(codec_allocator_->most_recent_config->media_crypto);
+  EXPECT_FALSE(codec_allocator_->most_recent_config->use_block_model);
+}
+
 static std::vector<VideoCodec> GetTestList() {
   std::vector<VideoCodec> test_codecs;
 

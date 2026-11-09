@@ -7016,7 +7016,16 @@
       "philyan@chromium.org",
       "media-dev@chromium.org"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 180
+  },
+  {
+    "name": "media-codec-block-model-encrypted",
+    "owners": [
+      "dalecurtis@chromium.org",
+      "philyan@chromium.org",
+      "media-dev@chromium.org"
+    ],
+    "expiry_milestone": 180
   },
   {
     "name": "media-codec-block-model-output",

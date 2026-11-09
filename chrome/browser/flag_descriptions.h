@@ -6361,6 +6361,12 @@ inline constexpr char kMediaCodecBlockModelName[] = "MediaCodec Block Model";
 inline constexpr char kMediaCodecBlockModelDescription[] =
     "Enables Block Model for MediaCodec on Android.";
 
+inline constexpr char kMediaCodecBlockModelEncryptedName[] =
+    "MediaCodec Block Model Encrypted";
+inline constexpr char kMediaCodecBlockModelEncryptedDescription[] =
+    "Enables Block Model for MediaCodec on Android for encrypted playback. "
+    "Has no effect unless MediaCodec Block Model is enabled.";
+
 inline constexpr char kMediaCodecBlockModelOutputName[] =
     "MediaCodec Block Model Output";
 inline constexpr char kMediaCodecBlockModelOutputDescription[] =

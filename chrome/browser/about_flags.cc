@@ -12253,6 +12253,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMediaCodecBlockModelDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(media::kMediaCodecBlockModel)},
 
+    {"media-codec-block-model-encrypted",
+     flag_descriptions::kMediaCodecBlockModelEncryptedName,
+     flag_descriptions::kMediaCodecBlockModelEncryptedDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(media::kMediaCodecBlockModelEncrypted)},
+
     {"media-codec-block-model-output",
      flag_descriptions::kMediaCodecBlockModelOutputName,
      flag_descriptions::kMediaCodecBlockModelOutputDescription, kOsAndroid,
