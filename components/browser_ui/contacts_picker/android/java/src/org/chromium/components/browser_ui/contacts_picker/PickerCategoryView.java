@@ -24,11 +24,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
@@ -88,6 +90,14 @@ public class PickerCategoryView extends OptimizedFrameLayout
     private static final int ICON_SIZE_DP = 36;
     private static final int ICON_CORNER_RADIUS_DP = 20;
     private static final int ICON_TEXT_SIZE_DP = 12;
+
+    private static boolean sSkipSystemPickerIntentForTesting;
+
+    @VisibleForTesting
+    public static void setSkipSystemPickerIntentForTesting(boolean skip) {
+        sSkipSystemPickerIntentForTesting = skip;
+        ResettersForTesting.register(() -> sSkipSystemPickerIntentForTesting = false);
+    }
 
     // The dialog that owns us.
     private ContactsPickerDialog mDialog;
@@ -281,14 +291,18 @@ public class PickerCategoryView extends OptimizedFrameLayout
                                 ACTION_CANCEL));
         mDialog.setOnDismissListener(
                 dialog1 -> {
-                    ContactsPicker.onContactsPickerDismissed();
-                    mPickerAdapter.destroy();
+                    onDialogDismissed();
                 });
 
         mPickerAdapter.notifyDataSetChanged();
         if (ContactsPickerFeatureMap.shouldShowSystemContactsPicker()) {
             launchSystemPicker();
         }
+    }
+
+    public void onDialogDismissed() {
+        ContactsPicker.onContactsPickerDismissed();
+        mPickerAdapter.destroy();
     }
 
     public boolean siteWantsNames() {
@@ -446,6 +460,10 @@ public class PickerCategoryView extends OptimizedFrameLayout
                 requestedFields);
 
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, mMultiSelectionAllowed);
+
+        if (sSkipSystemPickerIntentForTesting) {
+            return;
+        }
 
         mWindowAndroid.showCancelableIntent(
                 intent,

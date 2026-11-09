@@ -44,4 +44,11 @@ public interface ContactsPickerDelegate {
      * @param picker The contacts picker object returned by showContactsPicker.
      */
     void cancelContactsPicker(Object picker);
+
+    /**
+     * @return Whether the contacts picker should be canceled when the WebContents loses visibility.
+     */
+    default boolean shouldCancelOnVisibilityChange() {
+        return true;
+    }
 }
