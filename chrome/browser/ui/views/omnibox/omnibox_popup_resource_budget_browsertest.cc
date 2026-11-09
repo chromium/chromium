@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -103,11 +104,14 @@ bool IsOmniboxPopup(content::WebContents* contents) {
   return contents->GetVisibleURL().host() == chrome::kChromeUIOmniboxPopupHost;
 }
 
-// Counts popup resources owned by `profile`, across all browser windows.
+// Counts popup resources for `profile`, across all browser windows. With
+// kTopChromeWebUISharedRenderer, the popups are in TopChromeWebUIProfile, so
+// they are counted by their user profile.
 PopupResources CountPopupResources(Profile* profile) {
   PopupResources resources;
   for (content::WebContents* contents : content::GetAllWebContents()) {
-    if (contents->GetBrowserContext() != profile || !IsOmniboxPopup(contents)) {
+    if (webui::GetUserProfile(contents) != profile ||
+        !IsOmniboxPopup(contents)) {
       continue;
     }
     resources.web_contents.push_back(contents);

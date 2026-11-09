@@ -210,6 +210,7 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   // Lens icon IPH if `element` belongs to this popup.
   void OnLensIconShown(ui::TrackedElement* element);
 
+  // The profile of the window showing the popup.
   raw_ptr<Profile> profile_;
 
   // Must outlive `omnibox_handler_` and `composebox_handler_`.

@@ -215,6 +215,13 @@ content::WebContents* GetActiveTabWebContents(
       }
     }
   }
+  // The WebUI omnibox popup in TopChromeWebUIProfile, which is shared by the
+  // windows of all profiles, has no services or prefs of a user, so it can't
+  // hold the state of a tab.
+  if (Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          ->IsTopChromeWebUIProfile()) {
+    return nullptr;
+  }
   return web_contents;
 }
 
@@ -694,9 +701,15 @@ void ContextualSearchboxHandler::OnActiveTabChanged(TabListInterface& tab_list,
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_DICE_SUPPORT)
   composebox_drive_signin_promo_controller_.reset();
 #endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_DICE_SUPPORT)
-  contextual_tasks::ContextualTasksWebContentsUserData::
-      UpdateInputStateModelIdentity(GetActiveTabWebContents(web_contents_),
-                                    input_state_model_.get());
+  // The model may not exist yet if there was no active tab before, e.g. for
+  // the WebUI omnibox popup in TopChromeWebUIProfile.
+  if (!input_state_model_) {
+    InitializeInputStateModel();
+  } else {
+    contextual_tasks::ContextualTasksWebContentsUserData::
+        UpdateInputStateModelIdentity(GetActiveTabWebContents(web_contents_),
+                                      input_state_model_.get());
+  }
   page_->OnTabStripChanged();
 }
 
@@ -1781,6 +1794,9 @@ ContextualSearchboxHandler::GetOrCreateInputStateModel() {
   // contexts.
   content::WebContents* target_web_contents =
       GetActiveTabWebContents(web_contents_);
+  if (!target_web_contents) {
+    return nullptr;
+  }
   auto* user_data =
       contextual_tasks::ContextualTasksWebContentsUserData::FromWebContents(
           target_web_contents);

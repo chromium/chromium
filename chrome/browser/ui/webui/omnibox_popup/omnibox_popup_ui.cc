@@ -136,9 +136,9 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                                /*enable_chrome_send=*/true,
                                /*enable_chrome_histograms=*/true),
       content::WebContentsObserver(web_ui->GetWebContents()),
-      profile_(Profile::FromWebUI(web_ui)) {
+      profile_(webui::GetUserProfile(web_ui->GetWebContents())) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      profile_, chrome::kChromeUIOmniboxPopupHost);
+      Profile::FromWebUI(web_ui), chrome::kChromeUIOmniboxPopupHost);
 
   source->AddLocalizedStrings(
       SearchboxHandler::GetProfileIndependentWebUIDataSourceDict(
@@ -302,11 +302,16 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::MediaSrc,
       "media-src blob: data: 'self';");
 
-  content::URLDataSource::Add(profile_,
-                              std::make_unique<SanitizedImageSource>(profile_));
-  content::URLDataSource::Add(
-      profile_, std::make_unique<FaviconSource>(
-                    profile_, chrome::FaviconUrlFormat::kFavicon2));
+  {
+    // The URL data sources are added to the profile of the WebUI, which is
+    // shared by the windows of all profiles in TopChromeWebUIProfile.
+    Profile* webui_profile = Profile::FromWebUI(web_ui);
+    content::URLDataSource::Add(
+        webui_profile, std::make_unique<SanitizedImageSource>(webui_profile));
+    content::URLDataSource::Add(
+        webui_profile, std::make_unique<FaviconSource>(
+                           webui_profile, chrome::FaviconUrlFormat::kFavicon2));
+  }
 
   // Allow the WebUI to report the Lens icon so it can anchor an IPH.
   ui::TrackedElementHandlerDocumentSingleton::Register(
@@ -365,8 +370,8 @@ void OmniboxPopupUI::WebUIRenderFrameCreated(
   if (!webui::IsWebUIDataSourceShared(web_ui())) {
     return;
   }
-  if (std::optional<std::string> json = base::WriteJson(GetProfileLoadTimeData(
-          webui::GetUserProfile(web_ui()->GetWebContents())))) {
+  if (std::optional<std::string> json =
+          base::WriteJson(GetProfileLoadTimeData(profile_))) {
     render_frame_host->SetWebUIProperty("profileLoadTimeData", *json);
   }
 }
@@ -424,8 +429,8 @@ void OmniboxPopupUI::CreatePageHandler(
         static_cast<ChromeOmniboxClient*>(omnibox_controller->client());
     CHECK(client);
     omnibox_handler_ = std::make_unique<WebuiOmniboxFullHandler>(
-        std::move(pending_page_handler), std::move(page),
-        Profile::FromWebUI(web_ui()), web_ui()->GetWebContents(),
+        std::move(pending_page_handler), std::move(page), profile_,
+        web_ui()->GetWebContents(),
         std::make_unique<ChromeOmniboxClient>(
             client->GetLocationBar(), client->browser(), client->profile()),
         base::BindRepeating(&OmniboxPopupUI::GetOrCreateContextualSessionHandle,
@@ -434,7 +439,7 @@ void OmniboxPopupUI::CreatePageHandler(
     omnibox_handler_ = std::make_unique<WebuiOmniboxHandler>(
         std::move(pending_page_handler), std::move(page),
         metrics_reporter_service->metrics_reporter(), omnibox_controller,
-        Profile::FromWebUI(web_ui()), web_ui()->GetWebContents(),
+        profile_, web_ui()->GetWebContents(),
         base::BindRepeating(&OmniboxPopupUI::GetOrCreateContextualSessionHandle,
                             base::Unretained(this)));
   }
@@ -578,7 +583,7 @@ OmniboxPopupUI::GetOrCreateContextualSessionHandle() {
           contextual_search::ContextualSearchSource::kOmnibox,
           lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
       shared_session_handle_->CheckSearchContentSharingSettings(
-          Profile::FromWebUI(web_ui())->GetPrefs());
+          profile_->GetPrefs());
     }
   }
   return shared_session_handle_.get();

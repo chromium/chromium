@@ -90,13 +90,15 @@ class WebUIContentsWrapper
     GetWebContentsModalDialogHost(content::WebContents* web_contents);
   };
 
+  // `user_profile` is required if `profile` is TopChromeWebUIProfile.
   WebUIContentsWrapper(const GURL& webui_url,
                        Profile* profile,
                        int task_manager_string_id,
                        bool webui_resizes_host,
                        bool esc_closes_ui,
                        bool supports_draggable_regions,
-                       std::string_view webui_name);
+                       std::string_view webui_name,
+                       Profile* user_profile = nullptr);
   ~WebUIContentsWrapper() override;
 
   // content::WebContentsDelegate:
@@ -243,7 +245,8 @@ class WebUIContentsWrapperT : public WebUIContentsWrapper {
                         Profile* profile,
                         int task_manager_string_id,
                         bool esc_closes_ui = true,
-                        bool supports_draggable_regions = false)
+                        bool supports_draggable_regions = false,
+                        Profile* user_profile = nullptr)
       : WebUIContentsWrapper(webui_url,
                              profile,
                              task_manager_string_id,
@@ -251,7 +254,8 @@ class WebUIContentsWrapperT : public WebUIContentsWrapper {
                                  ->ShouldAutoResizeHost(),
                              esc_closes_ui,
                              supports_draggable_regions,
-                             T::GetWebUIName()),
+                             T::GetWebUIName(),
+                             user_profile),
         webui_url_(webui_url) {
     static_assert(views_metrics::IsValidWebUIName(
         ConcatStrings({".", T::GetWebUIName()})));

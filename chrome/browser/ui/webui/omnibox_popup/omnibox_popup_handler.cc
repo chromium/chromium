@@ -14,6 +14,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_dogfood_feedback.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/omnibox_logging_utils.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
@@ -443,7 +445,10 @@ void OmniboxPopupHandler::OnCutOrCopy(uint32_t sequence_number,
   bool is_cut_or_copy_allowed = !selection.is_empty();
   if (is_cut_or_copy_allowed) {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    if (web_contents_ && web_contents_->GetBrowserContext()->IsOffTheRecord()) {
+    // Use the user profile, since the popup can be in TopChromeWebUIProfile,
+    // which is shared by the windows of all profiles.
+    if (web_contents_ &&
+        webui::GetUserProfile(web_contents_)->IsOffTheRecord()) {
       writer.MarkAsOffTheRecord();
     }
     writer.WriteText(u16_selected_text);

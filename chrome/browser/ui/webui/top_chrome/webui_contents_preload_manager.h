@@ -80,8 +80,14 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // Note: The returned WebContents has a WebContentsModalDialogManager
   // initialized, but its delegate is NOT set. Consumers must set the delegate
   // (e.g. via WebUIContentsWrapper) before any web-modal dialogs can be shown.
+  //
+  // If `browser_context` is TopChromeWebUIProfile, which is shared by the
+  // windows of all profiles, `user_profile` must be the profile of the window
+  // showing the WebUI. It is set as the user profile of a newly created
+  // WebContents.
   RequestResult Request(const GURL& webui_url,
-                        content::BrowserContext* browser_context);
+                        content::BrowserContext* browser_context,
+                        Profile* user_profile = nullptr);
 
   // Returns the timeticks when the specific `web_contents` was requested.
   std::optional<base::TimeTicks> GetRequestTime(
@@ -167,7 +173,8 @@ class WebUIContentsPreloadManager : public ProfileObserver,
 
   std::unique_ptr<content::WebContents> CreateNewContents(
       content::BrowserContext* browser_context,
-      GURL url);
+      GURL url,
+      Profile* user_profile = nullptr);
 
   void LoadURLForContents(content::WebContents* web_contents, GURL url);
 

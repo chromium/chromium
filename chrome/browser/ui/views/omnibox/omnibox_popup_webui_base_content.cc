@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -547,9 +548,14 @@ void OmniboxPopupWebUIBaseContent::LoadContent() {
                     GetMetricPrefix()})),
                "url", content_url_.spec());
   CHECK(!content_url_.is_empty(), base::NotFatalUntil::M162);
+  // With kTopChromeWebUISharedRenderer, the popup of a browser window is
+  // created in TopChromeWebUIProfile, which is shared by the windows of all
+  // profiles.
   contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<OmniboxPopupUI>>(
-      content_url_, location_bar_->GetProfile(), IDS_TASK_MANAGER_OMNIBOX,
-      EscClosesUI());
+      content_url_,
+      &webui::GetProfileForTopChromeWebUIContents(location_bar_->GetProfile()),
+      IDS_TASK_MANAGER_OMNIBOX, EscClosesUI(),
+      /*supports_draggable_regions=*/false, location_bar_->GetProfile());
   BindContentsToWindow();
 }
 
