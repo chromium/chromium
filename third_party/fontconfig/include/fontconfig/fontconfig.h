@@ -884,6 +884,18 @@ FcFontSort (FcConfig   *config,
 FcPublic void
 FcFontSetSortDestroy (FcFontSet *fs);
 
+/* fcindex.c */
+FcPublic unsigned int
+FcIndexerQueryAll (const FcChar8 *file,
+                   unsigned int   id,
+                   int           *count,
+                   FcFontSet     *set);
+
+FcPublic FcPattern *
+FcIndexerQuery (const FcChar8 *file,
+                unsigned int   id,
+                int           *count);
+
 /* fcmatrix.c */
 FcPublic FcMatrix *
 FcMatrixCopy (const FcMatrix *mat);
