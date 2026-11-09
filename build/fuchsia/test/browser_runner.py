@@ -10,7 +10,7 @@ import time
 from typing import List, Optional
 from urllib.parse import urlparse
 
-from common import run_continuous_ffx_command, ssh_run, REPO_ALIAS
+from common import run_continuous_ffx_command, REPO_ALIAS
 from ffx_integration import run_symbolizer
 
 WEB_ENGINE_SHELL = 'web-engine-shell'
@@ -178,9 +178,6 @@ class BrowserRunner:
         self._symbolizer_proc.kill()
         self._symbolizer_proc = None
         self._devtools_port = None
-        # The process may be stopped already, ignoring the no process found
-        # error.
-        ssh_run(['killall', 'web_instance.cmx'], self._target_id, check=False)
 
     def is_browser_running(self) -> bool:
         """Checks if the browser is still running."""

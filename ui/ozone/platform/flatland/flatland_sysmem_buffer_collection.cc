@@ -4,7 +4,6 @@
 
 #include "ui/ozone/platform/flatland/flatland_sysmem_buffer_collection.h"
 
-#include <fuchsia/sysmem/cpp/fidl.h>
 #include <lib/zx/eventpair.h>
 
 #include <bit>
@@ -16,7 +15,6 @@
 #include "base/numerics/checked_math.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
-#include "flatland_sysmem_buffer_collection.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "ui/ozone/platform/flatland/flatland_surface_factory.h"

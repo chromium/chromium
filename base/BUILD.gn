@@ -1648,7 +1648,6 @@ component("base") {
       "//third_party/fuchsia-sdk/sdk/pkg/async-loop-cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/async-loop-default",
       "//third_party/fuchsia-sdk/sdk/pkg/fidl",
-      "//third_party/fuchsia-sdk/sdk/pkg/inspect_component_cpp",
       "//third_party/icu",
     ]
 
@@ -3733,7 +3732,6 @@ if (is_fuchsia) {
       ":testfidl_cpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io:fuchsia.io_cpp_common",
       "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp_wire",
-      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
   }
 

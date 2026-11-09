@@ -7,8 +7,6 @@
 #include <fidl/base.testfidl/cpp/fidl.h>
 #include <fidl/fuchsia.logger/cpp/fidl.h>
 #include <lib/async/default.h>
-#include <lib/fidl/cpp/binding.h>
-#include <lib/sys/cpp/component_context.h>
 
 #include <string_view>
 

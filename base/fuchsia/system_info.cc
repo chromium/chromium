@@ -6,7 +6,6 @@
 
 #include <fidl/fuchsia.buildinfo/cpp/fidl.h>
 #include <fidl/fuchsia.hwinfo/cpp/fidl.h>
-#include <lib/sys/cpp/component_context.h>
 
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_component_connect.h"

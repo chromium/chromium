@@ -83,11 +83,7 @@ class FakeCameraStream final
   void SetBufferCollection2(
       fidl::InterfaceHandle<fuchsia::sysmem2::BufferCollectionToken>
           token_handle) override;
-  void SetBufferCollection(
-      fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
-          token_handle) override;
   void WatchBufferCollection2(WatchBufferCollection2Callback callback) override;
-  void WatchBufferCollection(WatchBufferCollectionCallback callback) override;
   void GetNextFrame(GetNextFrameCallback callback) override;
 
   // fuchsia::camera3::testing::Stream_TestBase override.

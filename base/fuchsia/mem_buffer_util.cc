@@ -4,16 +4,13 @@
 
 #include "base/fuchsia/mem_buffer_util.h"
 
-#include <lib/fdio/io.h>
 #include <lib/zx/vmo.h>
 
 #include <string>
 #include <string_view>
 #include <utility>
 
-#include "base/files/file.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace base {
@@ -52,14 +49,6 @@ fuchsia::mem::Buffer MemBufferFromString(std::string_view data,
   buffer.vmo = VmoFromString(data, name);
   buffer.size = data.size();
   return buffer;
-}
-
-fuchsia::mem::Buffer MemBufferFromString16(std::u16string_view data,
-                                           std::string_view name) {
-  return MemBufferFromString(
-      std::string_view(reinterpret_cast<const char*>(data.data()),
-                       data.size() * sizeof(char16_t)),
-      name);
 }
 
 std::optional<std::string> StringFromVmo(const zx::vmo& vmo) {
@@ -119,39 +108,6 @@ std::optional<std::string> StringFromMemData(const fuchsia::mem::Data& data) {
   }
 
   return std::nullopt;
-}
-
-fuchsia::mem::Buffer MemBufferFromFile(File file) {
-  if (!file.IsValid()) {
-    return {};
-  }
-
-  zx::vmo vmo;
-  zx_status_t status =
-      fdio_get_vmo_copy(file.GetPlatformFile(), vmo.reset_and_get_address());
-  if (status != ZX_OK) {
-    ZX_LOG(ERROR, status) << "fdio_get_vmo_copy";
-    return {};
-  }
-
-  fuchsia::mem::Buffer output;
-  output.vmo = std::move(vmo);
-  output.size = checked_cast<uint64_t>(file.GetLength());
-  return output;
-}
-
-fuchsia::mem::Buffer CloneBuffer(const fuchsia::mem::Buffer& buffer,
-                                 std::string_view name) {
-  fuchsia::mem::Buffer output;
-  output.size = buffer.size;
-  zx_status_t status = buffer.vmo.create_child(
-      ZX_VMO_CHILD_SNAPSHOT_AT_LEAST_ON_WRITE, 0, buffer.size, &output.vmo);
-  ZX_CHECK(status == ZX_OK, status) << "zx_vmo_create_child";
-
-  status = output.vmo.set_property(ZX_PROP_NAME, name.data(), name.size());
-  ZX_DCHECK(status == ZX_OK, status);
-
-  return output;
 }
 
 }  // namespace base

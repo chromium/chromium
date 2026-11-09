@@ -6,7 +6,7 @@
 #define MEDIA_FUCHSIA_COMMON_STREAM_PROCESSOR_HELPER_H_
 
 #include <fuchsia/media/cpp/fidl.h>
-#include <fuchsia/sysmem/cpp/fidl.h>
+#include <fuchsia/sysmem2/cpp/fidl.h>
 
 #include <forward_list>
 

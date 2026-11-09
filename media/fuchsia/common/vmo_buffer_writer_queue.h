@@ -5,9 +5,6 @@
 #ifndef MEDIA_FUCHSIA_COMMON_VMO_BUFFER_WRITER_QUEUE_H_
 #define MEDIA_FUCHSIA_COMMON_VMO_BUFFER_WRITER_QUEUE_H_
 
-#include <fuchsia/media/cpp/fidl.h>
-#include <fuchsia/sysmem/cpp/fidl.h>
-
 #include <deque>
 #include <memory>
 #include <vector>

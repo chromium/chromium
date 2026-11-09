@@ -5,7 +5,7 @@
 #ifndef MEDIA_FUCHSIA_COMMON_SYSMEM_BUFFER_STREAM_H_
 #define MEDIA_FUCHSIA_COMMON_SYSMEM_BUFFER_STREAM_H_
 
-#include <fuchsia/sysmem/cpp/fidl.h>
+#include <fuchsia/sysmem2/cpp/fidl.h>
 
 #include "base/memory/scoped_refptr.h"
 #include "media/fuchsia/common/stream_processor_helper.h"

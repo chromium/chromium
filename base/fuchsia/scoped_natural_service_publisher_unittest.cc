@@ -3,12 +3,8 @@
 // found in the LICENSE file.
 
 #include <fidl/base.testfidl/cpp/fidl.h>
-#include <fuchsia/io/cpp/fidl.h>
 #include <lib/async/default.h>
-#include <lib/fidl/cpp/interface_handle.h>
-#include <lib/fidl/cpp/interface_ptr.h>
 #include <lib/sys/cpp/component_context.h>
-#include <lib/sys/cpp/service_directory.h>
 #include <lib/vfs/cpp/pseudo_dir.h>
 
 #include "base/fuchsia/process_context.h"

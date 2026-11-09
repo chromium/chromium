@@ -9,8 +9,6 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
-#include <fuchsia/images/cpp/fidl.h>
-
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/gpu_fence.h"

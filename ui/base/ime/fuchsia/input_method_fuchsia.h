@@ -6,7 +6,6 @@
 #define UI_BASE_IME_FUCHSIA_INPUT_METHOD_FUCHSIA_H_
 
 #include <fidl/fuchsia.ui.views/cpp/common_types.h>
-#include <lib/fidl/cpp/binding.h>
 
 #include <optional>
 

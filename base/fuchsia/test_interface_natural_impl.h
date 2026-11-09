@@ -9,7 +9,6 @@
 #include <fidl/fuchsia.io/cpp/markers.h>
 #include <lib/fidl/cpp/traits.h>
 #include <lib/fidl/cpp/wire/connect_service.h>
-#include <lib/sys/cpp/service_directory.h>
 
 namespace base {
 

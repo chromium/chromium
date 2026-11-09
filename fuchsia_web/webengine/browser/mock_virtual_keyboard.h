@@ -6,7 +6,6 @@
 #define FUCHSIA_WEB_WEBENGINE_BROWSER_MOCK_VIRTUAL_KEYBOARD_H_
 
 #include <fidl/fuchsia.input.virtualkeyboard/cpp/fidl.h>
-#include <lib/fidl/cpp/binding.h>
 
 #include <optional>
 

@@ -7,7 +7,6 @@
 
 #include <fidl/fuchsia.logger/cpp/fidl.h>
 #include <lib/async/default.h>
-#include <lib/fidl/cpp/binding.h>
 #include <lib/zx/time.h>
 
 #include <memory>

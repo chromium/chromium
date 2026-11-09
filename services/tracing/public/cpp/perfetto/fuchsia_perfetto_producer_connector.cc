@@ -7,7 +7,6 @@
 #include <fidl/fuchsia.tracing.perfetto/cpp/fidl.h>
 #include <lib/async/default.h>
 #include <lib/fdio/fd.h>
-#include <lib/sys/cpp/component_context.h>
 #include <lib/zx/socket.h>
 #include <lib/zx/vmo.h>
 #include <perfetto/ext/tracing/core/shared_memory.h>

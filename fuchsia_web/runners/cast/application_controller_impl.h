@@ -8,8 +8,6 @@
 #include <fidl/chromium.cast/cpp/fidl.h>
 #include <fuchsia/media/sessions2/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
-#include <lib/fidl/cpp/binding.h>
-#include <lib/fidl/cpp/interface_request.h>
 
 #include <optional>
 

@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <fuchsia/logger/cpp/fidl.h>
-#include <lib/fidl/cpp/binding.h>
-#include <lib/sys/cpp/component_context.h>
-
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/fuchsia/fuchsia_logging.h"
 #include "partition_alloc/partition_alloc_base/logging.h"

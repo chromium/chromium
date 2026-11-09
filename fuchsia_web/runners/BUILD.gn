@@ -96,7 +96,6 @@ executable("cast_runner_exe") {
     "//content/public/common",
     "//media",
     "//third_party/blink/common",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular:*",
   ]
 
   sources = [ "cast/main.cc" ]

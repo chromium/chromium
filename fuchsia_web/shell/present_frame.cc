@@ -7,7 +7,6 @@
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/service_directory.h>
 #include <stdint.h>
-#include <zircon/rights.h>
 
 #include <memory>
 #include <utility>
@@ -17,15 +16,6 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/logging.h"
-
-fuchsia::ui::views::ViewRef CloneViewRef(
-    const fuchsia::ui::views::ViewRef& view_ref) {
-  fuchsia::ui::views::ViewRef dup;
-  zx_status_t status =
-      view_ref.reference.duplicate(ZX_RIGHT_SAME_RIGHTS, &dup.reference);
-  ZX_CHECK(status == ZX_OK, status) << "zx_object_duplicate";
-  return dup;
-}
 
 fuchsia::element::GraphicalPresenterPtr PresentFrame(
     fuchsia::web::Frame* frame,

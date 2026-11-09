@@ -8,7 +8,6 @@
 #include <fidl/fuchsia.tracing.perfetto/cpp/fidl.h>
 #include <lib/async/default.h>
 #include <lib/fdio/fd.h>
-#include <lib/fidl/cpp/binding.h>
 #include <zircon/errors.h>
 #include <zircon/types.h>
 

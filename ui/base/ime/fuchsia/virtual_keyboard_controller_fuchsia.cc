@@ -7,7 +7,6 @@
 #include <fidl/fuchsia.input.virtualkeyboard/cpp/natural_ostream.h>
 #include <lib/async/default.h>
 #include <lib/fit/function.h>
-#include <lib/sys/cpp/component_context.h>
 
 #include <utility>
 

@@ -26,16 +26,4 @@ void SetDefaultJob(zx::job job) {
   g_job = job.release();
 }
 
-ScopedDefaultJobForTest::ScopedDefaultJobForTest(zx::job new_default_job) {
-  DCHECK(new_default_job.is_valid());
-  old_default_job_.reset(g_job);
-  g_job = new_default_job.release();
-}
-
-ScopedDefaultJobForTest::~ScopedDefaultJobForTest() {
-  DCHECK_NE(g_job, ZX_HANDLE_INVALID);
-  zx::job my_default_job(g_job);
-  g_job = old_default_job_.release();
-}
-
 }  // namespace base

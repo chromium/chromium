@@ -290,15 +290,6 @@ void FakeCameraStream::WatchOrientation(WatchOrientationCallback callback) {
   SendOrientation();
 }
 
-// temporary until other chromium code switches to sysmem2 tokens only
-void FakeCameraStream::SetBufferCollection(
-    fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
-        token_handle) {
-  SetBufferCollection2(
-      fidl::InterfaceHandle<fuchsia::sysmem2::BufferCollectionToken>(
-          token_handle.TakeChannel()));
-}
-
 void FakeCameraStream::SetBufferCollection2(
     fidl::InterfaceHandle<fuchsia::sysmem2::BufferCollectionToken>
         token_handle) {
@@ -341,20 +332,6 @@ void FakeCameraStream::SetBufferCollection2(
           fuchsia::sysmem2::Node_Sync_Result sync_result) mutable {
         OnBufferCollectionSyncDone(std::move(token_for_client),
                                    std::move(failed_token));
-      });
-}
-
-// temporary until other chromium code switches to sysmem2 tokens only
-void FakeCameraStream::WatchBufferCollection(
-    WatchBufferCollectionCallback callback) {
-  WatchBufferCollection2(
-      [callback = std::move(callback)](
-          fidl::InterfaceHandle<fuchsia::sysmem2::BufferCollectionToken>
-              sysmem2_token) mutable {
-        auto sysmem1_token =
-            fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>(
-                sysmem2_token.TakeChannel());
-        callback(std::move(sysmem1_token));
       });
 }
 

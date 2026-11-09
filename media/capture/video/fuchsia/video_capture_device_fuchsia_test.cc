@@ -207,7 +207,6 @@ class TestVideoCaptureClient final : public VideoCaptureDevice::Client {
 class VideoCaptureDeviceFuchsiaTest : public testing::Test {
  public:
   VideoCaptureDeviceFuchsiaTest() {
-    test_context_.AddService("fuchsia.sysmem.Allocator");
     test_context_.AddService("fuchsia.sysmem2.Allocator");
   }
 

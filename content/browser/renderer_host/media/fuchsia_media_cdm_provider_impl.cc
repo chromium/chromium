@@ -4,9 +4,6 @@
 
 #include "content/browser/renderer_host/media/fuchsia_media_cdm_provider_impl.h"
 
-#include <fuchsia/mediacodec/cpp/fidl.h>
-#include <lib/sys/cpp/component_context.h>
-
 #include "content/public/browser/provision_fetcher_factory.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"

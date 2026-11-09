@@ -5,14 +5,11 @@
 #include "fuchsia_web/webengine/test/isolated_archivist.h"
 
 #include <lib/async/default.h>
-#include <lib/sys/cpp/component_context.h>
-#include <lib/sys/cpp/service_directory.h>
 
 #include <utility>
 
 #include "base/fuchsia/fuchsia_component_connect.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/fuchsia/process_context.h"
 
 IsolatedArchivist::IsolatedArchivist(
     ::sys::OutgoingDirectory& outgoing_directory) {
@@ -22,7 +19,6 @@ IsolatedArchivist::IsolatedArchivist(
           fidl::DiscoverableProtocolName<fuchsia_logger::LogSink>);
   ZX_CHECK(status == ZX_OK, status) << "Remove LogSink service";
 
-  auto service_directory = base::ComponentContextForProcess()->svc();
   log_sink_publisher_.emplace(
       &outgoing_directory,
       [](fidl::ServerEnd<fuchsia_logger::LogSink> server_end) {

@@ -6,7 +6,6 @@
 #define BASE_FUCHSIA_PROCESS_LIFECYCLE_H_
 
 #include <fidl/fuchsia.process.lifecycle/cpp/fidl.h>
-#include <lib/fidl/cpp/binding.h>
 #include <lib/fidl/cpp/wire/channel.h>
 
 #include <optional>

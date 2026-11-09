@@ -155,12 +155,6 @@ component("ozone_base") {
     public_deps += [ "//gpu/vulkan" ]
   }
 
-  if (is_fuchsia) {
-    public_deps += [
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.images:fuchsia.images_hlcpp",
-    ]
-  }
-
   if (is_linux) {
     public_deps += [ "//ui/linux:linux_ui" ]
   }

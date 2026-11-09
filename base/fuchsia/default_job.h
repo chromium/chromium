@@ -18,22 +18,6 @@ namespace base {
 BASE_EXPORT zx::unowned_job GetDefaultJob();
 BASE_EXPORT void SetDefaultJob(zx::job job);
 
-// Replaces the current default job (if any) with the specified zx::job, and
-// restores the original default job when going out-of-scope.
-// Note that replacing the default job is not thread-safe!
-class BASE_EXPORT ScopedDefaultJobForTest {
- public:
-  ScopedDefaultJobForTest(zx::job new_default_job);
-
-  ScopedDefaultJobForTest(const ScopedDefaultJobForTest&) = delete;
-  ScopedDefaultJobForTest& operator=(const ScopedDefaultJobForTest&) = delete;
-
-  ~ScopedDefaultJobForTest();
-
- private:
-  zx::job old_default_job_;
-};
-
 }  // namespace base
 
 #endif  // BASE_FUCHSIA_DEFAULT_JOB_H_

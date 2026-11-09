@@ -4,11 +4,9 @@
 
 #include "ui/base/ime/fuchsia/input_method_fuchsia.h"
 
-#include <lib/sys/cpp/component_context.h>
 #include <memory>
 #include <utility>
 
-#include "base/fuchsia/process_context.h"
 #include "base/logging.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/events/base_event_utils.h"

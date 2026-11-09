@@ -6,8 +6,6 @@
 #define UI_ACCESSIBILITY_PLATFORM_FUCHSIA_SEMANTIC_PROVIDER_IMPL_H_
 
 #include <fidl/fuchsia.accessibility.semantics/cpp/fidl.h>
-#include <fuchsia/ui/views/cpp/fidl.h>
-#include <lib/fidl/cpp/binding.h>
 
 #include <map>
 #include <optional>

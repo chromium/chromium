@@ -16,9 +16,6 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
 
-constexpr char FakeApplicationConfigManager::kFakeAgentUrl[] =
-    "fuchsia-pkg://fuchsia.com/fake_agent#meta/fake_agent.cmx";
-
 // static
 chromium::cast::ApplicationConfig FakeApplicationConfigManager::CreateConfig(
     std::string_view id,
@@ -27,7 +24,6 @@ chromium::cast::ApplicationConfig FakeApplicationConfigManager::CreateConfig(
   app_config.set_id(std::string(id));
   app_config.set_display_name("Dummy test app");
   app_config.set_web_url(url.spec());
-  app_config.set_agent_url(kFakeAgentUrl);
 
   // Add a PROTECTED_MEDIA_IDENTIFIER permission. This is consistent with the
   // real ApplicationConfigManager.

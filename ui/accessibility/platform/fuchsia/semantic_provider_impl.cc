@@ -6,7 +6,6 @@
 
 #include <fidl/fuchsia.ui.gfx/cpp/fidl.h>
 #include <lib/async/default.h>
-#include <lib/sys/cpp/component_context.h>
 
 #include "base/check.h"
 #include "base/check_op.h"

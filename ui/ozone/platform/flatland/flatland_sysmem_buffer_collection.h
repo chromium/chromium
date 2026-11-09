@@ -5,7 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_FLATLAND_FLATLAND_SYSMEM_BUFFER_COLLECTION_H_
 #define UI_OZONE_PLATFORM_FLATLAND_FLATLAND_SYSMEM_BUFFER_COLLECTION_H_
 
-#include <fuchsia/sysmem/cpp/fidl.h>
+#include <fuchsia/sysmem2/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
 #include <lib/zx/eventpair.h>
 #include <vulkan/vulkan.h>

@@ -6,7 +6,6 @@
 #define UI_ACCESSIBILITY_PLATFORM_FUCHSIA_ACCESSIBILITY_BRIDGE_FUCHSIA_IMPL_H_
 
 #include <fidl/fuchsia.accessibility.semantics/cpp/fidl.h>
-#include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/inspect/cpp/vmo/types.h>
 
 #include <optional>

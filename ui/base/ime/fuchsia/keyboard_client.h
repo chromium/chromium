@@ -6,7 +6,6 @@
 #define UI_BASE_IME_FUCHSIA_KEYBOARD_CLIENT_H_
 
 #include <fidl/fuchsia.ui.input3/cpp/fidl.h>
-#include <lib/fidl/cpp/binding.h>
 
 #include <optional>
 

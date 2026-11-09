@@ -60,7 +60,7 @@ source_set("flatland") {
     "//skia",
     "//third_party/angle/src/common/fuchsia_egl",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem:fuchsia.mem_hlcpp",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem2:fuchsia.sysmem2_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.views:fuchsia.ui.views_cpp_hlcpp_conversion",
     "//third_party/fuchsia-sdk/sdk/pkg/component_incoming_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
