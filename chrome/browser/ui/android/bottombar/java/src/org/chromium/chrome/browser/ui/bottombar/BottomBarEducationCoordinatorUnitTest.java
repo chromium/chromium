@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.actions.ActionId;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils.DefaultPinState;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.EducationOnboardingEvent;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.IphEvent;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -153,6 +154,8 @@ public class BottomBarEducationCoordinatorUnitTest {
         }
         TrackerFactory.setTrackerForTests(null);
         BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(null);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.BOTTOM_BAR_DEFAULT_PIN_STATE);
     }
 
     @Test
@@ -176,6 +179,7 @@ public class BottomBarEducationCoordinatorUnitTest {
         assertFalse(BottomBarEducationCoordinator.hasEducationShownThisSession());
         triggerShow();
         assertTrue(BottomBarEducationCoordinator.hasEducationShownThisSession());
+        assertEquals(DefaultPinState.KEPT_ON, readPinState());
     }
 
     @Test
@@ -190,6 +194,49 @@ public class BottomBarEducationCoordinatorUnitTest {
         assertEquals(BrowserControlsState.BOTH, mVisibilityDelegate.get().intValue());
         assertNull(mCoordinator.getBubbleViewForTesting());
         assertFalse(BottomBarEducationCoordinator.hasEducationShownThisSession());
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .contains(ChromePreferenceKeys.BOTTOM_BAR_DEFAULT_PIN_STATE));
+    }
+
+    @Test
+    public void testPendingNeverSeen_LaunchedDefaultOff_ReleasesInsteadOfShowingBubble() {
+        setupForShow();
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
+                .thenReturn(true);
+        assertTrue(mCoordinator.wouldShow(mProfile));
+
+        // Launched default off, no new pins, for an opt-out arm user with a pending pin who never
+        // saw onboarding.
+        ChromeFeatureList.sAndroidBottomBarDefaultUserEnabled.setForTesting(false);
+        ChromeFeatureList.sAndroidBottomBarPinDefaultUserEnabled.setForTesting(false);
+        writePinState(DefaultPinState.PENDING_ON);
+
+        // Released before answering: the bar stays on for this run, the promo slot is not claimed
+        // and the bubble does not show.
+        assertFalse(mCoordinator.wouldShow(mProfile));
+        assertEquals(DefaultPinState.RELEASED, readPinState());
+        triggerShow();
+        verify(mTracker, never()).shouldTriggerHelpUi(any());
+        verify(mScrimManager, never()).showScrim(any());
+        assertNull(mCoordinator.getBubbleViewForTesting());
+    }
+
+    @Test
+    public void testPendingNeverSeen_SameDefault_SettlesPinThenShowsBubble() {
+        setupForShow();
+        writePinState(DefaultPinState.PENDING_ON);
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
+                .thenReturn(true);
+
+        // Same default: wouldShow() resolves the pending pin, then the bubble shows and keeps it.
+        assertTrue(mCoordinator.wouldShow(mProfile));
+        assertEquals(DefaultPinState.RELEASED, readPinState());
+
+        triggerShow();
+        verify(mScrimManager).showScrim(any());
+        assertNotNull(mCoordinator.getBubbleViewForTesting());
+        assertEquals(DefaultPinState.KEPT_ON, readPinState());
     }
 
     @Test
@@ -1608,5 +1655,15 @@ public class BottomBarEducationCoordinatorUnitTest {
 
         assertNotNull(mCoordinator.getCurrentTooltipForTesting());
         assertFalse(isBubbleShowing());
+    }
+
+    private static @DefaultPinState int readPinState() {
+        return ChromeSharedPreferences.getInstance()
+                .readInt(ChromePreferenceKeys.BOTTOM_BAR_DEFAULT_PIN_STATE, DefaultPinState.NONE);
+    }
+
+    private static void writePinState(@DefaultPinState int state) {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.BOTTOM_BAR_DEFAULT_PIN_STATE, state);
     }
 }

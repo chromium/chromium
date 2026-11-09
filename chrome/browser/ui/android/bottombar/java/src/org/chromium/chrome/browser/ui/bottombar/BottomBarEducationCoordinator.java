@@ -182,19 +182,31 @@ public class BottomBarEducationCoordinator
     }
 
     /**
+     * Returns whether the education IPH would be shown if requested.
+     *
+     * <p>Once the Tracker is initialized, this resolves a pending pin first. That can turn
+     * education off for this run, so a user whose default is about to change does not claim the
+     * startup promo slot. {@link #maybeShow()} does not repeat the check: it only runs after this
+     * returned true, or for the opt-in tooltips.
+     *
      * @param profile The current Profile.
-     * @return Whether the education IPH would be shown if requested.
      */
     public boolean wouldShow(Profile profile) {
+        if (!BottomBarConfigUtils.isEducationEnabled()) return false;
         if (wouldShowTooltips(profile)) return true;
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile.getOriginalProfile());
-        return tracker != null
-                && tracker.isInitialized()
-                && tracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+        if (!tracker.isInitialized()) return false;
+        // Resolve a pending pin first. A release that would flip the bar turns education off for
+        // this run.
+        // TODO(crbug.com/582747594): Remove once AndroidBottomBar is enabled by default.
+        BottomBarEducationUtils.maybeBackfillEducationSeen(profile);
+        if (!BottomBarConfigUtils.isEducationEnabled()) return false;
+        return tracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
     }
 
     /** Attempts to show the education bubble if the conditions are met. */
     public void maybeShow() {
+        if (!BottomBarConfigUtils.isEducationEnabled()) return;
         if (mState != State.IDLE) return;
         Profile profile = mProfileSupplier.get();
         if (profile == null) return;
@@ -227,8 +239,10 @@ public class BottomBarEducationCoordinator
             return;
         }
 
-        // Set at approval time like FET; if UI fails, tip is deferred.
+        // Record session state and the kept default as soon as Feature Engagement triggers, since
+        // Feature Engagement already counts the education as shown at this point.
         setEducationShownThisSession();
+        BottomBarConfigUtils.recordEducationShown();
         mActiveTracker = tracker;
         mActiveFeature = FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION;
         activate(State.SHOWING_BUBBLE);

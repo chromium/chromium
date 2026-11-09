@@ -25,6 +25,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.FeatureOverrides;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -32,7 +34,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils.DefaultPinState;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.components.cached_flags.CachedFlagsSharedPreferences;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -55,6 +59,8 @@ public class BottomBarConfigUtilsUnitTest {
 
     @After
     public void tearDown() {
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.BOTTOM_BAR_DEFAULT_PIN_STATE);
         ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.BOTTOM_BAR_ENABLED);
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.BOTTOM_BAR_GLIC_BUTTON_ENABLED);
@@ -157,6 +163,198 @@ public class BottomBarConfigUtilsUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":default_user_enabled/false")
     public void testIsBottomBarEnabled_DefaultParamFalse_PrefUnset() {
         assertFalse(BottomBarConfigUtils.isBottomBarEnabled(mContext));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testSavingDefault_SkippedWhenFlagOffPinningOffOrUserChose() {
+        Runnable[] writers = {
+            BottomBarConfigUtils::maybePinDefaultUserEnabled,
+            BottomBarConfigUtils::recordEducationShown
+        };
+        for (Runnable writer : writers) {
+            FeatureOverrides.disable(ChromeFeatureList.ANDROID_BOTTOM_BAR);
+            writer.run();
+            assertFalse(hasPinState());
+            FeatureOverrides.enable(ChromeFeatureList.ANDROID_BOTTOM_BAR);
+
+            // The launch config turns pinning off.
+            ChromeFeatureList.sAndroidBottomBarPinDefaultUserEnabled.setForTesting(false);
+            writer.run();
+            assertFalse(hasPinState());
+            ChromeFeatureList.sAndroidBottomBarPinDefaultUserEnabled.setForTesting(true);
+
+            BottomBarConfigUtils.setBottomBarUserEnabled(false);
+            writer.run();
+            assertFalse(hasPinState());
+            ChromeSharedPreferences.getInstance()
+                    .removeKey(ChromePreferenceKeys.BOTTOM_BAR_ENABLED);
+        }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testMaybePinDefaultUserEnabled_SavesDefaultOnce() {
+        for (boolean armDefault : new boolean[] {false, true}) {
+            ChromeSharedPreferences.getInstance()
+                    .removeKey(ChromePreferenceKeys.BOTTOM_BAR_DEFAULT_PIN_STATE);
+            ChromeFeatureList.sAndroidBottomBarDefaultUserEnabled.setForTesting(armDefault);
+            BottomBarConfigUtils.maybePinDefaultUserEnabled();
+            assertEquals(pendingState(armDefault), readPinState());
+
+            // Later starts with the other default leave a pending, kept or released state alone.
+            ChromeFeatureList.sAndroidBottomBarDefaultUserEnabled.setForTesting(!armDefault);
+            int[] savedStates = {
+                pendingState(armDefault), keptState(armDefault), DefaultPinState.RELEASED
+            };
+            for (@DefaultPinState int state : savedStates) {
+                writePinState(state);
+                BottomBarConfigUtils.maybePinDefaultUserEnabled();
+                assertEquals(state, readPinState());
+            }
+        }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testIsBottomBarUserEnabled_FollowsSavedDefault() {
+        for (boolean armDefault : new boolean[] {false, true}) {
+            ChromeFeatureList.sAndroidBottomBarDefaultUserEnabled.setForTesting(!armDefault);
+            int[] savedStates = {pendingState(armDefault), keptState(armDefault)};
+            for (@DefaultPinState int state : savedStates) {
+                writePinState(state);
+                assertEquals(armDefault, BottomBarConfigUtils.isBottomBarUserEnabled());
+                // Saving a default does not count as an explicit user setting, so the opt-in
+                // dialog still shows while the bar is off.
+                assertEquals(
+                        !armDefault, BottomBarConfigUtils.isEligibleForEducationDialog(mContext));
+
+                ChromeFeatureList.sAndroidBottomBarUsePinnedDefaultUserEnabled.setForTesting(false);
+                assertEquals(!armDefault, BottomBarConfigUtils.isBottomBarUserEnabled());
+                ChromeFeatureList.sAndroidBottomBarUsePinnedDefaultUserEnabled.setForTesting(true);
+            }
+
+            writePinState(DefaultPinState.RELEASED);
+            assertEquals(!armDefault, BottomBarConfigUtils.isBottomBarUserEnabled());
+        }
+    }
+
+    @Test
+    public void testBackfillEducationSeen_Seen_KeepsSavedDefault() {
+        for (boolean armDefault : new boolean[] {false, true}) {
+            writePinState(pendingState(armDefault));
+            BottomBarConfigUtils.backfillEducationSeen(/* seen= */ true);
+            assertEquals(keptState(armDefault), readPinState());
+        }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_enabled/true")
+    public void testBackfillEducationSeen_NeverSeen_ReleasesWithoutChangingThisRun() {
+        for (boolean armDefault : new boolean[] {false, true}) {
+            // The saved default matches default_user_enabled.
+            ChromeFeatureList.sAndroidBottomBarDefaultUserEnabled.setForTesting(armDefault);
+            writePinState(pendingState(armDefault));
+            backfillNeverSeenAndAssertThisRunUnchanged();
+
+            // The kill switch already ignores the saved default.
+            ChromeFeatureList.sAndroidBottomBarDefaultUserEnabled.setForTesting(!armDefault);
+            ChromeFeatureList.sAndroidBottomBarUsePinnedDefaultUserEnabled.setForTesting(false);
+            writePinState(pendingState(armDefault));
+            backfillNeverSeenAndAssertThisRunUnchanged();
+            ChromeFeatureList.sAndroidBottomBarUsePinnedDefaultUserEnabled.setForTesting(true);
+
+            // An explicit choice wins over the saved default.
+            BottomBarConfigUtils.setBottomBarUserEnabled(!armDefault);
+            writePinState(pendingState(armDefault));
+            backfillNeverSeenAndAssertThisRunUnchanged();
+            ChromeSharedPreferences.getInstance()
+                    .removeKey(ChromePreferenceKeys.BOTTOM_BAR_ENABLED);
+        }
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR
+                    + ":default_user_enabled/true/education_enabled/true")
+    public void testBackfillEducationSeen_NeverSeen_KeepsShownBarUntilNextStart() {
+        writePinState(DefaultPinState.PENDING_OFF);
+        BottomBarConfigUtils.backfillEducationSeen(/* seen= */ false);
+        assertEquals(DefaultPinState.RELEASED, readPinState());
+        // The bar stays off for this run, and the education waits for the next start.
+        assertFalse(BottomBarConfigUtils.isBottomBarUserEnabled());
+        assertFalse(BottomBarConfigUtils.isEducationEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testRecordEducationShown_KeepsShownDefault() {
+        for (boolean armDefault : new boolean[] {false, true}) {
+            // A pending or kept default is what the bar showed, whatever default_user_enabled is.
+            ChromeFeatureList.sAndroidBottomBarDefaultUserEnabled.setForTesting(!armDefault);
+            int[] savedStates = {pendingState(armDefault), keptState(armDefault)};
+            for (@DefaultPinState int state : savedStates) {
+                writePinState(state);
+                BottomBarConfigUtils.recordEducationShown();
+                assertEquals(keptState(armDefault), readPinState());
+            }
+
+            // Without a saved default, or when the kill switch ignores it, the bar showed
+            // default_user_enabled.
+            ChromeFeatureList.sAndroidBottomBarDefaultUserEnabled.setForTesting(armDefault);
+            int[] unsavedStates = {DefaultPinState.NONE, DefaultPinState.RELEASED};
+            for (@DefaultPinState int state : unsavedStates) {
+                writePinState(state);
+                BottomBarConfigUtils.recordEducationShown();
+                assertEquals(keptState(armDefault), readPinState());
+            }
+            ChromeFeatureList.sAndroidBottomBarUsePinnedDefaultUserEnabled.setForTesting(false);
+            writePinState(pendingState(!armDefault));
+            BottomBarConfigUtils.recordEducationShown();
+            assertEquals(keptState(armDefault), readPinState());
+            ChromeFeatureList.sAndroidBottomBarUsePinnedDefaultUserEnabled.setForTesting(true);
+        }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testRecordEducationShown_FirstRunOnNewSeed_KeepsShownDefault() {
+        SharedPreferencesManager cachedPrefs = CachedFlagsSharedPreferences.getInstance();
+        String cachedDefaultKey =
+                CachedFlagsSharedPreferences.FLAGS_FEATURE_PARAM_CACHED.createKey(
+                        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":default_user_enabled");
+        String cachedPinningKey =
+                CachedFlagsSharedPreferences.FLAGS_FEATURE_PARAM_CACHED.createKey(
+                        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":pin_default_user_enabled");
+        String cachedUsePinnedKey =
+                CachedFlagsSharedPreferences.FLAGS_FEATURE_PARAM_CACHED.createKey(
+                        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":use_pinned_default_user_enabled");
+        String cachedEducationKey =
+                CachedFlagsSharedPreferences.FLAGS_FEATURE_PARAM_CACHED.createKey(
+                        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_enabled");
+
+        // Simulate a cold start where isBottomBarUserEnabled() has not run before native init
+        // (for example Custom Tabs or an unfolded foldable). maybePinDefaultUserEnabled() locks
+        // this process's cached bottom bar params before cacheNativeFlags() writes the new seed.
+        writePinState(DefaultPinState.PENDING_OFF);
+        cachedPrefs.writeBoolean(cachedDefaultKey, false);
+        cachedPrefs.writeBoolean(cachedPinningKey, true);
+        cachedPrefs.writeBoolean(cachedUsePinnedKey, true);
+        cachedPrefs.writeBoolean(cachedEducationKey, true);
+        BottomBarConfigUtils.maybePinDefaultUserEnabled();
+        cachedPrefs.writeBoolean(cachedDefaultKey, true);
+        cachedPrefs.writeBoolean(cachedPinningKey, false);
+        cachedPrefs.writeBoolean(cachedUsePinnedKey, false);
+        cachedPrefs.writeBoolean(cachedEducationKey, false);
+
+        // When a tabbed activity opens later in the same process, it still uses the pre-launch
+        // seed and keeps the default that onboarding showed.
+        assertFalse(BottomBarConfigUtils.isBottomBarUserEnabled());
+        BottomBarConfigUtils.backfillEducationSeen(/* seen= */ false);
+        assertEquals(DefaultPinState.RELEASED, readPinState());
+        assertTrue(BottomBarConfigUtils.isEducationEnabled());
+        BottomBarConfigUtils.recordEducationShown();
+        assertEquals(DefaultPinState.KEPT_OFF, readPinState());
     }
 
     @Test
@@ -623,5 +821,36 @@ public class BottomBarConfigUtilsUnitTest {
         assertFalse(BottomBarConfigUtils.hasUserSetBottomBarEnabled());
         assertTrue(BottomBarConfigUtils.isBottomBarUserEnabled());
         assertFalse(BottomBarConfigUtils.isEligibleForEducationDialog(mContext));
+    }
+
+    private static void backfillNeverSeenAndAssertThisRunUnchanged() {
+        boolean shown = BottomBarConfigUtils.isBottomBarUserEnabled();
+        BottomBarConfigUtils.backfillEducationSeen(/* seen= */ false);
+        assertEquals(DefaultPinState.RELEASED, readPinState());
+        assertEquals(shown, BottomBarConfigUtils.isBottomBarUserEnabled());
+        assertTrue(BottomBarConfigUtils.isEducationEnabled());
+    }
+
+    private static boolean hasPinState() {
+        return ChromeSharedPreferences.getInstance()
+                .contains(ChromePreferenceKeys.BOTTOM_BAR_DEFAULT_PIN_STATE);
+    }
+
+    private static @DefaultPinState int readPinState() {
+        return ChromeSharedPreferences.getInstance()
+                .readInt(ChromePreferenceKeys.BOTTOM_BAR_DEFAULT_PIN_STATE, DefaultPinState.NONE);
+    }
+
+    private static void writePinState(@DefaultPinState int state) {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.BOTTOM_BAR_DEFAULT_PIN_STATE, state);
+    }
+
+    private static @DefaultPinState int pendingState(boolean enabled) {
+        return enabled ? DefaultPinState.PENDING_ON : DefaultPinState.PENDING_OFF;
+    }
+
+    private static @DefaultPinState int keptState(boolean enabled) {
+        return enabled ? DefaultPinState.KEPT_ON : DefaultPinState.KEPT_OFF;
     }
 }

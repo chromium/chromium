@@ -105,17 +105,25 @@ public class BottomBarEducationDialogCoordinator
         }
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile.getOriginalProfile());
-        if (!tracker.isInitialized()
-                || !tracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION)) {
+        if (!tracker.isInitialized()) return false;
+
+        // Resolve a pending pin first. A release that would flip the bar turns education off for
+        // this run, so the dialog must not show.
+        // TODO(crbug.com/582747594): Remove once AndroidBottomBar is enabled by default.
+        BottomBarEducationUtils.maybeBackfillEducationSeen(profile);
+        if (!BottomBarConfigUtils.isEligibleForEducationDialog(mContext)) return false;
+
+        if (!tracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION)) {
             return false;
         }
 
         mTracker = tracker;
 
         showDialog();
-        // Setting the flag at request time is acceptable even if the dialog queues because it only
-        // defers the NTP tip.
+        // Record session state and the kept default at request time even if ModalDialogManager
+        // queues the dialog, since Feature Engagement already counts the education as shown.
         BottomBarEducationCoordinator.setEducationShownThisSession();
+        BottomBarConfigUtils.recordEducationShown();
         return true;
     }
 

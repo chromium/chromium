@@ -24,18 +24,66 @@ import com.google.android.material.color.HarmonizedColors;
 import com.google.android.material.color.HarmonizedColorsOptions;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.actions.ActionId;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
-/** Helpers for the bottom bar education content shared by the bubble and the opt-in dialog. */
+/**
+ * Helpers for the bottom bar education UI and the one-time Feature Engagement backfill of saved
+ * bottom bar defaults.
+ */
 @NullMarked
-final class BottomBarEducationUtils {
+public final class BottomBarEducationUtils {
     private BottomBarEducationUtils() {}
+
+    /**
+     * Backfills whether the user has seen the bottom bar onboarding flow from the Feature
+     * Engagement Tracker once initialized. Because the saved default is app-wide while the Tracker
+     * is per profile, the first regular profile Tracker to answer resolves the saved default.
+     *
+     * <p>Runs from post-native initialization for each regular profile, usually waiting for the
+     * Tracker's posted init callback. The opt-in dialog and {@link
+     * BottomBarEducationCoordinator#wouldShow(Profile)} also call it right before they decide to
+     * show, so they never decide on a pending pin. Does nothing unless the pin is pending.
+     */
+    // TODO(crbug.com/582747594): Remove once AndroidBottomBar is enabled by default.
+    public static void maybeBackfillEducationSeen(Profile profile) {
+        if (!BottomBarConfigUtils.shouldBackfillEducationSeen()) return;
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile.getOriginalProfile());
+        if (tracker.isInitialized()) {
+            backfillEducationSeenFromTracker(tracker);
+        } else {
+            tracker.addOnInitializedCallback(
+                    success -> {
+                        if (success) backfillEducationSeenFromTracker(tracker);
+                    });
+        }
+    }
+
+    private static void backfillEducationSeenFromTracker(Tracker tracker) {
+        // Re-check in case education showed or another profile's Tracker answered while waiting
+        // for Feature Engagement to initialize.
+        if (!BottomBarConfigUtils.shouldBackfillEducationSeen()) return;
+        if (tracker.hasEverTriggered(
+                FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION, /* fromWindow= */ true)) {
+            BottomBarConfigUtils.backfillEducationSeen(/* seen= */ true);
+            return;
+        }
+        // Only release a pending default when education is enabled and allowed to show so the
+        // user gets onboarding for the new default. Otherwise keep PENDING_* and check again on
+        // the next start.
+        if (BottomBarConfigUtils.isEducationEnabled()
+                && tracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION)) {
+            BottomBarConfigUtils.backfillEducationSeen(/* seen= */ false);
+        }
+    }
 
     /**
      * Returns whether the Gemini-focused education copy should be used. This requires both the

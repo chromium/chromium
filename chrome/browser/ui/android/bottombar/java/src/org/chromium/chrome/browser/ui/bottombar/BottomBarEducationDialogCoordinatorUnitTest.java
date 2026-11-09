@@ -24,6 +24,7 @@ import android.content.res.Configuration;
 import android.view.View;
 import android.widget.TextView;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,6 +48,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils.DefaultPinState;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.EducationOnboardingEvent;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -86,6 +88,13 @@ public class BottomBarEducationDialogCoordinatorUnitTest {
 
         mCoordinator =
                 new BottomBarEducationDialogCoordinator(mActivity, mModalDialogManager, () -> mTab);
+    }
+
+    @After
+    public void tearDown() {
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.BOTTOM_BAR_DEFAULT_PIN_STATE);
+        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.BOTTOM_BAR_ENABLED);
     }
 
     @Test
@@ -129,13 +138,55 @@ public class BottomBarEducationDialogCoordinatorUnitTest {
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
                 .thenReturn(false);
         assertFalse(mCoordinator.maybeShow(mProfile));
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .contains(ChromePreferenceKeys.BOTTOM_BAR_DEFAULT_PIN_STATE));
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
+    }
+
+    @Test
+    public void testPendingNeverSeen_LaunchedDefaultOn_ReleasesInsteadOfShowing() {
+        // Launch config (bar on by default, no new pins) for an opt-in arm user with a pending
+        // pin who never saw onboarding.
+        ChromeFeatureList.sAndroidBottomBarDefaultUserEnabled.setForTesting(true);
+        ChromeFeatureList.sAndroidBottomBarPinDefaultUserEnabled.setForTesting(false);
+        writePinState(DefaultPinState.PENDING_OFF);
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
+                .thenReturn(true);
+
+        assertFalse(mCoordinator.maybeShow(mProfile));
+
+        // Released before the dialog could show: the bar stays off for this run and the user gets
+        // the launched bar and its bubble next start.
+        assertEquals(DefaultPinState.RELEASED, readPinState());
+        verify(mTracker, never()).shouldTriggerHelpUi(any());
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
+        assertFalse(BottomBarEducationCoordinator.hasEducationShownThisSession());
+    }
+
+    @Test
+    public void testPendingNeverSeen_SameDefault_SettlesPinThenShows() {
+        writePinState(DefaultPinState.PENDING_OFF);
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
+                .thenReturn(true);
+        // The pending pin is already resolved when the dialog consumes the trigger.
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
+                .thenAnswer(
+                        invocation -> {
+                            assertEquals(DefaultPinState.RELEASED, readPinState());
+                            return true;
+                        });
+
+        // Same default: the dialog still shows now and keeps it.
+        assertTrue(mCoordinator.maybeShow(mProfile));
+        assertEquals(DefaultPinState.KEPT_OFF, readPinState());
     }
 
     @Test
     public void testShownAndTitleText() {
         assertTrue(mCoordinator.maybeShow(mProfile));
         assertTrue(BottomBarEducationCoordinator.hasEducationShownThisSession());
+        assertEquals(DefaultPinState.KEPT_OFF, readPinState());
         verify(mModalDialogManager)
                 .showDialog(
                         mModelCaptor.capture(),
@@ -406,5 +457,15 @@ public class BottomBarEducationDialogCoordinatorUnitTest {
         assertTrue(BottomBarConfigUtils.isEligibleForEducationDialog(mActivity));
         assertFalse(mCoordinator.maybeShow(mProfile));
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
+    }
+
+    private static @DefaultPinState int readPinState() {
+        return ChromeSharedPreferences.getInstance()
+                .readInt(ChromePreferenceKeys.BOTTOM_BAR_DEFAULT_PIN_STATE, DefaultPinState.NONE);
+    }
+
+    private static void writePinState(@DefaultPinState int state) {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.BOTTOM_BAR_DEFAULT_PIN_STATE, state);
     }
 }

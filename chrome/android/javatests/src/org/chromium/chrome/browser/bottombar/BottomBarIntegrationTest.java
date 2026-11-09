@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertNull;
 
 import static org.chromium.base.test.util.Criteria.checkThat;
 
@@ -21,6 +22,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -28,6 +31,9 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils.DefaultPinState;
 import org.chromium.chrome.browser.ui.bottombar.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -36,7 +42,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
-/** Integration tests for the Bottom Bar extra button candidate resolution. */
+/** Integration tests for the Bottom Bar. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction(DeviceFormFactor.PHONE)
 @Batch(Batch.PER_CLASS)
@@ -56,6 +62,9 @@ public class BottomBarIntegrationTest {
     @After
     public void tearDown() {
         GlicEnabling.setEnabledForTesting(/* isEnabled= */ false);
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+        prefs.removeKey(ChromePreferenceKeys.BOTTOM_BAR_DEFAULT_PIN_STATE);
+        prefs.removeKey(ChromePreferenceKeys.BOTTOM_BAR_ENABLED);
     }
 
     @Test
@@ -100,5 +109,28 @@ public class BottomBarIntegrationTest {
                             extraContainer == null || extraContainer.getVisibility() == View.GONE,
                             is(/* expected= */ true));
                 });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR
+                + ":default_user_enabled/true/pin_default_user_enabled/false"
+    })
+    public void testKeptDefaultOff_LaunchedDefaultOn_NoBottomBar() {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.BOTTOM_BAR_DEFAULT_PIN_STATE,
+                        DefaultPinState.KEPT_OFF);
+
+        mPage = mActivityTestRule.startOnBlankPage();
+
+        // startOnBlankPage() waits for native init, which is when the bar would be attached.
+        assertNull(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mActivityTestRule
+                                        .getActivity()
+                                        .findViewById(R.id.bottom_bar_container)));
     }
 }

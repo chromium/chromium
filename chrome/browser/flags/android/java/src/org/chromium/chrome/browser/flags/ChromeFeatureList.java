@@ -2141,6 +2141,15 @@ public abstract class ChromeFeatureList {
                     ANDROID_BOTTOM_BAR, "move_toolbar_settings_to_appearance", true);
     public static final BooleanCachedFeatureParam sAndroidBottomBarNtpScrollOffEnabled =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "ntp_scroll_off_enabled", true);
+    // Saves each experiment user's initial default_user_enabled value so a later launch with the
+    // opposite default does not flip the bottom bar for users who already saw education. Defaults
+    // to true so the first start on an updated build saves the default before this param is cached.
+    // The Finch launch config sets this param to false and keeps both education_enabled and
+    // IPH_AndroidBottomBarEducation enabled so pending users who never saw education can be
+    // released.
+    // TODO(crbug.com/582747594): Remove once AndroidBottomBar is enabled by default.
+    public static final BooleanCachedFeatureParam sAndroidBottomBarPinDefaultUserEnabled =
+            newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "pin_default_user_enabled", true);
     public static final BooleanCachedFeatureParam
             sAndroidBottomBarRemoveTopPaddingForBottomOmnibox =
                     newBooleanCachedFeatureParam(
@@ -2156,6 +2165,13 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_settings_toggle", true);
     public static final BooleanCachedFeatureParam sAndroidBottomBarShowUpdateBadge =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_update_badge", true);
+    // Kill switch for saved bottom bar defaults (see sAndroidBottomBarPinDefaultUserEnabled). When
+    // false, saved defaults are ignored and users without an explicit setting follow
+    // default_user_enabled.
+    // TODO(crbug.com/582747594): Remove along with the BottomBarConfigUtils.DefaultPinState reader.
+    public static final BooleanCachedFeatureParam sAndroidBottomBarUsePinnedDefaultUserEnabled =
+            newBooleanCachedFeatureParam(
+                    ANDROID_BOTTOM_BAR, "use_pinned_default_user_enabled", true);
     public static final IntCachedFeatureParam sAndroidBottomBarHeightDp =
             newIntCachedFeatureParam(ANDROID_BOTTOM_BAR, "bottom_bar_height_dp", 56);
     // go/keep-sorted end
@@ -2541,11 +2557,13 @@ public abstract class ChromeFeatureList {
                     sAndroidBottomBarKeepAppMenuInToolbar,
                     sAndroidBottomBarMoveToolbarSettingsToAppearance,
                     sAndroidBottomBarNtpScrollOffEnabled,
+                    sAndroidBottomBarPinDefaultUserEnabled,
                     sAndroidBottomBarRemoveTopPaddingForBottomOmnibox,
                     sAndroidBottomBarShowBottomBarOnGts,
                     sAndroidBottomBarShowGlicSettingToggle,
                     sAndroidBottomBarShowSettingsToggle,
                     sAndroidBottomBarShowUpdateBadge,
+                    sAndroidBottomBarUsePinnedDefaultUserEnabled,
                     sAndroidTipsNotificationsV2CooldownDays,
                     sAndroidTipsNotificationsV2MaxShowCount,
                     sAndroidVerticalTabsBlockDrawOnColdStart,
