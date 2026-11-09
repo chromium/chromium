@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -116,13 +117,15 @@ class ProcessedLocalAudioSourceBase : public SimTest {
   }
 
   void CreateProcessedLocalAudioSource(
-      const MediaStreamAudioProcessingLayout& processing_layout) {
+      const MediaStreamAudioProcessingLayout& processing_layout,
+      mojom::MediaStreamType stream_type =
+          mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
     std::unique_ptr<blink::ProcessedLocalAudioSource> source =
         std::make_unique<blink::ProcessedLocalAudioSource>(
             *MainFrame().GetFrame(),
             MediaStreamDevice(
-                mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-                "mock_audio_device_id", "Mock audio device", kSampleRate,
+                stream_type, "mock_audio_device_id", "Mock audio device",
+                kSampleRate,
                 media::ChannelLayoutConfig::FromLayout<kDeviceChannelLayout>(),
                 kDeviceBufferSize),
             /*disable_local_echo=*/false, processing_layout, base::DoNothing(),
@@ -354,6 +357,92 @@ TEST_P(ProcessedLocalAudioSourceTest, CaptureErrorStopsCapturerAndEndsTrack) {
   }));
   EXPECT_EQ(audio_source()->ErrorCode(),
             media::AudioCapturerSource::ErrorCode::kUnknown);
+}
+
+// Stale capture errors from a previous AudioCapturerSource (queued either
+// before ChangeSource() or while Stop() is joining the capture thread) must not
+// terminate the track after switching to a new source.
+TEST_P(ProcessedLocalAudioSourceTest,
+       StaleCaptureErrorIgnoredAcrossChangeSource) {
+  base::test::ScopedFeatureList scoped_feature_list;
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (GetParam() == ProcessingLocation::kAudioService) {
+    scoped_feature_list.InitAndEnableFeature(
+        media::kChromeWideEchoCancellation);
+  } else {
+    scoped_feature_list.InitAndDisableFeature(
+        media::kChromeWideEchoCancellation);
+  }
+#endif
+
+  AudioProcessingProperties properties;
+  CreateProcessedLocalAudioSource(
+      MediaStreamAudioProcessingLayout(
+          properties,
+          /*available_platform_effects=*/0,
+          /*channels=*/ChannelLayoutToChannelCount(kProcessedChannelLayout)),
+      mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE);
+
+  EXPECT_CALL(*mock_audio_capturer_source(),
+              Initialize(_, capture_source_callback()));
+  EXPECT_CALL(*mock_audio_capturer_source(), SetAutomaticGainControl(_));
+  EXPECT_CALL(*mock_audio_capturer_source(), Start())
+      .WillOnce(Invoke(
+          capture_source_callback(),
+          &media::AudioCapturerSource::CaptureCallback::OnCaptureStarted));
+  ASSERT_TRUE(audio_source()->ConnectToInitializedTrack(audio_track()));
+  ASSERT_EQ(audio_track()->GetReadyState(), MediaStreamSource::kReadyStateLive);
+  ASSERT_FALSE(audio_source()->ErrorCode().has_value());
+  testing::Mock::VerifyAndClearExpectations(mock_audio_capturer_source());
+
+  // Queue an error before ChangeSource() starts, and another inside Stop()
+  // (simulating an error posted on the audio thread right before Stop() joins
+  // it) to ensure invalidation happens after Stop() returns.
+  capture_source_callback()->OnCaptureError(
+      media::AudioCapturerSource::ErrorCode::kUnknown,
+      "stale error before stop");
+
+  EXPECT_CALL(*mock_audio_capturer_source(), Stop()).WillOnce([&]() {
+    capture_source_callback()->OnCaptureError(
+        media::AudioCapturerSource::ErrorCode::kUnknown,
+        "stale error during stop");
+  });
+  EXPECT_CALL(*mock_audio_capturer_source(),
+              Initialize(_, capture_source_callback()));
+  EXPECT_CALL(*mock_audio_capturer_source(), SetAutomaticGainControl(_));
+  EXPECT_CALL(*mock_audio_capturer_source(), Start())
+      .WillOnce(Invoke(
+          capture_source_callback(),
+          &media::AudioCapturerSource::CaptureCallback::OnCaptureStarted));
+
+  MediaStreamDevice new_device(
+      mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE, "new_audio_device_id",
+      "New mock audio device", kSampleRate,
+      media::ChannelLayoutConfig::FromLayout<kDeviceChannelLayout>(),
+      kDeviceBufferSize);
+  audio_source()->ChangeSource(new_device);
+  testing::Mock::VerifyAndClearExpectations(mock_audio_capturer_source());
+
+  // Flush the source's task runner so any posted StopSourceOnErrorOnTaskRunner
+  // callbacks have had their turn to execute.
+  base::RunLoop flush_loop;
+  scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
+      FROM_HERE, flush_loop.QuitClosure());
+  flush_loop.Run();
+
+  EXPECT_EQ(audio_track()->GetReadyState(), MediaStreamSource::kReadyStateLive);
+  EXPECT_FALSE(audio_source()->ErrorCode().has_value());
+
+  // A subsequent error from the newly started source must still stop the track.
+  EXPECT_CALL(*mock_audio_capturer_source(), Stop());
+  capture_source_callback()->OnCaptureError(
+      media::AudioCapturerSource::ErrorCode::kSocketError, "new source error");
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return audio_track()->GetReadyState() ==
+           MediaStreamSource::kReadyStateEnded;
+  }));
+  EXPECT_EQ(audio_source()->ErrorCode(),
+            media::AudioCapturerSource::ErrorCode::kSocketError);
 }
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)

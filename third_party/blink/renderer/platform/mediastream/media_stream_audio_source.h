@@ -203,6 +203,14 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   void StopSourceOnError(media::AudioCapturerSource::ErrorCode code,
                          const std::string& why);
 
+  // Invalidates any pending StopSourceOnError callbacks posted prior to a
+  // source change or stop of the underlying AudioCapturerSource.
+  // Precondition: Must only be called on `GetTaskRunner()` after stopping the
+  // underlying AudioCapturerSource (`Stop()` joins the capture thread), so no
+  // concurrent `StopSourceOnError()` call can race `GetWeakPtr()` against
+  // `InvalidateWeakPtrs()`.
+  void InvalidatePendingErrorCallbacks();
+
   // Sets muted state and notifies it to all registered tracks.
   void SetMutedState(bool state);
 
@@ -247,6 +255,11 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   // Provides weak pointers so that MediaStreamAudioTracks won't call
   // StopAudioDeliveryTo() if this instance dies first.
   base::WeakPtrFactory<MediaStreamAudioSource> weak_factory_{this};
+
+  // Dedicated factory for StopSourceOnError() callbacks so pending error tasks
+  // from a stopped AudioCapturerSource can be cancelled without invalidating
+  // general weak pointers from `weak_factory_`.
+  base::WeakPtrFactory<MediaStreamAudioSource> error_weak_factory_{this};
 };
 
 }  // namespace blink

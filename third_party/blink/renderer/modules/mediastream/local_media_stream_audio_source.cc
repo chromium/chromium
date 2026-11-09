@@ -111,6 +111,9 @@ void LocalMediaStreamAudioSource::EnsureSourceIsStopped() {
 
   source_->Stop();
   source_ = nullptr;
+  // `Stop()` joins the audio capture thread, so no concurrent
+  // `StopSourceOnError()` call can race with `InvalidatePendingErrorCallbacks`.
+  InvalidatePendingErrorCallbacks();
 
   VLOG(1) << "Stopped local audio input device (session_id="
           << device().session_id() << ") with audio parameters={"

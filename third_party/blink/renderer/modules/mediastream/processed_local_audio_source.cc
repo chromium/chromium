@@ -330,6 +330,9 @@ void ProcessedLocalAudioSource::EnsureSourceIsStopped() {
   }
 
   source_to_stop->Stop();
+  // `Stop()` joins the audio capture thread, so no concurrent
+  // `StopSourceOnError()` call can race with `InvalidatePendingErrorCallbacks`.
+  InvalidatePendingErrorCallbacks();
 
   if (media_stream_audio_processor_) {
     // Stop the audio processor to avoid feeding render data into the processor.
