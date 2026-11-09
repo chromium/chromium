@@ -1767,7 +1767,9 @@ void MenuController::OnDragExitedScrollButton(SubmenuView* source) {
 }
 
 void MenuController::OnDragDropWillStart() {
-  CHECK(!drag_in_progress_, base::NotFatalUntil::M163);
+  // TODO(crbug.com/582716084): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!drag_in_progress_);
   drag_in_progress_ = true;
 }
 
