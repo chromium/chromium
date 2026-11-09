@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_consumer.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_date_item.h"
@@ -119,6 +120,12 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   // depends on immutable inputs.
   NSArray<AutofillLegalMessageLine*>* _legalMessages;
 
+  // URLs from `_legalMessages` displayed in the footer.
+  std::vector<GURL> _legalMessageURLs;
+
+  // Whether `kLegalMessageShown` has already been logged for this presentation.
+  BOOL _hasLoggedLegalMessageShown;
+
   // Ties a save to the Google Wallet disclosure notice the user was shown, so
   // it only holds a value when that notice is shown. Resolved once at
   // initialization, since it only depends on immutable inputs.
@@ -189,18 +196,21 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   }
   [consumer setEditingAllowed:editingAllowed];
   [consumer setIsServerWalletItem:isServerWalletItem];
-  // TODO(crbug.com/573949431): Compute the footer text and URLs in the mediator
-  // and push them via a single consumer method instead of pushing
-  // `isPrivateWalletPass`, `userEmail`, and `legalMessages` separately and
-  // duplicating footer construction across view controllers.
-  [consumer setIsPrivateWalletPass:[self isPrivateWalletPass]];
-  [consumer setUserEmail:_userEmail];
 
-  // `_legalMessages` is only set when the Google Wallet disclosure notice is
-  // shown.
-  if (_legalMessages) {
-    [consumer setLegalMessages:_legalMessages];
+  autofill::AutofillAiEntityFooterContent footerContent =
+      autofill::GetEntityFooterContent(*_entityInstance, /*is_update=*/false,
+                                       base::SysNSStringToUTF16(_userEmail),
+                                       _legalMessages);
+  _legalMessageURLs = std::move(footerContent.legal_message_urls);
+
+  if (!_legalMessageURLs.empty() && !_hasLoggedLegalMessageShown) {
+    _hasLoggedLegalMessageShown = YES;
+    autofill::LogWalletNoticeFunnelEvent(
+        autofill::AutofillAiWalletNoticeFunnelEvents::kLegalMessageShown,
+        /*in_settings=*/true);
   }
+
+  [consumer setFooterText:footerContent.text urls:footerContent.urls];
 
   [self updateEditItemsWithAllAttributes:NO];
 }
@@ -531,6 +541,14 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   item.detailText = countryItem.text;
   item.hasValidValueStatus = YES;
   [self.consumer updateItem:item];
+}
+
+- (void)didTapFooterLinkURL:(const GURL&)url {
+  if (std::ranges::contains(_legalMessageURLs, url)) {
+    autofill::LogWalletNoticeFunnelEvent(
+        autofill::AutofillAiWalletNoticeFunnelEvents::kLinkClicked,
+        /*in_settings=*/true);
+  }
 }
 
 - (GURL)walletManagementURL {

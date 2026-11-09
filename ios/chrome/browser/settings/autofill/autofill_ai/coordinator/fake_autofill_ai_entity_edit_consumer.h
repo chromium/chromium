@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_consumer.h"
 
-@class AutofillLegalMessageLine;
+@class CrURL;
 @class TableViewItem;
 
 // Fake consumer for AutofillAIEntityEditMediator and Coordinator tests.
@@ -30,13 +30,11 @@
 
 @property(nonatomic, assign) BOOL isServerWalletItem;
 
-@property(nonatomic, assign) BOOL isPrivateWalletPass;
+// The footer text passed to the consumer.
+@property(nonatomic, copy) NSString* footerText;
 
-// User email with the account.
-@property(nonatomic, strong) NSString* userEmail;
-
-// The legal message lines passed to the consumer.
-@property(nonatomic, strong) NSArray<AutofillLegalMessageLine*>* legalMessages;
+// The footer link URLs passed to the consumer.
+@property(nonatomic, copy) NSArray<CrURL*>* footerURLs;
 
 // YES if `setLoadingState:YES` was called on the consumer.
 @property(nonatomic, assign) BOOL showLoadingStateCalled;

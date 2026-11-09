@@ -8,6 +8,11 @@
 
 @implementation FakeAutofillAIEntityEditConsumer
 
+- (void)setFooterText:(NSString*)footerText urls:(NSArray<CrURL*>*)urls {
+  self.footerText = footerText;
+  self.footerURLs = urls;
+}
+
 - (void)updateItem:(TableViewItem*)item {
   // Empty implementation to satisfy protocol.
 }

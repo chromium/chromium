@@ -222,6 +222,7 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
 }
 
 - (void)didTapLinkWithURL:(CrURL*)url {
+  [_mediator didTapFooterLinkURL:url.gurl];
   id<SceneCommands> sceneHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   [sceneHandler

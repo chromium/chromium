@@ -23,6 +23,7 @@
 #import "components/wallet/core/common/wallet_features.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/fake_autofill_ai_entity_edit_consumer.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_consumer.h"
@@ -32,11 +33,13 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 @interface FakeAutofillAIEntityEditMediatorDelegate
@@ -104,7 +107,7 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
                 consentAuditor:&fake_consent_auditor_
                identityManager:identity_test_env_.identity_manager()
                   reauthModule:mockReauthModule_
-                     userEmail:nil];
+                     userEmail:@"test@example.com"];
     mediator_.consumer = consumer_;
     mediator_.delegate = fake_delegate_;
   }
@@ -400,7 +403,9 @@ TEST_F(AutofillAIEntityEditMediatorTest,
   CreateMediator(std::move(wallet_instance), AutofillAIEntityEditMode::kCreate);
 
   EXPECT_FALSE(consumer_.isServerWalletItem);
-  EXPECT_EQ(consumer_.legalMessages.count, 0u);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_FOOTER_SAVE_TO_DEVICE),
+              consumer_.footerText);
+  EXPECT_EQ(0u, consumer_.footerURLs.count);
 
   [mediator_ saveEntityInstance];
 
@@ -441,8 +446,10 @@ TEST_F(AutofillAIEntityEditMediatorTest,
 
   // No disclosure notice is required, so no legal messages are shown and the
   // entity is still presented and saved as a Wallet item.
-  EXPECT_EQ(consumer_.legalMessages.count, 0u);
   EXPECT_TRUE(consumer_.isServerWalletItem);
+  EXPECT_NE(0u, consumer_.footerText.length);
+  ASSERT_EQ(1u, consumer_.footerURLs.count);
+  EXPECT_EQ(autofill::GetManageYourInfoURL(), consumer_.footerURLs[0].gurl);
 
   [mediator_ saveEntityInstance];
 
@@ -474,7 +481,9 @@ TEST_F(AutofillAIEntityEditMediatorTest,
   CreateMediator(instance, AutofillAIEntityEditMode::kCreate);
 
   // Legal messages should be suppressed because the entity is ineligible.
-  EXPECT_EQ(consumer_.legalMessages.count, 0u);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_FOOTER_SAVE_TO_DEVICE),
+              consumer_.footerText);
+  EXPECT_EQ(0u, consumer_.footerURLs.count);
 
   [mediator_ saveEntityInstance];
 
@@ -499,8 +508,9 @@ TEST_F(AutofillAIEntityEditMediatorTest,
 
   autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse response;
   response.legal_message_token = "test_legal_message_token";
-  response.legal_message_lines.push_back(
-      autofill::TestLegalMessageLine("Test Legal Message"));
+  response.legal_message_lines.push_back(autofill::TestLegalMessageLine(
+      "Test Legal Message", {autofill::LegalMessageLine::Link(
+                                0, 4, "https://policies.google.com/terms")}));
   response.user_eligibility =
       autofill::WalletPassAccessManager::UserEligibility::kEligible;
 
@@ -508,17 +518,37 @@ TEST_F(AutofillAIEntityEditMediatorTest,
               ExtractPreloadedDetailsForUpsertPass(wallet_instance.type()))
       .WillOnce(testing::Return(response));
 
+  base::HistogramTester histogram_tester;
   CreateMediator(std::move(wallet_instance), AutofillAIEntityEditMode::kCreate);
 
-  // Legal messages should be pushed to the consumer.
-  EXPECT_EQ(consumer_.legalMessages.count, 1u);
+  // Storage notice and legal messages should be pushed to the consumer.
   EXPECT_TRUE(consumer_.isServerWalletItem);
+  EXPECT_TRUE([consumer_.footerText
+      containsString:@"BEGIN_LINKTestEND_LINK Legal Message"]);
+  ASSERT_EQ(2u, consumer_.footerURLs.count);
+  EXPECT_EQ(autofill::GetManageYourInfoURL(), consumer_.footerURLs[0].gurl);
+  EXPECT_EQ(GURL("https://policies.google.com/terms"),
+            consumer_.footerURLs[1].gurl);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.WalletNotice.Settings.Funnel",
+      autofill::AutofillAiWalletNoticeFunnelEvents::kLegalMessageShown, 1);
 
-  base::HistogramTester histogram_tester;
+  // Tapping the storage notice URL should not log `kLinkClicked`, whereas
+  // tapping the legal message URL should.
+  [mediator_ didTapFooterLinkURL:autofill::GetManageYourInfoURL()];
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Ai.WalletNotice.Settings.Funnel",
+      autofill::AutofillAiWalletNoticeFunnelEvents::kLinkClicked, 0);
+
+  [mediator_ didTapFooterLinkURL:GURL("https://policies.google.com/terms")];
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Ai.WalletNotice.Settings.Funnel",
+      autofill::AutofillAiWalletNoticeFunnelEvents::kLinkClicked, 1);
+
   [mediator_ saveEntityInstance];
   [mediator_ disconnect];
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectBucketCount(
       "Autofill.Ai.WalletNotice.Settings.Funnel",
       autofill::AutofillAiWalletNoticeFunnelEvents::kEntitySaved, 1);
   EXPECT_TRUE(consumer_.didFinishSavingCalled);
@@ -571,10 +601,12 @@ TEST_F(AutofillAIEntityEditMediatorTest,
                .management_url = GURL()}});
   autofill::EntityInstance::EntityId guid = wallet_instance.guid();
 
+  // Supply preloaded details with a legal message containing a link URL.
   autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse response;
   response.legal_message_token = "test_legal_message_token";
-  response.legal_message_lines.push_back(
-      autofill::TestLegalMessageLine("Test Legal Message"));
+  response.legal_message_lines.push_back(autofill::TestLegalMessageLine(
+      "Test Legal Message", {autofill::LegalMessageLine::Link(
+                                0, 4, "https://policies.google.com/terms")}));
   response.user_eligibility =
       autofill::WalletPassAccessManager::UserEligibility::kIneligible;
 
@@ -582,15 +614,30 @@ TEST_F(AutofillAIEntityEditMediatorTest,
               ExtractPreloadedDetailsForUpsertPass(wallet_instance.type()))
       .WillOnce(testing::Return(response));
 
+  base::HistogramTester histogram_tester;
   CreateMediator(std::move(wallet_instance), AutofillAIEntityEditMode::kCreate);
 
-  EXPECT_EQ(consumer_.legalMessages.count, 0u);
+  // The entity remains a server Wallet item. However, because the user is
+  // ineligible, disclosure is suppressed:
+  // 1. The legal message text is not appended to the footer.
+  // 2. The legal message link URL is not pushed to footer URLs (only the
+  //    standard storage notice manage-info URL is present).
+  // 3. No Wallet notice funnel metrics are recorded.
   EXPECT_TRUE(consumer_.isServerWalletItem);
+  EXPECT_FALSE([consumer_.footerText containsString:@"Test Legal Message"]);
+  ASSERT_EQ(1u, consumer_.footerURLs.count);
+  EXPECT_EQ(autofill::GetManageYourInfoURL(), consumer_.footerURLs[0].gurl);
+  histogram_tester.ExpectTotalCount("Autofill.Ai.WalletNotice.Settings.Funnel",
+                                    0);
 
   [mediator_ saveEntityInstance];
 
+  // The entity is successfully saved to Wallet without local fallback or
+  // logging disclosure funnel events.
   EXPECT_TRUE(consumer_.didFinishSavingCalled);
   EXPECT_FALSE(consumer_.didFinishSavingToLocalAsFallbackCalled);
+  histogram_tester.ExpectTotalCount("Autofill.Ai.WalletNotice.Settings.Funnel",
+                                    0);
 
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, true, ^{
@@ -624,8 +671,10 @@ TEST_F(AutofillAIEntityEditMediatorTest,
 
   CreateMediator(std::move(wallet_instance), AutofillAIEntityEditMode::kCreate);
 
-  EXPECT_EQ(consumer_.legalMessages.count, 0u);
   EXPECT_FALSE(consumer_.isServerWalletItem);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_FOOTER_SAVE_TO_DEVICE),
+              consumer_.footerText);
+  EXPECT_EQ(0u, consumer_.footerURLs.count);
 
   [mediator_ saveEntityInstance];
 
@@ -666,8 +715,10 @@ TEST_F(AutofillAIEntityEditMediatorTest,
 
   CreateMediator(std::move(wallet_instance), AutofillAIEntityEditMode::kCreate);
 
-  EXPECT_EQ(consumer_.legalMessages.count, 0u);
   EXPECT_FALSE(consumer_.isServerWalletItem);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_FOOTER_SAVE_TO_DEVICE),
+              consumer_.footerText);
+  EXPECT_EQ(0u, consumer_.footerURLs.count);
 
   [mediator_ saveEntityInstance];
 

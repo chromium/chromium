@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class AutofillLegalMessageLine;
+@class CrURL;
 @class TableViewItem;
 
 // Defines the presentation and behavioral mode of the view controller.
@@ -36,14 +36,9 @@ enum class AutofillAIEntityEditMode {
 // Sets whether the entity being viewed is a server wallet item.
 - (void)setIsServerWalletItem:(BOOL)isServerWalletItem;
 
-// Sets whether the entity being viewed is a private wallet pass.
-- (void)setIsPrivateWalletPass:(BOOL)isPrivateWalletPass;
-
-// Sets the user email.
-- (void)setUserEmail:(NSString*)userEmail;
-
-// Sets the legal disclosure messages to be displayed in the footer.
-- (void)setLegalMessages:(NSArray<AutofillLegalMessageLine*>*)legalMessages;
+// Sets the footer text (with "BEGIN_LINK"/"END_LINK" delimiters) and the
+// corresponding tappable link URLs.
+- (void)setFooterText:(NSString*)footerText urls:(NSArray<CrURL*>*)urls;
 
 // Updates the given item.
 - (void)updateItem:(TableViewItem*)item;

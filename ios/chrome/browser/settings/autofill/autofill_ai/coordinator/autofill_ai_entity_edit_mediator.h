@@ -47,6 +47,9 @@ enum class AutofillAIEntityEditMode;
 // The consumer of this mediator.
 @property(nonatomic, weak) id<AutofillAIEntityEditConsumer> consumer;
 
+// The delegate of this mediator.
+@property(nonatomic, weak) id<AutofillAIEntityEditMediatorDelegate> delegate;
+
 // The fetched country list.
 @property(nonatomic, strong, readonly) NSArray<CountryItem*>* allCountries;
 
@@ -69,13 +72,14 @@ enum class AutofillAIEntityEditMode;
 - (void)didSelectCountry:(CountryItem*)countryItem
                  forItem:(AutofillAIEntityCountryItem*)item;
 
+// Called when a link in the footer is tapped.
+- (void)didTapFooterLinkURL:(const GURL&)url;
+
 // Returns the URL to manage the Server Wallet item.
 - (GURL)walletManagementURL;
 
 // Disconnects the mediator and logs metrics if the flow ended without saving.
 - (void)disconnect;
-
-@property(nonatomic, weak) id<AutofillAIEntityEditMediatorDelegate> delegate;
 
 @end
 
