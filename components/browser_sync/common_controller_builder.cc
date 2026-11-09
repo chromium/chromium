@@ -207,15 +207,8 @@ base::WeakPtr<syncer::SyncableService> SyncableServiceForPrefs(
 }
 
 bool ArePreferencesAllowedInTransportMode() {
-  if (!base::FeatureList::IsEnabled(
-          switches::kEnablePreferencesAccountStorage)) {
-    return false;
-  }
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  return syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
-#else
-  return true;
-#endif
+  return base::FeatureList::IsEnabled(
+      switches::kEnablePreferencesAccountStorage);
 }
 
 }  // namespace
@@ -694,8 +687,8 @@ CommonControllerBuilder::CreateAutofillWalletDataTypeController(
   }
   return CreateWalletDataTypeController(
       syncer::AUTOFILL_WALLET_DATA,
-      base::BindRepeating(&AutofillWalletDelegateFromDataService), sync_service,
-      /*with_transport_mode_support=*/true);
+      base::BindRepeating(&AutofillWalletDelegateFromDataService),
+      sync_service);
 }
 
 std::unique_ptr<syncer::DataTypeController>
@@ -707,8 +700,7 @@ CommonControllerBuilder::CreateAutofillWalletMetadataDataTypeController(
   return CreateWalletDataTypeController(
       syncer::AUTOFILL_WALLET_METADATA,
       base::BindRepeating(&AutofillWalletMetadataDelegateFromDataService),
-      sync_service, /*with_transport_mode_support=*/
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
+      sync_service);
 }
 
 #if !BUILDFLAG(IS_IOS)
@@ -721,7 +713,7 @@ CommonControllerBuilder::CreateAutofillWalletUsageDataTypeController(
   return CreateWalletDataTypeController(
       syncer::AUTOFILL_WALLET_USAGE,
       base::BindRepeating(&AutofillWalletUsageDataDelegateFromDataService),
-      sync_service, /*with_transport_mode_support=*/true);
+      sync_service);
 }
 #endif
 
@@ -734,7 +726,7 @@ CommonControllerBuilder::CreateAutofillWalletCredentialDataTypeController(
   return CreateWalletDataTypeController(
       syncer::AUTOFILL_WALLET_CREDENTIAL,
       base::BindRepeating(&AutofillWalletCredentialDataDelegateFromDataService),
-      sync_service, /*with_transport_mode_support=*/true);
+      sync_service);
 }
 
 std::unique_ptr<syncer::DataTypeController>
@@ -787,10 +779,7 @@ CommonControllerBuilder::CreateSessionsDataTypeController(
   auto full_sync_mode_delegate =
       std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate);
   auto transport_mode_delegate =
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-                delegate)
-          : nullptr;
+      std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate);
   return std::make_unique<sync_sessions::SessionDataTypeController>(
       sync_service, pref_service_.value(), std::move(full_sync_mode_delegate),
       std::move(transport_mode_delegate));
@@ -997,10 +986,7 @@ CommonControllerBuilder::CreateUserEventsDataTypeController(
       /*delegate_for_full_sync_mode=*/
       std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate),
       /*delegate_for_transport_mode=*/
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-                delegate)
-          : nullptr);
+      std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate));
 }
 
 std::unique_ptr<syncer::DataTypeController>
@@ -1324,12 +1310,7 @@ CommonControllerBuilder::CreateWalletDataTypeController(
     const base::RepeatingCallback<
         base::WeakPtr<syncer::DataTypeControllerDelegate>(
             autofill::AutofillWebDataService*)>& delegate_from_web_data,
-    syncer::SyncService* sync_service,
-    bool with_transport_mode_support) {
-  // Transport mode should be supported, except for METADATA where support is
-  // still work in progress, see crbug.com/1448894.
-  CHECK(with_transport_mode_support ||
-        type == syncer::AUTOFILL_WALLET_METADATA);
+    syncer::SyncService* sync_service) {
   auto delegate_for_full_sync_mode =
       std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
           profile_autofill_web_data_service_.value()->GetDBTaskRunner(),
@@ -1337,14 +1318,11 @@ CommonControllerBuilder::CreateWalletDataTypeController(
               delegate_from_web_data,
               base::RetainedRef(profile_autofill_web_data_service_.value())));
   auto delegate_for_transport_mode =
-      with_transport_mode_support
-          ? std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-                account_autofill_web_data_service_.value()->GetDBTaskRunner(),
-                base::BindRepeating(
-                    delegate_from_web_data,
-                    base::RetainedRef(
-                        account_autofill_web_data_service_.value())))
-          : nullptr;
+      std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
+          account_autofill_web_data_service_.value()->GetDBTaskRunner(),
+          base::BindRepeating(
+              delegate_from_web_data,
+              base::RetainedRef(account_autofill_web_data_service_.value())));
   return std::make_unique<AutofillWalletDataTypeController>(
       type, std::move(delegate_for_full_sync_mode),
       std::move(delegate_for_transport_mode), pref_service_.value(),

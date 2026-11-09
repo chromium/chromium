@@ -360,16 +360,12 @@ class CommonControllerBuilder {
   // Factory function for DataTypeController instances for wallet-related
   // datatypes, which live in `db_thread_` and have a delegate accessible via
   // AutofillWebDataService.
-  // If `with_transport_mode_support` is true, the controller will support
-  // transport mode, implemented via an independent AutofillWebDataService,
-  // namely `web_data_service_in_memory_`.
   std::unique_ptr<syncer::DataTypeController> CreateWalletDataTypeController(
       syncer::DataType type,
       const base::RepeatingCallback<
           base::WeakPtr<syncer::DataTypeControllerDelegate>(
               autofill::AutofillWebDataService*)>& delegate_from_web_data,
-      syncer::SyncService* sync_service,
-      bool with_transport_mode_support);
+      syncer::SyncService* sync_service);
 
   // For all above, nullopt indicates the corresponding setter wasn't invoked.
   // nullptr indicates the setter was invoked with nullptr.
