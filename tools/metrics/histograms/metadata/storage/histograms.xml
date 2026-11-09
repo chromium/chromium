@@ -1821,7 +1821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.{DomStorageType}.ShutdownDroppedChanges"
-    enum="Boolean" expires_after="2026-11-01">
+    enum="Boolean" expires_after="2027-05-07">
   <owner>leimy@chromium.org</owner>
   <owner>stevebe@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
