@@ -733,6 +733,19 @@ TEST_F(AutofillAgentTest, TriggerFormExtractionWithResponse_CalledTwice) {
   EXPECT_CALL(mock_callback, Run(false));
   autofill_agent().TriggerFormExtractionWithResponse(/*force=*/false,
                                                      mock_callback.Get());
+  EXPECT_CALL(mock_callback, Run(true));
+  task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle);
+}
+
+TEST_F(AutofillAgentTest, TriggerFormExtractionWithResponse_AbortedOnReset) {
+  EXPECT_CALL(autofill_driver(), FormsSeen);
+  LoadHTML(R"(<body> <input> </body>)");
+  WaitForFormsSeen();
+  base::MockOnceCallback<void(bool)> mock_callback;
+  autofill_agent().TriggerFormExtractionWithResponse(/*force=*/false,
+                                                     mock_callback.Get());
+  EXPECT_CALL(mock_callback, Run(false));
+  LoadHTML(R"(<body></body>)");
 }
 
 // Tests that `AutofillAgent::TriggerSuggestions()` triggers

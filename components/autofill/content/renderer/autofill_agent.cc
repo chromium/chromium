@@ -70,6 +70,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/renderer/render_frame.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -1912,6 +1913,11 @@ void AutofillAgent::TriggerFormExtractionWithResponse(
   if (force) {
     form_cache_.ClearCache();
   }
+  // If the timer is stopped before firing (e.g., in `Reset()` on navigation),
+  // ensure the Mojo response callback is still invoked with `false` rather
+  // than dropped on an open pipe.
+  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                         /*success=*/false);
   ExtractForms(process_forms_form_extraction_with_response_timer_,
                std::move(callback));
 }

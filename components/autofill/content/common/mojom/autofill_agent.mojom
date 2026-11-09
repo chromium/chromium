@@ -28,7 +28,8 @@ interface AutofillAgent {
   // If `force` is true, the form cache is cleared before extracting forms so
   // that all forms are re-extracted.
   // If `success == false`, TriggerFormExtractionWithResponse() was triggered
-  // while another TriggerFormExtractionWithResponse() was ongoing.
+  // while another TriggerFormExtractionWithResponse() was ongoing, or form
+  // extraction was aborted (e.g., due to a navigation before the timer fired).
   TriggerFormExtractionWithResponse(bool force) => (bool success);
 
   // Fills or previews the form identified by `form` with the data of its

@@ -2743,23 +2743,6 @@
     ]
   },
   "CREDIT_CARD_VERIFICATION_CODE": {
-    "br": [
-      {
-        "positive_pattern": "código de segurança",
-        "positive_score": 1.0,
-        "negative_pattern": null,
-        "match_field_attributes": [
-          "LABEL",
-          "NAME"
-        ],
-        "form_control_types": [
-          "INPUT_TEXT",
-          "INPUT_TELEPHONE",
-          "INPUT_PASSWORD",
-          "INPUT_NUMBER"
-        ]
-      }
-    ],
     "de": [
       {
         "__comment__": "kartenprüfnummer and kartenprüfnr.",
@@ -2798,6 +2781,23 @@
     "es": [
       {
         "positive_pattern": "código de seguridad",
+        "positive_score": 1.0,
+        "negative_pattern": null,
+        "match_field_attributes": [
+          "LABEL",
+          "NAME"
+        ],
+        "form_control_types": [
+          "INPUT_TEXT",
+          "INPUT_TELEPHONE",
+          "INPUT_PASSWORD",
+          "INPUT_NUMBER"
+        ]
+      }
+    ],
+    "pt": [
+      {
+        "positive_pattern": "código de segurança",
         "positive_score": 1.0,
         "negative_pattern": null,
         "match_field_attributes": [
