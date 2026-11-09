@@ -302,7 +302,9 @@ bool TabStateStorageDatabase::SaveNodePayload(OpenTransaction* transaction,
       "SET payload = ? "
       "WHERE id = ?";
 
-  CHECK(db_.IsSQLValid(kUpdatePayloadSql), base::NotFatalUntil::M163);
+  // TODO(crbug.com/583184058): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(db_.IsSQLValid(kUpdatePayloadSql));
 
   sql::Statement write_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kUpdatePayloadSql));
