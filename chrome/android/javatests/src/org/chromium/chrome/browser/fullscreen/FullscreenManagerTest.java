@@ -1341,16 +1341,11 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
-    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/572787748
     public void testFullscreenPageHeightLegacy() throws Throwable {
         launchOnFullscreenMode(LONG_HTML_TEST_PAGE, false);
         Assert.assertTrue(getPersistentFullscreenMode());
         float pixelDensity =
-                InstrumentationRegistry.getInstrumentation()
-                        .getContext()
-                        .getResources()
-                        .getDisplayMetrics()
-                        .density;
+                mActivityTestRule.getActivity().getResources().getDisplayMetrics().density;
         View tabView = mActivityTestRule.getActivityTab().getContentView();
         Assert.assertEquals(tabView.getHeight() / pixelDensity, getPageHeight(), 1);
     }
@@ -1362,16 +1357,11 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
-    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/572787748
     public void testFullscreenPageHeight() throws Throwable {
         launchOnFullscreenMode(LONG_HTML_TEST_PAGE, true);
         Assert.assertTrue(getPersistentFullscreenMode());
         float pixelDensity =
-                InstrumentationRegistry.getInstrumentation()
-                        .getContext()
-                        .getResources()
-                        .getDisplayMetrics()
-                        .density;
+                mActivityTestRule.getActivity().getResources().getDisplayMetrics().density;
         View tabView = mActivityTestRule.getActivityTab().getContentView();
         Assert.assertEquals(tabView.getHeight() / pixelDensity, getPageHeight(), 1);
     }
