@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/libfuzzer/buildflags.h"
 #include "testing/libfuzzer/disable_flaky_fuzztests_listener.h"
 #include "testing/libfuzzer/fuzztest_init_helper.h"
 #include "third_party/fuzztest/src/fuzztest/init_fuzztest.h"
@@ -50,9 +49,7 @@ static void RealInitFunction(int argc, char const* const* argv) {
   fuzztest_argc = argc;
   fuzztest_argv = fuzztest_argv_data.data();
   fuzztest::ParseAbslFlags(fuzztest_argc, fuzztest_argv);
-#if BUILDFLAG(REGISTER_FUZZTESTS_IN_TEST_SUITES)
   fuzztest::InitFuzzTest(&fuzztest_argc, &fuzztest_argv);
-#endif
   [[maybe_unused]] static bool listener_registered = []() {
     testing::UnitTest::GetInstance()->listeners().Append(
         new fuzztest_init_helper::DisableFlakyFuzzTestsListener());

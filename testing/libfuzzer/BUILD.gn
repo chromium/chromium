@@ -22,7 +22,6 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "ARCHIVE_SEED_CORPUS=$archive_seed_corpus",
-    "REGISTER_FUZZTESTS_IN_TEST_SUITES=$register_fuzztests_in_test_suites",
     "USE_CENTIPEDE=$use_centipede",
     "USE_FUZZTEST_WRAPPER=$use_fuzztest_wrapper",
   ]
@@ -186,7 +185,6 @@ source_set("confirm_fuzztest_init") {
   sources = [ "confirm_fuzztest_init.cc" ]
   testonly = true
   deps = [
-    ":buildflags",
     ":disable_flaky_fuzztests_listener",
     ":fuzztest_init_support",
     "//testing/gtest",
