@@ -1426,7 +1426,9 @@
   {
     "prefix": "global-privacy-control-force",
     "owners": [
-      "arichiv@chromium.org"
+      "arichiv@chromium.org",
+      "zalmashni@google.com",
+      "arabm@google.com"
     ],
     "platforms": [
       "Linux",
@@ -1440,7 +1442,7 @@
     "args": [
       "--enable-features=GlobalPrivacyControlForce"
     ],
-    "expires": "Nov 7, 2026"
+    "expires": "Nov 7, 2027"
   },
   "This never expires because it tests a shipping configuration",
   {
