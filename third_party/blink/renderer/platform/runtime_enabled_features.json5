@@ -5449,6 +5449,12 @@
       status: "stable",
     },
     {
+      // Enables the <rangegroup> element, which combines descendant range
+      // inputs on a shared track while preserving each input's semantics.
+      // https://open-ui.org/components/enhanced-range-input.explainer/
+      name: "RangeGroup",
+    },
+    {
       name: "RasterInducingScroll",
       status: "stable",
     },
