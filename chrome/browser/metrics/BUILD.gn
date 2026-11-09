@@ -831,7 +831,6 @@ if (!is_android) {
       "metrics_service_browsertest.cc",
       "metrics_service_user_demographics_browsertest.cc",
       "process_memory_metrics_emitter_browsertest.cc",
-      "puma_browsertest.cc",
       "structured_metrics_service_browsertest.cc",
       "ukm_background_recorder_browsertest.cc",
       "ukm_browsertest.cc",
@@ -920,7 +919,6 @@ if (is_android) {
       "android/background_upload_task_browsertest.cc",
       "dwa_browsertest.cc",
       "metrics_service_user_demographics_browsertest.cc",
-      "puma_browsertest.cc",
       "ukm_browsertest.cc",
     ]
 
