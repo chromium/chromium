@@ -36,6 +36,7 @@ static_library("mahi") {
     ":mahi_availability",
     "//ash",
     "//ash/constants",
+    "//ash/public/cpp",
     "//ash/webui/settings/public/constants:mojom",
     "//base",
     "//chrome/browser/ash/magic_boost",
@@ -54,6 +55,8 @@ static_library("mahi") {
     "//components/history/core/browser",
     "//components/manta",
     "//components/session_manager/core",
+    "//third_party/zstd:compress",
+    "//third_party/zstd:decompress",
     "//ui/aura",
     "//ui/base",
     "//ui/gfx",
@@ -119,6 +122,7 @@ source_set("unit_tests") {
     "//ui/gfx",
     "//ui/lottie",
     "//ui/views",
+    "//ui/views:test_support",
   ]
 }
 

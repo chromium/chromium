@@ -9,9 +9,13 @@
 #include <optional>
 #include <string>
 
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
@@ -22,6 +26,8 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/manta/mahi_provider.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace gfx {
 class Rect;
@@ -38,7 +44,9 @@ class MahiNudgeController;
 // Implementation of `MahiManager`.
 class MahiManagerImpl : public chromeos::MahiManager,
                         public chromeos::MagicBoostState::Observer,
-                        public history::HistoryServiceObserver {
+                        public history::HistoryServiceObserver,
+                        public SessionObserver,
+                        public views::WidgetObserver {
  public:
   // `variations_service` must not be null and must outlive `this`.
   explicit MahiManagerImpl(
@@ -97,6 +105,21 @@ class MahiManagerImpl : public chromeos::MahiManager,
   // chromeos::MagicBoostState::Observer:
   void OnHMREnabledUpdated(bool enabled) override;
   void OnIsDeleting() override;
+
+  // SessionObserver:
+  void OnActiveUserSessionChanged(const AccountId& account_id) override;
+
+  // views::WidgetObserver:
+  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
+
+  // Observes the panel widget so that the panel state can be cleared when the
+  // panel closes.
+  void ObservePanelWidget();
+
+  // Clears the panel state if `widget` is the current panel, i.e. it was not
+  // replaced by a newly opened panel.
+  void MaybeClearPanelState(views::Widget* widget);
 
   // Interrupts the flow of `context_menu_request` handling by showing a
   // disclaimer view. The original flow will be resumed if the consent status
@@ -223,6 +246,14 @@ class MahiManagerImpl : public chromeos::MahiManager,
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       scoped_history_service_observer_{this};
+
+  base::ScopedObservation<SessionController, SessionObserver>
+      session_observation_{this};
+
+  // Observes panel widgets. A previous panel can still be closing when a new
+  // one is opened.
+  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+      panel_widget_observations_{this};
 
   base::WeakPtrFactory<MahiManagerImpl> weak_ptr_factory_for_closure_runner_{
       this};

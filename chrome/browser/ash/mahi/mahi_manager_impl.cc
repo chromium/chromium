@@ -234,6 +234,8 @@ MahiManagerImpl::MahiManagerImpl(
       cache_manager_(std::make_unique<MahiCacheManager>()),
       mahi_nudge_controller_(std::make_unique<MahiNudgeController>()) {
   magic_boost_state_observation_.Observe(chromeos::MagicBoostState::Get());
+  CHECK(SessionController::Get());
+  session_observation_.Observe(SessionController::Get());
 }
 
 MahiManagerImpl::~MahiManagerImpl() {
@@ -638,6 +640,7 @@ void MahiManagerImpl::OpenMahiPanel(int64_t display_id,
                                     const gfx::Rect& mahi_menu_bounds) {
   ui_controller_.OpenMahiPanel(display_id, mahi_menu_bounds,
                                /*elucidation_in_use=*/false);
+  ObservePanelWidget();
 }
 
 void MahiManagerImpl::OpenMahiPanelForElucidation(
@@ -645,6 +648,7 @@ void MahiManagerImpl::OpenMahiPanelForElucidation(
     const gfx::Rect& mahi_menu_bounds) {
   ui_controller_.OpenMahiPanel(display_id, mahi_menu_bounds,
                                /*elucidation_in_use=*/true);
+  ObservePanelWidget();
 }
 
 bool MahiManagerImpl::IsEnabled() {
@@ -761,6 +765,49 @@ void MahiManagerImpl::OnHMREnabledUpdated(bool enabled) {
 
 void MahiManagerImpl::OnIsDeleting() {
   magic_boost_state_observation_.Reset();
+}
+
+void MahiManagerImpl::OnActiveUserSessionChanged(const AccountId& account_id) {
+  weak_ptr_factory_for_requests_.InvalidateWeakPtrs();
+  cache_manager_->ClearCache();
+}
+
+void MahiManagerImpl::OnWidgetClosing(views::Widget* widget) {
+  MaybeClearPanelState(widget);
+}
+
+void MahiManagerImpl::OnWidgetDestroying(views::Widget* widget) {
+  panel_widget_observations_.RemoveObservation(widget);
+  MaybeClearPanelState(widget);
+}
+
+void MahiManagerImpl::MaybeClearPanelState(views::Widget* widget) {
+  // Keep the state if `widget` was replaced by a newly opened panel.
+  views::Widget* panel_widget = ui_controller_.mahi_panel_widget();
+  if (panel_widget && panel_widget != widget) {
+    return;
+  }
+
+  // Discard in-flight requests for the closing panel so late responses do not
+  // repopulate panel state or hit CHECKs on cleared fields.
+  weak_ptr_factory_for_requests_.InvalidateWeakPtrs();
+
+  // Release the panel's page content, which can be several MB, and the
+  // other panel state once the panel is closed.
+  current_panel_content_ = chromeos::MahiPageContent();
+  current_panel_info_ = chromeos::MahiPageInfo();
+  current_panel_qa_.clear();
+  current_selected_text_.reset();
+  latest_summary_.clear();
+  latest_elucidation_.clear();
+}
+
+void MahiManagerImpl::ObservePanelWidget() {
+  views::Widget* panel_widget = ui_controller_.mahi_panel_widget();
+  if (panel_widget &&
+      !panel_widget_observations_.IsObservingSource(panel_widget)) {
+    panel_widget_observations_.AddObservation(panel_widget);
+  }
 }
 
 bool MahiManagerImpl::MaybeInitializeAndDiscardPendingRequests() {

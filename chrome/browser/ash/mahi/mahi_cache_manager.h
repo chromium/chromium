@@ -5,10 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_MAHI_MAHI_CACHE_MANAGER_H_
 #define CHROME_BROWSER_ASH_MAHI_MAHI_CACHE_MANAGER_H_
 
-#include <map>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <optional>
 #include <string>
+#include <vector>
 
-#include "base/timer/timer.h"
+#include "base/containers/lru_cache.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -17,6 +21,11 @@ namespace ash {
 // A helper class that help MahiManager to manage its cache.
 class MahiCacheManager {
  public:
+  // Maximum number of pages retained in the in-memory cache. The cache only
+  // helps when Help me read is used again on a recently used page (e.g. after
+  // reopening the panel or switching back to a tab), so it is kept small.
+  static constexpr size_t kMaxCacheEntries = 20;
+
   struct MahiQA {
     std::u16string question;
     std::u16string answer;
@@ -35,12 +44,16 @@ class MahiCacheManager {
     MahiData& operator=(const MahiData&);
     ~MahiData();
 
+    // Returns the extracted content of the page.
+    std::u16string GetPageContent() const;
+
     // URL of the webpage
     std::string url;
     // The title of the page.
     std::u16string title;
-    // The extracted content of the page.
-    std::u16string page_content;
+    // The extracted content of the page, zstd-compressed since it can be
+    // several MB. Use `GetPageContent()` to read it.
+    std::vector<uint8_t> compressed_page_content;
     // The favicon of the page.
     std::optional<gfx::ImageSkia> favicon_image;
     // The summary of the page;
@@ -85,21 +98,19 @@ class MahiCacheManager {
   // exist in the cache.
   void DeleteCacheForUrl(const std::string& url);
 
-  // Gets size of the cache.
-  int size() { return page_cache_.size(); }
+  // Gets size of the cache, excluding expired entries.
+  int size() const;
 
  private:
   friend class MahiCacheManagerTest;
 
-  // Called when the |periodic_timer_| triggers.
-  void OnTimerFired();
+  // Removes expired entries. Called on every access instead of using a timer,
+  // since the cache holds at most `kMaxCacheEntries` entries.
+  void RemoveExpiredEntries() const;
 
-  // Timer to trigger periodically for clearing cache.
-  std::unique_ptr<base::RepeatingTimer> periodic_timer_;
-
-  // A map from a url to it's corresponding data. It's used to store the cache
-  // for mahi.
-  std::map<GURL, MahiData> page_cache_;
+  // Bounded LRU cache from a URL to its corresponding data. Mutable so const
+  // lookup accessors can update recency order and remove expired entries.
+  mutable base::LRUCache<GURL, MahiData> page_cache_;
 };
 
 }  // namespace ash

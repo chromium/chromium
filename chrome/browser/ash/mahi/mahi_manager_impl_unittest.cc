@@ -68,6 +68,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -127,9 +128,26 @@ class FakeMahiProvider : public manta::MahiProvider {
                  const std::optional<std::string>& url,
                  manta::MantaGenericCallback callback) override {
     latest_elucidation_input_ = input;
+    if (hold_elucidate_response_) {
+      pending_elucidate_callback_ = std::move(callback);
+      return;
+    }
     std::move(callback).Run(
         base::DictValue().Set("outputData", kFakeElucidation),
         {manta::MantaStatusCode::kOk, "Status string ok"});
+  }
+
+  void HoldElucidateResponse() { hold_elucidate_response_ = true; }
+
+  bool HasPendingElucidateCallback() const {
+    return !pending_elucidate_callback_.is_null();
+  }
+
+  void RunPendingElucidateCallback() {
+    CHECK(pending_elucidate_callback_);
+    std::move(pending_elucidate_callback_)
+        .Run(base::DictValue().Set("outputData", kFakeElucidation),
+             {manta::MantaStatusCode::kOk, "Status string ok"});
   }
 
   // Counts the number of call to `Summarize()`
@@ -148,6 +166,8 @@ class FakeMahiProvider : public manta::MahiProvider {
 
  private:
   int num_summarize_call_ = 0;
+  bool hold_elucidate_response_ = false;
+  manta::MantaGenericCallback pending_elucidate_callback_;
   std::string latest_title_;
   std::string latest_elucidation_input_;
   std::string latest_summary_input_;
@@ -309,6 +329,25 @@ class MahiManagerImplTest : public AshTestBase {
 
   MahiCacheManager* GetCacheManager() {
     return mahi_manager_impl_->cache_manager_.get();
+  }
+
+  views::Widget* OpenPanel() {
+    mahi_manager_impl_->OpenMahiPanel(GetPrimaryDisplay().id(), {});
+    return mahi_manager_impl_->ui_controller_for_test()->mahi_panel_widget();
+  }
+
+  views::Widget* OpenPanelForElucidation() {
+    mahi_manager_impl_->OpenMahiPanelForElucidation(GetPrimaryDisplay().id(),
+                                                    {});
+    return mahi_manager_impl_->ui_controller_for_test()->mahi_panel_widget();
+  }
+
+  bool HasPanelState() const {
+    return !mahi_manager_impl_->current_panel_content_.page_content.empty() ||
+           !mahi_manager_impl_->current_panel_info_.url.is_empty() ||
+           mahi_manager_impl_->current_selected_text_.has_value() ||
+           !mahi_manager_impl_->latest_summary_.empty() ||
+           !mahi_manager_impl_->latest_elucidation_.empty();
   }
 
   void NotifyRefreshAvailability(bool available) {
@@ -590,6 +629,34 @@ TEST_F(MahiManagerImplTest, SetMahiPrefOnLogin) {
   }
 }
 
+TEST_F(MahiManagerImplTest, ClearCacheOnActiveUserChanged) {
+  SetMahiEnabledByUserPref(true);
+  ASSERT_TRUE(IsEnabled());
+  const AccountId user1_account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+
+  RequestSummary();
+  EXPECT_EQ(GetCacheManager()->size(), 1);
+
+  // Logging in and switching to a second user who also has Mahi enabled clears
+  // the first user's cached entries.
+  const AccountId user2_account_id =
+      AccountId::FromUserEmail("other@user.test");
+  SimulateUserLogin(user2_account_id);
+  SetMahiEnabledByUserPref(true);
+  ASSERT_TRUE(IsEnabled());
+  EXPECT_EQ(GetCacheManager()->size(), 0);
+
+  // Switching back to the first user also clears the second user's cached
+  // entries.
+  RequestSummary();
+  EXPECT_EQ(GetCacheManager()->size(), 1);
+
+  SwitchActiveUser(user1_account_id);
+  ASSERT_TRUE(IsEnabled());
+  EXPECT_EQ(GetCacheManager()->size(), 0);
+}
+
 TEST_F(MahiManagerImplTest, OnPreferenceChanged) {
   for (bool mahi_enabled : {false, true, false}) {
     SetMahiEnabledByUserPref(mahi_enabled);
@@ -698,6 +765,74 @@ TEST_F(MahiManagerImplTest, GetSummaryForSelectedText) {
   // Checks the page content is request and cached even if the summary is for
   // selected text.
   EXPECT_EQ(GetCacheManager()->size(), 1);
+}
+
+// Tests that the panel state, including the page content, is released when the
+// panel is closed.
+TEST_F(MahiManagerImplTest, ClearsPanelStateWhenPanelCloses) {
+  SetMahiEnabledByUserPref(true);
+  views::Widget* closing_widget = OpenPanel();
+  ASSERT_TRUE(closing_widget);
+  RequestSummary();
+  EXPECT_TRUE(HasPanelState());
+
+  // `CloseMahiPanel()` closes the widget asynchronously. The state is released
+  // as soon as the close starts.
+  views::test::WidgetDestroyedWaiter waiter(closing_widget);
+  mahi_manager_impl_->ui_controller_for_test()->CloseMahiPanel();
+  EXPECT_FALSE(HasPanelState());
+  waiter.Wait();
+
+  // Closing the panel widget directly also releases the state.
+  views::Widget* widget = OpenPanel();
+  ASSERT_TRUE(widget);
+  RequestSummary();
+  EXPECT_TRUE(HasPanelState());
+
+  widget->CloseNow();
+  EXPECT_FALSE(HasPanelState());
+}
+
+// Tests that closing the panel while `Elucidate()` is in flight discards the
+// pending callback instead of crashing on the cleared `current_selected_text_`.
+TEST_F(MahiManagerImplTest, ClosingPanelCancelsInFlightElucidation) {
+  SetMahiEnabledByUserPref(true);
+  GetMahiProvider()->HoldElucidateResponse();
+
+  chromeos::MahiWebContentsManager::Get()->SetSelectedText(
+      u"test selected text");
+  mahi_manager_impl_->SetCurrentFocusedPageInfo(
+      CreatePageInfo("http://url1.com/abc", /*title=*/u"Title of url1"));
+  UpdateCurrentSelectedText();
+
+  views::Widget* widget = OpenPanelForElucidation();
+  ASSERT_TRUE(widget);
+  ASSERT_TRUE(GetMahiProvider()->HasPendingElucidateCallback());
+
+  views::test::WidgetDestroyedWaiter waiter(widget);
+  mahi_manager_impl_->ui_controller_for_test()->CloseMahiPanel();
+  EXPECT_FALSE(HasPanelState());
+  waiter.Wait();
+
+  GetMahiProvider()->RunPendingElucidateCallback();
+  EXPECT_FALSE(HasPanelState());
+}
+
+// Tests that replacing an open panel with a new one keeps the panel state.
+TEST_F(MahiManagerImplTest, KeepsPanelStateWhenPanelIsReplaced) {
+  SetMahiEnabledByUserPref(true);
+  views::Widget* old_widget = OpenPanel();
+  ASSERT_TRUE(old_widget);
+
+  views::Widget* new_widget = OpenPanel();
+  ASSERT_TRUE(new_widget);
+  ASSERT_NE(old_widget, new_widget);
+  RequestSummary();
+  EXPECT_TRUE(HasPanelState());
+
+  // The old panel may finish closing after the new one is used.
+  old_widget->CloseNow();
+  EXPECT_TRUE(HasPanelState());
 }
 
 TEST_F(MahiManagerImplTest, IsEnabled_ReturnsFalseWhenMantaCapabilityUnknown) {

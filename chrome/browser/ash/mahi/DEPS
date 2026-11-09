@@ -28,6 +28,9 @@ specific_include_rules = {
     "+chrome/browser/ash/settings",
     "+chrome/browser/signin",
   ],
+  "mahi_cache_manager\\.cc": [
+    "+third_party/zstd/src/lib/zstd.h",
+  ],
   "mahi_ui_browsertest\\.cc": [
     "+chrome/browser/renderer_context_menu/render_view_context_menu.h",
     "+chrome/browser/ui/ash/magic_boost/magic_boost_opt_in_card.h",
