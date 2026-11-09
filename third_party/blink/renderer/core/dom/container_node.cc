@@ -185,7 +185,7 @@ static inline bool CollectChildrenAndRemoveFromOldParent(
 }
 
 void ContainerNode::ParserTakeAllChildrenFrom(ContainerNode& old_parent) {
-  HeapVector<Member<Node>> children;
+  NodeVector children;
   for (Node* child = old_parent.firstChild(); child;
        child = child->nextSibling()) {
     children.push_back(child);
