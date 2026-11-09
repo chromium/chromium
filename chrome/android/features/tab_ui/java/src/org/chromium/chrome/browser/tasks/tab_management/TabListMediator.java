@@ -774,12 +774,14 @@ public class TabListMediator implements TabListNotificationHandler {
 
                     @Override
                     public void onTabClosureUndone(@TabId int tabId) {
-                        // TODO(crbug.com/562590772): Handle tab closure undone.
+                        // The card and its observers were already restored by the preceding
+                        // onItemsInserted.
+                        recordUndoCloseMetrics(tabId);
                     }
 
                     @Override
                     public void onTabClosureCommitted(@TabId int tabId) {
-                        // TODO(crbug.com/562590772): Handle tab closure committed.
+                        mTabClosedFrom.delete(tabId);
                     }
                 };
 
