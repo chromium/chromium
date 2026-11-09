@@ -38,7 +38,9 @@ void WebContentsCloseHandler::WillCloseAllTabs() {
 }
 
 void WebContentsCloseHandler::CloseAllTabsCanceled() {
-  CHECK(in_close_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/582169836): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(in_close_);
   in_close_ = false;
   if (tab_changed_after_clone_) {
     // If the tab changed, destroy immediately. That way we make sure we aren't
