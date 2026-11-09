@@ -41,6 +41,17 @@ TEST(LanguageTagTest, CompileTimeTags) {
   static_assert(GetKnownLanguageTag("en-US").tag_string() == "en-US");
   constexpr LanguageTag ja_jp = GetKnownLanguageTag("ja-JP");
   static_assert(ja_jp.tag_string() == "ja-JP");
+
+  // Verify that an arbitrarily long tag can be constructed at compile time.
+  // Note that `GetKnownLanguageTag()` only accepts tags whose subtags are all
+  // known to Chromium (see //tools/i18n/generate_known_bcp47_subtags.py).
+  constexpr std::string_view kLongTag = "en-Latn-GB-oxendict";
+  constexpr LanguageTag long_tag = GetKnownLanguageTag(kLongTag);
+  static_assert(long_tag.tag_string() == kLongTag);
+
+  // Verify that the same behavior happens at runtime.
+  EXPECT_EQ(long_tag.tag_string(), kLongTag);
+  EXPECT_EQ(long_tag, LanguageTagConverter::GetInstance().FromString(kLongTag));
 }
 
 TEST(LanguageTagTest, ParseAndSubtagsString) {
