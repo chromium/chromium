@@ -141,6 +141,24 @@ void ClearAllRenderedTextOnMainThread(int placeholder_canvas_id) {
   }
 }
 
+bool CanvasMatches(
+    const OffscreenCanvas& offscreen_canvas,
+    const V8UnionElementOrElementImage* element_or_element_image) {
+  if (!offscreen_canvas.HasPlaceholderCanvas()) {
+    return false;
+  }
+  if (element_or_element_image->IsElement()) {
+    auto* element_canvas =
+        element_or_element_image->GetAsElement()->CanvasForDrawing();
+    return element_canvas && element_canvas->GetDomNodeId() ==
+                                 offscreen_canvas.PlaceholderCanvasId();
+  } else if (element_or_element_image->IsElementImage()) {
+    return element_or_element_image->GetAsElementImage()->GetCanvasNodeId() ==
+           offscreen_canvas.PlaceholderCanvasId();
+  }
+  return false;
+}
+
 void ApplyElementGeometryUpdatesOnMainThread(
     DOMNodeId canvas_id,
     Vector<OffscreenCanvas::ElementGeometryUpdate> updates) {
@@ -283,8 +301,9 @@ void OffscreenCanvas::DeregisterFromAnimationFrameProvider() {
     WorkerAnimationFrameProvider* animation_frame_provider =
         To<DedicatedWorkerGlobalScope>(GetTopExecutionContext())
             ->GetAnimationFrameProvider();
-    if (animation_frame_provider)
+    if (animation_frame_provider) {
       animation_frame_provider->DeregisterOffscreenCanvas(this);
+    }
   }
 }
 
@@ -502,6 +521,14 @@ void OffscreenCanvas::updateElementGeometry(
     }
   }
 
+  if (!CanvasMatches(*this, element_or_element_image)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "updateElementGeometry() can only be called on an element's nearest "
+        "ancestor <canvas>.");
+    return;
+  }
+
   if (element_or_element_image->IsElement()) {
     UpdateDrawnElementGeometry(*element_or_element_image->GetAsElement(),
                                transform_ptr, clip_ptr,
@@ -514,7 +541,15 @@ void OffscreenCanvas::updateElementGeometry(
 }
 
 void OffscreenCanvas::clearElementGeometry(
-    const V8UnionElementOrElementImage* element_or_element_image) {
+    const V8UnionElementOrElementImage* element_or_element_image,
+    ExceptionState& exception_state) {
+  if (!CanvasMatches(*this, element_or_element_image)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "clearElementGeometry() can only be called on an element's nearest "
+        "ancestor <canvas>.");
+    return;
+  }
   if (element_or_element_image->IsElement()) {
     ClearDrawnElementGeometry(*element_or_element_image->GetAsElement());
   } else if (element_or_element_image->IsElementImage()) {

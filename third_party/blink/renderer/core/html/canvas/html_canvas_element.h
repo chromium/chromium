@@ -396,7 +396,8 @@ class CORE_EXPORT HTMLCanvasElement final
   void updateElementGeometry(const V8UnionElementOrElementImage*,
                              const UpdateElementGeometryOptions*,
                              ExceptionState&);
-  void clearElementGeometry(const V8UnionElementOrElementImage*);
+  void clearElementGeometry(const V8UnionElementOrElementImage*,
+                            ExceptionState&);
 
   // Descendants of this canvas that have been drawn via `drawElementImage()` or
   // added explicitly via a call to `canvas.updateElementGeometry(element)`, in

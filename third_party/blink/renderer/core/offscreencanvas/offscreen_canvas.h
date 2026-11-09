@@ -90,7 +90,8 @@ class CORE_EXPORT OffscreenCanvas final
   void updateElementGeometry(const V8UnionElementOrElementImage*,
                              const UpdateElementGeometryOptions*,
                              ExceptionState&);
-  void clearElementGeometry(const V8UnionElementOrElementImage*);
+  void clearElementGeometry(const V8UnionElementOrElementImage*,
+                            ExceptionState&);
 
   void SetSize(gfx::Size);
   void RecordTransfer();
