@@ -39,6 +39,7 @@ source_set("publishers") {
     "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
+    "//chrome/browser/ui/waap:window_creation",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/app_service",
   ]

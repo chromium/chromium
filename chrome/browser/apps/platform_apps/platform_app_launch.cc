@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/base/base_window.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -148,7 +149,9 @@ bool OpenDeprecatedApplicationPrompt(Profile* profile,
 
   BrowserWindowCreateParams create_params(profile, /*from_user_gesture=*/false);
   BrowserWindowInterface* browser =
-      CreateBrowserWindow(std::move(create_params));
+      waap::CreateBrowserWindowAndRecordCreationSource(
+          std::move(create_params),
+          waap::NewWindowCreationSource::kNewEmptyWindow);
 
   GURL url;
   if (extensions::util::IsExtensionForceInstalled(app_id, profile)) {

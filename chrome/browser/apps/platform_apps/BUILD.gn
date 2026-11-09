@@ -66,6 +66,7 @@ source_set("platform_apps") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/waap:window_creation",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/extensions",
     "//chrome/common",

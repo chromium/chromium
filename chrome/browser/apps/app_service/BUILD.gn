@@ -50,6 +50,7 @@ source_set("app_service") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/waap:window_creation",
     "//chrome/browser/web_applications:features",
     "//components/app_constants",
     "//components/tabs:public",

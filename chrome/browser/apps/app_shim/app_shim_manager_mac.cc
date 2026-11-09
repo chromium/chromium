@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
@@ -1483,8 +1484,10 @@ void AppShimManager::OpenAppURLInBrowserWindow(
     return;
   }
   BrowserWindowInterface* browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-          BrowserWindowInterface::TYPE_NORMAL, profile, true));
+      waap::CreateBrowserWindowAndRecordCreationSource(
+          BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL,
+                                    profile, true),
+          waap::NewWindowCreationSource::kLaunch);
   browser->GetWindow()->Show();
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.tabstrip_add_types = AddTabTypes::ADD_ACTIVE;

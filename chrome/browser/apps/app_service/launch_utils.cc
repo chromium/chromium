@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -97,7 +98,8 @@ std::vector<base::FilePath> GetLaunchFilesFromCommandLine(
 BrowserWindowInterface* CreateBrowserWithNewTabPage(Profile* profile) {
   BrowserWindowCreateParams create_params(profile, /*from_user_gesture=*/false);
   BrowserWindowInterface* browser =
-      CreateBrowserWindow(std::move(create_params));
+      waap::CreateBrowserWindowAndRecordCreationSource(
+          std::move(create_params), waap::NewWindowCreationSource::kLaunch);
 
   NavigateParams params(browser, chrome::ChromeUINewTabURLAsGURL(),
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);

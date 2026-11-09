@@ -86,7 +86,10 @@ source_set("app_shim") {
   if (is_mac) {
     # app_shim_manager_mac.cc includes chrome/browser/ui/chrome_pages.h, which
     # is a desktop-only (!is_android) target.
-    deps += [ "//chrome/browser/ui:chrome_pages" ]
+    deps += [
+      "//chrome/browser/ui:chrome_pages",
+      "//chrome/browser/ui/waap:window_creation",
+    ]
   }
 }
 

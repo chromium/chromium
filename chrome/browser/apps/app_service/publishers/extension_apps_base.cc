@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -474,7 +475,9 @@ void ExtensionAppsBase::OpenNativeSettings(const std::string& app_id) {
     BrowserWindowInterface* browser =
         ProfileBrowserCollection::GetForProfile(profile_)->FindTabbedBrowser();
     if (!browser) {
-      browser = CreateBrowserWindow(BrowserWindowCreateParams(profile_, true));
+      browser = waap::CreateBrowserWindowAndRecordCreationSource(
+          BrowserWindowCreateParams(profile_, true),
+          waap::NewWindowCreationSource::kNewEmptyWindow);
     }
 
     chrome::ShowExtensions(browser, extension->id());
