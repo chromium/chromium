@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
@@ -134,7 +135,7 @@ class ContentSettingsAgentImpl
   std::unique_ptr<RendererContentSettingRules> content_setting_rules_ = nullptr;
 
   // Stores if images, scripts, and plugins have actually been blocked.
-  base::flat_set<ContentSettingsType> content_blocked_;
+  base::EnumSet<ContentSettingsType> content_blocked_;
 
   // Caches the result of AllowStorageAccess.
   using StoragePermissionsKey = std::pair<url::Origin, StorageType>;

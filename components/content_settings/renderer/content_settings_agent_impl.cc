@@ -114,10 +114,12 @@ ContentSettingsAgentImpl::GetContentSettingsManager() {
 
 void ContentSettingsAgentImpl::DidBlockContentType(
     ContentSettingsType settings_type) {
-  bool newly_blocked = content_blocked_.insert(settings_type).second;
-  if (newly_blocked)
+  bool newly_blocked = !content_blocked_.Has(settings_type);
+  if (newly_blocked) {
+    content_blocked_.Put(settings_type);
     GetContentSettingsManager().OnContentBlocked(
         render_frame()->GetWebFrame()->GetLocalFrameToken(), settings_type);
+  }
 }
 
 namespace {
@@ -394,7 +396,7 @@ void ContentSettingsAgentImpl::DidNotAllowImage() {
 }
 
 void ContentSettingsAgentImpl::ClearBlockedContentSettings() {
-  content_blocked_.clear();
+  content_blocked_.Clear();
   cached_storage_permissions_.clear();
 }
 
