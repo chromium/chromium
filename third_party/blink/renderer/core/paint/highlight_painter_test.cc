@@ -5,7 +5,12 @@
 #include "third_party/blink/renderer/core/paint/highlight_painter.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/editing/commands/editing_state.h"
+#include "third_party/blink/renderer/core/editing/commands/split_text_node_command.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
@@ -17,6 +22,7 @@
 #include "third_party/blink/renderer/core/paint/text_painter.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -27,6 +33,80 @@ class HighlightPainterTest : public PaintControllerPaintTest {
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(HighlightPainterTest);
+
+TEST_P(HighlightPainterTest, TextMatchMarkersAfterRedoAndShrink) {
+  ScopedSearchTextHighlightPseudoForTest search_text_highlight(true);
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #editor {
+        font: 24px Ahem;
+        text-transform: uppercase;
+        inline-size: 9px;
+        word-break: break-all;
+        overflow-wrap: anywhere;
+      }
+    </style>
+    <div id="editor" contenteditable spellcheck="false">&#xdf;x &#xdf;x</div>
+    <div id="seed"></div>
+  )HTML");
+
+  auto* editor = GetElementById("editor");
+  auto* source = To<Text>(editor->firstChild());
+  const String match(u"\u00DFx");
+  SimpleEditCommand* command =
+      MakeGarbageCollected<SplitTextNodeCommand>(source, 4);
+  EditingState editing_state;
+  command->DoApply(&editing_state);
+  ASSERT_FALSE(editing_state.IsAborted());
+  auto* prefix = To<Text>(editor->firstChild());
+  ASSERT_NE(source, prefix);
+  command->DoUnapply();
+  ASSERT_EQ(source, editor->firstChild());
+
+  // Redo reuses the prefix and the find markers it acquired in seed.
+  prefix->setData("aaa" + match);
+  GetElementById("seed")->AppendChild(prefix);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  auto& controller = GetDocument().Markers();
+  for (unsigned start : {0u, 3u}) {
+    controller.AddTextMatchMarker(
+        EphemeralRange(Position(source, start), Position(source, start + 2)),
+        TextMatchMarker::MatchStatus::kInactive);
+  }
+  controller.AddTextMatchMarker(
+      EphemeralRange(Position(prefix, 3), Position(prefix, 5)),
+      TextMatchMarker::MatchStatus::kInactive);
+
+  command->DoReapply();
+  ASSERT_EQ(prefix, editor->firstChild());
+  prefix->deleteData(0, 3, ASSERT_NO_EXCEPTION);
+  ASSERT_EQ(match, prefix->data());
+
+  const auto markers =
+      controller.MarkersFor(*prefix, DocumentMarker::MarkerTypes::TextMatch());
+  ASSERT_EQ(2u, markers.size());
+  EXPECT_EQ(0u, markers[0]->StartOffset());
+  EXPECT_EQ(0u, markers[0]->EndOffset());
+  EXPECT_EQ(0u, markers[1]->StartOffset());
+  EXPECT_EQ(2u, markers[1]->EndOffset());
+
+  UpdateAllLifecyclePhasesExceptPaint();
+  InlineCursor cursor;
+  cursor.MoveTo(*prefix->GetLayoutObject());
+  ASSERT_TRUE(cursor);
+  ASSERT_TRUE(cursor.Current().IsText());
+  ASSERT_EQ(1u, cursor.Current().TextEndOffset() -
+                    cursor.Current().TextStartOffset());
+  // The first S of uppercased sharp s paints a collapsed DOM range.
+  const auto offsets = HighlightPainter::GetFragmentDOMOffsets(
+      *prefix, cursor.Current().TextStartOffset(),
+      cursor.Current().TextEndOffset());
+  EXPECT_EQ(0u, offsets.start);
+  EXPECT_EQ(0u, offsets.end);
+
+  UpdateAllLifecyclePhasesForTest();
+}
 
 TEST_P(HighlightPainterTest, FastSpellingGrammarPaintCase) {
   auto test = [&](String stylesheet) {
