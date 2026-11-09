@@ -96,7 +96,10 @@ FontDataManager::FontDataManager()
       main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
 }
 
-FontDataManager::~FontDataManager() = default;
+FontDataManager::~FontDataManager() {
+  CHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  font_data_service_slot_.reset();
+}
 
 // static
 void FontDataManager::CreateAndInitialize() {
@@ -112,6 +115,10 @@ void FontDataManager::CreateAndInitialize() {
 
 void FontDataManager::PrewarmFamily(const blink::WebString& family_name) {
   PrewarmFamilyImpl(family_name, base::OnceClosure());
+}
+
+bool FontDataManager::IsFontServiceConnected() const {
+  return is_font_service_connected_.load(std::memory_order_relaxed);
 }
 
 void FontDataManager::PrewarmFamilyForTesting(  // IN-TEST
@@ -214,8 +221,10 @@ sk_sp<SkTypeface> FontDataManager::onMatchFamilyStyle(
   {
     TRACE_EVENT1("fonts", "FontDataManager::onMatchFamilyStyle", "family_name",
                  cpp_requested_family_name);
-    GetRemoteFontDataService().MatchFamilyName(cpp_requested_family_name,
-                                               std::move(style), &response);
+    if (!GetRemoteFontDataService().MatchFamilyName(
+            cpp_requested_family_name, std::move(style), &response)) {
+      SetFontServiceDisconnected();
+    }
   }
 
   // Update the cache with the resulting typeface even in case of a failure to
@@ -253,10 +262,13 @@ sk_sp<SkTypeface> FontDataManager::onMatchFamilyStyleCharacter(
     // SAFETY: Skia passes BCP47 language tags as an array of `bcp47_count`
     // null-terminated c-style strings. Generate an equivalent
     // std::vector<std::string> to pass over mojo.
-    GetRemoteFontDataService().MatchFamilyNameCharacter(
+    bool ipc_succeeded = GetRemoteFontDataService().MatchFamilyNameCharacter(
         cpp_requested_family_name, std::move(style),
         UNSAFE_BUFFERS(bcp47ArrayToVector(bcp47, bcp47_count)), character,
         &match_result);
+    if (!ipc_succeeded) {
+      SetFontServiceDisconnected();
+    }
   }
 
   return CreateTypefaceFromMatchResult(std::move(match_result));
@@ -333,8 +345,10 @@ sk_sp<SkTypeface> FontDataManager::onLegacyMakeTypeface(
     TRACE_EVENT1("fonts", "FontDataManager::onLegacyMakeTypeface",
                  "family_name", cpp_requested_family_name);
 
-    GetRemoteFontDataService().LegacyMakeTypeface(
-        cpp_requested_family_name, std::move(style), &match_result);
+    if (!GetRemoteFontDataService().LegacyMakeTypeface(
+            cpp_requested_family_name, std::move(style), &match_result)) {
+      SetFontServiceDisconnected();
+    }
   }
 
   auto typeface = CreateTypefaceFromMatchResult(std::move(match_result));
@@ -352,6 +366,10 @@ void FontDataManager::SetFontServiceForTesting(
   mojo::Remote<font_data_service::mojom::FontDataService>& remote =
       font_data_service_slot_.GetOrCreateValue();
   remote.Bind(std::move(font_data_service));
+  // Safe because `font_data_service_slot_` is reset in
+  // `ShutdownPrewarmerForTesting()` and `~FontDataManager()`.
+  remote.set_disconnect_handler(base::BindOnce(
+      &FontDataManager::SetFontServiceDisconnected, base::Unretained(this)));
 }
 
 void FontDataManager::InitializePrewarmerForTesting(  // IN-TEST
@@ -457,8 +475,23 @@ FontDataManager::GetRemoteFontDataService() const {
           FROM_HERE, base::BindOnce(&BindHostReceiverOnMainThread,
                                     remote.BindNewPipeAndPassReceiver()));
     }
+    // Safe because `FontDataManager` is leaked for the lifetime of the child
+    // process via `skia::OverrideDefaultSkFontMgr()` in production, and
+    // `font_data_service_slot_` is reset before destruction in tests.
+    remote.set_disconnect_handler(base::BindOnce(
+        &FontDataManager::SetFontServiceDisconnected, base::Unretained(this)));
   }
   return *remote;
+}
+
+void FontDataManager::SetFontServiceDisconnected() const {
+  // When a [Sync] Mojo call fails due to peer closure, MultiplexRouter defers
+  // InterfaceEndpointClient::NotifyError() (which updates
+  // Remote::is_connected() and runs the disconnect handler) to a posted task.
+  // Track disconnection explicitly so IsFontServiceConnected() returns false
+  // immediately on the same stack frame in
+  // FontCache::GetLastResortFallbackFont().
+  is_font_service_connected_.store(false, std::memory_order_relaxed);
 }
 
 sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
@@ -565,7 +598,9 @@ sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
 }
 
 void FontDataManager::GetAllFamilyNamesLockRequired() const {
-  GetRemoteFontDataService().GetAllFamilyNames(&family_names_);
+  if (!GetRemoteFontDataService().GetAllFamilyNames(&family_names_)) {
+    SetFontServiceDisconnected();
+  }
 }
 
 std::optional<sk_sp<SkTypeface>> FontDataManager::TryGetFromCache(

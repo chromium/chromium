@@ -5,6 +5,7 @@
 #ifndef CONTENT_CHILD_FONT_DATA_FONT_DATA_MANAGER_H_
 #define CONTENT_CHILD_FONT_DATA_FONT_DATA_MANAGER_H_
 
+#include <atomic>
 #include <list>
 #include <memory>
 #include <string>
@@ -59,6 +60,7 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr,
 
   // blink::WebFontPrewarmer:
   void PrewarmFamily(const blink::WebString& family_name) override;
+  bool IsFontServiceConnected() const override;
 
   // SkFontMgr:
   int onCountFamilies() const override;
@@ -105,6 +107,7 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr,
                              base::OnceClosure completion_callback);
 
   font_data_service::mojom::FontDataService& GetRemoteFontDataService() const;
+  void SetFontServiceDisconnected() const;
 
   sk_sp<SkTypeface> CreateTypefaceFromMatchResult(
       mojom::MatchFamilyNameResultPtr match_result) const;
@@ -227,6 +230,7 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr,
   mutable base::SequenceLocalStorageSlot<
       mojo::Remote<font_data_service::mojom::FontDataService>>
       font_data_service_slot_;
+  mutable std::atomic<bool> is_font_service_connected_{true};
 };
 
 }  // namespace font_data_service

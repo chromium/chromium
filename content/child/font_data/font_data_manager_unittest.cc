@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/string_util.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/services/font_data/public/mojom/font_data_service.mojom.h"
@@ -44,6 +45,8 @@ class TestFontServiceApp : public font_data_service::mojom::FontDataService {
     receivers_.Add(this, proxy.InitWithNewPipeAndPassReceiver());
     return proxy;
   }
+
+  void ClearReceivers() { receivers_.Clear(); }
 
   void MatchFamilyName(const std::string& family_name,
                        font_data_service::mojom::TypefaceStylePtr style,
@@ -650,6 +653,34 @@ TEST_P(FontDataManagerUnitTest, GetFamilyName) {
   // output parameter.
   skia_font_manager_->getFamilyName(2, &empty_family_name);
   EXPECT_TRUE(empty_family_name.isEmpty());
+}
+
+TEST_F(FontDataManagerUnitTestBase, DisconnectHandler) {
+  EXPECT_TRUE(skia_font_manager_->IsFontServiceConnected());
+
+  test_font_data_service_app_.ClearReceivers();
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !skia_font_manager_->IsFontServiceConnected(); }));
+}
+
+TEST_F(FontDataManagerUnitTestBase, IsFontServiceConnectedSyncFailure) {
+  EXPECT_TRUE(skia_font_manager_->IsFontServiceConnected());
+
+  // A missing font while the Mojo service is still connected returns nullptr
+  // over a successful sync IPC and must not mark the service disconnected.
+  test_font_data_service_app_.set_unmatched_family("MissingFont");
+  EXPECT_FALSE(
+      skia_font_manager_->matchFamilyStyle("MissingFont", SkFontStyle()));
+  EXPECT_TRUE(skia_font_manager_->IsFontServiceConnected());
+
+  test_font_data_service_app_.ClearReceivers();
+  // Attempting to match a font after the receiver closes fails the sync Mojo
+  // IPC itself and must immediately mark the font service disconnected without
+  // waiting for the disconnect task to be dispatched on the message loop.
+  EXPECT_FALSE(
+      skia_font_manager_->matchFamilyStyle("NonexistentFont", SkFontStyle()));
+  EXPECT_FALSE(skia_font_manager_->IsFontServiceConnected());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, FontDataManagerUnitTest, testing::Bool());
