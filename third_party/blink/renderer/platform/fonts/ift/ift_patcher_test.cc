@@ -18,19 +18,21 @@
 namespace blink {
 namespace {
 
-// Patch URLs embedded in `roboto-ift.ttf`. The base font only supports 'a'.
-// Supporting 'b' or 'c' requires a table-keyed patch (cmap, hmtx, etc.) and a
-// glyph-keyed patch (outlines). Table-keyed patches are invalidating, so which
-// one is needed depends on the patches already applied.
+// Patch URLs embedded in `roboto-ift.ttf`. The base font only supports 'a' and
+// wght [100, 400]. Supporting 'b' or 'c' requires a table-keyed patch (cmap,
+// hmtx, etc.) and a glyph-keyed patch (outlines). Table-keyed patches are
+// invalidating, so which one is needed depends on the patches already applied.
 //
 // Table-keyed patch for 'b' applied to the base font.
-constexpr char kPatchBTableUrl[] = "0K.ift_tk";
+constexpr char kPatchBTableUrl[] = "1K.ift_tk";
 // Table-keyed patch for 'c' applied after `kPatchBTableUrl`.
-constexpr char kPatchCAfterBTableUrl[] = "0C.ift_tk";
+constexpr char kPatchCAfterBTableUrl[] = "14.ift_tk";
 // Glyph-keyed patch with the outline for 'b'.
 constexpr char kPatchBGlyphUrl[] = "04.1.ift_gk";
 // Glyph-keyed patch with the outline for 'c'.
 constexpr char kPatchCGlyphUrl[] = "08.1.ift_gk";
+// Table-keyed patch for wght [500, 900] applied to the base font.
+constexpr char kPatchWghtTableUrl[] = "1S.ift_tk";
 constexpr uint32_t kLigaTag = 0x6c696761;  // 'liga'
 constexpr uint32_t kWghtTag = 0x77676874;  // 'wght'
 constexpr uint32_t kWdthTag = 0x77647468;  // 'wdth'
@@ -148,6 +150,29 @@ TEST_F(IftPatcherTest, RenderedFontRequiresPatchesUntilMarkedRendered) {
   patcher->MarkFontDataRendered();
   EXPECT_FALSE(patcher->RenderedFontRequiresPatches(subset));
   EXPECT_FALSE(patcher->HasUnrenderedChanges());
+}
+
+TEST_F(IftPatcherTest, DesignSpaceOutsideBaseFontRequiresPatches) {
+  std::unique_ptr<IftPatcher> patcher = IftPatcher::Create(IftFont());
+  ASSERT_NE(patcher, nullptr);
+
+  // The base font has wght [100, 400].
+  IftSubsetDefinition light;
+  light.AddCodepoint('a');
+  light.AddDesignSpace(kWghtTag, 300.0, 300.0);
+  EXPECT_FALSE(patcher->RenderedFontRequiresPatches(light));
+
+  // wght [500, 900] is added by a table-keyed patch.
+  IftSubsetDefinition bold;
+  bold.AddCodepoint('a');
+  bold.AddDesignSpace(kWghtTag, 700.0, 700.0);
+  EXPECT_TRUE(patcher->RenderedFontRequiresPatches(bold));
+  ASSERT_THAT(patcher->RequestPatches(bold),
+              base::test::ValueIs(testing::ElementsAre(kPatchWghtTableUrl)));
+  patcher->AddPatchData(kPatchWghtTableUrl, LoadTestData(kPatchWghtTableUrl));
+  ASSERT_EQ(patcher->ApplyPatches(bold), IftPatcher::ApplyStatus::kSuccess);
+  patcher->MarkFontDataRendered();
+  EXPECT_FALSE(patcher->RenderedFontRequiresPatches(bold));
 }
 
 TEST_F(IftPatcherTest, ApplyPatchesSequentiallyUpdatesFontData) {

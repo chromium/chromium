@@ -52,9 +52,9 @@ namespace blink {
 namespace {
 
 // Table-keyed patch for 'b' applied to the base font.
-constexpr char kPatchBTableUrl[] = "https://example.com/fonts/0K.ift_tk";
+constexpr char kPatchBTableUrl[] = "https://example.com/fonts/1K.ift_tk";
 // Table-keyed patch for 'c' applied after `kPatchBTableUrl`.
-constexpr char kPatchCAfterBTableUrl[] = "https://example.com/fonts/0C.ift_tk";
+constexpr char kPatchCAfterBTableUrl[] = "https://example.com/fonts/14.ift_tk";
 // Glyph-keyed patch with the outline for 'b'.
 constexpr char kPatchBGlyphUrl[] = "https://example.com/fonts/04.1.ift_gk";
 // Glyph-keyed patch with the outline for 'c'.
@@ -86,8 +86,9 @@ class IftCustomFontDataTest : public SimTest {
   // font.
   //
   // The font is `roboto-ift.ttf`, a Roboto subset whose base font contains
-  // only codepoint 'a'. Codepoints 'b' and 'c' are added through table-keyed
-  // and glyph-keyed patches.
+  // codepoint 'a', feature 'smcp' (GSUB table), and the wght [100, 400] design
+  // space. Codepoints 'b' and 'c', 'smcp' outlines, and wght [500, 900] are
+  // added through table-keyed and glyph-keyed patches.
   //
   // If `world` is set, the `@font-face` rule is parsed in `world`. If
   // `font_redirect_url` is set, the font request is redirected to it.
@@ -688,7 +689,7 @@ TEST_F(IftCustomFontDataTest, PatchRequestSettings) {
 TEST_F(IftCustomFontDataTest, PatchRequestsUseRedirectedFontUrl) {
   constexpr char kRedirectedFontUrl[] = "https://example.com/v2/roboto-ift.ttf";
   constexpr char kRedirectedPatchBTableUrl[] =
-      "https://example.com/v2/0K.ift_tk";
+      "https://example.com/v2/1K.ift_tk";
   constexpr char kRedirectedPatchBGlyphUrl[] =
       "https://example.com/v2/04.1.ift_gk";
   SimSubresourceRequest patch_b_table(kRedirectedPatchBTableUrl,

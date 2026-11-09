@@ -1,23 +1,37 @@
 # Segmentation plan for the Blink IFT test font (roboto-ift.ttf / .woff2).
 #
-# Input: Roboto[wdth,wght].ttf subset to 'a', 'b', 'c' plus an unmapped padding
-# glyph (gid 4). The encoder always keeps the last gid in the base font, so the
-# padding glyph ensures 'c' (gid 3) is not pulled into the base font.
+# Input: Roboto[wdth,wght].ttf subset to 'a', 'b', 'c', the 'smcp' feature
+# (gids 4..6 = 'c.smcp', 'b.smcp', 'a.smcp'), plus an unmapped padding glyph
+# (gid 7). The encoder always keeps the last gid in the base font, so the
+# padding glyph ensures 'a.smcp' (gid 6) is not pulled into the base font.
 #
-# Base font: 'a' only.
-# 'b' and 'c' each need a table-keyed patch (cmap/hmtx/etc.) and a glyph-keyed
-# patch (outlines).
+# Base font: codepoint 'a', feature 'smcp' (GSUB table; glyph outlines are in
+# patch 3), and design space wght [100, 400].
+# - 'b' and 'c' each need a table-keyed patch (cmap/hmtx/etc.) and a
+#   glyph-keyed patch (outlines).
+# - 'smcp' needs a glyph-keyed patch (outlines for gids 4..6).
+# - wght [500, 900] needs a table-keyed patch (HVAR/gvar/STAT/etc.).
 
 segments { key: 1 value { codepoints { values: 0x62 } } }  # 'b'
 segments { key: 2 value { codepoints { values: 0x63 } } }  # 'c'
+segments { key: 3 value { features { values: "smcp" } } }
 
 glyph_patches { key: 1 value { values: 2 } }  # gid 2 = 'b'
 glyph_patches { key: 2 value { values: 3 } }  # gid 3 = 'c'
+glyph_patches { key: 3 value { values: 4 values: 5 values: 6 } }  # gids 4..6 = smcp
 
 glyph_patch_conditions { required_segments { values: 1 } activated_patch: 1 }
 glyph_patch_conditions { required_segments { values: 2 } activated_patch: 2 }
+glyph_patch_conditions { required_segments { values: 3 } activated_patch: 3 }
 
 initial_codepoints { values: 0x61 }  # 'a'
+initial_features { values: "smcp" }
+initial_design_space {
+  ranges { key: "wght" value { start: 100 end: 400 } }
+}
 
 non_glyph_segments { values: 1 }
 non_glyph_segments { values: 2 }
+non_glyph_design_space_segmentation {
+  ranges { key: "wght" value { start: 500 end: 900 } }
+}

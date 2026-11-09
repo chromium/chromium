@@ -21,41 +21,58 @@ relative patch URLs are embedded directly within the font binary:
 - third_party/blink/renderer/platform/testing/data/roboto-ift.ttf
 - third_party/blink/renderer/platform/testing/data/roboto-ift.woff2
 - third_party/blink/renderer/platform/testing/data/04.1.ift_gk
+- third_party/blink/renderer/platform/testing/data/04.2.ift_gk
 - third_party/blink/renderer/platform/testing/data/08.1.ift_gk
-- third_party/blink/renderer/platform/testing/data/0C.ift_tk
+- third_party/blink/renderer/platform/testing/data/08.2.ift_gk
+- third_party/blink/renderer/platform/testing/data/0C.1.ift_gk
+- third_party/blink/renderer/platform/testing/data/0C.2.ift_gk
 - third_party/blink/renderer/platform/testing/data/0G.ift_tk
 - third_party/blink/renderer/platform/testing/data/0K.ift_tk
 - third_party/blink/renderer/platform/testing/data/0O.ift_tk
+- third_party/blink/renderer/platform/testing/data/0S.ift_tk
+- third_party/blink/renderer/platform/testing/data/10.ift_tk
+- third_party/blink/renderer/platform/testing/data/14.ift_tk
+- third_party/blink/renderer/platform/testing/data/18.ift_tk
+- third_party/blink/renderer/platform/testing/data/1C.ift_tk
+- third_party/blink/renderer/platform/testing/data/1G.ift_tk
+- third_party/blink/renderer/platform/testing/data/1K.ift_tk
+- third_party/blink/renderer/platform/testing/data/1O.ift_tk
+- third_party/blink/renderer/platform/testing/data/1S.ift_tk
 
 Local Modifications:
 Derived from Roboto[wdth,wght].ttf by generating a mixed-mode IFT encoding.
-The base font supports only codepoint 'a'. Codepoints 'b' and 'c' each need a
-table-keyed patch (cmap, hmtx, etc.) and a glyph-keyed patch (outlines):
-- 04.1.ift_gk: outline for 'b'.
-- 08.1.ift_gk: outline for 'c'.
-- 0K.ift_tk: tables for 'b', applied to the base font.
-- 0O.ift_tk: tables for 'c', applied to the base font.
-- 0C.ift_tk: tables for 'c', applied after 0K.ift_tk.
-- 0G.ift_tk: tables for 'b', applied after 0O.ift_tk.
+The base font supports codepoint 'a', feature 'smcp' (GSUB table; glyph outlines
+are in a glyph-keyed patch), and design space wght [100, 400]:
+- 04.1.ift_gk / 04.2.ift_gk: outline for 'b' (initial / expanded wght).
+- 08.1.ift_gk / 08.2.ift_gk: outline for 'c' (initial / expanded wght).
+- 0C.1.ift_gk / 0C.2.ift_gk: outlines for 'smcp' glyphs (initial / expanded wght).
+- 1K.ift_tk: tables for 'b', applied to the base font.
+- 1O.ift_tk: tables for 'c', applied to the base font.
+- 1S.ift_tk: tables for wght [500, 900], applied to the base font.
+- 14.ift_tk: tables for 'c', applied after 1K.ift_tk.
+- 1C.ift_tk: tables for 'b', applied after 1O.ift_tk.
+- 0G.ift_tk, 0K.ift_tk, 0O.ift_tk, 0S.ift_tk, 10.ift_tk, 18.ift_tk,
+  1G.ift_tk: remaining transitions in the table-keyed extension graph for {'b',
+  'c', wght [500, 900]}.
 
-The font also contains an unmapped padding glyph (gid 4). The encoder always
-keeps the last glyph in the base font, so the padding glyph prevents 'c'
-(gid 3) from being pulled into the base font.
+The font also contains an unmapped padding glyph (gid 7). The encoder always
+keeps the last glyph in the base font, so the padding glyph prevents 'a.smcp'
+(gid 6) from being pulled into the base font.
 
 The IFT encoding was generated with an internal build of the IFT encoder, using
 roboto-ift-plan.txtpb in this directory. The public equivalent is
 https://github.com/w3c/ift-encoder, which provides the same font2ift tool:
 
-  pyftsubset 'Roboto[wdth,wght].ttf' --text=abc --gids=370 \
-    --output-file=roboto-abc-pad.ttf
+  pyftsubset 'Roboto[wdth,wght].ttf' --text=abc --gids=591 \
+    --layout-features+=smcp --output-file=roboto-abc-pad.ttf
   mkdir out
   font2ift --input_font=roboto-abc-pad.ttf --plan=roboto-ift-plan.txtpb \
     --output_path=out/ --output_font=roboto-ift.woff2
   woff2_decompress out/roboto-ift.woff2  # Produces out/roboto-ift.ttf.
 
 - Roboto[wdth,wght].ttf is available at
-  https://github.com/google/fonts/tree/main/ofl/roboto. Glyph 370 is an
-  unmapped glyph that sorts after 'c'.
+  https://github.com/google/fonts/tree/main/ofl/roboto. Glyph 591 is an
+  unmapped simple glyph that sorts after the 'smcp' glyphs (588..590).
 - With the public encoder, font2ift can be built and run from the ift-encoder
   repository with `bazel run -c opt //util:font2ift -- <flags>`. Output from
   the public encoder may not be byte-identical to the checked-in files.
