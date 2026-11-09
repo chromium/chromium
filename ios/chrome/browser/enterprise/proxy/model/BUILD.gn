@@ -68,6 +68,19 @@ source_set("proxy_auth_challenge_util") {
   public_deps = [ "//net" ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_enterprise_proxy_tab_helper_delegate.h",
+    "fake_enterprise_proxy_tab_helper_delegate.mm",
+  ]
+  public_deps = [
+    ":model",
+    "//base",
+  ]
+  deps = [ "//ios/web/public" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -81,6 +94,7 @@ source_set("unit_tests") {
   deps = [
     ":model",
     ":proxy_auth_challenge_util",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/enterprise:test_support",

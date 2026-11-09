@@ -10,6 +10,7 @@
 #import "components/enterprise/net/core/enterprise_proxy_error_data.h"
 #import "components/enterprise/net/core/enterprise_proxy_error_service.h"
 #import "components/enterprise/net/core/mock_enterprise_proxy_service.h"
+#import "ios/chrome/browser/enterprise/proxy/model/fake_enterprise_proxy_tab_helper_delegate.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/log/net_log_with_source.h"
@@ -24,23 +25,6 @@ constexpr char kRedirectURL[] = "https://redirect.example.com/";
 constexpr char kOtherURL[] = "https://other.example.com/";
 constexpr char kProxyURL[] = "https://proxy.example.com/";
 constexpr int kDisguisedErrorCode = 403;
-
-// Records the re-sign-in requests.
-class FakeDelegate : public EnterpriseProxyTabHelper::Delegate {
- public:
-  // EnterpriseProxyTabHelper::Delegate:
-  void SignIn(web::WebState* web_state) override {
-    ++sign_in_count_;
-    last_web_state_ = web_state;
-  }
-
-  int sign_in_count() const { return sign_in_count_; }
-  web::WebState* last_web_state() const { return last_web_state_; }
-
- private:
-  int sign_in_count_ = 0;
-  raw_ptr<web::WebState> last_web_state_ = nullptr;
-};
 
 }  // namespace
 
@@ -73,7 +57,7 @@ class EnterpriseProxyTabHelperTest : public PlatformTest {
   testing::NiceMock<enterprise_net::MockEnterpriseProxyService> proxy_service_;
   enterprise_net::EnterpriseProxyErrorService error_service_{&proxy_service_};
   // Outlives `web_state_`, whose tab helper points to it.
-  FakeDelegate delegate_;
+  FakeEnterpriseProxyTabHelperDelegate delegate_;
   web::FakeWebState web_state_;
   raw_ptr<EnterpriseProxyTabHelper> tab_helper_ = nullptr;
 };

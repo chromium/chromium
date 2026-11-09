@@ -20,6 +20,7 @@
 #import "components/enterprise/net/core/mock_enterprise_proxy_service.h"
 #import "components/security_interstitials/core/controller_client.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_tab_helper.h"
+#import "ios/chrome/browser/enterprise/proxy/model/fake_enterprise_proxy_tab_helper_delegate.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -72,18 +73,6 @@ constexpr std::string_view kLoadTimeDataRawDeclaration = "var loadTimeDataRaw";
 constexpr int kInterstitialItemIndex = 1;
 // Index of the previous page in the navigation history.
 constexpr int kPreviousItemIndex = 0;
-
-// Counts the re-sign-in requests.
-class FakeDelegate : public EnterpriseProxyTabHelper::Delegate {
- public:
-  // EnterpriseProxyTabHelper::Delegate:
-  void SignIn(web::WebState* web_state) override { ++sign_in_count_; }
-
-  int sign_in_count() const { return sign_in_count_; }
-
- private:
-  int sign_in_count_ = 0;
-};
 
 // Returns the value of the template `error_category` parameter for `category`.
 std::string GetErrorCategoryParam(ErrorCategory category) {
@@ -190,7 +179,7 @@ class EnterpriseProxyBlockingPageTest : public PlatformTest {
   testing::NiceMock<enterprise_net::MockEnterpriseProxyService> proxy_service_;
   // Outlive `web_state_`, whose tab helper points to them.
   enterprise_net::EnterpriseProxyErrorService error_service_{&proxy_service_};
-  FakeDelegate delegate_;
+  FakeEnterpriseProxyTabHelperDelegate delegate_;
   web::FakeWebState web_state_;
   raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
 };
