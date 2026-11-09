@@ -618,7 +618,9 @@ void PrintPreviewHandler::HandleGetPreview(const base::ListValue& args) {
   // headers and footers are to be displayed.
   std::optional<bool> display_header_footer_opt =
       settings.FindBool(kSettingHeaderFooterEnabled);
-  CHECK(display_header_footer_opt, base::NotFatalUntil::M162);
+  // TODO(crbug.com/580229748): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(display_header_footer_opt);
   if (display_header_footer_opt.value_or(false)) {
     settings.Set(kSettingHeaderFooterTitle, initiator->GetTitle());
 
