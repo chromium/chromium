@@ -645,13 +645,22 @@ base::ListValue TabsQueryFunction::BuildTabList(
     }
 
     TabListInterface* tab_list = TabListInterface::From(browser);
+    // On Android the tab list can be gone while the window is still
+    // enumerable (crbug.com/578132340), and a tab slot can be null when the
+    // native tab was destroyed while still referenced by the Java tab model
+    // (crbug.com/578128713). Skip both instead of crashing.
+    if (!tab_list) {
+      continue;
+    }
     for (int i = 0; i < tab_list->GetTabCount(); ++i) {
       if (tab_index > -1 && i != tab_index) {
         continue;
       }
 
       ::tabs::TabInterface* tab = tab_list->GetTab(i);
-      CHECK(tab);
+      if (!tab) {
+        continue;
+      }
 
       if (!MatchesTab(tab, url_patterns)) {
         continue;
