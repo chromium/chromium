@@ -80,7 +80,7 @@ if (!remove_starboard_headers) {
       "//base/test:test_support",
       "//chromecast/common:timing_tracker",
       "//chromecast/starboard/chromecast/starboard_cast_api",
-      "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
+      "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api_dummy",
       "//testing/gmock",
       "//testing/gtest",
     ]

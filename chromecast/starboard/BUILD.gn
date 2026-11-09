@@ -30,7 +30,6 @@ source_set("starboard_adapter_loader") {
       "//chromecast/starboard/media/media:starboard_api_wrapper_impl_14",
       "//chromecast/starboard/media/media:starboard_api_wrapper_impl_15",
     ]
-    data_deps = [ "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api" ]
   }
 }
 
@@ -54,6 +53,7 @@ test("starboard_adapter_loader_unittests") {
       ":starboard_adapters",
       "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
     ]
+    ldflags = [ "-Wl,-rpath=\$ORIGIN/starboard_cast_dummy" ]
   }
 }
 
