@@ -377,6 +377,7 @@ source_set("ui_bundled") {
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
     "//ios/third_party/webkit",
     "//ios/web",
+    "//ios/web/common:features",
     "//ios/web/public",
     "//services/metrics/public/cpp:ukm_builders",
     "//ui/base",

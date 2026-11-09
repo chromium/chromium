@@ -289,6 +289,50 @@ static int gAnyContext = 0;
   }
 }
 
+- (CGPoint)contentOffset {
+  return self.underlyingScrollView.contentOffset;
+}
+
+- (void)setContentOffset:(CGPoint)contentOffset {
+  self.underlyingScrollView.contentOffset = contentOffset;
+}
+
+- (UIEdgeInsets)contentInset {
+  return self.underlyingScrollView.contentInset;
+}
+
+- (void)setContentInset:(UIEdgeInsets)contentInset {
+  self.underlyingScrollView.contentInset = contentInset;
+}
+
+- (BOOL)isDecelerating {
+  return self.underlyingScrollView.decelerating;
+}
+
+- (BOOL)isDragging {
+  return self.underlyingScrollView.dragging;
+}
+
+- (BOOL)isTracking {
+  return self.underlyingScrollView.tracking;
+}
+
+- (BOOL)isZooming {
+  return self.underlyingScrollView.zooming;
+}
+
+- (CGSize)contentSize {
+  return self.underlyingScrollView.contentSize;
+}
+
+- (void)setContentSize:(CGSize)contentSize {
+  self.underlyingScrollView.contentSize = contentSize;
+}
+
+- (CGRect)frame {
+  return self.underlyingScrollView.frame;
+}
+
 - (BOOL)clipsToBounds {
   return self.underlyingScrollView.clipsToBounds;
 }
@@ -305,6 +349,10 @@ static int gAnyContext = 0;
     (UIScrollViewContentInsetAdjustmentBehavior)contentInsetAdjustmentBehavior {
   [self.underlyingScrollView
       setContentInsetAdjustmentBehavior:contentInsetAdjustmentBehavior];
+}
+
+- (UIPanGestureRecognizer*)panGestureRecognizer {
+  return self.underlyingScrollView.panGestureRecognizer;
 }
 
 - (NSArray<__kindof UIView*>*)subviews {

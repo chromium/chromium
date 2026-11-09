@@ -22,6 +22,19 @@
 // information look at the UIScrollView documentation.
 @interface CRWWebViewScrollViewProxy : NSObject
 
+@property(nonatomic, assign) CGPoint contentOffset;
+@property(nonatomic, assign) UIEdgeInsets contentInset;
+@property(nonatomic, readonly, getter=isDecelerating) BOOL decelerating;
+@property(nonatomic, readonly, getter=isDragging) BOOL dragging;
+@property(nonatomic, readonly, getter=isTracking) BOOL tracking;
+@property(nonatomic, readonly, getter=isZooming) BOOL zooming;
+@property(nonatomic, assign) CGSize contentSize;
+@property(nonatomic, readonly) CGRect frame;
+@property(nonatomic, assign) BOOL clipsToBounds;
+@property(nonatomic, assign)
+    UIScrollViewContentInsetAdjustmentBehavior contentInsetAdjustmentBehavior;
+@property(weak, nonatomic, readonly)
+    UIPanGestureRecognizer* panGestureRecognizer;
 @property(nonatomic, readonly, copy) NSArray<__kindof UIView*>* subviews;
 
 // Used by the CRWWebViewProxy to set the UIScrollView to be managed.
@@ -49,25 +62,12 @@
 // to avoid compilation error saying they are not implemented.
 @interface CRWWebViewScrollViewProxy (ForwardedMethods)
 
-@property(nonatomic, assign) CGPoint contentOffset;
-@property(nonatomic, assign) UIEdgeInsets contentInset;
-@property(nonatomic, readonly, getter=isDecelerating) BOOL decelerating;
-@property(nonatomic, readonly, getter=isDragging) BOOL dragging;
-@property(nonatomic, readonly, getter=isTracking) BOOL tracking;
-@property(nonatomic, readonly) BOOL isZooming;
 @property(nonatomic, readonly) CGFloat zoomScale;
 @property(nonatomic, assign) UIEdgeInsets scrollIndicatorInsets;
-@property(nonatomic, assign) CGSize contentSize;
-@property(nonatomic, readonly) CGRect frame;
 @property(nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
 @property(nonatomic, assign) BOOL bounces;
 @property(nonatomic, assign) BOOL scrollsToTop;
-@property(nonatomic, assign) BOOL clipsToBounds;
-@property(nonatomic, assign)
-    UIScrollViewContentInsetAdjustmentBehavior contentInsetAdjustmentBehavior;
 @property(nonatomic, readonly) UIEdgeInsets adjustedContentInset;
-@property(weak, nonatomic, readonly)
-    UIPanGestureRecognizer* panGestureRecognizer;
 // Returns the scrollview's gesture recognizers.
 @property(weak, nonatomic, readonly) NSArray* gestureRecognizers;
 

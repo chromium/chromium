@@ -111,6 +111,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -528,12 +529,14 @@ bool IsFullscreenNextIAEnabled() {
     if (!IsRefactorToolbarsSize()) {
       StartBroadcastingToolbarsSize(_toolbarsSize, broadcaster);
     }
-    _mainContentUIUpdater = [[MainContentUIStateUpdater alloc]
-        initWithState:[[MainContentUIState alloc] init]];
-    _webMainContentUIForwarder = [[WebScrollViewMainContentUIForwarder alloc]
-        initWithUpdater:_mainContentUIUpdater
-           webStateList:self.webStateList];
-    StartBroadcastingMainContentUI(self, broadcaster);
+    if (web::features::ShouldUseBroadcasterForSmoothScrolling()) {
+      _mainContentUIUpdater = [[MainContentUIStateUpdater alloc]
+          initWithState:[[MainContentUIState alloc] init]];
+      _webMainContentUIForwarder = [[WebScrollViewMainContentUIForwarder alloc]
+          initWithUpdater:_mainContentUIUpdater
+             webStateList:self.webStateList];
+      StartBroadcastingMainContentUI(self, broadcaster);
+    }
 
     if (!IsFullscreenRefactoringEnabled()) {
       _fullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
@@ -545,11 +548,13 @@ bool IsFullscreenNextIAEnabled() {
     if (!IsRefactorToolbarsSize()) {
       StopBroadcastingToolbarsSize(broadcaster);
     }
-    StopBroadcastingMainContentUI(broadcaster);
-    _mainContentUIUpdater = nil;
     _toolbarsSize = nil;
-    [_webMainContentUIForwarder disconnect];
-    _webMainContentUIForwarder = nil;
+    if (web::features::ShouldUseBroadcasterForSmoothScrolling()) {
+      StopBroadcastingMainContentUI(broadcaster);
+      _mainContentUIUpdater = nil;
+      [_webMainContentUIForwarder disconnect];
+      _webMainContentUIForwarder = nil;
+    }
 
     _fullscreenUIUpdater = nullptr;
   }
