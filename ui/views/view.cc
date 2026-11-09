@@ -3297,6 +3297,9 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
   }
 
   // Should never destroy a view or its child when adding to the hierarchy.
+  //
+  // TODO(https://crbug.com/578997426): Remove upstream guards when these become
+  // a hard errors.
   ViewGuard this_guard(*this, base::NotFatalUntil::M165);
   ViewGuard child_guard(*view, base::NotFatalUntil::M165);
 

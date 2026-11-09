@@ -11,6 +11,7 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,6 +31,7 @@
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/tree/widget_ax_manager.h"
 #include "ui/views/view.h"
+#include "ui/views/view_guard.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
@@ -295,6 +297,19 @@ void ViewAccessibility::NotifyEvent(ax::mojom::Event event_type,
   if (widget && !widget->GetNativeView()) {
     return;
   }
+
+  // Malicious or badly-configured programs hooking accessibility callbacks can
+  // theoretically destroy the view being updated in a number of ways by
+  // immediately injecting events into the current process in response to an
+  // accessibility event. In almost all cases, this makes the calling code
+  // unsafe in ways that are hard to fully harden against.
+  //
+  // Instead of hardening every such point, harden this method to prevent
+  // synchronous destruction of the view being updated through bad re-entrancy.
+  //
+  // TODO(https://crbug.com/578997426): Remove upstream guards when this becomes
+  // a hard error.
+  ViewGuard guard(*view_, base::NotFatalUntil::M165);
 
   AXUpdateNotifier::Get()->NotifyViewEvent(view_, event_type);
 
