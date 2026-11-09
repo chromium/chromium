@@ -531,11 +531,16 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                    views::Widget::ClosedReason reason,
                    bool hide_widget);
 
-  // Called when the user closes the dialog. This is called by
-  // OnCloseButtonClicked() if the user clicks the close button, and directly
-  // called by views toolkit if the user dismisses with another mechanism such
-  // as pressing "esc".
+  // Called when the user closes the dialog. This is called (in a separate task)
+  // by `OnCloseButtonClicked()` if the user clicks the close button, and
+  // directly called by views toolkit if the user dismisses with another
+  // mechanism such as pressing "esc".
   void OnUserClosedDialog(views::Widget::ClosedReason reason);
+
+  // Closes the dialog for a click on the close button, unless `closing_widget`
+  // was destroyed or replaced since the click. Posted by
+  // `OnCloseButtonClicked()`.
+  void CloseDialogForCloseButton(base::WeakPtr<views::Widget> closing_widget);
 
   // This method calculates whether the dialog should be visible. This method
   // always updates the dialog position if the dialog should be visible. If the
