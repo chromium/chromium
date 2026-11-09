@@ -301,6 +301,8 @@ void BaseRenderingContext2D::ResetBacking() {
     shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
     shared_image_interface_provider_.reset();
   }
+  notify_gpu_context_lost_task_.Cancel();
+  notified_context_lost_ = false;
   if (Host()) {
     Host()->UpdateMemoryUsage();
   }
@@ -636,30 +638,22 @@ void BaseRenderingContext2D::OnContextDestroyed() {
 }
 
 void BaseRenderingContext2D::OnContextLost() {
-  if (!shared_image_provider_ ||
-      shared_image_provider_->notified_context_lost_) {
+  if (!shared_image_provider_ || notified_context_lost_) {
     return;
   }
   shared_image_provider_->ClearUnusedResources();
+  notified_context_lost_ = true;
   // Notify the host that the GPU context was lost. The call is done in a
   // separate task, so that the host can reset the backing if needed.
+  notify_gpu_context_lost_task_.Reset(
+      blink::BindOnce(&CanvasRenderingContextHost::NotifyGpuContextLost,
+                      WrapWeakPersistent(Host())));
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      blink::BindOnce(&BaseRenderingContext2D::NotifyGpuContextLostTask,
-                      WrapWeakPersistent(this),
-                      shared_image_provider_->CreateWeakPtr()));
-  shared_image_provider_->notified_context_lost_ = true;
+      FROM_HERE, notify_gpu_context_lost_task_.callback());
 }
 
 void BaseRenderingContext2D::OnGpuChannelLost() {
   OnContextLost();
-}
-
-void BaseRenderingContext2D::NotifyGpuContextLostTask(
-    base::WeakPtr<Canvas2DResourceProvider> provider) {
-  if (provider && Host()) {
-    Host()->NotifyGpuContextLost();
-  }
 }
 
 gpu::raster::RasterInterface* BaseRenderingContext2D::RasterInterface() const {

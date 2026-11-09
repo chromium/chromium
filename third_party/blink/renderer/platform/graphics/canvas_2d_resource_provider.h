@@ -153,7 +153,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   scoped_refptr<CanvasResourceSharedImage> resource_;
 
   const bool is_accelerated_;
-  bool notified_context_lost_ = false;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
