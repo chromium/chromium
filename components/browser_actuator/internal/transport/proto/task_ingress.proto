@@ -33,7 +33,7 @@ message TaskIngressUpstreamPayload {
 }
 
 // Command sent from the Chrome client to initiate a new agentic task.
-// Next ID: 3
+// Next ID: 4
 message StartTaskCommand {
   // The feature use case for the task.
   TaskUseCase use_case = 1;
@@ -41,6 +41,9 @@ message StartTaskCommand {
   // Feature-specific startup configuration and parameters (for example, the
   // target credential domain for Automated Password Change).
   google.protobuf.Any feature_payload = 2;
+
+  // Chrome Sync client GUID of the browser instance that initiated the task.
+  string client_id = 3;
 }
 
 // Downstream payload packed inside ActuatorDownstreamTypedPayload.proto_payload
