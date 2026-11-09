@@ -147,7 +147,6 @@
 /spirv-tools/src
 /src
 /subresource-filter-ruleset/data/*
-/swift-format
 /swift-toolchain
 /swiftshader/
 /syzygy

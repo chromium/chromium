@@ -3112,17 +3112,6 @@ deps = {
       ],
   },
 
-  'src/third_party/swift-format': {
-      'packages': [
-          {
-              'package': 'infra/3pp/tools/swift-format/mac-${{arch}}',
-              'version': 'version:2@505.chromium.1',
-          },
-      ],
-      'condition': 'host_os == mac',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/swiftshader':
     Var('swiftshader_git') + '/SwiftShader.git' + '@' +  Var('swiftshader_revision'),
 
