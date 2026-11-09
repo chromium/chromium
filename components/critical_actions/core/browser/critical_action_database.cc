@@ -416,6 +416,8 @@ bool CriticalActionDatabase::AddCriticalAction(
   // Enforce kMaxConversationAnchorIdLength here so storage stays bounded
   // regardless of the caller. Oversized anchors are dropped (stored as NULL)
   // without failing the insertion, so the action itself is still recorded.
+  // CriticalActionService already drops them on the UI thread, so this is the
+  // last line of defense for other callers.
   std::string_view conversation_anchor_id = entry.conversation_anchor_id;
   if (conversation_anchor_id.size() > kMaxConversationAnchorIdLength) {
     DLOG(WARNING) << "Dropping oversized conversation_anchor_id (length="

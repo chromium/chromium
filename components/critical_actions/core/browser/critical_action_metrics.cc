@@ -34,6 +34,15 @@ void RecordVisitIdResolutionOutcome(ActionSource source,
       outcome);
 }
 
+void RecordConversationAnchorResolutionOutcome(
+    ActionSource source,
+    ConversationAnchorResolutionOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"CriticalActions.ConversationAnchorResolutionOutcome.",
+                    ActionSourceToHistogramSuffix(source)}),
+      outcome);
+}
+
 void RecordConversationIdResolutionOutcome(
     ActionSource source,
     ConversationIdResolutionOutcome outcome) {

@@ -6,7 +6,9 @@
 #define COMPONENTS_CRITICAL_ACTIONS_CORE_BROWSER_CRITICAL_ACTION_SERVICE_H_
 
 #include <cstdint>
+#include <functional>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -66,6 +68,35 @@ class CriticalActionService : public KeyedService,
       const std::vector<std::string>& actor_task_ids,
       std::string_view conversation_id);
 
+  // UI thread entry point to associate an actor task with its current opaque
+  // conversation anchor ID (e.g., Glic turn ID). The anchor is stamped onto
+  // critical actions for `actor_task_id` when they are logged, so callers must
+  // set it before the actor performs the actions of that turn. Anchors set
+  // later are not applied to actions that were already logged. Conversely, the
+  // anchor is resolved when an action is logged, not when it was initiated, so
+  // an action of an earlier turn that is logged after the next turn's anchor
+  // was set (e.g. an asynchronous event) gets the newer anchor. Setting the
+  // same anchor again (e.g. for each batch of actions of one turn) does not
+  // change attribution; only a different anchor does.
+  // Passing an empty `conversation_anchor_id` clears any cached anchor for
+  // `actor_task_id`. Anchors longer than `kMaxConversationAnchorIdLength` are
+  // treated as if MarkActorTaskConversationAnchorDroppedTooLong() had been
+  // called. No-op unless features::IsActionLevelChatLinkoutsEnabled().
+  // TODO(b/583743246): Capture the anchor when an action is initiated so that
+  // asynchronously logged actions are attributed to the turn that caused them.
+  virtual void SetActorTaskConversationAnchorId(
+      std::string_view actor_task_id,
+      std::string_view conversation_anchor_id);
+
+  // UI thread entry point for callers that enforce their own, stricter anchor
+  // length limit (e.g. Glic turn IDs). Invalidates any cached anchor for
+  // `actor_task_id`. Until the next SetActorTaskConversationAnchorId() call,
+  // actions for `actor_task_id` get no anchor and record
+  // `ConversationAnchorResolutionOutcome::kDroppedTooLong` rather than
+  // `kCacheMiss`. No-op unless features::IsActionLevelChatLinkoutsEnabled().
+  virtual void MarkActorTaskConversationAnchorDroppedTooLong(
+      std::string_view actor_task_id);
+
   // UI thread entry point to log or queue a critical action linked by
   // navigation ID.
   virtual void AddCriticalActionWithNavigationId(
@@ -105,8 +136,30 @@ class CriticalActionService : public KeyedService,
     std::vector<CriticalActionEntry> pending_actions;
   };
 
+  struct CachedAnchor {
+    // Non-empty and at most `kMaxConversationAnchorIdLength` bytes when
+    // `was_dropped_too_long` is false; empty otherwise.
+    std::string anchor_id;
+    bool was_dropped_too_long = false;
+  };
+
   void DropPendingActions(NavigationState& state,
                           VisitIdResolutionOutcome reason);
+
+  // Resolves `entry.conversation_anchor_id` at enqueue time and records
+  // CriticalActions.ConversationAnchorResolutionOutcome. When action-level
+  // chat linkouts are disabled, only drops an oversized caller-provided anchor
+  // and records nothing.
+  void MaybeResolveConversationAnchorId(CriticalActionEntry& entry);
+
+  // Resolves or validates `entry.conversation_anchor_id` at enqueue time.
+  ConversationAnchorResolutionOutcome ResolveConversationAnchorId(
+      CriticalActionEntry& entry);
+
+  // Resolves `conversation_id`, records persistence metrics, and forwards
+  // `entry` (whose `conversation_anchor_id` has already been resolved) to
+  // `backend_`.
+  void PersistCriticalAction(CriticalActionEntry entry);
 
   // TODO(b/561944228): Temporary solution while b/494212836 is in place; remove
   // once fixed. CriticalActionService needs conversation_id.
@@ -148,6 +201,11 @@ class CriticalActionService : public KeyedService,
   // available when logging critical actions.
   base::LRUCache<std::string, std::vector<PendingCriticalAction>>
       task_to_critical_action_ids_cache_;
+
+  // Capacity-limited LRU cache mapping actor_task_id to its current
+  // conversation anchor state. Only populated when action-level chat linkouts
+  // are enabled. Cleared on Shutdown().
+  base::LRUCache<std::string, CachedAnchor, std::less<>> task_to_anchor_cache_;
 
   base::WeakPtrFactory<CriticalActionService> weak_ptr_factory_{this};
 };

@@ -28,6 +28,17 @@ TEST(CriticalActionMetricsTest, RecordVisitIdResolutionOutcome) {
       VisitIdResolutionOutcome::kEvictedNavigatedAway, 1);
 }
 
+TEST(CriticalActionMetricsTest, RecordConversationAnchorResolutionOutcome) {
+  base::HistogramTester histogram_tester;
+  RecordConversationAnchorResolutionOutcome(
+      ActionSource::kActor,
+      ConversationAnchorResolutionOutcome::kResolvedFromCache);
+
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kResolvedFromCache, 1);
+}
+
 TEST(CriticalActionMetricsTest, RecordConversationIdResolutionOutcome) {
   base::HistogramTester histogram_tester;
   RecordConversationIdResolutionOutcome(

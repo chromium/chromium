@@ -7,13 +7,16 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,6 +24,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -51,11 +55,34 @@ constexpr char kServerInRedirectActor[] =
 constexpr char kClientInRedirectActor[] =
     "CriticalActions.EventLoggedInRedirect.ClientRedirect.Actor";
 
+// Optionally enables `kCriticalActionHistory` with the given params for as long
+// as it is alive.
+class ScopedCriticalActionHistoryFeature {
+ public:
+  ScopedCriticalActionHistoryFeature() = default;
+  explicit ScopedCriticalActionHistoryFeature(base::FieldTrialParams params) {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kCriticalActionHistory, params);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 }  // namespace
 
 class CriticalActionServiceTest : public testing::Test {
  public:
   CriticalActionServiceTest() = default;
+
+ protected:
+  // Enables `kCriticalActionHistory` with `critical_action_history_params`.
+  // The feature list is set up before `task_environment_` exists and is
+  // restored only after it is destroyed, so no thread pool thread can read
+  // base::FeatureList while it is being changed.
+  explicit CriticalActionServiceTest(
+      base::FieldTrialParams critical_action_history_params)
+      : feature_list_(std::move(critical_action_history_params)) {}
 
  protected:
   void SetUp() override {
@@ -105,6 +132,22 @@ class CriticalActionServiceTest : public testing::Test {
                      history::VisitResponseCodeCategory::kNot404, nav_id));
   }
 
+  std::optional<CriticalActionEntry> GetCriticalActionSync(
+      std::string_view critical_action_id) {
+    base::test::TestFuture<std::optional<CriticalActionEntry>> get_future;
+    service_->GetCriticalAction(critical_action_id, get_future.GetCallback());
+    return get_future.Get();
+  }
+
+  void FlushBackend() {
+    base::test::TestFuture<void> flush_future;
+    backend_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                           flush_future.GetCallback());
+    ASSERT_TRUE(flush_future.Wait());
+  }
+
+  // Must be declared before `task_environment_`; see the constructor above.
+  ScopedCriticalActionHistoryFeature feature_list_;
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
@@ -977,6 +1020,524 @@ TEST_F(CriticalActionServiceTest,
 
   histogram_tester.ExpectUniqueSample(kClientInRedirectActor,
                                       ActionType::kFormFill, 1);
+}
+
+// Enables `kCriticalActionHistory` with `enable_action_level_chat_linkouts` set
+// to `action_level_enabled`, plus `extra_params`.
+class CriticalActionServiceAnchorTest : public CriticalActionServiceTest {
+ public:
+  CriticalActionServiceAnchorTest()
+      : CriticalActionServiceAnchorTest(/*action_level_enabled=*/true) {}
+
+ protected:
+  explicit CriticalActionServiceAnchorTest(
+      bool action_level_enabled,
+      base::FieldTrialParams extra_params = {})
+      : CriticalActionServiceTest(
+            WithActionLevelParam(action_level_enabled,
+                                 std::move(extra_params))) {}
+
+ private:
+  static base::FieldTrialParams WithActionLevelParam(
+      bool action_level_enabled,
+      base::FieldTrialParams params) {
+    params["enable_action_level_chat_linkouts"] =
+        action_level_enabled ? "true" : "false";
+    return params;
+  }
+};
+
+TEST_F(CriticalActionServiceAnchorTest,
+       StaleTurnRacePreservesEnqueueTimeAnchor) {
+  base::HistogramTester histogram_tester;
+  constexpr std::string_view kTaskId = "task_1";
+  constexpr int64_t kNavId1 = 101;
+  constexpr int64_t kVisitId1 = 5001;
+
+  service_->SetActorTaskConversationAnchorId(kTaskId, "turn_a");
+
+  // Enqueue action 1 before `kNavId1` commits to History.
+  CriticalActionEntry entry1 = CreateDefaultEntry();
+  entry1.actor_task_id = std::string(kTaskId);
+  service_->AddCriticalActionWithNavigationId(entry1, kNavId1);
+
+  // Advance the active turn before History resolves `kNavId1`.
+  service_->SetActorTaskConversationAnchorId(kTaskId, "turn_b");
+  NotifyVisit(kNavId1, kVisitId1, kNewChain);
+
+  auto retrieved1 = GetCriticalActionSync(entry1.critical_action_id);
+  ASSERT_TRUE(retrieved1.has_value());
+  EXPECT_EQ(retrieved1->visit_id, kVisitId1);
+  EXPECT_EQ(retrieved1->conversation_anchor_id, "turn_a");
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kResolvedFromCache, 1);
+
+  // Log action 2 on already-resolved `kNavId1` after `"turn_b"` was set.
+  CriticalActionEntry entry2 = CreateDefaultEntry();
+  entry2.actor_task_id = std::string(kTaskId);
+  service_->AddCriticalActionWithNavigationId(entry2, kNavId1);
+
+  auto retrieved2 = GetCriticalActionSync(entry2.critical_action_id);
+  ASSERT_TRUE(retrieved2.has_value());
+  EXPECT_EQ(retrieved2->visit_id, kVisitId1);
+  EXPECT_EQ(retrieved2->conversation_anchor_id, "turn_b");
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kResolvedFromCache, 2);
+}
+
+TEST_F(CriticalActionServiceAnchorTest,
+       PrePopulatedConversationAnchorPreserved) {
+  base::HistogramTester histogram_tester;
+  constexpr std::string_view kTaskId = "task_1";
+  constexpr int64_t kNavId = 102;
+  constexpr int64_t kVisitId = 5002;
+
+  service_->SetActorTaskConversationAnchorId(kTaskId, "cached_anchor");
+
+  CriticalActionEntry nav_entry = CreateDefaultEntry();
+  nav_entry.actor_task_id = std::string(kTaskId);
+  nav_entry.conversation_anchor_id = "explicit_anchor";
+  service_->AddCriticalActionWithNavigationId(nav_entry, kNavId);
+  NotifyVisit(kNavId, kVisitId, kNewChain);
+
+  CriticalActionEntry direct_entry = CreateDefaultEntry();
+  direct_entry.actor_task_id = std::string(kTaskId);
+  direct_entry.conversation_anchor_id = "explicit_anchor";
+  service_->AddCriticalAction(direct_entry);
+
+  auto retrieved_nav = GetCriticalActionSync(nav_entry.critical_action_id);
+  ASSERT_TRUE(retrieved_nav.has_value());
+  EXPECT_EQ(retrieved_nav->conversation_anchor_id, "explicit_anchor");
+
+  auto retrieved_direct =
+      GetCriticalActionSync(direct_entry.critical_action_id);
+  ASSERT_TRUE(retrieved_direct.has_value());
+  EXPECT_EQ(retrieved_direct->conversation_anchor_id, "explicit_anchor");
+
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kAlreadyPresent, 2);
+}
+
+TEST_F(CriticalActionServiceAnchorTest, ConversationAnchorMissingTaskId) {
+  base::HistogramTester histogram_tester;
+
+  CriticalActionEntry entry = CreateDefaultEntry();
+  entry.actor_task_id = "";
+  entry.conversation_anchor_id = "";
+  service_->AddCriticalAction(entry);
+
+  auto retrieved = GetCriticalActionSync(entry.critical_action_id);
+  ASSERT_TRUE(retrieved.has_value());
+  EXPECT_EQ(retrieved->conversation_anchor_id, "");
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kMissingTaskId, 1);
+}
+
+TEST_F(CriticalActionServiceAnchorTest,
+       ConversationAnchorCacheMissNotBackfilledDuringVisitWait) {
+  base::HistogramTester histogram_tester;
+  constexpr std::string_view kTaskId = "task_miss";
+  constexpr int64_t kNavId = 103;
+  constexpr int64_t kVisitId = 5003;
+
+  CriticalActionEntry entry = CreateDefaultEntry();
+  entry.actor_task_id = std::string(kTaskId);
+  service_->AddCriticalActionWithNavigationId(entry, kNavId);
+
+  // Setting an anchor while waiting for History visit commit must not
+  // retroactively stamp the already-enqueued action.
+  service_->SetActorTaskConversationAnchorId(kTaskId, "late_anchor");
+  NotifyVisit(kNavId, kVisitId, kNewChain);
+
+  auto retrieved = GetCriticalActionSync(entry.critical_action_id);
+  ASSERT_TRUE(retrieved.has_value());
+  EXPECT_EQ(retrieved->visit_id, kVisitId);
+  EXPECT_EQ(retrieved->conversation_anchor_id, "");
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kCacheMiss, 1);
+}
+
+TEST_F(CriticalActionServiceAnchorTest,
+       ConversationAnchorExactMaxLengthAccepted) {
+  base::HistogramTester histogram_tester;
+  const std::string max_anchor(kMaxConversationAnchorIdLength, 'a');
+  constexpr std::string_view kTaskId = "task_max_len";
+  constexpr int64_t kNavId = 104;
+  constexpr int64_t kVisitId = 5004;
+
+  CriticalActionEntry direct_entry = CreateDefaultEntry();
+  direct_entry.conversation_anchor_id = max_anchor;
+  service_->AddCriticalAction(direct_entry);
+
+  service_->SetActorTaskConversationAnchorId(kTaskId, max_anchor);
+  CriticalActionEntry cached_entry = CreateDefaultEntry();
+  cached_entry.actor_task_id = std::string(kTaskId);
+  service_->AddCriticalActionWithNavigationId(cached_entry, kNavId);
+  NotifyVisit(kNavId, kVisitId, kNewChain);
+
+  auto retrieved_direct =
+      GetCriticalActionSync(direct_entry.critical_action_id);
+  ASSERT_TRUE(retrieved_direct.has_value());
+  EXPECT_EQ(retrieved_direct->conversation_anchor_id, max_anchor);
+
+  auto retrieved_cached =
+      GetCriticalActionSync(cached_entry.critical_action_id);
+  ASSERT_TRUE(retrieved_cached.has_value());
+  EXPECT_EQ(retrieved_cached->conversation_anchor_id, max_anchor);
+
+  histogram_tester.ExpectTotalCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor", 2);
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kAlreadyPresent, 1);
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kResolvedFromCache, 1);
+}
+
+TEST_F(CriticalActionServiceAnchorTest,
+       OversizedConversationAnchorOnEntryDropped) {
+  base::HistogramTester histogram_tester;
+  constexpr std::string_view kTaskId = "task_oversized_entry";
+  const std::string oversized_anchor(kMaxConversationAnchorIdLength + 1, 'x');
+  constexpr int64_t kNavId = 105;
+  constexpr int64_t kVisitId = 5005;
+
+  service_->SetActorTaskConversationAnchorId(kTaskId, "valid_anchor");
+
+  CriticalActionEntry nav_entry = CreateDefaultEntry();
+  nav_entry.actor_task_id = std::string(kTaskId);
+  nav_entry.conversation_anchor_id = oversized_anchor;
+  service_->AddCriticalActionWithNavigationId(nav_entry, kNavId);
+  NotifyVisit(kNavId, kVisitId, kNewChain);
+
+  CriticalActionEntry direct_entry = CreateDefaultEntry();
+  direct_entry.actor_task_id = std::string(kTaskId);
+  direct_entry.conversation_anchor_id = oversized_anchor;
+  service_->AddCriticalAction(direct_entry);
+
+  auto retrieved_nav = GetCriticalActionSync(nav_entry.critical_action_id);
+  ASSERT_TRUE(retrieved_nav.has_value());
+  EXPECT_EQ(retrieved_nav->conversation_anchor_id, "");
+
+  auto retrieved_direct =
+      GetCriticalActionSync(direct_entry.critical_action_id);
+  ASSERT_TRUE(retrieved_direct.has_value());
+  EXPECT_EQ(retrieved_direct->conversation_anchor_id, "");
+
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kDroppedTooLong, 2);
+}
+
+TEST_F(CriticalActionServiceAnchorTest,
+       OversizedConversationAnchorInCacheInvalidatesPreviousAnchor) {
+  base::HistogramTester histogram_tester;
+  constexpr std::string_view kTaskId = "task_oversized_cache";
+
+  service_->SetActorTaskConversationAnchorId(kTaskId, "turn_1");
+  CriticalActionEntry entry1 = CreateDefaultEntry();
+  entry1.actor_task_id = std::string(kTaskId);
+  service_->AddCriticalAction(entry1);
+
+  auto retrieved1 = GetCriticalActionSync(entry1.critical_action_id);
+  ASSERT_TRUE(retrieved1.has_value());
+  EXPECT_EQ(retrieved1->conversation_anchor_id, "turn_1");
+
+  // Setting an oversized anchor must invalidate `"turn_1"` and record
+  // `kDroppedTooLong` rather than `kCacheMiss`.
+  service_->SetActorTaskConversationAnchorId(
+      kTaskId, std::string(kMaxConversationAnchorIdLength + 1, 'z'));
+  CriticalActionEntry entry2 = CreateDefaultEntry();
+  entry2.actor_task_id = std::string(kTaskId);
+  service_->AddCriticalAction(entry2);
+
+  auto retrieved2 = GetCriticalActionSync(entry2.critical_action_id);
+  ASSERT_TRUE(retrieved2.has_value());
+  EXPECT_EQ(retrieved2->conversation_anchor_id, "");
+
+  // Setting a valid anchor afterwards recovers normal resolution.
+  service_->SetActorTaskConversationAnchorId(kTaskId, "turn_3");
+  CriticalActionEntry entry3 = CreateDefaultEntry();
+  entry3.actor_task_id = std::string(kTaskId);
+  service_->AddCriticalAction(entry3);
+
+  auto retrieved3 = GetCriticalActionSync(entry3.critical_action_id);
+  ASSERT_TRUE(retrieved3.has_value());
+  EXPECT_EQ(retrieved3->conversation_anchor_id, "turn_3");
+
+  histogram_tester.ExpectTotalCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor", 3);
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kResolvedFromCache, 2);
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kDroppedTooLong, 1);
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kCacheMiss, 0);
+}
+
+TEST_F(CriticalActionServiceAnchorTest,
+       MarkConversationAnchorDroppedTooLongInvalidatesPreviousAnchor) {
+  base::HistogramTester histogram_tester;
+  constexpr std::string_view kTaskId = "task_marked_dropped";
+
+  // Marking an empty task ID is a safe no-op.
+  service_->MarkActorTaskConversationAnchorDroppedTooLong("");
+
+  service_->SetActorTaskConversationAnchorId(kTaskId, "turn_1");
+  // A caller-enforced length violation invalidates `"turn_1"` and records
+  // `kDroppedTooLong` rather than `kCacheMiss`, even though the anchor itself
+  // never reached the service.
+  service_->MarkActorTaskConversationAnchorDroppedTooLong(kTaskId);
+  CriticalActionEntry entry1 = CreateDefaultEntry();
+  entry1.actor_task_id = std::string(kTaskId);
+  service_->AddCriticalAction(entry1);
+
+  auto retrieved1 = GetCriticalActionSync(entry1.critical_action_id);
+  ASSERT_TRUE(retrieved1.has_value());
+  EXPECT_EQ(retrieved1->conversation_anchor_id, "");
+
+  // Setting a valid anchor afterwards recovers normal resolution.
+  service_->SetActorTaskConversationAnchorId(kTaskId, "turn_2");
+  CriticalActionEntry entry2 = CreateDefaultEntry();
+  entry2.actor_task_id = std::string(kTaskId);
+  service_->AddCriticalAction(entry2);
+
+  auto retrieved2 = GetCriticalActionSync(entry2.critical_action_id);
+  ASSERT_TRUE(retrieved2.has_value());
+  EXPECT_EQ(retrieved2->conversation_anchor_id, "turn_2");
+
+  histogram_tester.ExpectTotalCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor", 2);
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kDroppedTooLong, 1);
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kResolvedFromCache, 1);
+}
+
+TEST_F(CriticalActionServiceAnchorTest,
+       SetActorTaskConversationAnchorIdEmptyInputsClearOrIgnore) {
+  base::HistogramTester histogram_tester;
+  constexpr std::string_view kTaskId = "task_clear";
+
+  // Empty task ID is a safe no-op, and clearing an absent task ID is a no-op.
+  service_->SetActorTaskConversationAnchorId("", "turn_1");
+  service_->SetActorTaskConversationAnchorId(kTaskId, "");
+
+  service_->SetActorTaskConversationAnchorId(kTaskId, "turn_1");
+  CriticalActionEntry entry1 = CreateDefaultEntry();
+  entry1.actor_task_id = std::string(kTaskId);
+  service_->AddCriticalAction(entry1);
+
+  auto retrieved1 = GetCriticalActionSync(entry1.critical_action_id);
+  ASSERT_TRUE(retrieved1.has_value());
+  EXPECT_EQ(retrieved1->conversation_anchor_id, "turn_1");
+
+  // Passing an empty anchor clears the cached value for `kTaskId`.
+  service_->SetActorTaskConversationAnchorId(kTaskId, "");
+  CriticalActionEntry entry2 = CreateDefaultEntry();
+  entry2.actor_task_id = std::string(kTaskId);
+  service_->AddCriticalAction(entry2);
+
+  auto retrieved2 = GetCriticalActionSync(entry2.critical_action_id);
+  ASSERT_TRUE(retrieved2.has_value());
+  EXPECT_EQ(retrieved2->conversation_anchor_id, "");
+
+  histogram_tester.ExpectTotalCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor", 2);
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kResolvedFromCache, 1);
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kCacheMiss, 1);
+}
+
+// Configures an anchor cache capacity of 1 to check that
+// `max_task_to_anchor_cache_capacity` is plumbed through.
+class CriticalActionServiceSmallAnchorCacheTest
+    : public CriticalActionServiceAnchorTest {
+ public:
+  CriticalActionServiceSmallAnchorCacheTest()
+      : CriticalActionServiceAnchorTest(
+            /*action_level_enabled=*/true,
+            {{"max_task_to_anchor_cache_capacity", "1"}}) {}
+};
+
+TEST_F(CriticalActionServiceSmallAnchorCacheTest,
+       TaskToAnchorCacheRespectsCapacity) {
+  base::HistogramTester histogram_tester;
+
+  service_->SetActorTaskConversationAnchorId("task_1", "anchor_1");
+  // With capacity 1, caching `"task_2"` evicts `"task_1"`.
+  service_->SetActorTaskConversationAnchorId("task_2", "anchor_2");
+
+  CriticalActionEntry check_task_1 = CreateDefaultEntry();
+  check_task_1.actor_task_id = "task_1";
+  service_->AddCriticalAction(check_task_1);
+
+  CriticalActionEntry check_task_2 = CreateDefaultEntry();
+  check_task_2.actor_task_id = "task_2";
+  service_->AddCriticalAction(check_task_2);
+
+  auto retrieved_task_1 =
+      GetCriticalActionSync(check_task_1.critical_action_id);
+  ASSERT_TRUE(retrieved_task_1.has_value());
+  EXPECT_EQ(retrieved_task_1->conversation_anchor_id, "");
+
+  auto retrieved_task_2 =
+      GetCriticalActionSync(check_task_2.critical_action_id);
+  ASSERT_TRUE(retrieved_task_2.has_value());
+  EXPECT_EQ(retrieved_task_2->conversation_anchor_id, "anchor_2");
+
+  histogram_tester.ExpectTotalCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor", 2);
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kCacheMiss, 1);
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kResolvedFromCache, 1);
+}
+
+// `Shutdown()` also clears `task_to_anchor_cache_`, but that is not observable
+// through the public API because every entry point returns early once the
+// backend is gone. This test only verifies that the anchor APIs are safe no-ops
+// after shutdown.
+TEST_F(CriticalActionServiceAnchorTest,
+       ConversationAnchorApisNoOpAfterShutdown) {
+  base::HistogramTester histogram_tester;
+  constexpr std::string_view kTaskId = "task_shutdown";
+
+  service_->SetActorTaskConversationAnchorId(kTaskId, "turn_1");
+  CriticalActionEntry before_shutdown = CreateDefaultEntry();
+  before_shutdown.actor_task_id = std::string(kTaskId);
+  service_->AddCriticalAction(before_shutdown);
+
+  auto retrieved = GetCriticalActionSync(before_shutdown.critical_action_id);
+  ASSERT_TRUE(retrieved.has_value());
+  EXPECT_EQ(retrieved->conversation_anchor_id, "turn_1");
+
+  service_->Shutdown();
+
+  // Post-shutdown calls to anchor cache and action logging APIs must be safe
+  // no-ops without emitting additional anchor resolution histograms.
+  service_->SetActorTaskConversationAnchorId(kTaskId, "turn_2");
+  service_->SetActorTaskConversationAnchorId(kTaskId, "");
+  service_->MarkActorTaskConversationAnchorDroppedTooLong(kTaskId);
+
+  CriticalActionEntry after_shutdown = CreateDefaultEntry();
+  after_shutdown.actor_task_id = std::string(kTaskId);
+  service_->AddCriticalActionWithNavigationId(after_shutdown,
+                                              /*navigation_id=*/42);
+  service_->AddCriticalAction(after_shutdown);
+
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
+      ConversationAnchorResolutionOutcome::kResolvedFromCache, 1);
+  FlushBackend();
+}
+
+TEST_F(CriticalActionServiceAnchorTest,
+       ZeroNavigationIdRecordsNoConversationAnchorOutcome) {
+  base::HistogramTester histogram_tester;
+  constexpr std::string_view kTaskId = "task_zero_nav";
+  service_->SetActorTaskConversationAnchorId(kTaskId, "turn_1");
+
+  CriticalActionEntry entry = CreateDefaultEntry();
+  entry.actor_task_id = std::string(kTaskId);
+  service_->AddCriticalActionWithNavigationId(entry, /*navigation_id=*/0);
+
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.VisitIdResolutionOutcome.Actor",
+      VisitIdResolutionOutcome::kDroppedNoNavigationId, 1);
+  histogram_tester.ExpectTotalCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor", 0);
+}
+
+TEST_F(CriticalActionServiceTest,
+       ZeroNavigationIdAfterShutdownRecordsNoVisitIdOutcome) {
+  base::HistogramTester histogram_tester;
+  service_->Shutdown();
+
+  service_->AddCriticalActionWithNavigationId(CreateDefaultEntry(),
+                                              /*navigation_id=*/0);
+
+  histogram_tester.ExpectTotalCount(
+      "CriticalActions.VisitIdResolutionOutcome.Actor", 0);
+}
+
+// With `enable_action_level_chat_linkouts` off, anchors are neither cached nor
+// resolved, and no ConversationAnchorResolutionOutcome is recorded. A
+// caller-provided anchor is still stored as before, unless it is oversized.
+class CriticalActionServiceActionLevelDisabledTest
+    : public CriticalActionServiceAnchorTest {
+ public:
+  CriticalActionServiceActionLevelDisabledTest()
+      : CriticalActionServiceAnchorTest(/*action_level_enabled=*/false) {}
+};
+
+TEST_F(CriticalActionServiceActionLevelDisabledTest,
+       ConversationAnchorsNotCachedOrResolved) {
+  base::HistogramTester histogram_tester;
+  constexpr std::string_view kTaskId = "task_disabled";
+  constexpr int64_t kNavId = 106;
+  constexpr int64_t kVisitId = 5006;
+
+  service_->SetActorTaskConversationAnchorId(kTaskId, "turn_1");
+  CriticalActionEntry direct_entry = CreateDefaultEntry();
+  direct_entry.actor_task_id = std::string(kTaskId);
+  service_->AddCriticalAction(direct_entry);
+
+  service_->MarkActorTaskConversationAnchorDroppedTooLong(kTaskId);
+  CriticalActionEntry nav_entry = CreateDefaultEntry();
+  nav_entry.actor_task_id = std::string(kTaskId);
+  service_->AddCriticalActionWithNavigationId(nav_entry, kNavId);
+  NotifyVisit(kNavId, kVisitId, kNewChain);
+
+  CriticalActionEntry explicit_entry = CreateDefaultEntry();
+  explicit_entry.actor_task_id = std::string(kTaskId);
+  explicit_entry.conversation_anchor_id = "explicit_anchor";
+  service_->AddCriticalAction(explicit_entry);
+
+  CriticalActionEntry oversized_entry = CreateDefaultEntry();
+  oversized_entry.actor_task_id = std::string(kTaskId);
+  oversized_entry.conversation_anchor_id =
+      std::string(kMaxConversationAnchorIdLength + 1, 'x');
+  service_->AddCriticalAction(oversized_entry);
+
+  auto retrieved_direct =
+      GetCriticalActionSync(direct_entry.critical_action_id);
+  ASSERT_TRUE(retrieved_direct.has_value());
+  EXPECT_EQ(retrieved_direct->conversation_anchor_id, "");
+
+  auto retrieved_nav = GetCriticalActionSync(nav_entry.critical_action_id);
+  ASSERT_TRUE(retrieved_nav.has_value());
+  EXPECT_EQ(retrieved_nav->visit_id, kVisitId);
+  EXPECT_EQ(retrieved_nav->conversation_anchor_id, "");
+
+  auto retrieved_explicit =
+      GetCriticalActionSync(explicit_entry.critical_action_id);
+  ASSERT_TRUE(retrieved_explicit.has_value());
+  EXPECT_EQ(retrieved_explicit->conversation_anchor_id, "explicit_anchor");
+
+  auto retrieved_oversized =
+      GetCriticalActionSync(oversized_entry.critical_action_id);
+  ASSERT_TRUE(retrieved_oversized.has_value());
+  EXPECT_EQ(retrieved_oversized->conversation_anchor_id, "");
+
+  histogram_tester.ExpectTotalCount(
+      "CriticalActions.ConversationAnchorResolutionOutcome.Actor", 0);
 }
 
 }  // namespace critical_actions

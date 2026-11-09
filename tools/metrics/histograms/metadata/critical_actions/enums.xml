@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(CriticalActionConversationAnchorResolutionOutcome) -->
+
+<enum name="CriticalActionConversationAnchorResolutionOutcome">
+  <int value="0" label="Success: Already present on entry"/>
+  <int value="1" label="Success: Resolved from in-memory cache"/>
+  <int value="2" label="Failed: Missing actor task ID"/>
+  <int value="3" label="Failed: Cache miss at enqueue time"/>
+  <int value="4" label="Dropped: Exceeded maximum anchor ID length"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_metrics.h:ConversationAnchorResolutionOutcome) -->
+
 <!-- LINT.IfChange(CriticalActionConversationIdDeferredResolutionOutcome) -->
 
 <enum name="CriticalActionConversationIdDeferredResolutionOutcome">

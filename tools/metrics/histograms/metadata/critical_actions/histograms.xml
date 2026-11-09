@@ -43,6 +43,34 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_redirect_metrics_recorder.h:RedirectType) -->
 
 <histogram
+    name="CriticalActions.ConversationAnchorResolutionOutcome.{ActionSource}"
+    enum="CriticalActionConversationAnchorResolutionOutcome"
+    expires_after="2027-11-01">
+  <owner>heychirag@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records whether a critical action triggered by {ActionSource} was assigned a
+    conversation anchor (e.g. the Gemini turn that caused it), and if not, why.
+    Recorded once per critical action when it is logged, before it is associated
+    with a history visit, and only while action-level chat linkouts are enabled.
+
+    The anchor is the one most recently set for the action's task when the
+    action is logged. Setting the same anchor again (e.g. for each batch of
+    actions of one turn) does not change attribution, but an action that is
+    logged after a different anchor was set (e.g. an asynchronous event from an
+    earlier turn) gets the newer anchor and is still recorded as &quot;Success:
+    Resolved from in-memory cache&quot;.
+
+    Because it is recorded when the action is logged, this includes actions that
+    are dropped before they are associated with a history visit (see
+    CriticalActions.VisitIdResolutionOutcome.{ActionSource}) and are never
+    saved, so its total is not comparable to
+    CriticalActions.EventLogged.{ActionSource}.
+  </summary>
+  <token key="ActionSource" variants="ActionSource"/>
+</histogram>
+
+<histogram
     name="CriticalActions.ConversationIdDeferredResolutionOutcome.{ActionSource}"
     enum="CriticalActionConversationIdDeferredResolutionOutcome"
     expires_after="2027-01-01">
@@ -98,10 +126,12 @@ chromium-metrics-reviews@google.com.
   <owner>kalinino@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>
-    Records the ActionType category (e.g. form fill, password manager login,
-    federated login, download, OTP) of a critical action. Recorded in
-    CriticalActionService::AddCriticalAction whenever a new critical action is
-    added to the service to be persisted to the database by {ActionSource}.
+    Records the category (e.g. form fill, password manager login, federated
+    login, download, OTP) of each critical action triggered by {ActionSource}
+    that is saved to the critical action history. For most sources, an action is
+    saved once it has been associated with a history visit; actions that are
+    dropped before that are not recorded (see
+    CriticalActions.VisitIdResolutionOutcome.{ActionSource}).
   </summary>
   <token key="ActionSource" variants="ActionSource"/>
 </histogram>

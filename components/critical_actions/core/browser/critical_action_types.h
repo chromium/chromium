@@ -57,7 +57,7 @@ enum class OpenConversationResult {
 // Maximum allowed byte length for
 // `CriticalActionEntry::conversation_anchor_id`. Generous enough for
 // agent-agnostic identifiers (e.g., Glic turn IDs, UUIDs, or opaque 3P agent
-// tokens) while bounding SQLite storage.
+// tokens) while bounding in-memory caches and SQLite storage.
 inline constexpr size_t kMaxConversationAnchorIdLength = 512;
 
 // Represents a memory row copy of a single record in critical_actions database.

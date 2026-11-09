@@ -11,6 +11,19 @@
 
 namespace critical_actions {
 
+// Outcome of resolving a conversation anchor ID for critical action entries
+// at enqueue time.
+// LINT.IfChange(ConversationAnchorResolutionOutcome)
+enum class ConversationAnchorResolutionOutcome {
+  kAlreadyPresent = 0,
+  kResolvedFromCache = 1,
+  kMissingTaskId = 2,
+  kCacheMiss = 3,
+  kDroppedTooLong = 4,
+  kMaxValue = kDroppedTooLong,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:CriticalActionConversationAnchorResolutionOutcome)
+
 // Outcome of resolving a conversation ID for critical action entries.
 // LINT.IfChange(ConversationIdResolutionOutcome)
 enum class ConversationIdResolutionOutcome {
@@ -52,6 +65,12 @@ std::string_view ActionSourceToHistogramSuffix(ActionSource source);
 // Records CriticalActions.VisitIdResolutionOutcome.{ActionSource}.
 void RecordVisitIdResolutionOutcome(ActionSource source,
                                     VisitIdResolutionOutcome outcome);
+
+// Records
+// CriticalActions.ConversationAnchorResolutionOutcome.{ActionSource}.
+void RecordConversationAnchorResolutionOutcome(
+    ActionSource source,
+    ConversationAnchorResolutionOutcome outcome);
 
 // Records CriticalActions.ConversationIdResolutionOutcome.{ActionSource}.
 void RecordConversationIdResolutionOutcome(
