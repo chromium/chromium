@@ -49,6 +49,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
@@ -1020,6 +1021,11 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
   EXPECT_FALSE(group_view_b->GetVisible());
   EXPECT_LT(group_view_a->GetFocusSwitchSlideOffset(), 0);
   EXPECT_FALSE(unrelated_tab_view->GetVisible());
+  EXPECT_EQ(unrelated_tab_view->layer(), nullptr);
+  ASSERT_NE(group_view_a->layer(), nullptr);
+  EXPECT_GT(group_view_a->layer()->opacity(), 0.0f);
+  EXPECT_LT(group_view_a->layer()->opacity(), 1.0f);
+  EXPECT_EQ(group_view_b->layer(), nullptr);
   EXPECT_EQ(group_view_a->y(), 0);
 
   // After the handoff (100 ms in) the incoming group takes its place and
@@ -1029,6 +1035,11 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
   EXPECT_TRUE(group_view_b->GetVisible());
   EXPECT_GT(group_view_b->GetFocusSwitchSlideOffset(), 0);
   EXPECT_FALSE(unrelated_tab_view->GetVisible());
+  EXPECT_EQ(unrelated_tab_view->layer(), nullptr);
+  EXPECT_EQ(group_view_a->layer(), nullptr);
+  ASSERT_NE(group_view_b->layer(), nullptr);
+  EXPECT_GT(group_view_b->layer()->opacity(), 0.0f);
+  EXPECT_LT(group_view_b->layer()->opacity(), 1.0f);
   EXPECT_EQ(group_view_b->y(), 0);
   EXPECT_TRUE(group_view_b->unfocus_header()->GetVisible());
   EXPECT_FALSE(group_view_b->group_line()->GetVisible());
@@ -1042,6 +1053,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
   EXPECT_TRUE(group_view_b->unfocus_header()->GetVisible());
   EXPECT_EQ(group_view_a->GetFocusSwitchSlideOffset(), 0);
   EXPECT_EQ(group_view_b->GetFocusSwitchSlideOffset(), 0);
+  EXPECT_EQ(group_view_a->layer(), nullptr);
+  EXPECT_EQ(group_view_b->layer(), nullptr);
 }
 
 // Exiting focus on an ephemeral (non-group focus) group defers dissolving the
@@ -1118,6 +1131,11 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
   EXPECT_FALSE(model->group_model()->ContainsTabGroup(group_id));
   EXPECT_EQ(find_group_view(), nullptr);
   EXPECT_EQ(unrelated_tab_view->height(), unrelated_tab_height);
+  // The dissolved group's tabs were reparented into the container as the exit
+  // motion ended; neither they nor the unrelated tab keep a fade layer.
+  for (views::View* child : unpinned_view->children()) {
+    EXPECT_EQ(child->layer(), nullptr);
+  }
 }
 
 // With rich animations disabled (e.g. reduced motion), entering and exiting
@@ -1131,6 +1149,18 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
   views::View* const unpinned_view = unpinned_collection_node()->view();
   TabStripModel* const model = browser()->GetTabStripModel();
 
+  const base::CallbackListSubscription sub =
+      BrowserAnimationController::From(browser())->Subscribe(
+          FocusModeAnimations::kFocusMode,
+          base::BindRepeating(
+              [](views::View* unpinned_view, const BrowserAnimationController*,
+                 BrowserAnimationUpdate) {
+                for (views::View* child : unpinned_view->children()) {
+                  EXPECT_EQ(child->layer(), nullptr);
+                }
+              },
+              unpinned_view));
+
   model->EnterFocusMode(group_id);
   RunScheduledLayouts();
   FinishFocusMotion();
@@ -1139,6 +1169,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
   EXPECT_FALSE(group_view->group_line()->GetVisible());
   for (views::View* child : unpinned_view->children()) {
     EXPECT_EQ(child->GetVisible(), child == group_view);
+    EXPECT_EQ(child->layer(), nullptr);
   }
 
   model->ExitFocusMode();
@@ -1149,6 +1180,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
   EXPECT_TRUE(group_view->group_line()->GetVisible());
   for (views::View* child : unpinned_view->children()) {
     EXPECT_TRUE(child->GetVisible());
+    EXPECT_EQ(child->layer(), nullptr);
   }
 }
 
@@ -1178,7 +1210,139 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
             nullptr);
   for (views::View* child : unpinned_collection_node()->view()->children()) {
     EXPECT_TRUE(child->GetVisible());
+    EXPECT_EQ(child->layer(), nullptr);
   }
+}
+
+// While a focus transition runs, the container's unrelated children paint to
+// layers that fade with `FocusModeAnimations::kUnrelatedTabsOpacity`; the
+// focused group never does. The layers are released once the motion ends.
+IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
+                       FocusModeFadesUnrelatedChildren) {
+  DisableFocusAnimations();
+  tab_groups::TabGroupId group_id = CreateInactiveTabGroup();
+  TabGroupView* const group_view = GetTabGroupView(group_id);
+  ASSERT_NE(group_view, nullptr);
+  views::View* const unrelated_tab_view =
+      unpinned_collection_node()->children()[0]->view();
+  ASSERT_EQ(unrelated_tab_view->layer(), nullptr);
+
+  EnableFocusAnimations();
+  auto animation_container = base::MakeRefCounted<gfx::AnimationContainer>();
+  BrowserAnimationController* const anim_controller =
+      BrowserAnimationController::From(browser());
+  anim_controller->SetAnimationContainerForTesting(
+      FocusModeAnimations::kFocusMode, animation_container.get());
+  TabStripModel* const model = browser()->GetTabStripModel();
+
+  // Enter: the unrelated tab is layered on the first progress step and fades
+  // out over [0, 100] ms while the 300 ms enter motion shrinks it away.
+  model->EnterFocusMode(group_id);
+  gfx::AnimationContainerTestApi enter_test_api(animation_container.get());
+  RunScheduledLayouts();
+  EXPECT_EQ(unrelated_tab_view->layer(), nullptr);
+  EXPECT_EQ(group_view->layer(), nullptr);
+
+  enter_test_api.IncrementTime(base::Milliseconds(50));
+  RunScheduledLayouts();
+  ASSERT_NE(unrelated_tab_view->layer(), nullptr);
+  EXPECT_GT(unrelated_tab_view->layer()->opacity(), 0.0f);
+  EXPECT_LT(unrelated_tab_view->layer()->opacity(), 1.0f);
+  EXPECT_EQ(group_view->layer(), nullptr);
+
+  enter_test_api.IncrementTime(base::Milliseconds(100));
+  RunScheduledLayouts();
+  ASSERT_NE(unrelated_tab_view->layer(), nullptr);
+  EXPECT_EQ(unrelated_tab_view->layer()->opacity(), 0.0f);
+  EXPECT_EQ(group_view->layer(), nullptr);
+
+  enter_test_api.IncrementTime(base::Milliseconds(200));
+  RunScheduledLayouts();
+  EXPECT_FALSE(anim_controller->IsAnimating(FocusModeAnimations::kFocusMode));
+  EXPECT_EQ(unrelated_tab_view->layer(), nullptr);
+  EXPECT_EQ(group_view->layer(), nullptr);
+
+  // Exit: the unrelated tab is layered at opacity 0 while growing back, then
+  // fades in over [167, 250] ms and releases its layer when the motion ends.
+  model->ExitFocusMode();
+  gfx::AnimationContainerTestApi exit_test_api(animation_container.get());
+  RunScheduledLayouts();
+  EXPECT_EQ(unrelated_tab_view->layer(), nullptr);
+  EXPECT_EQ(group_view->layer(), nullptr);
+
+  exit_test_api.IncrementTime(base::Milliseconds(100));
+  RunScheduledLayouts();
+  ASSERT_NE(unrelated_tab_view->layer(), nullptr);
+  EXPECT_EQ(unrelated_tab_view->layer()->opacity(), 0.0f);
+  EXPECT_TRUE(unrelated_tab_view->GetVisible());
+  EXPECT_EQ(group_view->layer(), nullptr);
+
+  exit_test_api.IncrementTime(base::Milliseconds(100));
+  RunScheduledLayouts();
+  ASSERT_NE(unrelated_tab_view->layer(), nullptr);
+  EXPECT_GT(unrelated_tab_view->layer()->opacity(), 0.0f);
+  EXPECT_LT(unrelated_tab_view->layer()->opacity(), 1.0f);
+  EXPECT_EQ(group_view->layer(), nullptr);
+
+  exit_test_api.IncrementTime(base::Milliseconds(100));
+  RunScheduledLayouts();
+  EXPECT_FALSE(anim_controller->IsAnimating(FocusModeAnimations::kFocusMode));
+  EXPECT_EQ(unrelated_tab_view->layer(), nullptr);
+  EXPECT_EQ(group_view->layer(), nullptr);
+  EXPECT_TRUE(unrelated_tab_view->GetVisible());
+
+  anim_controller->SetAnimationContainerForTesting(
+      FocusModeAnimations::kFocusMode, nullptr);
+}
+
+// A child that leaves the container mid-transition (here, an unrelated tab
+// pulled into the focused group) gives up its fade layer rather than carrying
+// it into its new parent.
+IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
+                       FocusModeFadeReleasedWhenChildLeavesContainer) {
+  DisableFocusAnimations();
+  AppendTab();
+  AppendTab();
+  TabStripModel* const model = browser()->GetTabStripModel();
+  const tab_groups::TabGroupId group_id = model->AddToNewGroup({2});
+  ActivateTab(model->GetTabAtIndex(0));
+  TabGroupView* const group_view = GetTabGroupView(group_id);
+  ASSERT_NE(group_view, nullptr);
+  views::View* const unpinned_view = unpinned_collection_node()->view();
+  views::View* const tab_view_1 =
+      unpinned_collection_node()->children()[1]->view();
+  ASSERT_TRUE(views::IsViewClass<TabView>(tab_view_1));
+
+  EnableFocusAnimations();
+  auto animation_container = base::MakeRefCounted<gfx::AnimationContainer>();
+  BrowserAnimationController* const anim_controller =
+      BrowserAnimationController::From(browser());
+  anim_controller->SetAnimationContainerForTesting(
+      FocusModeAnimations::kFocusMode, animation_container.get());
+
+  model->EnterFocusMode(group_id);
+  gfx::AnimationContainerTestApi test_api(animation_container.get());
+  test_api.IncrementTime(base::Milliseconds(50));
+  RunScheduledLayouts();
+  ASSERT_NE(tab_view_1->layer(), nullptr);
+  EXPECT_LT(tab_view_1->layer()->opacity(), 1.0f);
+
+  // Move tab 1 into the focused group while the enter motion is still running.
+  model->AddToExistingGroup({1}, group_id);
+  RunScheduledLayouts();
+  EXPECT_TRUE(group_view->Contains(tab_view_1));
+  EXPECT_EQ(tab_view_1->layer(), nullptr);
+
+  test_api.IncrementTime(base::Milliseconds(300));
+  RunScheduledLayouts();
+  EXPECT_FALSE(anim_controller->IsAnimating(FocusModeAnimations::kFocusMode));
+  EXPECT_EQ(tab_view_1->layer(), nullptr);
+  for (views::View* child : unpinned_view->children()) {
+    EXPECT_EQ(child->layer(), nullptr);
+  }
+
+  anim_controller->SetAnimationContainerForTesting(
+      FocusModeAnimations::kFocusMode, nullptr);
 }
 
 class HorizontalTabGroupViewBrowserTest : public InProcessBrowserTest {

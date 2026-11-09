@@ -111,8 +111,13 @@ class UnpinnedTabContainerView
 
   void ResetCollectionNode();
   void OnCollapseStateChanged(tabs::VerticalTabStripCollapseState state);
+
+  // Follows `FocusModeAnimations::kFocusMode`, fading children on layers that
+  // are released when the motion ends.
   void OnFocusAnimationUpdated(const BrowserAnimationController* controller,
                                BrowserAnimationUpdate status);
+  void UpdateFocusTransitionFade(const BrowserAnimationController& controller);
+  void ReleaseFocusTransitionFade();
 
   const TabStripOrientation orientation_;
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;

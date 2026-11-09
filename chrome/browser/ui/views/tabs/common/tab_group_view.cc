@@ -71,18 +71,16 @@ std::unique_ptr<TabGroupView::LayoutManager> CreateTabGroupViewLayout(
   }
   return std::make_unique<TabGroupViewHorizontalLayout>();
 }
+}  // namespace
 
-// Progress of one group's half of a direct switch between focused groups. The
-// outgoing group plays over [0, kFocusSwitchHandoffProgress] of the motion and
-// the incoming group over [kFocusSwitchHandoffProgress, 1].
-float GetFocusSwitchPhaseProgress(float progress, bool is_incoming) {
-  constexpr float kHandoff = TabGroupView::kFocusSwitchHandoffProgress;
+// static
+float TabGroupView::GetFocusSwitchPhaseProgress(float progress,
+                                                bool is_incoming) {
+  constexpr float kHandoff = kFocusSwitchHandoffProgress;
   return is_incoming
              ? std::clamp((progress - kHandoff) / (1.0f - kHandoff), 0.0f, 1.0f)
              : std::clamp(progress / kHandoff, 0.0f, 1.0f);
 }
-
-}  // namespace
 
 TabGroupView::TabGroupView(TabCollectionNode* collection_node)
     : DraggedTabsContainer(

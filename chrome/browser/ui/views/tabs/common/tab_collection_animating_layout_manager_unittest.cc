@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/rect.h"
@@ -1072,6 +1073,65 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   widget()->LayoutRootViewIfNecessary();
   finish_animation();
   EXPECT_EQ(child3->layer(), nullptr);
+}
+
+// Layout animations only drive the opacity of layers they acquired. A layer
+// held by another holder (e.g. a focus transition fade) keeps the opacity that
+// holder set, both across a non-animating retarget and while the layout manager
+// animates the child's bounds.
+TEST_P(TabCollectionAnimatingLayoutManagerTest,
+       DoesNotDriveOpacityOfLayerHeldByAnotherHolder) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
+  auto* const child =
+      host_view()->AddChildView(std::make_unique<views::View>());
+  child->SetPreferredSize(gfx::Size(20, 20));
+  host_view()->InvalidateLayout();
+  widget()->LayoutRootViewIfNecessary();
+  task_environment()->FastForwardBy(base::Seconds(1));
+  widget()->LayoutRootViewIfNecessary();
+  ASSERT_FALSE(layout_manager()->is_animating());
+  ASSERT_EQ(child->layer(), nullptr);
+
+  AcquireViewLayer(child);
+  child->layer()->SetOpacity(0.5f);
+
+  // Non-animating retarget (e.g. while a focus transition drives the layout):
+  // `RecalculateTarget()` snaps via `InterpolateLayout(1.0)` and must not snap
+  // the externally held layer back to opaque.
+  ON_CALL(*layout_manager_delegate(), ShouldAnimateLayout)
+      .WillByDefault(testing::Return(false));
+  child->SetPreferredSize(gfx::Size(40, 40));
+  widget()->LayoutRootViewIfNecessary();
+  ASSERT_FALSE(layout_manager()->is_animating());
+  EXPECT_EQ(child->layer()->opacity(), 0.5f);
+  ON_CALL(*layout_manager_delegate(), ShouldAnimateLayout)
+      .WillByDefault(testing::Return(true));
+
+  // Animating: the child is a "moved" view for the duration of a bounds
+  // animation, which must not snap it to opaque either.
+  child->SetPreferredSize(gfx::Size(60, 60));
+  widget()->LayoutRootViewIfNecessary();
+  ASSERT_TRUE(layout_manager()->is_animating());
+  EXPECT_EQ(child->layer()->opacity(), 0.5f);
+  task_environment()->FastForwardBy(base::Milliseconds(50));
+  widget()->LayoutRootViewIfNecessary();
+  EXPECT_EQ(child->layer()->opacity(), 0.5f);
+
+  // Negative control: once the layer is handed to the layout animation, it is
+  // treated as layout-animation-held and snapped to opaque.
+  TabCollectionAnimatingLayoutManager::HoldLayerWhileParentAnimates(child);
+  task_environment()->FastForwardBy(base::Milliseconds(50));
+  widget()->LayoutRootViewIfNecessary();
+  EXPECT_EQ(child->layer()->opacity(), 1.0f);
+
+  task_environment()->FastForwardBy(base::Seconds(1));
+  widget()->LayoutRootViewIfNecessary();
+  ASSERT_FALSE(layout_manager()->is_animating());
+
+  ReleaseViewLayer(child);
+  EXPECT_EQ(child->layer(), nullptr);
 }
 
 // A holder releasing its reference while the parent is mid-animation (e.g. a
