@@ -99,6 +99,60 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:AndroidBottomBarCandidateAction) -->
 
+<!-- LINT.IfChange(AndroidBottomBarDefaultPinState) -->
+
+<enum name="AndroidBottomBarDefaultPinState">
+  <int value="0" label="None">No saved default yet, or pinning off</int>
+  <int value="1" label="PendingOff">
+    Saved default off, waiting for the Feature Engagement check
+  </int>
+  <int value="2" label="PendingOn">
+    Saved default on, waiting for the Feature Engagement check
+  </int>
+  <int value="3" label="KeptOff">User saw onboarding with the bar off</int>
+  <int value="4" label="KeptOn">User saw onboarding with the bar on</int>
+  <int value="5" label="Released">
+    Never saw onboarding, follows default_user_enabled
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarConfigUtils.java:AndroidBottomBarDefaultPinState) -->
+
+<!-- LINT.IfChange(AndroidBottomBarDefaultPinTransition) -->
+
+<enum name="AndroidBottomBarDefaultPinTransition">
+  <int value="0" label="PinnedOff">
+    First start with pinning: the bar-off default was saved
+  </int>
+  <int value="1" label="PinnedOn">
+    First start with pinning: the bar-on default was saved
+  </int>
+  <int value="2" label="KeptOffOnEducation">
+    Onboarding showed with the bar off, so off is kept
+  </int>
+  <int value="3" label="KeptOnOnEducation">
+    Onboarding showed with the bar on, so on is kept
+  </int>
+  <int value="4" label="KeptOffOnBackfill">
+    Feature Engagement said onboarding was already seen, so the saved off
+    default is kept
+  </int>
+  <int value="5" label="KeptOnOnBackfill">
+    Feature Engagement said onboarding was already seen, so the saved on default
+    is kept
+  </int>
+  <int value="6" label="Released">
+    Never saw onboarding and education can show, so the saved default is dropped
+    and the user follows default_user_enabled
+  </int>
+  <int value="7" label="ReleasedAndHeld">
+    Released, but the new default differs, so the bar kept its state for this
+    run and changes on the next start
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarConfigUtils.java:AndroidBottomBarDefaultPinTransition) -->
+
 <!-- LINT.IfChange(AndroidBottomBarEducationOnboardingEvent) -->
 
 <enum name="AndroidBottomBarEducationOnboardingEvent">

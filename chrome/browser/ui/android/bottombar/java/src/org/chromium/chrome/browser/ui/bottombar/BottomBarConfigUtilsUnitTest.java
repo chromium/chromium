@@ -30,11 +30,13 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils.DefaultPinState;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils.DefaultPinTransition;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.cached_flags.CachedFlagsSharedPreferences;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -44,6 +46,9 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "sw300dp")
 public class BottomBarConfigUtilsUnitTest {
+    private static final String ON_STARTUP = "Android.BottomBar.DefaultPinState.OnStartup";
+    private static final String TRANSITION = "Android.BottomBar.DefaultPinState.Transition";
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private Context mContext;
@@ -355,6 +360,130 @@ public class BottomBarConfigUtilsUnitTest {
         assertTrue(BottomBarConfigUtils.isEducationEnabled());
         BottomBarConfigUtils.recordEducationShown();
         assertEquals(DefaultPinState.KEPT_OFF, readPinState());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testMaybePinDefaultUserEnabled_RecordsStartupStateAndPin() {
+        for (boolean armDefault : new boolean[] {false, true}) {
+            ChromeSharedPreferences.getInstance()
+                    .removeKey(ChromePreferenceKeys.BOTTOM_BAR_DEFAULT_PIN_STATE);
+            ChromeFeatureList.sAndroidBottomBarDefaultUserEnabled.setForTesting(armDefault);
+
+            // The first start with pinning records the state it started with, then saves the arm
+            // default.
+            HistogramWatcher watcher =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecord(ON_STARTUP, DefaultPinState.NONE)
+                            .expectIntRecord(
+                                    TRANSITION,
+                                    armDefault
+                                            ? DefaultPinTransition.PINNED_ON
+                                            : DefaultPinTransition.PINNED_OFF)
+                            .build();
+            BottomBarConfigUtils.maybePinDefaultUserEnabled();
+            watcher.assertExpected();
+
+            // Later starts only record the state.
+            watcher =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecord(ON_STARTUP, pendingState(armDefault))
+                            .expectNoRecords(TRANSITION)
+                            .build();
+            BottomBarConfigUtils.maybePinDefaultUserEnabled();
+            watcher.assertExpected();
+        }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testMaybePinDefaultUserEnabled_SkipsHistogramsWhenNotApplicable() {
+        // Nothing is recorded while the flag is off.
+        FeatureOverrides.disable(ChromeFeatureList.ANDROID_BOTTOM_BAR);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(ON_STARTUP)
+                        .expectNoRecords(TRANSITION)
+                        .build();
+        BottomBarConfigUtils.maybePinDefaultUserEnabled();
+        watcher.assertExpected();
+        FeatureOverrides.enable(ChromeFeatureList.ANDROID_BOTTOM_BAR);
+
+        // The launch config (pinning off) records the state but saves nothing.
+        ChromeFeatureList.sAndroidBottomBarPinDefaultUserEnabled.setForTesting(false);
+        watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(ON_STARTUP, DefaultPinState.NONE)
+                        .expectNoRecords(TRANSITION)
+                        .build();
+        BottomBarConfigUtils.maybePinDefaultUserEnabled();
+        watcher.assertExpected();
+        ChromeFeatureList.sAndroidBottomBarPinDefaultUserEnabled.setForTesting(true);
+
+        // A user who chose in Settings is not counted, whatever pin state they carry.
+        BottomBarConfigUtils.setBottomBarUserEnabled(true);
+        writePinState(DefaultPinState.KEPT_OFF);
+        watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(ON_STARTUP)
+                        .expectNoRecords(TRANSITION)
+                        .build();
+        BottomBarConfigUtils.maybePinDefaultUserEnabled();
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testRecordEducationShown_RecordsKeptTransition() {
+        for (boolean armDefault : new boolean[] {false, true}) {
+            ChromeFeatureList.sAndroidBottomBarDefaultUserEnabled.setForTesting(!armDefault);
+            writePinState(pendingState(armDefault));
+            HistogramWatcher watcher =
+                    HistogramWatcher.newSingleRecordWatcher(
+                            TRANSITION,
+                            armDefault
+                                    ? DefaultPinTransition.KEPT_ON_ON_EDUCATION
+                                    : DefaultPinTransition.KEPT_OFF_ON_EDUCATION);
+            BottomBarConfigUtils.recordEducationShown();
+            watcher.assertExpected();
+        }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testBackfillEducationSeen_RecordsTransition() {
+        for (boolean armDefault : new boolean[] {false, true}) {
+            ChromeFeatureList.sAndroidBottomBarDefaultUserEnabled.setForTesting(armDefault);
+
+            // Seen keeps the pending default.
+            writePinState(pendingState(armDefault));
+            HistogramWatcher watcher =
+                    HistogramWatcher.newSingleRecordWatcher(
+                            TRANSITION,
+                            armDefault
+                                    ? DefaultPinTransition.KEPT_ON_ON_BACKFILL
+                                    : DefaultPinTransition.KEPT_OFF_ON_BACKFILL);
+            BottomBarConfigUtils.backfillEducationSeen(/* seen= */ true);
+            watcher.assertExpected();
+
+            // Never seen with the same default releases it without a hold.
+            writePinState(pendingState(armDefault));
+            watcher =
+                    HistogramWatcher.newSingleRecordWatcher(
+                            TRANSITION, DefaultPinTransition.RELEASED);
+            BottomBarConfigUtils.backfillEducationSeen(/* seen= */ false);
+            watcher.assertExpected();
+        }
+
+        // A release that would flip the bar is held for this run. Last, since the hold is
+        // process-wide until the resetter runs.
+        ChromeFeatureList.sAndroidBottomBarDefaultUserEnabled.setForTesting(true);
+        writePinState(DefaultPinState.PENDING_OFF);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        TRANSITION, DefaultPinTransition.RELEASED_AND_HELD);
+        BottomBarConfigUtils.backfillEducationSeen(/* seen= */ false);
+        watcher.assertExpected();
     }
 
     @Test

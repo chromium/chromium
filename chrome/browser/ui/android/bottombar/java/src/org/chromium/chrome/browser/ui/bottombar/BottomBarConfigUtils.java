@@ -12,6 +12,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TriState;
 import org.chromium.base.TriStateUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -48,6 +49,7 @@ public class BottomBarConfigUtils {
     // TODO(crbug.com/582747594): Migrate KEPT_* entries to BOTTOM_BAR_ENABLED (or keep reading
     // them) before removing this state when AndroidBottomBar is enabled by default, otherwise
     // users with a kept default will have their bottom bar flipped.
+    // LINT.IfChange(AndroidBottomBarDefaultPinState)
     @IntDef({
         DefaultPinState.NONE,
         DefaultPinState.PENDING_OFF,
@@ -70,7 +72,46 @@ public class BottomBarConfigUtils {
         int KEPT_ON = 4;
         // User had not seen onboarding and education can show. Follow default_user_enabled.
         int RELEASED = 5;
+        int COUNT = 6;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarDefaultPinState)
+
+    /**
+     * Reason for a {@link DefaultPinState} write. Recorded in
+     * Android.BottomBar.DefaultPinState.Transition.
+     */
+    // TODO(crbug.com/582747594): Remove once AndroidBottomBar is enabled by default.
+    // LINT.IfChange(AndroidBottomBarDefaultPinTransition)
+    @IntDef({
+        DefaultPinTransition.PINNED_OFF,
+        DefaultPinTransition.PINNED_ON,
+        DefaultPinTransition.KEPT_OFF_ON_EDUCATION,
+        DefaultPinTransition.KEPT_ON_ON_EDUCATION,
+        DefaultPinTransition.KEPT_OFF_ON_BACKFILL,
+        DefaultPinTransition.KEPT_ON_ON_BACKFILL,
+        DefaultPinTransition.RELEASED,
+        DefaultPinTransition.RELEASED_AND_HELD
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface DefaultPinTransition {
+        // default_user_enabled saved as a pending pin on the first start with pinning.
+        int PINNED_OFF = 0;
+        int PINNED_ON = 1;
+        // Education showed, so the state it showed with is kept.
+        int KEPT_OFF_ON_EDUCATION = 2;
+        int KEPT_ON_ON_EDUCATION = 3;
+        // Feature Engagement says education was seen, so the pending pin is kept.
+        int KEPT_OFF_ON_BACKFILL = 4;
+        int KEPT_ON_ON_BACKFILL = 5;
+        // Never seen and education can show, so the pin is released.
+        int RELEASED = 6;
+        // Released, but the bar would flip, so it is held for this run.
+        int RELEASED_AND_HELD = 7;
+        int COUNT = 8;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarDefaultPinTransition)
 
     private BottomBarConfigUtils() {}
 
@@ -155,10 +196,10 @@ public class BottomBarConfigUtils {
     }
 
     /**
-     * Locks this process's cached bottom bar pinning and education params before {@code
-     * ChromeCachedFlags#cacheNativeFlags()} overwrites disk prefs, and saves {@code
-     * default_user_enabled} as {@code DefaultPinState.PENDING_*} when no pin state or explicit user
-     * choice exists yet.
+     * Saves {@code default_user_enabled} as a pending pin on the first start with pinning, unless
+     * the user already chose, and records the saved default this run started with. Reads the cached
+     * pinning and education params first, so this run keeps them after {@code
+     * ChromeCachedFlags#cacheNativeFlags()} refreshes the cache.
      */
     // TODO(crbug.com/582747594): Remove once AndroidBottomBar is enabled by default.
     public static void maybePinDefaultUserEnabled() {
@@ -166,11 +207,24 @@ public class BottomBarConfigUtils {
         // Read cached params now so non-tabbed starts (for example Custom Tabs) and unfolded
         // foldables do not mix pre-native and post-cacheNativeFlags() seeds in the same process.
         boolean defaultValue = ChromeFeatureList.sAndroidBottomBarDefaultUserEnabled.getValue();
-        ChromeFeatureList.sAndroidBottomBarPinDefaultUserEnabled.getValue();
+        boolean pinDefault = ChromeFeatureList.sAndroidBottomBarPinDefaultUserEnabled.getValue();
         ChromeFeatureList.sAndroidBottomBarUsePinnedDefaultUserEnabled.getValue();
         ChromeFeatureList.sAndroidBottomBarEducationEnabled.getValue();
-        if (!canSaveDefault() || getDefaultPinState() != DefaultPinState.NONE) return;
+        // Record the state carried over from earlier runs. A default saved on this start shows up
+        // in the Transition histogram instead, and users who chose in Settings or education are
+        // skipped because the saved default does not apply to them.
+        @DefaultPinState int state = getDefaultPinState();
+        boolean userChose = hasUserSetBottomBarEnabled();
+        if (!userChose) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.BottomBar.DefaultPinState.OnStartup", state, DefaultPinState.COUNT);
+        }
+        if (state != DefaultPinState.NONE || userChose || !pinDefault) {
+            return;
+        }
         setDefaultPinState(toPendingPinState(defaultValue));
+        recordTransition(
+                defaultValue ? DefaultPinTransition.PINNED_ON : DefaultPinTransition.PINNED_OFF);
     }
 
     /**
@@ -179,10 +233,19 @@ public class BottomBarConfigUtils {
      */
     // TODO(crbug.com/582747594): Remove once AndroidBottomBar is enabled by default.
     static void recordEducationShown() {
-        if (!canSaveDefault()) return;
+        if (!ChromeFeatureList.sAndroidBottomBar.isEnabled()
+                || !ChromeFeatureList.sAndroidBottomBarPinDefaultUserEnabled.getValue()
+                || hasUserSetBottomBarEnabled()) {
+            return;
+        }
         // Read isBottomBarUserEnabled() rather than getDefaultPinState() so we keep the state
         // actually shown (for example when use_pinned_default_user_enabled is false).
-        setDefaultPinState(toKeptPinState(isBottomBarUserEnabled()));
+        boolean shown = isBottomBarUserEnabled();
+        setDefaultPinState(toKeptPinState(shown));
+        recordTransition(
+                shown
+                        ? DefaultPinTransition.KEPT_ON_ON_EDUCATION
+                        : DefaultPinTransition.KEPT_OFF_ON_EDUCATION);
     }
 
     /**
@@ -205,25 +268,23 @@ public class BottomBarConfigUtils {
     static void backfillEducationSeen(boolean seen) {
         assert shouldBackfillEducationSeen();
         if (seen) {
-            setDefaultPinState(toKeptPinState(getDefaultPinState() == DefaultPinState.PENDING_ON));
+            boolean pendingOn = getDefaultPinState() == DefaultPinState.PENDING_ON;
+            setDefaultPinState(toKeptPinState(pendingOn));
+            recordTransition(
+                    pendingOn
+                            ? DefaultPinTransition.KEPT_ON_ON_BACKFILL
+                            : DefaultPinTransition.KEPT_OFF_ON_BACKFILL);
             return;
         }
         boolean shown = isBottomBarUserEnabled();
         setDefaultPinState(DefaultPinState.RELEASED);
-        if (isBottomBarUserEnabled() != shown) {
+        boolean held = isBottomBarUserEnabled() != shown;
+        if (held) {
             sReleasedPinForProcess = TriStateUtils.from(shown);
             ResettersForTesting.register(() -> sReleasedPinForProcess = TriState.NOT_SET);
         }
-    }
-
-    /**
-     * Returns whether a default can be saved in this run: AndroidBottomBar and pinning are on, and
-     * the user hasn't set the bottom bar themselves.
-     */
-    private static boolean canSaveDefault() {
-        return ChromeFeatureList.sAndroidBottomBar.isEnabled()
-                && ChromeFeatureList.sAndroidBottomBarPinDefaultUserEnabled.getValue()
-                && !hasUserSetBottomBarEnabled();
+        recordTransition(
+                held ? DefaultPinTransition.RELEASED_AND_HELD : DefaultPinTransition.RELEASED);
     }
 
     private static @DefaultPinState int getDefaultPinState() {
@@ -234,6 +295,14 @@ public class BottomBarConfigUtils {
     private static void setDefaultPinState(@DefaultPinState int state) {
         ChromeSharedPreferences.getInstance()
                 .writeInt(ChromePreferenceKeys.BOTTOM_BAR_DEFAULT_PIN_STATE, state);
+    }
+
+    // TODO(crbug.com/582747594): Remove once AndroidBottomBar is enabled by default.
+    private static void recordTransition(@DefaultPinTransition int transition) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.BottomBar.DefaultPinState.Transition",
+                transition,
+                DefaultPinTransition.COUNT);
     }
 
     private static boolean getPinnedDefault(boolean fallback) {

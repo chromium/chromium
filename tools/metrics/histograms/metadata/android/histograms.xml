@@ -1182,6 +1182,49 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.BottomBar.DefaultPinState.OnStartup"
+    enum="AndroidBottomBarDefaultPinState" expires_after="2027-05-26">
+  <owner>polardz@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
+  <summary>
+    Shows how many users keep a saved bottom bar default across a launch, and
+    when no pending defaults are left so the saved-default state can be retired.
+    Records the default saved for the user before this start
+    (BottomBarConfigUtils.DefaultPinState), once per full browser process start
+    while AndroidBottomBar is enabled. Users with an explicit Settings or
+    education choice are not recorded, since the saved default does not apply to
+    them. Includes Custom Tab and other non-tabbed starts and all form factors,
+    and excludes activity recreation, so read it by user count rather than by
+    sample. A default saved on this start is counted in
+    Android.BottomBar.DefaultPinState.Transition as PinnedOff or PinnedOn
+    instead, so PendingOff and PendingOn only count defaults carried over from
+    an earlier run.
+  </summary>
+</histogram>
+
+<histogram name="Android.BottomBar.DefaultPinState.Transition"
+    enum="AndroidBottomBarDefaultPinTransition" expires_after="2027-05-26">
+  <owner>polardz@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
+  <summary>
+    Recorded each time the saved bottom bar default
+    (BottomBarConfigUtils.DefaultPinState) is written, on all form factors.
+    PinnedOff, PinnedOn, KeptOffOnEducation and KeptOnOnEducation skip users
+    with an explicit Settings or education choice. The Feature Engagement check
+    writes do not, but an explicit choice always wins for the bar itself.
+    Buckets count events, so one user can appear in Released and later in
+    KeptOnOnEducation. KeptOffOnBackfill and KeptOnOnBackfill count users whose
+    pending default moved to kept once Feature Engagement confirmed prior
+    onboarding, on the first start where Feature Engagement initializes after
+    pinning, often before launch. Both can also record while AndroidBottomBar is
+    off. ReleasedAndHeld counts never-seen users whose bar would have changed
+    mid-run. The bar kept its state for that run and changed on the next start,
+    when education can show.
+  </summary>
+</histogram>
+
 <histogram name="Android.BottomBar.Education.Onboarding.{OnboardingType}.Event"
     enum="AndroidBottomBarEducationOnboardingEvent" expires_after="2027-05-26">
   <owner>madhavpruthi@google.com</owner>
