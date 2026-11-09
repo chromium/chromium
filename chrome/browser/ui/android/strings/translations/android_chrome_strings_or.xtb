@@ -166,6 +166,7 @@
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, ସେୟାର କରୁଥିବା ଟାବ</translation>
 <translation id="1601378265092360672">ବ୍ରାଉଜିଂ ଡାଟାରେ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ, କୁକୀ ଏବଂ ଅନ୍ୟ ସାଇଟ ଡାଟା, କେଶେ ହୋଇଥିବା ଇମେଜ ଓ ଫାଇଲ ଏବଂ ଖୋଲା ଥିବା ଟାବଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ</translation>
 <translation id="160275202205869636">ଚାଲୁ ଥିବା ସମୟରେ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଡାଟା ବ୍ୟବହାର ଏବଂ ସେଭ କରନ୍ତୁ। ବନ୍ଦ ଥିବା ସମୟରେ କେବଳ ଏହି ଡିଭାଇସରେ ଡାଟା ସେଭ କରାଯାଏ।</translation>
+<translation id="160403827062749147">ଦୁନିଆର ସବୁଠାରୁ ସୁରକ୍ଷିତ ବ୍ରାଉଜର, Google Chromeକୁ ସ୍ୱାଗତ</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 ଚୟନ କରାଯାଇଥିବା ଆଇଟମ୍‌ କାଢ଼ନ୍ତୁ}other{#ଟି ଚୟନ କରାଯାଇଥିବା ଆଇଟମ୍‌ କାଢ଼ନ୍ତୁ}}</translation>
 <translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
 <translation id="1641113438599504367">ସେଫ୍ ବ୍ରାଉଜିଂ</translation>
@@ -858,6 +859,7 @@
 <translation id="4374192654218566997">\n\nଆପଣ ଏହି ଡିଭାଇସରୁ ଏହି ଡାଟାକୁ ମଧ୍ୟ କାଢ଼ି ଦେଇପାରିବେ:</translation>
 <translation id="4378154925671717803">ଫୋନ୍</translation>
 <translation id="4380055775103003110">ଯଦି ଏହି ସମସ୍ୟା ଲାଗିରୁହେ, ତେବେ <ph name="SITE_ETLD_PLUS_ONE" />ରେ ଜାରି ରଖିବା ପାଇଁ ଆପଣ ଅନ୍ୟ ଉପାୟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରି ଦେଖିପାରିବେ।</translation>
+<translation id="4381351546374507910">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ବୁକମାର୍କ, ପାସୱାର୍ଡ ଏବଂ ଅଟୋଫିଲ ସୂଚନା ପାଇବାକୁ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="4384468725000734951">ସର୍ଚ୍ଚ ପାଇଁ Sogou ବ୍ୟବହାର କରାଯାଉଛି</translation>
 <translation id="4387647248986092471">ଏକ କାର ପ୍ରୋଫାଇଲ ଲକ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="4387817230000841154">ଡାଉନଲୋଡ ଖୋଲନ୍ତୁ</translation>
@@ -1231,6 +1233,7 @@
 <translation id="5865733239029070421">ସ୍ୱଚାଳିତରୂପେ Googleକୁ ବ୍ୟବହାରର ପରିସଂଖ୍ୟାନ ଏବଂ କ୍ରାସ୍ ରିପୋର୍ଟ ପଠାଏ</translation>
 <translation id="5869522115854928033">ସଞ୍ଚିତ ପାସୱାର୍ଡସମୂହ</translation>
 <translation id="5870416898561279542">ଡୁପ୍ଲିକେଟ ଟାବ ଏବଂ ଗ୍ରୁପ କିମ୍ବା <ph name="DAYS_INACTIVE" /> ଦିନ ପାଇଁ ବ୍ୟବହାର କରାଯାଇନଥିବା ଟାବ ଏବଂ ଗ୍ରୁପଗୁଡ଼ିକୁ ଏଠାକୁ ମୁଭ କରାଯାଏ<ph name="AUTODELETE_SECTION" />। ଆପଣ ଯେ କୌଣସି ସମୟରେ <ph name="DECLUTTER_SETTINGS_TITLE" />ରେ ଏହାକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
+<translation id="5882488054564514114">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ଡାଟା ପାଇବା ଏବଂ ଆପଣଙ୍କ ଅନୁଭୂତିକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="5885378508678660271">ବିଜ୍ଞପ୍ତି <ph name="SEPARATOR" /> ଏହି ସାଇଟ ବିପଦଜନକ ହୋଇଥିବା ଯୋଗୁଁ Chrome ଏହି ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦେଇଛି</translation>
 <translation id="5895138241574237353">ପୁନଃଆରମ୍ଭ</translation>
 <translation id="5896944002928653773">ଏଣ୍ଟରପ୍ରାଇଜ ସିଗନାଲ ଅସ୍ୱୀକରଣ ବଟମ ସିଟ ବନ୍ଦ ଅଛି</translation>
@@ -1979,6 +1982,7 @@
 <translation id="8570677896027847510">ଫାଇଲକୁ ସୁରକ୍ଷିତ ଭାବେ ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="8571213806525832805">ବିଗତ 4 ସପ୍ତାହ</translation>
 <translation id="8580435650274205305">ମିଆଦ ଶେଷ ହେବାର ତାରିଖ, ଆବଶ୍ୟକ</translation>
+<translation id="8584698523080138290">ଆପଣଙ୍କ Chromeକୁ ଆପଣଙ୍କ ସହ ନିଅନ୍ତୁ</translation>
 <translation id="8585103689515290060">ଅଟୋଫିଲ ସେବା</translation>
 <translation id="8586116786993312006">Chromeରେ ବ୍ରାଉଜିଂ ଡାଟା ଡିଲିଟ କରିବାକୁ ଟାପ କରନ୍ତୁ</translation>
 <translation id="859046281437143747">ଅଧିକ ବିକଳ୍ପ ବଟନରୁ ମୂଲ୍ୟ ଟ୍ରାକ କରନ୍ତୁ</translation>
@@ -2031,6 +2035,7 @@
 <translation id="8803526663383843427">ଯେତେବେଳେ ଏହା ଚାଲୁ ଥାଏ</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="ACCOUNT_EMAIL" />ରେ ଆଇଟମ ସେଭ କରାଯାଇଛି।}other{ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="ACCOUNT_EMAIL" />ରେ ଆଇଟମଗୁଡ଼ିକ ସେଭ କରାଯାଇଛି।}}</translation>
 <translation id="8804742093141782941">ଗ୍ରୁପ ରଖନ୍ତୁ</translation>
+<translation id="880967149107462122">Chrome ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="8812260976093120287">ଆପଣଙ୍କ ଡିଭାଇସ୍‌ରେ ଥିବା ଉପରୋକ୍ତ ସମର୍ଥିତ ପେମେଣ୍ଟ୍ ଆପ୍ସ ସାହାଯ୍ୟରେ ଆପଣ କେତେକ ୱେବସାଇଟ୍‌ରେ ପେମେଣ୍ଟ କରିପାରିବେ।</translation>
 <translation id="8816556050903368450">ଲିଙ୍କ ସମେତ: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">ପ୍ରିଭ୍ୟୁ ଟାବର ବିଷୟବସ୍ତୁକୁ ଦେଖି ହେବ ନାହିଁ।</translation>
@@ -2056,6 +2061,7 @@
 <translation id="8903921497873541725">ଜୁମ୍ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="8909135823018751308">ସେୟାର୍ କରନ୍ତୁ…</translation>
 <translation id="8918299437379122615">ଏହା ପାଇଁ ସର୍ଚ୍ଚ ଫଳାଫଳ ପୃଷ୍ଠାରେ ଲିଙ୍କ ସେୟାର କରନ୍ତୁ: <ph name="SEARCH_QUERY" />। ସୋର୍ସ: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">ଯେ କୌଣସି ୱେବସାଇଟରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="8922289737868596582">ସେଗୁଡ଼ିକୁ ଅଫ୍‌ଲାଇନ୍‌ରେ ବ୍ୟବହାର କରିବାକୁ ’ଅଧିକ ବିକଳ୍ପଗୁଡ଼ିକ’ ବଟନ୍‌ରୁ ପୃଷ୍ଠାଗୁଡ଼ିକ ଡାଉନ୍‌ଲୋଡ୍‌ କରନ୍ତୁ</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ପ୍ରସ୍ତୁତ ଅଛି</translation>

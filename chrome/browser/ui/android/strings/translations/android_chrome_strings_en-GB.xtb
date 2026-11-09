@@ -166,6 +166,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, sharing tab</translation>
 <translation id="1601378265092360672">Browsing data includes your browsing history, cookies and other site data, cached images and files and open tabs</translation>
 <translation id="160275202205869636">When on, use and save data in your Google Account. When off, data is saved only to this device.</translation>
+<translation id="160403827062749147">Welcome to Google Chrome, the world's safest browser</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remove 1 selected item}other{Remove # selected items}}</translation>
 <translation id="1639239467298939599">Loading</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
@@ -858,6 +859,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4374192654218566997">\n\nYou can also remove this data from this device:</translation>
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4380055775103003110">If this issue keeps happening, you can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="4381351546374507910">Sign in to get your bookmarks, passwords and Autofill information across all your devices.</translation>
 <translation id="4384468725000734951">Using Sogou for search</translation>
 <translation id="4387647248986092471">Create a car profile lock</translation>
 <translation id="4387817230000841154">Open downloads</translation>
@@ -1231,6 +1233,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5865733239029070421">Automatically sends usage statistics and crash reports to Google</translation>
 <translation id="5869522115854928033">Saved passwords</translation>
 <translation id="5870416898561279542">Duplicate tabs and groups or those unused for <ph name="DAYS_INACTIVE" /> days are moved here<ph name="AUTODELETE_SECTION" />. You can change this at any time in <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5882488054564514114">Sign in to get your data across your devices and personalise your experience.</translation>
 <translation id="5885378508678660271">Notifications <ph name="SEPARATOR" /> Chrome removed these permissions because this site is dangerous</translation>
 <translation id="5895138241574237353">Restart</translation>
 <translation id="5896944002928653773">Enterprise signals disclaimer bottom sheet is closed</translation>
@@ -1979,6 +1982,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8570677896027847510">File can’t be downloaded securely</translation>
 <translation id="8571213806525832805">Last 4 weeks</translation>
 <translation id="8580435650274205305">Expiry date required</translation>
+<translation id="8584698523080138290">Take Chrome with you</translation>
 <translation id="8585103689515290060">Autofill services</translation>
 <translation id="8586116786993312006">Tap to delete browsing data in Chrome</translation>
 <translation id="859046281437143747">Track price from the 'More options' button</translation>
@@ -2031,6 +2035,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8803526663383843427">When on</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Item saved in your Google Account, <ph name="ACCOUNT_EMAIL" />.}other{Items saved in your Google Account, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8804742093141782941">Keep group</translation>
+<translation id="880967149107462122">Go to Chrome settings</translation>
 <translation id="8812260976093120287">On some websites, you can pay with above supported payment apps on your device.</translation>
 <translation id="8816556050903368450">Including link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Preview tab content is not viewable.</translation>
@@ -2056,6 +2061,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8903921497873541725">Zoom in</translation>
 <translation id="8909135823018751308">Share…</translation>
 <translation id="8918299437379122615">Share link to search results page for: <ph name="SEARCH_QUERY" />. Source: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Sign in to any website</translation>
 <translation id="8922289737868596582">Download pages from the More Options button to use them offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> is ready</translation>

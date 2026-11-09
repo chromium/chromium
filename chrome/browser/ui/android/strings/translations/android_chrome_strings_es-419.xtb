@@ -166,6 +166,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, pestaña con uso compartido</translation>
 <translation id="1601378265092360672">Los datos de navegación incluyen tu historial de navegación, pestañas abiertas, cookies y otros datos de sitios, e imágenes y archivos almacenados en caché</translation>
 <translation id="160275202205869636">Si activas esta opción, los datos se usan y guardan en tu Cuenta de Google. Si desactivas esta opción, los datos se guardan solo en este dispositivo.</translation>
+<translation id="160403827062749147">Te damos la bienvenida a Google Chrome, el navegador más seguro del mundo</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Quitar 1 elemento seleccionado}other{Quitar # elementos seleccionados}}</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
@@ -858,6 +859,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4374192654218566997">\n\nTambién puedes quitar estos datos de este dispositivo:</translation>
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4380055775103003110">Si el problema persiste, prueba otras formas de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="4381351546374507910">Accede para obtener tus favoritos, contraseñas y datos de Autocompletar en todos tus dispositivos.</translation>
 <translation id="4384468725000734951">Se usa Sogou para la búsqueda</translation>
 <translation id="4387647248986092471">Crear un bloqueo de perfil en el automóvil</translation>
 <translation id="4387817230000841154">Abrir Descargas</translation>
@@ -1231,6 +1233,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5865733239029070421">Envía automáticamente informes de fallas y estadísticas de uso a Google</translation>
 <translation id="5869522115854928033">Contraseñas almacenadas</translation>
 <translation id="5870416898561279542">Las pestañas y los grupos duplicados o que no se usaron durante <ph name="DAYS_INACTIVE" /> días se mueven aquí<ph name="AUTODELETE_SECTION" />. Puedes cambiar este parámetro cuando lo desees en <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5882488054564514114">Accede para obtener tus datos en todos tus dispositivos y personalizar tu experiencia.</translation>
 <translation id="5885378508678660271">Notificaciones <ph name="SEPARATOR" /> Chrome quitó estos permisos porque este sitio es peligroso</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5896944002928653773">Se cerró la hoja inferior de la advertencia de los indicadores empresariales</translation>
@@ -1979,6 +1982,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8570677896027847510">No es posible descargar el archivo de forma segura</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8580435650274205305">La fecha de vencimiento es obligatoria</translation>
+<translation id="8584698523080138290">Lleva Chrome adondequiera que vayas</translation>
 <translation id="8585103689515290060">Servicios de autocompletado</translation>
 <translation id="8586116786993312006">Presiona para borrar los datos de navegación en Chrome</translation>
 <translation id="859046281437143747">Desde el botón Más opciones, realiza un seguimiento del precio</translation>
@@ -2031,6 +2035,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8803526663383843427">Cuando está activada</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Elemento guardado en tu Cuenta de Google, <ph name="ACCOUNT_EMAIL" />.}other{Elementos guardados en tu Cuenta de Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8804742093141782941">Conservar grupo</translation>
+<translation id="880967149107462122">Ve a la configuración de Chrome</translation>
 <translation id="8812260976093120287">En algunos sitios web, puedes usar las apps compatibles que se enumeran anteriormente para hacer pagos en tu dispositivo.</translation>
 <translation id="8816556050903368450">Incluye el vínculo <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">No se puede obtener la vista previa del contenido de la pestaña.</translation>
@@ -2056,6 +2061,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8903921497873541725">Acercar</translation>
 <translation id="8909135823018751308">Compartir…</translation>
 <translation id="8918299437379122615">Compartir el vínculo a la página de resultados de búsqueda para: <ph name="SEARCH_QUERY" />. Fuente: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Accede a cualquier sitio web</translation>
 <translation id="8922289737868596582">Descarga páginas desde el botón Más opciones para usarlas sin conexión</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> está listo</translation>

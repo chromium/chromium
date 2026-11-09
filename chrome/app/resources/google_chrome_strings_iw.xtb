@@ -20,6 +20,7 @@
 <translation id="1125124144982679672">‏מי משתמש/ת ב-Chrome?</translation>
 <translation id="1142745911746664600">‏לא ניתן לעדכן את Chrome</translation>
 <translation id="1148360048981192980">‏בפעם הבאה ש-Chrome ייפתח במכשיר <ph name="DEVICE_TYPE" />, תופיע הנחיה להשתמש במנהל הסיסמאות של Google.</translation>
+<translation id="1150418667633096194">‏לכפתור "חלונית הצד של חיפוש Google" בסרגל הכלים יש סמל חדש. כדי לשאול שאלות בזמן הגלישה עם חיפוש Google בחלונית הצד, עליך ללחוץ עליו.</translation>
 <translation id="1152920704813762236">‏מידע על ChromeOS</translation>
 <translation id="1154147086299354128">‏&amp;פתיחה ב-Chrome</translation>
 <translation id="1157952955648710254">‏סגירת החלונית הצדדית של חיפוש Google</translation>
@@ -50,11 +51,13 @@
 <translation id="1439793550875056299">‏הצמדת Chrome</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{‏האדמין דורש להפעיל מחדש את Chrome כדי שהעדכון הזה ייכנס לתוקף. החלון המבודד לא ייפתח מחדש.}one{‏האדמין דורש להפעיל מחדש את Chrome כדי שהעדכון הזה ייכנס לתוקף. ‫# החלונות המבודדים לא ייפתחו מחדש.}two{‏האדמין דורש להפעיל מחדש את Chrome כדי שהעדכון הזה ייכנס לתוקף. ‫# החלונות המבודדים לא ייפתחו מחדש.}other{‏האדמין דורש להפעיל מחדש את Chrome כדי שהעדכון הזה ייכנס לתוקף. ‫# החלונות המבודדים לא ייפתחו מחדש.}}</translation>
 <translation id="146866447420868597">‏להיכנס אל Chrome?</translation>
+<translation id="1470136641087909499">‏כדי לשאול שאלות תוך כדי גלישה, עליך לפתוח מחדש את חיפוש Google ב-Chrome</translation>
 <translation id="1476347941828409626">‏&amp;ניהול הפרופילים ב-Chrome</translation>
 <translation id="1492280395845991349">‏צריך להפעיל מחדש כדי לסיים את העדכון של Chrome</translation>
 <translation id="1497802159252041924">שגיאת התקנה: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">‏רוצה להתאים אישית את פרופיל Chrome?</translation>
 <translation id="1518627427551567882">הדף הזה מוגן</translation>
+<translation id="15408169957028265">‏פתיחה מחדש של חיפוש Google ב-Chrome</translation>
 <translation id="1547295885616600893">‏<ph name="BEGIN_LINK_CROS_OSS" />תוכנת קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספת מאפשרת את השימוש ב-ChromeOS.</translation>
 <translation id="1547469039832541117">סיום המשימה המודגשת.</translation>
 <translation id="1553358976309200471">‏כדאי לעדכן את Chrome</translation>
@@ -85,6 +88,7 @@
 <translation id="1713301662689114961">{0,plural, =1{‏Chrome יופעל מחדש בעוד שעה}one{‏Chrome יופעל מחדש בעוד # שעות}two{‏Chrome יופעל מחדש בעוד # שעות}other{‏Chrome יופעל מחדש בעוד # שעות}}</translation>
 <translation id="1722488837206509557">כך תהיה לך אפשרות לבחור מבין המכשירים הזמינים ולהציג בהם תוכן.</translation>
 <translation id="1724094881572874997">‏כדי להגן על העבודה שלך ב-Chrome, הארגון יוכל לראות מידע מסוים או לנהל אותו אם התחברת לחשבון בדפדפן.</translation>
+<translation id="1769661297620183092">‏כדי לשאול שאלות תוך כדי גלישה, אפשר לפתוח מחדש את החלונית של חיפוש Google</translation>
 <translation id="177180974022074201">‏אפשר לנסות אותה עם Gemini ב-Chrome</translation>
 <translation id="1786003790898721085">‏יש לוודא שנכנסת ל-Chrome ב-<ph name="TARGET_DEVICE_NAME" /> ולשלוח שוב.</translation>
 <translation id="1786044937610313874">‏קיצורי דרך ייפתחו ב-Chrome</translation>
@@ -103,6 +107,7 @@
 <translation id="1880677175115548835">בחירת טקסט</translation>
 <translation id="1896602904211344018">‏הורדת אפליקציית Chrome</translation>
 <translation id="1919130412786645364">‏התרת כניסה אל Chrome</translation>
+<translation id="1925069572871307609">‏כדי לקבל עדכונים של Google Chrome בעתיד, עליך להשתמש ב-Windows 10 מגרסה 1809 ואילך. במחשב הזה פועלת גרסה ישנה של Windows 10.</translation>
 <translation id="1953553007165777902">מתבצעת הורדה… יש עוד <ph name="MINUTE" /> דק'</translation>
 <translation id="1975400514743766362">‏עם אפליקציית Chrome במכשיר <ph name="DEVICE_TYPE" />, תכונות הבטיחות של Google הולכות איתך לכל מקום</translation>
 <translation id="1979600810166324878">‏אפשר ליהנות מאינטרנט בטוח יותר בכל מקום עם הגרסה המשופרת של הגלישה הבטוחה ב-Chrome ל-iOS</translation>
@@ -116,6 +121,7 @@
 <translation id="2040220733769034247">‏זה קוד ה-QR שצריך לסרוק בטלפון כדי להוריד את Chrome ולהיכנס לחשבון ב-Google.</translation>
 <translation id="2044908892530830113">‏הצגת החיפוש באמצעות Chrome בסרגל התפריטים של Mac והפעלת מקשי הקיצור</translation>
 <translation id="2050189601866423230">‏כדי לשאול שאלות במהלך הגלישה, אפשר להצמיד את מצב AI בחיפוש Google</translation>
+<translation id="2060311596979880693">‏הצלחת! עכשיו יש לך אפשרות לשאול שאלות בקלות במהלך הגלישה בחיפוש Google ב-Chrome</translation>
 <translation id="2091012649849228750">‏כדי לקבל עדכונים של Google Chrome בעתיד, צריך להשתמש ב-Windows מגרסה 10 ואילך. במחשב הזה פועלת מערכת Windows 8.</translation>
 <translation id="2094648590148273905">‏התנאים של ChromeOS Flex</translation>
 <translation id="2094919256425865063">‏לסגור את Chrome בכל זאת?</translation>
@@ -141,6 +147,7 @@
 <translation id="2216543877350048334">‏כדי להסיר את החשבון שלך ב-Google מ-Chrome, צריך לצאת מהחשבון</translation>
 <translation id="2236949375853147973">הפעילות שלי</translation>
 <translation id="22791603784558743">‏סגירת Gemini ב-Chrome פיתוח</translation>
+<translation id="2283228908180457226">‏אותו קיצור דרך, עם סמל חדש: כדי לשאול שאלות בזמן הגלישה באמצעות חיפוש Google בחלונית הצד, עליך ללחוץ עליו.</translation>
 <translation id="2290014774651636340">‏המפתחות של Google API חסרים. פונקציונליות מסוימת של Google Chrome תהיה מושבתת.</translation>
 <translation id="2290095356545025170">‏ברצונך באמת להסיר את Google Chrome?</translation>
 <translation id="2295218613066132598">‏הצגת קיצורי דרך לאתרים ב-Chrome</translation>
@@ -203,6 +210,7 @@
 <translation id="2861074815332034794">‏מתבצע עדכון של Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2869959624320573933">‏כניסה ל-Chrome</translation>
 <translation id="2875053229394024379">‏כשנכנסים ל-Chrome באמצעות חשבון Google, אפשר להשתמש בפרופיל Chrome עם Gemini. <ph name="BEGIN_LINK" />איך להיכנס לחשבון ב-Chrome<ph name="END_LINK" /></translation>
+<translation id="2876152561415416331">‏פתיחה מחדש של החלונית של חיפוש Google</translation>
 <translation id="2876628302275096482">‏<ph name="BEGIN_LINK" />מידע נוסף לגבי השמירה על פרטיות הנתונים ב-Chrome<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">מנהל המשימות</translation>
 <translation id="2888126860611144412">‏מידע כללי על Chrome</translation>
@@ -218,6 +226,8 @@
 <translation id="3003694935412297923">כל המשימות</translation>
 <translation id="3018957014024118866">‏אני רוצה למחוק את הנתונים גם מ-Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">‏צריך להפעיל מחדש כדי לעדכן את ChromeOS Flex</translation>
+<translation id="3034219227076811559">‏חיפוש Google ב-Chrome</translation>
+<translation id="3037190258341683404">‏כדי לשאול שאלות בזמן הגלישה, אפשר להצמיד את חיפוש Google ב-Chrome</translation>
 <translation id="3037517125981011456">‏יוצגו הודעות לצורך כניסה אל Chrome</translation>
 <translation id="3037838751736561277">‏Google Chrome נמצא במצב רקע.</translation>
 <translation id="3038232873781883849">בהמתנה להתקנה…</translation>
@@ -325,6 +335,8 @@
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3968962723676998462">‏כדי להשתמש בנתונים של Chrome ולשמור אותם בחשבון <ph name="ACCOUNT_EMAIL" />, צריך להזין את ביטוי הסיסמה</translation>
 <translation id="3973161977468201858">‏‫Google Chrome רוצה למחוק את הנתונים שלך במנהל הסיסמאות של Google. כדי לאפשר זאת, צריך להזין את הסיסמה שלך ל-Windows.</translation>
+<translation id="3984557288004650913">‏כדי לפתוח את החלונית מחדש ולשאול שאלות תוך כדי גלישה, עליך ללחוץ על הכפתור "חיפוש Google ב-Chrome" שבסרגל הכלים</translation>
+<translation id="399788104667917863">הצמדה לסרגל הכלים</translation>
 <translation id="400161754580828648">‏כדי לשתף את המסך, צריך לאפשר הקלטת מסך ב-Chrome בקטע "הגדרות המערכת".</translation>
 <translation id="4012899077942246412">‏כשמחוברים לחשבון, אפשר להשתמש בסיסמאות ובפרטים נוספים מחשבון Google ב-Chrome. כדי לשנות את האפשרות הזאת, כדאי לעבור אל "החשבון שלך ב-Chrome".</translation>
 <translation id="4022972681110646219">תרגום המסך</translation>
@@ -399,6 +411,7 @@
 <translation id="4768676935374695498">‏חיפוש בסרטון בעזרת Google Lens</translation>
 <translation id="479167709087336770">‏נעשה כאן שימוש בבדיקת האיות של חיפוש Google. הטקסט המוקלד בדפדפן נשלח אל Google. אפשר לשנות את ההתנהגות הזו בכל שלב דרך ההגדרות.</translation>
 <translation id="4793679854893018356">‏איך מערכת Chromium שומרת על האבטחה שלך</translation>
+<translation id="4803313124144656665">‏סגירת חיפוש Google ב-Chrome</translation>
 <translation id="4828579605166583682">‏Google Chrome מנסה להחליף סיסמאות קיימות. כדי לאפשר זאת, יש להזין את הסיסמה שלך ל-Windows.</translation>
 <translation id="4836321460899997044">‏פרופיל Chrome</translation>
 <translation id="4839733921943823254">הצמדה של קיצור הדרך</translation>
@@ -447,6 +460,7 @@
 <translation id="5234764350956374838">סגירה</translation>
 <translation id="5239627039202700673">‏שימוש ב-Chrome בכל פעם שלוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="524751727772074981">‏עם Gemini ב-Chrome אפשר לשאול כל דבר, מכל מקום</translation>
+<translation id="5247617065091903691">‏כדי לשאול שאלות במהלך הגלישה, עליך להצמיד את חלונית הצד של חיפוש Google</translation>
 <translation id="5251420635869119124">‏אורחים יכולים להשתמש ב-Chrome בלי להשאיר עקבות.</translation>
 <translation id="5271833978500241046">‏משתמשים בהן עם פיצ'רים אחרים של Gemini ב-Chrome</translation>
 <translation id="5286907366254680517">זוהתה</translation>
@@ -466,6 +480,7 @@
 <translation id="5430073640787465221">‏קובץ ההעדפות שלך פגום או לא חוקי. Google Chrome לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="5465210843490471889">‏בחירת פרופיל ב-Chrome לשימוש עם <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">‏‫Chrome מופעל עכשיו יחד עם Windows, כך שאפשר להתחיל לגלוש מיד. ניתן להשבית זאת בהגדרות.</translation>
+<translation id="5482575505313585759">‏סגירת החלונית של חיפוש Google</translation>
 <translation id="5486346529181556467">‏כדי לשפר את הבטיחות באינטרנט לכולם, אפשר לדווח על אתר שלדעתך עשוי לגרום נזק. מידע נוסף על <ph name="BEGIN_LINK" />המדיניות של Google בנושא אתרים לא בטוחים<ph name="END_LINK" /></translation>
 <translation id="5503069778428381665">‏במהלך השימוש ב-Google Lens במחשב, כותרת הדף, כתובת ה-URL והתוכן, כולל קובצי PDF, נשלחים ל-Google</translation>
 <translation id="5524890928877629608">‏הפינה השמאלית העליונה של אזור החיפוש: ‎<ph name="LEFT" />%‎ משמאל, ‎<ph name="TOP" />%‎ מלמעלה</translation>
@@ -483,6 +498,7 @@
 <translation id="566568153320186256">‏‫Chrome חוסך בחיי הסוללה על ידי הגבלת הפעילות ברקע והאפקטים החזותיים, כמו גלילה חלקה וקצב פריימים של סרטונים. <ph name="BEGIN_LINK" />מידע נוסף על מצב חיסכון באנרגיה<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">‏צריך למחוק את נתוני Chrome בחשבון</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל את העדכון הזה}=1{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל את העדכון הזה. החלון האנונימי לא ייפתח מחדש.}one{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל את העדכון הזה. # החלונות האנונימיים לא ייפתחו מחדש.}two{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל את העדכון הזה. # החלונות האנונימיים לא ייפתחו מחדש.}other{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל את העדכון הזה. # החלונות האנונימיים לא ייפתחו מחדש.}}</translation>
+<translation id="568656514202614970">‏הצלחת! עכשיו יש לך אפשרות לשאול שאלות בקלות במהלך הגלישה, באמצעות חלונית הצד של חיפוש Google</translation>
 <translation id="5686916850681061684">‏התאמה אישית וניהול של Google Chrome. נחוצה פעולה שלך - יש ללחוץ לקבלת פרטים נוספים.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">‏לא ניתן להתחבר לאינטרנט. נדרש אימות של שרת ה-proxy.</translation>
@@ -559,11 +575,14 @@
 <translation id="6288580400488258237">‏הגדרת Google Chrome כדפדפן ברירת המחדל והצמדה שלו לסרגל המשימות</translation>
 <translation id="6291089322031436445">‏אפליקציות לגרסת הפיתוח של Chrome</translation>
 <translation id="6291549208091401781">‏Google Chrome כבר מותקן במחשב ונגיש לכל המשתמשים.</translation>
+<translation id="6294638840436017818">‏כדי לפתוח את החלונית מחדש ולשאול שאלות תוך כדי גלישה, אפשר ללחוץ על הכפתור "חלונית הצד של חיפוש Google" שבסרגל הכלים</translation>
+<translation id="6308106880471005841">‏לכפתור "חלונית חיפוש Google" בסרגל הכלים יש סמל חדש. כדי לשאול שאלות במהלך הגלישה, צריך ללחוץ עליו.</translation>
 <translation id="6311220991371174222">‏לא ניתן להפעיל את Chrome מכיוון שמשהו השתבש בפתיחת הפרופיל שלך. יש לנסות להפעיל מחדש את Chrome.</translation>
 <translation id="6319856120645568262">‏ל-Chrome נדרשת הרשאה כדי למפות את הסביבה שלך ולעקוב אחרי תנועות הידיים</translation>
 <translation id="6321592572353357376">‏התוסף "<ph name="EXTENSION_NAME" />" מבקש ממך להיכנס ל-Chrome</translation>
 <translation id="6326175484149238433">‏הסרה מ-Chrome</translation>
 <translation id="6334815226785304306">‏הגדרת Google Chrome כדפדפן ברירת המחדל והצמדה שלו לסרגל המשימות</translation>
+<translation id="6339888439788291743">‏אותו קיצור דרך, עם סמל חדש: כדי לשאול שאלות במהלך הגלישה בחיפוש Google במצב AI, עליך ללחוץ עליו.</translation>
 <translation id="63540178978900677">‏‫Chrome לא מוגדר יותר כדפדפן ברירת המחדל. אני רוצה ש-Chrome יהיה דפדפן ברירת המחדל</translation>
 <translation id="6357670763064300993">‏‫Gemini Enterprise ב-Chrome</translation>
 <translation id="6360449101159168105">‏בזמן שהכרטיסייה הזו לא הייתה פעילה, התפנה זיכרון כדי ש-Chrome ימשיך לפעול במהירות. ניתן לבחור להחריג תמיד את האתר הזה כדי שיישאר במצב פעיל.</translation>
@@ -613,6 +632,7 @@
 <translation id="6723445727540769832">‏מיטב הטכנולוגיות של Google אצלך בידיים עם אפליקציית Chrome לטלפון</translation>
 <translation id="6734827584173583205">‏לא נכנסת לאתר הזה בזמן האחרון. ההרשאות "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" ועוד <ph name="COUNT" /> הרשאות הוסרו על ידי Chrome</translation>
 <translation id="6735387454586646204">‏מערכת ChromeOS Flex</translation>
+<translation id="674891594898436429">סגירת החיפוש הפעיל בכרטיסייה הזו</translation>
 <translation id="6750954913813541382">‏כדי לתקן שגיאות כתיב, הטקסט שהוקלד על ידך בדפדפן נשלח אל Google על ידי Chrome</translation>
 <translation id="6760235774835597023">‏אפשר להאיץ ביצועים של אתרים באמצעות מנוע V8 של Chrome, אבל Chrome יהיה קצת פחות עמיד בפני מתקפות. ההגדרה הזו פועלת.</translation>
 <translation id="677276454032249905">‏לסגור את Chrome בכל זאת?</translation>
@@ -631,6 +651,7 @@
 <translation id="689368324615299626">‏עם אפליקציית Chrome במכשיר <ph name="DEVICE_TYPE" /> אפשר ליהנות מכל היתרונות של Google</translation>
 <translation id="6896758677409633944">העתקה</translation>
 <translation id="6908182077349113099">‏רוצה לסנכרן את הסיסמאות, הסימניות וההיסטוריה שלך באופן מושלם בין המכשירים? כדי להשתמש בקלות בתכונות המוכרות והאהובות, צריך לעדכן את דפדפן ברירת המחדל ל-Chrome.</translation>
+<translation id="6926772305569367352">‏לכפתור "חיפוש Google ב-Chrome" בסרגל הכלים יש סמל חדש. כדי לשאול שאלות במהלך הגלישה בחיפוש Google ב-Chrome, צריך ללחוץ עליו.</translation>
 <translation id="6930294499209825">‏השירות שומר על תוכנות Google מעודכנות. אם השירות יושבת או יופסק, תוכנות Google שמותקנות אצלך לא יתעדכנו יותר באופן קבוע. המשמעות היא שלא ניתן יהיה לתקן פרצות אבטחה שעשויות להיווצר ושתכונות מסוימות לא יפעלו. השירות הזה יוסר באופן אוטומטי אם אין תוכנה של Google שמשתמשת בו.</translation>
 <translation id="6933858244219479645">‏מערכת ChromeOS</translation>
 <translation id="6938166777909186039">‏כדי לקבל עדכונים של Google Chrome בעתיד, צריך להשתמש ב-Windows מגרסה 10 ואילך. במחשב הזה פועלת מערכת Windows 8.1.</translation>
@@ -667,6 +688,7 @@
 <translation id="7285616922384953075">‏הארגון '<ph name="MANAGER" />' מנהל את Chrome</translation>
 <translation id="7285990705317078173">‏כדי לעקוב אחרי מחירים ולקבל התראות על ירידות במחיר באתר מסוים, כדאי להוריד את Chrome לטלפון שלך</translation>
 <translation id="7288567540154601580">כרטיסיות ותוספים</translation>
+<translation id="7290997427370476749">‏כדי לפתוח את החלונית מחדש ולשאול שאלות תוך כדי גלישה, עליך ללחוץ על הכפתור "חלונית חיפוש Google" שבסרגל הכלים</translation>
 <translation id="7296210096911315575">מידע חשוב על בטיחות ועל אופן השימוש</translation>
 <translation id="7299899569525778554">חיפוש מהמחשב</translation>
 <translation id="7302361266603927550">‏חלק מהנתונים ב-Chrome עדיין לא נשמרו בחשבון Google. כדאי לחכות כמה דקות לפני היציאה מהחשבון. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו.</translation>
@@ -674,6 +696,7 @@
 <translation id="7308322188646931570">‏Chrome זקוק לגישה לאחסון כדי להוריד קבצים</translation>
 <translation id="7352651011704765696">משהו השתבש</translation>
 <translation id="7371412052245999753">‏הגנה על הזיכרון של Chrome מפני אפליקציות אחרות במחשב.</translation>
+<translation id="7374061268215476070">‏כדי לשאול שאלות תוך כדי גלישה, אפשר לפתוח מחדש את חלונית הצד של חיפוש Google</translation>
 <translation id="73786666777299047">‏פתיחת חנות האינטרנט של Chrome</translation>
 <translation id="7386878009611068389">‏כדי לשמור על הבטיחות אונליין בהתאם לאפשרויות שנבחרו על ידי ההורה שלך, עליך לעבור לפרופיל Chrome שבו כבר נכנסת לחשבון עם האימייל <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">‏התחברת ל-Chrome כ-<ph name="USER_EMAIL_ADDRESS" />. יש להשתמש באותו חשבון כדי להיכנס שוב.</translation>
@@ -727,6 +750,7 @@
 <translation id="778331955594035129">‏נדרשת הרשאת מיקום ב-Chrome עבור האתר הזה</translation>
 <translation id="7787950393032327779">‏נראה שהפרופיל נמצא בשימוש על ידי תהליך אחר של Google Chrome‏ (<ph name="PROCESS_ID" />) במחשב אחר (<ph name="HOST_NAME" />)‏. Chrome נעל את הפרופיל כדי שלא ייפגם. אם ברור לך שאף תהליך אחר אינו משתמש בפרופיל זה, באפשרותך לבטל את נעילת הפרופיל ולהפעיל את Chrome מחדש.</translation>
 <translation id="7800043020703832708">‏סגירת חיפוש Google בחלונית הצד</translation>
+<translation id="7801317262080715012">‏אותו קיצור דרך, עם סמל חדש: כדי לשאול שאלות במהלך הגלישה בחלונית של חיפוש Google, עליך ללחוץ עליו.</translation>
 <translation id="7801699035218095297">‏Google Chrome מנסה להעתיק את הסיסמאות. כדי לאפשר את הפעולה הזו, יש להקליד את הסיסמה שלך ל-Windows.</translation>
 <translation id="7804364787702057554">‏החשבון שלך ב-Chrome</translation>
 <translation id="7804947029129221742">‏בוצע שינוי מחוץ ל-Chrome במנוע החיפוש שמוגדר כברירת המחדל. כדי להגן עליך, Chrome איפס את ההגדרה לערך ברירת המחדל המקורי. <ph name="LEARN_MORE_LINK" /></translation>
@@ -781,7 +805,9 @@
 <translation id="8162006532256575008">‏שימוש ב-Chrome ללא חשבון</translation>
 <translation id="8172231188687329735">‏כדי לשמור סיסמאות תוך כדי תנועה, צריך להוריד את אפליקציית Chrome</translation>
 <translation id="8177472873527554730">לא נמצא תוכן בדף</translation>
+<translation id="818985547157682832">‏לכפתור "מצב AI בחיפוש Google" בסרגל הכלים יש סמל חדש. כדי לשאול שאלות במהלך הגלישה בחיפוש Google במצב AI, עליך ללחוץ עליו.</translation>
 <translation id="8196526165798579689">‏חיפוש באמצעות Chrome פיתוח</translation>
+<translation id="8203105157044679380">‏החלונית של חיפוש Google</translation>
 <translation id="8221491193165283816">הבחירה שלך היא בדרך כלל לחסום התראות. כדי לאפשר לאתר הזה להציג התראות יש ללחוץ כאן.</translation>
 <translation id="8227493674161801700">‏חיפוש באמצעות Chrome בטא</translation>
 <translation id="8233224921566021881">‏כדי ש-Chrome יוכל למצוא מכשירים קרובים ולהשתמש בהם, צריך לתת לו גישה לרשת המקומית</translation>
@@ -793,6 +819,7 @@
 <translation id="8291415872436043161">‏להורדת Chrome</translation>
 <translation id="829923460755755423">‏ניתן להוסיף קיצור דרך למנהל הסיסמאות של Google</translation>
 <translation id="8313851650939857356">שגיאת הפעלה: <ph name="STARTUP_ERROR" />.</translation>
+<translation id="8321058241987390452">‏הצלחת! עכשיו יש לך אפשרות לשאול שאלות בקלות במהלך הגלישה בחלונית של חיפוש Google</translation>
 <translation id="8321888067342493336">שמירה כתמונה</translation>
 <translation id="8336463659890584292">‏כשאתר מבקש לטעון מראש קישורים בדף שלו באופן פרטי, Chrome משתמש בשרתי Google. כך מוסתרת הזהות שלך מהאתר שנטען מראש, אבל Google יכולה לדעת אילו אתרים נטענים מראש.</translation>
 <translation id="8342675569599923794">‏Chrome‏ חסם את הקובץ הזה כי הוא מסוכן.</translation>
@@ -819,10 +846,12 @@
 
 כדי לשמור סימניות חדשות בחשבון, צריך למחוק חלק מהסימניות הקיימות. יציאה מהחשבון תמחק את הסימניות שלא נשמרו.</translation>
 <translation id="8458117863387545390">‏הורדת Chrome לטלפון</translation>
+<translation id="8467931559764188481">‏סגירת החיפוש הפעיל ב-Google</translation>
 <translation id="848851325211467878">‏נכנסת בתור <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, עם מינוי ל-Google. פתיחת תפריט החשבון</translation>
 <translation id="8496177819998570653">‏מנהל &amp;הסיסמאות של Google</translation>
 <translation id="8498858610309223613">‏בוצע עדכון אבטחה מיוחד של Google Chrome. עכשיו עליך להפעיל מחדש את Chrome ואנחנו נשחזר את הכרטיסיות.</translation>
 <translation id="8502181052659370">‏חיפוש בכרטיסייה בעזרת Google Lens</translation>
+<translation id="8520489851087523435">‏פתיחה מחדש של חלונית הצד של חיפוש Google</translation>
 <translation id="8521348052903287641">‏כלל נכנס לגרסת הפיתוח של Google Chrome כדי לאפשר תנועת mDNS.</translation>
 <translation id="852529348814672339">‏הצגת Chrome בשפה הזו</translation>
 <translation id="8525579356836940628">ההתקנה נעצרה</translation>
@@ -831,6 +860,7 @@
 <translation id="8555465886620020932">שגיאה בשירות: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8564408666201523086">‏הפעולה הצליחה. עכשיו בזמן הגלישה בחיפוש Google, אפשר לשאול שאלות בקלות ישירות מחלונית הצד</translation>
 <translation id="856656450041460113">רשימת שפות לחיפוש</translation>
+<translation id="8568499811906962479">‏כדי לשאול שאלות במהלך הגלישה, אפשר להצמיד את החלונית של חיפוש Google</translation>
 <translation id="8575047640889685742">‏שימוש ב<ph name="BEGIN_LINK" />ביטוי סיסמה משלך<ph name="END_LINK" /> כדי להצפין את כל נתוני Chrome בחשבון Google. אמצעי תשלום וכתובות שנשמרו ב-Google Pay לא יוצפנו. היסטוריית הגלישה ב-Chrome לא תסונכרן.</translation>
 <translation id="8590782867495422699">‏פתיחה מחדש של מצב AI בחיפוש Google</translation>
 <translation id="8598779894319572882">‏כדי לשאול שאלות תוך כדי גלישה, אפשר ללחוץ על הכפתור מצב AI בחיפוש Google שבסרגל הכלים ולפתוח את החלונית מחדש</translation>
@@ -843,6 +873,7 @@
 <translation id="8656634243791296665">‏פתיחת Gemini ב-Chrome פיתוח</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chrome.</translation>
+<translation id="8689408573494410517">‏לכפתור "חיפוש Google בחלונית הצד" בסרגל הכלים יש סמל חדש. כדי לשאול שאלות בזמן הגלישה עם חיפוש Google בחלונית הצד, עליך ללחוץ עליו.</translation>
 <translation id="8699232386626916686">‏עדכון Chrome לשמירה על האבטחה</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8712767363896337380">‏העדכון כמעט הושלם. כדי להשלים את העדכון, עליך להפעיל את Chrome מחדש.</translation>
@@ -863,8 +894,10 @@
 <translation id="8834965163890861871">‏Google Chrome מנסה לערוך את הסיסמאות. כדי לאפשר את הפעולה הזו, יש להקליד את הסיסמה שלך ל-Windows.</translation>
 <translation id="8841151363570555833">‏הצגת Gemini ב-Chrome בסרגל התפריטים ב-Mac</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{‏ההמלצה של Chrome היא להסיר אותו}one{‏ההמלצה של Chrome היא להסיר אותם}two{‏ההמלצה של Chrome היא להסיר אותם}other{‏ההמלצה של Chrome היא להסיר אותם}}</translation>
+<translation id="8861692536395317751">‏כדי להשתמש ב-Google Chrome, נדרשת מערכת הפעלה Windows 10 מגרסה 1809 ואילך.</translation>
 <translation id="8862326446509486874">אין לך זכויות שמתאימות להתקנה ברמת המערכת. יש לנסות להפעיל שוב את המתקין כמנהל מערכת.</translation>
 <translation id="8865415417596392024">‏נתוני Chrome בחשבון שלך</translation>
+<translation id="8897637834206928776">‏אותו קיצור דרך, עם סמל חדש: כדי לשאול שאלות בזמן הגלישה באמצעות חיפוש Google בחלונית הצד, עליך ללחוץ עליו.</translation>
 <translation id="8914504000324227558">‏הפעלה מחדש של Chrome</translation>
 <translation id="8920304659326707347">‏עם Chrome ב-iOS אפשר להמשיך מהמקום שבו הפסקת.</translation>
 <translation id="8922998289262614701">‏להסיר את הנתונים של האפליקציה הזאת מ-Chrome?</translation>
@@ -890,6 +923,7 @@
 <translation id="9018218886431812662">ההתקנה הושלמה</translation>
 <translation id="9066987883552592250">‏סגירת Gemini ב-Chrome Canary</translation>
 <translation id="9074041031320636790">‏הצלחנו! עכשיו אפשר לשאול שאלות בקלות במהלך הגלישה בחיפוש Google במצב AI</translation>
+<translation id="9074163480955555019">‏אותו קיצור דרך, עם סמל חדש: כדי לשאול שאלות בזמן הגלישה באמצעות חיפוש Google ב-Chrome, צריך ללחוץ עליו.</translation>
 <translation id="9090566250983691233">‏למה קבצים מסוימים נחסמים ב-Chrome</translation>
 <translation id="9106236359747881194">אפשר לבחור טקסט לחיפוש</translation>
 <translation id="911206726377975832">למחוק גם את נתוני הגלישה שלך?</translation>

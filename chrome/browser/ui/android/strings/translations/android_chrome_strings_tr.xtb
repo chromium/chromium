@@ -166,6 +166,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, Paylaşım Sekmesi</translation>
 <translation id="1601378265092360672">Tarama verileri; tarama geçmişiniz, çerezler ve diğer site verileri, önbelleğe alınan resimler ve dosyalar ile açık sekmeleri içerir</translation>
 <translation id="160275202205869636">Etkinleştirildiğinde verileri Google Hesabınıza kaydedebilir ve hesabınızdaki verileri kullanabilirsiniz. Devre dışı bırakıldığında veriler yalnızca bu cihaza kaydedilir.</translation>
+<translation id="160403827062749147">Dünyanın en güvenli tarayıcısı Google Chrome'a hoş geldiniz</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 seçili öğeyi kaldır}other{# seçili öğeyi kaldır}}</translation>
 <translation id="1639239467298939599">Yükleniyor</translation>
 <translation id="1641113438599504367">Güvenli Tarama</translation>
@@ -858,6 +859,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4374192654218566997">\n\nBu verileri bu cihazdan da kaldırabilirsiniz:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Bu sorun çözülmezse <ph name="SITE_ETLD_PLUS_ONE" /> sitesine devam etmek için başka yöntemler deneyebilirsiniz.</translation>
+<translation id="4381351546374507910">Yer işaretlerinize, şifrelerinize ve otomatik doldurma bilgilerinize tüm cihazlarınızdan erişmek için oturum açın.</translation>
 <translation id="4384468725000734951">Arama için Sogou kullanılıyor</translation>
 <translation id="4387647248986092471">Araba profil kilidi oluştur</translation>
 <translation id="4387817230000841154">İndirilenler'i Aç</translation>
@@ -1231,6 +1233,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="5865733239029070421">Kullanım istatistiklerini ve kilitlenme raporlarını Google'a otomatik olarak gönderir</translation>
 <translation id="5869522115854928033">Kayıtlı şifreler</translation>
 <translation id="5870416898561279542">Kopya veya <ph name="DAYS_INACTIVE" /> gündür kullanılmayan sekmeler ve gruplar buraya taşınır<ph name="AUTODELETE_SECTION" />. Bunu istediğiniz zaman <ph name="DECLUTTER_SETTINGS_TITLE" /> bölümünde değiştirebilirsiniz.</translation>
+<translation id="5882488054564514114">Verilerinize tüm cihazlarınızdan erişmek ve deneyiminizi kişiselleştirmek için oturum açın.</translation>
 <translation id="5885378508678660271">Bildirimler <ph name="SEPARATOR" /> Bu site tehlikeli olduğu için Chrome bu izinleri kaldırdı</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="5896944002928653773">Kurumsal sinyaller sorumluluk reddi beyanı alt sayfası kapatıldı</translation>
@@ -1979,6 +1982,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8570677896027847510">Dosya güvenli bir şekilde indirilemiyor</translation>
 <translation id="8571213806525832805">Son 4 hafta</translation>
 <translation id="8580435650274205305">Son kullanma tarihi, gerekli</translation>
+<translation id="8584698523080138290">Chrome'u yanınızda taşıyın</translation>
 <translation id="8585103689515290060">Otomatik doldurma hizmetleri</translation>
 <translation id="8586116786993312006">Chrome'daki tarama verilerini silmek için dokunun</translation>
 <translation id="859046281437143747">Daha fazla seçenek düğmesinden fiyatı takip edin</translation>
@@ -2031,6 +2035,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8803526663383843427">Açık olduğunda</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Öğe, Google Hesabınıza (<ph name="ACCOUNT_EMAIL" />) kaydedildi.}other{Öğeler, Google Hesabınıza (<ph name="ACCOUNT_EMAIL" />) kaydedildi.}}</translation>
 <translation id="8804742093141782941">Grubu silme</translation>
+<translation id="880967149107462122">Chrome Ayarlarına Git</translation>
 <translation id="8812260976093120287">Bazı web sitelerinde, yukarıdaki desteklenen ödeme uygulamalarıyla cihazınızdan ödeme yapabilirsiniz.</translation>
 <translation id="8816556050903368450">Bağlantı dahil: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Önizleme sekmesinin içeriği görüntülenemiyor.</translation>
@@ -2056,6 +2061,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8903921497873541725">Yakınlaştır</translation>
 <translation id="8909135823018751308">Paylaş…</translation>
 <translation id="8918299437379122615"><ph name="SEARCH_QUERY" /> için arama sonuçları sayfasının bağlantısını paylaşın. Kaynak: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">İstediğiniz web sitesinde oturum açın</translation>
 <translation id="8922289737868596582">Çevrimdışı olarak kullanmak istediğiniz sayfaları Diğer seçenekler düğmesini kullanarak indirin</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Daha Fazla Bilgi<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> hazır</translation>

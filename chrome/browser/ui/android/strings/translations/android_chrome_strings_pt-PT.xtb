@@ -166,6 +166,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, separador a partilhar</translation>
 <translation id="1601378265092360672">Os dados de navegação incluem o histórico de navegação, os cookies e outros dados de sites, as imagens e os ficheiros em cache, bem como os separadores abertos</translation>
 <translation id="160275202205869636">Quando esta opção está ativada, use e guarde os dados na sua Conta Google. Quando está desativada, os dados são guardados apenas neste dispositivo.</translation>
+<translation id="160403827062749147">Damos-lhe as boas-vindas ao Google Chrome, o navegador mais seguro do mundo</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remover 1 item selecionado}other{Remover # itens selecionados}}</translation>
 <translation id="1639239467298939599">A carregar…</translation>
 <translation id="1641113438599504367">Navegação segura</translation>
@@ -858,6 +859,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4374192654218566997">\n\nTambém pode remover estes dados deste dispositivo:</translation>
 <translation id="4378154925671717803">Telemóvel</translation>
 <translation id="4380055775103003110">Se este problema continuar a acontecer, pode experimentar outras formas de continuar em <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="4381351546374507910">Inicie sessão para obter os seus marcadores, palavras-passe e informações de preenchimento automático em todos os seus dispositivos.</translation>
 <translation id="4384468725000734951">A utilizar o Sogou para pesquisa</translation>
 <translation id="4387647248986092471">Criar bloqueio do perfil do carro</translation>
 <translation id="4387817230000841154">Abrir Transferências</translation>
@@ -1231,6 +1233,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5865733239029070421">Envia automaticamente estatísticas de utilização e relatórios de falhas para a Google.</translation>
 <translation id="5869522115854928033">Palavras-passe guardadas</translation>
 <translation id="5870416898561279542">Os separadores e os grupos duplicados ou que não são usados há <ph name="DAYS_INACTIVE" /> dias são movidos para aqui<ph name="AUTODELETE_SECTION" />. Pode alterar esta definição em qualquer altura nas <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5882488054564514114">Inicie sessão para obter os seus dados nos seus dispositivos e personalizar a sua experiência.</translation>
 <translation id="5885378508678660271">Notificações <ph name="SEPARATOR" /> O Chrome removeu estas autorizações porque este site é perigoso</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5896944002928653773">A secção inferior da exclusão de responsabilidade dos sinais empresariais está fechada</translation>
@@ -1979,6 +1982,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8570677896027847510">Não é possível transferir o ficheiro em segurança</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8580435650274205305">Data de validade, obrigatória</translation>
+<translation id="8584698523080138290">Leve o Chrome consigo</translation>
 <translation id="8585103689515290060">Serviços de preenchimento automático</translation>
 <translation id="8586116786993312006">Toque para eliminar os dados de navegação no Chrome</translation>
 <translation id="859046281437143747">Monitorize o preço a partir do botão Mais opções</translation>
@@ -2031,6 +2035,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8803526663383843427">Quando está ativada</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Item guardado na sua Conta Google, <ph name="ACCOUNT_EMAIL" />.}other{Itens guardados na sua Conta Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8804742093141782941">Manter grupo</translation>
+<translation id="880967149107462122">Aceda às definições do Chrome</translation>
 <translation id="8812260976093120287">Nalguns Sites, é possível pagar com as aplicações de pagamento compatíveis acima no dispositivo.</translation>
 <translation id="8816556050903368450">Incluindo o link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">O conteúdo do separador de pré-visualização não está visível.</translation>
@@ -2056,6 +2061,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8903921497873541725">Ampliar</translation>
 <translation id="8909135823018751308">Partilhar…</translation>
 <translation id="8918299437379122615">Partilhe o link para a página de resultados da pesquisa de <ph name="SEARCH_QUERY" />. Fonte: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Inicie sessão em qualquer Website</translation>
 <translation id="8922289737868596582">Descarregue páginas através do botão Mais opções para as utilizar offline.</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">O idioma <ph name="LANG" /> está pronto</translation>

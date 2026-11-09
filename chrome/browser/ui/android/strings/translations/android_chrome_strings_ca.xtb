@@ -166,6 +166,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, pestanya de compartició</translation>
 <translation id="1601378265092360672">Les dades de navegació inclouen l'historial de navegació, les galetes i altres dades de llocs web, les imatges i els fitxers desats a la memòria cau, i les pestanyes obertes</translation>
 <translation id="160275202205869636">Quan l'opció està activada, utilitza i desa les dades al teu Compte de Google. Quan està desactivada, les dades només es desen en aquest dispositiu.</translation>
+<translation id="160403827062749147">Et donem la benvinguda a Google Chrome, el navegador més segur del món</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Suprimeix 1 element seleccionat}other{Suprimeix # elements seleccionats}}</translation>
 <translation id="1639239467298939599">S'està carregant</translation>
 <translation id="1641113438599504367">Navegació segura</translation>
@@ -858,6 +859,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4374192654218566997">\n\nTambé pots suprimir aquestes dades d'aquest dispositiu:</translation>
 <translation id="4378154925671717803">Telèfon</translation>
 <translation id="4380055775103003110">Si el problema persisteix, pots provar altres maneres de continuar a <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="4381351546374507910">Inicia la sessió per obtenir les teves adreces d'interès, contrasenyes i informació d'Emplenament automàtic en tots els teus dispositius.</translation>
 <translation id="4384468725000734951">S'utilitza Sogou per a la cerca</translation>
 <translation id="4387647248986092471">Crea un bloqueig de perfil al cotxe</translation>
 <translation id="4387817230000841154">Obre les baixades</translation>
@@ -1231,6 +1233,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5865733239029070421">Envia automàticament a Google estadístiques d'ús i informes d'error</translation>
 <translation id="5869522115854928033">Contrasenyes desades</translation>
 <translation id="5870416898561279542">Les pestanyes i els grups duplicats o els que no hagis utilitzat durant <ph name="DAYS_INACTIVE" /> dies es mouran aquí <ph name="AUTODELETE_SECTION" />. Pots canviar-ho en qualsevol moment a <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5882488054564514114">Inicia la sessió per accedir a les teves dades en tots els teus dispositius i personalitzar la teva experiència.</translation>
 <translation id="5885378508678660271">Notificacions <ph name="SEPARATOR" /> Chrome ha suprimit aquests permisos perquè aquest lloc web és perillós</translation>
 <translation id="5895138241574237353">Reinicia</translation>
 <translation id="5896944002928653773">El full inferior de l'avís d'exempció de responsabilitat dels senyals d'Enterprise està tancat</translation>
@@ -1979,6 +1982,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8570677896027847510">El fitxer no es pot baixar de manera segura</translation>
 <translation id="8571213806525832805">4 darreres setmanes</translation>
 <translation id="8580435650274205305">Data de caducitat, obligatòria</translation>
+<translation id="8584698523080138290">Emporta't Chrome amb tu</translation>
 <translation id="8585103689515290060">Serveis d'emplenament automàtic</translation>
 <translation id="8586116786993312006">Toca per suprimir les dades de navegació a Chrome</translation>
 <translation id="859046281437143747">Fes un seguiment del preu des del botó Més opcions</translation>
@@ -2031,6 +2035,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8803526663383843427">Quan està activada</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{L'element s'ha desat al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}other{Els elements s'han desat al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8804742093141782941">Conserva el grup</translation>
+<translation id="880967149107462122">Ves a la configuració de Chrome</translation>
 <translation id="8812260976093120287">En alguns llocs web, pots fer servir el teu dispositiu per pagar amb les aplicacions de pagament anteriors admeses.</translation>
 <translation id="8816556050903368450">Inclòs l'enllaç: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">El contingut de la pestanya de previsualització no es pot veure.</translation>
@@ -2056,6 +2061,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8903921497873541725">Amplia el zoom</translation>
 <translation id="8909135823018751308">Comparteix...</translation>
 <translation id="8918299437379122615">Comparteix l'enllaç a la pàgina de resultats de la cerca per a: <ph name="SEARCH_QUERY" />. Font: <ph name="PAGE_URL" />.</translation>
+<translation id="8919911527569629802">Inicia la sessió en qualsevol lloc web</translation>
 <translation id="8922289737868596582">Baixa pàgines amb el botó Més opcions per utilitzar-les sense connexió</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> està a punt</translation>

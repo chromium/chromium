@@ -138,7 +138,6 @@
 <translation id="1346403631707626730">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android a copilului trimițând automat la Google date de diagnosticare și utilizare a dispozitivului și a aplicațiilor. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date agregate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google. <ph name="BEGIN_LINK1" />Află mai multe despre valori<ph name="BEGIN_LINK1_END" />Află mai multe<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">Dreapta</translation>
 <translation id="1350494136075914725">În desfășurare · Comută la fila</translation>
-<translation id="1351937230027495976">Restrânge meniul</translation>
 <translation id="1355088139103479645">Ștergi toate datele?</translation>
 <translation id="1360220746312242196">Când cauți o pagină, accesează potrivirea anterioară pentru căutare</translation>
 <translation id="1360788414852622716">Se dezactivează profilul. Procesul poate dura câteva minute.</translation>
@@ -682,7 +681,6 @@
 <translation id="3033545621352269033">Activat</translation>
 <translation id="3033912566804961911">Combină cu <ph name="DESK_NAME" /></translation>
 <translation id="3036327949511794916">A trecut termenul limită pentru returnarea acestui <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3039491566278747710">Nu a putut fi instalată politica offline pe dispozitiv.</translation>
 <translation id="3039939407102840004">Bateria creionului este la <ph name="PERCENTAGE" /> %.</translation>
 <translation id="304097922505898963">Deschide aplicația Key Shortcuts</translation>
 <translation id="304417730895741346">Aplicațiile fixate și deschise sunt pe raft. Pentru a fixa o aplicație pe raft, dă clic dreapta pe aplicație sau atinge touchpadul cu două degete.</translation>
@@ -698,7 +696,6 @@
 <translation id="3075144191779656260">Atinge senzorul de amprentă în partea stângă a dispozitivului <ph name="DEVICE_TYPE" />. Datele privind amprentele sunt stocate în siguranță și nu părăsesc niciodată dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3075874217500066906">Este necesară o repornire pentru a începe procesul de Powerwash. După repornire, ți se va solicita să confirmi dacă dorești să continui.</translation>
 <translation id="3077734595579995578">shift</translation>
-<translation id="3081696990447829002">Extinde meniul</translation>
 <translation id="3087734570205094154">Jos</translation>
 <translation id="3088128611727407543">Se pregătește profilul aplicației...</translation>
 <translation id="3090214513075567547">Deschide meniul contextual</translation>
@@ -804,7 +801,6 @@
 <translation id="3405101454990027959">Activează accesul la microfon</translation>
 <translation id="3407967630066378878">Pentru a configura amprenta, solicită-i copilului tău să atingă senzorul de amprentă în partea stângă a acestui <ph name="DEVICE_TYPE" />. Datele privind amprentele copilului sunt stocate în siguranță și nu părăsesc niciodată dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3409584356742878290">Afișează sau ascunde inspectorul Developer Tools</translation>
-<translation id="3413817803639110246">Încă nu este nimic de văzut</translation>
 <translation id="3417835166382867856">Caută file</translation>
 <translation id="3426253816581969877">Apasă lung pe <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, atinge <ph name="KEY" /> până când ajungi la fereastra pe care dorești să o deschizi, apoi eliberează</translation>
 <translation id="3428447136709161042">Deconectează-te de la <ph name="NETWORK_NAME" /></translation>
@@ -899,7 +895,6 @@
 <translation id="3626281679859535460">Luminozitate</translation>
 <translation id="3628323833346754646">Butonul din față</translation>
 <translation id="3630697955794050612">dezactivată</translation>
-<translation id="3631369015426612114">Permite notificările de la</translation>
 <translation id="3633097874324966332">Deschide setările Bluetooth pentru a asocia dispozitivul</translation>
 <translation id="3633851487917460983">Deschide clipboardul</translation>
 <translation id="363473492175527493">Activitatea asupra căreia te concentrezi: <ph name="TASK_NAME" />. Apasă pe Enter pentru a edita activitatea.</translation>
@@ -915,7 +910,6 @@
 <translation id="3659667652322717492">Poți modifica oricând comportamentul microfonului.</translation>
 <translation id="3659814201068740063">Timp aproximativ rămas: <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Conectează dispozitivul la o sursă de alimentare.</translation>
-<translation id="3660860940251915011">Activează / dezactivează vizibilitatea crescută pentru <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Utilizatorul gestionat <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Glisează pentru a ascunde fereastra flotantă</translation>
 <translation id="367531336287639526">Selectează prima pictogramă din stânga barei de adrese</translation>
@@ -924,7 +918,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="36813544980941320">Se va permite accesul la rețelele Wi-Fi de pe telefon și de pe <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, apoi <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Site-uri</translation>
-<translation id="3697991387880191195">Apasă pe comanda rapidă pentru capturi de ecran</translation>
 <translation id="3702809606464356667">Se afișează ferestrele de pe desktopul actual. Apasă tasta săgeată în sus pentru a afișa ferestrele de pe toate desktopurile.</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Se încarcă…</translation>
@@ -950,7 +943,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
         <ph name="BEGIN_PARAGRAPH3" />Poți dezactiva acest serviciu din Setări.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> poate debloca acum și acest <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3756485814916578707">Se proiectează ecranul</translation>
-<translation id="3765246971671567135">Nu s-a putut citi politica offline privind modul demo.</translation>
 <translation id="3765841382945324995">Comanda rapidă <ph name="SIX_PACK_KEY_NAME" /> este actualizată la <ph name="NEW_SHORTCUT" /> de la <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3772109172035555611">Personalizează TrackPoint</translation>
 <translation id="3773700760453577392">Un administrator a interzis conectarea multiplă pentru <ph name="USER_EMAIL" />. Toți utilizatorii trebuie să se deconecteze pentru a continua.</translation>
@@ -986,7 +978,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3859364108019690">Nu se pot reda în stream aplicațiile</translation>
 <translation id="3861638017150647085">Numele de utilizator „<ph name="USERNAME" />” nu este disponibil</translation>
 <translation id="3861651314799684201">Apasă pe Enter pentru a înregistra ecranul complet</translation>
-<translation id="3870197372373144624">Încearcă să închizi dispozitivul.</translation>
 <translation id="3873915545594852654">A apărut o eroare la ARC++.</translation>
 <translation id="3879748587602334249">Manager de descărcări</translation>
 <translation id="3884007280698606545">Ai atins limita pentru dispozitivele USB</translation>
@@ -1172,7 +1163,6 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="439598569299422042">Întreruptă, <ph name="SIZE_INFO" /></translation>
 <translation id="439817266247065935">Dispozitivul nu s-a închis corect. Repornește Linux ca să folosești aplicațiile Linux.</translation>
 <translation id="440113666232554208">Nu se poate salva înregistrarea de pe ecran</translation>
-<translation id="4405151984121254935">Tipul de dispozitiv periferic conectat nu este acceptat</translation>
 <translation id="4406883609789734330">Subtitrări live</translation>
 <translation id="4412698727486357573">Centrul de ajutor</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> este dezactivat.</translation>
@@ -1355,7 +1345,6 @@ Un dispozitiv conectat.</translation>
 <translation id="493076006037866439">Micșorează ecranul</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4934763315031217818">Nu poate conține secvențe ordonate</translation>
-<translation id="4936329710968938986">Toți, dezactivat</translation>
 <translation id="4937170330762390348">Cu ajutorul dictării, poți să introduci text cu vocea. Apasă tasta de dictare sau selectează pictograma microfon din partea de jos a ecranului atunci când ești într-un câmp de text. Limba de dictare este setată la <ph name="LANGUAGE" />. Fișierele de redare în scris a vorbirii se vor descărca, astfel încât să poți folosi dictarea offline. Poți schimba limba de dictare oricând în Setări &gt; Accesibilitate.</translation>
 <translation id="4938176435186993759">Ascunde toate sugestiile</translation>
 <translation id="4945196315133970626">Dezactivează notificările</translation>
@@ -1372,7 +1361,6 @@ Un dispozitiv conectat.</translation>
 <translation id="4966431234408005599">Crește volumul</translation>
 <translation id="496999337731226334">Pasul <ph name="STEP" /> din <ph name="TOTAL_STEPS" /> al turului. Comenzile folosite frecvent, cum ar fi Wi-Fi, Bluetooth și volumul, se găsesc în Setările rapide. Aici poți și să faci capturi de ecran. Apasă pe Alt + Shift + S pentru a deschide Setările rapide.</translation>
 <translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> solicită să descarci o actualizare azi. Actualizarea se va descărca automat când te vei conecta la internet.}few{<ph name="MANAGER" /> solicită să descarci o actualizare înainte de termenul-limită. Actualizarea se va descărca automat când te vei conecta la internet.}other{<ph name="MANAGER" /> solicită să descarci o actualizare înainte de termenul-limită. Actualizarea se va descărca automat când te vei conecta la internet.}}</translation>
-<translation id="4975771730019223894">Marcarea cu insignă a aplicațiilor</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
@@ -1575,7 +1563,6 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5551456515017410630">Deschide / închide calendarul</translation>
 <translation id="5551974246223970793">Când cauți o pagină, accesează următoarea potrivire pentru căutare</translation>
 <translation id="5556459405103347317">Reîncarcă</translation>
-<translation id="5558091555391176027">Activează / dezactivează vizibilitatea crescută pentru Trimiterea în apropiere</translation>
 <translation id="556042886152191864">Buton</translation>
 <translation id="5570122939431135380">Deschide o filă nouă într-o fereastră incognito nouă</translation>
 <translation id="5575528586625653441">A apărut o problemă cu solicitarea de înregistrare demo.</translation>
@@ -1602,7 +1589,6 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5620979661744857819">Astfel, se permite accesul pentru <ph name="APP_NAME" /> și pentru toate aplicațiile și site-urile care au permisiuni pentru camera foto și microfon Poate fi necesar să actualizezi pagina web sau să repornești aplicația.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Parola ta nu a putut fi confirmată. Încearcă din nou.</translation>
-<translation id="5632485077360054581">Arată-mi cum</translation>
 <translation id="5648021990716966815">Mufă pentru microfon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> are nevoie de atenție.</translation>
 <translation id="5657667036353380798">Extensia externă necesită instalarea versiunii Chrome <ph name="MINIMUM_CHROME_VERSION" /> sau a unei versiuni superioare.</translation>
@@ -1921,7 +1907,6 @@ Niciun dispozitiv conectat.</translation>
 <translation id="651753338596587143">A apărut o eroare la instalarea dependențelor DLC. Încearcă să repornești și, dacă problema persistă, trimite feedback cu #bruschetta în descriere. Codul de eroare este <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Selectează o fereastră ca să o capturezi</translation>
 <translation id="652139407789908527">Pe durata actualizării, ecranul se va goli pentru o perioadă mai lungă decât de obicei (maximum un minut). Nu apăsa butonul de alimentare în timpul actualizării.</translation>
-<translation id="6528179044667508675">Nu deranja</translation>
 <translation id="65320610082834431">Emoji</translation>
 <translation id="6537924328260219877">Puterea semnalului: <ph name="SIGNAL_STRENGTH" />, bateria telefonului: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Se scanează <ph name="FILENAME" /> pentru descărcare</translation>
@@ -2165,7 +2150,6 @@ Instalare nouă</translation>
 <translation id="7264788308526527464">Redu durata la <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Ridică degetul și atinge din nou pentru a adăuga toate părțile amprentei</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7285232777292757180">Folosește instrumentul Captură de ecran din setările rapide pentru a face capturi de ecran</translation>
 <translation id="7301826272005790482">Închide sugestiile de ferestre</translation>
 <translation id="7302889331339392448">Funcția Subtitrări live este dezactivată.</translation>
 <translation id="7303281435234579599">Hopa! A apărut o eroare la configurarea modului demo.</translation>
@@ -2704,7 +2688,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="880709030178078220">Ajutor</translation>
 <translation id="8813531681893371930">Conectează căști cu fir</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
-<translation id="8815390544836110344">Apasă pe comanda rapidă pentru capturi de ecran, Ctrl + Shift + tasta modului Prezentare generală</translation>
 <translation id="881757059229893486">Setări pentru metode de introducere a textului</translation>
 <translation id="8819728065740986820">S-a activat încărcarea adaptativă</translation>
 <translation id="882204272221080310">Actualizează firmware-ul pentru securitate suplimentară.</translation>
@@ -2810,7 +2793,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="9098750710832798892">Niciun element copiat în clipboard</translation>
 <translation id="9098969848082897657">Dezactivează sunetul telefonului</translation>
 <translation id="9126339866969410112">Anulează ultima acțiune</translation>
-<translation id="9126642911267312373">Funcția Bluetooth nu este disponibilă</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{În 1 min.}few{În # min.}other{În # de min.}}</translation>
 <translation id="9129245940793250979">Butonul din spate</translation>
 <translation id="9133335900048457298">Nu se poate înregistra conținut protejat</translation>

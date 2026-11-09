@@ -386,7 +386,6 @@
 <translation id="2104436223719117661">በመታየት ላይ ያሉ ፍለጋዎች</translation>
 <translation id="21133533946938348">ትር አጣብቅ</translation>
 <translation id="2117650889962717098">ወደ ማንነት የማያሳውቅ ሁነታ በመቀየር አሳሽዎን የግል አድርገው ያቆዩ</translation>
-<translation id="2119126821484134587">ብጁ የሆነ እገዛን ለማቅረብ Gemini የተወሰነ ውሂብዎን (እንደ የውይይቶችዎ ክፍሎች፣ አካባቢ እና ሌሎች አግባብነት ያላቸው መረጃዎች) እንደ ካርታዎች እና በረራዎች ካሉ ሌሎች የGoogle አገልግሎቶች ጋር ያጋራል። እርስዎ በኋላ ላይ የእርስዎን Gemini የመተግበሪያ ታሪክ ቢሰርዙ እንኳን እነዚህ አገልግሎቶች ያንን መረጃ ለማሻሻል ሊጠቀሙ ይችላሉ። በ<ph name="BEGIN_LINK" />Gemini መተግበሪያዎች የግላዊነት ማዕከል<ph name="END_LINK" /> ውስጥ የበለጠ ይወቁ።</translation>
 <translation id="2119636449201577317">ክፈት በ…</translation>
 <translation id="2119962645034852864">አንዳንድ አገልግሎቶች ለመለያዎ አይገኙም</translation>
 <translation id="2120553909046681540">የእርስዎ ድርጅት የግል አሰሳን አጥፍቷል።</translation>
@@ -519,6 +518,7 @@
 <translation id="2524699375503213836">ከSafari ላይ ውሂብዎን ያምጡ</translation>
 <translation id="2526166285241366046">የይለፍ ቃል አስቀምጥ</translation>
 <translation id="2529021024822217800">ሁሉንም ክፈት</translation>
+<translation id="2536421147135705892">ጂዮ አካባቢ ይፈቀድ?</translation>
 <translation id="2536991091671391962">የተቀመጡ የይለፍ ቃላትን በማንኛውም መሣሪያ ላይ መጠቀም ይችላሉ። ለ<ph name="EMAIL" /> ወደ የGoogle የይለፍ ቃል አስተዳዳሪ ተቀምጠዋል።</translation>
 <translation id="2538103551183528357">የተደበቀ፣ የይለፍ ቃል</translation>
 <translation id="2538705697765638552">መረጃዎን ያስቀምጡ እና በመላው የGoogle ምርቶች ላይ እንደ ቅጾችን መሙላት ያሉ ነገሮችን በፍጥነት ያከናውኑ። መረጃዎን Google Wallet ውስጥ ለ<ph name="USER_EMAIL" /> ማስተዳደር ይችላሉ።</translation>
@@ -1110,7 +1110,6 @@
 <translation id="4470766488397113689">ምን ላይ መሥራት ይፈልጋሉ?</translation>
 <translation id="4471472356135655769">የይለፍ ቃላትን ወደ ውጭ መላክ አልተቻለም</translation>
 <translation id="4472575034687746823">ይጀምሩ</translation>
-<translation id="4473565697543262065">ይህ በዚህ መሣሪያ ላይ እና በGoogle መለያዎ <ph name="USER_EMAIL" /> ውስጥ የተቀመጠውን የተመረጠ መረጃ ይሰርዛል</translation>
 <translation id="4473608001744970767">ዋጋ ተከታተል የሚለውን ደብቅ</translation>
 <translation id="4474142134969976028">ምንም የሚዛመዱ ውጤቶች የሉም</translation>
 <translation id="4474494258097106883">ለእርስዎ iPhone የተገነባ</translation>
@@ -1337,6 +1336,7 @@
 <translation id="5128788795241319992">አዲሱን ምናሌ ያስሱ</translation>
 <translation id="5132942445612118989">የእርስዎን የይለፍ ቃላት፣ ታሪክ እና ተጨማሪ ነገሮች በሁሉም መሣሪያዎች ላይ ያስምሩ</translation>
 <translation id="5137568953923142260">አንድ ጊዜ ፍቀድ</translation>
+<translation id="5139344197062265975">ከGemini ጋር ለመወያየት የእርስዎን ማይክሮፎን ይጠቀሙ። ከGemini ጋር ሲነጋገሩ ኦዲዮ የGemini ታሪክ (ከበራ) ውስጥ ይቀመጣል። ውሂብዎ ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ጥቅም ላይ አይውልም</translation>
 <translation id="5141363746588976328">በትሮች ካርድዎ ላይ የዋጋ ቅነሳዎችን ደብቅ</translation>
 <translation id="514154868070499296">ቅርጸ ቁምፊ፦ <ph name="FONT" /></translation>
 <translation id="5145331760738811130">ከትር መቀያየሪያ ውጣ</translation>
@@ -1434,7 +1434,6 @@
 <translation id="5443636120437209490">በነባሪ የተሻለ አሰሳ</translation>
 <translation id="5444892875087332195">ዕልባቶች</translation>
 <translation id="5447973833955560753">የመልሶ ማግኛ የይለፍ ቃል</translation>
-<translation id="5448623529214315261">የተቀመጠ ፎቶ <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">ጠንካራ የይለፍ ቃል ይጠቀሙ፦</translation>
 <translation id="5454211924362324495">ሌሎች የእርስዎን የይለፍ ቃል እንዳይጠቀሙ ለማስቆም <ph name="BEGIN_LINK" /> <ph name="WEBSITE" /> ላይ ይለውጡት<ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">ወደ ፍለጋዎ ያክሉ</translation>
@@ -1607,6 +1606,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6000893618966378846">«የአሰሳ ውሂብን ሰርዝ» ተጠናቅቋል!</translation>
 <translation id="6004988584831654445">ጨርሰዋል! አዲስ ተግባራት ሲደርሱ ማሳወቂያ ያግኙ።</translation>
 <translation id="6006672969046233841">አዲስ ትር</translation>
+<translation id="6006758170939001741">የእኛ <ph name="BEGIN_LINK" />ደንቦች<ph name="END_LINK" />፣ <ph name="BEGIN_LINK" />የኮሪያ አካባቢ ደንቦች<ph name="END_LINK" /> እና <ph name="BEGIN_LINK" />የግላዊነት ማስታወቂያ<ph name="END_LINK" /> ይተገበራሉ። ውይይቶች ይገመገማሉ እና ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሰልጠን ጥቅም ላይ ይውላሉ። Gemini ሰው ሠራሽ አስተውሎት ነው እና ስለ ሰዎች ጨምሮ ስህተቶችን ሊሠራ ይችላል። አንዳንድ ይዘት ለሁሉም ሰው ተስማሚ ላይሆን ይችላል። <ph name="BEGIN_LINK" />ስለ አካባቢዎ መረጃ<ph name="END_LINK" /> ጨምሮ <ph name="BEGIN_LINK" />ታሪክዎን ማስተዳደር<ph name="END_LINK" /> ይችላሉ። <ph name="BEGIN_LINK" />ስለ ምርጫዎችዎ የበለጠ ይወቁ<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">የፍለጋ አስተያየት ጥቆማዎችን ያሻሽሉ</translation>
 <translation id="6012140227487808125">በመመስጠር ላይ…</translation>
 <translation id="6014801569448771146">የእርስዎን የይለፍ ቃላት ይፈትሹ</translation>
@@ -1845,6 +1845,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6670729408462528018">ማዕከለ-ሥዕላት</translation>
 <translation id="6671294218820966278">እንደ የተነበበ ምልክት አድርግ</translation>
 <translation id="6672697278890207089">የእርስዎን የይለፍ ሐረግ ያስገቡ</translation>
+<translation id="6673666785752667010">የሰው ሠራሽ አስተውሎት ሁነታን ዝጋ</translation>
 <translation id="6674917187596384849">በቀላሉ በመለያዎች መካከል መቀየር ይችላሉ</translation>
 <translation id="6676349090816247042">የመግቢያ አማራጮች።</translation>
 <translation id="667999046851023355">ሰነድ</translation>
@@ -1852,6 +1853,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6682680306647339111">አስታዋሽ ተወግዷል</translation>
 <translation id="6683022854667115063">የራስ ላይ ማዳመጫዎች</translation>
 <translation id="6684262542644248484">ወደ ድር ጣቢያ ይግቡ</translation>
+<translation id="668475086425500258">የጣቢያ ቅንብሮች</translation>
 <translation id="6685259053455152195">ቅንብሮችን በፍጥነት ለማሻሻል እና ከአድራሻ አሞሌው ላይ ባህሪዎችን ለመጠቀም አቋራጮች።</translation>
 <translation id="6689342293888598653">ነጭ የዳራ ቀለም</translation>
 <translation id="6689685206615181381">ማንነት የማያሳውቅ ሁነታ ብቻ ይገኛል</translation>
@@ -1867,7 +1869,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="672735642903863329">የእርስዎን እልባቶች፣ የይለፍ ቃላት እና ሌሎችን በሁሉም መሣሪያዎችዎ ላይ ያግኙ።</translation>
 <translation id="6729493062119577923">የተጋራ የትር ቡድን እንቅስቃሴ</translation>
 <translation id="6732087373923685049">ካሜራ</translation>
-<translation id="6736243959894955139">አድራሻ</translation>
 <translation id="6746338529702829275">የመለያ ውሂብዎን ይገምግሙ</translation>
 <translation id="6749473226660745022">ፎቶዎች</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} የመጣ ታሪክ ንጥል}one{{count} የመጣ ታሪክ ንጥል}other{{count} የመጡ ታሪክ ንጥሎች}}</translation>
@@ -1989,7 +1990,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7128693485119315539">ደርጅትዎ እንደ የእርስዎ የአሰሳ ታሪክ እና የይለፍ ቃላት ያለ ከሚተዳደር መለያ ጋር የተያያዘ የአሰሳ ውሂብን ማየት እና ማስተዳደር ሊያስፈልገው ይችላል።</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">ካሜራ አይገኝም</translation>
-<translation id="7138678301420049075">ሌላ</translation>
 <translation id="7140355148730164340"><ph name="EMAIL" />። <ph name="AI_TIER" />።</translation>
 <translation id="7141960840225504692">የእርስዎ ትሮች ይዘጋሉ እና የአሰሳ ውሂብ ይሰረዛሉ</translation>
 <translation id="714291438898585119">ኮከብ የተደረገባቸው</translation>
@@ -2137,6 +2137,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT} ገቢር ያልሆነ ትር ይዘጋ?}one{{COUNT} ገቢር ያልሆኑ ትሮች ይዘጉ?}other{{COUNT} ገቢር ያልሆኑ ትሮች ይዘጉ?}}</translation>
 <translation id="7598439272585186139">ተጨማሪ ደኅንነት ያግኙ</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />ን በጭራሽ አትተርጉም</translation>
+<translation id="760230853074995500">ውይይቶች ይገመገማሉ እና ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሰልጠን ጥቅም ላይ ይውላሉ። <ph name="BEGIN_LINK" />ስለ አካባቢዎ መረጃ<ph name="END_LINK" /> ጨምሮ <ph name="BEGIN_LINK" />ታሪክዎን ማስተዳደር<ph name="END_LINK" /> ይችላሉ። <ph name="BEGIN_LINK" />ስለ ምርጫዎችዎ የበለጠ ይወቁ<ph name="END_LINK" />።</translation>
 <translation id="7603308509262646847">ካርድ ያዢውን <ph name="NAME" /> በራስ-ሙላ</translation>
 <translation id="7603852183842204213">ብቅ-ባዮች ታግደዋል (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">ስምረት እየሠራ አይደለም</translation>
@@ -2622,7 +2623,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9039373489628511875">መተላለፊያ ይዘት</translation>
 <translation id="9042363670218758847">ለፈጣን ፍለጋዎች ወደተገነባ አቀማመጥ ይቀይሩ</translation>
 <translation id="9042893549633094279">ግላዊነት እና ደኅንነት</translation>
-<translation id="9044703854323320868">የGmail መልዕክት <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">ክፍት ትሮችዎን ለማደራጀት የትር ቡድኖችን ይፍጠሩ እና ምርታማ ሆነው ይቆዩ</translation>
 <translation id="9055580485132823283">{password_count} የይለፍ ቃሎችን፣ {passkey_count} የይለፍ ቁልፎችን እና በመለያ መግቢያ መረጃን መቼም ላለማስቀመጥ የመረጡባቸውን የጣቢያዎች እና መተግበሪያዎች ዝርዝር ሊሰርዙ ነው። ለጣቢያዎች ወይም ለመተግበሪያዎች የፈጠሩት ማንኛውም መለያ አይሰረዝም።</translation>
 <translation id="9057030985451135243">ስለተጋሩ የትር ቡድኖች የበለጠ ይወቁ</translation>
@@ -2631,6 +2631,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9066097352053395362">እልባት አርትዕን ደብቅ</translation>
 <translation id="9070824521421603770">እርስዎ ዘግተው እንዲወጡ ይደረጋሉ እና ትሮች ይዘጋሉ</translation>
 <translation id="9072837124205571418">ከሁሉም መሣሪያዎች የትር ቡድኖች</translation>
+<translation id="9073322251019919253">Gemini ሰው ሠራሽ አስተውሎት ነው እና ስለ ሰዎች ጨምሮ ስህተቶችን ሊሠራ ይችላል። አንዳንድ ይዘት ለሁሉም ሰው ተስማሚ ላይሆን ይችላል። ውይይቶች ይገመገማሉ እና ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሰልጠን ጥቅም ላይ ይውላሉ። <ph name="BEGIN_LINK" />ስለ አካባቢዎ መረጃ<ph name="END_LINK" /> ጨምሮ <ph name="BEGIN_LINK" />ታሪክዎን ማስተዳደር<ph name="END_LINK" /> ይችላሉ። <ph name="BEGIN_LINK" />ስለ ምርጫዎችዎ ይወቁ<ph name="END_LINK" />። የእኛ <ph name="BEGIN_LINK" />ደንቦች<ph name="END_LINK" /> እና <ph name="BEGIN_LINK" />የግላዊነት ማስታወቂያ<ph name="END_LINK" /> ይተገበራሉ።</translation>
 <translation id="9081058212938299310">የ<ph name="USERNAME" /> ይለፍ ቃል ይዘመን?</translation>
 <translation id="908365381820697818">አሁን ከGmail እና ሌሎችም መረጃ ማግኘት እና መሙላት ይችላሉ</translation>
 <translation id="9083838294503912307">በመላ መሣሪያዎች ላይ ለማስመር እና ግላዊነትን ለማላበስ ስምረትን ያብሩ።</translation>

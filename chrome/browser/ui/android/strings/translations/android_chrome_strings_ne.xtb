@@ -166,6 +166,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, सेयरिङ ट्याब</translation>
 <translation id="1601378265092360672">ब्राउजिङ डेटामा तपाईंको ब्राउजिङ हिस्ट्री, कुकी तथा अन्य साइट डेटा, क्यास गरिएका फोटो तथा फाइल र खुला ट्याबहरू समावेश हुन्छन्</translation>
 <translation id="160275202205869636">यो सुविधा अन हुँदा आफ्नो Google खातामा डेटा प्रयोग र सेभ गर्नुहोस्। यो सुविधा अफ हुँदा उक्त डेटा यो डिभाइसमा मात्र सेभ गरिन्छ।</translation>
+<translation id="160403827062749147">विश्वकै सबैभन्दा सुरक्षित ब्राउजर Google Chrome मा स्वागत छ</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{चयन गरिएको १ वस्तु हटाउनुहोस्}other{चयन गरिएका # वस्तुहरू हटाउनुहोस्}}</translation>
 <translation id="1639239467298939599">लोड गर्दै</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउजिङ</translation>
@@ -858,6 +859,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4374192654218566997">\n\nतपाईं यस डिभाइसबाट यो डेटा हटाउन पनि सक्नुहुन्छ:</translation>
 <translation id="4378154925671717803">फोन</translation>
 <translation id="4380055775103003110">यो समस्या अझै पनि देखिएको खण्डमा तपाईं <ph name="SITE_ETLD_PLUS_ONE" /> मा जाने अन्य तरिका अपनाई हेर्न सक्नुहुन्छ।</translation>
+<translation id="4381351546374507910">आफ्ना सबै डिभाइसमा आफ्ना बुकमार्क, पासवर्ड र अटोफिलसम्बन्धी जानकारी प्राप्त गर्न साइन इन गर्नुहोस्।</translation>
 <translation id="4384468725000734951">खोजीका लागि Sogou प्रयोग गर्दै</translation>
 <translation id="4387647248986092471">कार प्रोफाइल लक बनाउनुहोस्</translation>
 <translation id="4387817230000841154">"डाउनलोड" पेज खोल्नुहोस्</translation>
@@ -1230,6 +1232,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5865733239029070421">प्रयोगसम्बन्धी तथ्याङ्क र क्र्यास रिपोर्टहरू स्वतः Google मा पठाउँछ</translation>
 <translation id="5869522115854928033">बचत गरिएका पासवर्डहरू</translation>
 <translation id="5870416898561279542"><ph name="DAYS_INACTIVE" /> दिनदेखि प्रयोग नगरिएका वा दोहोरिएका ट्याब तथा समूहहरू सारेर यहाँ लगिन्छन्<ph name="AUTODELETE_SECTION" />। तपाईं जुनसुकै बेला <ph name="DECLUTTER_SETTINGS_TITLE" /> मा गई यसलाई परिवर्तन गर्न सक्नुहुन्छ।</translation>
+<translation id="5882488054564514114">आफ्ना विभिन्न डिभाइसमा आफ्नो डेटा प्राप्त गर्न र आफूले पाउने सुविधा पर्सनलाइज गर्न साइन इन गर्नुहोस्।</translation>
 <translation id="5885378508678660271">नोटिफिकेसन <ph name="SEPARATOR" /> यो साइट खतरनाक भएकाले Chrome ले यसलाई दिइएका यी अनुमति रद्द गरेको छ</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
 <translation id="5896944002928653773">इन्टरप्राइज सिग्नलसम्बन्धी डिस्क्लेमर भएको पुछारको पाना बन्द गरिएको छ</translation>
@@ -1978,6 +1981,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8570677896027847510">यो फाइल सुरक्षित रूपमा डाउनलोड गर्न सकिँदैन</translation>
 <translation id="8571213806525832805">पछिल्ला ४ हप्ता</translation>
 <translation id="8580435650274205305">म्याद सकिने मिति, अनिवार्य</translation>
+<translation id="8584698523080138290">Chrome आफूसँगै लैजानुहोस्</translation>
 <translation id="8585103689515290060">अटोफिल सेवाहरू</translation>
 <translation id="8586116786993312006">Chrome मा भएको ब्राउजिङ डेटा मेटाउन ट्याप गर्नुहोस्</translation>
 <translation id="859046281437143747">"थप विकल्पहरू" बटनमा क्लिक गरी मूल्य ट्रयाक गर्नुहोस्</translation>
@@ -2030,6 +2034,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8803526663383843427">अन भएका बेला</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{तपाईंको Google खाता (<ph name="ACCOUNT_EMAIL" />) मा सेभ गरिएको सामग्री।}other{तपाईंको Google खाता (<ph name="ACCOUNT_EMAIL" />) मा सेभ गरिएका सामग्रीहरू।}}</translation>
 <translation id="8804742093141782941">समूह राखिराख्नुहोस्</translation>
+<translation id="880967149107462122">Chrome का सेटिङमा जानुहोस्</translation>
 <translation id="8812260976093120287">केही वेबसाइटहरूमा तपाईंले माथि समर्थन गरिएका भुक्तानी सम्बन्धी अनुप्रयोगहरूमार्फत आफ्नो यन्त्रमा भुक्तानी गर्न सक्नुहुन्छ।</translation>
 <translation id="8816556050903368450">लिंकसहित: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">ट्याबका सामग्री प्रिभ्यू गर्ने सुविधा उपलब्ध छैन।</translation>
@@ -2055,6 +2060,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8903921497873541725">जुम इन</translation>
 <translation id="8909135823018751308">साझा गर्नुहोस्...</translation>
 <translation id="8918299437379122615">निम्न किवर्डको खोज परिणाम देखिने पेजको लिंक सेयर गर्नुहोस्: <ph name="SEARCH_QUERY" />। स्रोत: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">कुनै पनि वेबसाइटमा साइन इन गर्नुहोस्</translation>
 <translation id="8922289737868596582">पृष्ठहरूलाई अफलाइन हेर्न थप विकल्पहरू नामक बटनबाट तिनीहरूलाई डाउनलोड गर्नुहोस्</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> डाउनलोड गरिएको छ</translation>

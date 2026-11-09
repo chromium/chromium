@@ -386,7 +386,6 @@
 <translation id="2104436223719117661">Trend olan aramalar</translation>
 <translation id="21133533946938348">Sekmeyi Sabitle</translation>
 <translation id="2117650889962717098">Gizli moda geçerek tarama işlemlerinizi gizli tutun</translation>
-<translation id="2119126821484134587">Gemini, kişiye özel yardım sunmak için sohbetlerinizin bazı bölümleri, konumunuz ve diğer alakalı bilgiler dahil bazı verilerinizi Haritalar ve Uçuş Arama gibi diğer Google hizmetleriyle paylaşır. Gemini Uygulamaları geçmişinizi daha sonra silseniz bile bu hizmetler, bilgileri iyileştirme amacıyla kullanabilir. <ph name="BEGIN_LINK" />Gemini Uygulamaları Gizlilik Merkezi<ph name="END_LINK" />'nden daha fazla bilgi edinebilirsiniz.</translation>
 <translation id="2119636449201577317">Şu uygulamada aç…</translation>
 <translation id="2119962645034852864">Bazı hizmetler, hesabınızda kullanılamıyor</translation>
 <translation id="2120553909046681540">Kuruluşunuz gizli taramayı kapattı.</translation>
@@ -519,6 +518,7 @@
 <translation id="2524699375503213836">Safari'deki verilerinizi taşıyın</translation>
 <translation id="2526166285241366046">Şifre kaydedin</translation>
 <translation id="2529021024822217800">Tümünü Aç</translation>
+<translation id="2536421147135705892">Coğrafi konuma izin verilsin mi?</translation>
 <translation id="2536991091671391962">Kayıtlı şifrelerinizi istediğiniz cihazda kullanabilirsiniz. Şifreleriniz <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="2538103551183528357">Gizli, şifre</translation>
 <translation id="2538705697765638552">Google ürünlerinde form doldurma gibi işlemleri daha hızlı yapmak için bilgilerinizi kaydedin. <ph name="USER_EMAIL" /> hesabına ait Google Cüzdan'da bilgilerinizi yönetebilirsiniz.</translation>
@@ -1110,7 +1110,6 @@
 <translation id="4470766488397113689">Ne üzerinde çalışmak istiyorsunuz?</translation>
 <translation id="4471472356135655769">Şifreler dışa aktarılamıyor</translation>
 <translation id="4472575034687746823">Başlayın</translation>
-<translation id="4473565697543262065">Bu cihazda ve <ph name="USER_EMAIL" /> Google Hesabınızda kayıtlı seçili bilgiler silinir.</translation>
 <translation id="4473608001744970767">Fiyatı Takip Et Seçeneğini Gizle</translation>
 <translation id="4474142134969976028">Eşleşen sonuç yok</translation>
 <translation id="4474494258097106883">iPhone'unuz için Geliştirildi</translation>
@@ -1337,6 +1336,7 @@
 <translation id="5128788795241319992">Yeni menüyü keşfedin</translation>
 <translation id="5132942445612118989">Tüm cihazlardaki şifreleriniz, geçmişiniz ve diğer öğelerinizi senkronize edin</translation>
 <translation id="5137568953923142260">Bir kez izin ver</translation>
+<translation id="5139344197062265975">Gemini ile sohbet etmek için mikrofonunuzu kullanın. Gemini ile konuştuğunuzda ses, Gemini Geçmişi'ne (açıksa) kaydedilir. Verileriniz, üretken yapay zeka modellerini daha iyi hale getirmek için kullanılmaz</translation>
 <translation id="5141363746588976328">Sekmelerinizdeki fiyat düşüşleri kartını gizle</translation>
 <translation id="514154868070499296">Yazı tipi: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Sekme Değiştirici'den çık</translation>
@@ -1434,7 +1434,6 @@
 <translation id="5443636120437209490">Varsayılan olarak daha iyi tarama deneyimi</translation>
 <translation id="5444892875087332195">Yer İşaretleri</translation>
 <translation id="5447973833955560753">Kurtarma şifresi</translation>
-<translation id="5448623529214315261"><ph name="INDEX" /> fotoğrafı kaydedildi</translation>
 <translation id="5452354193031718372">Güçlü şifre kullanın:</translation>
 <translation id="5454211924362324495">Başkalarının şifrenizi kullanmasını engellemek için <ph name="BEGIN_LINK" /><ph name="WEBSITE" /> sayfasında şifrenizi değiştirin<ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Aramanıza ekleyin</translation>
@@ -1607,6 +1606,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6000893618966378846">"Tarama verilerini sil" işlemi tamamlandı.</translation>
 <translation id="6004988584831654445">Artık hazırsınız. Yeni görevler geldiğinde bildirim alın.</translation>
 <translation id="6006672969046233841">Yeni Sekme</translation>
+<translation id="6006758170939001741"><ph name="BEGIN_LINK" />Şartlarımız<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Kore Konum Şartları<ph name="END_LINK" /> ve <ph name="BEGIN_LINK" />Gizlilik Uyarımız<ph name="END_LINK" /> geçerlidir. Sohbetler incelenir ve üretken yapay zeka modellerini eğitmek için kullanılır. Gemini bir yapay zeka modeli olduğu için kişiler dahil olmak üzere farklı konular hakkında yanlış bilgi verebilir. Bazı içerikler herkese uygun olmayabilir. <ph name="BEGIN_LINK" />Konumunuzla ilgili bilgiler<ph name="END_LINK" /> de dahil olmak üzere <ph name="BEGIN_LINK" />geçmişinizi yönetebilirsiniz<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Seçenekleriniz hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="6011308810877101166">Arama önerilerini iyileştir</translation>
 <translation id="6012140227487808125">Şifreleniyor…</translation>
 <translation id="6014801569448771146">Şifrelerinizi kontrol edin</translation>
@@ -1845,6 +1845,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6670729408462528018">Galeri</translation>
 <translation id="6671294218820966278">Okundu Olarak İşaretle</translation>
 <translation id="6672697278890207089">Parolanızı girin</translation>
+<translation id="6673666785752667010">AI Modu'nu kapat</translation>
 <translation id="6674917187596384849">Hesaplar arasında kolayca geçiş yapabilirsiniz</translation>
 <translation id="6676349090816247042">Oturum açma seçenekleri.</translation>
 <translation id="667999046851023355">Doküman</translation>
@@ -1852,6 +1853,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6682680306647339111">Hatırlatıcı kaldırıldı</translation>
 <translation id="6683022854667115063">Kulaklık</translation>
 <translation id="6684262542644248484">Bir web sitesinde oturum açın.</translation>
+<translation id="668475086425500258">site ayarları</translation>
 <translation id="6685259053455152195">Adres çubuğundaki özellikleri kullanmanıza ve ayarları hızlıca değiştirmenize olanak tanıyan kısayollar.</translation>
 <translation id="6689342293888598653">Beyaz arka plan rengi</translation>
 <translation id="6689685206615181381">Sadece "Gizli mod" Kullanılabilir</translation>
@@ -1867,7 +1869,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="672735642903863329">Yer işaretleri, şifreler ve diğer öğelerinize tüm cihazlarınızdan ulaşın.</translation>
 <translation id="6729493062119577923">Paylaşılan sekme grubu etkinliği</translation>
 <translation id="6732087373923685049">kamera</translation>
-<translation id="6736243959894955139">Adres</translation>
 <translation id="6746338529702829275">Hesap verilerinizi inceleyin</translation>
 <translation id="6749473226660745022">Fotoğraflar</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} geçmiş öğesi içe aktarıldı}other{{count} geçmiş öğesi içe aktarıldı}}</translation>
@@ -1989,7 +1990,6 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7128693485119315539">Kuruluşunuzun, yönetilen hesabınıza bağlı tarama geçmişiniz ve şifreleriniz gibi tarama verilerini görmesi ve yönetmesi gerekebilir.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera kullanılamıyor</translation>
-<translation id="7138678301420049075">Diğer</translation>
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Sekmeleriniz kapatılacak ve tarama verileri silinecek</translation>
 <translation id="714291438898585119">Yıldızlı</translation>
@@ -2137,6 +2137,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7596103009408415410">{COUNT,plural, =1{Etkin olmayan {COUNT} sekme kapatılsın mı?}other{Etkin olmayan {COUNT} sekme kapatılsın mı?}}</translation>
 <translation id="7598439272585186139">Daha fazla güvenlikten yararlanın</translation>
 <translation id="7600965453749440009">Bu dili (<ph name="LANGUAGE" />) asla çevirme</translation>
+<translation id="760230853074995500">Sohbetler incelenir ve üretken yapay zeka modellerini eğitmek için kullanılır. <ph name="BEGIN_LINK" />Konumunuzla ilgili bilgiler<ph name="END_LINK" /> de dahil olmak üzere <ph name="BEGIN_LINK" />geçmişinizi yönetebilirsiniz<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Seçenekleriniz hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="7603308509262646847">Kart sahibini (<ph name="NAME" />) otomatik doldur</translation>
 <translation id="7603852183842204213">Engellen Pop-up'lar (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Senkronizasyon çalışmıyor</translation>
@@ -2622,7 +2623,6 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="9039373489628511875">Bant genişliği</translation>
 <translation id="9042363670218758847">Hızlı aramalar için tasarlanmış bir düzene geçin</translation>
 <translation id="9042893549633094279">Gizlilik ve güvenlik</translation>
-<translation id="9044703854323320868"><ph name="INDEX" /> tarihli Gmail iletisi</translation>
 <translation id="9055291197094969722">Açık sekmelerinizi düzenlemek ve üretkenliğinizi her zaman korumak için sekme grupları oluşturun</translation>
 <translation id="9055580485132823283">{password_count} şifreyi, {passkey_count} geçiş anahtarını ve oturum açma bilgilerini hiçbir zaman kaydetmemeyi seçtiğiniz site ve uygulamaların listesini silmek üzeresiniz. Siteler ve uygulamalar için oluşturduğunuz hesaplar silinmez.</translation>
 <translation id="9057030985451135243">Ortak sekme grupları hakkında bilgi</translation>
@@ -2631,6 +2631,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="9066097352053395362">Yer İşaretini Düzenle Seçeneğini Gizle</translation>
 <translation id="9070824521421603770">Oturumunuz ve sekmeler kapatılacak</translation>
 <translation id="9072837124205571418">Tüm cihazlardaki sekme grupları</translation>
+<translation id="9073322251019919253">Gemini bir yapay zeka modeli olduğu için kişiler dahil olmak üzere farklı konular hakkında yanlış bilgi verebilir. Bazı içerikler herkese uygun olmayabilir. Sohbetler incelenir ve üretken yapay zeka modellerini eğitmek için kullanılır. <ph name="BEGIN_LINK" />Konumunuzla ilgili bilgiler<ph name="END_LINK" /> de dahil olmak üzere <ph name="BEGIN_LINK" />geçmişinizi yönetebilirsiniz<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Seçenekleriniz hakkında bilgi edinin<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Şartlarımız<ph name="END_LINK" /> ve <ph name="BEGIN_LINK" />Gizlilik Uyarımız<ph name="END_LINK" /> geçerlidir.</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> hesabının şifresi güncellensin mi?</translation>
 <translation id="908365381820697818">Artık Gmail ve diğer uygulamalardaki bilgileri bulup doldurabilirsiniz</translation>
 <translation id="9083838294503912307">Cihazlar arasında senkronizasyon ve kişiselleştirme yapmak için senkronizasyonu etkinleştirin.</translation>

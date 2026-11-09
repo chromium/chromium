@@ -166,6 +166,7 @@
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, ແຖບການແບ່ງປັນ</translation>
 <translation id="1601378265092360672">ຂໍ້ມູນການທ່ອງເວັບປະກອບດ້ວຍປະຫວັດການທ່ອງເວັບ, ຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊອື່ນໆ, ຮູບພາບ ແລະ ໄຟລ໌ທີ່ແຄສໄວ້, ຮວມທັງແຖບທີ່ເປີດຢູ່ຂອງທ່ານ</translation>
 <translation id="160275202205869636">ເມື່ອເປີດໄວ້, ລະບົບຈະໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນໃນບັນຊີ Google ຂອງທ່ານ. ເມື່ອປິດໄວ້, ລະບົບຈະບັນທຶກຂໍ້ມູນໃສ່ໃນອຸປະກອນເຄື່ອງນີ້ເທົ່ານັ້ນ.</translation>
+<translation id="160403827062749147">ຍິນດີຕ້ອນຮັບສູ່ Google Chrome, ໂປຣແກຣມທ່ອງເວັບທີ່ປອດໄພທີ່ສຸດໃນໂລກ</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{ລຶບ 1 ລາຍການທີ່ເລືອກອອກ}other{ລຶບ # ລາຍການທີ່ເລືອກອອກ}}</translation>
 <translation id="1639239467298939599">ກໍາລັງໂຫຼດ</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
@@ -858,6 +859,7 @@
 <translation id="4374192654218566997">\n\nນອກຈາກນີ້, ທ່ານຍັງສາມາດລຶບຂໍ້ມູນນີ້ອອກຈາກອຸປະກອນນີ້ໄດ້ນຳ:</translation>
 <translation id="4378154925671717803">ໂທລະ​ສັບ</translation>
 <translation id="4380055775103003110">ຫາກບັນຫານີ້ຍັງເກີດຂຶ້ນຢູ່, ທ່ານສາມາດລອງດຳເນີນການຕໍ່ໃນ <ph name="SITE_ETLD_PLUS_ONE" /> ດ້ວຍວິທີອື່ນໆໄດ້.</translation>
+<translation id="4381351546374507910">ເຂົ້າສູ່ລະບົບເພື່ອຮັບບຸກມາກ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນການຕື່ມຂໍ້ມູນອັດຕະໂນມັດຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ.</translation>
 <translation id="4384468725000734951">ກຳລັງໃຊ້ Sogou ສຳລັບການຊອກຫາ</translation>
 <translation id="4387647248986092471">ສ້າງການລັອກໂປຣໄຟລ໌ລົດ</translation>
 <translation id="4387817230000841154">ເປີດການດາວໂຫຼດ</translation>
@@ -1231,6 +1233,7 @@
 <translation id="5865733239029070421">ສົ່ງສະຖິຕິການໃຊ້ ແລະ ລາຍງານການຂັດຂ້ອງໃຫ້ Google ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="5869522115854928033">ລະ​ຫັດ​ຜ່ານ​ທີ່ບັນທຶກໄວ້</translation>
 <translation id="5870416898561279542">ແຖບ ແລະ ກຸ່ມທີ່ຊ້ຳກັນ ຫຼື ບໍ່ໄດ້ໃຊ້ເປັນເວລາ <ph name="DAYS_INACTIVE" /> ມື້ຈະຍ້າຍມາບ່ອນນີ້<ph name="AUTODELETE_SECTION" />. ທ່ານສາມາດປ່ຽນຕົວເລືອກນີ້ໄດ້ທຸກເວລາໃນ <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5882488054564514114">ເຂົ້າສູ່ລະບົບເພື່ອຮັບຂໍ້ມູນຂອງທ່ານໃນອຸປະກອນຕ່າງໆຂອງທ່ານ ແລະ ປັບແຕ່ງປະສົບການຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວ.</translation>
 <translation id="5885378508678660271">ການແຈ້ງເຕືອນ <ph name="SEPARATOR" /> Chrome ໄດ້ລຶບການອະນຸຍາດເຫຼົ່ານີ້ອອກເນື່ອງຈາກເວັບໄຊນີ້ເປັນອັນຕະລາຍ</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
 <translation id="5896944002928653773">ຊີດລຸ່ມສຸດຂອງຂໍ້ຈຳກັດຄວາມຮັບຜິດຊອບກ່ຽວກັບສັນຍານ Enterprise ປິດຢູ່</translation>
@@ -1979,6 +1982,7 @@
 <translation id="8570677896027847510">ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ໄດ້ຢ່າງປອດໄພ</translation>
 <translation id="8571213806525832805">4 ອາທິດຜ່ານມາ</translation>
 <translation id="8580435650274205305">ຕ້ອງລະບຸວັນທີໝົດອາຍຸ</translation>
+<translation id="8584698523080138290">ໃຫ້ Chrome ໄປກັບທ່ານໄດ້ທຸກບ່ອນ</translation>
 <translation id="8585103689515290060">ບໍລິການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="8586116786993312006">ແຕະເພື່ອລຶບຂໍ້ມູນການທ່ອງເວັບໃນ Chrome</translation>
 <translation id="859046281437143747">ຕິດຕາມລາຄາຈາກປຸ່ມຕົວເລືອກເພີ່ມເຕີມ</translation>
@@ -2031,6 +2035,7 @@
 <translation id="8803526663383843427">ເມື່ອເປີດໃຊ້</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{ບັນທຶກລາຍການໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, ເຊິ່ງແມ່ນ <ph name="ACCOUNT_EMAIL" /> ແລ້ວ.}other{ບັນທຶກລາຍການໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, ເຊິ່ງແມ່ນ <ph name="ACCOUNT_EMAIL" /> ແລ້ວ.}}</translation>
 <translation id="8804742093141782941">ເກັບກຸ່ມໄວ້</translation>
+<translation id="880967149107462122">ໄປຫາການຕັ້ງຄ່າ Chrome</translation>
 <translation id="8812260976093120287">ໃນບາງເວັບໄຊ, ທ່ານສາມາດຈ່າຍດ້ວຍແອັບການຈ່າຍເງິນທີ່ຮອງຮັບຢູ່ຂ້າງເທິງໃນອຸປະກອນຂອງທ່ານໄດ້.</translation>
 <translation id="8816556050903368450">ຮວມລິ້ງ: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">ເບິ່ງເນື້ອຫາໃນແຖບສະແດງຕົວຢ່າງບໍ່ໄດ້.</translation>
@@ -2056,6 +2061,7 @@
 <translation id="8903921497873541725">ຊຸມເຂົ້າ</translation>
 <translation id="8909135823018751308">ແຊຣ໌...</translation>
 <translation id="8918299437379122615">ແບ່ງປັນລິ້ງໄປຫາໜ້າຜົນການຊອກຫາສຳລັບ: <ph name="SEARCH_QUERY" />. ແຫຼ່ງທີ່ມາ: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">ເຂົ້າສູ່ລະບົບເວັບໄຊໃດກໍໄດ້</translation>
 <translation id="8922289737868596582">ດາວໂຫຼດໜ້າເວັບຕ່າງໆຈາກປຸ່ມຕົວເລືອກເພີ່ມເຕີມເພື່ອໃຊ້ພວກມັນແບບອອບລາຍ</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ພ້ອມແລ້ວ</translation>

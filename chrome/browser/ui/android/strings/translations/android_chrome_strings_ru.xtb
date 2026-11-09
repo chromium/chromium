@@ -166,6 +166,7 @@
 <translation id="1600756129506222718">Вкладка "<ph name="TAB_TITLE" />" с доступом к экрану</translation>
 <translation id="1601378265092360672">К данным о работе в браузере относятся история браузера, файлы cookie и другие данные сайтов, кешированные изображения и файлы, а также открытые вкладки.</translation>
 <translation id="160275202205869636">Когда параметр включен, данные можно использовать и сохранять в аккаунте Google. В противном случае данные хранятся только на этом устройстве.</translation>
+<translation id="160403827062749147">Добро пожаловать в Google Chrome — самый безопасный браузер в мире</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Удалить 1 выбранный объект}one{Удалить # выбранный объект}few{Удалить # выбранных объекта}many{Удалить # выбранных объектов}other{Удалить # выбранного объекта}}</translation>
 <translation id="1639239467298939599">Загрузка…</translation>
 <translation id="1641113438599504367">Безопасный просмотр</translation>
@@ -858,6 +859,7 @@
 <translation id="4374192654218566997">\n\nВы также можете удалить эти данные с устройства.</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4380055775103003110">Если проблема не решится, попробуйте другие способы авторизации, чтобы продолжить работу на <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="4381351546374507910">Войдите, чтобы получить доступ к закладкам, паролям и данным автозаполнения на всех своих устройствах.</translation>
 <translation id="4384468725000734951">Sogou используется как поисковая система по умолчанию</translation>
 <translation id="4387647248986092471">Настроить блокировку профиля для автомобиля</translation>
 <translation id="4387817230000841154">Открыть папку со скачанными файлами</translation>
@@ -1231,6 +1233,7 @@
 <translation id="5865733239029070421">Автоматически отправлять в Google статистику использования и отчеты о сбоях</translation>
 <translation id="5869522115854928033">Сохраненные пароли</translation>
 <translation id="5870416898561279542">Сюда переносятся одинаковые вкладки и группы, а также те, которые не использовались в течение <ph name="DAYS_INACTIVE" /> дн. <ph name="AUTODELETE_SECTION" />. Чтобы изменить этот параметр, перейдите в <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5882488054564514114">Войдите в аккаунт, чтобы получить доступ к своим данным на всех устройствах и персонализировать Chrome.</translation>
 <translation id="5885378508678660271">Уведомления <ph name="SEPARATOR" /> Chrome отозвал разрешения у этого опасного сайта</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
 <translation id="5896944002928653773">Нижний экран с отказом от обязательств в отношении сигналов Enterprise закрыт</translation>
@@ -1979,6 +1982,7 @@
 <translation id="8570677896027847510">Невозможно безопасно скачать файл</translation>
 <translation id="8571213806525832805">Последние 4 недели</translation>
 <translation id="8580435650274205305">Срок действия (обязательно)</translation>
+<translation id="8584698523080138290">Chrome всегда под рукой</translation>
 <translation id="8585103689515290060">Сервисы автозаполнения</translation>
 <translation id="8586116786993312006">Нажмите, чтобы удалить данные о работе в браузере Chrome.</translation>
 <translation id="859046281437143747">Нажмите кнопку "Ещё" и выберите пункт "Отслеживание цен"</translation>
@@ -2031,6 +2035,7 @@
 <translation id="8803526663383843427">Если функция включена</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Объект сохранен в вашем аккаунте Google (<ph name="ACCOUNT_EMAIL" />).}one{Объекты сохранены в вашем аккаунте Google (<ph name="ACCOUNT_EMAIL" />).}few{Объекты сохранены в вашем аккаунте Google (<ph name="ACCOUNT_EMAIL" />).}many{Объекты сохранены в вашем аккаунте Google (<ph name="ACCOUNT_EMAIL" />).}other{Объекты сохранены в вашем аккаунте Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="8804742093141782941">Оставить</translation>
+<translation id="880967149107462122">Откройте настройки Chrome.</translation>
 <translation id="8812260976093120287">На некоторых сайтах вы можете совершать платежи со своего устройства с помощью перечисленных выше приложений.</translation>
 <translation id="8816556050903368450">Добавить ссылку: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Контент вкладки предпросмотра недоступен для показа.</translation>
@@ -2056,6 +2061,7 @@
 <translation id="8903921497873541725">Увеличить</translation>
 <translation id="8909135823018751308">Поделиться...</translation>
 <translation id="8918299437379122615">Поделиться ссылкой на страницу результатов поиска по запросу: <ph name="SEARCH_QUERY" />. Источник: <ph name="PAGE_URL" />.</translation>
+<translation id="8919911527569629802">Войдите на любой сайт.</translation>
 <translation id="8922289737868596582">Скачивайте страницы через меню кнопки "Ещё" и открывайте их без подключения к Интернету</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" />: языковой пакет готов.</translation>

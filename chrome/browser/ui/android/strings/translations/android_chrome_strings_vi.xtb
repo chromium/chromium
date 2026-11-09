@@ -166,6 +166,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, Thẻ đang chia sẻ</translation>
 <translation id="1601378265092360672">Dữ liệu duyệt web bao gồm nhật ký duyệt web, cookie và dữ liệu khác của trang web, tệp và hình ảnh được lưu vào bộ nhớ đệm, cũng như các thẻ đang mở</translation>
 <translation id="160275202205869636">Khi bật, bạn có thể sử dụng và lưu dữ liệu trên Chrome vào Tài khoản Google của mình. Khi tắt, dữ liệu trên Chrome sẽ chỉ được lưu trên thiết bị này.</translation>
+<translation id="160403827062749147">Chào mừng bạn đến với Google Chrome, trình duyệt web an toàn nhất thế giới</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Xóa 1 mục đã chọn}other{Xóa # mục đã chọn}}</translation>
 <translation id="1639239467298939599">Đang tải</translation>
 <translation id="1641113438599504367">Duyệt web an toàn</translation>
@@ -858,6 +859,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4374192654218566997">\n\nBạn cũng có thể xoá dữ liệu này khỏi thiết bị này:</translation>
 <translation id="4378154925671717803">Điện thoại</translation>
 <translation id="4380055775103003110">Nếu sự cố này vẫn tiếp diễn, bạn có thể thử các cách khác để tiếp tục trên <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="4381351546374507910">Đăng nhập để sử dụng dấu trang, mật khẩu và thông tin Tự động điền trên mọi thiết bị của bạn.</translation>
 <translation id="4384468725000734951">Sử dụng Sogou để tìm kiếm</translation>
 <translation id="4387647248986092471">Tạo phương thức khoá hồ sơ cho ô tô</translation>
 <translation id="4387817230000841154">Mở Tệp đã tải xuống</translation>
@@ -1231,6 +1233,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5865733239029070421">Tự động gửi số liệu thống kê sử dụng và báo cáo sự cố cho Google</translation>
 <translation id="5869522115854928033">Mật khẩu đã lưu</translation>
 <translation id="5870416898561279542">Các thẻ và nhóm thẻ trùng lặp hoặc không dùng đến trong <ph name="DAYS_INACTIVE" /> ngày sẽ được chuyển đến đây<ph name="AUTODELETE_SECTION" />. Bạn có thể thay đổi chế độ này bất cứ lúc nào trong phần <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5882488054564514114">Đăng nhập để sử dụng dữ liệu trên mọi thiết bị của bạn và cá nhân hoá trải nghiệm.</translation>
 <translation id="5885378508678660271">Thông báo <ph name="SEPARATOR" /> Chrome đã loại bỏ các quyền này vì trang web này nguy hiểm</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
 <translation id="5896944002928653773">Bảng dưới cùng chứa tuyên bố từ chối trách nhiệm về tín hiệu doanh nghiệp đã đóng</translation>
@@ -1979,6 +1982,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8570677896027847510">Không thể tải tệp xuống một cách an toàn</translation>
 <translation id="8571213806525832805">4 tuần qua</translation>
 <translation id="8580435650274205305">Bạn cần điền ngày hết hạn</translation>
+<translation id="8584698523080138290">Sử dụng Chrome trên mọi thiết bị</translation>
 <translation id="8585103689515290060">Dịch vụ tự động điền</translation>
 <translation id="8586116786993312006">Nhấn để xoá dữ liệu duyệt web trong Chrome</translation>
 <translation id="859046281437143747">Theo dõi giá trong nút Tuỳ chọn khác</translation>
@@ -2031,6 +2035,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8803526663383843427">Khi bật</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Đã lưu mục vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}other{Đã lưu các mục vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}}</translation>
 <translation id="8804742093141782941">Giữ lại nhóm</translation>
+<translation id="880967149107462122">Chuyển đến phần cài đặt Chrome</translation>
 <translation id="8812260976093120287">Trên một số trang web, bạn có thể thanh toán bằng các ứng dụng thanh toán được hỗ trợ bên trên trên thiết bị của bạn.</translation>
 <translation id="8816556050903368450">Bao gồm đường liên kết: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Không thể xem nội dung trên thẻ Xem trước.</translation>
@@ -2056,6 +2061,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8903921497873541725">Phóng to</translation>
 <translation id="8909135823018751308">Chia sẻ...</translation>
 <translation id="8918299437379122615">Chia sẻ đường liên kết đến trang kết quả tìm kiếm cho: <ph name="SEARCH_QUERY" />. Nguồn: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Đăng nhập vào bất kỳ trang web nào</translation>
 <translation id="8922289737868596582">Tải trang xuống từ nút Thêm tùy chọn để sử dụng ngoại tuyến</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> đã sẵn sàng</translation>

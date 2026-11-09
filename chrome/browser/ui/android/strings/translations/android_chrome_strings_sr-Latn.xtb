@@ -166,6 +166,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, kartica za deljenje</translation>
 <translation id="1601378265092360672">Podaci pregledanja obuhvataju istoriju pregledanja, kolačiće i druge podatke o sajtovima, keširane slike i fajlove i otvorene kartice</translation>
 <translation id="160275202205869636">Kada je uključeno, koristite i čuvajte podatke na Google nalogu. Kada je isključeno, podaci se čuvaju samo na ovom uređaju.</translation>
+<translation id="160403827062749147">Dobro došli u Google Chrome, najbezbedniji pregledač na svetu</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Ukloni 1 izabranu stavku}one{Ukloni # izabranu stavku}few{Ukloni # izabrane stavke}other{Ukloni # izabranih stavki}}</translation>
 <translation id="1639239467298939599">Učitava se</translation>
 <translation id="1641113438599504367">Bezbedno pregledanje</translation>
@@ -858,6 +859,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4374192654218566997">\n\nMožete i da uklonite ove podatke sa ovog uređaja:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Ako problem nastavi da se javlja, možete da probate druge načine da biste nastavili na <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="4381351546374507910">Prijavite se da biste pristupali obeleživačima, lozinkama i podacima za automatsko popunjavanje na svim uređajima.</translation>
 <translation id="4384468725000734951">Koristite Sogou za pretragu</translation>
 <translation id="4387647248986092471">Primeni zaključavanje profila automobila</translation>
 <translation id="4387817230000841154">Otvori Preuzimanja</translation>
@@ -1231,6 +1233,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5865733239029070421">Automatski šalje Google-u statistiku korišćenja i izveštaje o otkazivanju</translation>
 <translation id="5869522115854928033">Sačuvane lozinke</translation>
 <translation id="5870416898561279542">Duple kartice i grupe ili one koje se ne koriste <ph name="DAYS_INACTIVE" /> dana premeštaju se ovde<ph name="AUTODELETE_SECTION" />. To možete da promenite u bilo kom trenutku u odeljku <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5882488054564514114">Prijavite se da biste pristupali podacima na svim uređajima i personalizovali doživljaj.</translation>
 <translation id="5885378508678660271">Obaveštenja <ph name="SEPARATOR" /> Chrome je uklonio ove dozvole jer je ovaj sajt opasan</translation>
 <translation id="5895138241574237353">Pokreni ponovo</translation>
 <translation id="5896944002928653773">Zatvorena je donja tabela sa odricanjem odgovornosti za signale preduzeća</translation>
@@ -1979,6 +1982,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8570677896027847510">Fajl ne može da se bezbedno preuzme</translation>
 <translation id="8571213806525832805">Poslednje 4 nedelje</translation>
 <translation id="8580435650274205305">Datum isteka, obavezno</translation>
+<translation id="8584698523080138290">Ponesite Chrome sa sobom</translation>
 <translation id="8585103689515290060">Usluge automatskog popunjavanja</translation>
 <translation id="8586116786993312006">Dodirnite da biste izbrisali podatke pregledanja u Chrome-u</translation>
 <translation id="859046281437143747">Pratite cenu pomoću dugmeta Još opcija</translation>
@@ -2031,6 +2035,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8803526663383843427">Kada je uključeno</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Stavka je sačuvana na Google nalogu, <ph name="ACCOUNT_EMAIL" />.}one{Stavke su sačuvane na Google nalogu, <ph name="ACCOUNT_EMAIL" />}few{Stavke su sačuvane na Google nalogu, <ph name="ACCOUNT_EMAIL" />}other{Stavke su sačuvane na Google nalogu, <ph name="ACCOUNT_EMAIL" />}}</translation>
 <translation id="8804742093141782941">Zadrži grupu</translation>
+<translation id="880967149107462122">Idite u podešavanja Chrome-a</translation>
 <translation id="8812260976093120287">Na nekim veb-sajtovima možete da plaćate pomoću prethodno navedenih podržanih aplikacija za plaćanje na uređaju.</translation>
 <translation id="8816556050903368450">Link za uvršćivanje: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Sadržaj kartice za pregled ne može da se vidi.</translation>
@@ -2056,6 +2061,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8903921497873541725">Uvećavanje</translation>
 <translation id="8909135823018751308">Deli...</translation>
 <translation id="8918299437379122615">Delite link do stranice rezultata pretrage za: <ph name="SEARCH_QUERY" />. Izvor: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Prijavite se na bilo koji veb-sajt</translation>
 <translation id="8922289737868596582">Preuzmite stranice pomoću dugmeta Još opcija da biste ih koristili oflajn</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Jezik <ph name="LANG" /> je spreman</translation>

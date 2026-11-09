@@ -386,7 +386,6 @@
 <translation id="2104436223719117661">Populära sökningar</translation>
 <translation id="21133533946938348">Fäst flik</translation>
 <translation id="2117650889962717098">Surfa privat genom att växla till inkognitoläge</translation>
-<translation id="2119126821484134587">För att ge anpassad hjälp delar Gemini viss data (som delar av dina chattar, din plats och annan relevant information) med andra tjänster från Google, som Maps och Flights. Dessa tjänster kan använda informationen för att bli bättre, även om du raderar din Gemini-apphistorik senare. Läs mer i <ph name="BEGIN_LINK" />integritetscentret för Gemini-apparna<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Öppna i …</translation>
 <translation id="2119962645034852864">Vissa tjänster är inte tillgängliga för ditt konto</translation>
 <translation id="2120553909046681540">Organisationen har inaktiverat privat surfning.</translation>
@@ -519,6 +518,7 @@
 <translation id="2524699375503213836">Hämta din data från Safari</translation>
 <translation id="2526166285241366046">Spara ett lösenord</translation>
 <translation id="2529021024822217800">Öppna alla</translation>
+<translation id="2536421147135705892">Vill du tillåta geolokalisering?</translation>
 <translation id="2536991091671391962">Du kan använda sparade lösenord på vilken enhet som helst. De sparas i Google Lösenordshantering för <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Dolt, lösenord</translation>
 <translation id="2538705697765638552">Spara dina uppgifter så att du kan få saker gjorda snabbare, till exempel fylla i formulär i Googles produkter. Du kan hantera dina uppgifter i Google Wallet för <ph name="USER_EMAIL" />.</translation>
@@ -1110,7 +1110,6 @@
 <translation id="4470766488397113689">Vad vill du jobba med?</translation>
 <translation id="4471472356135655769">Det gick inte att exportera lösenord</translation>
 <translation id="4472575034687746823">Kom igång</translation>
-<translation id="4473565697543262065">Detta raderar vald information som har sparats på den här enheten och i Google-kontot <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Dölj Bevaka pris</translation>
 <translation id="4474142134969976028">Det finns inga matchande resultat</translation>
 <translation id="4474494258097106883">Byggd för iPhone</translation>
@@ -1337,6 +1336,7 @@
 <translation id="5128788795241319992">Utforska den nya menyn</translation>
 <translation id="5132942445612118989">Synkronisera lösenord, historik med mera på alla dina enheter</translation>
 <translation id="5137568953923142260">Tillåt en gång</translation>
+<translation id="5139344197062265975">Använd mikrofonen för att chatta med Gemini. När du pratar med Gemini lagras ljud i Gemini-historiken (om den är aktiverad). Din data används inte för att förbättra generativa AI-modeller</translation>
 <translation id="5141363746588976328">Dölj kortet Sänkta priser på dina flikar</translation>
 <translation id="514154868070499296">Font: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Stäng Flikbyte</translation>
@@ -1434,7 +1434,6 @@
 <translation id="5443636120437209490">Surfa bättre som standard</translation>
 <translation id="5444892875087332195">Bokmärken</translation>
 <translation id="5447973833955560753">Återställningslösenord</translation>
-<translation id="5448623529214315261">Sparat foto <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Använd ett starkt lösenord:</translation>
 <translation id="5454211924362324495">Hindra andra från att använda ditt lösenord genom att <ph name="BEGIN_LINK" />ändra det på <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Lägg till i sökningen</translation>
@@ -1607,6 +1606,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6000893618966378846">Webbinformationen har raderats</translation>
 <translation id="6004988584831654445">Nu är det klart! Få aviseringar när nya uppgifter kommer.</translation>
 <translation id="6006672969046233841">Ny flik</translation>
+<translation id="6006758170939001741">Våra <ph name="BEGIN_LINK" />villkor<ph name="END_LINK" />, <ph name="BEGIN_LINK" />villkor för platstjänster i Sydkorea<ph name="END_LINK" /> och vårt <ph name="BEGIN_LINK" />integritetsmeddelande<ph name="END_LINK" /> gäller. Chattar granskas och används för att träna generativa AI-modeller. Gemini är AI och den kan göra misstag, inklusive om personer. Visst innehåll kanske inte är lämpligt för alla. Du kan <ph name="BEGIN_LINK" />hantera din historik<ph name="END_LINK" />, inklusive <ph name="BEGIN_LINK" />information om din plats<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Läs mer om dina val<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">Förbättra sökförslag</translation>
 <translation id="6012140227487808125">Krypterar …</translation>
 <translation id="6014801569448771146">Kontrollera lösenorden</translation>
@@ -1845,6 +1845,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6670729408462528018">Galleri</translation>
 <translation id="6671294218820966278">Markera som läst</translation>
 <translation id="6672697278890207089">Ange din lösenfras</translation>
+<translation id="6673666785752667010">Stäng AI-läget</translation>
 <translation id="6674917187596384849">Du kan enkelt byta mellan konton</translation>
 <translation id="6676349090816247042">Inloggningsalternativ.</translation>
 <translation id="667999046851023355">Dokument</translation>
@@ -1852,6 +1853,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6682680306647339111">Påminnelsen har tagits bort</translation>
 <translation id="6683022854667115063">Hörlurar</translation>
 <translation id="6684262542644248484">Logga in på en webbplats</translation>
+<translation id="668475086425500258">webbplatsinställningar</translation>
 <translation id="6685259053455152195">Genvägar till att snabbt ändra inställningar och använda funktioner från adressfältet.</translation>
 <translation id="6689342293888598653">Vit bakgrundsfärg</translation>
 <translation id="6689685206615181381">Endast inkognitoläget är tillgängligt</translation>
@@ -1867,7 +1869,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="672735642903863329">Använd samma bokmärken, lösenord med mera på alla enheter.</translation>
 <translation id="6729493062119577923">Aktivitet i den delade flikgruppen</translation>
 <translation id="6732087373923685049">kamera</translation>
-<translation id="6736243959894955139">Adress</translation>
 <translation id="6746338529702829275">Granska din kontodata</translation>
 <translation id="6749473226660745022">Foton</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} historikobjekt har importerats}other{{count} historikobjekt har importerats}}</translation>
@@ -1989,7 +1990,6 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="7128693485119315539">Organisationen behöver kanske se och hantera webbinformation som är kopplad till ditt hanterade konto, till exempel webbhistorik och lösenord.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kameran är inte tillgänglig</translation>
-<translation id="7138678301420049075">Övrigt</translation>
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Flikarna stängs och webbinformationen rensas</translation>
 <translation id="714291438898585119">Stjärnmärkta</translation>
@@ -2137,6 +2137,7 @@ Du kan starta om när som helst.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Vill du stänga {COUNT} inaktiv flik?}other{Vill du stänga {COUNT} inaktiva flikar?}}</translation>
 <translation id="7598439272585186139">Öka säkerheten</translation>
 <translation id="7600965453749440009">Översätt aldrig från <ph name="LANGUAGE" /></translation>
+<translation id="760230853074995500">Chattar granskas och används för att träna generativa AI-modeller. Du kan <ph name="BEGIN_LINK" />hantera din historik<ph name="END_LINK" />, inklusive <ph name="BEGIN_LINK" />information om din plats<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Läs mer om dina val<ph name="END_LINK" />.</translation>
 <translation id="7603308509262646847">Autofyll kortinnehavaren <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Popup blockeras (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Det går inte att synkronisera</translation>
@@ -2622,7 +2623,6 @@ Du kan starta om när som helst.</translation>
 <translation id="9039373489628511875">Bandbredd</translation>
 <translation id="9042363670218758847">Byt till en layout utformad för snabbsökningar</translation>
 <translation id="9042893549633094279">Integritet och säkerhet</translation>
-<translation id="9044703854323320868">Gmail-meddelande <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Skapa flikgrupper för att ordna dina öppna flikar och vara produktiv</translation>
 <translation id="9055580485132823283">Du är på väg att radera {password_count} lösenord, {passkey_count} nycklar och listan över webbplatser och appar där du valt att aldrig spara inloggningsuppgifter. Konton som du har skapat för webbplatser och appar raderas inte.</translation>
 <translation id="9057030985451135243">Läs mer om delade flikgrupper</translation>
@@ -2631,6 +2631,7 @@ Du kan starta om när som helst.</translation>
 <translation id="9066097352053395362">Dölj Redigera bokmärke</translation>
 <translation id="9070824521421603770">Du loggas ut och flikar stängs</translation>
 <translation id="9072837124205571418">Flikgrupper från alla enheter</translation>
+<translation id="9073322251019919253">Gemini är AI och den kan göra misstag, inklusive om personer. Visst innehåll kanske inte är lämpligt för alla. Chattar granskas och används för att träna generativa AI-modeller. Du kan <ph name="BEGIN_LINK" />hantera din historik<ph name="END_LINK" />, inklusive <ph name="BEGIN_LINK" />information om din plats<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Läs mer om dina val<ph name="END_LINK" />. Våra <ph name="BEGIN_LINK" />villkor<ph name="END_LINK" /> och vårt <ph name="BEGIN_LINK" />integritetsmeddelande<ph name="END_LINK" /> gäller.</translation>
 <translation id="9081058212938299310">Vill du uppdatera lösenordet för <ph name="USERNAME" />?</translation>
 <translation id="908365381820697818">Nu kan du söka efter och fylla i information från Gmail med mera</translation>
 <translation id="9083838294503912307">Aktivera synkronisering om du vill synkronisera och anpassa alla dina enheter.</translation>

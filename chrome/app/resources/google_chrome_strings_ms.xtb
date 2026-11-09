@@ -336,11 +336,13 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="3968962723676998462">Masukkan ungkapan laluan anda untuk menggunakan dan menyimpan data Chrome dalam akaun anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome mahu memadamkan data Google Password Manager. Taip kata laluan Windows anda untuk membenarkan tindakan ini.</translation>
 <translation id="3984557288004650913">Daripada butang "Google Search dalam Chrome" pada bar alat, anda boleh membuka semula Google Search dalam Chrome untuk mengemukakan pertanyaan semasa anda menyemak imbas</translation>
+<translation id="399788104667917863">Semat pada bar alat</translation>
 <translation id="400161754580828648">Untuk berkongsi skrin anda, benarkan rakaman skrin untuk Chrome dalam Tetapan Sistem.</translation>
 <translation id="4012899077942246412">Semasa anda log masuk, anda boleh menggunakan kata laluan anda dan pelbagai lagi daripada Google Account anda dalam Chrome. Untuk menukar tetapan ini, akses “Akaun anda dalam Chrome”.</translation>
 <translation id="4022972681110646219">Terjemahkan skrin</translation>
 <translation id="4023601594785368013">Bahasa asal: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Dibina dalam Chrome untuk membantu anda membuat, menyimpan dan menggunakan autolengkap kata laluan kukuh. Tambahkan pintasan untuk akses mudah.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Keahlian Google.</translation>
 <translation id="4035053306113201399">Chrome OS perlu dimulakan semula untuk melaksanakan kemaskinian.</translation>
 <translation id="4050175100176540509">Peningkatan keselamatan penting dan ciri baharu tersedia dalam versi terkini.</translation>
 <translation id="4053720452172726777">Sesuaikan dan kawal Google Chrome</translation>
@@ -931,6 +933,7 @@ Penanda halaman baharu tidak boleh disimpan dalam akaun anda sehingga anda memad
 <translation id="9148058034647219655">Keluar</translation>
 <translation id="9150331942025550505">Dapatkan kuasa AI apabila anda menggunakan apl Chrome pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="919706545465235479">Kemas kini Chrome untuk memulakan penyegerakan</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Keahlian Google.</translation>
 <translation id="922152298093051471">Sesuaikan Chrome</translation>
 <translation id="93760716455950538">Mulakan semula Chrome OS Flex</translation>
 <translation id="943390475793766444">Chrome mengesyorkan pengimbasan fail ini kerana fail ini mungkin berbahaya.</translation>

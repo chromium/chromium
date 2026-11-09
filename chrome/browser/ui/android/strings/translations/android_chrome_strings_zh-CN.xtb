@@ -166,6 +166,7 @@
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />，正在共享内容的标签页</translation>
 <translation id="1601378265092360672">浏览数据包括您的浏览记录、Cookie 和其他网站数据、缓存的图片和文件，以及打开的标签页</translation>
 <translation id="160275202205869636">当此设置处于开启状态时，系统会将数据保存在您的 Google 账号中并使用这些数据。当此设置处于关闭状态时，数据只会保存在此设备上。</translation>
+<translation id="160403827062749147">欢迎使用 Google Chrome，全球备受信赖的安全浏览器</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 个所选项}other{移除 # 个所选项}}</translation>
 <translation id="1639239467298939599">正在加载</translation>
 <translation id="1641113438599504367">安全浏览</translation>
@@ -858,6 +859,7 @@
 <translation id="4374192654218566997">\n\n您还可以从此设备中移除以下数据：</translation>
 <translation id="4378154925671717803">电话</translation>
 <translation id="4380055775103003110">如果此问题仍然存在，您可以尝试在 <ph name="SITE_ETLD_PLUS_ONE" /> 上通过其他方法继续操作。</translation>
+<translation id="4381351546374507910">登录后即可在所有设备上获取您的书签、密码和自动填充信息。</translation>
 <translation id="4384468725000734951">目前使用的搜索引擎是搜狗</translation>
 <translation id="4387647248986092471">设置车载系统个人资料锁定方式</translation>
 <translation id="4387817230000841154">打开下载内容页面</translation>
@@ -1231,6 +1233,7 @@
 <translation id="5865733239029070421">自动将使用情况统计信息和崩溃报告发送给 Google</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
 <translation id="5870416898561279542">重复的标签页和分组或已闲置 <ph name="DAYS_INACTIVE" /> 天的标签页和分组会移至此处，<ph name="AUTODELETE_SECTION" />。您随时可在<ph name="DECLUTTER_SETTINGS_TITLE" />中更改此设置。</translation>
+<translation id="5882488054564514114">登录后即可跨设备获取您的数据，并获享个性化体验。</translation>
 <translation id="5885378508678660271">通知 <ph name="SEPARATOR" /> Chrome 撤消了这些权限，因为此网站具有危险性</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5896944002928653773">企业信号免责声明底部动作条已关闭</translation>
@@ -1977,6 +1980,7 @@
 <translation id="8570677896027847510">无法安全地下载文件</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8580435650274205305">失效日期（必填）</translation>
+<translation id="8584698523080138290">随时随地使用 Chrome</translation>
 <translation id="8585103689515290060">自动填充服务</translation>
 <translation id="8586116786993312006">点按即可删除 Chrome 中的浏览数据</translation>
 <translation id="859046281437143747">通过“更多选项”按钮跟踪价格</translation>
@@ -2029,6 +2033,7 @@
 <translation id="8803526663383843427">开启时</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{这项内容已保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}other{这些内容已保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}}</translation>
 <translation id="8804742093141782941">保留分组</translation>
+<translation id="880967149107462122">前往 Chrome 设置</translation>
 <translation id="8812260976093120287">在某些网站上，您可以使用自己的设备通过上述支持的付款应用付款。</translation>
 <translation id="8816556050903368450">包含链接：<ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">无法查看标签页的预览内容。</translation>
@@ -2054,6 +2059,7 @@
 <translation id="8903921497873541725">放大</translation>
 <translation id="8909135823018751308">分享…</translation>
 <translation id="8918299437379122615">分享指向以下搜索查询的搜索结果页的链接：<ph name="SEARCH_QUERY" />。来源：<ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">登录任意网站</translation>
 <translation id="8922289737868596582">通过“更多选项”按钮下载网页以供离线查看</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">可以使用<ph name="LANG" />了</translation>

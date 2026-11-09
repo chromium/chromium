@@ -166,6 +166,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />、共有タブ</translation>
 <translation id="1601378265092360672">閲覧データには、閲覧履歴、Cookie やその他のサイトデータ、キャッシュされた画像とファイル、開いているタブが含まれます</translation>
 <translation id="160275202205869636">オンにすると、Google アカウントのデータが使用、保存されます。オフにすると、データはこのデバイスのみに保存されます。</translation>
+<translation id="160403827062749147">世界で最も安全なブラウザ、Google Chrome へようこそ</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{選択された 1 件のアイテムを削除します}other{選択された # 件のアイテムを削除します}}</translation>
 <translation id="1639239467298939599">読み込んでいます</translation>
 <translation id="1641113438599504367">セーフ ブラウジング</translation>
@@ -858,6 +859,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4374192654218566997">\n\nこのデバイスから次のデータも削除できます。</translation>
 <translation id="4378154925671717803">電話</translation>
 <translation id="4380055775103003110">問題が解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
+<translation id="4381351546374507910">ログインすると、すべてのデバイスで同じブックマーク、パスワード、自動入力情報を使用できます。</translation>
 <translation id="4384468725000734951">検索に Sogou を使用します</translation>
 <translation id="4387647248986092471">車のプロフィールのロックを作成</translation>
 <translation id="4387817230000841154">ダウンロードを開く</translation>
@@ -1231,6 +1233,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="5865733239029070421">使用統計情報や障害レポートを Google に自動送信します</translation>
 <translation id="5869522115854928033">保存したパスワード</translation>
 <translation id="5870416898561279542">重複しているタブとグループや <ph name="DAYS_INACTIVE" /> 日間使用していないタブとグループはここに移動され、<ph name="AUTODELETE_SECTION" />。これは [<ph name="DECLUTTER_SETTINGS_TITLE" />] でいつでも変更できます。</translation>
+<translation id="5882488054564514114">ログインすると、デバイス間でデータを共有したり、エクスペリエンスをカスタマイズしたりできます。</translation>
 <translation id="5885378508678660271">通知 <ph name="SEPARATOR" /> このサイトは危険なため、権限を削除しました</translation>
 <translation id="5895138241574237353">再起動</translation>
 <translation id="5896944002928653773">Enterprise シグナルに関する免責事項のボトムシートは閉じています</translation>
@@ -1979,6 +1982,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8570677896027847510">ファイルを安全にダウンロードできません</translation>
 <translation id="8571213806525832805">過去 4 週間</translation>
 <translation id="8580435650274205305">有効期限、必須です</translation>
+<translation id="8584698523080138290">どこでも Chrome と一緒に</translation>
 <translation id="8585103689515290060">自動入力サービス</translation>
 <translation id="8586116786993312006">タップすると、Chrome の閲覧データを削除できます</translation>
 <translation id="859046281437143747">[その他のオプション] から価格をトラッキングできます</translation>
@@ -2031,6 +2035,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8803526663383843427">有効にした場合</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Google アカウント（<ph name="ACCOUNT_EMAIL" />）にアイテムを保存しました。}other{Google アカウント（<ph name="ACCOUNT_EMAIL" />）にアイテムを保存しました。}}</translation>
 <translation id="8804742093141782941">グループを保持</translation>
+<translation id="880967149107462122">Chrome 設定に移動します</translation>
 <translation id="8812260976093120287">一部のウェブサイトでは、デバイスでサポートされている上記のお支払いアプリを使って支払いができます。</translation>
 <translation id="8816556050903368450">リンク: <ph name="ORIGIN" /> を含む</translation>
 <translation id="881688628773363275">タブのコンテンツのプレビューを表示できません。</translation>
@@ -2056,6 +2061,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8903921497873541725">拡大する</translation>
 <translation id="8909135823018751308">共有...</translation>
 <translation id="8918299437379122615">「<ph name="SEARCH_QUERY" />」の検索結果ページへのリンクを共有します。ソース: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">任意のウェブサイトにログインします</translation>
 <translation id="8922289737868596582">[その他のオプション] からページをダウンロードするとオフラインで使用できるようになります</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> を使用できるようになりました</translation>

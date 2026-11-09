@@ -5977,21 +5977,6 @@ Esta política no tendrá ningún efecto si se asigna el valor false a la polít
 <translation id="4725691087141147920">Mostrar Sync Consent durante el inicio de sesión</translation>
 <translation id="4725801978265372736">Requerir que el nombre del usuario local y el propietario del host de acceso remoto coincidan</translation>
 <translation id="4726228171190098009">No permitir que el dispositivo solicite usar la función Powerwash</translation>
-<translation id="4726236283425627939">Si se define esta política, se controlará la configuración de gestión de extensiones de <ph name="PRODUCT_NAME" />, incluidas las que controlen las políticas existentes relacionadas con las extensiones.
-
-Esta política asociará un ID de extensión o una URL de actualización únicamente a su configuración específica. Se puede definir una configuración predeterminada para el ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las extensiones para las que no se haya definido una configuración personalizada en esta política.
-
-Esta política puede anular los ajustes por extensión de las políticas antiguas.
-
-Ten en cuenta que cualquier ajuste por ID de extensión de <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> o <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> solo heredará "installation_mode" y "update_url" de los valores predeterminados de <ph name="DEFAULT_SCOPE" />. No heredará ninguna otra propiedad. Si se usa una URL de actualización, la configuración se aplicará a las extensiones que incluyan la misma URL de actualización en su archivo de manifiesto (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Si a la marca "override_update_url" se le asigna el valor true, la extensión se instalará y se actualizará mediante la URL de actualización que se especifique en la política <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o en el campo "update_url" de esta política. Se ignorará el indicador "override_update_url" si el valor de "update_url" es una URL de Chrome Web Store.
-
-A partir de la versión 154 de <ph name="PRODUCT_NAME" />, si se aplica "runtime_blocked_hosts" a una extensión con el permiso "debugger", se inhabilitará por completo "chrome.debugger.attach()" en todos los destinos.
-
-En las instancias de <ph name="MS_WIN_NAME" />, las aplicaciones y extensiones que no estén alojadas en Chrome Web Store solo se podrán instalar de manera forzada si la instancia está vinculada a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o si se ha registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-En las instancias de <ph name="MAC_OS_NAME" />, las aplicaciones y extensiones que no estén alojadas en Chrome Web Store solo se podrán instalar de manera forzada si la instancia se gestiona mediante MDM, está vinculada a un dominio a través de MCX o se ha registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Nota: Esta política solo se aplica a las plataformas compatibles con extensiones.</translation>
 <translation id="4726895359147376813">Asignación desde IDs persistentes a configuraciones de VM</translation>
 <translation id="4732069502693984686">Habilitar la captura automática de varias pantallas</translation>
 <translation id="4733471537137819387">Políticas relacionadas con la autenticación HTTP integrada</translation>
@@ -6665,11 +6650,6 @@ Si no se establece esta política o se inhabilita, las cookies y los datos se po
 <translation id="5152787786897382519">Tanto Chromium como Google Chrome cuentan con algunos grupos de políticas que tienen dependencia mutua para asumir el control de una función. Estos conjuntos están representados por los grupos de políticas que se indican a continuación. Dado que las políticas pueden tener varias fuentes, solo se aplicarán los valores procedentes de la fuente que tenga la mayor prioridad. Se ignorarán los valores procedentes de las fuentes del mismo grupo que tengan menor prioridad. El orden de prioridad se define en la página <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Icono de experimentos del navegador en la barra de herramientas</translation>
 <translation id="5159674159887919923">No enviar datos adicionales de hardware con ChromeOS Flex</translation>
-<translation id="5162562564734598188">Si se habilita esta política, no se permitirá hacer capturas de pantalla mediante combinaciones de teclas ni APIs de extensión. Si se inhabilita esta política o no se establece, se permitirán las capturas de pantalla.
-
-A partir de la versión 154 de <ph name="PRODUCT_NAME" />, si se habilita esta política, también se impedirá que las extensiones adjunten el depurador mediante "chrome.debugger.attach()".
-
-Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph name="LINUX_OS_NAME" />, esta política no impedirá que se hagan capturas de pantalla mediante aplicaciones del sistema operativo o de terceros.</translation>
 <translation id="5162571264806471078">Habilitar los informes en la nube de señales de seguridad en perfiles gestionados</translation>
 <translation id="5162982931329320509">Lista de dominios que se resolverán mediante DNS-over-HTTPS. Los dominios que no se incluyan en la lista no se resolverán mediante DNS-over-HTTPS. Esta política se ignora cuando el modo DNS seguro se desactiva (usa siempre un DNS de texto sin formato).
 
@@ -7316,13 +7296,6 @@ Si se inhabilita <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de Sh
 <translation id="5537400155400537818">Inhabilitado: el zoom de CSS conserva su comportamiento anterior al estándar.</translation>
 <translation id="5537587542872235553">Permitir que las apps web aisladas que se han instalado de manera forzada y las apps de kiosco usen la API Device Attributes</translation>
 <translation id="553806128266843748">Un indicador booleano que especifica si las limitaciones de ancho de banda están habilitadas.</translation>
-<translation id="5540415024237352600">Esta política dejará de estar disponible en la versión M153 y no se admitirá (no tendrá ningún efecto) en una versión futura. Las firmas específicas para las aplicaciones nativas creadas al instalar una aplicación web progresiva (PWA) ahora están habilitadas de forma permanente en <ph name="MAC_OS_NAME" />. De esta forma, cada aplicación instalada tiene una identidad única para los componentes del sistema de <ph name="MAC_OS_NAME" />.
-
-Si se habilita esta política o no se define, se permitirá que se usen firmas específicas para la aplicación nativa que se crea al instalar una aplicación web progresiva (PWA). De esta forma, cada aplicación instalada tiene una identidad única para los componentes del sistema de <ph name="MAC_OS_NAME" />.
-
-Si se inhabilita esta política, todas las aplicaciones nativas creadas al instalar aplicaciones web progresivas tendrán la misma identidad. Esto puede interferir con la funcionalidad de <ph name="MAC_OS_NAME" />.
-
-Por ello, esta política solo debe inhabilitarse si usas una solución de seguridad de endpoints que bloquee las aplicaciones con una firma específica.</translation>
 <translation id="5540885720415375851">Permitir descubrimiento de dispositivos locales</translation>
 <translation id="5542235730745104308">Si se asigna el valor true a esta política, <ph name="PRODUCT_NAME" /> usará páginas de error alternativas que vienen incorporadas (como "No se encuentra la página"). Si se le asigna el valor false, <ph name="PRODUCT_NAME" /> nunca usará páginas de error alternativas.
 
@@ -8406,11 +8379,6 @@ En la versión 114 y posteriores, esta política es opcional si se establece la 
 <translation id="6224070048795197148">Permitir que el usuario use el navegador sin iniciar sesión</translation>
 <translation id="6224304369267200483">Las URL y los dominios han permitido automáticamente la confirmación directa de la llave de seguridad</translation>
 <translation id="6225938950222983458">Esta política está obsoleta y no se admite. Usa <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" /> en su lugar.</translation>
-<translation id="6230442621691161858">Esta función habilita sugerencias sobre contenido nuevo por descubrir. Incluye aplicaciones, páginas web y más.
-      Si se le asigna el valor "True" a esta política, se habilitarán las sugerencias sobre contenido nuevo por descubrir.
-      Si se le asigna el valor "False", se inhabilitarán las sugerencias sobre contenido nuevo por descubrir.
-      Si no se asigna ningún valor a esta política, las sugerencias sobre contenido nuevo por descubrir estarán inhabilitadas para los usuarios gestionados y habilitadas para el resto de usuarios.
-      </translation>
 <translation id="6233173491898450179">Establecer directorio de descargas</translation>
 <translation id="6234167788423986573">La recogida de datos anónima con clave de URL nunca está activa</translation>
 <translation id="6234177445959386333">Configurar la lista de las URL de acceso de empresa en las que el servicio de protección de contraseñas debería capturar los hashes con salt de las contraseñas.</translation>

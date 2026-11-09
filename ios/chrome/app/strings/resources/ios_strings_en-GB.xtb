@@ -386,7 +386,6 @@
 <translation id="2104436223719117661">Trending searches</translation>
 <translation id="21133533946938348">Pin Tab</translation>
 <translation id="2117650889962717098">Keep your browsing private by switching to Incognito mode</translation>
-<translation id="2119126821484134587">To provide tailored help, Gemini shares some of your data (such as parts of your chats, location and other relevant info) with other Google services, like Maps and Flights. These services may use that info to improve, even if you later delete your Gemini Apps history. Learn more in the <ph name="BEGIN_LINK" />Gemini Apps Privacy Hub<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Open in…</translation>
 <translation id="2119962645034852864">Some services aren't available for your account</translation>
 <translation id="2120553909046681540">Your organisation has turned off private browsing.</translation>
@@ -519,6 +518,7 @@
 <translation id="2524699375503213836">Bring your data from Safari</translation>
 <translation id="2526166285241366046">Save a password</translation>
 <translation id="2529021024822217800">Open All</translation>
+<translation id="2536421147135705892">Allow geolocation?</translation>
 <translation id="2536991091671391962">You can use saved passwords on any device. They're saved to Google Password Manager for <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Hidden, password</translation>
 <translation id="2538705697765638552">Save your info and get things done faster, like filling forms across Google products. You can manage your info in Google Wallet for <ph name="USER_EMAIL" />.</translation>
@@ -1110,7 +1110,6 @@
 <translation id="4470766488397113689">What do you want to work on?</translation>
 <translation id="4471472356135655769">Can't export passwords</translation>
 <translation id="4472575034687746823">Get started</translation>
-<translation id="4473565697543262065">This deletes selected info saved on this device and in your Google Account <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Hide Track price</translation>
 <translation id="4474142134969976028">No matching results</translation>
 <translation id="4474494258097106883">Built for your iPhone</translation>
@@ -1337,6 +1336,7 @@
 <translation id="5128788795241319992">Explore the new menu</translation>
 <translation id="5132942445612118989">Sync your passwords, history and more on all devices</translation>
 <translation id="5137568953923142260">Allow once</translation>
+<translation id="5139344197062265975">Use your microphone to chat with Gemini. When you speak to Gemini, audio is stored in Gemini History (if it's on). Your data is not used to improve generative AI models</translation>
 <translation id="5141363746588976328">Hide price drops on your tabs card</translation>
 <translation id="514154868070499296">Font: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Leave Tab Switcher</translation>
@@ -1434,7 +1434,6 @@
 <translation id="5443636120437209490">Better browsing by default</translation>
 <translation id="5444892875087332195">Bookmarks</translation>
 <translation id="5447973833955560753">Recovery password</translation>
-<translation id="5448623529214315261">Saved photo <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Use strong password:</translation>
 <translation id="5454211924362324495">To stop others from using your password, <ph name="BEGIN_LINK" />change it on <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Add to your search</translation>
@@ -1607,6 +1606,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6000893618966378846">'Delete browsing data' completed!</translation>
 <translation id="6004988584831654445">You're ready to go! Get notified when new tasks arrive.</translation>
 <translation id="6006672969046233841">New tab</translation>
+<translation id="6006758170939001741">Our <ph name="BEGIN_LINK" />Terms<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Korean Location Terms<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />Privacy Notice<ph name="END_LINK" /> apply. Chats are reviewed and used to train generative AI models. Gemini is AI and can make mistakes, including about people. Some content may not be suitable for everyone. You can <ph name="BEGIN_LINK" />manage your history<ph name="END_LINK" />, including <ph name="BEGIN_LINK" />info about your location<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Learn more about your choices<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">Improve search suggestions</translation>
 <translation id="6012140227487808125">Encrypting…</translation>
 <translation id="6014801569448771146">Check your passwords</translation>
@@ -1845,6 +1845,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6670729408462528018">Gallery</translation>
 <translation id="6671294218820966278">Mark as read</translation>
 <translation id="6672697278890207089">Enter your passphrase</translation>
+<translation id="6673666785752667010">Close AI Mode</translation>
 <translation id="6674917187596384849">You can easily switch between accounts</translation>
 <translation id="6676349090816247042">Sign-in options.</translation>
 <translation id="667999046851023355">Document</translation>
@@ -1852,6 +1853,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6682680306647339111">Reminder removed</translation>
 <translation id="6683022854667115063">Headphones</translation>
 <translation id="6684262542644248484">Sign in to a website</translation>
+<translation id="668475086425500258">site settings</translation>
 <translation id="6685259053455152195">Shortcuts to quickly modify settings and use features from the address bar.</translation>
 <translation id="6689342293888598653">White background colour</translation>
 <translation id="6689685206615181381">Only Incognito mode is available</translation>
@@ -1867,7 +1869,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="672735642903863329">Get your bookmarks, passwords and more on all your devices.</translation>
 <translation id="6729493062119577923">Shared tab group activity</translation>
 <translation id="6732087373923685049">camera</translation>
-<translation id="6736243959894955139">Address</translation>
 <translation id="6746338529702829275">Review your account data</translation>
 <translation id="6749473226660745022">Photos</translation>
 <translation id="6750456911389438250">{count,plural, =1{Imported {count} history item}other{Imported {count} history items}}</translation>
@@ -1989,7 +1990,6 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="7128693485119315539">Your organisation may need to see and manage browsing data tied to your managed account, such as your browsing history and passwords.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Camera is unavailable</translation>
-<translation id="7138678301420049075">Other</translation>
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Your tabs will be closed and browsing data will be deleted</translation>
 <translation id="714291438898585119">Starred</translation>
@@ -2137,6 +2137,7 @@ You can restart at any time.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Close {COUNT} inactive tab?}other{Close {COUNT} inactive tabs?}}</translation>
 <translation id="7598439272585186139">Get more security</translation>
 <translation id="7600965453749440009">Never translate <ph name="LANGUAGE" /></translation>
+<translation id="760230853074995500">Chats are reviewed and used to train generative AI models. You can <ph name="BEGIN_LINK" />manage your history<ph name="END_LINK" />, including <ph name="BEGIN_LINK" />info about your location<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Learn more about your choices<ph name="END_LINK" />.</translation>
 <translation id="7603308509262646847">Autofill the cardholder <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Pop-ups blocked (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Sync isn't working</translation>
@@ -2622,7 +2623,6 @@ You can restart at any time.</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
 <translation id="9042363670218758847">Switch to a layout built for quick searches</translation>
 <translation id="9042893549633094279">Privacy and security</translation>
-<translation id="9044703854323320868">Gmail message <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Create tab groups to organise your open tabs and stay productive</translation>
 <translation id="9055580485132823283">You are about to delete {password_count} passwords, {passkey_count} passkeys and the list of sites and apps for which you chose to never save sign-in info. Any account that you created for sites and apps won't be deleted.</translation>
 <translation id="9057030985451135243">Learn about shared tab groups</translation>
@@ -2631,6 +2631,7 @@ You can restart at any time.</translation>
 <translation id="9066097352053395362">Hide Edit bookmark</translation>
 <translation id="9070824521421603770">You'll be signed out and tabs will be closed</translation>
 <translation id="9072837124205571418">Tab groups from all devices</translation>
+<translation id="9073322251019919253">Gemini is AI and can make mistakes, including about people. Some content may not be suitable for everyone. Chats are reviewed and used to train generative AI models. You can <ph name="BEGIN_LINK" />manage your history<ph name="END_LINK" />, including <ph name="BEGIN_LINK" />info about your location<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Learn about your choices<ph name="END_LINK" />. Our <ph name="BEGIN_LINK" />Terms<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />Privacy Notice<ph name="END_LINK" /> apply.</translation>
 <translation id="9081058212938299310">Update password for <ph name="USERNAME" />?</translation>
 <translation id="908365381820697818">Now you can find and fill info from Gmail and more</translation>
 <translation id="9083838294503912307">To sync and personalise across devices, turn on sync.</translation>

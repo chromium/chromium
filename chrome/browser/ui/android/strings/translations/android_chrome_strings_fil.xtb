@@ -166,6 +166,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, Nagshe-share na Tab</translation>
 <translation id="1601378265092360672">Kasama sa data ng pagba-browse ang iyong history ng pag-browse, cookies at iba pang data ng site, naka-cache na larawan at file, at nakabukas na tab</translation>
 <translation id="160275202205869636">Kapag naka-on, gagamitin at ise-save ang data sa Google Account mo. Kapag naka-off, ise-save lang ang data sa device na ito.</translation>
+<translation id="160403827062749147">Welcome sa Google Chrome, ang pinakaligtas na browser sa mundo</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Alisin ang 1 piniling item}one{Alisin ang # piniling item}other{Alisin ang # na piniling item}}</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
 <translation id="1641113438599504367">Ligtas na Pagba-browse</translation>
@@ -858,6 +859,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="4374192654218566997">\n\nPuwede mo ring alisin ang data na ito sa device na ito:</translation>
 <translation id="4378154925671717803">Telepono</translation>
 <translation id="4380055775103003110">Kung patuloy na nangyayari ang isyung ito, puwede kang sumubok ng iba pang paraan para magpatuloy sa <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="4381351546374507910">Mag-sign in para makuha ang iyong mga bookmark, password, at impormasyon sa Autofill sa lahat ng device mo.</translation>
 <translation id="4384468725000734951">Ginagamit ang Sogou para sa paghahanap</translation>
 <translation id="4387647248986092471">Gumawa ng lock ng profile ng kotse</translation>
 <translation id="4387817230000841154">Buksan ang Mga Download</translation>
@@ -1231,6 +1233,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5865733239029070421">Awtomatikong nagpapadala sa Google ng mga istatistika ng paggamit at ulat ng pag-crash</translation>
 <translation id="5869522115854928033">Mga naka-save na password</translation>
 <translation id="5870416898561279542">Ililipat dito ang mga duplicate na tab at grupo o ang mga hindi ginamit sa loob ng <ph name="DAYS_INACTIVE" /> (na) araw<ph name="AUTODELETE_SECTION" />. Puwede mo itong baguhin anumang oras sa <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5882488054564514114">Mag-sign in para makuha ang iyong data sa lahat ng device mo at i-personalize ang iyong experience.</translation>
 <translation id="5885378508678660271">Mga Notification <ph name="SEPARATOR" /> Inalis ng Chrome ang mga pahintulot na ito dahil mapanganib ang site na ito</translation>
 <translation id="5895138241574237353">I-restart</translation>
 <translation id="5896944002928653773">Isinara ang bottom sheet ng disclaimer ng mga signal ng enterprise</translation>
@@ -1979,6 +1982,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8570677896027847510">Hindi secure na mada-download ang mga file</translation>
 <translation id="8571213806525832805">Huling 4 na linggo</translation>
 <translation id="8580435650274205305">Nire-require ang petsa ng pag-expire</translation>
+<translation id="8584698523080138290">Dalhin mo ang Chrome</translation>
 <translation id="8585103689515290060">Mga serbisyo ng autofill</translation>
 <translation id="8586116786993312006">I-tap para i-delete ang data ng pag-browse sa Chrome</translation>
 <translation id="859046281437143747">Subaybayan ang presyo mula sa button na Higit pang opsyon</translation>
@@ -2031,6 +2035,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8803526663383843427">Kapag naka-on</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Na-save ang item sa iyong Google Account na <ph name="ACCOUNT_EMAIL" />.}one{Na-save ang mga item sa iyong Google Account na <ph name="ACCOUNT_EMAIL" />.}other{Na-save ang mga item sa iyong Google Account na <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8804742093141782941">Panatilihin ang grupo</translation>
+<translation id="880967149107462122">Pumunta sa Mga Setting ng Chrome</translation>
 <translation id="8812260976093120287">Sa ilang website, maaari kang magbayad sa iyong device gamit ang mga sinusuportahang app sa pagbabayad sa itaas.</translation>
 <translation id="8816556050903368450">Kasama ang link na: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Hindi puwedeng tingnan ang content ng tab na preview.</translation>
@@ -2056,6 +2061,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8903921497873541725">Mag-zoom in</translation>
 <translation id="8909135823018751308">Ibahagi…</translation>
 <translation id="8918299437379122615">I-share ang link sa page ng mga resulta ng search para sa: <ph name="SEARCH_QUERY" />. Source: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Mag-sign in sa anumang website</translation>
 <translation id="8922289737868596582">I-download ang mga page mula sa button na Higit pang opsyon para magamit ang mga ito offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Handa na ang <ph name="LANG" /></translation>

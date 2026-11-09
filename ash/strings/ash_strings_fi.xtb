@@ -138,7 +138,6 @@
 <translation id="1346403631707626730">Lähetä käyttö- ja diagnostiikkadataa. Auta parantamaan lapsesi Android-käyttökokemusta lähettämällä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Dataa ei käytetä lapsesi henkilöllisyyden selvittämiseen – sen avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Koostetusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, esim. Android-kehittäjille. Jos muun verkko- ja sovellustoiminnan asetus on lapsella käytössä, tätä dataa voidaan tallentaa hänen Google-tililleen. <ph name="BEGIN_LINK1" />Lue lisää mittareista<ph name="BEGIN_LINK1_END" />Lue lisää<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">Oikealla</translation>
 <translation id="1350494136075914725">Käynnissä · Vaihda välilehteen</translation>
-<translation id="1351937230027495976">Tiivistä valikko</translation>
 <translation id="1355088139103479645">Poistetaanko kaikki data?</translation>
 <translation id="1360220746312242196">Kun haet sivua, siirry haun edelliseen osumaan</translation>
 <translation id="1360788414852622716">Profiilia poistetaan käytöstä. Tässä voi kulua muutama minuutti.</translation>
@@ -682,7 +681,6 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3033545621352269033">Päällä</translation>
 <translation id="3033912566804961911">Yhdistä <ph name="DESK_NAME" /></translation>
 <translation id="3036327949511794916">Laitteen (<ph name="DEVICE_TYPE" />) palauttamisen määräaika on mennyt umpeen.</translation>
-<translation id="3039491566278747710">Offline-käytäntöjen asentaminen laitteelle epäonnistui.</translation>
 <translation id="3039939407102840004">Näyttökynän akun varaus on <ph name="PERCENTAGE" /> prosenttia.</translation>
 <translation id="304097922505898963">Avaa Key Shortcuts ‑sovellus</translation>
 <translation id="304417730895741346">Kiinnitetyt ja avoimet sovellukset näkyvät hyllyssä. Voit kiinnittää sovelluksen hyllyyn klikkaamalla sovellusta kakkospainikkeella tai napauttamalla sitä kosketuslevyllä kahdella sormella.</translation>
@@ -698,7 +696,6 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3075144191779656260">Kosketa sormenjälkitunnistinta, joka on laitteen (<ph name="DEVICE_TYPE" />) vasemmassa reunassa. Sormenjälkidata tallennetaan turvallisesti vain laitteellesi (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="3075874217500066906">Powerwash-prosessin aloittaminen vaatii uudelleenkäynnistyksen. Uudelleenkäynnistyksen jälkeen sinua pyydetään vahvistamaan, että haluat jatkaa.</translation>
 <translation id="3077734595579995578">shift</translation>
-<translation id="3081696990447829002">Laajenna valikko</translation>
 <translation id="3087734570205094154">Alaosassa</translation>
 <translation id="3088128611727407543">Sovellusprofiilia valmistellaan…</translation>
 <translation id="3090214513075567547">Avaa kontekstivalikko</translation>
@@ -804,7 +801,6 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3405101454990027959">Laita mikrofonin käyttölupa päälle</translation>
 <translation id="3407967630066378878">Ota sormenjälki käyttöön pyytämällä lasta koskettamaan sormenjälkitunnistinta, joka on laitteen (<ph name="DEVICE_TYPE" />) vasemmassa reunassa. Lapsen sormenjälkidata tallennetaan turvallisesti vain tälle laitteelle (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="3409584356742878290">Näytä tai piilota Kehittäjätyökalut-tarkistin</translation>
-<translation id="3413817803639110246">Ei mitään nähtävää vielä</translation>
 <translation id="3417835166382867856">Hae välilehtiä</translation>
 <translation id="3426253816581969877">Pidä <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> ‑näppäin painettuna ja paina <ph name="KEY" />, kunnes olet haluamassasi ikkunassa, ja vapauta sitten näppäimet</translation>
 <translation id="3428447136709161042">Katkaistaanko yhteys (<ph name="NETWORK_NAME" />)?</translation>
@@ -899,7 +895,6 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3626281679859535460">Kirkkaus</translation>
 <translation id="3628323833346754646">Etupainike</translation>
 <translation id="3630697955794050612">poissa päältä</translation>
-<translation id="3631369015426612114">Salli ilmoitukset seuraavista:</translation>
 <translation id="3633097874324966332">Avaa Bluetooth-asetukset ja muodosta laitepari</translation>
 <translation id="3633851487917460983">Avaa leikepöytä</translation>
 <translation id="363473492175527493">Tehtävä, johon keskitytään: <ph name="TASK_NAME" />. Muokkaa tehtävää painamalla Enter.</translation>
@@ -915,7 +910,6 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3659667652322717492">Voit muuttaa mikrofonin toimintaa milloin tahansa.</translation>
 <translation id="3659814201068740063">Noin <ph name="TIME_LEFT" /> jäljellä (<ph name="PERCENTAGE" /> %).
 Yhdistä laite virtalähteeseen.</translation>
-<translation id="3660860940251915011">Laita näkyvyys päälle/pois: <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ylläpidetty käyttäjä</translation>
 <translation id="3666266999138159418">Piilota kelluva ikkuna pyyhkäisemällä</translation>
 <translation id="367531336287639526">Valitse ensimmäinen kuvake osoitepalkin vasemmalta puolelta</translation>
@@ -924,7 +918,6 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="36813544980941320">Wi-Fi-verkot jaetaan puhelimesi ja <ph name="DEVICE_NAME" />-laitteesi välillä</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, sitten <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Verkkosivustot</translation>
-<translation id="3697991387880191195">Paina kuvakaappauksen pikanäppäintä</translation>
 <translation id="3702809606464356667">Näytetään nykyisen työpöydän ikkunat, näytä kaikkien työpöytien ikkunat painamalla ylänuolta</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Ladataan...</translation>
@@ -950,7 +943,6 @@ Yhdistä laite virtalähteeseen.</translation>
         <ph name="BEGIN_PARAGRAPH3" />Voit laittaa tämän palvelun pois päältä asetuksista.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> voi nyt avata myös tämän <ph name="DEVICE_TYPE" />-laitteen.</translation>
 <translation id="3756485814916578707">Striimataan näyttöä</translation>
-<translation id="3765246971671567135">Esittelytilan offline-käytäntöjä ei voitu lukea.</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" />-pikakomento on päivitetty <ph name="NEW_SHORTCUT" /> ‑pikakomennoksi (vanha: <ph name="OLD_SHORTCUT" />)</translation>
 <translation id="3772109172035555611">Muokkaa tappiohjainta</translation>
 <translation id="3773700760453577392">Järjestelmänvalvoja on estänyt käyttäjää <ph name="USER_EMAIL" /> kirjautumasta sisään useille tileille. Kaikkien käyttäjien on kirjauduttava ulos jatkaakseen käyttöä.</translation>
@@ -986,7 +978,6 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="3859364108019690">Sovelluksia ei voi striimata</translation>
 <translation id="3861638017150647085">Käyttäjänimi <ph name="USERNAME" /> ei ole käytettävissä</translation>
 <translation id="3861651314799684201">Tallenna koko näytön sisältö painamalla Enter</translation>
-<translation id="3870197372373144624">Kokeile sammuttaa laite.</translation>
 <translation id="3873915545594852654">ARC++:n kanssa tapahtui ongelma.</translation>
 <translation id="3879748587602334249">Latausten hallinta</translation>
 <translation id="3884007280698606545">USB-laitteita on enimmäismäärä</translation>
@@ -1171,7 +1162,6 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="439598569299422042">Keskeytetty, <ph name="SIZE_INFO" /></translation>
 <translation id="439817266247065935">Laitetta ei suljettu oikein. Käynnistä Linux uudelleen käyttääksesi Linux-sovelluksia.</translation>
 <translation id="440113666232554208">Ruutukaappausvideota ei voi tallentaa</translation>
-<translation id="4405151984121254935">Yhdistettyä lisälaitetyyppiä ei tueta</translation>
 <translation id="4406883609789734330">Livetekstitys</translation>
 <translation id="4412698727486357573">Ohjekeskus</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ei ole päällä.</translation>
@@ -1354,7 +1344,6 @@ Yksi laite yhdistetty.</translation>
 <translation id="493076006037866439">Loitonna näkymää</translation>
 <translation id="4932733599132424254">Päiväys</translation>
 <translation id="4934763315031217818">Ei voi sisältää peräkkäisiä numeroita</translation>
-<translation id="4936329710968938986">Kaikki, pois päältä</translation>
 <translation id="4937170330762390348">Kun käytät sanelua, voit kirjoittaa puhumalla. Paina sanelunäppäintä tai valitse mikrofonikuvake näytön alareunasta, kun olet tekstikentässä. Sanelukieleksi on asetettu <ph name="LANGUAGE" />. Puhetiedostot ladataan, jotta voit käyttää sanelua offline-tilassa. Voit muuttaa sanelukieltä milloin tahansa valitsemalla Asetukset &gt; Saavutettavuus.</translation>
 <translation id="4938176435186993759">Piilota kaikki ehdotukset</translation>
 <translation id="4945196315133970626">Laita ilmoitukset pois päältä</translation>
@@ -1371,7 +1360,6 @@ Yksi laite yhdistetty.</translation>
 <translation id="4966431234408005599">Lisää äänenvoimakkuutta</translation>
 <translation id="496999337731226334">Esittelyn vaihe <ph name="STEP" />/<ph name="TOTAL_STEPS" />. Pika-asetuksista löydät usein käytetyt valinnat, esimerkiksi Wi-Fin, Bluetoothin ja äänenvoimakkuuden. Voit myös ottaa kuvakaappauksia. Avaa pika-asetukset painamalla Alt + vaihto + S.</translation>
 <translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> edellyttää päivityksen lataamista tänään. Päivitys ladataan automaattisesti, kun olet yhteydessä internetiin.}other{<ph name="MANAGER" /> edellyttää päivityksen lataamista määräaikaan mennessä. Päivitys ladataan automaattisesti, kun olet yhteydessä internetiin.}}</translation>
-<translation id="4975771730019223894">Sovellusten merkitseminen</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
@@ -1574,7 +1562,6 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5551456515017410630">Avaa/sulje kalenteri</translation>
 <translation id="5551974246223970793">Kun haet sivua, siirry haun seuraavaan osumaan</translation>
 <translation id="5556459405103347317">Lataa uudelleen</translation>
-<translation id="5558091555391176027">Laita lähijakamisen näkyvyys päälle/pois</translation>
 <translation id="556042886152191864">Painike</translation>
 <translation id="5570122939431135380">Avaa uusi välilehti uudessa incognito-ikkunassa</translation>
 <translation id="5575528586625653441">Esittelyn rekisteröintipyynnön kanssa tapahtui ongelma.</translation>
@@ -1601,7 +1588,6 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5620979661744857819"><ph name="APP_NAME" /> ja kaikki sovellukset ja verkkosivustot, joilla on joilla on kamera- ja mikrofonilupa, saavat pääsyoikeuden. Sinun on ehkä päivitettävä verkkosivu tai käynnistettävä sovellus uudelleen.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Salasanaasi ei voitu vahvistaa. Yritä uudelleen.</translation>
-<translation id="5632485077360054581">Näytä miten</translation>
 <translation id="5648021990716966815">Mikrofoniliitäntä</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> pyytää huomiotasi.</translation>
 <translation id="5657667036353380798">Ulkoinen laajennus vaatii Chrome-version <ph name="MINIMUM_CHROME_VERSION" /> tai uudemman.</translation>
@@ -1919,7 +1905,6 @@ Ei liitettyjä laitteita.</translation>
 <translation id="651753338596587143">DLC-riippuvuuksien asennuksessa tapahtui virhe. Kokeile käynnistää laite uudelleen. Jos ongelma ei ratkea, lähetä palautetta ja lisää kuvaukseen #bruschetta. Virhekoodi on <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Valitse ikkuna kuvakaappausta varten</translation>
 <translation id="652139407789908527">Näyttö pimenee normaalia pidemmäksi aikaa (korkeintaan minuutiksi) päivityksen aikana. Älä paina virtapainiketta, kun päivitys on käynnissä.</translation>
-<translation id="6528179044667508675">Älä häiritse</translation>
 <translation id="65320610082834431">Emojit</translation>
 <translation id="6537924328260219877">Signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, puhelimen akun varaus <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Latausta <ph name="FILENAME" /> skannataan</translation>
@@ -2163,7 +2148,6 @@ Uusi asennus</translation>
 <translation id="7264788308526527464">Vähennä <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Kosketa tunnistinta toistuvasti, niin sormenjäljen eri osat lisätään</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + askelpalautin</translation>
-<translation id="7285232777292757180">Ota kuvakaappauksia pika-asetusten kuvakaappaustyökalulla</translation>
 <translation id="7301826272005790482">Hylkää ikkunaehdotukset</translation>
 <translation id="7302889331339392448">Livetekstitys on poissa päältä.</translation>
 <translation id="7303281435234579599">Hups, jotain meni vikaan esittelytilan määrityksessä.</translation>
@@ -2701,7 +2685,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="880709030178078220">Ohje</translation>
 <translation id="8813531681893371930">Yhdistä langalliset kuulokkeet</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
-<translation id="8815390544836110344">Paina kuvakaappauksen pikanäppäintä, Ctrl plus vaihto plus yleiskatsaustilanäppäin</translation>
 <translation id="881757059229893486">Syöttötapojen asetukset</translation>
 <translation id="8819728065740986820">Mukautuva lataus on päällä</translation>
 <translation id="882204272221080310">Paranna suojausta päivittämällä laiteohjelmisto.</translation>
@@ -2807,7 +2790,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="9098750710832798892">Leikepöydälle ei kopioitu kohteita</translation>
 <translation id="9098969848082897657">Mykistä puhelin</translation>
 <translation id="9126339866969410112">Kumoa edellinen toiminto</translation>
-<translation id="9126642911267312373">Bluetooth ei käytettävissä</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 min päästä}other{# min päästä}}</translation>
 <translation id="9129245940793250979">Takapainike</translation>
 <translation id="9133335900048457298">Suojattua sisältöä ei voi kuvata</translation>

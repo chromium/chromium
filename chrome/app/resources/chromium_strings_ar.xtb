@@ -16,9 +16,7 @@
 <translation id="113122355610423240">‏Chromium هو متصفحك التلقائي</translation>
 <translation id="1131805035311359397">‏للتحقُّق مما إذا كانت كلمات المرور آمنة من عمليات اختراق البيانات ومشاكل الأمان الأخرى، يُرجى <ph name="BEGIN_LINK" />تسجيل الدخول إلى Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{‏يطلب المشرف إعادة تشغيل Chromium لتطبيق هذا التحديث. هناك نافذة واحدة مفتوحة في وضع "التصفّح المتخفي" أو "التصفّح المعزول". ولن تتم إعادة فتحها بعد إعادة التشغيل.}zero{‏يطلب المشرف إعادة تشغيل Chromium لتطبيق هذا التحديث. هناك # نافذة مفتوحة في وضع "التصفّح المتخفي" و"التصفّح المعزول" عبر الملفات الشخصية. ولن تتم إعادة فتحها بعد إعادة التشغيل.}two{‏يطلب المشرف إعادة تشغيل Chromium لتطبيق هذا التحديث. هناك نافذتان مفتوحتان في وضع "التصفّح المتخفي" و"التصفّح المعزول" عبر الملفات الشخصية. ولن تتم إعادة فتحهما بعد إعادة التشغيل.}few{‏يطلب المشرف إعادة تشغيل Chromium لتطبيق هذا التحديث. هناك # نوافذ مفتوحة في وضع "التصفّح المتخفي" و"التصفّح المعزول" عبر الملفات الشخصية. ولن تتم إعادة فتحها بعد إعادة التشغيل.}many{‏يطلب المشرف إعادة تشغيل Chromium لتطبيق هذا التحديث. هناك # نافذة مفتوحة في وضع "التصفّح المتخفي" و"التصفّح المعزول" عبر الملفات الشخصية. ولن تتم إعادة فتحها بعد إعادة التشغيل.}other{‏يطلب المشرف إعادة تشغيل Chromium لتطبيق هذا التحديث. هناك # نافذة مفتوحة في وضع "التصفّح المتخفي" و"التصفّح المعزول" عبر الملفات الشخصية. ولن تتم إعادة فتحها بعد إعادة التشغيل.}}</translation>
-<translation id="1150418667633096194">‏تم إطلاق رمز جديد لزر "لوحة بحث Google الجانبية" على شريط الأدوات. يمكن النقر عليه لطرح الأسئلة أثناء التصفّح باستخدام اللوحة الجانبية.</translation>
 <translation id="1153368717515616349">‏انقر على قائمة Chromium.</translation>
-<translation id="1157952955648710254">‏إغلاق اللوحة الجانبية في "بحث Google"</translation>
 <translation id="1157985233335035034">أحدث اللغات</translation>
 <translation id="1184145431117212167">‏تعذَّر التثبيت بسبب عدم توافُق الإصدار الذي تستخدمه من نظام التشغيل Windows.</translation>
 <translation id="1185134272377778587">‏لمحة عن Chromium</translation>
@@ -45,15 +43,12 @@
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1388276868779258475">‏يمكنك استخدام تطبيق Chromium لمواصلة التصفّح أثناء التنقل</translation>
 <translation id="141901961143729572">شارِك أفكارك</translation>
-<translation id="1438812738230833934">‏يمكنك إعادة فتح "بحث Google" في اللوحة الجانبية لطرح الأسئلة أثناء التصفّح</translation>
 <translation id="1465192221147974788">‏لمشاركة النافذة، يجب السماح بتسجيل الشاشة في Chromium ضِمن "إعدادات النظام" (System Settings).</translation>
-<translation id="1470136641087909499">‏يمكنك إعادة فتح "بحث Google" في Chrome لطرح الأسئلة أثناء التصفّح</translation>
 <translation id="1478370723027452770">‏الحصول على مساعدة بشأن Chrome for Testing</translation>
 <translation id="147870194906295621">‏يمكنك تسجيل الدخول إلى Chromium للوصول إلى معلوماتك المحفوظة وغيرها على "<ph name="DEVICE" />"</translation>
 <translation id="1497802159252041924">حدث خطأ أثناء التثبيت: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">هذه الصفحة محمية</translation>
 <translation id="1524282610922162960">‏مشاركة علامة تبويب Chromium</translation>
-<translation id="15408169957028265">‏إعادة فتح "بحث Google" في Chrome</translation>
 <translation id="154404805518949443">‏تسجيل الدخول إلى Chromium</translation>
 <translation id="1547469039832541117">يؤدي النقر على هذا الزر إلى إنهاء المهمّة المحدّدة.</translation>
 <translation id="1562320819937089394">‏تثبيت Chromium</translation>
@@ -73,7 +68,6 @@
 <translation id="1736662517232558588">‏تم محو بيانات Chromium</translation>
 <translation id="1745121272106313518">‏ستتم إعادة تشغيل Chromium خلال <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">‏سيستخدم Chromium اتصالاً غير آمن بدون تحذيرك في حال عدم توفُّر بروتوكول HTTPS.</translation>
-<translation id="1769661297620183092">‏يمكنك إعادة فتح لوحة "بحث Google" لطرح الأسئلة أثناء التصفّح</translation>
 <translation id="1774152462503052664">‏دع Chromium يعمل في الخلفية</translation>
 <translation id="1779356040007214683">‏لجعل Chromium أكثر أمانًا، تم إيقاف بعض الإضافات غير المدرجة في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> والتي ربما تمت إضافتها بدون علمك.</translation>
 <translation id="1793486931176048546">‏انقر على <ph name="BEGIN_BOLD" />نعم<ph name="END_BOLD" /> في إشعار Windows لتثبيت Chromium في شريط التطبيقات والوصول إليه بسرعة.</translation>
@@ -106,7 +100,6 @@
 <translation id="2039417478970545937">الإعدادات</translation>
 <translation id="2049376729098081731">‏اختَر ما إذا كنت تريد تضمين سجلّ Chromium للحصول على تجارب أكثر تخصيصًا في خدمات Google.</translation>
 <translation id="2050698962207788467">‏هذه الخدمة مضمّنة في Chromium لمساعدتك في إنشاء كلمات مرور قوية وحفظها وملئها تلقائيًا. ويمكنك إضافة اختصار للوصول إليها بسهولة.</translation>
-<translation id="2060311596979880693">‏نجح الإجراء. يمكنك الآن طرح الأسئلة بسهولة أثناء التصفّح باستخدام "بحث Google" في Chrome</translation>
 <translation id="2064856577282482477">‏يمكنك النقر على زر "تخصيص Chromium" في صفحة "علامة تبويب جديدة" لإضفاء مظهر جديد عليه</translation>
 <translation id="2086476982681781442">‏حَظَر Chromium عملية التنزيل هذه لأنّ الملف مخادع وقد يُجري تغييرات غير متوقعة على جهازك.</translation>
 <translation id="208726765006323911">‏ستظهر لك رسالة تطلب منك تجربة "<ph name="FEATURE_NAME" />" عند فتح Chromium على iOS في المرة القادمة.</translation>
@@ -132,7 +125,6 @@
 <translation id="2238130810669087193">‏يمكنك تسجيل الدخول إلى Chromium للوصول إلى العناوين وغيرها على جميع أجهزتك. وسيتم حفظ هذا العنوان في حسابك على Google بعد تسجيل الدخول.</translation>
 <translation id="2241627712206172106">‏إذا كنت تشارك الكمبيوتر مع أصدقائك وعائلتك، فبإمكانهم التصفح على حدة وإعداد Chromium على النحو الذي يريدونه.</translation>
 <translation id="22571759390241347">‏"المهارات" في Chromium</translation>
-<translation id="2283228908180457226">‏رمز جديد للاختصار نفسه: يمكنك النقر لطرح الأسئلة أثناء التصفّح باستخدام لوحة "بحث Google" الجانبية.</translation>
 <translation id="2283803047247799269">البحث في علامة التبويب هذه باستخدام ميزة "البحث بالصور"</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{‏ينصح Chromium بإيقاف علامة التبويب التي تبطئ المتصفّح مؤقتًا}zero{‏ينصح Chromium بإيقاف علامات التبويب التي تبطئ المتصفّح مؤقتًا}two{‏ينصح Chromium بإيقاف علامتَي التبويب اللتين تبطئان المتصفّح مؤقتًا}few{‏ينصح Chromium بإيقاف علامات التبويب التي تبطئ المتصفّح مؤقتًا}many{‏ينصح Chromium بإيقاف علامات التبويب التي تبطئ المتصفّح مؤقتًا}other{‏ينصح Chromium بإيقاف علامات التبويب التي تبطئ المتصفّح مؤقتًا}}</translation>
 <translation id="2307973900865360088">‏إبقاء التطبيق في شريط التطبيقات (Dock)</translation>
@@ -155,7 +147,6 @@
 <translation id="2483889755041906834">‏في Chromium</translation>
 <translation id="2485422356828889247">إزالة التثبيت</translation>
 <translation id="2513154137948333830"><ph name="INSTALL_SUCCESS" />: يجب إعادة التشغيل.</translation>
-<translation id="2521391734665471391">‏إغلاق "وضع AI" في "بحث Google"</translation>
 <translation id="2542968102051442371">اختيار نص باستخدام ميزة "بحث بالصور"</translation>
 <translation id="2554739539410784893">‏يحاول Chromium استبدال كلمات المرور الحالية. للسماح بذلك، يُرجى كتابة كلمة المرور المستخدَمة في Windows.</translation>
 <translation id="2560420686485554789">‏يحتاج Chromium إلى الوصول إلى مساحة التخزين لتنزيل الملفات.</translation>
@@ -191,7 +182,6 @@
 <translation id="2846251086934905009">خطأ في التثبيت: لم تكتمل أداة التثبيت. تم إلغاء عملية التثبيت.</translation>
 <translation id="2847479871509788944">‏إزالة من Chromium</translation>
 <translation id="2850691299438350830">‏يوفّر لك هذا الوضع حماية في Chromium، ويمكن استخدامه لتحسين مستوى أمانك في تطبيقات Google الأخرى عندما تكون مسجلاً دخولك.</translation>
-<translation id="2876152561415416331">‏إعادة فتح لوحة "بحث Google"</translation>
 <translation id="2885378588091291677">إدارة المهام</translation>
 <translation id="2910007522516064972">‏حو&amp;ل Chromium</translation>
 <translation id="2915996080311180594">إعادة التشغيل لاحقًا</translation>
@@ -209,8 +199,6 @@
 <translation id="302551344979399011">‏يتم حفظ ابتكارات الذكاء الاصطناعي، مثل المهارات، في حسابك على Google وإدارتها بشكل منفصل عن ميزة "مزامنة Chromium"</translation>
 <translation id="3032219013429286568">‏يمكنك تسجيل الدخول إلى Chromium للوصول إلى الإضافات وغيرها على جميع أجهزتك</translation>
 <translation id="3032787606318309379">‏جارٍ الإضافة إلى Chromium...</translation>
-<translation id="3034219227076811559">‏"بحث Google" في Chrome</translation>
-<translation id="3037190258341683404">‏يمكنك تثبيت "بحث Google" في Chrome لطرح الأسئلة أثناء التصفّح</translation>
 <translation id="3038232873781883849">في انتظار التثبيت...</translation>
 <translation id="3045032126857188731">اللغة الهدف: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">إغلاق مربّع حوار الملاحظات</translation>
@@ -304,8 +292,8 @@
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
 <translation id="3971865010372729242">‏عند الكتابة في شريط العناوين أو مربّع البحث، يرسل Chromium ما تمّت كتابته إلى أدوات البحث والذكاء الاصطناعي والوكلاء في مؤسستك للحصول على اقتراحات.</translation>
 <translation id="3975724895399328945">‏لمحة عن الإصدار Google Chrome for Testing</translation>
-<translation id="3984557288004650913">‏من خلال زر "بحث Google في Chrome" على شريط الأدوات، يمكن إعادة فتح "بحث Google" في Chrome لطرح الأسئلة أثناء التصفّح</translation>
 <translation id="3997429360543082038">‏لمحة عن نظام التشغيل Chromium</translation>
+<translation id="399788104667917863">تثبيت في شريط الأدوات</translation>
 <translation id="4016217212818346953">أنت في أمان مع "مدير كلمات المرور"</translation>
 <translation id="4019629340646866719">‏أصبح نظام التشغيل Chromium متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />، كما هو الحال في <ph name="BEGIN_LINK_LINUX_OSS" />بيئة تطوير Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">ترجمة محتوى الشاشة</translation>
@@ -353,7 +341,6 @@
 <translation id="4470974262661801543">‏عليك إدخال عبارة المرور لاستخدام بيانات Chromium وحفظها في حسابك على Google</translation>
 <translation id="4493028449971051158">خطأ في بدء التشغيل: يُرجى تشغيل أداة التثبيت بصفتك مشرفًا.</translation>
 <translation id="4501471624619070934">تعذّر تثبيت التطبيق بسبب حظر الدخول المفروض في هذا البلد.</translation>
-<translation id="4501839397124711198">‏يمكنك تثبيت "بحث Google" في اللوحة الجانبية لطرح الأسئلة أثناء التصفّح</translation>
 <translation id="4510853178268397146">‏لم تنشر هذه الإضافة الممارسات المتعلقة بالخصوصية، مثل كيفية جمعها للبيانات واستخدامها. ينصح متصفِّح Chromium بإزالتها.</translation>
 <translation id="452711251841752011">‏مرحبًا بك في Chromium. تم فتح نافذة متصفّح جديدة.</translation>
 <translation id="4531137820806573936">‏يحتاج Chromium إلى إذن لتتبُّع اليدين وإنشاء خريطة للبيئة المحيطة بك</translation>
@@ -384,7 +371,6 @@
 <translation id="4771701986670315895">‏لم تتم زيارة هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chromium إذنَي <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وأذونات أخرى (<ph name="COUNT" />).</translation>
 <translation id="4786083865378785874">‏إذا كان "Gemini في Chromium" مفتوحًا، ستبقى اللوحة الجانبية مفتوحة عند إنشاء علامات تبويب جديدة</translation>
 <translation id="479167709087336770">‏يستخدم ذلك المدقق الإملائي نفسه الذي يتم استخدامه في "بحث Google". ويتم إرسال النص الذي تكتبه في المتصفّح إلى Google. يمكنك دائمًا تغيير هذا السلوك في الإعدادات.</translation>
-<translation id="4803313124144656665">‏إغلاق "بحث Google" في Chrome</translation>
 <translation id="4814736265800133385">‏استخدام Chromium بدون حساب</translation>
 <translation id="4839733921943823254">تثبيت الاختصار</translation>
 <translation id="4888717733111232871">‏قاعدة الوارد إلى Chromium للسماح بحركة مرور mDNS.</translation>
@@ -398,10 +384,8 @@
 <translation id="4987820182225656817">‏يمكن للضيف استخدام Chromium بدون أن يترك أي أثر وراءه.</translation>
 <translation id="4992938037305302429">‏حسابك في Chromium</translation>
 <translation id="4994636714258228724">‏إضافة نفسك إلى Chromium</translation>
-<translation id="5000497292978544380">‏"وضع AI" في "بحث Google"</translation>
 <translation id="504699503110800016">افتح القائمة الكاملة</translation>
 <translation id="5074496654342756568">‏جميع خدمات Google المفضّلة لديك ستكون متاحة لك باستخدام Chromium على "<ph name="DEVICE_TYPE" />"</translation>
-<translation id="5121592697493894155">‏فتح "بحث Google" في اللوحة الجانبية</translation>
 <translation id="5123973130450702873">‏يحتاج Chromium إلى إذن لتتبُّع حركات يديك</translation>
 <translation id="5141988424377517949">‏لم تتم زيارة هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chromium أذونات <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">‏تسجيل الدخول إلى Chromium</translation>
@@ -411,7 +395,6 @@
 <translation id="5223510345050543907">‏يمكنك المتابعة من حيث توقفت مع Chromium على iOS.</translation>
 <translation id="5231355151045086930">‏الخروج من Chromium</translation>
 <translation id="5234764350956374838">إغلاق</translation>
-<translation id="5247617065091903691">‏يمكنك تثبيت لوحة "بحث Google" الجانبية لطرح الأسئلة أثناء التصفّح</translation>
 <translation id="5249261924633168472">‏فتح الرابط في نافذة "التصفح المت&amp;خفي" في Chromium</translation>
 <translation id="5276305953263010518">‏تنزيل تطبيق Chromium لحفظ كلمات المرور أثناء التنقل</translation>
 <translation id="5277894862589591112">‏لتطبيق التغييرات، يُرجى إعادة تشغيل Chromium</translation>
@@ -441,7 +424,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{‏ينصح Chromium بإيقاف علامة التبويب التي تبطئ المتصفّح مؤقتًا}zero{‏ينصح Chromium بإيقاف علامات التبويب التي تبطئ المتصفّح مؤقتًا}two{‏ينصح Chromium بإيقاف علامتَي التبويب اللتين تبطئان المتصفّح مؤقتًا}few{‏ينصح Chromium بإيقاف علامات التبويب التي تبطئ المتصفّح مؤقتًا}many{‏ينصح Chromium بإيقاف علامات التبويب التي تبطئ المتصفّح مؤقتًا}other{‏ينصح Chromium بإيقاف علامات التبويب التي تبطئ المتصفّح مؤقتًا}}</translation>
 <translation id="5473971139929175403">‏قد لا يعمل Chromium بشكل صحيح لأنّه لم يعد متاحًا على توزيع Linux هذا.</translation>
 <translation id="5475924890392386523">‏حَظَر Chromium عملية التنزيل هذه لأنّ الملف يمكن أن يضرّ حساباتك الشخصية وحساباتك على شبكات التواصل الاجتماعي</translation>
-<translation id="5482575505313585759">‏إغلاق لوحة "بحث Google"</translation>
 <translation id="549669000822060376">‏يُرجى الانتظار أثناء تثبيت Chromium لآخر تحديثات النظام.</translation>
 <translation id="5496810170689441661">‏يحاول Chromium تعديل كلمات المرور. للسماح بذلك، يُرجى كتابة كلمة مرور Windows الخاصة بك.</translation>
 <translation id="549975168243349205">‏العمل أصبح سلسًا مع تطبيقاتك المفضّلة، مثل Google Drive وYouTube، على Chromium أثناء التنقل.</translation>
@@ -464,7 +446,6 @@
 <translation id="5643865575100044307">‏حذف بيانات الموقع الإلكتروني من جهازك دائمًا عند إغلاق Chromium</translation>
 <translation id="5653831366781983928">‏يُرجى إعادة تشغيل Chromium الآن</translation>
 <translation id="565409517765894456">‏هذا الكمبيوتر مثبَّت عليه إصدار قديم من نظام التشغيل Windows 10. يجب تثبيت الإصدار 1809 أو أحدث لتلقي تحديثات Chromium القادمة.</translation>
-<translation id="568656514202614970">‏نجح الإجراء. يمكنك الآن طرح الأسئلة بسهولة أثناء التصفّح باستخدام لوحة "بحث Google" الجانبية</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">‏عرض Chromium بهذه اللغة</translation>
 <translation id="569897634095159764">يتعذّر الاتصال بالإنترنت. يتطلب الخادم الوكيل المصادقة.</translation>
@@ -511,6 +492,7 @@
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6173308241973263798">‏محو بيانات Chromium في حسابك</translation>
 <translation id="6174920971222007286">‏قد يكون هذا الملف خطيرًا.<ph name="LINE_BREAK" />بإمكان Chromium التحقُّق من عملية التنزيل هذه في حال أدخلت كلمة المرور. وتُرسل معلومات حول الملف إلى ميزة "التصفّح الآمن من Google"، ولكن يظل محتوى الملف وكلمة المرور على جهازك.</translation>
+<translation id="6177442314419606057">‏البحث في Chrome</translation>
 <translation id="6182736845697986886">تعذَّر تثبيت التطبيق بسبب حدوث خطأ داخلي في خادم التحديث.</translation>
 <translation id="6183079672144801177">‏يُرجى التأكُّد من تسجيل الدخول إلى متصفِّح Chromium على جهازك <ph name="TARGET_DEVICE_NAME" /> ثم محاولة الإرسال مرة أخرى.</translation>
 <translation id="6192070012454216182">‏يمكنك البحث وطرح الأسئلة باستخدام Chromium من أي مكان، حتى إن كان مصغّرًا. ويسمح هذا الإعداد بتشغيل Chromium في الخلفية.</translation>
@@ -526,10 +508,8 @@
 <translation id="6270547683008298381">‏تستخدم علامات التبويب هذه موارد إضافية. لتحسين أداء التصفُّح، ننصح بالسماح لمتصفّح Chromium بإيقاف علامات التبويب هذه.</translation>
 <translation id="6281746429495226318">‏تخصيص ملفك الشخصي في Chromium</translation>
 <translation id="6290827346642914212">‏تسمية ملفك الشخصي على Chromium</translation>
-<translation id="6294638840436017818">‏من خلال زر "لوحة بحث Google الجانبية" على شريط الأدوات، يمكن إعادة فتح اللوحة لطرح الأسئلة أثناء التصفّح</translation>
 <translation id="6294831894865512704">‏تطلب منك إحدى الإضافات تسجيل الدخول إلى Chromium</translation>
 <translation id="6295779123002464101">‏قد يكون ملف <ph name="FILE_NAME" /> ضارًا، لذلك فقد حظره Chromium.</translation>
-<translation id="6308106880471005841">‏تم إطلاق رمز جديد لزر "لوحة بحث Google" على شريط الأدوات. يمكن النقر عليه لطرح الأسئلة أثناء التصفّح باستخدام لوحة "بحث Google".</translation>
 <translation id="6309712487085796862">‏يستخدم Chromium الكاميرا.</translation>
 <translation id="6333502561965082103">‏عملية أخرى على Chromium قيد التقدم. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="6334986366598267305">‏الآن أصبح استخدام Chromium مع حسابك في Google وفي أجهزة الكمبيوتر المشتركة أكثر سهولة.</translation>
@@ -613,7 +593,6 @@
             • إعادة ضبط اختصارات Chromium
             <ph name="LINE_BREAKS" />
             لن يؤثّر هذا الإجراء في الإشارات المرجعية والسجلّ وكلمات المرور المحفوظة.</translation>
-<translation id="6926772305569367352">‏تم إطلاق رمز جديد لزر "بحث Google في Chrome" على شريط الأدوات. يمكن النقر عليه لطرح الأسئلة أثناء التصفّح باستخدام "بحث Google" في Chrome.</translation>
 <translation id="6948031725951063910">‏لقد بلغت الحدّ الأقصى لعدد الإشارات المرجعية في Chromium، وهو <ph name="BOOKMARK_LIMIT" />، لذا لم يتم حفظ بعض إشاراتك المرجعية في حسابك على Google حتى الآن.
 
 ولا يمكن حفظ إشارات مرجعية جديدة في حسابك إلا بعد حذف بعض الإشارات. وفي حال سجّلت الخروج الآن، سيتم حذف الإشارات المرجعية غير المحفوظة.</translation>
@@ -647,7 +626,6 @@
 <translation id="7252276985725323153">‏بدء التصفّح على الفور: يمكن الآن فتح Chromium تلقائيًا عند بدء تشغيل Windows.</translation>
 <translation id="7274695763216404502">تمّ تثبيت اللوحة. يمكنك استخدام ميزة "البحث بالصور" مرة أخرى من خلال شريط الأدوات</translation>
 <translation id="7288567540154601580">علامات التبويب والإضافات</translation>
-<translation id="7290997427370476749">‏من خلال زر "لوحة بحث Google" على شريط الأدوات، يمكن إعادة فتح "لوحة بحث Google" في اللوحة الجانبية لطرح الأسئلة أثناء التصفّح</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{‏ينصح متصفّح Chromium بإزالتها}zero{‏ينصح متصفّح Chromium بإزالتها}two{‏ينصح متصفّح Chromium بإزالتهما}few{‏ينصح متصفّح Chromium بإزالتها}many{‏ينصح متصفّح Chromium بإزالتها}other{‏ينصح متصفّح Chromium بإزالتها}}</translation>
 <translation id="7296334833518879294">‏لمشاركة صوت النظام، افتح "إعدادات النظام" (System Settings) وفعِّل خيار "تسجيل صوت النظام فقط" (System Audio Recording Only) لمتصفّح Chromium، ثم أعِد تشغيل المتصفّح.</translation>
 <translation id="7299899569525778554">البحث من خلال الكمبيوتر المكتبي</translation>
@@ -661,7 +639,6 @@
 <translation id="7349591376906416160">‏ضَبَط مشرف النظام Chromium لفتح <ph name="ALTERNATIVE_BROWSER_NAME" /> للوصول إلى <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7352651011704765696">حدث خطأ</translation>
 <translation id="7368826207863345663">‏للحصول على تحديثات Chromium في المستقبل، يجب استخدام كمبيوتر يعمل بنظام التشغيل macOS 13 أو إصدار أحدث. ويعمل هذا الكمبيوتر بنظام التشغيل macOS 12.</translation>
-<translation id="7374061268215476070">‏يمكنك إعادة فتح لوحة "بحث Google" الجانبية لطرح الأسئلة أثناء التصفّح</translation>
 <translation id="7376384068949534168">‏لم تتم زيارة هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chromium إذنَي <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">‏فتح سوق Chrome الإلكتروني</translation>
 <translation id="7394275517973019558">‏عرض "Gemini في Chromium" في لوحة النظام</translation>
@@ -704,8 +681,6 @@
 <translation id="7781047659465034537">‏ضبط Chromium كمتصفّح تلقائي وتثبيته في شريط المهام</translation>
 <translation id="7786760609782648049">‏زيادة سرعة متصفِّح Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
-<translation id="7800043020703832708">‏إغلاق "بحث Google" في اللوحة الجانبية</translation>
-<translation id="7801317262080715012">‏رمز جديد للاختصار نفسه: يمكنك النقر لطرح الأسئلة أثناء التصفّح باستخدام لوحة "بحث Google".</translation>
 <translation id="7803986347287457849">‏يمكنك جعل الاطّلاع على المواقع الإلكترونية التي تزورها أكثر صعوبة على الجهات التي يمكنها الوصول إلى حركة مرور بياناتك على الإنترنت. يستخدم Chromium اتصالاً آمنًا للبحث عن عنوان IP الخاص بأي موقع إلكتروني في نظام أسماء النطاقات (DNS).</translation>
 <translation id="7810005234485217901">يمكنك تثبيت ميزة "البحث بالصور" للوصول إليها بسهولة</translation>
 <translation id="7813559034750130602">{COUNT,plural, =1{‏يتوفر تحديث جديد لمتصفّح Chromium وسيتم تطبيقه فور إعادة التشغيل. هناك نافذة واحدة مفتوحة في وضع "التصفّح المتخفي" أو "التصفّح المعزول". ولن تتم إعادة فتحها بعد إعادة التشغيل.}zero{‏يتوفر تحديث جديد لمتصفّح Chromium وسيتم تطبيقه فور إعادة التشغيل. هناك # نافذة مفتوحة في وضع "التصفّح المتخفي" و"التصفّح المعزول" عبر الملفات الشخصية. ولن تتم إعادة فتحها بعد إعادة التشغيل.}two{‏يتوفر تحديث جديد لمتصفّح Chromium وسيتم تطبيقه فور إعادة التشغيل. هناك نافذتان مفتوحتان في وضع "التصفّح المتخفي" و"التصفّح المعزول" عبر الملفات الشخصية. ولن تتم إعادة فتحهما بعد إعادة التشغيل.}few{‏يتوفر تحديث جديد لمتصفّح Chromium وسيتم تطبيقه فور إعادة التشغيل. هناك # نوافذ مفتوحة في وضع "التصفّح المتخفي" و"التصفّح المعزول" عبر الملفات الشخصية. ولن تتم إعادة فتحها بعد إعادة التشغيل.}many{‏يتوفر تحديث جديد لمتصفّح Chromium وسيتم تطبيقه فور إعادة التشغيل. هناك # نافذة مفتوحة في وضع "التصفّح المتخفي" و"التصفّح المعزول" عبر الملفات الشخصية. ولن تتم إعادة فتحها بعد إعادة التشغيل.}other{‏يتوفر تحديث جديد لمتصفّح Chromium وسيتم تطبيقه فور إعادة التشغيل. هناك # نافذة مفتوحة في وضع "التصفّح المتخفي" و"التصفّح المعزول" عبر الملفات الشخصية. ولن تتم إعادة فتحها بعد إعادة التشغيل.}}</translation>
@@ -720,7 +695,6 @@
 <translation id="7873537467422636035">‏في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />حذف بيانات Chromium في حسابك<ph name="END_LINK" /></translation>
 <translation id="7874369989024033742">‏يمكنك فتح "Gemini في Chromium" بسرعة متى احتجت إليه</translation>
 <translation id="7888981273428720788">‏ضبط Chromium كمتصفّح تلقائي</translation>
-<translation id="7904213866086517086">‏إعادة فتح "بحث Google" في اللوحة الجانبية</translation>
 <translation id="7934340546140346950">‏يرقِّي متصفِّح Chromium الاتصالات غير الآمنة إلى اتصالات عبر بروتوكول HTTPS تلقائيًا إن أمكن ذلك</translation>
 <translation id="7937630085815544518">‏تم تسجيل دخولك إلى Chromium باعتبارك <ph name="USER_EMAIL_ADDRESS" />. يُرجى استخدام الحساب نفسه لتسجيل الدخول مرة أخرى.</translation>
 <translation id="7944602660083060118">‏حساب "<ph name="EXISTING_USER" />" مسجّل الدخول حاليًا. للحصول على تجربة تصفّح منفصلة، يُرجى تسجيل الدخول إلى ملفك الشخصي في Chromium بحساب <ph name="USER_EMAIL_ADDRESS" />. سيتيح لك ذلك أيضًا الوصول إلى إشاراتك المرجعية وغيرها على جميع أجهزتك.</translation>
@@ -751,7 +725,6 @@
 <translation id="81770708095080097">‏هذا الملف ضار، لذلك فقد حظره Chromium.</translation>
 <translation id="8177472873527554730">يتعذّر العثور على المحتوى في الصفحة</translation>
 <translation id="8200109504272824693">‏يجب إدخال عبارة المرور لاستخدام بيانات Chromium وحفظها في حسابك (<ph name="USER_EMAIL" />)</translation>
-<translation id="8203105157044679380">‏لوحة "بحث Google"</translation>
 <translation id="820759916613250543">البحث عن هذه الصورة باستخدام ميزة "البحث بالصور"</translation>
 <translation id="8221491193165283816">أنت تحظر الإشعارات عادةً. للسماح لهذا الموقع الإلكتروني بإرسال إشعارات لك، انقر هنا.</translation>
 <translation id="8223363452568144035">‏لاستخدام الكاميرا، يجب منح Chromium إذن الوصول في <ph name="BEGIN_LINK" />إعدادات النظام<ph name="END_LINK" /></translation>
@@ -766,7 +739,6 @@
 <translation id="8310603974518734211">‏رمز الاستجابة السريعة لتسجيل الدخول إلى Chromium باسم "<ph name="USER_NAME" />"</translation>
 <translation id="8313851650939857356">خطأ في بدء التشغيل: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8318772038038596122">‏تغلق مؤسستك Chromium في حال عدم استخدامه لمدّة <ph name="TIMEOUT_DURATION" />.</translation>
-<translation id="8321058241987390452">‏نجح الإجراء. يمكنك الآن طرح الأسئلة بسهولة أثناء التصفّح باستخدام لوحة "بحث Google"</translation>
 <translation id="8321888067342493336">حفظ كصورة</translation>
 <translation id="8340674089072921962">‏كان <ph name="USER_EMAIL_ADDRESS" /> يستخدم Chromium مسبقًا</translation>
 <translation id="8351551329754447960">‏تفعيل "المهارات" في Chromium</translation>
@@ -777,10 +749,8 @@
 <translation id="8370517070665726704">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لشركة Google LLC. جميع الحقوق محفوظة.</translation>
 <translation id="8372327902843331129">‏سجِّل الدخول إلى Chromium للوصول إلى كلمات المرور وغيرها على جميع أجهزتك. سيتم حفظ كلمة المرور هذه في حسابك على Google بعد تسجيل الدخول.</translation>
 <translation id="837460953767177950">‏بعد ذلك، عليك إعادة تشغيل Chromium.</translation>
-<translation id="8376752431516546391">‏اللوحة الجانبية لمحرك بحث Google</translation>
 <translation id="8397248745433792218">‏ينصح Chromium بإزالة هذه الإضافة. <ph name="BEGIN_LINK" />مزيد من المعلومات عن الإضافات المتوافقة<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">‏ألغى المطوِّر نشر هذه الإضافة، علمًا بأنّها قد تكون غير آمنة. يُرجى إزالة هذه الإضافة من Chromium كي لا تتمكّن من الاطّلاع على بياناتك وتغييرها، بما في ذلك معلوماتك الشخصية، على المواقع الإلكترونية التي تزورها.</translation>
-<translation id="8406687098231754303">‏من خلال زر "بحث Google في اللوحة الجانبية" على شريط الأدوات، يمكنك إعادة فتح "بحث Google" في اللوحة الجانبية لطرح الأسئلة أثناء التصفّح</translation>
 <translation id="8416884904046428725">‏يحتاج Chromium إلى إثبات هويتك قبل حفظ بعض البيانات في حسابك على Google واستخدامها على جميع أجهزتك. إذا سجّلت الخروج الآن، فسيتم حذف هذه البيانات.</translation>
 <translation id="8417404458978023919">{0,plural, =1{‏يجب إعادة تشغيل Chromium في غضون يوم واحد}zero{‏يجب إعادة تشغيل Chromium في غضون # يوم}two{‏يجب إعادة تشغيل Chromium في غضون يومين}few{‏يجب إعادة تشغيل Chromium في غضون # أيام}many{‏يجب إعادة تشغيل Chromium في غضون # يومًا}other{‏يجب إعادة تشغيل Chromium في غضون # يوم}}</translation>
 <translation id="8438543370129609977">‏عند استخدام ميزة "البحث بالصور"، يتم إرسال عنوان URL للصفحة وعنوانها ومحتواها، بما في ذلك ملفات PDF، إلى الخادم. <ph name="LEARN_MORE" /></translation>
@@ -791,24 +761,19 @@
 <translation id="8482493977473846331">‏يتم عرض طلبات تسجيل الدخول إلى Chromium</translation>
 <translation id="8493179195440786826">‏إصدار Chromium قديم</translation>
 <translation id="850264194101621529">‏نشكرك على اختيار Chromium كمتصفِّح تلقائي.</translation>
-<translation id="8520489851087523435">‏إعادة فتح لوحة "بحث Google" الجانبية</translation>
 <translation id="8522801943730206384">‏لا يستطيع Chromium التحقُّق من كلمات المرور إلا عند حفظها.</translation>
 <translation id="8525579356836940628">تم إيقاف التثبيت</translation>
 <translation id="8545729292258443488">‏مع تطبيق Chromium على "<ph name="DEVICE_TYPE" />"، ستكون كلمات المرور وعلامات التبويب الخاصة بك وغيرها متاحة لك أثناء التنقل</translation>
 <translation id="8555465886620020932">حدث خطأ في الخدمة: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">‏تتوفّر اختصارات لبعض ميزات وإضافات Chromium. يمكنك اختيار إعادة تفعيلها.</translation>
 <translation id="8556420416730706394">يمكنك تثبيت ميزة "البحث بالصور" للوصول إليها بسهولة من خلال النقر على الزر "تثبيت" في أعلى اللوحة الجانبية</translation>
-<translation id="8564408666201523086">‏تمت العملية بنجاح. يمكنك الآن طرح الأسئلة بسهولة أثناء التصفّح باستخدام "بحث Google" في اللوحة الجانبية</translation>
 <translation id="856656450041460113">البحث في قائمة اللغات</translation>
-<translation id="8568499811906962479">‏يمكنك تثبيت لوحة "بحث Google" لطرح الأسئلة أثناء التصفّح</translation>
 <translation id="8576826849825683917">‏تدير مؤسسات متعدّدة متصفِّح Chromium</translation>
 <translation id="8586442755830160949">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لصالح The Chromium Authors. جميع الحقوق محفوظة.</translation>
-<translation id="8590782867495422699">‏إعادة فتح "وضع AI" في "بحث Google"</translation>
 <translation id="8619360774459241877">‏جارٍ إطلاق Chromium...</translation>
 <translation id="8624541899164515475">الإعدادات (يفتح الرابط في علامة تبويب جديدة)</translation>
 <translation id="8648201657708811153">‏لا يمكن اختيار الإصدار Google Chrome for Test ليكون متصفِّحك التلقائي.</translation>
 <translation id="8676101123715131330">‏البحث باستخدام Chromium من أي مكان</translation>
-<translation id="8689408573494410517">‏تم إطلاق رمز جديد لزر "بحث Google في اللوحة الجانبية" على شريط الأدوات. يمكن النقر عليه لطرح الأسئلة أثناء التصفّح باستخدام "بحث Google" في اللوحة الجانبية.</translation>
 <translation id="8697124171261953979">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chromium أو إجراء بحث من المربع متعدد الاستخدامات.</translation>
 <translation id="8702213505203810093">‏لإرسال علامة التبويب هذه إلى جهاز آخر، يجب تسجيل الدخول إلى Chromium على ذلك الجهاز</translation>
 <translation id="8704119203788522458">‏هذا هو Chromium الخاص بك</translation>
@@ -827,7 +792,6 @@
 <translation id="8876044221123442390">‏إضافة ملف شخصي على Chromium</translation>
 <translation id="8890569919834781711">‏تعذَّر على ChromiumOS حفظ بيانات Chromium في حسابك على Google بسبب حدوث خطأ أثناء تسجيل الدخول</translation>
 <translation id="8891709362986793894">‏تطلُب المؤسسة منك تسجيل الدخول إلى Chromium</translation>
-<translation id="8897637834206928776">‏رمز جديد للاختصار نفسه: يمكنك النقر لطرح الأسئلة أثناء التصفّح باستخدام "بحث Google" في اللوحة الجانبية.</translation>
 <translation id="8906384069222226849">‏يتطلّب Chromium نظام التشغيل Windows 10 بالإصدار 1809 أو أحدث.</translation>
 <translation id="8907580949721785412">‏يحاول Chromium عرض كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="8932992523185907506">‏لم يعُد Chromium متصفّحك التلقائي. جعل Chromium المتصفح التلقائي؟</translation>
@@ -857,8 +821,6 @@
 <translation id="9056398481763999048">‏يمكنك استخدام أفضل أدوات الذكاء الاصطناعي من Google من خلال تطبيق Chromium على هاتفك</translation>
 <translation id="9057625473949801035">‏يمكنك تسجيل الدخول إلى Chromium للوصول إلى كلمات المرور وغيرها على "<ph name="DEVICE" />"</translation>
 <translation id="9062666675513499497">‏تسجيل الدخول إلى Chromium عند تسجيل الدخول إلى خدمات Google الأخرى</translation>
-<translation id="9074041031320636790">‏نجح الإجراء. يمكنك الآن طرح الأسئلة بسهولة أثناء التصفّح باستخدام "وضع AI" في "بحث Google"</translation>
-<translation id="9074163480955555019">‏رمز جديد، والاختصار نفسه: يمكنك النقر لطرح الأسئلة أثناء التصفّح باستخدام "بحث Google" في Chrome.</translation>
 <translation id="9078733879136747090">‏تم إغلاق Chromium تلقائيًا</translation>
 <translation id="9089354809943900324">‏إصدار Chromium قديم</translation>
 <translation id="9093206154853821181">{0,plural, =1{‏ستتم إعادة تشغيل Chromium في غضون ساعة واحدة}zero{‏ستتم إعادة تشغيل Chromium في غضون # ساعة}two{‏ستتم إعادة تشغيل Chromium في غضون ساعتين}few{‏ستتم إعادة تشغيل Chromium في غضون # ساعات}many{‏ستتم إعادة تشغيل Chromium في غضون # ساعةً}other{‏ستتم إعادة تشغيل Chromium في غضون # ساعة}}</translation>

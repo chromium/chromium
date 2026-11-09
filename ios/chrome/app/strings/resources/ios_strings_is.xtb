@@ -386,7 +386,6 @@
 <translation id="2104436223719117661">Vinsælar leitir</translation>
 <translation id="21133533946938348">Festa flipa</translation>
 <translation id="2117650889962717098">Skiptu yfir í huliðsstillingu til að halda vafraferlinum þínum leyndum</translation>
-<translation id="2119126821484134587">Til að bjóða upp á sérsniðna aðstoð deilir Gemini sumum gagnanna þinna (svo sem hlutum af spjallinu þínu, staðsetningu og öðrum viðeigandi upplýsingum) með öðrum Google-þjónustum, eins og „Kort“ og „Flug“. Þessar þjónustur kunna að nota upplýsingarnar fyrir endurbætur, jafnvel þótt þú eyðir Gemini-forritaferli þínum síðar meir. Nánar í <ph name="BEGIN_LINK" />persónuverndarmiðstöð Gemini-forrita<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Opna í…</translation>
 <translation id="2119962645034852864">Sumar þjónustur eru ekki í boði fyrir reikninginn þinn</translation>
 <translation id="2120553909046681540">Fyrirtækið þitt slökkti á óskráðri vefnotkun.</translation>
@@ -519,6 +518,7 @@
 <translation id="2524699375503213836">Taktu gögnin þín með þér úr Safari</translation>
 <translation id="2526166285241366046">Vista aðgangsorð</translation>
 <translation id="2529021024822217800">Opna allt</translation>
+<translation id="2536421147135705892">Leyfa staðsetningarmerki?</translation>
 <translation id="2536991091671391962">Þú getur notað vistuð aðgangsorð í hvaða tæki sem er. Þau eru vistuð í Google-aðgangsorðastjórnun fyrir <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Falið, aðgangsorð</translation>
 <translation id="2538705697765638552">Vistaðu upplýsingarnar þínar og komdu hlutum hraðar í verk, t.d. að fylla út eyðublöð í Google-vörum. Þú getur stjórnað upplýsingunum þínum í Google-veski fyrir <ph name="USER_EMAIL" />.</translation>
@@ -1110,7 +1110,6 @@
 <translation id="4470766488397113689">Hvað viltu vinna við?</translation>
 <translation id="4471472356135655769">Ekki tókst að flytja út aðgangsorð</translation>
 <translation id="4472575034687746823">Hefjast handa</translation>
-<translation id="4473565697543262065">Þetta eyðir völdum upplýsingum sem eru vistaðar í þessu tæki og á Google-reikningnum þínum <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Fela „Vakta verð“</translation>
 <translation id="4474142134969976028">Engar niðurstöður fundust</translation>
 <translation id="4474494258097106883">Sérhannað fyrir iPhone</translation>
@@ -1337,6 +1336,7 @@
 <translation id="5128788795241319992">Skoðaðu nýju valmyndina</translation>
 <translation id="5132942445612118989">Samstilltu aðgangsorðin, ferilinn og fleira í öllum tækjum</translation>
 <translation id="5137568953923142260">Leyfa einu sinni</translation>
+<translation id="5139344197062265975">Notaðu hljóðnemann til að spjalla við Gemini. Þegar þú spjallar við Gemini er hljóðupptakan vistuð í ferli Gemini (ef kveikt er á honum). Gögnin þín eru ekki notuð til að bæta skapandi gervigreindarlíkön</translation>
 <translation id="5141363746588976328">Fela spjaldið „Verðlækkun í flipunum þínum“</translation>
 <translation id="514154868070499296">Letur: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Loka flipavali</translation>
@@ -1434,7 +1434,6 @@
 <translation id="5443636120437209490">Sjálfgefin betri skoðun</translation>
 <translation id="5444892875087332195">Bókamerki</translation>
 <translation id="5447973833955560753">Endurheimtaraðgangsorð</translation>
-<translation id="5448623529214315261">Vistuð mynd <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Notaðu traust aðgangsorð:</translation>
 <translation id="5454211924362324495">Til að koma í veg fyrir að aðrir noti aðgangsorðið þitt <ph name="BEGIN_LINK" />skaltu breyta því á <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Bættu við leitina</translation>
@@ -1607,6 +1606,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6000893618966378846">„Eyða vefskoðunargögnum“ lokið!</translation>
 <translation id="6004988584831654445">Þá er allt klárt! Fáðu tilkynningar þegar ný verkefni berast.</translation>
 <translation id="6006672969046233841">Nýr flipi</translation>
+<translation id="6006758170939001741"><ph name="BEGIN_LINK" />Skilmálar<ph name="END_LINK" /> okkar, <ph name="BEGIN_LINK" />kóreskir staðsetningarskilmálar<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />upplýsingar um persónuvernd<ph name="END_LINK" /> gilda. Spjall er yfirfarið og notað til að þjálfa skapandi gervigreindarlíkön. Gemini er gervigreind og getur gert mistök, þ.m.t. um fólk. Sumt efni er hugsanlega ekki við hæfi allra. Þú getur <ph name="BEGIN_LINK" />stjórnað ferlinum þínum<ph name="END_LINK" />, þar á meðal <ph name="BEGIN_LINK" />upplýsingum um staðsetningu þína<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Nánar um valkosti þína<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">Bæta leitartillögur</translation>
 <translation id="6012140227487808125">Dulkóðar…</translation>
 <translation id="6014801569448771146">Athugaðu aðgangsorðin þín</translation>
@@ -1845,6 +1845,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6670729408462528018">Gallerí</translation>
 <translation id="6671294218820966278">Merkja sem lesið</translation>
 <translation id="6672697278890207089">Sláðu inn aðgangsorðið þitt</translation>
+<translation id="6673666785752667010">Loka gervigreindarstillingu</translation>
 <translation id="6674917187596384849">Þú getur skipt um reikning með einföldum hætti</translation>
 <translation id="6676349090816247042">Innskráningarkostir.</translation>
 <translation id="667999046851023355">Skjal</translation>
@@ -1852,6 +1853,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6682680306647339111">Áminning fjarlægð</translation>
 <translation id="6683022854667115063">Heyrnartól</translation>
 <translation id="6684262542644248484">Skráðu þig inn á vefsvæði</translation>
+<translation id="668475086425500258">stillingar vefsvæðis</translation>
 <translation id="6685259053455152195">Flýtileiðir til að breyta stillingum og nota eiginleika á veffangastikunni á fljótlegan hátt.</translation>
 <translation id="6689342293888598653">Hvítur bakgrunnslitur</translation>
 <translation id="6689685206615181381">Aðeins huliðsstilling er í boði</translation>
@@ -1867,7 +1869,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="672735642903863329">Fáðu bókamerkin, aðgangsorðin og fleira í öllum tækjunum þínum.</translation>
 <translation id="6729493062119577923">Sameiginleg virkni flipahóps</translation>
 <translation id="6732087373923685049">myndavél</translation>
-<translation id="6736243959894955139">Vistfang</translation>
 <translation id="6746338529702829275">Farðu yfir gögn reikningsins</translation>
 <translation id="6749473226660745022">Myndir</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} ferilatriði flutt inn}one{{count} ferilatriði flutt inn}other{{count} ferilatriði flutt inn}}</translation>
@@ -1989,7 +1990,6 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="7128693485119315539">Fyrirtækið þitt þarf hugsanlega að skoða og stjórna vefskoðunargögnum sem tengjast stýrða reikningnum þínum, t.d. vafraferli og aðgangsorðum.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Myndavélin er ekki tiltæk</translation>
-<translation id="7138678301420049075">Annað</translation>
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Flipum verður lokað og vefskoðunargögnum eytt</translation>
 <translation id="714291438898585119">Stjörnumerkt</translation>
@@ -2137,6 +2137,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="7596103009408415410">{COUNT,plural, =1{Loka {COUNT} óvirkum flipa?}one{Loka {COUNT} óvirkum flipa?}other{Loka {COUNT} óvirkum flipum?}}</translation>
 <translation id="7598439272585186139">Fáðu meira öryggi</translation>
 <translation id="7600965453749440009">Þýða aldrei <ph name="LANGUAGE" /></translation>
+<translation id="760230853074995500">Spjall er yfirfarið og notað til að þjálfa skapandi gervigreindarlíkön. Þú getur <ph name="BEGIN_LINK" />stjórnað ferlinum þínum<ph name="END_LINK" />, þar á meðal <ph name="BEGIN_LINK" />upplýsingum um staðsetningu þína<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Nánar um valkosti þína<ph name="END_LINK" />.</translation>
 <translation id="7603308509262646847">Fylla korthafann „<ph name="NAME" />“ sjálfkrafa út</translation>
 <translation id="7603852183842204213">Sprettigluggar útilokaðir (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Samstilling virkar ekki</translation>
@@ -2622,7 +2623,6 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="9039373489628511875">Bandvídd</translation>
 <translation id="9042363670218758847">Skiptu yfir í útlit sem er hannað fyrir fljótlegar leitir</translation>
 <translation id="9042893549633094279">Persónuvernd og öryggi</translation>
-<translation id="9044703854323320868">Gmail-skilaboð <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Búðu til flipahópa til að flokka opnu flipana þína og afkasta meiru</translation>
 <translation id="9055580485132823283">Þú ert í þann mund að fara að eyða {password_count} aðgangsorðum, {passkey_count} aðgangslyklum og listanum yfir vefsvæðin og forritin sem þú valdir að þurfa aldrei að skrá þig inn á/í. Engum reikningum sem þú hefur búið til á vefsvæðum eða í forritum verður eytt.</translation>
 <translation id="9057030985451135243">Nánar um sameiginlega flipahópa</translation>
@@ -2631,6 +2631,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="9066097352053395362">Fela „Breyta bókamerki“</translation>
 <translation id="9070824521421603770">Þú verður skráð(ur) út og flipum verður lokað</translation>
 <translation id="9072837124205571418">Flipahópar úr öllum tækjum</translation>
+<translation id="9073322251019919253">Gemini er gervigreind og getur gert mistök, þ.m.t. um fólk. Sumt efni er hugsanlega ekki við hæfi allra. Spjall er yfirfarið og notað til að þjálfa skapandi gervigreindarlíkön. Þú getur <ph name="BEGIN_LINK" />stjórnað ferlinum þínum<ph name="END_LINK" />, þar á meðal <ph name="BEGIN_LINK" />upplýsingum um staðsetningu þína<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Nánar um valkosti þína<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Skilmálar<ph name="END_LINK" /> okkar og <ph name="BEGIN_LINK" />upplýsingar um persónuvernd<ph name="END_LINK" /> gilda.</translation>
 <translation id="9081058212938299310">Uppfæra aðgangsorð fyrir <ph name="USERNAME" />?</translation>
 <translation id="908365381820697818">Nú geturðu fundið og fyllt út upplýsingar úr Gmail og fleiru</translation>
 <translation id="9083838294503912307">Kveiktu á samstillingu til að hafa allt samstillt og sérsniðið í tækjunum þínum.</translation>

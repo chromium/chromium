@@ -166,6 +166,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, ऐसा टैब जिसका कॉन्टेंट शेयर किया जा रहा है</translation>
 <translation id="1601378265092360672">इसमें ये डेटा शामिल होता है: आपका ब्राउज़िंग इतिहास, साइट का अन्य डेटा और कुकी, कैश मेमोरी में सेव की गई इमेज और फ़ाइलें, और खुले हुए टैब</translation>
 <translation id="160275202205869636">इसके चालू होने पर, अपने Google खाते के डेटा को इस्तेमाल करें और उसे सेव करें. इसके बंद होने पर, डेटा सिर्फ़ इस डिवाइस पर सेव किया जाता है.</translation>
+<translation id="160403827062749147">दुनिया के सबसे सुरक्षित ब्राउज़र, Google Chrome में आपका स्वागत है</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 चयनित आइटम निकालें}one{# चयनित आइटम निकालें}other{# चयनित आइटम निकालें}}</translation>
 <translation id="1639239467298939599">लोड हो रही है</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउज़िंग</translation>
@@ -858,6 +859,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="4374192654218566997">\n\nइस डिवाइस से यह डेटा भी हटाया जा सकता है:</translation>
 <translation id="4378154925671717803">फ़ोन</translation>
 <translation id="4380055775103003110">अगर यह समस्या बार-बार आ रही है, तो <ph name="SITE_ETLD_PLUS_ONE" /> पर जारी रखने के लिए, दूसरे तरीके आज़माएं.</translation>
+<translation id="4381351546374507910">अपने सभी डिवाइसों पर बुकमार्क, पासवर्ड, और ऑटोमैटिक तरीके से भरी जाने वाली जानकारी का ऐक्सेस पाने के लिए साइन इन करें.</translation>
 <translation id="4384468725000734951">खोज के लिए Sogou का इस्तेमाल कर रहे हैं</translation>
 <translation id="4387647248986092471">कार का प्रोफ़ाइल लॉक सेट करें</translation>
 <translation id="4387817230000841154">डाउनलोड पेज खोलें</translation>
@@ -1231,6 +1233,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="5865733239029070421">Google को इस्तेमाल के आंकड़े और गड़बड़ी की रिपोर्ट अपने-आप भेजती है</translation>
 <translation id="5869522115854928033">सेव किए गए पासवर्ड</translation>
 <translation id="5870416898561279542">डुप्लीकेट या <ph name="DAYS_INACTIVE" /> दिनों से इस्तेमाल नहीं किए गए टैब या ग्रुप को यहां मूव कर दिया जाता है <ph name="AUTODELETE_SECTION" />. <ph name="DECLUTTER_SETTINGS_TITLE" /> में जाकर, इसे किसी भी समय बदला जा सकता है.</translation>
+<translation id="5882488054564514114">अपने सभी डिवाइसों पर डेटा ऐक्सेस करने और अपनी दिलचस्पी के हिसाब से अनुभव पाने के लिए, साइन इन करें.</translation>
 <translation id="5885378508678660271">सूचनाएं <ph name="SEPARATOR" /> Chrome ने इस साइट के लिए यह अनुमति हटा दी है, क्योंकि यह सुरक्षित नहीं है</translation>
 <translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
 <translation id="5896944002928653773">एंटरप्राइज़ सिग्नल के डिसक्लेमर वाली बॉटम शीट बंद की गई</translation>
@@ -1979,6 +1982,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="8570677896027847510">फ़ाइल सुरक्षित तरीके से डाउनलोड नहीं की जा सकी</translation>
 <translation id="8571213806525832805">पिछले चार हफ़्ते</translation>
 <translation id="8580435650274205305">खत्म होने की तारीख डालना ज़रूरी है</translation>
+<translation id="8584698523080138290">Chrome को कभी भी, कहीं भी इस्तेमाल करें</translation>
 <translation id="8585103689515290060">जानकारी अपने-आप भरने वाली सेवाएं</translation>
 <translation id="8586116786993312006">Chrome में ब्राउज़िंग डेटा मिटाने के लिए टैप करें</translation>
 <translation id="859046281437143747">'ज़्यादा विकल्प' बटन से कीमत ट्रैक करें</translation>
@@ -2031,6 +2035,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="8803526663383843427">यह सुविधा चालू होने पर</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{आइटम को आपके Google खाते <ph name="ACCOUNT_EMAIL" /> में सेव किया गया.}one{आइटम को आपके Google खाते <ph name="ACCOUNT_EMAIL" /> में सेव किया गया.}other{आइटम आपके Google खाते <ph name="ACCOUNT_EMAIL" /> में सेव किए गए.}}</translation>
 <translation id="8804742093141782941">ग्रुप को बनाए रखें</translation>
+<translation id="880967149107462122">Chrome की सेटिंग में जाएं</translation>
 <translation id="8812260976093120287">कुछ वेबसाइटों पर, ऊपर दिए गए सपोर्ट किए जाने वाले पेमेंट ऐप्लिकेशन के ज़रिए अपने डिवाइस से पेमेंट किया जा सकता है.</translation>
 <translation id="8816556050903368450">यह लिंक भी शामिल है: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">टैब कॉन्टेंट की झलक देखी नहीं जा सकती.</translation>
@@ -2056,6 +2061,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="8903921497873541725">ज़ूम इन करें</translation>
 <translation id="8909135823018751308">शेयर करें…</translation>
 <translation id="8918299437379122615"><ph name="SEARCH_QUERY" /> के लिए खोज नतीजों के पेज का लिंक शेयर करें. सोर्स: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">किसी भी वेबसाइट में साइन इन करें</translation>
 <translation id="8922289737868596582">पेज का ऑफ़लाइन उपयोग करने के लिए उन्हें ज़्यादा विकल्प बटन से डाउनलोड करें</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> तैयार है</translation>

@@ -386,7 +386,6 @@
 <translation id="2104436223719117661">Tendencias de búsqueda</translation>
 <translation id="21133533946938348">Fijar pestaña</translation>
 <translation id="2117650889962717098">Cambia al modo Incógnito para mantener tu navegación en privado</translation>
-<translation id="2119126821484134587">Para brindarte ayuda personalizada, Gemini comparte algunos de tus datos (como fragmentos de tus chats, tu ubicación y otra información pertinente) con otros servicios de Google, como Maps y Vuelos. Es posible que estos servicios usen esa información para mejorar, incluso si luego borras tu historial de las Apps con Gemini. Obtén más información en el <ph name="BEGIN_LINK" />Centro de privacidad de las Apps con Gemini<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Abrir en…</translation>
 <translation id="2119962645034852864">Algunos servicios no están disponibles para tu cuenta</translation>
 <translation id="2120553909046681540">Tu organización desactivó la navegación privada.</translation>
@@ -519,6 +518,7 @@
 <translation id="2524699375503213836">Importa tus datos de Safari</translation>
 <translation id="2526166285241366046">Guardar una contraseña</translation>
 <translation id="2529021024822217800">Abrir todo</translation>
+<translation id="2536421147135705892">¿Permitir la ubicación geográfica?</translation>
 <translation id="2536991091671391962">Puedes usar las contraseñas guardadas en cualquier dispositivo. Se guardan en el Administrador de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Contraseña oculta</translation>
 <translation id="2538705697765638552">Guarda tu información y finaliza tareas más rápido, como completar formularios en los productos de Google. Puedes administrar tu información en la Billetera de Google para <ph name="USER_EMAIL" />.</translation>
@@ -1110,7 +1110,6 @@
 <translation id="4470766488397113689">¿Qué quieres hacer?</translation>
 <translation id="4471472356135655769">No se pueden exportar las contraseñas</translation>
 <translation id="4472575034687746823">Comenzar</translation>
-<translation id="4473565697543262065">Se borrará la información seleccionada que se guardó en este dispositivo y en tu Cuenta de Google <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Ocultar la opción Seguir precio</translation>
 <translation id="4474142134969976028">No hay resultados que coincidan</translation>
 <translation id="4474494258097106883">Diseñado para tu iPhone</translation>
@@ -1337,6 +1336,7 @@
 <translation id="5128788795241319992">Explora el nuevo menú</translation>
 <translation id="5132942445612118989">Sincroniza tus contraseñas, historial y más en todos los dispositivos</translation>
 <translation id="5137568953923142260">Permitir una vez</translation>
+<translation id="5139344197062265975">Usa el micrófono para chatear con Gemini. Cuando le hablas, el audio se guarda en el Historial de Gemini (si está activado). Tus datos no se usan para mejorar modelos de IA generativa.</translation>
 <translation id="5141363746588976328">Ocultar la tarjeta Reducciones de precio en las pestañas</translation>
 <translation id="514154868070499296">Fuente: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Salir del alternador de pestañas</translation>
@@ -1434,7 +1434,6 @@
 <translation id="5443636120437209490">Navegación mejorada de forma predeterminada</translation>
 <translation id="5444892875087332195">Favoritos</translation>
 <translation id="5447973833955560753">Contraseña de recuperación</translation>
-<translation id="5448623529214315261">Foto guardada <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Usa una contraseña segura:</translation>
 <translation id="5454211924362324495">Para evitar que otras personas usen tu contraseña, <ph name="BEGIN_LINK" />cámbiala en <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Agregar a la búsqueda</translation>
@@ -1607,6 +1606,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6000893618966378846">¡Se completó la tarea para borrar datos de navegación!</translation>
 <translation id="6004988584831654445">¡Eso es todo! Recibe notificaciones cuando lleguen tareas nuevas.</translation>
 <translation id="6006672969046233841">Nueva pestaña</translation>
+<translation id="6006758170939001741">Se aplican nuestras <ph name="BEGIN_LINK" />Condiciones<ph name="END_LINK" />, las <ph name="BEGIN_LINK" />Condiciones del Servicio de Ubicación de Corea<ph name="END_LINK" /> y nuestro <ph name="BEGIN_LINK" />Aviso de Privacidad<ph name="END_LINK" />. Los chats se revisan y se usan para entrenar modelos de IA generativa. Gemini es una IA y puede cometer errores, incluso con información sobre personas. Es posible que parte del contenido no sea apto para todos los usuarios. Puedes <ph name="BEGIN_LINK" />administrar tu historial<ph name="END_LINK" />, incluida la <ph name="BEGIN_LINK" />información sobre tu ubicación<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Más información sobre tus opciones<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">Mejorar las sugerencias de búsqueda</translation>
 <translation id="6012140227487808125">Encriptando...</translation>
 <translation id="6014801569448771146">Revisa tus contraseñas</translation>
@@ -1845,6 +1845,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6670729408462528018">Galería</translation>
 <translation id="6671294218820966278">Marcar como leído</translation>
 <translation id="6672697278890207089">Ingresa tu frase de contraseña</translation>
+<translation id="6673666785752667010">Cerrar el Modo IA</translation>
 <translation id="6674917187596384849">Puedes cambiar fácilmente entre cuentas</translation>
 <translation id="6676349090816247042">Opciones de acceso.</translation>
 <translation id="667999046851023355">Documento</translation>
@@ -1852,6 +1853,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6682680306647339111">Se quitó el recordatorio</translation>
 <translation id="6683022854667115063">Auriculares</translation>
 <translation id="6684262542644248484">Accede a un sitio web.</translation>
+<translation id="668475086425500258">configuración de los sitios</translation>
 <translation id="6685259053455152195">Accesos directos para modificar rápidamente la configuración y usar funciones de la barra de direcciones</translation>
 <translation id="6689342293888598653">Color de fondo blanco</translation>
 <translation id="6689685206615181381">Solo está disponible el modo Incógnito</translation>
@@ -1867,7 +1869,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="672735642903863329">Accede a tus favoritos, contraseñas y más en todos tus dispositivos.</translation>
 <translation id="6729493062119577923">Actividad del grupo de pestañas compartido</translation>
 <translation id="6732087373923685049">cámara</translation>
-<translation id="6736243959894955139">Dirección</translation>
 <translation id="6746338529702829275">Revisa los datos de tu cuenta</translation>
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6750456911389438250">{count,plural, =1{Se importó {count} elemento del historial}other{Se importaron {count} elementos del historial}}</translation>
@@ -1989,7 +1990,6 @@ Para continuar desde tu computadora, cambia a <ph name="OTHER_EMAIL" />. Obtendr
 <translation id="7128693485119315539">Es posible que tu organización necesite ver y administrar los datos de navegación vinculados a tu cuenta administrada, como el historial de navegación y las contraseñas.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">La cámara no está disponible</translation>
-<translation id="7138678301420049075">Otros</translation>
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Se cerrarán las pestañas y se borrarán los datos de navegación</translation>
 <translation id="714291438898585119">Destacados</translation>
@@ -2137,6 +2137,7 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{¿Quieres cerrar {COUNT} pestaña inactiva?}other{¿Quieres cerrar {COUNT} pestañas inactivas?}}</translation>
 <translation id="7598439272585186139">Obtén más seguridad</translation>
 <translation id="7600965453749440009">Nunca traducir <ph name="LANGUAGE" /></translation>
+<translation id="760230853074995500">Los chats se revisan y se usan para entrenar modelos de IA generativa. Puedes <ph name="BEGIN_LINK" />administrar tu historial<ph name="END_LINK" />, incluida la <ph name="BEGIN_LINK" />información sobre tu ubicación<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Obtén más información sobre tus opciones<ph name="END_LINK" />.</translation>
 <translation id="7603308509262646847">Autocompletar el titular de la tarjeta <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Vent.emerg.bloq. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">La sincronización no funciona</translation>
@@ -2622,7 +2623,6 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="9039373489628511875">Ancho de banda</translation>
 <translation id="9042363670218758847">Cambia a un diseño creado para búsquedas rápidas</translation>
 <translation id="9042893549633094279">Privacidad y seguridad</translation>
-<translation id="9044703854323320868">Mensaje de Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Crea grupos de pestañas para organizar las pestañas abiertas y mantener la productividad</translation>
 <translation id="9055580485132823283">Estás a punto de borrar {password_count} contraseñas, {passkey_count} llaves de acceso y la lista de sitios y apps para los que elegiste no guardar información de acceso. No se borrarán las cuentas que hayas creado para sitios y apps.</translation>
 <translation id="9057030985451135243">Más información sobre los grupos de pestañas compartidos</translation>
@@ -2631,6 +2631,7 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="9066097352053395362">Ocultar la opción Editar favorito</translation>
 <translation id="9070824521421603770">Saldrás de tu cuenta y se cerrarán las pestañas</translation>
 <translation id="9072837124205571418">Grupos de pestañas de todos los dispositivos</translation>
+<translation id="9073322251019919253">Gemini es una IA y puede cometer errores, incluso con información sobre personas. Es posible que parte del contenido no sea apto para todos los usuarios. Los chats se revisan y se usan para entrenar modelos de IA generativa. Puedes <ph name="BEGIN_LINK" />administrar tu historial<ph name="END_LINK" />, incluida la <ph name="BEGIN_LINK" />información sobre tu ubicación<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Obtén información sobre tus opciones<ph name="END_LINK" />. Se aplican nuestras <ph name="BEGIN_LINK" />Condiciones<ph name="END_LINK" /> y nuestro <ph name="BEGIN_LINK" />Aviso de Privacidad<ph name="END_LINK" />.</translation>
 <translation id="9081058212938299310">¿Quieres actualizar la contraseña para <ph name="USERNAME" />?</translation>
 <translation id="908365381820697818">Ahora puedes encontrar y completar información de Gmail y mucho más</translation>
 <translation id="9083838294503912307">Para sincronizar diferentes dispositivos y personalizar tu experiencia, activa la sincronización.</translation>

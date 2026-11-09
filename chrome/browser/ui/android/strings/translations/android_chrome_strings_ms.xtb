@@ -166,6 +166,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, Tab Perkongsian</translation>
 <translation id="1601378265092360672">Data semakan imbas termasuk sejarah penyemakan imbas, kuki dan data laman lain, imej dan fail dicache serta tab terbuka anda</translation>
 <translation id="160275202205869636">Apabila dihidupkan, gunakan dan simpan data dalam Google Account anda. Apabila dimatikan, data disimpan pada peranti ini sahaja.</translation>
+<translation id="160403827062749147">Selamat datang ke Google Chrome, penyemak imbas paling selamat di dunia</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Alih keluar 1 item yang dipilih}other{Alih keluar # item yang dipilih}}</translation>
 <translation id="1639239467298939599">Memuatkan</translation>
 <translation id="1641113438599504367">Penyemakan Imbas Selamat</translation>
@@ -858,6 +859,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="4374192654218566997">\n\nAnda juga boleh mengalih keluar data ini daripada peranti ini:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Jika masalah ini tetap berlaku, anda boleh mencuba cara lain untuk meneruskan pada <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="4381351546374507910">Log masuk untuk mendapatkan penanda halaman, kata laluan dan maklumat Autolengkap anda merentas semua peranti anda.</translation>
 <translation id="4384468725000734951">Menggunakan Sogou untuk carian</translation>
 <translation id="4387647248986092471">Buat kunci profil kereta</translation>
 <translation id="4387817230000841154">Buka Muat Turun</translation>
@@ -1231,6 +1233,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5865733239029070421">Menghantar perangkaan penggunaan dan laporan ranap sistem secara automatik kepada Google</translation>
 <translation id="5869522115854928033">Kata laluan disimpan</translation>
 <translation id="5870416898561279542">Tab dan kumpulan pendua atau tab dan kumpulan yang tidak digunakan selama <ph name="DAYS_INACTIVE" /> hari dialihkan ke sini<ph name="AUTODELETE_SECTION" />. Anda boleh menukar pilihan ini pada bila-bila masa dalam <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5882488054564514114">Log masuk untuk mendapatkan data anda merentas peranti anda dan memeribadikan pengalaman anda.</translation>
 <translation id="5885378508678660271">Pemberitahuan <ph name="SEPARATOR" /> Chrome telah mengalih keluar kebenaran ini kerana laman ini berbahaya</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
 <translation id="5896944002928653773">Helaian bawah penafian isyarat perusahaan ditutup</translation>
@@ -1799,6 +1802,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7956713633345437162">Penanda halaman mudah alih</translation>
 <translation id="7957413488482743710">Kad maya menyembunyikan kad sebenar anda untuk melindungi anda daripada kemungkinan penipuan. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang kad maya<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Tab pada peranti ini</translation>
+<translation id="7959802829514004148">Tidak dapat memuat turun PDF</translation>
 <translation id="7961926449547174351">Anda telah melumpuhkan akses Storan, sila pergi ke Tetapan untuk mendayakan akses itu.</translation>
 <translation id="7965838025086216108">Anda boleh menggunakan kata laluan yang disimpan pada mana-mana peranti. Kata laluan tersebut disimpan pada Google Password Manager untuk <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Ditambahkan pada senarai bacaan</translation>
@@ -1887,6 +1891,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8244387390464017490">Sesuaikan halaman tab baharu</translation>
 <translation id="8244444485683708655">Lampirkan gambar kamera</translation>
 <translation id="8250920743982581267">Dokumen</translation>
+<translation id="8254205582828322729">Ketik Simpan untuk menggunakan kata laluan ini dengan mudah apabila anda log masuk selepas ini</translation>
 <translation id="8257429805444572809">Telah menyahlanggan daripada <ph name="DOMAIN" /></translation>
 <translation id="8258999165172757081">Ditambah</translation>
 <translation id="8259179246279078674">Oleh sebab halaman pramuat disulitkan, Google tidak akan mempelajari apa-apa tentang kandungan halaman yang dipramuat. Pelayan Google akan mengetahui laman yang dipramuat secara peribadi. Maklumat ini hanya digunakan untuk pramuat halaman dan tidak dipautkan kepada maklumat lain daripada Google Account anda.</translation>
@@ -1976,9 +1981,11 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8560602726703398413">Cari senarai bacaan anda dalam Penanda Halaman</translation>
 <translation id="85618473456579127">Ketik profil pada bahagian atas sebelah kanan</translation>
 <translation id="8565021320663436446">Alih keluar <ph name="MEMBER_FULL_NAME" />?</translation>
+<translation id="8567433453247478023">Ketik Privasi dan keselamatan</translation>
 <translation id="8570677896027847510">Fail tidak dapat dimuat turun dengan selamat</translation>
 <translation id="8571213806525832805">4 minggu terakhir</translation>
 <translation id="8580435650274205305">Tarikh tamat tempoh, diperlukan</translation>
+<translation id="8584698523080138290">Bawa Chrome bersama anda</translation>
 <translation id="8585103689515290060">Perkhidmatan autolengkap</translation>
 <translation id="8586116786993312006">Ketik untuk memadamkan data semakan imbas dalam Chrome</translation>
 <translation id="859046281437143747">Jejaki harga daripada butang Lagi pilihan</translation>
@@ -1995,6 +2002,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8635399646025169806">Simpan kumpulan tab?</translation>
 <translation id="8636825310635137004">Hidupkan penyegerakan untuk mendapatkan tab daripada peranti anda yang lain.</translation>
 <translation id="8639963783467694461">Tetapan auto isi</translation>
+<translation id="8642256427178803328">Togol kepada hidupkan Kunci tab Inkognito apabila anda meninggalkan Chrome</translation>
 <translation id="8644482734962137770">Gemini memerlukan kebenaran untuk menggunakan Chrome</translation>
 <translation id="8662474268934425487">Log masuk ke <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Nama fail sudah wujud</translation>
@@ -2031,6 +2039,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8803526663383843427">Apabila dihidupkan</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Item yang disimpan dalam Google Account anda, <ph name="ACCOUNT_EMAIL" />.}other{Item yang disimpan dalam Google Account anda, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8804742093141782941">Simpan kumpulan</translation>
+<translation id="880967149107462122">Akses Tetapan Chrome</translation>
 <translation id="8812260976093120287">Pada sesetengah laman web, anda boleh membayar menggunakan apl pembayaran yang disokong di atas pada peranti anda.</translation>
 <translation id="8816556050903368450">Termasuk pautan: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Kandungan tab pratonton tidak boleh dilihat.</translation>
@@ -2056,6 +2065,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8903921497873541725">Zum masuk</translation>
 <translation id="8909135823018751308">Kongsi…</translation>
 <translation id="8918299437379122615">Kongsi pautan kepada halaman hasil carian untuk: <ph name="SEARCH_QUERY" />. Sumber: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Log masuk ke mana-mana laman web</translation>
 <translation id="8922289737868596582">Muat turun halaman daripada butang Lagi pilihan untuk digunakan di luar talian</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> sudah sedia</translation>

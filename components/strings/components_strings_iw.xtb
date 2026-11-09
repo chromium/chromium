@@ -3,6 +3,7 @@
 <translationbundle lang="iw">
 <translation id="1008557486741366299">לא עכשיו</translation>
 <translation id="100957008357583611">להשתמש במיקום שלך?</translation>
+<translation id="1010148478459329879">‏יכול להיות שבחשבון שלך ב-Google מופיעים סוגים אחרים של היסטוריית גלישה בכתובת <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, כמו <ph name="BEGIN_LINK_GAA" />ההיסטוריה ב-Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">לטעינת הדף מאוחר יותר</translation>
 <translation id="1010225406377140704">אפשר לפנות אל השולח/ת ולבקש קישור חדש</translation>
 <translation id="1011206368273183593">הקבצים בהכנה…</translation>
@@ -647,7 +648,6 @@
 <translation id="2102134110707549001">הצעת סיסמה חזקה…</translation>
 <translation id="2102495993840063010">‏אפליקציות Android</translation>
 <translation id="2103210856015238101">רשימת כרטיסי מועדון הלקוחות שאפשר למלא באמצעות מגע נפתחה בגובה המלא של המסך.</translation>
-<translation id="2104739941682874393">התכונה "מילוי אוטומטי משופר" מבינה את הטפסים טוב יותר ויכולה למלא אותם אוטומטית מהר יותר</translation>
 <translation id="2105237910269166838">שאלה לגבי הדף הזה</translation>
 <translation id="2107021941795971877">תמיכות להדפסה</translation>
 <translation id="2108755909498034140">אתחול המחשב</translation>
@@ -733,7 +733,6 @@
 <translation id="2215727959747642672">עריכת קובץ</translation>
 <translation id="2219658597883514593">חזרה על המדריך</translation>
 <translation id="2219735899272417925">יש לאתחל את המכשיר</translation>
-<translation id="2221460252073828078">‏כאן אפשר לראות את התשובה מ-AI בחיפוש Google</translation>
 <translation id="2222604080869344662">‏כדי להמשיך בהורדה, צריך להיכנס לחשבון ב-OneDrive</translation>
 <translation id="2224337661447660594">אין אינטרנט</translation>
 <translation id="2225927550500503913">הכרטיס הווירטואלי מופעל</translation>
@@ -833,7 +832,6 @@
 <translation id="2367025302166767427">הייתה בעיה במילוי הפרטים</translation>
 <translation id="2367567093518048410">רמה</translation>
 <translation id="2370368710215137370">העלאת קבצים</translation>
-<translation id="2370739752330685659">אולי יותר מאוחר</translation>
 <translation id="2371084566192454134">כרטיסיות וקבוצות של כרטיסיות</translation>
 <translation id="237379235388498999">‏הסרטון נשמר ב-OneDrive</translation>
 <translation id="2374629208601905275">‏בהתאם לחוק באזור שלך, עליך לבחור את מנוע החיפוש שיוגדר כברירת המחדל ב-Chrome. מנועי החיפוש האלה פופולריים באזור שלך ומוצגים בסדר אקראי.</translation>
@@ -1205,6 +1203,7 @@
 <translation id="3030331669969285614">התכונות הניסיוניות האלה מונעות או מחזירות לגרסה קודמת שינוי תוכנה שעלול לגרום לכשל, והן יהיו זמינות רק למשך פרק זמן מוגבל.</translation>
 <translation id="3033200136993730761">‏כתובת המגורים יכולה לעזור לך בשירותי Google, למשל לקבל תוצאות חיפוש רלוונטיות יותר ומסלולים במפות Google. אפשר לערוך או למחוק את הכתובת <ph name="BEGIN_LINK" />בחשבון <ph name="ACCOUNT" /> ב-Google<ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">יש הרשאה זמנית להשתמש בחיישני התנועה והאור</translation>
+<translation id="3034219227076811559">‏חיפוש Google ב-Chrome</translation>
 <translation id="3034526003882782781">יש הרשאה לגלול ולשנות את מרחק התצוגה</translation>
 <translation id="3037177537145227281">המחיר במעקב</translation>
 <translation id="3037605927509011580">אוי, לא!</translation>
@@ -1272,6 +1271,7 @@
 <translation id="3141337053413339205">החלפה לכרטיסייה הזו.</translation>
 <translation id="3144458715650412431">‏מדיניות הבדיקה הוחלה. ניתן לבדוק ולאפס אותה בכתובת chrome://policy/test. המדיניות של האדמין לא תוחל.</translation>
 <translation id="3145945101586104090">פענוח התגובה נכשל</translation>
+<translation id="3149865382039202168">‏כדי לבצע פעולות כמו מילוי טפסים מהר יותר בכל מוצרי Google, צריך לשמור את הפרטים ב-<ph name="GOOGLE_WALLET_TITLE" />. אפשר לשלוט ב<ph name="HOW_INFO_IS_USED_LINK" /> בהגדרות הכרטיס הפרטי בכתובת <ph name="ACCOUNT" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">שגיאת שרת זמנית</translation>
 <translation id="3150889484970506196">‏הכפתור ליצירת גיליון, מפעילים אותו כדי ליצור במהירות גיליון אלקטרוני חדש ב-Google Sheets</translation>
 <translation id="3154506275960390542">דף זה כולל טופס שעשוי להישלח באופן לא מאובטח. הנתונים ששולחים יהיו גלויים במהלך ההעברה, וקיימת סכנה שמישהו ישנה את הפרטים שהשרת יקבל.</translation>
@@ -1707,7 +1707,6 @@
 <translation id="3831915413245941253">הותקנו תוספים מהדומיין <ph name="ENROLLMENT_DOMAIN" /> כדי להשתמש בפונקציות נוספות. לתוספים יש גישה לחלק מהנתונים שלך.</translation>
 <translation id="3832522519263485449">ניקובים מרובים בצד שמאל</translation>
 <translation id="3835233591525155343">השימוש שלך במכשיר</translation>
-<translation id="383710924053593293">אפשר למלא יותר שדות במהירות</translation>
 <translation id="3843447501960446468">ניהול של כרטיסי מועדון לקוחות…</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267">‏<ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור במהירות מסמך חדש ב-Google Docs</translation>
@@ -1866,7 +1865,6 @@
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">היקף המדיניות אינו נתמך.</translation>
-<translation id="411918202192379658">המילוי האוטומטי השתפר</translation>
 <translation id="4121428309786185360">בתוקף עד </translation>
 <translation id="4123572138124678573">3 ניקובים בחלק התחתון</translation>
 <translation id="412601465078863288">פג הזמן שהוקצב להעלאה</translation>
@@ -2053,6 +2051,7 @@
 <translation id="4387362115623213806">תעזור לי לנסח תשובה מנומסת כדי לדחות תוכניות להיפגש</translation>
 <translation id="4387692837058041921">‏העלאת הקובץ אל Microsoft OneDrive הושהתה</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4394980935660306080">מוקדם יותר השבוע</translation>
 <translation id="4395550503472021297">המדיניות הזו קובעת את פעולת ברירת המחדל של כללי המדיניות הבאים: <ph name="POLICIES" /></translation>
 <translation id="4396554829965096368">רישיון נהיגה</translation>
 <translation id="4397978002248035985">ייפתח חלון קופץ לאימות באתר הבנק</translation>
@@ -2320,6 +2319,7 @@ Del</translation>
 <translation id="486459320933704969">כדי לבקר באתר הזה, עליך לקבל אישור מהורה או מאפוטרופוס</translation>
 <translation id="4865063548323785458">אפשר לשמור את הסיסמאות ולמלא אותן באופן אוטומטי כדי להיכנס בקלות לאתרים ולאפליקציות</translation>
 <translation id="4866506163384898554">צריך להקיש על |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| כדי להציג את הסמן</translation>
+<translation id="4867297348137739678">מהשבוע האחרון</translation>
 <translation id="4868277513442568587">‏כדי להמשיך להשתמש בקבוצות של הכרטיסיות המשותפות, צריך לעדכן את Chrome</translation>
 <translation id="4873312501243535625">בודק קובצי המדיה</translation>
 <translation id="4873807733347502026">לנעול את העכבר ולהשתמש בו</translation>
@@ -2448,7 +2448,6 @@ Del</translation>
 <translation id="5056587122125565772">יצירת תמונה</translation>
 <translation id="5056908537436373373">פתיחת חלון <ph name="WINDOW_INDEX" /> (כרטיסייה אחת) בחלון חדש</translation>
 <translation id="505757197798929356">יש לציין את הסיבה לפתיחה (חובה)</translation>
-<translation id="5058282932481719070">מידע נוסף על התכונה "מילוי אוטומטי משופר" בהגדרות</translation>
 <translation id="5061227663725596739">האם התכוונת ל-<ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">היסטוריית הדפסות</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2507,7 +2506,6 @@ Del</translation>
 <translation id="5147633291963801297">הצגת ירידות במחיר בחלונית הצדדית</translation>
 <translation id="5148809049217731050">פנים כלפי מעלה</translation>
 <translation id="5148889558173091794">הכתובת <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> נחסמה על ידי הארגון שלך עקב הפרת מדיניות. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
-<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154702632169343078">נושא</translation>
 <translation id="5156995531130738884">תנסח מערך שיעור עם תיאור של מפגש מעניין לכיתה שלי</translation>
 <translation id="5158275234811857234">שער</translation>
@@ -2717,6 +2715,7 @@ Del</translation>
 יש לנסות ליצור קשר עם מנהל המערכת.</translation>
 <translation id="5496804587179176046">שמירה של קודי אבטחה, כרגע לא שמורים קודי אבטחה</translation>
 <translation id="5499229993630251170">להמשיך את השרשור הזה?</translation>
+<translation id="5500759546320582211">קוד אימות: <ph name="OTP" /> מ-<ph name="EMAIL" /></translation>
 <translation id="5506286895894263601">אין קיצורי דרך תקינים ברשימה.</translation>
 <translation id="5507756662695126555">אי התכחשות</translation>
 <translation id="5508515366054931524">ההודעה לאימות כתובת האימייל נפתחה בגובה מלא</translation>
@@ -3208,6 +3207,7 @@ Del</translation>
 <translation id="6322182122604171028">‏לא ניתן היה להשתמש ב-Windows Hello</translation>
 <translation id="6326175484149238433">‏הסרה מ-Chrome</translation>
 <translation id="6326947323444967009">‏הגדרת Chrome כדפדפן ברירת המחדל של המערכת בהגדרות iOS</translation>
+<translation id="6327434859517217259">‏אופן השימוש במידע הזה בשירותי Google</translation>
 <translation id="6328639280570009161">יש לנסות להשבית את חיזוי הרשת</translation>
 <translation id="6329742260390895689">‏כדי למלא את הפרטים באופן אוטומטי, צריך להפעיל את ההגדרה "שימוש בכרטיסים בשירותי Google" ב-Wallet</translation>
 <translation id="6329815962353376655">&lt;כאן מקלידים שאלה&gt;</translation>
@@ -3573,7 +3573,6 @@ Del</translation>
 <translation id="695140971690006676">איפוס של הכול</translation>
 <translation id="6954269228996542693">המערכת מורידה את חבילות השפה… ‫%<ph name="PERCENT" /></translation>
 <translation id="695582302419398462">Cardboard (Double Wall)</translation>
-<translation id="6957153644870901611">הפעלת התכונה "מילוי אוטומטי משופר" כדי למלא שדות נוספים באופן אוטומטי</translation>
 <translation id="6957887021205513506">נראה שהאישור של השרת מזויף.</translation>
 <translation id="6958564499836457428">‏ניהול הגדרות הפרטיות ב-Google בחשבון Google</translation>
 <translation id="6961161369573226336">‏מנהל הסיסמאות של Google יכול לקבל את הקודים האלה בשבילך מהחשבון שלך ב-Gmail, <ph name="EMAIL" />. יש לך אפשרות לשנות את דעתך ו<ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />.</translation>
@@ -3596,6 +3595,7 @@ Del</translation>
 <translation id="6978236010531171013">אני רוצה לשתף בכל זאת</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">השתקה (ברירת מחדל)</translation>
+<translation id="6979737339423435258">משחר ההיסטוריה</translation>
 <translation id="6983783921975806247">‏OID רשום</translation>
 <translation id="6984095691972094111">אני מנסה ללמוד שפה חדשה. תכין לי בוחן שיעזור לי לתרגל אוצר מילים ודקדוק.</translation>
 <translation id="698450079873764780">תעזור לי להתכונן לשיחה קשה באמצעות משחק תפקידים כדי שאוכל לתרגל את התשובות שלי</translation>
@@ -3635,7 +3635,6 @@ Del</translation>
 <translation id="7053983685419859001">חסימה</translation>
 <translation id="7054563057916451424">‫<ph name="DESTINATION" />, פתיחה בכרטיסייה חדשה</translation>
 <translation id="7054717457611655239">מעכשיו אפשר לשמור את הקבצים ב-<ph name="CLOUD_PROVIDER" />.</translation>
-<translation id="7057567173736333354">צריך לתאר את התמונה</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> אימת ש-<ph name="ISSUER" /> הנפיק את האישור של האתר הזה.</translation>
 <translation id="7058774143982824355">‏שירות לניתוח סיסמאות CSV</translation>
 <translation id="7059913660448028407">האפשרות הזו לא נתמכת עכשיו</translation>
@@ -4305,6 +4304,7 @@ Del</translation>
 <translation id="8163468049564974856">‏כדי לשלם באינטרנט בצורה בטוחה, צריך להפעיל את המילוי האוטומטי. פרטי הכרטיס מוצפנים ב-Google Wallet.</translation>
 <translation id="8163866351304776260">4 ניקובים בצד שמאל</translation>
 <translation id="8164078261547504572">רוצה לקבל אימיילים על ירידה במחיר?</translation>
+<translation id="8166435925529495192">‏יכול להיות שבחשבון שלך ב-Google מופיעים פרטי <ph name="BEGIN_LINK_GAA" />ההיסטוריה ב-Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8169175551046720804">לא ניתן להגדיר את המפתחות <ph name="DATA_CONTROLS_KEYS" /> באותו מילון</translation>
 <translation id="8172809706700703589">תכין לי רשימת ציוד לנסיעה</translation>
 <translation id="8174047975335711832">מידע מהמכשיר</translation>
@@ -4322,6 +4322,7 @@ Del</translation>
 <translation id="8199437620497683918">Optical Disc (Glossy)</translation>
 <translation id="8202097416529803614">סיכום הזמנה</translation>
 <translation id="8202370299023114387">התנגשות</translation>
+<translation id="8203105157044679380">‏החלונית של חיפוש Google</translation>
 <translation id="8208363704094329105">‏300x400 מ"מ</translation>
 <translation id="8208629719488976364">‏התוכן של הדפים המודפסים ומידע על המדפסת יישלחו אל Google Cloud או לצדדים שלישיים לצורך ניתוח. לדוגמה, יכול להיות שהנתונים האלה יעברו סריקה כדי לאתר מידע אישי רגיש, וייתכן שהם יאוחסנו בהתאם למדיניות החברה ויהיו גלויים לאדמין שלך.</translation>
 <translation id="8210490490377416373">בחירת שם למדיניות</translation>
@@ -4820,7 +4821,6 @@ Del</translation>
 <translation id="9073799351042754113">בחרת להשבית את אזהרות האבטחה לגבי האתר הזה.</translation>
 <translation id="907426083053157749">טלפון <ph name="MANUFACTURER" /></translation>
 <translation id="9075717835386447447">חום בהיר 1</translation>
-<translation id="9078170656887151974">‏כדי לקבל הצעות ולשפר את התכונה הזו, כתובת ה-URL ותוכן הדף יישלחו אל Google. אפשר לשנות את ההחלטה בכל שלב ולקבל <ph name="LEARN_MORE" />.</translation>
 <translation id="9078964945751709336">נדרש מידע נוסף</translation>
 <translation id="9080712759204168376">סיכום הזמנה</translation>
 <translation id="908365381820697818">‏עכשיו אפשר למצוא ולמלא מידע מ-Gmail ועוד</translation>
@@ -4970,6 +4970,7 @@ Del</translation>
     &lt;li&gt;להסיר את ההתקנה של "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;להתחבר לרשת אחרת&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">‏יכול להיות שבחשבון שלך ב-Google מופיעים סוגים אחרים של היסטוריית גלישה בכתובת <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, כמו כניסות דרך פעולות אוטומטיות בדפדפן <ph name="BEGIN_LINK_GAA" />בהיסטוריה שלך ב-Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">‏הוספת IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>

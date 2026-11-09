@@ -138,7 +138,6 @@
 <translation id="1346403631707626730">Envia dades d'ús i de diagnòstic. Ajuda a millorar l'experiència a Android del teu fill o filla enviant automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades no es faran servir per identificar el teu fill o filla i ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. Si l'opció de configuració Activitat al web i en aplicacions addicional està activada per al teu fill o filla, és possible que aquestes dades es desin al seu Compte de Google. <ph name="BEGIN_LINK1" />Més informació sobre les mètriques<ph name="BEGIN_LINK1_END" />Més informació<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">Dreta</translation>
 <translation id="1350494136075914725">En curs · Canvia a la pestanya</translation>
-<translation id="1351937230027495976">Replega el menú</translation>
 <translation id="1355088139103479645">Vols suprimir totes les dades?</translation>
 <translation id="1360220746312242196">Quan cerquis una pàgina, ves a la coincidència anterior per cercar</translation>
 <translation id="1360788414852622716">S'està desactivant el perfil. Aquest procés pot tardar uns minuts.</translation>
@@ -682,7 +681,6 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3033912566804961911">Combina amb l'escriptori <ph name="DESK_NAME" /></translation>
 <translation id="3036327949511794916">El termini per tornar aquest dispositiu <ph name="DEVICE_TYPE" /> ha finalitzat.</translation>
-<translation id="3039491566278747710">No s'ha pogut instal·lar la política sense connexió al dispositiu.</translation>
 <translation id="3039939407102840004">El llapis òptic té un <ph name="PERCENTAGE" /> de bateria.</translation>
 <translation id="304097922505898963">Obre l'aplicació Tecles de drecera</translation>
 <translation id="304417730895741346">Les aplicacions fixades i les obertes es troben al prestatge. Per fixar-hi una aplicació, fes clic en una aplicació amb el botó dret o toca el ratolí tàctil amb dos dits.</translation>
@@ -698,7 +696,6 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3075144191779656260">Toca el sensor d'empremtes digitals que hi ha al costat esquerre del teu <ph name="DEVICE_TYPE" />. Les dades de la teva empremta digital s'emmagatzemen de manera segura i no surten mai del <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3075874217500066906">Per començar el procés de Powerwash, cal que reinicieu el dispositiu. Després de fer-ho, haureu de confirmar que voleu continuar.</translation>
 <translation id="3077734595579995578">maj</translation>
-<translation id="3081696990447829002">Desplega el menú</translation>
 <translation id="3087734570205094154">Part inferior</translation>
 <translation id="3088128611727407543">S'està preparant el perfil de l'aplicació...</translation>
 <translation id="3090214513075567547">Obre el menú contextual</translation>
@@ -804,7 +801,6 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3405101454990027959">Activa l'accés al micròfon</translation>
 <translation id="3407967630066378878">Per configurar una empremta digital, fes que el teu fill o filla toqui el sensor d'empremtes digitals que hi ha al costat esquerre d'aquest <ph name="DEVICE_TYPE" />. Les dades de la seva empremta digital s'emmagatzemen de manera segura i no surten mai del <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3409584356742878290">Mostra o amaga l'inspector d'eines per a desenvolupadors</translation>
-<translation id="3413817803639110246">Encara no hi ha res per veure</translation>
 <translation id="3417835166382867856">Cerca pestanyes</translation>
 <translation id="3426253816581969877">Mantén premudes les tecles <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, toca <ph name="KEY" /> fins a arribar a la finestra que vulguis obrir i, a continuació, deixa anar les tecles</translation>
 <translation id="3428447136709161042">Desconnecta't de la xarxa <ph name="NETWORK_NAME" /></translation>
@@ -899,7 +895,6 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3626281679859535460">Brillantor</translation>
 <translation id="3628323833346754646">Botó frontal</translation>
 <translation id="3630697955794050612">desactivat</translation>
-<translation id="3631369015426612114">Permet notificacions de les fonts següents:</translation>
 <translation id="3633097874324966332">Obre la configuració del Bluetooth per vincular el dispositiu</translation>
 <translation id="3633851487917460983">Obre el porta-retalls</translation>
 <translation id="363473492175527493">Tasca en què concentrar-se: <ph name="TASK_NAME" />. Prem Retorn per editar la tasca.</translation>
@@ -915,7 +910,6 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3659667652322717492">Pots canviar el comportament del micròfon en qualsevol moment.</translation>
 <translation id="3659814201068740063">Queden <ph name="TIME_LEFT" /> (un <ph name="PERCENTAGE" />%) aproximadament.
 Connecta el dispositiu a l'alimentació.</translation>
-<translation id="3660860940251915011">Commuta la visibilitat alta de <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Usuari gestionat (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="3666266999138159418">Llisca per amagar la finestra flotant</translation>
 <translation id="367531336287639526">Selecciona la primera icona a l'esquerra de la barra d'adreces</translation>
@@ -924,7 +918,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="36813544980941320">Les xarxes Wi-Fi es compartiran entre el teu telèfon i el dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> i després <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Llocs web</translation>
-<translation id="3697991387880191195">Prem la drecera de captura de pantalla</translation>
 <translation id="3702809606464356667">S'estan mostrant les finestres de l'escriptori actual. Prem la tecla de fletxa amunt per mostrar les finestres de tots els escriptoris.</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">S'està carregant...</translation>
@@ -950,7 +943,6 @@ Connecta el dispositiu a l'alimentació.</translation>
         <ph name="BEGIN_PARAGRAPH3" />Pots desactivar aquest servei a Configuració.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620">També podeu desbloquejar aquest <ph name="DEVICE_TYPE" /> mitjançant <ph name="PHONE_NAME" />.</translation>
 <translation id="3756485814916578707">S'està emetent la pantalla</translation>
-<translation id="3765246971671567135">No s'ha pogut llegir la política del mode de demostració sense connexió.</translation>
 <translation id="3765841382945324995">La drecera <ph name="SIX_PACK_KEY_NAME" /> s'ha actualitzat de <ph name="OLD_SHORTCUT" /> a<ph name="NEW_SHORTCUT" /></translation>
 <translation id="3772109172035555611">Personalitza el TrackPoint</translation>
 <translation id="3773700760453577392">Un administrador ha desactivat l'inici de sessió múltiple per a <ph name="USER_EMAIL" />. Tots els usuaris han de tancar la sessió per continuar.</translation>
@@ -986,7 +978,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3859364108019690">No es poden reproduir aplicacions en continu</translation>
 <translation id="3861638017150647085">El nom d'usuari "<ph name="USERNAME" />" no està disponible</translation>
 <translation id="3861651314799684201">Prem Retorn per gravar la pantalla completa</translation>
-<translation id="3870197372373144624">Prova d'apagar el dispositiu.</translation>
 <translation id="3873915545594852654">S'ha produït un problema amb ARC++.</translation>
 <translation id="3879748587602334249">Gestor de baixades</translation>
 <translation id="3884007280698606545">S'ha arribat al límit d'USB</translation>
@@ -1171,7 +1162,6 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="439598569299422042">En pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="439817266247065935">El dispositiu no s'ha apagat correctament. Reinicia Linux per fer servir les aplicacions de Linux.</translation>
 <translation id="440113666232554208">La captura de pantalla de vídeo no es pot desar</translation>
-<translation id="4405151984121254935">El tipus de perifèric connectat no és compatible</translation>
 <translation id="4406883609789734330">Subtítols instantanis</translation>
 <translation id="4412698727486357573">Centre d'ajuda</translation>
 <translation id="4412944820643904175">La funció <ph name="FEATURE_NAME" /> està desactivada.</translation>
@@ -1354,7 +1344,6 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="493076006037866439">Redueix la pantalla</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4934763315031217818">No pot contenir seqüències ordenades</translation>
-<translation id="4936329710968938986">Tothom, desactivat</translation>
 <translation id="4937170330762390348">Amb la funció de dictat, pots escriure utilitzant la veu. Prem la tecla de dictat o selecciona la icona de micròfon que hi ha a la part inferior de la pantalla quan siguis en un camp de text. L'idioma del dictat s'ha configurat en <ph name="LANGUAGE" />. Els fitxers de parla es baixaran perquè puguis utilitzar l'opció de dictat sense connexió. Pots canviar l'idioma del dictat en qualsevol moment a Configuració &gt; Accessibilitat.</translation>
 <translation id="4938176435186993759">Amaga tots els suggeriments</translation>
 <translation id="4945196315133970626">Desactiva les notificacions</translation>
@@ -1371,7 +1360,6 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4966431234408005599">Apuja el volum</translation>
 <translation id="496999337731226334">Pas <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> de la visita. Trobaràs els controls utilitzats amb més freqüència, com ara la Wi‐Fi, el Bluetooth i el volum, a la configuració ràpida. Des d'aquí també podràs fer captures de pantalla. Prem Alt+Maj+S per obrir la configuració ràpida.</translation>
 <translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requereix que baixis una actualització avui. Es baixarà automàticament quan et connectis a Internet.}other{<ph name="MANAGER" /> requereix que baixis una actualització abans de la data límit. Es baixarà automàticament quan et connectis a Internet.}}</translation>
-<translation id="4975771730019223894">Cercles a les aplicacions</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
@@ -1574,7 +1562,6 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5551456515017410630">Obre/Tanca el calendari</translation>
 <translation id="5551974246223970793">Quan cerquis una pàgina, ves a la coincidència següent per cercar</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
-<translation id="5558091555391176027">Commuta la visibilitat alta de Compartició Nearby</translation>
 <translation id="556042886152191864">Botó</translation>
 <translation id="5570122939431135380">Obre una pestanya nova en una finestra d'incògnit nova</translation>
 <translation id="5575528586625653441">S'ha produït un problema amb la sol·licitud per registrar la demostració.</translation>
@@ -1601,7 +1588,6 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5620979661744857819">Permet l'accés a <ph name="APP_NAME" /> i a totes les aplicacions i tots els llocs web amb permís per accedir a la càmera i al micròfon. És possible que hagis d'actualitzar la pàgina web o reiniciar l'aplicació.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">No s'ha pogut verificar la contrasenya. Torna-ho a provar.</translation>
-<translation id="5632485077360054581">Mostra'm com</translation>
 <translation id="5648021990716966815">Connector per al micròfon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> sol·licita la teva atenció.</translation>
 <translation id="5657667036353380798">L'extensió externa requereix que tingueu instal·lada la versió de Chrome <ph name="MINIMUM_CHROME_VERSION" /> o una de posterior.</translation>
@@ -1919,7 +1905,6 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="651753338596587143">Hi ha hagut un error en instal·lar les dependències de DLC. Prova de reiniciar i, si el problema continua, envia suggeriments amb #bruschetta a la descripció. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Selecciona la finestra que vols capturar</translation>
 <translation id="652139407789908527">Durant l'actualització, la pantalla es quedarà en blanc més temps del que és habitual (fins a un minut). No premis el botó d'engegada fins que no acabi.</translation>
-<translation id="6528179044667508675">No molestis</translation>
 <translation id="65320610082834431">Emojis</translation>
 <translation id="6537924328260219877"><ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, <ph name="BATTERY_STATUS" /> de bateria al telèfon</translation>
 <translation id="6539852571005954999">S'està escanejant <ph name="FILENAME" /> per baixar</translation>
@@ -2163,7 +2148,6 @@ Instal·lació nova</translation>
 <translation id="7264788308526527464">Redueix <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Continua aixecant el dit per afegir les diferents parts de l'empremta digital</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />+retrocés</translation>
-<translation id="7285232777292757180">Utilitza l'eina de captura de pantalla a la configuració ràpida per fer captures de pantalla</translation>
 <translation id="7301826272005790482">Ignora els suggeriments de finestres</translation>
 <translation id="7302889331339392448">La funció Subtítols instantanis està desactivada.</translation>
 <translation id="7303281435234579599">Hi ha hagut un error en configurar el mode de demostració.</translation>
@@ -2702,7 +2686,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="880709030178078220">"Ajuda"</translation>
 <translation id="8813531681893371930">Connecta uns auriculars amb cable</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
-<translation id="8815390544836110344">Prem la drecera de captura de pantalla, Ctrl més Maj i la tecla del mode de visió general</translation>
 <translation id="881757059229893486">Configuració dels mètodes d'introducció de text</translation>
 <translation id="8819728065740986820">La càrrega intel·ligent està activada</translation>
 <translation id="882204272221080310">Per a més seguretat, actualitza el microprogramari.</translation>
@@ -2808,7 +2791,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="9098750710832798892">No s'ha copiat cap element al porta-retalls</translation>
 <translation id="9098969848082897657">Silencia el telèfon</translation>
 <translation id="9126339866969410112">Desfés l'última acció</translation>
-<translation id="9126642911267312373">Bluetooth no disponible</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{D'aquí a 1 min}other{D'aquí a # min}}</translation>
 <translation id="9129245940793250979">Botó posterior</translation>
 <translation id="9133335900048457298">No es pot gravar contingut protegit</translation>

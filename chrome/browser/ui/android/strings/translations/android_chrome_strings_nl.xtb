@@ -166,6 +166,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, tabblad voor content delen</translation>
 <translation id="1601378265092360672">Browsegegevens omvatten je browsegeschiedenis, cookies en andere sitegegevens, gecachete afbeeldingen en bestanden, en geopende tabbladen</translation>
 <translation id="160275202205869636">Als dit aanstaat, kun je gegevens gebruiken en opslaan in je Google-account. Staat dit uit, dan worden gegevens alleen opgeslagen op dit apparaat.</translation>
+<translation id="160403827062749147">Welkom bij Google Chrome, de best beveiligde browser ter wereld</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 geselecteerd item verwijderen}other{# geselecteerde items verwijderen}}</translation>
 <translation id="1639239467298939599">Laden</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
@@ -858,6 +859,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4374192654218566997">\n\nJe kunt deze gegevens ook verwijderen van dit apparaat:</translation>
 <translation id="4378154925671717803">Telefoon</translation>
 <translation id="4380055775103003110">Als dit probleem zich blijft voordoen, kun je andere manieren proberen om door te gaan op <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="4381351546374507910">Log in om je bookmarks, wachtwoorden en informatie voor automatisch invullen op al je apparaten te krijgen.</translation>
 <translation id="4384468725000734951">Sogou wordt gebruikt om te zoeken</translation>
 <translation id="4387647248986092471">Profielvergrendeling voor auto instellen</translation>
 <translation id="4387817230000841154">Downloads openen</translation>
@@ -1231,6 +1233,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5865733239029070421">Hiermee worden automatisch gebruiksstatistieken en crashrapporten naar Google verzonden</translation>
 <translation id="5869522115854928033">Opgeslagen wachtwoorden</translation>
 <translation id="5870416898561279542">Dubbele tabbladen en groepen of tabbladen en groepen die <ph name="DAYS_INACTIVE" /> dagen niet zijn gebruikt, worden hierheen verplaatst<ph name="AUTODELETE_SECTION" />. Je kunt dit op elk moment wijzigen via <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5882488054564514114">Log in om je gegevens op je apparaten te gebruiken en de functionaliteit te personaliseren.</translation>
 <translation id="5885378508678660271">Meldingen <ph name="SEPARATOR" /> Chrome heeft deze rechten verwijderd omdat deze site gevaarlijk is</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
 <translation id="5896944002928653773">Blad onderaan met disclaimer voor Enterprise-signalen is gesloten</translation>
@@ -1979,6 +1982,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8570677896027847510">Bestand kan niet beveiligd worden gedownload</translation>
 <translation id="8571213806525832805">Afgelopen 4 weken</translation>
 <translation id="8580435650274205305">Vervaldatum, vereist</translation>
+<translation id="8584698523080138290">Neem Chrome met je mee</translation>
 <translation id="8585103689515290060">Services voor automatisch invullen</translation>
 <translation id="8586116786993312006">Tik om browsegegevens in Chrome te verwijderen</translation>
 <translation id="859046281437143747">Volg de prijs via de knop Meer opties</translation>
@@ -2031,6 +2035,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8803526663383843427">Als dit aanstaat</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Item opgeslagen in je Google-account, <ph name="ACCOUNT_EMAIL" />.}other{Items opgeslagen in je Google-account, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8804742093141782941">Groep behouden</translation>
+<translation id="880967149107462122">Naar de Chrome-instellingen</translation>
 <translation id="8812260976093120287">Op sommige websites kun je betalen met de bovenstaande ondersteunde betaal-apps op je apparaat.</translation>
 <translation id="8816556050903368450">Inclusief link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Content van voorbeeldtabblad is niet zichtbaar.</translation>
@@ -2056,6 +2061,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8903921497873541725">Inzoomen</translation>
 <translation id="8909135823018751308">Delen</translation>
 <translation id="8918299437379122615">Link delen naar pagina met zoekresultaten voor: <ph name="SEARCH_QUERY" />. Bron: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Log in bij een website</translation>
 <translation id="8922289737868596582">Download pagina's via de knop 'Meer opties' om ze offline te gebruiken</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> is klaar</translation>

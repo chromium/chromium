@@ -166,6 +166,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, pestana de uso compartido</translation>
 <translation id="1601378265092360672">Inclúen o teu historial de navegación, as cookies e outros datos dos sitios, as imaxes e os ficheiros almacenados na memoria caché e as pestanas abertas</translation>
 <translation id="160275202205869636">Se esta opción está activada, podes utilizar e gardar os datos na túa Conta de Google. Cando está desactivada, os datos gárdanse só no dispositivo.</translation>
+<translation id="160403827062749147">Dámosche a benvida a Google Chrome, o navegador máis seguro do mundo</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Quitar 1 elemento seleccionado}other{Quitar # elementos seleccionados}}</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
@@ -189,6 +190,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1749561566933687563">Sincroniza os teus marcadores</translation>
 <translation id="1750238553597293878">Sigue usando os contrasinais na túa Conta de Google</translation>
 <translation id="1753744496844366747">Aa</translation>
+<translation id="1760139219747062315">Restaurar a ventá <ph name="TITLE_OF_WINDOW" />.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Páxinas, 1 páxina na lista}other{Páxinas, # páxinas na lista}}</translation>
 <translation id="1771929606532798550">Envíaselle a Google a información sobre o uso que fas de Chrome, pero non se vincula contigo\n\nEn caso de que se produza un fallo en Chrome, entre os datos da incidencia podería incluírse algunha información persoal\n\nSe sincronizas o teu historial coa túa Conta de Google, as métricas tamén poderían conter información sobre os URL que visites</translation>
 <translation id="1778457539567749232">Marcar como sen ler</translation>
@@ -857,6 +859,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4374192654218566997">\n\nTamén podes quitar os seguintes deste dispositivo:</translation>
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4380055775103003110">Se o problema persiste, podes probar outras maneiras de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="4381351546374507910">Inicia sesión para poder acceder aos marcadores, contrasinais e información de autocompletar en todos os teus dispositivos.</translation>
 <translation id="4384468725000734951">Uso de Sogou para a busca</translation>
 <translation id="4387647248986092471">Crear un bloqueo do perfil do coche</translation>
 <translation id="4387817230000841154">Abrir Descargas</translation>
@@ -1230,6 +1233,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5865733239029070421">Envía estatísticas de uso e informes de erros automaticamente a Google</translation>
 <translation id="5869522115854928033">Contrasinais gardados</translation>
 <translation id="5870416898561279542">As pestanas e grupos duplicados ou os que non se usen durante <ph name="DAYS_INACTIVE" /> días moveranse aquí<ph name="AUTODELETE_SECTION" />. Podes cambiar esta opción cando queiras en <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5882488054564514114">Inicia sesión para poder acceder aos datos en todos os teus dispositivos e personalizar a túa experiencia.</translation>
 <translation id="5885378508678660271">Notificacións <ph name="SEPARATOR" /> Chrome quitou estes permisos porque este sitio é perigoso</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5896944002928653773">Panel inferior da sección de exención de responsabilidade polas sinais de empresa pechado</translation>
@@ -1603,6 +1607,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7190921792980745354">Queres bloquear a <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Abriuse a pestana en segundo plano.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Recomendámosche que o cambies agora}other{Recomendámosche que os cambies agora}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{Restaurar a ventá de <ph name="TAB_COUNT_ONE" /> pestana.}other{Restaurar a ventá de <ph name="TAB_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="7196215469483532480">A explicación sobre a Guía de privacidade está aberta a pantalla completa</translation>
 <translation id="7196455519852483601">Podes eliminar, parcial ou totalmente, o teu historial, as cookies, os datos dos sitios e moito máis</translation>
 <translation id="7197682514647286393">Elimina rapidamente os datos de navegación</translation>
@@ -1856,6 +1861,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8135406045838672858">Os PDF descargados abriranse automaticamente con <ph name="APP_NAME" /></translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{Recibiuse a ligazón}other{Recibíronse # ligazóns}}</translation>
 <translation id="8137562778192957619">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais de Google.</translation>
+<translation id="8149825829235553327">Protexer as pestanas do modo de incógnito</translation>
 <translation id="8151185429379586178">Ferramentas para programadores</translation>
 <translation id="8152331954420209374">Ir a Lens</translation>
 <translation id="8153206878708357851">Activar ou desactivar a navegación por cursor de texto</translation>
@@ -1976,6 +1982,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8570677896027847510">Non se pode descargar o ficheiro de forma segura</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8580435650274205305">Cómpre indicar a data de vencemento</translation>
+<translation id="8584698523080138290">Leva Chrome contigo</translation>
 <translation id="8585103689515290060">Servizos de autocompletar</translation>
 <translation id="8586116786993312006">Toca para eliminar os datos de navegación en Chrome</translation>
 <translation id="859046281437143747">Facer seguimento do prezo desde o botón Máis opcións</translation>
@@ -2028,6 +2035,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8803526663383843427">Se a función está activada</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{O elemento gardouse na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}other{Os elementos gardáronse na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="8804742093141782941">Manter grupo</translation>
+<translation id="880967149107462122">Vai á configuración de Chrome</translation>
 <translation id="8812260976093120287">Nalgúns sitios web, podes pagar no teu dispositivo coas aplicacións de pago compatibles mencionadas anteriormente.</translation>
 <translation id="8816556050903368450">Ligazón incluída: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">A vista previa do contido da pestana non está dispoñible.</translation>
@@ -2053,6 +2061,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8903921497873541725">Achegar</translation>
 <translation id="8909135823018751308">Compartir...</translation>
 <translation id="8918299437379122615">Compartir a ligazón á páxina de resultados de busca para <ph name="SEARCH_QUERY" />. Fonte: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Inicia sesión en calquera sitio web</translation>
 <translation id="8922289737868596582">Para ver as páxinas cando non teñas conexión, descárgaas a través do botón Máis opcións</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">O idioma (<ph name="LANG" />) está listo</translation>

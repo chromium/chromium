@@ -166,6 +166,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, sdílející karta</translation>
 <translation id="1601378265092360672">Údaje o prohlížení zahrnují historii prohlížení, soubory cookie a další data webů, obrázky a soubory v mezipaměti a otevřené karty</translation>
 <translation id="160275202205869636">Když je tato možnost zapnutá, používají a ukládají se data ve vašem účtu Google. Když je vypnutá, ukládají se data pouze do tohoto zařízení.</translation>
+<translation id="160403827062749147">Vítá vás Google Chrome, nejbezpečnější prohlížeč na světě</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Odstranit jednu vybranou položku}few{Odstranit # vybrané položky}many{Odstranit # vybrané položky}other{Odstranit # vybraných položek}}</translation>
 <translation id="1639239467298939599">Načítání</translation>
 <translation id="1641113438599504367">Bezpečné prohlížení</translation>
@@ -858,6 +859,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4374192654218566997">\n\nZ tohoto zařízení můžete odstranit také tato data:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Pokud tento problém přetrvává, můžete na <ph name="SITE_ETLD_PLUS_ONE" /> zkusit pokračovat jinými způsoby.</translation>
+<translation id="4381351546374507910">Přihlaste se, ať máte své záložky, hesla a údaje pro automatické vyplňování k dispozici na všech svých zařízeních.</translation>
 <translation id="4384468725000734951">K vyhledávání se používá služba Sogou</translation>
 <translation id="4387647248986092471">Vytvořit zámek profilu auta</translation>
 <translation id="4387817230000841154">Otevřít stažené položky</translation>
@@ -1231,6 +1233,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5865733239029070421">Automaticky odesílá statistiky o využívání a zprávy o selhání do Googlu</translation>
 <translation id="5869522115854928033">Uložená hesla</translation>
 <translation id="5870416898561279542">Sem se přesouvají duplicitní karty a skupiny nebo ty, které po dobu <ph name="DAYS_INACTIVE" /> dní nebyly použity<ph name="AUTODELETE_SECTION" />. V <ph name="DECLUTTER_SETTINGS_TITLE" /> to můžete kdykoli změnit.</translation>
+<translation id="5882488054564514114">Přihlaste se, ať máte svá data na všech svých zařízeních a můžete si přizpůsobit prostředí.</translation>
 <translation id="5885378508678660271">Oznámení <ph name="SEPARATOR" /> Chrome tato oprávnění odebral, protože tento web je nebezpečný</translation>
 <translation id="5895138241574237353">Restartovat</translation>
 <translation id="5896944002928653773">Spodní panel s odmítnutím odpovědnosti za podnikové signály je zavřený</translation>
@@ -1979,6 +1982,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8570677896027847510">Soubor nelze bezpečně stáhnout</translation>
 <translation id="8571213806525832805">Poslední 4 týdny</translation>
 <translation id="8580435650274205305">Datum konce platnosti je povinné</translation>
+<translation id="8584698523080138290">Mějte Chrome vždycky s sebou</translation>
 <translation id="8585103689515290060">Služby automatického vyplňování</translation>
 <translation id="8586116786993312006">Klepnutím vymažete údaje o prohlížení v Chromu</translation>
 <translation id="859046281437143747">Pomocí nabídky Další možnosti lze sledovat cenu</translation>
@@ -2031,6 +2035,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8803526663383843427">Když je tato funkce zapnutá</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Položka byla uložena do vašeho účtu Google (<ph name="ACCOUNT_EMAIL" />).}few{Položky byly uloženy do vašeho účtu Google (<ph name="ACCOUNT_EMAIL" />).}many{Položky byly uloženy do vašeho účtu Google (<ph name="ACCOUNT_EMAIL" />).}other{Položky byly uloženy do vašeho účtu Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="8804742093141782941">Zachovat skupinu</translation>
+<translation id="880967149107462122">Přejděte do nastavení Chromu</translation>
 <translation id="8812260976093120287">Na některých webech můžete platit pomocí výše uvedených podporovaných platebních aplikací v zařízení.</translation>
 <translation id="8816556050903368450">Včetně odkazu: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Obsah karty náhledu nelze zobrazit.</translation>
@@ -2056,6 +2061,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8903921497873541725">Přiblížit</translation>
 <translation id="8909135823018751308">Sdílet…</translation>
 <translation id="8918299437379122615">Sdílet odkaz na stránku s výsledky vyhledávání pro dotaz <ph name="SEARCH_QUERY" />. Zdroj: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Přihlaste se na libovolný web</translation>
 <translation id="8922289737868596582">Stáhněte si stránky k použití offline pomocí tlačítka Další možnosti</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Jazyk <ph name="LANG" /> je připraven</translation>

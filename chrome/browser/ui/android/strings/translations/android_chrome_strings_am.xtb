@@ -166,6 +166,7 @@
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />፣ እያጋራ ያለ ትር</translation>
 <translation id="1601378265092360672">የአሰሳ ውሂብ የእርስዎን የአሰሳ ታሪክ፣ ኩኪዎች እና ሌሎች የጣቢያ ውሂብ፣ የተሸጎጡ ምስሎች እና ፋይሎች እና ክፍት ትሮችን ያካትታል</translation>
 <translation id="160275202205869636">ሲበራ፣ በGoogle መለያዎ ውስጥ ውሂብ ይጠቀማል እና ያስቀምጣል። ሲጠፋ፣ ውሂብ ወደዚህ መሣሪያ ብቻ ይቀመጣል።</translation>
+<translation id="160403827062749147">እንኳን ወደ Google Chrome በደህና መጡ፣ የዓለም በጣም ደኅንነቱ የተጠበቀ አሳሽ</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 የተመረጠ ንጥልን አስወግድ}one{# የተመረጡ ንጥሎችን አስወግድ}other{# የተመረጡ ንጥሎችን አስወግድ}}</translation>
 <translation id="1639239467298939599">በመጫን ላይ</translation>
 <translation id="1641113438599504367">የጥንቃቄ አሰሳ</translation>
@@ -858,6 +859,7 @@
 <translation id="4374192654218566997">\n\nእንዲሁም ይህን ውሂብ ከዚህ መሣሪያ ማስወገድ ይችላሉ፦</translation>
 <translation id="4378154925671717803">ስልክ</translation>
 <translation id="4380055775103003110">ይህ ችግር መከሰቱን ከቀጠለ፣ በ<ph name="SITE_ETLD_PLUS_ONE" /> ላይ ለመቀጠል ሌሎች መንገዶችን መሞከር ይችላሉ።</translation>
+<translation id="4381351546374507910">የእርስዎን እልባቶች፣ የይለፍ ቃላት እና የራስ-ሙላ መረጃ በሁሉም መሣሪያዎችዎ ላይ ለማግኘት ይግቡ።</translation>
 <translation id="4384468725000734951">ለፍለጋ Sogouን መጠቀም</translation>
 <translation id="4387647248986092471">የመኪና የመገለጫ መቆለፊያ ይፍጠሩ</translation>
 <translation id="4387817230000841154">ውርዶችን ክፈት</translation>
@@ -1231,6 +1233,7 @@
 <translation id="5865733239029070421">የአጠቃቀም ስታስቲክስን እና የብልሽት ሪፖርቶችን በራስ-ሰር ወደ Google ይልካል</translation>
 <translation id="5869522115854928033">የተቀመጡ የይለፍ ቃሎች</translation>
 <translation id="5870416898561279542">የተባዙ ትሮች እና ቡድኖች ወይም ለ<ph name="DAYS_INACTIVE" /> ቀናት ጥቅም ላይ ያልዋሉ ወደዚህ <ph name="AUTODELETE_SECTION" /> ይንቀሳቀሳሉ። ይህን በማንኛውም ጊዜ በ<ph name="DECLUTTER_SETTINGS_TITLE" /> ውስጥ መለወጥ ይችላሉ።</translation>
+<translation id="5882488054564514114">ውሂብዎን በመላ መሣሪያዎችዎ ላይ ለማግኘት እና ተሞክሮዎን ግላዊ ለማድረግ ይግቡ።</translation>
 <translation id="5885378508678660271">ማሳወቂያዎች <ph name="SEPARATOR" /> ይህ ጣቢያ አደገኛ ስለሆነ Chrome እነዚህን ፈቃዶች አስወግዷል</translation>
 <translation id="5895138241574237353">እንደገና ጀምር</translation>
 <translation id="5896944002928653773">የድርጅት ምልክቶች የክህደት ቃል የግርጌ ሉህ ተዘግቷል</translation>
@@ -1979,6 +1982,7 @@
 <translation id="8570677896027847510">ፋይል ደህንነቱ በተጠበቀ ሁኔታ ሊወርድ አይችልም</translation>
 <translation id="8571213806525832805">ባለፉት 4 ሳምንቶች</translation>
 <translation id="8580435650274205305">የሚያበቃበት ቀን፣ አስፈላጊ</translation>
+<translation id="8584698523080138290">Chromeን ይዘው ይሂዱ</translation>
 <translation id="8585103689515290060">የራስ-ሙላ አገልግሎቶች</translation>
 <translation id="8586116786993312006">Chrome ውስጥ የአሰሳ ውሂብን ለመሰረዝ መታ ያድርጉ</translation>
 <translation id="859046281437143747">ከተጨማሪ አማራጮች አዝራር ዋጋን ይከታተሉ</translation>
@@ -2031,6 +2035,7 @@
 <translation id="8803526663383843427">ሲበራ</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{በእርስዎ Google መለያ፣ <ph name="ACCOUNT_EMAIL" /> ውስጥ የተቀመጠ ንጥል።}one{በእርስዎ Google መለያ፣ <ph name="ACCOUNT_EMAIL" /> ውስጥ የተቀመጠ ንጥል።}other{በእርስዎ Google መለያ፣ <ph name="ACCOUNT_EMAIL" /> ውስጥ የተቀመጡ ንጥሎች።}}</translation>
 <translation id="8804742093141782941">ቡድን አቆይ</translation>
+<translation id="880967149107462122">ወደ የChrome ቅንብሮች ይሂዱ</translation>
 <translation id="8812260976093120287">በአንዳንድ ድር ጣቢያዎች ላይ ከላይ ባሉ የሚደገፉ የክፍያ መተግበሪያዎች በመሣሪያዎ ላይ መክፈል ይችላሉ።</translation>
 <translation id="8816556050903368450">አገናኝን ጨምሮ፦ <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">የቅድመ-ዕይታ ትር ይዘት ሊታይ የሚችል አይደለም።</translation>
@@ -2056,6 +2061,7 @@
 <translation id="8903921497873541725">አጉላ</translation>
 <translation id="8909135823018751308">አጋራ…</translation>
 <translation id="8918299437379122615">የፍለጋ ውጤቶች ገጽ አገናኝን ለሚከተለው ያጋሩ፦ <ph name="SEARCH_QUERY" />። ምንጭ፦ <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">ወደ ማንኛውም ድር ጣቢያ ይግቡ</translation>
 <translation id="8922289737868596582">ገጾችን ከመስመር ውጭ ለመጠቀም ከተጨማሪ አማራጮች አዝራሩ ላይ ያውርዱ</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ዝግጁ ነው</translation>

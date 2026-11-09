@@ -68,7 +68,7 @@
 <translation id="1179890706672152411">נפח האחסון שלך מלא</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1190609913194133056">מרכז התראות</translation>
-<translation id="1191987227666124897">בקשה לביטול ההסכמה</translation>
+<translation id="1191987227666124897">סירוב לשימוש בנתונים</translation>
 <translation id="1196534270480620381">תסכם לי בקצרה את הדף הזה</translation>
 <translation id="1199631150313925648">סריקה ידנית</translation>
 <translation id="1199963004393929848">עיצוב ירוק</translation>
@@ -386,7 +386,6 @@
 <translation id="2104436223719117661">שאילתות חיפוש פופולריות</translation>
 <translation id="21133533946938348">הצמדת כרטיסייה</translation>
 <translation id="2117650889962717098">כדי לשמור על פרטיות הגלישה, אפשר לעבור למצב פרטי</translation>
-<translation id="2119126821484134587">‏כדי לספק עזרה בהתאמה אישית, Gemini משתף חלק מהנתונים שלך (למשל חלקים מהשיחות שלך, המיקום שלך ופרטים רלוונטיים נוספים) עם שירותי Google אחרים, כמו "מפות" ו"טיסות". נשתמש במידע הזה כדי לשפר את השירותים האלה, גם אם ההיסטוריה שלך בממשקי Gemini תימחק בהמשך. מידע נוסף מופיע ב<ph name="BEGIN_LINK" />מרכז המידע על פרטיות בממשקי Gemini<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">פתיחה באמצעות…</translation>
 <translation id="2119962645034852864">חלק מהשירותים לא זמינים בחשבון שלך</translation>
 <translation id="2120553909046681540">הארגון שלך כיבה את אפשרות הגלישה הפרטית.</translation>
@@ -722,7 +721,7 @@
 <translation id="3186796054637504691">מחיקת ההיסטוריה ונתוני האתר</translation>
 <translation id="3190558889382726167">הסיסמה נשמרה</translation>
 <translation id="3190736958609431397">ביטול המעקב</translation>
-<translation id="3192820089569442694">הבקשה לביטול ההסכמה לשימוש בנתונים לא הצליחה</translation>
+<translation id="3192820089569442694">הייתה בעיה בשליחת הסירוב לשימוש בנתונים</translation>
 <translation id="3208260410153224535">הכניסה הושבתה על ידי הארגון שלך. סימניות, סיסמאות ונתונים נוספים חדשים יישמרו רק במכשיר הזה.</translation>
 <translation id="3211969308836412674">ביטול ההצמדה של האתר</translation>
 <translation id="3213807041830307252">קונים, מתרגמים ומזהים את מה שרואים באמצעות המצלמה וגלריית התמונות.</translation>
@@ -1110,7 +1109,6 @@
 <translation id="4470766488397113689">על מה נעבוד עכשיו?</translation>
 <translation id="4471472356135655769">אי אפשר לייצא סיסמאות</translation>
 <translation id="4472575034687746823">תחילת העבודה</translation>
-<translation id="4473565697543262065">‏הפעולה הזו תמחק את המידע הנבחר ששמור במכשיר הזה ובחשבון שלך ב-Google: <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">הסתרת האפשרות 'מעקב אחר מחירים'</translation>
 <translation id="4474142134969976028">אין תוצאות מתאימות</translation>
 <translation id="4474494258097106883">‏מותאם ל-iPhone שלך</translation>
@@ -1434,7 +1432,6 @@
 <translation id="5443636120437209490">גלישה טובה יותר כברירת מחדל</translation>
 <translation id="5444892875087332195">סימניות</translation>
 <translation id="5447973833955560753">סיסמה לשחזור</translation>
-<translation id="5448623529214315261">התמונה <ph name="INDEX" /> נשמרה</translation>
 <translation id="5452354193031718372">שימוש בסיסמה חזקה:</translation>
 <translation id="5454211924362324495">כדי למנוע מאנשים אחרים להשתמש בסיסמה שלך, <ph name="BEGIN_LINK" />עליך לשנות אותה באתר <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">הוספה טקסט לחיפוש</translation>
@@ -1845,6 +1842,7 @@
 <translation id="6670729408462528018">גלריה</translation>
 <translation id="6671294218820966278">סימון כפריט שנקרא</translation>
 <translation id="6672697278890207089">הזן את משפט הסיסמה</translation>
+<translation id="6673666785752667010">‏סגירת מצב AI</translation>
 <translation id="6674917187596384849">אפשר לעבור בקלות בין חשבונות</translation>
 <translation id="6676349090816247042">אפשרויות כניסה לחשבון.</translation>
 <translation id="667999046851023355">מסמך</translation>
@@ -1852,6 +1850,7 @@
 <translation id="6682680306647339111">התזכורת הוסרה</translation>
 <translation id="6683022854667115063">אוזניות</translation>
 <translation id="6684262542644248484">נכנסים לחשבון באתר כלשהו</translation>
+<translation id="668475086425500258">הגדרות האתר</translation>
 <translation id="6685259053455152195">קיצורי דרך לשינויים מהירים בהגדרות ולשימוש בתכונות דרך סרגל הכתובות.</translation>
 <translation id="6689342293888598653">צבע רקע לבן</translation>
 <translation id="6689685206615181381">רק המצב הפרטי זמין</translation>
@@ -1867,7 +1866,6 @@
 <translation id="672735642903863329">גישה לסימניות, לסיסמאות ולנתונים נוספים בכל המכשירים שלך</translation>
 <translation id="6729493062119577923">פעילות בקבוצת הכרטיסיות המשותפת</translation>
 <translation id="6732087373923685049">מצלמה</translation>
-<translation id="6736243959894955139">כתובת</translation>
 <translation id="6746338529702829275">בדיקה של נתוני החשבון</translation>
 <translation id="6749473226660745022">תמונות</translation>
 <translation id="6750456911389438250">{count,plural, =1{יובא פריט אחד ({count}) בהיסטוריה}one{יובאו {count} פריטים בהיסטוריה}two{יובאו {count} פריטים בהיסטוריה}other{יובאו {count} פריטים בהיסטוריה}}</translation>
@@ -1989,7 +1987,6 @@
 <translation id="7128693485119315539">יכול להיות שהאדמין בארגון שלך יצטרך לראות ולנהל את נתוני הגלישה שקשורים לחשבון המנוהל שלך, כמו היסטוריית הגלישה והסיסמאות.</translation>
 <translation id="713215255510512027">‫<ph name="FILENAME" /> ‏(<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">המצלמה לא זמינה</translation>
-<translation id="7138678301420049075">אחר</translation>
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">הכרטיסיות ייסגרו ונתוני הגלישה יימחקו</translation>
 <translation id="714291438898585119">מסומנים בכוכב</translation>
@@ -2196,7 +2193,7 @@
 <translation id="7772948288262733182">ברוך שובך</translation>
 <translation id="777637629667389858">‏אחרי שנכנסת לחשבון, המערכת מגינה עליך בשירותי Google.</translation>
 <translation id="7776604279034196531">ההגדרה הזאת מאפשרת לפתוח את מצב הקריאה מסרגל הכתובות, כשזה אפשרי</translation>
-<translation id="7780992949171378848">שליחת בקשה לאתרים לבטל את ההסכמה לשימוש בנתונים האישיים שלך</translation>
+<translation id="7780992949171378848">דרישה שאתרים לא ישתמשו בנתונים האישיים שלך</translation>
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7788474973847076315">צילום תמונה</translation>
 <translation id="7788868432173225918">סגירת התצוגה המורחבת</translation>
@@ -2622,7 +2619,6 @@
 <translation id="9039373489628511875">רוחב פס</translation>
 <translation id="9042363670218758847">אפשר לעבור לפריסת דף ייעודית לחיפושים מהירים</translation>
 <translation id="9042893549633094279">פרטיות ואבטחה</translation>
-<translation id="9044703854323320868">‏הודעה ב-Gmail‏ <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">אפשר ליצור קבוצות של כרטיסיות כדי לארגן את הכרטיסיות הפתוחות ולשמור על הפרודוקטיביות</translation>
 <translation id="9055580485132823283">‏בחרת למחוק {password_count} סיסמאות, {passkey_count} מפתחות גישה ואת רשימת האתרים והאפליקציות שבחרת לא לשמור בהם אף פעם פרטי כניסה. חשבונות שיצרת לאתרים ולאפליקציות לא יימחקו.</translation>
 <translation id="9057030985451135243">מידע על קבוצות משותפות של כרטיסיות</translation>

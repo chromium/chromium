@@ -166,6 +166,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, Tab yang Sedang Berbagi</translation>
 <translation id="1601378265092360672">Data penjelajahan mencakup histori penjelajahan, cookie dan data situs lainnya, gambar dan file dalam cache, serta tab terbuka</translation>
 <translation id="160275202205869636">Jika diaktifkan, data akan digunakan dan disimpan di Akun Google Anda. Jika dinonaktifkan, data hanya disimpan di perangkat ini.</translation>
+<translation id="160403827062749147">Selamat datang di Google Chrome, browser paling aman di dunia</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Hapus 1 item yang dipilih}other{Hapus # item yang dipilih}}</translation>
 <translation id="1639239467298939599">Memuat</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
@@ -858,6 +859,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4374192654218566997">\n\nAnda juga dapat menghapus data ini dari perangkat ini:</translation>
 <translation id="4378154925671717803">Ponsel</translation>
 <translation id="4380055775103003110">Jika masalah ini terus terjadi, Anda dapat mencoba cara lain untuk melanjutkan di <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="4381351546374507910">Login untuk mendapatkan bookmark, sandi, dan informasi Isi Otomatis di semua berbagai Anda.</translation>
 <translation id="4384468725000734951">Menggunakan Sogou untuk penelusuran</translation>
 <translation id="4387647248986092471">Buat kunci profil mobil</translation>
 <translation id="4387817230000841154">Buka Hasil Download</translation>
@@ -1231,6 +1233,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5865733239029070421">Secara otomatis mengirimkan statistik penggunaan dan laporan kerusakan ke Google</translation>
 <translation id="5869522115854928033">Sandi tersimpan</translation>
 <translation id="5870416898561279542">Tab dan grup duplikat atau yang tidak digunakan selama <ph name="DAYS_INACTIVE" /> hari akan dipindahkan ke sini<ph name="AUTODELETE_SECTION" />. Anda dapat mengubahnya kapan saja di <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5882488054564514114">Login untuk mendapatkan data Anda di berbagai perangkat dan mempersonalisasi pengalaman Anda.</translation>
 <translation id="5885378508678660271">Notifikasi <ph name="SEPARATOR" /> Chrome menghapus izin ini karena situs ini berbahaya</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
 <translation id="5896944002928653773">Panel bawah pernyataan penyangkalan sinyal perusahaan ditutup</translation>
@@ -1979,6 +1982,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8570677896027847510">File tidak dapat didownload dengan aman</translation>
 <translation id="8571213806525832805">4 minggu terakhir</translation>
 <translation id="8580435650274205305">Tanggal habis masa berlaku, wajib diisi</translation>
+<translation id="8584698523080138290">Gunakan Chrome Anda di mana saja</translation>
 <translation id="8585103689515290060">Layanan isi otomatis</translation>
 <translation id="8586116786993312006">Ketuk untuk menghapus data penjelajahan di Chrome</translation>
 <translation id="859046281437143747">Pantau harga dari tombol opsi Lainnya</translation>
@@ -2031,6 +2035,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8803526663383843427">Saat aktif</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Item disimpan di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}other{Item disimpan di Akun Google Anda, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8804742093141782941">Simpan grup</translation>
+<translation id="880967149107462122">Buka Setelan Chrome</translation>
 <translation id="8812260976093120287">Di beberapa situs, Anda dapat membayar dengan aplikasi pembayaran yang didukung di atas pada perangkat Anda.</translation>
 <translation id="8816556050903368450">Termasuk link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Pratinjau konten tab tidak terlihat.</translation>
@@ -2056,6 +2061,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8903921497873541725">Perbesar</translation>
 <translation id="8909135823018751308">Bagikan...</translation>
 <translation id="8918299437379122615">Bagikan link ke halaman hasil penelusuran untuk: <ph name="SEARCH_QUERY" />. Sumber: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Login ke situs mana pun</translation>
 <translation id="8922289737868596582">Download halaman dari tombol opsi Lainnya untuk menggunakannya secara offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> sudah siap</translation>

@@ -189,6 +189,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1749561566933687563">Lesezeichen synchronisieren</translation>
 <translation id="1750238553597293878">Passwörter in deinem Google-Konto weiterhin verwenden</translation>
 <translation id="1753744496844366747">Aa</translation>
+<translation id="1760139219747062315">Fenster „<ph name="TITLE_OF_WINDOW" />“ wiederherstellen.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Seiten, 1 Seite in der Liste}other{Seiten, # Seiten in der Liste}}</translation>
 <translation id="1771929606532798550">Informationen zu deiner Nutzung von Chrome werden an Google gesendet, können aber nicht mit dir in Verbindung gebracht werden\n\nFalls Chrome abstürzt, können die Details zum Absturz personenbezogene Daten enthalten\n\nWenn du deinen Verlauf mit deinem Google-Konto synchronisierst, können die Messwerte auch Informationen zu den von dir besuchten URLs enthalten</translation>
 <translation id="1778457539567749232">Als ungelesen markieren</translation>
@@ -1603,6 +1604,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> blockieren?</translation>
 <translation id="7191430249889272776">Tab im Hintergrund geöffnet</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Wir empfehlen, das Passwort jetzt zu ändern}other{Wir empfehlen, die Passwörter jetzt zu ändern}}</translation>
+<translation id="7192569620455808130">{TAB_COUNT,plural, =1{Fenster mit <ph name="TAB_COUNT_ONE" /> Tab wiederherstellen.}other{Fenster mit <ph name="TAB_COUNT_MANY" /> Tabs wiederherstellen.}}</translation>
 <translation id="7196215469483532480">Erläuterungen zum Datenschutz-Leitfaden sind vollständig geöffnet</translation>
 <translation id="7196455519852483601">Du kannst deinen Verlauf, deine Cookies, deine Websitedaten und mehr teilweise oder vollständig löschen</translation>
 <translation id="7197682514647286393">Browserdaten schnell löschen</translation>
@@ -1856,6 +1858,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8135406045838672858">Heruntergeladene PDFs werden automatisch mit <ph name="APP_NAME" /> geöffnet</translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{Link empfangen}other{# Links empfangen}}</translation>
 <translation id="8137562778192957619">Du musst dir dieses Passwort nicht merken. Es wird im Google Passwortmanager gespeichert.</translation>
+<translation id="8149825829235553327">Inkognitotabs schützen</translation>
 <translation id="8151185429379586178">Entwicklertools</translation>
 <translation id="8152331954420209374">Zu Lens</translation>
 <translation id="8153206878708357851">Tastaturnavigation ein-/ausschalten</translation>
@@ -2028,6 +2031,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8803526663383843427">Wenn aktiviert</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Element im Google-Konto <ph name="ACCOUNT_EMAIL" /> gespeichert}other{Elemente im Google-Konto <ph name="ACCOUNT_EMAIL" /> gespeichert}}</translation>
 <translation id="8804742093141782941">Gruppe beibehalten</translation>
+<translation id="880967149107462122">Zu den Chrome-Einstellungen</translation>
 <translation id="8812260976093120287">Auf manchen Websites kannst du über dein Gerät mit den obigen unterstützten Zahlungs-Apps bezahlen.</translation>
 <translation id="8816556050903368450">Mit Link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Vorschau des Tab-Inhalts kann nicht angezeigt werden.</translation>
@@ -2053,6 +2057,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8903921497873541725">Vergrößern</translation>
 <translation id="8909135823018751308">Teilen...</translation>
 <translation id="8918299437379122615">Link zur Suchergebnisseite für „<ph name="SEARCH_QUERY" />“ teilen. Quelle: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Melde dich auf einer beliebigen Website an</translation>
 <translation id="8922289737868596582">Seiten über den Button „Weitere Optionen“ zur Offline-Ansicht herunterladen</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ist bereit</translation>

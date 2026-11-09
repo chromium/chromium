@@ -166,6 +166,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, tartalmat megosztó lap</translation>
 <translation id="1601378265092360672">A böngészési adatok közé tartoznak a böngészési előzmények, a cookie-k és egyéb webhelyadatok, a gyorsítótárazott képek és fájlok, valamint a megnyitott lapok.</translation>
 <translation id="160275202205869636">Bekapcsolva: a rendszer használja a Google-fiókjában lévő adatokat, és ment oda újakat. Kikapcsolva: a rendszer csak az eszközre menti az adatokat.</translation>
+<translation id="160403827062749147">Üdvözli a Google Chrome, a világ legbiztonságosabb böngészője</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 kijelölt elem eltávolítása}other{# kijelölt elem eltávolítása}}</translation>
 <translation id="1639239467298939599">Betöltés</translation>
 <translation id="1641113438599504367">Biztonságos Böngészés</translation>
@@ -858,6 +859,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4374192654218566997">\n\nA következő adatokat is eltávolíthatja erről az eszközről:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Ha a probléma továbbra is fennáll, más módon is próbálkozhat a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyen való folytatással.</translation>
+<translation id="4381351546374507910">Jelentkezzen be, hogy minden eszközén hozzáférhessen a könyvjelzőihez, jelszavaihoz és az automatikus kitöltési adatokhoz.</translation>
 <translation id="4384468725000734951">A Sogou használata a kereséshez</translation>
 <translation id="4387647248986092471">Autóprofil-zárolás létrehozása</translation>
 <translation id="4387817230000841154">Letöltések megnyitása</translation>
@@ -1231,6 +1233,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5865733239029070421">Automatikusan elküldi a használati statisztikákat és hibajelentéseket a Google-nak</translation>
 <translation id="5869522115854928033">Mentett jelszavak</translation>
 <translation id="5870416898561279542">Az ismétlődő lapok és csoportok, valamint a(z) <ph name="DAYS_INACTIVE" /> napja nem használt lapok ide kerülnek,<ph name="AUTODELETE_SECTION" /> A <ph name="DECLUTTER_SETTINGS_TITLE" /> között ez bármikor módosítható.</translation>
+<translation id="5882488054564514114">Jelentkezzen be, hogy hozzáférhessen az adataihoz az eszközein, és személyre szabhassa a felhasználói élményt.</translation>
 <translation id="5885378508678660271">Értesítések <ph name="SEPARATOR" /> A Chrome eltávolította ezeket az engedélyeket, mert ez a webhely veszélyes</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
 <translation id="5896944002928653773">A vállalati jelekre vonatkozó felelősségkizárás alsó lapja bezárva</translation>
@@ -1979,6 +1982,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8570677896027847510">A fájlt nem lehet biztonságosan letölteni</translation>
 <translation id="8571213806525832805">Az elmúlt 4 hétből</translation>
 <translation id="8580435650274205305">Lejárati dátum megadása kötelező</translation>
+<translation id="8584698523080138290">Vigye magával a Chrome-ot</translation>
 <translation id="8585103689515290060">Automatikus kitöltési szolgáltatások</translation>
 <translation id="8586116786993312006">Koppintson a Chrome-ban tárolt böngészési adatok törléséhez</translation>
 <translation id="859046281437143747">Az ár követéséhez nyomja meg a További műveletek gombot</translation>
@@ -2031,6 +2035,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8803526663383843427">Amikor be van kapcsolva</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Elem mentve az Ön Google-fiókjába (<ph name="ACCOUNT_EMAIL" />).}other{Elemek mentve az Ön Google-fiókjába (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="8804742093141782941">Csoport megtartása</translation>
+<translation id="880967149107462122">Lépjen a Chrome beállításaihoz.</translation>
 <translation id="8812260976093120287">Bizonyos webhelyeken fizethet eszközén a fenti támogatott fizetési alkalmazásokkal.</translation>
 <translation id="8816556050903368450">Tartalmazza a következő linket: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Az előnézeti lap tartalmát nem lehet megtekinteni.</translation>
@@ -2056,6 +2061,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8903921497873541725">Nagyítás</translation>
 <translation id="8909135823018751308">Megosztás...</translation>
 <translation id="8918299437379122615">A következő keresési kifejezés találatoldalára mutató link megosztása: <ph name="SEARCH_QUERY" />. Forrás: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Jelentkezzen be bármely webhelyre</translation>
 <translation id="8922289737868596582">A További lehetőségek gomb segítségével letölthet oldalakat offline használatra</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">A(z) <ph name="LANG" /> nyelv készen áll</translation>

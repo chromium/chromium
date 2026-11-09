@@ -138,7 +138,6 @@
 <translation id="1346403631707626730">‏داده‌های استفاده و تشخیص خرابی را ارسال کنید. با ارسال خودکار داده‌های تشخیص خرابی و داده‌های استفاده از دستگاه و برنامه به Google به بهبود تجربه Android فرزندتان کمک کنید. این داده‌ها برای شناسایی فرزندتان استفاده نخواهند شد و به بهبود پایداری سیستم و برنامه و موارد دیگر کمک خواهد کرد. بعضی‌از داده‌های تجمیعی نیز به برنامه‌ها و شرکای Google (مانند توسعه‌دهندگان Android) کمک می‌کند. اگر «دیگر فعالیت‌ها در وب و برنامه» برای فرزندتان روشن باشد، ممکن است این داده‌ها در «حساب Google» او ذخیره شود. <ph name="BEGIN_LINK1" />درباره سنجه‌ها بیشتر بدانید<ph name="BEGIN_LINK1_END" />بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">راست</translation>
 <translation id="1350494136075914725">درحال انجام · رفتن به زبانه</translation>
-<translation id="1351937230027495976">کوچک کردن منو</translation>
 <translation id="1355088139103479645">همه داده‌ها حذف شود؟</translation>
 <translation id="1360220746312242196">رفتن به مورد منطبق قبلی در جستجو هنگام جستجوی صفحه</translation>
 <translation id="1360788414852622716">درحال غیرفعال کردن نمایه. ممکن است چند دقیقه طول بکشد.</translation>
@@ -682,7 +681,6 @@
 <translation id="3033545621352269033">روشن</translation>
 <translation id="3033912566804961911">ترکیب با <ph name="DESK_NAME" /></translation>
 <translation id="3036327949511794916">مهلت برگرداندن این <ph name="DEVICE_TYPE" /> گذشته است.</translation>
-<translation id="3039491566278747710">خط‌مشی آفلاین روی دستگاه نصب نشد.</translation>
 <translation id="3039939407102840004">شارژ باتری قلم <ph name="PERCENTAGE" /> درصد است.</translation>
 <translation id="304097922505898963">باز کردن برنامه «میان‌برهای مهم»</translation>
 <translation id="304417730895741346">برنامه‌های سنجاق‌شده و باز در قفسه قرار دارد. برای سنجاق کردن برنامه به قفسه، روی برنامه کلیک راست کنید یا با دو انگشت روی صفحه لمسی تک‌ضرب بزنید.</translation>
@@ -698,7 +696,6 @@
 <translation id="3075144191779656260">حسگر اثر انگشت را در سمت چپ <ph name="DEVICE_TYPE" /> لمس کنید. داده‌های اثر انگشتتان به‌صورت ایمن ذخیره می‌شود و هرگز از <ph name="DEVICE_TYPE" /> شما خارج نمی‌شود.</translation>
 <translation id="3075874217500066906">‏برای شروع فرایند Powerwash، به یک راه‌اندازی مجدد نیاز دارید. پس‌از راه‌اندازی مجدد، از شما خواسته می‌شود تأیید کنید که می‌خواهید ادامه دهید.</translation>
 <translation id="3077734595579995578">تبدیل</translation>
-<translation id="3081696990447829002">بزرگ کردن منو</translation>
 <translation id="3087734570205094154">پایین</translation>
 <translation id="3088128611727407543">درحال آماده‌سازی نمایه برنامه...</translation>
 <translation id="3090214513075567547">باز کردن منوِ زمینه‌ای</translation>
@@ -804,7 +801,6 @@
 <translation id="3405101454990027959">روشن کردن دسترسی به میکروفون</translation>
 <translation id="3407967630066378878">برای تنظیم اثر انگشت، از فرزندتان بخواهید حسگر اثر انگشت را در سمت چپ این <ph name="DEVICE_TYPE" /> لمس کند. داده‌های اثر انگشت فرزندتان به‌صورت ایمن ذخیره می‌شود و هرگز از این <ph name="DEVICE_TYPE" /> خارج نمی‌شود.</translation>
 <translation id="3409584356742878290">نشان دادن یا پنهان کردن نظارتگر «ابزار توسعه‌دهندگان»</translation>
-<translation id="3413817803639110246">هنوز چیزی برای دیدن وجود ندارد</translation>
 <translation id="3417835166382867856">برگه‌های جستجو</translation>
 <translation id="3426253816581969877"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> را فشار دهید و نگه دارید، چندبار روی <ph name="KEY" /> تک‌ضرب بزنید تا به پنجره‌ای که می‌خواهید باز شود برسید، سپس کلید را رها کنید</translation>
 <translation id="3428447136709161042">قطع ارتباط از <ph name="NETWORK_NAME" /></translation>
@@ -899,7 +895,6 @@
 <translation id="3626281679859535460">روشنایی</translation>
 <translation id="3628323833346754646">دکمه جلو</translation>
 <translation id="3630697955794050612">خاموش</translation>
-<translation id="3631369015426612114">مجاز کردن اعلان‌های منابع زیر</translation>
 <translation id="3633097874324966332">برای جفت کردن دستگاهتان، تنظیمات «بلوتوث» را باز کنید</translation>
 <translation id="3633851487917460983">باز کردن بریده‌دان</translation>
 <translation id="363473492175527493">‏تکلیف روی تمرکز روشن تنظیم شد: <ph name="TASK_NAME" />. برای ویرایش تکلیف، کلید Enter را فشار دهید.</translation>
@@ -915,7 +910,6 @@
 <translation id="3659667652322717492">بعداً می‌توانید رفتار میکروفون را تغییر دهید.</translation>
 <translation id="3659814201068740063">حدود <ph name="TIME_LEFT" /> باقی مانده است (<ph name="PERCENTAGE" />٪).
 دستگاهتان را به برق وصل کنید.</translation>
-<translation id="3660860940251915011">روشن/خاموش کردن سطح بالای رؤیت‌پذیری <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> کاربر مدیریت‌شده</translation>
 <translation id="3666266999138159418">برای پنهان کردن پنجره شناور، تند بکشید</translation>
 <translation id="367531336287639526">انتخاب اولین نماد در سمت راست نوار نشانی</translation>
@@ -924,7 +918,6 @@
 <translation id="36813544980941320">‏تلفنتان و <ph name="DEVICE_NAME" /> باهم از شبکه‌های Wi-Fi استفاده خواهند کرد</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> سپس <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">وب‌سایت‌ها</translation>
-<translation id="3697991387880191195">میان‌بر نماگرفت را فشار دهید</translation>
 <translation id="3702809606464356667">درحال نمایش پنجره‌های میز کار کنونی، برای نمایش پنجره‌های همه میز کارها، کلید «جهت‌نمای بالا» را فشار دهید</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">در حال بارکردن…</translation>
@@ -950,7 +943,6 @@
         <ph name="BEGIN_PARAGRAPH3" />می‌توانید این سرویس را در «تنظیمات» خاموش کنید.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> شما اکنون می‌تواند قفل این <ph name="DEVICE_TYPE" /> را نیز باز کند.</translation>
 <translation id="3756485814916578707">درحال پخش محتوای صفحه‌نمایش</translation>
-<translation id="3765246971671567135">خط‌مشی آفلاین حالت نمایشی خوانده نشد.</translation>
 <translation id="3765841382945324995">میان‌بر <ph name="SIX_PACK_KEY_NAME" /> از <ph name="OLD_SHORTCUT" /> به <ph name="NEW_SHORTCUT" /> تغییر کرده است</translation>
 <translation id="3772109172035555611">‏سفارشی‌سازی TrackPoint</translation>
 <translation id="3773700760453577392">یکی از سرپرستان ورود چندگانه به سیستم را برای <ph name="USER_EMAIL" /> غیرمجاز کرده است. برای ادامه دادن، همه کاربران باید از سیستم خارج شوند.</translation>
@@ -986,7 +978,6 @@
 <translation id="3859364108019690">برنامه‌ها جاری‌سازی نشدند</translation>
 <translation id="3861638017150647085">نام کاربری «<ph name="USERNAME" />» در دسترس نیست</translation>
 <translation id="3861651314799684201">برای ضبط تمام صفحه، کلید «ورود» را فشار دهید</translation>
-<translation id="3870197372373144624">دستگاهتان را خاموش کنید.</translation>
 <translation id="3873915545594852654">‏در رابطه با ++ARC مشکلی پیش آمد.</translation>
 <translation id="3879748587602334249">مدیریت بارگیری</translation>
 <translation id="3884007280698606545">‏به حد تعداد USB رسیدید</translation>
@@ -1172,7 +1163,6 @@
 <translation id="439598569299422042">موقتاً متوقف شده است، <ph name="SIZE_INFO" /></translation>
 <translation id="439817266247065935">‏دستگاه‌تان درست خاموش نشد. برای استفاده از برنامه‌های Linux، آن را بازراه‌اندازی کنید.</translation>
 <translation id="440113666232554208">ضبط ویدیویی از صفحه ذخیره نشد</translation>
-<translation id="4405151984121254935">دستگاه جانبی متصل پشتیبانی نمی‌شود</translation>
 <translation id="4406883609789734330">زیرنویس زنده ناشنوایان</translation>
 <translation id="4412698727486357573">مرکز راهنمایی</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> خاموش است.</translation>
@@ -1355,7 +1345,6 @@
 <translation id="493076006037866439">زوم‌پس کردن صفحه‌نمایش</translation>
 <translation id="4932733599132424254">تاریخ</translation>
 <translation id="4934763315031217818">نمی‌تواند حاوی توالی‌های مرتب باشد</translation>
-<translation id="4936329710968938986">همه، خاموش</translation>
 <translation id="4937170330762390348">با ویژگی دیکته می‌توانید با صدایتان تایپ کنید. وقتی که در فیلد نوشتاری هستید، کلید دیکته را فشار دهید یا نماد میکروفون را در پایین صفحه انتخاب کنید. زبان دیکته روی <ph name="LANGUAGE" /> تنظیم شده است. فایل‌های گفتاری بارگیری خواهند شد تا بتوانید به‌صورت آفلاین از دیکته استفاده کنید. هر زمان که بخواهید می‌توانید زبان دیکته را در «تنظیمات &gt; دسترس‌پذیری» تغییر دهید.</translation>
 <translation id="4938176435186993759">پنهان کردن همه پیشنهادها</translation>
 <translation id="4945196315133970626">غیرفعال کردن اعلان‌ها</translation>
@@ -1372,7 +1361,6 @@
 <translation id="4966431234408005599">افزایش صدا</translation>
 <translation id="496999337731226334">‏مرحله <ph name="STEP" /> از <ph name="TOTAL_STEPS" /> در مراحل گشت. کنترل‌های پرکاربرد مثل Wi-Fi، بلوتوث، و میزان صدا در «تنظیمات فوری» قرار دارند. همچنین برای ثبت نماگرفت می‌توانید به اینجا بروید. برای باز کردن «تنظیمات فوری»، کلیدهای «دگرساز + تبدیل + S» را فشار دهید.</translation>
 <translation id="4974836474136150508">{NUM_DAYS,plural, =1{‫<ph name="MANAGER" /> لازم می‌داند به‌روزرسانی را امروز بارگیری کنید. وقتی که به اینترنت متصل شوید، به‌روزرسانی به‌طور خودکار بارگیری خواهد شد.}one{‫<ph name="MANAGER" /> لازم می‌داند به‌روزرسانی را پیش‌از مهلت تعیین‌شده بارگیری کنید. وقتی که به اینترنت متصل شوید، به‌روزرسانی به‌طور خودکار بارگیری خواهد شد.}other{‫<ph name="MANAGER" /> لازم می‌داند به‌روزرسانی را پیش‌از مهلت تعیین‌شده بارگیری کنید. وقتی که به اینترنت متصل شوید، به‌روزرسانی به‌طور خودکار بارگیری خواهد شد.}}</translation>
-<translation id="4975771730019223894">نشان‌گذاری برنامه</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />،
         <ph name="NOTIFICATION_2" />،
@@ -1575,7 +1563,6 @@
 <translation id="5551456515017410630">باز کردن/ بستن تقویم</translation>
 <translation id="5551974246223970793">رفتن به مورد منطبق بعدی در جستجو هنگام جستجوی صفحه</translation>
 <translation id="5556459405103347317">مجدد بار کردن</translation>
-<translation id="5558091555391176027">روشن/خاموش کردن «هم‌رسانی با اطراف» با میزان بالای رؤیت‌پذیری</translation>
 <translation id="556042886152191864">دکمه</translation>
 <translation id="5570122939431135380">باز کردن زبانه جدید در پنجره ناشناس جدید</translation>
 <translation id="5575528586625653441">مشکلی در رابطه با درخواست ثبت حالت نمایشی پیش آمد.</translation>
@@ -1602,7 +1589,6 @@
 <translation id="5620979661744857819">با این کار، دسترسی برای <ph name="APP_NAME" /> و همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین و میکروفون مجاز می‌شود. ممکن است لازم باشد صفحه وب را بازآوری کنید یا برنامه را دوباره راه‌اندازی کنید.</translation>
 <translation id="5625955975703555628">LTE+‎</translation>
 <translation id="5627392655516693966">گذرواژه‌تان تأیید نشد. دوباره امتحان کنید.</translation>
-<translation id="5632485077360054581">نشان دادن روش کار</translation>
 <translation id="5648021990716966815">فیش میکروفون</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> به توجه شما نیاز دارد.</translation>
 <translation id="5657667036353380798">‏برنامه افزودنی خارجی برای نصب شدن به Chrome نسخه <ph name="MINIMUM_CHROME_VERSION" /> یا بالاتر نیاز دارد.</translation>
@@ -1921,7 +1907,6 @@
 <translation id="651753338596587143">‏متأسفیم، هنگام نصب وابستگی‌های قابل‌بارگیری مشکلی پیش آمد. لطفاً دستگاه را بازراه‌اندازی کنید و اگر مشکل ادامه داشت، بازخوردی با هشتگ ‎#bruschetta در توضیحات ارسال کنید. کد خطا <ph name="ERROR" /> است.</translation>
 <translation id="6520517963145875092">پنجره‌ای را برای گرفتن عکس انتخاب کنید</translation>
 <translation id="652139407789908527">درطول این به‌روزرسانی، صفحه‌نمایش شما طولانی‌تر از معمول (حداکثر یک دقیقه) خالی می‌شود. لطفاً درحین انجام به‌روزرسانی، دکمه روشن/خاموش را فشار ندهید.</translation>
-<translation id="6528179044667508675">مزاحم نشوید</translation>
 <translation id="65320610082834431">اموجی‌ها</translation>
 <translation id="6537924328260219877">قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، باتری تلفن <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">بارگیری <ph name="FILENAME" /> درحال اسکن</translation>
@@ -2165,7 +2150,6 @@
 <translation id="7264788308526527464">کاهش <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">مدام انگشتتان را جابه‌جا کنید تا بخش‌های مختلف اثر انگشتتان را اضافه کنید</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + پس‌بر</translation>
-<translation id="7285232777292757180">برای ثبت نماگرفت، از ابزار ضبط صفحه‌نمایش در تنظیمات فوری استفاده کنید</translation>
 <translation id="7301826272005790482">بستن پیشنهادهای پنجره</translation>
 <translation id="7302889331339392448">«زیرنویس زنده ناشنوایان» خاموش است.</translation>
 <translation id="7303281435234579599">متأسفانه هنگام راه‌اندازی حالت نمایشی، مشکلی پیش آمد.</translation>
@@ -2703,7 +2687,6 @@
 <translation id="880709030178078220">«راهنمایی»</translation>
 <translation id="8813531681893371930">هدفون سیمی وصل کنید</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
-<translation id="8815390544836110344">میان‌بر نماگرفت (مهار به‌علاوه تبدیل به‌علاوه کلید حالت نمای کلی) را فشار دهید</translation>
 <translation id="881757059229893486">تنظیمات روش‌های ورودی</translation>
 <translation id="8819728065740986820">«شارژ تطبیقی» روشن است</translation>
 <translation id="882204272221080310">به‌روزرسانی سفت‌افزار برای امنیت بیشتر.</translation>
@@ -2809,7 +2792,6 @@
 <translation id="9098750710832798892">موردی در «بریده‌دان» کپی نشد</translation>
 <translation id="9098969848082897657">بی‌صدا کردن تلفن</translation>
 <translation id="9126339866969410112">واگرد آخرین کنش</translation>
-<translation id="9126642911267312373">بلوتوث دردسترس نیست</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{‫۱ دقیقه دیگر}one{‫# دقیقه دیگر}other{‫# دقیقه دیگر}}</translation>
 <translation id="9129245940793250979">دکمه پشت</translation>
 <translation id="9133335900048457298">نمی‌توان محتوای محافظت‌شده را ضبط کرد</translation>

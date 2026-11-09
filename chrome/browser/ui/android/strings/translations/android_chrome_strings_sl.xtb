@@ -166,6 +166,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, zavihek za deljenje</translation>
 <translation id="1601378265092360672">Med podatki brskanja so zgodovina brskanja, piškotki in drugi podatki spletnih mest, predpomnjene slike in datoteke ter odprti zavihki</translation>
 <translation id="160275202205869636">Če je ta možnost vklopljena, uporabljate in shranjujete podatke v računu Google. Če je izklopljena, se podatki shranjujejo samo v tej napravi.</translation>
+<translation id="160403827062749147">Pozdravljeni v Googlu Chrome, najvarnejšem brskalniku na svetu</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Odstranitev 1 izbranega elementa}one{Odstranitev # izbranega elementa}two{Odstranitev # izbranih elementov}few{Odstranitev # izbranih elementov}other{Odstranitev # izbranih elementov}}</translation>
 <translation id="1639239467298939599">Nalaganje</translation>
 <translation id="1641113438599504367">Varno brskanje</translation>
@@ -858,6 +859,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4374192654218566997">\n\nPrav tako lahko te podatke odstranite iz te naprave:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Če se težava ponavlja, lahko na <ph name="SITE_ETLD_PLUS_ONE" /> poskusite nadaljevati na druge načine.</translation>
+<translation id="4381351546374507910">Prijavite se, da boste imeli v vseh svojih napravah na voljo zaznamke, gesla in podatke za samodejno izpolnjevanje.</translation>
 <translation id="4384468725000734951">Uporaba iskalnika Sogou za iskanje</translation>
 <translation id="4387647248986092471">Ustvarjanje zaklepanja profila za avtomobil</translation>
 <translation id="4387817230000841154">Odpri prenose</translation>
@@ -1231,6 +1233,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5865733239029070421">Samodejno pošilja statistične podatke o uporabi in poročila o zrušitvah Googlu</translation>
 <translation id="5869522115854928033">Shranjena gesla</translation>
 <translation id="5870416898561279542">Sem so premaknjeni podvojeni zavihki in skupine ali elementi, ki jih niste uporabljali toliko več dni (<ph name="DAYS_INACTIVE" />): <ph name="AUTODELETE_SECTION" />. To lahko kadar koli spremenite tu: <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5882488054564514114">Prijavite se, da boste imeli v vseh svojih napravah na voljo svoje podatke in da lahko osebno prilagodite izkušnjo.</translation>
 <translation id="5885378508678660271">Obvestila <ph name="SEPARATOR" /> Chrome je odstranil ta dovoljenja, ker je to spletno mesto nevarno</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
 <translation id="5896944002928653773">Razdelek na dnu zaslona z izjavo o signalih za podjetja je zaprt</translation>
@@ -1979,6 +1982,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8570677896027847510">Datoteke ni mogoče varno prenesti</translation>
 <translation id="8571213806525832805">Zadnji 4 tedni</translation>
 <translation id="8580435650274205305">Datum poteka veljavnosti, obvezen</translation>
+<translation id="8584698523080138290">Vzemite Chrome s sabo</translation>
 <translation id="8585103689515290060">Storitve samodejnega izpolnjevanja</translation>
 <translation id="8586116786993312006">Dotaknite se, če želite izbrisati podatke brskanja v Chromu</translation>
 <translation id="859046281437143747">Spremljanje cene prek gumba za več možnosti</translation>
@@ -2031,6 +2035,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8803526663383843427">Če je to vklopljeno</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Element je shranjen v računu Google, <ph name="ACCOUNT_EMAIL" />.}one{Elementi so shranjeni v računu Google, <ph name="ACCOUNT_EMAIL" />.}two{Elementi so shranjeni v računu Google, <ph name="ACCOUNT_EMAIL" />.}few{Elementi so shranjeni v računu Google, <ph name="ACCOUNT_EMAIL" />.}other{Elementi so shranjeni v računu Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8804742093141782941">Ohrani skupino</translation>
+<translation id="880967149107462122">Odprite nastavitve Chroma</translation>
 <translation id="8812260976093120287">Na nekaterih spletnih mestih je mogoče plačevati z zgoraj navedenimi podprtimi aplikacijami v napravi.</translation>
 <translation id="8816556050903368450">Vključno s povezavo: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Predogleda vsebine zavihka si ni mogoče ogledati.</translation>
@@ -2056,6 +2061,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8903921497873541725">Povečaj</translation>
 <translation id="8909135823018751308">Skupna raba …</translation>
 <translation id="8918299437379122615">Deljenje povezave do strani z rezultati iskanja za: <ph name="SEARCH_QUERY" />. Vir: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Prijavite se v poljubno spletno mesto</translation>
 <translation id="8922289737868596582">Prenos strani za uporabo brez povezave z gumbom »Več možnosti«</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Jezik <ph name="LANG" /> je pripravljen.</translation>

@@ -166,6 +166,7 @@
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, Хуваалцаж буй таб</translation>
 <translation id="1601378265092360672">Интернэтээр үзсэн өгөгдөлд таны хөтчийн түүх, күүки болон сайтын бусад өгөгдөл, завсрын санах ойд хадгалсан зураг, файл, нээлттэй таб багтана</translation>
 <translation id="160275202205869636">Асаалттай үед таны Google Бүртгэлийн өгөгдлийг ашиглаж, үүнд хадгалдаг. Унтраалттай үед өгөгдлийг зөвхөн энэ төхөөрөмжид хадгалдаг.</translation>
+<translation id="160403827062749147">Дэлхийн хамгийн аюулгүй хөтөч болох Google Chrome-д тавтай морилно уу</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Сонгосон 1 зүйлийг устгах}other{Сонгосон # зүйлийг устгах}}</translation>
 <translation id="1639239467298939599">Ачаалж байна</translation>
 <translation id="1641113438599504367">Аюулгүй хайлт</translation>
@@ -858,6 +859,7 @@
 <translation id="4374192654218566997">\n\nТа мөн энэ өгөгдлийг энэ төхөөрөмжөөс хасах боломжтой:</translation>
 <translation id="4378154925671717803">Утас</translation>
 <translation id="4380055775103003110">Хэрэв энэ асуудал тохиолдсоор байвал та <ph name="SITE_ETLD_PLUS_ONE" />-д үргэлжлүүлэх бусад аргыг турших боломжтой.</translation>
+<translation id="4381351546374507910">Хавчуурга, нууц үг, Автоматаар бөглөх онцлогийн мэдээллээ бүх төхөөрөмж дээрээ авахын тулд нэвтэрнэ үү.</translation>
 <translation id="4384468725000734951">Sogou-р хайж байна</translation>
 <translation id="4387647248986092471">Машины профайлын түгжээ үүсгэх</translation>
 <translation id="4387817230000841154">Татаж авсан файл нээх</translation>
@@ -1231,6 +1233,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5865733239029070421">Хэрэглээний статистик мэдээ болон алдааны тайланг Google-д автоматаар илгээдэг</translation>
 <translation id="5869522115854928033">Хадгалагдсан нууц үг</translation>
 <translation id="5870416898561279542">Хуулбар таб, бүлэг эсвэл <ph name="DAYS_INACTIVE" /> хоногийн турш ашиглаагүй табуудыг ийш зөөж, <ph name="AUTODELETE_SECTION" />. Та үүнийг хүссэн үедээ <ph name="DECLUTTER_SETTINGS_TITLE" />-д өөрчлөх боломжтой.</translation>
+<translation id="5882488054564514114">Өгөгдлөө бүх төхөөрөмж дээрээ авч, өөртөө нийцсэн үйлчилгээ авахын тулд нэвтэрнэ үү.</translation>
 <translation id="5885378508678660271">Мэдэгдэл <ph name="SEPARATOR" /> Энэ сайт аюултай тул Chrome эдгээр зөвшөөрлийг хассан</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="5896944002928653773">Байгууллагын дохионы татгалзлын доод хүснэгтийг хаасан</translation>
@@ -1979,6 +1982,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8570677896027847510">Файлыг аюулгүйгээр татах боломжгүй</translation>
 <translation id="8571213806525832805">Сүүлийн 4 долоо хоног</translation>
 <translation id="8580435650274205305">Хүчинтэй хугацаа, оруулах шаардлагатай</translation>
+<translation id="8584698523080138290">Chrome-г өөртөө авч яваарай</translation>
 <translation id="8585103689515290060">Автоматаар бөглөх хэсгийн үйлчилгээ</translation>
 <translation id="8586116786993312006">Chrome-н интернэтээр үзсэн өгөгдлийг устгахын тулд товшино уу</translation>
 <translation id="859046281437143747">Бусад сонголт товчлуураас үнэ хянаарай</translation>
@@ -2031,6 +2035,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8803526663383843427">Асаалттай байх үед</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Таны <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлд зүйл хадгалсан.}other{Таны <ph name="ACCOUNT_EMAIL" /> Google Бүртгэлд зүйлс хадгалсан.}}</translation>
 <translation id="8804742093141782941">Бүлгийг үлдээх</translation>
+<translation id="880967149107462122">Chrome-н Тохиргоо руу очно уу</translation>
 <translation id="8812260976093120287">Зарим веб хуудаст та төлбөр хийхдээ таны төхөөрөмжид дэмжсэн дээрх төлбөрийн аппыг ашиглах боломжтой.</translation>
 <translation id="8816556050903368450">Холбоосыг оруулаад: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Урьдчилан үзэх табын контентыг үзэх боломжгүй.</translation>
@@ -2056,6 +2061,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8903921497873541725">Томруулж харах</translation>
 <translation id="8909135823018751308">Мэдээллийг хуваалцах ...</translation>
 <translation id="8918299437379122615">Дараах асуулгын хайлтын илэрцийн хуудасны холбоосыг хуваалцана уу: <ph name="SEARCH_QUERY" />. Эх сурвалж: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Дурын вебсайтад нэвтрэх</translation>
 <translation id="8922289737868596582">Хуудсыг офлайн үед ашиглахын тулд Бусад сонголт товчлуураас татна уу</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> бэлэн байна</translation>

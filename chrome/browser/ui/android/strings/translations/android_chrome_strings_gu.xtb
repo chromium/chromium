@@ -166,6 +166,7 @@
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, શેર કરતું ટૅબ</translation>
 <translation id="1601378265092360672">બ્રાઉઝિંગ ડેટામાં તમારો બ્રાઉઝિંગ ઇતિહાસ, કુકી અને સાઇટનો અન્ય ડેટા, કૅશ મેમરીમાં સાચવેલી છબીઓ અને ફાઇલો તથા ખુલ્લા ટૅબ શામેલ હોય છે</translation>
 <translation id="160275202205869636">ચાલુ હોય, ત્યારે તમારા Google એકાઉન્ટમાં ડેટાનો ઉપયોગ કરે છે અને તેને સાચવે છે. બંધ હોય ત્યારે, ડેટા ફક્ત આ ડિવાઇસ પર સાચવવામાં આવે છે.</translation>
+<translation id="160403827062749147">Google Chromeમાં સ્વાગત છે, વિશ્વનું સૌથી સુરક્ષિત બ્રાઉઝર</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{પસંદ કરેલ 1 આઇટમ દૂર કરો}one{પસંદ કરેલ # આઇટમ દૂર કરો}other{પસંદ કરેલ # આઇટમ દૂર કરો}}</translation>
 <translation id="1639239467298939599">લોડ થઇ રહી છે</translation>
 <translation id="1641113438599504367">સલામત બ્રાઉઝિંગ</translation>
@@ -858,6 +859,7 @@
 <translation id="4374192654218566997">\n\nતમે આ ડિવાઇસમાંથી આ ડેટા કાઢી પણ નાખી શકો છો:</translation>
 <translation id="4378154925671717803">ફોન</translation>
 <translation id="4380055775103003110">જો આ સમસ્યા આવવાનું ચાલુ રહે, તો તમે <ph name="SITE_ETLD_PLUS_ONE" /> પર ચાલુ રાખવા માટે અન્ય રીતો અજમાવી શકો છો.</translation>
+<translation id="4381351546374507910">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક, પાસવર્ડ અને ઑટોમૅટિક રીતે ભરવાની સુવિધાની માહિતી મેળવવા માટે સાઇન ઇન કરો.</translation>
 <translation id="4384468725000734951">શોધ માટે Sogouનો ઉપયોગ કરી રહ્યાં છીએ</translation>
 <translation id="4387647248986092471">કાર પ્રોફાઇલ લૉક બનાવો</translation>
 <translation id="4387817230000841154">ડાઉનલોડ પેજ ખોલો</translation>
@@ -1231,6 +1233,7 @@
 <translation id="5865733239029070421">Googleને વપરાશના આંકડા અને ક્રૅશ રિપોર્ટ ઑટોમૅટિક રીતે મોકલે છે</translation>
 <translation id="5869522115854928033">સાચવેલા પાસવર્ડ્સ</translation>
 <translation id="5870416898561279542">ડુપ્લિકેટ ટૅબ અને ગ્રૂપ અથવા <ph name="DAYS_INACTIVE" /> દિવસથી ઉપયોગમાં ન લેવાયેલા ટૅબ અને ગ્રૂપને અહીં ખસેડવામાં આવે છે<ph name="AUTODELETE_SECTION" />. <ph name="DECLUTTER_SETTINGS_TITLE" />માં તમે આને કોઈપણ સમયે બદલી શકો છો.</translation>
+<translation id="5882488054564514114">તમારા બધા ડિવાઇસ પર તમારો ડેટા મેળવવા અને તમારા અનુભવને મનગમતો બનાવવા માટે સાઇન ઇન કરો.</translation>
 <translation id="5885378508678660271">નોટિફિકેશન <ph name="SEPARATOR" /> Chrome દ્વારા આ પરવાનગીઓ કાઢી નાખવામાં આવી કારણ કે આ સાઇટ જોખમી છે</translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
 <translation id="5896944002928653773">એન્ટરપ્રાઇઝ સિગ્નલ સંબંધિત અસ્વીકાર બોટમ શીટ બંધ કરવામાં આવી છે</translation>
@@ -1979,6 +1982,7 @@
 <translation id="8570677896027847510">ફાઇલ સુરક્ષિત રીતે ડાઉનલોડ કરી શકાતી નથી</translation>
 <translation id="8571213806525832805">છેલ્લા 4 અઠવાડિયા</translation>
 <translation id="8580435650274205305">સમાપ્તિ તારીખ (આવશ્યક છે)</translation>
+<translation id="8584698523080138290">Chromeને તમારી સાથે રાખો</translation>
 <translation id="8585103689515290060">ઑટોમૅટિક રીતે ભરવાની સુવિધાઓ</translation>
 <translation id="8586116786993312006">Chromeમાં બ્રાઉઝિંગ ડેટા ડિલીટ કરવા માટે ટૅપ કરો</translation>
 <translation id="859046281437143747">વધુ વિકલ્પોના બટન પરથી કિંમત ટ્રૅક કરો</translation>
@@ -2031,6 +2035,7 @@
 <translation id="8803526663383843427">જ્યારે ચાલુ હોય</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{તમારા Google એકાઉન્ટ <ph name="ACCOUNT_EMAIL" />માં આઇટમ સાચવી.}one{તમારા Google એકાઉન્ટ <ph name="ACCOUNT_EMAIL" />માં આઇટમ સાચવી.}other{તમારા Google એકાઉન્ટ <ph name="ACCOUNT_EMAIL" />માં આઇટમ સાચવી.}}</translation>
 <translation id="8804742093141782941">ગ્રૂપ રાખો</translation>
+<translation id="880967149107462122">Chrome સેટિંગ પર જાઓ</translation>
 <translation id="8812260976093120287">કેટલીક વેબસાઇટ પર, તમે સમર્થિત ચુકવણી ઍપ્લિકેશનો વડે ચુકવણી કરી શકો છો.</translation>
 <translation id="8816556050903368450">આ લિંક સહિત: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">પ્રીવ્યૂ ટૅબનું કન્ટેન્ટ જોઈ શકાતું નથી.</translation>
@@ -2056,6 +2061,7 @@
 <translation id="8903921497873541725">ઝૂમ વધારો</translation>
 <translation id="8909135823018751308">શેર કરો…</translation>
 <translation id="8918299437379122615">આના માટે શોધ પરિણામોના પેજની લિંક શેર કરો: <ph name="SEARCH_QUERY" />. સૉર્સ: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">કોઈપણ વેબસાઇટમાં સાઇન ઇન કરો</translation>
 <translation id="8922289737868596582">વધુ વિકલ્પો બટનની મદદથી પેજ ડાઉનલોડ કરો, જેથી તમે ઇન્ટરનેટ વિના પણ તેનો ઉપયોગ કરી શકો</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ભાષા તૈયાર છે</translation>

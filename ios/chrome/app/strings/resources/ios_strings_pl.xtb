@@ -386,7 +386,6 @@
 <translation id="2104436223719117661">Wyszukiwania zyskujące popularność</translation>
 <translation id="21133533946938348">Przypnij kartę</translation>
 <translation id="2117650889962717098">Zadbaj o prywatność podczas przeglądania, przechodząc do trybu incognito</translation>
-<translation id="2119126821484134587">Aby zapewnić Ci spersonalizowaną pomoc, Gemini udostępnia niektóre Twoje dane (np. fragmenty Twoich czatów, Twoją lokalizację i inne istotne informacje) innym usługom Google, takim jak Mapy czy Loty. Pozwala to ulepszać te usługi, nawet jeśli później usuniesz swoją historię w aplikacjach z Gemini. Więcej informacji znajdziesz w <ph name="BEGIN_LINK" />Centrum prywatności dotyczącym aplikacji z Gemini<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Otwórz w…</translation>
 <translation id="2119962645034852864">Niektóre usługi są niedostępne na Twoim koncie</translation>
 <translation id="2120553909046681540">Twoja organizacja wyłączyła przeglądanie prywatne.</translation>
@@ -519,6 +518,7 @@
 <translation id="2524699375503213836">Przenieś dane z Safari</translation>
 <translation id="2526166285241366046">Zapisz hasło</translation>
 <translation id="2529021024822217800">Otwórz wszystkie</translation>
+<translation id="2536421147135705892">Zezwolić na geolokalizację?</translation>
 <translation id="2536991091671391962">Zapisanych haseł możesz używać na dowolnym urządzeniu. Menedżer haseł Google zapisuje je na koncie <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Ukryte, hasło</translation>
 <translation id="2538705697765638552">Zapisz swoje dane, aby szybciej wykonywać zadania, np. wypełniać formularze w usługach Google. Informacjami możesz zarządzać w Portfelu Google na koncie <ph name="USER_EMAIL" />.</translation>
@@ -1110,7 +1110,6 @@
 <translation id="4470766488397113689">Nad czym chcesz pracować?</translation>
 <translation id="4471472356135655769">Nie można wyeksportować haseł</translation>
 <translation id="4472575034687746823">Rozpocznij</translation>
-<translation id="4473565697543262065">Spowoduje to usunięcie wybranych informacji zapisanych na tym urządzeniu i na koncie Google <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Ukryj opcję Śledzenie cen</translation>
 <translation id="4474142134969976028">Brak pasujących wyników</translation>
 <translation id="4474494258097106883">Dla Twojego iPhone'a</translation>
@@ -1337,6 +1336,7 @@
 <translation id="5128788795241319992">Poznaj nowe menu</translation>
 <translation id="5132942445612118989">Synchronizuj swoje hasła, historię i inne dane na wszystkich swoich urządzeniach</translation>
 <translation id="5137568953923142260">Zezwól raz</translation>
+<translation id="5139344197062265975">Używaj mikrofonu do czatowania z Gemini. Gdy rozmawiasz z Gemini, dźwięk jest zapisywany w historii Gemini (jeśli ta opcja jest włączona). Nie używamy Twoich danych do ulepszania modeli generatywnej AI</translation>
 <translation id="5141363746588976328">Ukryj kartę Obniżki cen na kartach</translation>
 <translation id="514154868070499296">Czcionka: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Zamknij przełącznik kart</translation>
@@ -1434,7 +1434,6 @@
 <translation id="5443636120437209490">Domyślnie lepsze przeglądanie</translation>
 <translation id="5444892875087332195">Zakładki</translation>
 <translation id="5447973833955560753">Hasło zapasowe</translation>
-<translation id="5448623529214315261">Zapisano zdjęcie <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Użyj silnego hasła:</translation>
 <translation id="5454211924362324495">Aby uniemożliwić innym korzystanie z Twojego hasła, <ph name="BEGIN_LINK" />zmień je na stronie <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Dodaj do wyszukiwania</translation>
@@ -1607,6 +1606,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6000893618966378846">Zakończono usuwanie danych przeglądania.</translation>
 <translation id="6004988584831654445">Wszystko gotowe. Otrzymuj powiadomienia o nowych zadaniach.</translation>
 <translation id="6006672969046233841">Nowa karta</translation>
+<translation id="6006758170939001741">Obowiązują nasze <ph name="BEGIN_LINK" />Warunki<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Warunki korzystania z usług lokalizacyjnych dla Korei<ph name="END_LINK" /> oraz <ph name="BEGIN_LINK" />Informacje na temat ochrony prywatności<ph name="END_LINK" />. Czaty są sprawdzane i wykorzystywane do trenowania modeli generatywnej AI. Gemini to AI i może popełniać błędy, także co do ludzi. Niektóre treści mogą nie być odpowiednie dla wszystkich osób. Możesz <ph name="BEGIN_LINK" />zarządzać swoją historią<ph name="END_LINK" />, w tym <ph name="BEGIN_LINK" />informacjami o lokalizacji<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Więcej informacji o wybranych opcjach<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">Ulepszanie sugestii wyszukiwania</translation>
 <translation id="6012140227487808125">Szyfruję…</translation>
 <translation id="6014801569448771146">Sprawdź swoje hasła</translation>
@@ -1869,7 +1869,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="672735642903863329">Korzystaj z zakładek, haseł i innych ustawień na wszystkich urządzeniach.</translation>
 <translation id="6729493062119577923">Aktywność w udostępnianej grupie kart</translation>
 <translation id="6732087373923685049">kamera</translation>
-<translation id="6736243959894955139">Adres</translation>
 <translation id="6746338529702829275">Sprawdź dane konta</translation>
 <translation id="6749473226660745022">Zdjęcia</translation>
 <translation id="6750456911389438250">{count,plural, =1{Zaimportowano {count} element historii}few{Zaimportowano {count} elementy historii}many{Zaimportowano {count} elementów historii}other{Zaimportowano {count} elementu historii}}</translation>
@@ -1991,7 +1990,6 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="7128693485119315539">Twoja organizacja może potrzebować dostępu do danych przeglądania powiązanych z Twoim kontem zarządzanym, takich jak historia przeglądania i hasła, oraz chcieć nimi zarządzać.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Aparat jest niedostępny</translation>
-<translation id="7138678301420049075">Inne</translation>
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Karty zostaną zamknięte, a dane przeglądania usunięte</translation>
 <translation id="714291438898585119">Oznaczone gwiazdką</translation>
@@ -2139,6 +2137,7 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Zamknąć {COUNT} nieaktywną kartę?}few{Zamknąć {COUNT} nieaktywne karty?}many{Zamknąć {COUNT} nieaktywnych kart?}other{Zamknąć {COUNT} nieaktywnej karty?}}</translation>
 <translation id="7598439272585186139">Zwiększ bezpieczeństwo</translation>
 <translation id="7600965453749440009">Nigdy nie tłumacz z języka: <ph name="LANGUAGE" /></translation>
+<translation id="760230853074995500">Czaty są sprawdzane i wykorzystywane do trenowania modeli generatywnej AI. Możesz <ph name="BEGIN_LINK" />zarządzać swoją historią<ph name="END_LINK" />, w tym <ph name="BEGIN_LINK" />informacjami o lokalizacji<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Więcej informacji o wybranych opcjach<ph name="END_LINK" /></translation>
 <translation id="7603308509262646847">Automatycznie uzupełnij dane posiadacza karty (<ph name="NAME" />)</translation>
 <translation id="7603852183842204213">Zablokowano pop-upy (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Synchronizacja nie działa</translation>
@@ -2624,7 +2623,6 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="9039373489628511875">Przepustowość</translation>
 <translation id="9042363670218758847">Przełącz na układ stworzony z myślą o szybkim wyszukiwaniu</translation>
 <translation id="9042893549633094279">Prywatność i bezpieczeństwo</translation>
-<translation id="9044703854323320868">Wiadomość w Gmailu <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Twórz grupy kart, aby porządkować otwarte karty i utrzymywać produktywność</translation>
 <translation id="9055580485132823283">Nastąpi usunięcie {password_count} haseł, {passkey_count} kluczy dostępu oraz listy witryn i aplikacji, w przypadku których nie chcesz zapisywać danych logowania. Konta utworzone przez Ciebie w witrynach i aplikacjach nie zostaną usunięte.</translation>
 <translation id="9057030985451135243">Więcej informacji o udostępnianych grupach kart</translation>
@@ -2633,6 +2631,7 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="9066097352053395362">Ukryj opcję Edytuj zakładkę</translation>
 <translation id="9070824521421603770">Nastąpi wylogowanie, a karty zostaną zamknięte</translation>
 <translation id="9072837124205571418">Grupy kart ze wszystkich urządzeń</translation>
+<translation id="9073322251019919253">Gemini to AI i może popełniać błędy, także co do ludzi. Niektóre treści mogą nie być odpowiednie dla wszystkich osób. Czaty są sprawdzane i wykorzystywane do trenowania modeli generatywnej AI. Możesz <ph name="BEGIN_LINK" />zarządzać swoją historią<ph name="END_LINK" />, w tym <ph name="BEGIN_LINK" />informacjami o lokalizacji<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Sprawdź wybrane opcje<ph name="END_LINK" />. Obowiązują nasze <ph name="BEGIN_LINK" />Warunki<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />Informacje na temat ochrony prywatności<ph name="END_LINK" />.</translation>
 <translation id="9081058212938299310">Zaktualizować hasło dla <ph name="USERNAME" />?</translation>
 <translation id="908365381820697818">Teraz możesz znajdować i wypełniać informacje z Gmaila i innych źródeł</translation>
 <translation id="9083838294503912307">Aby synchronizować i personalizować wszystkie swoje urządzenia, włącz synchronizację.</translation>

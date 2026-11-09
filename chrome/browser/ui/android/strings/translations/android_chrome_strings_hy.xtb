@@ -166,6 +166,7 @@
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, ներդիր, որը հասանելի է այլ օգտատերերի</translation>
 <translation id="1601378265092360672">Այցելությունների պատմությունը ներառում է ձեր այցելած կայքերի պատմությունը, քուքիները և կայքերի այլ տվյալներ, քեշում պահված պատկերներն ու ֆայլերը, ինչպես նաև բացված ներդիրները</translation>
 <translation id="160275202205869636">Երբ պարամետրը միացված է, կարող եք օգտագործել և պահել տվյալները ձեր Google հաշվում։ Հակառակ դեպքում տվյալները կպահվեն միայն այս սարքում։</translation>
+<translation id="160403827062749147">Բարի գալուստ Google Chrome՝ աշխարհի ամենաապահով դիտարկիչը</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Հեռացնել ընտրված 1 տարրը}one{Հեռացնել ընտրված # տարրը}other{Հեռացնել ընտրված # տարրերը}}</translation>
 <translation id="1639239467298939599">Բեռնում</translation>
 <translation id="1641113438599504367">Անվտանգ դիտարկում</translation>
@@ -858,6 +859,7 @@
 <translation id="4374192654218566997">\n\nԴուք նաև կարող եք այս տվյալները հեռացնել սարքից՝</translation>
 <translation id="4378154925671717803">Հեռախոս</translation>
 <translation id="4380055775103003110">Եթե խնդիրը չվերանա, փորձեք մուտքի այլ եղանակներ՝ <ph name="SITE_ETLD_PLUS_ONE" /> կայքում ձեր աշխատանքը շարունակելու համար։</translation>
+<translation id="4381351546374507910">Մուտք գործեք՝ ձեր էջանիշները, գաղտնաբառերը և ինքնալրացման տվյալները բոլոր սարքերում օգտագործելու համար։</translation>
 <translation id="4384468725000734951">Օգտագործվում է Sogou որոնման համակարգը</translation>
 <translation id="4387647248986092471">Ստեղծել մեքենայի պրոֆիլի կողպում</translation>
 <translation id="4387817230000841154">Բացել ներբեռնումները</translation>
@@ -1231,6 +1233,7 @@
 <translation id="5865733239029070421">Ավտոմատ Google-ին է ուղարկում օգտագործման վիճակագրությունը և խափանումների մասին հաշվետվությունները</translation>
 <translation id="5869522115854928033">Պահված գաղտնաբառեր</translation>
 <translation id="5870416898561279542">Կրկնօրինակ կամ <ph name="DAYS_INACTIVE" /> օր չօգտագործված ներդիրներն ու խմբերը տեղափոխվում են այստեղ<ph name="AUTODELETE_SECTION" />։ Սա ցանկացած ժամանակ կարող եք փոխել <ph name="DECLUTTER_SETTINGS_TITLE" />ում։</translation>
+<translation id="5882488054564514114">Մուտք գործեք՝ ձեր տվյալները բոլոր սարքերում օգտագործելու և դիտարկիչի աշխատանքն անհատականացնելու համար։</translation>
 <translation id="5885378508678660271">Ծանուցումներ <ph name="SEPARATOR" /> Chrome-ը հեռացրել է այս թույլտվությունները, քանի որ այս կայքը վտանգավոր է</translation>
 <translation id="5895138241574237353">Վերագործարկել</translation>
 <translation id="5896944002928653773">Enterprise ազդանշանների վերաբերյալ հրաժարագրով ներքևի էկրանը փակված է</translation>
@@ -1979,6 +1982,7 @@
 <translation id="8570677896027847510">Ֆայլը հնարավոր չէ ներբեռնել անվտանգ եղանակով</translation>
 <translation id="8571213806525832805">Վերջին 4 շաբաթվա</translation>
 <translation id="8580435650274205305">Վավերականության ժամկետ, պարտադիր է</translation>
+<translation id="8584698523080138290">Chrome-ը ամենուր ձեզ հետ է</translation>
 <translation id="8585103689515290060">Ինքնալրացման ծառայություններ</translation>
 <translation id="8586116786993312006">Հպեք՝ Chrome-ում այցելությունների պատմությունը ջնջելու համար</translation>
 <translation id="859046281437143747">Հետևել գներին «Այլ ընտրանքներ» կոճակի օգնությամբ</translation>
@@ -2031,6 +2035,7 @@
 <translation id="8803526663383843427">Երբ գործառույթը միացված է</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Տարրը պահվեց ձեր Google հաշվում (<ph name="ACCOUNT_EMAIL" />)}one{Տարրը պահվեց ձեր Google հաշվում (<ph name="ACCOUNT_EMAIL" />)}other{Տարրերը պահվեցին ձեր Google հաշվում (<ph name="ACCOUNT_EMAIL" />)}}</translation>
 <translation id="8804742093141782941">Պահպանել խումբը</translation>
+<translation id="880967149107462122">Բացեք Chrome-ի կարգավորումները</translation>
 <translation id="8812260976093120287">Որոշ կայքերում կարող եք վճարել ձեր սարքից՝ վերոնշյալ աջակցվող վճարային հավելվածների օգնությամբ:</translation>
 <translation id="8816556050903368450">Ներառյալ հղումը՝ <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Նախադիտման ներդիրի բովանդակությունը չի ցուցադրվում։</translation>
@@ -2056,6 +2061,7 @@
 <translation id="8903921497873541725">Խոշորացնել</translation>
 <translation id="8909135823018751308">Կիսվել…</translation>
 <translation id="8918299437379122615">Կիսվել որոնման «<ph name="SEARCH_QUERY" />» հարցման արդյունքների էջի հղումով։ Աղբյուրը՝ <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Մուտք գործեք ցանկացած կայք</translation>
 <translation id="8922289737868596582">«Այլ տարբերակներ» կոճակի օգնությամբ ներբեռնեք էջերը՝ անցանց ռեժիմում օգտագործելու համար</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> լեզվի փաթեթը պատրաստ է</translation>

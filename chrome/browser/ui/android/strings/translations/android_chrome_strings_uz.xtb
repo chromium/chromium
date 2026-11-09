@@ -166,6 +166,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, kontenti ulashilayotgan varaq</translation>
 <translation id="1601378265092360672">Brauzer maʼlumotlariga brauzer tarixi, cookie fayllar va boshqa sayt maʼlumotlari, keshlangan rasmlar va fayllar hamda ochiq varaqlar kiradi</translation>
 <translation id="160275202205869636">Yoniq boʻlsa, maʼlumotlar Google hisobida saqlanadi va ishlatiladi Oʻchiq boʻlsa, maʼlumotlar faqat shu qurilmada saqlanadi.</translation>
+<translation id="160403827062749147">Dunyodagi eng xavfsiz brauzer – Google Chromega xush kelibsiz!</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Tanlangan 1 ta elementni olib tashlash}other{Tanlangan # ta elementni olib tashlash}}</translation>
 <translation id="1639239467298939599">Yuklanmoqda</translation>
 <translation id="1641113438599504367">Saytlarni xavfsiz kezish</translation>
@@ -858,6 +859,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="4374192654218566997">\n\nBu maʼlumotlarni qurilmadan olib tashlash ham mumkin:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Muammo qayta takrorlansa, <ph name="SITE_ETLD_PLUS_ONE" /> orqali boshqa usulda davom eting.</translation>
+<translation id="4381351546374507910">Barcha qurilmalaringizda bukmarklar, parollar va avtomatik kiritish maʼlumotlaridan foydalanish uchun hisobingizga kiring.</translation>
 <translation id="4384468725000734951">Asosiy qidiruv tizimi – Sogou</translation>
 <translation id="4387647248986092471">Avtomobil profil qulfini yaratish</translation>
 <translation id="4387817230000841154">Yuklanmalarni ochish</translation>
@@ -1231,6 +1233,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5865733239029070421">Foydalanish statistikasi va ishdan chiqish hisobotlari avtomatik tarzda Google serverlariga yuborilsin</translation>
 <translation id="5869522115854928033">Saqlab olingan parollar</translation>
 <translation id="5870416898561279542">Takroriy varaqlar va guruhlar yoki <ph name="DAYS_INACTIVE" /> kun ishlatilmagan varaqlar shu yerga olinadi<ph name="AUTODELETE_SECTION" />. Buni istalgan vaqtda <ph name="DECLUTTER_SETTINGS_TITLE" /> orqali oʻzgartirish mumkin.</translation>
+<translation id="5882488054564514114">Barcha qurilmalaringizda maʼlumotlaringizdan foydalanish va xizmatni oʻzingizga moslash uchun hisobingizga kiring.</translation>
 <translation id="5885378508678660271">Bildirishnomalar <ph name="SEPARATOR" /> Chrome bu saytni xavfli deb hisoblab, mazkur ruxsatlarni olib tashladi</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
 <translation id="5896944002928653773">Korporativ signallar boʻyicha ogohlantirish quyi ekrani yopildi</translation>
@@ -1979,6 +1982,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8570677896027847510">Faylni xavfsiz yuklab olish imkonsiz</translation>
 <translation id="8571213806525832805">Oxirgi 4 hafta</translation>
 <translation id="8580435650274205305">Amal qilish muddati, kiritilishi zarur</translation>
+<translation id="8584698523080138290">Chrome sizga doim hamroh boʻlsin</translation>
 <translation id="8585103689515290060">Avtomatik kiritish xizmatlari</translation>
 <translation id="8586116786993312006">Chrome brauzeri maʼlumotlarini oʻchirish uchun bosing</translation>
 <translation id="859046281437143747">Yana tugmasi orqali narxlarni kuzatish mumkin</translation>
@@ -2031,6 +2035,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8803526663383843427">Qachon yoqilgan</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Obyekt Google hisobingizga (<ph name="ACCOUNT_EMAIL" />) saqlandi.}other{Obyektlar Google hisobingizga (<ph name="ACCOUNT_EMAIL" />) saqlandi.}}</translation>
 <translation id="8804742093141782941">Guruh qolsin</translation>
+<translation id="880967149107462122">Chrome sozlamalarini oching</translation>
 <translation id="8812260976093120287">Ba’zi saytlarda qurilmangizdagi qo‘llab-quvvatlanadigan to‘lov ilovalari orqali to‘lash mumkin.</translation>
 <translation id="8816556050903368450">Bu havola bilan: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Razm solish sahifasi kontentini koʻrish imkonsiz.</translation>
@@ -2056,6 +2061,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8903921497873541725">Kattalashtirish</translation>
 <translation id="8909135823018751308">Ulashish…</translation>
 <translation id="8918299437379122615">Havolani <ph name="SEARCH_QUERY" /> boʻyicha qidiruv natijalari sahifasiga ulashing. Manba: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Istalgan saytga kiring</translation>
 <translation id="8922289737868596582">Saytlarni oflayn ko‘rish uchun “Boshqa parametrlar” tugmasidan foydalanib, yuklab oling</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> tayyor</translation>

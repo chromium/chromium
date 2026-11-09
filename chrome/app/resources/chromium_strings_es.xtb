@@ -18,9 +18,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="113122355610423240">Chromium es tu navegador predeterminado</translation>
 <translation id="1131805035311359397">Para comprobar si tus contraseñas han sufrido quiebras de seguridad de datos u otros problemas de seguridad, <ph name="BEGIN_LINK" />inicia sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Tu administrador pide que reinicies Chromium para aplicar esta actualización. Hay una ventana de Incógnito o aislada abierta. No se volverá a abrir después del reinicio.}other{Tu administrador pide que reinicies Chromium para aplicar esta actualización. Hay # ventanas de Incógnito y aisladas abiertas en los perfiles. No se volverán a abrir después del reinicio.}}</translation>
-<translation id="1150418667633096194">El botón "Panel lateral de la Búsqueda de Google" de la barra de herramientas tiene un nuevo icono. Haz clic en él para hacer preguntas mientras navegas con el panel lateral de la Búsqueda de Google.</translation>
 <translation id="1153368717515616349">Haz clic en el menú de Chromium</translation>
-<translation id="1157952955648710254">Cerrar el panel lateral de la Búsqueda de Google</translation>
 <translation id="1157985233335035034">Idiomas recientes</translation>
 <translation id="1184145431117212167">No se ha podido realizar la instalación porque no es compatible con tu versión de Windows.</translation>
 <translation id="1185134272377778587">Información de Chromium</translation>
@@ -47,15 +45,12 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1388276868779258475">Usa la aplicación Chromium para seguir navegando en cualquier lugar</translation>
 <translation id="141901961143729572">Comparte tus ideas</translation>
-<translation id="1438812738230833934">Puedes volver a abrir la Búsqueda de Google en el panel lateral para hacer preguntas mientras navegas</translation>
 <translation id="1465192221147974788">Para compartir tu ventana, permite la grabación de pantalla de Chromium en Ajustes del sistema</translation>
-<translation id="1470136641087909499">Puedes volver a abrir la Búsqueda de Google en Chrome para hacer preguntas mientras navegas</translation>
 <translation id="1478370723027452770">Obtener ayuda con Chrome for Testing</translation>
 <translation id="147870194906295621">Para acceder a tu información guardada y otros elementos de <ph name="DEVICE" />, inicia sesión en Chromium</translation>
 <translation id="1497802159252041924">Error de instalación: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Esta página está protegida</translation>
 <translation id="1524282610922162960">Compartir una pestaña de Chromium</translation>
-<translation id="15408169957028265">Volver a abrir Búsqueda de Google en Chrome</translation>
 <translation id="154404805518949443">Iniciar sesión en Chromium</translation>
 <translation id="1547469039832541117">Finaliza la tarea resaltada.</translation>
 <translation id="1562320819937089394">Fijar Chromium</translation>
@@ -75,7 +70,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1736662517232558588">Datos de Chromium borrados</translation>
 <translation id="1745121272106313518">Chromium se reiniciará dentro de <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">Si HTTPS no está disponible, Chromium usará una conexión no segura sin avisarte</translation>
-<translation id="1769661297620183092">Puedes volver a abrir el panel de la Búsqueda de Google para hacer preguntas mientras navegas</translation>
 <translation id="1774152462503052664">Permitir que Chromium se ejecute en segundo plano</translation>
 <translation id="1779356040007214683">Para aumentar la seguridad de Chromium, hemos inhabilitado algunas extensiones que no figuran en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> y que se podrían haber añadido sin tu conocimiento.</translation>
 <translation id="1793486931176048546">Haz clic en <ph name="BEGIN_BOLD" />Sí<ph name="END_BOLD" /> en la notificación de Windows para fijar Chromium a la barra de tareas y que puedas acceder rápidamente.</translation>
@@ -108,7 +102,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2039417478970545937">Configuración.</translation>
 <translation id="2049376729098081731">Indica si quieres incluir el historial de Chromium para ofrecer una experiencia más personalizada de los servicios de Google</translation>
 <translation id="2050698962207788467">Integrado en Chromium para ayudarte a crear, guardar y autocompletar contraseñas seguras. Añade el acceso directo para acceder fácilmente.</translation>
-<translation id="2060311596979880693">¡Listo! Ahora puedes hacer preguntas fácilmente mientras navegas con la Búsqueda de Google en Chrome</translation>
 <translation id="2064856577282482477">Haz clic en el botón Personalizar Chromium de la página Nueva pestaña para cambiar el diseño de Chromium</translation>
 <translation id="2086476982681781442">Chromium ha bloqueado esta descarga porque el archivo es engañoso y podría hacer cambios inesperados en tu dispositivo</translation>
 <translation id="208726765006323911">La próxima vez que abras Chromium en iOS, verás una petición para probar <ph name="FEATURE_NAME" />.</translation>
@@ -134,7 +127,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2238130810669087193">Para acceder a tus direcciones y más en todos tus dispositivos, inicia sesión en Chromium. Esta dirección se guardará en tu cuenta de Google cuando inicies sesión.</translation>
 <translation id="2241627712206172106">Si compartes un ordenador, tus amigos y familiares pueden navegar de forma independiente y configurar Chromium a su gusto.</translation>
 <translation id="22571759390241347">Habilidades en Chromium</translation>
-<translation id="2283228908180457226">Nuevo icono, mismo acceso directo: haz clic para hacer preguntas mientras navegas con el panel lateral de la Búsqueda de Google.</translation>
 <translation id="2283803047247799269">Buscar en esta pestaña con la búsqueda por imágenes</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium recomienda pausar la pestaña que ralentiza tu navegador}other{Chromium recomienda pausar las pestañas que ralentizan tu navegador}}</translation>
 <translation id="2307973900865360088">Mantener en el Dock</translation>
@@ -157,7 +149,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2483889755041906834">En Chromium</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2513154137948333830">Reinicio requerido: <ph name="INSTALL_SUCCESS" /></translation>
-<translation id="2521391734665471391">Cerrar Modo IA de la Búsqueda de Google</translation>
 <translation id="2542968102051442371">Selecciona texto con la búsqueda por imágenes</translation>
 <translation id="2554739539410784893">Chromium está intentando reemplazar las contraseñas. Introduce tu contraseña de Windows para permitirlo.</translation>
 <translation id="2560420686485554789">Chromium necesita acceso de almacenamiento para descargar archivos</translation>
@@ -193,7 +184,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2846251086934905009">Error de instalación: no se ha completado el proceso de instalación. Se ha cancelado la instalación.</translation>
 <translation id="2847479871509788944">Desinstalar de Chromium...</translation>
 <translation id="2850691299438350830">Te protege en Chromium y se puede usar para mejorar tu seguridad en otras aplicaciones de Google cuando has iniciado sesión.</translation>
-<translation id="2876152561415416331">Volver a abrir panel de la Búsqueda de Google</translation>
 <translation id="2885378588091291677">Administrador de tareas</translation>
 <translation id="2910007522516064972">Información de &amp;Chromium</translation>
 <translation id="2915996080311180594">Reiniciar más tarde</translation>
@@ -211,8 +201,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="302551344979399011">Las innovaciones de IA, como las habilidades, se guardan en tu cuenta de Google y se gestionan por separado de la sincronización de Chromium</translation>
 <translation id="3032219013429286568">Para acceder a tus extensiones y otros elementos en todos tus dispositivos, inicia sesión en Chromium</translation>
 <translation id="3032787606318309379">Añadiendo a Chromium...</translation>
-<translation id="3034219227076811559">Búsqueda de Google en Chrome</translation>
-<translation id="3037190258341683404">Puedes fijar la Búsqueda de Google en Chrome para hacer preguntas mientras navegas</translation>
 <translation id="3038232873781883849">Esperando para instalar...</translation>
 <translation id="3045032126857188731">Idioma traducido: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Cerrar cuadro de diálogo Comentarios</translation>
@@ -306,8 +294,8 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3971865010372729242">Al escribir en la barra de direcciones o en el cuadro de búsqueda, Chromium envía lo que escribes a las herramientas de búsqueda, de IA y de agente de tu organización para obtener sugerencias.</translation>
 <translation id="3975724895399328945">Información de &amp;Google Chrome for Testing</translation>
-<translation id="3984557288004650913">Con el botón "Búsqueda de Google en Chrome" de la barra de herramientas, puedes volver a abrirla para hacer preguntas mientras navegas</translation>
 <translation id="3997429360543082038">Información de ChromiumOS</translation>
+<translation id="399788104667917863">Fijar en la barra de herramientas</translation>
 <translation id="4016217212818346953">Protégete con el Gestor de contraseñas</translation>
 <translation id="4019629340646866719">ChromiumOS se ha creado gracias a <ph name="BEGIN_LINK_CROS_OSS" />software libre<ph name="END_LINK_CROS_OSS" /> adicional, como el <ph name="BEGIN_LINK_LINUX_OSS" />entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Traducir pantalla</translation>
@@ -355,7 +343,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4470974262661801543">Para usar y guardar los datos de Chromium en tu cuenta de Google, debes introducir tu frase de contraseña</translation>
 <translation id="4493028449971051158">Error de arranque: ejecuta el instalador como administrador.</translation>
 <translation id="4501471624619070934">Se ha producido un error en la instalación debido a una restricción de acceso en este país.</translation>
-<translation id="4501839397124711198">Puedes fijar la Búsqueda de Google en el panel lateral para hacer preguntas mientras navegas</translation>
 <translation id="4510853178268397146">Esta extensión no ha publicado sus prácticas de privacidad, como la forma en la que recoge y usa los datos. Chromium te recomienda que la elimines.</translation>
 <translation id="452711251841752011">Te damos la bienvenida a Chromium. Se ha abierto una nueva ventana del navegador.</translation>
 <translation id="4531137820806573936">Chromium necesita permiso para mapear tu entorno y hacer un seguimiento de tus manos</translation>
@@ -386,7 +373,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4771701986670315895">No has visitado el sitio recientemente. Chromium ha eliminado <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="COUNT" /> más.</translation>
 <translation id="4786083865378785874">Si Gemini en Chromium está abierto, el panel lateral permanece abierto al crear nuevas pestañas</translation>
 <translation id="479167709087336770">Utiliza el mismo corrector ortográfico que se usa en la Búsqueda de Google. El texto que escribas en el navegador se enviará a Google. Puedes cambiar esta opción en cualquier momento desde los ajustes.</translation>
-<translation id="4803313124144656665">Cerrar Búsqueda de Google en Chrome</translation>
 <translation id="4814736265800133385">Usar Chromium sin una cuenta</translation>
 <translation id="4839733921943823254">Fijar acceso directo</translation>
 <translation id="4888717733111232871">Regla entrante para que Chromium permita tráfico mDNS.</translation>
@@ -400,10 +386,8 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4987820182225656817">Los invitados pueden utilizar Chromium sin dejar nada atrás.</translation>
 <translation id="4992938037305302429">Tu cuenta en Chromium</translation>
 <translation id="4994636714258228724">Añadirte a Chromium</translation>
-<translation id="5000497292978544380">Modo IA de la Búsqueda de Google</translation>
 <translation id="504699503110800016">Abrir el menú adicional</translation>
 <translation id="5074496654342756568">Accede a todos tus favoritos de Google con Chromium en tu <ph name="DEVICE_TYPE" /></translation>
-<translation id="5121592697493894155">Búsqueda de Google en el panel lateral</translation>
 <translation id="5123973130450702873">Chromium necesita permiso para hacer seguimiento de tus manos</translation>
 <translation id="5141988424377517949">No has visitado el sitio recientemente. Chromium ha eliminado <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Inicia sesión en Chromium</translation>
@@ -413,7 +397,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="5223510345050543907">Sigue por donde lo dejaste con Chromium en iOS.</translation>
 <translation id="5231355151045086930">Cerrar sesión en Chromium</translation>
 <translation id="5234764350956374838">Cerrar</translation>
-<translation id="5247617065091903691">Puedes fijar el panel lateral de la Búsqueda de Google para hacer preguntas mientras navegas</translation>
 <translation id="5249261924633168472">Abrir enlace en una ventana de incó&amp;gnito de Chromium</translation>
 <translation id="5276305953263010518">Descarga la aplicación Chromium para guardar contraseñas estés donde estés</translation>
 <translation id="5277894862589591112">Reinicia Chromium para aplicar los cambios</translation>
@@ -443,7 +426,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium recomienda pausar la pestaña que ralentiza tu navegador}other{Chromium recomienda pausar las pestañas que ralentizan tu navegador}}</translation>
 <translation id="5473971139929175403">Es posible que Chromium no funcione correctamente porque ya no es compatible con esta distribución de Linux</translation>
 <translation id="5475924890392386523">Chromium ha bloqueado esta descarga porque el archivo puede dañar tus cuentas personales y de redes sociales</translation>
-<translation id="5482575505313585759">Cerrar panel de la Búsqueda de Google</translation>
 <translation id="549669000822060376">Espera mientras Chromium instala las últimas actualizaciones del sistema.</translation>
 <translation id="5496810170689441661">Chromium está intentando cambiar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="549975168243349205">Trabaja sin interrupciones con tus aplicaciones favoritas, como Google Drive y YouTube, en cualquier lugar con Chromium.</translation>
@@ -466,7 +448,6 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="5643865575100044307">Eliminar siempre los datos de sitios de tu dispositivo al cerrar Chromium</translation>
 <translation id="5653831366781983928">Reinicia Chromium ahora</translation>
 <translation id="565409517765894456">Para recibir futuras actualizaciones de Chromium, deberás tener la versión 1809 de Windows 10 o una posterior. Este ordenador tiene una versión antigua de Windows 10.</translation>
-<translation id="568656514202614970">¡Listo! Ahora puedes hacer preguntas fácilmente mientras navegas con el panel lateral de la Búsqueda de Google</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Mostrar Chromium en este idioma</translation>
 <translation id="569897634095159764">No se puede conectar a Internet. El servidor proxy requiere autenticación.</translation>
@@ -513,6 +494,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6173308241973263798">Borra los datos de Chromium de tu cuenta</translation>
 <translation id="6174920971222007286">Este archivo podría ser peligroso<ph name="LINE_BREAK" />Chromium puede comprobar esta descarga si proporcionas la contraseña. La información sobre el archivo se envía a Navegación segura de Google, pero su contenido y la contraseña permanecen en tu dispositivo.</translation>
+<translation id="6177442314419606057">Buscar en Chrome</translation>
 <translation id="6182736845697986886">No se ha podido realizar la instalación debido a un error interno del servidor de actualizaciones.</translation>
 <translation id="6183079672144801177">Comprueba que hayas iniciado sesión en Chromium con tu <ph name="TARGET_DEVICE_NAME" /> y, después, prueba a enviarlo de nuevo.</translation>
 <translation id="6192070012454216182">Busca y haz preguntas desde cualquier lugar, incluso si Chromium está minimizado. Permite que Chromium se ejecute en segundo plano.</translation>
@@ -528,10 +510,8 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="6270547683008298381">Estas pestañas están usando recursos adicionales. Para mejorar tu rendimiento, permite que Chromium las inactive.</translation>
 <translation id="6281746429495226318">Personaliza tu perfil de Chromium</translation>
 <translation id="6290827346642914212">Pon un nombre a tu perfil de Chromium</translation>
-<translation id="6294638840436017818">Con el botón "Panel lateral de la Búsqueda de Google" de la barra de herramientas, puedes volver a abrir este panel para hacer preguntas mientras navegas</translation>
 <translation id="6294831894865512704">Una extensión quiere que inicies sesión en Chromium</translation>
 <translation id="6295779123002464101">Es posible que <ph name="FILE_NAME" /> sea peligroso, por lo que Chromium lo ha bloqueado.</translation>
-<translation id="6308106880471005841">El botón "Panel de la Búsqueda de Google" de la barra de herramientas tiene un nuevo icono. Haz clic en él para hacer preguntas mientras navegas con el panel de la Búsqueda de Google.</translation>
 <translation id="6309712487085796862">Chromium está utilizando la cámara.</translation>
 <translation id="6333502561965082103">Hay otra operación en curso en Chromium. Vuelve a intentarlo más tarde.</translation>
 <translation id="6334986366598267305">Ahora es más fácil utilizar Chromium con tu cuenta de Google y en ordenadores compartidos.</translation>
@@ -615,7 +595,6 @@ Es posible que algunas funciones no estén disponibles. Especifica un directorio
             • Se restablecerán los accesos directos de Chromium
             <ph name="LINE_BREAKS" />
             Los marcadores, el historial y las contraseñas guardadas no se verán afectados.</translation>
-<translation id="6926772305569367352">El botón "Búsqueda de Google en Chrome" de la barra de herramientas tiene un nuevo icono. Haz clic en él para hacer preguntas mientras navegas con la Búsqueda de Google en Chrome.</translation>
 <translation id="6948031725951063910">Has alcanzado el límite de marcadores de Chromium (<ph name="BOOKMARK_LIMIT" />), por lo que algunos de ellos aún no se han guardado en tu cuenta de Google.
 
 No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si cierras sesión ahora, se eliminarán los marcadores que no hayas guardado.</translation>
@@ -649,7 +628,6 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="7252276985725323153">Empieza a navegar al instante: ahora Chromium puede iniciarse cuando se inicia Windows.</translation>
 <translation id="7274695763216404502">¡Fijada! Vuelve a usar la búsqueda por imágenes desde la barra de herramientas.</translation>
 <translation id="7288567540154601580">Pestañas y extensiones</translation>
-<translation id="7290997427370476749">Con el botón "Panel de la Búsqueda de Google" de la barra de herramientas, puedes volver a abrir este panel para hacer preguntas mientras navegas</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium te recomienda que la elimines}other{Chromium te recomienda que las elimines}}</translation>
 <translation id="7296334833518879294">Para compartir el audio del sistema, abre Configuración del sistema y permite "Solo grabación de audio del sistema" para Chromium. Después, tendrás que reiniciar Chromium.</translation>
 <translation id="7299899569525778554">Buscar desde un ordenador</translation>
@@ -663,7 +641,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="7349591376906416160">El administrador del sistema ha configurado Chromium para que abra <ph name="ALTERNATIVE_BROWSER_NAME" /> al acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
 <translation id="7368826207863345663">Para recibir futuras actualizaciones de Chromium, necesitarás macOS 13 o una versión posterior. Este ordenador usa macOS 12.</translation>
-<translation id="7374061268215476070">Puedes volver a abrir el panel lateral de la Búsqueda de Google para hacer preguntas mientras navegas</translation>
 <translation id="7376384068949534168">No has visitado el sitio recientemente. Chromium ha eliminado <ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Abre Chrome Web Store</translation>
 <translation id="7394275517973019558">Mostrar Gemini en Chromium en la bandeja del sistema</translation>
@@ -706,8 +683,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="7781047659465034537">Establece Chromium como predeterminado y fíjalo en la barra de tareas</translation>
 <translation id="7786760609782648049">Aumenta la velocidad de Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> ‑ Chromium Canary</translation>
-<translation id="7800043020703832708">Cerrar la Búsqueda de Google en el panel lateral</translation>
-<translation id="7801317262080715012">Nuevo icono, mismo acceso directo: haz clic para hacer preguntas mientras navegas con el panel de la Búsqueda de Google.</translation>
 <translation id="7803986347287457849">Haz que a las personas con acceso a tu tráfico de Internet les resulte más complicado ver los sitios que visitas. Chromium usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio).</translation>
 <translation id="7810005234485217901">Puedes fijar la búsqueda por imágenes para acceder a ella fácilmente</translation>
 <translation id="7813559034750130602">{COUNT,plural, =1{Hay una nueva actualización de Chromium disponible que se aplicará cuando lo reinicies. Hay una ventana de Incógnito o aislada abierta. No se volverá a abrir después del reinicio.}other{Hay una nueva actualización de Chromium disponible que se aplicará cuando lo reinicies. Hay # ventanas de Incógnito y aisladas abiertas en los perfiles. No se volverán a abrir después del reinicio.}}</translation>
@@ -722,7 +697,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="7873537467422636035">Si has olvidado tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="7874369989024033742">Abre Gemini rápidamente en Chromium cuando lo necesites</translation>
 <translation id="7888981273428720788">Establecer Chromium como navegador predeterminado</translation>
-<translation id="7904213866086517086">Volver a abrir la Búsqueda de Google en el panel lateral</translation>
 <translation id="7934340546140346950">Chromium cambia las conexiones no seguras a HTTPS automáticamente cuando es posible</translation>
 <translation id="7937630085815544518">Habías iniciado sesión en Chromium como <ph name="USER_EMAIL_ADDRESS" />. Utiliza la misma cuenta para volver a iniciar sesión.</translation>
 <translation id="7944602660083060118">Ya has iniciado sesión con <ph name="EXISTING_USER" />. Para mantener tu información de navegación aparte, inicia sesión en Chromium con tu perfil de <ph name="USER_EMAIL_ADDRESS" />. También tendrás tus marcadores y otra información en todos tus dispositivos.</translation>
@@ -753,7 +727,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="81770708095080097">Este archivo es peligroso, por lo que Chromium lo ha bloqueado.</translation>
 <translation id="8177472873527554730">No se encuentra contenido en la página</translation>
 <translation id="8200109504272824693">Introduce tu frase de contraseña para usar y guardar datos de Chromium en tu cuenta (<ph name="USER_EMAIL" />)</translation>
-<translation id="8203105157044679380">Panel de la Búsqueda de Google</translation>
 <translation id="820759916613250543">Buscar esta imagen con la búsqueda por imágenes</translation>
 <translation id="8221491193165283816">Normalmente bloqueas todas las notificaciones. Si quieres permitir que este sitio web te muestre notificaciones, haz clic aquí.</translation>
 <translation id="8223363452568144035">Para usar la cámara, da acceso a Chromium en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
@@ -768,7 +741,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8310603974518734211">Código QR para iniciar sesión en Chromium como <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">Error de arranque: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Tu organización cierra Chromium cuando lleva <ph name="TIMEOUT_DURATION" /> sin usarse.</translation>
-<translation id="8321058241987390452">¡Listo! Ahora puedes hacer preguntas fácilmente mientras navegas con el panel de la Búsqueda de Google</translation>
 <translation id="8321888067342493336">Guardar como imagen</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> usaba Chromium anteriormente</translation>
 <translation id="8351551329754447960">Activar habilidades en Chromium</translation>
@@ -779,10 +751,8 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="8372327902843331129">Para obtener tus contraseñas y más en todos tus dispositivos, inicia sesión en Chromium. Esta contraseña se guardará en tu cuenta de Google cuando inicies sesión.</translation>
 <translation id="837460953767177950">Después, tendrás que reiniciar Chromium.</translation>
-<translation id="8376752431516546391">Panel lateral de la Búsqueda de Google</translation>
 <translation id="8397248745433792218">Chromium te recomienda que la elimines. <ph name="BEGIN_LINK" />Más información sobre las extensiones compatibles<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">El desarrollador de esta extensión ha anulado su publicación y la extensión podría no ser segura. Elimínala de Chromium para que no pueda ver ni cambiar tus datos en los sitios que visites, incluida tu información personal.</translation>
-<translation id="8406687098231754303">Con el botón "Búsqueda de Google en el panel lateral" de la barra de herramientas, puedes volver a abrir esta búsqueda para hacer preguntas mientras navegas</translation>
 <translation id="8416884904046428725">Chromium debe verificar que eres tú para poder guardar algunos datos en tu cuenta de Google y usarlos en todos tus dispositivos. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicia Chromium en el próximo día}other{Reinicia Chromium en los próximos # días}}</translation>
 <translation id="8438543370129609977">Cuando usas la búsqueda por imágenes, el título, la URL y el contenido de la página (incluidos los PDFs) se envían al servidor. <ph name="LEARN_MORE" /></translation>
@@ -793,24 +763,19 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8482493977473846331">Muestra solicitudes para iniciar sesión en Chromium</translation>
 <translation id="8493179195440786826">Chromium no está actualizado</translation>
 <translation id="850264194101621529">Gracias por elegir Chromium como navegador predeterminado.</translation>
-<translation id="8520489851087523435">Volver a abrir panel lateral de la Búsqueda de Google</translation>
 <translation id="8522801943730206384">Chromium puede comprobar tus contraseñas si las guardas</translation>
 <translation id="8525579356836940628">Instalación detenida</translation>
 <translation id="8545729292258443488">Lleva tus contraseñas, pestañas y más a cualquier lugar con la aplicación Chromium en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8555465886620020932">Error del servicio: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Algunas funciones y extensiones de Chromium incluyen atajos. Puedes volver a activarlos.</translation>
 <translation id="8556420416730706394">Puedes fijar la búsqueda por imágenes para acceder a ella fácilmente. Haz clic en el botón Fijar en la parte superior del panel lateral.</translation>
-<translation id="8564408666201523086">¡Listo! Ahora puedes hacer preguntas fácilmente mientras navegas con la Búsqueda de Google en el panel lateral</translation>
 <translation id="856656450041460113">Buscar en la lista de idiomas</translation>
-<translation id="8568499811906962479">Puedes fijar el panel de la Búsqueda de Google para hacer preguntas mientras navegas</translation>
 <translation id="8576826849825683917">Varias organizaciones gestionan Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los creadores de Chromium. Todos los derechos reservados.</translation>
-<translation id="8590782867495422699">Volver a abrir el Modo IA de la Búsqueda de Google</translation>
 <translation id="8619360774459241877">Iniciando Chromium...</translation>
 <translation id="8624541899164515475">Configuración, se abre en una pestaña nueva.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing no se puede establecer como navegador predeterminado.</translation>
 <translation id="8676101123715131330">Busca con Chromium desde cualquier lugar</translation>
-<translation id="8689408573494410517">El botón "Búsqueda de Google en el panel lateral" de la barra de herramientas tiene un nuevo icono. Haz clic en él para hacer preguntas mientras navegas con la Búsqueda de Google en el panel lateral.</translation>
 <translation id="8697124171261953979">También controla qué página se muestra al iniciar Chromium o al hacer búsquedas desde el omnibox.</translation>
 <translation id="8702213505203810093">Para enviar esta pestaña a otro dispositivo, inicia sesión en Chromium en ese dispositivo</translation>
 <translation id="8704119203788522458">Aquí tienes tu navegador Chromium</translation>
@@ -829,7 +794,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8876044221123442390">Añadir perfil de Chromium</translation>
 <translation id="8890569919834781711">ChromiumOS no ha podido guardar los datos de Chromium en tu cuenta de Google debido a un error de inicio de sesión</translation>
 <translation id="8891709362986793894">Tu organización requiere que inicies sesión en Chromium</translation>
-<translation id="8897637834206928776">Nuevo icono, mismo acceso directo: haz clic para hacer preguntas mientras navegas con la Búsqueda de Google en el panel lateral.</translation>
 <translation id="8906384069222226849">Chromium requiere Windows 10 (versión 1809) o una versión posterior.</translation>
 <translation id="8907580949721785412">Chromium está intentando mostrar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="8932992523185907506">Chromium ya no es tu navegador predeterminado. ¿Establecer Chromium como navegador predeterminado?</translation>
@@ -859,8 +823,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="9056398481763999048">Usa las mejores herramientas de IA de Google con la aplicación Chromium en tu teléfono</translation>
 <translation id="9057625473949801035">Para acceder a tus contraseñas y otros elementos de <ph name="DEVICE" />, inicia sesión en Chromium</translation>
 <translation id="9062666675513499497">Iniciar sesión en Chromium al iniciar sesión en otros servicios de Google</translation>
-<translation id="9074041031320636790">¡Listo! Ahora puedes hacer preguntas fácilmente mientras navegas con el Modo IA de la Búsqueda de Google</translation>
-<translation id="9074163480955555019">Nuevo icono, mismo acceso directo: haz clic para hacer preguntas mientras navegas con la Búsqueda de Google en Chrome.</translation>
 <translation id="9078733879136747090">Chromium se ha cerrado automáticamente</translation>
 <translation id="9089354809943900324">Chromium no está actualizado</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium se reiniciará dentro de 1 hora}other{Chromium se reiniciará dentro de # horas}}</translation>

@@ -340,11 +340,13 @@
 <translation id="3968962723676998462">შეიყვანეთ თქვენი საიდუმლო ფრაზა, რომ გამოიყენოთ და შეინახოთ Chrome-ის მონაცემები თქვენს ანგარიშში, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome-ს სურს თქვენი Google პაროლების მმართველის მონაცემების წაშლა. აღნიშნულის დასაშვებად აკრიფეთ თქვენი Windows-ის პაროლი.</translation>
 <translation id="3984557288004650913">ხელსაწყოთა ზოლში არსებული ღილაკით „Google Search Chrome-ში“ შეგიძლიათ, ხელახლა გახსნათ Google Search Chrome-ში, რომ დათვალიერების პარალელურად დასვათ შეკითხვები</translation>
+<translation id="399788104667917863">ხელსაწყოთა ზოლში ჩამაგრება</translation>
 <translation id="400161754580828648">თქვენი ეკრანის გასაზიარებლად დაუშვით ეკრანის ჩაწერა Chrome-ისთვის სისტემის პარამეტრებში.</translation>
 <translation id="4012899077942246412">როცა შესული ხართ, Chrome-ში შეგიძლიათ გამოიყენოთ თქვენი პაროლები და სხვა კონტენტი თქვენი Google ანგარიშიდან. ამ პარამეტრის შესაცვლელად გახსენით „თქვენი ანგარიში Chrome-ში“.</translation>
 <translation id="4022972681110646219">ეკრანის თარგმნა</translation>
 <translation id="4023601594785368013">ორიგინალის ენა: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">ჩაშენებულია Chrome-ში, რათა დაგეხმაროთ ძლიერი პაროლების შექმნაში, შენახვასა და ავტომატურად შევსებაში. დაამატეთ მალსახმობი მარტივი წვდომისთვის.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Google-ის წევრობა.</translation>
 <translation id="4035053306113201399">განახლების მისასადაგებლად, ChromeOS უნდა გადაიტვირთოს.</translation>
 <translation id="4050175100176540509">უსაფრთხოების მნიშვნელოვანი გაუმჯობესება და ახალი თვისებები ხელმისაწვდომია უახლეს ვერსიაში.</translation>
 <translation id="4053720452172726777">Google Chrome-ის მორგება და კონტროლი</translation>
@@ -939,6 +941,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="9148058034647219655">გასვლა</translation>
 <translation id="9150331942025550505">მიიღეთ ხელოვნური ინტელექტის შესაძლებლობები, როცა Chrome აპს იყენებთ თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="919706545465235479">სინქრონიზაციის დასაწყებად, განაახლეთ Chrome</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google-ის წევრობა.</translation>
 <translation id="922152298093051471">Chrome-ის მორგება</translation>
 <translation id="93760716455950538">გადატვირთეთ ChromeOS Flex</translation>
 <translation id="943390475793766444">Chrome გირჩევთ, დაასკანიროთ ეს ფაილი, რადგან ის შეიძლება სახიფათო იყოს.</translation>

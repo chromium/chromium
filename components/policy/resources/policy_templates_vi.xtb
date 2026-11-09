@@ -6022,21 +6022,6 @@ Chính sách này sẽ không có hiệu lực khi bạn đặt chính sách <ph
 <translation id="4725691087141147920">Hiển thị màn hình Đồng ý đồng bộ hoá trong khi đăng nhập</translation>
 <translation id="4725801978265372736">Yêu cầu tên của người dùng cục bộ và chủ sở hữu máy chủ truy cập từ xa phải khớp với nhau</translation>
 <translation id="4726228171190098009">Không cho phép thiết bị yêu cầu định dạng lại</translation>
-<translation id="4726236283425627939">Nếu bạn đặt chính sách này, hệ thống sẽ kiểm soát các chế độ cài đặt quản lý tiện ích cho <ph name="PRODUCT_NAME" />, bao gồm cả những chế độ cài đặt chịu sự kiểm soát của các chính sách hiện có liên quan đến tiện ích.
-
-Chính sách này chỉ ánh xạ một mã tiện ích hoặc một URL cập nhật với chế độ cài đặt cụ thể tương ứng. Bạn có thể đặt cấu hình mặc định cho mã đặc biệt <ph name="DEFAULT_SCOPE" />. Cấu hình này sẽ áp dụng cho tất cả tiện ích chưa đặt cấu hình tuỳ chỉnh trong chính sách này.
-
-Chính sách này có thể ghi đè cấu hình theo từng tiện ích từ các chính sách cũ.
-
-Lưu ý: Mọi chế độ cài đặt tiện ích theo mã nhận dạng từ <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> hoặc <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> sẽ chỉ kế thừa "installation_mode" và "update_url" từ các giá trị mặc định của <ph name="DEFAULT_SCOPE" />. Chế độ cài đặt sẽ không kế thừa bất kỳ thuộc tính nào khác. Với URL cập nhật, cấu hình sẽ áp dụng cho những tiện ích có URL cập nhật chính xác được nêu trong tệp kê khai của tiện ích đó (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Nếu bạn đặt cờ "override_update_url" thành true (đúng), thì tiện ích đó sẽ được cài đặt và cập nhật bằng URL "cập nhật" được chỉ định trong chính sách <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> hoặc trong trường "update_url" của chính sách này. Cờ "override_update_url" sẽ bị bỏ qua nếu "update_url" là một URL của Cửa hàng Chrome trực tuyến.
-
-Kể từ phiên bản 154 của <ph name="PRODUCT_NAME" />, việc áp dụng "runtime_blocked_hosts" cho một tiện ích có quyền "debugger" sẽ tắt hoàn toàn "chrome.debugger.attach()" trên tất cả các mục tiêu.
-
-Trên các phiên bản <ph name="MS_WIN_NAME" />, bạn chỉ có thể buộc cài đặt các ứng dụng và tiện ích từ bên ngoài Cửa hàng Chrome trực tuyến nếu phiên bản đó đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Trên các phiên bản <ph name="MAC_OS_NAME" />, bạn chỉ có thể buộc cài đặt các ứng dụng và tiện ích từ bên ngoài Cửa hàng Chrome trực tuyến nếu phiên bản đó được quản lý qua MDM, đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Lưu ý: Chính sách này chỉ áp dụng cho những nền tảng hỗ trợ tiện ích.</translation>
 <translation id="4726895359147376813">Liên kết từ mã cố định đến cấu hình máy ảo</translation>
 <translation id="4732069502693984686">Bật tính năng tự động chụp ảnh nhiều màn hình</translation>
 <translation id="4733471537137819387">Các chính sách liên quan đến xác thực HTTP tích hợp.</translation>
@@ -6717,12 +6702,6 @@ Khi bạn tắt hoặc không đặt chính sách này, dữ liệu và cookie c
 <translation id="5152787786897382519">Cả Chromium và Google Chrome đều có một số nhóm chính sách dựa vào nhau để cho phép kiểm soát một tính năng. Các nhóm này được biểu thị qua các nhóm chính sách sau đây. Nếu các chính sách có thể chứa nhiều nguồn, thì chỉ áp dụng những giá trị thuộc nguồn có mức ưu tiên cao nhất. Các giá trị thuộc một nguồn có mức ưu tiên thấp hơn trong cùng một nhóm sẽ bị bỏ qua. Thứ tự ưu tiên được xác định trong <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Biểu tượng các tính năng thử nghiệm của trình duyệt trên thanh công cụ</translation>
 <translation id="5159674159887919923">Không gửi thêm dữ liệu phần cứng trên ChromeOS Flex</translation>
-<translation id="5162562564734598188">Nếu bạn đặt chính sách này thành Bật thì người dùng sẽ không thể dùng phím tắt hoặc API tiện ích để chụp ảnh màn hình. Nếu bạn đặt chính sách này thành Tắt hoặc không đặt thì người dùng có thể chụp ảnh màn hình.
-
-Kể từ phiên bản 154 của <ph name="PRODUCT_NAME" />, việc bật chính sách này cũng ngăn các tiện ích đính kèm trình gỡ lỗi thông qua "chrome.debugger.attach()".
-
-Lưu ý rằng trên <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> và <ph name="LINUX_OS_NAME" />,
-chính sách này không ngăn việc chụp ảnh màn hình bằng hệ điều hành hoặc các ứng dụng của bên thứ ba.</translation>
 <translation id="5162571264806471078">Bật tính năng báo cáo trên đám mây về các tín hiệu an toàn trong hồ sơ được quản lý</translation>
 <translation id="5162982931329320509">Danh sách các miền sẽ được phân giải bằng giao thức DNS-over-HTTPS. Những miền khác không có trong danh sách sẽ không được phân giải bằng giao thức DNS-over-HTTPS. Hệ thống sẽ bỏ qua chính sách này nếu bạn đặt chế độ DNS bảo mật thành tắt (luôn sử dụng DNS dạng văn bản thuần tuý).
 
@@ -7387,13 +7366,6 @@ Nếu bạn tắt <ph name="NTPCARDSVISIBLE" />, thẻ SharePoint và OneDrive s
 <translation id="5537400155400537818">Tắt: Thuộc tính thu phóng trong CSS giữ nguyên hành vi cũ, trước khi có thông số kỹ thuật tiêu chuẩn.</translation>
 <translation id="5537587542872235553">Cho phép các Ứng dụng web tách biệt và ứng dụng kiosk bị buộc cài đặt sử dụng Device Attributes API</translation>
 <translation id="553806128266843748">Một cờ boolean cho biết liệu tùy chọn điều tiết có được bật hay không.</translation>
-<translation id="5540415024237352600">Chính sách này sẽ không được dùng nữa trong M153 và sẽ không được hỗ trợ (không có hiệu lực) trong một bản phát hành sau này. Giờ đây, chữ ký đặc biệt cho ứng dụng gốc được tạo khi cài đặt Ứng dụng web tiến bộ (PWA) được bật vĩnh viễn trên <ph name="MAC_OS_NAME" />. Điều này đảm bảo rằng mỗi ứng dụng được cài đặt đều có danh tính riêng biệt đối với các thành phần hệ thống <ph name="MAC_OS_NAME" />.
-
-Nếu bạn đặt chính sách này thành Bật hoặc không đặt chính sách này, người dùng có thể sử dụng chữ ký đặc biệt cho ứng dụng gốc được tạo khi cài đặt Ứng dụng web tiến bộ (PWA). Điều này đảm bảo rằng mỗi ứng dụng được cài đặt đều có danh tính riêng biệt đối với các thành phần hệ thống <ph name="MAC_OS_NAME" />.
-
-Nếu bạn đặt chính sách này thành Tắt, mọi ứng dụng gốc được tạo khi cài đặt Ứng dụng web tiến bộ sẽ có cùng một danh tính. Điều này có thể ảnh hưởng đến chức năng của <ph name="MAC_OS_NAME" />.
-
-Bạn chỉ nên tắt chính sách này nếu đang sử dụng giải pháp bảo mật điểm cuối có tác dụng chặn ứng dụng có chữ ký đặc biệt.</translation>
 <translation id="5540885720415375851">Cho phép tìm thiết bị cục bộ</translation>
 <translation id="5542235730745104308">Nếu bạn đặt chính sách này thành True, thì <ph name="PRODUCT_NAME" /> sẽ sử dụng các trang thông báo lỗi thay thế tích hợp (chẳng hạn như "không tìm thấy trang"). Nếu bạn đặt chính sách này thành False, thì <ph name="PRODUCT_NAME" /> sẽ không bao giờ sử dụng các trang thông báo lỗi thay thế.
 
@@ -8491,11 +8463,6 @@ Từ phiên bản 114 trở lên, bạn không bắt buộc phải đặt chính
 <translation id="6224070048795197148">Cho phép người dùng sử dụng trình duyệt mà không cần đăng nhập</translation>
 <translation id="6224304369267200483">URL/miền đã tự động cho phép chứng thực Khóa bảo mật trực tiếp</translation>
 <translation id="6225938950222983458">Chính sách này không còn được dùng nữa và không được hỗ trợ, vui lòng dùng <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />.</translation>
-<translation id="6230442621691161858">Tính năng này sẽ bật tùy chọn đề xuất nội dung mới để khám phá. Bao gồm ứng dụng, trang web và nhiều nội dung khác.
-      Nếu bạn đặt chính sách này thành Bật, tùy chọn đề xuất nội dung mới để khám phá sẽ được bật.
-      Nếu bạn đặt chính sách này thành Tắt, tùy chọn đề xuất nội dung mới để khám phá sẽ bị tắt.
-      Nếu bạn không đặt chính sách này, tùy chọn đề xuất nội dung mới để khám phá sẽ bị tắt đối với người dùng được quản lý và sẽ được bật cho những người dùng khác.
-      </translation>
 <translation id="6233173491898450179">Đặt thư mục tải xuống</translation>
 <translation id="6234167788423986573">Tính năng thu thập dữ liệu ẩn danh nhập dưới dạng URL không bao giờ hoạt động</translation>
 <translation id="6234177445959386333">Định cấu hình danh sách các URL đăng nhập của doanh nghiệp mà dịch vụ bảo vệ mật khẩu sẽ ghi lại hàm băm có chuỗi ngẫu nhiên của mật khẩu.</translation>

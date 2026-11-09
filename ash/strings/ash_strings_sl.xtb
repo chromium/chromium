@@ -138,7 +138,6 @@
 <translation id="1346403631707626730">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Pomagajte izboljšati otrokovo izkušnjo z Androidom s samodejnim pošiljanjem diagnostičnih podatkov ter podatkov o uporabi naprave in aplikacij Googlu. Teh podatkov ne bomo uporabljali, da bi prepoznali vašega otroka, temveč za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. Če ste za otroka vklopili dodatno dejavnost v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu Google. <ph name="BEGIN_LINK1" />Preberite več o meritvah<ph name="BEGIN_LINK1_END" />Več o tem<ph name="END_LINK1" />.</translation>
 <translation id="1346748346194534595">V desno</translation>
 <translation id="1350494136075914725">Poteka · Preklop na zavihek</translation>
-<translation id="1351937230027495976">Strni meni</translation>
 <translation id="1355088139103479645">Želite izbrisati vse podatke?</translation>
 <translation id="1360220746312242196">Preklop na prejšnje ujemanje za iskanje pri iskanju na strani</translation>
 <translation id="1360788414852622716">Onemogočanje profila. To lahko traja nekaj minut.</translation>
@@ -682,7 +681,6 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="3033545621352269033">Vklopljeno</translation>
 <translation id="3033912566804961911">Združi z namizjem <ph name="DESK_NAME" /></translation>
 <translation id="3036327949511794916">Rok za vrnitev te naprave <ph name="DEVICE_TYPE" /> je potekel.</translation>
-<translation id="3039491566278747710">Namestitev pravilnika za način brez povezave v napravi ni uspela.</translation>
 <translation id="3039939407102840004">Raven napolnjenosti baterije pisala je <ph name="PERCENTAGE" /> %.</translation>
 <translation id="304097922505898963">Odpiranje aplikacije za bližnjične tipke</translation>
 <translation id="304417730895741346">Pripete in odprte aplikacije so na polici. Če želite aplikacijo pripeti na polico, z desnim gumbom kliknite aplikacijo ali se dotaknite sledilne ploščice z dvema prstoma.</translation>
@@ -698,7 +696,6 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="3075144191779656260">Dotaknite se tipala prstnih odtisov na levi strani naprave <ph name="DEVICE_TYPE" />. Podatki o prstnih odtisih so varno shranjeni in nikoli ne zapustijo naprave <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3075874217500066906">Za začetek postopka Powerwash je potreben vnovični zagon. Po vnovičnem zagonu boste morali potrditi, da želite nadaljevati.</translation>
 <translation id="3077734595579995578">shift</translation>
-<translation id="3081696990447829002">Razširi meni</translation>
 <translation id="3087734570205094154">Na dno</translation>
 <translation id="3088128611727407543">Pripravljanje profila aplikacije ….</translation>
 <translation id="3090214513075567547">Odpiranje kontekstnega menija</translation>
@@ -804,7 +801,6 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="3405101454990027959">Vklopi dostop do mikrofona</translation>
 <translation id="3407967630066378878">Če želite nastaviti prstni odtis, naj se otrok dotakne tipala prstnih odtisov na levi strani te naprave <ph name="DEVICE_TYPE" />. Podatki o prstnih odtisih otroka so varno shranjeni in nikoli ne zapustijo naprave <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3409584356742878290">Prikaz ali skrivanje pregledovalnika orodij za razvijalce</translation>
-<translation id="3413817803639110246">Zaenkrat ni še ničesar</translation>
 <translation id="3417835166382867856">Iskanje zavihkov</translation>
 <translation id="3426253816581969877">Pridržite <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> in se dotikajte <ph name="KEY" />, dokler se ne prikaže želeno okno, nato izpustite</translation>
 <translation id="3428447136709161042">Prekinitev povezave z omrežjem <ph name="NETWORK_NAME" /></translation>
@@ -899,7 +895,6 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="3626281679859535460">Svetlost</translation>
 <translation id="3628323833346754646">Gumb na sprednji</translation>
 <translation id="3630697955794050612">izklopljeno</translation>
-<translation id="3631369015426612114">Omogočanje obvestil teh virov</translation>
 <translation id="3633097874324966332">Odprite nastavitve Bluetootha, če želite seznaniti napravo.</translation>
 <translation id="3633851487917460983">Odpiranje odložišča</translation>
 <translation id="363473492175527493">To opravilo je nastavljeno za osredotočanje: <ph name="TASK_NAME" />. Pritisnite tipko Enter, če želite urediti opravilo.</translation>
@@ -915,7 +910,6 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="3659667652322717492">Delovanje mikrofona lahko kadar koli spremenite.</translation>
 <translation id="3659814201068740063">Še približno <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Priklopite napravo v vir napajanja.</translation>
-<translation id="3660860940251915011">Preklop visoke vidnosti funkcije <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Upravljani uporabnik</translation>
 <translation id="3666266999138159418">Povlecite, če želite skriti plavajoče okno</translation>
 <translation id="367531336287639526">Izbira prve ikone levo od naslovne vrstice</translation>
@@ -924,7 +918,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="36813544980941320">Omrežja Wi-Fi bodo deljena med telefonom in napravo <ph name="DEVICE_NAME" />.</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, nato <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Spletna mesta</translation>
-<translation id="3697991387880191195">Pritisnite bližnjico za ustvarjanje posnetka zaslona</translation>
 <translation id="3702809606464356667">Prikaz oken s trenutnega namizja, pritisnite tipko s puščico gor, če želite prikazati okna z vseh namizij</translation>
 <translation id="3705722231355495246">–</translation>
 <translation id="370665806235115550">Nalaganje ...</translation>
@@ -950,7 +943,6 @@ Priklopite napravo v vir napajanja.</translation>
         <ph name="BEGIN_PARAGRAPH3" />To storitev lahko izklopite v nastavitvah.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620">Vaš telefon <ph name="PHONE_NAME" /> lahko zdaj odklene tudi to napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3756485814916578707">Predvajanje vsebine zaslona</translation>
-<translation id="3765246971671567135">Pravilnika za predstavitveni način brez povezave ni bilo mogoče prebrati.</translation>
 <translation id="3765841382945324995">Bližnjica <ph name="SIX_PACK_KEY_NAME" /> je posodobljena z bližnjice <ph name="OLD_SHORTCUT" /> na bližnjico <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3772109172035555611">Prilagajanje naprave TrackPoint</translation>
 <translation id="3773700760453577392">Skrbnik je prepovedal prijavo z več računi za <ph name="USER_EMAIL" />. Če želite nadaljevati, morajo biti odjavljeni vsi uporabniki.</translation>
@@ -986,7 +978,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="3859364108019690">Aplikacij ni mogoče pretočno predvajati</translation>
 <translation id="3861638017150647085">Uporabniško ime »<ph name="USERNAME" />« ni na voljo</translation>
 <translation id="3861651314799684201">Pritisnite Enter, če želite snemati v celozaslonskem načinu</translation>
-<translation id="3870197372373144624">Poskusite izklopiti napravo.</translation>
 <translation id="3873915545594852654">Prišlo je do težave s tehnologijo ARC++.</translation>
 <translation id="3879748587602334249">Upravitelj prenosov</translation>
 <translation id="3884007280698606545">Omejitev USB je dosežena</translation>
@@ -1174,7 +1165,6 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="439598569299422042">Začasno zaustavljeno, <ph name="SIZE_INFO" /></translation>
 <translation id="439817266247065935">Naprava se ni pravilno zaustavila. Znova zaženite Linux, če želite uporabljati aplikacije za Linux.</translation>
 <translation id="440113666232554208">Snemanja zaslona ni mogoče shraniti</translation>
-<translation id="4405151984121254935">Vrsta povezane zunanje naprave ni podprta.</translation>
 <translation id="4406883609789734330">Samodejni podnapisi</translation>
 <translation id="4412698727486357573">Center za pomoč</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> je izklopljena.</translation>
@@ -1357,7 +1347,6 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="493076006037866439">Pomanjšava zaslona</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4934763315031217818">Ne sme vsebovati urejenih zaporedij</translation>
-<translation id="4936329710968938986">Vsi, izklopljeno</translation>
 <translation id="4937170330762390348">Z narekom lahko vnašate z glasom. Ko ste v polju z besedilom, pritisnite tipko za narek ali izberite ikono mikrofona na dnu zaslona. Jezik nareka je nastavljen na jezik <ph name="LANGUAGE" />. Datoteke za govor bodo prenesene, tako da boste lahko uporabljali narek brez povezave. Jezik nareka lahko kadar koli spremenite v »Nastavitve &gt; Dostopnost«.</translation>
 <translation id="4938176435186993759">Skrij vse predloge</translation>
 <translation id="4945196315133970626">Izklop obvestil</translation>
@@ -1374,7 +1363,6 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4966431234408005599">Povečanje glasnosti</translation>
 <translation id="496999337731226334"><ph name="STEP" />. korak predstavitve od <ph name="TOTAL_STEPS" />. Pogosto uporabljeni kontrolniki, kot so Wi-Fi, Bluetooth in glasnost, so v hitrih nastavitvah. Tukaj lahko ustvarite tudi posnetke zaslona. Pritisnite Alt + Shift + S, če želite odpreti hitre nastavitve.</translation>
 <translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> zahteva, da danes prenesete posodobitev. Posodobitev se bo samodejno prenesla, ko se povežete z internetom.}one{<ph name="MANAGER" /> zahteva, da pred rokom prenesete posodobitev. Posodobitev se bo samodejno prenesla, ko se povežete z internetom.}two{<ph name="MANAGER" /> zahteva, da pred rokom prenesete posodobitev. Posodobitev se bo samodejno prenesla, ko se povežete z internetom.}few{<ph name="MANAGER" /> zahteva, da pred rokom prenesete posodobitev. Posodobitev se bo samodejno prenesla, ko se povežete z internetom.}other{<ph name="MANAGER" /> zahteva, da pred rokom prenesete posodobitev. Posodobitev se bo samodejno prenesla, ko se povežete z internetom.}}</translation>
-<translation id="4975771730019223894">Označevanje aplikacij z značko</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
@@ -1577,7 +1565,6 @@ Nobena naprava ni povezana.</translation>
 <translation id="5551456515017410630">Odpiranje/zapiranje koledarja</translation>
 <translation id="5551974246223970793">Preklop na naslednje ujemanje za iskanje pri iskanju na strani</translation>
 <translation id="5556459405103347317">Znova naloži</translation>
-<translation id="5558091555391176027">Preklop visoke vidnosti deljenja v bližini</translation>
 <translation id="556042886152191864">Gumb</translation>
 <translation id="5570122939431135380">Odpiranje novega zavihka v novem anonimnem oknu</translation>
 <translation id="5575528586625653441">Prišlo je do težave z zahtevo za registracijo predstavitve.</translation>
@@ -1604,7 +1591,6 @@ Nobena naprava ni povezana.</translation>
 <translation id="5620979661744857819">To omogoča dostop za aplikacijo <ph name="APP_NAME" /> ter vse aplikacije in spletna mesta z dovoljenji za kamero in mikrofon. Morda boste morali osvežiti spletno stran ali znova zagnati aplikacijo.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Vašega gesla ni bilo mogoče preveriti. Poskusite znova.</translation>
-<translation id="5632485077360054581">Postopek</translation>
 <translation id="5648021990716966815">Vtič za mikrofon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> potrebuje vašo pozornost.</translation>
 <translation id="5657667036353380798">Za zunanjo razširitev mora biti nameščen Chrome <ph name="MINIMUM_CHROME_VERSION" /> ali novejši.</translation>
@@ -1925,7 +1911,6 @@ Nobena naprava ni povezana.</translation>
 <translation id="651753338596587143">Pri namestitvi odvisnosti prenosljive vsebine je prišlo do napake. Poskusite znova zagnati in če težave ne odpravite, pošljite povratne informacije z oznako #bruschetta v opisu. Koda napake je <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Izberite okno za posnetek</translation>
 <translation id="652139407789908527">Zaslon bo imel med to posodobitvijo prazen zaslon dlje kot običajno (največ eno minuto). Med posodabljanjem ne pritisnite gumba za vklop.</translation>
-<translation id="6528179044667508675">Ne moti</translation>
 <translation id="65320610082834431">Emodžiji</translation>
 <translation id="6537924328260219877">Moč signala je <ph name="SIGNAL_STRENGTH" />, stanje baterije telefona je <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Pregledovanje prenosa: <ph name="FILENAME" /></translation>
@@ -2169,7 +2154,6 @@ Nova namestitev</translation>
 <translation id="7264788308526527464">Zmanjšanje: <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Še naprej privzdigujte prst, da dodate različne dele prstnega odtisa.</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + vračalka</translation>
-<translation id="7285232777292757180">Za ustvarjanje posnetkov zaslona v hitrih nastavitvah uporabite orodje za zajem zaslonske slike</translation>
 <translation id="7301826272005790482">Opustitev predlogov za okna</translation>
 <translation id="7302889331339392448">Samodejni podnapisi so izklopljeni.</translation>
 <translation id="7303281435234579599">Ojoj. Pri nastavljanju predstavitvenega načina je prišlo do napake.</translation>
@@ -2708,7 +2692,6 @@ Nova namestitev</translation>
 <translation id="880709030178078220">»Pomoč«</translation>
 <translation id="8813531681893371930">Priključite žične slušalke</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
-<translation id="8815390544836110344">Pritisnite bližnjico za ustvarjanje posnetka zaslona, Ctrl + Shift in tipko za način pregleda</translation>
 <translation id="881757059229893486">Nastavitve načinov vnosa</translation>
 <translation id="8819728065740986820">Prilagodljivo polnjenje je vklopljeno</translation>
 <translation id="882204272221080310">Posodobitev vdelane programske opreme zaradi dodatne varnosti.</translation>
@@ -2814,7 +2797,6 @@ Nova namestitev</translation>
 <translation id="9098750710832798892">Noben element ni kopiran v odložišče</translation>
 <translation id="9098969848082897657">Utišanje telefona</translation>
 <translation id="9126339866969410112">Razveljavitev zadnjega dejanja</translation>
-<translation id="9126642911267312373">Bluetooth ni na voljo</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{čez 1 min}one{Čez # min}two{Čez # min}few{Čez # min}other{Čez # min}}</translation>
 <translation id="9129245940793250979">Guma na zadnji strani</translation>
 <translation id="9133335900048457298">Zaščitene vsebine ni mogoče posneti</translation>

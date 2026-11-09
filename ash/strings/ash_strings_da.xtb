@@ -138,7 +138,6 @@
 <translation id="1346403631707626730">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre dit barns Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Disse data bruges ikke til at identificere dit barn. De bruges kun til forbedring af bl.a. systemets og appens stabilitet. Noget dataaggregering hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Hvis yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto. <ph name="BEGIN_LINK1" />Få flere oplysninger om metrics<ph name="BEGIN_LINK1_END" />Få flere oplysninger<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">Højre</translation>
 <translation id="1350494136075914725">I gang · Skift til fane</translation>
-<translation id="1351937230027495976">Skjul menu</translation>
 <translation id="1355088139103479645">Vil du slette alle data?</translation>
 <translation id="1360220746312242196">Når du søger på en side, kan du gå til forrige match for at søge</translation>
 <translation id="1360788414852622716">Deaktiverer profilen. Dette kan tage et par minutter.</translation>
@@ -682,7 +681,6 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="3033545621352269033">Til</translation>
 <translation id="3033912566804961911">Kombiner med <ph name="DESK_NAME" /></translation>
 <translation id="3036327949511794916">Fristen for at returnere denne <ph name="DEVICE_TYPE" /> er overskredet.</translation>
-<translation id="3039491566278747710">Offlinepolitikken kunne ikke installeres på enheden.</translation>
 <translation id="3039939407102840004">Styluspennens batteriniveau er på <ph name="PERCENTAGE" /> procent.</translation>
 <translation id="304097922505898963">Åbn appen Key Shortcuts</translation>
 <translation id="304417730895741346">Dine fastgjorte og åbne apps er på hylden. Du kan fastgøre en app til hylden ved at højreklikke på en app eller trykke på touchpladen med to fingre.</translation>
@@ -698,7 +696,6 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="3075144191779656260">Sæt fingeren på fingeraftrykssensoren til venstre på din <ph name="DEVICE_TYPE" />. Dine fingeraftryksdata gemmes sikkert og forlader aldrig din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3075874217500066906">Enheden skal genstartes for at begynde Powerwash-processen. Efter genstart vil du blive bedt om at bekræfte, at du vil fortsætte.</translation>
 <translation id="3077734595579995578">Shift</translation>
-<translation id="3081696990447829002">Udvid menu</translation>
 <translation id="3087734570205094154">Bund</translation>
 <translation id="3088128611727407543">Forbereder app-profil…</translation>
 <translation id="3090214513075567547">Åbn genvejsmenuen</translation>
@@ -804,7 +801,6 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="3405101454990027959">Aktivér mikrofonadgang</translation>
 <translation id="3407967630066378878">Du kan konfigurere et fingeraftryk ved at få dit barn til at sætte fingeren på fingeraftrykssensoren til venstre på denne <ph name="DEVICE_TYPE" />. Dit barns fingeraftryksdata gemmes sikkert og forlader aldrig denne <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3409584356742878290">Vis eller skjul undersøgelsesværktøjet i Udviklerværktøjer</translation>
-<translation id="3413817803639110246">Der er intet at se endnu</translation>
 <translation id="3417835166382867856">Søg i faner</translation>
 <translation id="3426253816581969877">Hold fingeren på <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, og tryk på <ph name="KEY" />, indtil det vindue, du vil åbne, vises, og giv slip derefter tasterne</translation>
 <translation id="3428447136709161042">Afbryd forbindelsen til <ph name="NETWORK_NAME" /></translation>
@@ -899,7 +895,6 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="3626281679859535460">Lysstyrke</translation>
 <translation id="3628323833346754646">Forsideknap</translation>
 <translation id="3630697955794050612">fra</translation>
-<translation id="3631369015426612114">Tillad notifikationer fra følgende</translation>
 <translation id="3633097874324966332">Åbn Bluetooth-indstillingerne for at parre din enhed</translation>
 <translation id="3633851487917460983">Åbn udklipsholderen</translation>
 <translation id="363473492175527493">Opgaven er angivet til at fokusere på: <ph name="TASK_NAME" />. Tryk på Enter for at redigere opgaven.</translation>
@@ -915,7 +910,6 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="3659667652322717492">Du kan til enhver tid ændre mikrofonadfærden senere.</translation>
 <translation id="3659814201068740063">Cirka <ph name="TIME_LEFT" /> tilbage (<ph name="PERCENTAGE" /> %).
 Slut din enhed til en strømkilde.</translation>
-<translation id="3660860940251915011">Slå høj synlighed til/fra for <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Administreret bruger</translation>
 <translation id="3666266999138159418">Stryg for at skjule det svævende vindue</translation>
 <translation id="367531336287639526">Vælg det første ikon til venstre for adresselinjen</translation>
@@ -924,7 +918,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="36813544980941320">Wi-Fi-netværk deles mellem din telefon og <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> efterfulgt af <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Websites</translation>
-<translation id="3697991387880191195">Tryk på genvejen til screenshot</translation>
 <translation id="3702809606464356667">Når du får vist vinduer fra det aktuelle skrivebord, kan du trykke på pil op for at få vist vinduer fra alle skriveborde</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Indlæser...</translation>
@@ -950,7 +943,6 @@ Slut din enhed til en strømkilde.</translation>
         <ph name="BEGIN_PARAGRAPH3" />Du kan deaktivere denne tjeneste i Indstillinger.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620">Din <ph name="PHONE_NAME" /> kan nu også låse denne <ph name="DEVICE_TYPE" /> op.</translation>
 <translation id="3756485814916578707">Skærmen castes</translation>
-<translation id="3765246971671567135">Politikken for offlinedemotilstand kunne ikke læses.</translation>
 <translation id="3765841382945324995">Genvejen for <ph name="SIX_PACK_KEY_NAME" /> er opdateret til <ph name="NEW_SHORTCUT" /> fra <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3772109172035555611">Tilpas TrackPoint</translation>
 <translation id="3773700760453577392">En administrator har afvist samlet login fra flere konti for <ph name="USER_EMAIL" />. Alle brugere skal logge ud for at fortsætte.</translation>
@@ -986,7 +978,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3859364108019690">Der kan ikke streames apps</translation>
 <translation id="3861638017150647085">Brugernavnet "<ph name="USERNAME" />" er ikke tilgængeligt</translation>
 <translation id="3861651314799684201">Tryk på Enter for at optage fuld skærm</translation>
-<translation id="3870197372373144624">Prøv at slukke din enhed.</translation>
 <translation id="3873915545594852654">Der opstod et problem med ARC++.</translation>
 <translation id="3879748587602334249">Downloadadministrator</translation>
 <translation id="3884007280698606545">Grænsen for USB-enheder er nået</translation>
@@ -1172,7 +1163,6 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="439598569299422042">Sat på pause, <ph name="SIZE_INFO" /></translation>
 <translation id="439817266247065935">Din enhed blev ikke lukket korrekt ned. Genstart Linux for at bruge Linux-apps.</translation>
 <translation id="440113666232554208">Dit screencast kan ikke gemmes</translation>
-<translation id="4405151984121254935">Den tilsluttede tilbehørstype understøttes ikke</translation>
 <translation id="4406883609789734330">Livetekstning</translation>
 <translation id="4412698727486357573">Hjælp</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> er deaktiveret.</translation>
@@ -1355,7 +1345,6 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="493076006037866439">Zoom ud på skærmen</translation>
 <translation id="4932733599132424254">Dato</translation>
 <translation id="4934763315031217818">Må ikke indeholde ordnede sekvenser</translation>
-<translation id="4936329710968938986">Alle, deaktiveret</translation>
 <translation id="4937170330762390348">Du kan skrive med din stemme ved hjælp af diktering. Tryk på dikteringstasten, eller vælg mikrofonikonet nederst på skærmen, når du er i et tekstfelt. Dit dikteringssprog er indstillet til <ph name="LANGUAGE" />. Talefilerne downloades, så du kan bruge diktering offline. Du kan til enhver tid ændre dikteringssproget i Indstillinger &gt; Hjælpefunktioner.</translation>
 <translation id="4938176435186993759">Skjul alle forslag</translation>
 <translation id="4945196315133970626">Deaktiver notifikationer</translation>
@@ -1372,7 +1361,6 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4966431234408005599">Skru op for lyden</translation>
 <translation id="496999337731226334">Se trin <ph name="STEP" /> af <ph name="TOTAL_STEPS" />. Du finder ofte anvendte styringselementer såsom Wi-Fi, Bluetooth og lydstyrke i kvikmenuen. Du kan også tage screenshots her. Tryk på Alt + Shift + S for at åbne kvikmenuen.</translation>
 <translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kræver, at du downloader en opdatering i dag. Opdateringen downloades automatisk, når du opretter forbindelse til internettet.}one{<ph name="MANAGER" /> kræver, at du downloader en opdatering før deadlinen. Opdateringen downloades automatisk, når du opretter forbindelse til internettet.}other{<ph name="MANAGER" /> kræver, at du downloader en opdatering før deadlinen. Opdateringen downloades automatisk, når du opretter forbindelse til internettet.}}</translation>
-<translation id="4975771730019223894">Appbadges</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
@@ -1575,7 +1563,6 @@ Ingen enheder er forbundet.</translation>
 <translation id="5551456515017410630">Åbn/luk kalender</translation>
 <translation id="5551974246223970793">Når du søger på en side, kan du gå til næste match for at søge</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
-<translation id="5558091555391176027">Slå høj synlighed til/fra for Deling tæt på</translation>
 <translation id="556042886152191864">Knap</translation>
 <translation id="5570122939431135380">Åbn ny fane i et nyt inkognitovindue</translation>
 <translation id="5575528586625653441">Der opstod et problem med anmodningen om demoregistrering.</translation>
@@ -1602,7 +1589,6 @@ Ingen enheder er forbundet.</translation>
 <translation id="5620979661744857819">Dette giver <ph name="APP_NAME" /> og alle apps og websites, der har kamera- og mikrofontilladelserne, adgang. Du skal muligvis opdatere websiden eller genstarte appen.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Din adgangskode kunne ikke verificeres. Prøv igen.</translation>
-<translation id="5632485077360054581">Vis mig hvordan</translation>
 <translation id="5648021990716966815">Stik til mikrofon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> kræver din opmærksomhed.</translation>
 <translation id="5657667036353380798">Den eksterne udvidelse kræver Chrome-versionen <ph name="MINIMUM_CHROME_VERSION" /> eller nyere for at blive installeret.</translation>
@@ -1921,7 +1907,6 @@ Ingen enheder er forbundet.</translation>
 <translation id="651753338596587143">Noget gik galt under installationen af DLC-afhængigheder. Prøv at genstarte. Hvis problemet fortsætter, kan du indsende feedback med #bruschetta i beskrivelsen. Fejlkoden er <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Vælg et vindue, der skal tages billede af</translation>
 <translation id="652139407789908527">Din skærm vil være tom i længere tid end normalt (i op til et minut) under denne opdatering. Undlad at trykke på afbryderknappen, mens opdateringen er i gang.</translation>
-<translation id="6528179044667508675">Forstyr ikke</translation>
 <translation id="65320610082834431">Emojis</translation>
 <translation id="6537924328260219877">Signalstyrke <ph name="SIGNAL_STRENGTH" />, telefonbatteri <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Downloaden scannes: <ph name="FILENAME" /></translation>
@@ -2165,7 +2150,6 @@ Installeret for nylig</translation>
 <translation id="7264788308526527464">Reducer med <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Bliv ved med at løfte fingeren for at få hele fingeraftrykket med</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
-<translation id="7285232777292757180">Brug værktøjet Screenshot i kvikmenuen til at tage screenshots</translation>
 <translation id="7301826272005790482">Luk vinduet med forslag</translation>
 <translation id="7302889331339392448">Livetekstning er slået fra.</translation>
 <translation id="7303281435234579599">Ups! Noget gik galt under konfigurationen af demotilstand.</translation>
@@ -2704,7 +2688,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="880709030178078220">"Hjælp"</translation>
 <translation id="8813531681893371930">Tilslut høretelefoner med ledning</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
-<translation id="8815390544836110344">Tryk på genvejen til screenshot, Ctrl + Shift og tasten Oversigtstilstand</translation>
 <translation id="881757059229893486">Indstillinger for indtastningsmetoder</translation>
 <translation id="8819728065740986820">Adaptiv opladning er aktiveret</translation>
 <translation id="882204272221080310">Opdater firmwaren for ekstra beskyttelse.</translation>
@@ -2810,7 +2793,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="9098750710832798892">Ingen elementer er kopieret til Udklipsholder</translation>
 <translation id="9098969848082897657">Sæt telefonen på lydløs</translation>
 <translation id="9126339866969410112">Fortryd seneste handling</translation>
-<translation id="9126642911267312373">Bluetooth er ikke tilgængeligt</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{Om 1 min.}one{Om # min.}other{Om # min.}}</translation>
 <translation id="9129245940793250979">Bagsideknap</translation>
 <translation id="9133335900048457298">Der kan ikke optages beskyttet indhold</translation>

@@ -138,7 +138,6 @@
 <translation id="1346403631707626730">‏إرسال بيانات الاستخدام والتشخيص: يمكنك المساهمة في تحسين تجربة طفلك على Android من خلال إرسال بيانات التشخيص وبيانات استخدام التطبيقات والجهاز تلقائيًا إلى Google. ولن يتم استخدام هذه البيانات لتحديد هوية طفلك، بل ستُستخدَم لتعزيز استقرار النظام والتطبيقات وإجراء المزيد من التحسينات. ستساعد أيضًا بعض البيانات المجمّعة تطبيقات Google وشركاءها، مثل مطوّري تطبيقات Android. في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات" لطفلك، قد يتم حفظ هذه البيانات في حسابه على Google. <ph name="BEGIN_LINK1" />مزيد من المعلومات حول المقاييس<ph name="BEGIN_LINK1_END" />مزيد من المعلومات<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">يمين</translation>
 <translation id="1350494136075914725">اجتماع جارٍ · التبديل إلى علامة التبويب</translation>
-<translation id="1351937230027495976">تصغير القائمة</translation>
 <translation id="1355088139103479645">هل تريد حذف كلّ البيانات؟</translation>
 <translation id="1360220746312242196">الانتقال إلى النتيجة المطابِقة السابقة عند البحث في صفحة</translation>
 <translation id="1360788414852622716">جارٍ إيقاف الملف الشخصي. قد يستغرق ذلك بضع دقائق.</translation>
@@ -681,7 +680,6 @@
 <translation id="3033545621352269033">مُفعَّلة</translation>
 <translation id="3033912566804961911">دمج مع <ph name="DESK_NAME" /></translation>
 <translation id="3036327949511794916">لقد انتهت مهلة إرجاع جهاز <ph name="DEVICE_TYPE" /> هذا.</translation>
-<translation id="3039491566278747710">تعذّر تثبيت السياسة بلا إنترنت على الجهاز.</translation>
 <translation id="3039939407102840004">مستوى شحن بطارية قلم الشاشة <ph name="PERCENTAGE" /> في المئة.</translation>
 <translation id="304097922505898963">فتح تطبيق "اختصارات لوحة المفاتيح"</translation>
 <translation id="304417730895741346">تطبيقاتك المثبَّتة والمفتوحة معروضة هنا على الرف. لتثبيت تطبيق في الرف، انقر بزر الماوس الأيمن عليه أو انقر بإصبعين على لوحة اللمس.</translation>
@@ -697,7 +695,6 @@
 <translation id="3075144191779656260">المِس أداة استشعار بصمة الإصبع في الجانب الأيسر من جهاز <ph name="DEVICE_TYPE" />. يتم تخزين بيانات بصمة الإصبع بشكل آمن وتظلّ محفوظة على جهاز <ph name="DEVICE_TYPE" /> فقط.</translation>
 <translation id="3075874217500066906">يجب إعادة التشغيل لبدء عملية المحو الكامل. بعد إعادة التشغيل سيُطلب منك تأكيد أنك تريد المتابعة.</translation>
 <translation id="3077734595579995578">shift</translation>
-<translation id="3081696990447829002">توسيع القائمة</translation>
 <translation id="3087734570205094154">أسفل</translation>
 <translation id="3088128611727407543">جارٍ تحضير الملف الشخصي للتطبيق...</translation>
 <translation id="3090214513075567547">فتح قائمة السياق</translation>
@@ -801,7 +798,6 @@
 <translation id="3405101454990027959">السماح بالوصول إلى الميكروفون</translation>
 <translation id="3407967630066378878">لضبط إعدادات بصمة الإصبع، اطلب من طفلك لمس أداة استشعار بصمة الإصبع في الجانب الأيسر من جهاز <ph name="DEVICE_TYPE" /> هذا. يتم تخزين بيانات بصمة إصبع طفلك بشكل آمن وتظلّ محفوظة على جهاز <ph name="DEVICE_TYPE" /> هذا فقط.</translation>
 <translation id="3409584356742878290">إظهار أداة فحص "أدوات المطوِّرين" أو إخفاؤها</translation>
-<translation id="3413817803639110246">ليس لديك شيء للمشاهدة حتى الآن</translation>
 <translation id="3417835166382867856">البحث في علامات التبويب</translation>
 <translation id="3426253816581969877">‏اضغط مع الاستمرار على ‎<ph name="MODIFIER_1" /><ph name="MODIFIER_2" />، وانقر على <ph name="KEY" /> إلى أن تصل إلى النافذة التي تريد فتحها، ثم ارفع إصبعك.</translation>
 <translation id="3428447136709161042">تم قطع الاتصال بالشبكة <ph name="NETWORK_NAME" /></translation>
@@ -896,7 +892,6 @@
 <translation id="3626281679859535460">السطوع</translation>
 <translation id="3628323833346754646">الزرّ الأمامي</translation>
 <translation id="3630697955794050612">غير مفعّل</translation>
-<translation id="3631369015426612114">السماح بالإشعارات من المصادر التالية</translation>
 <translation id="3633097874324966332">يُرجى فتح إعدادات البلوتوث لإقران جهازك.</translation>
 <translation id="3633851487917460983">فتح الحافظة</translation>
 <translation id="363473492175527493">‏تم ضبط المهمة للتركيز على: <ph name="TASK_NAME" />. اضغط على مفتاح Enter لتعديل المهمة.</translation>
@@ -912,7 +907,6 @@
 <translation id="3659667652322717492">يمكنك متى شئت تغيير إعدادات الميكروفون.</translation>
 <translation id="3659814201068740063">يتبقّى <ph name="TIME_LEFT" /> تقريبًا (%<ph name="PERCENTAGE" />).
 يُرجى توصيل الجهاز بمصدر طاقة.</translation>
-<translation id="3660860940251915011">إيقاف أو تفعيل وضع الظهور العالي لميزة "<ph name="FEATURE_NAME" />"</translation>
 <translation id="366222428570480733">المستخدِم المُدار <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">مرِّر سريعًا لإخفاء النافذة العائمة.</translation>
 <translation id="367531336287639526">اختيار الرمز الأول على يمين شريط العناوين</translation>
@@ -921,7 +915,6 @@
 <translation id="36813544980941320">‏ستتم مشاركة شبكات Wi-Fi بين هاتفك وجهاز <ph name="DEVICE_NAME" />.</translation>
 <translation id="3682279812299376603">‏‫‎<ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> ثم <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">المواقع الإلكترونية</translation>
-<translation id="3697991387880191195">الضغط على اختصار أخذ لقطة الشاشة</translation>
 <translation id="3702809606464356667">يتم الآن عرض النوافذ المفتوحة في سطح المكتب الحالي، ويمكنك الضغط على مفتاح السهم المتّجه للأعلى لعرض النوافذ المفتوحة في جميع أسطح المكتب.</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">جارٍ التحميل...</translation>
@@ -948,7 +941,6 @@
         <ph name="BEGIN_PARAGRAPH3" />يمكنك إيقاف هذه الخدمة من خلال الإعدادات.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620">بإمكان هاتفك <ph name="PHONE_NAME" /> أن يلغي قفل جهاز<ph name="DEVICE_TYPE" /> أيضًا.</translation>
 <translation id="3756485814916578707">جارٍ بثّ الشاشة</translation>
-<translation id="3765246971671567135">تعذَّرت قراءة سياسة الوضع التجريبي بلا إنترنت.</translation>
 <translation id="3765841382945324995">تم تعديل اختصار <ph name="SIX_PACK_KEY_NAME" /> من "<ph name="OLD_SHORTCUT" />" إلى "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="3772109172035555611">‏تخصيص TrackPoint</translation>
 <translation id="3773700760453577392">منع أحد المشرفين الدخول المتعدد لـ <ph name="USER_EMAIL" />. لذا على جميع المستخدمين تسجيل الخروج للمتابعة.</translation>
@@ -984,7 +976,6 @@
 <translation id="3859364108019690">يتعذّر بث محتوى التطبيقات</translation>
 <translation id="3861638017150647085">اسم المستخدم "<ph name="USERNAME" />" غير متوفر.</translation>
 <translation id="3861651314799684201">‏اضغط على المفتاح Enter لتسجيل فيديو للشاشة بأكملها</translation>
-<translation id="3870197372373144624">جرِّب إيقاف تشغيل جهازك.</translation>
 <translation id="3873915545594852654">‏حدثت مشكلة في "وقت تشغيل التطبيقات في Chrome (ARC++)".</translation>
 <translation id="3879748587602334249">تطبيق إدارة التنزيل</translation>
 <translation id="3884007280698606545">‏تم بلوغ الحد الأقصى لعدد أجهزة USB التي يمكن توصيلها</translation>
@@ -1173,7 +1164,6 @@
 <translation id="439598569299422042">التنزيل متوقّف مؤقتًا، <ph name="SIZE_INFO" /></translation>
 <translation id="439817266247065935">‏لم يتم إيقاف تشغيل جهازك بالشكل الملائم. أعِد تشغيل نظام التشغيل Linux لاستخدام تطبيقاته.</translation>
 <translation id="440113666232554208">يتعذّر حفظ التسجيل الرقمي للشاشة</translation>
-<translation id="4405151984121254935">نوع الجهاز الملحق المتصل غير متوافق.</translation>
 <translation id="4406883609789734330">النسخ النصي التلقائي</translation>
 <translation id="4412698727486357573">مركز المساعدة</translation>
 <translation id="4412944820643904175">ميزة <ph name="FEATURE_NAME" /> غير مُفعَّلة.</translation>
@@ -1356,7 +1346,6 @@
 <translation id="493076006037866439">تصغير الشاشة</translation>
 <translation id="4932733599132424254">التاريخ</translation>
 <translation id="4934763315031217818">لا يمكن أن يتضمّن رقم التعريف الشخصي أرقامًا متتالية</translation>
-<translation id="4936329710968938986">الجميع: غير مفعّل</translation>
 <translation id="4937170330762390348">من خلال ميزة "إملاء"، يمكنك الكتابة باستخدام صوتك. اضغط على مفتاح ميزة "إملاء" أو اختَر رمز الميكروفون في أسفل الشاشة عندما تكون في حقل نصي. تم ضبط لغة ميزة "إملاء" على <ph name="LANGUAGE" />. سيتم تنزيل ملفات التعرّف على الكلام كي تتمكّن من استخدام ميزة "إملاء" بلا اتصال بالإنترنت. يمكنك في أي وقت تغيير لغة ميزة "إملاء" من خلال الإعدادات &gt; تسهيل الاستخدام.</translation>
 <translation id="4938176435186993759">إخفاء جميع الاقتراحات</translation>
 <translation id="4945196315133970626">إيقاف الإشعارات</translation>
@@ -1373,7 +1362,6 @@
 <translation id="4966431234408005599">رفع مستوى الصوت</translation>
 <translation id="496999337731226334">‏الخطوة <ph name="STEP" /> من إجمالي <ph name="TOTAL_STEPS" />: في قائمة "الإعدادات السريعة"، ستظهر لك عناصر التحكّم الشائعة الاستخدام على جهازك، مثل Wi-Fi والبلوتوث ومستوى الصوت. يمكنك من خلال القائمة أيضًا أخذ لقطات شاشة. اضغط على Alt + Shift + S لفتح "الإعدادات السريعة".</translation>
 <translation id="4974836474136150508">{NUM_DAYS,plural, =1{يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز اليوم، لذا سيتم تنزيله تلقائيًا عند الاتصال بالإنترنت.}zero{يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز قبل الموعد النهائي، لذا سيتم تنزيله تلقائيًا عند الاتصال بالإنترنت.}two{يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز قبل الموعد النهائي، لذا سيتم تنزيله تلقائيًا عند الاتصال بالإنترنت.}few{يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز قبل الموعد النهائي، لذا سيتم تنزيله تلقائيًا عند الاتصال بالإنترنت.}many{يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز قبل الموعد النهائي، لذا سيتم تنزيله تلقائيًا عند الاتصال بالإنترنت.}other{يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز قبل الموعد النهائي، لذا سيتم تنزيله تلقائيًا عند الاتصال بالإنترنت.}}</translation>
-<translation id="4975771730019223894">وضع شارات على رمز التطبيق</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />،
         <ph name="NOTIFICATION_2" />،
@@ -1576,7 +1564,6 @@
 <translation id="5551456515017410630">فتح/إغلاق التقويم</translation>
 <translation id="5551974246223970793">الانتقال إلى النتيجة المطابِقة التالية عند البحث في صفحة</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
-<translation id="5558091555391176027">إيقاف/تفعيل وضع الظهور لجميع الأجهزة القريبة لميزة "المشاركة عن قرب"</translation>
 <translation id="556042886152191864">زر</translation>
 <translation id="5570122939431135380">فتح علامة تبويب جديدة في نافذة تصفُّح متخفٍ جديدة</translation>
 <translation id="5575528586625653441">حدثت مشكلة في طلب التسجيل التجريبي.</translation>
@@ -1603,7 +1590,6 @@
 <translation id="5620979661744857819">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا والميكروفون لتطبيق "<ph name="APP_NAME" />" ولجميع التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن. قد تحتاج إلى إعادة تحميل صفحة الويب أو إعادة تشغيل التطبيق.</translation>
 <translation id="5625955975703555628">LTE+‎</translation>
 <translation id="5627392655516693966">لا يمكن التأكد من كلمة المرور لحسابك. يُرجى إعادة المحاولة.</translation>
-<translation id="5632485077360054581">الاطّلاع على الإرشادات</translation>
 <translation id="5648021990716966815">مقبس الميكروفون</translation>
 <translation id="5652575806481723716">لديك إشعار من <ph name="FOCUSED_APP_NAME" />.</translation>
 <translation id="5657667036353380798">‏تتطلب الإضافة الخارجية تثبيت chrome الإصدار <ph name="MINIMUM_CHROME_VERSION" /> أو أعلى.</translation>
@@ -1925,7 +1911,6 @@
 <translation id="651753338596587143">‏حدث خطأ أثناء تثبيت ملحقات المحتوى القابل للتنزيل (DLC). يُرجى محاولة إعادة تشغيل الجهاز وإذا استمرت المشكلة، يُرجى إرسال ملاحظاتك وإضافة عبارة ‎#bruschetta في الوصف. رمز الخطأ هو <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">يُرجى تحديد نافذة للحصول لالتقاط صورة لها.</translation>
 <translation id="652139407789908527">ستظهر شاشتك فارغة لمدة أطول من المعتاد (تصل إلى دقيقة واحدة) أثناء هذا التحديث. يُرجى عدم الضغط على زر التشغيل خلال عملية التحديث.</translation>
-<translation id="6528179044667508675">عدم الإزعاج</translation>
 <translation id="65320610082834431">رموز الإيموجي</translation>
 <translation id="6537924328260219877">قوة الإشارة <ph name="SIGNAL_STRENGTH" />، بطارية الهاتف <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">جارٍ فحص الملف <ph name="FILENAME" /> لتنزيله</translation>
@@ -2170,7 +2155,6 @@
 <translation id="7264788308526527464">تقليل <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">يُرجى تكرار اللمس بالإصبع لإضافة الأجزاء المختلفة من بصمته.</translation>
 <translation id="7278787617901301220">‏‫<ph name="LAUNCHER_KEY_NAME" /> + مفتاح backspace</translation>
-<translation id="7285232777292757180">استخدِم أداة تصوير الشاشة في الإعدادات السريعة لأخذ لقطات شاشة.</translation>
 <translation id="7301826272005790482">إغلاق اقتراحات النوافذ</translation>
 <translation id="7302889331339392448">ميزة "النسخ النصي التلقائي" غير مفعَّلة.</translation>
 <translation id="7303281435234579599">عفوًا، لقد حدث خطأ أثناء إعداد الوضع التجريبي.</translation>
@@ -2709,7 +2693,6 @@
 <translation id="880709030178078220">"مساعدة"</translation>
 <translation id="8813531681893371930">توصيل سمّاعة رأس سلكية</translation>
 <translation id="8814190375133053267">‏لاسلكي، Wi-Fi</translation>
-<translation id="8815390544836110344">‏اضغط على اختصار أخذ لقطة الشاشة، أو Ctrl‏ + Shift + مفتاح وضع "نظرة عامة".</translation>
 <translation id="881757059229893486">إعدادات أساليب الإدخال</translation>
 <translation id="8819728065740986820">ميزة "الشحن الذكي" مفعّلة</translation>
 <translation id="882204272221080310">يمكنك تحديث البرامج الثابتة لمزيد من الأمان.</translation>
@@ -2815,7 +2798,6 @@
 <translation id="9098750710832798892">لم يتم نسخ أي عناصر إلى "الحافظة"</translation>
 <translation id="9098969848082897657">كتم صوت الهاتف</translation>
 <translation id="9126339866969410112">التراجع عن الإجراء الأخير</translation>
-<translation id="9126642911267312373">البلوتوث غير متوفّر</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{بعد دقيقة واحدة}zero{بعد # دقيقة}two{بعد دقيقتين}few{بعد # دقائق}many{بعد # دقيقة}other{بعد # دقيقة}}</translation>
 <translation id="9129245940793250979">الزرّ الخلفي</translation>
 <translation id="9133335900048457298">لا يمكن تسجيل المحتوى المحمي</translation>

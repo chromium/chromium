@@ -138,7 +138,6 @@
 <translation id="1346403631707626730">वापर आणि निदान डेटा पाठवा. Google ला आपोआप निदान, डिव्हाइस आणि अ‍ॅप वापर डेटा पाठवून तुमच्या लहान मुलाचा Android अनुभव सुधारण्यात मदत करा. हे तुमच्या लहान मुलाला ओळखण्यासाठी वापरले जाणार नाही आणि सिस्टीम व अ‍ॅप स्थिरता आणि इतर सुधारणांसाठी मदत करेल. काही एकत्रित डेटा Google अ‍ॅप्स आणि Android डेव्हलपर यासारख्या भागीदारांनादेखील मदत करेल. तुमच्या लहान मुलासाठी अतिरिक्त वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सुरू केलेली असल्यास, हा डेटा त्याच्या Google खात्यामध्ये स्टोअर केला जाऊ शकतो. <ph name="BEGIN_LINK1" />मेट्रिकबद्दल अधिक जाणून घ्या<ph name="BEGIN_LINK1_END" />अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">उजवे</translation>
 <translation id="1350494136075914725">सुरू आहे · टॅबवर स्विच करा</translation>
-<translation id="1351937230027495976">मेनू कोलॅप्स करा</translation>
 <translation id="1355088139103479645">सर्व डेटा हटवायचा का?</translation>
 <translation id="1360220746312242196">पेज शोधत असताना, शोधासाठी मागील जुळणीवर जा</translation>
 <translation id="1360788414852622716">प्रोफाइल बंद करत आहे. यासाठी काही मिनिटे लागू शकतात.</translation>
@@ -682,7 +681,6 @@
 <translation id="3033545621352269033">सुरू</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> सह एकत्र करा</translation>
 <translation id="3036327949511794916">हे <ph name="DEVICE_TYPE" /> परत करण्याची डेडलाइन निघून गेली आहे.</translation>
-<translation id="3039491566278747710">डिव्हाइसवर ऑफलाइन धोरण इंस्टॉल करता आले नाही.</translation>
 <translation id="3039939407102840004">स्टायलसची बॅटरी <ph name="PERCENTAGE" /> टक्के आहे.</translation>
 <translation id="304097922505898963">Key Shortcuts अ‍ॅप उघडा</translation>
 <translation id="304417730895741346">तुमची पिन केलेली आणि सुरू असलेली ॲप्स शेल्फवर आहेत. एखादे ॲप शेल्फवर पिन करण्यासाठी, ॲपवर राइट-क्लिक करा किंवा तुमच्या टचपॅडवर दोन बोटांनी टॅप करा.</translation>
@@ -698,7 +696,6 @@
 <translation id="3075144191779656260">तुमच्या <ph name="DEVICE_TYPE" /> च्या डाव्या बाजूला असलेल्या फिंगरप्रिंट सेन्सरला स्पर्श करा. तुमचा फिंगरप्रिंट डेटा सुरक्षितपणे स्टोअर केला जातो आणि तुमच्या <ph name="DEVICE_TYPE" /> मध्येच राहतो.</translation>
 <translation id="3075874217500066906">Powerwash प्रक्रिया सुरू करण्‍यासाठी रीस्‍टार्ट आवश्‍यक आहे. रीस्‍टार्ट केल्‍यानंतर तुम्ही पुढे सुरू ठेवू इच्‍छिता याची पुष्‍टी करण्‍यासाठी आपल्‍याला विचारले जाईल.</translation>
 <translation id="3077734595579995578">shift</translation>
-<translation id="3081696990447829002">मेनूचा विस्तार करा</translation>
 <translation id="3087734570205094154">तळाकडील</translation>
 <translation id="3088128611727407543">अ‍ॅप प्रोफाइल तयार करत आहे...</translation>
 <translation id="3090214513075567547">कॉंटेक्स्ट मेनू उघडा</translation>
@@ -804,7 +801,6 @@
 <translation id="3405101454990027959">मायक्रोफोनचा अ‍ॅक्सेस सुरू करा</translation>
 <translation id="3407967630066378878">फिंगरप्रिंट सेट करण्यासाठी, तुमच्या लहान मुलाला या <ph name="DEVICE_TYPE" /> च्या डाव्या बाजूला असलेल्या फिंगरप्रिंट सेन्सरला स्पर्श करण्यास सांगा. तुमच्या लहान मुलाचा फिंगरप्रिंट डेटा सुरक्षितपणे स्टोअर केला जातो आणि तो या <ph name="DEVICE_TYPE" /> मध्येच राहतो.</translation>
 <translation id="3409584356742878290">डेव्हलपर टूल इन्स्पेक्टर दाखवा किंवा लपवा</translation>
-<translation id="3413817803639110246">आत्ताच पाहण्यासाठी काहीही नाही</translation>
 <translation id="3417835166382867856">टॅब शोधा</translation>
 <translation id="3426253816581969877"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> प्रेस करून धरून ठेवा, तुम्हाला उघडायच्या असलेल्या विंडोवर तुम्ही पोहोचेपर्यंत <ph name="KEY" /> वर टॅप करत राहा, त्यानंतर सोडा.</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> मधून डिस्कनेक्ट करा</translation>
@@ -899,7 +895,6 @@
 <translation id="3626281679859535460">ब्राइटनेस</translation>
 <translation id="3628323833346754646">फ्रंट बटण</translation>
 <translation id="3630697955794050612">बंद</translation>
-<translation id="3631369015426612114">यांना सूचना पाठवू द्या</translation>
 <translation id="3633097874324966332">तुमचे डिव्हाइस पेअर करण्यासाठी ब्लूटूथ सेटिंग्ज उघडा</translation>
 <translation id="3633851487917460983">क्लिपबोर्ड उघडा</translation>
 <translation id="363473492175527493">फोकस करण्यासाठी टास्क सेट केली आहे: <ph name="TASK_NAME" />. टास्क संपादित करण्यासाठी एंटर प्रेस करा.</translation>
@@ -915,7 +910,6 @@
 <translation id="3659667652322717492">तुम्ही माइकचे वर्तन नंतर कधीही बदलू शकता.</translation>
 <translation id="3659814201068740063">सुमारे <ph name="TIME_LEFT" /> शिल्लक (<ph name="PERCENTAGE" />%).
 तुमचे डिव्हाइस पॉवरशी कनेक्ट करा.</translation>
-<translation id="3660860940251915011"><ph name="FEATURE_NAME" /> ची उच्च दृश्यमानता टॉगल करा</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> व्यवस्थापित वापरकर्ता</translation>
 <translation id="3666266999138159418">तुमची फ्लोटिंग विंडो लपवण्यासाठी स्वाइप करा</translation>
 <translation id="367531336287639526">अ‍ॅड्रेस बारच्या डावीकडील पहिला आयकन निवडा</translation>
@@ -924,7 +918,6 @@
 <translation id="36813544980941320">तुमचा फोन आणि <ph name="DEVICE_NAME" /> यांच्या दरम्यान वाय-फाय नेटवर्क शेअर केली जातील</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> त्यानंतर<ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">वेबसाइट</translation>
-<translation id="3697991387880191195">स्क्रीनशॉट शॉर्टकट प्रेस करा</translation>
 <translation id="3702809606464356667">सध्याच्या डेस्कवरील विंडो दाखवत आहे, सर्व डेस्कवरील विंडो दाखवण्यासाठी अप अ‍ॅरो की प्रेस करा</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">लोड करीत आहे...</translation>
@@ -950,7 +943,6 @@
         <ph name="BEGIN_PARAGRAPH3" />ही सेवा तुम्ही सेटिंग्ज मध्ये बंद करू शकता.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620">तुमचा <ph name="PHONE_NAME" /> आता हे <ph name="DEVICE_TYPE" /> देखील अनलॉॅक करू शकतो.</translation>
 <translation id="3756485814916578707">स्‍क्रीन कास्‍ट करत आहे</translation>
-<translation id="3765246971671567135">ऑफलाइन डेमो मोड धोरण रीड करता आले नाही.</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> शॉर्टकट <ph name="OLD_SHORTCUT" /> वरून <ph name="NEW_SHORTCUT" /> वर अपडेट केला आहे</translation>
 <translation id="3772109172035555611">तुमचे TrackPoint कस्टमाइझ करा</translation>
 <translation id="3773700760453577392">ॲडमिनिस्ट्रेटरने <ph name="USER_EMAIL" /> साठी एकाहून अधिक साइन-इन बंद केले आहे. सुरू ठेवण्यासाठी सर्व वापरकर्त्यांनी साइन आउट करणे आवश्यक आहे.</translation>
@@ -986,7 +978,6 @@
 <translation id="3859364108019690">ॲप्स स्ट्रीम करू शकत नाही</translation>
 <translation id="3861638017150647085">वापरकर्ता नाव "<ph name="USERNAME" />" उपलब्ध नाही</translation>
 <translation id="3861651314799684201">फुल स्क्रीन रेकॉर्ड करण्यासाठी एंटर प्रेस करा</translation>
-<translation id="3870197372373144624">तुमचे डिव्हाइस बंद करून पहा.</translation>
 <translation id="3873915545594852654">ARC++ ला समस्या आली.</translation>
 <translation id="3879748587602334249">डाउनलोड व्यवस्थापक</translation>
 <translation id="3884007280698606545">USB ची मर्यादा गाठली आहे</translation>
@@ -1171,7 +1162,6 @@
 <translation id="439598569299422042">थांबवले, <ph name="SIZE_INFO" /></translation>
 <translation id="439817266247065935">तुमचे डिव्हाइस योग्य प्रकारे बंद झाले नाही. Linux अ‍ॅप्स वापरण्यासाठी Linux रीस्टार्ट करा.</translation>
 <translation id="440113666232554208">स्क्रीनकास्ट सेव्ह करता आले नाही</translation>
-<translation id="4405151984121254935">कनेक्ट केलेल्या पेरिफेरल प्रकाराला सपोर्ट नाही</translation>
 <translation id="4406883609789734330">लाइव्ह कॅप्शन</translation>
 <translation id="4412698727486357573">मदत केंद्र</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> बंद आहे.</translation>
@@ -1354,7 +1344,6 @@
 <translation id="493076006037866439">स्क्रीनवर झूम आउट करा</translation>
 <translation id="4932733599132424254">तारीख</translation>
 <translation id="4934763315031217818">क्रमाने येणाऱ्या संख्या असू शकत नाहीत</translation>
-<translation id="4936329710968938986">प्रत्येकजण, बंद आहे</translation>
 <translation id="4937170330762390348">डिक्टेशनसह तुम्ही तुमचा आवाज वापरून टाइप करू शकता. तुम्ही मजकूर फील्डवर असताना डिक्टेशन की प्रेस करा किंवा स्क्रीनच्या तळाशी असलेला मायक्रोफोन आयकन निवडा. तुमची डिक्टेशन भाषा <ph name="LANGUAGE" /> वर सेट केली आहे. स्पीच फाइल डाउनलोड केल्या जातील, जेणेकरून तुम्ही डिक्टेशन ऑफलाइन वापरू शकाल. तुम्ही सेटिंग्ज &gt; अ‍ॅक्सेसिबिलिटी मध्ये डिक्टेशन भाषा कधीही बदलू शकता.</translation>
 <translation id="4938176435186993759">सर्व सूचना लपवा</translation>
 <translation id="4945196315133970626">सूचना बंद करा</translation>
@@ -1371,7 +1360,6 @@
 <translation id="4966431234408005599">व्‍हॉल्‍यूम वाढवा</translation>
 <translation id="496999337731226334">टूरच्या <ph name="TOTAL_STEPS" /> पायऱ्यांपैकी <ph name="STEP" />. वाय-फाय, ब्लूटूथ आणि व्हॉल्यूम यांसारखी वारंवार वापरली जाणारी नियंत्रणे क्विक सेटिंग्ज मध्ये आहेत. तुम्ही स्क्रीनशॉट घेण्यासाठी इथेदेखील जाऊ शकता. क्विक सेटिंग्ज उघडण्यासाठी Alt + Shift + S प्रेस करा.</translation>
 <translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> साठी तुम्ही आजच अपडेट डाउनलोड करणे आवश्यक आहे. तुम्ही इंटरनेटशी कनेक्ट केल्यावर अपडेट आपोआप डाउनलोड होईल.}other{<ph name="MANAGER" /> साठी तुम्ही डेडलाइनच्‍या आधी अपडेट डाउनलोड करणे आवश्यक आहे. तुम्ही इंटरनेटशी कनेक्ट केल्यावर अपडेट आपोआप डाउनलोड होईल.}}</translation>
-<translation id="4975771730019223894">अ‍ॅप बॅजिंग</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
@@ -1574,7 +1562,6 @@
 <translation id="5551456515017410630">कॅलेंडर सुरू/बंद करा</translation>
 <translation id="5551974246223970793">पेज शोधत असताना, शोधासाठी नवीन जुळणीवर जा</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
-<translation id="5558091555391176027">Nearby सह शेअरिंग चा उच्च दृश्यमानता मोड टॉगल करा</translation>
 <translation id="556042886152191864">बटण</translation>
 <translation id="5570122939431135380">नवीन टॅबमध्ये नवीन गुप्त विंडो उघडा</translation>
 <translation id="5575528586625653441">डेमो नोंदणी विनंतीला समस्या आली.</translation>
@@ -1601,7 +1588,6 @@
 <translation id="5620979661744857819">हे <ph name="APP_NAME" /> आणि कॅमेरा व मायक्रोफोन वापरण्याच्या परवानग्यांसह सर्व अ‍ॅप्स आणि वेबसाइट अ‍ॅक्सेस करण्यास अनुमती देते. तुम्हाला वेब पेज रिफ्रेश करावे लागू शकते किंवा ॲप रीस्टार्ट करावे लागू शकते.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">तुमच्या पासवर्डची पडताळणी करता आली नाही. पुन्हा प्रयत्न करा.</translation>
-<translation id="5632485077360054581">मला कसे ते दाखवा</translation>
 <translation id="5648021990716966815">माइक जॅक</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> तुम्हाला लक्ष देण्याची विनंती करते.</translation>
 <translation id="5657667036353380798">बाह्य एक्स्टेंशनला chrome <ph name="MINIMUM_CHROME_VERSION" /> किंवा मोठी आवृत्ती इंस्टॉल केली जाण्‍याची आवश्‍यकता आहे.</translation>
@@ -1919,7 +1905,6 @@
 <translation id="651753338596587143">सॉरी, DLC अवलंबने इंस्टॉल करताना काहीतरी चुकले. कृपया रीबूट करून पहा आणि समस्या कायम राहिल्यास, वर्णनामध्ये #bruschetta च्या समावेशासह फीडबॅक द्या. <ph name="ERROR" /> हा एरर कोड आहे.</translation>
 <translation id="6520517963145875092">कॅप्चर करण्यासाठी विंडो निवडा</translation>
 <translation id="652139407789908527">तुमची स्क्रीन या अपडेटदरम्यान नेहमीपेक्षा (एका मिनिटापर्यंत) जास्त वेळ बंद राहील. कृपया अपडेट सुरू असताना पॉवर बटण दाबू नका.</translation>
-<translation id="6528179044667508675">व्यत्यय आणू नका</translation>
 <translation id="65320610082834431">इमोजी</translation>
 <translation id="6537924328260219877">सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, फोन बॅटरी <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999"><ph name="FILENAME" /> डाउनलोड स्कॅन करत आहे</translation>
@@ -2163,7 +2148,6 @@
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> कमी करा</translation>
 <translation id="7267875682732693301">तुमच्‍या फिंगरप्रिंटचे वेगवेगळे भाग जोडण्यासाठी तुमचे बोट उचलत राहा</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7285232777292757180">स्क्रीनशॉट घेण्यासाठी क्विक सेटिंग्जमधील स्क्रीन कॅप्चर टूल वापरा</translation>
 <translation id="7301826272005790482">विंडो सूचना डिसमिस करा</translation>
 <translation id="7302889331339392448">लाइव्ह कॅप्शन बंद आहे.</translation>
 <translation id="7303281435234579599">अरेरे! डेमो मोड सेट करताना काहीतरी चूक झाली.</translation>
@@ -2702,7 +2686,6 @@
 <translation id="880709030178078220">"मदत"</translation>
 <translation id="8813531681893371930">वायर्ड हेडफोन कनेक्ट करा</translation>
 <translation id="8814190375133053267">वाय-फाय</translation>
-<translation id="8815390544836110344">स्क्रीनशॉट शॉर्टकट, Ctrl +Shift+ Overview मोड की प्रेस करा</translation>
 <translation id="881757059229893486">इनपुट पद्धती सेटिंग्ज</translation>
 <translation id="8819728065740986820">अडॅप्टिव्ह चार्जिंग सुरू आहे</translation>
 <translation id="882204272221080310">अतिरिक्त सुरक्षिततेसाठी फर्मवेअर अपडेट करा.</translation>
@@ -2808,7 +2791,6 @@
 <translation id="9098750710832798892">तुमच्या क्लिपबोर्ड वर कोणतेही आयटम कॉपी केले नाहीत</translation>
 <translation id="9098969848082897657">फोन सायलंट करा</translation>
 <translation id="9126339866969410112">शेवटची कृती पहिल्यासारखी करा</translation>
-<translation id="9126642911267312373">ब्लूटूथ उपलब्ध नाही</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{१ मिनिटामध्ये}other{# मिनिटांमध्ये}}</translation>
 <translation id="9129245940793250979">रीअर बटण</translation>
 <translation id="9133335900048457298">सुरक्षित आशय रेकॉर्ड करू शकत नाही</translation>

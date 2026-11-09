@@ -16,9 +16,7 @@
 <translation id="113122355610423240">Chromium ist dein Standardbrowser</translation>
 <translation id="1131805035311359397">Wenn du prüfen möchtest, ob deine Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melde dich in Chromium an<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Laut deinem Administrator solltest du Chromium neu starten, um dieses Update durchzuführen. Ein Inkognito- oder isoliertes Fenster ist geöffnet. Es wird nach dem Neustart nicht wieder geöffnet.}other{Laut deinem Administrator solltest du Chromium neu starten, um dieses Update durchzuführen. # Inkognito- oder isolierte Fenster sind geöffnet. Sie werden nach dem Neustart nicht wieder geöffnet.}}</translation>
-<translation id="1150418667633096194">Der Button „Seitenleiste der Google Suche“ in der Symbolleiste hat ein neues Symbol. Klicke darauf, um über die Seitenleiste der Google Suche beim Surfen Fragen zu stellen.</translation>
 <translation id="1153368717515616349">Klicke auf das Chromium-Menü</translation>
-<translation id="1157952955648710254">Seitenleiste der Google Suche schließen</translation>
 <translation id="1157985233335035034">Zuletzt verwendete Sprachen</translation>
 <translation id="1184145431117212167">Die Installation ist fehlgeschlagen, weil deine Windows-Version nicht unterstützt wird.</translation>
 <translation id="1185134272377778587">Über Chromium</translation>
@@ -44,15 +42,12 @@
 <translation id="1383876407941801731">Suchen</translation>
 <translation id="1388276868779258475">Mit der Chromium App kannst du unterwegs weiter surfen</translation>
 <translation id="141901961143729572">Lass uns wissen, was du denkst</translation>
-<translation id="1438812738230833934">Du kannst die Google Suche in der Seitenleiste wieder öffnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="1465192221147974788">Wenn du dein Fenster teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chromium zulassen.</translation>
-<translation id="1470136641087909499">Du kannst die Google Suche in Chrome wieder öffnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="1478370723027452770">Hilfe zu Chrome for Testing</translation>
 <translation id="147870194906295621">Wenn du auf deine gespeicherten Informationen und andere Daten von <ph name="DEVICE" /> zugreifen möchtest, melde dich in Chromium an</translation>
 <translation id="1497802159252041924">Installationsfehler: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Diese Seite ist geschützt</translation>
 <translation id="1524282610922162960">Chromium-Tab freigeben</translation>
-<translation id="15408169957028265">Google Suche in Chrome wieder öffnen</translation>
 <translation id="154404805518949443">In Chromium anmelden</translation>
 <translation id="1547469039832541117">Beendet den ausgewählten Task.</translation>
 <translation id="1562320819937089394">Chromium anpinnen</translation>
@@ -72,7 +67,6 @@
 <translation id="1736662517232558588">Chromium-Daten gelöscht</translation>
 <translation id="1745121272106313518">Chromium wird in <ph name="REMAINING_TIME" /> neu gestartet</translation>
 <translation id="1749104137266986751">Wenn HTTPS nicht verfügbar ist, verwendet Chromium eine unsichere Verbindung ohne Warnung</translation>
-<translation id="1769661297620183092">Du kannst das Google-Suchfeld wieder öffnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="1774152462503052664">Chromium im Hintergrund ausführen</translation>
 <translation id="1779356040007214683">Um Chromium sicherer zu machen, haben wir einige Erweiterungen deaktiviert, die nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt sind und möglicherweise ohne dein Wissen hinzugefügt wurden.</translation>
 <translation id="1793486931176048546">Klicke in der Windows-Benachrichtigung auf <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" />, um Chromium für den Schnellzugriff an die Taskleiste anzupinnen.</translation>
@@ -105,7 +99,6 @@
 <translation id="2039417478970545937">den Einstellungen.</translation>
 <translation id="2049376729098081731">Lege fest, ob der Chromium-Verlauf dafür verwendet werden soll, die Google-Dienste stärker für dich zu personalisieren</translation>
 <translation id="2050698962207788467">Der Passwortmanager ist direkt in Chromium eingebunden und kann für dich starke Passwörter erstellen, speichern und automatisch einfügen. Füge die Verknüpfung hinzu, um einfacher darauf zuzugreifen.</translation>
-<translation id="2060311596979880693">Fertig! Mit der Google Suche in Chrome kannst du jetzt ganz einfach Fragen stellen, während du surfst.</translation>
 <translation id="2064856577282482477">Wenn du Chromium einen neuen Look geben möchtest, klicke auf der Seite „Neuer Tab“ auf den Button „Chromium anpassen“</translation>
 <translation id="2086476982681781442">Chromium hat diesen Download blockiert, weil dich die Datei täuschen soll und unerwartete Änderungen an deinem Gerät vornehmen könnte</translation>
 <translation id="208726765006323911">Wenn du Chromium unter iOS das nächste Mal öffnest, wirst du aufgefordert, die Funktion „<ph name="FEATURE_NAME" />“ auszuprobieren.</translation>
@@ -131,7 +124,6 @@
 <translation id="2238130810669087193">Wenn du auf allen deinen Geräten auf deine Adressen und andere Daten zugreifen möchtest, melde dich in Chromium an. Diese Adresse wird in deinem Google-Konto gespeichert, nachdem du dich angemeldet hast.</translation>
 <translation id="2241627712206172106">Bei gemeinsam genutzten Computern können die verschiedenen Personen separat surfen und Chromium jeweils nach ihren Wünschen einrichten.</translation>
 <translation id="22571759390241347">Skills in Chromium</translation>
-<translation id="2283228908180457226">Neues Symbol, gleiche Verknüpfung: Klicke darauf, um über die Seitenleiste der Google Suche beim Surfen Fragen zu stellen.</translation>
 <translation id="2283803047247799269">Diesen Tab mit der Bildersuche durchsuchen</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium empfiehlt, den Tab zu pausieren, der deinen Browser verlangsamt}other{Chromium empfiehlt, die Tabs zu pausieren, die deinen Browser verlangsamen}}</translation>
 <translation id="2307973900865360088">Im Dock behalten</translation>
@@ -154,7 +146,6 @@
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Deinstallieren</translation>
 <translation id="2513154137948333830">Neustart erforderlich: <ph name="INSTALL_SUCCESS" /></translation>
-<translation id="2521391734665471391">KI-Modus der Google Suche schließen</translation>
 <translation id="2542968102051442371">Text mit der Bildersuche auswählen</translation>
 <translation id="2554739539410784893">Chromium versucht, vorhandene Passwörter zu ersetzen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="2560420686485554789">Chromium benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>
@@ -190,7 +181,6 @@
 <translation id="2846251086934905009">Installationsfehler: Die Installation konnte nicht abgeschlossen werden und wurde abgebrochen.</translation>
 <translation id="2847479871509788944">Aus Chromium entfernen...</translation>
 <translation id="2850691299438350830">Schützt dich in Chromium und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn du angemeldet bist.</translation>
-<translation id="2876152561415416331">Google-Suchfeld wieder öffnen</translation>
 <translation id="2885378588091291677">Task-Manager</translation>
 <translation id="2910007522516064972">Über &amp;Chromium</translation>
 <translation id="2915996080311180594">Später neu starten</translation>
@@ -208,8 +198,6 @@
 <translation id="302551344979399011">KI-Innovationen wie Skills werden in deinem Google-Konto gespeichert und getrennt von der Chromium-Synchronisierung verwaltet</translation>
 <translation id="3032219013429286568">Wenn du auf allen deinen Geräten auf deine Erweiterungen und andere Daten zugreifen möchtest, melde dich in Chromium an</translation>
 <translation id="3032787606318309379">Wird zu Chromium hinzugefügt...</translation>
-<translation id="3034219227076811559">Google Suche in Chrome</translation>
-<translation id="3037190258341683404">Du kannst die Google Suche in Chrome anpinnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="3038232873781883849">Warten auf Installation…</translation>
 <translation id="3045032126857188731">Übersetzte Sprache: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Feedback-Dialogfeld schließen</translation>
@@ -303,8 +291,8 @@
 <translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="3971865010372729242">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chromium deine Eingabe an die Such-, KI- und Hilfetools deiner Organisation, um Vorschläge zu erhalten.</translation>
 <translation id="3975724895399328945">Über &amp;Google Chrome for Testing</translation>
-<translation id="3984557288004650913">Über den Button „Google Suche in Chrome“ in der Symbolleiste kannst du die Google Suche in Chrome wieder öffnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="3997429360543082038">Über Chromium OS</translation>
+<translation id="399788104667917863">An Symbolleiste anpinnen</translation>
 <translation id="4016217212818346953">Mit dem Passwortmanager geschützt bleiben</translation>
 <translation id="4019629340646866719">Chromium OS und die <ph name="BEGIN_LINK_LINUX_OSS" />Linux-Entwicklungsumgebung<ph name="END_LINK_LINUX_OSS" /> werden durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="4022972681110646219">Bildschirm übersetzen</translation>
@@ -352,7 +340,6 @@
 <translation id="4470974262661801543">Gib deine Passphrase ein, um Chromium-Daten in deinem Google-Konto zu verwenden und zu speichern</translation>
 <translation id="4493028449971051158">Fehler beim Starten: Bitte führe das Installationsprogramm als Administrator aus.</translation>
 <translation id="4501471624619070934">Fehler bei der Installation. Der Zugriff ist in diesem Land eingeschränkt.</translation>
-<translation id="4501839397124711198">Du kannst die Google Suche in der Seitenleiste anpinnen, um während des Surfens Fragen zu stellen</translation>
 <translation id="4510853178268397146">Für diese Erweiterung wurden keine Informationen zum Umgang mit dem Datenschutz veröffentlicht, wie z. B. Informationen darüber, wie Daten erhoben und verwendet werden. Chromium empfiehlt daher, sie zu entfernen.</translation>
 <translation id="452711251841752011">Willkommen bei Chromium; neues Browserfenster geöffnet</translation>
 <translation id="4531137820806573936">Chromium benötigt eine Berechtigung für das Erstellen einer Karte deiner Umgebung und das Hand-Tracking</translation>
@@ -383,7 +370,6 @@
 <translation id="4771701986670315895">Du hast diese Website in letzter Zeit nicht besucht. Chromium hat „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und <ph name="COUNT" /> weitere Berechtigungen entfernt.</translation>
 <translation id="4786083865378785874">Wenn Gemini in Chromium geöffnet ist, bleibt die Seitenleiste beim Erstellen neuer Tabs geöffnet</translation>
 <translation id="479167709087336770">Es wird dieselbe Rechtschreibprüfung wie in der Google Suche verwendet. Der in den Browser eingegebene Text wird an Google gesendet. Du kannst dies jederzeit in den Einstellungen ändern.</translation>
-<translation id="4803313124144656665">Google Suche in Chrome schließen</translation>
 <translation id="4814736265800133385">Chromium ohne Konto verwenden</translation>
 <translation id="4839733921943823254">Kurzbefehl anpinnen</translation>
 <translation id="4888717733111232871">Eingangsregel für die Zulassung von mDNS-Verkehr in Chromium</translation>
@@ -397,10 +383,8 @@
 <translation id="4987820182225656817">Gastnutzer können Chromium verwenden, ohne Daten zu hinterlassen.</translation>
 <translation id="4992938037305302429">Mein Konto in Chromium</translation>
 <translation id="4994636714258228724">Mich zu Chromium hinzufügen</translation>
-<translation id="5000497292978544380">KI-Modus der Google Suche</translation>
 <translation id="504699503110800016">Öffne das Dreipunkt-Menü</translation>
 <translation id="5074496654342756568">Mit Chromium auf deinem <ph name="DEVICE_TYPE" /> kannst du auf alle deine Google-Favoriten zugreifen</translation>
-<translation id="5121592697493894155">Google Suche in der Seitenleiste</translation>
 <translation id="5123973130450702873">Chromium benötigt eine Berechtigung für das Handtracking</translation>
 <translation id="5141988424377517949">Du hast diese Website in letzter Zeit nicht besucht. Chromium hat „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und „<ph name="PERMISSION_3" />“ entfernt.</translation>
 <translation id="5171868502429358653">In Chromium anmelden</translation>
@@ -410,7 +394,6 @@
 <translation id="5223510345050543907">Mit Chromium für iOS kannst du genau da weitermachen, wo du aufgehört hast.</translation>
 <translation id="5231355151045086930">Von Chromium abmelden</translation>
 <translation id="5234764350956374838">Schließen</translation>
-<translation id="5247617065091903691">Du kannst die Seitenleiste der Google Suche anpinnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="5249261924633168472">Link in Inkognitofenster in Chromium öffnen</translation>
 <translation id="5276305953263010518">Mit der Chromium App kannst du Passwörter unterwegs speichern</translation>
 <translation id="5277894862589591112">Starte Chromium neu, um die Änderungen zu übernehmen</translation>
@@ -440,7 +423,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium empfiehlt, den Tab zu pausieren, der deinen Browser verlangsamt}other{Chromium empfiehlt, die Tabs zu pausieren, die deinen Browser verlangsamen}}</translation>
 <translation id="5473971139929175403">Chromium funktioniert unter Umständen nicht ordnungsgemäß, da es unter dieser Linux-Distribution nicht mehr unterstützt wird</translation>
 <translation id="5475924890392386523">Chromium hat diesen Download blockiert, weil die Datei deine privaten Konten sowie Konten in sozialen Netzwerken schädigen kann</translation>
-<translation id="5482575505313585759">Google-Suchfeld schließen</translation>
 <translation id="549669000822060376">Bitte warte, bis die aktuellen Systemupdates von Chromium installiert wurden.</translation>
 <translation id="5496810170689441661">Chromium versucht, Passwörter zu bearbeiten. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="549975168243349205">Mit Chromium kannst du unterwegs nahtlos mit deinen bevorzugten Apps wie Google Drive und YouTube arbeiten.</translation>
@@ -463,7 +445,6 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="5643865575100044307">Beim Schließen von Chromium immer die Websitedaten von deinem Gerät löschen</translation>
 <translation id="5653831366781983928">Starte Chromium jetzt neu</translation>
 <translation id="565409517765894456">Du benötigst Windows 10 Version 1809 oder höher, um zukünftige Chromium-Updates zu erhalten. Auf diesem Computer wird eine ältere Version von Windows 10 ausgeführt.</translation>
-<translation id="568656514202614970">Fertig! Über die Seitenleiste der Google Suche kannst du jetzt ganz einfach beim Surfen Fragen stellen</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium in dieser Sprache anzeigen</translation>
 <translation id="569897634095159764">Internetverbindung kann nicht hergestellt werden. Für den Proxyserver ist eine Authentifizierung erforderlich.</translation>
@@ -510,6 +491,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6173308241973263798">Chromium-Daten in deinem Konto löschen</translation>
 <translation id="6174920971222007286">Diese Datei könnte gefährlich sein<ph name="LINE_BREAK" />Chromium kann diesen Download für dich prüfen, wenn du das Passwort eingibst. Die Dateiinformationen werden an Google Safe Browsing gesendet, aber der Dateiinhalt und das Passwort bleiben auf deinem Gerät.</translation>
+<translation id="6177442314419606057">Suche in Chrome</translation>
 <translation id="6182736845697986886">Die Installation ist aufgrund eines internen Fehlers des Update-Servers fehlgeschlagen.</translation>
 <translation id="6183079672144801177">Du musst auf deinem Gerät (<ph name="TARGET_DEVICE_NAME" />) in Chromium angemeldet sein. Versuche es dann noch einmal.</translation>
 <translation id="6192070012454216182">Du kannst von überall aus suchen und Fragen stellen, auch wenn Chromium minimiert ist. Ermöglicht die Ausführung von Chromium im Hintergrund.</translation>
@@ -525,10 +507,8 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="6270547683008298381">Diese Tabs verbrauchen zusätzliche Ressourcen. Du kannst die Leistung verbessern, wenn du zulässt, dass Chromium sie deaktiviert.</translation>
 <translation id="6281746429495226318">Chromium-Profil personalisieren</translation>
 <translation id="6290827346642914212">Chromium-Profil benennen</translation>
-<translation id="6294638840436017818">Über den Button „Seitenleiste der Google Suche“ in der Symbolleiste kannst du die Seitenleiste der Google Suche wieder öffnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="6294831894865512704">Eine deiner Erweiterungen fordert dich auf, dich in Chromium anzumelden</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> ist möglicherweise schädlich und wurde daher von Chromium blockiert.</translation>
-<translation id="6308106880471005841">Der Button „Google-Suchfeld“ in der Symbolleiste hat ein neues Symbol. Klicke darauf, um über das Google-Suchfeld beim Surfen Fragen zu stellen.</translation>
 <translation id="6309712487085796862">Chromium verwendet deine Kamera.</translation>
 <translation id="6333502561965082103">In Chromium wird eine andere Aktion durchgeführt. Bitte versuche es später noch einmal.</translation>
 <translation id="6334986366598267305">Du kannst Chromium jetzt noch einfacher mit deinem Google-Konto und auf gemeinsam genutzten Computern verwenden.</translation>
@@ -612,7 +592,6 @@ Einige Funktionen stehen möglicherweise nicht zur Verfügung. Gib bitte ein and
             • Chromium-Verknüpfungen zurückgesetzt
             <ph name="LINE_BREAKS" />
             Diese Aktion wirkt sich nicht auf Lesezeichen, den Verlauf und gespeicherte Passwörter aus.</translation>
-<translation id="6926772305569367352">Der Button „Google Suche in Chrome“ in der Symbolleiste hat ein neues Symbol. Klicke darauf, um über die Google Suche in Chrome beim Surfen Fragen zu stellen.</translation>
 <translation id="6948031725951063910">Du hast das Chromium-Limit von <ph name="BOOKMARK_LIMIT" /> Lesezeichen erreicht. Einige deiner Lesezeichen wurden daher noch nicht in deinem Google-Konto gespeichert.
 
 Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelöscht hast. Wenn du dich jetzt abmeldest, werden nicht gespeicherte Lesezeichen gelöscht.</translation>
@@ -646,7 +625,6 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="7252276985725323153">Sofort lossurfen: Chromium kann jetzt beim Starten von Windows geöffnet werden.</translation>
 <translation id="7274695763216404502">Angepinnt! Du kannst die Bildersuche wieder über die Symbolleiste verwenden.</translation>
 <translation id="7288567540154601580">Tabs und Erweiterungen</translation>
-<translation id="7290997427370476749">Über den Button „Google-Suchfeld“ in der Symbolleiste kannst du das Google-Suchfeld wieder öffnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium empfiehlt, sie zu entfernen}other{Chromium empfiehlt, sie zu entfernen}}</translation>
 <translation id="7296334833518879294">Wenn du Systemaudio teilen möchtest, öffne die Systemeinstellungen und aktiviere die Option „Nur Systemaudio aufzeichnen“ für Chromium. Du musst Chromium dann neu starten.</translation>
 <translation id="7299899569525778554">Vom Desktop aus suchen</translation>
@@ -660,7 +638,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="7349591376906416160">Dein Systemadministrator hat Chromium so konfiguriert, dass <ph name="ALTERNATIVE_BROWSER_NAME" /> für den Zugriff auf <ph name="TARGET_URL_HOSTNAME" /> geöffnet wird.</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten</translation>
 <translation id="7368826207863345663">Du benötigst macOS 13 oder höher, um zukünftige Chromium-Updates zu erhalten. Auf diesem Computer wird macOS 12 ausgeführt.</translation>
-<translation id="7374061268215476070">Du kannst die Seitenleiste der Google Suche wieder öffnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="7376384068949534168">Du hast diese Website in letzter Zeit nicht besucht. Chromium hat „<ph name="PERMISSION_1" />“ und „<ph name="PERMISSION_2" />“ entfernt.</translation>
 <translation id="73786666777299047">Chrome Web Store öffnen</translation>
 <translation id="7394275517973019558">Gemini in Chromium in der Taskleiste anzeigen</translation>
@@ -703,8 +680,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="7781047659465034537">Chromium als Standardbrowser festlegen und an die Taskleiste anpinnen</translation>
 <translation id="7786760609782648049">Chromium noch schneller machen</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
-<translation id="7800043020703832708">Google Suche in der Seitenleiste schließen</translation>
-<translation id="7801317262080715012">Neues Symbol, gleiche Verknüpfung: Klicke darauf, um über das Google-Suchfeld beim Surfen Fragen zu stellen.</translation>
 <translation id="7803986347287457849">Du kannst es Personen mit Zugriff auf deinen Internetverkehr erschweren, zu sehen, welche Websites du besuchst. Chromium nutzt eine verschlüsselte Verbindung, um die IP-Adresse einer Website im DNS (Domain Name System) zu ermitteln.</translation>
 <translation id="7810005234485217901">Du kannst die Bildersuche anpinnen, um leichter darauf zuzugreifen</translation>
 <translation id="7813559034750130602">{COUNT,plural, =1{Ein neues Update für Chromium ist verfügbar und wird installiert, sobald du den Browser neu startest. Ein Inkognito- oder isoliertes Fenster ist geöffnet. Es wird nach dem Neustart nicht wieder geöffnet.}other{Ein neues Update für Chromium ist verfügbar und wird installiert, sobald du den Browser neu startest. # Inkognito- oder isolierte Fenster sind geöffnet. Sie werden nach dem Neustart nicht wieder geöffnet.}}</translation>
@@ -719,7 +694,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="7873537467422636035">Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chromium-Daten in deinem Konto<ph name="END_LINK" /></translation>
 <translation id="7874369989024033742">So kannst du jederzeit auf Gemini in Chromium zugreifen</translation>
 <translation id="7888981273428720788">Chromium als Standardbrowser festlegen</translation>
-<translation id="7904213866086517086">Google Suche in der Seitenleiste wieder öffnen</translation>
 <translation id="7934340546140346950">Chromium stellt unsichere Verbindungen nach Möglichkeit automatisch auf HTTPS um</translation>
 <translation id="7937630085815544518">Du warst in Chromium als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Melde dich bitte wieder mit demselben Konto an.</translation>
 <translation id="7944602660083060118"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich mit <ph name="USER_EMAIL_ADDRESS" /> in deinem eigenen Profil in Chromium an. Du kannst dann auch auf allen deinen Geräten auf deine Lesezeichen und weitere Daten zugreifen.</translation>
@@ -750,7 +724,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="81770708095080097">Diese Datei ist schädlich und wurde von Chromium blockiert.</translation>
 <translation id="8177472873527554730">Inhalt auf der Seite nicht gefunden</translation>
 <translation id="8200109504272824693">Gib deine Passphrase ein, um Chromium-Daten in deinem Konto <ph name="USER_EMAIL" /> zu verwenden und zu speichern</translation>
-<translation id="8203105157044679380">Google-Suchfeld</translation>
 <translation id="820759916613250543">Dieses Bild mit der Bildersuche durchsuchen</translation>
 <translation id="8221491193165283816">Normalerweise blockierst du Benachrichtigungen. Klicke hier, wenn du von dieser Website Benachrichtigungen erhalten möchtest.</translation>
 <translation id="8223363452568144035">Wenn du deine Kamera verwenden möchtest, erlaube Chromium über die <ph name="BEGIN_LINK" />Systemeinstellungen<ph name="END_LINK" /> den Zugriff darauf</translation>
@@ -765,7 +738,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8310603974518734211">QR-Code, um dich als <ph name="USER_NAME" /> in Chromium anzumelden</translation>
 <translation id="8313851650939857356">Fehler beim Starten: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">In deiner Organisation wird Chromium nach <ph name="TIMEOUT_DURATION" /> Inaktivität geschlossen.</translation>
-<translation id="8321058241987390452">Fertig! Mit dem Google-Suchfeld kannst du jetzt ganz einfach Fragen stellen, während du surfst.</translation>
 <translation id="8321888067342493336">Als Bild speichern</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> hat zuvor Chromium verwendet</translation>
 <translation id="8351551329754447960">Skills in Chromium aktivieren</translation>
@@ -776,10 +748,8 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="8372327902843331129">Wenn du auf allen deinen Geräten auf deine Passwörter und andere Daten zugreifen möchtest, melde dich in Chromium an. Dieses Passwort wird in deinem Google-Konto gespeichert, nachdem du dich angemeldet hast.</translation>
 <translation id="837460953767177950">Du musst Chromium dann neu starten.</translation>
-<translation id="8376752431516546391">Seitenleiste der Google Suche</translation>
 <translation id="8397248745433792218">Chromium empfiehlt, sie zu entfernen. <ph name="BEGIN_LINK" />Weitere Informationen zu unterstützten Erweiterungen<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Diese Erweiterung ist möglicherweise nicht sicher – ihre Veröffentlichung wurde vom Entwickler aufgehoben. Entferne sie aus Chromium, damit sie deine Daten auf von dir besuchten Websites nicht mehr abrufen oder ändern kann, auch nicht deine personenbezogenen Daten.</translation>
-<translation id="8406687098231754303">Über den Button für die Google Suche in der Seitenleiste, den du in der Symbolleiste findest, kannst du die Google Suche in der Seitenleiste wieder öffnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="8416884904046428725">Chromium muss deine Identität bestätigen, damit einige Daten in deinem Google-Konto gespeichert und auf allen deinen Geräten verwendet werden können. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium innerhalb eines Tages neu starten}other{Chromium innerhalb von # Tagen neu starten}}</translation>
 <translation id="8438543370129609977">Wenn du die Bildersuche verwendest, werden der Seitentitel, die URL und der Inhalt, einschließlich PDFs, an den Server gesendet. <ph name="LEARN_MORE" /></translation>
@@ -790,24 +760,19 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8482493977473846331">Aufforderungen für die Anmeldung in Chromium werden angezeigt</translation>
 <translation id="8493179195440786826">Chromium ist veraltet.</translation>
 <translation id="850264194101621529">Vielen Dank, dass du Chromium als Standardbrowser festgelegt hast.</translation>
-<translation id="8520489851087523435">Seitenleiste der Google Suche wieder öffnen</translation>
 <translation id="8522801943730206384">Chromium kann deine Passwörter prüfen, wenn du sie speicherst</translation>
 <translation id="8525579356836940628">Installation angehalten</translation>
 <translation id="8545729292258443488">Mit der Chromium App auf deinem Gerät <ph name="DEVICE_TYPE" /> Passwörter, Tabs und andere Daten unterwegs nutzen</translation>
 <translation id="8555465886620020932">Dienstfehler: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Für bestimmte Chromium-Funktionen und -Erweiterungen sind Kürzel verfügbar. Du kannst sie wieder aktivieren.</translation>
 <translation id="8556420416730706394">Du kannst die Bildersuche anpinnen, um leichter darauf zuzugreifen. Klicke dazu oben in der Seitenleiste auf den Button „Anpinnen“.</translation>
-<translation id="8564408666201523086">Fertig! Mit der Google Suche in der Seitenleiste kannst du jetzt ganz einfach Fragen stellen, während du surfst</translation>
 <translation id="856656450041460113">In Liste mit Sprachen suchen</translation>
-<translation id="8568499811906962479">Du kannst das Google-Suchfeld anpinnen, um beim Surfen Fragen zu stellen</translation>
 <translation id="8576826849825683917">Chromium wird von mehreren Organisationen verwaltet</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Die Chromium-Autoren. Alle Rechte vorbehalten.</translation>
-<translation id="8590782867495422699">KI-Modus der Google Suche wieder öffnen</translation>
 <translation id="8619360774459241877">Chromium wird gestartet…</translation>
 <translation id="8624541899164515475">Einstellungen, werden in neuem Tab geöffnet.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing kann nicht als Standardbrowser festgelegt werden.</translation>
 <translation id="8676101123715131330">Mit Chromium von überall aus suchen</translation>
-<translation id="8689408573494410517">Der Button „Google Suche in der Seitenleiste“, den du in der Symbolleiste findest, hat ein neues Symbol. Klicke darauf, um über die Google Suche in der Seitenleiste beim Surfen Fragen zu stellen.</translation>
 <translation id="8697124171261953979">Die Erweiterung legt auch fest, welche Seite beim Start von Chromium oder bei der Suche über die Omnibox angezeigt wird.</translation>
 <translation id="8702213505203810093">Wenn du diesen Tab an ein anderes Gerät senden möchtest, melde dich dort in Chromium an</translation>
 <translation id="8704119203788522458">Dies ist dein persönlicher Chromium-Browser</translation>
@@ -826,7 +791,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8876044221123442390">Chromium-Profil hinzufügen</translation>
 <translation id="8890569919834781711">Chromium OS konnte aufgrund eines Fehlers bei der Anmeldung die Chromium-Daten nicht in deinem Google-Konto speichern</translation>
 <translation id="8891709362986793894">Deine Organisation verlangt, dass du dich in Chromium anmeldest</translation>
-<translation id="8897637834206928776">Neues Symbol, gleiche Verknüpfung: Klicke hier, um über die Google Suche in der Seitenleiste beim Surfen Fragen zu stellen.</translation>
 <translation id="8906384069222226849">Für Chromium ist Windows 10 Version 1809 oder höher erforderlich.</translation>
 <translation id="8907580949721785412">Chromium möchte Passwörter anzeigen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="8932992523185907506">Chromium ist nicht mehr dein Standardbrowser. Chromium als Standardbrowser verwenden?</translation>
@@ -856,8 +820,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="9056398481763999048">Mit der Chromium App auf deinem Smartphone die besten KI-Tools von Google nutzen</translation>
 <translation id="9057625473949801035">Wenn du auf deine Passwörter und andere Daten von <ph name="DEVICE" /> zugreifen möchtest, melde dich in Chromium an</translation>
 <translation id="9062666675513499497">In Chromium anmelden, wenn du dich in anderen Google-Diensten anmeldest</translation>
-<translation id="9074041031320636790">Fertig! Mit dem KI-Modus der Google Suche kannst du jetzt ganz einfach Fragen stellen, während du surfst</translation>
-<translation id="9074163480955555019">Neues Symbol, gleiche Verknüpfung: Klicke darauf, um über die Google Suche in Chrome beim Surfen Fragen zu stellen.</translation>
 <translation id="9078733879136747090">Chromium wurde automatisch geschlossen</translation>
 <translation id="9089354809943900324">Chromium ist veraltet.</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium wird in einer Stunde neu gestartet}other{Chromium wird in # Stunden neu gestartet}}</translation>

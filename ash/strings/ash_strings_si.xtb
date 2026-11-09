@@ -138,7 +138,6 @@
 <translation id="1346403631707626730">භාවිත සහ දෝෂ නිර්ණ දත්ත යවන්න. ස්වයංක්‍රියව රෝග විනිශ්චය, උපාංග සහ යෙදුම් භාවිත දත්ත Google වෙත යැවීමෙන් ඔබේ දරුවාගේ Android අත්දැකීම දියුණු කර ගැනීමට උදවු කරන්න. මෙය ඔබේ දරුවා හඳුනා ගැනීමට භාවිත නොකෙරෙන අතර, පද්ධති සහ යෙදුම් ස්ථායිතාවට සහ අනෙකුත් දියුණු කිරීම්වලට උදවු කරයි. සමහර සමස්ත දත්ත Google යෙදුම්වලට සහ Android සංවර්ධකයින් වැනි හවුල්කරුවන්ට ද උදවු කරයි. ඔබේ දරුවා සඳහා අමතර වෙබ් සහ යෙදුම් ක්‍රියාකාරකම සක්‍රීය කර තිබේ නම්, මෙම දත්ත ඔවුන්ගේ Google ගිණුමට සුරැකේවි. <ph name="BEGIN_LINK1" />මාත්‍රික ගැන තව දැන ගන්න<ph name="BEGIN_LINK1_END" />තව දැන ගන්න<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">දක්ෂිණාවර්ත</translation>
 <translation id="1350494136075914725">සිදුවෙමින් පවතී · පටිත්තට මාරු වන්න</translation>
-<translation id="1351937230027495976">මෙනුව හකුළන්න</translation>
 <translation id="1355088139103479645">සියලු දත්ත මකන්නද?</translation>
 <translation id="1360220746312242196">පිටුවක් සොයන විට, සෙවීම සඳහා පෙර ගැළපීම වෙත යන්න</translation>
 <translation id="1360788414852622716">පැතිකඩ අබල කරමින්. මෙයට මිනිත්තු කිහිපයක් ගත විය හැක.</translation>
@@ -682,7 +681,6 @@
 <translation id="3033545621352269033">සක්‍රියයි</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> සමග ඒකාබද්ධ කරන්න</translation>
 <translation id="3036327949511794916">මෙම <ph name="DEVICE_TYPE" /> ආපසු දීමේ කාල සීමාව අවසන් වී ඇත.</translation>
-<translation id="3039491566278747710">උපාංගය මත නොබැඳි ප්‍රතිපත්තිය ස්ථාපන කළ නොහැකි විය.</translation>
 <translation id="3039939407102840004">පන්හිඳ බැටරිය සියයට <ph name="PERCENTAGE" />කි.</translation>
 <translation id="304097922505898963">යතුරු කෙටි මං යෙදුම් විවෘත කරන්න</translation>
 <translation id="304417730895741346">ඔබේ අමුණන ලද සහ විවෘත යෙදුම් රාක්කයේ ඇත. යෙදුමක් රාක්කයට ඇමිණීමට, යෙදුමක් දකුණු-ක්ලික් කරන්න හෝ ඇඟිලි දෙකකින් ඔබේ ස්පර්ශ පුවරුව තට්ටු කරන්න.</translation>
@@ -698,7 +696,6 @@
 <translation id="3075144191779656260">ඔබේ <ph name="DEVICE_TYPE" /> හි වම් අත පැත්තේ ඇඟිලි සලකුණු සංවේදකය ස්පර්ශ කරන්න. ඔබේ ඇඟිලි සලකුණු දත්ත ආරක්ෂිතව ගබඩා කෙරෙන අතර කිසි විටක ඔබේ <ph name="DEVICE_TYPE" /> හැර නොයයි.</translation>
 <translation id="3075874217500066906">Powerwash ක්‍රියාවලිය ඇරඹීම සඳහා නැවත ආරම්භ කිරීමක් අවශයි. නැවත ඇරඹූ පසු ඔබට ඉදිරිය යා යුත්තේ කෙසේදැයි විමසනු ඇත.</translation>
 <translation id="3077734595579995578">shift</translation>
-<translation id="3081696990447829002">මෙනුව දිග හරින්න</translation>
 <translation id="3087734570205094154">පතුල</translation>
 <translation id="3088128611727407543">යෙදුම් පැතිකඩ සූදානම් කෙරේ...</translation>
 <translation id="3090214513075567547">ප්‍රකරණ මෙනුව විවෘත කරන්න</translation>
@@ -804,7 +801,6 @@
 <translation id="3405101454990027959">මයික්‍රෆෝන ප්‍රවේශය ක්‍රියාත්මක කරන්න</translation>
 <translation id="3407967630066378878">ඇඟිලි සලකුණ පිහිටුවීම සඳහා, ඔබේ දරුවාට මෙම <ph name="DEVICE_TYPE" /> හි වම් පස ඇති ඇඟිලි සලකුණු සංවේදකය ස්පර්ශ කිරීමට සලස්වන්න. ඔබේ දරුවාගේ ඇඟිලි සලකුණු දත්ත ආරක්ෂිතව ගබඩා කෙරෙන අතර කිසි විටක ඔබේ <ph name="DEVICE_TYPE" /> හැර නොයයි.</translation>
 <translation id="3409584356742878290">සංවර්ධක මෙවලම් පරීක්ෂක පෙන්වන්න හෝ සඟවන්න</translation>
-<translation id="3413817803639110246">තවම දැකීමට කිසිවක් නැත</translation>
 <translation id="3417835166382867856">ටැබ සොයන්න</translation>
 <translation id="3426253816581969877"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> ඔබාගෙන සිට, ඔබට විවෘත කිරීමට අවශ්‍ය කවුළුව වෙත පැමිණෙන තෙක් <ph name="KEY" /> තට්ටු කර, අනතුරුව මුදා හරින්න</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> වෙතින් විසන්ධි කරන්න</translation>
@@ -899,7 +895,6 @@
 <translation id="3626281679859535460">දීප්තිය</translation>
 <translation id="3628323833346754646">ඉදිරිපස බොත්තම</translation>
 <translation id="3630697955794050612">ක්‍රියාවිරහිතයි</translation>
-<translation id="3631369015426612114">පහත ඒවායින් දැනුම්දීම්වලට ඉඩ දෙන්න</translation>
 <translation id="3633097874324966332">ඔබගේ උපාංගය යුගල කිරීමට බ්ලූටූත් සැකසීම් විවෘත කරන්න</translation>
 <translation id="3633851487917460983">පසුරු පුවරුව විවෘත කරන්න</translation>
 <translation id="363473492175527493">කාර්යය අවධානය සක්‍රීය ලෙස සකසන ලදි: <ph name="TASK_NAME" />. කාර්යය සංස්කරණ කිරීමට Enter ඔබන්න.</translation>
@@ -915,7 +910,6 @@
 <translation id="3659667652322717492">ඔබට පසුව ඕනෑම වේලාවක මයික් හැසිරීම වෙනස් කළ හැක.</translation>
 <translation id="3659814201068740063"><ph name="TIME_LEFT" /> පමණ ඉතිරිව ඇත (<ph name="PERCENTAGE" />%).
 ඔබගේ උපාංගය බලයට සම්බන්ධ කරන්න.</translation>
-<translation id="3660860940251915011">ඉහළ දෘශ්‍යතා <ph name="FEATURE_NAME" /> ටොගල් කරන්න</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> කළමනා කරන පරිශීලකයා</translation>
 <translation id="3666266999138159418">ඔබේ පාවෙන කවුළුව සැඟවීමට ස්වයිප් කරන්න</translation>
 <translation id="367531336287639526">ලිපින තීරුවේ වම් පස පළමු නිරූපකය තෝරන්න</translation>
@@ -924,7 +918,6 @@
 <translation id="36813544980941320">Wi-Fi ජාල ඔබගේ දුරකථනය සහ <ph name="DEVICE_NAME" /> අතර බෙදා ගනු ඇත</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> අනතුරුව <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">වෙබ් අඩවි</translation>
-<translation id="3697991387880191195">තිර රූ කෙටිමඟ ඔබන්න</translation>
 <translation id="3702809606464356667">වත්මන් මේසයෙන් කවුළු පෙන්වමින්, සියලු මේසවලින් කවුළු පෙන්වීමට ඉහළට ඊතලය යතුර ඔබන්න</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">පූරණය වේ...</translation>
@@ -950,7 +943,6 @@
         <ph name="BEGIN_PARAGRAPH3" />ඔබට මෙය සැකසීම් තුළ අක්‍රිය කළ හැක.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620">ඔබගේ <ph name="PHONE_NAME" /> හට දැන් මෙම <ph name="DEVICE_TYPE" /> ද අගුළු හැරීමට හැකිය.</translation>
 <translation id="3756485814916578707">තිරය විකාශය කරමින්</translation>
-<translation id="3765246971671567135">නොබැඳි ආදර්ශන ප්‍රකාර ප්‍රතිපත්තිය කියවීමට නොහැකි විය.</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> කෙටිමඟ <ph name="OLD_SHORTCUT" /> වෙතින් <ph name="NEW_SHORTCUT" /> වෙත යාවත්කාලීන කර ඇත</translation>
 <translation id="3772109172035555611">ඔබේ TrackPoint අභිරුචි කරන්න</translation>
 <translation id="3773700760453577392">පරිපාලකයෙකු විසින් <ph name="USER_EMAIL" /> සඳහා බහු පුරනයට ඉඩ දී නොමැත. සියලු පරිශීලකයින් ඉදිරියට යෑමට වරනය විය යුතුයි.</translation>
@@ -987,7 +979,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3859364108019690">යෙදුම් ප්‍රවාහ කළ නොහැක</translation>
 <translation id="3861638017150647085">පරිශීලක නාමය "<ph name="USERNAME" />" නොලැබේ</translation>
 <translation id="3861651314799684201">සම්පූර්ණ තිරය පටිගත කිරීමට Enter ඔබන්න</translation>
-<translation id="3870197372373144624">ඔබේ උපාංගය වසා දැමීමට උත්සාහ කරන්න.</translation>
 <translation id="3873915545594852654">ARC++ සමඟ ගැටලුවක් ඇති විය.</translation>
 <translation id="3879748587602334249">බාගැනීමේ කළමනාකරු</translation>
 <translation id="3884007280698606545">USB සීමාවට ළඟා විය</translation>
@@ -1173,7 +1164,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="439598569299422042"><ph name="SIZE_INFO" />, විරාම කරන ලදි</translation>
 <translation id="439817266247065935">ඔබේ උපාංගය නිසි පරිදි වැසුණේ නැත. ලිනක්ස් යෙදුම් භාවිත කිරීමට ලිනක්ස් යළි අරඹන්න.</translation>
 <translation id="440113666232554208">තිරසටහන සුරැකිය නොහැකිය</translation>
-<translation id="4405151984121254935">සම්බන්ධිත උපාංග වර්ගයට සහාය නොදක්වයි</translation>
 <translation id="4406883609789734330">සජීවී සිරස්තලය</translation>
 <translation id="4412698727486357573">උදවු මධ්‍යස්ථානය</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ක්‍රියාවිරහිතයි.</translation>
@@ -1356,7 +1346,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="493076006037866439">තිරයෙන් විශාලනය අඩු කරන්න</translation>
 <translation id="4932733599132424254">දිනය</translation>
 <translation id="4934763315031217818">අනුපිළිවෙල අනුක්‍රම අඩංගු විය නොහැක</translation>
-<translation id="4936329710968938986">සියලු දෙනා, ක්‍රියාවිරහිතයි</translation>
 <translation id="4937170330762390348">අනුලේඛනය මගින්, ඔබට ඔබේ හඬ භාවිත කර ටයිප් කළ හැක. ඔබ පාඨ ක්‍ෂේත්‍රයක් මත සිටින විට අනුලේඛන යතුර ඔබන්න, නැති නම් තිරය යට ඇති මයික්‍රොෆෝන නිරූපකය තෝරන්න. ඔබේ අනුලේඛන භාෂාව <ph name="LANGUAGE" /> ලෙස සකසා ඇත. ඔබට නොබැඳිව අනුලේඛනය භාවිත කළ හැකි වීමට කථන ගොනු බා ගනු ලැබේ. ඔබට සැකසීම් &gt; ප්‍රවේශ්‍යතාව තුළින් ඕනෑම වේලාවක අනුලේඛන භාෂාව වෙනස් කළ හැක.</translation>
 <translation id="4938176435186993759">සියලු යෝජනා සඟවන්න</translation>
 <translation id="4945196315133970626">දැනුම්දීම් ක්‍රියාවිරහිත කරන්න</translation>
@@ -1373,7 +1362,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4966431234408005599">හඬ පරිමාව වැඩි කරන්න</translation>
 <translation id="496999337731226334">සංචාරයේ පියවර <ph name="TOTAL_STEPS" />න් <ph name="STEP" />. Wi-Fi, බ්ලූටූත් සහ ශබ්දය වැනි නිතර භාවිත කරන පාලන ක්ෂණික සැකසීම් තුළ ඇත. තිර රූ ගැනීමට ද ඔබට මෙහි යා හැක. ක්ෂණික සැකසීම් විවෘත කිරීමට Alt + Shift + S ඔබන්න.</translation>
 <translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> හට ඔබ අද යාවත්කාලීනයක් බාගැනීමට අවශ්‍යයි. ඔබ අන්තර්ජාලයට සම්බන්ධ වන විට යාවත්කාලීනය ස්වයංක්‍රියව බාගනු ඇත.}one{<ph name="MANAGER" /> හට නියමිත වේලාවට පෙර ඔබ යාවත්කාලීනයක් බාගැනීම අවශ්‍යයි. ඔබ අන්තර්ජාලයට සම්බන්ධ වන විට යාවත්කාලීනය ස්වයංක්‍රියව බාගනු ඇත.}other{<ph name="MANAGER" /> හට නියමිත වේලාවට පෙර ඔබ යාවත්කාලීනයක් බාගැනීම අවශ්‍යයි. ඔබ අන්තර්ජාලයට සම්බන්ධ වන විට යාවත්කාලීනය ස්වයංක්‍රියව බාගනු ඇත.}}</translation>
-<translation id="4975771730019223894">යෙදුම් ලාංඡනය</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
@@ -1576,7 +1564,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5551456515017410630">දින දර්ශනය විවෘත කරන්න/වසන්න</translation>
 <translation id="5551974246223970793">පිටුවක් සොයන විට, සෙවීම සඳහා මීළඟ ගැළපීම වෙත යන්න</translation>
 <translation id="5556459405103347317">නැවත</translation>
-<translation id="5558091555391176027">ළඟ බෙදා ගැනීමේ ඉහළ දෘශ්‍යතාව ටොගල් කරන්න</translation>
 <translation id="556042886152191864">බොත්තම</translation>
 <translation id="5570122939431135380">නව අප්‍රසිද්ධ කවුළුවක නව පටිත්ත විවෘත කරන්න</translation>
 <translation id="5575528586625653441">ආදර්ශන ලියාපදිංචි ඉල්ලීම සමඟ ගැටලුවක් සිදු විය.</translation>
@@ -1603,7 +1590,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5620979661744857819">මෙය <ph name="APP_NAME" /> සහ කැමරා සහ මයික්‍රොෆෝන අවසර සහිත සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා ප්‍රවේශයට ඉඩ දෙයි. ඔබට වෙබ් පිටුව නැවුම් කිරීමට හෝ යෙදුම නැවත ආරම්භ කිරීමට අවශ්‍ය වේවි.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">ඔබේ මුරපදය සත්‍යාපනය කළ නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
-<translation id="5632485077360054581">කෙසේද කියා මට පෙන්වන්න</translation>
 <translation id="5648021990716966815">මයික් ජැක්කුව</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ඔබගේ අවධානය ඉල්ලයි.</translation>
 <translation id="5657667036353380798">බාහිර දිගුව ස්ථාපනයට chrome <ph name="MINIMUM_CHROME_VERSION" /> අනුවාදය හෝ ඉහළ අවශ්‍යයි.</translation>
@@ -1922,7 +1908,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="651753338596587143">සමාවන්න, DLC පරායත්ත ස්ථාපනය කිරීමේ දී යම් දෝෂයක් සිදු විය. නැවත පණගැන්වීමට උත්සාහ කරන්න සහ ගැටලුව දිගටම පවතින්නේ නම් විස්තරයේ #bruschetta සමග ප්‍රතිපෝෂණ ගොනු කරන්න. දෝෂ කේතය <ph name="ERROR" /> වේ.</translation>
 <translation id="6520517963145875092">ග්‍රහණය කිරීමට කවුළුවක් තෝරන්න</translation>
 <translation id="652139407789908527">මෙම යාවත්කාලීන සමයේ ඔබේ තිරය සාමාන්‍යයට වඩා දිග වේලාවකට (විනාඩියක් දක්වා) හිස් වෙයි. යාවත්කාලීනය සිදු වෙමින් පවතින විට බල බොත්තම නොඔබන්න.</translation>
-<translation id="6528179044667508675">බාධා නොකරන්න</translation>
 <translation id="65320610082834431">ඉමොජි</translation>
 <translation id="6537924328260219877">සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, දුරකථන බැටරිය <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">ස්කෑන් කරන <ph name="FILENAME" /> බාගන්න</translation>
@@ -2166,7 +2151,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> අඩු කරන්න</translation>
 <translation id="7267875682732693301">ඔබගේ ඇඟිලි සලකුණෙහි විවිධ කොටස් එක් කිරීමට ඔබගේ ඇඟිල්ල ඔසවා තබා ගන්න</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + බැක්ස්පේස්</translation>
-<translation id="7285232777292757180">තිර රූ ගැනීමට ඉක්මන් සැකසීම් තුළ තිර ග්‍රහණ මෙවලම භාවිතා කරන්න</translation>
 <translation id="7301826272005790482">කවුළු යෝජනා ඉවතලන්න</translation>
 <translation id="7302889331339392448">සජීවී සිරස්තල ක්‍රියාවිරහිතයි.</translation>
 <translation id="7303281435234579599">අපොයි! ආදර්ශන ප්‍රකාරය සැකසීමේදී යම් දෙයක් වැරදිණි.</translation>
@@ -2705,7 +2689,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="880709030178078220">"උදවු"</translation>
 <translation id="8813531681893371930">රැහැන් ගත හෙඩ්ෆෝන් සම්බන්‍ධ කරන්න</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
-<translation id="8815390544836110344">තිර රූ කෙටිමඟ, Ctrl සහ Shift සහ දළ විශ්ලේෂණ ප්‍රකාර යතුර ඔබන්න</translation>
 <translation id="881757059229893486">ආදාන ක්‍රම සැකසීම්</translation>
 <translation id="8819728065740986820">අනුවර්තී ආරෝපණය ක්‍රියාත්මකයි</translation>
 <translation id="882204272221080310">අමතර ආරක්ෂාව සඳහා ස්ථිරාංග යාවත්කාලීන කරන්න.</translation>
@@ -2811,7 +2794,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9098750710832798892">ඔබේ පසුරු පුවරුව වෙත කිසිදු අයිතමයක් පිටපත් කර නැත</translation>
 <translation id="9098969848082897657">දුරකථනය නිහඬ කරන්න</translation>
 <translation id="9126339866969410112">අවසාන ක්‍රියාව පසුගමනය කරන්න</translation>
-<translation id="9126642911267312373">බ්ලූටූත් නොමැත</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{මිනි 1කින්}one{මිනි #කින්}other{මිනි #කින්}}</translation>
 <translation id="9129245940793250979">පිටුපස බොත්තම</translation>
 <translation id="9133335900048457298">ආරක්ෂිත අන්තර්ගතය පටිගත කළ නොහැකිය</translation>

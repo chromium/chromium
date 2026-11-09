@@ -166,6 +166,7 @@
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, ಹಂಚಿಕೊಳ್ಳುವಿಕೆ ಟ್ಯಾಬ್</translation>
 <translation id="1601378265092360672">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವು ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಕುಕೀಗಳು ಮತ್ತು ಇತರ ಸೈಟ್ ಡೇಟಾ, ಕ್ಯಾಷ್ ಮಾಡಿದ ಚಿತ್ರಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳು ಮತ್ತು ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಒಳಗೊಂಡಿರುತ್ತದೆ</translation>
 <translation id="160275202205869636">ಆನ್ ಆಗಿರುವಾಗ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಡೇಟಾವನ್ನು ಬಳಸಿ ಮತ್ತು ಸೇವ್ ಮಾಡಿ. ಆಫ್ ಆಗಿರುವಾಗ, ಡೇಟಾವನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
+<translation id="160403827062749147">ವಿಶ್ವದ ಅತ್ಯಂತ ಸುರಕ್ಷಿತ ಬ್ರೌಸರ್ ಆದ Google Chrome ಗೆ ಸುಸ್ವಾಗತ</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{ಆಯ್ಕೆಮಾಡಲಾದ 1 ಐಟಂ ತೆಗೆದುಹಾಕಿ}one{ಆಯ್ಕೆಮಾಡಲಾದ # ಐಟಂಗಳನ್ನು ತೆಗೆದುಹಾಕಿ}other{ಆಯ್ಕೆಮಾಡಲಾದ # ಐಟಂಗಳನ್ನು ತೆಗೆದುಹಾಕಿ}}</translation>
 <translation id="1639239467298939599">ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1641113438599504367">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್</translation>
@@ -858,6 +859,7 @@
 <translation id="4374192654218566997">\n\nನೀವು ಈ ಸಾಧನದಿಂದ ಈ ಡೇಟಾವನ್ನು ಸಹ ತೆಗೆದುಹಾಕಬಹುದು:</translation>
 <translation id="4378154925671717803">ಫೋನ್</translation>
 <translation id="4380055775103003110">ಈ ಸಮಸ್ಯೆ ಮುಂದುವರಿದರೆ, ನೀವು <ph name="SITE_ETLD_PLUS_ONE" /> ನಲ್ಲಿ ಮುಂದುವರಿಯಲು ಇತರ ಮಾರ್ಗಗಳನ್ನು ಪ್ರಯತ್ನಿಸಬಹುದು.</translation>
+<translation id="4381351546374507910">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಆಟೋಫಿಲ್ ಮಾಹಿತಿಯನ್ನು ಪಡೆಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="4384468725000734951">ಹುಡುಕಲು Sogou ಬಳಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4387647248986092471">ಕಾರ್ ಪ್ರೊಫೈಲ್ ಲಾಕ್ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="4387817230000841154">ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -1230,6 +1232,7 @@
 <translation id="5865733239029070421">ಬಳಕೆಯ ಅಂಕಿಅಂಶಗಳು ಮತ್ತು ಕ್ರ್ಯಾಶ್ ವರದಿಗಳನ್ನು Google ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕಳುಹಿಸುತ್ತದೆ</translation>
 <translation id="5869522115854928033">ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="5870416898561279542">ನಕಲಿ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಗುಂಪುಗಳು ಅಥವಾ <ph name="DAYS_INACTIVE" /> ದಿನಗಳವರೆಗೆ ಬಳಸದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಇಲ್ಲಿಗೆ ಸರಿಸಲಾಗಿದೆ<ph name="AUTODELETE_SECTION" />. ನೀವು ಇದನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ <ph name="DECLUTTER_SETTINGS_TITLE" /> ನಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು.</translation>
+<translation id="5882488054564514114">ನಿಮ್ಮ ಸಾಧನಗಳಾದ್ಯಂತ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಪಡೆಯಲು ಮತ್ತು ನಿಮ್ಮ ಅನುಭವವನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="5885378508678660271">ನೋಟಿಫಿಕೇಶನ್‌ಗಳು <ph name="SEPARATOR" /> ಈ ಸೈಟ್ ಅಪಾಯಕಾರಿಯಾದ ಕಾರಣ Chrome ಈ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಿದೆ</translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="5896944002928653773">ಎಂಟರ್‌ಪ್ರೈಸ್ ಸಿಗ್ನಲ್‌ಗಳ ಹಕ್ಕುನಿರಾಕರಣೆ ಕೆಳಭಾಗದ ಶೀಟ್ ಅನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
@@ -1978,6 +1981,7 @@
 <translation id="8570677896027847510">ಫೈಲ್ ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8571213806525832805">ಕಳೆದ 4 ವಾರಗಳು</translation>
 <translation id="8580435650274205305">ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕದ ಅಗತ್ಯವಿದೆ</translation>
+<translation id="8584698523080138290">Chrome ಅನ್ನು ನಿಮ್ಮೊಂದಿಗೆ ತೆಗೆದುಕೊಂಡು ಹೋಗಿ</translation>
 <translation id="8585103689515290060">ಆಟೋಫಿಲ್‌ ಸೇವೆಗಳು</translation>
 <translation id="8586116786993312006">Chrome ನಲ್ಲಿ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="859046281437143747">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳ ಬಟನ್‌ನಿಂದ ಬೆಲೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
@@ -2030,6 +2034,7 @@
 <translation id="8803526663383843427">ಆನ್ ಆಗಿರುವಾಗ</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{ನಿಮ್ಮ Google ಖಾತೆ, <ph name="ACCOUNT_EMAIL" /> ನಲ್ಲಿ ಐಟಂ ಅನ್ನು ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ.}one{ನಿಮ್ಮ Google ಖಾತೆ, <ph name="ACCOUNT_EMAIL" /> ನಲ್ಲಿ ಐಟಂಗಳನ್ನು ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ.}other{ನಿಮ್ಮ Google ಖಾತೆ, <ph name="ACCOUNT_EMAIL" /> ನಲ್ಲಿ ಐಟಂಗಳನ್ನು ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ.}}</translation>
 <translation id="8804742093141782941">ಗುಂಪನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ</translation>
+<translation id="880967149107462122">Go to Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="8812260976093120287">ಕೆಲವು ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ, ನೀವು ಮೇಲೆ ಬೆಂಬಲಿಸಲಾದ ಪಾವತಿ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಬಳಸಿಕೊಂಡು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಪಾವತಿಸಬಹುದು.</translation>
 <translation id="8816556050903368450">ಲಿಂಕ್ ಒಳಗೊಂಡಿದೆ: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">ಪೂರ್ವವೀಕ್ಷಣೆ ಟ್ಯಾಬ್ ವಿಷಯವನ್ನು ವೀಕ್ಷಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
@@ -2055,6 +2060,7 @@
 <translation id="8903921497873541725">ಝೂಮ್ ಇನ್</translation>
 <translation id="8909135823018751308">ಹಂಚಿಕೊಳ್ಳು...</translation>
 <translation id="8918299437379122615">ಇದಕ್ಕಾಗಿ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳ ಪುಟಕ್ಕೆ ಲಿಂಕ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ: <ph name="SEARCH_QUERY" />. ಮೂಲ: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">ಯಾವುದೇ ವೆಬ್‌ಸೈಟ್‌ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="8922289737868596582">ಪುಟಗಳನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಬಳಸಲು ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳ ಬಟನ್ ಮೂಲಕ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಿ</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ಸಿದ್ಧವಾಗಿದೆ</translation>

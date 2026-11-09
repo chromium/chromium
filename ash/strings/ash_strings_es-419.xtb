@@ -138,7 +138,6 @@
 <translation id="1346403631707626730">Enviar datos de uso y diagnóstico. Para ayudar a mejorar la experiencia de Android de tu hijo o hija, envía a Google datos de diagnóstico y uso de dispositivos y apps de forma automática. Esta información no se usará para identificar a tu hijo o hija, y ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. Si habilitaste la Actividad web y de aplicaciones adicional para tu hijo o hija, es posible que se almacenen estos datos en su Cuenta de Google. <ph name="BEGIN_LINK1" />Más información sobre las métricas<ph name="BEGIN_LINK1_END" />Más información<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">Derecha</translation>
 <translation id="1350494136075914725">En curso · Cambiar a la pestaña</translation>
-<translation id="1351937230027495976">Contraer menú</translation>
 <translation id="1355088139103479645">¿Quieres borrar todos los datos?</translation>
 <translation id="1360220746312242196">Ir a la coincidencia de búsqueda anterior al buscar en una página</translation>
 <translation id="1360788414852622716">Se está inhabilitando el perfil. Este proceso puede demorar unos minutos.</translation>
@@ -682,7 +681,6 @@ De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <p
 <translation id="3033545621352269033">Sí</translation>
 <translation id="3033912566804961911">Combinar con <ph name="DESK_NAME" /></translation>
 <translation id="3036327949511794916">Ya pasó la fecha límite para devolver este dispositivo <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3039491566278747710">No se pudo instalar la política sin conexión en el dispositivo.</translation>
 <translation id="3039939407102840004">El nivel de la batería de la pluma stylus es del <ph name="PERCENTAGE" />%.</translation>
 <translation id="304097922505898963">Abrir la app de Combinaciones de teclas</translation>
 <translation id="304417730895741346">Las apps que fijaste y abriste están en la barra. Para fijar una app a la barra, haz clic con el botón derecho en la app o presiona el panel táctil con dos dedos.</translation>
@@ -698,7 +696,6 @@ De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <p
 <translation id="3075144191779656260">Toca el sensor de huellas dactilares en el lado izquierdo del dispositivo <ph name="DEVICE_TYPE" />. Los datos de las huellas dactilares se almacenan de forma segura y no salen nunca de tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3075874217500066906">Es necesario reiniciar el dispositivo antes de comenzar el proceso de la función Powerwash. Luego de reiniciar, debes confirmar que quieres continuar.</translation>
 <translation id="3077734595579995578">shift</translation>
-<translation id="3081696990447829002">Expandir menú</translation>
 <translation id="3087734570205094154">Inferior</translation>
 <translation id="3088128611727407543">Preparando el perfil de la app…</translation>
 <translation id="3090214513075567547">Abrir menú contextual</translation>
@@ -804,7 +801,6 @@ De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <p
 <translation id="3405101454990027959">Activar el acceso al micrófono</translation>
 <translation id="3407967630066378878">Para configurar una huella dactilar, haz que tu hijo toque el sensor de huellas dactilares en el lado izquierdo del dispositivo <ph name="DEVICE_TYPE" />. Los datos de la huella dactilar de tu hijo se almacenan de forma segura y no salen nunca de este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3409584356742878290">Ocultar o mostrar el inspector de Herramientas para desarrolladores</translation>
-<translation id="3413817803639110246">No hay nada para ver</translation>
 <translation id="3417835166382867856">Buscar pestañas</translation>
 <translation id="3426253816581969877">Mantén presionado <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> y, luego, presiona <ph name="KEY" /> hasta que se muestre la ventana que deseas abrir; a continuación, suelta las teclas</translation>
 <translation id="3428447136709161042">Desconectar de <ph name="NETWORK_NAME" /></translation>
@@ -899,7 +895,6 @@ De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <p
 <translation id="3626281679859535460">Brillo</translation>
 <translation id="3628323833346754646">Botón frontal</translation>
 <translation id="3630697955794050612">desactivado</translation>
-<translation id="3631369015426612114">Permitir notificaciones de las siguientes fuentes</translation>
 <translation id="3633097874324966332">Abre la configuración de la conexión Bluetooth para vincular el dispositivo</translation>
 <translation id="3633851487917460983">Abrir el Portapapeles</translation>
 <translation id="363473492175527493">Se estableció la tarea en la que te concentrarás: <ph name="TASK_NAME" />. Presiona Intro para editar la tarea.</translation>
@@ -915,7 +910,6 @@ De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <p
 <translation id="3659667652322717492">Puedes cambiar el comportamiento del micrófono en cualquier momento.</translation>
 <translation id="3659814201068740063">Quedan aproximadamente <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Conecta tu dispositivo a la corriente.</translation>
-<translation id="3660860940251915011">Activar o desactivar la alta visibilidad de <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, usuario administrado</translation>
 <translation id="3666266999138159418">Desliza para ocultar la ventana flotante</translation>
 <translation id="367531336287639526">Seleccionar el primer ícono a la izquierda de la barra de direcciones</translation>
@@ -924,7 +918,6 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="36813544980941320">Se compartirán las redes Wi-Fi entre tu teléfono y tu <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, luego, <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Sitios web</translation>
-<translation id="3697991387880191195">Presiona el atajo para realizar captura de pantalla</translation>
 <translation id="3702809606464356667">Se muestran las ventanas del escritorio actual. Para ver las de todos los escritorios, presiona la flecha hacia arriba.</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Cargando...</translation>
@@ -950,7 +943,6 @@ Conecta tu dispositivo a la corriente.</translation>
         <ph name="BEGIN_PARAGRAPH3" />Puedes desactivar este servicio en Configuración.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620">El <ph name="PHONE_NAME" /> ahora también puede desbloquear este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3756485814916578707">Transmitiendo pantalla</translation>
-<translation id="3765246971671567135">No se pudo leer la política del modo de demostración sin conexión.</translation>
 <translation id="3765841382945324995">Se actualizó la combinación de teclas <ph name="SIX_PACK_KEY_NAME" /> de <ph name="OLD_SHORTCUT" /> a <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3772109172035555611">Personaliza tu TrackPoint</translation>
 <translation id="3773700760453577392">Un administrador inhabilitó el acceso múltiple para <ph name="USER_EMAIL" />.
@@ -987,7 +979,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3859364108019690">No se pueden transmitir apps</translation>
 <translation id="3861638017150647085">El nombre de usuario "<ph name="USERNAME" />" no está disponible</translation>
 <translation id="3861651314799684201">Presiona intro para grabar la pantalla completa</translation>
-<translation id="3870197372373144624">Intenta apagar el dispositivo.</translation>
 <translation id="3873915545594852654">Hubo un problema con ARC++.</translation>
 <translation id="3879748587602334249">Administrador de descargas</translation>
 <translation id="3884007280698606545">Se alcanzó el límite de dispositivos USB</translation>
@@ -1172,7 +1163,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="439598569299422042">Pausado: <ph name="SIZE_INFO" /></translation>
 <translation id="439817266247065935">El dispositivo no se apagó correctamente. Reinicia Linux para usar las apps de este sistema operativo.</translation>
 <translation id="440113666232554208">No se pudo guardar la presentación en pantalla</translation>
-<translation id="4405151984121254935">El tipo de periférico conectado no es compatible.</translation>
 <translation id="4406883609789734330">Subtitulado instantáneo</translation>
 <translation id="4412698727486357573">Centro de ayuda</translation>
 <translation id="4412944820643904175">La función <ph name="FEATURE_NAME" /> está desactivada.</translation>
@@ -1355,7 +1345,6 @@ Se conectó un dispositivo.</translation>
 <translation id="493076006037866439">Alejar la pantalla</translation>
 <translation id="4932733599132424254">Fecha</translation>
 <translation id="4934763315031217818">No puede contener secuencias ordenadas</translation>
-<translation id="4936329710968938986">Todos, desactivado</translation>
 <translation id="4937170330762390348">Con el dictado, puedes escribir con tu voz. Presiona la tecla de dictado o selecciona el ícono de micrófono en la parte inferior de la pantalla cuando estés en un campo de texto. El idioma de dictado está configurado en <ph name="LANGUAGE" />. Se descargarán los archivos de voz para que puedas usar el dictado sin conexión. Puedes cambiar el idioma de dictado en cualquier momento en Configuración &gt; Accesibilidad.</translation>
 <translation id="4938176435186993759">Ocultar todas las sugerencias</translation>
 <translation id="4945196315133970626">Desactivar las notificaciones</translation>
@@ -1372,7 +1361,6 @@ Se conectó un dispositivo.</translation>
 <translation id="4966431234408005599">Subir el volumen</translation>
 <translation id="496999337731226334">Paso <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> del recorrido. Los controles que usas con frecuencia, como Wi-Fi, Bluetooth y volumen, se encuentran en la Configuración rápida. También puedes ir aquí para tomar capturas de pantalla. Presiona Alt + Mayúsculas + S para abrir la Configuración rápida.</translation>
 <translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que descargues una actualización hoy. Cuando te conectes a Internet, se descargará automáticamente.}other{<ph name="MANAGER" /> requiere que descargues una actualización antes de la fecha límite. Cuando te conectes a Internet, se descargará automáticamente.}}</translation>
-<translation id="4975771730019223894">Insignias de apps</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
@@ -1575,7 +1563,6 @@ No hay dispositivos conectados.</translation>
 <translation id="5551456515017410630">Abrir o cerrar el calendario</translation>
 <translation id="5551974246223970793">Ir a la siguiente coincidencia de búsqueda al buscar en una página</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
-<translation id="5558091555391176027">Activar o desactivar la alta visibilidad de Compartir con Nearby</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5570122939431135380">Abrir una nueva pestaña en una nueva ventana de incógnito</translation>
 <translation id="5575528586625653441">Hubo un problema con la solicitud de registro de demostración.</translation>
@@ -1602,7 +1589,6 @@ No hay dispositivos conectados.</translation>
 <translation id="5620979661744857819">Esto permite el acceso para <ph name="APP_NAME" /> y todas las apps y sitios web con los permisos de cámara y micrófono. Es posible que debas actualizar la página web o reiniciar la app.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">No se pudo verificar tu contraseña. Vuelve a intentarlo.</translation>
-<translation id="5632485077360054581">Cómo hacerlo</translation>
 <translation id="5648021990716966815">Conector para micrófono</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> requiere tu atención.</translation>
 <translation id="5657667036353380798">La extensión externa requiere que esté instalada la versión <ph name="MINIMUM_CHROME_VERSION" /> o una versión posterior de Chrome.</translation>
@@ -1920,7 +1906,6 @@ No hay dispositivos conectados.</translation>
 <translation id="651753338596587143">Se produjo un error al instalar las dependencias de DLC. Reinicia el dispositivo y, si el problema persiste, envía tus comentarios con el hashtag #bruschetta en la descripción. El código de error es <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Selecciona una ventana que quieras capturar</translation>
 <translation id="652139407789908527">Durante esta actualización, se apagará la pantalla por más tiempo que lo usual (hasta un minuto). Mientras se realiza la actualización, no presiones el botón de encendido.</translation>
-<translation id="6528179044667508675">No interrumpir</translation>
 <translation id="65320610082834431">Emojis</translation>
 <translation id="6537924328260219877">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, nivel de batería del teléfono: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Análisis de descargas: <ph name="FILENAME" /></translation>
@@ -2164,7 +2149,6 @@ Nueva instalación</translation>
 <translation id="7264788308526527464">Reducir <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Sigue levantando el dedo para agregar diferentes partes de la huella dactilar.</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + retroceso</translation>
-<translation id="7285232777292757180">Usar la herramienta de captura de pantalla en la configuración rápida para tomar capturas de pantalla</translation>
 <translation id="7301826272005790482">Descartar sugerencias de ventanas</translation>
 <translation id="7302889331339392448">El Subtitulado instantáneo está desactivado.</translation>
 <translation id="7303281435234579599">Hubo un error cuando se intentaba configurar el modo de demostración.</translation>
@@ -2703,7 +2687,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="880709030178078220">"Ayuda"</translation>
 <translation id="8813531681893371930">Conecta auriculares con cable</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
-<translation id="8815390544836110344">Presiona la combinación de teclas para realizar una captura de pantalla, Ctrl + Mayúsculas + la tecla del modo de vista Recientes</translation>
 <translation id="881757059229893486">Configuración de los métodos de entrada</translation>
 <translation id="8819728065740986820">La carga adaptable está activada</translation>
 <translation id="882204272221080310">Actualizar el firmware para mejorar la seguridad</translation>
@@ -2809,7 +2792,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="9098750710832798892">No se copió ningún elemento en el Portapapeles</translation>
 <translation id="9098969848082897657">Silenciar teléfono</translation>
 <translation id="9126339866969410112">Deshacer la última acción</translation>
-<translation id="9126642911267312373">Bluetooth no disponible</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{En 1 min}other{En # min}}</translation>
 <translation id="9129245940793250979">Botón trasero</translation>
 <translation id="9133335900048457298">No se puede grabar contenido protegido</translation>

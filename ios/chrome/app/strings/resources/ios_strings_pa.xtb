@@ -386,7 +386,6 @@
 <translation id="2104436223719117661">ਪ੍ਰਚਲਿਤ ਖੋਜਾਂ</translation>
 <translation id="21133533946938348">ਟੈਬ ਪਿੰਨ ਕਰੋ</translation>
 <translation id="2117650889962717098">ਇਨਕੋਗਨਿਟੋ ਮੋਡ 'ਤੇ ਸਵਿੱਚ ਕਰ ਕੇ ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਪ੍ਰਾਈਵੇਟ ਰੱਖੋ</translation>
-<translation id="2119126821484134587">ਵਿਉਂਤਬੱਧ ਮਦਦ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ, Gemini ਤੁਹਾਡੇ ਕੁਝ ਡਾਟੇ (ਜਿਵੇਂ ਕਿ ਤੁਹਾਡੀਆਂ ਚੈਟਾਂ ਦੇ ਕੁਝ ਹਿੱਸੇ, ਟਿਕਾਣਾ ਅਤੇ ਹੋਰ ਸੰਬੰਧਿਤ ਜਾਣਕਾਰੀ) ਨੂੰ Maps ਅਤੇ Flights ਵਰਗੀਆਂ ਹੋਰ Google ਸੇਵਾਵਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰਦਾ ਹੈ। ਇਹ ਸੇਵਾਵਾਂ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀਆਂ ਹਨ, ਭਾਵੇਂ ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ ਆਪਣੇ Gemini ਐਪਾਂ ਸੰਬੰਧੀ ਇਤਿਹਾਸ ਨੂੰ ਮਿਟਾ ਦੇਵੋ। <ph name="BEGIN_LINK" />Gemini ਐਪਾਂ ਸੰਬੰਧੀ ਪਰਦੇਦਾਰੀ ਹੱਬ<ph name="END_LINK" /> ਵਿੱਚ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="2119636449201577317">ਇਸ ਵਿੱਚ ਖੋਲ੍ਹੋ…</translation>
 <translation id="2119962645034852864">ਕੁਝ ਸੇਵਾਵਾਂ ਤੁਹਾਡੇ ਖਾਤੇ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹਨ</translation>
 <translation id="2120553909046681540">ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੇ ਪ੍ਰਾਈਵੇਟ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
@@ -519,6 +518,7 @@
 <translation id="2524699375503213836">Safari ਤੋਂ ਆਪਣਾ ਡਾਟਾ ਆਯਾਤ ਕਰੋ</translation>
 <translation id="2526166285241366046">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="2529021024822217800">ਸਭ ਖੋਲ੍ਹੋ</translation>
+<translation id="2536421147135705892">ਕੀ ਭੂਗੋਲਿਕ-ਟਿਕਾਣੇ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
 <translation id="2536991091671391962">ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਵਰਤ ਸਕਦੇ ਹੋ। ਉਹ <ph name="EMAIL" /> ਦੇ ਲਈ Google Password Manager ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਹਨ।</translation>
 <translation id="2538103551183528357">ਲੁਕਿਆ, ਪਾਸਵਰਡ</translation>
 <translation id="2538705697765638552">ਆਪਣੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ Google ਉਤਪਾਦਾਂ ਵਿੱਚ ਫ਼ਾਰਮ ਭਰਨ ਵਰਗੇ ਕੰਮ ਤੇਜ਼ੀ ਨਾਲ ਕਰੋ। ਤੁਸੀਂ <ph name="USER_EMAIL" /> ਲਈ Google Wallet ਵਿੱਚ ਆਪਣੀ ਜਾਣਕਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ।</translation>
@@ -1110,7 +1110,6 @@
 <translation id="4470766488397113689">ਤੁਸੀਂ ਕਿਸ ਚੀਜ਼ 'ਤੇ ਕੰਮ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="4471472356135655769">ਪਾਸਵਰਡ ਨਿਰਯਾਤ ਨਹੀਂ ਕੀਤੇ ਜਾ ਸਕਦੇ</translation>
 <translation id="4472575034687746823">ਸ਼ੁਰੂਆਤ ਕਰੋ</translation>
-<translation id="4473565697543262065">ਇਸ ਨਾਲ ਇਸ ਡੀਵਾਈਸ ਅਤੇ ਤੁਹਾਡੇ Google ਖਾਤੇ <ph name="USER_EMAIL" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਉਹ ਜਾਣਕਾਰੀ ਮਿਟ ਜਾਂਦੀ ਹੈ, ਜੋ ਚੁਣੀ ਗਈ ਹੁੰਦੀ ਹੈ</translation>
 <translation id="4473608001744970767">'ਕੀਮਤ ਟਰੈਕ ਕਰੋ' ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="4474142134969976028">ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਨਤੀਜਾ ਨਹੀਂ</translation>
 <translation id="4474494258097106883">ਤੁਹਾਡੇ iPhone ਲਈ ਬਣਾਇਆ ਗਿਆ</translation>
@@ -1337,6 +1336,7 @@
 <translation id="5128788795241319992">ਨਵੇਂ ਮੀਨੂ ਦੀ ਪੜਚੋਲ ਕਰੋ</translation>
 <translation id="5132942445612118989">ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ, ਇਤਿਹਾਸ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਦਾ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="5137568953923142260">ਇੱਕ ਵਾਰ ਆਗਿਆ ਦਿਓ</translation>
+<translation id="5139344197062265975">Gemini ਨਾਲ ਚੈਟ ਕਰਨ ਲਈ ਆਪਣੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰੋ। ਜਦੋਂ ਤੁਸੀਂ Gemini ਨਾਲ ਗੱਲ ਕਰਦੇ ਹੋ, ਤਾਂ ਆਡੀਓ Gemini ਇਤਿਹਾਸ ਵਿੱਚ ਸਟੋਰ ਹੋ ਜਾਂਦੀ ਹੈ (ਜੇ ਇਹ ਸੈਟਿੰਗ ਚਾਲੂ ਹੈ)। ਤੁਹਾਡੇ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਜਨਰੇਟਿਵ AI ਮਾਡਲਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ</translation>
 <translation id="5141363746588976328">ਆਪਣੇ ਟੈਬ ਕਾਰਡ 'ਤੇ ਕੀਮਤ ਘਟਣ ਦੀ ਜਾਣਕਾਰੀ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="514154868070499296">ਫ਼ੌਂਟ: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">ਟੈਬ ਸਵਿੱਚਰ ਨੂੰ ਛੱਡੋ</translation>
@@ -1434,7 +1434,6 @@
 <translation id="5443636120437209490">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਬਿਹਤਰ ਬ੍ਰਾਊਜ਼ਿੰਗ</translation>
 <translation id="5444892875087332195">ਬੁੱਕਮਾਰਕ</translation>
 <translation id="5447973833955560753">ਰਿਕਵਰੀ ਪਾਸਵਰਡ</translation>
-<translation id="5448623529214315261">ਰੱਖਿਅਤ ਕੀਤੀ ਫ਼ੋਟੋ <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ:</translation>
 <translation id="5454211924362324495">ਦੂਜਿਆਂ ਨੂੰ ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰਨ ਤੋਂ ਰੋਕਣ ਲਈ, ਇਸਨੂੰ <ph name="BEGIN_LINK" /><ph name="WEBSITE" /> 'ਤੇ ਬਦਲੋ<ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">ਆਪਣੀ ਖੋਜ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -1607,6 +1606,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="6000893618966378846">"ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ" ਪੂਰਾ ਹੋਇਆ!</translation>
 <translation id="6004988584831654445">ਤੁਸੀਂ ਪੂਰੀ ਤਰ੍ਹਾਂ ਤਿਆਰ ਹੋ! ਨਵੇਂ ਕਾਰਜ ਆਉਣ 'ਤੇ ਸੂਚਨਾ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
 <translation id="6006672969046233841">ਨਵੀਂ ਟੈਬ</translation>
+<translation id="6006758170939001741">ਸਾਡੇ <ph name="BEGIN_LINK" />ਨਿਯਮ<ph name="END_LINK" />, <ph name="BEGIN_LINK" />ਕੋਰੀਆਈ ਟਿਕਾਣੇ ਸੰਬੰਧੀ ਨਿਯਮ<ph name="END_LINK" /> ਅਤੇ <ph name="BEGIN_LINK" />ਪਰਦੇਦਾਰੀ ਨੋਟਿਸ<ph name="END_LINK" /> ਲਾਗੂ ਹੁੰਦੇ ਹਨ। ਚੈਟਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਅਤੇ ਇਨ੍ਹਾਂ ਦੀ ਵਰਤੋਂ ਜਨਰੇਟਿਵ AI ਮਾਡਲਾਂ ਨੂੰ ਸਿਖਲਾਈ ਦੇਣ ਲਈ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। Gemini ਇੱਕ AI ਹੈ ਅਤੇ ਇਹ ਗਲਤੀਆਂ ਕਰ ਸਕਦਾ ਹੈ, ਜਿਸ ਵਿੱਚ ਲੋਕਾਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਵੀ ਸ਼ਾਮਲ ਹੈ। ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਕੁਝ ਸਮੱਗਰੀ ਹਰੇਕ ਲਈ ਢੁਕਵੀਂ ਨਾ ਹੋਵੇ। ਤੁਸੀਂ <ph name="BEGIN_LINK" />ਆਪਣੇ ਟਿਕਾਣੇ ਬਾਰੇ ਜਾਣਕਾਰੀ<ph name="END_LINK" /> ਸਮੇਤ <ph name="BEGIN_LINK" />ਆਪਣੇ ਇਤਿਹਾਸ ਦਾ ਪ੍ਰਬੰਧਨ<ph name="END_LINK" /> ਕਰ ਸਕਦੇ ਹੋ। <ph name="BEGIN_LINK" />ਆਪਣੀਆਂ ਚੋਣਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">ਖੋਜ ਸੁਝਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਓ</translation>
 <translation id="6012140227487808125">ਇਨਕ੍ਰਿਪਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
 <translation id="6014801569448771146">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
@@ -1845,6 +1845,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="6670729408462528018">ਗੈਲਰੀ</translation>
 <translation id="6671294218820966278">ਪੜ੍ਹੇ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਕਰੋ</translation>
 <translation id="6672697278890207089">ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="6673666785752667010">AI ਮੋਡ ਬੰਦ ਕਰੋ</translation>
 <translation id="6674917187596384849">ਤੁਸੀਂ ਖਾਤਿਆਂ ਵਿਚਾਲੇ ਆਸਾਨੀ ਨਾਲ ਸਵਿੱਚ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="6676349090816247042">ਸਾਈਨ-ਇਨ ਕਰਨ ਦੇ ਵਿਕਲਪ।</translation>
 <translation id="667999046851023355">ਦਸਤਾਵੇਜ਼</translation>
@@ -1852,6 +1853,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="6682680306647339111">ਰਿਮਾਈਂਡਰ ਹਟਾਇਆ ਗਿਆ</translation>
 <translation id="6683022854667115063">ਹੈੱਡਫ਼ੋਨ</translation>
 <translation id="6684262542644248484">ਕਿਸੇ ਵੈੱਬਸਾਈਟ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
+<translation id="668475086425500258">ਸਾਈਟ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="6685259053455152195">ਸੈਟਿੰਗਾਂ ਨੂੰ ਤੁਰੰਤ ਸੋਧਣ ਅਤੇ ਪਤਾ ਬਾਰ ਤੋਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਸ਼ਾਰਟਕੱਟ।</translation>
 <translation id="6689342293888598653">ਬੈਕਗ੍ਰਾਊਂਡ ਦਾ ਸਫ਼ੈਦ ਰੰਗ</translation>
 <translation id="6689685206615181381">ਸਿਰਫ਼ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਉਪਲਬਧ ਹੈ</translation>
@@ -1867,7 +1869,6 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="672735642903863329">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
 <translation id="6729493062119577923">ਸਾਂਝਾ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪ ਸੰਬੰਧੀ ਸਰਗਰਮੀ</translation>
 <translation id="6732087373923685049">ਕੈਮਰਾ</translation>
-<translation id="6736243959894955139">ਪਤਾ</translation>
 <translation id="6746338529702829275">ਆਪਣੇ ਖਾਤੇ ਦੇ ਡਾਟੇ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="6749473226660745022">ਫ਼ੋਟੋਆਂ</translation>
 <translation id="6750456911389438250">{count,plural, =1{ਇਤਿਹਾਸ ਵਿੱਚ ਮੌਜੂਦ {count} ਆਈਟਮ ਨੂੰ ਆਯਾਤ ਕੀਤਾ ਗਿਆ}one{ਇਤਿਹਾਸ ਵਿੱਚ ਮੌਜੂਦ {count} ਆਈਟਮ ਨੂੰ ਆਯਾਤ ਕੀਤਾ ਗਿਆ}other{ਇਤਿਹਾਸ ਵਿੱਚ ਮੌਜੂਦ {count} ਆਈਟਮਾਂ ਨੂੰ ਆਯਾਤ ਕੀਤਾ ਗਿਆ}}</translation>
@@ -1989,7 +1990,6 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="7128693485119315539">ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੂੰ ਤੁਹਾਡੇ ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਖਾਤੇ ਨਾਲ ਸੰਬੰਧਿਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਨੂੰ ਦੇਖਣ ਅਤੇ ਉਸਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਦੀ ਲੋੜ ਹੋ ਸਕਦੀ ਹੈ, ਜਿਵੇਂ ਕਿ ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਅਤੇ ਪਾਸਵਰਡ।</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">ਕੈਮਰਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
-<translation id="7138678301420049075">ਹੋਰ</translation>
 <translation id="7140355148730164340"><ph name="EMAIL" />। <ph name="AI_TIER" />।</translation>
 <translation id="7141960840225504692">ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਬੰਦ ਹੋ ਜਾਣਗੀਆਂ ਅਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="714291438898585119">ਤਾਰਾਬੱਧ</translation>
@@ -2137,6 +2137,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="7596103009408415410">{COUNT,plural, =1{ਕੀ {COUNT} ਅਕਿਰਿਆਸ਼ੀਲ ਟੈਬ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?}one{ਕੀ {COUNT} ਅਕਿਰਿਆਸ਼ੀਲ ਟੈਬ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?}other{ਕੀ {COUNT} ਅਕਿਰਿਆਸ਼ੀਲ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?}}</translation>
 <translation id="7598439272585186139">ਹੋਰ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> ਦਾ ਕਦੇ ਵੀ ਅਨੁਵਾਦ ਨਾ ਕਰੋ</translation>
+<translation id="760230853074995500">ਚੈਟਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਅਤੇ ਇਨ੍ਹਾਂ ਦੀ ਵਰਤੋਂ ਜਨਰੇਟਿਵ AI ਮਾਡਲਾਂ ਨੂੰ ਸਿਖਲਾਈ ਦੇਣ ਲਈ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਤੁਸੀਂ <ph name="BEGIN_LINK" />ਆਪਣੇ ਟਿਕਾਣੇ ਬਾਰੇ ਜਾਣਕਾਰੀ<ph name="END_LINK" /> ਸਮੇਤ <ph name="BEGIN_LINK" />ਆਪਣੇ ਇਤਿਹਾਸ ਦਾ ਪ੍ਰਬੰਧਨ<ph name="END_LINK" /> ਕਰ ਸਕਦੇ ਹੋ। <ph name="BEGIN_LINK" />ਆਪਣੀਆਂ ਚੋਣਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK" />।</translation>
 <translation id="7603308509262646847">ਕਾਰਡਧਾਰਕ <ph name="NAME" /> ਨੂੰ ਆਟੋਫਿਲ ਕਰੋ</translation>
 <translation id="7603852183842204213">ਪੌਪ-ਅਪਸ ਬਲੌਕ ਕੀਤੇ ਗਏ (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">ਸਿੰਕ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ</translation>
@@ -2622,7 +2623,6 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="9039373489628511875">ਬੈਂਡਵਿਡਥ</translation>
 <translation id="9042363670218758847">ਤਤਕਾਲ ਖੋਜਾਂ ਲਈ ਬਣਾਏ ਗਏ ਖਾਕੇ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="9042893549633094279">ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ</translation>
-<translation id="9044703854323320868">Gmail ਸੁਨੇਹਾ <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">ਆਪਣੀਆਂ ਖੁੱਲ੍ਹੀਆਂ ਹੋਈਆਂ ਟੈਬਾਂ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰਨ ਲਈ ਟੈਬ ਗਰੁੱਪ ਬਣਾਓ ਅਤੇ ਉਤਪਾਦਕ ਰਹੋ</translation>
 <translation id="9055580485132823283">ਤੁਸੀਂ {password_count} ਪਾਸਵਰਡ, {passkey_count} ਪਾਸਕੀ ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਦੀ ਸੂਚੀ ਨੂੰ ਮਿਟਾਉਣ ਜਾ ਰਹੇ ਹੋ, ਜਿਨ੍ਹਾਂ ਲਈ ਤੁਸੀਂ ਸਾਈਨ-ਇਨ ਜਾਣਕਾਰੀ ਨੂੰ ਕਦੇ ਵੀ ਰੱਖਿਅਤ ਨਾ ਕਰਨ ਦਾ ਵਿਕਲਪ ਚੁਣਿਆ ਹੈ। ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਲਈ ਤੁਹਾਡੇ ਵੱਲੋਂ ਬਣਾਇਆ ਗਿਆ ਕੋਈ ਵੀ ਖਾਤਾ ਨਹੀਂ ਮਿਟਾਇਆ ਜਾਵੇਗਾ।</translation>
 <translation id="9057030985451135243">ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
@@ -2631,6 +2631,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="9066097352053395362">'ਬੁੱਕਮਾਰਕ ਦਾ ਸੰਪਾਦਨ ਕਰੋ' ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="9070824521421603770">ਤੁਸੀਂ ਸਾਈਨ-ਆਊਟ ਹੋ ਜਾਵੋਗੇ ਅਤੇ ਟੈਬਾਂ ਬੰਦ ਹੋ ਜਾਣਗੀਆਂ</translation>
 <translation id="9072837124205571418">ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਟੈਬ ਗਰੁੱਪ</translation>
+<translation id="9073322251019919253">Gemini ਇੱਕ AI ਹੈ ਅਤੇ ਇਹ ਗਲਤੀਆਂ ਕਰ ਸਕਦਾ ਹੈ, ਜਿਸ ਵਿੱਚ ਲੋਕਾਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਵੀ ਸ਼ਾਮਲ ਹੈ। ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਕੁਝ ਸਮੱਗਰੀ ਹਰੇਕ ਲਈ ਢੁਕਵੀਂ ਨਾ ਹੋਵੇ। ਚੈਟਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਅਤੇ ਇਨ੍ਹਾਂ ਦੀ ਵਰਤੋਂ ਜਨਰੇਟਿਵ AI ਮਾਡਲਾਂ ਨੂੰ ਸਿਖਲਾਈ ਦੇਣ ਲਈ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਤੁਸੀਂ <ph name="BEGIN_LINK" />ਆਪਣੇ ਟਿਕਾਣੇ ਬਾਰੇ ਜਾਣਕਾਰੀ<ph name="END_LINK" /> ਸਮੇਤ <ph name="BEGIN_LINK" />ਆਪਣੇ ਇਤਿਹਾਸ ਦਾ ਪ੍ਰਬੰਧਨ<ph name="END_LINK" /> ਕਰ ਸਕਦੇ ਹੋ। <ph name="BEGIN_LINK" />ਆਪਣੇ ਵਿਕਲਪਾਂ ਬਾਰੇ ਜਾਣੋ<ph name="END_LINK" />। ਸਾਡੇ <ph name="BEGIN_LINK" />ਨਿਯਮ<ph name="END_LINK" /> ਅਤੇ <ph name="BEGIN_LINK" />ਪਰਦੇਦਾਰੀ ਨੋਟਿਸ<ph name="END_LINK" /> ਲਾਗੂ ਹੁੰਦੇ ਹਨ।</translation>
 <translation id="9081058212938299310">ਕੀ <ph name="USERNAME" /> ਲਈ ਪਾਸਵਰਡ ਅੱਪਡੇਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="908365381820697818">ਹੁਣ ਤੁਸੀਂ Gmail ਅਤੇ ਹੋਰ ਸਰੋਤਾਂ ਤੋਂ ਜਾਣਕਾਰੀ ਲੱਭ ਸਕਦੇ ਹੋ ਅਤੇ ਭਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="9083838294503912307">ਡੀਵਾਈਸਾਂ ਵਿਚਾਲੇ ਸਿੰਕ ਕਰਨ ਅਤੇ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ, ਸਿੰਕ ਚਾਲੂ ਕਰੋ।</translation>

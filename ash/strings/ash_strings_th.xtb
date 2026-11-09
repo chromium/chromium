@@ -138,7 +138,6 @@
 <translation id="1346403631707626730">ส่งข้อมูลการใช้งานและการวินิจฉัย ช่วยปรับปรุงประสบการณ์การใช้งาน Android ของบุตรหลานให้ดีขึ้นด้วยการส่งข้อมูลการวินิจฉัย อุปกรณ์ และการใช้งานแอปไปยัง Google โดยอัตโนมัติ โดยจะไม่มีการใช้ข้อมูลนี้ในการระบุตัวตนบุตรหลานของคุณ และจะช่วยปรับปรุงความเสถียรของระบบและแอป และอื่นๆ ข้อมูลรวมบางส่วนจะมีประโยชน์ต่อแอปและพาร์ทเนอร์ของ Google ด้วย เช่น นักพัฒนาแอป Android หากเปิดการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปสำหรับบุตรหลาน ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของบุตรหลาน <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติมเกี่ยวกับเมตริก<ph name="BEGIN_LINK1_END" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">ขวา</translation>
 <translation id="1350494136075914725">ดำเนินอยู่ · เปลี่ยนเป็นแท็บ</translation>
-<translation id="1351937230027495976">ยุบเมนู</translation>
 <translation id="1355088139103479645">ลบข้อมูลทั้งหมดใช่ไหม</translation>
 <translation id="1360220746312242196">เมื่อค้นหาในหน้า ให้ไปยังรายการก่อนหน้าที่ตรงกับการค้นหา</translation>
 <translation id="1360788414852622716">กำลังปิดใช้โปรไฟล์ การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
@@ -682,7 +681,6 @@
 <translation id="3033545621352269033">เปิด</translation>
 <translation id="3033912566804961911">รวมกับ <ph name="DESK_NAME" /></translation>
 <translation id="3036327949511794916">เลยกำหนดเวลาส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้แล้ว</translation>
-<translation id="3039491566278747710">ติดตั้งนโยบายออฟไลน์ในอุปกรณ์นี้ไม่สำเร็จ</translation>
 <translation id="3039939407102840004">สไตลัสเหลือแบตเตอรี่ <ph name="PERCENTAGE" /> เปอร์เซ็นต์</translation>
 <translation id="304097922505898963">เปิดแอปแป้นพิมพ์ลัด</translation>
 <translation id="304417730895741346">แอปที่ปักหมุดและเปิดไว้จะอยู่ในแถบ หากต้องการปักหมุดแอปในแถบ ให้คลิกขวาที่แอปหรือใช้ 2 นิ้วแตะทัชแพด</translation>
@@ -698,7 +696,6 @@
 <translation id="3075144191779656260">แตะเซ็นเซอร์ลายนิ้วมือที่ด้านซ้ายของ <ph name="DEVICE_TYPE" /> ข้อมูลลายนิ้วมือจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> ของคุณเสมอ</translation>
 <translation id="3075874217500066906">จำเป็นต้องรีสตาร์ทเพื่อเริ่มดำเนินการ Powerwash เมื่อรีสตาร์ทแล้ว ระบบจะขอให้คุณยืนยันว่าคุณต้องการดำเนินการ</translation>
 <translation id="3077734595579995578">shift</translation>
-<translation id="3081696990447829002">ขยายเมนู</translation>
 <translation id="3087734570205094154">ด้านล่าง</translation>
 <translation id="3088128611727407543">กำลังเตรียมโปรไฟล์แอป...</translation>
 <translation id="3090214513075567547">เปิดเมนูตามบริบท</translation>
@@ -804,7 +801,6 @@
 <translation id="3405101454990027959">เปิดการเข้าถึงไมโครโฟน</translation>
 <translation id="3407967630066378878">หากต้องการตั้งค่าลายนิ้วมือ ให้บุตรหลานแตะเซ็นเซอร์ลายนิ้วมือที่ด้านซ้ายของ <ph name="DEVICE_TYPE" /> เครื่องนี้ ข้อมูลลายนิ้วมือของบุตรหลานจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> เครื่องนี้เสมอ</translation>
 <translation id="3409584356742878290">แสดงหรือซ่อนตัวตรวจสอบเครื่องมือสำหรับนักพัฒนาแอป</translation>
-<translation id="3413817803639110246">ไม่มีการแจ้งเตือนใหม่</translation>
 <translation id="3417835166382867856">ค้นหาแท็บ</translation>
 <translation id="3426253816581969877">กด <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> ค้างไว้แล้วแตะ <ph name="KEY" /> จนกว่าคุณจะไปถึงหน้าต่างที่ต้องการเปิดแล้วจึงปล่อย</translation>
 <translation id="3428447136709161042">ยกเลิกการเชื่อมต่อกับ <ph name="NETWORK_NAME" /></translation>
@@ -899,7 +895,6 @@
 <translation id="3626281679859535460">ความสว่าง</translation>
 <translation id="3628323833346754646">ปุ่มด้านหน้า</translation>
 <translation id="3630697955794050612">ปิดอยู่</translation>
-<translation id="3631369015426612114">อนุญาตให้มีการแจ้งเตือนจากรายการต่อไปนี้</translation>
 <translation id="3633097874324966332">เปิดการตั้งค่าบลูทูธเพื่อจับคู่อุปกรณ์</translation>
 <translation id="3633851487917460983">เปิดคลิปบอร์ด</translation>
 <translation id="363473492175527493">ตั้งค่างานให้โฟกัสที่: <ph name="TASK_NAME" /> กด Enter เพื่อแก้ไขงาน</translation>
@@ -911,7 +906,6 @@
 <translation id="3659667652322717492">คุณเปลี่ยนลักษณะการทำงานของไมค์ได้ทุกเมื่อในภายหลัง</translation>
 <translation id="3659814201068740063">เหลืออีกประมาณ <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)
 เชื่อมต่ออุปกรณ์กับแหล่งจ่ายไฟ</translation>
-<translation id="3660860940251915011">เปิด/ปิดระดับการเข้าถึงสูงของ <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">ผู้ใช้ที่ได้รับการจัดการ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">ปัดเพื่อซ่อนหน้าต่างแบบลอย</translation>
 <translation id="367531336287639526">เลือกไอคอนแรกทางด้านซ้ายของแถบที่อยู่</translation>
@@ -920,7 +914,6 @@
 <translation id="36813544980941320">จะมีการแชร์เครือข่าย Wi-Fi ระหว่างโทรศัพท์และ <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> แล้วตามด้วย <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">เว็บไซต์</translation>
-<translation id="3697991387880191195">กดทางลัดสำหรับการจับภาพหน้าจอ</translation>
 <translation id="3702809606464356667">กำลังแสดงหน้าต่างจากเดสก์ปัจจุบัน กดปุ่มลูกศรขึ้นเพื่อแสดงหน้าต่างจากเดสก์ทั้งหมด</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">กำลังโหลด ...</translation>
@@ -946,7 +939,6 @@
         <ph name="BEGIN_PARAGRAPH3" />คุณปิดบริการนี้ได้ในการตั้งค่า<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620">ขณะนี้ <ph name="PHONE_NAME" /> สามารถปลดล็อก <ph name="DEVICE_TYPE" /> ได้เช่นกัน</translation>
 <translation id="3756485814916578707">กำลังแคสต์หน้าจอ</translation>
-<translation id="3765246971671567135">อ่านนโยบายโหมดสาธิตออฟไลน์ไม่ได้</translation>
 <translation id="3765841382945324995">อัปเดตแป้นพิมพ์ลัดสำหรับการ<ph name="SIX_PACK_KEY_NAME" />จาก <ph name="OLD_SHORTCUT" /> เป็น <ph name="NEW_SHORTCUT" /> แล้ว</translation>
 <translation id="3772109172035555611">ปรับแต่ง TrackPoint</translation>
 <translation id="3773700760453577392">ผู้ดูแลระบบไม่อนุญาตให้ <ph name="USER_EMAIL" /> ลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี ผู้ใช้ทุกคนต้องออกจากระบบเพื่อดำเนินการต่อ</translation>
@@ -982,7 +974,6 @@
 <translation id="3859364108019690">สตรีมแอปไม่ได้</translation>
 <translation id="3861638017150647085">ใช้ชื่อผู้ใช้ "<ph name="USERNAME" />" ไม่ได้</translation>
 <translation id="3861651314799684201">กด Enter เพื่อบันทึกแบบเต็มหน้าจอ</translation>
-<translation id="3870197372373144624">ลองปิดอุปกรณ์</translation>
 <translation id="3873915545594852654">เกิดปัญหาเกี่ยวกับ ARC++</translation>
 <translation id="3879748587602334249">Download Manager</translation>
 <translation id="3884007280698606545">USB ถึงขีดจำกัดแล้ว</translation>
@@ -1166,7 +1157,6 @@
 <translation id="439598569299422042">หยุดชั่วคราว <ph name="SIZE_INFO" /></translation>
 <translation id="439817266247065935">อุปกรณ์ของคุณไม่ได้ปิดอย่างถูกต้อง รีสตาร์ท Linux เพื่อใช้แอป Linux</translation>
 <translation id="440113666232554208">บันทึก Screencast ไม่ได้</translation>
-<translation id="4405151984121254935">ไม่รองรับอุปกรณ์ต่อพ่วงที่เชื่อมต่ออยู่</translation>
 <translation id="4406883609789734330">คำบรรยายสด</translation>
 <translation id="4412698727486357573">ศูนย์ช่วยเหลือ</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ปิดอยู่</translation>
@@ -1349,7 +1339,6 @@
 <translation id="493076006037866439">ซูมออกนอกหน้าจอ</translation>
 <translation id="4932733599132424254">วันที่</translation>
 <translation id="4934763315031217818">ต้องไม่มีตัวเลขที่เรียงตามลำดับ</translation>
-<translation id="4936329710968938986">ทุกคน ปิดอยู่</translation>
 <translation id="4937170330762390348">ฟีเจอร์การพิมพ์ตามคำบอกช่วยให้คุณพิมพ์ด้วยเสียงได้ กดแป้นให้พิมพ์ตามคำบอกหรือเลือกไอคอนไมโครโฟนที่ด้านล่างของหน้าจอเมื่อคุณอยู่ในช่องข้อความ ภาษาสำหรับการพิมพ์ตามคำบอกตั้งค่าเป็น<ph name="LANGUAGE" /> จะมีการดาวน์โหลดไฟล์คำพูดเพื่อให้คุณใช้การพิมพ์ตามคำบอกแบบออฟไลน์ได้ คุณเปลี่ยนภาษาสำหรับการพิมพ์ตามคำบอกได้ทุกเมื่อในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
 <translation id="4938176435186993759">ซ่อนคำแนะนำทั้งหมด</translation>
 <translation id="4945196315133970626">ปิดการแจ้งเตือน</translation>
@@ -1366,7 +1355,6 @@
 <translation id="4966431234408005599">เพิ่มระดับเสียง</translation>
 <translation id="496999337731226334">ดูการแนะนำขั้นตอนที่ <ph name="STEP" /> จาก <ph name="TOTAL_STEPS" /> การควบคุมที่ใช้บ่อย เช่น Wi-Fi, บลูทูธ และระดับเสียงจะอยู่ในการตั้งค่าด่วน คุณยังจับภาพหน้าจอได้จากที่นี่ด้วย กด Alt + Shift + S เพื่อเปิดการตั้งค่าด่วน</translation>
 <translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> กำหนดให้คุณดาวน์โหลดอัปเดตวันนี้ ระบบจะดาวน์โหลดอัปเดตโดยอัตโนมัติเมื่อคุณเชื่อมต่ออินเทอร์เน็ต}other{<ph name="MANAGER" /> กำหนดให้คุณดาวน์โหลดอัปเดตก่อนเวลาที่กำหนด ระบบจะดาวน์โหลดอัปเดตโดยอัตโนมัติเมื่อคุณเชื่อมต่ออินเทอร์เน็ต}}</translation>
-<translation id="4975771730019223894">การติดป้ายแอป</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
@@ -1569,7 +1557,6 @@
 <translation id="5551456515017410630">เปิด/ปิดปฏิทิน</translation>
 <translation id="5551974246223970793">เมื่อค้นหาในหน้า ให้ไปยังรายการถัดไปที่ตรงกับการค้นหา</translation>
 <translation id="5556459405103347317">โหลดใหม่</translation>
-<translation id="5558091555391176027">เปิด/ปิดระดับการเข้าถึงสูงของการแชร์ใกล้เคียง</translation>
 <translation id="556042886152191864">ปุ่ม</translation>
 <translation id="5570122939431135380">เปิดแท็บใหม่ในหน้าต่างใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="5575528586625653441">เกิดปัญหาเกี่ยวกับคำขอลงทะเบียนสาธิต</translation>
@@ -1596,7 +1583,6 @@
 <translation id="5620979661744857819">การดำเนินการนี้ช่วยให้ <ph name="APP_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องและไมโครโฟนได้ คุณอาจต้องรีเฟรชหน้าเว็บหรือรีสตาร์ทแอป</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">ยืนยันรหัสผ่านของคุณไม่ได้ โปรดลองอีกครั้ง</translation>
-<translation id="5632485077360054581">แสดงวิธีการ</translation>
 <translation id="5648021990716966815">ช่องเสียบไมโครโฟน</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ส่งคำขอให้คุณดำเนินการ</translation>
 <translation id="5657667036353380798">ต้องมี Chrome เวอร์ชัน <ph name="MINIMUM_CHROME_VERSION" /> หรือสูงกว่าเพื่อติดตั้งส่วนขยายภายนอก</translation>
@@ -1914,7 +1900,6 @@
 <translation id="651753338596587143">ขออภัย เกิดข้อผิดพลาดขณะติดตั้งทรัพยากร Dependency ของ DLC โปรดลองรีบูต จากนั้นหากปัญหายังคงอยู่ ให้ส่งความคิดเห็นพร้อมใส่ #bruschetta ในคำอธิบาย รหัสข้อผิดพลาดคือ <ph name="ERROR" /></translation>
 <translation id="6520517963145875092">เลือกหน้าต่างที่จะจับภาพ</translation>
 <translation id="652139407789908527">หน้าจอจะไม่แสดงผลเป็นเวลานานกว่าปกติ (สูงสุด 1 นาที) ในระหว่างการอัปเดตนี้ โปรดอย่ากดปุ่มเปิด/ปิดขณะอัปเดต</translation>
-<translation id="6528179044667508675">ห้ามรบกวน</translation>
 <translation id="65320610082834431">อีโมจิ</translation>
 <translation id="6537924328260219877">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">กำลังสแกน <ph name="FILENAME" /> เพื่อดาวน์โหลด</translation>
@@ -2158,7 +2143,6 @@
 <translation id="7264788308526527464">ลด <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">ยกนิ้วมือเรื่อยๆ เพื่อเพิ่มส่วนอื่นๆ ของลายนิ้วมือ</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
-<translation id="7285232777292757180">ใช้เครื่องมือจับภาพหน้าจอในการตั้งค่าด่วนเพื่อถ่ายภาพหน้าจอ</translation>
 <translation id="7301826272005790482">ปิดคำแนะนำหน้าต่าง</translation>
 <translation id="7302889331339392448">คำบรรยายสดปิดอยู่</translation>
 <translation id="7303281435234579599">อ๊ะ! เกิดข้อผิดพลาดขณะตั้งค่าโหมดสาธิต</translation>
@@ -2697,7 +2681,6 @@
 <translation id="880709030178078220">"ช่วยเหลือ"</translation>
 <translation id="8813531681893371930">เชื่อมต่อหูฟังแบบมีสาย</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
-<translation id="8815390544836110344">กดแป้นพิมพ์ลัดสำหรับการจับภาพหน้าจอ ปุ่ม Ctrl + Shift + แป้นโหมดภาพรวม</translation>
 <translation id="881757059229893486">การตั้งค่าวิธีการป้อนข้อมูล</translation>
 <translation id="8819728065740986820">การชาร์จแบบปรับอัตโนมัติเปิดอยู่</translation>
 <translation id="882204272221080310">อัปเดตเฟิร์มแวร์เพื่อเพิ่มความปลอดภัย</translation>
@@ -2803,7 +2786,6 @@
 <translation id="9098750710832798892">ไม่มีรายการที่คัดลอกไปยังคลิปบอร์ด</translation>
 <translation id="9098969848082897657">ปิดเสียงโทรศัพท์</translation>
 <translation id="9126339866969410112">เลิกทำงานล่าสุด</translation>
-<translation id="9126642911267312373">บลูทูธไม่พร้อมใช้งาน</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{ในอีก 1 นาที}other{ในอีก # นาที}}</translation>
 <translation id="9129245940793250979">ปุ่มด้านหลัง</translation>
 <translation id="9133335900048457298">บันทึกเนื้อหาที่ได้รับการคุ้มครองไม่ได้</translation>

@@ -138,7 +138,6 @@
 <translation id="1346403631707626730">傳送使用情況和診斷資料。將診斷、裝置及應用程式的使用情況資料自動傳送至 Google，協助改善你子女的 Android 使用體驗。這些資料不會用來識別你子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料亦會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果你為子女開啟「其他網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。<ph name="BEGIN_LINK1" />進一步瞭解數據<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1350494136075914725">進行中 · 切換至分頁</translation>
-<translation id="1351937230027495976">摺埋選單</translation>
 <translation id="1355088139103479645">要刪除所有資料嗎？</translation>
 <translation id="1360220746312242196">搜尋頁面時，前往上一個符合搜尋的項目</translation>
 <translation id="1360788414852622716">正在停用個人檔案，請稍候片刻。</translation>
@@ -682,7 +681,6 @@
 <translation id="3033545621352269033">已開啟</translation>
 <translation id="3033912566804961911">與「<ph name="DESK_NAME" />」合併</translation>
 <translation id="3036327949511794916">此 <ph name="DEVICE_TYPE" /> 的退貨期限已過。</translation>
-<translation id="3039491566278747710">無法在裝置上安裝離線政策。</translation>
 <translation id="3039939407102840004">觸控筆有 <ph name="PERCENTAGE" />% 電。</translation>
 <translation id="304097922505898963">開啟「鍵盤快速鍵」應用程式</translation>
 <translation id="304417730895741346">捷徑列會顯示已固定及開啟的應用程式。如要將應用程式固定至捷徑列，請在應用程式上按一下右鍵，或在觸控板上用兩隻手指輕按應用程式。</translation>
@@ -698,7 +696,6 @@
 <translation id="3075144191779656260">請輕觸 <ph name="DEVICE_TYPE" /> 左側的指紋感應器。系統會妥善地將您的指紋資料儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="3075874217500066906">Powerwash 程序必須重新啟動才能開始執行。重新啟動後，系統將向您確認是否繼續操作。</translation>
 <translation id="3077734595579995578">Shift</translation>
-<translation id="3081696990447829002">打開選單</translation>
 <translation id="3087734570205094154">下方</translation>
 <translation id="3088128611727407543">正在準備應用程式設定檔…</translation>
 <translation id="3090214513075567547">開啟內容選單</translation>
@@ -804,7 +801,6 @@
 <translation id="3405101454990027959">開啟麥克風存取權</translation>
 <translation id="3407967630066378878">如要設定指紋，請讓子女輕觸 <ph name="DEVICE_TYPE" /> 左側的指紋感應器。子女的指紋資料會安全儲存在此 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="3409584356742878290">顯示或隱藏 Developer Tools 檢查器</translation>
-<translation id="3413817803639110246">目前尚未有任何通知</translation>
 <translation id="3417835166382867856">搜尋分頁</translation>
 <translation id="3426253816581969877">按住 <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> 鍵並輕按 <ph name="KEY" /> 鍵，直到切換至您要開啟的視窗，然後鬆開手指</translation>
 <translation id="3428447136709161042">中斷同<ph name="NETWORK_NAME" />嘅連線</translation>
@@ -899,7 +895,6 @@
 <translation id="3626281679859535460">亮度</translation>
 <translation id="3628323833346754646">前按鈕</translation>
 <translation id="3630697955794050612">關閉</translation>
-<translation id="3631369015426612114">允許顯示來自以下來源的通知</translation>
 <translation id="3633097874324966332">開啟「藍牙設定」以配對裝置</translation>
 <translation id="3633851487917460983">開啟剪貼簿</translation>
 <translation id="363473492175527493">設定要專心處理嘅工作：<ph name="TASK_NAME" />。㩒 Enter 掣就可以修改工作。</translation>
@@ -915,7 +910,6 @@
 <translation id="3659667652322717492">您稍後可隨時變更麥克風行為。</translation>
 <translation id="3659814201068740063">約餘下 <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)。
 請將裝置接上電源。</translation>
-<translation id="3660860940251915011">將「<ph name="FEATURE_NAME" />」功能切換為是否向附近的所有裝置顯示</translation>
 <translation id="366222428570480733">受管理嘅使用者：<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">滑動即可隱藏浮動視窗</translation>
 <translation id="367531336287639526">選取網址列左方的第一個圖示</translation>
@@ -924,7 +918,6 @@
 <translation id="36813544980941320">您的手機和 <ph name="DEVICE_NAME" /> 將共用 Wi-Fi 網絡</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> 然後 <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">網站</translation>
-<translation id="3697991387880191195">按一下螢幕截圖快速鍵</translation>
 <translation id="3702809606464356667">顯示緊來自目前桌面嘅視窗，㩒向上箭咀掣就可以顯示來自所有桌面嘅視窗</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">載入中…</translation>
@@ -950,7 +943,6 @@
         <ph name="BEGIN_PARAGRAPH3" />你可以在「設定」中關閉此服務。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620">您的 <ph name="PHONE_NAME" /> 現在也可為這部 <ph name="DEVICE_TYPE" /> 解鎖。</translation>
 <translation id="3756485814916578707">正在投放畫面</translation>
-<translation id="3765246971671567135">無法讀取離線示範模式的政策。</translation>
 <translation id="3765841382945324995">「<ph name="SIX_PACK_KEY_NAME" />」快速鍵已由「<ph name="OLD_SHORTCUT" />」更新為「<ph name="NEW_SHORTCUT" />」</translation>
 <translation id="3772109172035555611">自訂 TrackPoint</translation>
 <translation id="3773700760453577392">管理員已禁止 <ph name="USER_EMAIL" /> 的多重登入功能。所有使用者都必須登出，才能繼續操作。</translation>
@@ -986,7 +978,6 @@
 <translation id="3859364108019690">無法以串流方式使用應用程式</translation>
 <translation id="3861638017150647085">使用者名稱「<ph name="USERNAME" />」無法使用</translation>
 <translation id="3861651314799684201">㩒 Enter 掣就可以錄全螢幕畫面</translation>
-<translation id="3870197372373144624">請嘗試將裝置關機。</translation>
 <translation id="3873915545594852654">ARC++ 發生問題。</translation>
 <translation id="3879748587602334249">下載管理員</translation>
 <translation id="3884007280698606545">USB 數目達到上限</translation>
@@ -1171,7 +1162,6 @@
 <translation id="439598569299422042">已暫停，下載進度：<ph name="SIZE_INFO" /></translation>
 <translation id="439817266247065935">您的裝置先前未正確關閉。如要使用 Linux 應用程式，請重新啟動 Linux。</translation>
 <translation id="440113666232554208">無法儲存螢幕錄影</translation>
-<translation id="4405151984121254935">不支援已連接的周邊裝置類型</translation>
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4412698727486357573">說明中心</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
@@ -1354,7 +1344,6 @@
 <translation id="493076006037866439">縮小螢幕</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4934763315031217818">不可包含順序數字</translation>
-<translation id="4936329710968938986">所有人，已關閉</translation>
 <translation id="4937170330762390348">語音聽寫功能可讓你透過語音輸入文字。請在文字欄位中，按下語音聽寫鍵或選取畫面底部的「麥克風」圖示。你的語音聽寫語言已設定為<ph name="LANGUAGE" />。系統會下載語音檔案，方便你離線使用語音聽寫功能。你可隨時在「設定」&gt; [無障礙設定] 變更語音聽寫語言。</translation>
 <translation id="4938176435186993759">隱藏所有建議</translation>
 <translation id="4945196315133970626">關閉通知</translation>
@@ -1371,7 +1360,6 @@
 <translation id="4966431234408005599">調高音量</translation>
 <translation id="496999337731226334">導覽步驟 <ph name="STEP" />，共 <ph name="TOTAL_STEPS" /> 個步驟。「快速設定」內有 Wi-Fi、藍牙和音量等常用控制項，你亦可透過快速設定擷取螢幕截圖。按下 Alt + Shift + S 鍵可開啟「快速設定」。</translation>
 <translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你在今天內下載更新。系統將在你連接互聯網時自動下載更新。}other{<ph name="MANAGER" /> 要求你在期限前下載更新。系統將在你連接互聯網時自動下載更新。}}</translation>
-<translation id="4975771730019223894">應用程式徽章</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />：
         <ph name="NOTIFICATION_1" />；
         <ph name="NOTIFICATION_2" />；以及 <ph name="NUM_OTHER_NOTIFICATION" /></translation>
@@ -1573,7 +1561,6 @@
 <translation id="5551456515017410630">開啟/關閉日曆</translation>
 <translation id="5551974246223970793">搜尋頁面時，前往下一個符合搜尋的項目</translation>
 <translation id="5556459405103347317">重新載入</translation>
-<translation id="5558091555391176027">將「咫尺共享」功能切換為向附近的所有裝置顯示</translation>
 <translation id="556042886152191864">按鈕</translation>
 <translation id="5570122939431135380">在新無痕式視窗中開啟新分頁</translation>
 <translation id="5575528586625653441">示範註冊要求發生問題。</translation>
@@ -1600,7 +1587,6 @@
 <translation id="5620979661744857819">此操作會允許「<ph name="APP_NAME" />」和所有具備相機和麥克風權限的應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">無法驗證您的密碼。請再試一次。</translation>
-<translation id="5632485077360054581">顯示方法</translation>
 <translation id="5648021990716966815">麥克風插孔</translation>
 <translation id="5652575806481723716">「<ph name="FOCUSED_APP_NAME" />」有新嘅要求需要你處理。</translation>
 <translation id="5657667036353380798">這個外部擴充功能需要安裝 <ph name="MINIMUM_CHROME_VERSION" /> 版本以上的 Chrome 瀏覽器。</translation>
@@ -1918,7 +1904,6 @@
 <translation id="651753338596587143">抱歉，安裝 DLC 依附組件時發生問題。請嘗試重新開機。如果問題持續，請提供意見，並在說明中加上 #bruschetta。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="6520517963145875092">選取要擷取的視窗</translation>
 <translation id="652139407789908527">進行此更新時，螢幕顯示空白畫面的時間可能會比平時更長 (最多一分鐘)。請勿在更新期間按下開關按鈕。</translation>
-<translation id="6528179044667508675">請勿騷擾</translation>
 <translation id="65320610082834431">Emoji</translation>
 <translation id="6537924328260219877">訊號強度係 <ph name="SIGNAL_STRENGTH" />，手機電量係 <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">掃瞄緊下載項目 <ph name="FILENAME" /></translation>
@@ -2161,7 +2146,6 @@
 <translation id="7264788308526527464">減 <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">覆按壓指紋感應器，以建立完整的指紋檔案</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />鍵 + Backspace 鍵</translation>
-<translation id="7285232777292757180">使用快速設定中的螢幕截圖工具擷取螢幕截圖</translation>
 <translation id="7301826272005790482">關閉視窗建議</translation>
 <translation id="7302889331339392448">「即時字幕」功能已關閉。</translation>
 <translation id="7303281435234579599">糟糕！設定示範模式時發生問題。</translation>
@@ -2700,7 +2684,6 @@
 <translation id="880709030178078220">「說明」</translation>
 <translation id="8813531681893371930">連接有線耳機</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
-<translation id="8815390544836110344">㩒一下螢幕截圖快速鍵：Ctrl 加 Shift 加概覽模式鍵</translation>
 <translation id="881757059229893486">輸入方法設定</translation>
 <translation id="8819728065740986820">自動調節充電速度功能已開啟</translation>
 <translation id="882204272221080310">更新韌體以提高安全性。</translation>
@@ -2806,7 +2789,6 @@
 <translation id="9098750710832798892">未複製任何項目至「剪貼簿」</translation>
 <translation id="9098969848082897657">將手機設為靜音</translation>
 <translation id="9126339866969410112">復原上一個操作</translation>
-<translation id="9126642911267312373">無法使用藍牙</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 分鐘後}other{# 分鐘後}}</translation>
 <translation id="9129245940793250979">後按鈕</translation>
 <translation id="9133335900048457298">無法錄影受保護的內容</translation>

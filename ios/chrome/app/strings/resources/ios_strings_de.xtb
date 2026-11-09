@@ -386,7 +386,6 @@
 <translation id="2104436223719117661">Trends bei Suchanfragen</translation>
 <translation id="21133533946938348">Tab anpinnen</translation>
 <translation id="2117650889962717098">Im Inkognitomodus bleiben deine Browsing-Aktivitäten privat</translation>
-<translation id="2119126821484134587">Damit Gemini dich individuell unterstützen kann, werden einige deiner Daten (z. B. Teile deiner Chats, dein Standort und andere relevante Informationen) an andere Google-Dienste wie Google Maps und Google Flüge weitergegeben. Diese Informationen können zur Verbesserung dieser Dienste verwendet werden, auch wenn du deinen Verlauf in Gemini-Apps später löschst. Weitere Informationen findest du im <ph name="BEGIN_LINK" />Privacy Hub für Gemini-Apps<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Öffnen in…</translation>
 <translation id="2119962645034852864">Einige Dienste sind für dein Konto nicht verfügbar</translation>
 <translation id="2120553909046681540">Deine Organisation hat das private Surfen deaktiviert.</translation>
@@ -1110,7 +1109,6 @@
 <translation id="4470766488397113689">Woran möchtest du arbeiten?</translation>
 <translation id="4471472356135655769">Passwörter können nicht exportiert werden</translation>
 <translation id="4472575034687746823">Jetzt starten</translation>
-<translation id="4473565697543262065">Dadurch werden ausgewählte Informationen gelöscht, die auf diesem Gerät und in deinem Google-Konto <ph name="USER_EMAIL" /> gespeichert sind</translation>
 <translation id="4473608001744970767">„Preis beobachten“ ausblenden</translation>
 <translation id="4474142134969976028">Keine passenden Ergebnisse</translation>
 <translation id="4474494258097106883">Für dein iPhone entwickelt</translation>
@@ -1434,7 +1432,6 @@
 <translation id="5443636120437209490">Standardmäßig besseres Surfen</translation>
 <translation id="5444892875087332195">Lesezeichen</translation>
 <translation id="5447973833955560753">Wiederherstellungspasswort</translation>
-<translation id="5448623529214315261">Foto „<ph name="INDEX" />“ gespeichert</translation>
 <translation id="5452354193031718372">Starkes Passwort verwenden:</translation>
 <translation id="5454211924362324495">Wenn du verhindern möchtest, dass andere dein Passwort verwenden, <ph name="BEGIN_LINK" />ändere es auf <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Suchanfrage ergänzen</translation>
@@ -1845,6 +1842,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6670729408462528018">Galerie</translation>
 <translation id="6671294218820966278">Als gelesen markieren</translation>
 <translation id="6672697278890207089">Passphrase eingeben</translation>
+<translation id="6673666785752667010">KI-Modus schließen</translation>
 <translation id="6674917187596384849">Du kannst ganz einfach zwischen Konten wechseln</translation>
 <translation id="6676349090816247042">Anmeldeoptionen.</translation>
 <translation id="667999046851023355">Dokument</translation>
@@ -1852,6 +1850,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6682680306647339111">Erinnerung entfernt</translation>
 <translation id="6683022854667115063">Kopfhörer</translation>
 <translation id="6684262542644248484">Melde dich auf einer Website an</translation>
+<translation id="668475086425500258">Website-Einstellungen</translation>
 <translation id="6685259053455152195">Verknüpfungen zum schnellen Anpassen der Einstellungen oder Zugreifen auf Funktionen über die Adressleiste.</translation>
 <translation id="6689342293888598653">Hintergrund in Weiß</translation>
 <translation id="6689685206615181381">Nur der Inkognitomodus ist verfügbar</translation>
@@ -1867,7 +1866,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="672735642903863329">Greife auf allen deinen Geräten auf Lesezeichen, Passwörter und andere Daten zu.</translation>
 <translation id="6729493062119577923">Aktivitäten der geteilten Tabgruppe</translation>
 <translation id="6732087373923685049">Kamera</translation>
-<translation id="6736243959894955139">Adresse</translation>
 <translation id="6746338529702829275">Kontodaten prüfen</translation>
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} Verlaufseintrag importiert}other{{count} Verlaufseinträge importiert}}</translation>
@@ -1989,7 +1987,6 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7128693485119315539">Deine Organisation muss möglicherweise Browserdaten, die mit deinem verwalteten Konto verknüpft sind, sehen und verwalten – beispielsweise deinen Browserverlauf und deine Passwörter.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera ist nicht verfügbar</translation>
-<translation id="7138678301420049075">Sonstiges</translation>
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Deine Tabs werden geschlossen und die Browserdaten werden gelöscht</translation>
 <translation id="714291438898585119">Markiert</translation>
@@ -2622,7 +2619,6 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="9039373489628511875">Bandbreite</translation>
 <translation id="9042363670218758847">Wechsle zu einem Layout, das für die Schnellsuche entwickelt wurde</translation>
 <translation id="9042893549633094279">Datenschutz und Sicherheit</translation>
-<translation id="9044703854323320868">Gmail-Nachricht <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Mit Tabgruppen kannst du deine geöffneten Tabs organisieren und bist produktiver</translation>
 <translation id="9055580485132823283">Du bist im Begriff, {password_count} Passwörter, {passkey_count} Passkeys und die Liste der Websites und Apps zu löschen, für die du festgelegt hast, dass Anmeldedaten nie gespeichert werden sollen. Konten, die du für Websites und Apps erstellt hast, werden nicht gelöscht.</translation>
 <translation id="9057030985451135243">Informationen zu geteilten Tabgruppen</translation>

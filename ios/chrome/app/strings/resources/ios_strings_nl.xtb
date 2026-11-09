@@ -386,7 +386,6 @@
 <translation id="2104436223719117661">Trending zoekopdrachten</translation>
 <translation id="21133533946938348">Tabblad vastzetten</translation>
 <translation id="2117650889962717098">Schakel over naar de incognitomodus om privé te browsen</translation>
-<translation id="2119126821484134587">Om hulp op maat te bieden, deelt Gemini bepaalde gegevens (zoals fragmenten van je gesprekken, je locatie en andere relevante informatie) met andere Google-services, zoals Maps en Vluchten. Deze services kunnen die informatie gebruiken om beter te worden, ook als je je Gemini Apps-geschiedenis later verwijdert. Meer informatie vind je in de <ph name="BEGIN_LINK" />Gemini Apps Privacy Hub<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Openen in…</translation>
 <translation id="2119962645034852864">Sommige services zijn niet beschikbaar voor je account</translation>
 <translation id="2120553909046681540">Je organisatie heeft privé browsen uitgezet.</translation>
@@ -519,6 +518,7 @@
 <translation id="2524699375503213836">Je gegevens ophalen uit Safari</translation>
 <translation id="2526166285241366046">Een wachtwoord opslaan</translation>
 <translation id="2529021024822217800">Alles openen</translation>
+<translation id="2536421147135705892">Geolocatie toestaan?</translation>
 <translation id="2536991091671391962">Je kunt opgeslagen wachtwoorden op elk apparaat gebruiken. Ze worden opgeslagen in Google Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Verborgen, wachtwoord</translation>
 <translation id="2538705697765638552">Sla je informatie op en doe sneller dingen, zoals formulieren invullen in Google-producten. Je kunt je informatie in Google Wallet beheren voor <ph name="USER_EMAIL" />.</translation>
@@ -1110,7 +1110,6 @@
 <translation id="4470766488397113689">Waar wil je aan werken?</translation>
 <translation id="4471472356135655769">Kan wachtwoorden niet exporteren</translation>
 <translation id="4472575034687746823">Aan de slag</translation>
-<translation id="4473565697543262065">Hiermee verwijder je geselecteerde informatie die is opgeslagen op dit apparaat en in je Google-account <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Prijs volgen verbergen</translation>
 <translation id="4474142134969976028">Geen overeenkomende resultaten</translation>
 <translation id="4474494258097106883">Ontworpen voor je iPhone</translation>
@@ -1337,6 +1336,7 @@
 <translation id="5128788795241319992">Het nieuwe menu ontdekken</translation>
 <translation id="5132942445612118989">Je wachtwoorden, geschiedenis en meer synchroniseren op al je apparaten</translation>
 <translation id="5137568953923142260">Eenmalig toestaan</translation>
+<translation id="5139344197062265975">Gebruik je microfoon om te praten met Gemini. Als je met Gemini praat, wordt audio opgeslagen in Gemini-geschiedenis (als dit aanstaat). Je gegevens worden niet gebruikt om generatieve AI-modellen te verbeteren.</translation>
 <translation id="5141363746588976328">Kaart Prijsdalingen op je tabbladen verbergen</translation>
 <translation id="514154868070499296">Lettertype: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Tabbladschakelaar verlaten</translation>
@@ -1434,7 +1434,6 @@
 <translation id="5443636120437209490">Standaard beter browsen</translation>
 <translation id="5444892875087332195">Bookmarks</translation>
 <translation id="5447973833955560753">Herstelwachtwoord</translation>
-<translation id="5448623529214315261">Opgeslagen foto <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Sterk wachtwoord gebruiken:</translation>
 <translation id="5454211924362324495"><ph name="BEGIN_LINK" />Wijzig je wachtwoord op <ph name="WEBSITE" /><ph name="END_LINK" /> om te voorkomen dat anderen het gebruiken</translation>
 <translation id="5457082343331641453">Zoekopdracht aanvullen</translation>
@@ -1607,6 +1606,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6000893618966378846">'Browsegegevens verwijderen' is afgerond</translation>
 <translation id="6004988584831654445">Je bent helemaal klaar! Krijg een melding als er nieuwe taken zijn.</translation>
 <translation id="6006672969046233841">Nieuw tabblad</translation>
+<translation id="6006758170939001741">Onze <ph name="BEGIN_LINK" />Servicevoorwaarden<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Servicevoorwaarden voor locatie voor Korea<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />Privacyverklaring<ph name="END_LINK" /> zijn van toepassing. Gesprekken worden beoordeeld en gebruikt om generatieve AI-modellen te trainen. Gemini is AI en kan fouten maken, ook over mensen. Bepaalde content is misschien niet geschikt voor iedereen. Je kunt <ph name="BEGIN_LINK" />je geschiedenis beheren<ph name="END_LINK" />, waaronder <ph name="BEGIN_LINK" />informatie over je locatie<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Meer informatie over je keuzes<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">Zoeksuggesties verbeteren</translation>
 <translation id="6012140227487808125">Versleutelen…</translation>
 <translation id="6014801569448771146">Je wachtwoorden controleren</translation>
@@ -1845,6 +1845,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6670729408462528018">Galerij</translation>
 <translation id="6671294218820966278">Markeren als gelezen</translation>
 <translation id="6672697278890207089">Je wachtwoordzin invoeren</translation>
+<translation id="6673666785752667010">AI-modus sluiten</translation>
 <translation id="6674917187596384849">Je kunt makkelijk wisselen tussen accounts</translation>
 <translation id="6676349090816247042">Inlogopties.</translation>
 <translation id="667999046851023355">Document</translation>
@@ -1852,6 +1853,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6682680306647339111">Herinnering verwijderd</translation>
 <translation id="6683022854667115063">Hoofdtelefoon</translation>
 <translation id="6684262542644248484">Log in bij een website</translation>
+<translation id="668475086425500258">site-instellingen</translation>
 <translation id="6685259053455152195">Snelkoppelingen om snel instellingen te wijzigen en functies te gebruiken via de adresbalk.</translation>
 <translation id="6689342293888598653">Witte achtergrondkleur</translation>
 <translation id="6689685206615181381">Alleen de incognitomodus is beschikbaar</translation>
@@ -1867,7 +1869,6 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="672735642903863329">Gebruik je bookmarks, wachtwoorden en meer op al je apparaten.</translation>
 <translation id="6729493062119577923">Activiteit van gedeelde tabbladgroep</translation>
 <translation id="6732087373923685049">camera</translation>
-<translation id="6736243959894955139">Adres</translation>
 <translation id="6746338529702829275">Check je accountgegevens</translation>
 <translation id="6749473226660745022">Foto's</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} geschiedenisitem geïmporteerd}other{{count} geschiedenisitems geïmporteerd}}</translation>
@@ -1989,7 +1990,6 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="7128693485119315539">Je organisatie moet misschien browsegegevens kunnen bekijken en beheren die aan je beheerde account zijn gekoppeld, zoals je browsegeschiedenis en wachtwoorden.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Camera is niet beschikbaar</translation>
-<translation id="7138678301420049075">Overige</translation>
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Je tabbladen worden gesloten en browsegegevens worden verwijderd</translation>
 <translation id="714291438898585119">Met ster</translation>
@@ -2137,6 +2137,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT} inactief tabblad sluiten?}other{{COUNT} inactieve tabbladen sluiten?}}</translation>
 <translation id="7598439272585186139">Meer beveiliging krijgen</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nooit vertalen</translation>
+<translation id="760230853074995500">Gesprekken worden beoordeeld en gebruikt om generatieve AI-modellen te trainen. Je kunt <ph name="BEGIN_LINK" />je geschiedenis beheren<ph name="END_LINK" />, waaronder <ph name="BEGIN_LINK" />informatie over je locatie<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Meer informatie over je keuzes<ph name="END_LINK" />.</translation>
 <translation id="7603308509262646847">De kaarthouder <ph name="NAME" /> automatisch invullen</translation>
 <translation id="7603852183842204213">Pop-ups geblokkeerd (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Synchronisatie werkt niet</translation>
@@ -2622,7 +2623,6 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="9039373489628511875">Bandbreedte</translation>
 <translation id="9042363670218758847">Wissel naar een indeling die is gemaakt voor snelle zoekopdrachten</translation>
 <translation id="9042893549633094279">Privacy en beveiliging</translation>
-<translation id="9044703854323320868">Gmail-bericht <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Maak tabbladgroepen om je geopende tabbladen te ordenen en productief te blijven</translation>
 <translation id="9055580485132823283">Je staat op het punt om {password_count} wachtwoorden, {passkey_count} toegangssleutels en de lijst met sites en apps waarvoor je hebt gekozen om nooit inloggegevens op te slaan, te verwijderen. Accounts die je voor sites en apps hebt gemaakt, worden niet verwijderd.</translation>
 <translation id="9057030985451135243">Meer informatie over gedeelde tabbladgroepen</translation>
@@ -2631,6 +2631,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="9066097352053395362">Bookmark bewerken verbergen</translation>
 <translation id="9070824521421603770">Je wordt uitgelogd en tabbladen worden gesloten</translation>
 <translation id="9072837124205571418">Tabbladgroepen van alle apparaten</translation>
+<translation id="9073322251019919253">Gemini is AI en kan fouten maken, ook over mensen. Bepaalde content is misschien niet geschikt voor iedereen. Gesprekken worden beoordeeld en gebruikt om generatieve AI-modellen te trainen. Je kunt <ph name="BEGIN_LINK" />je geschiedenis beheren<ph name="END_LINK" />, waaronder <ph name="BEGIN_LINK" />informatie over je locatie<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Meer informatie over je keuzes<ph name="END_LINK" />. Onze <ph name="BEGIN_LINK" />Voorwaarden<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />Privacyverklaring<ph name="END_LINK" /> zijn van toepassing.</translation>
 <translation id="9081058212938299310">Wachtwoord voor <ph name="USERNAME" /> updaten?</translation>
 <translation id="908365381820697818">Je kunt nu onder andere informatie uit Gmail vinden en invullen</translation>
 <translation id="9083838294503912307">Zet de synchronisatie aan om verschillende apparaten te synchroniseren en te personaliseren.</translation>

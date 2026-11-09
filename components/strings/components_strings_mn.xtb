@@ -3,6 +3,7 @@
 <translationbundle lang="mn">
 <translation id="1008557486741366299">Боломжгүй байна</translation>
 <translation id="100957008357583611">Байршлаа ашиглах уу?</translation>
+<translation id="1010148478459329879">Таны Google Бүртгэл <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> дээр таны <ph name="BEGIN_LINK_GAA" />Gemini-н түүх<ph name="END_LINK_GAA" /> зэрэг хөтчийн түүхийн өөр хэлбэртэй байж болно.</translation>
 <translation id="1010200102790553230">Хуудсыг дараа ачаалах</translation>
 <translation id="1010225406377140704">Шинэ холбоос хүсэхийн тулд илгээгчтэй холбогдоно уу</translation>
 <translation id="1011206368273183593">Файлуудыг бэлтгэж байна</translation>
@@ -648,7 +649,6 @@
 <translation id="2102134110707549001">Хүчтэй нууц үг санал болгох...</translation>
 <translation id="2102495993840063010">Андройд апп</translation>
 <translation id="2103210856015238101">Хүрч бөглөх боломжтой лояалти картуудыг бүтэн өндрөөр нээсэн.</translation>
-<translation id="2104739941682874393">Сайжруулсан автоматаар бөглөх хэсэг маягтыг илүү сайн ойлгодог бөгөөд танд илүү хурдан автоматаар бөглөж өгөх боломжтой</translation>
 <translation id="2105237910269166838">Энэ хуудасны тухай асуух</translation>
 <translation id="2107021941795971877">Хэвлэлийн дэмжлэг</translation>
 <translation id="2108755909498034140">Компьютероо дахин эхлүүлэх</translation>
@@ -734,7 +734,6 @@
 <translation id="2215727959747642672">Файл засах</translation>
 <translation id="2219658597883514593">Практик хичээлийг дахин эхлүүлэх</translation>
 <translation id="2219735899272417925">Төхөөрөмжийг шинэчлэх шаардлагатай</translation>
-<translation id="2221460252073828078">Хайлтын ХОУ-ы хариултаа эндээс харна уу</translation>
 <translation id="2222604080869344662">Үргэлжлүүлэн татахын тулд OneDrive-т нэвтэрнэ үү</translation>
 <translation id="2224337661447660594">Интернэт алга</translation>
 <translation id="2225927550500503913">Виртуал картыг асаасан</translation>
@@ -747,6 +746,7 @@
 <translation id="2236949375853147973">Миний үйл ажиллагаа</translation>
 <translation id="2239100178324503013">Одоо илгээх</translation>
 <translation id="223921069122391343">Таны хадгалсан саналыг автоматаар бөглөх хэсгийг ашиглан тооцоо хийх үед ашиглах боломжтой. <ph name="BEGIN_LINK" />Ерөнхий нөхцөлийг харах<ph name="END_LINK" /></translation>
+<translation id="2241152885794021133">Google.com-с гарах</translation>
 <translation id="224130779555573777">Нөхөн төлөх дугаар нэмэх</translation>
 <translation id="2241693394036365668">Файлыг татдаг</translation>
 <translation id="2242389809734574253">IBAN-г хадгалах хүснэгтийг хаасан.</translation>
@@ -834,7 +834,6 @@
 <translation id="2367025302166767427">Таны мэдээллийг бөглөхөд асуудал гарлаа</translation>
 <translation id="2367567093518048410">Түвшин</translation>
 <translation id="2370368710215137370">Файлын байршуулалт</translation>
-<translation id="2370739752330685659">Магадгүй дараа</translation>
 <translation id="2371084566192454134">Таб, табын бүлэг</translation>
 <translation id="237379235388498999">Видеог OneDrive-т хадгалсан</translation>
 <translation id="2374629208601905275">Танай бүс нутгийн хуульд тулгуурлан Chrome танаас өгөгдмөл хайлтын системээ сонгохыг хүснэ. Эдгээр хайлтын систем нь танай бүс нутагт эрэлттэй бөгөөд эдгээрийг санамсаргүй дарааллаар харуулсан.</translation>
@@ -1098,6 +1097,7 @@
 <translation id="2840680829170913626">Эдгээр сонголтыг санал болгохын тулд тооцоо хийх хуудасны агуулгыг Google-тэй хуваалцдаг. Төлбөрийн төлөвлөгөө нь зохих эрхтэй эсэхээс хамаарна. Автоматаар бөглөх хэсэг дэх дараа төлөх сонголтуудыг нуухын тулд <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> руу очно уу.</translation>
 <translation id="2843623755398178332">Хуваалцсан табаа гүйлгэж, томруулах уу?</translation>
 <translation id="2849936225196189499">Аюултай</translation>
+<translation id="2850376380414956858">Бүх бүртгэлээс гарах</translation>
 <translation id="2851291081585704741">Та офлайн байна</translation>
 <translation id="2854163610915391726">Google Бүртгэлдээ Chrome-н ямар мэдээлэл хадгалахаа удирдах</translation>
 <translation id="2858134430383535011">200 x 300 мм</translation>
@@ -1275,6 +1275,7 @@
 <translation id="3141337053413339205">Энэ таб руу сэлгэнэ үү.</translation>
 <translation id="3144458715650412431">Туршилтын бодлогуудыг хэрэглэсэн. Chrome://policy/test дээрээс тэдгээрийг шалгаж шинэчилнэ үү. Админы бодлогуудыг хэрэглээгүй.</translation>
 <translation id="3145945101586104090">Хариуг шифрлэж чадсангүй</translation>
+<translation id="3149865382039202168">Мэдээллээ <ph name="GOOGLE_WALLET_TITLE" />-д хадгалаад, Google-н бүтээгдэхүүнүүд дээрх маягтыг бөглөх зэрэг зүйлсийг илүү хурдан хийгээрэй. Та <ph name="ACCOUNT" />-н хувийн картын тохиргооноосоо <ph name="HOW_INFO_IS_USED_LINK" />-г хянах боломжтой. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Серверийн түр хугацааны алдаа</translation>
 <translation id="3150889484970506196">Хүснэгт үүсгэх товчлуур, шинэ Google Хүснэгтийг шуурхай үүсгэхийн тулд идэвхжүүлнэ үү</translation>
 <translation id="3154506275960390542">Энэ хуудас нь илгээхэд аюултай байж болзошгүй маягтыг агуулдаг. Таны илгээх өгөгдлийг шилжүүлэх зуур бусад хүмүүс харах, халдагч этгээд серверийн хүлээн авах зүйлийг өөрчлөх боломжтой.</translation>
@@ -1712,7 +1713,6 @@
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> нэмэлт функцийн өргөтгөлүүдийг суулгасан байна. Өргөтгөлүүд нь таны зарим өгөгдөлд хандах эрхтэй.</translation>
 <translation id="3832522519263485449">Зүүн ирмэг дагуу олон нүх цоолох</translation>
 <translation id="3835233591525155343">Таны төхөөрөмжийн ашиглалт</translation>
-<translation id="383710924053593293">Илүү олон талбарыг илүү хурдан бөглөөрэй</translation>
 <translation id="3843447501960446468">Лояалти картыг удирдах...</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Шинэ Google Док шуурхай үүсгэхийн тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
@@ -1871,7 +1871,6 @@
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Журмын хамрах хүрээг дэмждэггүй.</translation>
-<translation id="411918202192379658">Автоматаар бөглөх онцлог илүү сайн боллоо</translation>
 <translation id="4121428309786185360">-д хугацаа нь дуусна</translation>
 <translation id="4123572138124678573">Доод буланд гурван нүх цоолох</translation>
 <translation id="412601465078863288">Байршуулах үйлдэл завсарласан</translation>
@@ -1998,6 +1997,7 @@
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" />-г шинэчилсэн</translation>
 <translation id="4298148761711700950">QR код байршуулахгүйгээр шуурхай төлөх</translation>
 <translation id="4298925811540301889">Энэ сайтын күүкиг таны ChromeOS төхөөрөмжүүд дээр синк хийдэг. Юу синк хийхээ удирдахын тулд <ph name="SYNC_SETTINGS" /> руу очно уу.</translation>
+<translation id="4299360487321267760"><ph name="APP_NAME" />-н эх сурвалж <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">Товчлолын нэр <ph name="MAX_LENGTH" /> тэмдэгтийн зөвшөөрөгдсөн хязгаараас хэтэрсэн байна.</translation>
 <translation id="4300272766492248925">Апп нээх</translation>
 <translation id="4300675098767811073">Баруун ирмэг дагуу олон нүх цоолох</translation>
@@ -2058,6 +2058,7 @@
 <translation id="4387362115623213806">Уулзах төлөвлөгөөнөөс татгалзах эелдэг хариу ноороглоход тусална уу</translation>
 <translation id="4387692837058041921">Microsoft OneDrive-т файл байршуулахыг түр зогсоосон</translation>
 <translation id="4390472908992056574">Хүрээ</translation>
+<translation id="4394980935660306080">Энэ долоо хоногийн эхээр</translation>
 <translation id="4395550503472021297">Энэ бодлого дараах бодлогуудын өгөгдмөл үйлдлийг хянаж байна: <ph name="POLICIES" /></translation>
 <translation id="4396554829965096368">Жолооны үнэмлэх</translation>
 <translation id="4397978002248035985">Таны банкны вебсайт дээр баталгаажуулах попапыг нээнэ</translation>
@@ -2112,6 +2113,7 @@
 <translation id="4497843134750481377">Санал удирдах</translation>
 <translation id="4500587658229086076">аюултай контент</translation>
 <translation id="4501939680615452918">Тренд болж буй ресторануудаас сул ширээ хайна уу</translation>
+<translation id="4503437956670248875">Ажлын байр нэгдсэн</translation>
 <translation id="4503459574136856756">Миний намтрыг илүү мэргэжлийн сонсогдохоор найруулан бичнэ үү</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> хүн</translation>
 <translation id="4506176782989081258">Баталгаажуулалтын алдаа: <ph name="VALIDATION_ERROR" /></translation>
@@ -2321,6 +2323,7 @@
 <translation id="486459320933704969">Эцэг эх эсвэл асран хамгаалагч таныг энэ вебсайтад зочилж БОЛНО гэж хэлэх ёстой</translation>
 <translation id="4865063548323785458">Сайт, аппад хялбархан нэвтрэхийн тулд нууц үгээ хадгалж, автоматаар бөглөөрэй</translation>
 <translation id="4866506163384898554">Курсороо харуулахын тулд |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| дээр дарна уу</translation>
+<translation id="4867297348137739678">Өнгөрсөн долоо хоног</translation>
 <translation id="4868277513442568587">Дундын табын бүлгээ үргэлжлүүлэн ашиглахын тулд Chrome-г шинэчилнэ үү</translation>
 <translation id="4873312501243535625">Медиа файл шалгагч</translation>
 <translation id="4873807733347502026">Хулганаа түгжих ба ашиглах</translation>
@@ -2449,7 +2452,6 @@
 <translation id="5056587122125565772">Зураг үүсгэх</translation>
 <translation id="5056908537436373373"><ph name="WINDOW_INDEX" /> цонхыг (1 таб) шинэ цонхонд нээх</translation>
 <translation id="505757197798929356">Нээж буй шалтгаанаар хангана уу (шаардлагатай)</translation>
-<translation id="5058282932481719070">тохиргооноос сайжруулсан автоматаар бөглөх хэсгийн талаар нэмэлт мэдээлэл авах</translation>
 <translation id="5061227663725596739">Та <ph name="LOOKALIKE_DOMAIN" />-г хайсан уу?</translation>
 <translation id="5066056036849835175">Хэвлэлийн түүх</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2508,7 +2510,6 @@
 <translation id="5147633291963801297">Хажуугийн самбараас үнийн бууралтыг харна уу</translation>
 <translation id="5148809049217731050">Нүүрээр нь дээш харуулсан</translation>
 <translation id="5148889558173091794"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> бодлогыг зөрчиж байгаа тул танай байгууллага тус домэйнийг блоклосон. <ph name="BEGIN_LEARN_MORE_LINK" />Энэ сануулгын талаар нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
-<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154702632169343078">Гарчиг</translation>
 <translation id="5156995531130738884">Манай ангид зориулж сонирхолтой хичээлийн тойм гаргаж, хичээлийн төлөвлөгөө ноороглоно уу</translation>
 <translation id="5158275234811857234">Ковер</translation>
@@ -2717,6 +2718,7 @@
     Та системийн админтайгаа холбогдоно уу.</translation>
 <translation id="5496804587179176046">Хамгаалалтын кодыг хадгална уу, одоогоор хадгалсан хамгаалалтын код байхгүй байна</translation>
 <translation id="5499229993630251170">Энэ уялдаатыг үргэлжлүүлэх үү?</translation>
+<translation id="5500759546320582211">Баталгаажуулах код: <ph name="EMAIL" />-с ирсэн <ph name="OTP" /></translation>
 <translation id="5506286895894263601">Жагсаалт ямар ч хүчинтэй товчлол агуулаагүй байна.</translation>
 <translation id="5507756662695126555">Үл цуцлах</translation>
 <translation id="5508515366054931524">Имэйл баталгаажуулах зааврыг бүтэн өндрөөр нээсэн</translation>
@@ -3157,6 +3159,7 @@
 <translation id="6246316216123107851"><ph name="NUM_DAYS" /> хоногийн өмнө</translation>
 <translation id="6246382863801034910">Тээврийн хэрэгсэл</translation>
 <translation id="6246868321321344665">Танай байгууллага ажлын болон хувийн профайл дахь нууц үг, түүх зэрэг интернэтээр үзсэн өгөгдлийг харах боломжтой</translation>
+<translation id="6247135136978128662">Төхөөрөмж нэгдсэн</translation>
 <translation id="6248479108671123143"><ph name="MEMBER_FIRST_NAME" /> энэ <ph name="TAB_TITLE" /> табыг өөрчилсөн</translation>
 <translation id="6248988683584659830">Хайлтын тохиргоо</translation>
 <translation id="6251906504834538140">{0,plural, =1{Файлыг зөөхийг блоклосон}other{<ph name="FILE_COUNT" /> файлыг зөөхийг блоклосон}}</translation>
@@ -3207,6 +3210,7 @@
 <translation id="6322182122604171028">Windows Hello-г ашиглаж чадсангүй</translation>
 <translation id="6326175484149238433">Chrome-оос устга</translation>
 <translation id="6326947323444967009">iOS-н тохиргоонд Chrome-г системийн өгөгдмөл хөтөч болгон тохируулна уу</translation>
+<translation id="6327434859517217259">энэ мэдээллийг Google дээр хэрхэн ашигладаг болох</translation>
 <translation id="6328639280570009161">Сүлжээний таамаглалыг идэвхгүй болгох гээд үзээрэй</translation>
 <translation id="6329742260390895689">Мэдээллээ автоматаар бөглөхийн тулд Wallet-н тохиргооноос "Google дээр карт ашиглах" гэснийг асаана уу</translation>
 <translation id="6329815962353376655">&lt;Асуулт шивэх&gt;</translation>
@@ -3425,6 +3429,7 @@
 <translation id="6698381487523150993">Үүсгэсэн:</translation>
 <translation id="6698769547327354196">Pix-г Chrome-д унтраахын тулд <ph name="BEGIN_LINK1" />төлбөрийн тохиргоо<ph name="END_LINK1" /> руугаа очно уу</translation>
 <translation id="67007264085648978">Хугацаа гүйлгэгч</translation>
+<translation id="67008498521868073">Google.com-н бүх бүртгэлээс гарах</translation>
 <translation id="6702919718839027939">Үзүүлэн</translation>
 <translation id="6704458454638854812">"Custom_size" шинж чанарыг тохируулсан бөгөөд нэр нь "custom" байна гэж тооцоолсон.</translation>
 <translation id="670477556876354552">Дахин эхлүүлэх шаардлагатай</translation>
@@ -3572,7 +3577,6 @@
 <translation id="695140971690006676">Бүгдийг шинэчлэх</translation>
 <translation id="6954269228996542693">Хэлний багцуудыг татаж байна... <ph name="PERCENT" />%</translation>
 <translation id="695582302419398462">Цаасан хайрцаг (хоёр давхар)</translation>
-<translation id="6957153644870901611">Илүү олон талбарыг автоматаар бөглөхийн тулд сайжруулсан автоматаар бөглөх хэсгийг асаана уу</translation>
 <translation id="6957887021205513506">Серверийн гэрчилгээ хуурамч байж болзошгүй байна.</translation>
 <translation id="6958564499836457428">Google Бүртгэлдээ Google-н нууцлалын тохиргоог удирдах</translation>
 <translation id="6961161369573226336">Google Нууц үгний менежер эдгээр кодыг таны Gmail <ph name="EMAIL" />-с авах боломжтой. Та бодлоо өөрчилж, <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" /> боломжтой.</translation>
@@ -3595,6 +3599,7 @@
 <translation id="6978236010531171013">Ямартай ч хуваалцах</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Дууг хаах (өгөгдмөл)</translation>
+<translation id="6979737339423435258">Бүх цаг</translation>
 <translation id="6983783921975806247">OID-ыг бүртгэсэн</translation>
 <translation id="6984095691972094111">Би шинэ хэл сурахаар оролдож байна. Надад үгний сан, дүрмийн дадлага хийхэд туслах сорил үүсгэнэ үү</translation>
 <translation id="698450079873764780">Надтай дүрд тоглох замаар хэцүү харилцан ярианд бэлдэхэд минь тусална уу. Би хариултуудаа давтмаар байна.</translation>
@@ -3634,7 +3639,6 @@
 <translation id="7053983685419859001">Блоклох</translation>
 <translation id="7054563057916451424"><ph name="DESTINATION" />, шинэ табд нээгдэнэ</translation>
 <translation id="7054717457611655239">Одооноос файлуудаа <ph name="CLOUD_PROVIDER" />-д хадгална уу.</translation>
-<translation id="7057567173736333354">Зургаа тайлбарлана уу</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> <ph name="ISSUER" />-г энэ веб сайтын гэрчилгээг олгосон болохыг баталгаажуулсан.</translation>
 <translation id="7058774143982824355">CSV-н нууц үг задлан шинжлэгч үйлчилгээ</translation>
 <translation id="7059913660448028407">Яг одоо ашиглах боломжгүй</translation>
@@ -4054,6 +4058,7 @@
 <translation id="7716147886133743102">Таны администратор блоклосон</translation>
 <translation id="7716375162095500223">Хараахан байршуулаагүй эсвэл үл хэрэгсээгүй</translation>
 <translation id="7716424297397655342">Энэ сайтыг нөөцөөс ачаалах боломжгүй</translation>
+<translation id="7717821180424994530">Нэгдээгүй</translation>
 <translation id="7718626066800460799">Скан хийсэн зүйлийг хадгалах боломжгүй</translation>
 <translation id="772128550427553158">Карт баталгаажуулалтын код нь таны картын урд талд байрладаг.</translation>
 <translation id="7724603315864178912">Хайчлах</translation>
@@ -4303,6 +4308,7 @@
 <translation id="8163468049564974856">Онлайнаар аюулгүй тооцоо хийхийн тулд автоматаар бөглөхийг асаана уу. Таны картын дэлгэрэнгүй мэдээллийг Google Wallet-д шифрлэдэг.</translation>
 <translation id="8163866351304776260">Зүүн ирмэг дагуу дөрвөн нүх цоолох</translation>
 <translation id="8164078261547504572">Үнэ буурсан тохиолдолд имэйл авахыг хүсэж байна уу?</translation>
+<translation id="8166435925529495192">Таны Google Бүртгэлд таны <ph name="BEGIN_LINK_GAA" />Gemini-н түүх<ph name="END_LINK_GAA" /> байж болно</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" түлхүүрийг ижил толь бичигт тохируулах боломжгүй</translation>
 <translation id="8172809706700703589">Миний аялалд зориулж авч явах зүйлсийн жагсаалт үүсгэнэ үү</translation>
 <translation id="8174047975335711832">Төхөөрөмжийн мэдээлэл</translation>
@@ -4411,6 +4417,7 @@
 <translation id="833935588477667012"><ph name="FIELD_LABEL" />, шаардлагатай</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
+<translation id="8340798050747465939">Нэгдсэн, дэлгэрэнгүй мэдээлэл боломжгүй байна</translation>
 <translation id="8344776605855290140">Виртуал картын бүртгэлийг бүтэн өндрөөр нь нээсэн</translation>
 <translation id="834805203690963649">Таны сайт руу илгээсэн эсвэл тус сайтаас хүлээн авсан мэдээллийг халдагч харж, өөрчлөх боломжтой.</translation>
 <translation id="8349305172487531364">Хайлтын жагсаалтын цонх</translation>
@@ -4451,6 +4458,7 @@
 <translation id="8405579342203358118">Chrome-н тохиргоонд ямар мэдээлэл синк хийхээ удирдана уу</translation>
 <translation id="8405621913275228683">Тодорхойгүй алдааны улмаас скан хийсэн зүйл алдагдсан</translation>
 <translation id="8406071103346257942">нууц үг бөглөхөд таны дэлгэцийн түгжээг ашиглахыг зогсоохоор оролдож байна</translation>
+<translation id="8407618705357144341">Microsoft Entra-д нэгдэх:</translation>
 <translation id="8409413588194360210">төлбөр хариуцагч</translation>
 <translation id="8410956920192583322">Сараар эсвэл 4 хувааж хэсэгчилсэн төлбөр</translation>
 <translation id="8412145213513410671">Эвдрэл (<ph name="CRASH_COUNT" />)</translation>
@@ -4819,7 +4827,6 @@
 <translation id="9073799351042754113">Та энэ сайтын аюулгүй байдлын сануулгыг унтраахаар сонгосон байна.</translation>
 <translation id="907426083053157749"><ph name="MANUFACTURER" />-н утас</translation>
 <translation id="9075717835386447447">Бор шаргал 1</translation>
-<translation id="9078170656887151974">Зөвлөмж санал болгож, энэ онцлогийг сайжруулахын тулд хуудасны URL, агуулгыг Google-тэй хуваалцдаг. Хүссэн үедээ бодлоо өөрчилж, <ph name="LEARN_MORE" />.</translation>
 <translation id="9078964945751709336">Дэлгэрэнгүй мэдээлэл шаардлагатай</translation>
 <translation id="9080712759204168376">Захиалгын хураангуй</translation>
 <translation id="908365381820697818">Одоо та Gmail болон бусад үйлчилгээнээс мэдээлэл олж, бөглөх боломжтой</translation>
@@ -4969,6 +4976,7 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />"-г устгах эсвэл идэвхгүй болгоно уу&lt;/li&gt;
     &lt;li&gt;Өөр сүлжээнд холбогдоно уу&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Таны Google Бүртгэл <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> дээр таны <ph name="BEGIN_LINK_GAA" />Gemini-н түүх<ph name="END_LINK_GAA" /> дэх автомат хөтчийн зочлол зэрэг хөтчийн түүхийн өөр хэлбэртэй байж болно</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Олон улсын банк акаунтны дугаар нэмэх</translation>
 <translation id="995782501881226248">YouTube</translation>

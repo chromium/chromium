@@ -166,6 +166,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, onglet avec partage en cours</translation>
 <translation id="1601378265092360672">Les données de navigation comprennent votre historique de navigation, les témoins et autres données relatives aux sites, les images et fichiers mis en cache, ainsi que les onglets ouverts</translation>
 <translation id="160275202205869636">Activée : utilisez et enregistrez des données dans votre compte Google. Désactivée : les données sont enregistrées uniquement sur cet appareil.</translation>
+<translation id="160403827062749147">Bienvenue dans Google Chrome, le navigateur le plus sécuritaire au monde</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Supprimer 1 élément sélectionné}one{Supprimer # élément sélectionné}other{Supprimer # éléments sélectionnés}}</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
 <translation id="1641113438599504367">Navigation sécurisée</translation>
@@ -858,6 +859,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4374192654218566997">\n\nVous pouvez également retirer ces données de cet appareil :</translation>
 <translation id="4378154925671717803">Numéro de téléphone</translation>
 <translation id="4380055775103003110">Si ce problème persiste, vous pouvez essayer d'autres solutions pour continuer sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="4381351546374507910">Connectez-vous pour accéder à vos favoris, à vos mots de passe et à vos informations de remplissage automatique sur tous vos appareils.</translation>
 <translation id="4384468725000734951">Sogou est utilisé pour la recherche</translation>
 <translation id="4387647248986092471">Créer un verrouillage de profil du véhicule</translation>
 <translation id="4387817230000841154">Ouvrir les téléchargements</translation>
@@ -1231,6 +1233,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5865733239029070421">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
 <translation id="5870416898561279542">Les onglets et les groupes en double ou inutilisés depuis <ph name="DAYS_INACTIVE" /> jours sont déplacés ici <ph name="AUTODELETE_SECTION" />. Vous pouvez modifier cette option en tout temps dans <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5882488054564514114">Connectez-vous pour accéder à vos données sur tous vos appareils et personnaliser votre expérience.</translation>
 <translation id="5885378508678660271">Notifications <ph name="SEPARATOR" /> Chrome a retiré ces autorisations, car ce site est dangereux</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5896944002928653773">La zone de contenu dans le bas de l'écran concernant la clause de non-responsabilité relative aux signaux d'Entreprise est fermée</translation>
@@ -1979,6 +1982,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8570677896027847510">Impossible de télécharger le fichier en toute sécurité</translation>
 <translation id="8571213806525832805">Quatre dernières semaines</translation>
 <translation id="8580435650274205305">Date d'expiration, requise</translation>
+<translation id="8584698523080138290">Emportez Chrome avec vous</translation>
 <translation id="8585103689515290060">Services de remplissage automatique</translation>
 <translation id="8586116786993312006">Touchez pour supprimer les données de navigation dans Chrome</translation>
 <translation id="859046281437143747">Suivez le prix à partir du bouton Plus d'options</translation>
@@ -2031,6 +2035,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8803526663383843427">Lorsque activée</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Élément enregistré dans votre compte Google, <ph name="ACCOUNT_EMAIL" />.}one{Élément enregistré dans votre compte Google, <ph name="ACCOUNT_EMAIL" />.}other{Éléments enregistrés dans votre compte Google, <ph name="ACCOUNT_EMAIL" />}}</translation>
 <translation id="8804742093141782941">Conserver le groupe</translation>
+<translation id="880967149107462122">Accédez aux paramètres de Chrome</translation>
 <translation id="8812260976093120287">Sur certains sites Web, vous pouvez payer avec les applications de paiement prises en charge indiquées ci-dessus sur votre appareil.</translation>
 <translation id="8816556050903368450">Y compris le lien : <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Impossible d'afficher l'aperçu du contenu dans un onglet.</translation>
@@ -2056,6 +2061,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8903921497873541725">Zoom avant</translation>
 <translation id="8909135823018751308">Partager...</translation>
 <translation id="8918299437379122615">Partager le lien vers la page de résultats de recherche pour : <ph name="SEARCH_QUERY" />. Source : <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Connectez-vous à n'importe quel site Web</translation>
 <translation id="8922289737868596582">Téléchargez des pages à partir du bouton Plus d'options pour les utiliser hors connexion</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> est prêt</translation>

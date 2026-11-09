@@ -386,7 +386,6 @@
 <translation id="2104436223719117661">การค้นหาที่มาแรง</translation>
 <translation id="21133533946938348">ปักหมุดแท็บ</translation>
 <translation id="2117650889962717098">รักษาความเป็นส่วนตัวในการท่องเว็บโดยเปลี่ยนไปใช้โหมดไม่ระบุตัวตน</translation>
-<translation id="2119126821484134587">Gemini จะแชร์ข้อมูลบางอย่างของคุณ (เช่น แชทบางส่วน ตำแหน่ง และข้อมูลอื่นๆ ที่เกี่ยวข้อง) กับบริการอื่นๆ ของ Google เช่น Maps และ Flights เพื่อให้ความช่วยเหลือที่เหมาะสมกับความต้องการของคุณ บริการเหล่านี้อาจใช้ข้อมูลดังกล่าวเพื่อปรับปรุงระบบ แม้ว่าคุณจะลบประวัติการใช้แอป Gemini ในภายหลังก็ตาม ดูข้อมูลเพิ่มเติมได้ใน<ph name="BEGIN_LINK" />ฮับด้านความเป็นส่วนตัวของแอป Gemini<ph name="END_LINK" /></translation>
 <translation id="2119636449201577317">เปิดใน…</translation>
 <translation id="2119962645034852864">บริการบางอย่างไม่พร้อมให้บริการสำหรับบัญชีของคุณ</translation>
 <translation id="2120553909046681540">องค์กรปิดการท่องเว็บแบบส่วนตัวไว้</translation>
@@ -519,6 +518,7 @@
 <translation id="2524699375503213836">ดึงข้อมูลของคุณจาก Safari</translation>
 <translation id="2526166285241366046">บันทึกรหัสผ่าน</translation>
 <translation id="2529021024822217800">เปิดทั้งหมด</translation>
+<translation id="2536421147135705892">อนุญาตให้เข้าถึงตำแหน่งทางภูมิศาสตร์ไหม</translation>
 <translation id="2536991091671391962">คุณสามารถใช้รหัสผ่านที่บันทึกไว้ได้ในทุกอุปกรณ์ เพราะระบบได้บันทึกไว้ในเครื่องมือจัดการรหัสผ่านบน Google แล้วสำหรับ <ph name="EMAIL" /></translation>
 <translation id="2538103551183528357">รหัสผ่านแบบซ่อน</translation>
 <translation id="2538705697765638552">บันทึกข้อมูลเพื่อทำสิ่งต่างๆ ให้เสร็จเร็วขึ้น เช่น การกรอกแบบฟอร์มในผลิตภัณฑ์ต่างๆ ของ Google คุณสามารถจัดการข้อมูลใน Google Wallet สำหรับ <ph name="USER_EMAIL" /> ได้</translation>
@@ -1110,7 +1110,6 @@
 <translation id="4470766488397113689">อยากทำอะไรดี</translation>
 <translation id="4471472356135655769">ส่งออกรหัสผ่านไม่ได้</translation>
 <translation id="4472575034687746823">เริ่มต้น</translation>
-<translation id="4473565697543262065">การดำเนินการนี้จะลบข้อมูลที่เลือกซึ่งบันทึกไว้ในอุปกรณ์นี้และในบัญชี Google <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">ซ่อน "ติดตามราคา"</translation>
 <translation id="4474142134969976028">ไม่มีผลลัพธ์ที่ตรงกัน</translation>
 <translation id="4474494258097106883">สร้างขึ้นเพื่อ iPhone ของคุณ</translation>
@@ -1337,6 +1336,7 @@
 <translation id="5128788795241319992">สํารวจเมนูใหม่</translation>
 <translation id="5132942445612118989">ซิงค์รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="5137568953923142260">อนุญาตครั้งเดียว</translation>
+<translation id="5139344197062265975">ใช้ไมโครโฟนเพื่อแชทกับ Gemini เมื่อคุณพูดกับ Gemini ระบบจะจัดเก็บเสียงไว้ในประวัติการใช้ Gemini (หากเปิดอยู่) ระบบไม่ได้ใช้ข้อมูลของคุณในการปรับปรุงโมเดล Generative AI</translation>
 <translation id="5141363746588976328">ซ่อนการ์ด "ดูราคาที่ต่ำลงได้ในแท็บ"</translation>
 <translation id="514154868070499296">แบบอักษร: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">ออกจากตัวสลับแท็บ</translation>
@@ -1434,7 +1434,6 @@
 <translation id="5443636120437209490">การท่องเว็บที่ดีขึ้นโดยค่าเริ่มต้น</translation>
 <translation id="5444892875087332195">บุ๊กมาร์ก</translation>
 <translation id="5447973833955560753">รหัสผ่านสำหรับการกู้คืน</translation>
-<translation id="5448623529214315261">รูปภาพที่บันทึกเมื่อ <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">ใช้รหัสผ่านที่รัดกุม</translation>
 <translation id="5454211924362324495">หากไม่ต้องการให้ผู้อื่นใช้รหัสผ่านของคุณ ให้<ph name="BEGIN_LINK" />เปลี่ยนรหัสผ่านใน <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">เพิ่มไปยังการค้นหาของคุณ</translation>
@@ -1607,6 +1606,7 @@
 <translation id="6000893618966378846">"ลบข้อมูลการท่องเว็บ" เสร็จสมบูรณ์แล้ว</translation>
 <translation id="6004988584831654445">เรียบร้อยแล้ว รับการแจ้งเตือนเมื่อมีงานใหม่</translation>
 <translation id="6006672969046233841">แท็บใหม่</translation>
+<translation id="6006758170939001741">เป็นไปตาม<ph name="BEGIN_LINK" />ข้อกำหนด<ph name="END_LINK" /> <ph name="BEGIN_LINK" />ข้อกำหนดในการให้บริการตำแหน่งในประเทศเกาหลี<ph name="END_LINK" /> และ<ph name="BEGIN_LINK" />ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัว<ph name="END_LINK" /> แชทจะได้รับการตรวจสอบและนำไปใช้เพื่อฝึกโมเดล Generative AI Gemini เป็น AI และอาจทำผิดพลาดได้ ซึ่งรวมถึงข้อมูลเกี่ยวกับผู้คน เนื้อหาบางรายการอาจไม่เหมาะสำหรับทุกคน คุณสามารถ<ph name="BEGIN_LINK" />จัดการประวัติการใช้งาน<ph name="END_LINK" /> รวมถึง<ph name="BEGIN_LINK" />ข้อมูลเกี่ยวกับตำแหน่งของคุณ<ph name="END_LINK" />ได้ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับตัวเลือกของคุณ<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">ปรับปรุงการแนะนำการค้นหา</translation>
 <translation id="6012140227487808125">กำลังเข้ารหัส…</translation>
 <translation id="6014801569448771146">ตรวจสอบรหัสผ่านของคุณ</translation>
@@ -1845,6 +1845,7 @@
 <translation id="6670729408462528018">แกลเลอรี</translation>
 <translation id="6671294218820966278">ทำเครื่องหมายว่าอ่านแล้ว</translation>
 <translation id="6672697278890207089">ป้อนพาสเฟรสของคุณ</translation>
+<translation id="6673666785752667010">ปิดโหมด AI</translation>
 <translation id="6674917187596384849">คุณสลับระหว่างบัญชีต่างๆ ได้อย่างง่ายดาย</translation>
 <translation id="6676349090816247042">ตัวเลือกการลงชื่อเข้าใช้</translation>
 <translation id="667999046851023355">เอกสาร</translation>
@@ -1852,6 +1853,7 @@
 <translation id="6682680306647339111">นำการช่วยเตือนออกแล้ว</translation>
 <translation id="6683022854667115063">หูฟัง</translation>
 <translation id="6684262542644248484">ลงชื่อเข้าใช้เว็บไซต์</translation>
+<translation id="668475086425500258">การตั้งค่าเว็บไซต์</translation>
 <translation id="6685259053455152195">ทางลัดเพื่อแก้ไขการตั้งค่าและใช้ฟีเจอร์ต่างๆ จากแถบที่อยู่ได้อย่างรวดเร็ว</translation>
 <translation id="6689342293888598653">สีพื้นหลังสีขาว</translation>
 <translation id="6689685206615181381">ใช้ได้เฉพาะโหมดไม่ระบุตัวตน</translation>
@@ -1867,7 +1869,6 @@
 <translation id="672735642903863329">รับบุ๊กมาร์ก รหัสผ่าน และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="6729493062119577923">กิจกรรมในกลุ่มแท็บที่แชร์</translation>
 <translation id="6732087373923685049">กล้อง</translation>
-<translation id="6736243959894955139">ที่อยู่</translation>
 <translation id="6746338529702829275">ตรวจสอบข้อมูลบัญชีของคุณ</translation>
 <translation id="6749473226660745022">รูปภาพ</translation>
 <translation id="6750456911389438250">{count,plural, =1{นำเข้ารายการประวัติ {count} รายการแล้ว}other{นำเข้ารายการประวัติ {count} รายการแล้ว}}</translation>
@@ -1989,7 +1990,6 @@
 <translation id="7128693485119315539">องค์กรของคุณอาจต้องดูและจัดการข้อมูลการท่องเว็บที่เชื่อมโยงกับบัญชีที่มีการจัดการ เช่น ประวัติการท่องเว็บและรหัสผ่าน</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">กล้องถ่ายรูปไม่พร้อมใช้งาน</translation>
-<translation id="7138678301420049075">อื่นๆ</translation>
 <translation id="7140355148730164340"><ph name="EMAIL" /> <ph name="AI_TIER" /></translation>
 <translation id="7141960840225504692">แท็บจะปิดไป และข้อมูลการท่องเว็บจะถูกลบ</translation>
 <translation id="714291438898585119">ที่ติดดาว</translation>
@@ -2137,6 +2137,7 @@
 <translation id="7596103009408415410">{COUNT,plural, =1{ปิด {COUNT} แท็บที่ไม่ได้ใช้งานใช่ไหม}other{ปิด {COUNT} แท็บที่ไม่ได้ใช้งานใช่ไหม}}</translation>
 <translation id="7598439272585186139">เพิ่มความปลอดภัย</translation>
 <translation id="7600965453749440009">ไม่ต้องแปลภาษา<ph name="LANGUAGE" /></translation>
+<translation id="760230853074995500">แชทจะได้รับการตรวจสอบและนำไปใช้เพื่อฝึกโมเดล Generative AI คุณสามารถ<ph name="BEGIN_LINK" />จัดการประวัติการใช้งาน<ph name="END_LINK" /> รวมถึง<ph name="BEGIN_LINK" />ข้อมูลเกี่ยวกับตำแหน่งของคุณ<ph name="END_LINK" />ได้ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับตัวเลือกของคุณ<ph name="END_LINK" /></translation>
 <translation id="7603308509262646847">ป้อนชื่อผู้ถือบัตรเป็น <ph name="NAME" /> โดยอัตโนมัติ</translation>
 <translation id="7603852183842204213">ป๊อปอัปที่บล็อก (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">การซิงค์ไม่ทำงาน</translation>
@@ -2622,7 +2623,6 @@
 <translation id="9039373489628511875">แบนด์วิดท์</translation>
 <translation id="9042363670218758847">เปลี่ยนไปใช้เลย์เอาต์ที่สร้างขึ้นเพื่อการค้นหาอย่างรวดเร็ว</translation>
 <translation id="9042893549633094279">ความเป็นส่วนตัวและความปลอดภัย</translation>
-<translation id="9044703854323320868">ข้อความ Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">สร้างกลุ่มแท็บเพื่อจัดระเบียบแท็บที่เปิดอยู่และทำงานได้อย่างมีประสิทธิภาพ</translation>
 <translation id="9055580485132823283">คุณกำลังจะลบรหัสผ่าน {password_count} รายการ พาสคีย์ {passkey_count} รายการ รวมถึงรายการเว็บไซต์และแอปที่คุณเลือกที่จะไม่บันทึกข้อมูลการลงชื่อเข้าใช้ ระบบจะไม่ลบบัญชีใดๆ ที่คุณสร้างไว้สำหรับเว็บไซต์และแอป</translation>
 <translation id="9057030985451135243">ดูข้อมูลเกี่ยวกับกลุ่มแท็บที่ใช้ร่วมกัน</translation>
@@ -2631,6 +2631,7 @@
 <translation id="9066097352053395362">ซ่อน "แก้ไขบุ๊กมาร์ก"</translation>
 <translation id="9070824521421603770">คุณจะออกจากระบบ และแท็บจะปิดไป</translation>
 <translation id="9072837124205571418">กลุ่มแท็บจากอุปกรณ์ทั้งหมด</translation>
+<translation id="9073322251019919253">Gemini เป็น AI และอาจทำผิดพลาดได้ ซึ่งรวมถึงข้อมูลเกี่ยวกับผู้คน เนื้อหาบางรายการอาจไม่เหมาะสำหรับทุกคน แชทจะได้รับการตรวจสอบและนำไปใช้เพื่อฝึกโมเดล Generative AI คุณสามารถ<ph name="BEGIN_LINK" />จัดการประวัติการใช้งาน<ph name="END_LINK" /> รวมถึง<ph name="BEGIN_LINK" />ข้อมูลเกี่ยวกับตำแหน่งของคุณ<ph name="END_LINK" />ได้ <ph name="BEGIN_LINK" />ดูข้อมูลเกี่ยวกับตัวเลือกของคุณ<ph name="END_LINK" /> การใช้งานต้องเป็นไปตาม<ph name="BEGIN_LINK" />ข้อกำหนด<ph name="END_LINK" />และ<ph name="BEGIN_LINK" />ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัว<ph name="END_LINK" />ของเรา</translation>
 <translation id="9081058212938299310">อัปเดตรหัสผ่านของ <ph name="USERNAME" /> ไหม</translation>
 <translation id="908365381820697818">ตอนนี้คุณสามารถค้นหาและป้อนข้อมูลจาก Gmail และอื่นๆ ได้แล้ว</translation>
 <translation id="9083838294503912307">เปิดการซิงค์เพื่อซิงค์และปรับเปลี่ยนข้อมูลตามความต้องการในอุปกรณ์ทุกเครื่อง</translation>

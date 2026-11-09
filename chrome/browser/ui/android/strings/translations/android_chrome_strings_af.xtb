@@ -166,6 +166,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, oortjie wat gedeel word</translation>
 <translation id="1601378265092360672">Blaaierdata sluit jou blaaigeskiedenis, webkoekies en ander werfdata, gekaste prente en lêers, en oop oortjies in</translation>
 <translation id="160275202205869636">Gebruik en stoor data in jou Google-rekening wanneer dit aan is. Data word slegs op hierdie toestel gestoor wanneer dit af is.</translation>
+<translation id="160403827062749147">Welkom by Google Chrome, die wêreld se veiligste blaaier</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Verwyder 1 gekose item}other{Verwyder # gekose items}}</translation>
 <translation id="1639239467298939599">Laai tans</translation>
 <translation id="1641113438599504367">Veiligblaai</translation>
@@ -858,6 +859,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4374192654218566997">\n\nJy kan ook hierdie data van hierdie toestel verwyder:</translation>
 <translation id="4378154925671717803">Foon</translation>
 <translation id="4380055775103003110">Jy ander maniere probeer om voort te gaan op <ph name="SITE_ETLD_PLUS_ONE" /> as hierdie kwessie aanhou voorkom.</translation>
+<translation id="4381351546374507910">Meld aan om jou boekmerke, wagwoorde en outovulinligting op al jou toestelle te kry.</translation>
 <translation id="4384468725000734951">Gebruik Sogou om te soek</translation>
 <translation id="4387647248986092471">Skep ’n motorprofielslot</translation>
 <translation id="4387817230000841154">Maak aflaaie oop</translation>
@@ -1231,6 +1233,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5865733239029070421">Stuur gebruikstatistieke en omvalverslae outomaties na Google</translation>
 <translation id="5869522115854928033">Gestoorde wagwoorde</translation>
 <translation id="5870416898561279542">Duplikaatoortjies en -groepe of dié wat vir <ph name="DAYS_INACTIVE" /> dae nie gebruik is nie, word hierheen geskuif<ph name="AUTODELETE_SECTION" />. Jy kan dit enige tyd in <ph name="DECLUTTER_SETTINGS_TITLE" /> verander.</translation>
+<translation id="5882488054564514114">Meld aan om jou data op al jou toestelle te kry en jou ervaring te personaliseer.</translation>
 <translation id="5885378508678660271">Kennisgewings <ph name="SEPARATOR" /> Chrome het hierdie toestemmings verwyder want die werf is gevaarlik</translation>
 <translation id="5895138241574237353">Herbegin</translation>
 <translation id="5896944002928653773">Enterprise-seinevrywaring se onderste blad is toegemaak</translation>
@@ -1979,6 +1982,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8570677896027847510">Lêer kan nie veilig afgelaai word nie</translation>
 <translation id="8571213806525832805">Afgelope vier weke</translation>
 <translation id="8580435650274205305">Vervaldatum word vereis</translation>
+<translation id="8584698523080138290">Neem Chrome saam met jou</translation>
 <translation id="8585103689515290060">Outovuldienste</translation>
 <translation id="8586116786993312006">Tik om blaaierdata in Chrome uit te vee</translation>
 <translation id="859046281437143747">Spoor pryse deur die Meer Opsies-knoppie na</translation>
@@ -2031,6 +2035,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8803526663383843427">As dit aan is</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Item is in jou Google-rekening, <ph name="ACCOUNT_EMAIL" />, gestoor.}other{Items is in jou Google-rekening, <ph name="ACCOUNT_EMAIL" />, gestoor.}}</translation>
 <translation id="8804742093141782941">Hou groep</translation>
+<translation id="880967149107462122">Gaan na Chrome-instellings</translation>
 <translation id="8812260976093120287">Op sommige webwerwe kan jy met gesteunde betalingprogramme op jou toestel betaal.</translation>
 <translation id="8816556050903368450">Skakel ingesluit: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Voorskou-oortjie se inhoud kan nie bekyk word.</translation>
@@ -2056,6 +2061,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8903921497873541725">Zoem in</translation>
 <translation id="8909135823018751308">Deel …</translation>
 <translation id="8918299437379122615">Deel skakel na soekresultaatbladsy vir: <ph name="SEARCH_QUERY" />. Bron: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Meld by enige webwerf aan</translation>
 <translation id="8922289737868596582">Laai bladsye vanaf die Meer Opsies-knoppie af om hulle vanlyn te gebruik</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> is gereed</translation>

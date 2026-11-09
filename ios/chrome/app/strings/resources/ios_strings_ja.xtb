@@ -386,7 +386,6 @@
 <translation id="2104436223719117661">急上昇ワード</translation>
 <translation id="21133533946938348">タブを固定</translation>
 <translation id="2117650889962717098">シークレット モードに切り替えることで、ブラウジングのプライバシーを保護できます</translation>
-<translation id="2119126821484134587">Gemini は、カスタマイズされたサポートを提供するため、ユーザーデータの一部（ユーザーとのチャットの一部、位置情報、その他の関連情報など）を他の Google サービス（Google マップ、Google フライトなど）と共有します。これらのサービスは、ユーザーが Gemini アプリの履歴を削除した後も、改善のためにその情報を使用する場合があります。詳しくは、<ph name="BEGIN_LINK" />Gemini アプリのプライバシー ハブ<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="2119636449201577317">アプリで開く…</translation>
 <translation id="2119962645034852864">お使いのアカウントでは一部のサービスをご利用いただけません</translation>
 <translation id="2120553909046681540">シークレット ブラウジングは組織によって無効にされています。</translation>
@@ -519,6 +518,7 @@
 <translation id="2524699375503213836">Safari からデータを移行</translation>
 <translation id="2526166285241366046">パスワードを保存する</translation>
 <translation id="2529021024822217800">すべて開く</translation>
+<translation id="2536421147135705892">位置情報の利用を許可しますか？</translation>
 <translation id="2536991091671391962">保存したパスワードは他のデバイスで使用できます。パスワードは、<ph name="EMAIL" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="2538103551183528357">非表示のパスワード</translation>
 <translation id="2538705697765638552">情報を保存すると、Google サービス全体でフォームの入力などをすばやく行えるようになります。保存した情報は <ph name="USER_EMAIL" /> の Google ウォレットで管理できます。</translation>
@@ -800,7 +800,7 @@
 <translation id="3476450923187944815">他のアプリからパスワードにアクセスできます。</translation>
 <translation id="3479552764303398839">後で</translation>
 <translation id="3481315707647070701">ビジュアル化して編集</translation>
-<translation id="3485558910355485767">新規シークレット ウインドウ</translation>
+<translation id="3485558910355485767">新しいシークレット ウインドウ</translation>
 <translation id="3488501490964659223">タブを閉じて閲覧データを削除し、ログアウトしました</translation>
 <translation id="3493531032208478708">詳しくは、<ph name="BEGIN_LINK" />おすすめのコンテンツ<ph name="END_LINK" />についての説明をご覧ください</translation>
 <translation id="349446645805573740">「<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />」の保存先を選択してください</translation>
@@ -1110,7 +1110,6 @@
 <translation id="4470766488397113689">何をしますか？</translation>
 <translation id="4471472356135655769">パスワードをエクスポートできません</translation>
 <translation id="4472575034687746823">始める</translation>
-<translation id="4473565697543262065">このデバイスと Google アカウント（<ph name="USER_EMAIL" />）に保存されている情報から選択した情報を削除します</translation>
 <translation id="4473608001744970767">[価格を追跡] を非表示</translation>
 <translation id="4474142134969976028">一致する結果がありません</translation>
 <translation id="4474494258097106883">iPhone 向けの設計</translation>
@@ -1337,6 +1336,7 @@
 <translation id="5128788795241319992">新しいメニューを確認する</translation>
 <translation id="5132942445612118989">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
 <translation id="5137568953923142260">今回だけ許可</translation>
+<translation id="5139344197062265975">マイクを使って Gemini と会話できます。Gemini に話しかけると、内容が Gemini の履歴に保存されます（オンになっている場合）。ユーザーのデータが生成 AI モデルの改善に使用されることはありません。</translation>
 <translation id="5141363746588976328">タブの値下げ情報カードを非表示にする</translation>
 <translation id="514154868070499296">フォント: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">タブ切り替え機能を終了</translation>
@@ -1434,7 +1434,6 @@
 <translation id="5443636120437209490">デフォルトに設定してブラウジングを効率化</translation>
 <translation id="5444892875087332195">ブックマーク</translation>
 <translation id="5447973833955560753">再設定用のパスワード</translation>
-<translation id="5448623529214315261">保存した写真 <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">安全なパスワードを使用:</translation>
 <translation id="5454211924362324495">他のユーザーがパスワードを使用できないようにするには、<ph name="BEGIN_LINK" /><ph name="WEBSITE" /> でパスワードを変更<ph name="END_LINK" />します</translation>
 <translation id="5457082343331641453">検索に追加する</translation>
@@ -1607,6 +1606,7 @@
 <translation id="6000893618966378846">「閲覧履歴データの削除」が完了しました。</translation>
 <translation id="6004988584831654445">タスク完了。新しいタスクが届いたときに通知を受け取る。</translation>
 <translation id="6006672969046233841">新しいタブ</translation>
+<translation id="6006758170939001741"><ph name="BEGIN_LINK" />利用規約<ph name="END_LINK" />、<ph name="BEGIN_LINK" />韓国の位置情報に関する利用規約<ph name="END_LINK" />、および<ph name="BEGIN_LINK" />プライバシーに関するお知らせ<ph name="END_LINK" />が適用されます。チャットはレビューされ、生成 AI モデルのトレーニングに使用されます。Gemini は AI であり、不正確な情報（人物に関する情報など）を表示することがあります。一部のユーザーには適していない可能性のあるコンテンツを提供することがあります。ユーザーは、<ph name="BEGIN_LINK" />位置情報<ph name="END_LINK" />などの<ph name="BEGIN_LINK" />履歴を管理<ph name="END_LINK" />できます。<ph name="BEGIN_LINK" />ユーザーが選択できる設定の詳細<ph name="END_LINK" />をご確認ください。</translation>
 <translation id="6011308810877101166">検索候補の関連性を高める</translation>
 <translation id="6012140227487808125">暗号化しています...</translation>
 <translation id="6014801569448771146">パスワードの確認</translation>
@@ -1845,6 +1845,7 @@
 <translation id="6670729408462528018">ギャラリー</translation>
 <translation id="6671294218820966278">既読にする</translation>
 <translation id="6672697278890207089">パスフレーズの入力</translation>
+<translation id="6673666785752667010">AI モードを終了</translation>
 <translation id="6674917187596384849">アカウントを簡単に切り替えられます</translation>
 <translation id="6676349090816247042">ログイン オプションです。</translation>
 <translation id="667999046851023355">ドキュメント</translation>
@@ -1852,6 +1853,7 @@
 <translation id="6682680306647339111">リマインダーを削除しました</translation>
 <translation id="6683022854667115063">ヘッドフォン</translation>
 <translation id="6684262542644248484">ウェブサイトにログインします</translation>
+<translation id="668475086425500258">サイトの設定</translation>
 <translation id="6685259053455152195">設定をすばやく変更したり、アドレスバーの機能を使用したりするためのショートカット。</translation>
 <translation id="6689342293888598653">白の背景色</translation>
 <translation id="6689685206615181381">シークレット モードのみ使用できます</translation>
@@ -1867,7 +1869,6 @@
 <translation id="672735642903863329">すべてのデバイスで同じブックマーク、パスワード、その他の設定を使用できます。</translation>
 <translation id="6729493062119577923">共有タブグループのアクティビティ</translation>
 <translation id="6732087373923685049">カメラ</translation>
-<translation id="6736243959894955139">アドレス</translation>
 <translation id="6746338529702829275">アカウントのデータを確認します</translation>
 <translation id="6749473226660745022">写真</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} 件の履歴をインポートしました}other{{count} 件の履歴をインポートしました}}</translation>
@@ -1989,7 +1990,6 @@
 <translation id="7128693485119315539">組織で必要に応じて管理対象アカウントに関連付けられた閲覧データ（閲覧履歴やパスワードなど）を確認、管理する場合があります。</translation>
 <translation id="713215255510512027"><ph name="FILENAME" />（<ph name="FILESIZE" />）</translation>
 <translation id="7136892417564438900">カメラを使用できません</translation>
-<translation id="7138678301420049075">その他</translation>
 <translation id="7140355148730164340"><ph name="EMAIL" />。<ph name="AI_TIER" />。</translation>
 <translation id="7141960840225504692">タブを閉じて閲覧データを削除します</translation>
 <translation id="714291438898585119">スター付き</translation>
@@ -2137,6 +2137,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{アクティブでない {COUNT} 個のタブを閉じますか？}other{アクティブでない {COUNT} 個のタブを閉じますか？}}</translation>
 <translation id="7598439272585186139">セキュリティを強化</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />を翻訳しない</translation>
+<translation id="760230853074995500">チャットはレビューされ、生成 AI モデルのトレーニングに使用されます。ユーザーは、<ph name="BEGIN_LINK" />位置情報<ph name="END_LINK" />などの<ph name="BEGIN_LINK" />履歴を管理<ph name="END_LINK" />できます。<ph name="BEGIN_LINK" />ユーザーが選択できる設定の詳細<ph name="END_LINK" />をご確認ください。</translation>
 <translation id="7603308509262646847">カード所有者「<ph name="NAME" />」を自動入力する</translation>
 <translation id="7603852183842204213">ブロックしたポップアップ: <ph name="NUMBER_OF_BLOCKED_POPUPS" /></translation>
 <translation id="7605594153474022051">同期が機能していません</translation>
@@ -2182,7 +2183,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="7730937523779541003">フォーカス モードの新しいタブページを適用しました</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />、このデバイスのみ。</translation>
 <translation id="7737550920399185748">フォト ライブラリのホームページの写真は、デバイス間で同期されません。</translation>
-<translation id="7738120385185846461">問題を報告する…</translation>
+<translation id="7738120385185846461">問題を報告…</translation>
 <translation id="7744192722284567281">データ侵害で漏洩</translation>
 <translation id="7749790401023484470">テキストが選択されていません。</translation>
 <translation id="7753518506804173312">お気に入りのサイトを固定して、後から簡単にアクセスできるようにします</translation>
@@ -2430,7 +2431,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="8487667956631253959">オン</translation>
 <translation id="8487700953926739672">オフラインでの利用</translation>
 <translation id="8488065047914929586">「パスワードを保存する」を完了してから</translation>
-<translation id="8488923644885757471">新しいウインドウを開く</translation>
+<translation id="8488923644885757471">新しいウインドウ</translation>
 <translation id="8490629238792920282">リンクを作成できません</translation>
 <translation id="8501469528283376592">ダウンロードの自動削除</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
@@ -2622,7 +2623,6 @@ Level Up はいつでも再開できます。</translation>
 <translation id="9039373489628511875">帯域幅</translation>
 <translation id="9042363670218758847">すばやく検索できるように設計されたレイアウトに切り替えます</translation>
 <translation id="9042893549633094279">プライバシーとセキュリティ</translation>
-<translation id="9044703854323320868">Gmail のメール <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">タブグループを作成して、開いているタブを整理し、効率的に作業できます</translation>
 <translation id="9055580485132823283">{password_count} 件のパスワード、{passkey_count} 件のパスキーと、ログイン情報を保存しない設定にしたサイトとアプリの一覧を削除しようとしています。サイトやアプリで作成したアカウントは削除されません。</translation>
 <translation id="9057030985451135243">共有タブグループの詳細</translation>
@@ -2631,6 +2631,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="9066097352053395362">[ブックマークを編集] を非表示</translation>
 <translation id="9070824521421603770">ログアウトしてタブを閉じます</translation>
 <translation id="9072837124205571418">すべてのデバイスのタブグループ</translation>
+<translation id="9073322251019919253">Gemini は AI であり、不正確な情報（人物に関する情報など）を表示することがあります。一部のユーザーには適していない可能性のあるコンテンツを提供することがあります。チャットはレビューされ、生成 AI モデルのトレーニングに使用されます。ユーザーは、<ph name="BEGIN_LINK" />位置情報<ph name="END_LINK" />などの<ph name="BEGIN_LINK" />履歴を管理<ph name="END_LINK" />できます。<ph name="BEGIN_LINK" />ユーザーが選択できる設定の詳細<ph name="END_LINK" />をご確認ください。<ph name="BEGIN_LINK" />利用規約<ph name="END_LINK" />と<ph name="BEGIN_LINK" />プライバシーに関するお知らせ<ph name="END_LINK" />が適用されます。</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> のパスワードを更新しますか？</translation>
 <translation id="908365381820697818">Gmail などから情報を探して入力できるようになりました</translation>
 <translation id="9083838294503912307">カスタマイズした設定を複数のデバイスで同期して使用するには、同期を有効にします。</translation>

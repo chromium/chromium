@@ -386,7 +386,6 @@
 <translation id="2104436223719117661">Carian sohor kini</translation>
 <translation id="21133533946938348">Pin Tab</translation>
 <translation id="2117650889962717098">Pastikan penyemakan imbas anda sulit dengan menukar kepada mod Inkognito</translation>
-<translation id="2119126821484134587">Untuk memberikan bantuan yang disesuaikan, Gemini berkongsi sesetengah data anda (seperti sebahagian daripada sembang anda, lokasi dan maklumat lain yang berkaitan) dengan perkhidmatan Google yang lain, seperti Maps dan Flights. Perkhidmatan ini mungkin menggunakan maklumat tersebut untuk meningkatkan prestasi, walaupun anda memadamkan sejarah Apl Gemini anda kemudian. Ketahui maklumat lanjut dalam <ph name="BEGIN_LINK" />Hab Privasi Apl Gemini<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Buka dalam…</translation>
 <translation id="2119962645034852864">Sesetengah perkhidmatan tidak tersedia untuk akaun anda</translation>
 <translation id="2120553909046681540">Organisasi anda telah mematikan penyemakan imbas peribadi.</translation>
@@ -519,6 +518,7 @@
 <translation id="2524699375503213836">Bawa data anda daripada Safari</translation>
 <translation id="2526166285241366046">Simpan kata laluan</translation>
 <translation id="2529021024822217800">Buka Semua</translation>
+<translation id="2536421147135705892">Benarkan Geolokasi?</translation>
 <translation id="2536991091671391962">Anda boleh menggunakan kata laluan yang disimpan pada mana-mana peranti. Kata laluan tersebut disimpan pada Google Password Manager untuk <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Disembunyikan, kata laluan</translation>
 <translation id="2538705697765638552">Simpan maklumat anda dan selesaikan tugasan dengan lebih pantas, seperti mengisi borang merentas produk Google. Anda boleh mengurus maklumat anda dalam Google Wallet untuk <ph name="USER_EMAIL" />.</translation>
@@ -1110,7 +1110,6 @@
 <translation id="4470766488397113689">Apakah perkara yang mahu anda usahakan?</translation>
 <translation id="4471472356135655769">Tidak dapat mengeksport kata laluan</translation>
 <translation id="4472575034687746823">Bermula</translation>
-<translation id="4473565697543262065">Tindakan ini memadamkan maklumat yang dipilih yang disimpan pada peranti ini dan dalam Google Account anda <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Sembunyikan Jejak Harga</translation>
 <translation id="4474142134969976028">Tiada hasil carian yang sepadan</translation>
 <translation id="4474494258097106883">Dibina untuk iPhone Anda</translation>
@@ -1337,6 +1336,7 @@
 <translation id="5128788795241319992">Terokai menu baharu</translation>
 <translation id="5132942445612118989">Segerakkan kata laluan, sejarah &amp; pelbagai lagi pada semua peranti</translation>
 <translation id="5137568953923142260">Benarkan sekali</translation>
+<translation id="5139344197062265975">Gunakan mikrofon anda untuk bersembang dengan Gemini. Apabila anda bercakap dengan Gemini, audio akan disimpan dalam Sejarah Gemini (jika dihidupkan). Data anda tidak digunakan untuk meningkatkan model AI generatif</translation>
 <translation id="5141363746588976328">Sembunyikan kad penurunan harga pada tab anda</translation>
 <translation id="514154868070499296">Fon: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Tinggalkan Penukar Tab</translation>
@@ -1434,7 +1434,6 @@
 <translation id="5443636120437209490">Penyemakan imbas yang lebih baik secara lalai</translation>
 <translation id="5444892875087332195">Penanda halaman</translation>
 <translation id="5447973833955560753">Kata laluan pemulihan</translation>
-<translation id="5448623529214315261">Foto yang disimpan <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Gunakan kata laluan kukuh:</translation>
 <translation id="5454211924362324495">Untuk menghalang orang lain daripada menggunakan kata laluan anda, <ph name="BEGIN_LINK" />tukar kata laluan pada <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Tambahkan pada carian anda</translation>
@@ -1607,6 +1606,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6000893618966378846">"Padamkan data semakan imbas" selesai!</translation>
 <translation id="6004988584831654445">Anda sudah sedia! Dapatkan pemberitahuan apabila tugasan baharu tiba.</translation>
 <translation id="6006672969046233841">Tab Baharu</translation>
+<translation id="6006758170939001741"><ph name="BEGIN_LINK" />Syarat<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Syarat Lokasi Korea<ph name="END_LINK" /> dan <ph name="BEGIN_LINK" />Notis Privasi<ph name="END_LINK" /> kami digunakan. Sembang disemak dan digunakan untuk melatih model AI generatif. Gemini ialah AI dan mungkin melakukan kesilapan, termasuk tentang orang. Sesetengah kandungan mungkin hanya sesuai untuk sesetengah orang. Anda boleh <ph name="BEGIN_LINK" />mengurus sejarah anda<ph name="END_LINK" />, termasuk <ph name="BEGIN_LINK" />maklumat tentang lokasi anda<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Ketahui perihal pilihan anda dengan lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">Tingkatkan cadangan carian</translation>
 <translation id="6012140227487808125">Menyulitkan...</translation>
 <translation id="6014801569448771146">Semak kata laluan anda</translation>
@@ -1869,7 +1869,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="672735642903863329">Dapatkan penanda halaman, kata laluan dan pelbagai lagi pada semua peranti anda.</translation>
 <translation id="6729493062119577923">Aktiviti kumpulan tab kongsi</translation>
 <translation id="6732087373923685049">kamera</translation>
-<translation id="6736243959894955139">Alamat</translation>
 <translation id="6746338529702829275">Semak data akaun anda</translation>
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} item sejarah diimport}other{{count} item sejarah diimport}}</translation>
@@ -1991,7 +1990,6 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="7128693485119315539">Organisasi anda mungkin perlu melihat dan mengurus data penyemakan imbas yang dikaitkan dengan akaun terurus anda, seperti sejarah penyemakan imbas dan kata laluan anda.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera tidak tersedia</translation>
-<translation id="7138678301420049075">Lain-lain</translation>
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Tab anda akan ditutup dan data semakan imbas dipadamkan</translation>
 <translation id="714291438898585119">Dibintangi</translation>
@@ -2037,6 +2035,7 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="728025568708172005">Pengenalan</translation>
 <translation id="7280980607183752256">Fail ini tidak dapat diimport</translation>
 <translation id="7282197670900591579">Tema kuning sitron</translation>
+<translation id="7283937415134849498">Untuk memberikan bantuan yang disesuaikan, Gemini berkongsi sesetengah data anda (seperti sebahagian daripada sembang anda, lokasi dan maklumat lain yang berkaitan) dengan perkhidmatan Google yang lain, seperti Maps dan Flights. Perkhidmatan ini mungkin menggunakan maklumat tersebut untuk meningkatkan prestasi, walaupun anda memadamkan sejarah Gemini anda kemudian. Ketahui maklumat lanjut dalam <ph name="BEGIN_LINK" />Hab Privasi Apl Gemini<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Pilih bahasa</translation>
 <translation id="72961285530871072">Tindakan ini akan memadamkan kemajuan Level Up anda secara kekal dan data penggunaan ciri untuk Level Up tidak akan dihantar kepada Google untuk profil anda lagi.
 
@@ -2139,6 +2138,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Tutup {COUNT} tab yang tidak aktif?}other{Tutup {COUNT} tab yang tidak aktif?}}</translation>
 <translation id="7598439272585186139">Dapatkan perlindungan lanjut</translation>
 <translation id="7600965453749440009">Jangan sekali-kali terjemahkan <ph name="LANGUAGE" /></translation>
+<translation id="760230853074995500">Sembang disemak dan digunakan untuk melatih model AI generatif. Anda boleh <ph name="BEGIN_LINK" />mengurus sejarah anda<ph name="END_LINK" />, termasuk <ph name="BEGIN_LINK" />maklumat tentang lokasi anda<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Ketahui perihal pilihan anda dengan lebih lanjut<ph name="END_LINK" />.</translation>
 <translation id="7603308509262646847">Autoisi pemegang kad <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Pop timbul disekat (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Penyegerakan tidak berfungsi</translation>
@@ -2624,7 +2624,6 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="9039373489628511875">Lebar Jalur</translation>
 <translation id="9042363670218758847">Beralih kepada reka letak yang dibina untuk carian pantas</translation>
 <translation id="9042893549633094279">Privasi dan keselamatan</translation>
-<translation id="9044703854323320868">Mesej Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Buat kumpulan tab untuk mengatur tab anda yang terbuka dan kekal produktif</translation>
 <translation id="9055580485132823283">Anda akan memadamkan {password_count} kata laluan, {passkey_count} kunci laluan serta senarai laman &amp; apl yang anda pilih untuk tidak sekali-kali menyimpan log masuk. Mana-mana akaun yang anda buat untuk laman dan apl tidak akan dipadamkan.</translation>
 <translation id="9057030985451135243">Ketahui tentang kumpulan tab dikongsi</translation>
@@ -2633,6 +2632,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="9066097352053395362">Sembunyikan Edit Penanda Halaman</translation>
 <translation id="9070824521421603770">Anda akan dilog keluar dan tab akan ditutup</translation>
 <translation id="9072837124205571418">Kumpulan tab daripada semua peranti</translation>
+<translation id="9073322251019919253">Gemini ialah AI dan mungkin melakukan kesilapan, termasuk tentang orang. Sesetengah kandungan mungkin hanya sesuai untuk sesetengah orang. Sembang disemak dan digunakan untuk melatih model AI generatif. Anda boleh <ph name="BEGIN_LINK" />mengurus sejarah anda<ph name="END_LINK" />, termasuk <ph name="BEGIN_LINK" />maklumat tentang lokasi anda<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Ketahui perihal pilihan anda<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Syarat<ph name="END_LINK" /> dan <ph name="BEGIN_LINK" />Notis Privasi<ph name="END_LINK" /> kami digunakan.</translation>
 <translation id="9081058212938299310">Kemas kini kata laluan untuk <ph name="USERNAME" />?</translation>
 <translation id="908365381820697818">Kini anda boleh menemukan dan mengisi maklumat daripada Gmail dan pelbagai lagi</translation>
 <translation id="9083838294503912307">Hidupkan penyegerakan untuk melakukan penyegerakan dan pemperibadian pada semua peranti.</translation>
@@ -2649,6 +2649,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="91023216973987714">Kaedah pembayaran</translation>
 <translation id="9106655997975673326">Daripada "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Semak kata laluan yang terjejas</translation>
+<translation id="9115035712231910133">Imej {title} dilampirkan</translation>
 <translation id="9119764377203471454">Tidak dapat menambahkan lampiran</translation>
 <translation id="9124387962554796433">Google mungkin menggunakan sejarah anda untuk memperibadikan Carian dan perkhidmatan Google yang lain.</translation>
 <translation id="9124978074365039456">Beli, terjemahkan dan kenal pasti perkara yang anda lihat menggunakan kamera dan galeri foto anda</translation>

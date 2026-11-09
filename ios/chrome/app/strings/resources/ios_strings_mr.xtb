@@ -386,7 +386,6 @@
 <translation id="2104436223719117661">ट्रेंडिंग शोध</translation>
 <translation id="21133533946938348">टॅब पिन करा</translation>
 <translation id="2117650889962717098">गुप्त मोडवर स्विच करून तुमचे ब्राउझिंग खाजगी ठेवा</translation>
-<translation id="2119126821484134587">अनुकूल केलेली मदत पुरवण्यासाठी, Gemini हे Maps आणि Flights यांसारख्या इतर Google सेवांसोबत तुमचा काही डेटा (जसे की तुमच्या चॅटचे भाग, स्थान व इतर सुसंबद्ध माहिती) शेअर करते. तुम्ही नंतर तुमचा Gemini ॲप्स इतिहास हटवला, तरीही या सेवा स्वतःमध्ये सुधारणा करण्यासाठी त्या माहितीचा वापर करू शकतात. <ph name="BEGIN_LINK" />Gemini ॲप्स गोपनीयता केंद्र<ph name="END_LINK" /> यामध्ये अधिक जाणून घ्या.</translation>
 <translation id="2119636449201577317">यामध्ये उघडा…</translation>
 <translation id="2119962645034852864">तुमच्या खात्यासाठी काही सेवा उपलब्ध नाहीत</translation>
 <translation id="2120553909046681540">तुमच्या संस्थेने खाजगी ब्राउझिंग बंद केले आहे.</translation>
@@ -519,6 +518,7 @@
 <translation id="2524699375503213836">Safari मधून तुमचा डेटा आणा</translation>
 <translation id="2526166285241366046">पासवर्ड सेव्ह करा</translation>
 <translation id="2529021024822217800">सर्व उघडा</translation>
+<translation id="2536421147135705892">भौगोलिक स्थानाला अनुमती द्यायची आहे का?</translation>
 <translation id="2536991091671391962">तुम्ही सेव्ह केलेले पासवर्ड कोणत्याही डिव्हाइसवर वापरू शकता. ते <ph name="EMAIL" /> साठी Google Password Manager यामध्ये सेव्ह केले जातात.</translation>
 <translation id="2538103551183528357">लपवलेला, पासवर्ड</translation>
 <translation id="2538705697765638552">तुमची माहिती सेव्ह करा आणि सर्व Google उत्पादनांवर फॉर्म भरणे यासारखी कामे अधिक जलद पूर्ण करा. तुम्ही <ph name="USER_EMAIL" /> साठी Google Wallet मध्ये तुमची माहिती व्यवस्थापित करू शकता.</translation>
@@ -1110,7 +1110,6 @@
 <translation id="4470766488397113689">तुम्हाला कशावर काम करायचे आहे?</translation>
 <translation id="4471472356135655769">पासवर्ड एक्सपोर्ट करू शकत नाही</translation>
 <translation id="4472575034687746823">सुरुवात करा</translation>
-<translation id="4473565697543262065">यामुळे या डिव्हाइसवर आणि तुमच्या Google खाते <ph name="USER_EMAIL" /> मध्ये सेव्ह केलेली निवडक माहिती हटवली जाते</translation>
 <translation id="4473608001744970767">किमतीचा माग ठेवा हे लपवा</translation>
 <translation id="4474142134969976028">जुळणारे परिणाम नाहीत</translation>
 <translation id="4474494258097106883">तुमच्या iPhone साठी तयार केलेले</translation>
@@ -1337,6 +1336,7 @@
 <translation id="5128788795241319992">नवीन मेनू एक्सप्लोर करा</translation>
 <translation id="5132942445612118989">सर्व डिव्हाइसवर तुमचे पासवर्ड, इतिहास आणि बरेच काही सिंक करा</translation>
 <translation id="5137568953923142260">एकदा अनुमती द्या</translation>
+<translation id="5139344197062265975">Gemini सोबत चॅट करण्यासाठी तुमचा मायक्रोफोन वापरा. तुम्ही Gemini सोबत बोलता, तेव्हा ऑडिओ Gemini इतिहास (सुरू केलेला असल्यास) यामध्ये स्टोअर केला जातो. जनरेटिव्ह AI मॉडेलमध्ये सुधारणा करण्यासाठी तुमचा डेटा वापरला जात नाही</translation>
 <translation id="5141363746588976328">तुमच्या टॅब कार्डवरील किमतीतील घट लपवा</translation>
 <translation id="514154868070499296">फाँट: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">टॅब स्विचरमधून बाहेर पडा</translation>
@@ -1434,7 +1434,6 @@
 <translation id="5443636120437209490">बाय डीफॉल्ट आणखी चांगले ब्राउझिंग</translation>
 <translation id="5444892875087332195">बुकमार्क</translation>
 <translation id="5447973833955560753">रिकव्हरी पासवर्ड</translation>
-<translation id="5448623529214315261"><ph name="INDEX" /> फोटो सेव्ह केला आहे</translation>
 <translation id="5452354193031718372">क्लिष्ट पासवर्ड वापरा:</translation>
 <translation id="5454211924362324495">इतरांना तुमचा पासवर्ड वापरण्यापासून थांबवण्यासाठी, तो<ph name="BEGIN_LINK" /><ph name="WEBSITE" /> वर बदलणे<ph name="END_LINK" /> हे करा</translation>
 <translation id="5457082343331641453">तुमच्या शोधामध्ये जोडा</translation>
@@ -1607,6 +1606,7 @@
 <translation id="6000893618966378846">"ब्राउझिंग डेटा हटवणे" पूर्ण झाले!</translation>
 <translation id="6004988584831654445">तुम्ही पूर्णपणे तयार आहात! नवीन टास्क आल्यावर सूचना मिळवा.</translation>
 <translation id="6006672969046233841">नवीन टॅब</translation>
+<translation id="6006758170939001741">आमच्या <ph name="BEGIN_LINK" />अटी<ph name="END_LINK" />, <ph name="BEGIN_LINK" />कोरियन स्थान अटी<ph name="END_LINK" /> आणि <ph name="BEGIN_LINK" />गोपनीयता नोटिस<ph name="END_LINK" /> लागू होतात. चॅटचे पुनरावलोकन केले जाते आणि ती जनरेटिव्ह AI मॉडेलना प्रशिक्षण देण्यासाठी वापरली जातात. Gemini हे AI आहे आणि ते लोकांच्या बाबतीतदेखील चुका करू शकते. काही आशय प्रत्येकासाठी योग्य नसू शकतो. तुम्ही <ph name="BEGIN_LINK" />तुमच्या स्थानाबद्दलची माहिती<ph name="END_LINK" /> याच्या समावेशासह <ph name="BEGIN_LINK" />तुमचा इतिहास व्यवस्थापित करणे<ph name="END_LINK" /> हे करू शकता. <ph name="BEGIN_LINK" />तुमच्या निवडींबद्दल अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">शोध सूचनांमध्ये सुधारणा करा</translation>
 <translation id="6012140227487808125">कूटबद्ध करीत आहे...</translation>
 <translation id="6014801569448771146">तुमचे पासवर्ड तपासा</translation>
@@ -1870,7 +1870,6 @@
 <translation id="672735642903863329">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क, पासवर्ड आणि आणखी बरेच काही मिळवा.</translation>
 <translation id="6729493062119577923">शेअर केलेल्या टॅब गटाची अ‍ॅक्टिव्हिटी</translation>
 <translation id="6732087373923685049">कॅमेरा</translation>
-<translation id="6736243959894955139">पत्ता</translation>
 <translation id="6746338529702829275">तुमच्या खाते डेटाचे पुनरावलोकन करा</translation>
 <translation id="6749473226660745022">फोटो</translation>
 <translation id="6750456911389438250">{count,plural, =1{इतिहासाचा {count} आयटम इंपोर्ट केला आहे}other{इतिहासाचे {count} आयटम इंपोर्ट केले आहेत}}</translation>
@@ -1992,7 +1991,6 @@
 <translation id="7128693485119315539">तुमच्या संस्थेला तुमच्या व्यवस्थापित खात्याशी जोडलेला ब्राउझिंग डेटा पाहण्याची आणि व्यवस्थापित करण्याची आवश्यकता असू शकते, जसे की तुमचा ब्राउझिंग इतिहास आणि पासवर्ड.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">कॅमेरा अनुपलब्ध आहे</translation>
-<translation id="7138678301420049075">इतर</translation>
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">तुमचे टॅब बंद केले जातील आणि ब्राउझिंग डेटा हटवला जाईल</translation>
 <translation id="714291438898585119">तारांकित</translation>
@@ -2038,6 +2036,7 @@
 <translation id="728025568708172005">आसपास फेरफटका मारा</translation>
 <translation id="7280980607183752256">ही फाइल इंपोर्ट करता आली नाही</translation>
 <translation id="7282197670900591579">सिट्रोन थीम</translation>
+<translation id="7283937415134849498">तुमच्यासाठी अनुकूल केलेली मदत पुरवण्यासाठी, Gemini हे Maps आणि Flights यांसारख्या इतर Google सेवांसोबत तुमचा काही डेटा (जसे की तुमच्या चॅटचे भाग, स्थान व इतर सुसंबद्ध माहिती) शेअर करते. तुम्ही नंतर तुमचा Gemini इतिहास हटवला, तरीही या सेवा स्वतःमध्ये सुधारणा करण्यासाठी त्या माहितीचा वापर करू शकतात. <ph name="BEGIN_LINK" />Gemini अ‍ॅप्स गोपनीयता केंद्र<ph name="END_LINK" /> यामध्ये अधिक जाणून घ्या.</translation>
 <translation id="7293429513719260019">भाषा निवडा</translation>
 <translation id="72961285530871072">यामुळे तुमची लेव्हल अप प्रगती कायमची हटवली जाईल आणि लेव्हल अप साठी वैशिष्ट्य वापर डेटा यापुढे तुमच्या प्रोफाइलसाठी Google ला पाठवला जाणार नाही.
 
@@ -2140,6 +2139,7 @@
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT} इनॅक्टिव्ह टॅब बंद करायचा आहे का?}other{{COUNT} इनॅक्टिव्ह टॅब बंद करायचे आहेत का?}}</translation>
 <translation id="7598439272585186139">आणखी सुरक्षा मिळवा</translation>
 <translation id="7600965453749440009">कधीही <ph name="LANGUAGE" /> चा भाषांतर करु नका</translation>
+<translation id="760230853074995500">चॅटचे पुनरावलोकन केले जाते आणि ती जनरेटिव्ह AI मॉडेलना प्रशिक्षण देण्यासाठी वापरली जातात. तुम्ही <ph name="BEGIN_LINK" />तुमच्या स्थानाबद्दलची माहिती<ph name="END_LINK" /> याच्या समावेशासह <ph name="BEGIN_LINK" />तुमचा इतिहास व्यवस्थापित करणे<ph name="END_LINK" /> हे करू शकता. <ph name="BEGIN_LINK" />तुमच्या निवडींबद्दल अधिक जाणून घ्या<ph name="END_LINK" />.</translation>
 <translation id="7603308509262646847"><ph name="NAME" /> कार्डधारक ऑटोफिल करा</translation>
 <translation id="7603852183842204213">(<ph name="NUMBER_OF_BLOCKED_POPUPS" />) पॉप-अप ब्लॉक केले</translation>
 <translation id="7605594153474022051">सिंक कार्य करत नाही</translation>
@@ -2625,7 +2625,6 @@
 <translation id="9039373489628511875">बँडविड्थ</translation>
 <translation id="9042363670218758847">झटपट शोधांसाठी तयार केलेल्या लेआउटवर स्विच करा</translation>
 <translation id="9042893549633094279">गोपनीयता आणि सुरक्षा</translation>
-<translation id="9044703854323320868">Gmail मेसेज <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">तुमचे उघडे असलेले टॅब संगतवार लावण्यासाठी आणि उत्पादनक्षम राहण्यासाठी टॅब गट तयार करा</translation>
 <translation id="9055580485132823283">तुमचे {password_count} पासवर्ड, {passkey_count} पासकी आणि तुम्ही साइन-इन माहिती कधीही सेव्ह न करण्याचे निवडलेल्या साइट व ॲप्सची सूची हटवणार आहात. एखाद्या साइट आणि ॲप्ससाठी तुम्ही तयार केलेले कोणतेही खाते हटवले जाणार नाही.</translation>
 <translation id="9057030985451135243">शेअर केलेल्या टॅब गटांबद्दल जाणून घ्या</translation>
@@ -2634,6 +2633,7 @@
 <translation id="9066097352053395362">बुकमार्क संपादित करा हे लपवा</translation>
 <translation id="9070824521421603770">तुम्हाला साइन आउट केले जाईल आणि टॅब बंद केले जातील</translation>
 <translation id="9072837124205571418">सर्व डिव्हाइसवरील टॅब गट</translation>
+<translation id="9073322251019919253">Gemini हे AI आहे आणि ते लोकांच्या बाबतीतदेखील चुका करू शकते. काही आशय प्रत्येकासाठी योग्य नसू शकतो. चॅटचे पुनरावलोकन केले जाते आणि ती जनरेटिव्ह AI मॉडेलना प्रशिक्षण देण्यासाठी वापरली जातात. तुम्ही <ph name="BEGIN_LINK" />तुमच्या स्थानाबद्दलची माहिती<ph name="END_LINK" /> याच्या समावेशासह <ph name="BEGIN_LINK" />तुमचा इतिहास व्यवस्थापित करणे<ph name="END_LINK" /> हे करू शकता. <ph name="BEGIN_LINK" />तुमच्या निवडींबद्दल जाणून घ्या<ph name="END_LINK" />. आमच्या <ph name="BEGIN_LINK" />अटी<ph name="END_LINK" /> आणि <ph name="BEGIN_LINK" />गोपनीयता नोटिस<ph name="END_LINK" /> लागू होतात.</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> साठी पासवर्ड अपडेट करायचा?</translation>
 <translation id="908365381820697818">तुम्ही आता Gmail आणि आणखी बऱ्याच ठिकाणांहून माहिती शोधू व भरू शकता</translation>
 <translation id="9083838294503912307">सर्व डिव्हाइसवर सिंक आणि पर्सनलाइझ करण्यासाठी, सिंक सुरू करा.</translation>

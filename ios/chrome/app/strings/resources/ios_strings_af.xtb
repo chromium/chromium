@@ -386,7 +386,6 @@
 <translation id="2104436223719117661">Soekneigings</translation>
 <translation id="21133533946938348">Speld oortjie vas</translation>
 <translation id="2117650889962717098">Hou jou blaaiery privaat deur na Incognitomodus oor te skakel</translation>
-<translation id="2119126821484134587">Gemini deel sommige van jou data (soos dele van jou kletse, ligging en ander relevante inligting) met ander Google-dienste, soos Maps en Flights, om gepasmaakte hulp te verskaf. Hierdie dienste kan daardie inligting gebruik om te verbeter, selfs al vee jy later jou Gemini-appsgeskiedenis uit. Kry meer inligting in <ph name="BEGIN_LINK" />Gemini-apps se Privaatheidsentrum<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Maak oop in …</translation>
 <translation id="2119962645034852864">Sekere dienste is nie vir jou rekening beskikbaar nie</translation>
 <translation id="2120553909046681540">Jou organisasie het private blaai afgeskakel.</translation>
@@ -519,6 +518,7 @@
 <translation id="2524699375503213836">Bring jou data van Safari af</translation>
 <translation id="2526166285241366046">Stoor ’n wagwoord</translation>
 <translation id="2529021024822217800">Maak almal oop</translation>
+<translation id="2536421147135705892">Laat geoligging toe?</translation>
 <translation id="2536991091671391962">Jy kan gestoorde wagwoorde op enige toestel gebruik. Hulle word in Google Wagwoordbestuurder gestoor vir <ph name="EMAIL" /></translation>
 <translation id="2538103551183528357">Versteekte wagwoord</translation>
 <translation id="2538705697765638552">Stoor jou inligting en kry dinge vinniger gedoen, soos om vorms in verskillende Google-produkte in te vul. Jy kan jou inligting in Google Wallet vir <ph name="USER_EMAIL" /> bestuur.</translation>
@@ -1110,7 +1110,6 @@
 <translation id="4470766488397113689">Waaraan wil jy werk?</translation>
 <translation id="4471472356135655769">Kan nie wagwoorde uitvoer nie</translation>
 <translation id="4472575034687746823">Kom aan die gang</translation>
-<translation id="4473565697543262065">Dit vee gekose inligting uit wat op hierdie toestel en in jou Google-rekening <ph name="USER_EMAIL" /> gestoor is</translation>
 <translation id="4473608001744970767">Versteek prysnasporing</translation>
 <translation id="4474142134969976028">Geen passende resultate nie</translation>
 <translation id="4474494258097106883">Gebou vir jou iPhone</translation>
@@ -1337,6 +1336,7 @@
 <translation id="5128788795241319992">Verken die nuwe kieslys</translation>
 <translation id="5132942445612118989">Sinkroniseer jou wagwoorde, geskiedenis en meer op alle toestelle</translation>
 <translation id="5137568953923142260">Laat een keer toe</translation>
+<translation id="5139344197062265975">Gebruik jou mikrofoon om met Gemini te klets. Wanneer jy met Gemini praat, word oudio in Gemini-geskiedenis geberg (as dit aan is). Jou data word nie gebruik om generatiewe-KI-modelle te verbeter nie</translation>
 <translation id="5141363746588976328">Versteek prysdalings op jou oortjieskaart</translation>
 <translation id="514154868070499296">Lettertipe: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Verlaat oortjiewisselaar</translation>
@@ -1434,7 +1434,6 @@
 <translation id="5443636120437209490">Beter blaai by verstek</translation>
 <translation id="5444892875087332195">Boekmerke</translation>
 <translation id="5447973833955560753">Terugstelwagwoord</translation>
-<translation id="5448623529214315261">Gestoorde foto <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Gebruik sterk wagwoord:</translation>
 <translation id="5454211924362324495"><ph name="BEGIN_LINK" />Verander jou wagwoord op <ph name="WEBSITE" /><ph name="END_LINK" /> om te keer dat ander dit gebruik</translation>
 <translation id="5457082343331641453">Voeg by jou soektog</translation>
@@ -1607,6 +1606,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6000893618966378846">“Vee blaaierdata uit” is voltooi!</translation>
 <translation id="6004988584831654445">Jy is gereed! Word in kennis gestel wanneer jy nuwe take kry.</translation>
 <translation id="6006672969046233841">Nuwe oortjie</translation>
+<translation id="6006758170939001741">Ons <ph name="BEGIN_LINK" />bepalings<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Koreaanse Liggingbepalings<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />privaatheidkennisgewing<ph name="END_LINK" /> geld. Kletse word nagegaan en gebruik om generatiewe-KI-modelle op te lei. Gemini is KI en kan foute maak, insluitend oor mense. Sommige inhoud is dalk nie vir almal geskik nie. Jy kan <ph name="BEGIN_LINK" />jou geskiedenis bestuur<ph name="END_LINK" />, insluitend <ph name="BEGIN_LINK" />inligting oor jou ligging<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Kry meer inligting oor jou keuses<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">Verbeter soekvoorstelle</translation>
 <translation id="6012140227487808125">Enkripteer tans …</translation>
 <translation id="6014801569448771146">Gaan jou wagwoorde na</translation>
@@ -1845,6 +1845,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6670729408462528018">Galery</translation>
 <translation id="6671294218820966278">Merk as gelees</translation>
 <translation id="6672697278890207089">Voer jou wagfrase in</translation>
+<translation id="6673666785752667010">Maak KI-modus toe</translation>
 <translation id="6674917187596384849">Jy kan maklik tussen rekeninge wissel</translation>
 <translation id="6676349090816247042">Aanmeldopsies.</translation>
 <translation id="667999046851023355">Dokument</translation>
@@ -1852,6 +1853,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6682680306647339111">Onthounota is verwyder</translation>
 <translation id="6683022854667115063">Oorfone</translation>
 <translation id="6684262542644248484">Meld by ’n webwerf aan</translation>
+<translation id="668475086425500258">werfinstellings</translation>
 <translation id="6685259053455152195">Kortpaaie om instellings vinnig te wysig en kenmerke van die adresbalk af te gebruik.</translation>
 <translation id="6689342293888598653">Wit agtergrondkleur</translation>
 <translation id="6689685206615181381">Slegs Incognito-modus is beskikbaar</translation>
@@ -1867,7 +1869,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="672735642903863329">Kry jou boekmerke, wagwoorde en meer op al jou toestelle.</translation>
 <translation id="6729493062119577923">Gedeelde oortjiegroepaktiwiteit</translation>
 <translation id="6732087373923685049">kamera</translation>
-<translation id="6736243959894955139">Adres</translation>
 <translation id="6746338529702829275">Gaan jou rekeningdata na</translation>
 <translation id="6749473226660745022">Foto's</translation>
 <translation id="6750456911389438250">{count,plural, =1{Het {count} geskiedenisitem ingevoer}other{Het {count} geskiedenisitems ingevoer}}</translation>
@@ -1989,7 +1990,6 @@ Skakel oor na <ph name="OTHER_EMAIL" /> om van jou rekenaar af voort te gaan. Jy
 <translation id="7128693485119315539">Dit kan nodig wees dat jou organisasie blaaierdata verbonde aan jou bestuurde rekening moet sien en bestuur, soos jou blaaigeskiedenis en wagwoorde.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera is onbeskikbaar</translation>
-<translation id="7138678301420049075">Ander</translation>
 <translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Jou oortjies sal gesluit word en blaaierdata sal uitgevee word</translation>
 <translation id="714291438898585119">Gester</translation>
@@ -2137,6 +2137,7 @@ Jy kan enige tyd herbegin.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Maak {COUNT} onaktiewe oortjie toe?}other{Maak {COUNT} onaktiewe oortjies toe?}}</translation>
 <translation id="7598439272585186139">Kry meer sekuriteit</translation>
 <translation id="7600965453749440009">Moet nooit <ph name="LANGUAGE" /> vertaal nie</translation>
+<translation id="760230853074995500">Kletse word nagegaan en gebruik om generatiewe-KI-modelle op te lei. Jy kan <ph name="BEGIN_LINK" />jou geskiedenis bestuur<ph name="END_LINK" />, insluitend <ph name="BEGIN_LINK" />inligting oor jou ligging<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Kry meer inligting oor jou keuses<ph name="END_LINK" />.</translation>
 <translation id="7603308509262646847">Vul die kaarthouer <ph name="NAME" /> outomaties in</translation>
 <translation id="7603852183842204213">Opspringers geblokkeer (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Sinkronisering werk nie</translation>
@@ -2622,7 +2623,6 @@ Jy kan enige tyd herbegin.</translation>
 <translation id="9039373489628511875">Bandwydte</translation>
 <translation id="9042363670218758847">Skakel oor na ’n uitleg wat vir vinnige soektogte gebou is</translation>
 <translation id="9042893549633094279">Privaatheid en sekuriteit</translation>
-<translation id="9044703854323320868">Gmail-boodskap <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Skep oortjiegroepe om jou oop oortjies te organiseer en produktief te bly</translation>
 <translation id="9055580485132823283">Jy is op die punt om {password_count} wagwoorde, {passkey_count} toegangsleutels en die lys werwe en apps uit te vee wat jy gekies het om nooit aanmeldinligting voor te stoor nie. Enige rekening wat jy vir werwe en apps geskep het, sal nie uitgevee word nie.</translation>
 <translation id="9057030985451135243">Kry meer inligting oor gedeelde oortjiegroepe</translation>
@@ -2631,6 +2631,7 @@ Jy kan enige tyd herbegin.</translation>
 <translation id="9066097352053395362">Versteek Wysig boekmerk</translation>
 <translation id="9070824521421603770">Jy sal afgemeld word en oortjies sal toegemaak word</translation>
 <translation id="9072837124205571418">Oortjiegroepe van alle toestelle af</translation>
+<translation id="9073322251019919253">Gemini is KI en kan foute maak, insluitend oor mense. Sommige inhoud is dalk nie vir almal geskik nie. Kletse word nagegaan en gebruik om generatiewe-KI-modelle op te lei. Jy kan <ph name="BEGIN_LINK" />jou geskiedenis bestuur<ph name="END_LINK" />, insluitend <ph name="BEGIN_LINK" />inligting oor jou ligging<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Kry meer inligting oor jou keuses<ph name="END_LINK" />. Ons <ph name="BEGIN_LINK" />bepalings<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />privaatheidkennisgewing<ph name="END_LINK" /> is van toepassing.</translation>
 <translation id="9081058212938299310">Dateer wagwoord op vir <ph name="USERNAME" />?</translation>
 <translation id="908365381820697818">Jy kan nou inligting vanaf Gmail en meer vind en invul</translation>
 <translation id="9083838294503912307">Skakel sinkronisering aan om oor toestelle heen te sinkroniseer en personaliseer.</translation>

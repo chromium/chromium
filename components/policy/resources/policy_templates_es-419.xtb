@@ -1444,7 +1444,7 @@ La disponibilidad de las extensiones aún se controla mediante otras políticas.
 <translation id="1858775210076906272">Configuración ya completada de Kerberos</translation>
 <translation id="1861206724856734193">Establece una lista de reglas para prevenir la filtración de datos</translation>
 <translation id="1862267110714201519">Inhabilitar la función de ventana fantasma.</translation>
-<translation id="1862749749551522146">La aleatorización del tamaño del grupo de sockets es un mecanismo de seguridad que impide que los atacantes aprovechen los límites de capacidad determinísticos para obtener información entre sitios.
+<translation id="1862749749551522146">La aleatorización del tamaño del grupo de sockets es un mecanismo de seguridad que impide que los atacantes aprovechen los límites de capacidad deterministas para obtener información entre sitios.
 Si la capacidad de un grupo es normalmente de 128 sockets, este mecanismo limita aleatoriamente el grupo entre 128 y 256.
 Esto puede permitir hasta el doble de conexiones al proxy, pero en la práctica el valor esperado es más parecido a 1.2 veces.
 
@@ -6155,21 +6155,6 @@ Esta política no tendrá ningún efecto si estableces la política <ph name="DE
 <translation id="4725691087141147920">Mostrar el consentimiento de sincronización durante el acceso</translation>
 <translation id="4725801978265372736">Solicitar que el nombre del usuario local y el propietario del host de acceso remoto coincidan</translation>
 <translation id="4726228171190098009">No permitir que el dispositivo solicite usar powerwash</translation>
-<translation id="4726236283425627939">Si estableces esta política, se controlará la configuración de la administración de extensiones para <ph name="PRODUCT_NAME" />, incluido cualquier parámetro de configuración controlado por políticas existentes relacionadas con extensiones.
-
-Esta política asigna un ID de extensión o una URL de actualización solo a su configuración específica. Se puede establecer una configuración predeterminada para el ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las extensiones que no tengan una configuración personalizada en esta política.
-
-Esta política puede anular la configuración por extensión de las políticas heredadas.
-
-Ten en cuenta que cualquier configuración de extensión por ID de <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> o <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> solo heredará "installation_mode" y "update_url" de la configuración predeterminada de <ph name="DEFAULT_SCOPE" />. No heredará ninguna otra propiedad. Con una URL de actualización, la configuración se aplica a todas las extensiones con la URL de actualización exacta establecida en el manifiesto de la extensión (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Si estableces la función experimental "override_update_url" como verdadera, se instalará la extensión y se actualizará a través de la URL "update" especificada en la política <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o en el campo "update_url" de esta política. Se ignorará la función experimental "override_update_url" si "update_url" es una URL de Chrome Web Store.
-
-A partir de la versión 154 de <ph name="PRODUCT_NAME" />, si se aplica "runtime_blocked_hosts" a una extensión con el permiso "debugger", se inhabilitará por completo "chrome.debugger.attach()" en todos los destinos.
-
-En instancias de <ph name="MS_WIN_NAME" />, las apps y extensiones que no provengan de Chrome Web Store podrán instalarse de manera automática solo si la instancia está vinculada a un dominio de <ph name="MS_AD_NAME" />, vinculada a <ph name="MS_AAD_NAME" /> o inscrita en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-En instancias de <ph name="MAC_OS_NAME" />, las apps y extensiones que no provengan de Chrome Web Store podrán instalarse de manera automática solo si la instancia está administrada con MDM, vinculada a un dominio a través de MCX o inscrita en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Nota: Esta política solo se aplica a las plataformas que admiten extensiones.</translation>
 <translation id="4726895359147376813">Asigna desde IDs persistentes hasta opciones de configuración de VM</translation>
 <translation id="4732069502693984686">Habilitar la captura de pantalla automática de varias pantallas</translation>
 <translation id="4733471537137819387">Políticas relacionadas con la autenticación de HTTP integrada</translation>
@@ -6855,13 +6840,6 @@ Si no la estableces o la inhabilitas, las cookies y los datos se pueden usar par
 <translation id="5152787786897382519">Chromium y Google Chrome tienen algunos grupos de políticas que dependen unos de otros para controlar una función. Los siguientes grupos de políticas representan estos conjuntos. Como las políticas pueden tener diferentes fuentes, solo se aplicarán los valores que provengan de la fuente de mayor prioridad. Se ignorarán los valores que provengan de una fuente de menor prioridad perteneciente al mismo grupo. El orden de prioridad se define en <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Ícono de experimentos del navegador de la barra de herramientas</translation>
 <translation id="5159674159887919923">No enviar datos de hardware adicionales en ChromeOS Flex</translation>
-<translation id="5162562564734598188">Si habilitas la política, no se permitirá realizar capturas de pantalla con combinaciones de teclas
-ni APIs de extensiones. Si inhabilitas la política o no la estableces, se permitirán las capturas de pantalla.
-
-A partir de la versión 154 de <ph name="PRODUCT_NAME" />, habilitar esta política también impide que las extensiones adjunten el depurador a través de "chrome.debugger.attach()".
-
-Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph name="LINUX_OS_NAME" />,
-esto no impide que se tomen capturas de pantalla con aplicaciones del sistema operativo o de terceros.</translation>
 <translation id="5162571264806471078">Habilitar los informes en la nube de indicadores de seguridad en los perfiles administrados</translation>
 <translation id="5162982931329320509">Lista de dominios que se resolverán con DNS-over-HTTPS. Los otros dominios que no se incluyen en la lista no se resolverán con DNS-over-HTTPS. Esta política se ignora cuando el modo de DNS seguro está desactivado (siempre usa DNS en texto sin formato).
 
@@ -7530,13 +7508,6 @@ Si inhabilitas <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de Shar
 <translation id="5537400155400537818">Inhabilitada: El zoom de CSS conserva su comportamiento heredado anterior al estándar.</translation>
 <translation id="5537587542872235553">Permitir que las apps web aisladas y las aplicaciones de kiosco instaladas de manera automática usen la API de Device Attributes</translation>
 <translation id="553806128266843748">Una función experimental booleana que indica si está habilitada la limitación de la red.</translation>
-<translation id="5540415024237352600">Esta política dejará de estar disponible en la versión M153 y no será compatible (no tendrá efecto) en una versión futura. Las firmas ad hoc para las aplicaciones nativas que se crean cuando se instala una aplicación web progresiva (AWP) ahora están habilitadas de forma permanente en <ph name="MAC_OS_NAME" />. Esto garantiza que cada aplicación instalada tenga una identidad única para los componentes del sistema <ph name="MAC_OS_NAME" />.
-
-Si habilitas la política o no la estableces, se habilitará el uso de firmas de ad-hoc para la aplicación nativa que se crea cuando se instala una aplicación web progresiva (AWP). Esto garantiza que cada aplicación instalada tenga una identidad única para los componentes del sistema <ph name="MAC_OS_NAME" />.
-
-Si inhabilitas la política, todas las aplicaciones nativas que se creen cuando se instale una aplicación web progresiva tendrán la misma identidad. Esto puede interferir con la funcionalidad de <ph name="MAC_OS_NAME" />.
-
-Solo desactiva la política si usas una solución de seguridad de endpoint que bloquea las aplicaciones con una firma de ad-hoc.</translation>
 <translation id="5540885720415375851">Permite el descubrimiento de dispositivos locales</translation>
 <translation id="5542235730745104308">Si estableces la política como verdadera, <ph name="PRODUCT_NAME" /> utilizará páginas de error alternativas integradas en el navegador (como "no se encontró la página"). Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no utilizará nunca páginas de error alternativas.
 
@@ -8647,11 +8618,6 @@ En la versión 114 y en versiones posteriores, esta política es opcional si se 
 <translation id="6224070048795197148">Permitir que el usuario utilice el navegador sin acceder</translation>
 <translation id="6224304369267200483">Las URL y los dominios permiten automáticamente la atestación directa de llaves de seguridad</translation>
 <translation id="6225938950222983458">Esta política dejó de estar disponible y ya no se admite. En su lugar, usa <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />.</translation>
-<translation id="6230442621691161858">Esta función habilita sugerencias para explorar nuevo contenido. Incluye apps, páginas web y mucho más.
-      Si estableces esta política como verdadera, se habilitarán las sugerencias para explorar nuevo contenido.
-      Si la estableces como falsa, se inhabilitarán estas sugerencias.
-      Si no la estableces, se inhabilitarán estas sugerencias para los usuarios administrados y se habilitarán para los demás usuarios.
-      </translation>
 <translation id="6233173491898450179">Establecer el directorio de descarga</translation>
 <translation id="6234167788423986573">Mantener la recopilación de datos anónimos con URL siempre desactivada</translation>
 <translation id="6234177445959386333">Configura la lista de las URLs de acceso empresariales donde el servicio de protección de contraseñas debe capturar los hash con sal de las contraseñas.</translation>

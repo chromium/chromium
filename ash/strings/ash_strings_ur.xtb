@@ -138,7 +138,6 @@
 <translation id="1346403631707626730">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ ‫Google کو خودکار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا بھیج کر اپنے بچے کا Android تجربہ بہتر بنانے میں مدد کریں۔ اس کا استعمال آپ کے بچے کی شناخت کیلئے نہیں کیا جائے گا اور اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اگر آپ کے بچے کیلئے ویب اور ایپ کی اضافی سرگرمی آن ہے تو اس ڈیٹا کو اس کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ <ph name="BEGIN_LINK1" />میٹرکس کے بارے میں مزید جانیں<ph name="BEGIN_LINK1_END" />مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">دائیں</translation>
 <translation id="1350494136075914725">جاری · ٹیب پر سوئچ کریں</translation>
-<translation id="1351937230027495976">مینیو کو سکیڑیں</translation>
 <translation id="1355088139103479645">سبھی ڈیٹا حذف کریں؟</translation>
 <translation id="1360220746312242196">صفحہ تلاش کرتے وقت، تلاش کے لیے پچھلی مماثلت پر جائیں</translation>
 <translation id="1360788414852622716">پروفائل کو غیر فعال کیا جا رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
@@ -682,7 +681,6 @@
 <translation id="3033545621352269033">آن</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> کے ساتھ یکجا کریں</translation>
 <translation id="3036327949511794916">اس <ph name="DEVICE_TYPE" /> کو واپس کرنے کی آخری تاریخ گزر چکی ہے۔</translation>
-<translation id="3039491566278747710">آلہ پر آف لائن پالیسی انسٹال نہیں ہو سکی۔</translation>
 <translation id="3039939407102840004">اسٹائلس بیٹری <ph name="PERCENTAGE" /> فیصد پر ہے۔</translation>
 <translation id="304097922505898963">اہم شارٹ کٹس ایپ کھولیں</translation>
 <translation id="304417730895741346">آپ کی پن کردہ اور کھلی ایپس شیلف پر ہیں۔ کسی ایپ کو شیلف میں پن کرنے کے لیے، کسی ایپ پر دائیں کلک کریں یا اپنے ٹچ پیڈ کو دو انگلیوں سے تھپتھپائیں۔</translation>
@@ -698,7 +696,6 @@
 <translation id="3075144191779656260">اپنے <ph name="DEVICE_TYPE" /> کے بائیں ہاتھ کی طرف موجود فنگر پرنٹ سینسر کو ٹچ کریں۔ آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="3075874217500066906">‏Powerwash کارروائی شروع کرنے کیلئے ایک بار دوبارہ شروع کرنا درکار ہے۔ دوبارہ شروع کرنے کے بعد آپ سے یہ توثیق کرنے کیلئے پوچھا جائے گا کہ آپ جاری رکھنا چاہتے ہیں۔</translation>
 <translation id="3077734595579995578">شفٹ</translation>
-<translation id="3081696990447829002">مینیو کو پھیلائیں</translation>
 <translation id="3087734570205094154">نیچے</translation>
 <translation id="3088128611727407543">ایپ کی پروفائل تیار ہو رہی ہے...</translation>
 <translation id="3090214513075567547">سیاق و سباق کا مینو کھولیں</translation>
@@ -804,7 +801,6 @@
 <translation id="3405101454990027959">مائیکروفون تک رسائی آن کریں</translation>
 <translation id="3407967630066378878">فنگر پرنٹ سیٹ اپ کرنے کے لیے، اپنے بچے سے اس <ph name="DEVICE_TYPE" /> کے بائیں ہاتھ کی طرف موجود فنگر پرنٹ کو ٹچ کرنے کو کہیں۔ آپ کے بچے کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی اس <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="3409584356742878290">ڈویلپر ٹولز انسپکٹر دکھائیں یا چھپائیں</translation>
-<translation id="3413817803639110246">ابھی تک دیکھنے کیلئے کچھ نہیں ہے</translation>
 <translation id="3417835166382867856">ٹیبز تلاش کریں</translation>
 <translation id="3426253816581969877"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> کو دبا کر رکھیں، <ph name="KEY" /> پر تھپتھپاتے رہیں یہاں تک کہ اس ونڈو تک پہنچ جائیں جسے آپ کھولنا چاہتے ہیں، پھر ریلیز کریں۔</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> سے غیر منسلک کریں</translation>
@@ -899,7 +895,6 @@
 <translation id="3626281679859535460">چمکیلاپن</translation>
 <translation id="3628323833346754646">سامنے والا بٹن</translation>
 <translation id="3630697955794050612">آف</translation>
-<translation id="3631369015426612114">مندرجہ ذیل سے اطلاعات کی اجازت دیں</translation>
 <translation id="3633097874324966332">اپنے آلے کا جوڑا بنانے کے لیے بلوٹوتھ ترتیبات کھولیں</translation>
 <translation id="3633851487917460983">کلپ بورڈ کھولیں</translation>
 <translation id="363473492175527493">ٹاسک کو اس پر فوکس کرنے کے لیے سیٹ کیا گیا ہے: <ph name="TASK_NAME" />۔ ٹاسک میں ترمیم کرنے کے لیے اینٹر دبائیں۔</translation>
@@ -915,7 +910,6 @@
 <translation id="3659667652322717492">آپ بعد میں مائیک کے برتاؤ کو کسی بھی وقت تبدیل کر سکتے ہیں۔</translation>
 <translation id="3659814201068740063">تقریباً <ph name="TIME_LEFT" /> باقی ہے (%<ph name="PERCENTAGE" />)۔
 اپنے آلے کو پاور سے منسلک کریں۔</translation>
-<translation id="3660860940251915011"><ph name="FEATURE_NAME" /> کی اعلی مرئیت کو ٹوگل کریں</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> نظم کردہ صارف</translation>
 <translation id="3666266999138159418">فلوٹنگ ونڈو کو چھپانے کے لیے سوائپ کریں</translation>
 <translation id="367531336287639526">ایڈریس بار کے بائیں جانب موجود پہلے آئیکن کو منتخب کریں</translation>
@@ -924,7 +918,6 @@
 <translation id="36813544980941320">‏آپ کے فون اور <ph name="DEVICE_NAME" /> کے درمیان Wi-Fi نیٹ ورکس کا اشتراک کیا جائے گا</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> پھر <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">ویب سائٹس</translation>
-<translation id="3697991387880191195">اسکرین شاٹ لینے کا شارٹ کٹ دبائیں</translation>
 <translation id="3702809606464356667">موجودہ ڈیسک سے ونڈوز دکھائی جا رہی ہیں تمام ڈیسکس سے ونڈوز کو دکھانے کے لیے اوپر تیر کے نشان والی کلید دبائیں</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">لوڈ ہو رہے ہیں…</translation>
@@ -950,7 +943,6 @@
         <ph name="BEGIN_PARAGRAPH3" />آپ اس سروس کو ترتیبات میں جا کر آف کر سکتے ہیں۔<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620">آپ کا <ph name="PHONE_NAME" /> اب اس <ph name="DEVICE_TYPE" /> کو بھی غیر مقفل کر سکتا ہے۔</translation>
 <translation id="3756485814916578707">اسکرین کاسٹ ہو رہی ہے</translation>
-<translation id="3765246971671567135">آف لائن ڈیمو موڈ کی پالیسی کو پڑھا نہیں جا سکا۔</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> شارٹ کٹ کو <ph name="OLD_SHORTCUT" /> سے <ph name="NEW_SHORTCUT" /> میں اپ ڈیٹ کیا گیا ہے</translation>
 <translation id="3772109172035555611">‏اپنے TrackPoint کو حسب ضرورت بنائیں</translation>
 <translation id="3773700760453577392">منتظم نے <ph name="USER_EMAIL" /> کیلئے متعدد سائن ان کی اجازت نہیں دی ہے۔ جاری رکھنے کیلئے تمام صارفین کا سائن آؤٹ کرنا لازمی ہے۔</translation>
@@ -986,7 +978,6 @@
 <translation id="3859364108019690">ایپس کی سلسلہ بندی نہیں کی جا سکتی</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" صارف نام دستیاب نہیں ہے</translation>
 <translation id="3861651314799684201">فُل اسکرین ریکارڈ کرنے کے لیے اینٹر دبائیں</translation>
-<translation id="3870197372373144624">اپنے آلے کو شٹ ڈاؤن کرنے کی کوشش کریں۔</translation>
 <translation id="3873915545594852654">‏++ARC کے ساتھ ایک مسئلہ پیش آگیا۔</translation>
 <translation id="3879748587602334249">ڈاؤن لوڈ مینیجر</translation>
 <translation id="3884007280698606545">‏‫USB کی حد تک پہنچ گئے ہیں</translation>
@@ -1171,7 +1162,6 @@
 <translation id="439598569299422042">موقوف ہو گیا، <ph name="SIZE_INFO" /></translation>
 <translation id="439817266247065935">‏آپ کا آلہ صحیح سے بند نہیں ہوا ہے۔ Linux ایپس کو استعمال کرنے کیلئے Linux کو ری سٹارٹ کریں۔</translation>
 <translation id="440113666232554208">اسکرین کاسٹ کو محفوظ نہیں کیا جا سکتا</translation>
-<translation id="4405151984121254935">منسلک پیریفرل کی قسم تعاون یافتہ نہیں ہے</translation>
 <translation id="4406883609789734330">لائیو کیپشن</translation>
 <translation id="4412698727486357573">ہیلپ سینٹر</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> آف ہے۔</translation>
@@ -1354,7 +1344,6 @@
 <translation id="493076006037866439">اسکرین کو زوم آؤٹ کریں</translation>
 <translation id="4932733599132424254">تاریخ</translation>
 <translation id="4934763315031217818">ترتیب والی سیکوئنسز پر مشتمل نہیں ہو سکتا</translation>
-<translation id="4936329710968938986">ہر کوئی، آف</translation>
 <translation id="4937170330762390348">ڈکٹیشن کے ساتھ، آپ اپنی آواز کا استعمال کرتے ہوئے ٹائپ کر سکتے ہیں۔ جب آپ ٹیکسٹ فیلڈ پر ہوں تو ڈکٹیشن کلید دبائیں یا اسکرین کے نیچے مائیکروفون آئیکن کو منتخب کریں۔ آپ کی ڈکٹیشن زبان <ph name="LANGUAGE" /> پر سیٹ ہے۔ اسپیچ فائلز ڈاؤن لوڈ کی جائیں گی تاکہ آپ ڈکٹیشن آف لائن استعمال کر سکیں۔ آپ ترتیبات &gt; ایکسیسبیلٹی میں کسی بھی وقت ڈکٹیشن کی زبان تبدیل کر سکتے ہیں۔</translation>
 <translation id="4938176435186993759">سبھی تجاویز چھپائیں</translation>
 <translation id="4945196315133970626">اطلاعات آف کریں</translation>
@@ -1371,7 +1360,6 @@
 <translation id="4966431234408005599">والیوم بڑھائیں</translation>
 <translation id="496999337731226334">‏<ph name="TOTAL_STEPS" /> میں سے <ph name="STEP" /> ٹؤر قدم۔ Wi-Fi، بلوٹوتھ اور والیوم جیسے اکثر استعمال ہونے والے کنٹرولز فوری ترتیبات میں موجود ہیں۔ آپ اسکرین شاٹس لینے کے لیے یہاں بھی جا سکتے ہیں۔ فوری ترتیبات کو کھولنے کے لیے Alt + Shift + S دبائیں۔</translation>
 <translation id="4974836474136150508">{NUM_DAYS,plural, =1{‫<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ آج ہی ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ آپ کے انٹرنیٹ سے منسلک ہونے پر اپ ڈیٹ خودکار طور پر ڈاؤن لوڈ ہو جائے گی۔}other{‫<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ آخری تاریخ سے پہلے ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ آپ کے انٹرنیٹ سے منسلک ہونے پر اپ ڈیٹ خودکار طور پر ڈاؤن لوڈ ہو جائے گی۔}}</translation>
-<translation id="4975771730019223894">ایپ بیجینگ</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />،
         <ph name="NOTIFICATION_2" />،
@@ -1574,7 +1562,6 @@
 <translation id="5551456515017410630">کیلنڈر کھولیں/بند کریں</translation>
 <translation id="5551974246223970793">صفحہ تلاش کرتے وقت، تلاش کے لیے اگلی مماثلت پر جائیں</translation>
 <translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
-<translation id="5558091555391176027">قریبی آلات کے ساتھ اشتراک کی اعلی مرئیت کو ٹوگل کریں</translation>
 <translation id="556042886152191864">بٹن</translation>
 <translation id="5570122939431135380">نئی پوشیدگی ونڈو میں نیا ٹیب کھولیں</translation>
 <translation id="5575528586625653441">ڈیمو کی رجسٹریشن کی درخواست کے ساتھ ایک مسئلہ پیش آگیا۔</translation>
@@ -1601,7 +1588,6 @@
 <translation id="5620979661744857819">اس سے کیمرے اور مائیکروفون کی اجازتوں کے ساتھ <ph name="APP_NAME" /> اور تمام ایپس اور ویب سائٹس تک رسائی کی اجازت ملتی ہے۔ آپ کو ویب صفحہ کو ریفریش کرنے یا ایپ کو دوبارہ شروع کرنے کی ضرورت پڑ سکتی ہے۔</translation>
 <translation id="5625955975703555628">LTE+‎</translation>
 <translation id="5627392655516693966">آپ کے پاس ورڈ کی تصدیق نہیں کی جا سکی۔ دوبارہ کوشش کریں۔</translation>
-<translation id="5632485077360054581">مجھے طریقہ دکھائیں</translation>
 <translation id="5648021990716966815">مائیک جیک</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> کو آپ کی توجہ درکار ہے۔</translation>
 <translation id="5657667036353380798">‏بیرونی ایکسٹینشن کیلئے chrome ورژن <ph name="MINIMUM_CHROME_VERSION" /> یا اس سے اعلی تر کو انسٹال کیے جانے کی ضرورت ہے۔</translation>
@@ -1919,7 +1905,6 @@
 <translation id="651753338596587143">‏معذرت، DLC انحصاریتوں کو انسٹال کرنے میں کچھ غلط ہو گیا۔ براہ کرم دوبارہ شروع کرنے کی کوشش کریں اور اگر مسئلہ برقرار رہتا ہے تو تفصیل میں #bruschetta کے ساتھ تاثرات جمع کرائیں۔ خرابی کا کوڈ <ph name="ERROR" /> ہے۔</translation>
 <translation id="6520517963145875092">کیپچر کرنے کیلئے ایک ونڈو منتخب کریں</translation>
 <translation id="652139407789908527">اس اپ ڈیٹ کے دوران آپ کی اسکرین معمول سے زیادہ دیر تک (ایک منٹ تک) خالی ہوگی۔ اپ ڈیٹ جاری ہونے کے دوران براہ کرم پاور بٹن نہ دبائیں۔</translation>
-<translation id="6528179044667508675">ڈسٹرب نہ کریں</translation>
 <translation id="65320610082834431">ایموجیز</translation>
 <translation id="6537924328260219877">سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، فون کی بیٹری <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">اسکین ہونے والی <ph name="FILENAME" /> کو ڈاؤن لوڈ کریں</translation>
@@ -2162,7 +2147,6 @@
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> کم کریں</translation>
 <translation id="7267875682732693301">اپنے فنگر پرنٹ کے مختلف حصوں کو شامل کرنے کیلئے اپنی انگلی کو اٹھاتے رہیں</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7285232777292757180">اسکرین شاٹس لینے کیلئے فوری ترتیبات میں اسکرین کیپچر ٹول استعمال کریں</translation>
 <translation id="7301826272005790482">ونڈو کی تجاویز مسترد کریں</translation>
 <translation id="7302889331339392448">لائیو کیپشن آف ہے۔</translation>
 <translation id="7303281435234579599">افوہ! ڈیمو موڈ کو سیٹ کرتے وقت کچھ غلط ہوگیا۔</translation>
@@ -2701,7 +2685,6 @@
 <translation id="880709030178078220">"مدد"</translation>
 <translation id="8813531681893371930">تار والے ہیڈ فون کو منسلک کریں</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
-<translation id="8815390544836110344">‏اسکرین شاٹ لینے کا شارٹ کٹ، Ctrl پلس شفٹ پلس مجموعی جائزہ وضع کلید دبائیں</translation>
 <translation id="881757059229893486">اندراج کے طریقے کی ترتیبات</translation>
 <translation id="8819728065740986820">اڈاپٹیو چارجنگ آن ہے</translation>
 <translation id="882204272221080310">اضافی سیکیورٹی کیلئے فرم ویئر اپ ڈیٹ کریں۔</translation>
@@ -2807,7 +2790,6 @@
 <translation id="9098750710832798892">آپ کے کلپ بورڈ پر کوئی آئٹم کاپی نہیں کیا گیا</translation>
 <translation id="9098969848082897657">فون کو خاموش کریں</translation>
 <translation id="9126339866969410112">پچھلی کارروائی کالعدم کریں</translation>
-<translation id="9126642911267312373">بلوٹوتھ دستیاب نہیں ہے</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{1 منٹ میں}other{# منٹس میں}}</translation>
 <translation id="9129245940793250979">پیچھے والا بٹن</translation>
 <translation id="9133335900048457298">تحفظ یافتہ مواد کو ریکارڈ نہیں کیا جا سکتا</translation>

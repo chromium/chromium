@@ -166,6 +166,7 @@
 <translation id="1600756129506222718">‫"<ph name="TAB_TITLE" />"، علامة تبويب تشارك محتواها</translation>
 <translation id="1601378265092360672">تشمل هذه البيانات سجلّ التصفّح وملفات تعريف الارتباط وبيانات المواقع الإلكترونية الأخرى والصور والملفات المخزَّنة مؤقتًا وعلامات التبويب المفتوحة</translation>
 <translation id="160275202205869636">‏عند تفعيل هذا الإعداد، يمكنك استخدام البيانات وحفظها في حسابك على Google. أمّا في حال إيقاف هذا الإعداد، فسيتم حفظ البيانات على هذا الجهاز فقط.</translation>
+<translation id="160403827062749147">‏مرحبًا بك في Google Chrome، المتصفّح الأكثر أمانًا في العالم</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{إزالة عنصر واحد محدد}zero{إزالة # عنصر محدد}two{إزالة عنصرين (#) محددين}few{إزالة # عناصر محددة}many{إزالة # عنصرًا محددًا}other{إزالة # عنصر محدد}}</translation>
 <translation id="1639239467298939599">جارٍ التحميل</translation>
 <translation id="1641113438599504367">التصفح الآمن</translation>
@@ -859,6 +860,7 @@
 <translation id="4374192654218566997">‏\n\nيمكنك أيضًا إزالة هذه البيانات من هذا الجهاز:</translation>
 <translation id="4378154925671717803">هاتف</translation>
 <translation id="4380055775103003110">في حال استمرار حدوث هذه المشكلة، يمكنك تجربة طرق أخرى للمتابعة على "<ph name="SITE_ETLD_PLUS_ONE" />".</translation>
+<translation id="4381351546374507910">يمكنك تسجيل الدخول للوصول إلى الإشارات المرجعية وكلمات المرور ومعلومات "الملء التلقائي" على جميع أجهزتك.</translation>
 <translation id="4384468725000734951">‏استخدام محرك Sogou للبحث</translation>
 <translation id="4387647248986092471">إنشاء قفل للملف الشخصي للسيارة</translation>
 <translation id="4387817230000841154">فتح صفحة "عمليات التنزيل"</translation>
@@ -1232,6 +1234,7 @@
 <translation id="5865733239029070421">‏إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا</translation>
 <translation id="5869522115854928033">كلمات المرور المحفوظة</translation>
 <translation id="5870416898561279542">يتم نقل علامات التبويب والمجموعات المكرّرة أو غير المستخدَمة لمدة <ph name="DAYS_INACTIVE" /> يوم إلى هنا <ph name="AUTODELETE_SECTION" />. يمكنك تعديل هذا الإعداد في أي وقت من خلال <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5882488054564514114">يمكنك تسجيل الدخول للوصول إلى بياناتك على جميع أجهزتك وتخصيص تجربتك.</translation>
 <translation id="5885378508678660271">‏الإشعارات <ph name="SEPARATOR" /> أزال Chrome هذه الأذونات لأنّ هذا الموقع الإلكتروني خطير</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
 <translation id="5896944002928653773">تم إغلاق البطاقة السفلية لبيان إخلاء المسؤولية بشأن الإشارات المؤسسية</translation>
@@ -1983,6 +1986,7 @@
 <translation id="8570677896027847510">تعذَّر تنزيل الملف بشكل آمن</translation>
 <translation id="8571213806525832805">آخر 4 أسابيع</translation>
 <translation id="8580435650274205305">تاريخ انتهاء الصلاحية، مطلوب إدخاله</translation>
+<translation id="8584698523080138290">‏‫Chrome معك في أي مكان</translation>
 <translation id="8585103689515290060">خدمات الملء التلقائي</translation>
 <translation id="8586116786993312006">‏يمكنك النقر لحذف بيانات التصفّح في Chrome</translation>
 <translation id="859046281437143747">يمكنك تتبُّع سعر المنتج من خلال الزر "خيارات إضافية".</translation>
@@ -2035,6 +2039,7 @@
 <translation id="8803526663383843427">عندما يكون الإعداد مفعَّلاً</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{‏تم حفظ البيانات في حسابك على Google‏ ‏(<ph name="ACCOUNT_EMAIL" />).}zero{‏تم حفظ البيانات في حسابك على Google‏ ‏(<ph name="ACCOUNT_EMAIL" />).}two{‏تم حفظ البيانات في حسابك على Google‏ ‏(<ph name="ACCOUNT_EMAIL" />).}few{‏تم حفظ البيانات في حسابك على Google‏ ‏(<ph name="ACCOUNT_EMAIL" />).}many{‏تم حفظ البيانات في حسابك على Google‏ ‏(<ph name="ACCOUNT_EMAIL" />).}other{‏تم حفظ البيانات في حسابك على Google‏ ‏(<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="8804742093141782941">الاحتفاظ بمجموعة علامات التبويب</translation>
+<translation id="880967149107462122">‏الانتقال إلى إعدادات Chrome</translation>
 <translation id="8812260976093120287">يمكنك على مواقع إلكترونية معيّنة الدفع باستخدام تطبيقات الدفع المتوافقة أعلاه على جهازك.</translation>
 <translation id="8816556050903368450">تضمين الرابط: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">محتوى علامة تبويب المعاينة غير قابل للعرض.</translation>
@@ -2060,6 +2065,7 @@
 <translation id="8903921497873541725">تكبير</translation>
 <translation id="8909135823018751308">مشاركة…</translation>
 <translation id="8918299437379122615">يؤدي النقر على الزرّ إلى مشاركة رابط صفحة نتائج البحث عن "<ph name="SEARCH_QUERY" />". المصدر: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">تسجيل الدخول إلى أي موقع إلكتروني</translation>
 <translation id="8922289737868596582">تنزيل الصفحات من الزر "مزيد من الخيارات" لاستخدامها بلا اتصال بالإنترنت</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> جاهز</translation>

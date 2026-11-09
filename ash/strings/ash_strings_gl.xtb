@@ -138,7 +138,6 @@
 <translation id="1346403631707626730">Envía datos de uso e diagnóstico. Para axudar a mellorar a experiencia do teu fillo ou filla en Android, envíalle automaticamente a Google datos de diagnóstico, do dispositivo e de uso das aplicacións. Esta información non se utilizará para identificar o teu fillo ou filla, senón co obxectivo de aumentar a estabilidade do sistema e das aplicacións, e de implementar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Se está activada a opción de configuración Actividade web e das aplicacións adicional para o teu fillo ou filla, estes datos pódense gardar na súa conta de Google. <ph name="BEGIN_LINK1" />Máis información sobre as métricas<ph name="BEGIN_LINK1_END" />Máis información<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">Dereita</translation>
 <translation id="1350494136075914725">En curso · Cambiar á pestana</translation>
-<translation id="1351937230027495976">Contraer menú</translation>
 <translation id="1355088139103479645">Queres eliminar todos os datos?</translation>
 <translation id="1360220746312242196">Ir á seguinte coincidencia ao buscar nunha páxina</translation>
 <translation id="1360788414852622716">Desactivando perfil. Esta acción pode tardar uns minutos.</translation>
@@ -682,7 +681,6 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3033912566804961911">Combinar con <ph name="DESK_NAME" /></translation>
 <translation id="3036327949511794916">Expirou o prazo para devolver este <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3039491566278747710">Non se puido instalar a política sen conexión no dispositivo.</translation>
 <translation id="3039939407102840004">Batería do lapis óptico ao <ph name="PERCENTAGE" /> %.</translation>
 <translation id="304097922505898963">Abrir aplicación Atallos de teclado</translation>
 <translation id="304417730895741346">As túas aplicacións fixadas e abertas están no andel. Para fixar unha aplicación no andel, fai clic nela co botón dereito ou toca o panel táctil con dous dedos.</translation>
@@ -698,7 +696,6 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3075144191779656260">Toca o sensor de impresión dixital situado na parte esquerda do dispositivo (<ph name="DEVICE_TYPE" />). Os datos da túa impresión dixital almacenaranse de maneira segura no teu dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
 <translation id="3075874217500066906">É necesario reiniciar o dispositivo para iniciar o proceso de Powerwash. Unha vez efectuado o reinicio, solicitaráseche que confirmes que queres continuar.</translation>
 <translation id="3077734595579995578">maiús</translation>
-<translation id="3081696990447829002">Despregar menú</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="3088128611727407543">Preparando perfil da aplicación...</translation>
 <translation id="3090214513075567547">Abrir o menú contextual</translation>
@@ -804,7 +801,6 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3405101454990027959">Activar acceso ao micrófono</translation>
 <translation id="3407967630066378878">Para configurar a impresión dixital, pídelle ao teu fillo ou filla que toque o sensor correspondente situado na parte esquerda deste dispositivo (<ph name="DEVICE_TYPE" />). Os datos da súa impresión dixital almacenaranse de maneira segura neste dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
 <translation id="3409584356742878290">Mostrar ou ocultar inspector de ferramentas para programadores</translation>
-<translation id="3413817803639110246">Aínda non hai contido</translation>
 <translation id="3417835166382867856">Realizar buscas nas pestanas</translation>
 <translation id="3426253816581969877">Mantén premida a tecla <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, toca <ph name="KEY" /> ata chegar á ventá que queiras abrir e despois solta as teclas</translation>
 <translation id="3428447136709161042">Desconectarse de <ph name="NETWORK_NAME" /></translation>
@@ -899,7 +895,6 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3626281679859535460">Brillo</translation>
 <translation id="3628323833346754646">Botón frontal</translation>
 <translation id="3630697955794050612">desactivado</translation>
-<translation id="3631369015426612114">Permitir notificacións das seguintes fontes:</translation>
 <translation id="3633097874324966332">Abre a configuración de Bluetooth para vincular o teu dispositivo</translation>
 <translation id="3633851487917460983">Abrir portapapeis</translation>
 <translation id="363473492175527493">Tarefa definida como obxectivo: <ph name="TASK_NAME" />. Preme Introducir para editala.</translation>
@@ -915,7 +910,6 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3659667652322717492">Podes cambiar o comportamento do micrófono máis adiante.</translation>
 <translation id="3659814201068740063">Tempo restante aproximado: <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Conecta o dispositivo á corrente.</translation>
-<translation id="3660860940251915011">Activar ou desactivar o modo de alta visibilidade de <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Usuario xestionado</translation>
 <translation id="3666266999138159418">Pasa o dedo para ocultar a ventá flotante</translation>
 <translation id="367531336287639526">Seleccionar primeira icona á esquerda da barra de enderezos</translation>
@@ -924,7 +918,6 @@ Conecta o dispositivo á corrente.</translation>
 <translation id="36813544980941320">O teu teléfono e o dispositivo (<ph name="DEVICE_NAME" />) compartirán as redes wifi</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> e, a continuación, <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Sitios web</translation>
-<translation id="3697991387880191195">Preme o atallo para facer unha captura de pantalla</translation>
 <translation id="3702809606464356667">Estanse mostrando só as ventás do escritorio actual. Para que se mostren as de todos os escritorios, preme a tecla Frecha arriba</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Cargando...</translation>
@@ -950,7 +943,6 @@ Conecta o dispositivo á corrente.</translation>
         <ph name="BEGIN_PARAGRAPH3" />Podes desactivar este servizo en Configuración.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3755411799582650620">Agora o teu dispositivo <ph name="PHONE_NAME" /> tamén pode desbloquear este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3756485814916578707">Emitindo pantalla</translation>
-<translation id="3765246971671567135">Non se puido ler a política do modo de demostración sen conexión.</translation>
 <translation id="3765841382945324995">O atallo para <ph name="SIX_PACK_KEY_NAME" /> actualizouse de <ph name="OLD_SHORTCUT" /> a <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3772109172035555611">Personaliza TrackPoint</translation>
 <translation id="3773700760453577392">Un administrador non permitiu o inicio de sesión múltiple de <ph name="USER_EMAIL" />.
@@ -987,7 +979,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3859364108019690">Non se pode reproducir en tempo real o contido das aplicacións</translation>
 <translation id="3861638017150647085">O nome de usuario "<ph name="USERNAME" />" non está dispoñible</translation>
 <translation id="3861651314799684201">Premer Introducir para gravar a pantalla completa</translation>
-<translation id="3870197372373144624">Proba a apagar o dispositivo.</translation>
 <translation id="3873915545594852654">Produciuse un problema con ARC++.</translation>
 <translation id="3879748587602334249">Xestor de descargas</translation>
 <translation id="3884007280698606545">Alcanzouse o límite máximo permitido de dispositivos USB</translation>
@@ -1172,7 +1163,6 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="439598569299422042">En pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="439817266247065935">O teu dispositivo non pechou correctamente. Reinicia Linux para usar as súas aplicacións.</translation>
 <translation id="440113666232554208">Non se puido gardar a gravación da pantalla</translation>
-<translation id="4405151984121254935">O tipo de periférico conectado non é compatible</translation>
 <translation id="4406883609789734330">Subtítulos instantáneos</translation>
 <translation id="4412698727486357573">Centro de axuda</translation>
 <translation id="4412944820643904175">A función <ph name="FEATURE_NAME" /> está desactivada.</translation>
@@ -1355,7 +1345,6 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="493076006037866439">Afastar pantalla</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4934763315031217818">Non pode conter secuencias ordenadas</translation>
-<translation id="4936329710968938986">Todos (desactivado)</translation>
 <translation id="4937170330762390348">A función de ditado permíteche escribir usando a voz. Cando esteas nun campo de texto, preme a tecla de ditado ou selecciona a icona do micrófono que está na parte inferior da pantalla. O <ph name="LANGUAGE" /> é o idioma que tes definido para o ditado. Os ficheiros de voz descargaranse para que poidas usar a función de ditado sen conexión. Podes cambiar o idioma do ditado cando queiras en Configuración &gt; Accesibilidade.</translation>
 <translation id="4938176435186993759">Ocultar todas as suxestións</translation>
 <translation id="4945196315133970626">Desactivar notificacións</translation>
@@ -1372,7 +1361,6 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4966431234408005599">Subir volume</translation>
 <translation id="496999337731226334">Paso <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> da visita. Os controis que se usan con frecuencia, como a wifi, o Bluetooth e o volume, están en Configuración rápida. Tamén podes facer capturas de pantalla desde aquí. Preme Alt + Maiúsculas + S para abrir Configuración rápida.</translation>
 <translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que descargues unha actualización hoxe. Farase automaticamente cando te conectes a Internet.}other{<ph name="MANAGER" /> require que descargues unha actualización antes de que acabe o prazo. Farase automaticamente cando te conectes a Internet.}}</translation>
-<translation id="4975771730019223894">Indicadores de notificacións</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
@@ -1575,7 +1563,6 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5551456515017410630">Abrir ou pechar calendario</translation>
 <translation id="5551974246223970793">Ir á seguinte coincidencia ao buscar nunha páxina</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
-<translation id="5558091555391176027">Activar/desactivar o modo de alta visibilidade da función Compartir por Nearby</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5570122939431135380">Abrir nova pestana nunha ventá nova do modo de incógnito</translation>
 <translation id="5575528586625653441">Produciuse un problema coa solicitude de rexistro de demostración.</translation>
@@ -1602,7 +1589,6 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5620979661744857819">Desta forma, <ph name="APP_NAME" /> e todas as aplicacións e sitios web que teñan permisos de cámara e micrófono poderán acceder. É posible que teñas que actualizar a páxina web ou reiniciar a aplicación.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Non se puido verificar o teu contrasinal. Téntao de novo.</translation>
-<translation id="5632485077360054581">Ver como facelo</translation>
 <translation id="5648021990716966815">Conector do micrófono</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> require a túa atención.</translation>
 <translation id="5657667036353380798">A extensión externa require a instalación da versión de Chrome <ph name="MINIMUM_CHROME_VERSION" /> ou unha superior.</translation>
@@ -1920,7 +1906,6 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="651753338596587143">Produciuse un erro ao instalar as dependencias de contido descargable. Proba a reiniciar o ordenador. Se o problema persiste, envíanos os teus comentarios coa palabra #bruschetta na descrición. O código de erro é <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Selecciona a ventá que queiras capturar</translation>
 <translation id="652139407789908527">A túa pantalla quedará en branco durante máis tempo do habitual (ata un minuto) durante a actualización. Non premas o botón de acendido mentres a actualización estea en curso.</translation>
-<translation id="6528179044667508675">Non molestar</translation>
 <translation id="65320610082834431">Emojis</translation>
 <translation id="6537924328260219877">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, batería do teléfono ao <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Escaneando ficheiro <ph name="FILENAME" /> para descargalo</translation>
@@ -2164,7 +2149,6 @@ Nova instalación</translation>
 <translation id="7264788308526527464">Reducir <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Continúa levantando o dedo para engadir as diferentes partes da túa impresión dixital</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + retroceso</translation>
-<translation id="7285232777292757180">Usa a ferramenta de captura de pantalla que está na configuración rápida para facer capturas de pantalla</translation>
 <translation id="7301826272005790482">Pechar as suxestións de ventás</translation>
 <translation id="7302889331339392448">A función Subtítulos instantáneos está desactivada.</translation>
 <translation id="7303281435234579599">Produciuse un erro ao configurar o modo de demostración.</translation>
@@ -2703,7 +2687,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="880709030178078220">"Axuda"</translation>
 <translation id="8813531681893371930">Conecta uns auriculares con cable</translation>
 <translation id="8814190375133053267">Wifi</translation>
-<translation id="8815390544836110344">Preme o atallo para facer unha captura de pantalla, Control máis Maiúsculas máis a tecla do modo de visión xeral</translation>
 <translation id="881757059229893486">Configuración dos métodos de introdución de texto</translation>
 <translation id="8819728065740986820">A función Carga intelixente está activada</translation>
 <translation id="882204272221080310">Actualizar o firmware para conseguir maior seguranza.</translation>
@@ -2809,7 +2792,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="9098750710832798892">Non hai ningún elemento copiado en Copiar e pegar</translation>
 <translation id="9098969848082897657">Silenciar teléfono</translation>
 <translation id="9126339866969410112">Desfai a última acción</translation>
-<translation id="9126642911267312373">O Bluetooth non está dispoñible</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{Dentro de 1 min}other{Dentro de # min}}</translation>
 <translation id="9129245940793250979">Botón traseiro</translation>
 <translation id="9133335900048457298">Non se pode gravar contido protexido</translation>

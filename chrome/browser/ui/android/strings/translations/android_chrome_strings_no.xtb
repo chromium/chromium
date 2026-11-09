@@ -166,6 +166,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, delingsfane</translation>
 <translation id="1601378265092360672">Nettlesingsdata omfatter nettleserloggen, informasjonskapsler og andre nettstedsdata, bufrede bilder og filer samt åpne faner</translation>
 <translation id="160275202205869636">Når dette er på, kan du bruke og lagre data i Google-kontoen din. Når dette er slått av, lagres data bare på denne enheten.</translation>
+<translation id="160403827062749147">Velkommen til Google Chrome – verdens sikreste nettleser</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Fjern 1 valgt element}other{Fjern # valgte elementer}}</translation>
 <translation id="1639239467298939599">Laster inn</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
@@ -858,6 +859,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4374192654218566997">\n\nDu kan også fjerne disse dataene fra denne enheten:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Hvis problemet vedvarer, kan du prøve å fortsette på <ph name="SITE_ETLD_PLUS_ONE" /> på andre måter.</translation>
+<translation id="4381351546374507910">Logg på for å få bokmerker, passord og autofyllinformasjon på alle enhetene dine.</translation>
 <translation id="4384468725000734951">Bruker Sogou til å søke</translation>
 <translation id="4387647248986092471">Lag en profillås for bilen</translation>
 <translation id="4387817230000841154">Åpne Nedlastinger</translation>
@@ -1231,6 +1233,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5865733239029070421">Sender automatisk brukerstatistikk og programstopprapporter til Google</translation>
 <translation id="5869522115854928033">Lagrede passord</translation>
 <translation id="5870416898561279542">Dupliserte faner og grupper eller faner og grupper som ikke er brukt på <ph name="DAYS_INACTIVE" /> dager, flyttes hit<ph name="AUTODELETE_SECTION" />. Du kan når som helst endre dette i <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5882488054564514114">Logg på for å få dataene dine på alle enhetene dine og gi opplevelsen et personlig preg.</translation>
 <translation id="5885378508678660271">Varsler <ph name="SEPARATOR" /> Chrome har fjernet disse tillatelsene fordi dette nettstedet er farlig</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
 <translation id="5896944002928653773">Feltet nederst med ansvarsfraskrivelsen for Enterprise-signaler er lukket</translation>
@@ -1979,6 +1982,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8570677896027847510">Filen kan ikke lastes ned sikkert</translation>
 <translation id="8571213806525832805">Siste 4 uker</translation>
 <translation id="8580435650274205305">Utløpsdato er obligatorisk</translation>
+<translation id="8584698523080138290">Ta med deg Chrome</translation>
 <translation id="8585103689515290060">Autofylltjenester</translation>
 <translation id="8586116786993312006">Trykk for å slette nettlesingsdata i Chrome</translation>
 <translation id="859046281437143747">Spor prisen med Flere alternativer-knappen</translation>
@@ -2031,6 +2035,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8803526663383843427">Når funksjonen er på</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Elementet er lagret i Google-kontoen din, <ph name="ACCOUNT_EMAIL" />.}other{Elementene er lagret i Google-kontoen din, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8804742093141782941">Behold gruppen</translation>
+<translation id="880967149107462122">Gå til Chrome-innstillingene</translation>
 <translation id="8812260976093120287">På noen nettsteder kan du betale med de støttede betalingsappene ovenfor på enheten din.</translation>
 <translation id="8816556050903368450">Inkludert link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Innholdet på forhåndsvisningsfanen kan ikke vises.</translation>
@@ -2056,6 +2061,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8903921497873541725">Zoom inn</translation>
 <translation id="8909135823018751308">Del</translation>
 <translation id="8918299437379122615">Del linken til søkeresultatsiden for <ph name="SEARCH_QUERY" />. Kilde: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">Logg på et hvilket som helst nettsted</translation>
 <translation id="8922289737868596582">Last ned sider via Flere alternativer-knappen for å bruke dem uten nett</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> er klart</translation>

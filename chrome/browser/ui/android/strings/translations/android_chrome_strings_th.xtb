@@ -166,6 +166,7 @@
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, แท็บการแชร์</translation>
 <translation id="1601378265092360672">ข้อมูลการท่องเว็บประกอบด้วยประวัติการท่องเว็บ คุกกี้และข้อมูลเว็บไซต์อื่นๆ รูปภาพและไฟล์ที่แคชไว้ รวมถึงแท็บที่เปิดอยู่</translation>
 <translation id="160275202205869636">เมื่อเปิดไว้ ระบบจะใช้และบันทึกข้อมูลในบัญชี Google ของคุณ เมื่อปิดไว้ ระบบจะบันทึกข้อมูลในอุปกรณ์เครื่องนี้เท่านั้น</translation>
+<translation id="160403827062749147">ยินดีต้อนรับสู่ Google Chrome เบราว์เซอร์ที่ปลอดภัยที่สุดในโลก</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{นำ 1 รายการที่เลือกออก}other{นำ # รายการที่เลือกออก}}</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
 <translation id="1641113438599504367">Google Safe Browsing</translation>
@@ -858,6 +859,7 @@
 <translation id="4374192654218566997">\n\nคุณยังนำข้อมูลนี้ออกจากอุปกรณ์นี้ได้ด้วย</translation>
 <translation id="4378154925671717803">โทรศัพท์</translation>
 <translation id="4380055775103003110">หากปัญหานี้ยังเกิดขึ้นอยู่ คุณสามารถลองดำเนินการต่อใน <ph name="SITE_ETLD_PLUS_ONE" /> ด้วยวิธีอื่นๆ ได้</translation>
+<translation id="4381351546374507910">ลงชื่อเข้าใช้เพื่อรับบุ๊กมาร์ก รหัสผ่าน และข้อมูลการป้อนข้อความอัตโนมัติในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="4384468725000734951">กำลังใช้ Sogou ในการค้นหา</translation>
 <translation id="4387647248986092471">สร้างการล็อกโปรไฟล์รถยนต์</translation>
 <translation id="4387817230000841154">เปิดการดาวน์โหลด</translation>
@@ -1231,6 +1233,7 @@
 <translation id="5865733239029070421">ส่งสถิติการใช้งานและรายงานข้อขัดข้องให้กับ Google โดยอัตโนมัติ</translation>
 <translation id="5869522115854928033">รหัสผ่านที่บันทึกไว้</translation>
 <translation id="5870416898561279542">แท็บและกลุ่มที่ซ้ำกันหรือไม่ได้ใช้งานเป็นเวลา <ph name="DAYS_INACTIVE" /> วันจะย้ายมาที่นี่<ph name="AUTODELETE_SECTION" /> คุณเปลี่ยนตัวเลือกนี้ได้ทุกเมื่อใน<ph name="DECLUTTER_SETTINGS_TITLE" /></translation>
+<translation id="5882488054564514114">ลงชื่อเข้าใช้เพื่อรับข้อมูลในอุปกรณ์ต่างๆ และปรับเปลี่ยนประสบการณ์การใช้งานในแบบของคุณ</translation>
 <translation id="5885378508678660271">การแจ้งเตือน <ph name="SEPARATOR" /> Chrome นำสิทธิ์เหล่านี้ออกเนื่องจากเว็บไซต์นี้อันตราย</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
 <translation id="5896944002928653773">Bottom Sheet ข้อจำกัดความรับผิดเกี่ยวกับสัญญาณ Enterprise ปิดอยู่</translation>
@@ -1979,6 +1982,7 @@
 <translation id="8570677896027847510">ดาวน์โหลดไฟล์อย่างปลอดภัยไม่ได้</translation>
 <translation id="8571213806525832805">4 สัปดาห์ที่ผ่านมา</translation>
 <translation id="8580435650274205305">ต้องระบุวันที่หมดอายุ</translation>
+<translation id="8584698523080138290">พกพา Chrome ไปกับคุณด้วย</translation>
 <translation id="8585103689515290060">บริการป้อนข้อความอัตโนมัติ</translation>
 <translation id="8586116786993312006">แตะเพื่อลบข้อมูลการท่องเว็บใน Chrome</translation>
 <translation id="859046281437143747">ติดตามราคาโดยใช้ปุ่ม "ตัวเลือกเพิ่มเติม"</translation>
@@ -2031,6 +2035,7 @@
 <translation id="8803526663383843427">เมื่อเปิด</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{บันทึกรายการไว้ในบัญชี Google <ph name="ACCOUNT_EMAIL" /> แล้ว}other{บันทึกรายการไว้ในบัญชี Google <ph name="ACCOUNT_EMAIL" /> แล้ว}}</translation>
 <translation id="8804742093141782941">เก็บกลุ่มไว้</translation>
+<translation id="880967149107462122">ไปที่การตั้งค่า Chrome</translation>
 <translation id="8812260976093120287">ในบางเว็บไซต์ คุณสามารถชำระเงินด้วยแอปชำระเงินที่รองรับด้านบนในอุปกรณ์ของคุณ</translation>
 <translation id="8816556050903368450">รวมลิงก์: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">ดูเนื้อหาในแท็บตัวอย่างไม่ได้</translation>
@@ -2056,6 +2061,7 @@
 <translation id="8903921497873541725">ขยาย</translation>
 <translation id="8909135823018751308">แชร์…</translation>
 <translation id="8918299437379122615">แชร์ลิงก์ไปยังหน้าผลการค้นหาสำหรับ: <ph name="SEARCH_QUERY" /> แหล่งที่มา: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">ลงชื่อเข้าใช้เว็บไซต์ใดก็ได้</translation>
 <translation id="8922289737868596582">ดาวน์โหลดหน้าจากปุ่มตัวเลือกเพิ่มเติมเพื่อใช้งานแบบออฟไลน์</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">ภาษา<ph name="LANG" />พร้อมใช้งานแล้ว</translation>

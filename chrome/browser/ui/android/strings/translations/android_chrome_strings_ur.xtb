@@ -166,6 +166,7 @@
 <translation id="1600756129506222718">‫<ph name="TAB_TITLE" />، اشتراک کا ٹیب</translation>
 <translation id="1601378265092360672">براؤزنگ ڈیٹا میں آپ کی براؤزنگ کی سرگزشت، کوکیز اور دیگر سائٹ ڈیٹا، کیش کردہ تصاویر اور فائلز اور کھلے ٹیبز شامل ہیں</translation>
 <translation id="160275202205869636">‏آن ہونے پر، اپنے Google اکاؤنٹ میں ڈیٹا کا استعمال اور اسے محفوظ کریں۔ آف ہونے پر، ڈیٹا صرف اس آلے میں محفوظ ہوتا ہے۔</translation>
+<translation id="160403827062749147">‏‫Google Chrome میں خوش آمدید، دنیا کا سب سے محفوظ براؤزر</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 منتخب آئٹم کو ہٹائیں}other{# منتخب آئٹمز کو ہٹائیں}}</translation>
 <translation id="1639239467298939599">لوڈ ہو رہی ہے</translation>
 <translation id="1641113438599504367">محفوظ براؤزنگ</translation>
@@ -858,6 +859,7 @@
 <translation id="4374192654218566997">‏\n\nآپ اس ڈیٹا کو اس آلہ سے بھی ہٹا سکتے ہیں:</translation>
 <translation id="4378154925671717803">فون</translation>
 <translation id="4380055775103003110">اگر یہ مسئلہ جاری رہتا ہے، تو آپ <ph name="SITE_ETLD_PLUS_ONE" /> پر جاری رکھنے کے لیے دوسرے طریقے آزما سکتے ہیں۔</translation>
+<translation id="4381351546374507910">اپنے تمام آلات پر اپنے بُک مارکس، پاس ورڈز اور آٹو فل کی معلومات حاصل کرنے کے لیے سائن ان کریں۔</translation>
 <translation id="4384468725000734951">‏تلاش کیلئے Sogou کا استعمال کیا جا رہا ہے</translation>
 <translation id="4387647248986092471">کار پروفائل لاک بنائیں</translation>
 <translation id="4387817230000841154">ڈاؤن لوڈز کھولیں</translation>
@@ -1231,6 +1233,7 @@
 <translation id="5865733239029070421">‏Google کو خودکار طور پر استعمال کے اعداد و شمار اور کریش رپورٹس بھیجتا ہے</translation>
 <translation id="5869522115854928033">محفوظ کردہ پاس ورڈز</translation>
 <translation id="5870416898561279542">ڈپلیکیٹ ٹیبز اور گروپس یا وہ جو <ph name="DAYS_INACTIVE" /> دن سے غیر استعمال شدہ ہیں انہیں یہاں منتقل کر دیا جاتا ہے<ph name="AUTODELETE_SECTION" />۔ آپ اسے <ph name="DECLUTTER_SETTINGS_TITLE" /> میں کسی بھی وقت تبدیل کر سکتے ہیں۔</translation>
+<translation id="5882488054564514114">اپنے تمام آلات پر اپنا ڈیٹا حاصل کرنے اور اپنے تجربے کو ذاتی نوعیت کا بنانے کے لیے سائن ان کریں۔</translation>
 <translation id="5885378508678660271">‏اطلاعات <ph name="SEPARATOR" /> Chrome نے یہ اجازتیں ہٹادی ہیں کیوں کہ یہ سائٹ خطرناک ہے</translation>
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
 <translation id="5896944002928653773">انٹرپرائز سگنلز کے اعلان دستبرداری کی نیچے کی شیٹ بند ہے</translation>
@@ -1799,6 +1802,7 @@
 <translation id="7956713633345437162">موبائل بُک مارکس</translation>
 <translation id="7957413488482743710">ورچوئل کارڈ آپ کے اصل کارڈ کو چھپاتا ہے تاکہ آپ کی ممکنہ دھوکہ دہی سے حفاظت کرنے میں مدد کر سکے۔ <ph name="BEGIN_LINK1" />ورچوئل کارڈز کے بارے میں مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">اس آلہ پر ٹیبز</translation>
+<translation id="7959802829514004148">‏‫PDF کو ڈاؤن لوڈ نہیں کیا جا سکا</translation>
 <translation id="7961926449547174351">آپ نے اسٹوریج تک رسائی کو غیر فعال کر دیا ہے، براہ کرم اسے فعال کرنے کے لیے ترتیبات پر جائیں۔</translation>
 <translation id="7965838025086216108">‏آپ کسی بھی آلے پر محفوظ کردہ پاس ورڈز استعمال کر سکتے ہیں۔ وہ <ph name="ACCOUNT" /> کے Google پاس ورڈ مینیجر میں محفوظ ہوتے ہیں۔</translation>
 <translation id="7968014550143838305">پڑھنے کی فہرست میں شامل کیا گیا</translation>
@@ -1887,6 +1891,7 @@
 <translation id="8244387390464017490">نئے ٹیب کا صفحہ حسب ضرورت بنائیں</translation>
 <translation id="8244444485683708655">کیمرے کی تصویر منسلک کریں</translation>
 <translation id="8250920743982581267">دستاویزات</translation>
+<translation id="8254205582828322729">اگلی بار سائن ان کرتے وقت اس پاس ورڈ کو آسانی سے استعمال کرنے کے لیے محفوظ کریں پر تھپتھپائیں</translation>
 <translation id="8257429805444572809">‫<ph name="DOMAIN" /> سے اَن سبسکرائب کر دیا گیا</translation>
 <translation id="8258999165172757081">شامل کر دیا گیا</translation>
 <translation id="8259179246279078674">‏چونکہ پیشگی لوڈ کردہ صفحات مرموز کردہ ہیں، Google پیشگی لوڈ کردہ صفحہ کے مواد کے بارے میں کچھ نہیں سیکھے گا Google سرورز یہ سیکھیں گے کون سی سائٹس نجی طور پر پیشگی لوڈ کردہ ہیں۔ یہ معلومات صرف صفحات کو پیشگی لوڈ کرنے کے لیے استعمال کی جاتی ہے اور آپ کے Google اکاؤنٹ کی دیگر معلومات سے لنک نہیں ہے۔</translation>
@@ -1976,9 +1981,11 @@
 <translation id="8560602726703398413">‏Bookmarks میں اپنی پڑھنے کی فہرست پائيں</translation>
 <translation id="85618473456579127">اوپر بائیں طرف پروفائل پر تھپتھپائیں</translation>
 <translation id="8565021320663436446">‫<ph name="MEMBER_FULL_NAME" /> ہٹائیں؟</translation>
+<translation id="8567433453247478023">رازداری اور سیکیورٹی پر تھپتھپائیں</translation>
 <translation id="8570677896027847510">فائل کو محفوظ طریقے سے ڈاؤن لوڈ نہیں کیا جا سکتا</translation>
 <translation id="8571213806525832805">گزشتہ 4 ہفتے</translation>
 <translation id="8580435650274205305">تاریخ اختتام درکار ہے</translation>
+<translation id="8584698523080138290">‏‫Chrome کو اپنے ساتھ رکھیں</translation>
 <translation id="8585103689515290060">آٹو فِل سروسز</translation>
 <translation id="8586116786993312006">‏‫Chrome میں براؤزنگ ڈیٹا کو حذف کرنے کے لیے تھپتھپائیں</translation>
 <translation id="859046281437143747">مزید اختیارات والے بٹن سے قیمت ٹریک کریں</translation>
@@ -1995,6 +2002,7 @@
 <translation id="8635399646025169806">ٹیب گروپ کو برقرار رکھیں؟</translation>
 <translation id="8636825310635137004">اپنے دیگر آلات سے اپنے ٹیبز حاصل کرنے کیلئے، مطابقت پذیری کو آن کریں۔</translation>
 <translation id="8639963783467694461">آٹو فل ترتیبات</translation>
+<translation id="8642256427178803328">‏‫"Chrome چھوڑتے وقت پوشیدگی ٹیبز کو مقفل کریں" کو آن کریں</translation>
 <translation id="8644482734962137770">‏‫Gemini کو Chrome استعمال کرنے کی اجازت درکار ہے</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> میں سائن ان کریں</translation>
 <translation id="8664979001105139458">فائل کا نام پہلے سے موجود ہے</translation>
@@ -2031,6 +2039,7 @@
 <translation id="8803526663383843427">آن ہونے پر</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{‏آپ کے Google اکاؤنٹ <ph name="ACCOUNT_EMAIL" /> میں محفوظ کردہ آئٹم۔}other{‏آپ کے Google اکاؤنٹ <ph name="ACCOUNT_EMAIL" /> میں محفوظ کردہ آئٹمز۔}}</translation>
 <translation id="8804742093141782941">گروپ کو برقرار رکھیں</translation>
+<translation id="880967149107462122">‏Chrome کی ترتیبات پر جائیں</translation>
 <translation id="8812260976093120287">کچھ ویب سائٹس پر، آپ اپنے آلہ پر اوپر موجود تعاون یافتہ ادائیگی ایپس کے ساتھ ادائیگی کر سکتے ہیں۔</translation>
 <translation id="8816556050903368450">یہ لنک شامل ہے: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">پیش منظر کے ٹیب کا مواد قابل ملاحظہ نہیں ہے۔</translation>
@@ -2056,6 +2065,7 @@
 <translation id="8903921497873541725">زوم ان کریں</translation>
 <translation id="8909135823018751308">اشتراک کریں…</translation>
 <translation id="8918299437379122615">اس کے لیے تلاش کے نتائج کے صفحہ کے لنک کا اشتراک کریں: <ph name="SEARCH_QUERY" />۔ ماخذ: <ph name="PAGE_URL" /></translation>
+<translation id="8919911527569629802">کسی بھی ویب سائٹ میں سائن ان کریں</translation>
 <translation id="8922289737868596582">آف لائن صفحات استعمال کرنے کے لیے انہیں مزید اختیارات بٹن سے ڈاؤن لوڈ کریں</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> تیار ہے</translation>

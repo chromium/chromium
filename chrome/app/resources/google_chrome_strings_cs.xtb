@@ -339,6 +339,7 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="3968962723676998462">Pokud chcete používat a ukládat data Chromu ve svém účtu <ph name="ACCOUNT_EMAIL" />, zadejte heslovou frázi</translation>
 <translation id="3973161977468201858">Google Chrome chce smazat vaše data Správce hesel Google. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="3984557288004650913">Pomocí tlačítka Vyhledávání Google v Chromu na liště můžete tuto funkci znovu otevřít a pokládat otázky při prohlížení</translation>
+<translation id="399788104667917863">Připnout na lištu</translation>
 <translation id="400161754580828648">Pokud chcete sdílet obrazovku, v Nastavení systému povolte pro Chrome nahrávání obrazovky.</translation>
 <translation id="4012899077942246412">Když jste přihlášeni, můžete v Chromu používat hesla a další položky ze svého účtu Google. Pokud to chcete změnit, přejděte do sekce Váš účet v Chromu.</translation>
 <translation id="4022972681110646219">Přeložit obrazovku</translation>
@@ -836,7 +837,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="8367950957770994118">Umožňuje kdykoli Gemini v Chromu rychle otevřít</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všechna práva vyhrazena.</translation>
 <translation id="8370748943308169953">QR kód k přihlášení do Chromu jako <ph name="USER_NAME" /></translation>
-<translation id="8374507495134902558">Je připravena <ph name="IMPORTANT_UPDATE" />. Můžete prohlížeč Chromium buď hned restarovat, nebo nastavit, aby se aktualizoval, až bude obrazovka <ph name="IDLE_DURATION" /> zapnutá a nebudete ji používat.</translation>
+<translation id="8374507495134902558">Je připravena <ph name="IMPORTANT_UPDATE" />. Můžete prohlížeč Chrome buď hned restartovat, nebo nastavit, aby se aktualizoval, až bude obrazovka <ph name="IDLE_DURATION" /> zapnutá a nebudete ji používat.</translation>
 <translation id="8376752431516546391">Boční panel Vyhledávání Google</translation>
 <translation id="8377158135256176353">Přepnout Gemini v Chromu Canary</translation>
 <translation id="8380754585531979907">Pomocí klávesnice můžete přecházet mezi Gemini v Chromu a otevřenou kartou.</translation>
