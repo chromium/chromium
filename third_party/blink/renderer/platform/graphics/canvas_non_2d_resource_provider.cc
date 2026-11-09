@@ -635,12 +635,6 @@ scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot() {
 
 CanvasImageProvider* CanvasNon2DResourceProvider::GetOrCreateImageProvider() {
   if (!canvas_image_provider_) {
-    if (!context_provider_wrapper_) {
-      context_provider_wrapper_ = SharedGpuContext::ContextProviderWrapper();
-      if (context_provider_wrapper_) {
-        context_provider_wrapper_->AddObserver(this);
-      }
-    }
     if (!is_software_) {
       if (!IsGpuContextLost()) {
         // Create an ImageDecodeCache for half float images only if the canvas
@@ -662,6 +656,20 @@ CanvasImageProvider* CanvasNon2DResourceProvider::GetOrCreateImageProvider() {
             context_provider_wrapper_);
       }
     } else {
+      // TODO(crbug.com/352263194): CanvasImageProvider only uses
+      // `context_provider_wrapper_` in `RasterMode::kSoftware` for
+      // `PaintImage::BindTextureBacking()`, which is only non-no-op for
+      // `VideoTextureBacking` (from HTML-in-Canvas `<video>` PaintRecords).
+      // Investigate whether software `CanvasNon2DResourceProvider` can ever
+      // encounter that case and, if not, pass nullptr here and make
+      // `context_provider_wrapper_` GPU-only.
+      if (!context_provider_wrapper_) {
+        context_provider_wrapper_ = SharedGpuContext::ContextProviderWrapper();
+        if (context_provider_wrapper_) {
+          context_provider_wrapper_->AddObserver(this);
+        }
+      }
+
       // Create an ImageDecodeCache for half float images only if the canvas
       // is using half float back storage.
       cc::ImageDecodeCache* cache_f16 = nullptr;
