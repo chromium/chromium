@@ -2544,4 +2544,35 @@ TEST_P(PaintPropertyTreeUpdateTest, SVGTransformAnimationSMILChange) {
   EXPECT_EQ(gfx::Point3F(50, 50, 0), transform->Origin());
 }
 
+TEST_P(PaintPropertyTreeUpdateTest, SVGTransformAnimationZoomChange) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(10deg); }
+      }
+      #target {
+        transform-origin: 50% 50%;
+        animation: anim 1s infinite;
+      }
+    </style>
+    <svg width="100" height="100">
+      <rect id="target" width="100" height="100"/>
+    </svg>
+  )HTML");
+
+  const auto* transform = PaintPropertiesForElement("target")->Transform();
+  ASSERT_TRUE(transform);
+  EXPECT_EQ(gfx::Point3F(50, 50, 0), transform->Origin());
+
+  GetElementById("target")->setAttribute(html_names::kStyleAttr,
+                                         AtomicString("zoom: 2"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::Point3F(), transform->Origin());
+
+  GetElementById("target")->removeAttribute(html_names::kStyleAttr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::Point3F(50, 50, 0), transform->Origin());
+}
+
 }  // namespace blink

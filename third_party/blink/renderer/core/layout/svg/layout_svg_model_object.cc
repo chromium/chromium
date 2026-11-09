@@ -173,6 +173,12 @@ void LayoutSVGModelObject::StyleDidChange(
     }
   }
 
+  if (old_style && old_style->EffectiveZoom() != new_style.EffectiveZoom()) {
+    // `CompositorAnimations::CanStartTransformAnimationOnCompositorForSVG` has
+    // a dependency on zoom which is used for the transform paint property.
+    SetNeedsPaintPropertyUpdate();
+  }
+
   SetHasTransformRelatedProperty(new_style.HasTransformRelatedPropertyForSVG());
 
   SVGResources::UpdateEffects(*this, diff, old_style);

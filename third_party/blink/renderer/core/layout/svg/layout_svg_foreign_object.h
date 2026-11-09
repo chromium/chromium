@@ -76,12 +76,6 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   PaintLayerType LayerTypeRequired() const override;
   bool CreatesNewFormattingContext() const override;
 
-  // LayoutBlock override:
-  void StyleDidChange(StyleDifference,
-                      const ComputedStyle* old_style,
-                      const ComputedStyle& new_style,
-                      const StyleChangeContext&) override;
-
   // The resolved viewport in the regular SVG coordinate space (after any
   // 'transform' has been applied but without zoom-adjustment).
   gfx::RectF viewport_;
