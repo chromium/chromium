@@ -7,6 +7,7 @@ source_set("model") {
     "badge_type.h",
     "location_bar_badge_configuration.h",
     "location_bar_badge_configuration.mm",
+    "location_bar_badge_request.h",
     "location_bar_badge_tab_helper.h",
     "location_bar_badge_tab_helper.mm",
     "location_bar_badge_tab_helper_observer.h",

@@ -35,7 +35,7 @@ TEST_F(LocationBarBadgeTabHelperObserverBridgeTest,
       [[FakeLocationBarBadgeObserver alloc] init];
   LocationBarBadgeTabHelperObserverBridge bridge(tab_helper(), observer);
 
-  tab_helper()->SetBadge(LocationBarBadgeType::kTranslate);
+  tab_helper()->SetBadge({.badge_type = LocationBarBadgeType::kTranslate});
   EXPECT_EQ(observer.callCount, 1);
 
   tab_helper()->RemoveBadge(LocationBarBadgeType::kTranslate);
@@ -50,7 +50,7 @@ TEST_F(LocationBarBadgeTabHelperObserverBridgeTest,
   std::optional<LocationBarBadgeTabHelperObserverBridge> bridge;
   bridge.emplace(tab_helper(), observer);
 
-  tab_helper()->SetBadge(LocationBarBadgeType::kTranslate);
+  tab_helper()->SetBadge({.badge_type = LocationBarBadgeType::kTranslate});
   EXPECT_EQ(observer.callCount, 1);
 
   bridge.reset();

@@ -7,6 +7,7 @@
 #import <algorithm>
 #import <map>
 #import <optional>
+#import <utility>
 
 #import "base/check.h"
 #import "base/check_op.h"
@@ -30,8 +31,10 @@ bool CompareBadgePrecedence(
         competitor_badge_entry) {
   const auto& candidate_badge_record = candidate_badge_entry.second;
   const auto& competitor_badge_record = competitor_badge_entry.second;
-  if (candidate_badge_record.priority != competitor_badge_record.priority) {
-    return candidate_badge_record.priority < competitor_badge_record.priority;
+  if (candidate_badge_record.request.priority !=
+      competitor_badge_record.request.priority) {
+    return candidate_badge_record.request.priority <
+           competitor_badge_record.request.priority;
   }
   return candidate_badge_record.sequence_number >
          competitor_badge_record.sequence_number;
@@ -60,22 +63,25 @@ void LocationBarBadgeTabHelper::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void LocationBarBadgeTabHelper::SetBadge(LocationBarBadgeType type,
-                                         LocationBarBadgePriority priority) {
-  CHECK_NE(type, LocationBarBadgeType::kNone);
+void LocationBarBadgeTabHelper::SetBadge(LocationBarBadgeRequest request) {
+  CHECK_NE(request.badge_type, LocationBarBadgeType::kNone);
   if (!IsLocationBarBadgeMigrationEnabled()) {
     return;
   }
-  const auto active_badge_iterator = active_badges_.find(type);
+  const LocationBarBadgeType badge_type = request.badge_type;
+  const auto active_badge_iterator = active_badges_.find(badge_type);
   if (active_badge_iterator != active_badges_.end() &&
-      active_badge_iterator->second.priority == priority) {
+      active_badge_iterator->second.request == request) {
     return;
   }
-  const LocationBarBadgeRecord badge_record = {
-      .priority = priority,
-      .sequence_number = ++next_sequence_number_,
-  };
-  active_badges_.insert_or_assign(type, badge_record);
+  const uint64_t sequence_number =
+      (active_badge_iterator != active_badges_.end() &&
+       active_badge_iterator->second.request.priority == request.priority)
+          ? active_badge_iterator->second.sequence_number
+          : ++next_sequence_number_;
+  active_badges_.insert_or_assign(
+      badge_type, LocationBarBadgeRecord{.request = std::move(request),
+                                         .sequence_number = sequence_number});
   NotifyDisplayedBadgeChangedIfNecessary();
 }
 
@@ -97,22 +103,23 @@ bool LocationBarBadgeTabHelper::HasBadge(LocationBarBadgeType type) const {
   return active_badges_.contains(type);
 }
 
-std::optional<LocationBarBadgeType>
-LocationBarBadgeTabHelper::GetDisplayedBadge() const {
+std::optional<LocationBarBadgeRequest>
+LocationBarBadgeTabHelper::GetDisplayedBadgeRequest() const {
   if (!IsLocationBarBadgeMigrationEnabled() || active_badges_.empty()) {
     return std::nullopt;
   }
   const auto highest_priority_badge_iterator = std::max_element(
       active_badges_.begin(), active_badges_.end(), &CompareBadgePrecedence);
-  return highest_priority_badge_iterator->first;
+  return highest_priority_badge_iterator->second.request;
 }
 
 void LocationBarBadgeTabHelper::NotifyDisplayedBadgeChangedIfNecessary() {
-  const std::optional<LocationBarBadgeType> current_badge = GetDisplayedBadge();
-  if (current_badge == last_displayed_badge_) {
+  const std::optional<LocationBarBadgeRequest> current_request =
+      GetDisplayedBadgeRequest();
+  if (current_request == last_displayed_badge_request_) {
     return;
   }
-  last_displayed_badge_ = current_badge;
+  last_displayed_badge_request_ = current_request;
   for (LocationBarBadgeTabHelperObserver& observer : observers_) {
     observer.OnDisplayedBadgeChanged(this);
   }
