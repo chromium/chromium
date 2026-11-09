@@ -70,10 +70,7 @@ import java.util.Map;
 @RunWith(ParameterizedRunner.class)
 @Batch(Batch.PER_CLASS)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ChromeSwitches.CHECK_FOR_WEB_MANIFEST_UPDATE_ON_STARTUP
-})
+@CommandLineFlags.Add(ChromeSwitches.CHECK_FOR_WEB_MANIFEST_UPDATE_ON_STARTUP)
 public class WebApkUpdateManagerTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

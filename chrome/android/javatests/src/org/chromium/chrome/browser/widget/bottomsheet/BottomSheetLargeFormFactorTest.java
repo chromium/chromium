@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
-import static org.chromium.chrome.browser.flags.ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
@@ -31,7 +30,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -61,7 +59,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * layouts on a real Android view hierarchy and layout engine.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.BOTTOM_SHEET_ON_DESKTOP_WINDOWING})
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceFormFactor.DESKTOP)

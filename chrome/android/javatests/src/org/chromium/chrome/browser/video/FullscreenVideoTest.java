@@ -29,7 +29,6 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -47,10 +46,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Test suite for fullscreen video implementation. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY,
-})
+@CommandLineFlags.Add(MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY)
 @Features.EnableFeatures(ChromeFeatureList.DISPLAY_EDGE_TO_EDGE_FULLSCREEN)
 @Batch(Batch.PER_CLASS)
 public class FullscreenVideoTest {

@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
-import static org.chromium.chrome.browser.flags.ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
@@ -62,7 +60,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** This class tests the functionality of the {@link BottomSheet}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction(DeviceFormFactor.PHONE)
-@CommandLineFlags.Add({DISABLE_FIRST_RUN_EXPERIENCE})
 public class BottomSheetTest {
     private static final float VELOCITY_WHEN_MOVING_UP = 1.0f;
     private static final float VELOCITY_WHEN_MOVING_DOWN = -1.0f;
