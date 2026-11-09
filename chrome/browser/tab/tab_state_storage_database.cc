@@ -267,7 +267,9 @@ bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
       "(id, window_tag, is_off_the_record, type, payload, children)"
       "VALUES (?,?,?,?,?,?)";
 
-  CHECK(db_.IsSQLValid(kInsertNodeSql), base::NotFatalUntil::M163);
+  // TODO(crbug.com/582866356): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(db_.IsSQLValid(kInsertNodeSql));
 
   sql::Statement write_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kInsertNodeSql));
