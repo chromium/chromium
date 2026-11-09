@@ -343,8 +343,9 @@ void TabHoverCardController::UpdateHoverCard(
       }
       break;
     case TabSlotController::HoverCardUpdateType::kTabDataChanged:
-      CHECK(anchor_target && IsHoverCardShowingForTab(anchor_target),
-            base::NotFatalUntil::M162);
+      // TODO(crbug.com/580580736): CHECK-exclusion: Convert to a CHECK once
+      // we are confident it won't be triggered.
+      DCHECK(anchor_target && IsHoverCardShowingForTab(anchor_target));
       break;
     case TabSlotController::HoverCardUpdateType::kTabRemoved:
     case TabSlotController::HoverCardUpdateType::kAnimating:
