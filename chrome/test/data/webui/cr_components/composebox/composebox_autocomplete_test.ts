@@ -12,10 +12,10 @@ import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_component
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
-import {InputMethod, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {InputMethod, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteResult, PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
-import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {InputType, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -1851,6 +1851,204 @@ suite('ComposeboxAutocomplete', () => {
           await microtasksFinished();
 
           assertEquals(-1, element.activeQueryId);
+        });
+  });
+
+  suite('NoFlickerSuggestionsFix', () => {
+    test(
+        'carries over matches and suggestionGroupsMap on sync pass',
+        async () => {
+          loadTimeData.overrideValues({
+            composeboxShowZps: true,
+            composeboxShowTypedSuggest: true,
+          });
+          element = createTestElement({
+            composeboxNoFlickerSuggestionsFix: true,
+            richImageSuggestionsEnabled: true,
+          });
+          await microtasksFinished();
+
+          const zpsGroupMap = {
+            40000: {
+              header: 'Explore ideas',
+              renderType: RenderType.kGrid,
+              sideType: SideType.kDefaultPrimary,
+            },
+          };
+          const zpsMatches = [
+            createAutocompleteMatch({
+              fillIntoEdit: 'idea 1',
+              type: 'search-suggest',
+              suggestionGroupId: 40000,
+              suggestTemplate:
+                  createSuggestTemplateInfo({primaryText: 'idea 1'}),
+            }),
+            createAutocompleteMatch({
+              fillIntoEdit: 'idea 2',
+              type: 'search-suggest',
+              suggestionGroupId: 40000,
+              suggestTemplate:
+                  createSuggestTemplateInfo({primaryText: 'idea 2'}),
+            }),
+          ];
+          searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                queryId: element.activeQueryId,
+                input: '',
+                matches: zpsMatches,
+                suggestionGroupsMap: zpsGroupMap,
+              }));
+          await searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          const dropdown = element.$.matches;
+          assertFalse(dropdown.hidden);
+          assertEquals(
+              'Explore ideas',
+              dropdown.shadowRoot.querySelector('#header_40000')
+                  ?.textContent.trim());
+          assertEquals(
+              1, dropdown.shadowRoot.querySelectorAll('.matches.grid').length);
+
+          // Simulate typing a character and receiving the synchronous
+          // verbatim-only response.
+          setInputValue(element.getInputElement().inputElement, 'a');
+          element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+          await microtasksFinished();
+
+          const verbatimMatch = createSearchMatchForTesting({
+            fillIntoEdit: 'a',
+            type: 'search-what-you-typed',
+            allowedToBeDefaultMatch: true,
+          });
+          searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                queryId: element.activeQueryId,
+                input: 'a',
+                matches: [verbatimMatch],
+                suggestionGroupsMap: {},
+              }));
+          await searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          assertTrue(element.showDropdown);
+          assertFalse(dropdown.hidden);
+          assertEquals(3, element.result!.matches.length);
+          assertDeepEquals(zpsGroupMap, element.result!.suggestionGroupsMap);
+          assertEquals(
+              'Explore ideas',
+              dropdown.shadowRoot.querySelector('#header_40000')
+                  ?.textContent.trim());
+          assertEquals(
+              1, dropdown.shadowRoot.querySelectorAll('.matches.grid').length);
+
+          // Simulate receiving the asynchronous typed suggest response.
+          const typedMatch = createSearchMatchForTesting({
+            fillIntoEdit: 'apple',
+            type: 'search-suggest',
+            allowedToBeDefaultMatch: false,
+          });
+          searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                queryId: element.activeQueryId,
+                input: 'a',
+                matches: [verbatimMatch, typedMatch],
+                suggestionGroupsMap: {},
+              }));
+          await searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          assertEquals(2, element.result!.matches.length);
+          assertDeepEquals({}, element.result!.suggestionGroupsMap);
+        });
+
+    test(
+        'does not carry over previous matches when typing in tool mode',
+        async () => {
+          loadTimeData.overrideValues({
+            composeboxShowZps: true,
+            composeboxShowTypedSuggest: true,
+          });
+          element = createTestElement({
+            composeboxNoFlickerSuggestionsFix: true,
+            richImageSuggestionsEnabled: true,
+          });
+          await microtasksFinished();
+
+          searchboxCallbackRouterRemote.onInputStateChanged(
+              new MockInputState({activeTool: ToolMode.kImageGen}));
+          await searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+          assertTrue(element.inToolMode);
+
+          searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                queryId: element.activeQueryId,
+                input: '',
+                matches: [
+                  createAutocompleteMatch({
+                    fillIntoEdit: 'neon city',
+                    type: 'search-suggest',
+                    suggestionGroupId: 40000,
+                    suggestTemplate: createSuggestTemplateInfo({
+                      primaryText: 'neon city',
+                      style: SuggestStyle.kRichImage,
+                    }),
+                  }),
+                  createAutocompleteMatch({
+                    fillIntoEdit: 'watercolor cat',
+                    type: 'search-suggest',
+                    suggestionGroupId: 40000,
+                    suggestTemplate: createSuggestTemplateInfo({
+                      primaryText: 'watercolor cat',
+                      style: SuggestStyle.kRichImage,
+                    }),
+                  }),
+                ],
+                suggestionGroupsMap: {
+                  40000: {
+                    header: 'Explore ideas',
+                    renderType: RenderType.kGrid,
+                    sideType: SideType.kDefaultPrimary,
+                  },
+                },
+              }));
+          await searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          const dropdown = element.$.matches;
+          assertTrue(element.showDropdown);
+          assertFalse(dropdown.hidden);
+
+          // Typing in tool mode only produces a synchronous verbatim match;
+          // previous ZPS matches should not be carried over so the dropdown
+          // closes immediately, matching Realbox.
+          setInputValue(element.getInputElement().inputElement, 'a');
+          element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+          await microtasksFinished();
+
+          searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                queryId: element.activeQueryId,
+                input: 'a',
+                matches: [
+                  createSearchMatchForTesting({
+                    fillIntoEdit: 'a',
+                    type: 'search-what-you-typed',
+                    allowedToBeDefaultMatch: true,
+                  }),
+                ],
+                suggestionGroupsMap: {},
+              }));
+          await searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          assertEquals(1, element.result!.matches.length);
+          assertDeepEquals({}, element.result!.suggestionGroupsMap);
+          assertFalse(element.showDropdown);
+          assertTrue(dropdown.hidden);
         });
   });
 

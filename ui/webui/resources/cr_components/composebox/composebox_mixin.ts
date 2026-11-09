@@ -1030,9 +1030,12 @@ export const ComposeboxEmbedderMixin =
         // Ideally, the ACController is not sending multiple responses for a
         // single query, especially when the matches is empty. Remove this logic
         // once a long term fix is found.
+        // Note: Carry-over is skipped in tool mode because tool mode does not
+        // support typed suggestions right now. If tool mode ever supports typed
+        // suggestions, `this.inToolMode` must be removed below.
         maybeCarryOverPreviousMatches(result: AutocompleteResult) {
           if (!this.composeboxNoFlickerSuggestionsFix ||
-              !this.showTypedSuggest ||
+              !this.showTypedSuggest || this.inToolMode ||
               this.haveReceivedSynchronousAutocompleteResponse) {
             return;
           }
@@ -1046,8 +1049,15 @@ export const ComposeboxEmbedderMixin =
           // response.
           if (this.result && this.result.matches.length > 0 &&
               result.matches.length <= 1) {
-            result.matches.push(...this.result.matches.filter(
-                match => match.type !== 'search-what-you-typed'));
+            const carriedOverMatches = this.result.matches.filter(
+                match => match.type !== 'search-what-you-typed');
+            if (carriedOverMatches.length > 0) {
+              result.matches.push(...carriedOverMatches);
+              result.suggestionGroupsMap = {
+                ...this.result.suggestionGroupsMap,
+                ...result.suggestionGroupsMap,
+              };
+            }
           }
         }
 
