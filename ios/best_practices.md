@@ -845,6 +845,10 @@ ______________________________________________________________________
     [Unit Testing Mediators](architecture/mediators.md#unit-testing-mediators)).
   - **EarlGrey tests (`*_egtest.mm`):** Use for end-to-end integration and user
     journeys across UI and model layers.
+- **Start bug fixes with a regression test:** When fixing a bug in a mediator or
+  model class, first write a unit test that reproduces the bug and fails, then
+  write the fix that makes it pass. Land the test in the same CL as the fix so
+  the bug cannot silently come back.
 - **Use Objective-C GTest macros in unit tests:** Prefer `EXPECT_NSEQ(a, b)` and
   `EXPECT_NSNE(a, b)` over `EXPECT_TRUE([a isEqualToString:b])` so test failures
   print both actual and expected Objective-C objects. (Enforced by
