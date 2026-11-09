@@ -30,9 +30,9 @@ namespace dictation {
 // is registered against this identifier.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kDictationIphAnchorElementId);
 
-// The dictation hotkey IPH is shown at most this many times, including the
-// times it was snoozed.
-inline constexpr int kMaxDictationHotkeyIphShows = 4;
+// Each dictation IPH is shown at most this many times, including the times it
+// was snoozed.
+inline constexpr int kMaxDictationIphShows = 4;
 
 // Returns the arrow to use for a help bubble of `bubble_size` placed next to
 // `field_bounds` so that the bubble fits inside `visible_bounds`. All rects are
@@ -58,12 +58,12 @@ user_education::HelpBubbleArrow GetDictationIphArrowForBounds(
 user_education::HelpBubbleArrow GetDictationIphArrow(
     const ui::TrackedElement* anchor_element);
 
-// Returns whether the dictation hotkey IPH may be requested at `now`, given its
-// stored `promo_data`, if it has ever been shown. User Education handles
-// dismissals and snoozes. On top of that, this caps the total number of shows
-// at `kMaxDictationHotkeyIphShows`, and waits a full snooze duration after
-// every show, so that an IPH the user ignored comes back like a snoozed one.
-bool CanRequestDictationHotkeyIph(
+// Returns whether a dictation IPH may be requested at `now`, given its stored
+// `promo_data`, if it has ever been shown. User Education handles dismissals
+// and snoozes. On top of that, this caps the total number of shows at
+// `kMaxDictationIphShows`, and waits a full snooze duration after every show,
+// so that an IPH the user ignored comes back like a snoozed one.
+bool CanRequestDictationIph(
     const std::optional<user_education::FeaturePromoData>& promo_data,
     base::Time now);
 

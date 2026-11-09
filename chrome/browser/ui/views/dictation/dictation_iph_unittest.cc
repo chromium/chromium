@@ -159,29 +159,26 @@ user_education::FeaturePromoData ShownPromoData(int show_count,
   return data;
 }
 
-TEST(DictationHotkeyIphTest, CanRequestBeforeFirstShow) {
+TEST(DictationIphShowLimitTest, CanRequestBeforeFirstShow) {
   const base::Time now = base::Time::Now();
-  EXPECT_TRUE(CanRequestDictationHotkeyIph(std::nullopt, now));
-  EXPECT_TRUE(
-      CanRequestDictationHotkeyIph(user_education::FeaturePromoData(), now));
+  EXPECT_TRUE(CanRequestDictationIph(std::nullopt, now));
+  EXPECT_TRUE(CanRequestDictationIph(user_education::FeaturePromoData(), now));
 }
 
-TEST(DictationHotkeyIphTest, WaitsASnoozeDurationAfterEachShow) {
+TEST(DictationIphShowLimitTest, WaitsASnoozeDurationAfterEachShow) {
   const base::Time now = base::Time::Now();
   const base::TimeDelta snooze = user_education::features::GetSnoozeDuration();
-  EXPECT_FALSE(CanRequestDictationHotkeyIph(
+  EXPECT_FALSE(CanRequestDictationIph(
       ShownPromoData(1, now, snooze - base::Minutes(1)), now));
-  EXPECT_TRUE(
-      CanRequestDictationHotkeyIph(ShownPromoData(1, now, snooze), now));
+  EXPECT_TRUE(CanRequestDictationIph(ShownPromoData(1, now, snooze), now));
 }
 
-TEST(DictationHotkeyIphTest, StopsAfterMaxShows) {
+TEST(DictationIphShowLimitTest, StopsAfterMaxShows) {
   const base::Time now = base::Time::Now();
-  EXPECT_TRUE(CanRequestDictationHotkeyIph(
-      ShownPromoData(kMaxDictationHotkeyIphShows - 1, now, base::Days(30)),
-      now));
-  EXPECT_FALSE(CanRequestDictationHotkeyIph(
-      ShownPromoData(kMaxDictationHotkeyIphShows, now, base::Days(30)), now));
+  EXPECT_TRUE(CanRequestDictationIph(
+      ShownPromoData(kMaxDictationIphShows - 1, now, base::Days(30)), now));
+  EXPECT_FALSE(CanRequestDictationIph(
+      ShownPromoData(kMaxDictationIphShows, now, base::Days(30)), now));
 }
 
 }  // namespace
