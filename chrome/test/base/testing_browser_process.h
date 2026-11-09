@@ -15,6 +15,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
@@ -47,6 +48,10 @@ namespace activity_reporter {
 class ActivityReporter;
 }  // namespace activity_reporter
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
 
 namespace extensions {
 class ExtensionsBrowserClient;
@@ -271,6 +276,13 @@ class TestingBrowserProcess
   void CreateGlobalFeaturesPreProfileManager();
   void CreateGlobalFeaturesPostProfileManager();
 
+  // Starts observing the ApplicationLocaleStorage owned by `features_` and
+  // initializes it.
+  void InitApplicationLocale();
+
+  // ApplicationLocaleStorage callback.
+  void OnLocaleChanged(const base::i18n::LanguageTag& new_locale);
+
   ui::UnownedUserDataHost unowned_user_data_host_;
 
   // This member needs to stay at or near the top of the list so it gets
@@ -302,6 +314,14 @@ class TestingBrowserProcess
   raw_ptr<metrics::MetricsService> metrics_service_ = nullptr;
   raw_ptr<variations::VariationsService> variations_service_ = nullptr;
   raw_ptr<StartupData> startup_data_ = nullptr;
+
+  // Copy of the locale stored in ApplicationLocaleStorage, kept in sync by
+  // OnLocaleChanged(). It backs the reference returned by
+  // GetApplicationLocale().
+  // TODO(crbug.com/582886728): Remove once GetApplicationLocale() returns a
+  // base::i18n::LanguageTag.
+  std::string application_locale_;
+  base::CallbackListSubscription on_locale_changed_callback_subscription_;
 
   // The `ProfileManager` is here as part of the `BrowserProcess` API. It is
   // typically created during initialization of the `TestingProfileManager`, but

@@ -330,11 +330,12 @@ TEST_F(ManifestSilentUpdateCommandTest,
 
   ApplicationLocaleStorage* locale_storage =
       g_browser_process->GetFeatures()->application_locale_storage();
-  base::ScopedClosureRunner restore_locale(
-      base::BindOnce([](ApplicationLocaleStorage* storage,
-                        std::string locale) { storage->Set(locale); },
-                     locale_storage, locale_storage->Get()));
-  locale_storage->Set("en-US");
+  base::ScopedClosureRunner restore_locale(base::BindOnce(
+      [](ApplicationLocaleStorage* storage, base::i18n::LanguageTag locale) {
+        storage->SetTag(std::move(locale));
+      },
+      locale_storage, locale_storage->GetTag()));
+  locale_storage->SetTag(base::i18n::GetKnownLanguageTag("en-US"));
 
   // `manifest.icons` still contains the valid square icon from
   // SetupBasicInstallablePageState(), but the localized icons for the current

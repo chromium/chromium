@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -807,7 +808,8 @@ TEST_F(ContextualTasksPageHandlerTest, AskGTooltipDismissed) {
 
 
 TEST_F(ContextualTasksPageHandlerTest, GetCommonSearchParams) {
-  g_browser_process->GetFeatures()->application_locale_storage()->Set("en-US");
+  g_browser_process->GetFeatures()->application_locale_storage()->SetTag(
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   // Default case: side panel enabled, dark mode disabled.
   {

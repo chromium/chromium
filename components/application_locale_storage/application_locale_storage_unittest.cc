@@ -38,9 +38,11 @@ TEST(ApplicationLocaleStorageTest, GetBCP47Format) {
 }
 
 TEST(ApplicationLocaleStorageTest, SetShouldTriggerCallback) {
-  std::vector<std::string> history;
+  std::vector<base::i18n::LanguageTag> history;
   base::RepeatingCallback callback = base::BindLambdaForTesting(
-      [&](const std::string& new_locale) { history.push_back(new_locale); });
+      [&](const base::i18n::LanguageTag& new_locale) {
+        history.push_back(new_locale);
+      });
 
   ApplicationLocaleStorage locale_storage;
   {
@@ -51,6 +53,6 @@ TEST(ApplicationLocaleStorageTest, SetShouldTriggerCallback) {
   }
 
   ASSERT_EQ(history.size(), static_cast<size_t>(2u));
-  EXPECT_EQ(history[0], "ja");
-  EXPECT_EQ(history[1], "fr");
+  EXPECT_EQ(history[0], base::i18n::GetKnownLanguageTag("ja"));
+  EXPECT_EQ(history[1], base::i18n::GetKnownLanguageTag("fr"));
 }

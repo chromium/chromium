@@ -57,6 +57,10 @@ class SiteIsolationPrefsObserver;
 class SystemNotificationHelper;
 class StartupData;
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 #if !BUILDFLAG(IS_CHROMEOS)
 namespace activity_reporter {
 class ActivityReporter;
@@ -290,7 +294,7 @@ class BrowserProcessImpl : public BrowserProcess,
   void ApplyDefaultBrowserPolicy();
 
   // ApplicationLocaleStorage callback
-  void OnLocaleChanged(const std::string& new_locale);
+  void OnLocaleChanged(const base::i18n::LanguageTag& new_locale);
 
 #if BUILDFLAG(IS_WIN)
   void UpdateProcessIsolationState();
@@ -425,6 +429,13 @@ class BrowserProcessImpl : public BrowserProcess,
 #endif
 
   base::CallbackListSubscription on_locale_changed_callback_subscription_;
+
+  // Copy of the locale stored in ApplicationLocaleStorage, kept in sync by
+  // OnLocaleChanged(). It backs the reference returned by
+  // GetApplicationLocale().
+  // TODO(crbug.com/582886728): Remove once GetApplicationLocale() returns a
+  // base::i18n::LanguageTag.
+  std::string application_locale_;
 
   // Download status updates (like a changing application icon on dock/taskbar)
   // are global per-application. DownloadStatusUpdater does no work in the ctor

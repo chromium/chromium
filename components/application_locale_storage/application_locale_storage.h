@@ -21,7 +21,7 @@ class ApplicationLocaleStorage {
   };
 
   using OnLocaleChangedCallbackList =
-      base::RepeatingCallbackList<void(const std::string&)>;
+      base::RepeatingCallbackList<void(const base::i18n::LanguageTag&)>;
 
   ApplicationLocaleStorage();
   ApplicationLocaleStorage(const ApplicationLocaleStorage&) = delete;

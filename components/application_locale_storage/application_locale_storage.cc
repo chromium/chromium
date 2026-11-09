@@ -44,7 +44,7 @@ void ApplicationLocaleStorage::SetTag(base::i18n::LanguageTag new_locale) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   locale_ = std::move(new_locale);
   tag_string_ = std::string(locale_.tag_string());
-  on_locale_changed_callback_list_.Notify(tag_string_);
+  on_locale_changed_callback_list_.Notify(locale_);
 }
 
 base::CallbackListSubscription

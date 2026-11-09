@@ -13,6 +13,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/i18n/tag_converters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -314,7 +315,8 @@ class CustomizeChromePageHandlerTest : public testing::Test {
     EXPECT_EQ(handler_.get(), ntp_background_service_observer_);
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);
 
-    application_locale_storage_->Set("foo");
+    application_locale_storage_->SetTag(
+        base::i18n::GetLanguageTagFromString("foo").value());
 
     scoped_feature_list_.Reset();
     task_environment_.RunUntilIdle();

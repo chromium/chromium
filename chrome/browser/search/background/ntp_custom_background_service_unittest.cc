@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/i18n/tag_converters.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
@@ -146,7 +147,8 @@ class NtpCustomBackgroundServiceTest : public testing::Test {
         NtpCustomBackgroundServiceFactory::GetForProfile(profile_.get());
     custom_background_service_->SetThemeDelegate(&mock_theme_delegate());
     scoped_observation_.Observe(custom_background_service_);
-    application_locale_storage_->Set("foo");
+    application_locale_storage_->SetTag(
+        base::i18n::GetLanguageTagFromString("foo").value());
   }
 
   void TearDown() override { scoped_observation_.Reset(); }

@@ -9,6 +9,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -220,7 +221,8 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnUsEnabledTest,
   // Set locale to en-US.
   ScopedBrowserLocale scoped_locale{"en-US"};
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
-  g_browser_process->GetFeatures()->application_locale_storage()->Set("en-US");
+  g_browser_process->GetFeatures()->application_locale_storage()->SetTag(
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   // Returns true when server eligibility checking is disabled, the flag is
   // enabled, and locale is en-US.

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
@@ -25,7 +26,8 @@ class TrustSafetySentimentServiceFactoryTest : public testing::Test {
     feature_list()->InitAndEnableFeature(features::kTrustSafetySentimentSurvey);
     // The TrustSafetySentimentSurvey only targets [en-*] locales currently.
     // Explicitly set the application language to English for tests.
-    g_browser_process->GetFeatures()->application_locale_storage()->Set("en");
+    g_browser_process->GetFeatures()->application_locale_storage()->SetTag(
+        base::i18n::GetKnownLanguageTag("en"));
   }
 
  protected:
@@ -73,7 +75,8 @@ TEST_F(TrustSafetySentimentServiceFactoryTest, NoServiceFeatureDisabled) {
 }
 
 TEST_F(TrustSafetySentimentServiceFactoryTest, NoServiceWrongLocale) {
-  g_browser_process->GetFeatures()->application_locale_storage()->Set("de");
+  g_browser_process->GetFeatures()->application_locale_storage()->SetTag(
+      base::i18n::GetKnownLanguageTag("de"));
   // Check that when the UI language is not English the service is not created.
   EXPECT_FALSE(TrustSafetySentimentServiceFactory::GetForProfile(profile()));
 }
