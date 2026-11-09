@@ -361,7 +361,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private accessor hadPassword_: boolean = false;
   protected accessor hasEdits_: boolean = false;
   // <if expr="enable_pdf_ink2">
-  protected accessor hasCommittedInk2Edits_: boolean = false;
+  private accessor hasCommittedInk2Edits_: boolean = false;
   // </if>
   // <if expr="enable_pdf_ink2 or enable_pdf_save_to_drive">
   // `hasUnsavedEdits_` is set whenever the user makes edits to the PDF that
@@ -377,8 +377,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private pdfGetSaveDataInBlocks_: boolean = false;
   // <if expr="enable_pdf_ink2">
   protected accessor pdfInk2Enabled_: boolean = false;
-  protected accessor pdfSignaturesEnabled_: boolean = false;
-  protected accessor pdfTextAnnotationsEnabled_: boolean = false;
+  private accessor pdfSignaturesEnabled_: boolean = false;
+  private accessor pdfTextAnnotationsEnabled_: boolean = false;
   // </if>
   // <if expr="enable_pdf_save_to_drive">
   protected accessor pdfSaveToDriveEnabled_: boolean = false;
@@ -407,7 +407,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected accessor sidenavCollapsed_: boolean;
 
   // <if expr="enable_pdf_ink2">
-  protected accessor textboxState_: TextBoxState = TextBoxState.INACTIVE;
+  private accessor textboxState_: TextBoxState = TextBoxState.INACTIVE;
   // </if>
   protected accessor title_: string = '';
   protected accessor toolbarEnabled_: boolean = false;

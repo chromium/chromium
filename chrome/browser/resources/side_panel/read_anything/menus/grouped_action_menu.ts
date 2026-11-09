@@ -61,7 +61,7 @@ export class GroupedActionMenuElement extends GroupedActionMenuElementBase {
 
   // Initializing to random value, but this is set by the parent.
   accessor label: string = '';
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  private accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {

@@ -70,8 +70,8 @@ export class VoiceSelectionDialogElement extends CrLitElement implements
   accessor previewVoicePlaying: SpeechSynthesisVoice|null = null;
 
   protected accessor candidateVoice_: SpeechSynthesisVoice|null = null;
-  protected accessor previewVoiceInitiated_: SpeechSynthesisVoice|null = null;
-  protected accessor currentNotifications_:
+  private accessor previewVoiceInitiated_: SpeechSynthesisVoice|null = null;
+  private accessor currentNotifications_:
       {[language: string]: NotificationType} = {};
 
   protected errorMessages_: string[] = [];

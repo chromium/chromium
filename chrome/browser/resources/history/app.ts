@@ -175,9 +175,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
     geminiAppsActivity: loadTimeData.getBoolean('isGlicEnabled'),
   };
   // <if expr="not is_chromeos">
-  protected accessor unoPhase2FollowUpEnabled_: boolean =
+  private accessor unoPhase2FollowUpEnabled_: boolean =
       loadTimeData.getBoolean('unoPhase2FollowUp');
-  protected accessor shouldShowHistorySyncPromo_: boolean = false;
+  private accessor shouldShowHistorySyncPromo_: boolean = false;
   protected accessor shouldShowHistoryCrossDeviceSigninPromo_: boolean = false;
   // </if>
   protected accessor hasDrawer_: boolean = false;
@@ -185,7 +185,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       loadTimeData.getBoolean('isHistoryClustersEnabled');
   protected accessor historyClustersVisible_: boolean =
       loadTimeData.getBoolean('isHistoryClustersVisible');
-  protected accessor identityState_: HistoryIdentityState = {
+  private accessor identityState_: HistoryIdentityState = {
     signIn: HistorySignInState.SIGNED_OUT,
     tabsSync: SyncState.TURNED_OFF,
     historySync: SyncState.TURNED_OFF,
@@ -232,11 +232,11 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected accessor includeActorVisits_: boolean = true;
   protected accessor includeUserVisits_: boolean = true;
   protected accessor clientIds_: string[] = [];
-  protected accessor isGlicWebActuationAvailable_: boolean =
+  private accessor isGlicWebActuationAvailable_: boolean =
       loadTimeData.getBoolean('isGlicWebActuationAvailable');
-  protected accessor isBrowsingHistoryFilterByDeviceEnabled_: boolean =
+  private accessor isBrowsingHistoryFilterByDeviceEnabled_: boolean =
       loadTimeData.getBoolean('isBrowsingHistoryFilterByDeviceEnabled');
-  protected accessor isBrowsingHistoryFilterByTimePeriodEnabled_: boolean =
+  private accessor isBrowsingHistoryFilterByTimePeriodEnabled_: boolean =
       loadTimeData.getBoolean('isBrowsingHistoryFilterByTimePeriodEnabled');
   protected accessor timePeriodOptions_: TimePeriodOption[] = [];
   protected accessor selectedTimePeriodOptionId_: TimePeriodOptionId =

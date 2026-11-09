@@ -127,8 +127,8 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected accessor hasSaveError_: boolean = false;
   protected accessor hasNameCharLimitError_: boolean = false;
   protected accessor showEmojiPicker_: boolean = false;
-  protected accessor canUndoRefine_: boolean = false;
-  protected accessor canRedoRefine_: boolean = false;
+  private accessor canUndoRefine_: boolean = false;
+  private accessor canRedoRefine_: boolean = false;
   protected accessor shouldShowErrorPage_: boolean =
     !loadTimeData.getBoolean('isGlicEnabled') ||
     (loadTimeData.valueExists('isSkillsSupported') &&
@@ -147,9 +147,9 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected accessor isAutoGenerationLoading_: boolean = false;
   protected accessor isAddDialog_: boolean = true;
   protected accessor generatedName_: string = '';
-  protected accessor generatedIcon_: string = '';
-  protected accessor isNameInputFocused_: boolean = false;
-  protected accessor hasSeenGeneratedSuggestion_: boolean = false;
+  private accessor generatedIcon_: string = '';
+  private accessor isNameInputFocused_: boolean = false;
+  private accessor hasSeenGeneratedSuggestion_: boolean = false;
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 

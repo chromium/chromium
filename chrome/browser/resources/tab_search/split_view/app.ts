@@ -56,7 +56,6 @@ export class SplitNewTabPageAppElement extends CrLitElement {
 
   protected accessor allEligibleTabs_: TabData[] = [];
   protected accessor minViewportHeight_: number = 0;
-  protected title_: string = '';
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private apiProxy_: BrowserProxy = browserProxyFactory.getInstance();
@@ -248,10 +247,6 @@ export class SplitNewTabPageAppElement extends CrLitElement {
               tabA.lastActiveTimeTicks.internalValue) :
           0;
     });
-
-    this.title_ = this.allEligibleTabs_.length === 0 ?
-        loadTimeData.getString('splitViewEmptyTitle') :
-        loadTimeData.getString('splitViewTitle');
   }
 
   private getTabData_(tab: Tab, inActiveWindow: boolean, type: TabItemType):

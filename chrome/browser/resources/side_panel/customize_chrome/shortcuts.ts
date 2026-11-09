@@ -73,8 +73,8 @@ export class ShortcutsElement extends CrLitElement {
   protected accessor show_: boolean = false;
   protected accessor showPersonalShortcuts_: boolean = false;
   protected accessor showEnterpriseShortcuts_: boolean = false;
-  protected accessor shortcutConfigs_: ShortcutConfig[] = [];
-  protected accessor disabledShortcuts_: TileType[] = [];
+  private accessor shortcutConfigs_: ShortcutConfig[] = [];
+  private accessor disabledShortcuts_: TileType[] = [];
 
   private setMostVisitedSettingsListenerId_: number|null = null;
 

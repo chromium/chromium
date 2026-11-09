@@ -45,7 +45,7 @@ export class SmartSearchElement extends CrLitElement {
   }
 
   protected accessor searchQuery_: string = '';
-  protected accessor results_: SmartSearchResult[] = [];
+  private accessor results_: SmartSearchResult[] = [];
   protected accessor selectedIds_: Set<string> = new Set();
   protected accessor isSearching_: boolean = false;
   protected accessor hasSearched_: boolean = false;

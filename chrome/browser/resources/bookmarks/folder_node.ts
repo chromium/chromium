@@ -65,7 +65,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   accessor depth: number = -1;
   accessor isOpen: boolean = false;
   accessor itemId: string = '';
-  protected accessor item_: BookmarkNode|undefined;
+  private accessor item_: BookmarkNode|undefined;
   private accessor openState_: boolean|null = null;
   private accessor selectedFolder_: string = '';
   private accessor searchActive_: boolean = false;

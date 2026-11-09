@@ -61,7 +61,7 @@ export class InkTextAnnotationsElement extends CrLitElement {
   accessor viewport: Viewport|null = null;
   protected accessor activeAnnotation_: TextAnnotation|null = null;
   protected accessor activePageDimensions_: ViewportRect|null = null;
-  protected accessor focusedIndex_: number = -1;
+  private accessor focusedIndex_: number = -1;
   protected accessor isPaste_: boolean = false;
   protected accessor placeholders_: Placeholder[] = [];
   private annotations_: TextAnnotation[] = [];

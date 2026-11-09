@@ -225,7 +225,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   accessor imagesEnabled: boolean = false;
 
   protected accessor options_: SettingsItem[] = [];
-  protected accessor currentOpenId_: string|null = null;
+  private accessor currentOpenId_: string|null = null;
 
   private interceptedEvents_: string[] =
       ['click', 'pointerdown', 'pointermove'];

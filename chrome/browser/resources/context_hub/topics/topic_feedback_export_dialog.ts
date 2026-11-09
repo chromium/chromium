@@ -173,22 +173,22 @@ export class TopicFeedbackExportDialogElement extends CrLitElement {
   accessor topics: TopicItem[] = [];
   accessor feedbacks: Map<string, TopicFeedback> = new Map();
   protected accessor windowDays_: number = DEFAULT_EXPORT_WINDOW_DAYS;
-  protected accessor preview_: TopicsFeedbackExportPreview|null = null;
+  private accessor preview_: TopicsFeedbackExportPreview|null = null;
   protected accessor previewState_: ExportPreviewState = 'loading';
   // Whether the rater excluded each domain. Domains the rater hasn't changed
   // keep the default from the preview.
-  protected accessor domainExclusions_: Map<string, boolean> = new Map();
-  protected accessor excludedUrls_: Set<string> = new Set();
+  private accessor domainExclusions_: Map<string, boolean> = new Map();
+  private accessor excludedUrls_: Set<string> = new Set();
   // Ids of the listed, unrated topics the rater left out.
-  protected accessor excludedTopicIds_: Set<string> = new Set();
-  protected accessor expandedDomains_: Set<string> = new Set();
+  private accessor excludedTopicIds_: Set<string> = new Set();
+  private accessor expandedDomains_: Set<string> = new Set();
   protected accessor missingTopics_: string = '';
   protected accessor acknowledged_: boolean = false;
-  protected accessor coverageTopicIds_: string[] = [];
+  private accessor coverageTopicIds_: string[] = [];
   protected accessor exportState_: ExportState = 'idle';
   // Whether a bundle was downloaded since the dialog opened. Stays true if a
   // later download fails, so the form stays the next step.
-  protected accessor hasDownloaded_: boolean = false;
+  private accessor hasDownloaded_: boolean = false;
   protected accessor confirmingClear_: boolean = false;
 
   // Ignores previews of windows the rater has since moved away from.

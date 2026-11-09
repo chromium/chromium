@@ -82,7 +82,7 @@ export class SignInPromoRefreshElement extends SignInPromoRefreshElementBase {
   protected accessor shouldDisableAnimations_: boolean =
       loadTimeData.getBoolean('disableAnimations') ||
       !loadTimeData.getBoolean('isFirstRunDesktopRevampEnabled');
-  protected accessor isDarkMode_: boolean;
+  private accessor isDarkMode_: boolean;
   private accessor anyButtonClicked_: boolean = false;
   private introBrowserProxy_: IntroMojoBrowserProxy =
       IntroMojoBrowserProxyImpl.getInstance();

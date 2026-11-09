@@ -72,7 +72,7 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
 
   // State of the section toggles, this is needed to control the save button
   // state.
-  protected dataSectionsToggles_: boolean[] = [];
+  private dataSectionsToggles_: boolean[] = [];
 
   // Whether save to account button is enabled or not.
   protected accessor isSaveEnabled_: boolean = true;

@@ -53,7 +53,7 @@ export class ViewerTextBottomToolbarElement extends
     };
   }
 
-  protected accessor currentAlignment_: TextAlignment = TextAlignment.LEFT;
+  private accessor currentAlignment_: TextAlignment = TextAlignment.LEFT;
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);

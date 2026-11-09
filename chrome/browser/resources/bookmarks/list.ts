@@ -66,7 +66,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
   private accessor focusedIndex_: number = 0;
   private eventTracker_: EventTracker = new EventTracker();
   private accessor searchTerm_: string = '';
-  protected accessor selectedFolder_: string = '';
+  private accessor selectedFolder_: string = '';
   private accessor selectedItems_: Set<string> = new Set();
   protected accessor shouldShowPromoCard_: boolean = false;
 

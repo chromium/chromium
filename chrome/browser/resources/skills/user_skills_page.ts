@@ -45,9 +45,9 @@ export class UserSkillsPageElement extends CrLitElement {
   }
 
   // Map tracking skills by id.
-  protected accessor skills_: Map<string, Skill> = new Map();
+  private accessor skills_: Map<string, Skill> = new Map();
   protected accessor addSkillButtonDisabled_: boolean = false;
-  protected accessor searchTerm_: string = '';
+  private accessor searchTerm_: string = '';
   protected accessor shouldDisableBrowseSkillsPage_: boolean =
       loadTimeData.getBoolean('shouldDisableBrowseSkillsPage');
   protected accessor webuiRoundedIconsEnabled_: boolean =

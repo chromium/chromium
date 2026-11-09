@@ -77,10 +77,10 @@ export class TopicCollectionCarouselElement extends CrLitElement {
   protected accessor canScrollForward_: boolean = false;
   // Image URLs of the cards' pages, keyed by page URL. Pages without one, or
   // whose image failed to load, show their favicon instead.
-  protected accessor imageUrls_: Map<string, string> = new Map();
+  private accessor imageUrls_: Map<string, string> = new Map();
   // CSS colors of the cards' pages' favicons, keyed by page URL. A card that
   // shows its favicon tints its image area with this color.
-  protected accessor faviconColors_: Map<string, string> = new Map();
+  private accessor faviconColors_: Map<string, string> = new Map();
 
   private resizeObserver_: ResizeObserver|null = null;
 

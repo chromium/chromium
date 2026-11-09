@@ -54,8 +54,8 @@ export class TabsFromOtherDevicesAppElement extends
 
   protected accessor syncedDevices_: ForeignSession[] = [];
   protected accessor searchQuery_: string = '';
-  protected accessor selectedDeviceTag_: string|null = null;
-  protected accessor failedScreenshots_: Set<string> = new Set();
+  private accessor selectedDeviceTag_: string|null = null;
+  private accessor failedScreenshots_: Set<string> = new Set();
   protected accessor showScreenshots_: boolean =
       loadTimeData.getBoolean('showScreenshots');
 

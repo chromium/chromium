@@ -105,18 +105,18 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('ntpNextFeaturesEnabled');
   protected accessor ntpNextDisablementEnabled_: boolean =
       loadTimeData.getBoolean('ntpNextDisablementEnabled');
-  protected accessor extensionPolicyEnabled_: boolean = false;
+  private accessor extensionPolicyEnabled_: boolean = false;
   protected accessor aimPolicyEnabled_: boolean =
       loadTimeData.getBoolean('aimPolicyEnabled');
-  protected accessor footerEnabled_: boolean =
+  private accessor footerEnabled_: boolean =
       loadTimeData.getBoolean('footerEnabled');
   protected accessor wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
-  protected accessor newTabPageType_: NewTabPageType =
+  private accessor newTabPageType_: NewTabPageType =
       NewTabPageType.kFirstPartyWebUI;
   protected accessor showEditTheme_: boolean = true;
   protected accessor showFooter_: boolean = false;
-  protected accessor showFooterForManagedBrowser_: boolean = false;
+  private accessor showFooterForManagedBrowser_: boolean = false;
   protected accessor toolbarCustomizationEnabled_: boolean =
       loadTimeData.getBoolean('toolbarCustomizationEnabled');
 

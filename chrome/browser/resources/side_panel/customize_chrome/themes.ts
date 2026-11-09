@@ -69,7 +69,7 @@ export class ThemesElement extends ThemesElementBase {
   accessor selectedCollection: BackgroundCollection|null = null;
 
   protected accessor header_: string = '';
-  protected accessor imageErrorDetectionEnabled_: boolean =
+  private accessor imageErrorDetectionEnabled_: boolean =
       loadTimeData.getBoolean('imageErrorDetectionEnabled');
   protected accessor isRefreshToggleChecked_: boolean = false;
   private accessor theme_: Theme|undefined;

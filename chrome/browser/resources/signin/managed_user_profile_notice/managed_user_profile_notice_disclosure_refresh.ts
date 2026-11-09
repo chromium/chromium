@@ -72,7 +72,7 @@ export class ManagedUserProfileNoticeDisclosureRefreshElement extends
   accessor appMode: AppMode = AppMode.FIRST_RUN;
   protected accessor revampEnabled_: boolean =
       loadTimeData.getBoolean('isFirstRunDesktopRevampEnabled');
-  protected accessor isDarkMode_: boolean = false;
+  private accessor isDarkMode_: boolean = false;
   protected accessor disableAnimations_: boolean =
       loadTimeData.getBoolean('disableAnimations');
   protected accessor webuiRoundedIconsEnabled_: boolean =

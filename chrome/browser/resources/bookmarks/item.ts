@@ -66,7 +66,7 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
 
   accessor itemId: string = '';
   accessor ironListTabIndex: number|undefined;
-  protected accessor item_: BookmarkNode|undefined;
+  private accessor item_: BookmarkNode|undefined;
   private accessor isSelectedItem_: boolean = false;
   private accessor isMultiSelect_: boolean = false;
   private accessor isFolder_: boolean = false;

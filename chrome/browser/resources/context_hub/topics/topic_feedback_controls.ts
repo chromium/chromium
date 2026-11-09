@@ -67,7 +67,7 @@ export class TopicFeedbackControlsElement extends CrLitElement {
   // The feedback being edited. Only reported via `topic-feedback-change`
   // while it's valid, so it can be ahead of `feedback`. Always replaced rather
   // than mutated, so it can share arrays with `feedback`.
-  protected accessor draft_: TopicFeedback|null = null;
+  private accessor draft_: TopicFeedback|null = null;
   protected accessor defectsPopoverOpen_: boolean = false;
 
   protected readonly defectCategories_ = TOPIC_DEFECT_CATEGORIES;

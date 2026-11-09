@@ -128,7 +128,7 @@ export class PowerBookmarksAppElement extends CrLitElement implements
   protected accessor canAddCurrentUrl_: boolean = false;
   protected accessor labels_: Label[] = [];
   protected accessor searchQuery_: string = '';
-  protected accessor currentUrl_: string|undefined = undefined;
+  private accessor currentUrl_: string|undefined = undefined;
   protected accessor editing_: boolean = false;
   protected accessor renamingId_: string = '';
   protected accessor selectedBookmarks_: {[key: string]: boolean} = {};
@@ -137,9 +137,9 @@ export class PowerBookmarksAppElement extends CrLitElement implements
   protected accessor hasScrollbars_: boolean = false;
   protected accessor contextMenuBookmark_: BookmarksTreeNode|undefined =
       undefined;
-  protected accessor hasLoadedData_: boolean = false;
+  private accessor hasLoadedData_: boolean = false;
   protected accessor hasSomeActiveFilter_: boolean = false;
-  protected accessor hasShownBookmarks_: boolean = false;
+  private accessor hasShownBookmarks_: boolean = false;
   protected accessor sectionVisibility_: AppSectionVisibility = {};
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');

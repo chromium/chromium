@@ -94,15 +94,15 @@ export class MemoryBanksElement extends CrLitElement {
   // entries matching at least one selected value are shown. `''` is the
   // "No collection" / "No tags" bucket. Everything starts out unchecked
   // (no filter applied, all entries shown).
-  protected accessor selectedCollections_: Set<string> = new Set();
-  protected accessor selectedTags_: Set<string> = new Set();
+  private accessor selectedCollections_: Set<string> = new Set();
+  private accessor selectedTags_: Set<string> = new Set();
   protected accessor activeFilterMenu_: 'collections'|'tags'|null = null;
   protected accessor availableCollections_: string[] = [];
   protected accessor availableTags_: string[] = [];
   protected accessor filteredEntries_: MemoryBankEntry[] = [];
   protected accessor viewMode_: 'card'|'table' = 'table';
   protected accessor currentPage_: number = 0;
-  protected pageSize_: number = 10;
+  private pageSize_: number = 10;
   protected accessor geminiResponse_: string = '';
   protected accessor isAskingGemini_: boolean = false;
   protected accessor showGeminiPanel_: boolean = false;

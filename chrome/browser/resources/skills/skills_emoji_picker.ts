@@ -94,7 +94,7 @@ export class SkillsEmojiPickerElement extends CrLitElement {
   }
 
   protected accessor searchQuery_: string = '';
-  protected accessor groupedEmojis_: Map<string, Emoji[]> = new Map();
+  private accessor groupedEmojis_: Map<string, Emoji[]> = new Map();
 
   private categoryMap_: Map<string, Emoji[]> = new Map();
   private debouncedUpdateGroups_: () => void;

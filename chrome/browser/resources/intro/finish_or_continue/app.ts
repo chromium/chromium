@@ -51,7 +51,7 @@ export class FinishOrContinueAppElement extends CrLitElement {
     };
   }
 
-  protected accessor isDarkMode_: boolean = false;
+  private accessor isDarkMode_: boolean = false;
   protected accessor disableAnimations_: boolean =
       loadTimeData.getBoolean('disableAnimations');
 

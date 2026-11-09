@@ -172,8 +172,8 @@ export class ViewerToolbarElement extends CrLitElement {
   accessor enableUndoRedo: boolean = true;
   accessor hasInk2Edits: boolean = false;
   accessor pdfInk2Enabled: boolean = false;
-  protected accessor shouldEnableRedo_: boolean = false;
-  protected accessor shouldEnableUndo_: boolean = false;
+  private accessor shouldEnableRedo_: boolean = false;
+  private accessor shouldEnableUndo_: boolean = false;
   protected accessor pdfSignaturesEnabled_: boolean = false;
   protected accessor pdfTextAnnotationsEnabled_: boolean = false;
 

@@ -49,7 +49,7 @@ export class FooterElement extends CrLitElement {
 
   protected accessor managedByPolicy_: boolean = false;
   protected accessor checked_: boolean = false;
-  protected canShowManagement_: boolean = false;
+  private canShowManagement_: boolean = false;
 
   private apiProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private setFooterSettingsListenerId_: number|null = null;

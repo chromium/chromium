@@ -136,7 +136,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   protected accessor listMaxHeight_: number|undefined;
   protected accessor listItemSize_: number|undefined;
   protected accessor searchQueryMaxLength_: number = SEARCH_QUERY_MAX_LENGTH;
-  protected accessor activeDescendantEnabled_: boolean = false;
+  private accessor activeDescendantEnabled_: boolean = false;
   protected accessor filteredItems_:
       Array<TitleItem|TabData|TabGroupData|SplitViewData> = [];
   private accessor searchOptions_:
@@ -168,7 +168,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   private accessor recentlyClosedDefaultItemDisplayCount_: number =
       loadTimeData.getValue('recentlyClosedDefaultItemDisplayCount');
   protected accessor searchResultText_: string = '';
-  protected accessor activeSelectionId_: string|undefined;
+  private accessor activeSelectionId_: string|undefined;
   protected accessor shortcut_: string = loadTimeData.getString('shortcutText');
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');

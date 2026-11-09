@@ -53,7 +53,7 @@ export class LanguageToastElement extends LanguageToastElementBase implements
     };
   }
 
-  protected notifications_: Map<string, NotificationType> = new Map();
+  private notifications_: Map<string, NotificationType> = new Map();
   protected accessor toastDuration_: number = toastDurationMs;
   protected accessor toastTitle_: string = '';
   protected accessor toastMessage_: string = '';

@@ -89,7 +89,7 @@ export class ProfilePickerMainViewElement extends
   }
 
   protected accessor profilesList_: ProfileState[] = [];
-  protected accessor profilesListLoaded_: boolean = false;
+  private accessor profilesListLoaded_: boolean = false;
   protected accessor hideAskOnStartup_: boolean = false;
   protected accessor askOnStartup_: boolean =
       loadTimeData.getBoolean('askOnStartup');

@@ -96,7 +96,7 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
   protected accessor isModalDialog_: boolean =
       loadTimeData.getBoolean('isModalDialog');
   protected accessor proceedLabel_: string = '';
-  protected accessor disableProceedButton_: boolean = false;
+  private accessor disableProceedButton_: boolean = false;
   protected accessor currentState_: State = State.DISCLOSURE;
   protected accessor appMode_: AppMode = this.getAppModeFromScreenType(
       loadTimeData.getInteger('screenType') as ScreenType);

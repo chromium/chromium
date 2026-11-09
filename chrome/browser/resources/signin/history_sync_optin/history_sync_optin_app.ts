@@ -54,7 +54,7 @@ export class HistorySyncOptinAppElement extends HistorySyncOptinAppElementBase {
 
   protected accessor accountImageSrc_: string =
       loadTimeData.getString('accountPictureUrl');
-  protected launchContext_: LaunchContext =
+  private launchContext_: LaunchContext =
       loadTimeData.getInteger('launchContext') as LaunchContext;
   protected accessor isModal_: boolean = this.isLaunchContext_(LaunchContext.kModal);
   protected accessor buttonsDisabled_: boolean = false;

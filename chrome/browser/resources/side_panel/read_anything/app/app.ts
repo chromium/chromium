@@ -121,7 +121,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   protected accessor hasValidSelection_: boolean = false;
   protected accessor isReadAnythingPinned_: boolean = false;
-  protected isReadAnythingImprovedUiEnabled_: boolean = false;
+  private isReadAnythingImprovedUiEnabled_: boolean = false;
 
   // Mirrors ContentController.isHidingContentForTranslation(): content is
   // drawn (so it can be translated) but kept behind the loading screen, and

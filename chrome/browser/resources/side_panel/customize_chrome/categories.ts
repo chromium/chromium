@@ -93,7 +93,7 @@ export class CategoriesElement extends CategoriesElementBase {
       loadTimeData.getBoolean('wallpaperSearchEnabled');
   protected accessor chromeWebStoreThemesEnabled_: boolean =
       loadTimeData.getBoolean('chromeWebStoreThemesEnabled');
-  protected imageErrorDetectionEnabled_: boolean =
+  private imageErrorDetectionEnabled_: boolean =
       loadTimeData.getBoolean('imageErrorDetectionEnabled');
 
   private apiProxy_: BrowserProxy = browserProxyFactory.getInstance();

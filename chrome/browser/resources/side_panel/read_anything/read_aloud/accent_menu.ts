@@ -14,7 +14,6 @@ import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js'
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -64,7 +63,6 @@ export class AccentMenuElement extends AccentMenuElementBase implements
       currentNotifications_: {type: Object},
       availableLanguages_: {type: Array},
       focusedIndex_: {type: Number},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -122,9 +120,7 @@ export class AccentMenuElement extends AccentMenuElementBase implements
   accessor availableVoices: SpeechSynthesisVoice[] = [];
   protected accessor languageSearchValue_: string = '';
   protected accessor availableLanguages_: LanguageDropdownItem[] = [];
-  protected accessor focusedIndex_: number = 0;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
-      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
+  private accessor focusedIndex_: number = 0;
   localesOfLangPackVoices: Set<string> = AVAILABLE_GOOGLE_TTS_LOCALES;
 
   // The current notifications that should be used in the accent menu.

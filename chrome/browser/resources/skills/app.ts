@@ -65,8 +65,8 @@ export class SkillsAppElement extends CrLitElement {
 
   protected accessor selectedPage_: Page = Page.USER_SKILLS;
   protected accessor narrow_: boolean = false;
-  protected accessor isDrawerOpen_: boolean = false;
-  protected accessor isSkillsEnabled_: boolean =
+  private accessor isDrawerOpen_: boolean = false;
+  private accessor isSkillsEnabled_: boolean =
       loadTimeData.getBoolean('isSkillsEnabled');
 
   private eventTracker_: EventTracker = new EventTracker();

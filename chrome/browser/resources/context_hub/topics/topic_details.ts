@@ -117,7 +117,7 @@ export class TopicDetailsElement extends CrLitElement {
   // The fishfood feedback stored for `topic`, or null if it has none.
   protected accessor feedback_: TopicFeedback|null = null;
   // The other topics, which `topic` can be marked a duplicate of.
-  protected accessor otherTopics_: TopicItem[] = [];
+  private accessor otherTopics_: TopicItem[] = [];
 
   // Guards against re-running init (a duplicate fetch, reopening the Glic
   // panel) if the element is re-attached to the DOM, whether or not the first

@@ -112,7 +112,7 @@ export class AppearanceElement extends AppearanceElementBase {
       loadTimeData.getBoolean('wallpaperSearchEnabled');
   private accessor footerEnabled_: boolean =
       loadTimeData.getBoolean('footerEnabled');
-  protected accessor newTabPageType_: NewTabPageType =
+  private accessor newTabPageType_: NewTabPageType =
       NewTabPageType.kFirstPartyWebUI;
   protected accessor showEditTheme_: boolean = true;
   protected accessor managedByName_: string = '';

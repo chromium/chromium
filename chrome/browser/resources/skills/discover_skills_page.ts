@@ -52,15 +52,15 @@ export class DiscoverSkillsPageElement extends CrLitElement {
   }
 
   /* key: category, value: skill */
-  protected accessor skills_: Map<string, Skill[]> = new Map();
+  private accessor skills_: Map<string, Skill[]> = new Map();
   // Subheader categories.
   protected accessor topicHeaders_: Set<TopicInfo> = new Set();
   // Skills that are pending removal and can't be saved.
-  protected skillsPendingRemoval_: Set<string> = new Set();
-  protected accessor selectedCategory_: string = '';
+  private skillsPendingRemoval_: Set<string> = new Set();
+  private accessor selectedCategory_: string = '';
   // Determines if a 1P skill is in the process of being saved.
-  protected accessor is1PSkillSaving_: boolean = false;
-  protected accessor searchTerm_: string = '';
+  private accessor is1PSkillSaving_: boolean = false;
+  private accessor searchTerm_: string = '';
   private listenerIds_: number[] = [];
   private proxy_: BrowserProxy = browserProxyFactory.getInstance();
   private eventTracker_: EventTracker = new EventTracker();

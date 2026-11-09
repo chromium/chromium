@@ -78,9 +78,9 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     };
   }
 
-  protected accessor unreadItems_: ReadLaterEntry[] = [];
-  protected accessor readItems_: ReadLaterEntry[] = [];
-  protected accessor focusedIndex_: number = -1;
+  private accessor unreadItems_: ReadLaterEntry[] = [];
+  private accessor readItems_: ReadLaterEntry[] = [];
+  private accessor focusedIndex_: number = -1;
   protected accessor focusedItem_: HTMLElement|null = null;
   private accessor currentPageActionButtonState_: CurrentPageActionButtonState =
       CurrentPageActionButtonState.kDisabled;

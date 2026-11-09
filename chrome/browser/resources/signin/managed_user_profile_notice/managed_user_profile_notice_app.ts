@@ -119,15 +119,15 @@ export class ManagedUserProfileNoticeAppElement extends
   private accessor continueAs_: string = '';
   protected accessor showEnterpriseBadge_: boolean = false;
   protected accessor pictureUrl_: string = '';
-  protected accessor title_: string = '';
-  protected accessor subtitle_: string = '';
+  private accessor title_: string = '';
+  private accessor subtitle_: string = '';
   protected accessor isModalDialog_: boolean =
       loadTimeData.getBoolean('isModalDialog');
   protected accessor proceedLabel_: string = '';
   protected accessor cancelLabel_: string = '';
   protected accessor errorTitle_: string = '';
   protected accessor errorSubtitle_: string = '';
-  protected accessor disableProceedButton_: boolean = false;
+  private accessor disableProceedButton_: boolean = false;
   private accessor currentState_: State = State.DISCLOSURE;
   protected accessor showValueProposition_: boolean = false;
   protected accessor showDisclosure_: boolean = false;

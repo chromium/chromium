@@ -120,17 +120,17 @@ export class TabGroupsElement extends CrLitElement {
 
   protected accessor groups_: TabGroup[] = [];
   protected accessor ungroupedTabs_: TabInfo[] = [];
-  protected chatHistory_: ChatMessage[] = [];
+  private chatHistory_: ChatMessage[] = [];
   protected accessor confirmedGroupSummaries_: TabGroupMojom[] = [];
   // Open ungrouped tabs, listed on the landing card.
   protected accessor tabs_: TabInfo[] = [];
-  protected accessor expandedConfirmedGroups_: Set<string> = new Set();
+  private accessor expandedConfirmedGroups_: Set<string> = new Set();
   protected accessor isGrouped_: boolean = false;
   protected accessor isGrouping_: boolean = false;
   protected accessor isRegrouping_: boolean = false;
-  protected autoTabGroupsEnabled_: boolean =
+  private autoTabGroupsEnabled_: boolean =
       loadTimeData.getBoolean('kAutoTabGroups');
-  protected maxTabGroupChatHistoryTurns_: number = this.autoTabGroupsEnabled_ ?
+  private maxTabGroupChatHistoryTurns_: number = this.autoTabGroupsEnabled_ ?
       loadTimeData.getInteger('kMaxTabGroupChatHistoryTurns') :
       10;
   protected accessor inputValue_: string = '';
@@ -141,7 +141,7 @@ export class TabGroupsElement extends CrLitElement {
   protected accessor editingGroupIndex_: number = -1;
   protected accessor editingLabel_: string = '';
   protected accessor dropTargetIndex_: number|null = null;
-  protected accessor moveMenuSource_: MoveSource|null = null;
+  private accessor moveMenuSource_: MoveSource|null = null;
   protected accessor ungroupedExpanded_: boolean = false;
   protected accessor confirmedExpanded_: boolean = false;
   protected accessor canvasFeedbackLiked_: boolean|null = null;
@@ -152,7 +152,7 @@ export class TabGroupsElement extends CrLitElement {
   protected accessor feedbackLiked_: boolean = true;
   protected accessor raterName_: string = '';
   protected accessor copiedRowSuccess_: boolean = false;
-  protected lastGroupPrompt_: string = 'Default';
+  private lastGroupPrompt_: string = 'Default';
   private undoStack_: SuggestionSnapshot[] = [];
   private dragSource_: MoveSource|null = null;
 
