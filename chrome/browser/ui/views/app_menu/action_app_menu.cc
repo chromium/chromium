@@ -496,6 +496,7 @@ void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
   search_bar_ = nullptr;
   menu_width_lock_.RunAndReset();
   has_notification_header_ = false;
+  showing_search_results_ = false;
   action_to_execute_on_close_.reset();
   command_to_action_map_.clear();
   section_header_count_ = 0;
@@ -688,6 +689,7 @@ void ActionAppMenu::ShowSearchResults(
       focus_controller_ ? focus_controller_->PreserveSearchBarFocus()
                         : base::ScopedClosureRunner();
   ClearItemsBelowSearchBar();
+  showing_search_results_ = true;
   PopulateMenu(root_, results);
   root_->ChildrenChanged();
   old_search_results_.reset();
@@ -701,6 +703,7 @@ void ActionAppMenu::RestoreMenu(
       focus_controller_ ? focus_controller_->PreserveSearchBarFocus()
                         : base::ScopedClosureRunner();
   ClearItemsBelowSearchBar();
+  showing_search_results_ = false;
   PopulateItemsBelowSearchBar();
   menu_width_lock_.RunAndReset();
   root_->ChildrenChanged();
@@ -970,8 +973,14 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
     AppMenuChipView::AttachTo(menu_item, *chip_text);
   }
 
+  const AppMenuActionItem::ItemHeight item_height =
+      showing_search_results_
+          ? (menu_item->secondary_title().empty()
+                 ? AppMenuActionItem::ItemHeight::kMedium
+                 : AppMenuActionItem::ItemHeight::kExpanded)
+          : child_base->GetProperty(AppMenuActionItem::kItemHeightKey);
   int target_item_height = 0;
-  switch (child_base->GetProperty(AppMenuActionItem::kItemHeightKey)) {
+  switch (item_height) {
     case AppMenuActionItem::ItemHeight::kCompact:
       target_item_height = provider->GetDistanceMetric(
           DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT);
@@ -990,8 +999,15 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
       break;
   }
 
-  const int content_height =
+  int content_height =
       std::max(default_icon_size, menu_item->GetIconPreferredSize().height());
+  if (!menu_item->secondary_title().empty()) {
+    // Two-line rows stack the title and secondary title in the label font.
+    if (const gfx::FontList* font_list =
+            GetLabelFontList(menu_item->GetCommand())) {
+      content_height = std::max(content_height, font_list->GetHeight() * 2);
+    }
+  }
 
   const int vertical_padding = (target_item_height - content_height) / 2;
 
@@ -1002,15 +1018,22 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
     const ui::ColorId container_color =
         child_base->GetProperty(AppMenuActionItem::kContainerColorKey);
 
-    views::MenuItemView::MenuItemBackground background(
-        container_color, top_radius, bottom_radius,
-        /*horizontal_margin=*/
-        provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_CONTAINER_MARGIN));
-    const int padding = provider->GetDistanceMetric(
-        DISTANCE_ACTION_APP_MENU_CONTAINER_VERTICAL_PADDING);
-    background.top_padding = add_top_padding ? padding : 0;
-    background.bottom_padding = add_bottom_padding ? padding : 0;
-    menu_item->SetMenuItemBackground(background);
+    if (showing_search_results_) {
+      menu_item->SetMenuItemBackground(views::MenuItemView::MenuItemBackground(
+          container_color, /*top_radius=*/0, /*bottom_radius=*/0,
+          /*horizontal_margin=*/0));
+    } else {
+      views::MenuItemView::MenuItemBackground background(
+          container_color, top_radius, bottom_radius,
+          /*horizontal_margin=*/
+          provider->GetDistanceMetric(
+              DISTANCE_ACTION_APP_MENU_CONTAINER_MARGIN));
+      const int padding = provider->GetDistanceMetric(
+          DISTANCE_ACTION_APP_MENU_CONTAINER_VERTICAL_PADDING);
+      background.top_padding = add_top_padding ? padding : 0;
+      background.bottom_padding = add_bottom_padding ? padding : 0;
+      menu_item->SetMenuItemBackground(background);
+    }
 
     // Apply darker hover selection states matching section theme.
     menu_item->SetSelectedColorId(ui::kColorAppMenuRowBackgroundHovered);
@@ -1095,7 +1118,9 @@ void ActionAppMenu::PopulateHeader(views::MenuItemView* view_parent,
     header_menu_item->SetBorder(
         views::CreateEmptyBorder(ChromeLayoutProvider::Get()->GetInsetsMetric(
             INSETS_ACTION_APP_MENU_HEADER)));
-    if (section_header_count_++ > 0) {
+    // Card headers after the first get extra space above them to separate
+    // the card groups; search result headers keep the default margin.
+    if (!showing_search_results_ && section_header_count_++ > 0) {
       header_menu_item->set_top_margin(default_margin * 2);
     }
   }

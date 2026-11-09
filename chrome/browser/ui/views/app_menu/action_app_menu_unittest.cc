@@ -2819,6 +2819,13 @@ TEST_F(ActionAppMenuWithSearchTest, ShortSearchQueryKeepsNormalMenu) {
 }
 
 TEST_F(ActionAppMenuWithSearchTest, SearchQueryShowsOnlyResults) {
+  actions::ActionItem* downloads_action =
+      actions::ActionManager::Get().FindAction(
+          kActionShowDownloadsPage, browser_actions_->root_action_item());
+  ASSERT_NE(downloads_action, nullptr);
+  downloads_action->SetImage(
+      ui::ImageModel::FromVectorIcon(kRocketLaunchIcon, ui::kColorIcon));
+
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
@@ -2846,10 +2853,16 @@ TEST_F(ActionAppMenuWithSearchTest, SearchQueryShowsOnlyResults) {
   EXPECT_TRUE(search_field->HasFocus());
   EXPECT_EQ(search_row->parent(), search_row_parent);
   EXPECT_EQ(search_row_parent->GetIndexOf(search_row), search_row_index);
-  EXPECT_NE(root->GetMenuItemByID(kActionShowDownloadsPage), nullptr);
+  views::MenuItemView* result = root->GetMenuItemByID(kActionShowDownloadsPage);
+  ASSERT_NE(result, nullptr);
   EXPECT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
   EXPECT_TRUE(GetBackButton(search_bar)->GetVisible());
   EXPECT_FALSE(GetSearchIcon(search_bar)->GetVisible());
+
+  // Results are flat, full-width rows: no card insets, one line is kMedium.
+  EXPECT_EQ(result->GetHighlightInsets(), gfx::Insets());
+  EXPECT_EQ(result->height(), ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                  DISTANCE_ACTION_APP_MENU_MEDIUM_ITEM_HEIGHT));
 
   // Clicking a result runs its action.
   EXPECT_CALL(mock_action_invoked_,
@@ -3246,6 +3259,13 @@ TEST_F(ActionAppMenuWithSearchTest, SearchResultsPreserveCheckableItems) {
   EXPECT_EQ(always_show->GetViewAccessibility().GetCheckedState(),
             ax::mojom::CheckedState::kTrue);
 
+  // The row carries a breadcrumb, so it is a two-line, kExpanded flat row.
+  ASSERT_FALSE(always_show->secondary_title().empty());
+  EXPECT_EQ(always_show->GetHighlightInsets(), gfx::Insets());
+  EXPECT_EQ(always_show->height(),
+            ChromeLayoutProvider::Get()->GetDistanceMetric(
+                DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT));
+
   views::MenuItemView* always_hide =
       root->GetMenuItemByID(kActionBookmarkBarSubmenuAlwaysHide);
   ASSERT_NE(always_hide, nullptr);
@@ -3302,7 +3322,14 @@ TEST_F(ActionAppMenuWithSearchTest, BackButtonRestoresNormalMenu) {
   EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
   EXPECT_TRUE(search_bar->GetText().empty());
   EXPECT_EQ(submenu->children().size(), row_count_at_open);
-  EXPECT_NE(root->GetMenuItemByID(kActionPrint), nullptr);
+  views::MenuItemView* print_item = root->GetMenuItemByID(kActionPrint);
+  ASSERT_NE(print_item, nullptr);
+
+  // Rows are card-styled again, not flat search rows.
+  ASSERT_TRUE(print_item->GetMenuItemBackground().has_value());
+  EXPECT_EQ(print_item->GetMenuItemBackground()->horizontal_margin,
+            ChromeLayoutProvider::Get()->GetDistanceMetric(
+                DISTANCE_ACTION_APP_MENU_CONTAINER_MARGIN));
 
   views::Separator* separator = GetSeparator(search_bar);
   ASSERT_TRUE(separator);
@@ -3572,6 +3599,59 @@ TEST_F(ActionAppMenuWithSearchTest, CloseMenuDuringLiveRebuildIsDeferred) {
     EXPECT_TRUE(closed_callback_ran);
     run_loop.Run();
   }
+}
+
+// Flat (search) headers all keep the default top margin: only card headers
+// after the first get the doubled margin that separates card groups. After the
+// normal menu is restored, its headers get 8dp / 16dp again.
+TEST_F(ActionAppMenuWithSearchTest, FlatHeadersKeepDefaultMargin) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  views::SubmenuView* submenu = root->GetSubmenu();
+  const int header_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_ACTION_APP_MENU_HEADER_VERTICAL_MARGIN);
+
+  auto root_titles = [submenu]() {
+    std::vector<views::MenuItemView*> titles;
+    for (views::MenuItemView* item : submenu->GetMenuItems()) {
+      if (item->GetType() == views::MenuItemView::Type::kTitle) {
+        titles.push_back(item);
+      }
+    }
+    return titles;
+  };
+
+  // Two sections, each with a flat header and one row, like search results.
+  auto results = actions::ActionItem::Builder().Build();
+  for (const char16_t* title : {u"Bookmarks", u"Tab groups"}) {
+    auto section = actions::ActionItem::Builder().Build();
+    section->SetProperty(AppMenuActionItem::kDisplayTypeKey,
+                         AppMenuActionItem::DisplayType::kSection);
+    section->AddChild(AppMenuActionItem::CreateHeader(title));
+    section->AddChild(actions::ActionItem::Builder().SetText(title).Build());
+    results->AddChild(std::move(section));
+  }
+  menu.ShowSearchResults(results.get(), /*old_results=*/nullptr);
+
+  std::vector<views::MenuItemView*> flat_titles = root_titles();
+  ASSERT_EQ(flat_titles.size(), 2u);
+  EXPECT_EQ(flat_titles[0]->GetTopMargin(), header_margin);
+  EXPECT_EQ(flat_titles[1]->GetTopMargin(), header_margin);
+
+  // Restoring the normal menu (the results were injected directly, so call the
+  // delegate method) brings back the card header spacing.
+  menu.RestoreMenu(/*old_results=*/nullptr);
+  std::vector<views::MenuItemView*> card_titles = root_titles();
+  ASSERT_GE(card_titles.size(), 2u);
+  EXPECT_EQ(card_titles[0]->GetTopMargin(), header_margin);
+  EXPECT_EQ(card_titles[1]->GetTopMargin(), header_margin * 2);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
 }
 
 TEST_F(ActionAppMenuTest, PopupAndComponentLayoutInsets) {

@@ -235,6 +235,7 @@ class ActionAppMenu : public views::MenuDelegate,
 
   // The states associated with the populated app menu.
   bool has_notification_header_ = false;
+  bool showing_search_results_ = false;
   size_t section_header_count_ = 0;
 
   struct ActionExecutionParams {
