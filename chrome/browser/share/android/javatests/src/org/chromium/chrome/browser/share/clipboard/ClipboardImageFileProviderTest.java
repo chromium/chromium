@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.share.clipboard;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Looper;
 
 import androidx.test.filters.SmallTest;
 
@@ -21,11 +20,11 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileProviderUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -58,42 +57,44 @@ public class ClipboardImageFileProviderTest {
     }
 
     private void waitForAsync() throws TimeoutException {
-        try {
-            AsyncTaskRunnableHelper runnableHelper = new AsyncTaskRunnableHelper();
-            AsyncTask.SERIAL_EXECUTOR.execute(runnableHelper);
-            runnableHelper.waitForCallback(0, 1, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        } catch (TimeoutException ex) {
-        }
+        AsyncTaskRunnableHelper runnableHelper = new AsyncTaskRunnableHelper();
+        AsyncTask.SERIAL_EXECUTOR.execute(runnableHelper);
+        runnableHelper.waitForCallback(0, 1, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }
 
     @Before
-    public void setUp() {
-        Looper.prepare();
-        // Clear the clipboard.
-        Clipboard.getInstance().setText("");
-
+    public void setUp() throws TimeoutException {
         Bitmap bitmap =
                 Bitmap.createBitmap(/* width= */ 10, /* height= */ 10, Bitmap.Config.ARGB_8888);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, /*quality = (0-100) */ 100, baos);
+        bitmap.compress(Bitmap.CompressFormat.PNG, /* quality= */ 100, baos);
         mTestImageData = baos.toByteArray();
 
         mActivityTestRule.startFromLauncherAtNtp();
-        FileProviderUtils.setFileProviderUtil(new FileProviderHelper());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    FileProviderUtils.setFileProviderUtil(new FileProviderHelper());
+                    Clipboard.getInstance().setText("");
+                });
+        // Drain any ShareImageFileUtils.clearSharedImages() task enqueued onto
+        // AsyncTask.SERIAL_EXECUTOR during deferred startup before writing test image files.
+        waitForAsync();
     }
 
     @After
     public void tearDown() throws TimeoutException {
-        // Clear the clipboard.
-        Clipboard.getInstance().setText("");
+        ThreadUtils.runOnUiThreadBlocking(() -> Clipboard.getInstance().setText(""));
+        waitForAsync();
     }
 
     @Test
     @SmallTest
-    @DisabledTest(message = "Flaky, see crbug.com/382511576")
     public void testClipboardSetImage() throws TimeoutException, IOException {
-        Clipboard.getInstance().setImageFileProvider(new ClipboardImageFileProvider());
-        Clipboard.getInstance().setImage(mTestImageData, TEST_PNG_IMAGE_FILE_EXTENSION);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Clipboard.getInstance().setImageFileProvider(new ClipboardImageFileProvider());
+                    Clipboard.getInstance().setImage(mTestImageData, TEST_PNG_IMAGE_FILE_EXTENSION);
+                });
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -104,7 +105,7 @@ public class ClipboardImageFileProviderTest {
                             Matchers.is(Clipboard.getInstance().getImageUri()));
                 });
 
-        Uri uri = Clipboard.getInstance().getImageUri();
+        Uri uri = ThreadUtils.runOnUiThreadBlocking(() -> Clipboard.getInstance().getImageUri());
         Assert.assertNotNull(uri);
         Bitmap bitmap =
                 ApiCompatibilityUtils.getBitmapByUri(
