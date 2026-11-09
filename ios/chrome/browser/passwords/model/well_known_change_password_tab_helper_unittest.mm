@@ -7,6 +7,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/bind.h"
+#import "base/test/gmock_callback_support.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/affiliations/core/browser/mock_affiliation_service.h"
 #import "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
@@ -68,7 +69,11 @@ void LoadUrlWithTransition(web::WebState* web_state,
 }
 
 std::unique_ptr<KeyedService> MakeMockAffiliationService(ProfileIOS* profile) {
-  return std::make_unique<NiceMock<affiliations::MockAffiliationService>>();
+  auto mock_service =
+      std::make_unique<NiceMock<affiliations::MockAffiliationService>>();
+  ON_CALL(*mock_service, FetchChangePasswordURL)
+      .WillByDefault(base::test::RunOnceCallback<1>(GURL()));
+  return mock_service;
 }
 
 }  // namespace
@@ -133,8 +138,8 @@ class WellKnownChangePasswordTabHelperTest : public PlatformTest {
   // Sets if change passwords URL can be obtained.
   void SetChangePasswordURLForAffiliationService(
       const GURL& change_password_url) {
-    EXPECT_CALL(*affiliation_service_, GetChangePasswordURL)
-        .WillRepeatedly(testing::Return(change_password_url));
+    EXPECT_CALL(*affiliation_service_, FetchChangePasswordURL)
+        .WillOnce(base::test::RunOnceCallback<1>(change_password_url));
   }
 
   // Maps a path to a ServerResponse config object.

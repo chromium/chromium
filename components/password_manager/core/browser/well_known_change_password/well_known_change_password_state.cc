@@ -111,17 +111,12 @@ void WellKnownChangePasswordState::FetchChangePasswordURL(
   if (!affiliation_service) {
     return;
   }
-  change_password_url_override_ =
-      affiliation_service->GetChangePasswordURL(url);
-  if (change_password_url_override_.is_empty()) {
-    fetch_timer_.Start(FROM_HERE, kFetchTimeout, this,
-                       &WellKnownChangePasswordState::ContinueProcessing);
-    affiliation_service->FetchChangePasswordURL(
-        url, base::BindOnce(
-                 &WellKnownChangePasswordState::OnChangePasswordURLFetched,
-                 weak_factory_.GetWeakPtr(),
-                 base::Unretained(affiliation_service), url));
-  }
+  fetch_timer_.Start(FROM_HERE, kFetchTimeout, this,
+                     &WellKnownChangePasswordState::ContinueProcessing);
+  affiliation_service->FetchChangePasswordURL(
+      url,
+      base::BindOnce(&WellKnownChangePasswordState::OnChangePasswordURLFetched,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void WellKnownChangePasswordState::SetChangePasswordResponseCode(
@@ -137,13 +132,9 @@ void WellKnownChangePasswordState::FetchNonExistingResourceCallback(
   ContinueProcessing();
 }
 
-void WellKnownChangePasswordState::OnChangePasswordURLFetched(
-    affiliations::AffiliationService* affiliation_service,
-    const GURL& requested_url,
-    GURL fetched_url) {
+void WellKnownChangePasswordState::OnChangePasswordURLFetched(GURL url) {
   if (fetch_timer_.IsRunning()) {
-    change_password_url_override_ =
-        affiliation_service->GetChangePasswordURL(requested_url);
+    change_password_url_override_ = std::move(url);
     fetch_timer_.Stop();
     ContinueProcessing();
   }

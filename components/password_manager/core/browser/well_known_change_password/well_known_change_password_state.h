@@ -76,10 +76,7 @@ class WellKnownChangePasswordState {
   void FetchNonExistingResourceCallback(
       scoped_refptr<net::HttpResponseHeaders> headers);
   // Callback for the request to the Affiliation Service fetch.
-  void OnChangePasswordURLFetched(
-      affiliations::AffiliationService* affiliation_service,
-      const GURL& requested_url,
-      GURL fetched_url);
+  void OnChangePasswordURLFetched(GURL url);
   // Function is called when both requests are finished. Decides to continue or
   // redirect to change password URL or homepage.
   void ContinueProcessing();
