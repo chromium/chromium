@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.download;
 
+import android.net.Uri;
+import android.text.TextUtils;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.StrictModeContext;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.pdf.PdfPage;
@@ -18,12 +22,15 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.navigation_controller.LoadURLType;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
+
+import java.io.File;
 
 /** Java counterpart of android DownloadController. Owned by native. */
 @NullMarked
@@ -36,6 +43,49 @@ public class DownloadController {
      */
     public static void downloadUrl(String url, Tab tab) {
         DownloadControllerJni.get().downloadUrl(url, tab.getWebContents());
+    }
+
+    /**
+     * Downloads a local file owned by Chrome (a file:// or content:// URI) through the regular
+     * download flow: target determination, location/duplicate dialogs, download UI and Download
+     * Home, exactly like a network download.
+     *
+     * <p>A {@code file://} source is re-pointed at Chrome's content providers when covered so a
+     * file already in the Downloads directory goes through the standard duplicate-download dialog /
+     * uniquification flow instead of failing as a same-path self-download; uncovered {@code
+     * file://} paths are passed through unchanged.
+     *
+     * @param uri The file:// or content:// URI of the local file.
+     * @param suggestedFileName The file name (with extension) to save the download as.
+     * @param tab The tab that initiated the download.
+     */
+    public static void downloadLocalFile(String uri, @Nullable String suggestedFileName, Tab tab) {
+        // A file:// source is re-pointed at Chrome's content providers (DownloadFileProvider /
+        // FileProvider) before reaching the download manager.
+        // DownloadPathReservationTracker only derives |source_path| from file:// URLs, so a
+        // file:// that already lives in the Downloads directory would otherwise be rejected
+        // with DOWNLOAD_INTERRUPT_REASON_FILE_SAME_AS_SOURCE instead of going through the
+        // duplicate-download dialog / uniquification like any other download.
+        Uri parsed = Uri.parse(uri);
+        String path = parsed.getPath();
+        if (UrlConstants.FILE_SCHEME.equals(parsed.getScheme())
+                && path != null
+                && !path.isEmpty()) {
+            Uri resolved;
+            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                resolved = DownloadUtils.getUriForItem(path);
+            }
+            if (UrlConstants.CONTENT_SCHEME.equals(resolved.getScheme())
+                    && TextUtils.isEmpty(suggestedFileName)) {
+                suggestedFileName = new File(path).getName();
+            }
+            uri = resolved.toString(); // falls back to file:// if uncovered
+        }
+        DownloadControllerJni.get()
+                .downloadLocalFile(
+                        uri,
+                        suggestedFileName != null ? suggestedFileName : "",
+                        tab.getWebContents());
     }
 
     /**
@@ -181,6 +231,11 @@ public class DownloadController {
     interface Natives {
         void downloadUrl(
                 @JniType("std::string") String url,
+                @JniType("content::WebContents*") @Nullable WebContents webContents);
+
+        void downloadLocalFile(
+                @JniType("std::string") String url,
+                @JniType("std::u16string") String suggestedFileName,
                 @JniType("content::WebContents*") @Nullable WebContents webContents);
 
         void cancelDownload(

@@ -13,8 +13,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.net.Uri;
 import android.os.Build;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,23 +27,24 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FileProviderUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestOrigins;
 import org.chromium.url.Origin;
 
 /**
- * Unit tests for {@link DownloadController}'s inline PDF handling.
+ * Unit tests for {@link DownloadController}.
  *
- * <p>These cover the initiator origin recorded on the synthesized {@code chrome-native://pdf}
- * entry. That entry is replayed on every later history traversal or tab restore, so whatever is
- * stored here determines the SameSite context of the eventual re-download. See crbug.com/500173014.
+ * <p>Covers inline PDF initiator-origin propagation (crbug.com/500173014) and {@link
+ * DownloadController#downloadLocalFile} {@code file://} normalization.
  *
  * <p>VANILLA_ICE_CREAM satisfies {@code PdfUtils.isPlatformSupported()}, which gates inline PDF
  * viewing.
@@ -54,6 +58,19 @@ public class DownloadControllerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Tab mTab;
+    @Mock private WebContents mWebContents;
+    @Mock private DownloadController.Natives mDownloadControllerJniMock;
+
+    @Before
+    public void setUp() {
+        DownloadControllerJni.setInstanceForTesting(mDownloadControllerJniMock);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+    }
+
+    @After
+    public void tearDown() {
+        FileProviderUtils.setFileProviderUtil(null);
+    }
 
     private LoadUrlParams captureLoadUrlParams(@Nullable Origin initiatorOrigin) {
         when(mTab.getUrl()).thenReturn(new GURL(TAB_URL));
@@ -138,5 +155,57 @@ public class DownloadControllerUnitTest {
         DownloadController.onDownloadFailed(mTab, info);
 
         verify(pdfPage).onDownloadFailed();
+    }
+
+    @Test
+    @Feature({"Download"})
+    public void testDownloadLocalFile_UncoveredFileUri_PreservesFileUri() {
+        FileProviderUtils.setFileProviderUtil(
+                file -> {
+                    throw new IllegalArgumentException("Uncovered path: " + file);
+                });
+
+        DownloadController.downloadLocalFile("file:///tmp/sample.pdf", "sample.pdf", mTab);
+
+        verify(mDownloadControllerJniMock)
+                .downloadLocalFile("file:///tmp/sample.pdf", "sample.pdf", mWebContents);
+    }
+
+    @Test
+    @Feature({"Download"})
+    public void testDownloadLocalFile_CoveredFileUri_RewritesToContentUri() {
+        String providerUri = "content://com.android.chrome.FileProvider/downloads/sample.pdf";
+        FileProviderUtils.setFileProviderUtil(file -> Uri.parse(providerUri));
+
+        DownloadController.downloadLocalFile(
+                "file:///storage/emulated/0/Download/sample.pdf", "annotated.pdf", mTab);
+
+        verify(mDownloadControllerJniMock)
+                .downloadLocalFile(providerUri, "annotated.pdf", mWebContents);
+    }
+
+    @Test
+    @Feature({"Download"})
+    public void testDownloadLocalFile_ContentUri_PassedThroughUnchanged() {
+        String contentUri = "content://media/external/downloads/42";
+
+        DownloadController.downloadLocalFile(contentUri, /* suggestedFileName= */ null, mTab);
+
+        verify(mDownloadControllerJniMock).downloadLocalFile(contentUri, "", mWebContents);
+    }
+
+    @Test
+    @Feature({"Download"})
+    public void testDownloadLocalFile_CoveredFileUriWithNullSuggestedFileName_ForwardsBasename() {
+        String opaqueProviderUri = "content://com.android.chrome.FileProvider/BlockedFile_1";
+        FileProviderUtils.setFileProviderUtil(file -> Uri.parse(opaqueProviderUri));
+
+        DownloadController.downloadLocalFile(
+                "file:///storage/emulated/0/Download/sample.pdf",
+                /* suggestedFileName= */ null,
+                mTab);
+
+        verify(mDownloadControllerJniMock)
+                .downloadLocalFile(opaqueProviderUri, "sample.pdf", mWebContents);
     }
 }

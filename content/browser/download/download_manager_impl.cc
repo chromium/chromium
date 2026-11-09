@@ -94,8 +94,10 @@
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "content/browser/android/content_url_loader_factory.h"
 #include "net/http/http_content_disposition.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -1699,6 +1701,14 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
                 // USER_VISIBLE because download should progress
                 // even when there is high priority work to do.
                 base::TaskPriority::USER_VISIBLE));
+#if BUILDFLAG(IS_ANDROID)
+  } else if (params->url().SchemeIs(url::kContentScheme)) {
+    // content:// URLs are served by the embedder's ContentProviders; mirror the
+    // navigation loader (NavigationURLLoaderImpl) and do not require a frame.
+    pending_url_loader_factory =
+        std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
+            ContentURLLoaderFactory::Create());
+#endif  // BUILDFLAG(IS_ANDROID)
   } else if (rfh && params->url().SchemeIs(content::kChromeUIScheme)) {
     pending_url_loader_factory =
         std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
@@ -1885,7 +1895,16 @@ void DownloadManagerImpl::BeginDownloadInternal(
     bool is_new_download,
     const std::string& serialized_embedder_download_data) {
   // Check if the renderer is permitted to request the requested URL.
+  // Browser-initiated local file/content downloads where the caller explicitly
+  // cleared `initiator` (e.g. downloading a browser-selected local file while
+  // associating the DownloadItem with a WebContents for UI) are not requested
+  // on behalf of the renderer process.
+  const bool is_browser_initiated_local_download =
+      !params->content_initiated() && !params->initiator().has_value() &&
+      (params->url().SchemeIsFile() ||
+       params->url().SchemeIs(url::kContentScheme));
   if (params->render_process_host_id() >= 0 &&
+      !is_browser_initiated_local_download &&
       !DownloadRequestUtils::IsURLSafe(params->render_process_host_id(),
                                        params->url())) {
     CreateInterruptedDownload(

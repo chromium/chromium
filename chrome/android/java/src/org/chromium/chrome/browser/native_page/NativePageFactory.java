@@ -757,6 +757,14 @@ public class NativePageFactory {
         }
 
         @Override
+        public void downloadLocalFile(String uri, @Nullable String suggestedFileName) {
+            if (mTab.isDestroyed() || mTab.getWebContents() == null || TextUtils.isEmpty(uri)) {
+                return;
+            }
+            DownloadController.downloadLocalFile(uri, suggestedFileName, mTab);
+        }
+
+        @Override
         public void selectTab() {
             if (mTab.isDestroyed() || mTab.isClosing() || isVisible()) return;
             TabModel model = mTabModelSelector.getModelForTabId(mTab.getId());

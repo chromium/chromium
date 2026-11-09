@@ -11,6 +11,7 @@ import android.view.View;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
@@ -45,7 +46,9 @@ public interface NativePageHost {
      */
     int getParentId();
 
-    /** @return whether the hosted native page is currently visible. */
+    /**
+     * @return whether the hosted native page is currently visible.
+     */
     boolean isVisible();
 
     /**
@@ -72,6 +75,18 @@ public interface NativePageHost {
      * @param url The URL to download.
      */
     default void downloadUrl(String url) {}
+
+    /**
+     * Downloads a local file owned by Chrome (file:// or content:// URI) through the regular
+     * download flow so the user gets the standard location/duplicate dialogs, download messages and
+     * a Download Home entry. {@code file://} sources are served through Chrome's content providers
+     * when possible so files already in the Downloads directory go through the duplicate-download
+     * dialog rather than failing as a same-path self-download.
+     *
+     * @param uri The file:// or content:// URI of the local file.
+     * @param suggestedFileName The file name (with extension) to save the download as.
+     */
+    default void downloadLocalFile(String uri, @Nullable String suggestedFileName) {}
 
     /** Selects the tab hosting this native page if supported; no-op by default. */
     default void selectTab() {}

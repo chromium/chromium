@@ -897,6 +897,26 @@ TEST_F(ChromeDownloadManagerDelegateTest, InterceptDownloadForAutomotive) {
 
   EXPECT_EQ(1, message_bridge->GetMessageShownCount());
 }
+
+TEST_F(ChromeDownloadManagerDelegateTest,
+       InterceptDownloadIfApplicable_LocalPdfOnlyDroppedWhenTransient) {
+  if (base::android::device_info::is_automotive()) {
+    GTEST_SKIP() << "Automotive blocks unsupported downloads separately.";
+  }
+
+  const bool should_open_pdf_inline = delegate()->ShouldOpenPdfInline();
+  for (const GURL& url :
+       {GURL("content://com.example/x.pdf"), GURL("file:///sdcard/x.pdf")}) {
+    EXPECT_FALSE(delegate()->InterceptDownloadIfApplicable(
+        url, "", "", "application/pdf", "", 10, /*is_transient=*/false,
+        /*is_content_initiated=*/false, nullptr));
+    EXPECT_EQ(
+        should_open_pdf_inline,
+        delegate()->InterceptDownloadIfApplicable(
+            url, "", "", "application/pdf", "", 10,
+            /*is_transient=*/true, /*is_content_initiated=*/false, nullptr));
+  }
+}
 #endif
 
 TEST_F(ChromeDownloadManagerDelegateTest,

@@ -130,6 +130,7 @@
 #include "net/http/http_content_disposition.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/android/window_android.h"
+#include "url/url_constants.h"
 #else
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -1333,10 +1334,13 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
     }
   }
 
-  if (ShouldOpenPdfInlineInternal(/*incognito=*/false) &&
+  // Drop transient downloads triggered by navigating to a local PDF, since the
+  // PDF viewer reads the local file:// or content:// URI directly. Allow
+  // explicit (non-transient) downloads of local PDFs (e.g. saving an edited
+  // PDF) to proceed.
+  if (is_transient && ShouldOpenPdfInline() &&
       mime_type == pdf::kPDFMimeType) {
-    // If this is already a file, there is no need to download.
-    if (url.SchemeIsFile() || url.SchemeIs("content")) {
+    if (url.SchemeIsFile() || url.SchemeIs(url::kContentScheme)) {
       return true;
     }
   }

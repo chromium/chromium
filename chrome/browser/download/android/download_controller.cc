@@ -76,6 +76,7 @@
 #include "ui/base/page_transition_types.h"
 #include "url/android/gurl_android.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "components/safe_browsing/content/common/file_type_policies/file_type_policies.h"
@@ -132,7 +133,6 @@ void RemoveDownloadItem(std::unique_ptr<DownloadManagerGetter> getter,
     item->Remove();
   }
 }
-
 
 bool ShouldOpenPdfInline(DownloadItem* item) {
   BrowserContext* context = content::DownloadItemUtils::GetBrowserContext(item);
@@ -260,6 +260,48 @@ static void JNI_DownloadController_DownloadUrl(
     dl_params->set_download_source(download::DownloadSource::TOOLBAR_MENU);
     download_manager->DownloadUrl(std::move(dl_params));
   }
+}
+
+static void JNI_DownloadController_DownloadLocalFile(
+    const std::string& url,
+    const std::u16string& suggested_name,
+    content::WebContents* web_contents) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  if (!web_contents) {
+    return;
+  }
+
+  const GURL gurl(url);
+  if (!gurl.SchemeIs(url::kContentScheme) && !gurl.SchemeIsFile()) {
+    // Only local files are supported; use DownloadUrl() for everything else.
+    return;
+  }
+
+  DownloadManager* download_manager =
+      web_contents->GetBrowserContext()->GetDownloadManager();
+  if (!download_manager) {
+    return;
+  }
+
+  std::unique_ptr<download::DownloadUrlParameters> dl_params =
+      content::DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
+          web_contents, gurl,
+          TRAFFIC_ANNOTATION_WITHOUT_PROTO("Download via toolbar menu"));
+  // The local file/URI was chosen by the browser, not by the frame's document,
+  // and `CreateDownloadForWebContentsMainFrame` is only used to associate the
+  // DownloadItem with `web_contents` (via `DownloadItemUtils::GetWebContents`).
+  // Clear `initiator` so:
+  // 1) `DownloadManagerImpl` treats this as a browser-vetted download and does
+  //    not require file-request permissions on the renderer process, and
+  // 2) `DownloadResponseHandler::OnReceiveResponse` does not wipe out
+  //    `suggested_name` due to an origin mismatch between the main frame (e.g.
+  //    `chrome-native://pdf/link?url=...`) and the `file://` or `content://`
+  //    download URL.
+  dl_params->set_initiator(std::nullopt);
+  dl_params->set_suggested_name(suggested_name);
+  dl_params->set_content_initiated(false);
+  dl_params->set_download_source(download::DownloadSource::TOOLBAR_MENU);
+  download_manager->DownloadUrl(std::move(dl_params));
 }
 
 // static
