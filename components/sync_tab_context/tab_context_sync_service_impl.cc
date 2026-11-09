@@ -127,7 +127,7 @@ TabContextSyncServiceImpl::TabContextSyncServiceImpl(
               dump_stack))),
       ephemeral_key_fetcher_(std::move(ephemeral_key_fetcher)),
       backend_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   CHECK(client_);
   CHECK(ephemeral_key_fetcher_);
