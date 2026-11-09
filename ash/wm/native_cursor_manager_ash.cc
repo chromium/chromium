@@ -114,36 +114,18 @@ void NativeCursorManagerAsh::SetCursorSize(
     ui::CursorSize cursor_size,
     ::wm::NativeCursorManagerDelegate* delegate) {
   cursor_size_ = cursor_size;
-  UpdateCursorLoaderSize();
   delegate->CommitCursorSize(cursor_size);
-
-  // Sets the cursor to reflect the scale change immediately.
-  if (delegate->IsCursorVisible())
-    SetCursor(delegate->GetCursor(), delegate);
-
-  Shell::Get()
-      ->window_tree_host_manager()
-      ->cursor_window_controller()
-      ->SetCursorSize(cursor_size);
+  UpdateCustomCursorSize(delegate);
 }
 
 void NativeCursorManagerAsh::SetLargeCursorSizeInDip(
     int large_cursor_size_in_dip,
     ::wm::NativeCursorManagerDelegate* delegate) {
   large_cursor_size_in_dip_ = large_cursor_size_in_dip;
-  UpdateCursorLoaderSize();
   delegate->CommitLargeCursorSizeInDip(large_cursor_size_in_dip);
-
-  // Sets the cursor to reflect the large cursor size change immediately.
-  if (delegate->IsCursorVisible()) {
-    SetCursor(delegate->GetCursor(), delegate);
-  }
-
-  Shell::Get()
-      ->window_tree_host_manager()
-      ->cursor_window_controller()
-      ->SetLargeCursorSizeInDip(large_cursor_size_in_dip);
+  UpdateCustomCursorSize(delegate);
 }
+
 void NativeCursorManagerAsh::SetVisibility(
     bool visible,
     ::wm::NativeCursorManagerDelegate* delegate) {
@@ -191,11 +173,23 @@ void NativeCursorManagerAsh::SetCursorColor(
       ->SetCursorColor(color);
 }
 
-void NativeCursorManagerAsh::UpdateCursorLoaderSize() {
-  cursor_loader_.SetCustomCursorSize(
+void NativeCursorManagerAsh::UpdateCustomCursorSize(
+    ::wm::NativeCursorManagerDelegate* delegate) {
+  const std::optional<int> custom_cursor_size =
       cursor_size_ == ui::CursorSize::kLarge
           ? std::make_optional(large_cursor_size_in_dip_)
-          : std::nullopt);
+          : std::nullopt;
+  cursor_loader_.SetCustomCursorSize(custom_cursor_size);
+
+  // Sets the cursor to reflect the size change immediately.
+  if (delegate->IsCursorVisible()) {
+    SetCursor(delegate->GetCursor(), delegate);
+  }
+
+  Shell::Get()
+      ->window_tree_host_manager()
+      ->cursor_window_controller()
+      ->SetCustomCursorSize(custom_cursor_size);
 }
 
 }  // namespace ash

@@ -58,9 +58,10 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
  private:
   friend class CursorManagerTestApi;
 
-  // Updates the custom cursor size of `cursor_loader_` based on
-  // `cursor_size_` and `large_cursor_size_in_dip_`.
-  void UpdateCursorLoaderSize();
+  // Updates the custom cursor size of `cursor_loader_` and the
+  // `CursorWindowController` based on `cursor_size_` and
+  // `large_cursor_size_in_dip_`.
+  void UpdateCustomCursorSize(::wm::NativeCursorManagerDelegate* delegate);
 
   // The cursor location where the cursor was disabled.
   gfx::Point disabled_cursor_location_;

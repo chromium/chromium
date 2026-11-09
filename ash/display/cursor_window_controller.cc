@@ -11,7 +11,6 @@
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
-#include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -58,9 +57,8 @@ namespace {
 constexpr SkColor kFillColorForInvert = SK_ColorMAGENTA;
 
 std::vector<gfx::ImageSkia> GetCursorImages(
-    ui::CursorSize cursor_size,
     ui::mojom::CursorType type,
-    int target_cursor_size_in_dip,
+    std::optional<int> custom_cursor_size,
     float dsf,
     SkColor cursor_color,
     std::optional<SkColor> outline_color,
@@ -71,9 +69,8 @@ std::vector<gfx::ImageSkia> GetCursorImages(
   // rotation here.
   std::optional<ui::CursorData> cursor_data = wm::GetCursorData(
       type, dsf,
-      cursor_size == ui::CursorSize::kLarge
-          ? std::make_optional(target_cursor_size_in_dip * dsf)
-          : std::nullopt,
+      custom_cursor_size ? std::make_optional(*custom_cursor_size * dsf)
+                         : std::nullopt,
       display::Display::ROTATE_0, cursor_color, outline_color);
   if (!cursor_data) {
     return images;
@@ -413,17 +410,13 @@ void CursorWindowController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void CursorWindowController::SetLargeCursorSizeInDip(
-    int large_cursor_size_in_dip) {
-  large_cursor_size_in_dip =
-      std::min(large_cursor_size_in_dip, kMaxLargeCursorSize);
-  large_cursor_size_in_dip =
-      std::max(large_cursor_size_in_dip, kMinLargeCursorSize);
-
-  if (large_cursor_size_in_dip_ == large_cursor_size_in_dip)
+void CursorWindowController::SetCustomCursorSize(
+    std::optional<int> custom_cursor_size) {
+  if (custom_cursor_size_ == custom_cursor_size) {
     return;
+  }
 
-  large_cursor_size_in_dip_ = large_cursor_size_in_dip;
+  custom_cursor_size_ = custom_cursor_size;
 
   if (display_.is_valid())
     UpdateCursorImage();
@@ -511,14 +504,15 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
     }
   }
 
-  if (prefs->GetBoolean(prefs::kAccessibilityLargeCursorEnabled)) {
+  if (prefs->GetBoolean(prefs::kAccessibilityLargeCursorEnabled) &&
+      custom_cursor_size_) {
     // If current display's cursor plane size (i.e. maximum cursor size) is
     // larger than the large cursor size, then large cursor can be drawn
     // using hardware plane. Otherwise, software compositing is needed
     // for cursor.
     if (gfx::ConvertSizeToDips(display_.maximum_cursor_size(),
                                display_.device_scale_factor())
-            .height() < large_cursor_size_in_dip_) {
+            .height() < *custom_cursor_size_) {
       return true;
     }
   }
@@ -646,11 +640,6 @@ void CursorWindowController::SetCursor(gfx::NativeCursor cursor) {
   cursor_ = cursor;
   UpdateCursorImage();
   UpdateCursorVisibility();
-}
-
-void CursorWindowController::SetCursorSize(ui::CursorSize cursor_size) {
-  cursor_size_ = cursor_size;
-  UpdateCursorImage();
 }
 
 void CursorWindowController::SetVisibility(bool visible) {
@@ -789,9 +778,9 @@ void CursorWindowController::UpdateCursorImage() {
     // large cursor. We don't need to care about the case where cursor
     // compositing is disabled as we always use cursor compositing if
     // accessibility large cursor is enabled.
-    if (cursor_size_ == ui::CursorSize::kLarge &&
-        large_cursor_size_in_dip_ != images[0].size().height()) {
-      const float rescale = static_cast<float>(large_cursor_size_in_dip_) /
+    if (custom_cursor_size_ &&
+        *custom_cursor_size_ != images[0].size().height()) {
+      const float rescale = static_cast<float>(*custom_cursor_size_) /
                             static_cast<float>(images[0].size().height());
       hot_point_ = gfx::ScaleToCeiledPoint(hot_point_, rescale);
       for (size_t i = 0; i < images.size(); ++i) {
@@ -809,9 +798,9 @@ void CursorWindowController::UpdateCursorImage() {
       outline_color = SK_ColorWHITE;
     }
 
-    images = GetCursorImages(cursor_size_, cursor_.type(),
-                             large_cursor_size_in_dip_, dsf, fill_color,
-                             outline_color, &hot_point_in_physical_pixels);
+    images =
+        GetCursorImages(cursor_.type(), custom_cursor_size_, dsf, fill_color,
+                        outline_color, &hot_point_in_physical_pixels);
     if (images.empty()) {
       return;
     }

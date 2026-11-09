@@ -9,7 +9,6 @@
 #include <optional>
 
 #include "ash/ash_export.h"
-#include "ash/constants/ash_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -17,7 +16,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -59,7 +57,9 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  void SetLargeCursorSizeInDip(int large_cursor_size_in_dip);
+  // Sets the size of the cursor in dip. If `std::nullopt`, the default size of
+  // the cursor assets is used.
+  void SetCustomCursorSize(std::optional<int> custom_cursor_size);
   void SetCursorColor(SkColor cursor_color);
   void SetCursorInverted(bool inverted);
 
@@ -92,7 +92,6 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   // throttle the update based on the display's refresh rate.
   void UpdateLocation(bool throttle = false);
   void SetCursor(gfx::NativeCursor cursor);
-  void SetCursorSize(ui::CursorSize cursor_size);
   void SetVisibility(bool visible);
 
   // aura::WindowObserver:
@@ -167,10 +166,11 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   // The last requested cursor visibility.
   bool visible_ = true;
 
-  ui::CursorSize cursor_size_ = ui::CursorSize::kNormal;
   gfx::Point hot_point_;
 
-  int large_cursor_size_in_dip_ = kDefaultLargeCursorSize;
+  // The size of the cursor in dip. If `std::nullopt`, the default size of the
+  // cursor assets is used.
+  std::optional<int> custom_cursor_size_;
   SkColor cursor_color_ = ui::kDefaultCursorColor;
   bool is_inverted_ = false;
 

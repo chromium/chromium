@@ -27,6 +27,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/resource/mock_resource_bundle_delegate.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -349,9 +350,9 @@ TEST_F(CursorWindowControllerTest, ShouldEnableCursorCompositing) {
   // the target large cursor size is larger than current display's maximum
   // cursor size.
   cursor_window_controller()->SetDisplay(display);
-  cursor_window_controller()->SetLargeCursorSizeInDip(
-      display_maximum_cursor_size_in_dip.height() + 1);
   prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, true);
+  prefs->SetInteger(prefs::kAccessibilityLargeCursorDipSize,
+                    display_maximum_cursor_size_in_dip.height() + 1);
   EXPECT_TRUE(cursor_window_controller()->is_cursor_compositing_enabled());
 
   // Disable large cursor, cursor compositing should be disabled.
@@ -361,10 +362,11 @@ TEST_F(CursorWindowControllerTest, ShouldEnableCursorCompositing) {
   // Re-enable large cursor, since large cursor size is smaller than display's
   // maximum cursor size, cursor should use hardware compositing instead of
   // software compositing.
-  cursor_window_controller()->SetDisplay(display);
-  cursor_window_controller()->SetLargeCursorSizeInDip(
-      display_maximum_cursor_size_in_dip.height() - 1);
   prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, true);
+  prefs->SetInteger(prefs::kAccessibilityLargeCursorDipSize,
+                    display_maximum_cursor_size_in_dip.height() - 1);
+  cursor_window_controller()->SetDisplay(display);
+  Shell::Get()->UpdateCursorCompositingEnabled();
   EXPECT_FALSE(cursor_window_controller()->is_cursor_compositing_enabled());
 }
 
