@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/test/mock_toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -24,15 +25,6 @@ namespace {
 
 using testing::_;
 using testing::Return;
-
-class MockToastController : public ToastController {
- public:
-  explicit MockToastController(BrowserWindowInterface* browser_window_interface)
-      : ToastController(browser_window_interface, nullptr) {}
-  ~MockToastController() override = default;
-
-  MOCK_METHOD(bool, MaybeShowToast, (ToastParams params), (override));
-};
 
 class MockManagePasswordsAutoSigninToastDelegate
     : public ManagePasswordsAutoSigninToastDelegate {

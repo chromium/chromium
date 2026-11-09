@@ -304,6 +304,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts:test_support",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/views/page_action:test_support",
       "//chrome/browser/ui/views/passwords",

@@ -1096,6 +1096,7 @@ source_set("unit_tests") {
       "//chrome/browser/sync",
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts:test_support",
       "//testing/gmock",
     ]
   }
@@ -1433,6 +1434,7 @@ source_set("browser_tests") {
       "//chrome/browser/ui/exclusive_access:test_support",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/toasts:test_support",
       "//chrome/browser/ui/views/page_info",
       "//chrome/common:constants",
       "//chrome/test:test_support",

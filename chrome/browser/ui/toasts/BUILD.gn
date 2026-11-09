@@ -90,6 +90,18 @@ source_set("impl") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test/mock_toast_controller.cc",
+    "test/mock_toast_controller.h",
+  ]
+  public_deps = [
+    ":toasts",
+    "//testing/gmock",
+  ]
+}
+
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

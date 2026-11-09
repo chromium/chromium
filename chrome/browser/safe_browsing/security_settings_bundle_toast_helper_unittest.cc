@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/test/mock_toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -17,16 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
-
-namespace {
-
-class MockToastController : public ToastController {
- public:
-  MockToastController() : ToastController(nullptr, nullptr) {}
-  MOCK_METHOD(bool, MaybeShowToast, (ToastParams params), (override));
-};
-
-}  // namespace
 
 class SecuritySettingsBundleToastHelperTest : public testing::Test {
  public:

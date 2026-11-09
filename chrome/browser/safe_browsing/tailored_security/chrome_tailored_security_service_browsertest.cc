@@ -11,7 +11,7 @@
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/test/mock_toast_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -21,16 +21,6 @@
 #include "ui/views/widget/any_widget_observer.h"
 
 namespace safe_browsing {
-
-namespace {
-
-class MockToastController : public ToastController {
- public:
-  MockToastController() : ToastController(nullptr, nullptr) {}
-  MOCK_METHOD(bool, MaybeShowToast, (ToastParams params), (override));
-};
-
-}  // namespace
 
 class ChromeTailoredSecurityServiceBrowserTest : public InProcessBrowserTest {
  public:
