@@ -43,6 +43,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.device.gamepad.GamepadList;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.util.KeyEventUtils;
 
@@ -1373,15 +1374,15 @@ public class KeyboardShortcuts {
 
     /**
      * Returns the localized keyboard shortcut text (e.g., "Ctrl+T") for the given menu item ID, or
-     * {@code null} if keyboard shortcut hints are disabled or the menu item has no associated
-     * keyboard shortcut.
+     * {@code null} if keyboard shortcut hints should not be shown or the menu item has no
+     * associated keyboard shortcut.
      *
+     * @param context The {@link Context} of the window displaying the menu.
      * @param menuItemId The {@code R.id.*} resource ID of the menu item.
      * @return The formatted shortcut text, or {@code null}.
      */
-    public static @Nullable String getShortcutText(@IdRes int menuItemId) {
-        if (!ChromeFeatureList.sAndroidKeyboardShortcutHints.isEnabled()
-                || !DeviceInput.supportsAlphabeticKeyboard()) {
+    public static @Nullable String getShortcutText(Context context, @IdRes int menuItemId) {
+        if (!shouldShowShortcutHints(context)) {
             return null;
         }
 
@@ -1455,6 +1456,12 @@ public class KeyboardShortcuts {
 
         String shortcutText = KeyboardShortcutsJni.get().getShortcutTextForCommandId(commandId);
         return shortcutText.isEmpty() ? null : shortcutText;
+    }
+
+    private static boolean shouldShowShortcutHints(Context context) {
+        return ChromeFeatureList.sAndroidKeyboardShortcutHints.isEnabled()
+                && DeviceInput.supportsAlphabeticKeyboard()
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     @CalledByNative

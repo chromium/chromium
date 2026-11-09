@@ -163,7 +163,8 @@ public class TabStripContextMenuCoordinator {
                         .withTitleRes(R.string.menu_new_tab)
                         .withMenuId(R.id.new_tab_menu_id)
                         .withIsIncognito(isIncognito)
-                        .withShortcutText(KeyboardShortcuts.getShortcutText(R.id.new_tab_menu_id))
+                        .withShortcutText(
+                                KeyboardShortcuts.getShortcutText(mContext, R.id.new_tab_menu_id))
                         .build());
         // Add "Reopen closed tab/tabs/group" option.
         @RecentlyClosedEntryType
@@ -181,7 +182,8 @@ public class TabStripContextMenuCoordinator {
                         .withIsIncognito(isIncognito)
                         .withEnabled(recentlyClosedEntryType != RecentlyClosedEntryType.NONE)
                         .withShortcutText(
-                                KeyboardShortcuts.getShortcutText(R.id.reopen_closed_entry))
+                                KeyboardShortcuts.getShortcutText(
+                                        mContext, R.id.reopen_closed_entry))
                         .build());
         // Add "Bookmark all tabs" option.
         if (!isIncognito) {
@@ -192,7 +194,8 @@ public class TabStripContextMenuCoordinator {
                             .withIsIncognito(false)
                             .withEnabled(mTabModel.getCount() > 1)
                             .withShortcutText(
-                                    KeyboardShortcuts.getShortcutText(R.id.bookmark_all_tabs))
+                                    KeyboardShortcuts.getShortcutText(
+                                            mContext, R.id.bookmark_all_tabs))
                             .build());
         }
         // Add "Name window" option.
@@ -274,7 +277,8 @@ public class TabStripContextMenuCoordinator {
                             .withTitleRes(R.string.menu_task_manager)
                             .withMenuId(R.id.task_manager)
                             .withIsIncognito(isIncognito)
-                            .withShortcutText(KeyboardShortcuts.getShortcutText(R.id.task_manager))
+                            .withShortcutText(
+                                    KeyboardShortcuts.getShortcutText(mContext, R.id.task_manager))
                             .build());
         }
     }

@@ -1805,7 +1805,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 .with(TITLE, title)
                 .with(ENABLED, enabled)
                 .with(TEXT_APPEARANCE_ID, BrowserUiListMenuUtils.getDefaultTextAppearanceStyle())
-                .with(SHORTCUT_TEXT, KeyboardShortcuts.getShortcutText(menuItemId))
+                .with(SHORTCUT_TEXT, KeyboardShortcuts.getShortcutText(mContext, menuItemId))
                 .build();
     }
 

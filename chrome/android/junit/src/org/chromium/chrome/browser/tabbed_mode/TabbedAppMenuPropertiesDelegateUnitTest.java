@@ -2712,6 +2712,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_HINTS)
     public void testShortcutTextPopulatedWhenEnabled() {
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);

@@ -4211,6 +4211,7 @@ public class TabContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
     @Feature("Tab Strip Context Menu")
     @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_HINTS)
     public void testShortcutText_populatedWhenEnabled() {
