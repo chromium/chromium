@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
@@ -27,6 +28,7 @@ import org.chromium.components.payments.Event2;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -41,6 +43,8 @@ import java.util.concurrent.TimeoutException;
 })
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376100658
 public class PaymentRequestPaymentAppUiSkipPreloadTest {
+    private static final long DISMISSED_TIMEOUT_SECONDS = 10L;
+
     public final FreshCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
@@ -58,6 +62,21 @@ public class PaymentRequestPaymentAppUiSkipPreloadTest {
     }
 
     /**
+     * Clicks "buy" and waits for the skipped-UI payment flow to dismiss.
+     *
+     * <p>Uses a longer timeout than {@link CallbackHelper#WAIT_TIMEOUT_SECONDS}: on the Android 15
+     * x64 emulator bots, tearing down the payment dialog's window can stall the UI thread for ~4.5s
+     * (crbug.com/583928053), which together with the 500ms delay in bobpay_ui_skip_preload.js goes
+     * over 5s.
+     */
+    private void clickBuyAndWaitForDismissed() throws TimeoutException {
+        CallbackHelper dismissed = mPaymentRequestTestRule.getDismissed();
+        int callCount = dismissed.getCallCount();
+        mPaymentRequestTestRule.clickNode("buy");
+        dismissed.waitForCallback(callCount, 1, DISMISSED_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+    }
+
+    /**
      * If Bob Pay is supported and installed, user should be able to pay with it. Here Bob Pay
      * responds to Chrome immediately.
      */
@@ -67,7 +86,7 @@ public class PaymentRequestPaymentAppUiSkipPreloadTest {
     public void testPayViaFastBobPay() throws TimeoutException {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-        mPaymentRequestTestRule.clickNodeAndWait("buy", mPaymentRequestTestRule.getDismissed());
+        clickBuyAndWaitForDismissed();
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"https://bobpay.test", "\"transaction\"", "1337"});
     }
@@ -82,7 +101,7 @@ public class PaymentRequestPaymentAppUiSkipPreloadTest {
     public void testPayViaSlowBobPay() throws TimeoutException {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-        mPaymentRequestTestRule.clickNodeAndWait("buy", mPaymentRequestTestRule.getDismissed());
+        clickBuyAndWaitForDismissed();
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"https://bobpay.test", "\"transaction\"", "1337"});
     }
@@ -100,7 +119,7 @@ public class PaymentRequestPaymentAppUiSkipPreloadTest {
                 AppPresence.HAVE_APPS,
                 FactorySpeed.FAST_FACTORY,
                 AppSpeed.SLOW_APP);
-        mPaymentRequestTestRule.clickNodeAndWait("buy", mPaymentRequestTestRule.getDismissed());
+        clickBuyAndWaitForDismissed();
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"https://bobpay.test", "\"transaction\"", "1337"});
     }
@@ -128,7 +147,7 @@ public class PaymentRequestPaymentAppUiSkipPreloadTest {
                 AppPresence.HAVE_APPS,
                 FactorySpeed.SLOW_FACTORY,
                 AppSpeed.SLOW_APP);
-        mPaymentRequestTestRule.clickNodeAndWait("buy", mPaymentRequestTestRule.getDismissed());
+        clickBuyAndWaitForDismissed();
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"https://bobpay.test", "\"transaction\"", "1337"});
         watcher.assertExpected();
