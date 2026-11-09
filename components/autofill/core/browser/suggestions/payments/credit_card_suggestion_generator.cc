@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/filling/payments/field_filling_payments_util.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -214,15 +215,11 @@ std::vector<CreditCard> FetchCreditCardOrCvcFieldSuggestionDataSync(
     return {};
   }
 
+  // If the trigger field holds a card value that Autofill filled, the user may
+  // want to swap to another card, so all cards are suggested instead of only
+  // those matching the field's current value.
   const bool allow_payment_swapping =
-      // TODO(crbug.com/393114125): Change to use
-      // `AutofillField::field_modifiers_` (checking `last_modifier() ==
-      // FieldModifier::kAutofill` alongside `filling_product()`, since
-      // `filling_product()` remains `kCreditCard` after user edits or when
-      // cleared by a nameless card swap).
-      trigger_field.is_autofilled_according_to_renderer() &&
-      trigger_autofill_field.filling_product() == FillingProduct::kCreditCard &&
-      IsPaymentsFieldSwappingEnabled();
+      AllowPaymentsSwappingOnField(trigger_autofill_field);
 
   bool suppress_disused_cards =
       SanitizeCreditCardFieldValue(trigger_field.value()).empty();
@@ -579,9 +576,8 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
         autofill_field &&
         autofill_field->Type().GetCreditCardType() == CREDIT_CARD_NUMBER) {
       card_number_field_value += SanitizeCreditCardFieldValue(field.value());
-      // TODO(crbug.com/393114125): Change to use
-      // `AutofillField::field_modifiers_`.
-      is_card_number_autofilled |= field.is_autofilled_according_to_renderer();
+      is_card_number_autofilled |=
+          autofill_field->last_modifier() == FieldModifier::kAutofill;
     }
   }
 

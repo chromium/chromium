@@ -2214,6 +2214,10 @@ TEST_F(
   // Fill data in CC Number field and set it as autofilled.
   test_api(form).field(1).set_value(u"4444 4444 4444 4444");
   test_api(form).field(1).set_is_autofilled_according_to_renderer(true);
+  test_api(autofill_manager())
+      .FindCachedFormById(form.global_id())
+      ->field(1)
+      ->AddFieldModifier(FieldModifier::kAutofill);
 
   // Expect that suggestions are returned for the expiry type field.
   const FormFieldData& expiry_type_field = form.fields()[2];

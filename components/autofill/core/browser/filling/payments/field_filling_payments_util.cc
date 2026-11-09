@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -491,6 +492,14 @@ std::optional<SelectOption> GetFillingOptionForCreditCardSelectControl(
   }
 }
 
+// Returns whether `field` has a credit card type that payments field swapping
+// applies to, i.e. any credit card type except the standalone CVC.
+bool HasSwappableCreditCardType(const AutofillField& field) {
+  const FieldType field_type = field.Type().GetCreditCardType();
+  return field_type != UNKNOWN_TYPE &&
+         field_type != CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
+}
+
 }  // namespace
 
 FillingValueAndType GetFillingValueAndTypeForCreditCard(
@@ -568,6 +577,33 @@ bool WillFillCreditCardNumberOrCvc(
 
   return std::ranges::any_of(fields,
                              is_fillable_credit_card_number_or_cvc_field);
+}
+
+bool AllowPaymentsSwappingOnField(const AutofillField& field) {
+  // Both conditions on the field's history are needed:
+  // - `filling_product()` alone is not enough because it stays `kCreditCard`
+  //   after the user edits the field, or after a swap clears it.
+  // - The credit card type alone is not enough because a field can have a
+  //   union type, e.g. `NAME_FULL` and `CREDIT_CARD_NAME_FULL`, and may have
+  //   been filled from an address.
+  // The value must also be non-empty: `last_modifier()` stays `kAutofill` if
+  // site JavaScript clears the field (e.g. `form.reset()`), but an empty field
+  // holds no card value to swap.
+  return IsPaymentsFieldSwappingEnabled() &&
+         HasSwappableCreditCardType(field) &&
+         field.last_modifier() == FieldModifier::kAutofill &&
+         field.filling_product() == FillingProduct::kCreditCard &&
+         !field.value().empty();
+}
+
+bool AllowPaymentsSwappingFill(const AutofillField& trigger_field,
+                               bool is_refill,
+                               FillingProduct filling_product) {
+  // Refills re-apply the card of the original fill to a form that changed
+  // dynamically, so they never swap.
+  return IsPaymentsFieldSwappingEnabled() &&
+         filling_product == FillingProduct::kCreditCard && !is_refill &&
+         HasSwappableCreditCardType(trigger_field);
 }
 
 }  // namespace autofill

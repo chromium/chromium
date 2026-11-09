@@ -211,30 +211,6 @@ bool ShouldSkipFieldBecauseOfMeaningfulInitialValue(const AutofillField& field,
   return true;
 }
 
-bool AllowPaymentSwapping(const AutofillField& trigger_field,
-                          const AutofillField& field,
-                          bool is_refill,
-                          FillingProduct filling_product) {
-  auto has_relevant_cc_field_type = [](const AutofillField& field) {
-    const FieldType field_type = field.Type().GetCreditCardType();
-    return field_type != UNKNOWN_TYPE &&
-           field_type != CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
-  };
-  // Check both that `field` was previously filled by `kCreditCard` and that the
-  // active fill operation is `kCreditCard`. Checking
-  // `has_relevant_cc_field_type()` alone is not sufficient because
-  // `AutofillType` can hold union types across products (e.g. a
-  // `CREDIT_CARD_NAME_*` type combined with a `NAME_*` or `AutofillAi` entity
-  // attribute type), so a non-card fill triggered on a dual-typed field could
-  // otherwise swap or clear a field previously filled by `kCreditCard`.
-  return field.last_modifier() == FieldModifier::kAutofill &&
-         field.filling_product() == FillingProduct::kCreditCard &&
-         filling_product == FillingProduct::kCreditCard &&
-         has_relevant_cc_field_type(trigger_field) &&
-         has_relevant_cc_field_type(field) && !is_refill &&
-         IsPaymentsFieldSwappingEnabled();
-}
-
 // Called by `FormFiller::MaybeScheduleAutomaticRefill()` and constructs a
 // refill value in case the website used JavaScript to reformat an expiration
 // date like "05/2023" into "05 / 20" (i.e. it broke the year by cutting the
@@ -549,18 +525,20 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
          FieldFillingSkipReason::kUserFilledFields);
 
   // Don't fill previously autofilled fields except the initiating field or
-  // when it's a refill or for credit card fields, when
-  // `kAutofillPaymentsFieldSwapping` is enabled.
+  // when it's a refill or when payments field swapping replaces a previously
+  // autofilled credit card (see `AllowPaymentsSwappingFill()`).
   //
   // Also exclude the case of empty fields, because sometimes autofilled fields
   // can be cleared without the modifiers being reset (e.g. if the form is reset
   // by JS).
-  add_if(field.last_modifier() == FieldModifier::kAutofill &&
-             !field.value().empty() && !is_trigger_field &&
-             !refill_options.is_refill() &&
-             !AllowPaymentSwapping(trigger_field, field,
-                                   refill_options.is_refill(), filling_product),
-         FieldFillingSkipReason::kAlreadyAutofilled);
+  add_if(
+      field.last_modifier() == FieldModifier::kAutofill &&
+          !field.value().empty() && !is_trigger_field &&
+          !refill_options.is_refill() &&
+          !(AllowPaymentsSwappingFill(trigger_field, refill_options.is_refill(),
+                                      filling_product) &&
+            AllowPaymentsSwappingOnField(field)),
+      FieldFillingSkipReason::kAlreadyAutofilled);
 
   AutofillType autofill_type = field.Type();
   FieldTypeSet field_types = autofill_type.GetTypes();
@@ -859,6 +837,12 @@ void FormFiller::FillOrPreviewForm(
 
   const AugmentedFillingPayload augmented_filling_payload =
       AugmentedFillingPayload(filling_payload, form, trigger_field);
+  // Whether this fill replaces a credit card that Autofill filled earlier. If
+  // so, fields holding that card's values are overwritten with the new card's
+  // values, or cleared where the new card has no value, so that the form does
+  // not mix data from two cards.
+  const bool allow_payments_swapping_fill = AllowPaymentsSwappingFill(
+      trigger_field, refill_options.is_refill(), filling_product);
 
   const auto filling_content =
       base::MakeFlatMap<FieldGlobalId,
@@ -873,9 +857,9 @@ void FormFiller::FillOrPreviewForm(
                     GetFieldFillingData(
                         *field, augmented_filling_payload, forced_fill_values,
                         action_persistence,
-                        AllowPaymentSwapping(trigger_field, *field,
-                                             refill_options.is_refill(),
-                                             filling_product),
+                        /*allow_suggestion_swapping=*/
+                        allow_payments_swapping_fill &&
+                            AllowPaymentsSwappingOnField(*field),
                         &failure_to_fill)) {
               return Pair(field->global_id(), std::move(*filling_content));
             }
@@ -905,11 +889,10 @@ void FormFiller::FillOrPreviewForm(
         expected_content = filling_content.at(field->global_id());
     CHECK(expected_content.has_value());
 
-    FillField(
-        expected_content.value(), result_field, action_persistence,
-        trigger_source,
-        AllowPaymentSwapping(trigger_field, *field, refill_options.is_refill(),
-                             filling_product));
+    FillField(expected_content.value(), result_field, action_persistence,
+              trigger_source,
+              /*allow_suggestion_swapping=*/allow_payments_swapping_fill &&
+                  AllowPaymentsSwappingOnField(*field));
     filled_field_types.emplace(field->global_id(),
                                expected_content->filling_type);
   }

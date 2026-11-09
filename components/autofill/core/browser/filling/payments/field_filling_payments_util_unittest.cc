@@ -1661,6 +1661,98 @@ TEST_F(FieldFillingPaymentsUtilTest,
       AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed));
 }
 
+// Returns a field of `types` whose current (non-empty) value was autofilled
+// from a credit card.
+AutofillField CreateCreditCardAutofilledField(FieldTypeSet types) {
+  AutofillField field;
+  field.SetTypeTo(AutofillType(types), AutofillPredictionSource::kHeuristics);
+  field.set_value(u"autofilled value");
+  field.AddFieldModifier(FieldModifier::kAutofill);
+  field.set_filling_product(FillingProduct::kCreditCard);
+  return field;
+}
+
+// Tests that only credit card fields (other than standalone CVC fields) whose
+// current value was autofilled from a credit card allow payments swapping.
+TEST_F(FieldFillingPaymentsUtilTest, AllowPaymentsSwappingOnField) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillPaymentsFieldSwapping};
+
+  EXPECT_TRUE(AllowPaymentsSwappingOnField(
+      CreateCreditCardAutofilledField({CREDIT_CARD_NUMBER})));
+  EXPECT_TRUE(AllowPaymentsSwappingOnField(
+      CreateCreditCardAutofilledField({NAME_FULL, CREDIT_CARD_NAME_FULL})));
+
+  // Not a credit card field.
+  EXPECT_FALSE(AllowPaymentsSwappingOnField(
+      CreateCreditCardAutofilledField({NAME_FULL})));
+  // Standalone CVC field.
+  EXPECT_FALSE(AllowPaymentsSwappingOnField(CreateCreditCardAutofilledField(
+      {CREDIT_CARD_STANDALONE_VERIFICATION_CODE})));
+
+  // Filled from an address.
+  AutofillField address_filled =
+      CreateCreditCardAutofilledField({NAME_FULL, CREDIT_CARD_NAME_FULL});
+  address_filled.set_filling_product(FillingProduct::kAddress);
+  EXPECT_FALSE(AllowPaymentsSwappingOnField(address_filled));
+
+  // Edited by the user after Autofill filled it.
+  AutofillField user_edited =
+      CreateCreditCardAutofilledField({CREDIT_CARD_NUMBER});
+  user_edited.AddFieldModifier(FieldModifier::kUser);
+  EXPECT_FALSE(AllowPaymentsSwappingOnField(user_edited));
+
+  // Cleared by site JavaScript (e.g. `form.reset()`) after Autofill filled it.
+  // `last_modifier()` remains `kAutofill`, but there is no value to swap.
+  AutofillField cleared_by_javascript =
+      CreateCreditCardAutofilledField({CREDIT_CARD_NUMBER});
+  cleared_by_javascript.set_value(u"");
+  ASSERT_EQ(cleared_by_javascript.last_modifier(), FieldModifier::kAutofill);
+  EXPECT_FALSE(AllowPaymentsSwappingOnField(cleared_by_javascript));
+}
+
+// Tests that only credit card fills that are not refills and that are
+// triggered from a credit card field other than a standalone CVC field may
+// swap. The trigger field does not need to hold an autofilled value.
+TEST_F(FieldFillingPaymentsUtilTest, AllowPaymentsSwappingFill) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillPaymentsFieldSwapping};
+
+  AutofillField empty_card_number_field;
+  empty_card_number_field.SetTypeTo(AutofillType(CREDIT_CARD_NUMBER),
+                                    AutofillPredictionSource::kHeuristics);
+  EXPECT_TRUE(AllowPaymentsSwappingFill(empty_card_number_field,
+                                        /*is_refill=*/false,
+                                        FillingProduct::kCreditCard));
+
+  EXPECT_FALSE(AllowPaymentsSwappingFill(empty_card_number_field,
+                                         /*is_refill=*/true,
+                                         FillingProduct::kCreditCard));
+  EXPECT_FALSE(AllowPaymentsSwappingFill(empty_card_number_field,
+                                         /*is_refill=*/false,
+                                         FillingProduct::kAddress));
+
+  AutofillField standalone_cvc_field;
+  standalone_cvc_field.SetTypeTo(
+      AutofillType(CREDIT_CARD_STANDALONE_VERIFICATION_CODE),
+      AutofillPredictionSource::kHeuristics);
+  EXPECT_FALSE(AllowPaymentsSwappingFill(standalone_cvc_field,
+                                         /*is_refill=*/false,
+                                         FillingProduct::kCreditCard));
+}
+
+// Tests that payments swapping is disallowed if
+// `kAutofillPaymentsFieldSwapping` is disabled.
+TEST_F(FieldFillingPaymentsUtilTest, PaymentsSwappingDisabled) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(features::kAutofillPaymentsFieldSwapping);
+
+  AutofillField field = CreateCreditCardAutofilledField({CREDIT_CARD_NUMBER});
+  EXPECT_FALSE(AllowPaymentsSwappingOnField(field));
+  EXPECT_FALSE(AllowPaymentsSwappingFill(field, /*is_refill=*/false,
+                                         FillingProduct::kCreditCard));
+}
+
 }  // namespace
 
 }  // namespace autofill
