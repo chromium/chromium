@@ -507,7 +507,6 @@ class DriveApiRequestsTest : public testing::Test {
     http_request_ = request;
 
     const GURL absolute_url = test_server_.GetURL(request.relative_url);
-    std::string id;
     if (absolute_url.GetPath() != "/upload/drive") {
       return nullptr;
     }

@@ -14,7 +14,6 @@ namespace google_apis {
 
 // Test about resource parsing.
 TEST(DriveAPIParserTest, AboutResourceParser) {
-  std::string error;
   std::unique_ptr<base::Value> document =
       test_util::LoadJSONFile("drive/about.json");
   ASSERT_TRUE(document.get());
@@ -72,7 +71,6 @@ TEST(DriveAPIParserTest, TeamDriveListParser) {
 
 // Test file list parsing.
 TEST(DriveAPIParserTest, FileListParser) {
-  std::string error;
   std::unique_ptr<base::Value> document =
       test_util::LoadJSONFile("drive/filelist.json");
   ASSERT_TRUE(document.get());
@@ -201,7 +199,6 @@ TEST(DriveAPIParserTest, FileListParser) {
 
 // Test change list parsing.
 TEST(DriveAPIParserTest, ChangeListParser) {
-  std::string error;
   std::unique_ptr<base::Value> document =
       test_util::LoadJSONFile("drive/changelist.json");
   ASSERT_TRUE(document.get());
@@ -270,7 +267,6 @@ TEST(DriveAPIParserTest, ChangeListParser) {
 
 // Test change list parsing.
 TEST(DriveAPIParserTest, ChangeListParserWithStartToken) {
-  std::string error;
   std::unique_ptr<base::Value> document = test_util::LoadJSONFile(
       "drive/changelist_with_new_start_page_token.json");
   ASSERT_TRUE(document.get());

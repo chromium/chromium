@@ -302,7 +302,6 @@ TEST_F(GServicesSettingsTest, UpdateFromCheckinResponseSettingsDiff) {
 
   // Full settings are necessary to calculate digest.
   GServicesSettings::SettingsMap full_settings(settings_diff);
-  std::string digest = GServicesSettings::CalculateDigest(full_settings);
 
   checkin_response.Clear();
   AddSettingsToResponse(checkin_response, settings_diff, true);
@@ -322,7 +321,6 @@ TEST_F(GServicesSettingsTest, UpdateFromCheckinResponseSettingsDiff) {
   full_settings.erase(full_settings.find("new_setting_1"));
   full_settings.erase(full_settings.find("gcm_secure_port"));
   full_settings["new_setting_3"] = "new_setting_3_value";
-  digest = GServicesSettings::CalculateDigest(full_settings);
 
   checkin_response.Clear();
   AddSettingsToResponse(checkin_response, settings_diff, true);

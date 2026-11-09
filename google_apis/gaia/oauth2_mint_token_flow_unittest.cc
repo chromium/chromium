@@ -1168,7 +1168,6 @@ TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallFailure_NullHead) {
 
 TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_NoGrantedScopes) {
   CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
-  std::set<std::string> granted_scopes = {"http://scope1", "http://scope2"};
   EXPECT_CALL(delegate_, OnMintTokenFailure(_));
   ProcessApiCallSuccess(head_200_.get(), kTokenResponseNoGrantedScopes);
   histogram_tester_.ExpectUniqueSample(
