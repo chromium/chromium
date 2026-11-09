@@ -1597,7 +1597,9 @@ class AXPosition {
       return Clone();
 
     AXPositionInstance copy = Clone();
-    CHECK_GE(copy->text_offset_, 0, base::NotFatalUntil::M163);
+    // TODO(crbug.com/583004279): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_GE(copy->text_offset_, 0);
     // Note that by design, `AXPosition::IsLeaf()` excludes the text found in
     // ignored subtrees from the accessibility tree's text representation. (See
     // `AXNode::IsEmptyLeaf()`.)
