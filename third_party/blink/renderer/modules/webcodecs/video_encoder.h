@@ -132,6 +132,7 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   // This will execute shortly after the async readback completes.
   void OnReadbackDone(Request* request,
                       scoped_refptr<media::VideoFrame> txt_frame,
+                      media::VideoEncoder::EncodeOptions encode_options,
                       media::VideoEncoder::EncoderStatusCB done_callback,
                       scoped_refptr<media::VideoFrame> result_frame);
   static base::expected<std::unique_ptr<media::VideoEncoder>,
@@ -199,9 +200,14 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   // Buffers returned by getAllFrameBuffers()
   HeapVector<Member<VideoEncoderBuffer>> frame_reference_buffers_;
 
+  // The transformation corresponding to the first input received by
+  // OnNewEncode() after configure(). Used to reject inputs with mismatched
+  // orientations.
+  std::optional<media::VideoTransformation> first_input_transformation_;
+
   // The transformation corresponding to the last input received by
   // ProcessEncode(). Used to request a key frame.
-  std::optional<media::VideoTransformation> first_input_transformation_;
+  std::optional<media::VideoTransformation> last_input_transformation_;
 
   // Latest VideoEncoderInfo reported by encoder
   media::VideoEncoderInfo encoder_info_;

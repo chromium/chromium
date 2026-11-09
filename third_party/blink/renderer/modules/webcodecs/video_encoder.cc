@@ -734,8 +734,11 @@ VideoEncoder::~VideoEncoder() = default;
 VideoEncoder::ParsedConfig* VideoEncoder::OnNewConfigure(
     const VideoEncoderConfig* config,
     ExceptionState& exception_state) {
-  first_input_transformation_.reset();
-  return ParseConfigStatic(config, exception_state);
+  auto* result = ParseConfigStatic(config, exception_state);
+  if (!exception_state.HadException()) {
+    first_input_transformation_.reset();
+  }
+  return result;
 }
 
 bool VideoEncoder::VerifyCodecSupport(ParsedConfig* config,
@@ -956,6 +959,7 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
                       WebFeature::kWebCodecsAv1EncodingWithQP);
   }
   last_decoder_config_.reset();
+  last_input_transformation_.reset();
   first_output_after_configure_ = true;
   encoder_metrics_provider_->Initialize(
       active_config_->profile, active_config_->options.frame_size,
@@ -1222,6 +1226,10 @@ void VideoEncoder::ProcessEncode(Request* request) {
   if (frame->metadata().transformation) {
     frame_transform = *frame->metadata().transformation;
   }
+  if (last_input_transformation_ != frame_transform) {
+    encode_options.key_frame = true;
+  }
+  last_input_transformation_ = frame_transform;
 
   frame_metadata_.push_back(FrameMetadata{.timestamp = frame->timestamp(),
                                           .duration = frame_duration,
@@ -1250,11 +1258,11 @@ void VideoEncoder::ProcessEncode(Request* request) {
     // resolve synchronously.
     blocking_request_in_progress_ = request;
 
-    auto readback_done_callback =
-        blink::BindOnce(&VideoEncoder::OnReadbackDone,
-                        MakeUnwrappingCrossThreadWeakHandle(this),
-                        MakeUnwrappingCrossThreadHandle(request), frame,
-                        std::move(encode_done_callback));
+    auto readback_done_callback = blink::BindOnce(
+        &VideoEncoder::OnReadbackDone,
+        MakeUnwrappingCrossThreadWeakHandle(this),
+        MakeUnwrappingCrossThreadHandle(request), frame,
+        std::move(encode_options), std::move(encode_done_callback));
 
     if (StartReadback(std::move(frame), std::move(readback_done_callback))) {
       request->input->close();
@@ -1379,6 +1387,7 @@ media::VideoEncoder::EncodeOptions VideoEncoder::CreateEncodeOptions(
 void VideoEncoder::OnReadbackDone(
     Request* request,
     scoped_refptr<media::VideoFrame> txt_frame,
+    media::VideoEncoder::EncodeOptions encode_options,
     media::VideoEncoder::EncoderStatusCB done_callback,
     scoped_refptr<media::VideoFrame> result_frame) {
   TRACE_EVENT_END(
@@ -1399,7 +1408,6 @@ void VideoEncoder::OnReadbackDone(
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto encode_options = CreateEncodeOptions(request);
   --requested_encodes_;
   ScheduleDequeueEvent();
   blocking_request_in_progress_ = nullptr;
@@ -1714,6 +1722,11 @@ void VideoEncoder::CallOutputCallback(
                         .ToString()
                   : std::string("none"));
     }
+    if (!last_decoder_config_.has_value() ||
+        output_transform != last_decoder_config_->video_transformation()) {
+      DCHECK(output.key_frame)
+          << "Encoders should generate a keyframe when changing orientation.";
+    }
     if (active_config->codec == media::VideoCodec::kH264) {
       DCHECK(active_config->options.avc.produce_annexb ||
              extra_data.size() > 0u);
@@ -1761,6 +1774,8 @@ void VideoEncoder::ResetInternal(DOMException* ex) {
   active_encodes_ = 0;
   frame_metadata_.clear();
   last_decoder_config_.reset();
+  first_input_transformation_.reset();
+  last_input_transformation_.reset();
 }
 
 void VideoEncoder::OnNewEncode(InputType* input,

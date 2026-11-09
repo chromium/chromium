@@ -192,12 +192,14 @@ VideoEncoderInit* CreateInit(ScriptState* script_state,
   return init;
 }
 
-VideoFrame* MakeVideoFrame(ScriptState* script_state,
-                           int width,
-                           int height,
-                           int timestamp,
-                           std::optional<gfx::Rect> visible_rect = std::nullopt,
-                           std::optional<uint64_t> duration = std::nullopt) {
+VideoFrame* MakeVideoFrame(
+    ScriptState* script_state,
+    int width,
+    int height,
+    int timestamp,
+    std::optional<gfx::Rect> visible_rect = std::nullopt,
+    std::optional<uint64_t> duration = std::nullopt,
+    media::VideoTransformation transformation = media::kNoTransformation) {
   std::vector<uint8_t> data(width * height * 4);
   NotShared<DOMUint8ClampedArray> data_u8(DOMUint8ClampedArray::Create(data));
 
@@ -222,6 +224,10 @@ VideoFrame* MakeVideoFrame(ScriptState* script_state,
     dom_rect->setWidth(visible_rect->width());
     dom_rect->setHeight(visible_rect->height());
     video_frame_init->setVisibleRect(dom_rect);
+  }
+  if (transformation != media::kNoTransformation) {
+    video_frame_init->setRotation(transformation.rotation);
+    video_frame_init->setFlip(transformation.mirrored);
   }
 
   auto* source = MakeGarbageCollected<V8CanvasImageSource>(image_bitmap);
@@ -898,6 +904,202 @@ TEST_F(VideoEncoderTest, EncodePreservesFrameDuration) {
       testing::ElementsAre(Pair(0, std::nullopt), Pair(10, 0), Pair(100, 111),
                            Pair(100, 222), Pair(300, 444), Pair(200, 333),
                            Pair(400, std::nullopt)));
+}
+
+TEST_F(VideoEncoderTest,
+       EncodeForcesKeyFrameOnOrientationChangeAfterReconfigure) {
+  V8TestingScope v8_scope;
+  auto& es = v8_scope.GetExceptionState();
+  auto* script_state = v8_scope.GetScriptState();
+
+  MockFunctionScope mock_function(script_state);
+  auto* collector =
+      MakeGarbageCollected<ChunkCollector>(script_state->GetIsolate());
+  auto* init =
+      CreateInit(script_state, collector, mock_function.ExpectNoCall());
+  auto* encoder = CreateMockEncoder(script_state, init, es);
+  ASSERT_FALSE(es.HadException());
+
+  auto* config = CreateConfig();
+  media::VideoEncoder::OutputCB output_cb;
+
+  auto media_encoder = std::make_unique<media::MockVideoEncoder>();
+  media::MockVideoEncoder* mock_media_encoder = media_encoder.get();
+  EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _, _))
+      .WillOnce(DoAll(
+          [encoder]() {
+            media::VideoEncoderInfo info;
+            info.implementation_name = "MockEncoderName";
+            info.is_hardware_accelerated = false;
+            encoder->CallOnMediaEncoderInfoChanged(info);
+          },
+          Return(ByMove(std::unique_ptr<media::VideoEncoder>(
+              std::move(media_encoder))))));
+  EXPECT_CALL(*encoder, CreateVideoEncoderMetricsProvider())
+      .WillOnce(Return(
+          ByMove(std::make_unique<media::MockVideoEncoderMetricsProvider>())));
+  EXPECT_CALL(*mock_media_encoder, Initialize(_, _, _, _, _))
+      .WillOnce(DoAll(
+          SaveArg<3>(&output_cb),
+          WithArgs<4>([](media::VideoEncoder::EncoderStatusCB done_cb) {
+            scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+                FROM_HERE, blink::BindOnce(std::move(done_cb),
+                                           media::EncoderStatus::Codes::kOk));
+          })));
+
+  auto emit_output = [&](int64_t timestamp_us, bool key_frame) {
+    media::VideoEncoderOutput out;
+    out.data = base::HeapArray<uint8_t>::Uninit(10);
+    out.key_frame = key_frame;
+    out.timestamp = base::Microseconds(timestamp_us);
+    scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+        FROM_HERE, blink::BindOnce(output_cb, std::move(out), std::nullopt));
+  };
+
+  auto ack_op = [](media::VideoEncoder::EncoderStatusCB done_cb) {
+    scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+        FROM_HERE,
+        blink::BindOnce(std::move(done_cb), media::EncoderStatus::Codes::kOk));
+  };
+
+  {
+    testing::InSequence seq;
+    // 1. Initial encode (90 deg, flipped).
+    EXPECT_CALL(*mock_media_encoder, Encode(_, _, _))
+        .WillOnce(
+            WithArgs<1, 2>([&](const media::VideoEncoder::EncodeOptions& opts,
+                               media::VideoEncoder::EncoderStatusCB done_cb) {
+              EXPECT_TRUE(opts.key_frame);
+              ack_op(std::move(done_cb));
+              emit_output(0, /*key_frame=*/true);
+            }));
+
+    // 2. First reconfigure (Flush + ChangeOptions).
+    EXPECT_CALL(*mock_media_encoder, Flush(_)).WillOnce(ack_op);
+    EXPECT_CALL(*mock_media_encoder, ChangeOptions(_, _, _))
+        .WillOnce(
+            WithArgs<1, 2>([&](media::VideoEncoder::OutputCB new_output_cb,
+                               media::VideoEncoder::EncoderStatusCB done_cb) {
+              output_cb = std::move(new_output_cb);
+              ack_op(std::move(done_cb));
+            }));
+
+    // 3. Encode after reconfigure with the SAME orientation -> not forced key.
+    EXPECT_CALL(*mock_media_encoder, Encode(_, _, _))
+        .WillOnce(
+            WithArgs<1, 2>([&](const media::VideoEncoder::EncodeOptions& opts,
+                               media::VideoEncoder::EncoderStatusCB done_cb) {
+              EXPECT_FALSE(opts.key_frame);
+              ack_op(std::move(done_cb));
+              emit_output(10, /*key_frame=*/false);
+            }));
+
+    // 4. Second reconfigure (Flush + ChangeOptions).
+    EXPECT_CALL(*mock_media_encoder, Flush(_)).WillOnce(ack_op);
+    EXPECT_CALL(*mock_media_encoder, ChangeOptions(_, _, _))
+        .WillOnce(
+            WithArgs<1, 2>([&](media::VideoEncoder::OutputCB new_output_cb,
+                               media::VideoEncoder::EncoderStatusCB done_cb) {
+              output_cb = std::move(new_output_cb);
+              ack_op(std::move(done_cb));
+            }));
+
+    // 5. Encode after reconfigure with a NEW orientation -> forced key frame!
+    EXPECT_CALL(*mock_media_encoder, Encode(_, _, _))
+        .WillOnce(
+            WithArgs<1, 2>([&](const media::VideoEncoder::EncodeOptions& opts,
+                               media::VideoEncoder::EncoderStatusCB done_cb) {
+              EXPECT_TRUE(opts.key_frame);
+              ack_op(std::move(done_cb));
+              emit_output(20, /*key_frame=*/true);
+            }));
+
+    // 6. Subsequent encode with the same new orientation -> not forced key.
+    EXPECT_CALL(*mock_media_encoder, Encode(_, _, _))
+        .WillOnce(
+            WithArgs<1, 2>([&](const media::VideoEncoder::EncodeOptions& opts,
+                               media::VideoEncoder::EncoderStatusCB done_cb) {
+              EXPECT_FALSE(opts.key_frame);
+              ack_op(std::move(done_cb));
+              emit_output(30, /*key_frame=*/false);
+            }));
+
+    EXPECT_CALL(*mock_media_encoder, Flush(_)).WillOnce(ack_op);
+  }
+
+  encoder->configure(config, es);
+  ASSERT_FALSE(es.HadException());
+
+  auto* opts = MakeGarbageCollected<VideoEncoderEncodeOptions>();
+  const media::VideoTransformation kTransform1(media::VIDEO_ROTATION_90, true);
+  const media::VideoTransformation kTransform2(media::VIDEO_ROTATION_270,
+                                               false);
+
+  encoder->encode(
+      MakeVideoFrame(script_state, kEncodeSize.width(), kEncodeSize.height(), 0,
+                     std::nullopt, std::nullopt, kTransform1),
+      opts, es);
+  ASSERT_FALSE(es.HadException());
+
+  // Changing orientation without configure() must throw DataError.
+  {
+    DummyExceptionStateForTesting dummy_es;
+    auto* mismatched_frame =
+        MakeVideoFrame(script_state, kEncodeSize.width(), kEncodeSize.height(),
+                       5, std::nullopt, std::nullopt, kTransform2);
+    encoder->encode(mismatched_frame, opts, dummy_es);
+    EXPECT_TRUE(dummy_es.HadException());
+    EXPECT_EQ(dummy_es.CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    mismatched_frame->close();
+  }
+
+  // A synchronously invalid configure() must not reset active orientation.
+  {
+    DummyExceptionStateForTesting dummy_es;
+    auto* bad_config = CreateConfig();
+    bad_config->setWidth(0);
+    encoder->configure(bad_config, dummy_es);
+    EXPECT_TRUE(dummy_es.HadException());
+
+    DummyExceptionStateForTesting encode_es;
+    auto* mismatched_frame =
+        MakeVideoFrame(script_state, kEncodeSize.width(), kEncodeSize.height(),
+                       6, std::nullopt, std::nullopt, kTransform2);
+    encoder->encode(mismatched_frame, opts, encode_es);
+    EXPECT_TRUE(encode_es.HadException());
+    EXPECT_EQ(encode_es.CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    mismatched_frame->close();
+  }
+
+  // Reconfigure and encode with the same orientation.
+  encoder->configure(config, es);
+  ASSERT_FALSE(es.HadException());
+  encoder->encode(
+      MakeVideoFrame(script_state, kEncodeSize.width(), kEncodeSize.height(),
+                     10, std::nullopt, std::nullopt, kTransform1),
+      opts, es);
+  ASSERT_FALSE(es.HadException());
+
+  // Reconfigure and encode with a different orientation.
+  encoder->configure(config, es);
+  ASSERT_FALSE(es.HadException());
+  encoder->encode(
+      MakeVideoFrame(script_state, kEncodeSize.width(), kEncodeSize.height(),
+                     20, std::nullopt, std::nullopt, kTransform2),
+      opts, es);
+  ASSERT_FALSE(es.HadException());
+  encoder->encode(
+      MakeVideoFrame(script_state, kEncodeSize.width(), kEncodeSize.height(),
+                     30, std::nullopt, std::nullopt, kTransform2),
+      opts, es);
+  ASSERT_FALSE(es.HadException());
+
+  ScriptPromiseTester tester(script_state, encoder->flush(script_state, es));
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsFulfilled());
+  EXPECT_EQ(collector->chunks().size(), 4u);
 }
 }  // namespace
 
