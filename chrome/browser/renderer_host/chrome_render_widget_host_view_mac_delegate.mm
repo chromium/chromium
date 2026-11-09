@@ -30,6 +30,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/user_browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -39,7 +40,7 @@
 
 @property(readonly) content::WebContents* webContents;
 @property(readonly) NSView* nsView;
-@property(readonly) PrefService* prefService;
+@property(readonly) PrefService* spellCheckPrefService;
 
 @end
 
@@ -112,15 +113,17 @@
   return renderWidgetHostView->GetNativeView().GetNativeNSView();
 }
 
-- (PrefService*)prefService {
-  content::RenderWidgetHost* renderWidgetHost =
-      content::RenderWidgetHost::FromID(_widgetProcessId, _widgetRoutingId);
-  if (!renderWidgetHost) {
+- (PrefService*)spellCheckPrefService {
+  content::WebContents* webContents = self.webContents;
+  if (!webContents) {
     return nullptr;
   }
 
+  // Spellcheck settings belong to the user. For Top Chrome WebUIs in
+  // TopChromeWebUIProfile, the user BrowserContext differs from the
+  // BrowserContext of the WebContents.
   return Profile::FromBrowserContext(
-             renderWidgetHost->GetProcess()->GetBrowserContext())
+             content::GetUserBrowserContext(*webContents))
       ->GetPrefs();
 }
 
@@ -209,7 +212,7 @@
 
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item
                       isValidItem:(BOOL*)valid {
-  PrefService* pref = self.prefService;
+  PrefService* pref = self.spellCheckPrefService;
   if (!pref) {
     return NO;
   }
@@ -333,7 +336,7 @@
 }
 
 - (void)toggleContinuousSpellChecking:(id)sender {
-  PrefService* pref = self.prefService;
+  PrefService* pref = self.spellCheckPrefService;
   if (!pref) {
     return;
   }
