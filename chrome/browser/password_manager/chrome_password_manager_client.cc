@@ -1280,7 +1280,8 @@ void ChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
 
   // The router is responsible for checking if the reporting of this event type
   // is enabled by the admin.
-  router->OnLoginEvent(url, is_federated, federated_origin, login_user_name);
+  router->OnLoginEvent(url, is_federated, federated_origin, login_user_name,
+                       /*initiator=*/std::nullopt);
 }
 
 void ChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(

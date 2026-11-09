@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 #include "components/enterprise/data_controls/core/browser/clipboard_context.h"
@@ -38,6 +39,8 @@ class ReportingEventRouter : public KeyedService {
       base::RepeatingCallback<void(OnGotHashCallback)>;
   using ExtensionInitiatorInfo =
       ::safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo;
+  using EventInitiatorInfo =
+      ::chrome::cros::reporting::proto::EventInitiatorInfo;
 
   explicit ReportingEventRouter(RealtimeReportingClientBase* reporting_client);
 
@@ -50,10 +53,15 @@ class ReportingEventRouter : public KeyedService {
 
   bool IsEventEnabled(const std::string& event);
 
+  // Notifies listeners that the user logged in to `url` with `username`.
+  // `initiator` is the entity that was acting on the tab when the login
+  // happened, if known. Each kind of initiator is only reported while its
+  // attribution feature is enabled.
   virtual void OnLoginEvent(const GURL& url,
                             bool is_federated,
                             const url::SchemeHostPort& federated_origin,
-                            const std::u16string& username);
+                            const std::u16string& username,
+                            const std::optional<EventInitiatorInfo>& initiator);
 
   virtual void OnPasswordBreach(
       const std::string& trigger,

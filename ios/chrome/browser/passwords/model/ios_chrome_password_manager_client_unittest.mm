@@ -80,7 +80,8 @@ class MockRouter : public enterprise_connectors::ReportingEventRouter {
               (const GURL& url,
                bool is_federated,
                const url::SchemeHostPort& federated_origin,
-               const std::u16string& username),
+               const std::u16string& username,
+               const std::optional<EventInitiatorInfo>& initiator),
               (override));
 
   MOCK_METHOD(
@@ -266,7 +267,7 @@ TEST_F(IOSChromePasswordManagerClientTest,
 TEST_F(IOSChromePasswordManagerClientTest, OnLogInInvoked) {
 
   PasswordManagerClient* client = passwordController_.passwordManagerClient;
-  EXPECT_CALL(*reporting_event_router_, OnLoginEvent(_, _, _, _)).Times(1);
+  EXPECT_CALL(*reporting_event_router_, OnLoginEvent);
   client->MaybeReportEnterpriseLoginEvent(GURL("https://www.example.com/"),
                                           url::SchemeHostPort().IsValid(),
                                           url::SchemeHostPort(), u"Fakeuser");

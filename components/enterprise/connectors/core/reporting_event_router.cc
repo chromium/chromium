@@ -126,6 +126,37 @@ void MaybeSetExtensionInitiator(
   *event.mutable_initiator()->mutable_chrome_extension() = *extension_initiator;
 }
 
+// Returns whether the attribution feature that gates `initiator`'s populated
+// variant is enabled.
+bool IsInitiatorAttributionEnabled(
+    const ReportingEventRouter::EventInitiatorInfo& initiator) {
+  using EventInitiatorInfo = ReportingEventRouter::EventInitiatorInfo;
+  switch (initiator.initiator_case()) {
+    case EventInitiatorInfo::kChromeExtension:
+      return base::FeatureList::IsEnabled(kEnterpriseExtensionActorAttribution);
+    case EventInitiatorInfo::kExternalProcessInfo:
+    case EventInitiatorInfo::kBrowserFeatureInfo:
+      return base::FeatureList::IsEnabled(kEventReportingCdpAttribution);
+    case EventInitiatorInfo::kBrowserAgentInfo:
+      return base::FeatureList::IsEnabled(kEnterpriseGlicActorAttribution);
+    case EventInitiatorInfo::INITIATOR_NOT_SET:
+      return false;
+  }
+  return false;
+}
+
+// Copies `initiator` onto `event` when present and the feature for its
+// populated variant is enabled. Leaves `event.initiator` unset otherwise so
+// consumers can tell "unknown" from "empty".
+void MaybeSetEventInitiator(
+    chrome::cros::reporting::proto::Event& event,
+    const std::optional<ReportingEventRouter::EventInitiatorInfo>& initiator) {
+  if (!initiator || !IsInitiatorAttributionEnabled(*initiator)) {
+    return;
+  }
+  *event.mutable_initiator() = *initiator;
+}
+
 }  // namespace
 
 ReportingEventRouter::SensitiveDataEvent::SensitiveDataEvent() = default;
@@ -151,7 +182,8 @@ void ReportingEventRouter::OnLoginEvent(
     const GURL& url,
     bool is_federated,
     const url::SchemeHostPort& federated_origin,
-    const std::u16string& username) {
+    const std::u16string& username,
+    const std::optional<EventInitiatorInfo>& initiator) {
   if (!IsEventEnabled(kKeyLoginEvent)) {
     return;
   }
@@ -170,6 +202,7 @@ void ReportingEventRouter::OnLoginEvent(
                       reporting_client_->GetProfileIdentifier(),
                       reporting_client_->GetProfileUserName());
     *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
+    MaybeSetEventInitiator(event, initiator);
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
 }
