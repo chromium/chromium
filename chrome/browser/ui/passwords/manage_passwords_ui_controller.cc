@@ -1439,17 +1439,6 @@ bool ManagePasswordsUIController::ShouldReshowOnTabVisible() const {
   return false;
 }
 
-PasswordChangeDelegate* ManagePasswordsUIController::GetPasswordChangeDelegate()
-    const {
-  ChromePasswordChangeService* password_change_service =
-      PasswordChangeServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-  if (!password_change_service) {
-    return nullptr;
-  }
-  return password_change_service->GetPasswordChangeDelegate(web_contents());
-}
-
 PasswordsLeakDialogDelegate*
 ManagePasswordsUIController::GetPasswordsLeakDialogDelegate() {
   return this;
@@ -1569,7 +1558,9 @@ bool ManagePasswordsUIController::IsPendingPasswordPhished() const {
 }
 
 bool ManagePasswordsUIController::IsPasswordChangeOngoing() const {
-  return GetPasswordChangeDelegate();
+  auto* password_change_service = GetPasswordChangeService(web_contents());
+  return password_change_service &&
+         password_change_service->GetPasswordChangeDelegate(web_contents());
 }
 
 bool ManagePasswordsUIController::BubbleManagerHasPasswordBubbleInQueue()

@@ -31,7 +31,6 @@ enum class CredentialSourceType;
 enum class MoveToAccountStoreTrigger;
 }  // namespace metrics_util
 }  // namespace password_manager
-class PasswordChangeDelegate;
 
 // An interface for ManagePasswordsBubbleModel implemented by
 // ManagePasswordsUIController. Allows to retrieve the current state of the tab
@@ -203,9 +202,6 @@ class PasswordsModelDelegate {
 
   // Called from the Relaunch Chrome bubble to gracefully restart the Chrome.
   virtual void RelaunchChrome() = 0;
-
-  // Returns the delegate for the password change flow.
-  virtual PasswordChangeDelegate* GetPasswordChangeDelegate() const = 0;
 
   virtual PasswordsLeakDialogDelegate* GetPasswordsLeakDialogDelegate() = 0;
 

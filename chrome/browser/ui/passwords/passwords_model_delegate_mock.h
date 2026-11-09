@@ -128,10 +128,6 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
               (override));
   MOCK_METHOD(void, MaybeShowIOSPasswordPromo, (), (override));
   MOCK_METHOD(void, RelaunchChrome, (), (override));
-  MOCK_METHOD(PasswordChangeDelegate*,
-              GetPasswordChangeDelegate,
-              (),
-              (const, override));
   MOCK_METHOD(PasswordsLeakDialogDelegate*,
               GetPasswordsLeakDialogDelegate,
               (),

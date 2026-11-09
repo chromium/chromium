@@ -314,8 +314,6 @@ class ManagePasswordsUIController
   void PrimaryPageChanged(content::Page& page) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
-  PasswordChangeDelegate* GetPasswordChangeDelegate() const override;
-
   PasswordsLeakDialogDelegate* GetPasswordsLeakDialogDelegate() override;
 
  private:
