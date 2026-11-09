@@ -630,7 +630,9 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
         login::GetAccountId(local_state_.get(), context.email,
                             context.gaia_id.ToString(), AccountType::GOOGLE);
     auto* user = user_manager::UserManager::Get()->FindUser(account_id);
-    CHECK(user, base::NotFatalUntil::M162);
+    // TODO(crbug.com/581841490): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(user);
     bool is_child_account = user && user->IsChild();
     // Enable the new endpoint for supervised account for now. We might expand
     // it to other account type in the future.
