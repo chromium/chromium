@@ -605,7 +605,9 @@ bool TextfieldModel::Undo() {
   if (!CanUndo()) {
     return false;
   }
-  CHECK(!HasCompositionText(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/582701535): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!HasCompositionText());
   if (HasCompositionText()) {
     CancelCompositionText();
   }
