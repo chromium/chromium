@@ -22,15 +22,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.browser_ui.widget.DualControlLayout.DualControlLayoutAlignment;
-import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
-import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for DualControlLayout. */
-@RunWith(ContentJUnit4ClassRunner.class)
+@RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class DualControlLayoutTest {
     private static final int PRIMARY_HEIGHT = 16;
@@ -309,7 +307,6 @@ public class DualControlLayoutTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/462299211
     public void testInflation() {
         // Check that the basic DualControlLayout has nothing going on.
         DualControlLayout layout = new DualControlLayout(mContext, null);
@@ -328,9 +325,8 @@ public class DualControlLayoutTest {
         Assert.assertEquals(DualControlLayoutAlignment.END, inflatedLayout.getAlignment());
         Assert.assertEquals(
                 "Incorrect stacked margin. Should be 24dp",
-                24 * dpToPx,
-                inflatedLayout.getStackedMargin(),
-                0.f);
+                Math.round(24 * dpToPx),
+                inflatedLayout.getStackedMargin());
 
         Button primaryButton = inflatedLayout.findViewById(R.id.button_primary);
         Assert.assertNotNull(primaryButton);
