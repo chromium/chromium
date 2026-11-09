@@ -86,9 +86,6 @@ class COMPONENT_EXPORT(UI_WM) CursorLoader
   // The scale of the current display, used for system cursors. The selection
   // of the particular cursor is platform-dependent.
   float scale_ = 1.0f;
-  // The scale used for cursor resources provided by Chromium. It will be set
-  // to the closest value to `scale_` for which there are resources available.
-  float resource_scale_ = 1.0f;
 
   // The current rotation of the mouse cursor icon.
   display::Display::Rotation rotation_ = display::Display::ROTATE_0;

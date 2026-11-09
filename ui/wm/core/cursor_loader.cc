@@ -19,7 +19,6 @@
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/base/cursor/platform_cursor.h"
-#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -63,8 +62,6 @@ bool CursorLoader::SetDisplay(const display::Display& display) {
 
   rotation_ = rotation;
   scale_ = scale;
-  resource_scale_ = ui::GetScaleForResourceScaleFactor(
-      ui::GetSupportedResourceScaleFactor(scale_));
 
   UnloadCursors();
   return true;
@@ -143,7 +140,7 @@ std::optional<ui::CursorData> CursorLoader::GetCursorData(
   // TODO(crbug.com/40175364): use the actual `rotation_` if that makes
   // sense for the current use cases of `GetCursorData` (e.g. Chrome Remote
   // Desktop, WebRTC and VideoRecordingWatcher).
-  return wm::GetCursorData(type, resource_scale_,
+  return wm::GetCursorData(type, scale_,
                            size_ == ui::CursorSize::kLarge
                                ? std::make_optional(large_cursor_size_in_px)
                                : std::nullopt,
@@ -215,7 +212,7 @@ scoped_refptr<ui::PlatformCursor> CursorLoader::CursorFromType(
 scoped_refptr<ui::PlatformCursor> CursorLoader::LoadCursorFromAsset(
     CursorType type) {
   std::optional<ui::CursorData> cursor_data = wm::GetCursorData(
-      type, resource_scale_,
+      type, scale_,
       size_ == ui::CursorSize::kLarge ? std::make_optional(ConvertDipToPixel(
                                             large_cursor_size_in_dip_, scale_))
                                       : std::nullopt,

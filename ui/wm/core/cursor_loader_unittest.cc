@@ -16,7 +16,6 @@
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/cursor/platform_cursor.h"
-#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -48,8 +47,6 @@ TEST(CursorLoaderTest, GetCursorDataForDefaultCursors) {
     SCOPED_TRACE(testing::Message() << "scale " << scale);
     display.set_device_scale_factor(scale);
     cursor_loader.SetDisplay(display);
-    const float resource_scale = ui::GetScaleForResourceScaleFactor(
-        ui::GetSupportedResourceScaleFactor(scale));
     for (const ui::CursorSize cursor_size :
          {ui::CursorSize::kNormal, ui::CursorSize::kLarge}) {
       SCOPED_TRACE(testing::Message()
@@ -81,9 +78,9 @@ TEST(CursorLoaderTest, GetCursorDataForDefaultCursors) {
                   ? std::nullopt
                   : std::make_optional(
                         cursor_loader.large_cursor_size_in_dip() * scale);
-          const auto cursor_data = GetCursorData(
-              cursor.type(), resource_scale, target_cursor_size_in_px,
-              display.panel_rotation(), cursor_color);
+          const auto cursor_data =
+              GetCursorData(cursor.type(), scale, target_cursor_size_in_px,
+                            display.panel_rotation(), cursor_color);
           ASSERT_TRUE(cursor_data);
           ASSERT_EQ(cursor_loader_data->bitmaps.size(),
                     cursor_data->bitmaps.size());
