@@ -160,6 +160,10 @@ CSSTransformInterpolationType::PreInterpolationCompositeIfNeeded(
     return value;
   }
 
+  if (underlying.is_attr_tainted) {
+    value.is_attr_tainted = true;
+  }
+
   InterpolableTransformList& transform_list =
       To<InterpolableTransformList>(*value.interpolable_value);
   const InterpolableTransformList& underlying_transform_list =

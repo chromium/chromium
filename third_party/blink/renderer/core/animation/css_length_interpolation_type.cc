@@ -182,6 +182,10 @@ CSSLengthInterpolationType::PreInterpolationCompositeIfNeeded(
     return value;
   }
 
+  if (underlying.is_attr_tainted) {
+    value.is_attr_tainted = true;
+  }
+
   if (length.IsNeutralValue()) {
     length = *underlying_length;
     return value;

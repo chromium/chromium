@@ -18,8 +18,8 @@ InterpolationValue CSSCustomListInterpolationType::MaybeConvertNeutral(
     ConversionCheckers& conversion_checkers) const {
   wtf_size_t underlying_length =
       UnderlyingLengthChecker::GetUnderlyingLength(underlying);
-  conversion_checkers.push_back(
-      MakeGarbageCollected<UnderlyingLengthChecker>(underlying_length));
+  conversion_checkers.push_back(MakeGarbageCollected<UnderlyingLengthChecker>(
+      underlying_length, underlying.is_attr_tainted));
 
   if (underlying_length == 0)
     return nullptr;
@@ -32,8 +32,12 @@ InterpolationValue CSSCustomListInterpolationType::MaybeConvertNeutral(
                                                           null_checkers);
   };
 
-  return ListInterpolationFunctions::CreateList(underlying_length,
-                                                convert_inner);
+  InterpolationValue result =
+      ListInterpolationFunctions::CreateList(underlying_length, convert_inner);
+  if (result && underlying.is_attr_tainted) {
+    result.is_attr_tainted = true;
+  }
+  return result;
 }
 
 InterpolationValue CSSCustomListInterpolationType::MaybeConvertValue(
@@ -74,7 +78,8 @@ CSSCustomListInterpolationType::PreInterpolationCompositeIfNeeded(
     EffectModel::CompositeOperation composite,
     ConversionCheckers& conversion_checkers) const {
   conversion_checkers.push_back(MakeGarbageCollected<UnderlyingLengthChecker>(
-      UnderlyingLengthChecker::GetUnderlyingLength(underlying)));
+      UnderlyingLengthChecker::GetUnderlyingLength(underlying),
+      underlying.is_attr_tainted));
   if (!underlying) {
     return value;
   }
@@ -117,7 +122,11 @@ CSSCustomListInterpolationType::PreInterpolationCompositeIfNeeded(
       ListInterpolationFunctions::InterpolableValuesKnownCompatible,
       NonInterpolableValuesAreCompatible, composite_callback);
 
-  return owner.Value().Clone();
+  InterpolationValue result = owner.Value().Clone();
+  if (value.is_attr_tainted || underlying.is_attr_tainted) {
+    result.is_attr_tainted = true;
+  }
+  return result;
 }
 
 const CSSValue* CSSCustomListInterpolationType::CreateCSSValue(

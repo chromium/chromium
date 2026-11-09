@@ -4492,6 +4492,276 @@ TEST_P(CSSAnimationsTest, AttrTaintedStyleQueryUrlBlocking) {
   }
 }
 
+TEST_P(CSSAnimationsTest, AttrTaintedRegisteredPropertyLengthPercentage) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @property --lp {
+        syntax: "<length-percentage>";
+        inherits: false;
+        initial-value: 0px;
+      }
+      @keyframes hold_lp {
+        to { --lp: 0px; }
+      }
+      @keyframes add_lp {
+        from { --lp: 0px; }
+        to { --lp: 0px; }
+      }
+      #target {
+        --lp: attr(data-value type(<length-percentage>));
+        animation: hold_lp 1000s linear paused;
+        background-image: if(style(--lp >= 40px):
+                            url(https://example.com/test.png); else: none);
+      }
+      #target_add {
+        --lp: attr(data-value type(<length-percentage>));
+        animation: add_lp 1000s linear paused;
+        animation-composition: add;
+      }
+      #control {
+        --lp: 42px;
+        animation: hold_lp 1000s linear paused;
+        background-image: if(style(--lp >= 40px):
+                            url(https://example.com/test.png); else: none);
+      }
+    </style>
+    <div id="target" data-value="42px"></div>
+    <div id="target_add" data-value="42px"></div>
+    <div id="control"></div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(target->GetComputedStyle());
+  const CSSVariableData* target_data =
+      target->GetComputedStyle()->GetVariableData(AtomicString("--lp"));
+  ASSERT_TRUE(target_data);
+  EXPECT_TRUE(target_data->IsAttrTainted());
+  EXPECT_FALSE(target->GetComputedStyle()->HasBackgroundImage());
+
+  Element* target_add = GetElementById("target_add");
+  ASSERT_TRUE(target_add);
+  ASSERT_TRUE(target_add->GetComputedStyle());
+  const CSSVariableData* add_data =
+      target_add->GetComputedStyle()->GetVariableData(AtomicString("--lp"));
+  ASSERT_TRUE(add_data);
+  EXPECT_TRUE(add_data->IsAttrTainted());
+
+  Element* control = GetElementById("control");
+  ASSERT_TRUE(control);
+  ASSERT_TRUE(control->GetComputedStyle());
+  const CSSVariableData* control_data =
+      control->GetComputedStyle()->GetVariableData(AtomicString("--lp"));
+  ASSERT_TRUE(control_data);
+  EXPECT_FALSE(control_data->IsAttrTainted());
+  EXPECT_TRUE(control->GetComputedStyle()->HasBackgroundImage());
+}
+
+TEST_P(CSSAnimationsTest, AttrTaintedRegisteredPropertyTransform) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @property --t {
+        syntax: "<transform-list>";
+        inherits: false;
+        initial-value: translateX(0px);
+      }
+      @property --tf {
+        syntax: "<transform-function>";
+        inherits: false;
+        initial-value: translateX(0px);
+      }
+      @keyframes hold_transform {
+        to {
+          --t: translateX(0px);
+          --tf: translateX(0px);
+        }
+      }
+      #target {
+        --t: attr(data-value type(<transform-list>));
+        --tf: attr(data-value type(<transform-function>));
+        animation: hold_transform 1000s linear paused;
+      }
+      #control {
+        --t: translateX(42px);
+        --tf: translateX(42px);
+        animation: hold_transform 1000s linear paused;
+      }
+    </style>
+    <div id="target" data-value="translateX(42px)"></div>
+    <div id="control"></div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(target->GetComputedStyle());
+  const CSSVariableData* target_t =
+      target->GetComputedStyle()->GetVariableData(AtomicString("--t"));
+  ASSERT_TRUE(target_t);
+  EXPECT_TRUE(target_t->IsAttrTainted());
+  const CSSVariableData* target_tf =
+      target->GetComputedStyle()->GetVariableData(AtomicString("--tf"));
+  ASSERT_TRUE(target_tf);
+  EXPECT_TRUE(target_tf->IsAttrTainted());
+
+  Element* control = GetElementById("control");
+  ASSERT_TRUE(control);
+  ASSERT_TRUE(control->GetComputedStyle());
+  const CSSVariableData* control_t =
+      control->GetComputedStyle()->GetVariableData(AtomicString("--t"));
+  ASSERT_TRUE(control_t);
+  EXPECT_FALSE(control_t->IsAttrTainted());
+  const CSSVariableData* control_tf =
+      control->GetComputedStyle()->GetVariableData(AtomicString("--tf"));
+  ASSERT_TRUE(control_tf);
+  EXPECT_FALSE(control_tf->IsAttrTainted());
+}
+
+TEST_P(CSSAnimationsTest, AttrTaintedRegisteredPropertyCustomList) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @property --l {
+        syntax: "<number>+";
+        inherits: false;
+        initial-value: 0;
+      }
+      @keyframes add_keyframe_attr {
+        from { --l: attr(data-value type(<number>+)); }
+        to { --l: attr(data-value type(<number>+)); }
+      }
+      @keyframes hold_list {
+        to { --l: 0; }
+      }
+      @keyframes add_untainted {
+        from { --l: 10; }
+        to { --l: 10; }
+      }
+      #target_keyframe {
+        --l: 1;
+        animation: add_keyframe_attr 1000s linear paused;
+        animation-composition: add;
+      }
+      #target_underlying {
+        --l: attr(data-value type(<number>+));
+        animation: hold_list 1000s linear paused;
+      }
+      #target_underlying_mismatch {
+        --l: attr(data-multi type(<number>+));
+        animation: add_untainted 1000s linear paused;
+        animation-composition: add;
+      }
+      #control {
+        --l: 1;
+        animation: add_untainted 1000s linear paused;
+        animation-composition: add;
+      }
+    </style>
+    <div id="target_keyframe" data-value="42"></div>
+    <div id="target_underlying" data-value="42"></div>
+    <div id="target_underlying_mismatch" data-multi="10 20"></div>
+    <div id="control" data-value="42"></div>
+  )HTML");
+
+  Element* target_keyframe = GetElementById("target_keyframe");
+  ASSERT_TRUE(target_keyframe);
+  ASSERT_TRUE(target_keyframe->GetComputedStyle());
+  const CSSVariableData* keyframe_data =
+      target_keyframe->GetComputedStyle()->GetVariableData(AtomicString("--l"));
+  ASSERT_TRUE(keyframe_data);
+  EXPECT_TRUE(keyframe_data->IsAttrTainted());
+
+  Element* target_underlying = GetElementById("target_underlying");
+  ASSERT_TRUE(target_underlying);
+  ASSERT_TRUE(target_underlying->GetComputedStyle());
+  const CSSVariableData* underlying_data =
+      target_underlying->GetComputedStyle()->GetVariableData(
+          AtomicString("--l"));
+  ASSERT_TRUE(underlying_data);
+  EXPECT_TRUE(underlying_data->IsAttrTainted());
+
+  Element* target_mismatch = GetElementById("target_underlying_mismatch");
+  ASSERT_TRUE(target_mismatch);
+  ASSERT_TRUE(target_mismatch->GetComputedStyle());
+  const CSSVariableData* mismatch_data =
+      target_mismatch->GetComputedStyle()->GetVariableData(AtomicString("--l"));
+  ASSERT_TRUE(mismatch_data);
+  EXPECT_TRUE(mismatch_data->IsAttrTainted());
+
+  Element* control = GetElementById("control");
+  ASSERT_TRUE(control);
+  ASSERT_TRUE(control->GetComputedStyle());
+  const CSSVariableData* control_data =
+      control->GetComputedStyle()->GetVariableData(AtomicString("--l"));
+  ASSERT_TRUE(control_data);
+  EXPECT_FALSE(control_data->IsAttrTainted());
+
+  // Dynamically updating the underlying list value to an attr()-tainted value
+  // of the same length must invalidate the conversion cache and mark the
+  // animated property as tainted.
+  control->setAttribute(html_names::kStyleAttr,
+                        AtomicString("--l: attr(data-value type(<number>+))"));
+  UpdateAllLifecyclePhasesForTest();
+  control_data =
+      control->GetComputedStyle()->GetVariableData(AtomicString("--l"));
+  ASSERT_TRUE(control_data);
+  EXPECT_TRUE(control_data->IsAttrTainted());
+
+  control->setAttribute(html_names::kStyleAttr, AtomicString("--l: 5"));
+  UpdateAllLifecyclePhasesForTest();
+  control_data =
+      control->GetComputedStyle()->GetVariableData(AtomicString("--l"));
+  ASSERT_TRUE(control_data);
+  EXPECT_FALSE(control_data->IsAttrTainted());
+}
+
+TEST_P(CSSAnimationsTest, AttrTaintedRegisteredPropertyFlipInterpolation) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @property --l {
+        syntax: "<number>+";
+        inherits: false;
+        initial-value: 0;
+      }
+      @property --m {
+        syntax: "<number> | <length>";
+        inherits: false;
+        initial-value: 0;
+      }
+      @keyframes flip_list {
+        from { --l: attr(data-value type(<number>+)); }
+        to { --l: 10 20; }
+      }
+      @keyframes flip_neutral {
+        to { --m: 100px; }
+      }
+      #target_list {
+        animation: flip_list 1000s steps(1, start) paused;
+      }
+      #target_multi {
+        --m: attr(data-value type(<number>));
+        animation: flip_neutral 1000s steps(1, start) paused;
+      }
+    </style>
+    <div id="target_list" data-value="42"></div>
+    <div id="target_multi" data-value="42"></div>
+  )HTML");
+
+  Element* target_list = GetElementById("target_list");
+  ASSERT_TRUE(target_list);
+  ASSERT_TRUE(target_list->GetComputedStyle());
+  const CSSVariableData* list_data =
+      target_list->GetComputedStyle()->GetVariableData(AtomicString("--l"));
+  ASSERT_TRUE(list_data);
+  EXPECT_TRUE(list_data->IsAttrTainted());
+
+  Element* target_multi = GetElementById("target_multi");
+  ASSERT_TRUE(target_multi);
+  ASSERT_TRUE(target_multi->GetComputedStyle());
+  const CSSVariableData* multi_data =
+      target_multi->GetComputedStyle()->GetVariableData(AtomicString("--m"));
+  ASSERT_TRUE(multi_data);
+  EXPECT_TRUE(multi_data->IsAttrTainted());
+}
+
 TEST_P(CSSAnimationsTest, ColorAnimationUsesIndependentInheritedFastPath) {
   SetBodyInnerHTML(R"HTML(
     <style>

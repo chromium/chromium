@@ -235,9 +235,13 @@ InterpolationValue CSSInterpolationType::MaybeConvertSingle(
       keyframe, environment, underlying, conversion_checkers);
   if (result && keyframe.Composite() !=
                     EffectModel::CompositeOperation::kCompositeReplace) {
-    return PreInterpolationCompositeIfNeeded(std::move(result), underlying,
-                                             keyframe.Composite(),
-                                             conversion_checkers);
+    bool is_attr_tainted = result.is_attr_tainted;
+    result = PreInterpolationCompositeIfNeeded(std::move(result), underlying,
+                                               keyframe.Composite(),
+                                               conversion_checkers);
+    if (result && is_attr_tainted) {
+      result.is_attr_tainted = true;
+    }
   }
   return result;
 }

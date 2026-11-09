@@ -93,6 +93,7 @@ class PairwisePrimitiveInterpolation : public PrimitiveInterpolation {
     start_->AssertCanInterpolateWith(*end_);
     start_->Interpolate(*end_, fraction,
                         *result->MutableValue().interpolable_value);
+    result->MutableValue().is_attr_tainted = is_attr_tainted_;
   }
 
   double InterpolateUnderlyingFraction(double start,
@@ -136,6 +137,10 @@ class FlipPrimitiveInterpolation : public PrimitiveInterpolation {
     const TypedInterpolationValue* side =
         ((fraction < 0.5) ? start_ : end_).Get();
     result = side ? side->Clone() : nullptr;
+    if (result && ((start_ && start_->IsAttrTainted()) ||
+                   (end_ && end_->IsAttrTainted()))) {
+      result->MutableValue().is_attr_tainted = true;
+    }
     last_fraction_ = fraction;
   }
 

@@ -272,12 +272,19 @@ void InvalidatableInterpolation::ApplyIterationAccumulation() const {
   if (current_iteration_ <= 0 ||
       current_iteration_composite_ !=
           EffectModel::kIterationCompositeAccumulate ||
-      !cached_end_value_ || !cached_value_ ||
-      cached_end_value_->GetType() != cached_value_->GetType()) {
+      !cached_end_value_ || !cached_value_) {
     return;
   }
 
   DCHECK(RuntimeEnabledFeatures::CSSAnimationIterationCompositeEnabled());
+
+  if (cached_end_value_->IsAttrTainted()) {
+    cached_value_->MutableValue().is_attr_tainted = true;
+  }
+
+  if (cached_end_value_->GetType() != cached_value_->GetType()) {
+    return;
+  }
 
   InterpolableValue* result_value =
       cached_value_->MutableValue().interpolable_value.Get();
@@ -339,12 +346,23 @@ void InvalidatableInterpolation::ApplyStack(
 
   // Compute the underlying value to composite onto.
   UnderlyingValueOwner underlying_value_owner;
+  bool underlying_is_attr_tainted = false;
   const auto& first_interpolation =
       To<InvalidatableInterpolation>(*interpolations.at(starting_index));
   first_interpolation.EnsureValidInterpolationTypes(environment);
   if (first_interpolation.DependsOnUnderlyingValue()) {
     underlying_value_owner.Set(
         first_interpolation.MaybeConvertUnderlyingValue(environment));
+    if (underlying_value_owner) {
+      underlying_is_attr_tainted =
+          underlying_value_owner.Value().is_attr_tainted;
+    } else if (environment.GetProperty().IsCSSCustomProperty()) {
+      const CSSVariableData* underlying_data =
+          environment.BaseStyle().GetVariableData(
+              environment.GetProperty().CustomPropertyName());
+      underlying_is_attr_tainted =
+          underlying_data && underlying_data->IsAttrTainted();
+    }
   } else {
     const TypedInterpolationValue* first_value =
         first_interpolation.EnsureValidConversion(environment,
@@ -381,17 +399,21 @@ void InvalidatableInterpolation::ApplyStack(
 
     should_apply = true;
     current_interpolation.SetFlagIfInheritUsed(environment);
+    bool is_attr_tainted = current_value->IsAttrTainted() ||
+                           (current_interpolation.DependsOnUnderlyingValue() &&
+                            (underlying_is_attr_tainted ||
+                             underlying_value_owner.Value().is_attr_tainted));
     if (!current_interpolation.DependsOnUnderlyingValue() ||
         !underlying_value_owner ||
         underlying_value_owner.GetType() != current_value->GetType()) {
       underlying_value_owner.Set(current_value);
     } else {
-      if (current_value->IsAttrTainted()) {
-        underlying_value_owner.MutableValue().is_attr_tainted = true;
-      }
       current_value->GetType()->Composite(
           underlying_value_owner, current_interpolation.UnderlyingFraction(),
           current_value->Value(), current_interpolation.current_fraction_);
+    }
+    if (is_attr_tainted && !underlying_value_owner.Value().is_attr_tainted) {
+      underlying_value_owner.MutableValue().is_attr_tainted = true;
     }
   }
 

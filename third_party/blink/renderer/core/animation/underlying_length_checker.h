@@ -13,8 +13,10 @@ namespace blink {
 
 class UnderlyingLengthChecker : public InterpolationType::ConversionChecker {
  public:
-  explicit UnderlyingLengthChecker(wtf_size_t underlying_length)
-      : underlying_length_(underlying_length) {}
+  explicit UnderlyingLengthChecker(wtf_size_t underlying_length,
+                                   bool is_attr_tainted = false)
+      : underlying_length_(underlying_length),
+        is_attr_tainted_(is_attr_tainted) {}
 
   static wtf_size_t GetUnderlyingLength(const InterpolationValue& underlying) {
     if (!underlying)
@@ -24,11 +26,13 @@ class UnderlyingLengthChecker : public InterpolationType::ConversionChecker {
 
   bool IsValid(const CSSInterpolationEnvironment&,
                const InterpolationValue& underlying) const final {
-    return underlying_length_ == GetUnderlyingLength(underlying);
+    return underlying_length_ == GetUnderlyingLength(underlying) &&
+           is_attr_tainted_ == underlying.is_attr_tainted;
   }
 
  private:
   wtf_size_t underlying_length_;
+  bool is_attr_tainted_;
 };
 
 }  // namespace blink
