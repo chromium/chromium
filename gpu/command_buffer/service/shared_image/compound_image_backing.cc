@@ -222,6 +222,10 @@ class WrappedGLTextureCompoundImageRepresentation
     return wrapped_->GetTexture(plane_index);
   }
 
+  bool IsBackingCleared() const override {
+    return wrapped_->IsBackingCleared();
+  }
+
   void SetClearedRect(const gfx::Rect& cleared_rect) override {
     SharedImageRepresentation::SetClearedRect(cleared_rect);
     if (owned_backing_) {
@@ -286,6 +290,10 @@ class WrappedGLTexturePassthroughCompoundImageRepresentation
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
       size_t plane_index) final {
     return wrapped_->GetTexturePassthrough(plane_index);
+  }
+
+  bool IsBackingCleared() const override {
+    return wrapped_->IsBackingCleared();
   }
 
   void SetClearedRect(const gfx::Rect& cleared_rect) override {
@@ -2397,17 +2405,6 @@ void CompoundImageBacking::CreateBackingFromBackingFactory(
   RecordBackingTypeUMA(backing->GetType());
 
   backing->SetNotRefCounted();
-
-  // When a CompoundImageBacking is created with a shared memory backing, it's
-  // considered logically cleared from the start, as the shared memory provides
-  // the initial content. For consistency, any newly created GPU backings also
-  // need to reflect this cleared state, even if their physical memory isn't
-  // yet initialized. The system ensures a copy from the shared memory backing
-  // to the GPU backing will occur on first access, synchronizing the physical
-  // content.
-  if (has_shm_backing_) {
-    backing->SetCleared();
-  }
 
   // Update peak GPU memory tracking with the new estimated size.
   size_t estimated_size = 0;

@@ -240,6 +240,8 @@ class GPU_GLES2_EXPORT GLTextureImageRepresentationBase
   // RGB.
   gpu::TextureBase* GetTextureBase();
 
+  virtual bool IsBackingCleared() const;
+
  protected:
   friend class SkiaGLImageRepresentation;
   friend class DawnEGLImageRepresentation;

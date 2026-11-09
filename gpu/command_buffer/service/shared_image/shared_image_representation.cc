@@ -162,6 +162,14 @@ GLTextureImageRepresentationBase::BeginScopedAccess(
     return nullptr;
   }
 
+  if (allow_uncleared != AllowUnclearedAccess::kYes && !IsBackingCleared()) {
+    LOG(ERROR) << "Attempt to access an uninitialized SharedImage backing. "
+                  "debug_label: "
+               << debug_label();
+    EndAccess();
+    return nullptr;
+  }
+
   UpdateClearedStateOnBeginAccess();
 
   AccessMode access_mode;
@@ -178,6 +186,10 @@ GLTextureImageRepresentationBase::BeginScopedAccess(
 gpu::TextureBase* GLTextureImageRepresentationBase::GetTextureBase() {
   CHECK_EQ(NumPlanesExpected(), 1u);
   return GetTextureBase(0);
+}
+
+bool GLTextureImageRepresentationBase::IsBackingCleared() const {
+  return IsCleared();
 }
 
 bool GLTextureImageRepresentationBase::SupportsMultipleConcurrentReadAccess() {

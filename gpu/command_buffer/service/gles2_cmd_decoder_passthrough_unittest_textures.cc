@@ -16,6 +16,10 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
+#include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/cpu_readback_upload_copy_strategy.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_copy_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/test_image_backing.h"
@@ -107,6 +111,106 @@ class GLErrorOnAccessTestImageBacking : public TestImageBacking {
   }
 };
 
+// Representation whose outer container reports cleared while its underlying
+// GL texture backing remains uncleared until first access syncs it.
+class DeferredSyncPassthroughRepresentation
+    : public GLTexturePassthroughImageRepresentation {
+ public:
+  DeferredSyncPassthroughRepresentation(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      std::unique_ptr<GLTexturePassthroughImageRepresentation> inner)
+      : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
+        inner_(std::move(inner)) {}
+
+  const scoped_refptr<TexturePassthrough>& GetTexturePassthrough(
+      size_t plane_index) override {
+    return inner_->GetTexturePassthrough(plane_index);
+  }
+  gfx::Rect ClearedRect() const override { return gfx::Rect(size()); }
+  bool IsBackingCleared() const override { return inner_->IsBackingCleared(); }
+  bool BeginAccess(GLenum mode) override {
+    inner_access_ = inner_->BeginScopedAccess(
+        mode, SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    if (!inner_access_) {
+      return false;
+    }
+    inner_->SetCleared();
+    return true;
+  }
+  void EndAccess() override { inner_access_.reset(); }
+
+ private:
+  std::unique_ptr<GLTexturePassthroughImageRepresentation> inner_;
+  std::unique_ptr<GLTexturePassthroughImageRepresentation::ScopedAccess>
+      inner_access_;
+};
+
+class DeferredSyncTestImageBacking : public TestImageBacking {
+ public:
+  using TestImageBacking::TestImageBacking;
+
+ protected:
+  std::unique_ptr<GLTexturePassthroughImageRepresentation>
+  ProduceGLTexturePassthrough(SharedImageManager* manager,
+                              MemoryTypeTracker* tracker) override {
+    return std::make_unique<DeferredSyncPassthroughRepresentation>(
+        manager, this, tracker,
+        TestImageBacking::ProduceGLTexturePassthrough(manager, tracker));
+  }
+};
+
+class TestPassthroughBackingFactory : public SharedImageBackingFactory {
+ public:
+  TestPassthroughBackingFactory() : SharedImageBackingFactory(kUsageAll) {}
+
+  std::unique_ptr<SharedImageBacking> CreateSharedImage(
+      const Mailbox& mailbox,
+      const SharedImageInfo& si_info,
+      SurfaceHandle surface_handle,
+      bool is_thread_safe) override {
+    auto backing = AllocateTextureAndCreateSharedImage(
+        mailbox, si_info.format, si_info.size, si_info.color_space,
+        si_info.surface_origin, si_info.alpha_type, si_info.usage);
+    last_created_backing_ = backing.get();
+    return backing;
+  }
+  std::unique_ptr<SharedImageBacking> CreateSharedImage(
+      const Mailbox& mailbox,
+      const SharedImageInfo& si_info,
+      bool is_thread_safe,
+      base::span<const uint8_t> pixel_data) override {
+    return nullptr;
+  }
+  std::unique_ptr<SharedImageBacking> CreateSharedImage(
+      const Mailbox& mailbox,
+      const SharedImageInfo& si_info,
+      bool is_thread_safe,
+      gfx::GpuMemoryBufferHandle handle) override {
+    return nullptr;
+  }
+  bool IsSupported(SharedImageUsageSet usage,
+                   viz::SharedImageFormat format,
+                   const gfx::Size& size,
+                   bool thread_safe,
+                   gfx::GpuMemoryBufferType gmb_type,
+                   GrContextType gr_context_type,
+                   base::span<const uint8_t> pixel_data) override {
+    return true;
+  }
+  SharedImageBackingType GetBackingType() override {
+    return SharedImageBackingType::kTest;
+  }
+
+  TestImageBacking* TakeLastCreatedBacking() {
+    return std::exchange(last_created_backing_, nullptr);
+  }
+
+ private:
+  raw_ptr<TestImageBacking> last_created_backing_ = nullptr;
+};
+
 }  // namespace
 
 TEST_F(GLES2DecoderPassthroughTest, CreateAndTexStorage2DSharedImageCHROMIUM) {
@@ -172,6 +276,126 @@ TEST_F(GLES2DecoderPassthroughTest,
   EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailbox.name)));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   EXPECT_TRUE(backing_ptr->IsCleared());
+
+  DoDeleteTexture(kNewClientId);
+  shared_image.reset();
+}
+
+// When a representation's container is logically cleared (e.g. a compound
+// backing with shared memory) but its underlying GL texture backing is not yet
+// cleared, CreateAndTexStorage2DSharedImageCHROMIUM must synchronize and
+// initialize the underlying backing.
+TEST_F(GLES2DecoderPassthroughTest,
+       CreateAndTexStorage2DSharedImageCHROMIUMSyncsUnclearedBacking) {
+  MemoryTypeTracker memory_tracker(nullptr);
+  Mailbox mailbox = Mailbox::Generate();
+  auto backing =
+      AllocateTextureAndCreateSharedImage<DeferredSyncTestImageBacking>(
+          mailbox, viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(10, 10),
+          gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+          {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE});
+  TestImageBacking* backing_ptr = backing.get();
+  EXPECT_FALSE(backing_ptr->IsCleared());
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
+      GetSharedImageManager()->Register(std::move(backing), &memory_tracker);
+
+  auto& cmd = *GetImmediateAs<
+      cmds::CreateAndTexStorage2DSharedImageINTERNALImmediate>();
+  cmd.Init(kNewClientId, mailbox.name);
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailbox.name)));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EXPECT_TRUE(backing_ptr->IsCleared());
+
+  DoDeleteTexture(kNewClientId);
+  shared_image.reset();
+
+  // If read synchronization fails during EnsureClear, the underlying backing
+  // remains uncleared and the client ID must not map to its uninitialized
+  // service_id.
+  Mailbox failing_mailbox = Mailbox::Generate();
+  auto failing_backing =
+      AllocateTextureAndCreateSharedImage<DeferredSyncTestImageBacking>(
+          failing_mailbox, viz::SinglePlaneFormat::kRGBA_8888,
+          gfx::Size(10, 10), gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+          kPremul_SkAlphaType,
+          {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE});
+  failing_backing->set_can_access(false);
+  GLuint failing_service_id = failing_backing->service_id();
+  TestImageBacking* failing_backing_ptr = failing_backing.get();
+  EXPECT_FALSE(failing_backing_ptr->IsCleared());
+  std::unique_ptr<SharedImageRepresentationFactoryRef> failing_shared_image =
+      GetSharedImageManager()->Register(std::move(failing_backing),
+                                        &memory_tracker);
+
+  cmd.Init(kNewClientId, failing_mailbox.name);
+  EXPECT_EQ(error::kNoError,
+            ExecuteImmediateCmd(cmd, sizeof(failing_mailbox.name)));
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EXPECT_FALSE(failing_backing_ptr->IsCleared());
+  uint32_t mapped_service_id = 0;
+  EXPECT_TRUE(GetPassthroughResources()->texture_id_map.GetServiceID(
+      kNewClientId, &mapped_service_id));
+  EXPECT_NE(mapped_service_id, failing_service_id);
+
+  DoDeleteTexture(kNewClientId);
+  failing_shared_image.reset();
+}
+
+// Friend of CompoundImageBacking, for access to its test-only factory.
+class GLES2DecoderPassthroughCompoundImageTest
+    : public GLES2DecoderPassthroughTest {
+ protected:
+  static std::unique_ptr<SharedImageBacking> CreateSharedMemoryCompoundBacking(
+      SharedImageBackingFactory* gpu_backing_factory,
+      scoped_refptr<SharedImageCopyManager> copy_manager,
+      const Mailbox& mailbox,
+      const SharedImageInfo& si_info,
+      gfx::BufferUsage buffer_usage) {
+    return CompoundImageBacking::CreateSharedMemoryForTesting(
+        gpu_backing_factory, std::move(copy_manager), mailbox, si_info,
+        buffer_usage);
+  }
+};
+
+// Importing a shared-memory-backed CompoundImageBacking into the passthrough
+// decoder must synchronize the lazily created GPU backing from shared memory
+// during CreateAndTexStorage2DSharedImageINTERNAL so the texture is initialized
+// even if the client does not call BeginSharedImageAccessDirectCHROMIUM.
+TEST_F(
+    GLES2DecoderPassthroughCompoundImageTest,
+    CreateAndTexStorage2DSharedImageCHROMIUMCompoundImageSynchronizesOnImport) {
+  MemoryTypeTracker memory_tracker(nullptr);
+  TestPassthroughBackingFactory test_factory;
+  auto copy_manager = base::MakeRefCounted<SharedImageCopyManager>();
+  copy_manager->AddStrategy(std::make_unique<CPUReadbackUploadCopyStrategy>());
+
+  Mailbox mailbox = Mailbox::Generate();
+  SharedImageInfo si_info(
+      viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(10, 10), gfx::ColorSpace(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+      {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE},
+      "TestLabel");
+  auto compound_backing = CreateSharedMemoryCompoundBacking(
+      &test_factory, std::move(copy_manager), mailbox, si_info,
+      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+  ASSERT_TRUE(compound_backing);
+  EXPECT_TRUE(compound_backing->IsCleared());
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
+      GetSharedImageManager()->Register(std::move(compound_backing),
+                                        &memory_tracker);
+
+  auto& cmd = *GetImmediateAs<
+      cmds::CreateAndTexStorage2DSharedImageINTERNALImmediate>();
+  cmd.Init(kNewClientId, mailbox.name);
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailbox.name)));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+
+  TestImageBacking* gpu_backing = test_factory.TakeLastCreatedBacking();
+  ASSERT_TRUE(gpu_backing);
+  EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+  EXPECT_TRUE(gpu_backing->IsCleared());
 
   DoDeleteTexture(kNewClientId);
   shared_image.reset();

@@ -4833,7 +4833,8 @@ GLES2DecoderPassthroughImpl::DoCreateAndTexStorage2DSharedImageINTERNAL(
 
   PassthroughResources::SharedImageData shared_image_data(
       this, std::move(shared_image));
-  if (!shared_image_data.representation()->IsCleared() &&
+  if ((!shared_image_data.representation()->IsCleared() ||
+       !shared_image_data.representation()->IsBackingCleared()) &&
       base::FeatureList::IsEnabled(kRejectUnclearedSharedImageOnClearFailure)) {
     // Create a placeholder texture (see http://crbug.com/472465 and
     // http://crbug.com/851878) and do not expose the uncleared shared image.

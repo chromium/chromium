@@ -34,6 +34,10 @@ class SharedImageCopyManager;
 class SharedImageFactory;
 class SharedImageFactoryRef;
 
+namespace gles2 {
+class GLES2DecoderPassthroughCompoundImageTest;
+}  // namespace gles2
+
 // TODO(kylechar): Merge with OzoneImageBacking::AccessStream enum.
 //
 // LINT.IfChange(SharedImageAccessStream)
@@ -227,8 +231,9 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   // be copied into it.
   // 3. Anytime a copy is performend between backings, the src backing's cleared
   // rect will be xfered to the dst backing.
-  // 4. If there is a shm backing, entire CompoundImageBacking as well all the
-  // created gpu backings will be marked as cleared always.
+  // 4. If there is a shm backing, CompoundImageBacking starts logically
+  // cleared, while newly created GPU backings remain uncleared until first
+  // access uploads from shared memory.
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
 
   void OnAddSecondaryReference() override;
@@ -302,6 +307,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking
  private:
   friend class CompoundImageBackingTest;
   friend class D3DImageBackingFactoryTest;
+  friend class gles2::GLES2DecoderPassthroughCompoundImageTest;
 
   // Holds one element, aka SharedImageBacking and related information, that
   // makes up the compound.

@@ -954,6 +954,130 @@ TEST_P(RasterDecoderOOPCopyGLErrorTest, ClearWhenSourceUnavailable) {
   EXPECT_EQ(!raise_gl_error(), representation->IsCleared());
 }
 
+namespace {
+
+// Source backing which counts attempts to produce a Skia representation, e.g.
+// to check that a command doesn't produce one (which can allocate, see
+// CompoundImageBacking) before validating its arguments.
+class CountingProduceSkiaTestImageBacking : public TestImageBacking {
+ public:
+  CountingProduceSkiaTestImageBacking(const Mailbox& mailbox,
+                                      const SharedImageInfo& si_info)
+      : TestImageBacking(mailbox, si_info, /*estimated_size=*/0) {
+    SetCleared();
+  }
+
+  int produce_skia_count() const { return produce_skia_count_; }
+
+ protected:
+  std::unique_ptr<SkiaGaneshImageRepresentation> ProduceSkiaGanesh(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<SharedContextState> context_state) override {
+    ++produce_skia_count_;
+    return nullptr;
+  }
+
+  std::unique_ptr<SkiaGraphiteImageRepresentation> ProduceSkiaGraphite(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<SharedContextState> context_state) override {
+    ++produce_skia_count_;
+    return nullptr;
+  }
+
+ private:
+  int produce_skia_count_ = 0;
+};
+
+}  // namespace
+
+// Readbacks must validate their arguments and shared memory before producing
+// the source image. Each param runs a readback whose last shared memory check
+// fails (true), or a valid readback as a control (false).
+class RasterDecoderOOPReadbackOrderTest
+    : public RasterDecoderOOPTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool invalid_shm() const { return GetParam(); }
+
+  void SetUp() override {
+    RasterDecoderOOPTest::SetUp();
+    source_mailbox_ = Mailbox::Generate();
+    SharedImageInfo si_info(viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(2, 2),
+                            gfx::ColorSpace::CreateSRGB(),
+                            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                            SHARED_IMAGE_USAGE_RASTER_READ, "TestLabel");
+    auto backing = std::make_unique<CountingProduceSkiaTestImageBacking>(
+        source_mailbox_, si_info);
+    source_backing_ = backing.get();
+    source_ref_ =
+        shared_image_manager()->Register(std::move(backing), &memory_tracker_);
+  }
+
+  void TearDown() override {
+    source_backing_ = nullptr;
+    source_ref_.reset();
+    RasterDecoderOOPTest::TearDown();
+  }
+
+  // Checks that the source was only produced for the valid readback.
+  void ExpectProducedOnlyIfValid() {
+    if (invalid_shm()) {
+      EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+      EXPECT_EQ(0, source_backing_->produce_skia_count());
+    } else {
+      // The backing can't produce a Skia representation, so the readback fails
+      // after producing it.
+      EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+      EXPECT_EQ(1, source_backing_->produce_skia_count());
+    }
+  }
+
+ protected:
+  // Past the end of the shared memory buffer.
+  static constexpr GLuint kOutOfRangeOffset = 4096;
+
+  Mailbox source_mailbox_;
+  raw_ptr<CountingProduceSkiaTestImageBacking> source_backing_ = nullptr;
+  std::unique_ptr<SharedImageRepresentationFactoryRef> source_ref_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         RasterDecoderOOPReadbackOrderTest,
+                         testing::Bool());
+
+TEST_P(RasterDecoderOOPReadbackOrderTest, ARGB) {
+  using Result = cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result;
+  const GLuint pixels_offset =
+      invalid_shm() ? kOutOfRangeOffset : sizeof(Result);
+  auto& cmd = *GetImmediateAs<cmds::ReadbackARGBImagePixelsINTERNALImmediate>();
+  cmd.Init(/*src_x=*/0, /*src_y=*/0, /*plane_index=*/0, /*dst_width=*/2,
+           /*dst_height=*/2, /*row_bytes=*/8, kRGBA_8888_SkColorType,
+           kPremul_SkAlphaType, shared_memory_id_, shared_memory_offset_,
+           /*color_space_offset=*/pixels_offset, pixels_offset,
+           source_mailbox_.name);
+  EXPECT_EQ(error::kNoError,
+            ExecuteImmediateCmd(cmd, sizeof(source_mailbox_.name)));
+  ExpectProducedOnlyIfValid();
+}
+
+TEST_P(RasterDecoderOOPReadbackOrderTest, YUV) {
+  using Result = cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result;
+  // 2x2 Y plane followed by 1x1 U and V planes.
+  const GLuint y_offset = sizeof(Result);
+  const GLuint u_offset = y_offset + 4;
+  const GLuint v_offset = invalid_shm() ? kOutOfRangeOffset : u_offset + 1;
+  auto& cmd = *GetImmediateAs<cmds::ReadbackYUVImagePixelsINTERNALImmediate>();
+  cmd.Init(/*src_x=*/0, /*src_y=*/0, /*src_width=*/2, /*src_height=*/2,
+           /*dst_width=*/2, /*dst_height=*/2, shared_memory_id_,
+           shared_memory_offset_, y_offset, /*y_stride=*/2, u_offset,
+           /*u_stride=*/1, v_offset, /*v_stride=*/1, source_mailbox_.name);
+  EXPECT_EQ(error::kNoError,
+            ExecuteImmediateCmd(cmd, sizeof(source_mailbox_.name)));
+  ExpectProducedOnlyIfValid();
+}
+
 TEST_F(RasterDecoderOOPTest, CopySharedImageOddSizeMultiplanar) {
   gpu::Mailbox source_mailbox = gpu::Mailbox::Generate();
   SharedImageInfo source_si_info(

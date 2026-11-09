@@ -761,6 +761,15 @@ class RasterDecoderImpl final : public RasterDecoder,
                                         GLuint v_stride,
                                         const volatile GLbyte* mailbox);
 
+  // Produces the Skia representation of the shared image named by the
+  // client-provided `mailbox`. If there is no such shared image, sets `error`
+  // with `error_message` for `function_name` and returns nullptr.
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkiaFromClientMailbox(
+      const volatile GLbyte* mailbox,
+      const char* function_name,
+      GLenum error,
+      const char* error_message);
+
   void DoLoseContextCHROMIUM(GLenum current, GLenum other);
   void DoBeginRasterCHROMIUM(GLfloat r,
                              GLfloat g,
@@ -1880,6 +1889,23 @@ void RasterDecoderImpl::DoCopySharedImageINTERNAL(
   }
 }
 
+std::unique_ptr<SkiaImageRepresentation>
+RasterDecoderImpl::ProduceSkiaFromClientMailbox(const volatile GLbyte* mailbox,
+                                                const char* function_name,
+                                                GLenum error,
+                                                const char* error_message) {
+  Mailbox client_mailbox = Mailbox::FromVolatile(
+      *reinterpret_cast<const volatile Mailbox*>(mailbox));
+  DLOG_IF(ERROR, !client_mailbox.Verify())
+      << function_name << " was passed an invalid mailbox";
+  auto shared_image = shared_image_representation_factory_.ProduceSkia(
+      client_mailbox, shared_context_state_);
+  if (!shared_image) {
+    LOCAL_SET_GL_ERROR(error, function_name, error_message);
+  }
+  return shared_image;
+}
+
 void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
                                               GLint y_offset,
                                               GLuint src_width,
@@ -1903,15 +1929,10 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
     return;
   }
 
-  Mailbox dest_mailbox = Mailbox::FromVolatile(
-      *reinterpret_cast<const volatile Mailbox*>(mailbox));
-  DLOG_IF(ERROR, !dest_mailbox.Verify())
-      << "WritePixels was passed an invalid mailbox";
-  auto dest_shared_image = shared_image_representation_factory_.ProduceSkia(
-      dest_mailbox, shared_context_state_);
+  auto dest_shared_image = ProduceSkiaFromClientMailbox(
+      mailbox, "glWritePixels", GL_INVALID_OPERATION,
+      "Attempting to write to unknown mailbox.");
   if (!dest_shared_image) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
-                       "Attempting to write to unknown mailbox.");
     return;
   }
 
@@ -2118,15 +2139,10 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
     return;
   }
 
-  Mailbox dest_mailbox = Mailbox::FromVolatile(
-      *reinterpret_cast<const volatile Mailbox*>(mailbox));
-  DLOG_IF(ERROR, !dest_mailbox.Verify())
-      << "WritePixelsYUV was passed an invalid mailbox";
-  auto dest_shared_image = shared_image_representation_factory_.ProduceSkia(
-      dest_mailbox, shared_context_state_);
+  auto dest_shared_image = ProduceSkiaFromClientMailbox(
+      mailbox, "glWritePixelsYUV", GL_INVALID_OPERATION,
+      "Attempting to write to unknown mailbox.");
   if (!dest_shared_image) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixelsYUV",
-                       "Attempting to write to unknown mailbox.");
     return;
   }
 
@@ -2357,20 +2373,6 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
     return;
   }
 
-  Mailbox source_mailbox = Mailbox::FromVolatile(
-      *reinterpret_cast<const volatile Mailbox*>(mailbox));
-  DLOG_IF(ERROR, !source_mailbox.Verify())
-      << "ReadbackImagePixels was passed an invalid mailbox";
-  auto source_shared_image = shared_image_representation_factory_.ProduceSkia(
-      source_mailbox, shared_context_state_);
-  if (!source_shared_image) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glReadbackImagePixels",
-                       "Unknown mailbox");
-    return;
-  }
-
-  viz::SharedImageFormat source_format = source_shared_image->format();
-
   // If present, the color space is serialized into shared memory after the
   // result and before the pixel data.
   if (color_space_offset > pixels_offset) {
@@ -2382,13 +2384,6 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
 
   sk_sp<SkColorSpace> dst_color_space;
   if (color_space_size) {
-    // For multiplanar formats readback is per plane, and destination color
-    // space must be nullptr to avoid unexpected color conversions.
-    if (source_format.is_multi_plane()) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
-                         "Unexpected color space for multiplanar shared image");
-      return;
-    }
     void* color_space_bytes = GetSharedMemoryAs<void*>(
         shm_id, shm_offset + color_space_offset, color_space_size);
     if (!color_space_bytes) {
@@ -2438,6 +2433,25 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
   if (!result) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
                        "Failed to retrieve memory for readPixels result");
+    return;
+  }
+
+  // Produce the source only after every argument and shared memory check has
+  // passed. Producing a representation can allocate: a CompoundImageBacking
+  // whose contents only live in shared memory allocates a GPU backing. An
+  // invalid readback must fail without that side effect.
+  auto source_shared_image = ProduceSkiaFromClientMailbox(
+      mailbox, "glReadbackImagePixels", GL_INVALID_VALUE, "Unknown mailbox");
+  if (!source_shared_image) {
+    return;
+  }
+
+  viz::SharedImageFormat source_format = source_shared_image->format();
+  if (color_space_size && source_format.is_multi_plane()) {
+    // For multiplanar formats readback is per plane, and destination color
+    // space must be nullptr to avoid unexpected color conversions.
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
+                       "Unexpected color space for multiplanar shared image");
     return;
   }
 
@@ -2522,18 +2536,6 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
     return;
   }
 
-  Mailbox source_mailbox = Mailbox::FromVolatile(
-      *reinterpret_cast<const volatile Mailbox*>(mailbox));
-  DLOG_IF(ERROR, !source_mailbox.Verify())
-      << "ReadbackImagePixels was passed an invalid mailbox";
-  auto source_shared_image = shared_image_representation_factory_.ProduceSkia(
-      source_mailbox, shared_context_state_);
-  if (!source_shared_image) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glReadbackImagePixels",
-                       "Unknown mailbox");
-    return;
-  }
-
   auto* result = GetSharedMemoryAs<
       cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result*>(
       shm_id, shm_offset,
@@ -2607,6 +2609,16 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
   if (!v_out) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackYUVImagePixels",
                        "Failed to get memory for v plane output");
+    return;
+  }
+
+  // Produce the source only after every argument and shared memory check has
+  // passed. Producing a representation can allocate: a CompoundImageBacking
+  // whose contents only live in shared memory allocates a GPU backing. An
+  // invalid readback must fail without that side effect.
+  auto source_shared_image = ProduceSkiaFromClientMailbox(
+      mailbox, "glReadbackImagePixels", GL_INVALID_VALUE, "Unknown mailbox");
+  if (!source_shared_image) {
     return;
   }
 
@@ -2713,19 +2725,12 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
     return;
   }
 
-  Mailbox mailbox =
-      Mailbox::FromVolatile(*reinterpret_cast<const volatile Mailbox*>(key));
-  DLOG_IF(ERROR, !mailbox.Verify()) << "BeginRasterCHROMIUM was "
-                                       "passed a mailbox that was not "
-                                       "generated by ProduceTextureCHROMIUM.";
-
   DCHECK(!shared_image_);
 
-  shared_image_ = shared_image_representation_factory_.ProduceSkia(
-      mailbox, shared_context_state_.get());
+  shared_image_ =
+      ProduceSkiaFromClientMailbox(key, "glBeginRasterCHROMIUM",
+                                   GL_INVALID_VALUE, "passed invalid mailbox.");
   if (!shared_image_) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glBeginRasterCHROMIUM",
-                       "passed invalid mailbox.");
     return;
   }
 
@@ -2813,7 +2818,7 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
 
   paint_op_shared_image_provider_ = std::make_unique<SharedImageProviderImpl>(
       &shared_image_representation_factory_, shared_context_state_, sk_surface_,
-      &end_semaphores_, error_state_.get(), mailbox);
+      &end_semaphores_, error_state_.get(), shared_image_->mailbox());
 
   // All or nothing clearing, as no way to validate the client's input on what
   // is the "used" part of the texture.  A separate |needs_clear| flag is needed

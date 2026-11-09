@@ -345,6 +345,11 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void NotifyGraphiteAboutInitializedStatus() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  // Marks the whole backing cleared after a successful UploadFromMemory().
+  // Graphite/Dawn is only notified if Dawn doesn't already consider the texture
+  // initialized, since notifying ends and restarts Dawn's persistent access.
+  void MarkClearedAfterUpload() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   // Flush pending graphite submits. It will call Graphite's Context::submit.
   void FlushGraphiteCommandsIfNeeded() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 

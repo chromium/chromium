@@ -328,12 +328,15 @@ class D3DImageBacking::PersistentGraphiteDawnAccess
   PersistentGraphiteDawnAccess(scoped_refptr<SharedContextState> context_state,
                                wgpu::Device device,
                                wgpu::Texture texture,
-                               wgpu::SharedTextureMemory texture_memory);
+                               wgpu::SharedTextureMemory texture_memory,
+                               bool is_multi_plane);
 
-  // Must be called once after construction. Since constructor cannot return
-  // error, this provides a way to initialize the access and return a result.
+  // Must be called after construction. Since constructor cannot return error,
+  // this provides a way to initialize the access and return a result.
   bool BeginAccess(bool is_cleared,
                    scoped_refptr<gfx::D3DSharedFence> wait_fence = nullptr);
+
+  bool access_begun() const { return access_begun_; }
 
   // Force EndAccess and invalidate the persistent access. It's invalid to use
   // this persistent access afterwards.
@@ -371,6 +374,8 @@ class D3DImageBacking::PersistentGraphiteDawnAccess
   wgpu::Device device_;
   wgpu::Texture texture_;
   wgpu::SharedTextureMemory texture_memory_;
+  const bool is_multi_plane_;
+  bool access_begun_ = false;
   // Flag indicates whether should flush graphite's submits before accessing
   // the backing in ANGLE/WebGPU.
   bool need_flush_commands_ = false;
@@ -380,11 +385,13 @@ D3DImageBacking::PersistentGraphiteDawnAccess::PersistentGraphiteDawnAccess(
     scoped_refptr<SharedContextState> context_state,
     wgpu::Device device,
     wgpu::Texture texture,
-    wgpu::SharedTextureMemory texture_memory)
+    wgpu::SharedTextureMemory texture_memory,
+    bool is_multi_plane)
     : context_state_(std::move(context_state)),
       device_(std::move(device)),
       texture_(std::move(texture)),
-      texture_memory_(std::move(texture_memory)) {}
+      texture_memory_(std::move(texture_memory)),
+      is_multi_plane_(is_multi_plane) {}
 
 bool D3DImageBacking::PersistentGraphiteDawnAccess::BeginAccess(
     bool is_cleared,
@@ -409,10 +416,12 @@ bool D3DImageBacking::PersistentGraphiteDawnAccess::BeginAccess(
   }
 
   if (texture_memory_.BeginAccess(texture_, &desc) == wgpu::Status::Success) {
+    access_begun_ = true;
     return true;
   }
 
   LOG(ERROR) << "SharedTextureMemory::BeginAccess() failed.";
+  access_begun_ = false;
   texture_memory_ = nullptr;
   texture_ = nullptr;
   return false;
@@ -424,11 +433,15 @@ D3DImageBacking::PersistentGraphiteDawnAccess::~PersistentGraphiteDawnAccess() {
 
 void D3DImageBacking::PersistentGraphiteDawnAccess::Invalidate() {
   if (!texture_memory_ || texture_memory_.IsDeviceLost()) {
+    access_begun_ = false;
     return;
   }
 
-  wgpu::SharedTextureMemoryEndAccessState end_state = {};
-  texture_memory_.EndAccess(texture_, &end_state);
+  if (access_begun_) {
+    wgpu::SharedTextureMemoryEndAccessState end_state = {};
+    texture_memory_.EndAccess(texture_, &end_state);
+    access_begun_ = false;
+  }
 
   texture_memory_ = nullptr;
   texture_ = nullptr;
@@ -457,9 +470,18 @@ bool D3DImageBacking::PersistentGraphiteDawnAccess::WaitForDCompBeforeWrite(
     return true;
   }
 
-  // Temporarily end Dawn's access.
-  wgpu::SharedTextureMemoryEndAccessState end_state = {};
-  texture_memory_.EndAccess(texture_, &end_state);
+  bool is_cleared = false;
+  if (access_begun_) {
+    // Temporarily end Dawn's access.
+    wgpu::SharedTextureMemoryEndAccessState end_state = {};
+    texture_memory_.EndAccess(texture_, &end_state);
+    access_begun_ = false;
+
+    // Sanity check that EndAccess() didn't forward prior fences because we
+    // didn't submit. There should be only one fence exported (owned by Dawn).
+    CHECK_LE(end_state.fenceCount, 1u);
+    is_cleared = end_state.initialized;
+  }
 
   // Restart BeginAccess to pass the fence to Dawn.
   // When Dawn's submit() is called after this point, it will wait for the fence
@@ -469,20 +491,24 @@ bool D3DImageBacking::PersistentGraphiteDawnAccess::WaitForDCompBeforeWrite(
   // only got here because of an exclusive write access, there shouldn't be any
   // concurrent dcomp texture access in the middle between the prior write
   // access and current write access.
-
-  // Sanity check that EndAccess() didn't forward prior fences because we didn't
-  // submit. There should be only one fence exported (owned by Dawn).
-  CHECK_LE(end_state.fenceCount, 1u);
-  return BeginAccess(end_state.initialized,
-                     std::move(dcomp_texture_available_fence));
+  return BeginAccess(is_cleared, std::move(dcomp_texture_available_fence));
 }
 
 bool D3DImageBacking::PersistentGraphiteDawnAccess::SetCleared(
     bool is_cleared) {
   // The only way to notify Dawn about init status is via STM.BeginAccess. So
   // end Dawn's access temporarily and BeginAccess again.
-  wgpu::SharedTextureMemoryEndAccessState end_state = {};
-  texture_memory_.EndAccess(texture_, &end_state);
+  if (access_begun_) {
+    wgpu::SharedTextureMemoryEndAccessState end_state = {};
+    texture_memory_.EndAccess(texture_, &end_state);
+    access_begun_ = false;
+  }
+
+  // Multiplanar textures cannot have Dawn access begun until they are
+  // initialized.
+  if (is_multi_plane_ && !is_cleared) {
+    return true;
+  }
 
   // Call Dawn's BeginAccess again.
   return BeginAccess(is_cleared);
@@ -814,6 +840,7 @@ bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
         pixmaps[0].addr(), pixmaps[0].rowBytes(), /*SrcDepthPitch=*/0,
         D3D11_COPY_DISCARD);
 
+    MarkClearedAfterUpload();
     return true;
   }
 
@@ -857,6 +884,7 @@ bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
   device_context->Unmap(staging_texture, 0);
   device_context->CopyResource(d3d11_texture_.Get(), staging_texture);
 
+  MarkClearedAfterUpload();
   return true;
 }
 
@@ -1141,10 +1169,15 @@ void D3DImageBacking::InitPersistentGraphiteDawnAccess(
   persistent_graphite_dawn_access_ =
       base::MakeRefCounted<PersistentGraphiteDawnAccess>(
           std::move(context_state), std::move(device), std::move(texture),
-          std::move(shared_texture_memory));
+          std::move(shared_texture_memory), format().is_multi_plane());
 
-  if (!persistent_graphite_dawn_access_->BeginAccess(
-          /*is_cleared=*/ClearedRectInternal() == gfx::Rect(size()))) {
+  // Multiplanar textures cannot have Dawn access begun until they are
+  // initialized. If this backing is not yet cleared (e.g. lazily allocated in
+  // CompoundImageBacking before UploadFromMemory runs), defer BeginAccess until
+  // NotifyGraphiteAboutInitializedStatus() or BeginAccessDawn().
+  const bool is_cleared = ClearedRectInternal() == gfx::Rect(size());
+  if ((!format().is_multi_plane() || is_cleared) &&
+      !persistent_graphite_dawn_access_->BeginAccess(is_cleared)) {
     persistent_graphite_dawn_access_.reset();
   }
 }
@@ -1352,6 +1385,12 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(
   // is already open.
   if (persistent_graphite_dawn_access_) {
     if (persistent_graphite_dawn_access_->IsGraphiteDevice(device)) {
+      if (!persistent_graphite_dawn_access_->access_begun() &&
+          !persistent_graphite_dawn_access_->BeginAccess(
+              /*is_cleared=*/ClearedRectInternal() == gfx::Rect(size()))) {
+        persistent_graphite_dawn_access_.reset();
+        return nullptr;
+      }
       if (dcomp_texture_ && write_access) {
         // For dcomp, we only need to wait for dcomp read fence before we write.
         // We don't need to signal any fence after that so it's still safe to
@@ -1613,6 +1652,21 @@ void D3DImageBacking::CheckForDawnDeviceLoss(
       persistent_graphite_dawn_access_.reset();
     }
   }
+}
+
+void D3DImageBacking::MarkClearedAfterUpload() {
+  SetClearedRectInternal(gfx::Rect(size()));
+  // Notifying Graphite ends and restarts Dawn's persistent access. Skip that
+  // round trip if Dawn already considers the texture initialized. This queries
+  // Dawn directly rather than ClearedRectInternal(), which may have been
+  // updated via SetClearedRect() without notifying Dawn.
+  if (persistent_graphite_dawn_access_ &&
+      persistent_graphite_dawn_access_->access_begun() &&
+      dawn::native::IsTextureSubresourceInitialized(
+          persistent_graphite_dawn_access_->texture().Get(), 0, 1, 0, 1)) {
+    return;
+  }
+  NotifyGraphiteAboutInitializedStatus();
 }
 
 void D3DImageBacking::NotifyGraphiteAboutInitializedStatus() {
