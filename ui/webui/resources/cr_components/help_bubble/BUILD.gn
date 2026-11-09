@@ -38,7 +38,7 @@ build_webui("build") {
     "new_badge.ts",
   ]
 
-  if ((!is_android && !is_ios) || is_desktop_android) {
+  if (!is_android && !is_ios) {
     ts_files += [ "help_bubble_mixin.ts" ]
   }
 
@@ -65,7 +65,7 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
-  if ((!is_android && !is_ios) || is_desktop_android) {
+  if (!is_android && !is_ios) {
     ts_deps += [ "//third_party/polymer/v3_0:library" ]
   }
   webui_context_type = "relative"

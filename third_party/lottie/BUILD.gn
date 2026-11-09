@@ -4,9 +4,8 @@
 
 import("//third_party/node/node.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-import("//ui/webui/webui_features.gni")
 
-assert((!is_android && !is_ios) || enable_webui_ntp)
+assert(!is_android && !is_ios)
 
 node("minify") {
   script = "minify_lottie.py"
