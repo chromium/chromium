@@ -20,6 +20,8 @@ BASE_DECLARE_FEATURE(kAndroidAutofillFieldsUpdatedOnSelect);
 BASE_DECLARE_FEATURE(kAndroidAutofillSuppressOffscreenDatalist);
 
 BASE_DECLARE_FEATURE(kAndroidAutofillIncludeSelectOptionValues);
+
+BASE_DECLARE_FEATURE(kAndroidAutofillRefetchManagerIfDisabled);
 }  // namespace autofill::features
 
 #endif  // COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_FEATURES_H_

@@ -29,6 +29,8 @@ public class AndroidAutofillFeatures extends Features {
             "AndroidAutofillSuppressOffscreenDatalist";
     public static final String ANDROID_AUTOFILL_INCLUDE_SELECT_OPTION_VALUES_NAME =
             "AndroidAutofillIncludeSelectOptionValues";
+    public static final String ANDROID_AUTOFILL_REFETCH_MANAGER_IF_DISABLED_NAME =
+            "AndroidAutofillRefetchManagerIfDisabled";
 
     public static final AndroidAutofillFeatures ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER =
             new AndroidAutofillFeatures(0, ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER_NAME);
@@ -40,6 +42,8 @@ public class AndroidAutofillFeatures extends Features {
             new AndroidAutofillFeatures(3, ANDROID_AUTOFILL_SUPPRESS_OFFSCREEN_DATALIST_NAME);
     public static final AndroidAutofillFeatures ANDROID_AUTOFILL_INCLUDE_SELECT_OPTION_VALUES =
             new AndroidAutofillFeatures(4, ANDROID_AUTOFILL_INCLUDE_SELECT_OPTION_VALUES_NAME);
+    public static final AndroidAutofillFeatures ANDROID_AUTOFILL_REFETCH_MANAGER_IF_DISABLED =
+            new AndroidAutofillFeatures(5, ANDROID_AUTOFILL_REFETCH_MANAGER_IF_DISABLED_NAME);
 
     private final int mOrdinal;
 

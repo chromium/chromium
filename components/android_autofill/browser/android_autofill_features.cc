@@ -24,6 +24,7 @@ constexpr std::array kFeaturesExposedToJava = {
     &kAndroidAutofillFieldsUpdatedOnSelect,
     &kAndroidAutofillSuppressOffscreenDatalist,
     &kAndroidAutofillIncludeSelectOptionValues,
+    &kAndroidAutofillRefetchManagerIfDisabled,
 };
 
 }  // namespace
@@ -63,6 +64,13 @@ BASE_FEATURE(kAndroidAutofillSuppressOffscreenDatalist,
 // indices from either range back to the corresponding option value.
 BASE_FEATURE(kAndroidAutofillIncludeSelectOptionValues,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, AutofillProvider fetches the AutofillManager from its context
+// again when the current one is disabled. This lets autofill work in WebViews
+// that were created with a context that has no Activity behind it and later
+// moved to an Activity, e.g. with MutableContextWrapper.setBaseContext().
+BASE_FEATURE(kAndroidAutofillRefetchManagerIfDisabled,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 static int64_t JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env,
                                                       int32_t ordinal) {

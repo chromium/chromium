@@ -411,16 +411,21 @@ public class AutofillProviderUMA {
     private @Nullable SessionRecorder mRecorder;
     private @TriState int mAutofillDisabledOnSessionStart;
 
-    private final boolean mIsAwGCurrentAutofillService;
+    private boolean mIsAwGCurrentAutofillService;
     private @Nullable ServerPredictionRecorder mServerPredictionRecorder;
 
-    private final @Provider int mCurrentProvider;
+    private @Provider int mCurrentProvider;
 
     public AutofillProviderUMA(
             Context context, boolean isAwGCurrentAutofillService, String packageName) {
         mCurrentProvider = getCurrentProvider(packageName);
         recordUmaCreationContext(context);
         mIsAwGCurrentAutofillService = isAwGCurrentAutofillService;
+    }
+
+    public void setCurrentProvider(boolean isAwGCurrentAutofillService, String packageName) {
+        mIsAwGCurrentAutofillService = isAwGCurrentAutofillService;
+        mCurrentProvider = getCurrentProvider(packageName);
     }
 
     public void onFormSubmitted(int submissionSource) {

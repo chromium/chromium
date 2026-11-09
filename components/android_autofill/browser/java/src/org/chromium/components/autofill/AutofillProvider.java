@@ -281,6 +281,7 @@ public class AutofillProvider {
             FocusField focusField = mRequest.getFocusField();
             @Nullable Rect clampedBounds = clampToVisibleBounds(focusField.absBound);
             if (clampedBounds == null) return;
+            maybeRefetchAutofillManager();
             getAutofillManagerWrapper()
                     .requestAutofill(
                             mContainerView,
@@ -316,6 +317,7 @@ public class AutofillProvider {
         mPrefillRequest = new PrefillRequest(form);
         mStructureProvidedForPrefillRequest = false;
 
+        maybeRefetchAutofillManager();
         getAutofillManagerWrapper()
                 .notifyVirtualViewsReady(mContainerView, mPrefillRequest.getPrefillHints());
     }
@@ -347,6 +349,7 @@ public class AutofillProvider {
 
         transformFormFieldToContainViewCoordinates(formData);
         initializeFrameworkWrapper();
+        maybeRefetchAutofillManager();
         mAutofillUMA.onSessionStarted(getAutofillManagerWrapper().isDisabled());
         mRequest =
                 new AutofillRequest(
@@ -677,6 +680,20 @@ public class AutofillProvider {
         return mAutofillManager;
     }
 
+    private void maybeRefetchAutofillManager() {
+        if (mAutofillManager == null) return;
+        Context context = getContext();
+        if (!mAutofillManager.canRefetch(context)) return;
+        if (!AndroidAutofillFeatures.ANDROID_AUTOFILL_REFETCH_MANAGER_IF_DISABLED.isEnabled()) {
+            return;
+        }
+        if (mAutofillManager.refetch(context) && mAutofillUMA != null) {
+            mAutofillUMA.setCurrentProvider(
+                    mAutofillManager.isAwGCurrentAutofillService(),
+                    mAutofillManager.getPackageName());
+        }
+    }
+
     /**
      * Displays the simplest popup for the datalist. This is same as WebView's datalist popup in
      * Android pre-o. No suggestion from the autofill service will be presented, No advance features
@@ -1003,6 +1020,9 @@ public class AutofillProvider {
      */
     @CalledByNative
     public boolean isAutofillDisabled() {
+        // Native calls this when a new page loads and skips the page's metrics if Autofill is
+        // disabled. Refetch first in case the app has moved the WebView to an Activity.
+        maybeRefetchAutofillManager();
         return mAutofillManager != null && mAutofillManager.isDisabled();
     }
 

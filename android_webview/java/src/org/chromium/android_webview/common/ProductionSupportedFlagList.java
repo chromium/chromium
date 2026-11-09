@@ -278,6 +278,10 @@ public final class ProductionSupportedFlagList {
                 "When enabled, select elements include both option display texts and option"
                         + " values in ViewStructure.setAutofillOptions."),
         Flag.baseFeature(
+                AndroidAutofillFeatures.ANDROID_AUTOFILL_REFETCH_MANAGER_IF_DISABLED_NAME,
+                "When enabled, fetches the Android AutofillManager again if it's disabled, e.g."
+                        + " after an app moves a WebView to an Activity."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ACCEPT_DOM_MUTATION_AFTER_AUTOFILL_SUBMISSION,
                 "Accepts DOM_MUTATION_AFTER_AUTOFILL submissions detected on password forms."),
         Flag.baseFeature(

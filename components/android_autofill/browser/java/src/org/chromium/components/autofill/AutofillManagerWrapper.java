@@ -23,6 +23,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.DoNotInline;
 import org.chromium.build.annotations.DoNotStripLogs;
 import org.chromium.build.annotations.EnsuresNonNullIf;
@@ -63,16 +64,18 @@ public class AutofillManagerWrapper {
     }
 
     private static boolean sIsLoggable;
-    private final String mPackageName;
+    private String mPackageName = "";
     private @Nullable AutofillManager mAutofillManager;
+    private boolean mHasActivityContext;
     private boolean mIsAutofillInputUiShowing;
     private @Nullable AutofillInputUiMonitor mMonitor;
     private boolean mDestroyed;
     private @Nullable ArrayList<WeakReference<InputUiObserver>> mInputUiObservers;
     // Indicates if AwG is the current Android autofill service.
-    private final boolean mIsAwGCurrentAutofillService;
+    private boolean mIsAwGCurrentAutofillService;
 
-    public static boolean isEnabled(AutofillManager autofillManager) {
+    @Contract("null -> false")
+    public static boolean isEnabled(@Nullable AutofillManager autofillManager) {
         try {
             return autofillManager != null && autofillManager.isEnabled();
         } catch (Exception e) {
@@ -105,32 +108,18 @@ public class AutofillManagerWrapper {
         }
     }
 
-    public AutofillManagerWrapper(Context context) {
+    public AutofillManagerWrapper(@Nullable Context context) {
         updateLogStat();
         if (isLoggable()) log("constructor");
 
+        mHasActivityContext = ContextUtils.activityFromContext(context) != null;
         mAutofillManager = retrieveAutofillManager(context);
         if (mAutofillManager == null) {
-            mPackageName = "";
-            mIsAwGCurrentAutofillService = false;
             if (isLoggable()) log("disabled");
             return;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            ComponentName componentName = getAutofillServiceComponentName(mAutofillManager);
-            if (componentName != null) {
-                mPackageName = componentName.getPackageName();
-                mIsAwGCurrentAutofillService = AWG_PACKAGE_NAME.equals(mPackageName);
-                AutofillProviderUMA.logCurrentProvider(mPackageName);
-            } else {
-                mPackageName = "";
-                mIsAwGCurrentAutofillService = false;
-            }
-        } else {
-            mPackageName = "";
-            mIsAwGCurrentAutofillService = false;
-        }
+        updateAutofillServiceInfo();
         mMonitor = new AutofillInputUiMonitor(this);
         try {
             mAutofillManager.registerCallback(mMonitor);
@@ -146,6 +135,65 @@ public class AutofillManagerWrapper {
             if (isLoggable()) log("Created with application context.");
         }
         return context.getSystemService(AutofillManager.class);
+    }
+
+    private void updateAutofillServiceInfo() {
+        if (mAutofillManager == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            mPackageName = "";
+            mIsAwGCurrentAutofillService = false;
+            return;
+        }
+        String previousPackageName = mPackageName;
+        ComponentName componentName = getAutofillServiceComponentName(mAutofillManager);
+        if (componentName != null) {
+            mPackageName = componentName.getPackageName();
+            mIsAwGCurrentAutofillService = AWG_PACKAGE_NAME.equals(mPackageName);
+            if (!mPackageName.equals(previousPackageName)) {
+                AutofillProviderUMA.logCurrentProvider(mPackageName);
+            }
+        } else {
+            mPackageName = "";
+            mIsAwGCurrentAutofillService = false;
+        }
+    }
+
+    /**
+     * Returns whether this wrapper was created without an {@link android.app.Activity} context, is
+     * currently disabled, and {@code context} now wraps an {@link android.app.Activity}.
+     */
+    public boolean canRefetch(@Nullable Context context) {
+        return !mDestroyed
+                && !mHasActivityContext
+                && ContextUtils.activityFromContext(context) != null
+                && !isEnabled(mAutofillManager);
+    }
+
+    /**
+     * Fetches the {@link AutofillManager} from {@code context} once it wraps an {@link
+     * android.app.Activity}, e.g. after {@link
+     * android.content.MutableContextWrapper#setBaseContext(Context)}. Runs at most once per wrapper
+     * instance.
+     *
+     * <p>Does not register {@link AutofillInputUiMonitor} on the new {@link AutofillManager}, since
+     * an {@link AutofillManager} supports only one callback and the app may have registered its
+     * own. Consequently, {@link InputUiObserver#onInputUiShown()} will not fire for dropdown or
+     * inline suggestions on the refetched manager (so those sessions skip {@code
+     * Autofill.WebView.KeyMetrics.FillingAcceptance.*} and record fills under {@code
+     * NO_SUGGESTION_FORM_AUTOFILLED_*} in {@code Autofill.WebView.AutofillSession}, while {@code
+     * FillingAssistance2.*} and {@code FillAfterInteraction2.*} remain unaffected).
+     *
+     * @return whether {@code mAutofillManager} was replaced with a different instance.
+     */
+    public boolean refetch(@Nullable Context context) {
+        if (!canRefetch(context)) return false;
+        mHasActivityContext = true;
+        @Nullable AutofillManager autofillManager = retrieveAutofillManager(context);
+        if (autofillManager == null || autofillManager == mAutofillManager) return false;
+        if (isLoggable()) log("refetch: replacing AutofillManager after moving to an Activity");
+        resetMonitoring();
+        mAutofillManager = autofillManager;
+        updateAutofillServiceInfo();
+        return true;
     }
 
     public String getPackageName() {
@@ -275,8 +323,19 @@ public class AutofillManagerWrapper {
     }
 
     public void destroy() {
-        if (isDisabled() || checkAndWarnIfDestroyed()) return;
+        // Unlike other methods, this also runs for disabled AutofillManagers: the callback may
+        // still be registered, and refetch() must not bring a destroyed wrapper back.
+        if (mDestroyed) return;
         if (isLoggable()) log("destroy");
+        resetMonitoring();
+        mAutofillManager = null;
+        mDestroyed = true;
+    }
+
+    /** Stops monitoring the autofill UI of the current AutofillManager. */
+    private void resetMonitoring() {
+        mIsAutofillInputUiShowing = false;
+        if (mAutofillManager == null || mMonitor == null) return;
         try {
             // The binder in the autofill service side might already be dropped,
             // unregisterCallback() will cause various exceptions in this
@@ -286,17 +345,13 @@ public class AutofillManagerWrapper {
             AutofillProviderUMA.recordException(
                     e, AutofillProviderUMA.AutofillManagerMethod.UNREGISTER_CALLBACK);
         } finally {
-            mAutofillManager = null;
-            mDestroyed = true;
+            mMonitor = null;
         }
     }
 
     @EnsuresNonNullIf(value = "mAutofillManager", result = false)
     public boolean isDisabled() {
-        if (mAutofillManager == null || mDestroyed) {
-            return true;
-        }
-        return !isEnabled(mAutofillManager);
+        return mDestroyed || !isEnabled(mAutofillManager);
     }
 
     /**

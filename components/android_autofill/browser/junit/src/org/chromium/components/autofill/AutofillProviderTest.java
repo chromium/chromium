@@ -13,14 +13,19 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.MutableContextWrapper;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -45,9 +50,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.autofill.mojom.SubmissionSource;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ImmutableWeakReference;
@@ -64,15 +71,18 @@ import java.util.Collections;
 @Features.EnableFeatures({
     AndroidAutofillFeatures.ANDROID_AUTOFILL_IMPROVED_VISIBILITY_DETECTION_NAME,
     AndroidAutofillFeatures.ANDROID_AUTOFILL_SUPPRESS_OFFSCREEN_DATALIST_NAME,
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_REFETCH_MANAGER_IF_DISABLED_NAME,
 })
 public class AutofillProviderTest {
     private static final float EXPECTED_DIP_SCALE = 2;
+    private static final String AUTOFILL_SERVICE_NAME = "autofill";
     private static final int SCROLL_X = 15;
     private static final int SCROLL_Y = 155;
     private static final int LOCATION_X = 25;
     private static final int LOCATION_Y = 255;
 
     private Context mContext;
+    private MutableContextWrapper mContextWrapper;
     private WindowAndroid mWindowAndroid;
     private WebContents mWebContents;
     private TestContainerView mContainerView;
@@ -171,8 +181,11 @@ public class AutofillProviderTest {
     @Before
     public void setUp() {
         mContext = Mockito.mock(Context.class);
-        when(mContext.getSystemService(AutofillManager.class)).thenReturn(mAutofillManager);
+        when(mContext.getSystemServiceName(AutofillManager.class))
+                .thenReturn(AUTOFILL_SERVICE_NAME);
+        when(mContext.getSystemService(AUTOFILL_SERVICE_NAME)).thenReturn(mAutofillManager);
         when(mAutofillManager.isEnabled()).thenReturn(true);
+        mContextWrapper = new MutableContextWrapper(mContext);
         mWindowAndroid = Mockito.mock(WindowAndroid.class);
         mDisplayAndroid = Mockito.mock(DisplayAndroid.class);
         mWebContents = Mockito.mock(WebContents.class);
@@ -184,7 +197,7 @@ public class AutofillProviderTest {
 
         mAutofillProvider =
                 new AutofillProvider(
-                        new WeakReference<>(mContext),
+                        new WeakReference<>(mContextWrapper),
                         mContainerView,
                         mWebContents,
                         "AutofillProviderTest") {
@@ -966,6 +979,246 @@ public class AutofillProviderTest {
 
         when(mAutofillManager.isEnabled()).thenReturn(false);
         assertTrue(mAutofillProvider.isAutofillDisabled());
+    }
+
+    @Test
+    public void testStartAutofillSessionRefetchesDisabledAutofillManager() {
+        AutofillManager newAutofillManager =
+                moveToActivityWithAutofillManager(/* isEnabled= */ true);
+        when(newAutofillManager.getAutofillServiceComponentName())
+                .thenReturn(new ComponentName("com.google.android.gms", "AutofillService"));
+        HistogramWatcher providerWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillProviderUMA.UMA_AUTOFILL_PROVIDER,
+                        AutofillProviderUMA.Provider.AWG);
+
+        startSessionOnSingleField();
+
+        verify(newAutofillManager).notifyViewEntered(any(View.class), anyInt(), any(Rect.class));
+        verify(mAutofillManager, never())
+                .notifyViewEntered(any(View.class), anyInt(), any(Rect.class));
+        // An AutofillManager has only one AutofillCallback, which may be the app's.
+        verify(newAutofillManager, never()).registerCallback(any());
+        verify(mAutofillManager).unregisterCallback(any());
+        assertFalse(mAutofillProvider.isAutofillDisabled());
+        assertEquals(
+                "com.google.android.gms",
+                mAutofillProvider.getAutofillManagerWrapper().getPackageName());
+        assertTrue(mAutofillProvider.getAutofillManagerWrapper().isAwGCurrentAutofillService());
+        providerWatcher.assertExpected();
+
+        // Verify AutofillProviderUMA also picked up the updated provider package.
+        HistogramWatcher sessionWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillProviderUMA.UMA_AUTOFILL_AUTOFILL_SESSION,
+                        AutofillProviderUMA.NO_SUGGESTION_FORM_AUTOFILLED_AWG);
+        simulateOnProvideAutofillStructure();
+        SparseArray<AutofillValue> values = new SparseArray<>();
+        values.put(FormData.toFieldVirtualId(123, (short) 0), AutofillValue.forText("alice"));
+        mAutofillProvider.autofill(values);
+        mAutofillProvider.onFormSubmitted(SubmissionSource.FORM_SUBMISSION);
+        sessionWatcher.assertExpected();
+    }
+
+    @Test
+    @Features.DisableFeatures(
+            AndroidAutofillFeatures.ANDROID_AUTOFILL_REFETCH_MANAGER_IF_DISABLED_NAME)
+    public void testStartAutofillSessionKeepsDisabledAutofillManagerWithoutFeature() {
+        AutofillManager newAutofillManager =
+                moveToActivityWithAutofillManager(/* isEnabled= */ true);
+
+        startSessionOnSingleField();
+
+        verify(newAutofillManager, never())
+                .notifyViewEntered(any(View.class), anyInt(), any(Rect.class));
+        assertTrue(mAutofillProvider.isAutofillDisabled());
+    }
+
+    @Test
+    public void testIsAutofillDisabledRefetchesDisabledAutofillManager() {
+        moveToActivityWithAutofillManager(/* isEnabled= */ true);
+
+        assertFalse(mAutofillProvider.isAutofillDisabled());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testSendPrefillRequestRefetchesDisabledAutofillManager() {
+        AutofillManager newAutofillManager =
+                moveToActivityWithAutofillManager(/* isEnabled= */ true);
+        FormFieldDataBuilder fieldBuilder = new FormFieldDataBuilder();
+        fieldBuilder.mServerPredictions = new String[] {"USERNAME"};
+        FormData formData =
+                new FormData(123, null, null, Collections.singletonList(fieldBuilder.build()));
+
+        mAutofillProvider.sendPrefillRequest(formData);
+
+        verify(newAutofillManager).notifyVirtualViewsReady(any(View.class), any());
+    }
+
+    @Test
+    public void testQueryAutofillSuggestionRefetchesDisabledAutofillManager() {
+        setContainerScreenGeometry(new Rect(0, 0, 200, 500), LOCATION_X, LOCATION_Y);
+        when(mAutofillManager.isEnabled()).thenReturn(false);
+        startSessionOnSingleField();
+
+        AutofillManager newAutofillManager =
+                moveToActivityWithAutofillManager(/* isEnabled= */ true);
+        mAutofillProvider.queryAutofillSuggestion();
+
+        verify(newAutofillManager).requestAutofill(any(View.class), anyInt(), any(Rect.class));
+    }
+
+    @Test
+    public void testMidSessionEventsDoNotRefetchDisabledAutofillManager() {
+        when(mAutofillManager.isEnabled()).thenReturn(false);
+        startSessionOnSingleField();
+
+        AutofillManager newAutofillManager =
+                moveToActivityWithAutofillManager(/* isEnabled= */ true);
+        mAutofillProvider.onFormFieldDidChange(
+                /* index= */ 0, /* x= */ 0, /* y= */ 0, /* width= */ 50, /* height= */ 20);
+        mAutofillProvider.onFormSubmitted(SubmissionSource.FORM_SUBMISSION);
+
+        verify(newAutofillManager, never()).notifyValueChanged(any(), anyInt(), any());
+        verify(newAutofillManager, never()).commit();
+
+        // A new session started afterwards does refetch.
+        startSessionOnSingleField();
+        verify(newAutofillManager).notifyViewEntered(any(View.class), anyInt(), any(Rect.class));
+    }
+
+    @Test
+    public void testNonActivityContextDoesNotRefetchBeforeMovingToActivity() {
+        when(mAutofillManager.isEnabled()).thenReturn(false);
+        AutofillManager otherManager = Mockito.mock(AutofillManager.class);
+        when(mContext.getSystemService(AUTOFILL_SERVICE_NAME)).thenReturn(otherManager);
+
+        startSessionOnSingleField();
+
+        verify(otherManager, never()).isEnabled();
+        verify(mAutofillManager, never()).unregisterCallback(any());
+        assertTrue(mAutofillProvider.isAutofillDisabled());
+    }
+
+    @Test
+    public void testActivityCreatedWebViewDoesNotRefetchWhenAutofillIsOff() {
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
+        AutofillManager disabledManager = Mockito.mock(AutofillManager.class);
+        when(disabledManager.isEnabled()).thenReturn(false);
+        AutofillManager replacementManager = Mockito.mock(AutofillManager.class);
+        final AutofillManager[] current = {disabledManager};
+        Context activityContext =
+                new ContextWrapper(activity) {
+                    @Override
+                    public Object getSystemService(String name) {
+                        if (AUTOFILL_SERVICE_NAME.equals(name)) {
+                            return current[0];
+                        }
+                        return super.getSystemService(name);
+                    }
+                };
+        mAutofillProvider.switchToContext(new WeakReference<>(activityContext));
+        current[0] = replacementManager;
+
+        assertTrue(mAutofillProvider.isAutofillDisabled());
+        startSessionOnSingleField();
+
+        verify(replacementManager, never()).isEnabled();
+        verify(disabledManager, never()).unregisterCallback(any());
+    }
+
+    @Test
+    public void testRefetchRunsAtMostOnceWhenAutofillIsOffInActivity() {
+        final int[] systemServiceCalls = {0};
+        when(mAutofillManager.isEnabled()).thenReturn(false);
+        AutofillManager disabledActivityManager = Mockito.mock(AutofillManager.class);
+        when(disabledActivityManager.isEnabled()).thenReturn(false);
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
+        Context activityContext =
+                new ContextWrapper(activity) {
+                    @Override
+                    public Object getSystemService(String name) {
+                        if (AUTOFILL_SERVICE_NAME.equals(name)) {
+                            systemServiceCalls[0]++;
+                            return disabledActivityManager;
+                        }
+                        return super.getSystemService(name);
+                    }
+                };
+        mContextWrapper.setBaseContext(activityContext);
+
+        assertTrue(mAutofillProvider.isAutofillDisabled());
+        startSessionOnSingleField();
+        assertTrue(mAutofillProvider.isAutofillDisabled());
+
+        verify(mAutofillManager).unregisterCallback(any());
+        // getSystemService() is queried only once on the first entry point; subsequent calls check
+        // the stored Activity manager directly without re-fetching.
+        assertEquals(1, systemServiceCalls[0]);
+        verify(disabledActivityManager, times(4)).isEnabled();
+    }
+
+    @Test
+    public void testDestroyUnregistersCallbackOfDisabledAutofillManager() {
+        when(mAutofillManager.isEnabled()).thenReturn(false);
+
+        mAutofillProvider.destroy();
+
+        verify(mAutofillManager).unregisterCallback(any());
+    }
+
+    @Test
+    public void testDestroyedWrapperDoesNotRefetchAutofillManager() {
+        AutofillManager newAutofillManager =
+                moveToActivityWithAutofillManager(/* isEnabled= */ true);
+
+        mAutofillProvider.destroy();
+
+        assertTrue(mAutofillProvider.isAutofillDisabled());
+        verify(newAutofillManager, never()).isEnabled();
+    }
+
+    /**
+     * Disables the initial (non-Activity) AutofillManager and moves {@link #mContextWrapper} to an
+     * {@link Activity} returning a new {@link AutofillManager} with the given enabled state.
+     */
+    private AutofillManager moveToActivityWithAutofillManager(boolean isEnabled) {
+        when(mAutofillManager.isEnabled()).thenReturn(false);
+        AutofillManager newAutofillManager = Mockito.mock(AutofillManager.class);
+        when(newAutofillManager.isEnabled()).thenReturn(isEnabled);
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
+        Context activityContext =
+                new ContextWrapper(activity) {
+                    @Override
+                    public Object getSystemService(String name) {
+                        if (AUTOFILL_SERVICE_NAME.equals(name)) {
+                            return newAutofillManager;
+                        }
+                        return super.getSystemService(name);
+                    }
+                };
+        mContextWrapper.setBaseContext(activityContext);
+        return newAutofillManager;
+    }
+
+    private void startSessionOnSingleField() {
+        FormFieldDataBuilder fieldBuilder = new FormFieldDataBuilder();
+        FormData formData =
+                new FormData(
+                        /* sessionId= */ 123,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Collections.singletonList(fieldBuilder.build()));
+        mAutofillProvider.startAutofillSession(
+                formData,
+                /* focus= */ 0,
+                /* x= */ 0,
+                /* y= */ 0,
+                /* width= */ 50,
+                /* height= */ 20,
+                /* hasServerPrediction= */ false);
     }
 
     @Test
