@@ -29,6 +29,7 @@ struct VectorIcon;
 namespace ash {
 
 class AppListViewDelegate;
+class SystemDecoration;
 
 // A view specific to AppList that displays an icon, two labels and a button.
 // The view can be built with all or some of the elements mentioned before, but
@@ -114,6 +115,9 @@ class ASH_EXPORT AppListToastView : public views::View {
   views::Button* close_button() const { return close_button_; }
 
   views::Label* GetTitleLabelForTesting() const { return title_label_; }
+  SystemDecoration* highlight_border_for_testing() {
+    return highlight_border_.get();
+  }
 
  private:
   class ToastPillButton : public PillButton {
@@ -173,6 +177,8 @@ class ASH_EXPORT AppListToastView : public views::View {
   raw_ptr<views::View> label_container_ = nullptr;
   // Layout manager for the view.
   raw_ptr<views::BoxLayout> layout_manager_ = nullptr;
+
+  std::unique_ptr<SystemDecoration> highlight_border_;
 };
 
 }  // namespace ash

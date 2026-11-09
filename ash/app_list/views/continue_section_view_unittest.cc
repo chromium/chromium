@@ -31,6 +31,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/system_decoration.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/memory/raw_ptr.h"
@@ -2149,6 +2150,15 @@ TEST_P(ContinueSectionViewTest, AnimatesPrivacyNoticeAccept) {
 
   AppListToastView* privacy_notice =
       GetContinueSectionView()->GetPrivacyNoticeForTest();
+  if (tablet_mode_param()) {
+    SystemDecoration* border = privacy_notice->highlight_border_for_testing();
+    ASSERT_TRUE(border);
+    EXPECT_EQ(privacy_notice->layer(), border->GetLayer()->parent());
+    EXPECT_EQ(privacy_notice->GetLocalBounds(), border->GetContentBounds());
+    EXPECT_TRUE(border->GetHighlightBorderValueForTesting().has_value());
+  } else {
+    EXPECT_FALSE(privacy_notice->highlight_border_for_testing());
+  }
 
   GestureTapOn(privacy_notice->toast_button());
 

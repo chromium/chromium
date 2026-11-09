@@ -17,6 +17,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
+#include "ash/style/system_decoration.h"
 #include "ash/style/typography.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
@@ -35,7 +36,6 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -228,8 +228,14 @@ AppListToastView::AppListToastView(const std::u16string& title,
             ? cros_tokens::kCrosSysSystemBaseElevated
             : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
     SetBackground(views::CreateSolidBackground(background_color_id));
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kCornerRadius, views::HighlightBorder::Type::kHighlightBorderNoShadow));
+    // Parent the highlight border under `layer()` rather than as a sibling
+    // region layer so it inherits `layer()`'s opacity during fade-out
+    // animations.
+    highlight_border_ = SystemDecoration::CreateForView(
+        this, SystemDecoration::ShadowType::kNone,
+        SystemDecoration::HighlightBorderMode::kHighlightBorder,
+        SystemDecoration::LayerParent::kViewLayer);
+    highlight_border_->SetRoundedCornerRadius(kCornerRadius);
   } else {
     const ui::ColorId background_color_id = cros_tokens::kCrosSysSystemOnBase;
     SetBackground(

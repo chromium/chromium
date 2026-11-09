@@ -23,6 +23,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/shell.h"
+#include "ash/style/system_decoration.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/functional/callback_helpers.h"
@@ -688,6 +689,13 @@ TEST_F(PagedAppsGridViewTest, CloseReorderToast) {
   EXPECT_TRUE(toast_container->GetToastButton()->HasFocus());
   EXPECT_TRUE(toast_container->IsToastVisible());
   EXPECT_EQ(2, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
+
+  AppListToastView* toast_view = toast_container->toast_view();
+  SystemDecoration* border = toast_view->highlight_border_for_testing();
+  ASSERT_TRUE(border);
+  EXPECT_EQ(toast_view->layer(), border->GetLayer()->parent());
+  EXPECT_EQ(toast_view->GetLocalBounds(), border->GetContentBounds());
+  EXPECT_TRUE(border->GetHighlightBorderValueForTesting().has_value());
 
   // Tap on the close button to remove the toast.
   GestureTapOn(toast_container->GetCloseButton());
