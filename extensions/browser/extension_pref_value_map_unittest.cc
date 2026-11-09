@@ -522,7 +522,6 @@ TEST_P(ExtensionPrefValueMapTestIncognitoTests, OverrideIncognito) {
                            ChromeSettingScope::kIncognitoSessionOnly,
                            CreateVal(strings[test.val_ext2_incognito_sess_]));
   }
-  std::string actual;
   EXPECT_EQ(strings[test.effective_value_regular_], GetValue(kPref1, false));
   EXPECT_EQ(strings[test.effective_value_incognito_], GetValue(kPref1, true));
   epvm_.UnregisterExtension(kExt1);

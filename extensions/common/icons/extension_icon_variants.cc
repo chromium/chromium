@@ -30,7 +30,6 @@ void ExtensionIconVariants::Parse(const Extension& extension,
                                   const base::ListValue* list) {
   // Parse each icon variant in `icon_variants`.
   for (auto& entry : *list) {
-    std::string issue;
     std::unique_ptr<ExtensionIconVariant> icon_variant =
         ExtensionIconVariant::Parse(extension, entry);
     if (!icon_variant) {

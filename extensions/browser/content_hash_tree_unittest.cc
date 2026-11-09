@@ -49,7 +49,6 @@ TEST(ContentHashTreeTest, HashTreeBasics) {
 TEST(ContentHashTreeTest, HashTreeMultipleLevels) {
   std::vector<std::string> nodes;
   for (int i = 0; i < 3; i++) {
-    std::string node;
     nodes.push_back(FakeSignatureWithSeed(i));
   }
 

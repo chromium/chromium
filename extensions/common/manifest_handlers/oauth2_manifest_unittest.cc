@@ -276,7 +276,6 @@ TEST_F(OAuth2ManifestTest, InvalidClientId) {
     base::DictValue ext_manifest =
         CreateManifest(AUTO_APPROVE_NOT_SET, false, CLIENT_ID_NOT_SET);
     ManifestData manifest(std::move(ext_manifest), "test");
-    std::string error;
     LoadAndExpectError(manifest, errors::kInvalidOAuth2ClientId);
   }
 
@@ -284,7 +283,6 @@ TEST_F(OAuth2ManifestTest, InvalidClientId) {
     base::DictValue ext_manifest =
         CreateManifest(AUTO_APPROVE_NOT_SET, false, CLIENT_ID_EMPTY);
     ManifestData manifest(std::move(ext_manifest), "test");
-    std::string error;
     LoadAndExpectError(manifest, errors::kInvalidOAuth2ClientId);
   }
 }
@@ -295,7 +293,6 @@ TEST_F(OAuth2ManifestTest, ComponentInvalidClientId) {
     base::DictValue ext_manifest =
         CreateManifest(AUTO_APPROVE_NOT_SET, false, CLIENT_ID_NOT_SET);
     ManifestData manifest(std::move(ext_manifest), "test");
-    std::string error;
     LoadAndExpectError(manifest, errors::kInvalidOAuth2ClientId,
                        ManifestLocation::kComponent);
   }
@@ -304,7 +301,6 @@ TEST_F(OAuth2ManifestTest, ComponentInvalidClientId) {
     base::DictValue ext_manifest =
         CreateManifest(AUTO_APPROVE_NOT_SET, false, CLIENT_ID_EMPTY);
     ManifestData manifest(std::move(ext_manifest), "test");
-    std::string error;
     LoadAndExpectError(manifest, errors::kInvalidOAuth2ClientId,
                        ManifestLocation::kComponent);
   }

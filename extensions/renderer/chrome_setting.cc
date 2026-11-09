@@ -164,7 +164,6 @@ void ChromeSetting::HandleFunction(const std::string& method_name,
   if (!access_checker_->HasAccessOrThrowError(context, full_name))
     return;
 
-  std::string error;
   const APISignature* signature = type_refs_->GetTypeMethodSignature(full_name);
   APISignature::JSONParseResult parse_result =
       signature->ParseArgumentsToJSON(context, argument_list, *type_refs_);

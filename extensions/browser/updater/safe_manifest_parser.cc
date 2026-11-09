@@ -220,7 +220,6 @@ void ParseXmlDone(ParseUpdateManifestCallback callback,
   std::vector<const base::Value*> apps;
   data_decoder::GetAllXmlElementChildrenWithTag(
       root, GetXmlQualifiedName(gupdate_ns, "app"), &apps);
-  std::string error_msg;
   int prodversionmin_count = 0;
   for (const auto* app : apps) {
     UpdateManifestResult manifest_result;

@@ -382,9 +382,6 @@ void EventRouter::BindForRenderer(
 void EventRouter::SwapReceiverForTesting(
     content::ChildProcessId render_process_id,
     mojom::EventRouter* new_impl) {
-  std::map<mojo::ReceiverId, content::ChildProcessId*> receiver_contexts =
-      receivers_.GetAllContexts();
-
   // We don't have the ReceiverId for the receiver stored anywhere, so loop
   // through existing receivers to find the ReceiverId and use it to find the
   // correct receiver to swap for testing.

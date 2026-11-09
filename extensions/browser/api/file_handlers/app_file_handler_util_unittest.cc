@@ -273,15 +273,14 @@ TEST(FileHandlersAppFileHandlerUtilTest, CreateEntryInfos) {
   // Param size mismatch (missing |mime_types| entry).
   {
     EXPECT_CHECK_DEATH(
-        std::vector<extensions::EntryInfo> entry_infos =
-            CreateEntryInfos({base::FilePath(FILE_PATH_LITERAL("foo.html")),
-                              base::FilePath(FILE_PATH_LITERAL("/x/bar.jpg")),
-                              base::FilePath(FILE_PATH_LITERAL("a/b/c")),
-                              base::FilePath(FILE_PATH_LITERAL("a/b/bez.rat"))},
-                             {"text/html", "image/jpeg", ""},
-                             {base::FilePath(FILE_PATH_LITERAL("a")),
-                              base::FilePath(FILE_PATH_LITERAL("a/b")),
-                              base::FilePath(FILE_PATH_LITERAL("a/b/c"))}));
+        CreateEntryInfos({base::FilePath(FILE_PATH_LITERAL("foo.html")),
+                          base::FilePath(FILE_PATH_LITERAL("/x/bar.jpg")),
+                          base::FilePath(FILE_PATH_LITERAL("a/b/c")),
+                          base::FilePath(FILE_PATH_LITERAL("a/b/bez.rat"))},
+                         {"text/html", "image/jpeg", ""},
+                         {base::FilePath(FILE_PATH_LITERAL("a")),
+                          base::FilePath(FILE_PATH_LITERAL("a/b")),
+                          base::FilePath(FILE_PATH_LITERAL("a/b/c"))}));
   }
 }
 

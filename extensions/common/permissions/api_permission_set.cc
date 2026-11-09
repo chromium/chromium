@@ -105,7 +105,6 @@ bool ParseChildPermissions(const std::string& base_name,
 
     const base::ListValue& list = permission_value->GetList();
     for (size_t i = 0; i < list.size(); ++i) {
-      std::string permission_str;
       if (!list[i].is_string()) {
         // permission should be a string
         if (error) {
