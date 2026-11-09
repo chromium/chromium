@@ -1438,10 +1438,6 @@ BASE_FEATURE(kUseMediaFormatCodedSize, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_APPLE)
-// Enables VideoToolbox Quality Metrics (MSE / PSNR) generation.
-BASE_FEATURE(kVTVideoEncodeAcceleratorCalculatePSNR,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables VideoToolbox zero-copy encode of opaque SharedImage-backed
 // VideoFrames.
 BASE_FEATURE(kVTVideoEncodeAcceleratorOpaqueSharedImageEncode,

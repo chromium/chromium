@@ -20128,21 +20128,6 @@
             ]
         }
     ],
-    "VTVideoEncodeAcceleratorCalculatePSNR": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "VTVideoEncodeAcceleratorCalculatePSNR"
-                    ]
-                }
-            ]
-        }
-    ],
     "VariationsFeatureAccessLogging": [
         {
             "platforms": [

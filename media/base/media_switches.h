@@ -435,7 +435,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseMediaFormatCodedSize);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_APPLE)
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kVTVideoEncodeAcceleratorCalculatePSNR);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(
     kVTVideoEncodeAcceleratorOpaqueSharedImageEncode);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVideoToolboxFullRangeOutput);

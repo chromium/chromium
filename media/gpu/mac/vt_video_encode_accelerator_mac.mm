@@ -1865,8 +1865,7 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession(VideoCodec codec) {
 
   if (@available(macOS 14.4, *)) {
     if (session_property_setter.IsSupported(
-            kVTCompressionPropertyKey_CalculateMeanSquaredError) &&
-        base::FeatureList::IsEnabled(kVTVideoEncodeAcceleratorCalculatePSNR)) {
+            kVTCompressionPropertyKey_CalculateMeanSquaredError)) {
       if (session_property_setter.Set(
               kVTCompressionPropertyKey_CalculateMeanSquaredError, true)) {
         calculate_psnr_ = true;
