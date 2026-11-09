@@ -62,10 +62,50 @@ TEST(PersonalContextEntityMetadataSyncUtilTest, RoundTripConversion) {
 
   EXPECT_EQ(specifics.guid(), "test-guid-1234");
   EXPECT_EQ(specifics.creation_time_windows_epoch_micros(), 1234567890);
+  EXPECT_EQ(specifics.suppression().hash(), kTestHash.value());
+  EXPECT_EQ(specifics.entity_suppression_hash(), kTestHash.value());
   EXPECT_FALSE(specifics.has_entity_suppression_key());
   EXPECT_TRUE(AreEntitySuppressionSpecificsValid(specifics));
   ASSERT_TRUE(converted_key.has_value());
   EXPECT_EQ(*converted_key, original_key);
+}
+
+// Tests that specifics with only the `suppression` submessage (without legacy
+// `entity_suppression_hash`) are valid and convert to `EntitySuppressionHash`.
+TEST(PersonalContextEntityMetadataSyncUtilTest,
+     SuppressionSubmessageWithoutLegacyHash) {
+  sync_pb::AutofillEntitySuppressionSpecifics specifics;
+  specifics.set_guid("test-guid-1234");
+  specifics.mutable_suppression()->set_hash(kTestHash.value());
+
+  EXPECT_TRUE(AreEntitySuppressionSpecificsValid(specifics));
+  EXPECT_EQ(CreateEntitySuppressionKeyFromSpecifics(specifics),
+            EntitySuppressionKey(kTestHash));
+}
+
+// Tests that legacy specifics with only `entity_suppression_hash` (without the
+// `suppression` submessage) remain valid and convert to
+// `EntitySuppressionHash`.
+TEST(PersonalContextEntityMetadataSyncUtilTest,
+     LegacyEntitySuppressionHashWithoutSuppressionSubmessage) {
+  sync_pb::AutofillEntitySuppressionSpecifics specifics;
+  specifics.set_guid("test-guid-1234");
+  specifics.set_entity_suppression_hash(kTestHash.value());
+
+  EXPECT_TRUE(AreEntitySuppressionSpecificsValid(specifics));
+  EXPECT_EQ(CreateEntitySuppressionKeyFromSpecifics(specifics),
+            EntitySuppressionKey(kTestHash));
+}
+
+// Tests that specifics with a `suppression` submessage missing `hash` are
+// considered invalid.
+TEST(PersonalContextEntityMetadataSyncUtilTest,
+     InvalidSpecificsEmptySuppressionSubmessage) {
+  sync_pb::AutofillEntitySuppressionSpecifics specifics;
+  specifics.set_guid("test-guid-1234");
+  specifics.mutable_suppression();
+
+  EXPECT_FALSE(AreEntitySuppressionSpecificsValid(specifics));
 }
 
 // Tests that `CreateSpecificsFromEntitySuppressionKey` preserves unknown
@@ -174,6 +214,7 @@ TEST(PersonalContextEntityMetadataSyncUtilTest, LegacyRoundTripConversion) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
       CreateLegacyTestPassportSpecifics();
 
+  EXPECT_FALSE(specifics.has_suppression());
   EXPECT_FALSE(specifics.has_entity_suppression_hash());
   EXPECT_TRUE(AreEntitySuppressionSpecificsValid(specifics));
   EXPECT_EQ(CreateEntitySuppressionKeyFromSpecifics(specifics),
