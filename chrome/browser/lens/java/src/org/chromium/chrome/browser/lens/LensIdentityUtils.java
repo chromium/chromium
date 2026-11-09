@@ -8,7 +8,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
 /** Static utility methods to support Lens identity matching. */
@@ -38,6 +38,6 @@ public class LensIdentityUtils {
             return null;
         }
 
-        return CoreAccountInfo.getEmailFrom(identityManager.getPrimaryAccountInfo());
+        return AccountInfo.getEmailFrom(identityManager.getPrimaryAccountInfo());
     }
 }
