@@ -664,7 +664,9 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   // WebApp.
   CHECK_EQ(web_app_info.manifest_id(), web_app.manifest_id());
 
-  CHECK(!web_app_info.title.empty(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/579501075): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!web_app_info.title.empty());
   web_app.SetName(base::UTF16ToUTF8(web_app_info.title.value()));
 
   const GURL& start_url = web_app_info.start_url();
