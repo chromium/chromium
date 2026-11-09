@@ -2108,12 +2108,6 @@
       status: "stable",
     },
     {
-      // https://drafts.csswg.org/css-ruby/#ruby-overhang
-      // ChromeStatus: https://chromestatus.com/feature/6560118298771456
-      name: "CSSRubyOverhang",
-      status: "stable",
-    },
-    {
       name: "CSSSafePrintableInset",
       status: "stable",
     },

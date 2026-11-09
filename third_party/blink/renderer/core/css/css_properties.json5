@@ -7976,7 +7976,6 @@
       keywords: ["auto", "none", "spaces"],
       default_value: "auto",
       invalidate: ["layout", "paint"],
-      runtime_flag: "CSSRubyOverhang",
     },
     {
       name: "-webkit-ruby-position",
