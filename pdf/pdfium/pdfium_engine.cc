@@ -3717,6 +3717,7 @@ std::vector<gfx::Size> PDFiumEngine::LoadPageSizes(
 
   const bool doc_complete = doc_loader_->IsDocumentComplete();
   const bool is_linear = IsLinearized();
+  page_sizes.reserve(new_page_count);
   for (size_t i = 0; i < new_page_count; ++i) {
     // Get page availability. If `document_loaded_` == true and the page is not
     // new, then the page has been constructed already. Get page availability
@@ -3746,6 +3747,7 @@ std::vector<gfx::Size> PDFiumEngine::LoadPageSizes(
   // available even if `doc_complete` is true because FPDFAvail_IsPageAvail()
   // still has to be called for this page, which will be done in
   // FinishLoadingDocument().
+  pages_.reserve(new_page_count);
   for (size_t i = pages_.size(); i < new_page_count; ++i) {
     auto page = std::make_unique<PDFiumPage>(this, i);
     if (document_loaded_ &&
@@ -4145,6 +4147,7 @@ void PDFiumEngine::FinishPaint(size_t progressive_index, SkBitmap& image_data) {
 
 std::vector<gfx::Rect> PDFiumEngine::CancelPaints() {
   std::vector<gfx::Rect> canceled_rects;
+  canceled_rects.reserve(progressive_paints_.size());
   for (const auto& paint : progressive_paints_) {
     FPDF_RenderPage_Close(pages_[paint.page_index()]->GetPage());
     canceled_rects.push_back(paint.rect());
