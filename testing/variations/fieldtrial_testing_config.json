@@ -2515,6 +2515,21 @@
             ]
         }
     ],
+    "AutofillReshowSavePromptOnTabReturn": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillReshowSavePromptOnTabReturn"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillSaveCardBottomSheetStrikeLimitIos": [
         {
             "platforms": [

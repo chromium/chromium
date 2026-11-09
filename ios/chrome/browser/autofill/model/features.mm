@@ -30,3 +30,6 @@ BASE_FEATURE(kIOSUnifiedManualFallbackSheet, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAutofillPaymentsBottomSheetRequiresUserGesture,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAutofillReshowSavePromptOnTabReturn,
+             base::FEATURE_DISABLED_BY_DEFAULT);

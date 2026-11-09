@@ -343,6 +343,13 @@ inline constexpr char
         "When enabled, form submission events will be ignored if they lack a "
         "user gesture.";
 
+inline constexpr char kAutofillReshowSavePromptOnTabReturnName[] =
+    "Autofill re-show save prompt on tab return";
+inline constexpr char kAutofillReshowSavePromptOnTabReturnDescription[] =
+    "Restores and re-shows pending Autofill save prompts (Autofill AI save "
+    "entity and save card bottom sheets) when returning to the originating "
+    "tab.";
+
 inline constexpr char kAutofillSaveCardBottomSheetStrikeLimitIosName[] =
     "Autofill Save Card Bottom Sheet Strike Limit on iOS";
 inline constexpr char kAutofillSaveCardBottomSheetStrikeLimitIosDescription[] =

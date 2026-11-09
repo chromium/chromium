@@ -1402,6 +1402,14 @@
     "expiry_milestone": 170
   },
   {
+    "name": "autofill-reshow-save-prompt-on-tab-return",
+    "owners": [
+      "yungyichen@google.com",
+      "bling-transactions@google.com"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "autofill-save-card-bottom-sheet-strike-limit-ios",
     "owners": [
       "qihuizhao@google.com",

@@ -3132,6 +3132,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kLensHideLoadingWebResultsPanelName,
      flag_descriptions::kLensHideLoadingWebResultsPanelDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensHideLoadingWebResultsPanel)},
+    {"autofill-reshow-save-prompt-on-tab-return",
+     flag_descriptions::kAutofillReshowSavePromptOnTabReturnName,
+     flag_descriptions::kAutofillReshowSavePromptOnTabReturnDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAutofillReshowSavePromptOnTabReturn)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
