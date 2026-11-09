@@ -22,9 +22,10 @@ namespace {
 
 // Different types of SystemDecoration implementations.
 enum class SystemDecorationType {
-  kDecoration,        // Instance of standard `SystemDecoration`.
-  kViewDecoration,    // Instance of `SystemViewDecoration`.
-  kWindowDecoration,  // Instance of `SystemWindowDecoration`.
+  kDecoration,           // Instance of standard `SystemDecoration`.
+  kViewDecoration,       // Instance of `SystemViewDecoration` (kRegionLayers).
+  kViewLayerDecoration,  // Instance of `SystemViewDecoration` (kViewLayer).
+  kWindowDecoration,     // Instance of `SystemWindowDecoration`.
 };
 
 // Gets the key and ambient shadow colors from a shadow.
@@ -91,6 +92,10 @@ class SystemDecorationColorTest
       case SystemDecorationType::kViewDecoration:
         return SystemDecoration::CreateForView(widget_->GetContentsView(),
                                                shadow_type, border_mode);
+      case SystemDecorationType::kViewLayerDecoration:
+        return SystemDecoration::CreateForView(
+            widget_->GetContentsView(), shadow_type, border_mode,
+            SystemDecoration::LayerParent::kViewLayer);
       case SystemDecorationType::kWindowDecoration:
         return SystemDecoration::CreateForWindow(widget_->GetNativeWindow(),
                                                  shadow_type, border_mode);
@@ -107,6 +112,7 @@ INSTANTIATE_TEST_SUITE_P(
     SystemDecorationColorTest,
     testing::Values(SystemDecorationType::kDecoration,
                     SystemDecorationType::kViewDecoration,
+                    SystemDecorationType::kViewLayerDecoration,
                     SystemDecorationType::kWindowDecoration),
     [](const testing::TestParamInfo<SystemDecorationColorTest::ParamType>&
            info) {
@@ -115,6 +121,8 @@ INSTANTIATE_TEST_SUITE_P(
           return "Decoration";
         case SystemDecorationType::kViewDecoration:
           return "ViewDecoration";
+        case SystemDecorationType::kViewLayerDecoration:
+          return "ViewLayerDecoration";
         case SystemDecorationType::kWindowDecoration:
           return "WindowDecoration";
       }
@@ -435,6 +443,96 @@ TEST_F(SystemDecorationTest, ViewDecorationViewDeletion) {
   auto decoration = SystemDecoration::CreateForView(
       child_view, SystemDecoration::ShadowType::kElevation4);
   EXPECT_EQ(child_view->GetLayersInOrder().size(), 2u);
+
+  // Deleting child_view invokes OnViewIsDeleting() on the decoration.
+  contents_view->RemoveChildViewT(child_view);
+  EXPECT_EQ(decoration->GetLayer()->parent(), nullptr);
+
+  // Resetting the decoration afterwards should be safe and clean.
+  decoration.reset();
+}
+
+// Tests that SystemViewDecoration with LayerParent::kViewLayer parents the
+// decoration layer directly under the view's layer, stacks it at the top when
+// a highlight border is present and at the bottom when borderless, and tracks
+// the view's local bounds.
+TEST_F(SystemDecorationTest, ViewLayerDecorationStackingAndBounds) {
+  auto widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                       /*delegate=*/nullptr,
+                       /*container_id=*/desks_util::GetActiveDeskContainerId(),
+                       /*bounds=*/gfx::Rect(100, 100, 320, 200));
+  views::View* contents_view = widget->GetContentsView();
+  auto* child_view =
+      contents_view->AddChildView(std::make_unique<views::View>());
+  child_view->SetBounds(20, 30, 150, 80);
+
+  auto* sub_child = child_view->AddChildView(std::make_unique<views::View>());
+  sub_child->SetPaintToLayer();
+
+  auto decoration = SystemDecoration::CreateForView(
+      child_view, SystemDecoration::ShadowType::kElevation4,
+      SystemDecoration::HighlightBorderMode::kNone,
+      SystemDecoration::LayerParent::kViewLayer);
+  ASSERT_TRUE(child_view->layer());
+  ui::Layer* decoration_layer = decoration->GetLayer();
+  EXPECT_EQ(child_view->layer(), decoration_layer->parent());
+  EXPECT_EQ(gfx::Rect(150, 80), decoration->GetContentBounds());
+
+  // Initially, shadow-only decoration layer is stacked at the bottom of
+  // child_view->layer().
+  EXPECT_EQ(child_view->layer()->children().front(), decoration_layer);
+  EXPECT_EQ(child_view->layer()->children().back(), sub_child->layer());
+
+  // After setting highlight border, decoration layer is stacked at the top.
+  decoration->SetHighlightBorder(
+      SystemDecoration::HighlightBorderMode::kHighlightBorder);
+  EXPECT_EQ(child_view->layer()->children().back(), decoration_layer);
+  EXPECT_EQ(child_view->layer()->children().front(), sub_child->layer());
+
+  // After clearing highlight border, decoration layer returns to the bottom.
+  decoration->SetHighlightBorder(SystemDecoration::HighlightBorderMode::kNone);
+  EXPECT_EQ(child_view->layer()->children().front(), decoration_layer);
+  EXPECT_EQ(child_view->layer()->children().back(), sub_child->layer());
+
+  // Updating the view's bounds updates the decoration's content bounds to the
+  // view's local bounds (origin 0, 0).
+  child_view->SetBounds(40, 50, 200, 100);
+  EXPECT_EQ(gfx::Rect(200, 100), decoration->GetContentBounds());
+
+  // Creating directly with a highlight border stacks the layer at the top.
+  decoration = SystemDecoration::CreateForView(
+      child_view, SystemDecoration::ShadowType::kNone,
+      SystemDecoration::HighlightBorderMode::kHighlightBorder,
+      SystemDecoration::LayerParent::kViewLayer);
+  EXPECT_EQ(child_view->layer(), decoration->GetLayer()->parent());
+  EXPECT_EQ(child_view->layer()->children().back(), decoration->GetLayer());
+  EXPECT_EQ(gfx::Rect(200, 100), decoration->GetContentBounds());
+
+  // Destroying the decoration detaches its layer from child_view->layer().
+  decoration.reset();
+  EXPECT_EQ(child_view->layer()->children().size(), 1u);
+  EXPECT_EQ(child_view->layer()->children()[0], sub_child->layer());
+}
+
+// Tests that destroying the view before a LayerParent::kViewLayer decoration
+// detaches the decoration's layer and does not crash on subsequent decoration
+// destruction.
+TEST_F(SystemDecorationTest, ViewLayerDecorationViewDeletion) {
+  auto widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                       /*delegate=*/nullptr,
+                       /*container_id=*/desks_util::GetActiveDeskContainerId(),
+                       /*bounds=*/gfx::Rect(100, 100, 320, 200));
+  views::View* contents_view = widget->GetContentsView();
+  auto* child_view =
+      contents_view->AddChildView(std::make_unique<views::View>());
+
+  auto decoration = SystemDecoration::CreateForView(
+      child_view, SystemDecoration::ShadowType::kNone,
+      SystemDecoration::HighlightBorderMode::kHighlightBorder,
+      SystemDecoration::LayerParent::kViewLayer);
+  EXPECT_EQ(child_view->layer(), decoration->GetLayer()->parent());
 
   // Deleting child_view invokes OnViewIsDeleting() on the decoration.
   contents_view->RemoveChildViewT(child_view);
