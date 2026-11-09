@@ -31,7 +31,9 @@ _CB_METADATA_COLUMNS = frozenset(
 
 def _get_metric_unit(metric: str) -> str:
   lower_key = metric.lower()
-  if 'score' in lower_key:
+  if any(
+    k in lower_key for k in ('score', 'tokenspersecond', 'acceptancerate')
+  ):
     return 'unitless_biggerIsBetter'
   if lower_key.endswith('_bytes'):
     return 'sizeInBytes_smallerIsBetter'
@@ -224,7 +226,11 @@ def convert(
     key_parts = key.split('/')
     if len(key_parts) == 1:
       lower_key = key.lower()
-      if lower_key.startswith('iteration') or lower_key == 'geomean':
+      if (
+        lower_key.startswith('iteration')
+        or lower_key == 'geomean'
+        or lower_key.endswith('_mb')
+      ):
         continue
       metric = key
       unit = _get_metric_unit(key)

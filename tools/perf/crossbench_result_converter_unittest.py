@@ -576,6 +576,104 @@ class CrossbenchResultConverterTest(unittest.TestCase):
     self.assertEqual(by_story['blank_startup']['sampleValues'], [110.0, 120.0])
     self.assertEqual(by_story['google_startup']['sampleValues'], [190.0])
 
+  def test_blink_ai(self):
+    blink_ai_metrics = {
+      'Iteration 1': {'values': [1]},
+      'geomean': {'values': [100.0]},
+      'downloadTimeMs': {'values': [500.5]},
+      'language_model.sessionCreationTimeMs': {'values': [120.5]},
+      'language_model.coldTimeToFirstTokenMs': {'values': [45.2]},
+      'language_model.coldTotalPromptTimeMs': {'values': [250.0]},
+      'language_model.coldTokensPerSecond': {'values': [45.8]},
+      'language_model.warmTokensPerSecond': {'values': [50.2, 55.1, 56.3]},
+      'mtp_summary.coldAcceptanceRate': {'values': [0.72]},
+      'mtp_summary.warmAcceptanceRate': {'values': [0.75, 0.78, 0.80]},
+      'tokensPerSecond': {'values': [48.0]},
+      'acceptanceRate': {'values': [0.65]},
+      'vram_peak_bytes': {'values': [209715200]},
+      'vram_peak_mb': {'values': [200.0]},
+      'vram/peak_mb': {'values': [200.0]},
+    }
+    with tempfile.TemporaryDirectory() as temp_dir:
+      dir_path = pathlib.Path(temp_dir)
+      blink_ai_json_path = dir_path / 'blink_ai.json'
+      blink_ai_json_path.write_text(json.dumps(blink_ai_metrics))
+
+      cb_results = {
+        'browsers': {
+          'BrowserA': {
+            'probes': {
+              'blink_ai': {
+                'json': [str(blink_ai_json_path)],
+              },
+            },
+          },
+        },
+      }
+      (dir_path / 'cb.results.json').write_text(json.dumps(cb_results))
+
+      out_file = dir_path / 'out.json'
+      crossbench_result_converter.convert(
+        dir_path, out_file, benchmark='blink-ai.crossbench'
+      )
+      result = self.list_to_dict(json.loads(out_file.read_text()))
+
+    self.assertNotIn('Iteration 1', result)
+    self.assertNotIn('geomean', result)
+    self.assertNotIn('vram_peak_mb', result)
+    self.assertNotIn('vram/peak_mb', result)
+    self.check_result(result, 'downloadTimeMs', 500.5, 'ms_smallerIsBetter')
+    self.check_result(
+      result,
+      'language_model.sessionCreationTimeMs',
+      120.5,
+      'ms_smallerIsBetter',
+    )
+    self.check_result(
+      result,
+      'language_model.coldTimeToFirstTokenMs',
+      45.2,
+      'ms_smallerIsBetter',
+    )
+    self.check_result(
+      result,
+      'language_model.coldTotalPromptTimeMs',
+      250.0,
+      'ms_smallerIsBetter',
+    )
+    self.check_result(
+      result,
+      'language_model.coldTokensPerSecond',
+      45.8,
+      'unitless_biggerIsBetter',
+    )
+    self.check_result(
+      result,
+      'language_model.warmTokensPerSecond',
+      50.2,
+      'unitless_biggerIsBetter',
+      sample_size=3,
+    )
+    self.check_result(
+      result, 'mtp_summary.coldAcceptanceRate', 0.72, 'unitless_biggerIsBetter'
+    )
+    self.check_result(
+      result,
+      'mtp_summary.warmAcceptanceRate',
+      0.75,
+      'unitless_biggerIsBetter',
+      sample_size=3,
+    )
+    self.check_result(
+      result, 'tokensPerSecond', 48.0, 'unitless_biggerIsBetter'
+    )
+    self.check_result(
+      result, 'acceptanceRate', 0.65, 'unitless_biggerIsBetter'
+    )
+    self.check_result(
+      result, 'vram_peak_bytes', 209715200, 'sizeInBytes_smallerIsBetter'
+    )
+
 
 if __name__ == '__main__':
   unittest.main()
