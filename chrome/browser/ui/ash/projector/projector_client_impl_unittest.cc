@@ -20,22 +20,25 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
 #include "chrome/browser/speech/fake_speech_recognizer.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/soda/mock_soda_installer.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_installer_impl_chromeos.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -51,6 +54,10 @@ const char kEnglishUS[] = "en-US";
 
 constexpr char kS3FallbackReasonMetricName[] =
     "Ash.Projector.OnDeviceToServerSpeechRecognitionFallbackReason";
+
+constexpr auto kAccountId =
+    AccountIdLiteral::FromUserEmailGaiaId("test-user@example.com",
+                                          GaiaId::Literal("1234567890"));
 
 inline void SetLocale(const std::string& locale) {
   TestingBrowserProcess::GetGlobal()
@@ -102,7 +109,7 @@ class ProjectorClientImplUnitTest
       delete;
   ~ProjectorClientImplUnitTest() override = default;
 
-  Profile* profile() { return testing_profile_; }
+  Profile* profile() { return profile_; }
 
   MockProjectorController& projector_controller() {
     return projector_controller_;
@@ -115,9 +122,6 @@ class ProjectorClientImplUnitTest
     scoped_feature_list_.InitWithFeatures(parameter.enabled_features,
                                           parameter.disabled_features);
 
-    ASSERT_TRUE(testing_profile_manager_.SetUp());
-    testing_profile_ = ProfileManager::GetPrimaryUserProfile();
-    ASSERT_TRUE(testing_profile_);
     SetLocale(kEnglishUS);
     soda_installer_ = std::make_unique<speech::MockSodaInstaller>();
     ON_CALL(*soda_installer_, GetAvailableLanguages)
@@ -126,6 +130,18 @@ class ProjectorClientImplUnitTest
     soda_installer_->NotifySodaInstalledForTesting(speech::LanguageCode::kEnUs);
     mock_app_client_ = std::make_unique<MockAppClient>();
     mock_locale_controller_ = std::make_unique<MockLocaleUpdateController>();
+
+    user_session_test_environment_ =
+        std::make_unique<test::UserSessionTestEnvironment>(
+            TestingBrowserProcess::GetGlobal()->local_state(),
+            std::make_unique<test::ChromeUserSessionTestEnvironmentDelegate>(
+                TestingBrowserProcess::GetGlobal()));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kAccountId));
+    user_session_test_environment_->LogIn(kAccountId);
+    profile_ = Profile::FromBrowserContext(
+        BrowserContextHelper::Get()->GetBrowserContextByAccountId(kAccountId));
+    ASSERT_TRUE(profile_);
+
     projector_client_ = std::make_unique<ProjectorClientImpl>(
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
@@ -140,6 +156,9 @@ class ProjectorClientImplUnitTest
 
   void TearDown() override {
     projector_client_.reset();
+    fake_service_ = nullptr;
+    profile_ = nullptr;
+    user_session_test_environment_.reset();
     mock_locale_controller_.reset();
     mock_app_client_.reset();
     soda_installer_.reset();
@@ -203,10 +222,9 @@ class ProjectorClientImplUnitTest
   base::HistogramTester histogram_tester_;
 
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<Profile, DanglingUntriaged> testing_profile_ = nullptr;
-
-  TestingProfileManager testing_profile_manager_{
-      TestingBrowserProcess::GetGlobal()};
+  std::unique_ptr<test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<Profile> profile_ = nullptr;
 
   MockProjectorController projector_controller_;
   std::unique_ptr<ProjectorClient> projector_client_;

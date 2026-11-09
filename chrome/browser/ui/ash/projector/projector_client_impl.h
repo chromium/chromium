@@ -19,6 +19,7 @@
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
 #include "chrome/browser/ui/ash/projector/projector_drivefs_provider.h"
 #include "chrome/browser/ui/ash/projector/projector_soda_installation_controller.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -90,10 +91,10 @@ class ProjectorClientImpl : public ash::ProjectorClient,
 
   // Called when any of the policies change that control whether the Projector
   // app is enabled.
-  void OnEnablementPolicyChanged();
+  void OnEnablementPolicyChanged(const AccountId& account_id);
 
   // Called when app registry becomes ready.
-  void SetAppIsDisabled(bool disabled);
+  void SetAppIsDisabled(const AccountId& account_id, bool disabled);
 
   raw_ref<ApplicationLocaleStorage> application_locale_storage_;
 

@@ -10,7 +10,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
 
 // static
@@ -70,11 +72,9 @@ ProjectorDriveFsProvider::~ProjectorDriveFsProvider() = default;
 
 void ProjectorDriveFsProvider::OnUserProfileLoaded(
     const AccountId& account_id) {
-  const user_manager::User* active_user =
-      user_manager::UserManager::IsInitialized()
-          ? user_manager::UserManager::Get()->GetActiveUser()
-          : nullptr;
-  if (active_user && active_user->GetAccountId() == account_id) {
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (active_session && active_session->account_id() == account_id) {
     OnActiveUserSwitch(account_id);
   }
 }

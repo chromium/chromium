@@ -9,15 +9,18 @@
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/speech_recognition_availability.h"
 #include "ash/webui/projector_app/projector_app_client.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/speech_recognition_recognizer_client_impl.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace {
 
@@ -56,8 +59,14 @@ void ProjectorSodaInstallationController::InstallSoda(
   auto* soda_installer = speech::SodaInstaller::GetInstance();
 
   // Initialization will trigger the installation of SODA and the language.
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
   PrefService* pref_service =
-      ProfileManager::GetPrimaryUserProfile()->GetPrefs();
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUserAndModify(
+                      primary_session->account_id()))
+          .GetProfilePrefs();
+  CHECK(pref_service);
   pref_service->SetString(ash::prefs::kProjectorCreationFlowLanguage,
                           language_name);
   soda_installer->Init(pref_service, &local_state);

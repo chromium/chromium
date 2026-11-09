@@ -24,9 +24,9 @@
 #include "components/account_manager_core/account_manager_metrics.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/soda/constants.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace {
@@ -99,12 +99,12 @@ void ProjectorAppClientImpl::RemoveObserver(Observer* observer) {
 
 bool ProjectorAppClientImpl::IsActiveAccount(
     const AccountId& account_id) const {
-  if (!account_id.is_valid() || !user_manager::UserManager::IsInitialized()) {
+  if (!account_id.is_valid()) {
     return false;
   }
-  const user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  return active_user && active_user->GetAccountId() == account_id;
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  return active_session && active_session->account_id() == account_id;
 }
 
 void ProjectorAppClientImpl::OnNewScreencastPreconditionChanged(
