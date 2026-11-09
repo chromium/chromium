@@ -343,8 +343,8 @@ BASE_FEATURE(kUseDisplaySDRMaxLuminanceNits, base::FEATURE_DISABLED_BY_DEFAULT);
 // skip tone mapping it in viz and instead pass its HDR metadata to the system
 // compositor with the primary plane, so the system compositor can tone map it
 // using the video's real metadata. Only used if the platform reports that the
-// system compositor tone maps using client HDR metadata.
-BASE_FEATURE(kHdrVideoMetadataPassthrough, base::FEATURE_DISABLED_BY_DEFAULT);
+// system compositor tone maps using client HDR metadata. Kill switch.
+BASE_FEATURE(kHdrVideoMetadataPassthrough, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // On mac, when the RenderWidgetHostViewMac is hidden, also hide the
