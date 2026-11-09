@@ -98,6 +98,22 @@ public class AiTierPillDrawableUnitTest {
     }
 
     @Test
+    public void testDrawsWithoutBrandingDelegate() {
+        // E.g. Chromium builds, which draw only the fill.
+        AiTierPillDrawable drawable =
+                new AiTierPillDrawable(
+                        new ContextThemeWrapper(
+                                RuntimeEnvironment.getApplication(),
+                                R.style.Theme_BrowserUI_DayNight),
+                        /* brandingDelegate= */ null);
+        drawable.setBounds(0, 0, 100, 22);
+
+        drawable.draw(mCanvas);
+
+        verify(mCanvas).drawBitmap(any(Bitmap.class), eq(0f), eq(0f), any(Paint.class));
+    }
+
+    @Test
     public void testEmptyBoundsDrawNothing() {
         mDrawable.setBounds(0, 0, 100, 0);
 

@@ -18,6 +18,7 @@ import androidx.preference.PreferenceViewHolder;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.signin.services.AiTierPillDrawable;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
@@ -30,13 +31,15 @@ public class CentralAccountCardPreference extends Preference
         implements ProfileDataCache.Observer, ContainmentItem {
     private DisplayableProfileData mPrimaryAccount;
     private ProfileDataCache mProfileDataCache;
+    private final boolean mAiTierRingEnabled;
 
     public CentralAccountCardPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         // TODO(crbug.com/576944682): Keep only the ring layout after flag cleanup.
+        mAiTierRingEnabled = SigninFeatureMap.getInstance().isAiTierRingInSettingsEnabled();
         setLayoutResource(
-                SigninFeatureMap.getInstance().isAiTierRingInSettingsEnabled()
+                mAiTierRingEnabled
                         ? R.layout.central_account_card_view
                         : R.layout.central_account_card_view_legacy);
     }
@@ -92,6 +95,11 @@ public class CentralAccountCardPreference extends Preference
         } else {
             secondaryText.setVisibility(View.GONE);
         }
+
+        // Only the ring layout has the AI tier pill.
+        if (mAiTierRingEnabled) {
+            bindAiTierPill(holder, primaryAndSecondaryText);
+        }
     }
 
     /** ProfileDataCache.Observer implementation. */
@@ -102,6 +110,92 @@ public class CentralAccountCardPreference extends Preference
         }
         mPrimaryAccount = profileData;
         notifyChanged();
+    }
+
+    /**
+     * Shows the AI tier pill below the avatar if the account has a tier name, and adds the
+     * membership to the card's description while the account has the AI tier ring. The pill itself
+     * is hidden from screen readers and isn't interactive.
+     */
+    private void bindAiTierPill(
+            PreferenceViewHolder holder, Pair<String, String> primaryAndSecondaryText) {
+        TextView pill = (TextView) holder.findViewById(R.id.central_account_ai_tier_pill);
+        String pillName = mPrimaryAccount.getAiTierPillName();
+        boolean showsPill = false;
+        if (pillName.isEmpty()) {
+            pill.setVisibility(View.GONE);
+            pill.setBackground(null);
+        } else {
+            pill.setText(pillName);
+            // Rebinding the same view keeps the drawable, which only redraws when its size
+            // changes.
+            if (!(pill.getBackground() instanceof AiTierPillDrawable)) {
+                // Builds without branding draw a plain pill, as they draw a plain ring.
+                pill.setBackground(
+                        new AiTierPillDrawable(
+                                getContext(),
+                                mProfileDataCache.getSubscriptionTierBrandingDelegate()));
+            }
+            pill.setVisibility(View.VISIBLE);
+            showsPill = true;
+        }
+
+        // Like the New Tab Page's identity disc, screen readers hear about the membership whenever
+        // the ring is shown, even without a pill (e.g. for tiers without a name).
+        String description =
+                mPrimaryAccount.hasAiTierRing()
+                        ? getDescriptionWithMembership(
+                                primaryAndSecondaryText,
+                                showsPill ? mPrimaryAccount.getAiTierFullName() : "")
+                        : null;
+
+        // As for TabCardLabelView, the texts aren't read separately when the card has a
+        // description: the card is then one stop for screen readers, without keyboard focus.
+        View card = holder.findViewById(R.id.central_account_card);
+        card.setContentDescription(description);
+        card.setScreenReaderFocusable(description != null);
+        int textImportance =
+                description == null
+                        ? View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
+                        : View.IMPORTANT_FOR_ACCESSIBILITY_NO;
+        holder.findViewById(R.id.central_account_primary_text)
+                .setImportantForAccessibility(textImportance);
+        holder.findViewById(R.id.central_account_secondary_text)
+                .setImportantForAccessibility(textImportance);
+    }
+
+    /**
+     * Returns the card's description with the membership.
+     *
+     * @param primaryAndSecondaryText The texts shown on the card.
+     * @param tierFullName The tier's full name, or empty if it isn't known (e.g. the pill isn't
+     *     shown, or the server overrides it with an empty name). The description then only says
+     *     "membership", with "Google" in branded builds, like the New Tab Page's identity disc.
+     */
+    private String getDescriptionWithMembership(
+            Pair<String, String> primaryAndSecondaryText, String tierFullName) {
+        Context context = getContext();
+        boolean singleLine = primaryAndSecondaryText.second.isEmpty();
+        if (tierFullName.isEmpty()) {
+            return singleLine
+                    ? context.getString(
+                            R.string.account_settings_card_description_single_line_with_membership,
+                            primaryAndSecondaryText.first)
+                    : context.getString(
+                            R.string.account_settings_card_description_with_membership,
+                            primaryAndSecondaryText.first,
+                            primaryAndSecondaryText.second);
+        }
+        return singleLine
+                ? context.getString(
+                        R.string.account_settings_card_description_single_line_with_tier,
+                        primaryAndSecondaryText.first,
+                        tierFullName)
+                : context.getString(
+                        R.string.account_settings_card_description_with_tier,
+                        primaryAndSecondaryText.first,
+                        primaryAndSecondaryText.second,
+                        tierFullName);
     }
 
     private Pair<String, String> getPrimaryAndSecondaryText(DisplayableProfileData profileData) {

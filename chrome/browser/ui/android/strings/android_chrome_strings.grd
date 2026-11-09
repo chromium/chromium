@@ -2403,6 +2403,12 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_ACCOUNT_SETTINGS_TITLE" desc="Title for the account settings page. [CHAR_LIMIT=32]">
         Account
       </message>
+      <message name="IDS_ACCOUNT_SETTINGS_CARD_DESCRIPTION_WITH_TIER" is_accessibility_with_no_ui="true" desc="Read by screen readers for the card at the top of the Account settings page, which shows the user's name, email and the name of their AI subscription.">
+        <ph name="USER_NAME">%1$s<ex>Jessica Doe</ex></ph>, <ph name="EMAIL">%2$s<ex>jessica@gmail.com</ex></ph>. <ph name="SUBSCRIPTION_NAME">%3$s<ex>Tier name</ex></ph> membership.
+      </message>
+      <message name="IDS_ACCOUNT_SETTINGS_CARD_DESCRIPTION_SINGLE_LINE_WITH_TIER" is_accessibility_with_no_ui="true" desc="Read by screen readers for the card at the top of the Account settings page, when the card shows only the user's name or only their email, and the name of their AI subscription.">
+        <ph name="USER_NAME_OR_EMAIL">%1$s<ex>jessica@gmail.com</ex></ph>. <ph name="SUBSCRIPTION_NAME">%2$s<ex>Tier name</ex></ph> membership.
+      </message>
       <message name="IDS_ACCOUNT_SECTION_HEADER" desc="Header of a section with toggles to control which types of data users can use and save in their Google Account (as opposed to saving them only on the device). Try to avoid long strings because this is a header in large font size.">
         In your Google Account
       </message>

@@ -637,7 +637,12 @@ public class MainSettingsFragmentTest {
                         R.string.settings_account_row_description_with_membership,
                         TestAccounts.ACCOUNT1.getFullName(),
                         TestAccounts.ACCOUNT1.getEmail());
-        onView(withContentDescription(description)).check(matches(isDisplayed()));
+        // The Account page, shown next to Main Settings on large screens, can have the same text.
+        onView(
+                        allOf(
+                                withContentDescription(description),
+                                isDescendantOfA(withId(R.id.preferences_header))))
+                .check(matches(isDisplayed()));
     }
 
     // Tests that screen readers read the email only once for an account without a name, whose
@@ -660,12 +665,14 @@ public class MainSettingsFragmentTest {
         startSettings();
 
         CriteriaHelper.pollInstrumentationThread(() -> signinRowHasAiTierRing(accountInfo));
+        String description =
+                mMainSettings.getString(
+                        R.string.settings_account_row_description_single_line_with_membership,
+                        accountInfo.getEmail());
         onView(
-                        withContentDescription(
-                                mMainSettings.getString(
-                                        R.string
-                                                .settings_account_row_description_single_line_with_membership,
-                                        accountInfo.getEmail())))
+                        allOf(
+                                withContentDescription(description),
+                                isDescendantOfA(withId(R.id.preferences_header))))
                 .check(matches(isDisplayed()));
     }
 
@@ -701,7 +708,11 @@ public class MainSettingsFragmentTest {
                         R.string.settings_account_row_description_with_membership,
                         TestAccounts.ACCOUNT1.getFullName(),
                         TestAccounts.ACCOUNT1.getEmail());
-        onView(withContentDescription(description)).check(doesNotExist());
+        onView(
+                        allOf(
+                                withContentDescription(description),
+                                isDescendantOfA(withId(R.id.preferences_header))))
+                .check(doesNotExist());
     }
 
     // Tests that the account row shows the AI tier ring again after the identity error is fixed on

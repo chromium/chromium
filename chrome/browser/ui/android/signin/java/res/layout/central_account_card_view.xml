@@ -41,6 +41,27 @@ found in the LICENSE file.
 
         </FrameLayout>
 
+        <!-- The AI tier pill, below the ring. Screen readers get the tier
+             from the card's description. -->
+        <TextView
+            android:id="@+id/central_account_ai_tier_pill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="8dp"
+            android:minHeight="22dp"
+            android:maxWidth="200dp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:importantForAccessibility="no"
+            android:textAppearance=
+                "@style/TextAppearance.TextSmallThick.Primary"
+            android:visibility="gone"/>
+
         <TextView
             android:id="@+id/central_account_primary_text"
             android:layout_width="wrap_content"

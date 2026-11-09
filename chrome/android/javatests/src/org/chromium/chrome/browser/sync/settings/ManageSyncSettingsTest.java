@@ -22,6 +22,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
@@ -62,6 +64,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -80,6 +83,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
@@ -108,6 +112,7 @@ import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJni;
+import org.chromium.chrome.browser.subscription_eligibility.AiSubscriptionTierNames;
 import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibilityService;
 import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibilityServiceFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -166,6 +171,7 @@ import java.util.Set;
 @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
 public class ManageSyncSettingsTest {
     private static final int RENDER_TEST_REVISION = 13;
+    private static final String AI_SUBSCRIPTION_TIER_PREF = "sync.ai_subscription_tier";
 
     /** Maps selected types to their Account UI element IDs. */
     private static final Map<Integer, String> ACCOUNT_UI_DATATYPES =
@@ -247,6 +253,9 @@ public class ManageSyncSettingsTest {
     // Returned by mSubscriptionEligibilityService. Tests set it to 1 to get the AI tier ring.
     private int mAiSubscriptionTier;
 
+    // Whether the test set AI_SUBSCRIPTION_TIER_PREF, which tearDown() then clears.
+    private boolean mAiSubscriptionTierPrefSet;
+
     @Before
     public void setUp() {
         UnifiedConsentServiceBridgeJni.setInstanceForTesting(mUnifiedConsentServiceBridgeMock);
@@ -276,6 +285,16 @@ public class ManageSyncSettingsTest {
         when(mSubscriptionEligibilityService.getAiSubscriptionTier())
                 .thenAnswer(invocation -> mAiSubscriptionTier);
         SubscriptionEligibilityServiceFactory.setForTesting(mSubscriptionEligibilityService);
+    }
+
+    @After
+    public void tearDown() {
+        if (mAiSubscriptionTierPrefSet) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () ->
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                                    .clearPref(AI_SUBSCRIPTION_TIER_PREF));
+        }
     }
 
     @Test
@@ -1547,12 +1566,112 @@ public class ManageSyncSettingsTest {
                 fragment.findPreference(ManageSyncSettings.PREF_IDENTITY_ERROR_CARD_PREFERENCE);
         Assert.assertTrue(identityErrorCard.isShown());
         Assert.assertFalse(centralAccountCardHasAiTierRing(fragment));
+        // The pill and the membership go away with the ring.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TextView pill = getAiTierPill(fragment);
+                    Criteria.checkThat(pill, notNullValue());
+                    Criteria.checkThat(pill.getVisibility(), is(View.GONE));
+                    Criteria.checkThat(
+                            getCentralAccountCard(fragment).getContentDescription(), nullValue());
+                });
 
         // Resolve the error while the page is open. This also leaves no error for later tests.
         ThreadUtils.runOnUiThreadBlocking(() -> syncService.setDecryptionPassphrase("passphrase"));
 
         CriteriaHelper.pollUiThread(() -> !identityErrorCard.isShown());
         CriteriaHelper.pollInstrumentationThread(() -> centralAccountCardHasAiTierRing(fragment));
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                getAiTierPill(fragment).getVisibility(), is(View.VISIBLE)));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures({
+        SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING,
+        SigninFeatures.AI_SUBSCRIPTION_AVATAR_RING_FOLLOWUP
+    })
+    public void testCentralAccountCardShowsAiTierPill() {
+        mAiSubscriptionTier = 1;
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        ManageSyncSettings fragment = startManageSyncPreferences();
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TextView pill = getAiTierPill(fragment);
+                    Criteria.checkThat(pill, notNullValue());
+                    Criteria.checkThat(pill.getVisibility(), is(View.VISIBLE));
+                });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TextView pill = getAiTierPill(fragment);
+                    View card = getCentralAccountCard(fragment);
+                    Assert.assertEquals(
+                            AiSubscriptionTierNames.getShortName(1), pill.getText().toString());
+                    // Screen readers get the tier from the card's description, not from the pill.
+                    Assert.assertEquals(
+                            View.IMPORTANT_FOR_ACCESSIBILITY_NO,
+                            pill.getImportantForAccessibility());
+                    Assert.assertFalse(pill.isClickable());
+                    Assert.assertEquals(
+                            fragment.getString(
+                                    R.string.account_settings_card_description_with_tier,
+                                    TestAccounts.ACCOUNT1.getFullName(),
+                                    TestAccounts.ACCOUNT1.getEmail(),
+                                    AiSubscriptionTierNames.getFullName(1)),
+                            card.getContentDescription().toString());
+                    Assert.assertTrue(card.isScreenReaderFocusable());
+                    Assert.assertFalse(card.isFocusable());
+                });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures({
+        SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING,
+        SigninFeatures.AI_SUBSCRIPTION_AVATAR_RING_FOLLOWUP
+    })
+    public void testCentralAccountCardShowsNoAiTierPillForUnknownTiers() {
+        useRealAiSubscriptionTier();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        // Starts with a known tier, so that the card visibly changes for the unknown one.
+        setAiSubscriptionTierPref(1);
+        ManageSyncSettings fragment = startManageSyncPreferences();
+        CentralAccountCardPreference preference =
+                fragment.findPreference(ManageSyncSettings.PREF_CENTRAL_ACCOUNT_CARD_PREFERENCE);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TextView pill = getAiTierPill(fragment);
+                    Criteria.checkThat(pill, notNullValue());
+                    Criteria.checkThat(pill.getVisibility(), is(View.VISIBLE));
+                });
+
+        // E.g. a tier added after this version was released: it has the ring but no name.
+        setAiSubscriptionTierPref(99);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(getAiTierPill(fragment).getVisibility(), is(View.GONE));
+                    Criteria.checkThat(
+                            preference.getProfileDataForTesting().hasAiTierRing(), is(true));
+                    // Screen readers still hear about the membership, without a tier name.
+                    View card = getCentralAccountCard(fragment);
+                    Criteria.checkThat(card.getContentDescription(), notNullValue());
+                    Criteria.checkThat(
+                            card.getContentDescription().toString(),
+                            is(
+                                    fragment.getString(
+                                            R.string
+                                                    .account_settings_card_description_with_membership,
+                                            TestAccounts.ACCOUNT1.getFullName(),
+                                            TestAccounts.ACCOUNT1.getEmail())));
+                    Criteria.checkThat(card.isScreenReaderFocusable(), is(true));
+                });
     }
 
     @Test
@@ -1702,12 +1821,38 @@ public class ManageSyncSettingsTest {
                 .check(matches(isDisplayed()));
     }
 
+    /** Returns the AI tier pill of the central account card. Must be called on the UI thread. */
+    private static TextView getAiTierPill(ManageSyncSettings fragment) {
+        return fragment.getActivity().findViewById(R.id.central_account_ai_tier_pill);
+    }
+
+    /** Returns the central account card. Must be called on the UI thread. */
+    private static View getCentralAccountCard(ManageSyncSettings fragment) {
+        return fragment.getActivity().findViewById(R.id.central_account_card);
+    }
+
     /** Returns whether the image shown by the central account card has the AI tier ring. */
     private boolean centralAccountCardHasAiTierRing(ManageSyncSettings fragment) {
         CentralAccountCardPreference preference =
                 fragment.findPreference(ManageSyncSettings.PREF_CENTRAL_ACCOUNT_CARD_PREFERENCE);
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> preference.getProfileDataForTesting().hasAiTierRing());
+    }
+
+    /**
+     * Makes the AI subscription tier come from the pref instead of mSubscriptionEligibilityService,
+     * so that changing the pref updates the open page.
+     */
+    private void useRealAiSubscriptionTier() {
+        SubscriptionEligibilityServiceFactory.setForTesting(null);
+    }
+
+    private void setAiSubscriptionTierPref(int tier) {
+        mAiSubscriptionTierPrefSet = true;
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                                .setInteger(AI_SUBSCRIPTION_TIER_PREF, tier));
     }
 
     @Test

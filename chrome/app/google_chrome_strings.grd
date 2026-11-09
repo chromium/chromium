@@ -364,6 +364,12 @@ chromium_strings.grd. -->
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_IDENTITY_DISC_WITH_NAME_AI_TIER" desc="The content description for a toolbar button displaying user profile picture when the user has an AI subscription, for users who don't have a readable email address. Tapping on this button navigates to Settings page" formatter_data="android_java">
         Signed in as <ph name="USER_NAME">%s<ex>Bruce Wayne</ex></ph>, Google membership. Open the account menu
       </message>
+      <message name="IDS_ACCOUNT_SETTINGS_CARD_DESCRIPTION_WITH_MEMBERSHIP" is_accessibility_with_no_ui="true" desc="Read by screen readers for the card at the top of the Account settings page, which shows the user's name and email, when the user has an AI subscription whose name isn't shown." formatter_data="android_java">
+        <ph name="USER_NAME">%1$s<ex>Jessica Doe</ex></ph>, <ph name="EMAIL">%2$s<ex>jessica@gmail.com</ex></ph>. Google membership.
+      </message>
+      <message name="IDS_ACCOUNT_SETTINGS_CARD_DESCRIPTION_SINGLE_LINE_WITH_MEMBERSHIP" is_accessibility_with_no_ui="true" desc="Read by screen readers for the card at the top of the Account settings page, when the card shows only the user's name or only their email, and the user has an AI subscription whose name isn't shown." formatter_data="android_java">
+        <ph name="USER_NAME_OR_EMAIL">%1$s<ex>jessica@gmail.com</ex></ph>. Google membership.
+      </message>
       <if expr="is_macosx or is_chromeos">
         <message name="IDS_TASK_MANAGER_TITLE" desc="The title of the Task Manager window">
           Task Manager

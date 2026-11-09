@@ -271,6 +271,14 @@ public class ProfileDataCache
     }
 
     /**
+     * Returns the branding used to draw the AI tier ring, and the AI tier pill shown next to it, or
+     * null in builds without branding (which draw both without it) or for caches without the ring.
+     */
+    public @Nullable SubscriptionTierBrandingDelegate getSubscriptionTierBrandingDelegate() {
+        return mBrandingDelegate;
+    }
+
+    /**
      * @return The space, in pixels, between each edge of the generated images and the avatar, which
      *     is left for the AI tier ring and its spacing, or 0 if this cache was created without the
      *     AI tier ring. Views can use it to keep the avatar where it would be without the ring.

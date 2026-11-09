@@ -27,7 +27,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 /**
  * Background of the AI tier pill: a fully rounded fill with a blurred wave at the bottom and an
  * inner shadow. {@link SubscriptionTierBrandingDelegate} provides the wave and the shadow color;
- * without them, only the fill is drawn.
+ * without them, e.g. in builds without branding, only the fill is drawn.
  */
 @NullMarked
 public class AiTierPillDrawable extends Drawable {
@@ -39,7 +39,7 @@ public class AiTierPillDrawable extends Drawable {
     // shadow's blur.
     private static final float SHADOW_FRAME_WIDTH_DP = 20f;
 
-    private final SubscriptionTierBrandingDelegate mBrandingDelegate;
+    private final @Nullable SubscriptionTierBrandingDelegate mBrandingDelegate;
     private final float mDensity;
     private final Paint mFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint mWavePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -51,9 +51,11 @@ public class AiTierPillDrawable extends Drawable {
 
     /**
      * @param context The context to get the fill color and the display density from.
-     * @param brandingDelegate Provides the wave and the shadow color.
+     * @param brandingDelegate Provides the wave and the shadow color. Null in builds without
+     *     branding, which draw only the fill.
      */
-    public AiTierPillDrawable(Context context, SubscriptionTierBrandingDelegate brandingDelegate) {
+    public AiTierPillDrawable(
+            Context context, @Nullable SubscriptionTierBrandingDelegate brandingDelegate) {
         mBrandingDelegate = brandingDelegate;
         mDensity = context.getResources().getDisplayMetrics().density;
         mFillPaint.setColor(SemanticColorUtils.getColorSurfaceContainerLowest(context));
@@ -92,6 +94,7 @@ public class AiTierPillDrawable extends Drawable {
         Canvas canvas = new Canvas(bitmap);
         canvas.clipPath(pillPath);
         canvas.drawPath(pillPath, mFillPaint);
+        if (mBrandingDelegate == null) return bitmap;
 
         Shader waveShader = mBrandingDelegate.getTierPillWaveShader(pillBounds);
         Path wavePath = mBrandingDelegate.getTierPillWavePath(pillBounds);
