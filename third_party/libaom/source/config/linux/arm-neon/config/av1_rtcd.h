@@ -117,6 +117,9 @@ int64_t av1_block_error_lp_c(const int16_t *coeff, const int16_t *dqcoeff, intpt
 int64_t av1_block_error_lp_neon(const int16_t *coeff, const int16_t *dqcoeff, intptr_t block_size);
 #define av1_block_error_lp av1_block_error_lp_neon
 
+int64_t av1_block_error_qm_c(const tran_low_t *coeff, const tran_low_t *dqcoeff, intptr_t block_size, const qm_val_t *qmatrix, const int16_t *scan, int64_t *ssz, int bd);
+#define av1_block_error_qm av1_block_error_qm_c
+
 void av1_build_compound_diffwtd_mask_c(uint8_t *mask, DIFFWTD_MASK_TYPE mask_type, const uint8_t *src0, int src0_stride, const uint8_t *src1, int src1_stride, int h, int w);
 void av1_build_compound_diffwtd_mask_neon(uint8_t *mask, DIFFWTD_MASK_TYPE mask_type, const uint8_t *src0, int src0_stride, const uint8_t *src1, int src1_stride, int h, int w);
 #define av1_build_compound_diffwtd_mask av1_build_compound_diffwtd_mask_neon
@@ -139,6 +142,9 @@ void av1_calc_indices_dim1_neon(const int16_t *data, const int16_t *centroids, u
 void av1_calc_indices_dim2_c(const int16_t *data, const int16_t *centroids, uint8_t *indices, int64_t *total_dist, int n, int k);
 void av1_calc_indices_dim2_neon(const int16_t *data, const int16_t *centroids, uint8_t *indices, int64_t *total_dist, int n, int k);
 #define av1_calc_indices_dim2 av1_calc_indices_dim2_neon
+
+void av1_combine_block_hashes_c(void *crc_calculator, const uint32_t *top, const uint32_t *bottom, uint32_t *dst, int width, int sub_size);
+#define av1_combine_block_hashes av1_combine_block_hashes_c
 
 void av1_convolve_2d_scale_c(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const InterpFilterParams *filter_params_x, const InterpFilterParams *filter_params_y, const int subpel_x_qn, const int x_step_qn, const int subpel_y_qn, const int y_step_qn, ConvolveParams *conv_params);
 void av1_convolve_2d_scale_neon(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const InterpFilterParams *filter_params_x, const InterpFilterParams *filter_params_y, const int subpel_x_qn, const int x_step_qn, const int subpel_y_qn, const int y_step_qn, ConvolveParams *conv_params);
@@ -274,6 +280,9 @@ void av1_fwht4x4_neon(const int16_t *input, tran_low_t *output, int stride);
 uint32_t av1_get_crc32c_value_c(void *crc_calculator, const uint8_t *p, size_t length);
 #define av1_get_crc32c_value av1_get_crc32c_value_c
 
+void av1_get_energy_distribution_finer_c(const int16_t *diff, int stride, int bw, int bh, float *hordist, float *verdist);
+#define av1_get_energy_distribution_finer av1_get_energy_distribution_finer_c
+
 void av1_get_horver_correlation_full_c(const int16_t *diff, int stride, int w, int h, float *hcorr, float *vcorr);
 void av1_get_horver_correlation_full_neon(const int16_t *diff, int stride, int w, int h, float *hcorr, float *vcorr);
 #define av1_get_horver_correlation_full av1_get_horver_correlation_full_neon
@@ -388,6 +397,9 @@ void av1_nn_predict_neon(const float *input_nodes, const NN_CONFIG *const nn_con
 void av1_quantize_b_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan, const qm_val_t * qm_ptr, const qm_val_t * iqm_ptr, int log_scale);
 #define av1_quantize_b av1_quantize_b_c
 
+void av1_quantize_b_qm_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan, const qm_val_t *qm_ptr, const qm_val_t *iqm_ptr, int log_scale);
+#define av1_quantize_b_qm av1_quantize_b_qm_c
+
 void av1_quantize_fp_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan);
 void av1_quantize_fp_neon(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan);
 #define av1_quantize_fp av1_quantize_fp_neon
@@ -399,6 +411,9 @@ void av1_quantize_fp_32x32_neon(const tran_low_t *coeff_ptr, intptr_t n_coeffs, 
 void av1_quantize_fp_64x64_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan);
 void av1_quantize_fp_64x64_neon(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan);
 #define av1_quantize_fp_64x64 av1_quantize_fp_64x64_neon
+
+void av1_quantize_fp_qm_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const int16_t *round_ptr, const int16_t *quant_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan, const qm_val_t *qm_ptr, const qm_val_t *iqm_ptr, int log_scale);
+#define av1_quantize_fp_qm av1_quantize_fp_qm_c
 
 void av1_quantize_lp_c(const int16_t *coeff_ptr, intptr_t n_coeffs, const int16_t *round_ptr, const int16_t *quant_ptr, int16_t *qcoeff_ptr, int16_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan);
 void av1_quantize_lp_neon(const int16_t *coeff_ptr, intptr_t n_coeffs, const int16_t *round_ptr, const int16_t *quant_ptr, int16_t *qcoeff_ptr, int16_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan);
