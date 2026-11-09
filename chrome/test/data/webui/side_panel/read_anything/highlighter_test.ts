@@ -5,9 +5,9 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {NodeStore, ReadAloudHighlighter, Segment, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {previousReadHighlightClass, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createSpeechSynthesisVoice, setupTestEnvironment} from './common.js';
+import {assertHtml, assertHtmlContains, assertHtmlExcludes, createSpeechSynthesisVoice, setupTestEnvironment} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 
@@ -20,26 +20,7 @@ suite('Highlighter', () => {
   let audioBrowserProxy: TestAudioBrowserProxy;
 
   function assertFullNodeIsHighlighted(id: number, text: string) {
-    assertEquals(
-        '<span class="current-read-highlight">' + text + '</span>',
-        (nodeStore.getDomNode(id) as Element).innerHTML,
-        (nodeStore.getDomNode(id) as Element).innerHTML);
-  }
-
-  function assertHtml(html: string, id: number) {
-    assertEquals(
-        html, (nodeStore.getDomNode(id) as Element).innerHTML,
-        (nodeStore.getDomNode(id) as Element).innerHTML);
-  }
-
-  function assertHtmlContains(partialHtml: string, id: number) {
-    assertStringContains(
-        (nodeStore.getDomNode(id) as Element).innerHTML, partialHtml);
-  }
-
-  function assertHtmlExcludes(partialHtml: string, id: number) {
-    assertStringExcludes(
-        (nodeStore.getDomNode(id) as Element).innerHTML, partialHtml);
+    assertHtml('<span class="current-read-highlight">' + text + '</span>', id);
   }
 
   const firstWordNodeId = 10;
@@ -220,8 +201,8 @@ suite('Highlighter', () => {
         assertFullNodeIsHighlighted(id2, text2);
         assertFullNodeIsHighlighted(id3, text3);
         assertFullNodeIsHighlighted(id4, text4);
-        assertEquals(sub, (nodeStore.getDomNode(id2) as Element).parentElement);
-        assertEquals(sup, (nodeStore.getDomNode(id4) as Element).parentElement);
+        assertEquals(sub, nodeStore.getDomNode(id2)?.parentElement);
+        assertEquals(sup, nodeStore.getDomNode(id4)?.parentElement);
       });
 
   test('with auto highlighting and rate of 2, sentence highlight used', () => {

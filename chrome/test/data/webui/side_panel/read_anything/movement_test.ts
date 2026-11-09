@@ -6,9 +6,9 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {NodeStore} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {currentReadHighlightClass, MovementGranularity, PARENT_OF_HIGHLIGHT_CLASS, PhraseHighlight, previousReadHighlightClass, ReadAloudNode, SentenceHighlight, WordHighlight} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertGT, assertNotEquals, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {setupTestEnvironment, setWindowSize} from './common.js';
+import {assertHtml, assertHtmlContains, assertHtmlExcludes, setupTestEnvironment, setWindowSize} from './common.js';
 
 suite('Movement', () => {
   let nodeStore: NodeStore;
@@ -20,22 +20,6 @@ suite('Movement', () => {
     setWindowSize(1000, 1000);
     nodeStore = result.nodeStore;
   });
-
-  function assertHtml(html: string, id: number) {
-    assertEquals(
-        html, (nodeStore.getDomNode(id) as Element).innerHTML,
-        (nodeStore.getDomNode(id) as Element).innerHTML);
-  }
-
-  function assertHtmlContains(partialHtml: string, id: number) {
-    assertStringContains(
-        (nodeStore.getDomNode(id) as Element).innerHTML, partialHtml);
-  }
-
-  function assertHtmlExcludes(partialHtml: string, id: number) {
-    assertStringExcludes(
-        (nodeStore.getDomNode(id) as Element).innerHTML, partialHtml);
-  }
 
   suite('MovementGranularity', () => {
     test('isEmpty is true when no highlights are added', () => {
