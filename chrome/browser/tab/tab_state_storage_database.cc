@@ -367,7 +367,9 @@ bool TabStateStorageDatabase::RemoveNode(OpenTransaction* transaction,
       "DELETE FROM nodes "
       "WHERE id = ?";
 
-  CHECK(db_.IsSQLValid(kDeleteNodeSql), base::NotFatalUntil::M163);
+  // TODO(crbug.com/583092265): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(db_.IsSQLValid(kDeleteNodeSql));
 
   sql::Statement write_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteNodeSql));
