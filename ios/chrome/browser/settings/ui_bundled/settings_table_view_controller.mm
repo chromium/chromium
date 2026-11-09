@@ -36,6 +36,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/subscription_eligibility/ai_subscription_tier_names.h"
 #import "components/subscription_eligibility/objc/subscription_eligibility_observer_bridge.h"
 #import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "components/sync/service/sync_service.h"
@@ -2069,8 +2070,10 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   if (GetAccountErrorUIInfo(syncService) != nil) {
     identityAccountItem.detailImage = TableViewAccountDetailImage::kError;
   } else if (_subscriptionEligibilityService &&
-             _subscriptionEligibilityService->GetAiSubscriptionTier() > 0 &&
-             IsAiSubscriptionAvatarRingFollowupIOSEnabled()) {
+             IsAiSubscriptionAvatarRingFollowupIOSEnabled() &&
+             subscription_eligibility::GetAiSubscriptionTierDisplayInfo(
+                 _subscriptionEligibilityService->GetAiSubscriptionTier())
+                 .show_decoration) {
     identityAccountItem.detailImage = TableViewAccountDetailImage::kAITierRing;
   } else {
     identityAccountItem.detailImage = TableViewAccountDetailImage::kNone;

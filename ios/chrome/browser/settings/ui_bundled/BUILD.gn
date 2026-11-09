@@ -106,6 +106,7 @@ source_set("ui_bundled") {
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//components/subscription_eligibility",
+    "//components/subscription_eligibility:tier_names",
     "//components/subscription_eligibility/objc",
     "//components/sync/base",
     "//components/translate/core/browser",

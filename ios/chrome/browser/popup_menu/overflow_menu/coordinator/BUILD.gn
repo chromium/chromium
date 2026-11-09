@@ -30,6 +30,7 @@ source_set("coordinator") {
     "//components/send_tab_to_self",
     "//components/signin/public/identity_manager/objc",
     "//components/subscription_eligibility",
+    "//components/subscription_eligibility:tier_names",
     "//components/subscription_eligibility/objc",
     "//components/supervised_user/core/common",
     "//components/supervised_user/core/common:features",

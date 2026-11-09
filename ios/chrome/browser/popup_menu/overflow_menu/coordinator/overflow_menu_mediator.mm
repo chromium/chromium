@@ -33,6 +33,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
+#import "components/subscription_eligibility/ai_subscription_tier_names.h"
 #import "components/subscription_eligibility/objc/subscription_eligibility_observer_bridge.h"
 #import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "components/supervised_user/core/common/features.h"
@@ -2217,8 +2218,10 @@ void GetPresetNTPBackgroundPreview(
   self.identityAction.showsAITierRing =
       ![self shouldIndicateIdentityError] &&
       self.subscriptionEligibilityService &&
-      self.subscriptionEligibilityService->GetAiSubscriptionTier() > 0 &&
-      IsAiSubscriptionAvatarRingFollowupIOSEnabled();
+      IsAiSubscriptionAvatarRingFollowupIOSEnabled() &&
+      subscription_eligibility::GetAiSubscriptionTierDisplayInfo(
+          self.subscriptionEligibilityService->GetAiSubscriptionTier())
+          .show_decoration;
 }
 
 // Returns whether the page can be manually translated. If `forceMenuLogging` is

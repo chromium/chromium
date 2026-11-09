@@ -6,6 +6,7 @@
 
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/subscription_eligibility/ai_subscription_tier_names.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/cells_swift.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -17,7 +18,6 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/intelligence/signin/signin_ai_logo.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -62,8 +62,9 @@ UIImage* GetEnterpriseIcon() {
   NSLayoutConstraint* _topPaddingConstraint;
   // Management label.
   UILabel* _managementLabel;
-  // The full name of the AI tier.
-  NSString* _aiTierFullName;
+  // The accessibility description of the AI subscription membership, or nil if
+  // no AI tier is displayed.
+  NSString* _aiTierMembershipLabel;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -78,11 +79,18 @@ UIImage* GetEnterpriseIcon() {
     CHECK(avatarImage);
     CHECK(email);
     _avatarImage = avatarImage;
-    BOOL showAITierViews = displayedAiTier > 0;
-    _aiTierFullName =
-        showAITierViews
-            ? [ios::provider::GetAITierFullName(displayedAiTier) copy]
-            : nil;
+    const subscription_eligibility::AiSubscriptionTierDisplayInfo tierInfo =
+        subscription_eligibility::GetAiSubscriptionTierDisplayInfo(
+            static_cast<int>(displayedAiTier));
+    BOOL showAITierViews = tierInfo.show_decoration;
+    // TODO(crbug.com/579375435): Fall back to a generic membership string when
+    // `full_membership_label` is empty (e.g. a tier unknown to this binary),
+    // once a translated one is available.
+    if (showAITierViews && !tierInfo.full_membership_label.empty()) {
+      _aiTierMembershipLabel = l10n_util::GetNSStringF(
+          IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MEMBERSHIPS_AI_TIER,
+          tierInfo.full_membership_label);
+    }
     _name = name;
     _email = email;
     _useLargeMargins = useLargeMargins;
@@ -221,7 +229,7 @@ UIImage* GetEnterpriseIcon() {
     ]];
 
     NSString* aiTierName =
-        showAITierViews ? ios::provider::GetAITierName(displayedAiTier) : nil;
+        showAITierViews ? base::SysUTF16ToNSString(tierInfo.badge_label) : nil;
     if (aiTierName.length > 0) {
       UIView* subscriptionChipView =
           [[AISubscriptionChipWrapperView alloc] initWithText:aiTierName];
@@ -271,12 +279,7 @@ UIImage* GetEnterpriseIcon() {
 #pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
-  NSString* aiTierString = nil;
-  if (_aiTierFullName.length > 0) {
-    aiTierString = l10n_util::GetNSStringF(
-        IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MEMBERSHIPS_AI_TIER,
-        base::SysNSStringToUTF16(_aiTierFullName));
-  }
+  NSString* aiTierString = _aiTierMembershipLabel;
 
   if (_name != nil) {
     // Both name and email are present.

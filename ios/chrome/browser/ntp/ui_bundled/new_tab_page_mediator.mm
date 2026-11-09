@@ -38,6 +38,7 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/subscription_eligibility/ai_subscription_tier_names.h"
 #import "components/subscription_eligibility/objc/subscription_eligibility_observer_bridge.h"
 #import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "ios/chrome/browser/aim/model/ai_mode_button_service_ios.h"
@@ -970,7 +971,9 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
 
     BOOL hasAITier =
         IsAiSubscriptionAvatarRingIOSEnabled() &&
-        _subscriptionEligibilityService->GetAiSubscriptionTier() > 0;
+        subscription_eligibility::GetAiSubscriptionTierDisplayInfo(
+            _subscriptionEligibilityService->GetAiSubscriptionTier())
+            .show_decoration;
     [self.imageUpdater updateAccountWithName:_signedInIdentity.userFullName
                                        email:_signedInIdentity.userEmail
                                  avatarImage:avatarImage

@@ -19,6 +19,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/subscription_eligibility/ai_subscription_tier_names.h"
 #import "components/subscription_eligibility/objc/subscription_eligibility_observer_bridge.h"
 #import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "components/sync/base/data_type.h"
@@ -1325,8 +1326,11 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     // ensures the Account Settings and the NTP displays are consistent.
     return 0;
   }
-  return std::max<NSInteger>(
-      _subscriptionEligibilityService->GetAiSubscriptionTier(), 0);
+  const int tier = _subscriptionEligibilityService->GetAiSubscriptionTier();
+  return subscription_eligibility::GetAiSubscriptionTierDisplayInfo(tier)
+                 .show_decoration
+             ? tier
+             : 0;
 }
 
 @end

@@ -1,6 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
   "+components/consent_auditor",
+  "+components/subscription_eligibility/ai_subscription_tier_names.h",
   "+ios/chrome/browser/settings",
   "+ios/chrome/browser/screen",
   "+ios/chrome/browser/first_run",

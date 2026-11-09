@@ -9,6 +9,10 @@
 
 namespace ios::provider {
 
+// TODO(crbug.com/579375435): Remove GetAITierName() and GetAITierFullName().
+// They are no longer used: tier names come from
+// subscription_eligibility::GetAiSubscriptionTierDisplayInfo().
+
 // Returns the name of the AI tier. Returns nil if the tier is non-positive or
 // unknown.
 NSString* GetAITierName(int ai_tier);

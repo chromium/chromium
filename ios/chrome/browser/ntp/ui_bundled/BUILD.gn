@@ -317,6 +317,7 @@ source_set("ntp_internal") {
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//components/subscription_eligibility",
+    "//components/subscription_eligibility:tier_names",
     "//components/subscription_eligibility/objc",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/aim/model:aim_availability",

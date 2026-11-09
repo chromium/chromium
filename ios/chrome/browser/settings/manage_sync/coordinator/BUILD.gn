@@ -18,6 +18,7 @@ source_set("coordinator") {
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//components/subscription_eligibility",
+    "//components/subscription_eligibility:tier_names",
     "//components/subscription_eligibility/objc",
     "//components/sync",
     "//ios/chrome/app/application_delegate:app_state",

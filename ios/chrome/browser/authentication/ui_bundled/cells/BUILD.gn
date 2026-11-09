@@ -41,6 +41,7 @@ source_set("cells") {
     ":cells_swift",
     "//base",
     "//build:branding_buildflags",
+    "//components/subscription_eligibility:tier_names",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/views",
     "//ios/chrome/browser/ntp/ui_bundled",
@@ -57,7 +58,6 @@ source_set("cells") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser/intelligence/signin",
     "//ui/base",
   ]
   public_deps = [
@@ -81,6 +81,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/consent_auditor",
     "//components/pref_registry",
+    "//components/subscription_eligibility:tier_names",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//components/version_info",
@@ -98,7 +99,6 @@ source_set("unit_tests") {
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util:image_util",
     "//ios/chrome/test/app:test_support",
-    "//ios/public/provider/chrome/browser/intelligence/signin",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ios/web/public/test",
     "//testing/gtest",

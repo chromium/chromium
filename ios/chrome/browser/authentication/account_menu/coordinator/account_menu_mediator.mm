@@ -14,6 +14,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/subscription_eligibility/ai_subscription_tier_names.h"
 #import "components/subscription_eligibility/objc/subscription_eligibility_observer_bridge.h"
 #import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "components/sync/service/sync_service_utils.h"
@@ -246,8 +247,11 @@
     // ensures the Account Menu and the NTP displays are consistent.
     return 0;
   }
-  return std::max<NSInteger>(
-      _subscriptionEligibilityService->GetAiSubscriptionTier(), 0);
+  const int tier = _subscriptionEligibilityService->GetAiSubscriptionTier();
+  return subscription_eligibility::GetAiSubscriptionTierDisplayInfo(tier)
+                 .show_decoration
+             ? tier
+             : 0;
 }
 
 - (NSString*)managementDescription {
@@ -313,8 +317,10 @@
         syncer::IdentityErrorDisplaySurface::kAccountMenu, _error.errorType);
   }
   [self.consumer updateErrorSection:_error];
-  if (_subscriptionEligibilityService->GetAiSubscriptionTier() > 0 &&
-      IsAiSubscriptionAvatarRingIOSEnabled()) {
+  if (IsAiSubscriptionAvatarRingIOSEnabled() &&
+      subscription_eligibility::GetAiSubscriptionTierDisplayInfo(
+          _subscriptionEligibilityService->GetAiSubscriptionTier())
+          .show_decoration) {
     // We may need to add/remove the AI Tier rings and chip.
     [self.consumer updatePrimaryAccount];
   }

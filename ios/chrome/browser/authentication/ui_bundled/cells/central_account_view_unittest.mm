@@ -8,6 +8,8 @@
 #import <UIKit/UIKit.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/subscription_eligibility/ai_subscription_tier_names.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/ai_subscription_chip_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/signin/model/constants.h"
@@ -16,7 +18,6 @@
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
-#import "ios/public/provider/chrome/browser/intelligence/signin/signin_ai_logo.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -253,7 +254,10 @@ TEST_F(CentralAccountViewTest, AccessibilityLabelsWithAITier) {
   NSString* name = @"Jessica";
   NSString* email = @"jessica@gmail.com";
   NSString* managementDescription = @"Managed by Google";
-  NSString* aiTierFullName = ios::provider::GetAITierFullName(1);
+  const std::u16string aiTierFullName =
+      subscription_eligibility::GetAiSubscriptionTierDisplayInfo(1)
+          .full_membership_label;
+  ASSERT_FALSE(aiTierFullName.empty());
 
   // Case 1: name, email, managed, AI tier.
   {
@@ -271,7 +275,7 @@ TEST_F(CentralAccountViewTest, AccessibilityLabelsWithAITier) {
         base::SysNSStringToUTF16(managementDescription),
         base::SysNSStringToUTF16(l10n_util::GetNSStringF(
             IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MEMBERSHIPS_AI_TIER,
-            base::SysNSStringToUTF16(aiTierFullName))));
+            aiTierFullName)));
     EXPECT_NSEQ(accountView.accessibilityLabel, expectedLabel);
   }
 
@@ -290,7 +294,7 @@ TEST_F(CentralAccountViewTest, AccessibilityLabelsWithAITier) {
         base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email),
         base::SysNSStringToUTF16(l10n_util::GetNSStringF(
             IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MEMBERSHIPS_AI_TIER,
-            base::SysNSStringToUTF16(aiTierFullName))));
+            aiTierFullName)));
     EXPECT_NSEQ(accountView.accessibilityLabel, expectedLabel);
   }
 
@@ -310,7 +314,7 @@ TEST_F(CentralAccountViewTest, AccessibilityLabelsWithAITier) {
         base::SysNSStringToUTF16(managementDescription),
         base::SysNSStringToUTF16(l10n_util::GetNSStringF(
             IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MEMBERSHIPS_AI_TIER,
-            base::SysNSStringToUTF16(aiTierFullName))));
+            aiTierFullName)));
     EXPECT_NSEQ(accountView.accessibilityLabel, expectedLabel);
   }
 
@@ -329,7 +333,85 @@ TEST_F(CentralAccountViewTest, AccessibilityLabelsWithAITier) {
         base::SysNSStringToUTF16(email),
         base::SysNSStringToUTF16(l10n_util::GetNSStringF(
             IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MEMBERSHIPS_AI_TIER,
-            base::SysNSStringToUTF16(aiTierFullName))));
+            aiTierFullName)));
     EXPECT_NSEQ(accountView.accessibilityLabel, expectedLabel);
   }
+}
+
+// Test fixture enabling `kAiSubscriptionTierOverrides` with `overrides`.
+class CentralAccountViewAiTierOverridesTest : public PlatformTest {
+ protected:
+  void EnableOverrides(const std::string& overrides) {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        subscription_eligibility::kAiSubscriptionTierOverrides,
+        {{subscription_eligibility::kAiTierOverrides.name, overrides}});
+    subscription_eligibility::ResetAiTierOverridesForTesting();
+  }
+
+  void TearDown() override {
+    feature_list_.Reset();
+    subscription_eligibility::ResetAiTierOverridesForTesting();
+    PlatformTest::TearDown();
+  }
+
+  CentralAccountView* CreateView(NSInteger tier) {
+    return [[CentralAccountView alloc]
+                initWithFrame:CGRectMake(0, 0, 100, 100)
+                  avatarImage:ios::provider::GetSigninDefaultAvatar()
+              displayedAiTier:tier
+                         name:nil
+                        email:@"jessica@gmail.com"
+        managementDescription:nil
+              useLargeMargins:YES];
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that an excluded tier shows no ring, no chip and no AI tier
+// accessibility label.
+TEST_F(CentralAccountViewAiTierOverridesTest, ExcludedTier) {
+  EnableOverrides(R"({"excluded_tiers": [1]})");
+  CentralAccountView* accountView = CreateView(1);
+
+  EXPECT_EQ(chrome_test_util::FindViewById(
+                accountView, kPremiumAvatarRingAccessibilityIdentifier),
+            nil);
+  EXPECT_EQ(chrome_test_util::FindViewById(accountView, kAISubscriptionChipId),
+            nil);
+  EXPECT_NSEQ(accountView.accessibilityLabel, @"jessica@gmail.com");
+}
+
+// Tests that the overridden names of a tier are used.
+TEST_F(CentralAccountViewAiTierOverridesTest, OverriddenNames) {
+  EnableOverrides(
+      R"({"tier_names": {"4": {"short_name": "Max", "full_name": "AI Max"}}})");
+  CentralAccountView* accountView = CreateView(4);
+
+  EXPECT_NE(chrome_test_util::FindViewById(
+                accountView, kPremiumAvatarRingAccessibilityIdentifier),
+            nil);
+  EXPECT_NE(chrome_test_util::FindViewById(accountView, kAISubscriptionChipId),
+            nil);
+  NSString* expectedLabel = l10n_util::GetNSStringF(
+      IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_AI_TIER, u"jessica@gmail.com",
+      l10n_util::GetStringFUTF16(
+          IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MEMBERSHIPS_AI_TIER,
+          u"AI Max"));
+  EXPECT_NSEQ(accountView.accessibilityLabel, expectedLabel);
+}
+
+// Tests that a tier with empty overridden names shows the ring without a chip,
+// and no AI tier accessibility label.
+TEST_F(CentralAccountViewAiTierOverridesTest, EmptyNames) {
+  EnableOverrides(
+      R"({"tier_names": {"1": {"short_name": "", "full_name": ""}}})");
+  CentralAccountView* accountView = CreateView(1);
+
+  EXPECT_NE(chrome_test_util::FindViewById(
+                accountView, kPremiumAvatarRingAccessibilityIdentifier),
+            nil);
+  EXPECT_EQ(chrome_test_util::FindViewById(accountView, kAISubscriptionChipId),
+            nil);
+  EXPECT_NSEQ(accountView.accessibilityLabel, @"jessica@gmail.com");
 }
