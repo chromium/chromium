@@ -12,7 +12,6 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -24,6 +23,7 @@ import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -70,6 +70,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     private @Nullable ContentView mContentView;
     private @Nullable EphemeralTabSheetContent mSheetContent;
     private @Nullable BottomSheetObserver mSheetObserver;
+    private ProfileManager.@Nullable Observer mProfileObserver;
 
     private @MonotonicNonNull GURL mUrl;
     private @Nullable GURL mFullPageUrl;
@@ -211,6 +212,19 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         if (mWebContents == null) {
             assert mSheetContent == null;
             createWebContents(profile);
+            mProfileObserver =
+                    new ProfileManager.Observer() {
+                        @Override
+                        public void onProfileAdded(Profile addedProfile) {}
+
+                        @Override
+                        public void onProfileDestroyed(Profile destroyedProfile) {
+                            if (destroyedProfile == profile) {
+                                destroyWebContents();
+                            }
+                        }
+                    };
+            ProfileManager.addObserver(mProfileObserver);
             mSheetObserver =
                     new BottomSheetObserver() {
                         @Override
@@ -301,23 +315,39 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
                         /* skipOnInitialNavigation= */ false);
     }
 
+    /** Destroys the ephemeral tab coordinator and tears down any open sheet. */
+    public void destroy() {
+        destroyWebContents();
+    }
+
     private void destroyWebContents() {
+        if (mProfileObserver != null) {
+            ProfileManager.removeObserver(mProfileObserver);
+            mProfileObserver = null;
+        }
+        if (mSheetObserver != null) {
+            mBottomSheetController.removeObserver(mSheetObserver);
+            mSheetObserver = null;
+        }
+
+        if (mSheetContent != null) {
+            mBottomSheetController.hideContent(mSheetContent, /* animate= */ false);
+        }
         mSheetContent = null; // Will be destroyed by BottomSheet controller.
 
         mPeeked = false;
         mFullyOpened = false;
 
-        if (mWebContents != null) {
-            final WebContents webContentsToDestroy = mWebContents;
-            ThreadUtils.postOnUiThread(() -> webContentsToDestroy.destroy());
-            mWebContents = null;
-            mContentView = null;
-        }
-
         mMediator.destroyContent();
 
+        if (mWebContents != null) {
+            WebContents webContentsToDestroy = mWebContents;
+            mWebContents = null;
+            mContentView = null;
+            webContentsToDestroy.destroy();
+        }
+
         mLayoutView.removeOnLayoutChangeListener(this);
-        if (mSheetObserver != null) mBottomSheetController.removeObserver(mSheetObserver);
     }
 
     private void openInNewTab() {

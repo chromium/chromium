@@ -1078,6 +1078,11 @@ public class RootUiCoordinator
             modalDialogManager.removeObserver(mModalDialogManagerObserver);
         }
 
+        EphemeralTabCoordinator ephemeralTabCoordinator = mEphemeralTabCoordinatorSupplier.get();
+        if (ephemeralTabCoordinator != null) {
+            ephemeralTabCoordinator.destroy();
+        }
+
         if (mBottomSheetManager != null) mBottomSheetManager.onDestroy();
 
         ManagedBottomSheetController bottomSheetController = getBottomSheetController();
