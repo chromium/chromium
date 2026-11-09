@@ -3,7 +3,7 @@
 # where.
 #
 # For more information, please refer to the official documentation:
-#   https://sites.google.com/a/chromium.org/dev/developers/how-tos/get-the-code
+#   https://www.chromium.org/developers/how-tos/get-the-code/
 #
 # When adding a new dependency, please update the top-level .gitignore file
 # to list the dependency's destination directory.
