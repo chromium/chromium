@@ -888,12 +888,16 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   proto.mutable_task_metadata()->set_sender_sequence_number(42);
 
   base::HistogramTester histogram_tester;
-  auto response = coordinator_->OnProtoMessage(
+  base::test::TestFuture<std::optional<ExperimentalTriggeringResponse>>
+      response_future;
+  coordinator_->OnProtoMessage(
       kTestContextId, proto,
       ScopedIncomingMessageResultLogger(GlicMetricReporter(profile_),
                                         ScopedIncomingMessageResultLogger::
                                             Channel::kBrowserActuatorTransport),
-      base::DoNothing(), nullptr);
+      base::DoNothing(), response_future.GetCallback());
+  std::optional<ExperimentalTriggeringResponse> response =
+      response_future.Take();
 
   ASSERT_TRUE(response.has_value());
   ASSERT_TRUE(response->task_update.has_value());
@@ -921,12 +925,16 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   proto.mutable_request();
 
   base::HistogramTester histogram_tester;
-  auto response = coordinator_->OnProtoMessage(
+  base::test::TestFuture<std::optional<ExperimentalTriggeringResponse>>
+      response_future;
+  coordinator_->OnProtoMessage(
       kTestContextId, proto,
       ScopedIncomingMessageResultLogger(GlicMetricReporter(profile_),
                                         ScopedIncomingMessageResultLogger::
                                             Channel::kBrowserActuatorTransport),
-      base::DoNothing(), nullptr);
+      base::DoNothing(), response_future.GetCallback());
+  std::optional<ExperimentalTriggeringResponse> response =
+      response_future.Take();
 
   ASSERT_TRUE(response.has_value());
   ASSERT_TRUE(response->task_update.has_value());
@@ -950,12 +958,16 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   proto.mutable_request()->mutable_device_opt_in_request();
 
   base::HistogramTester histogram_tester;
-  auto response = coordinator_->OnProtoMessage(
+  base::test::TestFuture<std::optional<ExperimentalTriggeringResponse>>
+      response_future;
+  coordinator_->OnProtoMessage(
       kTestContextId, proto,
       ScopedIncomingMessageResultLogger(GlicMetricReporter(profile_),
                                         ScopedIncomingMessageResultLogger::
                                             Channel::kBrowserActuatorTransport),
-      base::DoNothing(), nullptr);
+      base::DoNothing(), response_future.GetCallback());
+  std::optional<ExperimentalTriggeringResponse> response =
+      response_future.Take();
 
   ASSERT_TRUE(response.has_value());
   ASSERT_TRUE(response->task_update.has_value());
@@ -1860,7 +1872,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
       ScopedIncomingMessageResultLogger(
           GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
-      base::DoNothing(), nullptr);
+      base::DoNothing());
 
   histogram_tester.ExpectTotalCount(
       "Glic.ExperimentalTriggering.FirstFCMMessageLatency", 1);
@@ -1882,7 +1894,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
       ScopedIncomingMessageResultLogger(
           GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
-      base::DoNothing(), nullptr);
+      base::DoNothing());
 
   histogram_tester.ExpectTotalCount(
       "Glic.ExperimentalTriggering.FirstFCMMessageLatency", 0);
@@ -1907,7 +1919,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
       ScopedIncomingMessageResultLogger(
           GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
-      base::DoNothing(), nullptr);
+      base::DoNothing());
 
   histogram_tester.ExpectBucketCount(
       "Glic.ExperimentalTriggering.FirstFCMMessageLatency", 0, 1);
@@ -1932,7 +1944,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
       ScopedIncomingMessageResultLogger(
           GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
-      base::DoNothing(), nullptr);
+      base::DoNothing());
   histogram_tester.ExpectTotalCount(
       "Glic.ExperimentalTriggering.FirstFCMMessageLatency", 1);
 
@@ -1951,7 +1963,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
       ScopedIncomingMessageResultLogger(
           GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
-      base::DoNothing(), nullptr);
+      base::DoNothing());
   histogram_tester.ExpectTotalCount(
       "Glic.ExperimentalTriggering.FirstFCMMessageLatency", 1);
 }

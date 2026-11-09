@@ -16,11 +16,14 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_coordinator.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_types.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -45,7 +48,10 @@
 #include "components/browser_actuator/public/transport/transport_session.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/prefs/pref_service.h"
 #include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -104,7 +110,10 @@ class GlicExperimentalTriggeringTransportHandlerTest : public testing::Test {
             policy::ManagementServiceFactory::GetInstance()->GetForPlatform(),
             policy::EnterpriseManagementAuthority::NONE);
 
-    feature_list_.InitAndEnableFeature(features::kGlicExperimentalTriggering);
+    feature_list_.InitWithFeatures(
+        {features::kGlicActor, features::kGlicActorPolicyControlExemption,
+         features::kGlicExperimentalTriggering},
+        {});
     ASSERT_TRUE(profile_manager_.SetUp());
 
     TestingProfile::TestingFactories testing_factories;
@@ -143,10 +152,15 @@ class GlicExperimentalTriggeringTransportHandlerTest : public testing::Test {
     auto* glic_service =
         GlicKeyedServiceFactory::GetGlicKeyedService(profile_, /*create=*/true);
     ASSERT_TRUE(glic_service);
+    profile_->GetPrefs()->SetInteger(
+        glic::prefs::kGlicSparkPolicySettings,
+        static_cast<int>(glic::prefs::GlicSparkPolicyState::kEnabled));
     glic_service->enabling().SetCompletedFre(
         glic::prefs::FreStatus::kCompleted);
     glic_service->enabling().SetUserEnabledActuationOnWeb(true);
     glic_service->enabling().SetExperimentalTriggeringEnabled(true);
+    ASSERT_EQ(glic_service->enabling().GetExperimentalTriggeringState(),
+              syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady);
   }
 
  protected:
@@ -516,6 +530,289 @@ TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
   captured_update_callback.Run(std::move(declined_response));
 }
 
+TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
+       GeneratesUuidWhenContextIdAndSessionIdAreEmpty) {
+  OptIn();
+  ON_CALL(*session_, GetSessionId()).WillByDefault(testing::Return(""));
+
+  testing::NiceMock<MockGlicExperimentalTriggeringCoordinator> mock_coordinator(
+      profile_);
+  EXPECT_CALL(mock_coordinator,
+              OnRequest(testing::Not(testing::IsEmpty()), testing::_,
+                        testing::_, testing::_, nullptr))
+      .WillOnce([](const std::string& context_id,
+                   const ExperimentalTriggeringRequest& request,
+                   ScopedIncomingMessageResultLogger result_logger,
+                   GlicExperimentalTriggeringUpdateCallback update_callback,
+                   tabs::TabInterface* prepared_tab)
+                    -> std::optional<ExperimentalTriggeringResponse> {
+        EXPECT_FALSE(context_id.empty());
+        EXPECT_EQ(context_id, request.context_id);
+        result_logger.set_result(
+            GlicExperimentalTriggeringIncomingMessageResult::kSuccess);
+        return std::nullopt;
+      });
+
+  GlicExperimentalTriggeringTransportHandler handler(
+      profile_, session_.get(), mock_coordinator.GetWeakPtr());
+
+  components_sharing_message::GlicExperimentalTriggering triggering;
+  triggering.mutable_request()->mutable_device_opt_in_request();
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    triggering.SerializeAsString());
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
+       QueuesTriggerActuationUntilBackgroundTabPreparedOnAndroid) {
+  base::test::ScopedFeatureList bg_feature;
+  bg_feature.InitAndEnableFeature(features::kGlicBackgroundTriggering);
+  OptIn();
+
+  testing::NiceMock<MockGlicExperimentalTriggeringCoordinator> mock_coordinator(
+      profile_);
+  GlicExperimentalTriggeringTransportHandler handler(
+      profile_, session_.get(), mock_coordinator.GetWeakPtr());
+
+  components_sharing_message::GlicExperimentalTriggering triggering;
+  triggering.set_context_id("bg_context_id");
+  triggering.mutable_request()->mutable_trigger_actuation_request();
+
+  components_sharing_message::GlicExperimentalTriggering follow_up;
+  follow_up.set_context_id("bg_context_id");
+  follow_up.mutable_request()->mutable_continue_actuation_request();
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(mock_coordinator, OnRequest(testing::_, testing::_, testing::_,
+                                          testing::_, testing::_))
+      .Times(0);
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    triggering.SerializeAsString());
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    follow_up.SerializeAsString());
+  testing::Mock::VerifyAndClearExpectations(&mock_coordinator);
+
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile_);
+  ASSERT_TRUE(actor_service);
+  EXPECT_TRUE(actor_service->HasPendingTask("bg_context_id"));
+
+  tabs::MockTabInterface mock_tab;
+  base::WeakPtrFactory<tabs::TabInterface> tab_weak_factory(&mock_tab);
+  ON_CALL(mock_tab, GetWeakPtr())
+      .WillByDefault(testing::Return(tab_weak_factory.GetWeakPtr()));
+  auto starting_response =
+      [](const std::string& context_id,
+         const ExperimentalTriggeringRequest& request,
+         ScopedIncomingMessageResultLogger result_logger,
+         GlicExperimentalTriggeringUpdateCallback update_callback,
+         tabs::TabInterface* prepared_tab)
+      -> std::optional<ExperimentalTriggeringResponse> {
+    result_logger.set_result(
+        GlicExperimentalTriggeringIncomingMessageResult::kSuccess);
+    ExperimentalTriggeringResponse response;
+    response.context_id = context_id;
+    response.task_update = TaskUpdate{.state = TaskUpdate::State::kStarting};
+    return response;
+  };
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(mock_coordinator, OnRequest("bg_context_id", testing::_,
+                                            testing::_, testing::_, &mock_tab))
+        .WillOnce(starting_response);
+    EXPECT_CALL(mock_coordinator, OnRequest("bg_context_id", testing::_,
+                                            testing::_, testing::_, nullptr))
+        .WillOnce(starting_response);
+  }
+  EXPECT_CALL(*session_, SendUpstreamMessage(
+                             PayloadType::kExperimentalTriggering, testing::_))
+      .Times(2)
+      .WillRepeatedly(
+          testing::Return(base::expected<void, SendUpstreamMessageError>()));
+  EXPECT_CALL(*session_, Close()).Times(0);
+
+  actor_service->NotifyBackgroundTabReady(&mock_tab, "bg_context_id");
+  histogram_tester.ExpectTotalCount(
+      "Glic.ExperimentalTriggering.Android.BackgroundSetupLatency.Success", 2);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.IncomingMessageResult."
+      "BrowserActuatorTransport",
+      GlicExperimentalTriggeringIncomingMessageResult::kSuccess, 2);
+}
+
+TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
+       BackgroundSetupFailedSendsErrorResponseOnAndroid) {
+  base::test::ScopedFeatureList bg_feature;
+  bg_feature.InitAndEnableFeature(features::kGlicBackgroundTriggering);
+  OptIn();
+
+  testing::NiceMock<MockGlicExperimentalTriggeringCoordinator> mock_coordinator(
+      profile_);
+  GlicExperimentalTriggeringTransportHandler handler(
+      profile_, session_.get(), mock_coordinator.GetWeakPtr());
+
+  components_sharing_message::GlicExperimentalTriggering triggering;
+  triggering.set_context_id("bg_fail_context_id");
+  triggering.mutable_task_metadata()->set_sender_sequence_number(11);
+  triggering.mutable_request()->mutable_trigger_actuation_request();
+
+  base::HistogramTester histogram_tester;
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    triggering.SerializeAsString());
+
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile_);
+  ASSERT_TRUE(actor_service);
+  EXPECT_TRUE(actor_service->HasPendingTask("bg_fail_context_id"));
+
+  EXPECT_CALL(*session_, SendUpstreamMessage(
+                             PayloadType::kExperimentalTriggering, testing::_))
+      .WillOnce([](PayloadType type, const google::protobuf::MessageLite& msg)
+                    -> base::expected<void, SendUpstreamMessageError> {
+        const auto& response = static_cast<
+            const components_sharing_message::GlicExperimentalTriggering&>(msg);
+        EXPECT_EQ("bg_fail_context_id", response.context_id());
+        EXPECT_EQ(11, response.task_metadata().last_seen_sequence_number());
+        EXPECT_EQ(components_sharing_message::GlicExperimentalTriggering::
+                      ExperimentalTriggeringResponse::TaskUpdate::FAILED,
+                  response.response().task_update().state());
+        return {};
+      });
+  EXPECT_CALL(*session_, Close()).Times(1);
+
+  actor_service->NotifyBackgroundSetupFailed("bg_fail_context_id");
+  EXPECT_FALSE(actor_service->HasPendingTask("bg_fail_context_id"));
+  histogram_tester.ExpectTotalCount(
+      "Glic.ExperimentalTriggering.Android.BackgroundSetupLatency.Failed", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.IncomingMessageResult."
+      "BrowserActuatorTransport",
+      GlicExperimentalTriggeringIncomingMessageResult::kNoBrowserWindow, 1);
+}
+
+TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
+       StopActuationCancelsQueuedPendingMessageOnAndroid) {
+  base::test::ScopedFeatureList bg_feature;
+  bg_feature.InitAndEnableFeature(features::kGlicBackgroundTriggering);
+  OptIn();
+
+  testing::NiceMock<MockGlicExperimentalTriggeringCoordinator> mock_coordinator(
+      profile_);
+  GlicExperimentalTriggeringTransportHandler handler(
+      profile_, session_.get(), mock_coordinator.GetWeakPtr());
+
+  base::HistogramTester histogram_tester;
+  components_sharing_message::GlicExperimentalTriggering start_msg;
+  start_msg.set_context_id("bg_stop_context_id");
+  start_msg.mutable_task_metadata()->set_sender_sequence_number(5);
+  start_msg.mutable_request()->mutable_trigger_actuation_request();
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    start_msg.SerializeAsString());
+
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile_);
+  ASSERT_TRUE(actor_service);
+  EXPECT_TRUE(actor_service->HasPendingTask("bg_stop_context_id"));
+
+  components_sharing_message::GlicExperimentalTriggering stop_msg;
+  stop_msg.set_context_id("bg_stop_context_id");
+  stop_msg.mutable_request()->mutable_stop_actuation_request();
+
+  EXPECT_CALL(*session_, SendUpstreamMessage(
+                             PayloadType::kExperimentalTriggering, testing::_))
+      .WillOnce([](PayloadType type, const google::protobuf::MessageLite& msg)
+                    -> base::expected<void, SendUpstreamMessageError> {
+        const auto& response = static_cast<
+            const components_sharing_message::GlicExperimentalTriggering&>(msg);
+        EXPECT_EQ("bg_stop_context_id", response.context_id());
+        EXPECT_EQ(5, response.task_metadata().last_seen_sequence_number());
+        EXPECT_EQ(components_sharing_message::GlicExperimentalTriggering::
+                      ExperimentalTriggeringResponse::TaskUpdate::FAILED,
+                  response.response().task_update().state());
+        return {};
+      });
+  EXPECT_CALL(*session_, Close()).Times(1);
+  EXPECT_CALL(mock_coordinator, OnRequest("bg_stop_context_id", testing::_,
+                                          testing::_, testing::_, nullptr))
+      .WillOnce([](const std::string& context_id,
+                   const ExperimentalTriggeringRequest& request,
+                   ScopedIncomingMessageResultLogger result_logger,
+                   GlicExperimentalTriggeringUpdateCallback update_callback,
+                   tabs::TabInterface* prepared_tab)
+                    -> std::optional<ExperimentalTriggeringResponse> {
+        result_logger.set_result(
+            GlicExperimentalTriggeringIncomingMessageResult::kSuccess);
+        return std::nullopt;
+      });
+
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    stop_msg.SerializeAsString());
+  EXPECT_FALSE(actor_service->HasPendingTask("bg_stop_context_id"));
+  histogram_tester.ExpectTotalCount(
+      "Glic.ExperimentalTriggering.Android.BackgroundSetupLatency.Cancelled",
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.ExperimentalTriggering.IncomingMessageResult."
+      "BrowserActuatorTransport",
+      GlicExperimentalTriggeringIncomingMessageResult::kNoBrowserWindow, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.ExperimentalTriggering.IncomingMessageResult."
+      "BrowserActuatorTransport",
+      GlicExperimentalTriggeringIncomingMessageResult::kSuccess, 1);
+}
+
+TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
+       DestroyingCoordinatorCancelsPendingMessagesOnAndroid) {
+  base::test::ScopedFeatureList bg_feature;
+  bg_feature.InitAndEnableFeature(features::kGlicBackgroundTriggering);
+  OptIn();
+
+  auto mock_coordinator = std::make_unique<
+      testing::NiceMock<MockGlicExperimentalTriggeringCoordinator>>(profile_);
+  auto handler = std::make_unique<GlicExperimentalTriggeringTransportHandler>(
+      profile_, session_.get(), mock_coordinator->GetWeakPtr());
+
+  components_sharing_message::GlicExperimentalTriggering start_msg;
+  start_msg.set_context_id("bg_destroy_context_id");
+  start_msg.mutable_task_metadata()->set_sender_sequence_number(7);
+  start_msg.mutable_request()->mutable_trigger_actuation_request();
+
+  base::HistogramTester histogram_tester;
+  handler->OnMessage(PayloadType::kExperimentalTriggering,
+                     start_msg.SerializeAsString());
+
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile_);
+  ASSERT_TRUE(actor_service);
+  EXPECT_TRUE(actor_service->HasPendingTask("bg_destroy_context_id"));
+
+  EXPECT_CALL(*session_, SendUpstreamMessage(
+                             PayloadType::kExperimentalTriggering, testing::_))
+      .WillOnce([](PayloadType type, const google::protobuf::MessageLite& msg)
+                    -> base::expected<void, SendUpstreamMessageError> {
+        const auto& response = static_cast<
+            const components_sharing_message::GlicExperimentalTriggering&>(msg);
+        EXPECT_EQ("bg_destroy_context_id", response.context_id());
+        EXPECT_EQ(7, response.task_metadata().last_seen_sequence_number());
+        EXPECT_EQ(components_sharing_message::GlicExperimentalTriggering::
+                      ExperimentalTriggeringResponse::TaskUpdate::FAILED,
+                  response.response().task_update().state());
+        return {};
+      });
+  EXPECT_CALL(*session_, Close()).Times(1);
+
+  mock_coordinator.reset();
+  EXPECT_FALSE(actor_service->HasPendingTask("bg_destroy_context_id"));
+  histogram_tester.ExpectTotalCount(
+      "Glic.ExperimentalTriggering.Android.BackgroundSetupLatency.Shutdown", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.IncomingMessageResult."
+      "BrowserActuatorTransport",
+      GlicExperimentalTriggeringIncomingMessageResult::kCoordinatorUnavailable,
+      1);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Checks which profiles' GlicKeyedService registers the experimental
 // triggering factory on the BrowserActuator transport.
 class GlicExperimentalTriggeringTransportRegistrationTest
@@ -580,7 +877,6 @@ TEST_F(GlicExperimentalTriggeringTransportRegistrationTest,
        NotRegisteredForGeminiEnterprise) {
   EXPECT_TRUE(GetRegisteredFactories(GlicProvider::kGeminiEnterprise).empty());
 }
-
 // Pins `ExpectedTypeUrl` to the generated proto; this layer may include it.
 TEST(GlicExperimentalTriggeringTypeUrlTest, MatchesProtoTypeName) {
   EXPECT_EQ(

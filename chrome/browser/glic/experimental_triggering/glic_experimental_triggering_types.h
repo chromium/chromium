@@ -233,7 +233,7 @@ struct ExperimentalTriggeringResponse {
 };
 
 using GlicExperimentalTriggeringResponseCallback =
-    base::OnceCallback<void(ExperimentalTriggeringResponse)>;
+    base::OnceCallback<void(std::optional<ExperimentalTriggeringResponse>)>;
 using GlicExperimentalTriggeringUpdateCallback =
     base::RepeatingCallback<void(ExperimentalTriggeringResponse)>;
 

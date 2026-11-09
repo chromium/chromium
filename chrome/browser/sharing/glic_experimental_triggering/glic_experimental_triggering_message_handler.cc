@@ -4,14 +4,14 @@
 
 #include "chrome/browser/sharing/glic_experimental_triggering/glic_experimental_triggering_message_handler.h"
 
+#include <cstddef>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -20,10 +20,7 @@
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_coordinator.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
 #include "chrome/browser/glic/public/features.h"
-#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_feature.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/profiles/profile.h"
@@ -165,36 +162,7 @@ GlicExperimentalTriggeringMessageHandler::
 }
 
 GlicExperimentalTriggeringMessageHandler::
-    ~GlicExperimentalTriggeringMessageHandler() {
-  CancelAllPendingMessages();
-}
-
-void GlicExperimentalTriggeringMessageHandler::CancelAllPendingMessages() {
-#if BUILDFLAG(IS_ANDROID)
-  if (profile_) {
-    if (actor::ActorKeyedService* actor_service =
-            actor::ActorKeyedService::Get(profile_)) {
-      for (const auto& [context_id, _] : pending_messages_) {
-        actor_service->RemovePendingTask(context_id);
-      }
-    }
-  }
-#endif
-  for (auto& [context_id, message_list] : pending_messages_) {
-    for (auto& pending_message : message_list) {
-      base::UmaHistogramMediumTimes(
-          "Glic.ExperimentalTriggering.Android.BackgroundSetupLatency.Shutdown",
-          base::TimeTicks::Now() - pending_message.queued_time);
-      if (pending_message.done_callback) {
-        std::move(pending_message.done_callback)
-            .Run(CreateResponseMessage(
-                context_id, TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
-                "Message cancelled: Handler being destroyed.", nullptr,
-                kDefaultStartingRequestFailureSequenceNumber));
-      }
-    }
-  }
-}
+    ~GlicExperimentalTriggeringMessageHandler() = default;
 
 size_t
 GlicExperimentalTriggeringMessageHandler::GetUpdatesHandlerMapSizeForTesting()
@@ -264,19 +232,6 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
       request_metadata =
           request.has_task_metadata() ? &request.task_metadata() : nullptr;
 
-  if (request.has_glic_experimental_triggering_version() &&
-      !IsVersionSupported(request.glic_experimental_triggering_version())) {
-    result_logger.set_result(
-        glic::GlicExperimentalTriggeringIncomingMessageResult::
-            kVersionMismatchOrUnavailable);
-    std::move(done_callback)
-        .Run(CreateResponseMessage(
-            context_id, TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
-            "Rejected: version mismatch or unavailable.", request_metadata,
-            kDefaultStartingRequestFailureSequenceNumber));
-    return;
-  }
-
   if (!message.has_server_channel_configuration()) {
     result_logger.set_result(
         glic::GlicExperimentalTriggeringIncomingMessageResult::
@@ -290,121 +245,22 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
     return;
   }
 
-  if (!request.has_request() && !request.has_task_metadata_updated()) {
-    if (profile_) {
-      actor::ActorKeyedService* actor_service =
-          actor::ActorKeyedService::Get(profile_);
-      glic::LogGlicExperimentalTriggeringProto(
-          actor_service, "GlicExperimentalTriggering", "", request);
-    }
-
-    result_logger.set_result(
-        glic::GlicExperimentalTriggeringIncomingMessageResult::kMissingPayload);
-    std::move(done_callback)
-        .Run(CreateResponseMessage(
-            context_id, TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
-            "Received GlicExperimentalTriggering "
-            "message with no request payload.",
-            request_metadata, kDefaultStartingRequestFailureSequenceNumber));
-    return;
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(b/540892797): Move message-specific routing and foreground
-  // service lifecycle management into GlicExperimentalTriggeringCoordinator.
-  if (base::FeatureList::IsEnabled(features::kGlicBackgroundTriggering)) {
-    if (request.has_request() &&
-        request.request().has_stop_actuation_request()) {
-      VLOG(1) << "GlicTrigger: Received StopActuationRequest, intercepting to "
-                 "clear pending messages before routing to Domain logic.";
-
-      if (profile_) {
-        if (actor::ActorKeyedService* actor_service =
-                actor::ActorKeyedService::Get(profile_)) {
-          actor_service->RemovePendingTask(context_id);
-        }
-      }
-
-      // Delete any pending requests waiting for an offscreen tab
-      auto it = pending_messages_.find(context_id);
-      if (it != pending_messages_.end()) {
-        for (auto& pending_message : it->second) {
-          base::UmaHistogramMediumTimes(
-              "Glic.ExperimentalTriggering.Android.BackgroundSetupLatency."
-              "Cancelled",
-              base::TimeTicks::Now() - pending_message.queued_time);
-          if (pending_message.done_callback) {
-            std::move(pending_message.done_callback)
-                .Run(CreateResponseMessage(
-                    context_id, TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
-                    "Message cancelled by stop actuation request.",
-                    request_metadata,
-                    kDefaultStartingRequestFailureSequenceNumber));
-          }
-        }
-        pending_messages_.erase(it);
-      }
-
-      if (pending_messages_.empty()) {
-        actor_service_observation_.Reset();
-      }
-    } else if (pending_messages_.contains(context_id)) {
-      // Tab preparation is already in flight for this context. Queue the
-      // message.
-      pending_messages_[context_id].push_back(
-          MessageData{std::move(message), std::move(done_callback),
-                      std::move(result_logger)});
-      return;
-    } else if (request.has_request() &&
-               request.request().has_trigger_actuation_request()) {
-      if (profile_) {
-        actor::ActorKeyedService* actor_service =
-            actor::ActorKeyedService::Get(profile_);
-        if (actor_service) {
-          VLOG(1)
-              << "GlicTrigger: Registering pending task in ActorKeyedService";
-          if (!actor_service_observation_.IsObserving()) {
-            actor_service_observation_.Observe(actor_service);
-          }
-          pending_messages_[context_id].push_back(
-              MessageData{std::move(message), std::move(done_callback),
-                          std::move(result_logger)});
-          actor_service->AddPendingTask(context_id);
-          return;
-        }
-      }
-    }
-  } else {
-    VLOG(1) << "GlicTrigger: GlicBackgroundTriggering feature disabled, "
-               "skipping FGS trigger";
-  }
-#endif
-
-  ProcessValidatedMessage(std::move(message), context_id,
-                          std::move(done_callback), std::move(result_logger),
-                          nullptr);
-}
-
-void GlicExperimentalTriggeringMessageHandler::ProcessValidatedMessage(
-    components_sharing_message::SharingMessage message,
-    const std::string& context_id,
-    SharingMessageHandler::DoneCallback done_callback,
-    glic::ScopedIncomingMessageResultLogger result_logger,
-    tabs::TabInterface* prepared_tab) {
-  const auto& request = message.glic_experimental_triggering();
-  CHECK(!context_id.empty());
-
-  std::optional<glic::ExperimentalTriggeringResponse> domain_response =
-      coordinator_->OnProtoMessage(context_id, request,
-                                   std::move(result_logger),
-                                   GetUpdateCallback(message), prepared_tab);
-
-  if (domain_response.has_value()) {
-    std::move(done_callback)
-        .Run(ResponseToResponseMessageProto(*domain_response));
-  } else {
-    std::move(done_callback).Run(nullptr);
-  }
+  glic::GlicExperimentalTriggeringUpdateCallback update_callback =
+      GetUpdateCallback(message);
+  coordinator_->OnProtoMessage(
+      context_id, request, std::move(result_logger), std::move(update_callback),
+      base::BindOnce(
+          [](SharingMessageHandler::DoneCallback callback,
+             std::optional<glic::ExperimentalTriggeringResponse>
+                 domain_response) {
+            if (domain_response.has_value()) {
+              std::move(callback).Run(
+                  ResponseToResponseMessageProto(*domain_response));
+            } else {
+              std::move(callback).Run(nullptr);
+            }
+          },
+          std::move(done_callback)));
 }
 
 void GlicExperimentalTriggeringMessageHandler::CheckFeatureFlags() const {
@@ -451,83 +307,4 @@ GlicExperimentalTriggeringMessageHandler::GetUpdateCallback(
       },
       weak_ptr_factory_.GetWeakPtr(),
       *message.mutable_server_channel_configuration());
-}
-
-bool GlicExperimentalTriggeringMessageHandler::IsVersionSupported(
-    int incoming_version) const {
-  std::optional<int> local_version = GetLocalTriggeringVersion();
-  return local_version.has_value() && incoming_version <= *local_version;
-}
-
-std::optional<int>
-GlicExperimentalTriggeringMessageHandler::GetLocalTriggeringVersion() const {
-  glic::GlicKeyedService* glic_service =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_,
-                                                         /*create=*/false);
-  return glic_service
-             ? glic_service->enabling().GetExperimentalTriggeringVersion()
-             : std::nullopt;
-}
-
-void GlicExperimentalTriggeringMessageHandler::OnBackgroundTabPrepared(
-    tabs::TabInterface* tab,
-    const std::string& context_id) {
-  auto it = pending_messages_.find(context_id);
-  if (it == pending_messages_.end()) {
-    return;
-  }
-  std::vector<MessageData> messages = std::move(it->second);
-  pending_messages_.erase(it);
-
-  if (pending_messages_.empty()) {
-    actor_service_observation_.Reset();
-  }
-
-  for (auto& pending_message : messages) {
-    base::UmaHistogramMediumTimes(
-        "Glic.ExperimentalTriggering.Android.BackgroundSetupLatency.Success",
-        base::TimeTicks::Now() - pending_message.queued_time);
-    ProcessValidatedMessage(std::move(pending_message.message), context_id,
-                            std::move(pending_message.done_callback),
-                            std::move(pending_message.result_logger), tab);
-  }
-}
-
-void GlicExperimentalTriggeringMessageHandler::OnBackgroundSetupFailed(
-    const std::string& context_id) {
-#if BUILDFLAG(IS_ANDROID)
-  if (profile_) {
-    if (actor::ActorKeyedService* actor_service =
-            actor::ActorKeyedService::Get(profile_)) {
-      actor_service->RemovePendingTask(context_id);
-    }
-  }
-#endif
-  auto it = pending_messages_.find(context_id);
-  if (it == pending_messages_.end()) {
-    return;
-  }
-  std::vector<MessageData> messages = std::move(it->second);
-  pending_messages_.erase(it);
-
-  if (pending_messages_.empty()) {
-    actor_service_observation_.Reset();
-  }
-
-  for (auto& pending_message : messages) {
-    base::UmaHistogramMediumTimes(
-        "Glic.ExperimentalTriggering.Android.BackgroundSetupLatency.Failed",
-        base::TimeTicks::Now() - pending_message.queued_time);
-    const auto& request =
-        pending_message.message.glic_experimental_triggering();
-    const components_sharing_message::GlicExperimentalTriggering::TaskMetadata*
-        request_metadata =
-            request.has_task_metadata() ? &request.task_metadata() : nullptr;
-
-    std::move(pending_message.done_callback)
-        .Run(CreateResponseMessage(
-            context_id, TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
-            "Background setup failed.", request_metadata,
-            kDefaultStartingRequestFailureSequenceNumber));
-  }
 }

@@ -4,11 +4,16 @@
 
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_coordinator.h"
 
+#include <functional>
+#include <map>
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/atomic_sequence_num.h"
 #include "base/check.h"
@@ -17,12 +22,14 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_actions_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
@@ -33,6 +40,7 @@
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_converters.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_types.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_api_metrics.h"
@@ -52,6 +60,7 @@
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/task_source_info.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -188,6 +197,23 @@ ExperimentalTriggeringResponse CreateResponseMessage(
   task_update.data = message;
   response.task_update = std::move(task_update);
   return response;
+}
+
+void RejectProtoMessage(
+    const std::string& context_id,
+    const components_sharing_message::GlicExperimentalTriggering& proto,
+    ScopedIncomingMessageResultLogger& result_logger,
+    GlicExperimentalTriggeringIncomingMessageResult result,
+    const std::string& error_message,
+    GlicExperimentalTriggeringResponseCallback response_callback) {
+  result_logger.set_result(result);
+  std::optional<TaskMetadata> request_metadata = ProtoToTaskMetadata(proto);
+  std::move(response_callback)
+      .Run(CreateResponseMessage(
+          context_id, TaskUpdate::State::kFailed,
+          TaskUpdate::DataType::kErrorMessage, error_message,
+          request_metadata.has_value() ? &*request_metadata : nullptr,
+          /*sender_sequence_number=*/0));
 }
 
 // Builds a device opt-in response for synchronous request replies.
@@ -1816,6 +1842,27 @@ class ExperimentalTriggeringUpdatesHandler
       this};
 };
 
+struct GlicExperimentalTriggeringCoordinator::PendingMessageData {
+  components_sharing_message::GlicExperimentalTriggering proto;
+  ScopedIncomingMessageResultLogger result_logger;
+  GlicExperimentalTriggeringUpdateCallback update_callback;
+  GlicExperimentalTriggeringResponseCallback response_callback;
+  base::TimeTicks queued_time = base::TimeTicks::Now();
+
+  PendingMessageData(
+      components_sharing_message::GlicExperimentalTriggering proto,
+      ScopedIncomingMessageResultLogger result_logger,
+      GlicExperimentalTriggeringUpdateCallback update_callback,
+      GlicExperimentalTriggeringResponseCallback response_callback)
+      : proto(std::move(proto)),
+        result_logger(std::move(result_logger)),
+        update_callback(std::move(update_callback)),
+        response_callback(std::move(response_callback)) {}
+  PendingMessageData(PendingMessageData&&) = default;
+  PendingMessageData& operator=(PendingMessageData&&) = default;
+  ~PendingMessageData() = default;
+};
+
 GlicExperimentalTriggeringCoordinator::GlicExperimentalTriggeringCoordinator(
     Profile* profile)
     : profile_(profile) {
@@ -1823,7 +1870,12 @@ GlicExperimentalTriggeringCoordinator::GlicExperimentalTriggeringCoordinator(
 }
 
 GlicExperimentalTriggeringCoordinator::
-    ~GlicExperimentalTriggeringCoordinator() = default;
+    ~GlicExperimentalTriggeringCoordinator() {
+  CancelAllPendingMessages();
+  // Clear handlers before `weak_ptr_factory_` is destroyed so their destructors
+  // can still access `coordinator_` to remove pending tasks.
+  context_id_to_updates_handler_map_.clear();
+}
 
 BrowserWindowInterface*
 GlicExperimentalTriggeringCoordinator::GetBrowserWindow() const {
@@ -1855,42 +1907,31 @@ bool GlicExperimentalTriggeringCoordinator::IsChromeInBackground() const {
 #endif
 }
 
-std::optional<ExperimentalTriggeringResponse>
-GlicExperimentalTriggeringCoordinator::OnProtoMessage(
+void GlicExperimentalTriggeringCoordinator::OnProtoMessage(
     const std::string& context_id,
     const components_sharing_message::GlicExperimentalTriggering& proto,
     ScopedIncomingMessageResultLogger result_logger,
     GlicExperimentalTriggeringUpdateCallback update_callback,
-    tabs::TabInterface* prepared_tab) {
+    GlicExperimentalTriggeringResponseCallback response_callback) {
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_);
   LogGlicExperimentalTriggeringProto(
       actor_service, "GlicExperimentalTriggering", context_id, proto);
 
-  if (!HasUpdatesHandler(context_id)) {
-    GlicMetricReporter reporter(profile_);
-    MaybeRecordInitialSharingMessageDeliveryLatency(reporter, proto);
-  }
-
-  auto request_metadata = ProtoToTaskMetadata(proto);
-  const TaskMetadata* request_metadata_ptr =
-      request_metadata.has_value() ? &*request_metadata : nullptr;
-
   GlicKeyedService* glic_service =
       GlicKeyedServiceFactory::GetGlicKeyedService(profile_, /*create=*/false);
-  auto local_version =
+  std::optional<int> local_version =
       glic_service ? glic_service->enabling().GetExperimentalTriggeringVersion()
                    : std::nullopt;
   if (proto.has_glic_experimental_triggering_version() &&
       (!local_version.has_value() ||
        proto.glic_experimental_triggering_version() > *local_version)) {
-    result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
-                                 kVersionMismatchOrUnavailable);
-    return CreateResponseMessage(context_id, TaskUpdate::State::kFailed,
-                                 TaskUpdate::DataType::kErrorMessage,
-                                 "Rejected: version mismatch or unavailable.",
-                                 request_metadata_ptr,
-                                 /*sender_sequence_number=*/0);
+    RejectProtoMessage(context_id, proto, result_logger,
+                       GlicExperimentalTriggeringIncomingMessageResult::
+                           kVersionMismatchOrUnavailable,
+                       "Rejected: version mismatch or unavailable.",
+                       std::move(response_callback));
+    return;
   }
 
   const bool has_valid_request =
@@ -1899,21 +1940,177 @@ GlicExperimentalTriggeringCoordinator::OnProtoMessage(
           components_sharing_message::GlicExperimentalTriggering::
               ExperimentalTriggeringRequest::PAYLOAD_NOT_SET;
   if (!has_valid_request && !proto.has_task_metadata_updated()) {
-    result_logger.set_result(
-        GlicExperimentalTriggeringIncomingMessageResult::kMissingPayload);
-    return CreateResponseMessage(
-        context_id, TaskUpdate::State::kFailed,
-        TaskUpdate::DataType::kErrorMessage,
-        "Received GlicExperimentalTriggering message with no request payload.",
-        request_metadata_ptr,
-        /*sender_sequence_number=*/0);
+    RejectProtoMessage(
+        context_id, proto, result_logger,
+        GlicExperimentalTriggeringIncomingMessageResult::kMissingPayload,
+        "Received GlicExperimentalTriggering message with no request "
+        "payload.",
+        std::move(response_callback));
+    return;
   }
 
+  if (!HasUpdatesHandler(context_id) &&
+      !pending_messages_.contains(context_id)) {
+    GlicMetricReporter reporter(profile_);
+    MaybeRecordInitialSharingMessageDeliveryLatency(reporter, proto);
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kGlicBackgroundTriggering)) {
+    if (proto.has_request() && proto.request().has_stop_actuation_request()) {
+      if (actor_service) {
+        actor_service->RemovePendingTask(context_id);
+      }
+      FailPendingMessages(
+          context_id, TakePendingMessages(context_id),
+          GlicExperimentalTriggeringIncomingMessageResult::kNoBrowserWindow,
+          "Glic.ExperimentalTriggering.Android.BackgroundSetupLatency."
+          "Cancelled",
+          "Message cancelled by stop actuation request.");
+    } else if (auto it = pending_messages_.find(context_id);
+               it != pending_messages_.end()) {
+      it->second.emplace_back(proto, std::move(result_logger),
+                              std::move(update_callback),
+                              std::move(response_callback));
+      return;
+    } else if (!HasUpdatesHandler(context_id) && proto.has_request() &&
+               proto.request().has_trigger_actuation_request() &&
+               actor_service && glic_service &&
+               glic_service->enabling().GetExperimentalTriggeringState() ==
+                   syncer::DeviceInfo::GlicExperimentalTriggeringState::
+                       kReady) {
+      if (!actor_service_observation_.IsObserving()) {
+        actor_service_observation_.Observe(actor_service);
+      }
+      pending_messages_[context_id].emplace_back(
+          proto, std::move(result_logger), std::move(update_callback),
+          std::move(response_callback));
+      actor_service->AddPendingTask(context_id);
+      return;
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  std::move(response_callback)
+      .Run(ProcessValidatedProtoMessage(
+          context_id, proto, std::move(result_logger),
+          std::move(update_callback), /*prepared_tab=*/nullptr));
+}
+
+std::optional<ExperimentalTriggeringResponse>
+GlicExperimentalTriggeringCoordinator::ProcessValidatedProtoMessage(
+    const std::string& context_id,
+    const components_sharing_message::GlicExperimentalTriggering& proto,
+    ScopedIncomingMessageResultLogger result_logger,
+    GlicExperimentalTriggeringUpdateCallback update_callback,
+    tabs::TabInterface* prepared_tab) {
   ExperimentalTriggeringRequest domain_request = ProtoToRequest(proto);
   domain_request.context_id = context_id;
 
   return OnRequest(context_id, domain_request, std::move(result_logger),
                    std::move(update_callback), prepared_tab);
+}
+
+void GlicExperimentalTriggeringCoordinator::OnBackgroundTabPrepared(
+    tabs::TabInterface* tab,
+    const std::string& context_id) {
+  std::vector<PendingMessageData> messages = TakePendingMessages(context_id);
+  base::WeakPtr<GlicExperimentalTriggeringCoordinator> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+  base::WeakPtr<tabs::TabInterface> weak_tab =
+      tab ? tab->GetWeakPtr() : nullptr;
+  for (PendingMessageData& message_data : messages) {
+    if (!weak_this) {
+      return;
+    }
+    // Justification: Experimental triggering background setup latency is
+    // profile-scoped and recorded outside a GlicInstance session.
+    base::UmaHistogramMediumTimes(
+        "Glic.ExperimentalTriggering.Android.BackgroundSetupLatency.Success",
+        base::TimeTicks::Now() - message_data.queued_time);
+    const bool is_trigger =
+        message_data.proto.has_request() &&
+        message_data.proto.request().has_trigger_actuation_request();
+    std::move(message_data.response_callback)
+        .Run(ProcessValidatedProtoMessage(
+            context_id, message_data.proto,
+            std::move(message_data.result_logger),
+            std::move(message_data.update_callback),
+            is_trigger ? weak_tab.get() : nullptr));
+  }
+}
+
+void GlicExperimentalTriggeringCoordinator::OnBackgroundSetupFailed(
+    const std::string& context_id) {
+  std::vector<PendingMessageData> messages = TakePendingMessages(context_id);
+  if (messages.empty()) {
+    return;
+  }
+  if (actor::ActorKeyedService* actor_service =
+          actor::ActorKeyedService::Get(profile_)) {
+    actor_service->RemovePendingTask(context_id);
+  }
+  FailPendingMessages(
+      context_id, std::move(messages),
+      GlicExperimentalTriggeringIncomingMessageResult::kNoBrowserWindow,
+      "Glic.ExperimentalTriggering.Android.BackgroundSetupLatency.Failed",
+      "Background setup failed.");
+}
+
+std::vector<GlicExperimentalTriggeringCoordinator::PendingMessageData>
+GlicExperimentalTriggeringCoordinator::TakePendingMessages(
+    const std::string& context_id) {
+  auto it = pending_messages_.find(context_id);
+  if (it == pending_messages_.end()) {
+    return {};
+  }
+  std::vector<PendingMessageData> messages = std::move(it->second);
+  pending_messages_.erase(it);
+  if (pending_messages_.empty()) {
+    actor_service_observation_.Reset();
+  }
+  return messages;
+}
+
+void GlicExperimentalTriggeringCoordinator::FailPendingMessages(
+    const std::string& context_id,
+    std::vector<PendingMessageData> messages,
+    GlicExperimentalTriggeringIncomingMessageResult result,
+    std::string_view latency_histogram_name,
+    const std::string& error_message) {
+  for (PendingMessageData& message_data : messages) {
+    // Justification: Experimental triggering background setup latency is
+    // profile-scoped and recorded outside a GlicInstance session.
+    base::UmaHistogramMediumTimes(
+        latency_histogram_name,
+        base::TimeTicks::Now() - message_data.queued_time);
+    RejectProtoMessage(context_id, message_data.proto,
+                       message_data.result_logger, result, error_message,
+                       std::move(message_data.response_callback));
+  }
+}
+
+void GlicExperimentalTriggeringCoordinator::CancelAllPendingMessages() {
+  if (pending_messages_.empty()) {
+    return;
+  }
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile_);
+  std::map<std::string, std::vector<PendingMessageData>, std::less<>>
+      pending_messages = std::move(pending_messages_);
+  pending_messages_.clear();
+  actor_service_observation_.Reset();
+  for (auto& [context_id, messages] : pending_messages) {
+    if (actor_service) {
+      actor_service->RemovePendingTask(context_id);
+    }
+    FailPendingMessages(
+        context_id, std::move(messages),
+        GlicExperimentalTriggeringIncomingMessageResult::
+            kCoordinatorUnavailable,
+        "Glic.ExperimentalTriggering.Android.BackgroundSetupLatency.Shutdown",
+        "Message cancelled: Coordinator being destroyed.");
+  }
 }
 
 std::optional<ExperimentalTriggeringResponse>
