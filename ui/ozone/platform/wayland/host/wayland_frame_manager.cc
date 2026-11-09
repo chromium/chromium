@@ -609,8 +609,9 @@ void WaylandFrameManager::HandleFrameCallback(wl_callback* callback) {
     // frames should just be ignored.
     return;
   }
-  CHECK(submitted_frames_.back()->wl_frame_callback.get() == callback,
-        base::NotFatalUntil::M163);
+  // TODO(crbug.com/583272114): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(submitted_frames_.back()->wl_frame_callback.get() == callback);
   TRACE_EVENT("wayland", "HandleFrameCallback", "cb_owner_frame_id",
               submitted_frames_.back()->frame_id);
   submitted_frames_.back()->wl_frame_callback.reset();
