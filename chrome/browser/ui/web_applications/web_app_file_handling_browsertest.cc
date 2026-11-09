@@ -678,4 +678,156 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   }
 }
 
+// Regression test for https://crbug.com/505670262: when an app window is on a
+// validated `scope_extensions` origin and receives a file-handling launch (here
+// via `focus-existing`), `EntriesBuilder` must bind the File System Access
+// handles to the committed `RenderFrameHost`'s `StorageKey` so that subsequent
+// `createWritable()` calls succeed rather than failing
+// `ValidateRequestingFrame` with `kThirdPartyContext`.
+IN_PROC_BROWSER_TEST_F(
+    WebAppFileHandlingBrowserTest,
+    FocusExistingFileLaunchOnValidatedScopeExtensionCanWrite) {
+  const GURL start_url = embedded_https_test_server().GetURL(
+      "app.com", "/web_app_file_handling/index.html");
+  const GURL handler_url = embedded_https_test_server().GetURL(
+      "app.com", "/web_app_file_handling/handle_files.html");
+  const GURL extended_url = embedded_https_test_server().GetURL(
+      "associated.com", "/web_app_file_handling/handle_files.html");
+
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  web_app_info->scope = start_url.GetWithoutFilename();
+  web_app_info->title = u"Scope extension file handling app";
+  web_app_info->launch_handler = blink::Manifest::LaunchHandler(
+      blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting);
+  auto scope_extension =
+      ScopeExtensionInfo::CreateForOrigin(url::Origin::Create(extended_url));
+  web_app_info->scope_extensions = {scope_extension};
+  web_app_info->validated_scope_extensions = {scope_extension};
+
+  apps::FileHandler entry;
+  entry.action = handler_url;
+  entry.accept.emplace_back();
+  entry.accept[0].mime_type = "text/*";
+  entry.accept[0].file_extensions.insert(".txt");
+  web_app_info->file_handlers.push_back(std::move(entry));
+  const webapps::AppId app_id =
+      WebAppBrowserTestBase::InstallWebApp(std::move(web_app_info));
+
+  // Navigate the app window to the validated extended-scope origin.
+  content::WebContents* app_contents =
+      LaunchApplication(profile(), app_id, start_url);
+  ASSERT_TRUE(content::NavigateToURL(app_contents, extended_url));
+  AttachTestConsumer(app_contents);
+
+  const base::FilePath test_file_path = CreateTestFileWithExtension("txt");
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::WriteFile(test_file_path, "initial_data"));
+  }
+
+  apps::AppLaunchParams params(
+      app_id, apps::LaunchContainer::kLaunchContainerWindow,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      apps::LaunchSource::kFromFileManager);
+  params.launch_files = {test_file_path};
+  params.override_url = handler_url;
+
+  base::test::TestFuture<base::WeakPtr<BrowserWindowInterface>,
+                         base::WeakPtr<content::WebContents>,
+                         apps::LaunchContainer>
+      future;
+  provider()->scheduler().LaunchAppWithCustomParams(std::move(params),
+                                                    future.GetCallback());
+  web_contents_ = future.Get<1>().get();
+  ASSERT_EQ(web_contents_, app_contents);
+  EXPECT_EQ(extended_url, web_contents_->GetLastCommittedURL());
+  VerifyPwaDidReceiveFileLaunchParams(test_file_path);
+  EXPECT_EQ(handler_url, GetLaunchParamsTargetUrl());
+
+  // Auto-grant the write permission prompt and verify `createWritable()`
+  // succeeds on the extended-scope origin.
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents_.get())
+      ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
+
+  EXPECT_EQ("success", EvalJs(web_contents_.get(), R"(
+      (async () => {
+        const writable = await window.launchParams.files[0].createWritable();
+        await writable.write('written_from_scope_extension');
+        await writable.close();
+        return 'success';
+      })())"));
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string content;
+    EXPECT_TRUE(base::ReadFileToString(test_file_path, &content));
+    EXPECT_EQ("written_from_scope_extension", content);
+  }
+}
+
+// Verifies that if a file-handling launch is initiated with an `override_url`
+// outside the app's primary scope (such as a `scope_extensions` URL or a
+// same-origin URL outside the scope path), `WebAppLaunchProcess::Run` falls
+// back to a regular launch at `start_url` without delivering files.
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
+                       OutOfPrimaryScopeFileLaunchFallsBackToRegularLaunch) {
+  const GURL start_url = embedded_https_test_server().GetURL(
+      "app.com", "/web_app_file_handling/index.html");
+  const GURL handler_url = embedded_https_test_server().GetURL(
+      "app.com", "/web_app_file_handling/handle_files.html");
+  const GURL extended_url = embedded_https_test_server().GetURL(
+      "associated.com", "/web_app_file_handling/handle_files.html");
+  const GURL same_origin_out_of_scope_url =
+      embedded_https_test_server().GetURL("app.com", "/ssl/google.html");
+
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  web_app_info->scope = start_url.GetWithoutFilename();
+  web_app_info->title = u"Primary scope file launch check app";
+  auto scope_extension =
+      ScopeExtensionInfo::CreateForOrigin(url::Origin::Create(extended_url));
+  web_app_info->scope_extensions = {scope_extension};
+  web_app_info->validated_scope_extensions = {scope_extension};
+
+  apps::FileHandler entry;
+  entry.action = handler_url;
+  entry.accept.emplace_back();
+  entry.accept[0].mime_type = "text/*";
+  entry.accept[0].file_extensions.insert(".txt");
+  web_app_info->file_handlers.push_back(std::move(entry));
+  const webapps::AppId app_id =
+      WebAppBrowserTestBase::InstallWebApp(std::move(web_app_info));
+
+  const base::FilePath test_file_path = CreateTestFileWithExtension("txt");
+  for (const GURL& bad_launch_url :
+       {extended_url, same_origin_out_of_scope_url}) {
+    SCOPED_TRACE(bad_launch_url);
+    apps::AppLaunchParams params(app_id,
+                                 apps::LaunchContainer::kLaunchContainerWindow,
+                                 ui::mojom::WindowOpenDisposition::kNewWindow,
+                                 apps::LaunchSource::kFromFileManager);
+    params.launch_files = {test_file_path};
+    params.override_url = bad_launch_url;
+
+    content::TestNavigationObserver navigation_observer(start_url);
+    navigation_observer.StartWatchingNewWebContents();
+    base::test::TestFuture<base::WeakPtr<BrowserWindowInterface>,
+                           base::WeakPtr<content::WebContents>,
+                           apps::LaunchContainer>
+        future;
+    provider()->scheduler().LaunchAppWithCustomParams(std::move(params),
+                                                      future.GetCallback());
+    web_contents_ = future.Get<1>().get();
+    ASSERT_TRUE(web_contents_);
+    navigation_observer.Wait();
+    AttachTestConsumer(web_contents_);
+
+    EXPECT_EQ(start_url, web_contents_->GetLastCommittedURL());
+    ASSERT_TRUE(HasLaunchParams());
+    EXPECT_EQ(0, GetLaunchParamsFilesLength());
+    EXPECT_EQ(start_url, GetLaunchParamsTargetUrl());
+  }
+}
+
 }  // namespace web_app

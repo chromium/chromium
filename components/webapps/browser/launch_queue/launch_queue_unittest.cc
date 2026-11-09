@@ -355,4 +355,70 @@ TEST_F(LaunchQueueTest, OutOfScopeCurrentUrlReceivesNothing) {
   EXPECT_FALSE(fake_launch_service_.enqueue_called());
 }
 
+// Regression test for https://crbug.com/499052223 and
+// https://crbug.com/505670262: when `delegate_->IsInScope` returns true for an
+// in-scope cross-origin committed document (such as a validated
+// `scope_extensions` origin reached via redirect or `focus-existing`),
+// `SendLaunchParams` mints file and directory handles bound to the committed
+// `RenderFrameHost` and dispatches them to that document.
+TEST_F(LaunchQueueTest, CrossOriginInScopeCurrentUrlWithFilesOrDirDispatches) {
+  GURL committed_url("https://associated.example/visit.html");
+  CommitNavigation(committed_url, /*sandboxed=*/false);
+
+  GURL launch_url("https://app.example/open-file");
+  {
+    base::FilePath file_path(FILE_PATH_LITERAL("secret.txt"));
+    LaunchParams file_params =
+        CreateLaunchParams(launch_url, /*started_new_navigation=*/false);
+    file_params.set_paths({file_path});
+
+    EXPECT_CALL(*delegate_, GetPathInfo(file_path))
+        .WillOnce(testing::Return(content::PathInfo(file_path)));
+
+    launch_queue_->Enqueue(std::move(file_params));
+    launch_queue_->FlushForTesting();
+
+    EXPECT_TRUE(fake_launch_service_.enqueue_called());
+    EXPECT_EQ(fake_launch_service_.launched_url(), launch_url);
+    EXPECT_EQ(1u, fake_launch_service_.files().size());
+    fake_launch_service_.Reset();
+  }
+
+  {
+    base::FilePath dir_path(FILE_PATH_LITERAL("secret_dir"));
+    LaunchParams dir_params =
+        CreateLaunchParams(launch_url, /*started_new_navigation=*/true);
+    dir_params.set_dir(dir_path);
+
+    EXPECT_CALL(*delegate_, GetPathInfo(dir_path))
+        .WillOnce(testing::Return(content::PathInfo(dir_path)));
+
+    launch_queue_->Enqueue(std::move(dir_params));
+    launch_queue_->FlushForTesting();
+
+    EXPECT_TRUE(fake_launch_service_.enqueue_called());
+    EXPECT_EQ(fake_launch_service_.launched_url(), launch_url);
+    EXPECT_EQ(1u, fake_launch_service_.files().size());
+  }
+}
+
+// Verifies that non-file launches (no `paths` and no `dir`) between a primary
+// origin and an associated `scope_extensions` origin still dispatch when
+// `delegate_->IsInScope` admits both URLs.
+TEST_F(LaunchQueueTest, CrossOriginCurrentUrlWithoutFilesOrDirStillDispatches) {
+  GURL committed_url("https://app.example/index.html");
+  CommitNavigation(committed_url, /*sandboxed=*/false);
+
+  GURL extended_target_url("https://associated.example/captured-link");
+  LaunchParams params =
+      CreateLaunchParams(extended_target_url, /*started_new_navigation=*/false);
+
+  launch_queue_->Enqueue(std::move(params));
+  launch_queue_->FlushForTesting();
+
+  EXPECT_TRUE(fake_launch_service_.enqueue_called());
+  EXPECT_EQ(fake_launch_service_.launched_url(), extended_target_url);
+  EXPECT_TRUE(fake_launch_service_.files().empty());
+}
+
 }  // namespace webapps

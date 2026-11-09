@@ -33,7 +33,9 @@ bug, review Security for Agents to double-check your findings.
   `/.well-known/web-app-origin-association` over HTTPS naming the app
   (`WebAppOriginAssociationManager`) may badge, open in the app window without
   the origin bar, show notifications with the app's name and icon, use the app's
-  display mode (including fullscreen), and capture navigations.
+  display mode (including fullscreen), capture navigations, and receive
+  `LaunchQueue` / file-handling launches (including via `focus-existing` or
+  redirect from a primary-scope `file_handlers` action URL).
 - Silent secondary identity updates: For user-installed apps, changing `name`,
   `short_name`, or the primary icon requires user approval. Theme and background
   colors, shortcuts, and primary icon changes below the threshold in

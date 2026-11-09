@@ -35,6 +35,7 @@ class LaunchParams {
   const base::FilePath& dir() const { return dir_; }
   const std::vector<base::FilePath>& paths() const { return paths_; }
   const std::vector<bool>& can_write() const { return can_write_; }
+  bool HasFiles() const { return !paths_.empty() || !dir_.empty(); }
   base::TimeTicks time_navigation_started_for_enqueue() const {
     return time_navigation_started_for_enqueue_;
   }

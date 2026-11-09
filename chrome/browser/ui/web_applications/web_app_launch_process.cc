@@ -173,8 +173,11 @@ content::WebContents* WebAppLaunchProcess::Run() {
 
   auto web_app_scope = registrar_->GetEffectiveScope(params_->app_id);
   CHECK(web_app_scope);
+  // File handling action URLs (`launch_url`) must be within the app's primary
+  // scope rather than `scope_extensions`.
   LaunchUrlInScopeResult in_scope_result =
-      web_app_scope->GetScopeScore(launch_url) > 0
+      web_app_scope->GetScopeScore(
+          launch_url, {.exclude_scope_extensions = is_file_handling}) > 0
           ? LaunchUrlInScopeResult::kInScope
           : LaunchUrlInScopeResult::kNotInScope;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -226,9 +229,11 @@ content::WebContents* WebAppLaunchProcess::Run() {
   // During install, shortcut urls are required to be in-scope. But some users &
   // admins create custom shortcuts to launch weirdly configured apps with
   // out-of-scope but same-origin urls. So specifically also allow same-origin
-  // urls to be launched here, even if they are not in scope.
+  // urls to be launched here, even if they are not in scope, except for file
+  // handling launches whose action URL must be in the primary scope.
   if (in_scope_result == LaunchUrlInScopeResult::kNotInScope &&
-      !url::IsSameOriginWith(launch_url, web_app_scope->scope())) {
+      (is_file_handling ||
+       !url::IsSameOriginWith(launch_url, web_app_scope->scope()))) {
     launch_url = registrar_->GetAppStartUrl(params_->app_id);
     // If this was a file handler launch, then it would be unexpected that a
     // file handle exists if we are resetting the URL. Thus, reset to only a
