@@ -368,6 +368,42 @@ void ManifestBrokerState::UninstallCapability(
       weak_ptr_factory_.GetWeakPtr(), model_asset_id));
 }
 
+void ManifestBrokerState::GetInstalledModels(InstalledModelsCallback callback) {
+  EnsureInitialization(base::BindOnce(
+      [](base::WeakPtr<ManifestBrokerState> self,
+         InstalledModelsCallback callback,
+         const on_device_model::Capabilities&) {
+        std::vector<std::pair<OnDeviceBaseModel, base::FilePath>>
+            models_with_paths;
+        if (self && self->asset_manager_) {
+          models_with_paths = self->asset_manager_->GetInstalledBaseModels();
+        }
+        base::ThreadPool::PostTaskAndReplyWithResult(
+            FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+            base::BindOnce(
+                [](std::vector<std::pair<OnDeviceBaseModel, base::FilePath>>
+                       models_with_paths) {
+                  std::vector<InstalledModel> result;
+                  result.reserve(models_with_paths.size());
+                  for (const auto& [base_model, path] : models_with_paths) {
+                    uint64_t size_bytes =
+                        path.empty()
+                            ? 0
+                            : static_cast<uint64_t>(
+                                  base::ComputeDirectorySize(path));
+                    result.push_back(InstalledModel{
+                        .base_model = base_model,
+                        .size_bytes = size_bytes,
+                    });
+                  }
+                  return result;
+                },
+                std::move(models_with_paths)),
+            std::move(callback));
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void ManifestBrokerState::ResetModelCrashCount() {
   local_state_->SetInteger(
       model_execution::prefs::localstate::kOnDeviceModelCrashCount, 0);

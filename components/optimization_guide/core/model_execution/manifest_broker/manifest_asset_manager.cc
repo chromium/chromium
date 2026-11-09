@@ -891,4 +891,38 @@ ManifestAssetManager::GetBrokerModels() const {
   return factory_->GetBrokerModels();
 }
 
+std::vector<std::pair<OnDeviceBaseModel, base::FilePath>>
+ManifestAssetManager::GetInstalledBaseModels() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!factory_) {
+    return {};
+  }
+
+  const Manifest& manifest = factory_->manifest();
+  base::flat_map<OnDeviceBaseModel, base::FilePath> models_by_base_model;
+
+  for (const auto& [_, recipe] : manifest.GetRecipes().base_models()) {
+    const Manifest::AssetId& asset_id = recipe.weights_file().asset_id();
+    OnDeviceBaseModel base_model = ConvertComponentKeyToEnum(asset_id);
+    if (base_model == OnDeviceBaseModel::kUnknown ||
+        models_by_base_model.contains(base_model)) {
+      continue;
+    }
+    const proto::OnDemandComponent* component = manifest.GetAssetById(asset_id);
+    if (!component) {
+      continue;
+    }
+    const ComponentContext* context =
+        ledger_.GetContext(component->public_key());
+    if (!context || context->state() != ComponentState::kReady ||
+        !context->install_dir().has_value() ||
+        !asset_priorities_.IsAtLeast(AssetPriority::kEvictable, asset_id)) {
+      continue;
+    }
+    models_by_base_model.emplace(base_model, *context->install_dir());
+  }
+
+  return std::move(models_by_base_model).extract();
+}
+
 }  // namespace optimization_guide

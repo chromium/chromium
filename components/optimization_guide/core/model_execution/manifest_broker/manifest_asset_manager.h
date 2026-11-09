@@ -33,6 +33,7 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager_delegate.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_monitor.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_solution_factory.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_download_progress_manager.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -101,6 +102,10 @@ class ManifestAssetManager : public UsageTracker::Observer,
   // Returns a list of models for the broker state info.
   std::vector<std::pair<mojom::BrokerModelInfoPtr, base::FilePath>>
   GetBrokerModels() const;
+
+  // Returns installed base models and their install directories.
+  std::vector<std::pair<OnDeviceBaseModel, base::FilePath>>
+  GetInstalledBaseModels() const;
 
   // ManifestAssetManagerDelegate::AssetManager:
   void OnAssetReady(const std::string& public_key,

@@ -10,6 +10,7 @@
 
 #include "base/byte_size.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/task/execution_fence.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -25,6 +26,7 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
@@ -616,6 +618,83 @@ TEST_F(ManifestBrokerStateTest,
                         can_create_future.GetCallback());
   EXPECT_EQ(can_create_future.Get<0>(),
             mojom::ModelUnavailableReason::kPendingUsage);
+}
+
+TEST_F(ManifestBrokerStateTest, GetInstalledModelsBeforeManifestLoaded) {
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel("gemma4_component")
+      .AddUnsafeSolution("test", "gemma4_component")
+      .Finish();
+  ASSERT_TRUE(fake_.WarmupPrefsAndAssets());
+
+  // Call GetInstalledModels immediately on startup before the manifest has
+  // finished loading and creating ManifestAssetManager.
+  OnDeviceModelControl* model_control = fake_.state().GetModelControl();
+  ASSERT_NE(model_control, nullptr);
+
+  base::test::TestFuture<std::vector<OnDeviceModelControl::InstalledModel>>
+      future;
+  model_control->GetInstalledModels(future.GetCallback());
+
+  std::vector<OnDeviceModelControl::InstalledModel> models = future.Take();
+  ASSERT_EQ(models.size(), 1u);
+  EXPECT_EQ(models[0].base_model, OnDeviceBaseModel::kGemma4);
+  EXPECT_GT(models[0].size_bytes, 0u);
+}
+
+TEST_F(ManifestBrokerStateTest, GetInstalledModelsAndUninstall) {
+  proto::SolutionConfig compose_config;
+  *compose_config.mutable_feature() = SimpleComposeConfig();
+
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel("nano_v3_gpu_component")
+      .AddBaseModel("gemma4_component")
+      .AddAdaptation("adapt_A", "nano_v3_gpu_component")
+      .AddUnsafeSolution("test", "adapt_A")
+      .AddUnsafeSolution("compose", "gemma4_component",
+                         std::move(compose_config))
+      .Finish();
+  fake_.Startup();
+
+  fake_.client().RequestAssetsFor("test");
+  fake_.client().RequestAssetsFor("compose");
+
+  EXPECT_TRUE(fake_.component_state().WaitForRegistration(
+      {"nano_v3_gpu_component_key", base::Version("1.0.0.0")}));
+  EXPECT_TRUE(fake_.component_state().WaitForRegistration(
+      {"adapt_A_key", base::Version("12345")}));
+  EXPECT_TRUE(fake_.component_state().WaitForRegistration(
+      {"gemma4_component_key", base::Version("1.0.0.0")}));
+
+  OnDeviceModelControl* model_control = fake_.state().GetModelControl();
+  ASSERT_NE(model_control, nullptr);
+
+  {
+    base::test::TestFuture<std::vector<OnDeviceModelControl::InstalledModel>>
+        future;
+    model_control->GetInstalledModels(future.GetCallback());
+    std::vector<OnDeviceModelControl::InstalledModel> models = future.Take();
+    ASSERT_EQ(models.size(), 2u);
+
+    EXPECT_EQ(models[0].base_model, OnDeviceBaseModel::kV3NanoGpu);
+    EXPECT_GT(models[0].size_bytes, 0u);
+
+    EXPECT_EQ(models[1].base_model, OnDeviceBaseModel::kGemma4);
+    EXPECT_GT(models[1].size_bytes, 0u);
+  }
+
+  // Uninstalling nano_v3_gpu_component should immediately exclude it from
+  // GetInstalledModels.
+  model_control->UninstallCapability("nano_v3_gpu_component");
+
+  {
+    base::test::TestFuture<std::vector<OnDeviceModelControl::InstalledModel>>
+        future;
+    model_control->GetInstalledModels(future.GetCallback());
+    std::vector<OnDeviceModelControl::InstalledModel> models = future.Take();
+    ASSERT_EQ(models.size(), 1u);
+    EXPECT_EQ(models[0].base_model, OnDeviceBaseModel::kGemma4);
+  }
 }
 
 }  // namespace optimization_guide

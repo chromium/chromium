@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_CAPABILITY_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_CAPABILITY_H_
 
+#include <cstdint>
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -13,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
@@ -359,6 +363,19 @@ class OnDeviceSession {
 // Interface for managing and controlling installed on-device models.
 class OnDeviceModelControl {
  public:
+  // A base model whose weights component is installed on disk.
+  struct InstalledModel {
+    bool operator==(const InstalledModel& other) const = default;
+
+    // Identifier of the installed base model.
+    OnDeviceBaseModel base_model = OnDeviceBaseModel::kUnknown;
+    // Disk size of the installed base model directory in bytes (computed via
+    // base::ComputeDirectorySize()).
+    uint64_t size_bytes = 0;
+  };
+  using InstalledModelsCallback =
+      base::OnceCallback<void(std::vector<InstalledModel>)>;
+
   virtual ~OnDeviceModelControl() = default;
 
   // Uninstalls all downloaded on-device models and clears their usage history.
@@ -367,6 +384,11 @@ class OnDeviceModelControl {
   // Uninstalls a specific base model capability identified by `model_asset_id`
   // along with any dependent adaptations and unshared safety models.
   virtual void UninstallCapability(const std::string& model_asset_id) = 0;
+
+  // Waits for broker initialization (raising manifest load priority), then
+  // replies on the calling sequence with installed base models and their sizes
+  // already computed.
+  virtual void GetInstalledModels(InstalledModelsCallback callback) = 0;
 };
 
 // Provides capability information about the on-device models to be served by

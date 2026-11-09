@@ -65,6 +65,7 @@ class ManifestBrokerState final : public OnDeviceCapability,
 
   // OnDeviceModelControl
   void UninstallCapability(const std::string& model_asset_id) override;
+  void GetInstalledModels(InstalledModelsCallback callback) override;
 
   // mojom::ModelBrokerDebug, OnDeviceModelControl
   void UninstallModels() override;
