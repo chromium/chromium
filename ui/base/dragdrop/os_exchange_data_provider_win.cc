@@ -970,7 +970,9 @@ void OSExchangeDataProviderWin::SetDownloadFileInfo(
 void OSExchangeDataProviderWin::SetDragImage(
     const gfx::ImageSkia& image_skia,
     const gfx::Vector2d& cursor_offset) {
-  CHECK(!image_skia.size().IsEmpty(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/582462746): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!image_skia.size().IsEmpty());
 
   // InitializeFromBitmap() doesn't expect an alpha channel and is confused
   // by premultiplied colors, so unpremultiply the bitmap.
