@@ -3617,20 +3617,124 @@ TEST_F(AIPageContentAgentTest, ContentVisibilityAuto) {
       "      content-visibility: auto"
       "    }"
       "  </style>"
-      "  <div id=foo><div>far text</div></div>"
+      "  <p id=foo>far text</p>"
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
   GetAIPageContent();
 
   const auto& root = ContentRootNode();
-  EXPECT_EQ(root.children_nodes.size(), 1u);
+  ASSERT_EQ(root.children_nodes.size(), 1u);
 
-  const auto& text_node = *root.children_nodes[0];
+  const auto& foo_node = *root.children_nodes[0];
+  CheckParagraphNode(foo_node);
+  EXPECT_TRUE(foo_node.children_nodes.empty());
+}
+
+TEST_F(AIPageContentAgentTest, ContentVisibilityAutoInsideIframe) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <iframe srcdoc='"
+      "    <style>"
+      "      #foo {"
+      "        position: relative;"
+      "        top: 8000px;"
+      "        content-visibility: auto;"
+      "      }"
+      "    </style>"
+      "    <p id=foo>far text</p>"
+      "  '></iframe>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& iframe_node = *root.children_nodes[0];
+  EXPECT_EQ(iframe_node.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kIframe);
+  ASSERT_EQ(iframe_node.children_nodes.size(), 1u);
+  const auto& iframe_root = *iframe_node.children_nodes[0];
+
+  ASSERT_EQ(iframe_root.children_nodes.size(), 1u);
+  const auto& foo_node = *iframe_root.children_nodes[0];
+  CheckParagraphNode(foo_node);
+  EXPECT_TRUE(foo_node.children_nodes.empty());
+}
+
+TEST_F(AIPageContentAgentTest, ContentVisibilityAutoFlagDisabled) {
+  ScopedAIPageContentSkipContentVisibilityAutoForTest scoped_feature(false);
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    #foo {"
+      "      position: relative;"
+      "      top: 8000px;"
+      "      content-visibility: auto"
+      "    }"
+      "  </style>"
+      "  <p id=foo>far text</p>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& foo_node = *root.children_nodes[0];
+  CheckParagraphNode(foo_node);
+  ASSERT_EQ(foo_node.children_nodes.size(), 1u);
+
+  const auto& text_node = *foo_node.children_nodes[0];
   CheckTextNode(text_node, "far text");
+}
 
-  const auto& attributes = *text_node.content_attributes;
-  EXPECT_TRUE(attributes.dom_node_id.has_value());
+TEST_F(AIPageContentAgentTest, ContentVisibilityAutoWithHiddenUntilFound) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    #foo {"
+      "      position: relative;"
+      "      top: 8000px;"
+      "      content-visibility: auto;"
+      "    }"
+      "  </style>"
+      "  <div hidden=until-found>outside hidden text</div>"
+      "  <div id=foo>"
+      "    <div hidden=until-found>inside auto hidden text</div>"
+      "  </div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  const auto& root = ContentRootNode();
+  EXPECT_TRUE(TreeContainsTextSubstring(root, "outside hidden text"));
+  EXPECT_FALSE(TreeContainsTextSubstring(root, "inside auto hidden text"));
+}
+
+TEST_F(AIPageContentAgentTest, ClosedDetails) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <details>"
+      "    <summary>summary text</summary>"
+      "    details hidden text"
+      "  </details>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  const auto& root = ContentRootNode();
+  EXPECT_TRUE(TreeContainsTextSubstring(root, "summary text"));
+  EXPECT_TRUE(TreeContainsTextSubstring(root, "details hidden text"));
 }
 
 TEST_F(AIPageContentAgentTest, HiddenUntilFound) {
@@ -3849,11 +3953,19 @@ TEST_F(AIPageContentAgentTest, HiddenUntilFoundAcrossMultipleFrames) {
   Document* main_doc = helper_.LocalMainFrame()->GetFrame()->GetDocument();
   ASSERT_TRUE(main_doc);
   EXPECT_FALSE(
-      main_doc->GetDisplayLockDocumentState().ActivatableDisplayLocksForced());
+      main_doc->GetDisplayLockDocumentState().ActivatableDisplayLocksForced(
+          /*is_auto=*/true));
+  EXPECT_FALSE(
+      main_doc->GetDisplayLockDocumentState().ActivatableDisplayLocksForced(
+          /*is_auto=*/false));
   main_doc->View()->ForAllChildLocalFrameViews([](LocalFrameView& frame_view) {
     if (Document* child_doc = frame_view.GetFrame().GetDocument()) {
       EXPECT_FALSE(child_doc->GetDisplayLockDocumentState()
-                       .ActivatableDisplayLocksForced());
+                       .ActivatableDisplayLocksForced(
+                           /*is_auto=*/true));
+      EXPECT_FALSE(child_doc->GetDisplayLockDocumentState()
+                       .ActivatableDisplayLocksForced(
+                           /*is_auto=*/false));
     }
   });
 }

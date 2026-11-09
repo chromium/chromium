@@ -2654,29 +2654,35 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   mojom::blink::AIPageContentPtr page_content =
       mojom::blink::AIPageContent::New();
 
-  // Force activatable locks so content which is accessible via find-in-page is
-  // styled/laid out and included when walking the tree below.
-  //
-  // TODO(crbug.com/387355768): Consider limiting the lock to nodes with
-  // activation reason of FindInPage.
   DisplayLockDocumentState::ScopedForceActivatableDisplayLocks
       forced_activatable_locks;
 
   // If we're doing this extraction as a part of the document lifecycle, we
   // can't invalidate style/layout.
   if (!document.InvalidationDisallowed()) {
-    forced_activatable_locks.Add(document.GetDisplayLockDocumentState()
-                                     .GetScopedForceActivatableLocks());
+    // Force activatable locks so content which is accessible via find-in-page
+    // is styled/laid out and included when walking the tree below.
+    //
+    // content-visibility: auto locks are excluded: they are typically used to
+    // skip rendering work for large amounts of off-screen content, and forcing
+    // them makes extraction redo all of that work synchronously.
+    const bool include_auto_locks =
+        !RuntimeEnabledFeatures::
+            AIPageContentSkipContentVisibilityAutoEnabled();
+    forced_activatable_locks.Add(
+        document.GetDisplayLockDocumentState().GetScopedForceActivatableLocks(
+            include_auto_locks));
     document.View()->ForAllChildLocalFrameViews(
         [&](LocalFrameView& frame_view) {
           if (!frame_view.GetFrame().GetDocument()) {
             return;
           }
 
-          forced_activatable_locks.Add(frame_view.GetFrame()
-                                           .GetDocument()
-                                           ->GetDisplayLockDocumentState()
-                                           .GetScopedForceActivatableLocks());
+          forced_activatable_locks.Add(
+              frame_view.GetFrame()
+                  .GetDocument()
+                  ->GetDisplayLockDocumentState()
+                  .GetScopedForceActivatableLocks(include_auto_locks));
         });
   }
 

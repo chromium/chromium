@@ -94,7 +94,8 @@ class CORE_EXPORT DisplayLockContext final
     // Any of the following allows style:
     // - This isn't locked.
     // - Style and layout tree are forced for this lock.
-    // - This is an activatable lock and all activatable locks are forced.
+    // - This is an activatable lock and activatable locks of this type are
+    //   forced.
     // - This is content-visibility: auto within an element with a non-none
     //   scroll-marker-group property.
     // - This is an activatable for a11y lock and a11y is enabled.
@@ -113,7 +114,8 @@ class CORE_EXPORT DisplayLockContext final
     // Any of the following allows layout:
     // - This isn't locked.
     // - Layout is forced for this lock.
-    // - This is an activatable lock and all activatable locks are forced.
+    // - This is an activatable lock and activatable locks of this type are
+    //   forced.
     // - We're doing a container query, and one of the following is true:
     //   - This is content-visibility: auto within an element with a non-none
     //     scroll-marker-group property.
@@ -229,7 +231,8 @@ class CORE_EXPORT DisplayLockContext final
   }
 
   void DidForceActivatableDisplayLocks() {
-    if (IsLocked() && IsActivatable(DisplayLockActivationReason::kAny)) {
+    if (IsLocked() && IsActivatable(DisplayLockActivationReason::kAny) &&
+        ActivatableDisplayLocksForced()) {
       MarkForStyleRecalcIfNeeded();
       MarkForLayoutIfNeeded();
       MarkForPrePaintIfNeeded();
@@ -333,7 +336,8 @@ class CORE_EXPORT DisplayLockContext final
   // Clear the activated flag.
   void ResetActivation();
 
-  // Returns true if activatable display locks are being currently forced.
+  // Returns true if activatable display locks of this context's type are
+  // currently forced.
   bool ActivatableDisplayLocksForced() const;
 
   // The following functions propagate dirty bits from the locked element up to

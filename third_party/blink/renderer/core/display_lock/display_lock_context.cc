@@ -1304,8 +1304,7 @@ void DisplayLockContext::SetRenderAffectingState(RenderAffectingState state,
   // text (and DCHECK). Since layout is clean for this lock (we're unlocked),
   // keep the context unlocked until the next lifecycle starts.
   if (state == RenderAffectingState::kSubtreeHasSelection && !new_flag &&
-      document_->GetDisplayLockDocumentState()
-          .ActivatableDisplayLocksForced()) {
+      ActivatableDisplayLocksForced()) {
     SetKeepUnlockedUntilLifecycleCount(1);
   }
   // If we are changing state due to disappeared anchors, we're in a post-layout
@@ -1470,8 +1469,8 @@ bool DisplayLockContext::HasStashedScrollOffset() const {
 }
 
 bool DisplayLockContext::ActivatableDisplayLocksForced() const {
-  return document_->GetDisplayLockDocumentState()
-      .ActivatableDisplayLocksForced();
+  return document_->GetDisplayLockDocumentState().ActivatableDisplayLocksForced(
+      IsAuto());
 }
 
 void DisplayLockContext::SetAffectedByAnchorPositioning(bool val) {

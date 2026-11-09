@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DISPLAY_LOCK_DISPLAY_LOCK_DOCUMENT_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DISPLAY_LOCK_DISPLAY_LOCK_DOCUMENT_STATE_H_
 
+#include <utility>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -57,8 +59,10 @@ class CORE_EXPORT DisplayLockDocumentState final
   // DisplayLockBlockingAllActivationCount().
   bool HasActivatableLocks() const;
 
-  // Returns true if all activatable locks have been forced.
-  bool ActivatableDisplayLocksForced() const;
+  // Returns true if activatable content-visibility: auto locks (if `is_auto`)
+  // or other activatable locks, e.g. hidden=until-found and closed <details>
+  // (if not `is_auto`), are forced.
+  bool ActivatableDisplayLocksForced(bool is_auto) const;
 
   // Notifications for elements entering/exiting top layer.
   void ElementAddedToTopLayer(Element*);
@@ -80,17 +84,27 @@ class CORE_EXPORT DisplayLockDocumentState final
 
    private:
     friend DisplayLockDocumentState;
-    explicit ScopedForceActivatableDisplayLocks(DisplayLockDocumentState*);
+    ScopedForceActivatableDisplayLocks(DisplayLockDocumentState*,
+                                       bool include_auto_locks);
+
+    // A forced document state and whether content-visibility: auto locks are
+    // forced for it.
+    using StateAndIncludeAutoLocks =
+        std::pair<Member<DisplayLockDocumentState>, bool>;
 
     // Inline capacity 1 handles the common single-document case on the stack,
     // while multi-frame callers can merge additional states via `Add()`.
     // Elements use `Member` so Oilpan traces the backing buffer if the vector
     // spills to the heap (while the scope itself stays `STACK_ALLOCATED()` for
     // deterministic RAII destruction).
-    HeapVector<Member<DisplayLockDocumentState>, 1> states_;
+    HeapVector<StateAndIncludeAutoLocks, 1> states_;
   };
 
-  ScopedForceActivatableDisplayLocks GetScopedForceActivatableLocks();
+  // Forces activatable locks while the returned scope is alive. If
+  // `include_auto_locks` is false, content-visibility: auto locks are not
+  // forced, and locks nested inside them stay locked.
+  ScopedForceActivatableDisplayLocks GetScopedForceActivatableLocks(
+      bool include_auto_locks = true);
 
   // Notify the display locks that selection was removed.
   void NotifySelectionRemoved();
@@ -226,8 +240,11 @@ class CORE_EXPORT DisplayLockDocumentState final
   int locked_display_lock_count_ = 0;
   int display_lock_blocking_all_activation_count_ = 0;
 
-  // If greater than 0, then the activatable locks are forced.
-  int activatable_display_locks_forced_ = 0;
+  // If greater than 0, then activatable locks other than content-visibility:
+  // auto ones are forced.
+  int non_auto_display_locks_forced_ = 0;
+  // If greater than 0, then content-visibility: auto locks are forced.
+  int auto_display_locks_forced_ = 0;
 
   bool printing_ = false;
 

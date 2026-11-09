@@ -186,16 +186,19 @@ void DisplayLockDocumentState::ScheduleAnimation() {
 }
 
 DisplayLockDocumentState::ScopedForceActivatableDisplayLocks
-DisplayLockDocumentState::GetScopedForceActivatableLocks() {
-  return ScopedForceActivatableDisplayLocks(this);
+DisplayLockDocumentState::GetScopedForceActivatableLocks(
+    bool include_auto_locks) {
+  return ScopedForceActivatableDisplayLocks(this, include_auto_locks);
 }
 
 bool DisplayLockDocumentState::HasActivatableLocks() const {
   return LockedDisplayLockCount() != DisplayLockBlockingAllActivationCount();
 }
 
-bool DisplayLockDocumentState::ActivatableDisplayLocksForced() const {
-  return activatable_display_locks_forced_;
+bool DisplayLockDocumentState::ActivatableDisplayLocksForced(
+    bool is_auto) const {
+  return is_auto ? auto_display_locks_forced_ > 0
+                 : non_auto_display_locks_forced_ > 0;
 }
 
 void DisplayLockDocumentState::ElementAddedToTopLayer(Element* element) {
@@ -380,10 +383,15 @@ DisplayLockDocumentState::ScopedForceActivatableDisplayLocks::
     ScopedForceActivatableDisplayLocks() = default;
 
 DisplayLockDocumentState::ScopedForceActivatableDisplayLocks::
-    ScopedForceActivatableDisplayLocks(DisplayLockDocumentState* state) {
+    ScopedForceActivatableDisplayLocks(DisplayLockDocumentState* state,
+                                       bool include_auto_locks) {
   CHECK(state);
-  states_.push_back(state);
-  if (++state->activatable_display_locks_forced_ == 1) {
+  states_.emplace_back(state, include_auto_locks);
+  bool is_newly_forced = ++state->non_auto_display_locks_forced_ == 1;
+  if (include_auto_locks) {
+    is_newly_forced |= ++state->auto_display_locks_forced_ == 1;
+  }
+  if (is_newly_forced) {
     HeapVector<Member<DisplayLockContext>> contexts(
         state->display_lock_contexts_);
     for (auto& context : contexts) {
@@ -415,9 +423,13 @@ void DisplayLockDocumentState::ScopedForceActivatableDisplayLocks::Add(
 
 DisplayLockDocumentState::ScopedForceActivatableDisplayLocks::
     ~ScopedForceActivatableDisplayLocks() {
-  for (DisplayLockDocumentState* state : states_) {
-    CHECK_GT(state->activatable_display_locks_forced_, 0);
-    --state->activatable_display_locks_forced_;
+  for (const auto& [state, include_auto_locks] : states_) {
+    if (include_auto_locks) {
+      CHECK_GT(state->auto_display_locks_forced_, 0);
+      --state->auto_display_locks_forced_;
+    }
+    CHECK_GT(state->non_auto_display_locks_forced_, 0);
+    --state->non_auto_display_locks_forced_;
   }
 }
 

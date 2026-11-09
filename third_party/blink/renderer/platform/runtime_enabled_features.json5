@@ -434,6 +434,12 @@
       name: "AIPageContentPaidContentAnnotation",
       status: "stable"
     },
+    // Do not force content-visibility: auto display locks during AIPageContent
+    // extraction, skipping locked off-screen content-visibility: auto subtrees.
+    {
+      name: "AIPageContentSkipContentVisibilityAuto",
+      status: "stable",
+    },
     // Let fixed wrappers with pointer-events: none use normal APC container
     // skipping instead of preserving them automatically.
     {
