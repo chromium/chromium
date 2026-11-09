@@ -29,17 +29,16 @@ suite('NodeStore', () => {
     return metricsBrowserProxy.getArgs('updateWordsSeen')[count - 1];
   }
 
-  function areNodesAllHidden(axNodeIds: number[]): boolean {
-    return nodeStore.areNodesAllHidden(
-        axNodeIds.map(id => getReadAloudNode(id)));
+  function getReadAloudNodes(axNodeIds: number[]): ReadAloudNode[] {
+    return axNodeIds.map(id => {
+      const node = ReadAloudNode.createFromAxNode(id, nodeStore);
+      assertTrue(node !== undefined, `No DOM node for AXNodeID ${id}`);
+      return node;
+    });
   }
 
-  function getReadAloudNode(axNodeId: number): ReadAloudNode {
-    const domNode = nodeStore.getDomNode(axNodeId);
-    if (!domNode) {
-      return undefined as unknown as ReadAloudNode;
-    }
-    return ReadAloudNode.create(domNode);
+  function areNodesAllHidden(axNodeIds: number[]): boolean {
+    return nodeStore.areNodesAllHidden(getReadAloudNodes(axNodeIds));
   }
 
   function setDomNodes(axNodeIds: number[]) {
@@ -214,28 +213,13 @@ suite('NodeStore', () => {
   test('hasAnyNode', () => {
     const id1 = 216;
     const id2 = 218;
-    const id3 = 219;
 
-    // hasAnyNode returns false before there are associated DOM nodes.
-    assertFalse(nodeStore.hasAnyNode([
-      getReadAloudNode(id1),
-      getReadAloudNode(id2),
-      getReadAloudNode(id3),
-    ]));
+    assertFalse(nodeStore.hasAnyNode([]));
 
     setDomNodes([id1, id2]);
 
-    assertTrue(nodeStore.hasAnyNode([
-      getReadAloudNode(id1),
-      getReadAloudNode(id2),
-      getReadAloudNode(id3),
-    ]));
-
-    assertTrue(
-        nodeStore.hasAnyNode([getReadAloudNode(id1), getReadAloudNode(id2)]));
-    assertTrue(
-        nodeStore.hasAnyNode([getReadAloudNode(id1), getReadAloudNode(id3)]));
-    assertFalse(nodeStore.hasAnyNode([getReadAloudNode(id3)]));
+    assertTrue(nodeStore.hasAnyNode(getReadAloudNodes([id1, id2])));
+    assertTrue(nodeStore.hasAnyNode(getReadAloudNodes([id1])));
   });
 
   test('addImageToFetch', () => {

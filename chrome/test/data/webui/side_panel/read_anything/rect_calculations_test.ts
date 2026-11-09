@@ -303,8 +303,8 @@ suite('RectCalculations', () => {
   });
 
   suite('getRectIndexAtY', () => {
-    const rect1 = {bottom: 30} as DOMRect;
-    const rect2 = {bottom: 60} as DOMRect;
+    const rect1 = new DOMRect(0, 10, 100, 20);  // top: 10, bottom: 30
+    const rect2 = new DOMRect(0, 40, 100, 20);  // top: 40, bottom: 60
     const rects = [rect1, rect2];
 
     test('Y matches first rect returns 0', () => {

@@ -606,8 +606,8 @@ suite('ContentController', () => {
           const root = contentController.updateContent();
           await microtasksFinished();
 
-          assertTrue(!!root);
-          const contentDiv = (root as DocumentFragment).querySelector('div');
+          assertTrue(root instanceof DocumentFragment);
+          const contentDiv = root.querySelector('div');
           assertTrue(!!contentDiv);
           assertEquals(
               'I see my present partner\n\nin the imperfect tense',
@@ -625,8 +625,8 @@ suite('ContentController', () => {
           const root = contentController.updateContent();
           await microtasksFinished();
 
-          assertTrue(!!root);
-          const contentDiv = (root as DocumentFragment).querySelector('div');
+          assertTrue(root instanceof DocumentFragment);
+          const contentDiv = root.querySelector('div');
           assertTrue(!!contentDiv);
           assertEquals(
               'I see my present\npartner\n\nin the imperfect tense',
@@ -1086,11 +1086,11 @@ suite('ContentController', () => {
 
       const root = contentController.updateContent();
       await microtasksFinished();
-      assertTrue(!!root);
+      assertTrue(root instanceof DocumentFragment);
       const container = document.createElement('div');
       document.body.appendChild(container);
       const shadowRoot = container.attachShadow({mode: 'open'});
-      const contentDiv = (root as DocumentFragment).querySelector('div');
+      const contentDiv = root.querySelector('div');
       assertTrue(!!contentDiv);
       shadowRoot.append(...contentDiv.childNodes);
 
@@ -1233,9 +1233,9 @@ suite('ContentController', () => {
           const root = contentController.updateContent();
           await microtasksFinished();
 
-          assertTrue(!!root);
-          assertFalse(!!(root as DocumentFragment).querySelector('button'));
-          const newDiv = (root as DocumentFragment).querySelector('div > div');
+          assertTrue(root instanceof DocumentFragment);
+          assertFalse(!!root.querySelector('button'));
+          const newDiv = root.querySelector('div > div');
           assertTrue(!!newDiv);
           assertEquals(buttonText, newDiv.textContent);
         });
@@ -1252,9 +1252,9 @@ suite('ContentController', () => {
           const root = contentController.updateContent();
           await microtasksFinished();
 
-          assertTrue(!!root);
-          assertFalse(!!(root as DocumentFragment).querySelector('mark'));
-          const newSpan = (root as DocumentFragment).querySelector('div > div');
+          assertTrue(root instanceof DocumentFragment);
+          assertFalse(!!root.querySelector('mark'));
+          const newSpan = root.querySelector('div > div');
           assertTrue(!!newSpan);
           assertEquals(markText, newSpan.textContent);
         });
@@ -1482,11 +1482,11 @@ suite('ContentController', () => {
           const root = contentController.updateContent();
           await microtasksFinished();
 
-          assertTrue(!!root);
+          assertTrue(root instanceof DocumentFragment);
           const container = document.createElement('div');
           document.body.appendChild(container);
           const shadowRoot = container.attachShadow({mode: 'open'});
-          const contentDiv = (root as DocumentFragment).querySelector('div');
+          const contentDiv = root.querySelector('div');
           assertTrue(!!contentDiv);
           shadowRoot.append(...contentDiv.childNodes);
 
@@ -1512,11 +1512,11 @@ suite('ContentController', () => {
           const root = contentController.updateContent();
           await microtasksFinished();
 
-          assertTrue(!!root);
+          assertTrue(root instanceof DocumentFragment);
           const container = document.createElement('div');
           document.body.appendChild(container);
           const shadowRoot = container.attachShadow({mode: 'open'});
-          const contentDiv = (root as DocumentFragment).querySelector('div');
+          const contentDiv = root.querySelector('div');
           assertTrue(!!contentDiv);
           shadowRoot.append(...contentDiv.childNodes);
 
@@ -1779,6 +1779,13 @@ suite('ContentController', () => {
           '"><span class="parent-of-highlight"><span class="' +
           'current-read-highlight">Try</span> to keep it hidden</span></a>';
 
+      // Re-queried each time, since updateLinks() swaps <a> and <span>.
+      function getContentElement(): HTMLElement {
+        const element = shadowRoot.firstElementChild;
+        assertTrue(element instanceof HTMLElement);
+        return element;
+      }
+
       setup(() => {
         setupBasicSpeech(speech);
         contentBrowserProxy.rootId = linkId;
@@ -1809,19 +1816,16 @@ suite('ContentController', () => {
       });
 
       test('hides links when speech active', () => {
-        speechController.onPlayPauseToggle(
-            shadowRoot.firstElementChild as HTMLElement);
+        speechController.onPlayPauseToggle(getContentElement());
         contentController.updateLinks(shadowRoot);
         assertEquals(noLinksHtml, shadowRoot.innerHTML);
       });
 
       test('shows links when speech paused', () => {
-        speechController.onPlayPauseToggle(
-            shadowRoot.firstElementChild as HTMLElement);
+        speechController.onPlayPauseToggle(getContentElement());
         contentController.updateLinks(shadowRoot);
 
-        speechController.onPlayPauseToggle(
-            shadowRoot.firstElementChild as HTMLElement);
+        speechController.onPlayPauseToggle(getContentElement());
         contentController.updateLinks(shadowRoot);
 
         assertEquals(linksHtml, shadowRoot.innerHTML);
@@ -1831,8 +1835,7 @@ suite('ContentController', () => {
         const expectedHTML = '<a href="' + linkUrl +
             '"><span class="parent-of-highlight"><span class="">' +
             'Try</span> to keep it hidden</span></a>';
-        speechController.onPlayPauseToggle(
-            shadowRoot.firstElementChild as HTMLElement);
+        speechController.onPlayPauseToggle(getContentElement());
         contentController.updateLinks(shadowRoot);
 
         const spoken = await speech.whenCalled('speak');
@@ -1846,8 +1849,7 @@ suite('ContentController', () => {
         visualBrowserProxy.linksEnabled = false;
         contentController.updateLinks(shadowRoot);
 
-        speechController.onPlayPauseToggle(
-            shadowRoot.firstElementChild as HTMLElement);
+        speechController.onPlayPauseToggle(getContentElement());
         contentController.updateLinks(shadowRoot);
         assertEquals(noLinksHtml, shadowRoot.innerHTML);
       });
@@ -1855,12 +1857,10 @@ suite('ContentController', () => {
       test('hides links when speech paused and links disabled', () => {
         visualBrowserProxy.linksEnabled = false;
         contentController.updateLinks(shadowRoot);
-        speechController.onPlayPauseToggle(
-            shadowRoot.firstElementChild as HTMLElement);
+        speechController.onPlayPauseToggle(getContentElement());
         contentController.updateLinks(shadowRoot);
 
-        speechController.onPlayPauseToggle(
-            shadowRoot.firstElementChild as HTMLElement);
+        speechController.onPlayPauseToggle(getContentElement());
         contentController.updateLinks(shadowRoot);
 
         assertEquals(noLinksHtml, shadowRoot.innerHTML);
@@ -2791,10 +2791,10 @@ suite('ContentController', () => {
               '<iframe data-video="//www.youtube.com/embed/test" ' +
               'srcdoc="<script>evil()</script>"></iframe>';
 
-          const root = contentController.updateContent() as DocumentFragment;
+          const root = contentController.updateContent();
           await microtasksFinished();
 
-          assertTrue(!!root);
+          assertTrue(root instanceof DocumentFragment);
           assertEquals(null, root.querySelector('iframe'));
           assertEquals(null, root.querySelector('script'));
           assertStringContains(root.textContent || '', 'Normal text');
@@ -2819,10 +2819,10 @@ suite('ContentController', () => {
           '<a href="javascript:void(0)">Link</a>' +
           '</div>';
 
-      const content = contentController.updateContent() as DocumentFragment;
+      const content = contentController.updateContent();
       await microtasksFinished();
 
-      assertTrue(!!content);
+      assertTrue(content instanceof DocumentFragment);
       assertEquals(null, content.querySelector('style'));
       assertEquals(null, content.querySelector('link'));
       assertEquals(null, content.querySelector('dialog'));

@@ -113,20 +113,11 @@ suite('Remove Extraneous Elements', function() {
     // Simulate getBoundingClientRect for testing
     const elements = testContainer.querySelectorAll('*');
     for (const el of elements) {
-      const htmlEl = el as HTMLElement;
-      htmlEl.getBoundingClientRect = function() {
+      el.getBoundingClientRect = function() {
         const style = this.getAttribute('style') || '';
-        return {
-          width: style.includes('width: 0') ? 0 : 10,
-          height: style.includes('height: 0') ? 0 : 10,
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-          x: 0,
-          y: 0,
-          toJSON: () => {},
-        } as DOMRect;
+        return new DOMRect(
+            0, 0, style.includes('width: 0') ? 0 : 10,
+            style.includes('height: 0') ? 0 : 10);
       };
     }
 
@@ -160,20 +151,11 @@ suite('Remove Extraneous Elements', function() {
     // Simulate getBoundingClientRect for testing
     const elements = testContainer.querySelectorAll('*');
     for (const el of elements) {
-      const htmlEl = el as HTMLElement;
-      htmlEl.getBoundingClientRect = function() {
+      el.getBoundingClientRect = function() {
         const style = this.getAttribute('style') || '';
-        return {
-          width: style.includes('width: 0') ? 0 : 10,
-          height: style.includes('height: 0') ? 0 : 10,
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-          x: 0,
-          y: 0,
-          toJSON: () => {},
-        } as DOMRect;
+        return new DOMRect(
+            0, 0, style.includes('width: 0') ? 0 : 10,
+            style.includes('height: 0') ? 0 : 10);
       };
     }
 
@@ -283,20 +265,7 @@ suite('Remove Extraneous Elements', function() {
 
         const elements = testContainer.querySelectorAll('*');
         for (const el of elements) {
-          const htmlEl = el as HTMLElement;
-          htmlEl.getBoundingClientRect = function() {
-            return {
-              width: 0,
-              height: 0,
-              top: 0,
-              left: 0,
-              bottom: 0,
-              right: 0,
-              x: 0,
-              y: 0,
-              toJSON: () => {},
-            } as DOMRect;
-          };
+          el.getBoundingClientRect = () => new DOMRect();
         }
 
         removeExtraneousElementsFrom(testContainer);

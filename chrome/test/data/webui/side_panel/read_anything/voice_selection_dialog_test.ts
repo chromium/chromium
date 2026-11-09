@@ -10,13 +10,12 @@ import type {CrRadioButtonElement} from '//resources/cr_elements/cr_radio_button
 import type {CrRadioGroupElement} from '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {VoiceSelectionDialogElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AudioBrowserProxyImpl, getVoiceNatureNaming, spinnerDebounceTimeout, stringToHtmlTestId, ToolbarEvent, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {getVoiceNatureNaming, spinnerDebounceTimeout, stringToHtmlTestId, ToolbarEvent, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createSpeechSynthesisVoice, setupTestEnvironment} from './common.js';
-import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('VoiceSelectionDialog', () => {
@@ -81,9 +80,7 @@ suite('VoiceSelectionDialog', () => {
     const result = setupTestEnvironment();
     metrics = result.metrics;
 
-    const audioBrowserProxy =
-        AudioBrowserProxyImpl.getInstance() as TestAudioBrowserProxy;
-    audioBrowserProxy.localeToDisplayName = {
+    result.audioBrowserProxy.localeToDisplayName = {
       'it': 'Italian',
       'it-it': 'Italian',
       'en-us': 'English (United States)',
