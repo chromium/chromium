@@ -22,6 +22,10 @@ struct SnapshotItemDetails {
 
   SnapshotItemDetails(base::FilePath path, ItemType type, uint64_t data_types);
   ~SnapshotItemDetails() = default;
+
+  friend bool operator==(const SnapshotItemDetails&,
+                         const SnapshotItemDetails&) = default;
+
   const base::FilePath path;
   const bool is_directory;
 

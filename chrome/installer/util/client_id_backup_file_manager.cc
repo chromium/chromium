@@ -40,7 +40,7 @@ base::FilePath GetBackupFilePath() {
   if (!base::PathService::Get(chrome::DIR_USER_DATA, &dir) || dir.empty()) {
     return base::FilePath();
   }
-  return dir.Append(kClientIdBackupFileName);
+  return dir.Append(ClientIdBackupFileManager::GetBackupFileName());
 }
 
 void SetClientIdBackupFilePermissionIfNeeded(
@@ -86,6 +86,11 @@ ClientIdBackupValidationResult ValidateClientId(const std::string& client_id) {
 ClientIdBackupFileManager& ClientIdBackupFileManager::GetInstance() {
   static base::NoDestructor<ClientIdBackupFileManager> instance;
   return *instance;
+}
+
+// static
+base::FilePath ClientIdBackupFileManager::GetBackupFileName() {
+  return base::FilePath(kClientIdBackupFileName);
 }
 
 // static

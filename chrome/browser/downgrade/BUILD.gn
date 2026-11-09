@@ -47,6 +47,7 @@ source_set("impl") {
     "//chrome/common:buildflags",
     "//chrome/common:channel_info",
     "//chrome/common:constants",
+    "//chrome/installer/util:with_no_strings",
     "//components/prefs",
     "//components/version_info",
     "//content/public/browser",
@@ -68,11 +69,7 @@ source_set("impl") {
       "//components/strike_database",
       "//components/webdata/common",
     ]
-  }
-
-  if (is_win) {
-    deps += [ "//chrome/installer/util:with_no_strings" ]
-    if (enable_downgrade_processing) {
+    if (is_win) {
       deps += [ "//chrome/browser/web_applications/chrome_pwa_launcher:util" ]
     }
   }
@@ -92,7 +89,9 @@ source_set("unit_tests") {
     deps += [
       ":impl",
       "//base",
+      "//chrome/installer/util:with_no_strings",
       "//chrome/test:test_support",
+      "//testing/gmock",
       "//testing/gtest",
     ]
   }

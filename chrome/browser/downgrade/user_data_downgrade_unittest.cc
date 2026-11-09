@@ -11,11 +11,17 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "build/build_config.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/downgrade/snapshot_file_collector.h"
 #include "chrome/common/chrome_constants.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/installer/util/client_id_backup_file_manager.h"
+#endif
 
 namespace downgrade {
 
@@ -206,5 +212,14 @@ TEST(UserDataDowngradeTests, RemoveDataForProfile) {
                           chrome_browsing_data_remover::WIPE_PROFILE);
   EXPECT_FALSE(base::PathExists(snapshot_profile_path_1));
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST(UserDataDowngradeTests, CollectUserDataItemsIncludesClientIdBackup) {
+  EXPECT_THAT(CollectUserDataItems(),
+              ::testing::Contains(SnapshotItemDetails(
+                  ClientIdBackupFileManager::GetBackupFileName(),
+                  SnapshotItemDetails::ItemType::kFile, 0)));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace downgrade

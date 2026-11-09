@@ -22,6 +22,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/profiles/profile_shortcut_manager_win.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/last_browser_file_util.h"
+#include "chrome/installer/util/client_id_backup_file_manager.h"
 #endif
 
 namespace downgrade {
@@ -35,6 +36,8 @@ std::vector<SnapshotItemDetails> CollectUserDataItems() {
       SnapshotItemDetails(base::FilePath(profiles::kHighResAvatarFolderName),
                           SnapshotItemDetails::ItemType::kDirectory, 0)};
 #if BUILDFLAG(IS_WIN)
+  user_data_items.emplace_back(ClientIdBackupFileManager::GetBackupFileName(),
+                               SnapshotItemDetails::ItemType::kFile, 0);
   user_data_items.emplace_back(base::FilePath(web_app::kLastBrowserFilename),
                                SnapshotItemDetails::ItemType::kFile, 0);
 #endif  // BUILDFLAG(IS_WIN)

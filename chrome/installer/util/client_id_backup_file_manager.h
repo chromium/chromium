@@ -31,6 +31,10 @@ class ClientIdBackupFileManager {
  public:
   static ClientIdBackupFileManager& GetInstance();
 
+  // Returns the base file name of the client ID backup file under the user data
+  // directory.
+  static base::FilePath GetBackupFileName();
+
   static base::FilePath GetBackupFilePathForTesting();
 
   // This is a singleton, no copy constructors.
