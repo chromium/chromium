@@ -9,7 +9,68 @@
 
 namespace extensions {
 
-ListenerRegistrationPhaseMap::ListenerRegistrationPhaseMap() = default;
+bool ListenerRegistrationPhaseMap::ListenerSet::Has(
+    const std::string& event_name,
+    const base::DictValue* filter) const {
+  if (!filter) {
+    return events.contains(event_name);
+  }
+  const base::ListValue* filters = filtered_events.FindList(event_name);
+  return filters && filters->contains(*filter);
+}
+
+void ListenerRegistrationPhaseMap::ListenerSet::Add(
+    const std::string& event_name,
+    const base::DictValue* filter) {
+  if (!filter) {
+    events.insert(event_name);
+  } else if (!Has(event_name, filter)) {
+    filtered_events.EnsureList(event_name)->Append(filter->Clone());
+  }
+}
+
+void ListenerRegistrationPhaseMap::ListenerSet::Remove(
+    const std::string& event_name,
+    const base::DictValue* filter) {
+  if (!filter) {
+    events.erase(event_name);
+    return;
+  }
+  base::ListValue* filters = filtered_events.FindList(event_name);
+  if (!filters) {
+    return;
+  }
+  filters->EraseValue(base::Value(filter->Clone()));
+  if (filters->empty()) {
+    filtered_events.Remove(event_name);
+  }
+}
+
+void ListenerRegistrationPhaseMap::ListenerSet::AddAll(
+    const ListenerSet& other) {
+  events.insert(other.events.begin(), other.events.end());
+  // `other` can come from prefs, so skip malformed entries.
+  for (const auto [event_name, value] : other.filtered_events) {
+    const base::ListValue* filters = value.GetIfList();
+    if (!filters) {
+      continue;
+    }
+    for (const base::Value& filter : *filters) {
+      if (const base::DictValue* filter_dict = filter.GetIfDict()) {
+        Add(event_name, filter_dict);
+      }
+    }
+  }
+}
+
+ListenerRegistrationPhaseMap::ListenerSet
+ListenerRegistrationPhaseMap::ListenerSet::Clone() const {
+  return {events, filtered_events.Clone()};
+}
+
+ListenerRegistrationPhaseMap::ListenerRegistrationPhaseMap(
+    OnFinishedCallback on_finished)
+    : on_finished_(std::move(on_finished)) {}
 
 ListenerRegistrationPhaseMap::~ListenerRegistrationPhaseMap() = default;
 
@@ -37,9 +98,8 @@ bool ListenerRegistrationPhaseMap::Commit(
     // instance.
     return false;
   }
-  // TODO(crbug.com/509627729): Replace the persisted routing state with the
-  // set of listeners registered during this instance.
   it->second.state = State::kCommitted;
+  on_finished_.Run(extension_id, browser_context, State::kCommitted);
   return true;
 }
 
@@ -52,6 +112,7 @@ void ListenerRegistrationPhaseMap::Abort(
     return;
   }
   it->second.state = State::kAborted;
+  on_finished_.Run(extension_id, browser_context, State::kAborted);
 }
 
 void ListenerRegistrationPhaseMap::AbortForInstance(
@@ -66,6 +127,7 @@ void ListenerRegistrationPhaseMap::AbortForInstance(
     return;
   }
   it->second.state = State::kAborted;
+  on_finished_.Run(extension_id, browser_context, State::kAborted);
 }
 
 std::optional<ListenerRegistrationPhaseMap::State>
@@ -86,6 +148,17 @@ bool ListenerRegistrationPhaseMap::IsStarted(
     return false;
   }
   return GetState(extension_id, browser_context) == State::kStarted;
+}
+
+ListenerRegistrationPhaseMap::ListenerSet*
+ListenerRegistrationPhaseMap::GetListeners(
+    const ExtensionId& extension_id,
+    content::BrowserContext& browser_context) {
+  auto it = phases_.find({extension_id, browser_context.UniqueToken()});
+  if (it == phases_.end()) {
+    return nullptr;
+  }
+  return &it->second.listeners;
 }
 
 void ListenerRegistrationPhaseMap::RemoveAllForExtension(

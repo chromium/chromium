@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -11,13 +12,16 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api_helpers.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/test/base/profile_destruction_waiter.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/web_contents.h"
@@ -29,6 +33,7 @@
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/events/listener_registration_phase_map.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/browser/service_worker/worker_id.h"
@@ -524,8 +529,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
 // TODO(crbug.com/40072982): Test that kBadRequestId no longer kills the service
 // worker renderer with a test that mimics receiving a stale ack to the browser.
 
-// TODO(crbug.com/509627729): Flaky on desktop Android.
+// TODO(crbug.com/574148904): Flaky on desktop Android.
 #if !BUILDFLAG(IS_ANDROID)
+constexpr char kOnBeforeNavigate[] = "webNavigation.onBeforeNavigate";
+constexpr char kOnCommitted[] = "webNavigation.onCommitted";
+
 // Manifest for an extension using `background.async_listener_registration`.
 constexpr char kAsyncListenerRegistrationManifest[] =
     R"({
@@ -539,8 +547,7 @@ constexpr char kAsyncListenerRegistrationManifest[] =
          }
        })";
 
-// Tests for the renderer-side event queue of extensions using
-// `background.async_listener_registration`.
+// Tests for extensions using `background.async_listener_registration`.
 class ServiceWorkerAsyncListenerRegistrationBrowserTest
     : public ServiceWorkerEventDispatchingBrowserTest {
  public:
@@ -583,6 +590,18 @@ class ServiceWorkerAsyncListenerRegistrationBrowserTest
         BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
   }
 
+  // Returns `extension`'s persisted service worker event filters for
+  // `event_name`.
+  base::ListValue GetPersistedFilters(const Extension& extension,
+                                      const std::string& event_name) {
+    const base::DictValue* filtered_events =
+        ExtensionPrefs::Get(profile())->ReadPrefAsDict(
+            extension.id(), EventRouter::kFilteredServiceWorkerEvents);
+    const base::ListValue* filters =
+        filtered_events ? filtered_events->FindList(event_name) : nullptr;
+    return filters ? filters->Clone() : base::ListValue();
+  }
+
   // Writes an extension with conditional listener registration to `test_dir`
   // and loads it. Its first instance registers a listener that persists across
   // worker instances, then completes registration. The helper then stops the
@@ -593,7 +612,8 @@ class ServiceWorkerAsyncListenerRegistrationBrowserTest
     // The reply to 'ready' tells each instance whether to register the
     // listener ('register' registers it). The listener records received
     // event URLs in `self.receivedEvents`. Each instance then completes
-    // registration and sends 'completed' once the API promise resolves.
+    // registration and sends 'completed' once the API promise resolves, unless
+    // the reply is 'skip-completion'.
     static constexpr char kBackgroundJs[] =
         R"(self.receivedEvents = [];
            (async () => {
@@ -602,6 +622,9 @@ class ServiceWorkerAsyncListenerRegistrationBrowserTest
                chrome.webNavigation.onBeforeNavigate.addListener((details) => {
                  self.receivedEvents.push(details.url);
                });
+             }
+             if (mode === 'skip-completion') {
+               return;
              }
              await chrome.runtime.markListenerRegistrationComplete();
              chrome.test.sendMessage('completed');
@@ -797,7 +820,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAsyncListenerRegistrationBrowserTest,
 // Tests that events matching persisted listeners from a previous run still
 // reach a new instance during its registration phase, even if the extension
 // does not re-register them. The renderer queues these events and drops them
-// at flush time when no matching listener is registered.
+// at flush time when no matching listener is registered. Completing
+// registration also removes any persisted listeners that weren't re-registered.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerAsyncListenerRegistrationBrowserTest,
                        OldPersistedStateRoutesEventsDuringPhase) {
   TestExtensionDir test_dir;
@@ -844,6 +868,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAsyncListenerRegistrationBrowserTest,
   // No JS listener was registered in this run, so the flushed events are
   // dropped and never reach JS.
   EXPECT_EQ(GetReceivedEvents(*extension), "[]");
+
+  // This instance didn't add the listener, so completing registration removed
+  // it from prefs and memory, and it won't wake future instances.
+  EXPECT_TRUE(GetPersistedFilters(*extension, kOnBeforeNavigate).empty());
+  EXPECT_FALSE(EventRouter::Get(profile())->HasLazyEventListenerForTesting(
+      kOnBeforeNavigate));
 }
 
 // Tests that events dispatched before the extension registers its listener
@@ -883,6 +913,110 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAsyncListenerRegistrationBrowserTest,
             R"(["http://example.com/wake","http://example.com/midphase"])");
   EXPECT_EQ(ListenerRegistrationPhaseMap::State::kCommitted,
             GetListenerRegistrationPhaseState(*profile(), extension->id()));
+}
+
+// Tests that if the worker stops before completing registration, the
+// previously persisted listeners are kept and the one it added is dropped.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerAsyncListenerRegistrationBrowserTest,
+                       AbortedPhaseKeepsPersistedListeners) {
+  TestExtensionDir test_dir;
+  const Extension* extension = LoadExtensionWithPersistedListener(test_dir);
+  ASSERT_TRUE(extension);
+  EventRouter* event_router = EventRouter::Get(profile());
+
+  // Second instance: the persisted listener wakes the worker, which registers
+  // a new listener but never completes registration.
+  ExtensionTestMessageListener second_ready_listener("ready",
+                                                     ReplyBehavior::kWillReply);
+  DispatchWebNavigationEvent(GURL("http://example.com/wake"));
+  {
+    SCOPED_TRACE("Waiting for the second instance to start");
+    ASSERT_TRUE(second_ready_listener.WaitUntilSatisfied());
+  }
+  second_ready_listener.Reply("skip-completion");
+  {
+    SCOPED_TRACE("Waiting for the second instance to add a listener");
+    ExecuteScriptInBackgroundPage(extension->id(), R"(
+        chrome.webNavigation.onCommitted.addListener(() => {});
+        chrome.test.sendScriptResult('');)");
+  }
+  ASSERT_TRUE(event_router->HasLazyEventListenerForTesting(kOnCommitted));
+  // The new listener isn't persisted while the phase is in progress.
+  EXPECT_TRUE(GetPersistedFilters(*extension, kOnCommitted).empty());
+
+  // Stopping the worker aborts the phase. Waiting for untrack ensures that the
+  // task queue has processed the abort.
+  TestServiceWorkerTaskQueueObserver task_queue_observer;
+  {
+    SCOPED_TRACE("Waiting for the second instance to stop");
+    browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                               extension->id());
+    task_queue_observer.WaitForUntrackServiceWorkerState(extension->url());
+  }
+  ASSERT_EQ(ListenerRegistrationPhaseMap::State::kAborted,
+            GetListenerRegistrationPhaseState(*profile(), extension->id()));
+
+  // The new listener was dropped, and the persisted one wakes a third instance.
+  EXPECT_FALSE(event_router->HasLazyEventListenerForTesting(kOnCommitted));
+  EXPECT_TRUE(GetPersistedFilters(*extension, kOnCommitted).empty());
+  EXPECT_EQ(GetPersistedFilters(*extension, kOnBeforeNavigate),
+            base::ListValue().Append(base::DictValue()));
+  ExtensionTestMessageListener third_ready_listener("ready");
+  DispatchWebNavigationEvent(GURL("http://example.com/wake-again"));
+  {
+    SCOPED_TRACE("Waiting for the third instance to start");
+    EXPECT_TRUE(third_ready_listener.WaitUntilSatisfied());
+  }
+}
+
+// Tests that closing the incognito window while a split-mode extension's
+// incognito worker is still registering listeners drops the listeners it added
+// and keeps the ones persisted by the regular worker.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerAsyncListenerRegistrationBrowserTest,
+                       SplitModeIncognitoClosedDuringRegistration) {
+  // Both workers register `onBeforeNavigate`. The regular worker completes
+  // registration, while the incognito worker adds `onCommitted` and doesn't.
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.webNavigation.onBeforeNavigate.addListener(() => {});
+         if (chrome.extension.inIncognitoContext) {
+           chrome.webNavigation.onCommitted.addListener(() => {});
+         } else {
+           chrome.runtime.markListenerRegistrationComplete();
+         })";
+  base::DictValue manifest =
+      base::test::ParseJsonDict(kAsyncListenerRegistrationManifest);
+  manifest.Set("incognito", "split");
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(manifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  const Extension* extension = LoadExtension(
+      test_dir.UnpackedPath(),
+      {.allow_in_incognito = true, .wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetListenerRegistrationPhaseState(*profile(), extension->id()) ==
+           ListenerRegistrationPhaseMap::State::kCommitted;
+  }));
+
+  // Navigating in an incognito tab wakes the incognito worker.
+  EventRouter* event_router = EventRouter::Get(profile());
+  content::WebContents* incognito_contents = PlatformOpenURLOffTheRecord(
+      profile(), embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(incognito_contents);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return event_router->HasLazyEventListenerForTesting(kOnCommitted);
+  }));
+
+  // Closing the only incognito tab destroys the incognito context, which drops
+  // `onCommitted` without persisting it.
+  ProfileDestructionWaiter profile_destruction_waiter(
+      Profile::FromBrowserContext(incognito_contents->GetBrowserContext()));
+  CloseTabForWebContents(incognito_contents);
+  profile_destruction_waiter.Wait();
+  EXPECT_FALSE(event_router->HasLazyEventListenerForTesting(kOnCommitted));
+  EXPECT_TRUE(GetPersistedFilters(*extension, kOnCommitted).empty());
+  EXPECT_EQ(GetPersistedFilters(*extension, kOnBeforeNavigate),
+            base::ListValue().Append(base::DictValue()));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

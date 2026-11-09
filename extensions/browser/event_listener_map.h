@@ -275,6 +275,17 @@ class EventListenerMap {
                                  bool is_for_service_worker,
                                  const base::DictValue& filtered);
 
+  // Replaces `extension_id`'s lazy service worker listeners with the unfiltered
+  // `event_names` and `filtered` listeners (same format as
+  // `LoadUnfilteredLazyListeners()` and `LoadFilteredLazyListeners()`).
+  // Unchanged listeners are left in place so `delegate_` is only notified of
+  // actual additions and removals.
+  void ReplaceLazyServiceWorkerListeners(
+      content::BrowserContext* browser_context,
+      const ExtensionId& extension_id,
+      const std::set<std::string>& event_names,
+      const base::DictValue& filtered);
+
  private:
   // Removes the listeners for which `removal_predicate` returns true.
   void RemoveListenersIf(

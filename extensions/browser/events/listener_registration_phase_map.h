@@ -7,9 +7,13 @@
 
 #include <map>
 #include <optional>
+#include <set>
+#include <string>
 #include <utility>
 
+#include "base/functional/callback.h"
 #include "base/unguessable_token.h"
+#include "base/values.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -31,7 +35,7 @@ namespace extensions {
 // The map retains the latest phase for each key until replaced by a new
 // instance, or removed on extension unload or context shutdown. This allows
 // distinguishing a late signal from a finished worker instance from one for a
-// phase that never started.
+// phase that never started. Each phase also tracks the worker's lazy listeners.
 //
 // Phases are keyed by extension ID and the unique token of the worker's
 // BrowserContext (`content::BrowserContext::UniqueToken()`) to keep
@@ -48,7 +52,34 @@ class ListenerRegistrationPhaseMap {
     kAborted,
   };
 
-  ListenerRegistrationPhaseMap();
+  // Tracks a set of lazy listeners using the same representation as
+  // ExtensionPrefs: unfiltered event names in `events`, and a dict mapping
+  // event names to lists of filter dicts in `filtered_events`.
+  //
+  // For `Has()`, `Add()`, and `Remove()`, a null `filter` refers to an
+  // unfiltered listener.
+  struct ListenerSet {
+    bool Has(const std::string& event_name,
+             const base::DictValue* filter) const;
+    void Add(const std::string& event_name, const base::DictValue* filter);
+    void Remove(const std::string& event_name, const base::DictValue* filter);
+    void AddAll(const ListenerSet& other);
+
+    ListenerSet Clone() const;
+
+    bool operator==(const ListenerSet&) const = default;
+
+    std::set<std::string> events;
+    base::DictValue filtered_events;
+  };
+
+  using OnFinishedCallback = base::RepeatingCallback<
+      void(const ExtensionId&, content::BrowserContext&, State)>;
+
+  // `on_finished` is called when `Commit()`, `Abort()`, or
+  // `AbortForInstance()` finishes a started phase (not when `Start()` replaces
+  // a phase or `RemoveAllFor*()` erases it).
+  explicit ListenerRegistrationPhaseMap(OnFinishedCallback on_finished);
   ~ListenerRegistrationPhaseMap();
 
   ListenerRegistrationPhaseMap(const ListenerRegistrationPhaseMap&) = delete;
@@ -89,6 +120,12 @@ class ListenerRegistrationPhaseMap {
   bool IsStarted(const ExtensionId& extension_id,
                  content::BrowserContext& browser_context) const;
 
+  // Returns the listener set for the latest registration phase of
+  // `extension_id`, or nullptr if no phase exists. `EventRouter` updates this
+  // set as the worker adds and removes lazy listeners.
+  ListenerSet* GetListeners(const ExtensionId& extension_id,
+                            content::BrowserContext& browser_context);
+
   // Removes registration phases for `extension_id` across all BrowserContexts
   // on extension unload.
   void RemoveAllForExtension(const ExtensionId& extension_id);
@@ -100,7 +137,10 @@ class ListenerRegistrationPhaseMap {
   struct Phase {
     blink::ServiceWorkerToken service_worker_token;
     State state = State::kStarted;
+    ListenerSet listeners;
   };
+
+  OnFinishedCallback on_finished_;
 
   // Keyed by extension ID and the unique token of the worker's BrowserContext.
   std::map<std::pair<ExtensionId, base::UnguessableToken>, Phase> phases_;

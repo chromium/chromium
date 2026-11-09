@@ -5,7 +5,13 @@
 #include "extensions/browser/events/listener_registration_phase_map.h"
 
 #include <optional>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
+#include "base/functional/bind.h"
+#include "base/values.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "extensions/common/extension_id.h"
@@ -16,7 +22,9 @@ namespace extensions {
 
 namespace {
 
+using ListenerSet = ListenerRegistrationPhaseMap::ListenerSet;
 using State = ListenerRegistrationPhaseMap::State;
+using FinishedPhase = std::pair<ExtensionId, State>;
 
 constexpr char kExtensionId[] = "mbflcebpggnecokmikipoihdbecnjfoj";
 
@@ -28,15 +36,29 @@ class ListenerRegistrationPhaseMapTest : public testing::Test {
   }
   ListenerRegistrationPhaseMap& phases() { return phases_; }
 
+  const std::vector<FinishedPhase>& finished_phases() const {
+    return finished_phases_;
+  }
+
  private:
+  void OnFinished(const ExtensionId& extension_id,
+                  content::BrowserContext&,
+                  State state) {
+    finished_phases_.emplace_back(extension_id, state);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
   content::TestBrowserContext other_browser_context_;
-  ListenerRegistrationPhaseMap phases_;
+  std::vector<FinishedPhase> finished_phases_;
+  ListenerRegistrationPhaseMap phases_{
+      base::BindRepeating(&ListenerRegistrationPhaseMapTest::OnFinished,
+                          base::Unretained(this))};
 };
 
 // Tests that Commit() requires a started phase for the matching worker
-// instance and only succeeds once.
+// instance, succeeds at most once, and runs the finished callback only when it
+// succeeds.
 TEST_F(ListenerRegistrationPhaseMapTest, Commit) {
   const blink::ServiceWorkerToken kWorkerToken;
   const blink::ServiceWorkerToken kOtherWorkerToken;
@@ -54,10 +76,13 @@ TEST_F(ListenerRegistrationPhaseMapTest, Commit) {
   EXPECT_FALSE(phases().Commit(kExtensionId, browser_context(), kWorkerToken));
   EXPECT_EQ(State::kCommitted,
             phases().GetState(kExtensionId, browser_context()));
+  EXPECT_EQ(finished_phases(),
+            (std::vector<FinishedPhase>{{kExtensionId, State::kCommitted}}));
 }
 
 // Tests that AbortForInstance() ignores stop signals from other worker
-// instances, and that committed phases cannot be aborted.
+// instances, and that committed phases cannot be aborted. No-op aborts don't
+// run the finished callback.
 TEST_F(ListenerRegistrationPhaseMapTest, Abort) {
   const blink::ServiceWorkerToken kWorkerToken;
   const blink::ServiceWorkerToken kStaleWorkerToken;
@@ -84,22 +109,84 @@ TEST_F(ListenerRegistrationPhaseMapTest, Abort) {
   phases().AbortForInstance(kExtensionId, browser_context(), kNextWorkerToken);
   EXPECT_EQ(State::kCommitted,
             phases().GetState(kExtensionId, browser_context()));
+  EXPECT_EQ(finished_phases(),
+            (std::vector<FinishedPhase>{{kExtensionId, State::kAborted},
+                                        {kExtensionId, State::kCommitted}}));
 }
 
-// Tests that Start() replaces a finished phase for a new worker instance.
+// Tests adding, querying, merging, and removing filtered and unfiltered
+// entries in `ListenerSet`.
+TEST_F(ListenerRegistrationPhaseMapTest, ListenerSet) {
+  const base::DictValue filter =
+      base::DictValue().Set("hostSuffix", "example.com");
+
+  // Adding the same filter twice keeps a single entry.
+  ListenerSet listeners;
+  listeners.Add("test.onEvent", nullptr);
+  listeners.Add("test.onFiltered", &filter);
+  listeners.Add("test.onFiltered", &filter);
+  EXPECT_EQ(listeners.events, std::set<std::string>{"test.onEvent"});
+  EXPECT_EQ(listeners.filtered_events,
+            base::DictValue().Set("test.onFiltered",
+                                  base::ListValue().Append(filter.Clone())));
+  EXPECT_TRUE(listeners.Has("test.onEvent", nullptr));
+  EXPECT_TRUE(listeners.Has("test.onFiltered", &filter));
+  EXPECT_FALSE(listeners.Has("test.onEvent", &filter));
+  EXPECT_FALSE(listeners.Has("test.onFiltered", nullptr));
+  EXPECT_EQ(listeners.Clone(), listeners);
+
+  // `AddAll()` merges new entries without duplicating existing filters.
+  ListenerSet other;
+  other.Add("test.onOther", nullptr);
+  other.Add("test.onFiltered", &filter);
+  other.Add("test.onOtherFiltered", &filter);
+  listeners.AddAll(other);
+  EXPECT_EQ(listeners.events,
+            (std::set<std::string>{"test.onEvent", "test.onOther"}));
+  EXPECT_EQ(
+      listeners.filtered_events,
+      base::DictValue()
+          .Set("test.onFiltered", base::ListValue().Append(filter.Clone()))
+          .Set("test.onOtherFiltered",
+               base::ListValue().Append(filter.Clone())));
+
+  // Removing an event's last filter also removes its key from
+  // `filtered_events`.
+  listeners.Remove("test.onFiltered", &filter);
+  listeners.Remove("test.onEvent", nullptr);
+  EXPECT_EQ(listeners.events, std::set<std::string>{"test.onOther"});
+  EXPECT_EQ(listeners.filtered_events,
+            base::DictValue().Set("test.onOtherFiltered",
+                                  base::ListValue().Append(filter.Clone())));
+}
+
+// Tests that a phase's listeners remain accessible after `Commit()`, and that
+// `Start()` for a new worker instance resets both the phase state and its
+// listeners.
 TEST_F(ListenerRegistrationPhaseMapTest, StartReplacesFinishedPhase) {
   const blink::ServiceWorkerToken kCommittedWorkerToken;
   const blink::ServiceWorkerToken kNewWorkerToken;
 
+  EXPECT_FALSE(phases().GetListeners(kExtensionId, browser_context()));
   phases().Start(kExtensionId, browser_context(), kCommittedWorkerToken);
+  ListenerSet* listeners =
+      phases().GetListeners(kExtensionId, browser_context());
+  ASSERT_TRUE(listeners);
+  listeners->Add("test.onEvent", nullptr);
   EXPECT_TRUE(
       phases().Commit(kExtensionId, browser_context(), kCommittedWorkerToken));
+  listeners = phases().GetListeners(kExtensionId, browser_context());
+  ASSERT_TRUE(listeners);
+  EXPECT_EQ(listeners->events, std::set<std::string>{"test.onEvent"});
 
-  // Starting a new instance replaces the committed phase and invalidates the
-  // previous worker token.
+  // Starting a new instance resets the phase (and its listener set) and
+  // invalidates the previous worker token.
   phases().Start(kExtensionId, browser_context(), kNewWorkerToken);
   EXPECT_EQ(State::kStarted,
             phases().GetState(kExtensionId, browser_context()));
+  listeners = phases().GetListeners(kExtensionId, browser_context());
+  ASSERT_TRUE(listeners);
+  EXPECT_EQ(*listeners, ListenerSet());
   EXPECT_FALSE(
       phases().Commit(kExtensionId, browser_context(), kCommittedWorkerToken));
   EXPECT_TRUE(
