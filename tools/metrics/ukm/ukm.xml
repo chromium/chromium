@@ -199,7 +199,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="AboutThisSiteStatus">
-  <owner>olesiamarukhnno@google.com</owner>
+  <owner>olesiamarukhno@google.com</owner>
   <summary>
     Recorded on each page info bubble open when &quot;About this site&quot; data
     is fetched.
@@ -10141,7 +10141,7 @@ be describing additional metrics about the same event.
 
 <event name="FileSystemAPI.WebRequest">
   <owner>mek@chromium.org</owner>
-  <owner>rhalavatigit@chromium.org</owner>
+  <owner>rhalavati@chromium.org</owner>
   <summary>
     Logged when a website requests accessing FileSystem API.
   </summary>
@@ -17172,7 +17172,7 @@ be describing additional metrics about the same event.
 <event name="OptimizationGuide.AIPageContentAgent">
   <owner>chrome-intelligence-core@google.com</owner>
   <owner>khushalsagar@chromium.org</owner>
-  <owner>abigailklein@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
   <owner>gklassen@chromium.org</owner>
   <summary>
     Metrics related to page content extraction. Only recorded when depth limit
@@ -21668,7 +21668,7 @@ be describing additional metrics about the same event.
 
 <event
     name="SafetyHub.DisruptiveNotificationRevocations.FalsePositiveInteraction">
-  <owner>olesiamarukhnno@google.com</owner>
+  <owner>olesiamarukhno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <summary>
     Recorded when an user interaction was detected for a site that was
@@ -21713,7 +21713,7 @@ be describing additional metrics about the same event.
 
 <event
     name="SafetyHub.DisruptiveNotificationRevocations.FalsePositiveRevocation">
-  <owner>olesiamarukhnno@google.com</owner>
+  <owner>olesiamarukhno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <summary>
     Recorded when enough user interactations were detected to be deemed a false
@@ -21767,7 +21767,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="SafetyHub.DisruptiveNotificationRevocations.Proposed">
-  <owner>olesiamarukhnno@google.com</owner>
+  <owner>olesiamarukhno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <summary>
     Recorded when Safety Hub would propose to revoke a disruptive notification
@@ -21793,7 +21793,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="SafetyHub.DisruptiveNotificationRevocations.UserRegrant">
-  <owner>olesiamarukhnno@google.com</owner>
+  <owner>olesiamarukhno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <summary>
     Recorded when a user has granted a notification permission for a site where
@@ -27584,7 +27584,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Webapp.AddToHomeScreen">
-  <owner>eirage@chromium.org&gt;</owner>
   <owner>hartmanng@chromium.org</owner>
   <owner>mwi-team-core@google.com</owner>
   <summary>
