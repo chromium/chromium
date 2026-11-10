@@ -6844,8 +6844,8 @@
   },
   {
     "name": "linked-accounts",
-    "owners": ["msalama@chromium.org", "chrome-signin-team@google.com"],
-    "expiry_milestone": 160
+    "owners": ["msalama@chromium.org", "chrome-signin-desktop-team@google.com"],
+    "expiry_milestone": 170
   },
   {
     "name": "load-all-tabs-at-startup",
