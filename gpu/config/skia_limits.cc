@@ -6,6 +6,8 @@
 
 #include <inttypes.h>
 
+#include <algorithm>
+
 #include "base/byte_size.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
@@ -34,6 +36,36 @@ BASE_FEATURE_PARAM(size_t, kMaxVizCompositorGraphiteImageProviderBytes,
                     4 * 1024 * 1024);
 
 }  // namespace
+
+void DetermineGraphiteContextCacheLimits(
+    size_t* max_context_resource_cache_bytes,
+    size_t* max_glyph_cache_texture_bytes) {
+  // The Graphite Context's GPU resources are primarily MSAA and depth-stencil
+  // attachments, so cap it at 96 MB rather than high-end Ganesh's 256 MB.
+  constexpr size_t kMaxGraphiteContextResourceCacheBytes = 96 * 1024 * 1024;
+  size_t max_resource_cache_bytes = 0;
+  DetermineGrCacheLimitsFromAvailableMemory(&max_resource_cache_bytes,
+                                            max_glyph_cache_texture_bytes);
+  *max_context_resource_cache_bytes =
+      std::min(max_resource_cache_bytes, kMaxGraphiteContextResourceCacheBytes);
+}
+
+void DetermineGraphiteRecorderCacheLimits(
+    size_t* max_gpu_main_recorder_cache_bytes,
+    size_t* max_viz_compositor_recorder_cache_bytes) {
+  // The GPU main recorder is the primary owner of GPU resources and gets the
+  // full memory-tier budget (up to 256 MB), while the Viz compositor recorder
+  // primarily allocates textures for composited image filters and is capped at
+  // 64 MB.
+  constexpr size_t kMaxVizCompositorGraphiteRecorderBytes = 64 * 1024 * 1024;
+  size_t max_resource_cache_bytes = 0;
+  size_t unused_glyph_cache_bytes = 0;
+  DetermineGrCacheLimitsFromAvailableMemory(&max_resource_cache_bytes,
+                                            &unused_glyph_cache_bytes);
+  *max_gpu_main_recorder_cache_bytes = max_resource_cache_bytes;
+  *max_viz_compositor_recorder_cache_bytes = std::min(
+      max_resource_cache_bytes, kMaxVizCompositorGraphiteRecorderBytes);
+}
 
 void DetermineGraphiteImageProviderCacheLimits(
     size_t* max_gpu_main_image_provider_cache_bytes,

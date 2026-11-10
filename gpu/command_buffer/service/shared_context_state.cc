@@ -622,14 +622,13 @@ bool SharedContextState::InitializeGraphite(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
     GpuProcessShmCount* use_shader_cache_shm_count) {
-  const skgpu::graphite::ContextOptions context_options =
-      GetDefaultGraphiteContextOptions(workarounds);
-
   gpu::GraphiteSharedContext* graphite_shared_context = nullptr;
 
   if (gr_context_type_ == GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     CHECK(dawn_context_provider_);
+    const skgpu::graphite::ContextOptions context_options =
+        GetDefaultGraphiteContextOptions(workarounds);
     if (dawn_context_provider_->InitializeGraphiteContext(
             context_options, use_shader_cache_shm_count)) {
       graphite_shared_context =
@@ -639,6 +638,8 @@ bool SharedContextState::InitializeGraphite(
   } else if (gr_context_type_ == GrContextType::kGraphiteVulkan) {
 #if BUILDFLAG(SKIA_USE_GRAPHITE_VULKAN)
     CHECK(vk_context_provider_);
+    const skgpu::graphite::ContextOptions context_options =
+        GetDefaultGraphiteContextOptions(workarounds);
     if (vk_context_provider_->InitializeGraphiteContext(context_options)) {
       graphite_shared_context = vk_context_provider_->GetGraphiteContext();
     }
@@ -664,6 +665,12 @@ bool SharedContextState::InitializeGraphite(
                             precompile_context_.get()));
   }
 
+  size_t max_gpu_main_recorder_cache_bytes = 0;
+  size_t max_viz_compositor_recorder_cache_bytes = 0;
+  DetermineGraphiteRecorderCacheLimits(
+      &max_gpu_main_recorder_cache_bytes,
+      &max_viz_compositor_recorder_cache_bytes);
+
   // We need image providers for both the OOP-R (gpu_main) recorder and the
   // SkiaRenderer (viz thread) recorder, as both need to process CPU-backed
   // images (for the SkiaRenderer recorder, this occurs in special cases such as
@@ -676,7 +683,7 @@ bool SharedContextState::InitializeGraphite(
       &max_viz_compositor_image_provider_cache_bytes);
 
   gpu_main_graphite_recorder_ = MakeGraphiteRecorder(
-      graphite_shared_context, context_options.fGpuBudgetInBytes,
+      graphite_shared_context, max_gpu_main_recorder_cache_bytes,
       max_gpu_main_image_provider_cache_bytes);
 
   const bool can_handle_context_resources =
@@ -697,7 +704,7 @@ bool SharedContextState::InitializeGraphite(
     // be inserted in order, so this grants the Viz thread more flexibility
     // without any negative impact. See https://crbug.com/406292843
     viz_compositor_graphite_recorder_ = MakeGraphiteRecorder(
-        graphite_shared_context, context_options.fGpuBudgetInBytes,
+        graphite_shared_context, max_viz_compositor_recorder_cache_bytes,
         max_viz_compositor_image_provider_cache_bytes,
         /*require_ordered_recordings=*/false);
   }

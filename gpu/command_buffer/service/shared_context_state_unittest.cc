@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_context_state.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <string>
@@ -15,10 +16,12 @@
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/context_state_test_helpers.h"
 #include "gpu/command_buffer/service/feature_info.h"
+#include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
+#include "gpu/config/skia_limits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_context_stub.h"
 #include "ui/gl/gl_mock.h"
@@ -229,6 +232,33 @@ TEST_F(SharedContextStateTest, ThreadLocalStorageBasics) {
     EXPECT_EQ(SharedContextState::GetForCurrentThread(), nullptr);
   }
   gl::GLSurfaceTestSupport::ShutdownGL(display);
+}
+
+TEST_F(SharedContextStateTest,
+       DefaultGraphiteContextOptionsRespect96MBCacheCap) {
+  GpuDriverBugWorkarounds workarounds;
+  skgpu::graphite::ContextOptions options =
+      GetDefaultGraphiteContextOptions(workarounds);
+  EXPECT_LE(options.fGpuBudgetInBytes, 96u * 1024u * 1024u);
+  EXPECT_GT(options.fGpuBudgetInBytes, 0u);
+}
+
+TEST_F(SharedContextStateTest, DefaultGraphiteRecorderCacheLimits) {
+  size_t max_resource_cache_bytes = 0;
+  size_t unused_glyph_cache_bytes = 0;
+  DetermineGrCacheLimitsFromAvailableMemory(&max_resource_cache_bytes,
+                                            &unused_glyph_cache_bytes);
+
+  size_t max_gpu_main_recorder_bytes = 0;
+  size_t max_viz_recorder_bytes = 0;
+  DetermineGraphiteRecorderCacheLimits(&max_gpu_main_recorder_bytes,
+                                       &max_viz_recorder_bytes);
+
+  // GPU main recorder keeps the full available memory tier budget (up to
+  // 256 MB), while Viz compositor recorder is capped at 64 MB.
+  EXPECT_EQ(max_gpu_main_recorder_bytes, max_resource_cache_bytes);
+  EXPECT_EQ(max_viz_recorder_bytes,
+            std::min(max_resource_cache_bytes, size_t{64u * 1024u * 1024u}));
 }
 
 }  // namespace gpu

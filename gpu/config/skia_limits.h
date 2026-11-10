@@ -11,6 +11,14 @@
 
 namespace gpu {
 
+GPU_CONFIG_EXPORT void DetermineGraphiteContextCacheLimits(
+    size_t* max_context_resource_cache_bytes,
+    size_t* max_glyph_cache_texture_bytes);
+
+GPU_CONFIG_EXPORT void DetermineGraphiteRecorderCacheLimits(
+    size_t* max_gpu_main_recorder_cache_bytes,
+    size_t* max_viz_compositor_recorder_cache_bytes);
+
 GPU_CONFIG_EXPORT void DetermineGraphiteImageProviderCacheLimits(
     size_t* max_gpu_main_image_provider_cache_bytes,
     size_t* max_viz_compositor_image_provider_cache_bytes);
