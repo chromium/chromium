@@ -30,6 +30,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_unsubscribed_entry.h"
@@ -135,8 +136,36 @@ const char kNotificationsPermissionRevocationGracePeriodDate[] =
     "notifications_permission_revocation_grace_period";
 #endif
 
-void RecordDeliveryStatus(blink::mojom::PushEventStatus status) {
+void RecordDeliveryStatus(const std::string& app_id,
+                          blink::mojom::PushEventStatus status) {
   UMA_HISTOGRAM_ENUMERATION("PushMessaging.DeliveryStatus", status);
+  base::UmaHistogramEnumeration(
+      push_messaging::AppIdentifier::UseInstanceID(app_id)
+          ? "Notifications.PushMessaging.DeliveryStatus.InstanceID"
+          : "Notifications.PushMessaging.DeliveryStatus.Legacy",
+      status);
+}
+
+void RecordStoredSubscriptionCounts(Profile* profile) {
+  int instance_id_count = 0;
+  int legacy_count = 0;
+  for (const push_messaging::AppIdentifier& identifier :
+       PushMessagingAppIdentifier::GetAll(profile)) {
+    if (identifier.is_null()) {
+      continue;
+    }
+    if (push_messaging::AppIdentifier::UseInstanceID(identifier.app_id())) {
+      ++instance_id_count;
+    } else {
+      ++legacy_count;
+    }
+  }
+  base::UmaHistogramCounts1000(
+      "Notifications.PushMessaging.StoredSubscriptionCount.InstanceID",
+      instance_id_count);
+  base::UmaHistogramCounts1000(
+      "Notifications.PushMessaging.StoredSubscriptionCount.Legacy",
+      legacy_count);
 }
 
 void RecordUnsubscribeReason(blink::mojom::PushUnregistrationReason reason) {
@@ -197,6 +226,14 @@ void PushMessagingServiceImpl::InitializeForProfile(Profile* profile) {
   // TODO(johnme): Consider whether push should be enabled in incognito.
   if (!profile || profile->IsOffTheRecord())
     return;
+
+  // Record only for regular user profiles. Guest, System, and ChromeOS
+  // internal profiles do not hold user subscriptions in practice and would
+  // add (0, 0) samples.
+  if (ProfileSelections::BuildForRegularProfile().ApplyProfileSelection(
+          profile)) {
+    RecordStoredSubscriptionCounts(profile);
+  }
 
   int count = PushMessagingAppIdentifier::GetCount(profile);
   if (count <= 0)
@@ -580,7 +617,7 @@ void PushMessagingServiceImpl::DeliverMessageCallback(
     const gcm::IncomingMessage& message,
     bool did_enqueue_message,
     blink::mojom::PushEventStatus status) {
-  RecordDeliveryStatus(status);
+  RecordDeliveryStatus(app_id, status);
 
   // Note: It's important that |message_handled_callback| is run or passed to
   // another function before this function returns.

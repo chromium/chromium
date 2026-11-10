@@ -93,6 +93,11 @@ chromium-metrics-reviews@google.com.
                of a tray notification"/>
 </variants>
 
+<variants name="PushSubscriptionAppIdType">
+  <variant name="InstanceID" summary="-V2 app_id (InstanceID)"/>
+  <variant name="Legacy" summary="non-V2 app_id (legacy)"/>
+</variants>
+
 <histogram name="Notifications.Actions" enum="NotificationActionType"
     expires_after="2027-03-21">
   <owner>dewittj@chromium.org</owner>
@@ -1260,6 +1265,46 @@ chromium-metrics-reviews@google.com.
     This histogram was previously unused from 2022-09-11 to 2026-02-13, so data
     might be missing.
   </summary>
+</histogram>
+
+<histogram name="Notifications.PushMessaging.DeliveryStatus.{SubscriptionType}"
+    enum="PushEventStatus" expires_after="2027-05-06">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <owner>src/chrome/browser/push_messaging/OWNERS</owner>
+  <summary>
+    Records the PushEventStatus outcome for a push message to a
+    {SubscriptionType} subscription. Recorded in
+    PushMessagingServiceImpl::DeliverMessageCallback when push message handling
+    finishes.
+
+    The type depends only on the app_id suffix (AppIdentifier::UseInstanceID).
+    If a non-V2 subscription subscribes again, Chrome keeps the app_id and gets
+    an InstanceID token for it. So Legacy can include InstanceID-backed
+    subscriptions.
+  </summary>
+  <token key="SubscriptionType" variants="PushSubscriptionAppIdType"/>
+</histogram>
+
+<histogram
+    name="Notifications.PushMessaging.StoredSubscriptionCount.{SubscriptionType}"
+    units="subscriptions" expires_after="2027-05-06">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <owner>src/chrome/browser/push_messaging/OWNERS</owner>
+  <summary>
+    Records the number of stored {SubscriptionType} push subscriptions in a
+    profile. Recorded once per loaded regular user profile (not Off-The-Record,
+    Guest, System, or ChromeOS internal profiles) in
+    PushMessagingServiceImpl::InitializeForProfile during profile
+    initialization.
+
+    The type depends only on the app_id suffix (AppIdentifier::UseInstanceID).
+    If a non-V2 subscription subscribes again, Chrome keeps the app_id and gets
+    an InstanceID token for it. So Legacy can include InstanceID-backed
+    subscriptions.
+  </summary>
+  <token key="SubscriptionType" variants="PushSubscriptionAppIdType"/>
 </histogram>
 
 <histogram name="Notifications.Scheduler.BackgroundTask.NotificationShown"
