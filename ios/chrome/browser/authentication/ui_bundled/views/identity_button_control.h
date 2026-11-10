@@ -26,6 +26,9 @@ typedef NS_ENUM(NSInteger, IdentityButtonControlArrowDirection) {
 // Arrow direction, default value is IdentityButtonControlArrowDown.
 @property(nonatomic, assign) IdentityButtonControlArrowDirection arrowDirection;
 
+// Whether the arrow is shown and user interaction is enabled. Default is `YES`.
+@property(nonatomic, assign) BOOL interactive;
+
 // Style for the IdentityView.
 @property(nonatomic, assign) IdentityViewStyle identityViewStyle;
 

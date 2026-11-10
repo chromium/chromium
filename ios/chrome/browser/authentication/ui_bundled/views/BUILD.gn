@@ -30,3 +30,15 @@ source_set("views_constants") {
     "views_constants.mm",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "identity_button_control_unittest.mm" ]
+  deps = [
+    ":views",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

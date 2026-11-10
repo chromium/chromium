@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
 
 #import "base/check.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_view.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/views_constants.h"
@@ -12,7 +13,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -34,11 +35,27 @@ const CGFloat kArrowDownMargin = 12.;
 
 @end
 
-@implementation IdentityButtonControl
+@implementation IdentityButtonControl {
+  // Trailing constraint from `_identityView` to `_arrowImageView`, active when
+  // `interactive` is `YES`.
+  NSLayoutConstraint* _withArrowConstraint;
+  // Trailing constraint from `_identityView` to `self`, active when
+  // `interactive` is `NO`.
+  NSLayoutConstraint* _noArrowConstraint;
+  // Account name passed to `-setIdentityName:email:managed:`, or `nil`.
+  NSString* _identityName;
+  // Account email passed to `-setIdentityName:email:managed:`, or `nil` before
+  // `-setIdentityName:email:managed:` is called.
+  NSString* _identityEmail;
+  // Whether the identity passed to `-setIdentityName:email:managed:` is
+  // managed.
+  BOOL _identityManaged;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
+    _interactive = YES;
     self.accessibilityIdentifier = kIdentityButtonControlIdentifier;
     self.layer.cornerRadius = kIdentityButtonControlRadius;
     [self setUnhighlightedBackgroundColor];
@@ -57,25 +74,26 @@ const CGFloat kArrowDownMargin = 12.;
     [self addSubview:_identityView];
 
     // Layout constraints.
-    NSDictionary* views = @{
-      @"identityview" : _identityView,
-      @"arrow" : _arrowImageView,
-    };
-    NSDictionary* metrics = @{
-      @"ArrowMargin" : @(kArrowDownMargin),
-      @"ArrowSize" : @(kArrowDownSize),
-    };
-    NSArray* constraints = @[
-      // Horizontal constraints.
-      @"H:|[identityview]-(ArrowMargin)-[arrow]-(ArrowMargin)-|",
-      // Vertical constraints.
-      @"V:|[identityview]|",
-      // Size constraints.
-      @"H:[arrow(ArrowSize)]",
-      @"V:[arrow(ArrowSize)]",
-    ];
+    _withArrowConstraint = [_identityView.trailingAnchor
+        constraintEqualToAnchor:_arrowImageView.leadingAnchor
+                       constant:-kArrowDownMargin];
+    _noArrowConstraint = [_identityView.trailingAnchor
+        constraintEqualToAnchor:self.trailingAnchor
+                       constant:-kArrowDownMargin];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [_identityView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+      [_identityView.topAnchor constraintEqualToAnchor:self.topAnchor],
+      [_identityView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+      [_arrowImageView.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor
+                         constant:-kArrowDownMargin],
+      [_arrowImageView.widthAnchor constraintEqualToConstant:kArrowDownSize],
+      [_arrowImageView.heightAnchor constraintEqualToConstant:kArrowDownSize],
+      // By default, `_withArrowConstraint` is active (`_interactive` is `YES`).
+      _withArrowConstraint,
+    ]];
     AddSameCenterYConstraint(self, _arrowImageView);
-    ApplyVisualConstraintsWithMetrics(constraints, views, metrics);
 
     [self addInteraction:[[ViewPointerInteraction alloc] init]];
 
@@ -95,24 +113,38 @@ const CGFloat kArrowDownMargin = 12.;
 - (void)setIdentityName:(NSString*)name
                   email:(NSString*)email
                 managed:(BOOL)managed {
-  DCHECK(email);
+  CHECK(email, base::NotFatalUntil::M170);
+  if (!email) {
+    return;
+  }
+  _identityName = [name copy];
+  _identityEmail = [email copy];
+  _identityManaged = managed;
   if (!name.length) {
     [self.identityView setTitle:email subtitle:nil managed:managed];
-    self.accessibilityLabel = l10n_util::GetNSStringF(
-        managed ? IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_EMAIL_MANAGED
-                : IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_EMAIL,
-        base::SysNSStringToUTF16(email));
   } else {
     [self.identityView setTitle:name subtitle:email managed:managed];
-    self.accessibilityLabel = l10n_util::GetNSStringF(
-        managed
-            ? IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_NAME_AND_EMAIL_MANAGED
-            : IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_NAME_AND_EMAIL,
-        base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email));
   }
+  [self updateAccessibility];
 }
 
 #pragma mark - Properties
+
+- (void)setInteractive:(BOOL)interactive {
+  if (_interactive == interactive) {
+    return;
+  }
+  _interactive = interactive;
+  _arrowImageView.hidden = !interactive;
+  _withArrowConstraint.active = interactive;
+  _noArrowConstraint.active = !interactive;
+  self.userInteractionEnabled = interactive;
+  self.accessibilityTraits =
+      interactive ? UIAccessibilityTraitButton : UIAccessibilityTraitNone;
+  if (_identityEmail) {
+    [self updateAccessibility];
+  }
+}
 
 - (void)setArrowDirection:(IdentityButtonControlArrowDirection)arrowDirection {
   _arrowDirection = arrowDirection;
@@ -131,6 +163,44 @@ const CGFloat kArrowDownMargin = 12.;
 }
 
 #pragma mark - Private
+
+// Updates `accessibilityLabel` from the configured identity and `interactive`.
+- (void)updateAccessibility {
+  CHECK(_identityEmail);
+  if (!_identityName.length) {
+    if (!self.interactive) {
+      self.accessibilityLabel =
+          _identityManaged
+              ? l10n_util::GetNSStringF(
+                    IDS_IOS_SIGNIN_ACCOUNT_PICKER_CHOOSE_ACCOUNT_ITEM_DESCRIPTION_WITH_EMAIL_MANAGED,
+                    base::SysNSStringToUTF16(_identityEmail))
+              : _identityEmail;
+    } else {
+      self.accessibilityLabel = l10n_util::GetNSStringF(
+          _identityManaged
+              ? IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_EMAIL_MANAGED
+              : IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_EMAIL,
+          base::SysNSStringToUTF16(_identityEmail));
+    }
+    return;
+  }
+  // Name is non-empty.
+  if (!self.interactive) {
+    self.accessibilityLabel = l10n_util::GetNSStringF(
+        _identityManaged
+            ? IDS_IOS_SIGNIN_ACCOUNT_PICKER_CHOOSE_ACCOUNT_ITEM_DESCRIPTION_WITH_NAME_AND_EMAIL_MANAGED
+            : IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME,
+        base::SysNSStringToUTF16(_identityName),
+        base::SysNSStringToUTF16(_identityEmail));
+    return;
+  }
+  self.accessibilityLabel = l10n_util::GetNSStringF(
+      _identityManaged
+          ? IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_NAME_AND_EMAIL_MANAGED
+          : IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_NAME_AND_EMAIL,
+      base::SysNSStringToUTF16(_identityName),
+      base::SysNSStringToUTF16(_identityEmail));
+}
 
 // Sets the background color when not highlighted.
 - (void)setUnhighlightedBackgroundColor {
