@@ -149,9 +149,7 @@ tabs::TabInterface* TabListBridge::GetActiveTab() {
 }
 
 void TabListBridge::ActivateTab(tabs::TabHandle tab) {
-  const int index = GetIndexOfTab(tab);
-  CHECK_NE(index, tab_list::kNoTabIndex);
-  tab_strip_->ActivateTabAt(index);
+  tab_strip_->ActivateTab(tab);
 }
 
 tabs::TabInterface* TabListBridge::OpenTab(const GURL& url,

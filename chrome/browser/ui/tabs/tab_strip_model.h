@@ -373,9 +373,13 @@ class TabStripModel {
   DetachTabsAndCollectionsForInsertion(const std::vector<int>& tab_indices);
 
   // Activates `tab`, which must be in this tab strip model. Prefer this over
-  // ActivateTabAt() when a TabInterface* is already available.
+  // ActivateTabAt() when a TabInterface* or TabHandle is already available.
   void ActivateTab(
       tabs::TabInterface* tab,
+      TabStripUserGestureDetails user_gesture = TabStripUserGestureDetails(
+          TabStripUserGestureDetails::GestureType::kNone));
+  void ActivateTab(
+      tabs::TabHandle tab,
       TabStripUserGestureDetails user_gesture = TabStripUserGestureDetails(
           TabStripUserGestureDetails::GestureType::kNone));
 
@@ -566,19 +570,23 @@ class TabStripModel {
   // pinned tabs.
   int IndexOfFirstNonPinnedTab() const;
 
-  // Extends the selection from the anchor to `index`.
+  // Extends the selection from the anchor to `index` or `tab`.
   void ExtendSelectionTo(int index);
+  void ExtendSelectionTo(tabs::TabHandle tab);
 
   // This can fail if the tabstrip is not editable.
   void SelectTabAt(int index);
+  void SelectTab(tabs::TabHandle tab);
 
   // This can fail if the tabstrip is not editable.
   void DeselectTabAt(int index);
+  void DeselectTab(tabs::TabHandle tab);
 
-  // Makes sure the tabs from the anchor to `index` are selected. This adds to
-  // the selection if there is an anchor and resets the selection to `index` if
-  // there is not an anchor.
+  // Makes sure the tabs from the anchor to `index` or `tab` are selected. This
+  // adds to the selection if there is an anchor and resets the selection to
+  // `index` or `tab` if there is not an anchor.
   void AddSelectionFromAnchorTo(int index);
+  void AddSelectionFromAnchorTo(tabs::TabHandle tab);
 
   // Returns true if the tab at `index` is selected.
   bool IsTabSelected(int index) const;
@@ -1422,11 +1430,11 @@ class TabStripModel {
   void SetSelectedTab(tabs::TabStripModelSelectionState& selection_state,
                       tabs::TabInterface* tab);
 
-  // Returns a vector of tabs between the anchor and a provided index, in
-  // traversal order, that takes into account split tabs. If the anchor or
-  // the tab at index is part of a split, the range will include that split.
-  std::vector<tabs::TabInterface*> GetSelectionRangeFromAnchorToIndex(
-      int index);
+  // Returns a vector of tabs between the anchor and `tab`, in traversal order,
+  // that takes into account split tabs. If the anchor or `tab` is part of a
+  // split, the range will include that split.
+  std::vector<tabs::TabInterface*> GetSelectionRangeFromAnchorToTab(
+      tabs::TabInterface* tab);
 
   // Generates the MoveNotifications for `MoveTabsToIndexImpl` and updates the
   // selection model and openers.

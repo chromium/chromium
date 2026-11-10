@@ -317,29 +317,32 @@ void TabStripCollectionController::MoveTabLast(
 void TabStripCollectionController::SelectTab(
     const tabs::TabInterface* tab_interface,
     const TabStripUserGestureDetails& gesture_detail) {
-  std::optional<int> tab_index = model_->GetIndexOfTab(tab_interface);
-  if (!tab_index.has_value()) {
+  if (!tab_interface ||
+      model_->GetIndexOfTab(tab_interface) == TabStripModel::kNoTab) {
     return;
   }
 
-  if (!model_->IsTabInForeground(tab_index.value())) {
+  tabs::TabHandle target_handle = tab_interface->GetHandle();
+  if (!model_->IsTabInForeground(target_handle)) {
     RecordMetricsOnTabSelectionChange(tab_interface->GetGroup());
   }
 
   std::optional<split_tabs::SplitTabId> split_id = tab_interface->GetSplit();
   if (split_id.has_value()) {
-    tab_index = split_tabs::GetIndexOfLastActiveTab(model_, split_id.value());
+    const int last_active_index =
+        split_tabs::GetIndexOfLastActiveTab(model_, split_id.value());
+    target_handle = model_->GetTabAtIndex(last_active_index)->GetHandle();
   }
 
   views::Widget* widget = browser_view_ ? browser_view_->GetWidget() : nullptr;
   std::unique_ptr<viz::PeakGpuMemoryTracker> tracker;
-  if (model_->active_index() != tab_index.value() && widget &&
+  if (model_->GetActiveTab() != target_handle.Get() && widget &&
       widget->GetCompositor()) {
     tracker = content::PeakGpuMemoryTrackerFactory::Create(
         viz::PeakGpuMemoryTracker::Usage::CHANGE_TAB);
   }
 
-  model_->ActivateTabAt(tab_index.value(), gesture_detail);
+  model_->ActivateTab(target_handle, gesture_detail);
 
   if (tracker) {
     if (views::Widget* post_activate_widget =
@@ -374,38 +377,39 @@ void TabStripCollectionController::CloseTab(
 
 void TabStripCollectionController::ToggleSelected(
     const tabs::TabInterface* tab_interface) {
-  std::optional<int> tab_index = model_->GetIndexOfTab(tab_interface);
-  if (!tab_index.has_value()) {
+  if (!tab_interface ||
+      model_->GetIndexOfTab(tab_interface) == TabStripModel::kNoTab) {
     return;
   }
 
-  if (model_->IsTabSelected(tab_index.value())) {
-    model_->DeselectTabAt(tab_index.value());
+  const tabs::TabHandle handle = tab_interface->GetHandle();
+  if (tab_interface->IsSelected()) {
+    model_->DeselectTab(handle);
   } else {
-    model_->SelectTabAt(tab_index.value());
+    model_->SelectTab(handle);
   }
 }
 
 void TabStripCollectionController::AddSelectionFromAnchorTo(
     const tabs::TabInterface* tab_interface) {
-  std::optional<int> tab_index = model_->GetIndexOfTab(tab_interface);
-  if (!tab_index.has_value()) {
+  const int tab_index = model_->GetIndexOfTab(tab_interface);
+  if (tab_index == TabStripModel::kNoTab) {
     return;
   }
 
-  ExpandCollapsedGroupsInSelectionRange(tab_index.value());
-  model_->AddSelectionFromAnchorTo(tab_index.value());
+  ExpandCollapsedGroupsInSelectionRange(tab_index);
+  model_->AddSelectionFromAnchorTo(tab_interface->GetHandle());
 }
 
 void TabStripCollectionController::ExtendSelectionTo(
     const tabs::TabInterface* tab_interface) {
-  std::optional<int> tab_index = model_->GetIndexOfTab(tab_interface);
-  if (!tab_index.has_value()) {
+  const int tab_index = model_->GetIndexOfTab(tab_interface);
+  if (tab_index == TabStripModel::kNoTab) {
     return;
   }
 
-  ExpandCollapsedGroupsInSelectionRange(tab_index.value());
-  model_->ExtendSelectionTo(tab_index.value());
+  ExpandCollapsedGroupsInSelectionRange(tab_index);
+  model_->ExtendSelectionTo(tab_interface->GetHandle());
 }
 
 const ui::ListSelectionModel& TabStripCollectionController::GetSelectionModel()

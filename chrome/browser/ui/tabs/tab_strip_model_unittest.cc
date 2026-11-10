@@ -9472,3 +9472,42 @@ TEST_F(TabStripModelTest, SingleTabStateHandleOverloads) {
 
   tabstrip()->CloseAllTabs();
 }
+
+TEST_F(TabStripModelTest, SingleTabSelectionHandleOverloads) {
+  PrepareTabstripForSelectionTest(tabstrip(), /*tab_count=*/4,
+                                  /*pinned_count=*/0,
+                                  /*selected_tabs=*/{0});
+  tabs::TabHandle tab0 = tabstrip()->GetTabAtIndex(0)->GetHandle();
+  tabs::TabHandle tab1 = tabstrip()->GetTabAtIndex(1)->GetHandle();
+  tabs::TabHandle tab2 = tabstrip()->GetTabAtIndex(2)->GetHandle();
+  tabs::TabHandle tab3 = tabstrip()->GetTabAtIndex(3)->GetHandle();
+
+  tabstrip()->ActivateTab(tab2);
+  EXPECT_EQ(tab2.Get(), tabstrip()->GetActiveTab());
+  EXPECT_TRUE(tab2.Get()->IsSelected());
+  EXPECT_FALSE(tab0.Get()->IsSelected());
+
+  tabstrip()->SelectTab(tab0);
+  EXPECT_EQ(tab0.Get(), tabstrip()->GetActiveTab());
+  EXPECT_TRUE(tab0.Get()->IsSelected());
+  EXPECT_TRUE(tab2.Get()->IsSelected());
+
+  tabstrip()->DeselectTab(tab2);
+  EXPECT_FALSE(tab2.Get()->IsSelected());
+  EXPECT_TRUE(tab0.Get()->IsSelected());
+
+  tabstrip()->ExtendSelectionTo(tab2);
+  EXPECT_TRUE(tab0.Get()->IsSelected());
+  EXPECT_TRUE(tab1.Get()->IsSelected());
+  EXPECT_TRUE(tab2.Get()->IsSelected());
+  EXPECT_FALSE(tab3.Get()->IsSelected());
+
+  tabstrip()->ActivateTab(tab1);
+  tabstrip()->AddSelectionFromAnchorTo(tab3);
+  EXPECT_TRUE(tab1.Get()->IsSelected());
+  EXPECT_TRUE(tab2.Get()->IsSelected());
+  EXPECT_TRUE(tab3.Get()->IsSelected());
+  EXPECT_EQ(tab3.Get(), tabstrip()->GetActiveTab());
+
+  tabstrip()->CloseAllTabs();
+}
