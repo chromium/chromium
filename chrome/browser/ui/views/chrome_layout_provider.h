@@ -254,6 +254,12 @@ enum ChromeDistanceMetric {
   DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN,
   // Maximum width for the Action App Menu.
   DISTANCE_ACTION_APP_MENU_MAX_WIDTH,
+  // Maximum width for Action App Menu submenus containing user/web content
+  // (e.g., page titles, bookmark labels, tab group names).
+  DISTANCE_ACTION_APP_MENU_DYNAMIC_SUBMENU_MAX_WIDTH,
+  // Maximum width for Action App Menu submenus nested within submenus
+  // containing user/web content (e.g., bookmark folders, saved tab groups).
+  DISTANCE_ACTION_APP_MENU_NESTED_DYNAMIC_SUBMENU_MAX_WIDTH,
 };
 
 enum ChromeShapeContextTokens : views::ShapeContextToken {

@@ -3926,6 +3926,64 @@ TEST_F(ActionAppMenuTest, MaxWidthForMenu) {
   menu.CloseMenu();
 }
 
+// Dynamic submenus, such as Bookmarks, and their nested submenus, such as
+// bookmark folders and subfolders, list page titles, so they are narrower than
+// other submenus.
+TEST_F(ActionAppMenuTest, DynamicSubmenusAreNarrower) {
+  BookmarkModelFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), BookmarkModelFactory::GetDefaultFactory());
+  BookmarkMergedSurfaceServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile_.get());
+  ASSERT_TRUE(bookmark_model);
+  bookmark_model->LoadEmptyForTest();
+  BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get())
+      ->LoadForTesting({});
+  const bookmarks::BookmarkNode* folder = bookmark_model->AddFolder(
+      bookmark_model->bookmark_bar_node(), 0, u"Folder");
+  bookmark_model->AddFolder(folder, 0, u"Subfolder");
+
+  ActionAppMenu menu(&mock_window_interface_, base::DoNothing());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  views::MenuItemView* bookmarks_item =
+      root->GetMenuItemByID(kActionBookmarksSubmenu);
+  ASSERT_TRUE(bookmarks_item);
+  menu.WillShowMenu(bookmarks_item);
+  const auto find_child = [](views::MenuItemView* parent,
+                             std::u16string_view title) {
+    for (views::MenuItemView* item : parent->GetSubmenu()->GetMenuItems()) {
+      if (item->title() == title) {
+        return item;
+      }
+    }
+    return static_cast<views::MenuItemView*>(nullptr);
+  };
+  views::MenuItemView* folder_item = find_child(bookmarks_item, u"Folder");
+  ASSERT_TRUE(folder_item);
+  views::MenuItemView* subfolder_item = find_child(folder_item, u"Subfolder");
+  ASSERT_TRUE(subfolder_item);
+  views::MenuItemView* passwords_item =
+      root->GetMenuItemByID(kActionPasswordsAndAutofillSubmenu);
+  ASSERT_TRUE(passwords_item);
+
+  const ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
+  const int max_width =
+      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_MAX_WIDTH);
+  const int dynamic_max_width = provider->GetDistanceMetric(
+      DISTANCE_ACTION_APP_MENU_DYNAMIC_SUBMENU_MAX_WIDTH);
+  const int nested_dynamic_max_width = provider->GetDistanceMetric(
+      DISTANCE_ACTION_APP_MENU_NESTED_DYNAMIC_SUBMENU_MAX_WIDTH);
+  EXPECT_EQ(menu.GetMaxWidthForMenu(root), max_width);
+  EXPECT_EQ(menu.GetMaxWidthForMenu(passwords_item), max_width);
+  EXPECT_EQ(menu.GetMaxWidthForMenu(bookmarks_item), dynamic_max_width);
+  EXPECT_EQ(menu.GetMaxWidthForMenu(folder_item), nested_dynamic_max_width);
+  EXPECT_EQ(menu.GetMaxWidthForMenu(subfolder_item), nested_dynamic_max_width);
+
+  menu.CloseMenu();
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ActionAppMenuTest, UpgradeNotificationRowStyling) {
   if (!browser_defaults::kShowUpgradeMenuItem) {
