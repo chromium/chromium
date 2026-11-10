@@ -599,7 +599,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
       mojom::blink::ScrollBehavior scroll_behavior) override {
     if (!should_restore_scroll)
       return;
-    pending_view_state_.emplace();
+    pending_view_state_ = std::make_unique<PendingViewState>();
     pending_view_state_->state = view_state;
     pending_view_state_->scroll_behavior = scroll_behavior;
   }
@@ -948,7 +948,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
     mojom::blink::ScrollBehavior scroll_behavior =
         mojom::blink::ScrollBehavior::kAuto;
   };
-  std::optional<PendingViewState> pending_view_state_;
+  // Only set on the layout viewport during a history restore, so keep it out
+  // of line.
+  std::unique_ptr<PendingViewState> pending_view_state_;
 
   // The set of scroll marker group data associated with this scrollable area
   // that should be notified of scroll updates.
