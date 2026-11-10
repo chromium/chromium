@@ -185,7 +185,6 @@ BASE_DECLARE_FEATURE(kDeferArchivedTabModelCreation);
 BASE_DECLARE_FEATURE(kDeferDetachedNativePageFreeze);
 BASE_DECLARE_FEATURE(kDeferNavigationStateChanged);
 BASE_DECLARE_FEATURE(kDesktopAndroidBackgroundTabLoading);
-BASE_DECLARE_FEATURE(kDesktopAndroidFilePickerForMedia);
 BASE_DECLARE_FEATURE(kDesktopAndroidLinkCapturing);
 BASE_DECLARE_FEATURE(kDesktopAndroidTWADeleteBrowserData);
 BASE_DECLARE_FEATURE(kDesktopAndroidTWADisclosures);

@@ -592,8 +592,6 @@ public abstract class ChromeFeatureList {
     public static final String DEFER_ARCHIVED_TAB_MODEL_CREATION = "DeferArchivedTabModelCreation";
     public static final String DEFER_DETACHED_NATIVE_PAGE_FREEZE = "DeferDetachedNativePageFreeze";
     public static final String DEFER_NAVIGATION_STATE_CHANGED = "DeferNavigationStateChanged";
-    public static final String DESKTOP_ANDROID_FILE_PICKER_FOR_MEDIA =
-            "DesktopAndroidFilePickerForMedia";
     public static final String DESKTOP_ANDROID_LINK_CAPTURING = "DesktopAndroidLinkCapturing";
     public static final String DESKTOP_ANDROID_TWA_DELETE_BROWSER_DATA =
             "DesktopAndroidTWADeleteBrowserData";

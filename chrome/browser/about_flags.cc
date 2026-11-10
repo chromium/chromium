@@ -14013,14 +14013,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableWalletGmailOffersDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableWalletGmailOffers)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"desktop-android-file-picker-for-media",
-     flag_descriptions::kDesktopAndroidFilePickerForMediaName,
-     flag_descriptions::kDesktopAndroidFilePickerForMediaDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kDesktopAndroidFilePickerForMedia)},
-#endif
-
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
     {"unify-wait-for-cookies", flag_descriptions::kUnifyWaitForCookiesName,
      flag_descriptions::kUnifyWaitForCookiesDescription, kOsAndroid,
