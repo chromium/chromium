@@ -291,6 +291,7 @@ public abstract class FullscreenHtmlApiHandlerBase
                         setContentView(tab != null ? tab.getContentView() : null);
                         if (tab != null) {
                             updateMultiTouchZoomSupport(!getPersistentFullscreenMode());
+                            updateActiveTabForPersistentFullscreen(tab);
                         }
                     }
                 };
@@ -300,12 +301,21 @@ public abstract class FullscreenHtmlApiHandlerBase
                     @Override
                     public void onContentChanged(Tab tab) {
                         setContentView(tab.getContentView());
+                        // Ignore content updates from background tabs.
+                        if (tab == mTab) {
+                            updateActiveTabForPersistentFullscreen(tab);
+                        }
                     }
 
                     @Override
                     public void onHidden(Tab tab, @TabHidingType int reason) {
-                        // Clean up any fullscreen state that might impact other tabs.
-                        mFullscreenManagerDelegate.onExitFullscreen(null);
+                        // FullscreenManagerDelegate#onExitFullscreen exits all fullscreen modes
+                        // (including browser immersive mode) when given `null`, whereas passing a
+                        // non-null `tab` only exits tab-initiated fullscreen for that tab. On tab
+                        // switches, pass `tab` so browser immersive mode remains active.
+                        boolean isTabSwitch = reason == TabHidingType.CHANGED_TABS;
+                        mFullscreenManagerDelegate.onExitFullscreen(
+                                isPersistentImmersiveModeEnabled() && isTabSwitch ? tab : null);
                     }
 
                     @Override
@@ -319,7 +329,10 @@ public abstract class FullscreenHtmlApiHandlerBase
                     public void onDidFinishNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {
                         if (!navigation.isSameDocument() && tab == modelSelector.getCurrentTab()) {
-                            mFullscreenManagerDelegate.onExitFullscreen(null);
+                            mFullscreenManagerDelegate.onExitFullscreen(
+                                    isPersistentImmersiveModeEnabled() ? tab : null);
+                            if (!isPersistentImmersiveModeEnabled()) return;
+                            updateActiveTabForPersistentFullscreen(tab);
                         }
                     }
 
@@ -339,6 +352,46 @@ public abstract class FullscreenHtmlApiHandlerBase
     void onTabInteractable(Tab tab) {
         Runnable enterFullscreen = getAndClearEnterFullscreenRunnable(tab);
         if (enterFullscreen != null) enterFullscreen.run();
+    }
+
+    private static boolean isPersistentImmersiveModeEnabled() {
+        return ChromeFeatureList.sAndroidZoomImmersive.isEnabled();
+    }
+
+    private void setTabInFullscreen(@Nullable Tab tab) {
+        mTabInFullscreen = tab;
+        mWebContentsInFullscreen = tab != null ? tab.getWebContents() : null;
+        mContentViewInFullscreen = tab != null ? tab.getContentView() : null;
+    }
+
+    /**
+     * Rebinds the active fullscreen tab references ({@code mTabInFullscreen}, {@code
+     * mWebContentsInFullscreen}, and {@code mContentViewInFullscreen}) to the newly active {@code
+     * tab} when persistent fullscreen mode stays active across tab switches or navigations.
+     */
+    private void updateActiveTabForPersistentFullscreen(@Nullable Tab tab) {
+        if (!isPersistentImmersiveModeEnabled()) return;
+        // If fullscreen entry is still pending (waiting for browser controls to finish hiding),
+        // mTabInFullscreen and mFullscreenOptions will still be null even though
+        // getPersistentFullscreenMode() is true.
+        if (!getPersistentFullscreenMode()
+                || mTabInFullscreen == null
+                || mFullscreenOptions == null
+                || tab == null) {
+            return;
+        }
+        WebContents webContents = tab.getWebContents();
+        View contentView = tab.getContentView();
+        if (webContents == null || contentView == null) return;
+
+        setTabInFullscreen(tab);
+        // Re-apply hidden system bars immediately on the newly active tab's ContentView (rather
+        // than waiting for the 200ms delayed FullscreenHtmlApiHandlerCompat#onApplyWindowInsets
+        // callback) so the desktop caption bar does not briefly appear and trigger a fullscreen
+        // exit via AppHeaderCoordinator -> ExclusiveAccessManager#onDesktopWindowingModeChanged.
+        if (!hasDesiredStateForSystemBars(contentView, mFullscreenOptions)) {
+            hideSystemBars(contentView, mFullscreenOptions);
+        }
     }
 
     @Override
@@ -628,9 +681,7 @@ public abstract class FullscreenHtmlApiHandlerBase
                             mTab, BrowserControlsState.SHOWN, true);
                 }
             }
-            mWebContentsInFullscreen = null;
-            mContentViewInFullscreen = null;
-            mTabInFullscreen = null;
+            setTabInFullscreen(null);
             mFullscreenOptions = null;
         }
         updateMultiTouchZoomSupport(true);
@@ -798,9 +849,7 @@ public abstract class FullscreenHtmlApiHandlerBase
         // The flow will continue in the handler of MSG_ID_UNSET_FULLSCREEN_LAYOUT message.
         ViewUtils.requestLayout(contentView, "FullscreenHtmlApiHandler.enterFullScreen");
 
-        mWebContentsInFullscreen = webContents;
-        mContentViewInFullscreen = contentView;
-        mTabInFullscreen = tab;
+        setTabInFullscreen(tab);
     }
 
     private void resetEnterFullscreenLayoutChangeListener(View contentView) {
@@ -938,6 +987,14 @@ public abstract class FullscreenHtmlApiHandlerBase
 
     void setTabForTesting(Tab tab) {
         mTab = tab;
+    }
+
+    @Nullable TabModelSelectorTabObserver getTabFullscreenObserverForTesting() {
+        return mTabFullscreenObserver;
+    }
+
+    @Nullable Tab getTabInFullscreenForTesting() {
+        return mTabInFullscreen;
     }
 
     ObserverList<FullscreenManager.Observer> getObserversForTesting() {

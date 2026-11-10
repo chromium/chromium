@@ -9,6 +9,7 @@ import static android.view.Display.INVALID_DISPLAY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -47,11 +48,14 @@ import org.chromium.base.test.util.Features;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager.FullscreenManagerDelegate;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.HashMap;
@@ -545,5 +549,140 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         assertFalse(mFullscreenHtmlApiHandlerCompat.getPersistentFullscreenMode());
         verify(observer, times(1)).onExitFullscreen(mTab);
         assertEqualNumberOfEnterAndExitActivityFullscreenMode(1);
+    }
+
+    private FullscreenManagerDelegate enterFullscreenAndSetMockDelegate() {
+        doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(mContentView).when(mTab).getContentView();
+        doReturn(true).when(mTab).isUserInteractable();
+        doReturn(mTab).when(mTabModelSelector).getCurrentTab();
+
+        // Status bar and navigation bar should be visible.
+        mContentView.setRootWindowInsets(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets());
+        mAreControlsHidden.set(true);
+
+        mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
+        mFullscreenHtmlApiHandlerCompat.initialize(mActivityTabProvider, mTabModelSelector);
+        FullscreenOptions fullscreenOptions =
+                new FullscreenOptions(
+                        /* showNavigationBar= */ false,
+                        /* showStatusBar= */ false,
+                        /* displayId= */ INVALID_DISPLAY);
+
+        // Enter persistent fullscreen mode.
+        mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
+
+        FullscreenManagerDelegate delegate = Mockito.mock(FullscreenManagerDelegate.class);
+        mFullscreenHtmlApiHandlerCompat.setFullscreenManagerDelegate(delegate);
+        return delegate;
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testOnHidden_ChangedTabs_WithImmersiveModeEnabled() {
+        FullscreenManagerDelegate delegate = enterFullscreenAndSetMockDelegate();
+        assertEquals(
+                "Initial fullscreen tab should be mTab.",
+                mTab,
+                mFullscreenHtmlApiHandlerCompat.getTabInFullscreenForTesting());
+
+        // New tab we are switching to.
+        Tab newTab = Mockito.mock(Tab.class);
+        WebContents newWebContents = Mockito.mock(WebContents.class);
+        TestContentView newContentView = new TestContentView(mActivity);
+        doReturn(newWebContents).when(newTab).getWebContents();
+        doReturn(newContentView).when(newTab).getContentView();
+        doReturn(newTab).when(mTabModelSelector).getCurrentTab();
+
+        // Simulate a user switching to a new tab: first the outgoing tab is hidden inside
+        // TabModelSelectorImpl.requestToShowTab, and then ActivityTabProvider notifies
+        // mActiveTabObserver.onObservingDifferentTab(newTab) once the new tab is selected.
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onHidden(mTab, /* type= */ TabHidingType.CHANGED_TABS);
+        mActivityTabProvider.setForTesting(newTab);
+
+        verify(
+                        delegate,
+                        description(
+                                "Should pass the hidden tab to exit only tab fullscreen while"
+                                        + " keeping browser fullscreen active."))
+                .onExitFullscreen(mTab);
+        verify(
+                        delegate,
+                        never().description(
+                                        "Should not pass null on tab switch when immersive mode is"
+                                                + " enabled, as that exits browser fullscreen."))
+                .onExitFullscreen(null);
+        assertEquals(
+                "Active fullscreen tab reference should update to newTab after switching tabs.",
+                newTab,
+                mFullscreenHtmlApiHandlerCompat.getTabInFullscreenForTesting());
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testOnHidden_ChangedTabs_WithImmersiveModeDisabled() {
+        FullscreenManagerDelegate delegate = enterFullscreenAndSetMockDelegate();
+
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onHidden(mTab, /* type= */ TabHidingType.CHANGED_TABS);
+
+        verify(
+                        delegate,
+                        description(
+                                "Should pass null on tab switch to exit fullscreen when immersive"
+                                        + " mode is disabled."))
+                .onExitFullscreen(null);
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testOnDidFinishNavigationInPrimaryMainFrame_WithImmersiveModeEnabled() {
+        FullscreenManagerDelegate delegate = enterFullscreenAndSetMockDelegate();
+        NavigationHandle navigation = Mockito.mock(NavigationHandle.class);
+        // Navigate to a different document (e.g., clicking a link to a new page) within the same
+        // tab.
+        doReturn(false).when(navigation).isSameDocument();
+
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab, navigation);
+
+        verify(
+                        delegate,
+                        description(
+                                "Should pass the current tab on cross-document navigation to exit"
+                                        + " only tab fullscreen while keeping browser fullscreen"
+                                        + " active."))
+                .onExitFullscreen(mTab);
+        verify(
+                        delegate,
+                        never().description(
+                                        "Should not pass null on cross-document navigation when"
+                                                + " immersive mode is enabled, as that exits"
+                                                + " browser fullscreen."))
+                .onExitFullscreen(null);
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testOnDidFinishNavigationInPrimaryMainFrame_WithImmersiveModeDisabled() {
+        FullscreenManagerDelegate delegate = enterFullscreenAndSetMockDelegate();
+
+        NavigationHandle navigation = Mockito.mock(NavigationHandle.class);
+        doReturn(false).when(navigation).isSameDocument();
+
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab, navigation);
+
+        verify(
+                        delegate,
+                        description(
+                                "Should pass null on cross-document navigation to exit fullscreen"
+                                        + " when immersive mode is disabled."))
+                .onExitFullscreen(null);
     }
 }
