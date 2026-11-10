@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <variant>
 
@@ -697,7 +698,16 @@ void TabStripCollectionController::TabGroupFocusChanged(
     }
     base::AutoReset<bool> starting(&focus_transition_->is_starting_focus_motion,
                                    true);
-    anim_controller->Start(FocusModeAnimations::kFocusMode, motion);
+    // A direct switch between groups plays `kEnter` but is logged separately.
+    const bool is_direct_switch =
+        is_entering && old_focused_group_id.has_value();
+    anim_controller->Start(
+        FocusModeAnimations::kFocusMode, motion,
+        /*group_histogram_override=*/GetFocusAnimationHistogramGroupPrefix(),
+        /*motion_histogram_override=*/
+        is_direct_switch ? std::make_optional<std::string_view>(
+                               FocusModeAnimations::kSwitchMotionHistogramName)
+                         : std::nullopt);
   } else {
     anim_controller->Reset(FocusModeAnimations::kFocusMode, motion);
   }
@@ -1058,6 +1068,16 @@ BrowserFrameView* TabStripCollectionController::GetBrowserFrameView() const {
 BrowserAnimationController*
 TabStripCollectionController::GetBrowserAnimationController() const {
   return BrowserAnimationController::From(browser_view_->browser());
+}
+
+std::string_view
+TabStripCollectionController::GetFocusAnimationHistogramGroupPrefix() const {
+  switch (root_node_->orientation()) {
+    case TabStripOrientation::kHorizontal:
+      return FocusModeAnimations::kHistogramGroupPrefixHorizontal;
+    case TabStripOrientation::kVertical:
+      return FocusModeAnimations::kHistogramGroupPrefixVertical;
+  }
 }
 
 void TabStripCollectionController::OnFocusAnimationUpdated(
