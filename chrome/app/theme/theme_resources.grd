@@ -145,6 +145,7 @@
             </if> <!-- _is_chrome_for_testing_branded -->
           </else>
         </if>
+        <structure type="chrome_scaled_image" name="IDR_PASSWORD_MANAGER_HEADER_BACKGROUND" file="common/password_manager_header_background.png" />
       </if>
       <structure type="chrome_scaled_image" name="IDR_PLUGINS_FAVICON" file="common/favicon_plugins.png" />
       <structure type="chrome_scaled_image" name="IDR_PRERENDER" file="common/prerender_succeed_icon.png" />
@@ -195,9 +196,6 @@
           </if> <!-- _is_chrome_for_testing_branded -->
         </else>
       </if> <!-- _google_chrome -->
-      <if expr="_google_chrome">
-        <structure type="chrome_scaled_image" name="IDR_REMOTE_ACTOR_SHARING_ILLUSTRATION" file="google_chrome/remote_actor_sharing_illustration.png" />
-      </if>
       <if expr="is_chromeos">
         <structure type="chrome_scaled_image" name="IDR_RESET_WARNING" file="cros/reset_warning.png" />
       </if>

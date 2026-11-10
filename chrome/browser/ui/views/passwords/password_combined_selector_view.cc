@@ -601,7 +601,7 @@ ui::ImageModel CreateRemoteActorHeaderImageModel(
   static constexpr int kPasswordManagerIconSize = 32;
   const gfx::ImageSkia* full_banner =
       ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_REMOTE_ACTOR_SHARING_ILLUSTRATION);
+          IDR_PASSWORD_MANAGER_HEADER_BACKGROUND);
   return ui::ImageModel::FromImageGenerator(
       base::BindRepeating(
           [](const gfx::ImageSkia& base_banner,
