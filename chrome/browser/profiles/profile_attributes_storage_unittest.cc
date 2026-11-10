@@ -2408,6 +2408,111 @@ TEST_P(ProfileAttributesStorageTestWithProfileReorderingParam,
   }
 }
 
+TEST_F(ProfileAttributesStorageTest,
+       MigrateExistingProfilesOrderWhenEnablingReordering) {
+  DisableObserver();
+
+  auto add_profile = [&](const std::string& dir_name,
+                         const std::u16string& local_name) {
+    ProfileAttributesInitParams params;
+    params.profile_path = GetProfilePath(dir_name);
+    params.profile_name = local_name;
+    storage()->AddProfile(std::move(params));
+  };
+
+  // Phase 1: Create profiles in non-alphabetical order while
+  // `switches::kProfilesReordering` is disabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(switches::kProfilesReordering);
+    ResetProfileAttributesStorage();
+
+    add_profile("Default", u"Zulu");
+    add_profile("Profile 1", u"Alpha");
+    add_profile("Profile 2", u"Mike");
+
+    // Underlying pref stores insertion order, while UI query returns
+    // alphabetical order.
+    EXPECT_EQ(
+        EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
+        (std::vector<std::string>{"Default", "Profile 1", "Profile 2"}));
+    EXPECT_EQ(
+        EntriesToKeys(
+            storage()
+                ->GetAllProfilesAttributesSortedByLocalProfileNameWithCheck()),
+        (std::vector<std::string>{"Profile 1", "Profile 2", "Default"}));
+  }
+
+  // Phase 2: Relaunch with `switches::kProfilesReordering` enabled.
+  // Existing profiles should migrate to alphabetical order by local profile
+  // name rather than exposing raw insertion order.
+  {
+    base::test::ScopedFeatureList feature_list{switches::kProfilesReordering};
+    ResetProfileAttributesStorage();
+
+    const std::vector<std::string> alphabetical_keys{"Profile 1", "Profile 2",
+                                                     "Default"};
+    EXPECT_EQ(
+        EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
+        alphabetical_keys);
+    EXPECT_EQ(
+        EntriesToKeys(
+            storage()
+                ->GetAllProfilesAttributesSortedByLocalProfileNameWithCheck()),
+        alphabetical_keys);
+    EXPECT_EQ(EntriesToKeys(
+                  storage()->GetAllProfilesAttributesSortedByNameWithCheck()),
+              alphabetical_keys);
+
+    // Phase 3: Reorder profiles and add a new profile while reordering is
+    // enabled, then restart with reordering still enabled. Custom order and
+    // new profile insertion at the end must be preserved.
+    storage()->UpdateProfilesOrderPref(2, 0,
+                                       ProfileOrderUpdateType::kDragAndDrop);
+    add_profile("Profile 3", u"Beta");
+
+    const std::vector<std::string> custom_keys{"Default", "Profile 1",
+                                               "Profile 2", "Profile 3"};
+    EXPECT_EQ(
+        EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
+        custom_keys);
+
+    ResetProfileAttributesStorage();
+    EXPECT_EQ(
+        EntriesToKeys(
+            storage()
+                ->GetAllProfilesAttributesSortedByLocalProfileNameWithCheck()),
+        custom_keys);
+  }
+
+  // Phase 4: Disabling and later re-enabling `switches::kProfilesReordering`
+  // should re-migrate to alphabetical order.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(switches::kProfilesReordering);
+    ResetProfileAttributesStorage();
+
+    EXPECT_EQ(
+        EntriesToKeys(
+            storage()
+                ->GetAllProfilesAttributesSortedByLocalProfileNameWithCheck()),
+        (std::vector<std::string>{"Profile 1", "Profile 3", "Profile 2",
+                                  "Default"}));
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list{switches::kProfilesReordering};
+    ResetProfileAttributesStorage();
+
+    EXPECT_EQ(
+        EntriesToKeys(
+            storage()
+                ->GetAllProfilesAttributesSortedByLocalProfileNameWithCheck()),
+        (std::vector<std::string>{"Profile 1", "Profile 3", "Profile 2",
+                                  "Default"}));
+  }
+}
+
 TEST_F(ProfileAttributesStorageTest, EnterpriseLabelOverridesLocalProfileName) {
   base::FilePath path = AddTestingProfile();
 

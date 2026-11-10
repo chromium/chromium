@@ -93,6 +93,7 @@ enum class MultiProfileUserType {
 };
 
 const char kProfileCountLastUpdatePref[] = "profile.profile_counts_reported";
+constexpr char kProfilesOrderMigrated[] = "profile.profiles_order_migrated";
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 const char kLegacyProfileNameMigrated[] = "legacy.profile.name.migrated";
 bool g_migration_enabled_for_testing = false;
@@ -342,6 +343,7 @@ ProfileAttributesStorage::~ProfileAttributesStorage() = default;
 void ProfileAttributesStorage::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kProfileAttributes);
   registry->RegisterListPref(prefs::kProfilesOrder);
+  registry->RegisterBooleanPref(kProfilesOrderMigrated, false);
   registry->RegisterTimePref(kProfileCountLastUpdatePref, base::Time());
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(kLegacyProfileNameMigrated, false);
@@ -545,12 +547,23 @@ bool ProfileAttributesStorage::IsProfilesOrderPrefValid() const {
 }
 
 void ProfileAttributesStorage::EnsureProfilesOrderPrefIsInitialized() {
+  const bool reordering_enabled =
+      base::FeatureList::IsEnabled(switches::kProfilesReordering);
+  if (!reordering_enabled) {
+    prefs_->ClearPref(kProfilesOrderMigrated);
+  }
+
+  const bool should_migrate =
+      reordering_enabled && !prefs_->GetBoolean(kProfilesOrderMigrated);
+
   ScopedListPrefUpdate update(prefs_, prefs::kProfilesOrder);
   base::ListValue& profile_keys_order = update.Get();
 
-  // If the saved order pref is not valid, we recover by reseting the whole list
-  // and re-populate it with the profiles ordered by local profile name.
-  if (!IsProfilesOrderPrefValid()) {
+  // If the saved order pref is not valid, or if `kProfilesReordering` is newly
+  // enabled (migrating existing profiles that were previously displayed
+  // alphabetically), reset the whole list and populate it with the profiles
+  // ordered by local profile name.
+  if (should_migrate || !IsProfilesOrderPrefValid()) {
     profile_keys_order.clear();
 
     std::vector<ProfileAttributesEntry*> entries =
@@ -558,6 +571,10 @@ void ProfileAttributesStorage::EnsureProfilesOrderPrefIsInitialized() {
     for (ProfileAttributesEntry* entry : entries) {
       profile_keys_order.Append(StorageKeyFromProfilePath(entry->GetPath()));
     }
+  }
+
+  if (should_migrate) {
+    prefs_->SetBoolean(kProfilesOrderMigrated, true);
   }
 
   CHECK_EQ(profile_keys_order.size(), GetNumberOfProfiles(),
