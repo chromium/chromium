@@ -35,19 +35,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BackgroundSync.Wakeup.DelayTime" units="ms"
-    expires_after="2024-02-06">
-  <owner>nator@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    If BackgroundSync uses BackgroundTaskScheduler to wake up Chrome, this
-    records the time elapsed since the soonest expected wake-up time. Recorded
-    whenever a BackgroundSync background task is called after loading the native
-    parts of the browser.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
