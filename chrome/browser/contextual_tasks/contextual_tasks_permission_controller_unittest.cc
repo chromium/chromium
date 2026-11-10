@@ -6,7 +6,6 @@
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_location_bar.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_controller.h"
@@ -19,6 +18,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/permissions/permission_util.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -106,7 +106,9 @@ TEST_F(ContextualTasksPermissionControllerTest, GetStateReflectsChipChanges) {
 
   auto* request_chip = dashboard->request_chip();
   const gfx::VectorIcon& icon =
-      features::IsRoundedIconsEnabled() ? kPhotoCameraIcon : kCameraOldIcon;
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kVideocamIcon
+          : vector_icons::kVideocamChromeRefreshOldIcon;
   request_chip->SetVisible(true);
   request_chip->SetChipIcon(icon);
   request_chip->SetMessage(u"Use your camera?");
@@ -121,7 +123,7 @@ TEST_F(ContextualTasksPermissionControllerTest, GetStateReflectsChipChanges) {
   ASSERT_TRUE(state);
   ASSERT_TRUE(state->request_chip);
   EXPECT_TRUE(state->request_chip->is_visible);
-  EXPECT_EQ(state->request_chip->icon_name, icon.name);
+  EXPECT_EQ(state->request_chip->icon_name, "webui-toolbar-shared:videocam");
   EXPECT_EQ(state->request_chip->message, u"Use your camera?");
   EXPECT_EQ(state->request_chip->tooltip, u"Camera tooltip");
   EXPECT_EQ(state->request_chip->theme,

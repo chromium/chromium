@@ -7,28 +7,46 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
+#include "base/base_paths.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 #include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delegate.h"
+#include "chrome/browser/ui/webauthn/ambient/ambient_login_permission_request.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
+#include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_uma_constants.h"
+#include "components/permissions/request_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/gfx/vector_icon_types.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -502,3 +520,107 @@ TEST_F(WebUIPermissionChipTest, DashboardChipsAnchorToTheirOwnElements) {
   // indicator chip.
   EXPECT_EQ(dashboard.GetAnchor().GetIfElement(), &indicator_chip_element);
 }
+
+// Checks that every icon the permission chip can be given resolves to an icon
+// in the `webui-toolbar-shared` iconset, for both the rounded and the old
+// icons. Without this the WebUI chip silently drops the icon.
+class WebUIPermissionChipIconTest : public WebUIPermissionChipTest,
+                                    public testing::WithParamInterface<bool> {
+ protected:
+  WebUIPermissionChipIconTest() {
+    feature_list_.InitWithFeatureStates({{features::kRoundedIcons, GetParam()},
+                                         {features::kDesktopGlowUp, false}});
+  }
+
+  void SetUp() override {
+    WebUIPermissionChipTest::SetUp();
+    base::FilePath icons_path;
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &icons_path));
+    icons_path = icons_path.AppendASCII(
+        "chrome/browser/resources/webui_toolbar_shared/icons.ts");
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::ReadFileToString(icons_path, &iconset_source_));
+  }
+
+  // Sets `icon` on a chip and checks that the chip sends an id registered in
+  // the `webui-toolbar-shared` iconset (webui_toolbar_shared/icons.ts).
+  void ExpectMapped(const gfx::VectorIcon& icon) {
+    SCOPED_TRACE(icon.name ? icon.name : "(unnamed icon)");
+    WebUIPermissionChip chip(
+        location_bar_.get(),
+        PermissionChipView::kPermissionRequestChipElementId);
+    chip.SetChipIcon(icon);
+    const std::string icon_name = chip.GetState()->icon_name;
+    constexpr std::string_view kPrefix = "webui-toolbar-shared:";
+    ASSERT_TRUE(base::StartsWith(icon_name, kPrefix)) << icon_name;
+    const std::string_view id =
+        std::string_view(icon_name).substr(kPrefix.size());
+    EXPECT_NE(iconset_source_.find(base::StrCat({"'", id, "': () =>"})),
+              std::string::npos)
+        << id << " is not registered in webui_toolbar_shared/icons.ts";
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::string iconset_source_;
+};
+
+// Checks that every request type that can show a request chip (the ones with
+// request chip text, see `ShouldUseChip()` in permission_prompt_factory.cc)
+// resolves its icon and blocked icon to an icon in the `webui-toolbar-shared`
+// iconset. Types without chip text always use a prompt bubble, so they're
+// skipped.
+TEST_P(WebUIPermissionChipIconTest, ChipRequestTypeIconsMapped) {
+  using permissions::RequestType;
+  int chip_types = 0;
+  for (int i = 0; i <= static_cast<int>(RequestType::kMaxValue); ++i) {
+    const RequestType type = static_cast<RequestType>(i);
+    SCOPED_TRACE(permissions::PermissionKeyForRequestType(type));
+    // Ambient login requests provide their own icons, which are covered
+    // below.
+    if (type == RequestType::kAmbientLogin) {
+      continue;
+    }
+    permissions::PermissionRequest request(
+        std::make_unique<permissions::PermissionRequestData>(
+            type, /*user_gesture=*/true, GURL("https://example.test")),
+        base::DoNothing());
+    if (!request
+             .GetRequestChipText(
+                 permissions::PermissionRequest::ChipTextType::LOUD_REQUEST)
+             .has_value()) {
+      continue;
+    }
+    ++chip_types;
+    ExpectMapped(request.GetIconForChip());
+    ExpectMapped(request.GetBlockedIconForChip());
+  }
+  EXPECT_GT(chip_types, 0);
+}
+
+TEST_P(WebUIPermissionChipIconTest, AmbientLoginIconsMapped) {
+  using ambient_signin::AmbientLoginPermissionRequest;
+  using ambient_signin::CredentialType;
+  ExpectMapped(AmbientLoginPermissionRequest::GetCredentialIcon(
+      CredentialType::kPasskey));
+  ExpectMapped(AmbientLoginPermissionRequest::GetCredentialIcon(
+      CredentialType::kPassword));
+  ExpectMapped(GooglePasswordManagerVectorIcon());
+}
+
+// The identity provider request has no blocked icon, so the chip shows none.
+TEST_P(WebUIPermissionChipIconTest, EmptyIconMapsToNoIcon) {
+  WebUIPermissionChip chip(location_bar_.get(),
+                           PermissionChipView::kPermissionRequestChipElementId);
+  chip.SetChipIcon(permissions::GetBlockedIconId(
+      permissions::RequestType::kIdentityProvider));
+  EXPECT_EQ(chip.GetState()->icon_name, "");
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebUIPermissionChipIconTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "RoundedIcons" : "OldIcons";
+                         });

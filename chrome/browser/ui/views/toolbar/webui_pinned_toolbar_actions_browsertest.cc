@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
       kActionShowPasswordsBubbleOrPage,
       toolbar_ui_api::mojom::PinnedToolbarAction::kShowPasswordsBubbleOrPage);
   EXPECT_EQ(features::IsRoundedIconsEnabled()
-                ? "webui-toolbar:password_manager"
+                ? "webui-toolbar-shared:password_manager"
                 : "webui-toolbar:password_manager_old",
             EvalJsOnPinnedAction(toolbar_ui_api::mojom::PinnedToolbarAction::
                                      kShowPasswordsBubbleOrPage,
@@ -1336,7 +1336,9 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsTtcBrowserTest,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   expected_icon = "internal-icons:audio_spark";
 #else
-  expected_icon = "webui-toolbar:mic_filled";
+  expected_icon = features::IsRoundedIconsEnabled()
+                      ? "webui-toolbar:mic_filled"
+                      : "webui-toolbar-shared:mic";
 #endif
 
   EXPECT_TRUE(base::test::RunUntil([&]() {

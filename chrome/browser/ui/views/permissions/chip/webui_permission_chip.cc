@@ -4,17 +4,58 @@
 
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
 
+#include <optional>
+#include <string>
+#include <string_view>
+
+#include "base/check.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
+#include "chrome/browser/ui/webui/webui_toolbar/icon_table.h"
 #include "ui/base/base_window.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
+
+// Returns the iconset name the WebUI chip renders for `icon`, e.g.
+// "webui-toolbar-shared:videocam", or an empty string for no icon. The mapping
+// lives in `webui_toolbar::IconTable` (see KnownIcons() in icon_table.cc).
+// Only request types with request chip text
+// (`PermissionRequest::GetRequestChipText(LOUD_REQUEST)`) can show a request
+// chip; the others always use a prompt bubble. The chip's icons must map to the
+// `webui-toolbar-shared` iconset, because the chip is also used by the
+// contextual tasks toolbar, which doesn't load the `webui-toolbar` iconset.
+std::string GetIconName(const gfx::VectorIcon& icon) {
+  if (icon.is_empty()) {
+    return std::string();
+  }
+  if (std::optional<std::string_view> name =
+          webui_toolbar::IconTable::GetKnownIconsetName(icon)) {
+    return std::string(*name);
+  }
+  // Ambient sign-in requests use `GooglePasswordManagerVectorIcon()`. In
+  // branded builds that's the multicolor Google Password Manager logo, which
+  // isn't in the public iconset, so use the monochrome password manager icon.
+  // In other builds it's a key icon, which IconTable already maps.
+  // TODO(crbug.com/582361456): In branded builds, map the Google Password
+  // Manager logo to an internal iconset (like `internal-icons` in
+  // webui_toolbar/internal/icons.ts) instead of the monochrome fallback.
+  if (&icon == &GooglePasswordManagerVectorIcon()) {
+    return "webui-toolbar-shared:password_manager";
+  }
+  // A new permission icon needs an entry in KnownIcons() and an SVG in
+  // webui_toolbar_shared/icons.ts.
+  DUMP_WILL_BE_NOTREACHED() << "No WebUI icon for " << icon.name;
+  return std::string();
+}
 
 // TODO(crbug.com/502597958): This C++/Mojo type conversion code could be
 // simplified with a `ToolbarUIService` mojom_traits file.
@@ -108,14 +149,13 @@ std::u16string WebUIPermissionChip::GetTooltipText() const {
 }
 
 void WebUIPermissionChip::SetChipIcon(const gfx::VectorIcon& icon) {
-  icon_name_ = icon.name;
+  icon_name_ = GetIconName(icon);
   UpdateState();
 }
 
 void WebUIPermissionChip::SetChipIcon(const gfx::VectorIcon* icon) {
   if (icon) {
-    icon_name_ = icon->name;
-    UpdateState();
+    SetChipIcon(*icon);
   }
 }
 

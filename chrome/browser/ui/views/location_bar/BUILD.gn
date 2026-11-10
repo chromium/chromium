@@ -357,6 +357,7 @@ source_set("unit_tests") {
     "//components/omnibox/browser:vector_icons",
     "//components/strings:components_strings",
     "//components/user_education/common",
+    "//components/vector_icons",
     "//content/test:test_support",
     "//extensions/common:extension_features",
     "//testing/gmock",

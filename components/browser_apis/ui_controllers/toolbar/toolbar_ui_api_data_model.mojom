@@ -895,6 +895,8 @@ enum PermissionAction {
 
 struct PermissionChipState {
   bool is_visible;
+  // The chip's icon as an iconset id (e.g.
+  // "webui-toolbar-shared:content_paste"), or empty for no icon.
   string icon_name;
   mojo_base.mojom.String16 message;
   mojo_base.mojom.String16 tooltip;

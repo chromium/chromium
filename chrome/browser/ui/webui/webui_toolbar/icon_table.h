@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -55,6 +56,13 @@ class IconTable {
 
   IconTable& operator=(const IconTable&) = delete;
   IconTable& operator=(IconTable&&) = delete;
+
+  // Returns the iconset name (e.g. "webui-toolbar-shared:videocam") that
+  // KnownIcons() in .cc maps `icon` to, or nullopt if `icon` isn't mapped to
+  // an iconset. For callers that send iconset names directly instead of
+  // IconHandles.
+  static std::optional<std::string_view> GetKnownIconsetName(
+      const gfx::VectorIcon& icon);
 
   // Tries to returns an IconHandle to a VectorIcon this class knows about
   // (see KnownIcons() in .cc). Returns nullopt if it doesn't recognize it.

@@ -19,7 +19,7 @@ suite('PermissionDashboardTest', function() {
       accessibilityName: 'Camera',
       tooltip: 'Camera in use',
       isVisible: isVisible,
-      iconName: 'kVideocamChromeRefreshIcon',
+      iconName: 'webui-toolbar-shared:videocam',
       theme: PermissionChipTheme.kNormalVisibility,
       promptStyle: PermissionPromptStyle.kChip,
       userDecision: PermissionAction.kGranted,

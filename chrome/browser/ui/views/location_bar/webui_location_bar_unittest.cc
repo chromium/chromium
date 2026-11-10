@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -192,8 +192,9 @@ TEST_F(WebUILocationBarTest, StateManagement_PermissionChip) {
   WebUIPermissionChip chip(location_bar_, kTestPermissionChipElementId);
 
   chip.SetVisible(true);
-  chip.SetChipIcon(features::IsRoundedIconsEnabled() ? kPhotoCameraIcon
-                                                     : kCameraOldIcon);
+  chip.SetChipIcon(features::IsRoundedIconsEnabled()
+                       ? vector_icons::kVideocamIcon
+                       : vector_icons::kVideocamChromeRefreshOldIcon);
   chip.SetMessage(u"Camera in use");
   chip.SetTooltipText(u"Tooltip");
   chip.SetTheme(PermissionChipTheme::kInUseActivityIndicator);
@@ -205,9 +206,7 @@ TEST_F(WebUILocationBarTest, StateManagement_PermissionChip) {
 
   auto state = chip.GetState();
   EXPECT_TRUE(state->is_visible);
-  EXPECT_EQ(state->icon_name, features::IsRoundedIconsEnabled()
-                                  ? kPhotoCameraIcon.name
-                                  : kCameraOldIcon.name);
+  EXPECT_EQ(state->icon_name, "webui-toolbar-shared:videocam");
   EXPECT_EQ(state->message, u"Camera in use");
   EXPECT_EQ(state->tooltip, u"Tooltip");
   EXPECT_EQ(

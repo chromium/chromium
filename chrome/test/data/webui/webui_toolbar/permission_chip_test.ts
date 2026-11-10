@@ -25,7 +25,7 @@ suite('PermissionChipTest', function() {
       accessibilityName: 'Camera',
       tooltip: 'Camera in use',
       isVisible: true,
-      iconName: 'kVideocamChromeRefreshOldIcon',
+      iconName: 'webui-toolbar-shared:videocam',
       theme: PermissionChipTheme.kNormalVisibility,
       promptStyle: PermissionPromptStyle.kChip,
       userDecision: PermissionAction.kGranted,
@@ -81,6 +81,30 @@ suite('PermissionChipTest', function() {
     // Verify it is a button for accessibility
     assertEquals('BUTTON', chipEl.tagName);
     assertEquals('Camera', chipEl.getAttribute('aria-label'));
+  });
+
+  // The browser sends the iconset id, so any permission icon renders, not only
+  // the camera, microphone, location and notifications icons.
+  test('Render icon from iconset id', async function() {
+    const state = createBaseState();
+    state.iconName = 'webui-toolbar-shared:content_paste';
+    state.message = 'Clipboard';
+    chip.chipState = state;
+    await microtasksFinished();
+
+    const iconEl = chip.shadowRoot.querySelector<CrIconElement>('#icon');
+    assertTrue(!!iconEl);
+    assertEquals('webui-toolbar-shared:content_paste', iconEl.icon);
+    assertTrue(!!iconEl.shadowRoot.querySelector('svg'));
+  });
+
+  test('Render no icon for empty icon name', async function() {
+    const state = createBaseState();
+    state.iconName = '';
+    chip.chipState = state;
+    await microtasksFinished();
+
+    assertFalse(!!chip.shadowRoot.querySelector('#icon'));
   });
 
   test('Click events', async function() {

@@ -1145,8 +1145,8 @@ suite('TopToolbarTest', () => {
           // Create request chip.
           const fakeState = {
             indicatorChip: createFakeChip(),
-            requestChip:
-                createFakeChip({isVisible: true, iconName: 'kMicIcon'}),
+            requestChip: createFakeChip(
+                {isVisible: true, iconName: 'webui-toolbar-shared:mic'}),
             isDividerVisible: false,
           };
 
@@ -1206,8 +1206,8 @@ suite('TopToolbarTest', () => {
 
           // Create indicator chip.
           const fakeState = {
-            indicatorChip:
-                createFakeChip({isVisible: true, iconName: 'kCameraIcon'}),
+            indicatorChip: createFakeChip(
+                {isVisible: true, iconName: 'webui-toolbar-shared:videocam'}),
             requestChip: createFakeChip(),
             isDividerVisible: false,
           };
@@ -1254,8 +1254,8 @@ suite('TopToolbarTest', () => {
           const observerRemote = toolbarProxy.bindToolbarUiObserverRemote();
           const pushedState = {
             indicatorChip: createFakeChip(),
-            requestChip:
-                createFakeChip({isVisible: true, iconName: 'kMicIcon'}),
+            requestChip: createFakeChip(
+                {isVisible: true, iconName: 'webui-toolbar-shared:mic'}),
             isDividerVisible: false,
           };
           observerRemote.onPermissionDashboardStateChanged(pushedState);
@@ -1269,8 +1269,11 @@ suite('TopToolbarTest', () => {
     test('forwards permission chip delegate calls to service', async () => {
       topToolbar.permissionDashboardState = {
         indicatorChip: createFakeChip(),
-        requestChip: createFakeChip(
-            {isVisible: true, isFullyCollapsed: true, iconName: 'kMicIcon'}),
+        requestChip: createFakeChip({
+          isVisible: true,
+          isFullyCollapsed: true,
+          iconName: 'webui-toolbar-shared:mic',
+        }),
         isDividerVisible: false,
       };
       await microtasksFinished();
