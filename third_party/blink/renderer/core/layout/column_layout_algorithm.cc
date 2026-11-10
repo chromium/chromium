@@ -1540,7 +1540,7 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
   LogicalOffset offset(
       BorderScrollbarPadding().inline_start + margins.inline_start,
       block_offset);
-  container_builder_.AddResult(*result, offset);
+  container_builder_.AddResult(*result, offset, margins);
 
   // According to the spec, the first spanner that has a baseline contributes
   // with its baseline to the multicol container. This is in contrast to column

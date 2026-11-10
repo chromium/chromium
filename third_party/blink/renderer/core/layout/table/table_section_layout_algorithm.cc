@@ -130,7 +130,7 @@ const LayoutResult* TableSectionLayoutAlgorithm::Layout() {
       first_baseline = offset.block_offset + *physical_fragment.FirstBaseline();
     last_baseline = offset.block_offset + *physical_fragment.LastBaseline();
 
-    container_builder_.AddResult(*row_result, offset);
+    container_builder_.AddResult(*row_result, offset, /*margins=*/BoxStrut());
     offset.block_offset += fragment.BlockSize();
     is_first_non_collapsed_row &= is_row_collapsed;
 

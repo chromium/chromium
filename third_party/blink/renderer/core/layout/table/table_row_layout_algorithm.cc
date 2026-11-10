@@ -175,10 +175,12 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
           table_data.column_locations[cell_data.start_column].offset -
               table_data.table_border_spacing.inline_size,
           LayoutUnit());
-      if (has_block_fragmentation || !row_baseline)
+      if (has_block_fragmentation || !row_baseline) {
         results.emplace_back(cell_result, offset);
-      else
-        container_builder_.AddResult(*cell_result, offset);
+      } else {
+        container_builder_.AddResult(*cell_result, offset,
+                                     /*margins=*/BoxStrut());
+      }
 
       if (should_propagate_child_break_values) {
         auto cell_break_before = JoinFragmentainerBreakValues(
@@ -250,8 +252,10 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
       PlaceCells(row_block_size, std::nullopt);
     }
 
-    for (auto& result : results)
-      container_builder_.AddResult(*result.result, result.offset);
+    for (auto& result : results) {
+      container_builder_.AddResult(*result.result, result.offset,
+                                   /*margins=*/BoxStrut());
+    }
   }
 
   // Since we always visit all cells in a row (cannot break halfway through;
