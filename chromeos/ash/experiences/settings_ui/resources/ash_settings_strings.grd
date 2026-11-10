@@ -5064,6 +5064,532 @@ Press an assigned switch or key to remove assignment.
         <ph name="PRINTER_NAME">$1<ex>HP 3100</ex></ph> <ph name="PRINTER_STATUS">$2<ex>Low on ink</ex></ph>. Printer <ph name="ITEM_POSITION">$3<ex>2</ex></ph> of <ph name="NUM_PRINTERS">$4<ex>4</ex></ph>.
       </message>
 
+      <!-- Shared across multiple pages -->
+      <message name="IDS_SETTINGS_LEARN_MORE" desc="The label in the settings UI if users can obtain more information.">
+        Learn more
+      </message>
+
+      <!-- Bluetooth page (OS settings) -->
+      <message name="IDS_SETTINGS_BLUETOOTH_CONNECTED" desc="In Bluetooth device list, this label is shown below a device which is already connected.">
+        Connected
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_CONNECTING">
+        Connecting...
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_PRIMARY_USER_CONTROLLED" desc="Settings > Bluetooth > Text to show when Bluetooth configuration is controlled by the primary user.">
+        Bluetooth configuration is controlled by <ph name="USER_EMAIL">$1<ex>joe@gmail.com</ex></ph>.
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_CONNECT" desc="Bluetooth pairing dialog: Text for dropdown meny item to connect to a device.">
+        Connect
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DISCONNECT" desc="Bluetooth pairing dialog: dropdown meny item to disconnect from a device.">
+        Disconnect
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTED" desc="Bluetooth device details page: Text informing user the device is currently connected.">
+        Connected
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_DISCONNECTED" desc="Bluetooth device details page: Text informing user the device is currently disconnected.">
+        Disconnected
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_FORGET" desc="Bluetooth device details page: button label for button that forgets the Bluetooth device when clicked.">
+        Forget
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_FORGET_A11Y_LABEL" desc="Bluetooth device details page: Accessibility label for button that forgets the Bluetooth device when clicked.">
+        Forget <ph name="DEVICE_NAME">$1<ex>Beats</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_HID_MESSAGE_CONNECTED" desc="Bluetooth device details page: Message displayed for devices that are currently connected that will disconnect automatically when turned off or not used.">
+        Device will disconnect automatically when it's turned off or isn't being used
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_HID_MESSAGE_DISCONNECTED" desc="Bluetooth device details page: Message displayed for devices that are currently disconnected that will connect automatically when turned on and used.">
+        Device will connect automatically when it's turned on and is being used
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_NAME" desc="Bluetooth device details page: label informing user the text below is the device name.">
+        Device name
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CHANGE_DEVICE_NAME" desc="Bluetooth device details page: button label for button that prompts user to change the Bluetooth device's name when clicked.">
+        Change device name
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CHANGE_DEVICE_NAME_BTN_A11Y_LABEL" desc="Bluetooth device details page: a11y label for button that prompts user to change the Bluetooth device's name when clicked.">
+        Change device name for <ph name="DEVICE_NAME">$1<ex>Beats</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_BATTERY_PERCENTAGE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current battery percentage.">
+        Battery level <ph name="PERCENTAGE">$1<ex>90</ex></ph>%
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_LEFT_BUD_BATTERY_PERCENTAGE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current battery percentage of the left true wireless bud.">
+        Left battery level <ph name="PERCENTAGE">$1<ex>90</ex></ph>%.
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CASE_BATTERY_PERCENTAGE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current battery percentage of the true wireless case.">
+        Case battery level <ph name="PERCENTAGE">$1<ex>90</ex></ph>%.
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_RIGHT_BUD_BATTERY_PERCENTAGE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current battery percentage of the right true wireless bud.">
+        Right battery level <ph name="PERCENTAGE">$1<ex>90</ex></ph>%.
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_TRUE_WIRELESS_LEFT_BUD_LABEL" desc="Bluetooth True Wireless Images component: Label describing the left bud of a set of True Wireless headphones.">
+        Left
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_TRUE_WIRELESS_CASE_LABEL" desc="Bluetooth True Wireless Images component: Label describing the case of a set of True Wireless headphones.">
+        Case
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_TRUE_WIRELESS_RIGHT_BUD_LABEL" desc="Bluetooth True Wireless Images component: Label describing the right bud of a set of True Wireless headphones.">
+        Right
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTED_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current device is connected.">
+        Connected to <ph name="DEVICE">$1<ex>Beats</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTING_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing, the current device is being connected to.">
+        Connecting to <ph name="DEVICE">$1<ex>Beats</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTION_FAILURE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing, the current device could not be connected to.">
+        Could not connect to <ph name="DEVICE">$1<ex>Beats</ex></ph>. Try again.
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTION_FAILURE_LABEL" desc="Bluetooth device details page: Message informing, the current device could not be connected to.">
+        Couldn't connect. Try again.
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_DISCONNECTED_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current device is disconnected.">
+        Disconnected from <ph name="DEVICE">$1<ex>Beats</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_CHANGE_DEVICE_NAME_DIALOG_NEW_NAME" desc="Bluetooth device details page > Change name dialog: label informing user to enter a new device name in input below.">
+        New device name
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_CHANGE_DEVICE_NAME_DIALOG_CANCEL" desc="Bluetooth device details page > Change device name dialog: Label for button that cancels device's name change.">
+        Cancel
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_CHANGE_DEVICE_NAME_DIALOG_DONE" desc="Bluetooth device details page > Change device name dialog: Label for button that initiates device's name change.">
+        Done
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CHANGE_DEVICE_SETTINGS_MOUSE" desc="Bluetooth device details page: label for button that changes current mouse device settings.">
+        Change mouse settings
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CHANGE_DEVICE_SETTINGS_KEYBOARD" desc="Bluetooth device details page: label for button that changes current keyboard device settings.">
+        Change keyboard settings
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_CHANGE_DEVICE_NAME_DIALOG_INPUT_A11Y_LABEL" desc="Bluetooth device details page > Change device name dialog:  The a11y label for the dialog input that renames a Bluetooth device, informing the user that letters, numbers and special characters are allowed, as well as the maximum number of characters permitted.">
+        Name can use letters, numbers, and special characters, and must be <ph name="MAX_CHARACTER_COUNT">$1<ex>20</ex></ph> characters or fewer
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_CHANGE_DEVICE_NAME_DIALOG_INPUT_SUBTITLE" desc="Bluetooth device details page > Change device name dialog: The Label for the dialog input that renames a Bluetooth device, informing the user that letters, numbers and special characters are allowed.">
+        Name can use letters, numbers, and special characters
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_CHANGE_DEVICE_NAME_DIALOG_INPUT_CHARACTER_COUNT" desc="Bluetooth device details page > Change device name dialog: The Label for the dialog input that renames a Bluetooth device, informing the user the number of characters they have inputted compared to the maximum number of characters allowed.">
+        <ph name="CURRENT_CHARACTER_COUNT">$1<ex>15</ex></ph>/<ph name="MAX_CHARACTER_COUNT">$2<ex>20</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_TOGGLE_ACCESSIBILITY_LABEL" desc="Accessibility only label for Bluetooth enable/disable toggle.">
+        Bluetooth enable
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing available Bluetooth devices. Only visible by screen reader software.">
+        Show available Bluetooth devices
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH" desc="Name of the settings page which displays Bluetooth device settings.">
+        Bluetooth
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_CONNECTED_A11Y_ONE_DEVICE" desc="Accessibility only label for Bluetooth summary page, when connected to one device.">
+        Connected to Bluetooth device named <ph name="DEVICE">$1<ex>Beats</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_CONNECTED_A11Y_TWO_DEVICES" desc="Accessibility only label for Bluetooth summary page, when connected to two devices.">
+        Connected to Bluetooth devices named <ph name="FIRST_DEVICE">$1<ex>Beats</ex></ph> and <ph name="SECOND_DEVICE">$2<ex>Mouse</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_CONNECTED_A11Y_TWO_OR_MORE_DEVICES" desc="Accessibility only label for Bluetooth summary page, when connected to two or more devices.">
+        Connected to <ph name="DEVICE">$1<ex>Beats</ex></ph> and <ph name="NUMBER_OF_DEVICES">$2<ex>2</ex></ph> other Bluetooth devices
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_TWO_OR_MORE_DEVICES_DESCRIPTION" desc="Label for Bluetooth summary page, when connected to two or more devices.">
+        <ph name="DEVICE">$1<ex>Beats</ex></ph> and <ph name="NUMBER_OF_DEVICES">$2<ex>2</ex></ph> others
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_TWO_DEVICES_DESCRIPTION" desc="Label for Bluetooth summary page, when connected to two devices.">
+        <ph name="FIRST_DEVICE">$1<ex>Beats</ex></ph>, <ph name="SECOND_DEVICE">$2<ex>Mouse</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_OFF" desc="Label for Bluetooth summary page, when Bluetooth is off.">
+        Off
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_ON" desc="Label for Bluetooth summary page, when Bluetooth is on but no devices are connected.">
+        On
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAILS" desc="Name of the settings page which displays Bluetooth device details.">
+        Bluetooth device details
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_SAVED_DEVICES" desc="Name of the settings page which displays Bluetooth saved devices.">
+        Devices saved to your account
+      </message>
+      <message name="IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_CANCEL" desc="Bluetooth saved devices subpage > Remove device dialog: Label for button that cancels removing the device.">
+        Cancel
+      </message>
+      <message name="IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_REMOVE" desc="Bluetooth saved devices subpage > Remove device dialog: Label for button that removes the device." meaning="the title and the button are meant to match. “Remove” means to move or take content/data down so that it's no longer visible in the user interface (but it may still exist in the system, as opposed to 'deleting' or 'uninstalling'">
+        Remove
+      </message>
+      <message name="IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_LABEL" desc="Bluetooth saved devices subpage > Remove device dialog: Label for dialog that removes the device." meaning="question to prompt users if they want to remove [device name] from their [email address]. The user then confirms removing the device name or cancels to not remove the device name">
+        Remove <ph name="DEVICE">$1<ex>Beats</ex></ph> from <ph name="PRIMARY_EMAIL">$2<ex>john@google.com</ex></ph>?
+      </message>
+      <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_CANCEL" desc="Bluetooth device details page > Forget device dialog: Label for button that cancels forgetting the device.">
+        Cancel
+      </message>
+      <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_FORGET" desc="Bluetooth device details page > Forget device dialog: Label for button that forgets the device." meaning="The 'forget' buttons means 'forgetting the device,' the 'forget' button is a confirmation for the user to unpair and remove the device from their account">
+        Forget
+      </message>
+      <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_LABEL" desc="Bluetooth device details page > Forget device dialog: Label for dialog that forgets the device.">
+        <ph name="DEVICE">$1<ex>Beats</ex></ph> will be removed from this Chromebook and won’t be saved to <ph name="PRIMARY_EMAIL">$2<ex>john@google.com</ex></ph>.
+      </message>
+      <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_TITLE" desc="Bluetooth device details page > Forget device dialog: Title for dialog that forgets the device." meaning="'Forget this device' means the device will be unpaired and removed from the account">
+        Forget this device?
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_REMOVE" desc="Label for removing (unpairing) a paired Bluetooth device">
+        Remove from list
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_MANAGED" desc="Tooltip description for icon notifying user that the Bluetooth device is managed by an enterprise policy and may have restricted functionality.">
+        Your administrator has blocked some functionality for this device
+      </message>
+      <message name="IDS_BLUETOOTH_ENABLE_FAST_PAIR_LABEL" desc="Label for the toggle that enables Fast Pair on the Bluetooth settings page.">
+        Scan for new devices
+      </message>
+      <message name="IDS_BLUETOOTH_ENABLE_FAST_PAIR_SUBTITLE" desc="Subtitle that describes the toggle that enables Fast Pair on the Bluetooth settings page.">
+        Connect and quickly set up Fast Pair devices close by
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_ENABLED_A11Y_LABEL" desc="Bluetooth device details page: Accessibility announcement when Bluetooth state is enabled.">
+        Bluetooth enabled
+      </message>
+      <message name="IDS_SETTINGS_BLUETOOTH_DISABLED_A11Y_LABEL" desc="Bluetooth device details page: Accessibility announcement when Bluetooth state is disabled.">
+        Bluetooth disabled
+      </message>
+      <message name="IDS_BLUETOOTH_SAVED_DEVICES_LABEL" desc="Label for the link row that directs to Saved Devices settings sub-page.">
+        Devices saved to your account
+      </message>
+      <message name="IDS_BLUETOOTH_SAVED_DEVICES_SUBTITLE" desc="Subtitle for the link row that directs to Saved Devices settings sub-page.">
+        Fast Pair devices saved to <ph name="PRIMARY_EMAIL">$1<ex>john@google.com</ex></ph>
+      </message>
+      <message name="IDS_BLUETOOTH_SAVED_DEVICES_REMOVE" desc="Label for remove button that removes a Saved Device.">
+        Remove from account
+      </message>
+      <message name="IDS_SAVED_DEVICE_ITEM_A11Y_LABEL" desc="Accessibility label for paired Bluetooth device list item with a device type of computer.">
+        Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>
+      </message>
+      <message name="IDS_SAVED_DEVICE_LIST_ITEM_BUTTON_A11Y_LABEL" desc="Accessibility label for button in a paired Bluetooth device list item that routes to the detail page for the device.">
+        More actions for <ph name="DEVICE">$1<ex>Beats</ex></ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_BLUETOOTH_MENU_ITEM_DESCRIPTION_MULTIPLE_DEVICES_CONNECTED" desc="Description for the Bluetooth menu item in the left menu when there are 2 or more bluetooth devices connected.">
+        <ph name="NUM_DEVICES_CONNECTED">$1<ex>2</ex></ph> devices connected
+      </message>
+
+      <!-- Multidevice Page (OS settings) -->
+      <message name="IDS_SETTINGS_MULTIDEVICE" desc="Title of a section of settings. This section describes settings for devices that are connected to the Chromebook, like phones.">
+        Connected devices
+      </message>
+      <message name="IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION" desc="Description for the Multidevice menu item in the left menu when no phone connected.">
+        Phone Hub, Nearby Share
+      </message>
+      <message name="IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION_PH" desc="Feature name placeholder: Description for the Multidevice menu item in the left menu when no phone connected.">
+        Phone Hub, <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION_PHONE_CONNECTED" desc="Description for the Multidevice menu item in the left menu when there is a phone connected.">
+        Connected to <ph name="HOST_DEVICE_NAME">$1<ex>Android phone</ex></ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_MULTIDEVICE_MENU_ITEM_DESCRIPTION_DEVICE_NAME_MISSING" desc="Description for the Multidevice menu item in the left menu when there is a phone connected but the device name is missing.">
+        Connected to Android phone
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_SETUP_BUTTON" desc="Label of the button that opens a menu to the user that allows them to set up a connection between the user's phone and their Chromebook to give them access to special features.">
+        Set up
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_VERIFY_BUTTON" desc="Label for the button to get the Chromebook to verify that it can connect with their phone.">
+        Verify
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_SETUP_BUTTON_A11Y_LABEL" desc="Accessibility label of the button that begins the setup process to link this Chromebook to one of the user's phones.">
+        Set up phone
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_VERIFY_BUTTON_A11Y_LABEL" desc="Accessibility label of the button to get the Chromebook to verify that it can connect with their phone.">
+        Verify phone
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_SETUP_ITEM_HEADING" desc="Heading for settings item that allows the user to connect their phone to their Chromebook.">
+        Android phone
+      </message>
+      <message name="IDS_OS_SETTINGS_MULTIDEVICE_SUBPAGE_TITLE" desc="Title for the multidevice detail subpage.">
+        Android phone (<ph name="HOST_DEVICE_NAME">$1<ex>Android phone</ex></ph>)
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_ENABLED" desc="Text to tell user multidevice features are turned on">
+        Enabled
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_DISABLED" desc="Text to tell user multidevice features are turned off">
+        Disabled
+      </message>
+      <message name="IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_VISIBLE_TO_ALL_CONTACTS" desc="Description for the nearby share settings row when nearby share is enabled and selected to be visible to all contacts.">
+        Visible to all contacts
+      </message>
+      <message name="IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_VISIBLE_TO_SELECTED_CONTACTS" desc="Description for the nearby share settings row when nearby share is enabled and selected to be visible to selected contacts only.">
+        Visible to some contacts
+      </message>
+      <message name="IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_VISIBLE_TO_YOUR_DEVICES" desc="Description for the nearby share settings row when nearby share is enabled and selected to be visible to your devices.">
+        Visible to your devices
+      </message>
+      <message name="IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_HIDDEN" desc="Description for the nearby share settings row when nearby share is enabled and selected to be hidden.">
+        Hidden
+      </message>
+      <message name="IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_OFF" desc="Description for the nearby share settings row when nearby share setting is disabled.">
+        Share files and more with nearby devices. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_MULTIDEVICE_TOGGLE_LABEL" desc="Label for the top level toggle button on the Connected Devices details subpage">
+        Connect to your phone
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_SUITE_TOGGLE_A11Y_LABEL" desc="Accessibility label for toggle button that enables/disables connected phone features.">
+        Connected phone features enable.
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING" desc="Name of a feature. This feature automatically offers the user to tether to their phone if their Chromebook is offline and their phone supports tethering.">
+        Instant Tethering
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING_SUMMARY" desc="Description of for the 'Instant Tethering' setting. This feature automatically offers the user to tether to their phone if their Chromebook is offline and their phone supports tethering.">
+        Connect to the internet through your phone
+      </message>
+      <message name="IDS_OS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING_CONNECTED_DESCRIPTION" desc="Description of for the 'Instant Tethering' setting when it's connected. This feature automatically offers the user to tether to their phone if their Chromebook is offline and their phone supports tethering.">
+        Connected to internet through <ph name="HOST_DEVICE_NAME">$1<ex>Android phone</ex></ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING_CONNECTING_DESCRIPTION" desc="Description of for the 'Instant Tethering' setting when it's being connected.">
+        Connecting to <ph name="HOST_DEVICE_NAME">$1<ex>Android phone</ex></ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING_NO_NETWORK_DESCRIPTION" desc="Description of for the 'Instant Tethering' setting when it's not connected.">
+        No network through <ph name="HOST_DEVICE_NAME">$1<ex>Android phone</ex></ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING_DISABLED_DESCRIPTION" desc="Description of for the 'Instant Tethering' setting when it's diabled.">
+        Connect to the internet through your phone
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_SECTION_TITLE" desc="The title of the Phone Hub section on the settings page.">
+        Phone Hub
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_LEARN_MORE_LABEL" desc="Accessibility label (used by screen readers, not shown in UI) for a link that leads to a page with more information about the 'Phone Hub' feature.">
+        Phone Hub, Learn More
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_SECTION_TITLE" desc="The title of the Phone Hub Recent Photo section on the settings page.">
+        Recent photos
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SECTION_TITLE" desc="The title of the Phone Hub Notifications section on the settings page.">
+        Notifications
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SECTION_TITLE" desc="The title of the Phone Hub Task Continuation section on the settings page.">
+        Recent Chrome tabs
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_TITLE" desc="The title of the Phone Hub Apps section on the settings page.">
+        Apps
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SECTION_TITLE" desc="The title of the Phone Hub Apps and Notifications combined section on the settings page.">
+        Notifications and apps
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_AND_NOTIFICATIONS_SECTION_TITLE" desc="The title of the Phone Hub Camera Roll and Notifications combined section on the settings page.">
+        Recent photos and notifications
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_AND_APPS_SECTION_TITLE" desc="The title of the Phone Hub Camera Roll and Apps combined section on the settings page.">
+        Recent photos and apps
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_NOTIFICATIONS_AND_APPS_SECTION_TITLE" desc="The title of the Phone Hub Camera Roll, Notifications and Apps combined section on the settings page.">
+        Recent photos, notifications, and apps
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_SUMMARY" desc="Description of for the 'Phone Hub' setting. This feature lets the user stay productive on ChromeOS by ensuring that their phones' apps, content, and connectivity are available on their ChromeOS device.">
+        Access your phone's capabilities from your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_SUMMARY" desc="Description of for the 'Phone Hub Camera Roll' setting. This feature populates most recent photos from a connected Android phone to Chrome OS devices.">
+        View your phone's photos and media
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY" desc="Description of for the 'Phone Hub Notifications' setting. This feature mirrors notifications from a connected Android phone to ChromeOS devices.">
+        View, dismiss, and reply to your phone’s notifications
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SUMMARY" desc="Description of for the 'Phone Hub Task Continuation' setting. This feature lets users resume in-app actions and chrome tabs that are open on a connected Android phone from ChromeOS devices.">
+        View recent Chrome tabs from your phone
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SUMMARY" desc="Description of for the 'Phone Hub Apps' setting. This feature lets users streaming apps from a Android phone to Chrome OS device.">
+        Stream your phone's apps
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SUMMARY" desc="Description of for the 'Phone Hub Apps and Notifications' setting. This feature mirrors notifications and lets users streaming apps from a Android phone to Chrome OS device.">
+        View your phone's notifications and apps
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_AND_NOTIFICATIONS_SUMMARY" desc="Description of for the 'Phone Hub Camera Roll and Notifications' combined setting.">
+        View your phone's photos, media, and notifications
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_AND_APPS_SUMMARY" desc="Description of for the 'Phone Hub Camera Roll and Apps' combined setting.">
+        View your phone's photos, media, and apps
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_NOTIFICATIONS_AND_APPS_SUMMARY" desc="Description of for the 'Phone Hub Camera Roll, Notifications and Apps' combined setting.">
+        View your phone's photos, media, notifications, and apps
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_DISABLED_SUMMARY" desc="Description of for the 'Phone Hub Task Continuation' setting when Chrome sync is not enabled. This feature lets users resume in-app actions and chrome tabs that are open on a connected Android phone from ChromeOS devices.">
+        Turn on <ph name="LINK1_BEGIN">&lt;a id="chromeSyncLink"&gt;</ph>Chrome Sync<ph name="LINK1_END">&lt;/a&gt;</ph> to view recent Chrome tabs. <ph name="LINK2_BEGIN">&lt;a target="_blank" id="learnMoreLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn More<ph name="LINK2_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SYNC_LABEL" desc="Accessibility label (used by screen readers, not shown in UI) for a link that leads to the Chrome Sync toggle that needs to be enabled as a prerequisite for the 'Phone Hub Task Continuation' feature to be enabled. This feature lets users resume chrome tabs that are open on a connected Android phone from ChromeOS devices.">
+        Turn on Chrome Sync to view recent Chrome tabs from your phone
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow shown when the Phone Hub 'Notifications' toggle is switched on.">
+        View notifications from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_SUMMARY" desc="The summary of the dialog containing the Phone Hub notification opt-in flow shown when the Phone Hub 'Notifications' toggle is switched on. Explains to the user that they need to grant permission to use notifications by enabling access to the Google Play Services app on their phone.">
+        To receive notifications from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>, follow the instructions on your phone to grant notifications access to Google Play Services.
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_AWAITING_RESPONSE_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow shown when the user needs to follow the setup flow instructions on their phone in order to start mirroring notifications from their phone to their Chromebook.">
+        Complete setup on your phone
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_AWAITING_RESPONSE_SUMMARY" desc="The summary of the dialog containing the Phone Hub notification opt-in flow shown after the user has started the flow. Explains to the user that they need to grant permission to use notifications by enabling access to the Google Play Services app on their phone.">
+        To receive notifications from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>, follow the instructions on your phone to grant notifications access to Google Play Services.
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_CONNECTING_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow shown when the user has confirmed to enable the feature that will mirror phone notifications to their Chromebook.">
+        Connecting to your phone
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_TITLE" desc="The title of the screen lock dialog containing the Phone Hub notification opt-in flow shown when the user has confirmed to enable the app stream that will stream phone to their Chromebook.">
+        Use a password or PIN to unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_SUBTITLE" desc="The subtitle of the screen lock dialog containing the Phone Hub notification opt-in flow shown when the user has confirmed to enable the app stream that will stream phone to their Chromebook.">
+        This password or PIN protects your data on this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> and any information you access from your phone. You'll need to unlock each time your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> wakes from sleep.
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_ICON_INSTRUCTION" desc="The icon instruction message of the screen lock dialog.">
+        If Smart Lock is turned on and your phone is unlocked, you don't need to enter a password or PIN
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_INSTRUCTIONS" desc="The second paragraph of text shown in the dialog containing the Phone Hub notification opt-in flow. Alerts the user that to enable notifications, they need to have their phone unlocked, nearby, and with Bluetooth/Wi-Fi on to complete setup.">
+        Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COMPLETED_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow when the feature is successfully turned on and notifications on their phone will now be mirrored to their Chromebook.">
+        Notifications turned on
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COMPLETED_SUMMARY" desc="The body text of the dialog containing the Phone Hub notification opt-in flow when the feature is successfully turned on and notifications on their phone will now be mirrored to their Chromebook.">
+        You can now receive notifications from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. Dismissing notifications on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> will also dismiss them on your phone. Make sure your phone is nearby and has Bluetooth and Wi-Fi turned on.
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COULD_NOT_ESTABLISH_CONNECTION_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow when the device is unable to establish a connection to the phone.">
+        Could not establish connection
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COULD_NOT_ESTABLISH_CONNECTION_SUMMARY" desc="The title of the dialog containing the Phone Hub notification opt-in flow when the device is unable to establish a connection to the phone.">
+        We were unable to establish a connection with your phone. Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on.
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_CONNECTION_LOST_WITH_PHONE_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow when the device loses its connection to the phone.">
+        Connection lost with your phone
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_CONNECTION_LOST_WITH_PHONE_SUMMARY" desc="The body text of the dialog containing the Phone Hub notification opt-in flow when the device loses its connection to the phone.">
+        We were unable to maintain a connection with your phone. Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on.
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACCESS_PROHIBITED_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow when access to notifications is prohibited because the user's phone has a work profile.">
+        Could not set up notifications syncing
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACCESS_PROHIBITED_SUMMARY" desc="The text of the dialog containing the Phone Hub notification opt-in flow when access to notifications is prohibited because the user's phone has a work profile.">
+        Notification syncing is not supported for phones in a work profile. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_PROHIBITED_TOOLTIP" desc="Tooltip shown to users when hovering the help icon in settings next to the Phone Hub notification syncing feature. The tooltip describes how users with work profiles cannot opt into this feature.">
+        Notification syncing is not supported for phones in a work profile
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_ITEM_DISABLED_BY_PHONE_ADMIN_TOOLTIP" desc="Tooltip shown to users when hovering the help icon in settings next to the Phone Hub notification syncing or apps streaming feature. The tooltip describes how users with feature disabled by their phones' administrator cannot opt into this feature.">
+        This setting is managed by your phone's administrator
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_GET_STARTED_BUTTON_LABEL" desc="The label to a button in the Phone Hub notification opt-in flow that appears when the dialog first opens. Clicking the button will allow the user to try enabling the feature.">
+        Get started
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_TRY_AGAIN_BUTTON_LABEL" desc="The label to a button in the Phone Hub notification opt-in flow that appears when the first attempt to enable feature fails. Clicking the button will allow the user to try enabling the feature again.">
+        Try again
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_SECTION_TITLE"  desc="The title of the Wifi Sync section on the settings page. Wi-Fi Sync V2 allows user to sync network configurations between ChromeOS devices and a connected Android phone.">
+        Wi-Fi Sync
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_SUMMARY"  desc="Description for the 'Wifi Sync' section on the settings page. This feature lets the user sync wifi network configurations between ChromeOS devices and a connected Android phone">
+        Sync Wi-Fi networks with your phone. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_ENABLE_WIFI_SYNC_V1_SUMMARY" desc="Description for the 'Wifi Sync' section on the settings page when the prerequisite 'Chrome Sync' setting is not activated. This feature lets the user sync wifi network configurations between ChromeOS devices and a connected Android phone. The description contains a link that leads to the toggle where the prerequisite 'Chrome Sync' feature can be turned on and a 'Learn More' link to learn more about the 'Wifi Sync' feature.">
+        Turn on <ph name="LINK1_BEGIN">&lt;a id="chromeSyncLink"&gt;</ph>Chrome Sync<ph name="LINK1_END">&lt;/a&gt;</ph> to use Wi-Fi Sync. <ph name="LINK2_BEGIN">&lt;a id="learnMoreLink" target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK2_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_CHROME_SYNC_LABEL" desc="Accessibility label (used by screen readers, not shown in UI) for a link that leads to the Chrome Sync toggle that needs to be enabled as a prerequisite for the 'Wifi Sync' feature to be enabled. This feature lets the user sync wifi network configurations between ChromeOS devices and a connected Android phone.">
+        Turn on Chrome Sync to use Wi-Fi Sync
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_LEARN_MORE_LABEL" desc="Accessibility label (used by screen readers, not shown in UI) for a link that leads to a page with more information about the 'Wifi Sync' feature. This feature lets the user sync wifi network configurations between ChromeOS devices and a connected Android phone.">
+        Wi-Fi Sync, Learn More
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_ACK_TITLE" desc="The title of the dialog containing the phone permissions opt-in flow shown when a user clicks the Phone Hub 'Notifications' or 'Apps' setup button.">
+        Be more productive when you connect your phone to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_ACK_SUBTITLE" desc="The subtitle of the dialog containing the phone permissions opt-in flow shown when a user clicks the Phone Hub 'Notifications' or 'Apps' setup button.">
+        Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> can then:
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_ITEM_SUMMARY" desc="The summary of the dialog containing the phone permissions opt-in flow shown when when a user clicks the Phone Hub 'Recent photos' setup button. Explains to the user that they need to grant Google Play Services permission to access files on the phone.">
+        View your phone's photos and media
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ITEM_SUMMARY" desc="The summary of the dialog containing the phone permissions opt-in flow shown when when a user clicks the Phone Hub 'Notifications' setup button. Explains to the user that they need to grant permission to use notifications by enabling access to the Google Play Services app on their phone.">
+        View, dismiss, and reply to your phone's notifications
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_APPS_ITEM_SUMMARY" desc="The summary of the dialog containing the phone permissions opt-in flow shown when when a user clicks the Phone Hub 'Apps' setup button. Explains to the user that they need to grant phone permission to stream apps.">
+        Stream your phone's apps
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_INSTRUCTIONS" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that to grant permissions, they need to have their phone unlocked, close by, and with Bluetooth/Wi-Fi on to complete setup.">
+        Make sure your phone is nearby, unlocked, and Bluetooth and Wi-Fi are turned on
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_AWAITING_RESPONSE_TITLE" desc="The title of the dialog containing the phone permissions opt-in flow shown when the user needs to follow the setup flow instructions on their phone.">
+        Finish setting up on your phone
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_OPERATION_INSTRUCTIONS" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that to enable notifications and apps permissionss on the phone.">
+        Go to your phone to review a few more permissions. Make sure your phone's Bluetooth and Wi-Fi are turned on.
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COULD_NOT_ESTABLISH_CONNECTION_TITLE" desc="The title of the dialog containing the phone permissions opt-in flow when the device is unable to establish a connection to the phone.">
+        Can't establish connection
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COULD_NOT_ESTABLISH_CONNECTION_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that the device is unable to establish a connection to the phone.">
+        Something went wrong. Make sure your phone is nearby, unlocked, and Bluetooth and Wi-Fi are turned on.
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CONNECTION_LOST_WITH_PHONE_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow when the device loses its connection to the phone.">
+        Can't maintain a connection with your phone. Make sure your phone is nearby, unlocked, and Bluetooth and Wi-Fi are turned on.
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ACCESS_PROHIBITED_TITLE" desc="The title of the dialog containing the phone permissions opt-in flow when the phone's account notification streaming is prohibited.">
+        Can't use this account
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ACCESS_PROHIBITED_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow when the phone's account notification streaming is prohibited.">
+        You can't view your phone's notifications on this managed account. Try again with a different account. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_ALL_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when all features are successfully turned on.">
+        You can now view your phone's recent photos, media, notifications, and apps
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_AND_NOTIFICATIONS_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Recent photos' and 'Notifications' are successfully turned on.">
+        You can now view your phone's recent photos, media, and notifications
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATIONS_AND_APPS_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Notifications' and 'Apps' are successfully turned on.">
+        You can now view your phone's notifications and apps
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_AND_APPS_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Recent photos' and 'Apps' are successfully turned on.">
+        You can now view your phone's recent photos, media, and apps
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Recent photos' is successfully turned on.">
+        You can now view your phone's recent photos and media
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATIONS_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Notifications' is successfully turned on.">
+        You can now view your phone's notifications
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_APPS_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Apps' is successfully turned on.">
+        You can now view your phone's apps
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_MORE_FEATURES_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow. Reminds users that some features have not been successfully turned on, and users can set it in the Phone Hub settings.">
+        You can set up more features in Phone Hub settings
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_FAILED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when permission was not successfully turned on.">
+        Permission still needed to complete setup
+      </message>
+      <message name="IDS_SETTINGS_PHONE_HUB_LEARN_MORE_ARIA_LABEL" desc="The aria label (used by screen readers, not shown in UI) for the phone permissions opt-in flow.">
+        Learn more about Phone Hub
+      </message>
+
+      <!-- Lock Screen Page (OS settings) -->
+      <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_OPTIONS_LOCK" desc="Text on the lock screen which is the subheader for the screen locking options.">
+        Screen lock options
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_FORGET_THIS_DEVICE" desc="Header to tell the user an action will make their Chromebook forget their phone. This means they will no longer have access to multidevice features.">
+        Forget phone
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_FORGET_THIS_DEVICE_EXPLANATION" desc="Explanation on a clickable menu item that makes the Chromebook forget the user's phone. It tells the user that the menu item will cause their phone to stop acting as a partner for their Chromebook for multidevice features.">
+        Disconnect your phone from your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_FORGET_DEVICE_DIALOG_MESSAGE" desc="Text of a dialog that lets the user choose if their Chromebook should forget their phone. This means they will no longer have access to multidevice features.">
+        Disconnect your phone from your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. They will no longer connect automatically.
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_FORGET_THIS_DEVICE_DISCONNECT" desc="Text for the button that lets the user choose if their Chromebook should forget their phone. This means they will no longer have access to multidevice features.">
+        Disconnect
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_SETUP_SUMMARY" desc="Tells the user to connect their Chromebook to their phone.">
+        Connect your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> with your phone. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$2<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_OS_SETTINGS_MULTIDEVICE_NO_ELIGIBLE_HOSTS" desc="Tells the user that there is no phone with their account on it that can connect to their Chromebook.">
+        No available devices. Add your Google Account to your phone to connect it to this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$2<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_VERIFICATION_TEXT" desc="Text to tell user that their Chromebook needs to verify that it can connect with their phone.">
+        Waiting for verification. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_SETTINGS_MULTIDEVICE_SMART_LOCK_SUMMARY" desc="Description of for the 'Smart Lock' setting. This feature automatically unlocks the user's Chromebook if their phone is nearby and unlocked.">
+        Unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> with your phone. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$2<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+
+      <!-- Smart Lock Page (OS settings) -->
+      <message name="IDS_SETTINGS_EASY_UNLOCK_SECTION_TITLE" desc="The title of the Easy Unlock section on the settings page.">
+        Smart Lock
+      </message>
+
       <part file="ash_settings_search_tag_strings.grdp" />
     </messages>
   </release>
