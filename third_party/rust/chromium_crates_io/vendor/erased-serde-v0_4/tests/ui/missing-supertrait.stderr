@@ -9,12 +9,11 @@ note: required by a bound in `erased_serde::__private::require_erased_serialize_
  --> src/private.rs
   |
   | pub fn require_erased_serialize_impl<T>()
-  |        ----------------------------- required by a bound in this function
   | where
   |     T: ?Sized + crate::Serialize,
   |                 ^^^^^^^^^^^^^^^^ required by this bound in `require_erased_serialize_impl`
   = note: this error originates in the macro `$crate::__internal_serialize_trait_object` which comes from the expansion of the macro `serialize_trait_object` (in Nightly builds, run with -Z macro-backtrace for more info)
 help: consider further restricting type parameter `__T` with trait `Serialize`
   |
-5 | serialize_trait_object!(MyTrait + serde_core::ser::Serialize);
-  |                                 ++++++++++++++++++++++++++++
+5 | serialize_trait_object!(MyTrait + erased_serde::__private::serde::ser::Serialize);
+  |                                 ++++++++++++++++++++++++++++++++++++++++++++++++

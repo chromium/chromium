@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.68"
 name = "erased-serde"
-version = "0.4.10"
+version = "0.4.11"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build.rs"
 exclude = ["benches"]

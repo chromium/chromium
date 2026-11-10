@@ -177,6 +177,7 @@ pub trait Serializer: sealed::serializer::Sealed {
         variant: &'static str,
         len: usize,
     ) -> Result<&mut dyn SerializeStructVariant, ErrorImpl>;
+    fn erased_collect_str(&mut self, value: &dyn Display);
     fn erased_is_human_readable(&self) -> bool;
     #[doc(hidden)]
     fn erased_display_error(&self) -> &dyn Display;
@@ -597,6 +598,13 @@ where
         }
     }
 
+    fn erased_collect_str(&mut self, value: &dyn Display) {
+        *self = match self.take_serializer().collect_str(value) {
+            Ok(ok) => erase::Serializer::Complete(ok),
+            Err(err) => erase::Serializer::Error(err),
+        };
+    }
+
     fn erased_is_human_readable(&self) -> bool {
         match self {
             erase::Serializer::Ready(serializer) => serializer.is_human_readable(),
@@ -900,12 +908,12 @@ impl<'a> serde::Serializer for MakeSerializer<&'a mut (dyn Serializer + '_)> {
             .map(MakeSerializer)
     }
 
-    #[cfg(not(feature = "alloc"))]
     fn collect_str<T>(self, value: &T) -> Result<Self::Ok, Self::Error>
     where
         T: ?Sized + Display,
     {
-        unreachable!()
+        self.0.erased_collect_str(&value);
+        Ok(())
     }
 
     fn is_human_readable(&self) -> bool {
@@ -1456,6 +1464,10 @@ macro_rules! deref_erased_serializer {
 
             fn erased_serialize_struct_variant(&mut self, name: &'static str, variant_index: u32, variant: &'static str, len: usize) -> Result<&mut dyn SerializeStructVariant, ErrorImpl> {
                 (**self).erased_serialize_struct_variant(name, variant_index, variant, len)
+            }
+
+            fn erased_collect_str(&mut self, value: &dyn Display) {
+                (**self).erased_collect_str(value);
             }
 
             fn erased_is_human_readable(&self) -> bool {
