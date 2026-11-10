@@ -13,7 +13,6 @@
 #import "base/strings/stringprintf.h"
 #import "base/synchronization/lock.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/keyed_service/core/keyed_service.h"
@@ -122,10 +121,8 @@ class HttpsOnlyModeUpgradeTabHelperTest
   }
 
   void TearDown() override {
-    ProfileIOS* profile =
-        ProfileIOS::FromBrowserState(web_state_.GetBrowserState());
     HttpsUpgradeService* service =
-        HttpsUpgradeServiceFactory::GetForProfile(profile);
+        HttpsUpgradeServiceFactory::GetForProfile(profile_.get());
     service->ClearAllowlist(base::Time(), base::Time::Max());
   }
 
@@ -181,13 +178,12 @@ class HttpsOnlyModeUpgradeTabHelperTest
     return policy_decision;
   }
 
-  base::HistogramTester histogram_tester_;
-  web::FakeWebState web_state_;
-
- private:
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ProfileIOS> profile_;
+  // Declared after `profile_` so the WebState and its tab helpers are destroyed
+  // before the profile.
+  web::FakeWebState web_state_;
 };
 
 // Tests that ShouldAllowResponse properly upgrades navigations and
