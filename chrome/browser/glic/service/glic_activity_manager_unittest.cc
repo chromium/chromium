@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/test_support/mock_glic_instance.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -1210,5 +1211,146 @@ TEST_F(GlicUnifiedActivityManagerTest, ConversationDestroyed_ClearsActivity) {
 
   EXPECT_FALSE(manager()->HasUnseenOrInProgressActivities());
   EXPECT_EQ(manager()->GetNumUnseenActivities(), 0u);
+}
+
+TEST_F(GlicUnifiedActivityManagerTest,
+       InstanceActivity_BuffersBeforeConversationRegistered) {
+  testing::NiceMock<MockGlicInstance> instance;
+  const InstanceId instance_id("inst_1");
+  ON_CALL(instance, id()).WillByDefault(testing::ReturnRef(instance_id));
+  ON_CALL(instance, conversation_id())
+      .WillByDefault(testing::Return(std::nullopt));
+  ON_CALL(instance, IsShowing()).WillByDefault(testing::Return(false));
+
+  manager()->OnInstanceActivityStateChanged(
+      instance, GlicActivityState::kInProgress, "Generating...");
+  EXPECT_TRUE(manager()->activities().empty());
+
+  ON_CALL(instance, conversation_id()).WillByDefault(testing::Return("conv_1"));
+  ON_CALL(instance, conversation_title())
+      .WillByDefault(testing::Return("Draft Email"));
+  manager()->OnInstanceConversationRegistered(instance);
+
+  GlicActivityKey key{GlicActivityType::kConversationResponse, "conv_1"};
+  ASSERT_TRUE(manager()->activities().contains(key));
+  EXPECT_EQ(manager()->activities().at(key).state,
+            GlicActivityState::kInProgress);
+  EXPECT_EQ(manager()->activities().at(key).title, u"Draft Email");
+  EXPECT_EQ(manager()->activities().at(key).subtitle, u"Generating...");
+}
+
+TEST_F(GlicUnifiedActivityManagerTest,
+       InstanceVisibilityChanged_SyncsInProgressOnHideAndMarksSeenOnShow) {
+  testing::NiceMock<MockGlicInstance> instance;
+  const InstanceId instance_id("inst_1");
+  ON_CALL(instance, id()).WillByDefault(testing::ReturnRef(instance_id));
+  ON_CALL(instance, conversation_id()).WillByDefault(testing::Return("conv_1"));
+  ON_CALL(instance, conversation_title())
+      .WillByDefault(testing::Return("Chat 1"));
+  ON_CALL(instance, IsShowing()).WillByDefault(testing::Return(true));
+
+  manager()->OnInstanceActivityStateChanged(
+      instance, GlicActivityState::kInProgress, std::nullopt);
+  GlicActivityKey key{GlicActivityType::kConversationResponse, "conv_1"};
+  ASSERT_TRUE(manager()->activities().contains(key));
+  EXPECT_TRUE(manager()->activities().at(key).has_been_seen);
+
+  // Hiding while kInProgress re-syncs the activity while hidden.
+  ON_CALL(instance, IsShowing()).WillByDefault(testing::Return(false));
+  manager()->OnInstanceVisibilityChanged(instance);
+  EXPECT_FALSE(manager()->activities().at(key).has_been_seen);
+  EXPECT_TRUE(manager()->HasUnseenOrInProgressActivities());
+
+  // Completing while hidden triggers an unseen response nudge.
+  manager()->OnInstanceActivityStateChanged(
+      instance, GlicActivityState::kCompleted, "Answer");
+  EXPECT_EQ(manager()->GetNumUnseenActivities(), 1u);
+  EXPECT_EQ(manager()->GetCurrentActivityNudgeState().text,
+            GlicActivityNudgeState::Text::kResponseReady);
+
+  // Showing the panel marks the activity seen and clears buffered state so a
+  // subsequent hide does not resurrect it.
+  ON_CALL(instance, IsShowing()).WillByDefault(testing::Return(true));
+  manager()->OnInstanceVisibilityChanged(instance);
+  EXPECT_EQ(manager()->GetNumUnseenActivities(), 0u);
+  EXPECT_TRUE(manager()->activities().at(key).has_been_seen);
+
+  ON_CALL(instance, IsShowing()).WillByDefault(testing::Return(false));
+  manager()->OnInstanceVisibilityChanged(instance);
+  EXPECT_EQ(manager()->GetNumUnseenActivities(), 0u);
+  EXPECT_TRUE(manager()->activities().at(key).has_been_seen);
+}
+
+TEST_F(GlicUnifiedActivityManagerTest,
+       InstanceWebClientClearedAndDestroyed_ClearBufferedAndTrackedState) {
+  testing::NiceMock<MockGlicInstance> instance;
+  const InstanceId instance_id("inst_1");
+  ON_CALL(instance, id()).WillByDefault(testing::ReturnRef(instance_id));
+  ON_CALL(instance, conversation_id())
+      .WillByDefault(testing::Return(std::nullopt));
+  ON_CALL(instance, IsShowing()).WillByDefault(testing::Return(false));
+
+  // Buffered pre-registration state is cleared when the web client resets.
+  manager()->OnInstanceActivityStateChanged(
+      instance, GlicActivityState::kInProgress, "Buffered");
+  manager()->OnInstanceWebClientCleared(instance);
+
+  ON_CALL(instance, conversation_id()).WillByDefault(testing::Return("conv_1"));
+  ON_CALL(instance, conversation_title())
+      .WillByDefault(testing::Return("Chat 1"));
+  manager()->OnInstanceConversationRegistered(instance);
+  EXPECT_TRUE(manager()->activities().empty());
+
+  // Tracked activity is removed when ClearInstanceActivity is called.
+  manager()->OnInstanceActivityStateChanged(
+      instance, GlicActivityState::kCompleted, "Done");
+  EXPECT_EQ(manager()->GetNumUnseenActivities(), 1u);
+
+  manager()->ClearInstanceActivity(instance);
+  EXPECT_TRUE(manager()->activities().empty());
+  EXPECT_EQ(manager()->GetNumUnseenActivities(), 0u);
+}
+
+TEST_F(GlicUnifiedActivityManagerTest,
+       InstanceResponseStartedAndStopped_UpdateActivityStateByCause) {
+  testing::NiceMock<MockGlicInstance> instance;
+  const InstanceId instance_id("inst_1");
+  ON_CALL(instance, id()).WillByDefault(testing::ReturnRef(instance_id));
+  ON_CALL(instance, conversation_id()).WillByDefault(testing::Return("conv_1"));
+  ON_CALL(instance, conversation_title())
+      .WillByDefault(testing::Return("Chat 1"));
+  ON_CALL(instance, IsShowing()).WillByDefault(testing::Return(false));
+
+  GlicActivityKey key{GlicActivityType::kConversationResponse, "conv_1"};
+
+  // Normal stop (kUnknown) marks the activity completed and unseen.
+  manager()->OnInstanceResponseStarted(instance);
+  ASSERT_TRUE(manager()->activities().contains(key));
+  EXPECT_EQ(manager()->activities().at(key).state,
+            GlicActivityState::kInProgress);
+
+  manager()->OnInstanceResponseStopped(instance,
+                                       mojom::ResponseStopCause::kUnknown);
+  EXPECT_EQ(manager()->activities().at(key).state,
+            GlicActivityState::kCompleted);
+  EXPECT_EQ(manager()->GetNumUnseenActivities(), 1u);
+
+  // User stop (kUser) clears in-progress activity without leaving an unseen
+  // badge or stuck working state.
+  manager()->OnInstanceResponseStarted(instance);
+  EXPECT_EQ(manager()->activities().at(key).state,
+            GlicActivityState::kInProgress);
+  manager()->OnInstanceResponseStopped(instance,
+                                       mojom::ResponseStopCause::kUser);
+  EXPECT_FALSE(manager()->activities().contains(key));
+  EXPECT_EQ(manager()->GetNumUnseenActivities(), 0u);
+
+  // Non-user abort/error stop (kOther) marks the activity failed and unseen.
+  manager()->OnInstanceResponseStarted(instance);
+  manager()->OnInstanceResponseStopped(instance,
+                                       mojom::ResponseStopCause::kOther);
+  ASSERT_TRUE(manager()->activities().contains(key));
+  EXPECT_EQ(manager()->activities().at(key).state, GlicActivityState::kFailed);
+  EXPECT_EQ(manager()->GetNumUnseenActivities(), 1u);
 }
 }  // namespace glic

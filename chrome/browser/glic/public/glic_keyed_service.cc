@@ -199,9 +199,11 @@ GlicKeyedService::GlicKeyedService(
           this,
           enabling_.get(),
           contextual_cueing_service)),
-      activity_manager_(base::FeatureList::IsEnabled(features::kGlicActivityHub)
-                            ? std::make_unique<GlicActivityManager>(profile_)
-                            : nullptr),
+      activity_manager_(
+          base::FeatureList::IsEnabled(features::kGlicActivityHub)
+              ? std::make_unique<GlicActivityManager>(profile_,
+                                                      *instance_coordinator_)
+              : nullptr),
       legacy_activity_manager_(
           base::FeatureList::IsEnabled(features::kGlicActivityHub)
               ? nullptr
@@ -336,10 +338,10 @@ void GlicKeyedService::Shutdown() {
     experimental_triggering_transport_handler_factory_.reset();
   }
   experimental_triggering_state_subscription_ = {};
-  instance_coordinator().Shutdown();
   if (activity_manager_) {
     activity_manager_->Shutdown();
   }
+  instance_coordinator().Shutdown();
   if (legacy_activity_manager_) {
     legacy_activity_manager_->Shutdown();
   }

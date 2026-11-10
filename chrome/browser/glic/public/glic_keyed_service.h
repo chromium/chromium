@@ -64,6 +64,7 @@ class GlicClientDataStorage;
 class GlicTabDataObserver;
 class GlicTabFaviconObserver;
 class GlicInstanceCoordinator;
+class GlicInstanceCoordinatorImpl;
 class GlicExperimentalOptInController;
 class GlicExperimentalTriggeringTransportHandlerFactory;
 #if BUILDFLAG(IS_ANDROID)
@@ -327,8 +328,7 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   std::unique_ptr<GlicMetrics> metrics_;
   std::unique_ptr<GlicExperimentalOptInController> opt_in_controller_;
   std::unique_ptr<GlicClientDataStorage> client_data_storage_;
-  // Is a GlicInstanceCoordinatorImpl.
-  std::unique_ptr<GlicInstanceCoordinator> instance_coordinator_;
+  std::unique_ptr<GlicInstanceCoordinatorImpl> instance_coordinator_;
   std::unique_ptr<GlicActivityManager> activity_manager_;
   std::unique_ptr<LegacyGlicActivityManager> legacy_activity_manager_;
   std::unique_ptr<GlicShareImageHandler> share_image_handler_;

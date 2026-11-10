@@ -1108,6 +1108,12 @@ GlicInstanceCoordinatorImpl::AddGlobalShowHideCallback(
   return global_show_hide_callback_list_.Add(std::move(callback));
 }
 
+base::CallbackListSubscription
+GlicInstanceCoordinatorImpl::AddInstanceCreatedCallback(
+    InstanceCreatedCallback callback) {
+  return instance_created_callback_list_.Add(std::move(callback));
+}
+
 void GlicInstanceCoordinatorImpl::Reload(
     content::RenderFrameHost* render_frame_host) {
   for (auto& [id, instance] : instances_) {
@@ -1304,6 +1310,7 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::CreateGlicInstance(
   }
 
   metrics_.RecordCountOnCreation();
+  instance_created_callback_list_.Notify(instance_ptr);
 
   return instance_ptr;
 }

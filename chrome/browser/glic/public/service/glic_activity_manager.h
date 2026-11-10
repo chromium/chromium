@@ -12,10 +12,14 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/glic/common/glic_instance_observer.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "chrome/browser/glic/public/glic_instance_id.h"
 #include "chrome/browser/glic/public/service/glic_activity_types.h"
 #include "components/actor/core/task_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -25,27 +29,48 @@ class Profile;
 
 namespace glic {
 
+class GlicInstance;
+class GlicInstanceCoordinatorImpl;
+class GlicInstanceImpl;
+
 // Centralized Profile-scoped manager for all asynchronous activities in Glic
 // (Actor tasks, conversation turn responses/generations, etc.).
-class GlicActivityManager {
+class GlicActivityManager : private GlicInstanceObserver {
  public:
   // Returns the GlicActivityManager instance associated with `profile`, or
   // nullptr if GlicKeyedService is not available for this profile.
   static GlicActivityManager* Get(Profile* profile);
 
-  explicit GlicActivityManager(Profile* profile);
-  ~GlicActivityManager();
+  GlicActivityManager(Profile* profile,
+                      GlicInstanceCoordinatorImpl& instance_coordinator);
+  ~GlicActivityManager() override;
 
-  // Called by GlicInstanceImpl when a conversation's activity state or preview
-  // snippet changes.
+  // Instance-level conversation activity and lifecycle hooks. Buffers pending
+  // state per InstanceId when activity events arrive before a conversation ID
+  // is registered on the instance.
+  void OnInstanceActivityStateChanged(
+      const GlicInstance& instance,
+      GlicActivityState state,
+      std::optional<std::string> preview_snippet);
+  void OnInstanceVisibilityChanged(const GlicInstance& instance) override;
+  void OnInstanceConversationRegistered(const GlicInstance& instance) override;
+  void OnInstanceResponseStarted(const GlicInstance& instance) override;
+  void OnInstanceResponseStopped(const GlicInstance& instance,
+                                 mojom::ResponseStopCause cause) override;
+  void OnInstanceWebClientCleared(const GlicInstance& instance) override;
+  void OnInstanceTabAddedToTask(const GlicInstance& instance,
+                                actor::TaskId task_id) override;
+  void ClearInstanceActivity(const GlicInstance& instance);
+
+  // Updates a conversation's activity state or preview snippet directly by ID.
   void OnConversationActivityStateChanged(
       const std::string& conversation_id,
       GlicConversationActivityUpdate update);
 
-  // Called by GlicInstanceImpl when a conversation's title is updated.
+  // Updates a conversation's title if tracked.
   void OnConversationTitleUpdated(const std::string& conversation_id,
                                   std::string_view title);
-  // Called by GlicInstanceImpl when a conversation instance is destroyed.
+  // Removes tracked conversation activity for `conversation_id`.
   void OnConversationDestroyed(const std::string& conversation_id);
 
   // Map of all tracked activities.
@@ -102,6 +127,10 @@ class GlicActivityManager {
   void Shutdown();
 
  private:
+  // Instance observation lifecycle handlers.
+  void OnInstanceDestroyed(GlicInstanceImpl* instance) override;
+  void OnInstanceCreated(GlicInstanceImpl* instance);
+
   // Actor task and activity item state handlers.
   void OnActorTaskStateUpdate(actor::TaskId task_id);
   void OnActorTaskRemoved(actor::TaskId task_id);
@@ -127,10 +156,22 @@ class GlicActivityManager {
   static bool ShouldSuppressNotification(glic::mojom::FeatureMode feature_mode,
                                          actor::ActorTask::State state);
 
+  struct InstanceActivityState {
+    GlicActivityState state = GlicActivityState::kInProgress;
+    std::optional<std::string> preview_snippet;
+  };
+
   void UpdateTaskNudge(bool show_bubble = false);
   raw_ptr<Profile> profile_;
 
+  base::CallbackListSubscription instance_created_subscription_;
+  base::ScopedMultiSourceObservation<GlicInstanceImpl, GlicInstanceObserver>
+      instance_observations_{this};
   std::vector<base::CallbackListSubscription> actor_subscriptions_;
+
+  // Per-instance conversation activity state (including state buffered before
+  // RegisterConversation assigns a conversation_id).
+  base::flat_map<InstanceId, InstanceActivityState> instance_activity_states_;
 
   // Map of all tracked activities.
   absl::flat_hash_map<GlicActivityKey, GlicActivityItem> activities_;

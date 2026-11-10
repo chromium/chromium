@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -59,6 +60,7 @@ class ContextualCueingService;
 class EmptyEmbedderDelegate;
 class GlicExperimentalTriggeringManager;
 class GlicGeminiEnterpriseManager;
+class GlicInstanceObserver;
 class GlicMetrics;
 class GlicSkillsManagerImpl;
 class GlicUiEmbedder;
@@ -152,6 +154,9 @@ class GlicInstanceImpl : public GlicInstance,
 
   GlicInstanceImpl(const GlicInstanceImpl&) = delete;
   GlicInstanceImpl& operator=(const GlicInstanceImpl&) = delete;
+
+  void AddObserver(GlicInstanceObserver* observer);
+  void RemoveObserver(GlicInstanceObserver* observer);
 
   Profile* profile() { return profile_; }
   GlicKeyedService* service() { return service_; }
@@ -291,6 +296,8 @@ class GlicInstanceImpl : public GlicInstance,
   void PrepareForOpen() override;
   void OnUserInputSubmitted(mojom::WebClientMode mode,
                             mojom::PromptType prompt_type) override;
+  void OnResponseStarted() override;
+  void OnResponseStopped(mojom::ResponseStopCause cause) override;
   void OnInteractionModeChange(mojom::WebClientMode new_mode) override;
   glic::GlicInstanceMetrics& instance_metrics() override;
   glic::GlicInstanceMetricsBackwardsCompatibility&
@@ -466,6 +473,7 @@ class GlicInstanceImpl : public GlicInstance,
   ConversationInfoChangedCallbackList conversation_info_changed_callback_list_;
 
   base::OnceCallbackList<void(GlicInstance*)> will_be_destroyed_callbacks_;
+  base::ObserverList<GlicInstanceObserver> observers_;
 
   raw_ptr<Profile> profile_;
   raw_ptr<GlicKeyedService> service_;

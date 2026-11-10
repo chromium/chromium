@@ -132,6 +132,7 @@ class GlicInstanceCoordinatorImpl
 
   // GlicInstanceCoordinatorMetrics::DataProvider implementation
   int GetVisibleInstanceCount() const override;
+  std::vector<GlicInstanceImpl*> GetInstances() override;
 
   bool IsAnyPanelShowing() const override;
   bool IsConversationPresent(const std::string& conversation_id) const override;
@@ -201,6 +202,10 @@ class GlicInstanceCoordinatorImpl
 
   base::CallbackListSubscription AddGlobalShowHideCallback(
       base::RepeatingClosure callback) override;
+  using InstanceCreatedCallback =
+      base::RepeatingCallback<void(GlicInstanceImpl*)>;
+  base::CallbackListSubscription AddInstanceCreatedCallback(
+      InstanceCreatedCallback callback);
   void Reload(content::RenderFrameHost* render_frame_host) override;
   base::WeakPtr<GlicInstanceCoordinatorImpl> GetWeakPtr();
 
@@ -217,7 +222,6 @@ class GlicInstanceCoordinatorImpl
   void SetWarmingEnabledForTesting(bool warming_enabled);
   GlicWebContentsWarmingPool& GetWebContentsWarmingPoolForTesting();
   std::string DescribeForTesting();
-  std::vector<GlicInstanceImpl*> GetInstances() override;
   GlicInstanceCoordinatorMetrics& GetMetricsForTesting() { return metrics_; }
   InstanceIndependentHotkeyManager* GetHotkeyManagerForTesting() {
     return hotkey_manager_.get();
@@ -392,6 +396,8 @@ class GlicInstanceCoordinatorImpl
   base::RepeatingCallbackList<void(GlicInstance*)>
       active_instance_changed_callback_list_;
   base::RepeatingClosureList global_show_hide_callback_list_;
+  base::RepeatingCallbackList<void(GlicInstanceImpl*)>
+      instance_created_callback_list_;
 
   base::MemoryConsumerRegistration memory_consumer_registration_;
 

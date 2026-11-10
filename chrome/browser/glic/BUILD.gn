@@ -347,12 +347,19 @@ source_set("selection_context") {
 
 # Definitions used broadly internal to glic, but shouldn't be used externally.
 source_set("private_types") {
-  sources = [ "service/glic_ui_types.h" ]
-  public_deps = [ ":public_types" ]
+  visibility = [ ":*" ]
+  sources = [
+    "common/glic_instance_observer.h",
+    "service/glic_ui_types.h",
+  ]
+  public_deps = [
+    ":mojo_bindings",
+    ":public_types",
+    "//base",
+    "//components/actor/core:task_id",
+  ]
   deps = [
     ":enum",
-    ":mojo_bindings",
-    "//base",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/tabs:tabs_public",
@@ -1134,6 +1141,7 @@ source_set("browser_tests") {
     "host/glic_start_benchmark_browsertest.cc",
     "host/glic_web_client_manager_browsertest.cc",
     "host/glic_web_contents_warming_pool_browsertest.cc",
+    "service/glic_activity_manager_browsertest.cc",
     "service/glic_instance_coordinator_browsertest.cc",
     "service/glic_instance_helper_browsertest.cc",
     "service/glic_invoke_browsertest.cc",

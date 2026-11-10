@@ -1574,6 +1574,7 @@ class GlicWebClientHandler
     host().instance_metrics().OnResponseStarted();
     host().instance_metrics().RecordAttachedContextTabCount(
         GetSharingManagerInternal().GetNumPinnedTabs());
+    host().instance_delegate().OnResponseStarted();
   }
 
   void OnResponseStopped(mojom::OnResponseStoppedDetailsPtr details) override {
@@ -1583,6 +1584,7 @@ class GlicWebClientHandler
       cause = details->cause;
     }
     host().instance_metrics().OnResponseStopped(cause);
+    host().instance_delegate().OnResponseStopped(cause);
   }
 
   void OnSessionTerminated() override {

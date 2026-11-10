@@ -22,6 +22,7 @@
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
+#include "chrome/browser/glic/common/glic_instance_observer.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
 #include "chrome/browser/glic/gemini_enterprise/glic_gemini_enterprise_manager.h"
 #include "chrome/browser/glic/glic_metrics.h"
@@ -49,6 +50,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
+#include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_tab_group_utils.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
@@ -98,7 +100,6 @@
 #include "chrome/browser/glic/widget/glic_side_panel_ui_android.h"
 #else
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
-#include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
 #include "chrome/browser/glic/widget/glic_floating_ui.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
@@ -235,6 +236,7 @@ void GlicInstanceImpl::NotifyVisibilityChange() {
     // OnAllEmbeddersInactive calls SetDebouncedVisibility(false).
     host_.SetDebouncedVisibility(true);
   }
+  observers_.Notify(&GlicInstanceObserver::OnInstanceVisibilityChanged, *this);
   for (tabs::TabInterface* tab : GetSharingManagerInternal().GetPinnedTabs()) {
     if (auto* helper = GlicInstanceHelper::From(tab)) {
       helper->OnPinnedInstanceVisibilityChanged(this);
@@ -358,6 +360,16 @@ GlicInstanceImpl::~GlicInstanceImpl() {
       helper->OnUnpinnedByInstance(this);
     }
   }
+
+  observers_.Notify(&GlicInstanceObserver::OnInstanceDestroyed, this);
+}
+
+void GlicInstanceImpl::AddObserver(GlicInstanceObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void GlicInstanceImpl::RemoveObserver(GlicInstanceObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 glic::GlicInstanceMetrics& GlicInstanceImpl::instance_metrics() {
@@ -720,6 +732,8 @@ void GlicInstanceImpl::RegisterConversation(
         conversation_info_->conversation_id);
   }
 
+  observers_.Notify(&GlicInstanceObserver::OnInstanceConversationRegistered,
+                    *this);
   std::move(callback).Run(std::nullopt);
 }
 
@@ -834,6 +848,15 @@ void GlicInstanceImpl::OnUserInputSubmitted(mojom::WebClientMode mode,
   // controller and I think it makes more sense for it to get that signal from
   // sharing manager instead of going through the keyed service.
   service_->OnUserInputSubmitted(mode);
+}
+
+void GlicInstanceImpl::OnResponseStarted() {
+  observers_.Notify(&GlicInstanceObserver::OnInstanceResponseStarted, *this);
+}
+
+void GlicInstanceImpl::OnResponseStopped(mojom::ResponseStopCause cause) {
+  observers_.Notify(&GlicInstanceObserver::OnInstanceResponseStopped, *this,
+                    cause);
 }
 
 void GlicInstanceImpl::OnInteractionModeChange(mojom::WebClientMode new_mode) {
@@ -1965,6 +1988,7 @@ void GlicInstanceImpl::NotifyPanelWillOpen(
 }
 
 void GlicInstanceImpl::OnWebClientCleared() {
+  observers_.Notify(&GlicInstanceObserver::OnInstanceWebClientCleared, *this);
   NotifyPanelWillOpen(mojom::InvocationSource::kDefaultValue, std::nullopt);
 }
 
@@ -2010,11 +2034,13 @@ void GlicInstanceImpl::OnTabAddedToTask(
     return;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  if (auto* activity_manager = LegacyGlicActivityManager::Get(profile_)) {
-    activity_manager->OnTabAddedToTask(task_id);
+  if (!base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
+    if (auto* activity_manager = LegacyGlicActivityManager::Get(profile_)) {
+      activity_manager->OnTabAddedToTask(task_id);
+    }
   }
-#endif
+  observers_.Notify(&GlicInstanceObserver::OnInstanceTabAddedToTask, *this,
+                    task_id);
 
   if (IsActiveEmbedder(SidePanelEmbedderKey(tab))) {
     return;

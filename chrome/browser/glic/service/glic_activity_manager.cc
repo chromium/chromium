@@ -24,7 +24,10 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -92,8 +95,17 @@ GlicActivityManager* GlicActivityManager::Get(Profile* profile) {
   return glic_service ? &glic_service->activity_manager() : nullptr;
 }
 
-GlicActivityManager::GlicActivityManager(Profile* profile) : profile_(profile) {
+GlicActivityManager::GlicActivityManager(
+    Profile* profile,
+    GlicInstanceCoordinatorImpl& instance_coordinator)
+    : profile_(profile) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActivityHub));
+  for (GlicInstanceImpl* instance : instance_coordinator.GetInstances()) {
+    OnInstanceCreated(instance);
+  }
+  instance_created_subscription_ =
+      instance_coordinator.AddInstanceCreatedCallback(base::BindRepeating(
+          &GlicActivityManager::OnInstanceCreated, base::Unretained(this)));
   if (auto* ui_state_manager = actor::ui::ActorUiStateManager::Get(profile_)) {
     actor_subscriptions_.push_back(
         ui_state_manager->RegisterActorTaskStateChange(
@@ -109,6 +121,137 @@ GlicActivityManager::GlicActivityManager(Profile* profile) : profile_(profile) {
 }
 
 GlicActivityManager::~GlicActivityManager() = default;
+
+void GlicActivityManager::OnInstanceActivityStateChanged(
+    const GlicInstance& instance,
+    GlicActivityState state,
+    std::optional<std::string> preview_snippet) {
+  auto& instance_state = instance_activity_states_[instance.id()];
+  instance_state.state = state;
+  instance_state.preview_snippet = std::move(preview_snippet);
+
+  std::optional<std::string> conv_id = instance.conversation_id();
+  if (!conv_id || conv_id->empty()) {
+    return;
+  }
+  OnConversationActivityStateChanged(
+      *conv_id, {.state = state,
+                 .title = instance.conversation_title(),
+                 .preview_snippet = instance_state.preview_snippet,
+                 .is_currently_visible = instance.IsShowing()});
+  if (instance.IsShowing() && state != GlicActivityState::kInProgress) {
+    instance_activity_states_.erase(instance.id());
+  }
+}
+
+void GlicActivityManager::OnInstanceVisibilityChanged(
+    const GlicInstance& instance) {
+  auto it = instance_activity_states_.find(instance.id());
+  if (instance.IsShowing()) {
+    if (it != instance_activity_states_.end() &&
+        it->second.state != GlicActivityState::kInProgress) {
+      instance_activity_states_.erase(it);
+    }
+    if (auto conv_id = instance.conversation_id()) {
+      MarkActivitySeen(
+          GlicActivityKey{GlicActivityType::kConversationResponse, *conv_id});
+    }
+    return;
+  }
+
+  if (it == instance_activity_states_.end() ||
+      it->second.state != GlicActivityState::kInProgress) {
+    return;
+  }
+  std::optional<std::string> conv_id = instance.conversation_id();
+  if (!conv_id || conv_id->empty()) {
+    return;
+  }
+  OnConversationActivityStateChanged(
+      *conv_id, {.state = it->second.state,
+                 .title = instance.conversation_title(),
+                 .preview_snippet = it->second.preview_snippet});
+}
+
+void GlicActivityManager::OnInstanceConversationRegistered(
+    const GlicInstance& instance) {
+  std::optional<std::string> conv_id = instance.conversation_id();
+  if (!conv_id || conv_id->empty()) {
+    return;
+  }
+  std::string title = instance.conversation_title();
+  auto it = instance_activity_states_.find(instance.id());
+  if (it != instance_activity_states_.end()) {
+    OnConversationActivityStateChanged(
+        *conv_id, {.state = it->second.state,
+                   .title = title,
+                   .preview_snippet = it->second.preview_snippet,
+                   .is_currently_visible = instance.IsShowing()});
+    if (instance.IsShowing() &&
+        it->second.state != GlicActivityState::kInProgress) {
+      instance_activity_states_.erase(it);
+    }
+    return;
+  }
+  if (!title.empty()) {
+    OnConversationTitleUpdated(*conv_id, title);
+  }
+}
+
+void GlicActivityManager::OnInstanceResponseStarted(
+    const GlicInstance& instance) {
+  OnInstanceActivityStateChanged(instance, GlicActivityState::kInProgress,
+                                 std::nullopt);
+}
+
+void GlicActivityManager::OnInstanceResponseStopped(
+    const GlicInstance& instance,
+    mojom::ResponseStopCause cause) {
+  switch (cause) {
+    case mojom::ResponseStopCause::kUnknown:
+      OnInstanceActivityStateChanged(instance, GlicActivityState::kCompleted,
+                                     std::nullopt);
+      break;
+    case mojom::ResponseStopCause::kUser:
+      ClearInstanceActivity(instance);
+      break;
+    case mojom::ResponseStopCause::kOther:
+      OnInstanceActivityStateChanged(instance, GlicActivityState::kFailed,
+                                     std::nullopt);
+      break;
+  }
+}
+
+void GlicActivityManager::OnInstanceWebClientCleared(
+    const GlicInstance& instance) {
+  ClearInstanceActivity(instance);
+}
+
+void GlicActivityManager::OnInstanceTabAddedToTask(
+    const GlicInstance& /*instance*/,
+    actor::TaskId task_id) {
+  OnTabAddedToTask(task_id);
+}
+
+void GlicActivityManager::ClearInstanceActivity(const GlicInstance& instance) {
+  instance_activity_states_.erase(instance.id());
+  if (auto conv_id = instance.conversation_id()) {
+    OnConversationDestroyed(*conv_id);
+  }
+}
+
+void GlicActivityManager::OnInstanceDestroyed(GlicInstanceImpl* instance) {
+  if (instance_observations_.IsObservingSource(instance)) {
+    instance_observations_.RemoveObservation(instance);
+  }
+  ClearInstanceActivity(*instance);
+}
+
+void GlicActivityManager::OnInstanceCreated(GlicInstanceImpl* instance) {
+  if (!instance_observations_.IsObservingSource(instance)) {
+    instance_observations_.AddObservation(instance);
+  }
+}
 
 void GlicActivityManager::OnConversationActivityStateChanged(
     const std::string& conversation_id,
@@ -128,7 +271,8 @@ void GlicActivityManager::OnConversationActivityStateChanged(
   if (update.preview_snippet.has_value()) {
     item.subtitle = base::UTF8ToUTF16(*update.preview_snippet);
   } else if (update.state == GlicActivityState::kInProgress ||
-             update.state == GlicActivityState::kCompleted) {
+             update.state == GlicActivityState::kCompleted ||
+             update.state == GlicActivityState::kFailed) {
     item.subtitle.clear();
   }
 
@@ -308,7 +452,10 @@ void GlicActivityManager::UpdateTaskNudge(bool show_bubble) {
 }
 
 void GlicActivityManager::Shutdown() {
+  instance_created_subscription_ = {};
+  instance_observations_.RemoveAllObservations();
   actor_subscriptions_.clear();
+  instance_activity_states_.clear();
   tasks_notified_of_start_.clear();
   last_actor_task_states_.clear();
   activities_.clear();
