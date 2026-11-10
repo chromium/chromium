@@ -1753,14 +1753,6 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
                 *tab, tab);
   }
 
-  if (wallet_reminder_notice_bubble_controller_) {
-    wallet_reminder_notice_bubble_controller_.reset();
-    wallet_reminder_notice_bubble_controller_ =
-        GetUserDataFactory()
-            .CreateInstance<autofill::WalletReminderNoticeBubbleController>(
-                *tab, tab);
-  }
-
   if (web_payments_observer_) {
     web_payments_observer_ =
         std::make_unique<payments::WebPaymentsObserver>(new_contents);

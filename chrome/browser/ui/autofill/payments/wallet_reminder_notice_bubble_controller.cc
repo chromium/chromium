@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_page_action_controller.h"
@@ -32,7 +33,11 @@ WalletReminderNoticeBubbleController::WalletReminderNoticeBubbleController(
     : AutofillBubbleControllerBase(tab_interface),
       scoped_unowned_user_data_(
           CHECK_DEREF(tab_interface).GetUnownedUserDataHost(),
-          *this) {}
+          *this),
+      will_discard_contents_subscription_(
+          tab_interface->RegisterWillDiscardContents(base::BindRepeating(
+              &WalletReminderNoticeBubbleController::WillDiscardContents,
+              base::Unretained(this)))) {}
 
 WalletReminderNoticeBubbleController::~WalletReminderNoticeBubbleController() {
   if (IsShowingBubble()) {
@@ -122,6 +127,18 @@ void WalletReminderNoticeBubbleController::OnBubbleClosed() {
   ResetBubbleViewAndInformBubbleManager();
 }
 
+void WalletReminderNoticeBubbleController::OnBubbleDiscarded() {
+  // Note: If the bubble is active or queued in `BubbleManager` when a tab is
+  // discarded, both `BubbleManagerImpl::WillDiscardContents()` and
+  // `WalletReminderNoticeBubbleController::WillDiscardContents()` will invoke
+  // `OnBubbleDiscarded()`, so this method must remain idempotent.
+  legal_message_lines_.clear();
+  if (WalletReminderNoticePageActionController* page_action_controller =
+          WalletReminderNoticePageActionController::From(*GetTabInterface())) {
+    page_action_controller->Hide();
+  }
+}
+
 BubbleType WalletReminderNoticeBubbleController::GetBubbleType() const {
   return BubbleType::kWalletReminderNotice;
 }
@@ -145,12 +162,21 @@ void WalletReminderNoticeBubbleController::DoShowBubble() {
   if (AutofillBubbleBase* bubble_view =
           autofill_bubble_handler->ShowWalletReminderNoticeBubble(
               web_contents(), this, is_reshow_)) {
+    logged_accept_button_clicked_ = false;
+    logged_link_clicked_ = false;
     SetBubbleView(*bubble_view);
 
     if (actions::ActionItem* action_item = GetActionItem()) {
       action_item->SetIsShowingBubble(true);
     }
   }
+}
+
+void WalletReminderNoticeBubbleController::WillDiscardContents(
+    tabs::TabInterface* tab,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  OnBubbleDiscarded();
 }
 
 actions::ActionItem* WalletReminderNoticeBubbleController::GetActionItem() {

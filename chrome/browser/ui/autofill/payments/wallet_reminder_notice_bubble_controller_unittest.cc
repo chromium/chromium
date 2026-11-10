@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
@@ -29,6 +30,9 @@ namespace autofill {
 
 namespace {
 
+using ::testing::Return;
+using ::testing::ReturnRef;
+
 class MockAutofillBubbleHandler : public TestAutofillBubbleHandler {
  public:
   MOCK_METHOD(AutofillBubbleBase*,
@@ -50,13 +54,18 @@ class WalletReminderNoticeBubbleControllerTest
     NavigateAndCommit(GURL("about:blank"));
 
     ON_CALL(mock_tab_interface_, GetContents())
-        .WillByDefault(testing::Return(web_contents()));
+        .WillByDefault(Return(web_contents()));
     ON_CALL(mock_tab_interface_, GetUnownedUserDataHost())
-        .WillByDefault(testing::ReturnRef(tab_unowned_user_data_host_));
+        .WillByDefault(ReturnRef(tab_unowned_user_data_host_));
     ON_CALL(mock_tab_interface_, GetBrowserWindowInterface())
-        .WillByDefault(testing::Return(&mock_browser_window_interface_));
+        .WillByDefault(Return(&mock_browser_window_interface_));
+    ON_CALL(mock_tab_interface_, RegisterWillDiscardContents)
+        .WillByDefault(
+            [this](tabs::TabInterface::WillDiscardContentsCallback callback) {
+              return will_discard_contents_callbacks_.Add(std::move(callback));
+            });
     ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost())
-        .WillByDefault(testing::ReturnRef(browser_unowned_user_data_host_));
+        .WillByDefault(ReturnRef(browser_unowned_user_data_host_));
 
     test_autofill_bubble_handler_registration_ =
         std::make_unique<ui::ScopedUnownedUserData<AutofillBubbleHandler>>(
@@ -90,6 +99,9 @@ class WalletReminderNoticeBubbleControllerTest
   page_actions::MockPageActionController mock_page_action_controller_;
   std::unique_ptr<WalletReminderNoticePageActionController>
       wallet_reminder_notice_page_action_controller_;
+  base::RepeatingCallbackList<
+      tabs::TabInterface::WillDiscardContentsCallback::RunType>
+      will_discard_contents_callbacks_;
   std::unique_ptr<WalletReminderNoticeBubbleController> controller_;
 };
 
@@ -200,6 +212,65 @@ TEST_F(WalletReminderNoticeBubbleControllerTest, OnBubbleClosed_Dismissed) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.WalletReminderNotice.Interaction",
       autofill_metrics::WalletReminderNoticeInteraction::kDismissed, 1);
+}
+
+// Tests that DoShowBubble() resets interaction flags across Show() and
+// ReshowBubble() calls.
+TEST_F(WalletReminderNoticeBubbleControllerTest,
+       DoShowBubble_ResetsInteractionFlagsBetweenBubbles) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(mock_autofill_bubble_handler_,
+              ShowWalletReminderNoticeBubble(web_contents(), controller_.get(),
+                                             /*is_user_gesture=*/false))
+      .WillOnce(Return(&test_bubble_));
+  EXPECT_CALL(mock_autofill_bubble_handler_,
+              ShowWalletReminderNoticeBubble(web_contents(), controller_.get(),
+                                             /*is_user_gesture=*/true))
+      .WillOnce(Return(&test_bubble_));
+
+  controller_->Show({TestLegalMessageLine("Line 1")});
+  controller_->OnLinkClicked(GURL("https://example.com"));
+  controller_->OnBubbleClosed();
+
+  controller_->ReshowBubble();
+  controller_->OnBubbleClosed();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.WalletReminderNotice.Interaction",
+      autofill_metrics::WalletReminderNoticeInteraction::kClickedLink, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.WalletReminderNotice.Interaction",
+      autofill_metrics::WalletReminderNoticeInteraction::kDismissed, 1);
+}
+
+// Tests that OnBubbleDiscarded() clears legal message lines and hides the page
+// action.
+TEST_F(WalletReminderNoticeBubbleControllerTest,
+       OnBubbleDiscarded_ClearsLegalMessageLinesAndHidesPageAction) {
+  controller_->Show({TestLegalMessageLine("Line 1")});
+  ASSERT_FALSE(controller_->GetLegalMessageLines().empty());
+
+  EXPECT_CALL(mock_page_action_controller_, Hide(kActionWalletReminderNotice));
+  controller_->OnBubbleDiscarded();
+  EXPECT_TRUE(controller_->GetLegalMessageLines().empty());
+}
+
+// Tests that discarding tab contents clears legal message lines and hides the
+// page action even after the bubble was closed.
+TEST_F(WalletReminderNoticeBubbleControllerTest,
+       WillDiscardContents_ClearsLegalMessageLinesAndHidesPageAction) {
+  EXPECT_CALL(mock_autofill_bubble_handler_,
+              ShowWalletReminderNoticeBubble(web_contents(), controller_.get(),
+                                             /*is_user_gesture=*/false))
+      .WillOnce(Return(&test_bubble_));
+  controller_->Show({TestLegalMessageLine("Line 1")});
+  controller_->OnBubbleClosed();
+  ASSERT_FALSE(controller_->GetLegalMessageLines().empty());
+
+  EXPECT_CALL(mock_page_action_controller_, Hide(kActionWalletReminderNotice));
+  will_discard_contents_callbacks_.Notify(&mock_tab_interface_, web_contents(),
+                                          nullptr);
+  EXPECT_TRUE(controller_->GetLegalMessageLines().empty());
 }
 
 }  // namespace

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -58,7 +59,7 @@ class WalletReminderNoticeBubbleController
   void OnBubbleClosed();
 
   // BubbleControllerBase:
-  void OnBubbleDiscarded() override {}
+  void OnBubbleDiscarded() override;
   BubbleType GetBubbleType() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
@@ -66,10 +67,14 @@ class WalletReminderNoticeBubbleController
   void DoShowBubble() override;
 
  private:
+  void WillDiscardContents(tabs::TabInterface* tab,
+                           content::WebContents* old_contents,
+                           content::WebContents* new_contents);
   actions::ActionItem* GetActionItem();
 
   ui::ScopedUnownedUserData<WalletReminderNoticeBubbleController>
       scoped_unowned_user_data_;
+  base::CallbackListSubscription will_discard_contents_subscription_;
 
   // Whether the bubble is shown as a re-show. When false, the bubble is shown
   // as an alert without stealing input focus from the webpage. Clicking the
