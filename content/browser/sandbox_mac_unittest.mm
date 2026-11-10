@@ -498,6 +498,8 @@ TEST_F(SandboxMacTest, RendererPidinfoUnrestricted) {
 
 constexpr base::FilePath::CharType kTestStoragePartitionRelPath[] =
     FILE_PATH_LITERAL("Default/Storage/ext/test_ext/def");
+constexpr base::FilePath::CharType kTestNestedStoragePartitionRelPath[] =
+    FILE_PATH_LITERAL("Default/Storage/ext/test_iwa_part1/test_iwa_part2/def");
 
 MULTIPROCESS_TEST_MAIN(NetworkDataMigrationRestrictedProcess) {
   std::string extra_data = GetExtraDataValue();
@@ -575,6 +577,28 @@ MULTIPROCESS_TEST_MAIN(NetworkDataMigrationRestrictedProcess) {
   CHECK(base::CreateDirectory(partition_shared_dict_dir));
   test_allowed_file(partition_shared_dict_dir.Append("db"));
 
+  // Nested storage partition (simulating multi-level IWA domains) cache
+  // subdirectory.
+  base::FilePath nested_partition_cache_parent =
+      user_cache_dir.Append(kTestNestedStoragePartitionRelPath);
+  base::FilePath nested_partition_cache_dir =
+      nested_partition_cache_parent.Append("Cache");
+  CHECK(base::CreateDirectory(nested_partition_cache_dir));
+  test_allowed_file(nested_partition_cache_dir.Append("cache_file"));
+
+  // Nested storage partition data subdirectories in user-data-dir.
+  base::FilePath nested_partition_data_parent =
+      user_data_dir.Append(kTestNestedStoragePartitionRelPath);
+  base::FilePath nested_partition_network_dir =
+      nested_partition_data_parent.Append("Network");
+  CHECK(base::CreateDirectory(nested_partition_network_dir));
+  test_allowed_file(nested_partition_network_dir.Append("cookies.db"));
+
+  base::FilePath nested_partition_shared_dict_dir =
+      nested_partition_data_parent.Append("Shared Dictionary");
+  CHECK(base::CreateDirectory(nested_partition_shared_dict_dir));
+  test_allowed_file(nested_partition_shared_dict_dir.Append("db"));
+
   // Denied directories and files.
   base::File::Error dir_error = base::File::FILE_OK;
   CHECK(!base::CreateDirectoryAndGetError(
@@ -591,15 +615,28 @@ MULTIPROCESS_TEST_MAIN(NetworkDataMigrationRestrictedProcess) {
       partition_data_parent.Append("Preferences"), &dir_error));
   CHECK_EQ(dir_error, base::File::FILE_ERROR_ACCESS_DENIED);
 
+  CHECK(!base::CreateDirectoryAndGetError(
+      nested_partition_cache_parent.Append("Code Cache"), &dir_error));
+  CHECK_EQ(dir_error, base::File::FILE_ERROR_ACCESS_DENIED);
+  CHECK(!base::CreateDirectoryAndGetError(
+      nested_partition_data_parent.Append("Code Cache"), &dir_error));
+  CHECK_EQ(dir_error, base::File::FILE_ERROR_ACCESS_DENIED);
+  CHECK(!base::CreateDirectoryAndGetError(
+      nested_partition_data_parent.Append("Preferences"), &dir_error));
+  CHECK_EQ(dir_error, base::File::FILE_ERROR_ACCESS_DENIED);
+
   test_denied_file(user_data_dir.Append("Default").Append("Preferences"));
   test_denied_file(user_data_dir.Append("Default").Append("NetworkExtra"));
   test_denied_file(user_data_dir.Append("unauthorized.txt"));
   test_denied_file(partition_data_parent.Append("unauthorized.txt"));
   test_denied_file(partition_data_parent.Append("NetworkExtra"));
+  test_denied_file(nested_partition_data_parent.Append("unauthorized.txt"));
+  test_denied_file(nested_partition_data_parent.Append("NetworkExtra"));
   test_denied_file(user_cache_dir.Append("unauthorized.txt"));
   test_denied_file(user_cache_dir.Append("Default").Append("unauthorized.txt"));
   test_denied_file(user_cache_dir.Append("Default").Append("CacheExtra"));
   test_denied_file(partition_cache_parent.Append("unauthorized.txt"));
+  test_denied_file(nested_partition_cache_parent.Append("unauthorized.txt"));
 
   // Symbolic link creation is denied even in writable directories.
   CHECK(!base::CreateSymbolicLink(network_dir.Append("cookies.db"),
@@ -634,10 +671,14 @@ TEST_F(SandboxMacTest, NetworkDataMigrationRestricted) {
   ASSERT_TRUE(base::CreateDirectory(user_data_dir.Append("Profile 1")));
   ASSERT_TRUE(base::CreateDirectory(
       user_data_dir.Append(kTestStoragePartitionRelPath)));
+  ASSERT_TRUE(base::CreateDirectory(
+      user_data_dir.Append(kTestNestedStoragePartitionRelPath)));
   ASSERT_TRUE(base::CreateDirectory(user_cache_dir));
   ASSERT_TRUE(base::CreateDirectory(user_cache_dir.Append("Default")));
   ASSERT_TRUE(base::CreateDirectory(
       user_cache_dir.Append(kTestStoragePartitionRelPath)));
+  ASSERT_TRUE(base::CreateDirectory(
+      user_cache_dir.Append(kTestNestedStoragePartitionRelPath)));
 
   user_data_dir = sandbox::policy::GetCanonicalPath(user_data_dir);
   user_cache_dir = sandbox::policy::GetCanonicalPath(user_cache_dir);

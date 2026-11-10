@@ -34,9 +34,10 @@
         ; Root or profile: [<profile>/]<subpath>[/...]
         (regex (string-append "^" base #"(/[^/]+)?/" subpaths #"(/.*)?$"))
         ; Storage partition:
-        ; <profile>/Storage/ext/<domain>/<partition>/<subpath>[/...]
+        ;   <profile>/Storage/ext/<domain>/<partition>/<subpath>[/...]
+        ; Note: <domain> can span multiple directory levels.
         (regex (string-append
-          "^" base #"/[^/]+/Storage/ext/[^/]+/[^/]+/" subpaths #"(/.*)?$"))))))
+          "^" base #"/[^/]+/Storage/ext/.+/" subpaths #"(/.*)?$"))))))
 
 (allow-network-subpaths user-data-dir
   #"(Network|Safe Browsing Network|Shared Dictionary)")
