@@ -231,4 +231,24 @@ TEST_F(ConnectionManagerTest, DisconnectOneFeatureDoesNotAffectOther) {
   EXPECT_NE(new_connection_a, connection_b);
 }
 
+
+TEST_F(ConnectionManagerTest, ReentrancyDuringOnDestroy) {
+  Connection* connection1 = manager_->GetConnection(kTestFeature);
+  FakeConnection* fake_connection1 = factory_->last_connection();
+
+  bool callback_executed = false;
+  Connection* connection2 = nullptr;
+  auto callback = base::BindOnce(
+      [](ConnectionManager* manager, bool* executed, Connection** out_connection2, base::expected<proto::PrivateAiResponse, StatusCode> result) {
+        *executed = true;
+        *out_connection2 = manager->GetConnection(kTestFeature);
+      },
+      manager_.get(), &callback_executed, &connection2);
+  proto::PrivateAiRequest req;
+  connection1->Send(std::move(req), base::TimeDelta(), std::move(callback));
+  fake_connection1->SimulateDisconnect();
+  EXPECT_TRUE(callback_executed);
+  EXPECT_NE(connection1, connection2);
+}
+
 }  // namespace private_ai

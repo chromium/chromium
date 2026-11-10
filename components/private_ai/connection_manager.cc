@@ -72,10 +72,10 @@ void ConnectionManager::OnConnectionDisconnected(
 
   // Move the active connection to the pending destruction list and call
   // `OnDestroy()` to ensure status is propagated to all pending callbacks.
-  Connection* connection_ptr = state.connection.get();
+  auto connection = std::move(state.connection);
+  Connection* connection_ptr = connection.get();
   connection_ptr->OnDestroy(status_code);
-  connections_pending_destruction_.emplace(connection_ptr,
-                                           std::move(state.connection));
+  connections_pending_destruction_.emplace(connection_ptr, std::move(connection));
 
   // Schedule destruction of the connection.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
