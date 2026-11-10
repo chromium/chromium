@@ -452,6 +452,7 @@ base::DictValue NewTabPageUI::GetLoadTimeData(
       {"linkRemove", IDS_NTP_CUSTOM_LINKS_REMOVE},
       {"shortcutReorder", IDS_NTP_CUSTOM_LINKS_REORDER},
       {"shortcutReorderA11y", IDS_NTP_SHORTCUT_REORDER_A11Y},
+      {"shortcutMovedA11y", IDS_NTP_SHORTCUT_MOVED_A11Y},
       {"linkRemoveA11y", IDS_NTP_MOST_VISITED_SITES_REMOVE},
       {"linkRemovedMsg", IDS_NTP_CONFIRM_MSG_SHORTCUT_REMOVED},
       {"shortcutMoreActions", IDS_NTP_CUSTOM_LINKS_MORE_ACTIONS},

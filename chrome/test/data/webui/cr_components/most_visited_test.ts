@@ -2648,6 +2648,48 @@ suite('ShortcutsReorder', () => {
 
         assertFalse(isVisible(dragPanIcon));
       });
+
+  test('announces tile move', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    await setUpTest({shortcutsReorderEnabled: true});
+    await addTiles(2);
+    const tile = queryTiles()[0]!;
+    const actionMenuButton =
+        tile.querySelector<HTMLElement>('#actionMenuButton')!;
+
+    // Enter reorder mode.
+    actionMenuButton.click();
+    await microtasksFinished();
+    $$<HTMLElement>(mostVisited, '#actionMenuReorder').click();
+    await new Promise(requestAnimationFrame);
+    await microtasksFinished();
+
+    const announcer = mostVisited.shadowRoot.querySelector('#announcer')!;
+    const announcementPromise = new Promise<void>(resolve => {
+      const observer = new MutationObserver(() => {
+        if (announcer.textContent.trim()) {
+          observer.disconnect();
+          resolve();
+        }
+      });
+      observer.observe(
+          announcer, {childList: true, characterData: true, subtree: true});
+    });
+
+    // Move tile.
+    tile.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'ArrowRight', bubbles: true}));
+    await announcementPromise;
+
+    assertEquals('Moved a to position 2 of 2.', announcer.textContent.trim());
+
+    // Exit reorder mode and verify the announcement is cleared.
+    tile.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
+    await microtasksFinished();
+
+    assertEquals('', announcer.textContent.trim());
+  });
 });
 
 suite('ShortcutsAutoRemovalToast', () => {
