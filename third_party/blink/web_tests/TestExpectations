@@ -2696,6 +2696,7 @@ crbug.com/582906923 external/wpt/webcodecs/videoFrame-encode-preserves-input.cro
 crbug.com/582904063 external/wpt/webdriver/tests/classic/get_computed_label/iframe.py [ Failure ]
 crbug.com/582904063 external/wpt/webdriver/tests/classic/get_computed_role/iframe.py [ Failure ]
 crbug.com/582898056 [ Mac ] external/wpt/webrtc/protocol/h264-fmtp-modifies-level.https.html [ Skip Timeout ]
+crbug.com/583907074 [ Linux ] external/wpt/webrtc/protocol/h264-fmtp-modifies-level.https.html [ Failure Pass ]
 crbug.com/582900645 external/wpt/webvtt/rendering/cues-with-video/processing-model/snap-to-line-wrap.html [ Failure ]
 crbug.com/582906427 external/wpt/webxr/layers/xrCompositionLayer_destroy.https.html [ Timeout ]
 crbug.com/582906427 external/wpt/webxr/layers/xrSession_updateRenderState_preservesLayers.https.html [ Timeout ]
