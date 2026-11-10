@@ -82,14 +82,6 @@ _HANG_WATCHER_FEATURES = (
     'EnableHangWatcherOnGpuProcess',
 )
 
-# Telemetry sets these on every benchmark run, on top of the field trial config,
-# see GetFromBrowserOptions in //third_party/catapult/telemetry/telemetry/
-# internal/backends/chrome/chrome_startup_args.py. Keep them in sync so that
-# crossbench profiles the same browser configuration telemetry does.
-_TELEMETRY_STARTUP_BROWSER_ARGS = (
-    f'--disable-features={",".join(_HANG_WATCHER_FEATURES)}',
-)
-
 # Benchmark files to serve from a local HTTP file server, since devices in
 # isolated lab environments have no access to the live benchmark URLs. The
 # version has to match the one crossbench resolves for the benchmark name, see
@@ -572,13 +564,11 @@ def get_crossbench_variations_browser_args(browser_args: List[str]):
         raise RuntimeError(f'No field trial args generated from {config_path}.')
 
     # Merge, so that the duplicate --enable-features/--disable-features coming
-    # from the three sources become a single flag each. Chrome keeps only the
+    # from the two sources become a single flag each. Chrome keeps only the
     # last value of a repeated switch, so leaving them separate would silently
-    # drop features. Telemetry adds _TELEMETRY_STARTUP_BROWSER_ARGS after
-    # generating the field trial args, so they are deliberately not part of the
-    # override set above.
+    # drop features.
     return fieldtrial_util.MergeFeaturesAndFieldTrialsArgs(
-        browser_args + generated_args + list(_TELEMETRY_STARTUP_BROWSER_ARGS)
+        browser_args + generated_args
     )
 
 
@@ -635,16 +625,8 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
         # incomplete profraw files. See https://crbug.com/366235732.
         'SpareRendererForSitePerProcess',
         'AndroidWarmUpSpareRendererWithTimeout',
+        *_HANG_WATCHER_FEATURES,
     ]
-    if not args.android_browser:
-        # On Android these are added by
-        # get_crossbench_variations_browser_args() (crossbench) or by telemetry
-        # itself, see _HANG_WATCHER_FEATURES.
-        disabled_features.extend(_HANG_WATCHER_FEATURES)
-        if sys.platform == 'win32':
-            # Prevents flakiness on Windows 10 devices, see
-            # https://crbug.com/457520120 and https://crbug.com/461512702.
-            disabled_features.append('SessionRestoreInfobar')
 
     browser_args = benchmark.ProduceBrowserArgs(disabled_features)
     if (
@@ -1221,19 +1203,15 @@ def main():
     # https://www.chromium.org/developers/telemetry/upload_to_cloud_storage/#request-access-for-google-partners
     if not args.run_public_benchmarks_only:
         platform = 'mobile' if args.android_browser else 'desktop'
-        # GPU-dependent benchmarks (system_health, motionmark) are disabled on
-        # Linux desktop until the Swarming pool GPU driver issue is resolved,
-        # see https://crbug.com/444038165.
-        if args.android_browser or not sys.platform.startswith('linux'):
-            benchmarks.append(
-                Benchmark(
-                    'system_health',
-                    [
-                        f'system_health.common_{platform}',
-                        '--run-abridged-story-set',
-                    ],
-                )
+        benchmarks.append(
+            Benchmark(
+                'system_health',
+                [
+                    f'system_health.common_{platform}',
+                    '--run-abridged-story-set',
+                ],
             )
+        )
 
         motionmark_benchmark_args = [
             f'rendering.{platform}',
@@ -1277,23 +1255,9 @@ def main():
                     ],
                 )
             )
-        elif platform == 'mobile':
+        else:
             benchmarks.append(
                 Benchmark('motionmark', motionmark_benchmark_args)
-            )
-        elif sys.platform == 'darwin':
-            # MotionMark is disabled on Linux (https://crbug.com/444038165) and
-            # Windows (https://crbug.com/327032629) desktop PGO builders.
-            benchmarks.append(
-                Benchmark('motionmark', motionmark_benchmark_args)
-            )
-            # Exercise the Skia Graphite path on macOS.
-            benchmarks.append(
-                Benchmark(
-                    'motionmark_graphite',
-                    motionmark_benchmark_args,
-                    enable_features=['SkiaGraphite'],
-                )
             )
 
     os.makedirs(args.outputdir, exist_ok=True)
