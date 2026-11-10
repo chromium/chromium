@@ -31,6 +31,7 @@ class OtpDeliveryPolicy {
     kOriginMismatch,
     kWebOtpBlocked,
     kPhishingVerdict,
+    kPhishGuardTimedOut,
     kTargetFieldMissing,
     kFrameInactive,
     kNonOtpFieldFocused,

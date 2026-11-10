@@ -359,10 +359,12 @@ TEST_F(OtpPhishGuardGatewayTest,
   EXPECT_FALSE(second_future.IsReady());
 
   task_environment_.FastForwardBy(OtpPhishGuardGateway::kCheckTimeout);
-  EXPECT_EQ(first_future.Get(), OneTimeTokensPhishGuardVerdict::kUnknown);
+  EXPECT_EQ(first_future.Get(), OneTimeTokensPhishGuardVerdict::kTimedOut);
   EXPECT_EQ(second_future.Get(), OneTimeTokensPhishGuardVerdict::kNotPhishing);
+  histogram_tester.ExpectUniqueTimeSample(
+      OtpPhishGuardGateway::kLatencyHistogram, base::Milliseconds(0), 1);
   histogram_tester.ExpectBucketCount(OtpPhishGuardGateway::kVerdictHistogram,
-                                     OneTimeTokensPhishGuardVerdict::kUnknown,
+                                     OneTimeTokensPhishGuardVerdict::kTimedOut,
                                      1);
   histogram_tester.ExpectBucketCount(
       OtpPhishGuardGateway::kVerdictHistogram,

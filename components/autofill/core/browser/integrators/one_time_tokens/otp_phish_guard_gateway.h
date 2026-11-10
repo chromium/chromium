@@ -42,7 +42,7 @@ class OtpPhishGuardGateway {
   ~OtpPhishGuardGateway();
 
   // Performs a PhishGuard check for `frame`, invokes `callback` with the
-  // resulting verdict (`kUnknown` when no `OtpPhishGuardDelegate` is attached),
+  // resulting verdict (`kUnknown` without a delegate, `kTimedOut` on timeout),
   // and records `CheckPerformed`, `Latency`, and `Verdict` histograms.
   // Concurrent calls are serialized in FIFO order so single-flight delegates
   // such as `ChromeOtpPhishGuardDelegate` never overwrite an in-flight check.

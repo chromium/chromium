@@ -133,12 +133,15 @@ struct OtpSuggestionData {
 };
 
 // Used for histograms. Do not reorder.
+// LINT.IfChange(OneTimeTokensPhishGuardVerdict)
 enum class OneTimeTokensPhishGuardVerdict {
   kUnknown = 0,
   kPhishing = 1,
   kNotPhishing = 2,
-  kMaxValue = kNotPhishing,
+  kTimedOut = 3,
+  kMaxValue = kTimedOut,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:OneTimeTokensPhishGuardVerdict)
 
 std::string_view OneTimeTokensPhishGuardVerdictToStringView(
     OneTimeTokensPhishGuardVerdict verdict);

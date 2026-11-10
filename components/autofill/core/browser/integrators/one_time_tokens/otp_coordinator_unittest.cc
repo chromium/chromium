@@ -479,6 +479,29 @@ TEST_F(OtpCoordinatorTest, PhishingVerdictBlocksSiteFrameAndClearsOriginCache) {
               HasValue("444444"));
 }
 
+TEST_F(OtpCoordinatorTest,
+       PhishGuardTimeoutRejectsCandidateWithoutBlockingFrame) {
+  phish_guard_delegate_->HoldCallbacks();
+
+  const OtpTarget target = AddOtpForm()[0];
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), target.form,
+                               target.field);
+
+  SendGmailOtp("111111", base::Time::Now());
+  phish_guard_delegate_->WaitForHeldCallbacks(1u);
+
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+  EXPECT_THAT(coordinator_->GetAvailableTokens(target), IsEmpty());
+
+  SendGmailOtp("222222", base::Time::Now());
+  phish_guard_delegate_->WaitForHeldCallbacks(2u);
+  std::move(phish_guard_delegate_->held_callbacks()[1])
+      .Run(/*is_phishing=*/false);
+  EXPECT_THAT(frame_observer_->triggered_fields(), ElementsAre(target.field));
+  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("222222"));
+}
+
 TEST_F(OtpCoordinatorTest, ServesCommandLineMockOtpWithoutStartingSources) {
   const OtpTarget target =
       AddOtpForm(/*fields=*/1, GURL(kTestUrl), /*listen=*/false)[0];

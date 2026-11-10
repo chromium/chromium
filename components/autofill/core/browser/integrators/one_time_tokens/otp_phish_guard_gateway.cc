@@ -100,13 +100,14 @@ void OtpPhishGuardGateway::OnPhishGuardCheckCompleted(
   in_flight_weak_ptr_factory_.InvalidateWeakPtrs();
   in_flight_timeout_timer_.Stop();
   dispatch_state_ = DispatchState::kRunningCallback;
-  base::UmaHistogramTimes(kLatencyHistogram,
-                          base::TimeTicks::Now() - in_flight_start_time_);
-  const OneTimeTokensPhishGuardVerdict verdict =
-      !is_phishing_site.has_value()
-          ? OneTimeTokensPhishGuardVerdict::kUnknown
-          : (*is_phishing_site ? OneTimeTokensPhishGuardVerdict::kPhishing
-                               : OneTimeTokensPhishGuardVerdict::kNotPhishing);
+  OneTimeTokensPhishGuardVerdict verdict =
+      OneTimeTokensPhishGuardVerdict::kTimedOut;
+  if (is_phishing_site.has_value()) {
+    base::UmaHistogramTimes(kLatencyHistogram,
+                            base::TimeTicks::Now() - in_flight_start_time_);
+    verdict = *is_phishing_site ? OneTimeTokensPhishGuardVerdict::kPhishing
+                                : OneTimeTokensPhishGuardVerdict::kNotPhishing;
+  }
   LOG_AF(client_->GetCurrentLogManager())
       << LoggingScope::kOneTimeTokens
       << "PhishGuard check completed with verdict: "
