@@ -833,7 +833,9 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       if (GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
         break;
       }
-      CHECK(IsDangerous(), base::NotFatalUntil::M161);
+      // TODO(crbug.com/582612340): CHECK-exclusion: Convert to a CHECK once
+      // we are confident it won't be triggered.
+      DCHECK(IsDangerous());
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
       MaybeSendDownloadReport(/*did_proceed=*/true, download_);
 #endif
