@@ -14,10 +14,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
-import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -30,7 +28,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
  * for every custom tab, but its only active if |isEnabledIncognitoCCT| returns true.
  */
 @NullMarked
-public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObserver {
+public class CustomTabIncognitoManager implements DestroyObserver {
     private final Activity mActivity;
     private final CustomTabActivityNavigationController mNavigationController;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -59,15 +57,6 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
                 && mIntentDataProvider.isOpenedByChrome()) {
             mIncognitoTabHost = new IncognitoCustomTabHost();
             IncognitoTabHostRegistry.getInstance().register(mIncognitoTabHost);
-        }
-    }
-
-    @Override
-    public void onFinishNativeInitialization() {
-        if (mIntentDataProvider.getCustomTabMode() == INCOGNITO
-                && !ChromeFeatureList.sEnableAndroidEnterpriseScreenshotProtection.isEnabled()) {
-            new IncognitoCustomTabSnapshotController(
-                    mActivity, () -> mIntentDataProvider.getCustomTabMode() == INCOGNITO);
         }
     }
 

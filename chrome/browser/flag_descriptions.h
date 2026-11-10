@@ -5584,13 +5584,6 @@ inline constexpr char kAndroidDocumentPictureInPictureDescription[] =
     "Enables Document Picture-In-Picture API allowing websites to open "
     "new floating always-on-top window with arbitrary HTML content.";
 
-inline constexpr char kAndroidEnterpriseScreenshotProtectionName[] =
-    "Enable unified screenshot protection controller on Android";
-inline constexpr char kAndroidEnterpriseScreenshotProtectionDescription[] =
-    "Enables a new screenshot protection controller that replaces the "
-    "incognito-only controller. Enterprise enrolled devices can also have "
-    "normal pages protected when determined by their admin.";
-
 inline constexpr char kAndroidElegantTextHeightName[] =
     "Android Elegant Text Height";
 inline constexpr char kAndroidElegantTextHeightDescription[] =

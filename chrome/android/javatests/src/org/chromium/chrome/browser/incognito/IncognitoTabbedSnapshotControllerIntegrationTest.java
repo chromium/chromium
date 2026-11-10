@@ -11,17 +11,11 @@ import android.view.WindowManager;
 
 import androidx.test.filters.LargeTest;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
-import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -29,7 +23,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
@@ -37,37 +31,14 @@ import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
-import java.util.List;
-
-/** Integration tests for {@link IncognitoTabbedSnapshotController}. */
-@RunWith(ParameterizedRunner.class)
-@UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+/** Integration tests for incognito screenshot protection in {@link ChromeTabbedActivity}. */
+@RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Tests window flags and features which are activity-global")
 public class IncognitoTabbedSnapshotControllerIntegrationTest {
-
-    @ClassParameter
-    private static final List<ParameterSet> sClassParams =
-            List.of(
-                    new ParameterSet().value(false).name("EnterpriseScreenshotProtectionDisabled"),
-                    new ParameterSet().value(true).name("EnterpriseScreenshotProtectionEnabled"));
-
-    private final boolean mEnterpriseScreenshotProtectionEnabled;
 
     @Rule
     public final FreshCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
-
-    public IncognitoTabbedSnapshotControllerIntegrationTest(
-            boolean enterpriseScreenshotProtectionEnabled) {
-        mEnterpriseScreenshotProtectionEnabled = enterpriseScreenshotProtectionEnabled;
-    }
-
-    @Before
-    public void setUp() {
-        FeatureOverrides.overrideFlag(
-                ChromeFeatureList.ENABLE_ANDROID_ENTERPRISE_SCREENSHOT_PROTECTION,
-                mEnterpriseScreenshotProtectionEnabled);
-    }
 
     private boolean isWindowSecure(ChromeTabbedActivity activity) {
         return ThreadUtils.runOnUiThreadBlocking(

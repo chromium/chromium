@@ -101,7 +101,6 @@ static_library("flags_android_impl") {
     "//components/download/public/common:public",
     "//components/embedder_support/android:util",
     "//components/enterprise/data_controls/core/browser:features",
-    "//components/enterprise/data_protection",
     "//components/facilitated_payments/core/features",
     "//components/feature_engagement/public:feature_constants",
     "//components/feed:feature_list",

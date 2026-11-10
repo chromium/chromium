@@ -180,7 +180,6 @@ import org.chromium.chrome.browser.incognito.IncognitoNotificationPresenceContro
 import org.chromium.chrome.browser.incognito.IncognitoProfileDestroyer;
 import org.chromium.chrome.browser.incognito.IncognitoStartup;
 import org.chromium.chrome.browser.incognito.IncognitoTabLauncher;
-import org.chromium.chrome.browser.incognito.IncognitoTabbedSnapshotController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.IncognitoWindowNightModeStateProvider;
 import org.chromium.chrome.browser.incognito_window.PreAttachIntentObserver;
@@ -1565,18 +1564,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         try (TraceEvent e =
                 TraceEvent.scoped(
                         "ChromeTabbedActivity.maybeCreateIncognitoTabSnapshotController")) {
-            if (!ChromeFeatureList.sEnableAndroidEnterpriseScreenshotProtection.isEnabled()) {
-                IncognitoTabbedSnapshotController.createIncognitoTabSnapshotController(
-                        this,
-                        assumeNonNull(mLayoutManager),
-                        mTabModelSelector,
-                        getLifecycleDispatcher());
-
-                mUiWithNativeInitialized = true;
-            } else {
-                mScreenshotProtectionControllerSupplier.addSyncObserverAndCallIfNonNull(
-                        _ -> mUiWithNativeInitialized = true);
-            }
+            mScreenshotProtectionControllerSupplier.addSyncObserverAndCallIfNonNull(
+                    _ -> mUiWithNativeInitialized = true);
 
             // Check for incognito tabs to handle the case where Chrome was swiped away in the
             // background.

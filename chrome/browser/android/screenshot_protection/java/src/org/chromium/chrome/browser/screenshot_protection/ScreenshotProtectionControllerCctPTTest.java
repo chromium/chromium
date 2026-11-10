@@ -21,9 +21,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.CctTransitTestRule;
@@ -40,7 +38,6 @@ import org.chromium.net.test.EmbeddedTestServer;
             + "[{\"class\":\"SCREENSHOT\",\"level\":\"BLOCK\"}],"
             + "\"sources\":{\"urls\":[\"*/chrome/test/data/android/google.html\"]}}]}"
 })
-@EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_ENTERPRISE_SCREENSHOT_PROTECTION)
 @DoNotBatch(reason = "Tests window flags and features which are activity-global")
 public class ScreenshotProtectionControllerCctPTTest {
 

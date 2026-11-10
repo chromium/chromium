@@ -32,7 +32,6 @@
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 #include "chrome/browser/enterprise/net/enterprise_proxy_error_service_factory.h"
 #include "chrome/browser/enterprise/net/enterprise_proxy_tab_helper_delegate.h"
@@ -148,7 +147,6 @@
 #include "components/download/content/factory/navigation_monitor_factory.h"
 #include "components/download/content/public/download_navigation_observer.h"
 #include "components/enterprise/browser/reporting/reporting_features.h"
-#include "components/enterprise/data_protection/features.h"
 #include "components/enterprise/net/content/enterprise_proxy_tab_helper.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/history/content/browser/web_contents_top_sites_observer.h"
@@ -233,21 +231,6 @@ std::optional<int64_t> GetPageContentAnnotationsTabId(
     return tab->GetAndroidId();
   }
   return std::nullopt;
-}
-
-// The data protection controller drives all per-navigation enterprise data
-// protection work on Android: screenshot restrictions and tab title reporting
-// for URL filtering events. It is only useful for managed profiles, and only
-// when at least one of the features it powers is enabled.
-bool ShouldCreateDataProtectionController(Profile* profile) {
-  if (!enterprise_util::IsBrowserManaged(profile)) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(
-             enterprise_data_protection::
-                 kEnableAndroidEnterpriseScreenshotProtection) ||
-         base::FeatureList::IsEnabled(
-             enterprise_data_protection::kEnterpriseTabTitleReporting);
 }
 
 }  // namespace
@@ -389,7 +372,10 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
       GetUserDataFactory().CreateInstance<lens::TabContextualizationController>(
           *tab, tab);
 
-  if (ShouldCreateDataProtectionController(profile)) {
+  // The data protection controller drives all per-navigation enterprise data
+  // protection work on Android: screenshot restrictions and tab title reporting
+  // for URL filtering events. It is only useful for managed profiles.
+  if (enterprise_util::IsBrowserManaged(profile)) {
     data_protection_tab_controller_ =
         GetUserDataFactory()
             .CreateInstance<

@@ -45,7 +45,6 @@ import org.chromium.net.test.EmbeddedTestServer;
             + "[{\"class\":\"SCREENSHOT\",\"level\":\"BLOCK\"}],"
             + "\"sources\":{\"urls\":[\"*/chrome/test/data/android/google.html\"]}}]}"
 })
-@EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_ENTERPRISE_SCREENSHOT_PROTECTION)
 @DoNotBatch(reason = "Tests window flags and features which are activity-global")
 public class ScreenshotProtectionControllerPTTest {
 

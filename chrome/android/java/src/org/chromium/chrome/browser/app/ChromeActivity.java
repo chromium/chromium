@@ -2360,16 +2360,13 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         getProfileProviderSupplier().runSyncOrOnAvailable(this::initializeManualFillingComponent);
 
-        if (ChromeFeatureList.sEnableAndroidEnterpriseScreenshotProtection.isEnabled()) {
-            mScreenshotProtectionControllerSupplier.set(
-                    new ScreenshotProtectionController(
-                            this,
-                            mActivityTabProvider.asObservable(),
-                            getTabModelSelector(),
-                            isCustomTab(),
-                            SupplierUtils.upcast(
-                                    mLayoutManagerSupplier, LayoutStateProvider.class)));
-        }
+        mScreenshotProtectionControllerSupplier.set(
+                new ScreenshotProtectionController(
+                        this,
+                        mActivityTabProvider.asObservable(),
+                        getTabModelSelector(),
+                        isCustomTab(),
+                        SupplierUtils.upcast(mLayoutManagerSupplier, LayoutStateProvider.class)));
         mTabReparentingControllerSupplier.set(
                 new TabReparentingController(
                         this::getTabModelSelector,
@@ -2560,10 +2557,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         return mEdgeToEdgeControllerSupplier;
     }
 
-    /**
-     * Returns a supplier of the {@link ScreenshotProtectionController} instance, if enabled from
-     * the EnableAndroidEnterpriseScreenshotProtection flag
-     */
+    /** Returns a supplier of the {@link ScreenshotProtectionController} instance. */
     public MonotonicObservableSupplier<ScreenshotProtectionController>
             getScreenshotProtectionController() {
         return mScreenshotProtectionControllerSupplier;

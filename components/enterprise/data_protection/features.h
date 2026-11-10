@@ -9,8 +9,6 @@
 
 namespace enterprise_data_protection {
 
-BASE_DECLARE_FEATURE(kEnableAndroidEnterpriseScreenshotProtection);
-
 BASE_DECLARE_FEATURE(kEnableDeepScanVerdictCacheSize);
 
 BASE_DECLARE_FEATURE(kEnableWatermarkTimestampTimezone);

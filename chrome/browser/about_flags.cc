@@ -116,7 +116,6 @@
 #include "components/enterprise/client_certificates/core/features.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/data_controls/core/browser/features.h"
-#include "components/enterprise/data_protection/features.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/enterprise/network_header_injection/core/features.h"
 #include "components/error_page/common/error_page_switches.h"
@@ -13627,14 +13626,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin | kOsMac | kOsLinux,
      FEATURE_VALUE_TYPE(features::kFeedbackDisabledDialog)},
 #endif
-#if BUILDFLAG(IS_ANDROID)
-    {"enable-android-enterprise-screenshot-protection",
-     flag_descriptions::kAndroidEnterpriseScreenshotProtectionName,
-     flag_descriptions::kAndroidEnterpriseScreenshotProtectionDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(enterprise_data_protection::
-                            kEnableAndroidEnterpriseScreenshotProtection)},
-#endif  // BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_ANDROID)
     {"dictation", flag_descriptions::kDictationName,
      flag_descriptions::kDictationDescription, kOsDesktop,

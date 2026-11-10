@@ -8,9 +8,6 @@
 
 namespace enterprise_data_protection {
 
-BASE_FEATURE(kEnableAndroidEnterpriseScreenshotProtection,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableDeepScanVerdictCacheSize, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/533005087): Disable the flag on iOS when changing default

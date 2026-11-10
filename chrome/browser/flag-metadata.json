@@ -3530,14 +3530,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-android-enterprise-screenshot-protection",
-    "owners": [
-      "alxchn@google.com",
-      "cbe-eng@google.com"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "enable-android-force-text-input-state-update-upon-focus",
     "owners": [
       "hdchuong@google.com",

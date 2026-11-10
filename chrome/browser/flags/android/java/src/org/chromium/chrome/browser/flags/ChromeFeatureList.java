@@ -624,8 +624,6 @@ public abstract class ChromeFeatureList {
     public static final String EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS =
             "EdgeToEdgeUseBackupNavbarInsets";
     public static final String EMAIL_VERIFICATION_PROTOCOL = "EmailVerificationProtocol";
-    public static final String ENABLE_ANDROID_ENTERPRISE_SCREENSHOT_PROTECTION =
-            "EnableAndroidEnterpriseScreenshotProtection";
     public static final String ENABLE_ANDROID_SIDE_PANEL = "EnableAndroidSidePanel";
     public static final String ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE =
             "EnableAndroidSidePanelDevFeature";
@@ -1275,11 +1273,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(EDGE_TO_EDGE_TOP_INSET, /* defaultValue= */ false);
     public static final CachedFlag sEdgeToEdgeUseBackupNavbarInsets =
             newCachedFlag(EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, true);
-    public static final CachedFlag sEnableAndroidEnterpriseScreenshotProtection =
-            newCachedFlag(
-                    ENABLE_ANDROID_ENTERPRISE_SCREENSHOT_PROTECTION,
-                    /* defaultValue= */ true,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sEnableAndroidSidePanel =
             newCachedFlag(
                     ENABLE_ANDROID_SIDE_PANEL,
@@ -1668,7 +1661,6 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeTablet,
                     sEdgeToEdgeTopInset,
                     sEdgeToEdgeUseBackupNavbarInsets,
-                    sEnableAndroidEnterpriseScreenshotProtection,
                     sEnableAndroidSidePanel,
                     sEnableAndroidSidePanelDevFeature,
                     sEnableAndroidSidePanelLogs,
