@@ -4729,6 +4729,17 @@ void RenderWidgetHostImpl::AddExpectedUserActivationNotification(
        event.GetType() == blink::WebInputEvent::Type::kKeyDown ||
        event.GetType() == blink::WebInputEvent::Type::kRawKeyDown ||
        event.GetType() == blink::WebInputEvent::Type::kTouchStart)) {
+    // For a page popup, we redirect the call to the popup creator's host widget
+    // because any user interaction on the popup activates the renderer that
+    // created the popup (vs the "internal" renderer for the popup).
+    if (popup_creator_frame_id_.has_value()) {
+      if (auto* creator_rfh =
+              RenderFrameHostImpl::FromID(*popup_creator_frame_id_)) {
+        creator_rfh->GetRenderWidgetHost()
+            ->AddExpectedUserActivationNotification(event);
+      }
+      return;
+    }
     expected_user_activation_notification_timer_.Start(
         FROM_HERE, kUserActivationVerificationTimeout,
         base::BindOnce(

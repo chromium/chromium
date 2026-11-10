@@ -7739,7 +7739,7 @@ class SitePerProcessHitTestTrustedUserActivationTriggersTest
 };
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestTrustedUserActivationTriggersTest,
-                       RenderWidgetUserActivationStateTest) {
+                       VerificationInRenderWidgetHost) {
   GURL main_url(embedded_test_server()->GetURL(
       "foo.com", "/frame_tree/page_with_positioned_frame.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -7825,5 +7825,177 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestTrustedUserActivationTriggersTest,
                    ->RemoveExpectedUserActivationNotificationIfAvailable());
   EXPECT_TRUE(root->HasTransientUserActivation());
 }
+
+// This WebPagePopupImpl user activation test is not applicable for Mac,
+// Android or iOS because these platforms use native pickers for <select>.
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestTrustedUserActivationTriggersTest,
+                       PopupRenderWidget) {
+  GURL url(embedded_test_server()->GetURL(
+      "foo.com", "/site_isolation/page-with-select.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  WaitForHitTestData(root->current_frame_host());
+
+  RenderWidgetHostViewBase* rwhv_root = static_cast<RenderWidgetHostViewBase*>(
+      root->current_frame_host()->GetRenderWidgetHost()->GetView());
+
+  // Open the <select> popup.
+  ShowPopupWidgetWaiter popup_waiter(web_contents(),
+                                     root->current_frame_host());
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.button = blink::WebPointerProperties::Button::kLeft;
+  mouse_event.click_count = 1;
+  gfx::PointF select_point(15, 15);
+  DispatchMouseEventAndWaitUntilDispatch(web_contents(), mouse_event, rwhv_root,
+                                         select_point, rwhv_root, select_point);
+  popup_waiter.Wait();
+
+  RenderWidgetHostImpl* popup_widget_host = RenderWidgetHostImpl::FromID(
+      root->current_frame_host()->GetProcess()->GetDeprecatedID(),
+      popup_waiter.last_routing_id());
+  ASSERT_TRUE(popup_widget_host);
+
+  // Clear the activation state before testing input events on the popup widget.
+  EXPECT_TRUE(root->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kClearActivation,
+      blink::mojom::UserActivationNotificationType::kNone));
+  ASSERT_FALSE(root->HasTransientUserActivation());
+
+  // Send a mouse down event to the popup widget.
+  mouse_event.SetPositionInWidget(5, 5);
+  {
+    UpdateUserActivationStateInterceptor activation_interceptor(
+        root->current_frame_host());
+    base::RunLoop run_loop;
+    activation_interceptor.set_quit_handler(run_loop.QuitClosure());
+    popup_widget_host->ForwardMouseEvent(mouse_event);
+    run_loop.Run();
+    EXPECT_TRUE(activation_interceptor.update_user_activation_state());
+  }
+
+  // The expected activation notification was redirected from the popup widget
+  // to the frame's widget and claimed by the activation notification.
+  EXPECT_FALSE(
+      popup_widget_host->RemoveExpectedUserActivationNotificationIfAvailable());
+  EXPECT_FALSE(root->current_frame_host()
+                   ->GetRenderWidgetHost()
+                   ->RemoveExpectedUserActivationNotificationIfAvailable());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+
+  // Clear the activation state again.
+  EXPECT_TRUE(root->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kClearActivation,
+      blink::mojom::UserActivationNotificationType::kNone));
+  ASSERT_FALSE(root->HasTransientUserActivation());
+
+  // Send a key down event to the popup widget.
+  input::NativeWebKeyboardEvent key_event(
+      blink::WebKeyboardEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  key_event.windows_key_code = ui::VKEY_DOWN;
+  {
+    UpdateUserActivationStateInterceptor activation_interceptor(
+        root->current_frame_host());
+    base::RunLoop run_loop;
+    activation_interceptor.set_quit_handler(run_loop.QuitClosure());
+    popup_widget_host->ForwardKeyboardEvent(key_event);
+    run_loop.Run();
+    EXPECT_TRUE(activation_interceptor.update_user_activation_state());
+  }
+
+  EXPECT_FALSE(
+      popup_widget_host->RemoveExpectedUserActivationNotificationIfAvailable());
+  EXPECT_FALSE(root->current_frame_host()
+                   ->GetRenderWidgetHost()
+                   ->RemoveExpectedUserActivationNotificationIfAvailable());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+}
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+// This WebPagePopupImpl user activation test is not applicable for Mac,
+// Android or iOS because these platforms use native pickers for <select>.
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestTrustedUserActivationTriggersTest,
+                       PopupRenderWidgetInIframe) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "foo.com", "/frame_tree/page_with_positioned_frame.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  // Use a cross-origin child frame as the popup creator so its RenderWidgetHost
+  // is distinct from the main frame's, verifying that expected user activation
+  // notifications are redirected to `popup_creator_frame_id_` rather than the
+  // main frame.
+  FrameTreeNode* child = root->child_at(0);
+  GURL site_url(embedded_test_server()->GetURL(
+      "baz.com", "/site_isolation/page-with-select.html"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(child, site_url));
+
+  WaitForHitTestData(child->current_frame_host());
+
+  // Open the <select> popup in the child frame.
+  ShowPopupWidgetWaiter popup_waiter(web_contents(),
+                                     child->current_frame_host());
+  EXPECT_TRUE(ExecJs(child, "focusSelectMenu();"));
+  input::NativeWebKeyboardEvent open_event(
+      blink::WebKeyboardEvent::Type::kChar, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  open_event.text[0] = ' ';
+  child->current_frame_host()->GetRenderWidgetHost()->ForwardKeyboardEvent(
+      open_event);
+  popup_waiter.Wait();
+
+  RenderWidgetHostImpl* popup_widget_host = RenderWidgetHostImpl::FromID(
+      child->current_frame_host()->GetProcess()->GetDeprecatedID(),
+      popup_waiter.last_routing_id());
+  ASSERT_TRUE(popup_widget_host);
+
+  // Clear the activation state before testing input events on the popup widget.
+  EXPECT_TRUE(root->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kClearActivation,
+      blink::mojom::UserActivationNotificationType::kNone));
+  ASSERT_FALSE(root->HasTransientUserActivation());
+  ASSERT_FALSE(child->HasTransientUserActivation());
+
+  // Send a key down event to the popup widget.
+  input::NativeWebKeyboardEvent key_event(
+      blink::WebKeyboardEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  key_event.windows_key_code = ui::VKEY_DOWN;
+  {
+    UpdateUserActivationStateInterceptor child_frame_activation_interceptor(
+        child->current_frame_host());
+    base::RunLoop child_frame_run_loop;
+    child_frame_activation_interceptor.set_quit_handler(
+        child_frame_run_loop.QuitClosure());
+    popup_widget_host->ForwardKeyboardEvent(key_event);
+    child_frame_run_loop.Run();
+    EXPECT_TRUE(
+        child_frame_activation_interceptor.update_user_activation_state());
+  }
+
+  // The expected activation notification was redirected from the popup widget
+  // to the child frame's widget and claimed by the activation notification.
+  EXPECT_FALSE(
+      popup_widget_host->RemoveExpectedUserActivationNotificationIfAvailable());
+  EXPECT_FALSE(child->current_frame_host()
+                   ->GetRenderWidgetHost()
+                   ->RemoveExpectedUserActivationNotificationIfAvailable());
+  EXPECT_TRUE(child->HasTransientUserActivation());
+  EXPECT_FALSE(root->current_frame_host()
+                   ->GetRenderWidgetHost()
+                   ->RemoveExpectedUserActivationNotificationIfAvailable());
+  // While root frame couldn't have claimed the child's user activation, it
+  // still gets the user activation through the propagation from from the child.
+  EXPECT_TRUE(root->HasTransientUserActivation());
+}
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace content
