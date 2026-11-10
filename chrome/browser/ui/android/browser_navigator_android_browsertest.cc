@@ -8,6 +8,7 @@
 
 #include "base/base_switches.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/android_buildflags.h"
 #include "chrome/browser/android/tab_android.h"
@@ -2442,4 +2443,63 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidUserAgentOverrideBrowserTest,
   content::NavigationEntry* entry2 = navigate_in_current_tab(mobile_url);
   ASSERT_TRUE(entry2);
   EXPECT_FALSE(entry2->GetIsOverridingUserAgent());
+}
+
+// Verifies new-window navigations from an Incognito window when
+// `kAndroidOpenIncognitoAsWindow` is disabled (i.e. `ChromeTabbedActivity` uses
+// `SupportedProfileType.MIXED`).
+class NavigateAndroidMixedProfileBrowserTest
+    : public NavigateAndroidBrowserTest {
+ public:
+  NavigateAndroidMixedProfileBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        feed::kAndroidOpenIncognitoAsWindow);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidMixedProfileBrowserTest,
+                       Async_Disposition_NewWindow_FromIncognitoProfile) {
+  BrowserWindowInterface* incognito_window = CreateIncognitoBrowserWindow();
+  ASSERT_NE(incognito_window, nullptr);
+  ASSERT_TRUE(incognito_window->GetProfile()->IsOffTheRecord());
+  TabListInterface* incognito_tab_list =
+      TabListInterface::From(incognito_window);
+  ASSERT_NE(incognito_tab_list, nullptr);
+  ASSERT_EQ(1, incognito_tab_list->GetTabCount());
+
+  const GURL target_url = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams params(incognito_window, target_url,
+                        ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
+
+  // Watch for the new window's WebContents before navigating, so the
+  // navigation can't finish before the observer exists.
+  content::TestNavigationObserver navigation_observer(target_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+  Navigate(&params, future.GetCallback());
+  base::WeakPtr<content::NavigationHandle> handle = future.Get();
+  ASSERT_TRUE(handle);
+  ASSERT_TRUE(handle->GetWebContents());
+
+  navigation_observer.Wait();
+
+  BrowserWindowInterface* new_incognito_window = params.browser;
+  ASSERT_NE(new_incognito_window, nullptr);
+  EXPECT_NE(new_incognito_window, incognito_window);
+  EXPECT_TRUE(new_incognito_window->GetProfile()->IsOffTheRecord());
+
+  TabListInterface* new_tab_list = TabListInterface::From(new_incognito_window);
+  ASSERT_NE(new_tab_list, nullptr);
+  EXPECT_EQ(1, new_tab_list->GetTabCount());
+  tabs::TabInterface* new_tab = new_tab_list->GetActiveTab();
+  ASSERT_TRUE(new_tab);
+  EXPECT_EQ(target_url, new_tab->GetContents()->GetLastCommittedURL());
+
+  // Original incognito window still has its single initial tab.
+  EXPECT_EQ(1, incognito_tab_list->GetTabCount());
 }

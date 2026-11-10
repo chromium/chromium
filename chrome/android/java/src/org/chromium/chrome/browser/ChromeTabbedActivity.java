@@ -2708,7 +2708,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             if (getSavedInstanceState() == null
                     && mTabModelOrchestrator.getRestoredTabCount() == 0) {
-                boolean incognito = mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD;
+                boolean incognito = mTabModelSelector.isIncognitoSelected();
                 List<String> startupUrls = TabbedStartupCoordinator.resolveStartupUrls(incognito);
                 if (!startupUrls.isEmpty()) {
                     LoadUrlParams loadUrlParams = new LoadUrlParams(startupUrls.get(0));
@@ -2925,7 +2925,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private void createInitialTab() {
         Log.i(TAG, "#createInitialTab executed.");
         mPendingInitialTabCreation = false;
-        boolean incognito = mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD;
+        boolean incognito = mTabModelSelector.isIncognitoSelected();
 
         String url = null;
         GURL homepageGurl = HomepageManager.getInstance().getHomepageGurlForZeroTabs(incognito);
@@ -4017,11 +4017,20 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 shouldPersistAcrossReboots()
                         && persistentState != null
                         && persistentState.getBoolean(IS_INCOGNITO_SELECTED, false);
+        Intent intent = getIntent();
+        boolean startedAsNewIncognitoWindow =
+                savedInstanceState == null
+                        && persistentState == null
+                        && intent != null
+                        && IntentHandler.wasIntentSenderChrome(intent)
+                        && IntentUtils.safeGetBooleanExtra(
+                                intent, IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false);
         boolean startIncognito =
                 (mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD)
                         || (mSupportedProfileType == SupportedProfileType.MIXED
                                 && (isIncognitoSelectedInSavedState
-                                        || isIncognitoSelectedInPersistentState));
+                                        || isIncognitoSelectedInPersistentState
+                                        || startedAsNewIncognitoWindow));
 
         mNextTabPolicySupplier = new ChromeNextTabPolicySupplier(mLayoutStateProviderSupplier);
 
