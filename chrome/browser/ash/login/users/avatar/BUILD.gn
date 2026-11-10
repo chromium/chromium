@@ -120,7 +120,6 @@ source_set("browser_tests") {
     "//chrome/browser/signin",
     "//chrome/common:constants",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/userdataauth",

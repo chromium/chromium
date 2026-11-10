@@ -528,7 +528,6 @@ source_set("browser_tests") {
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/cryptohome:public",
     "//chromeos/ash/components/dbus",

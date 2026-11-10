@@ -172,6 +172,8 @@ static_library("test_util") {
     "mahi_ui_browser_test_base.h",
   ]
 
+  public_deps = [ "//content/test:test_support" ]
+
   deps = [
     ":mahi",
     "//ash:test_support",
@@ -182,7 +184,7 @@ static_library("test_util") {
     "//chrome/browser/manta",
     "//chrome/browser/manta:impl",
     "//chrome/browser/ui/views/mahi",
-    "//chrome/test:test_support_ui",
+    "//chrome/test/base:ui_test_utils",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/signin:identity_manager_provider",
     "//chromeos/ash/experiences/settings_ui",

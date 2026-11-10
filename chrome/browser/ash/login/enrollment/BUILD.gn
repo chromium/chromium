@@ -119,7 +119,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/common:constants",
-    "//chrome/test:test_support_ui",
     "//chromeos:test_support",
     "//chromeos/ash/components/attestation:test_support",
     "//chromeos/ash/components/dbus",

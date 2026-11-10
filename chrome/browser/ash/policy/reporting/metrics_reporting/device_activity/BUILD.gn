@@ -52,7 +52,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/chromeos/reporting",
-    "//chrome/test:test_support_ui",
     "//chromeos/ash/components/settings",
     "//chromeos/dbus/missive:test_support",
     "//components/reporting/proto:metric_data_proto",

@@ -20,6 +20,7 @@ source_set("test_support") {
 
   public_deps = [
     "//base",
+    "//chrome/test/base:platform_browser_test",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",

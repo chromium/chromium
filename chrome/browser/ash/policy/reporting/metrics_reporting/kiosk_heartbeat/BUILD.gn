@@ -51,7 +51,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/chromeos/reporting",
     "//chrome/browser/profiles:profile",
-    "//chrome/test:test_support_ui",
     "//chromeos/ash/components/settings",
     "//chromeos/constants",
     "//chromeos/dbus/missive:test_support",
