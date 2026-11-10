@@ -210,9 +210,14 @@ public class FlatLayoutDelegateUnitTest {
     public void testOnUrlUpdated() {
         addTabsToModelList(TAB1_ID);
         PropertyModel model = mModelList.get(0).model;
+        when(mMediator.getLatestTitleForTabOrGroup(mTab1, model, /* useDefault= */ true))
+                .thenReturn("New Title");
 
         mDelegate.onUrlUpdated(mTab1);
 
+        assertEquals("New Title", model.get(TabProperties.TITLE));
+        verify(mMediator).updateDescriptionString(model);
+        verify(mMediator).updateActionButtonDescriptionString(mTab1, model);
         verify(mMediator).updateThumbnailFetcher(model, TAB1_ID);
         verify(mMediator).updateFaviconForTab(model, mTab1, null, null);
     }
@@ -295,6 +300,8 @@ public class FlatLayoutDelegateUnitTest {
         mDelegate.onTitleUpdated(mTab1);
 
         assertEquals("New Title", model.get(TabProperties.TITLE));
+        verify(mMediator).updateDescriptionString(model);
+        verify(mMediator).updateActionButtonDescriptionString(mTab1, model);
     }
 
     @Test

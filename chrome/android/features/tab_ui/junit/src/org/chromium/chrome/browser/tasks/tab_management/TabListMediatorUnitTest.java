@@ -231,7 +231,9 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.components.tabs.TabAlert;
+import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -417,7 +419,9 @@ public class TabListMediatorUnitTest {
     @Mock View mItemView4;
     @Mock View mTabView;
     @Mock TabGroupColorViewProvider mTabGroupColorViewProvider;
+    @Mock NavigationController mNavigationController;
     @Mock NavigationHandle mNavigationHandle;
+    @Mock WebContents mWebContents;
     @Mock PropertyModel mPropertyModel;
     @Mock ThumbnailFetcher mThumbnailFetcher1;
     @Mock ThumbnailFetcher mThumbnailFetcher2;
@@ -700,12 +704,21 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void updatesTitle_WithoutStoredTitle_Tab() {
-        assertThat(mModelList.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
+        PropertyModel model = mModelList.get(0).model;
+        assertThat(model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
+        var oldActionButtonResolver =
+                model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER);
 
         when(mTab1.getTitle()).thenReturn(NEW_TITLE);
         mTabObserverCaptor.getValue().onTitleUpdated(mTab1);
 
-        assertThat(mModelList.get(0).model.get(TabProperties.TITLE), equalTo(NEW_TITLE));
+        assertThat(model.get(TabProperties.TITLE), equalTo(NEW_TITLE));
+        assertNotEquals(
+                oldActionButtonResolver,
+                model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER));
+        assertEquals(
+                mContext.getString(R.string.accessibility_tabstrip_btn_close_tab, NEW_TITLE),
+                model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER).resolve(mContext));
     }
 
     @Test
@@ -3068,6 +3081,28 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void getLatestTitleForTabOrGroup_emptyTitle_initialNavigation() {
+        when(mTab1.getTitle()).thenReturn("");
+        when(mTab1.getWebContents()).thenReturn(mWebContents);
+        when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
+
+        when(mNavigationController.isInitialNavigation()).thenReturn(true);
+        assertEquals(
+                "", mMediator.getLatestTitleForTabOrGroup(mTab1, null, /* useDefault= */ true));
+
+        when(mNavigationController.isInitialNavigation()).thenReturn(false);
+        assertEquals(
+                TAB1_URL.getSpec(),
+                mMediator.getLatestTitleForTabOrGroup(mTab1, null, /* useDefault= */ true));
+
+        when(mNavigationController.isInitialNavigation()).thenReturn(true);
+        when(mWebContents.isDestroyed()).thenReturn(true);
+        assertEquals(
+                TAB1_URL.getSpec(),
+                mMediator.getLatestTitleForTabOrGroup(mTab1, null, /* useDefault= */ true));
+    }
+
+    @Test
     public void getLatestTitle_FlatLayout_Dialog() {
         setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
         createTabGroup(Collections.singletonList(mTab1), TAB_GROUP_ID);
@@ -3340,8 +3375,39 @@ public class TabListMediatorUnitTest {
         model1.set(TabProperties.FAVICON_FETCHER, null);
         mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
 
+        assertEquals(TAB1_TITLE, model1.get(TabProperties.TITLE));
         assertNotEquals(oldThumbnailFetcher, model1.get(TabProperties.THUMBNAIL_FETCHER));
         assertNotNull(model1.get(TabProperties.FAVICON_FETCHER));
+    }
+
+    @Test
+    public void urlUpdated_forSingleTab_EmptyTitleInitialNavigation_GroupedLayout() {
+        when(mTab1.getTitle()).thenReturn("");
+        when(mTab1.getWebContents()).thenReturn(mWebContents);
+        when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
+        when(mNavigationController.isInitialNavigation()).thenReturn(true);
+        mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), null, false);
+
+        PropertyModel model1 = mModelList.get(POSITION1).model;
+        assertEquals("", model1.get(TabProperties.TITLE));
+        var oldActionButtonResolver =
+                model1.get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER);
+        assertEquals(
+                mContext.getString(R.string.accessibility_tabstrip_btn_close_tab, ""),
+                oldActionButtonResolver.resolve(mContext));
+
+        when(mNavigationController.isInitialNavigation()).thenReturn(false);
+        when(mTab1.getUrl()).thenReturn(new GURL(NEW_URL));
+        mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
+
+        assertEquals(NEW_URL, model1.get(TabProperties.TITLE));
+        assertNotEquals(
+                oldActionButtonResolver,
+                model1.get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER));
+        assertEquals(
+                mContext.getString(R.string.accessibility_tabstrip_btn_close_tab, NEW_URL),
+                model1.get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER)
+                        .resolve(mContext));
     }
 
     @Test

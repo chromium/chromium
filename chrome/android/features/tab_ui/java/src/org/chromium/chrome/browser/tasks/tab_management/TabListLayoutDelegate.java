@@ -307,9 +307,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
                 || mMediator.getCurrentTabModelChecked().getTabById(updatedTab.getId()) == null) {
             return;
         }
-        model.set(
-                TabProperties.TITLE,
-                mMediator.getLatestTitleForTabOrGroup(updatedTab, model, /* useDefault= */ true));
+        updateTabTitleAndDescriptions(updatedTab, model);
     }
 
     @Override
@@ -360,7 +358,8 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
     }
 
     /**
-     * Updates the thumbnail and favicon for a tab or its representing card when its URL changes.
+     * Updates the title, accessibility descriptions, thumbnail, and favicon for a tab or its
+     * representing card when its URL changes.
      *
      * @param updatedTab The {@link Tab} whose URL changed.
      */
@@ -375,8 +374,17 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
         PropertyModel model = getModelFromTabId(updatedTab.getId());
         if (model == null) return;
 
+        updateTabTitleAndDescriptions(updatedTab, model);
         mMediator.updateThumbnailFetcher(model, updatedTab.getId());
         mMediator.updateFaviconForTab(model, updatedTab, null, null);
+    }
+
+    private void updateTabTitleAndDescriptions(Tab updatedTab, PropertyModel model) {
+        model.set(
+                TabProperties.TITLE,
+                mMediator.getLatestTitleForTabOrGroup(updatedTab, model, /* useDefault= */ true));
+        mMediator.updateDescriptionString(model);
+        mMediator.updateActionButtonDescriptionString(updatedTab, model);
     }
 
     /**

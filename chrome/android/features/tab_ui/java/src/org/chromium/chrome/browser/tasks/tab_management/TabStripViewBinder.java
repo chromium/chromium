@@ -108,6 +108,8 @@ class TabStripViewBinder {
                 notificationView.setVisibility(View.GONE);
             }
             setContentDescription(view, model);
+        } else if (TabProperties.TITLE == propertyKey) {
+            setContentDescription(view, model);
         }
     }
 

@@ -137,6 +137,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.components.tabs.TabAlert;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -1779,10 +1780,8 @@ public class TabListMediator implements TabListNotificationHandler {
                 getTabContextClickListener(tabActionState));
         model.set(TabProperties.TAB_HOVER_LISTENER, mTabListConfig.tabHoverListener);
 
-        if (mTabActionState != TabActionState.SELECTABLE) {
-            updateDescriptionString(model);
-            updateActionButtonDescriptionString(tab, model);
-        }
+        updateDescriptionString(model);
+        updateActionButtonDescriptionString(tab, model);
     }
 
     private void bindTabGroupActionStateProperties(
@@ -2084,7 +2083,9 @@ public class TabListMediator implements TabListNotificationHandler {
      * @param model The {@link PropertyModel} representing the tab or group card.
      */
     void updateDescriptionString(PropertyModel model) {
-        if (!mTabListConfig.supportsTabGroups) return;
+        if (!mTabListConfig.supportsTabGroups || mTabActionState == TabActionState.SELECTABLE) {
+            return;
+        }
         TextResolver contentDescriptionResolver =
                 (context) -> {
                     TabModel tabModel = getCurrentTabModelChecked();
@@ -2231,6 +2232,8 @@ public class TabListMediator implements TabListNotificationHandler {
      * @param model The {@link PropertyModel} representing the tab or group card.
      */
     void updateActionButtonDescriptionString(Tab tab, PropertyModel model) {
+        if (mTabActionState == TabActionState.SELECTABLE) return;
+
         Token tabGroupId = model.get(TabProperties.TAB_GROUP_HEADER_ID);
         if (tabGroupId != null) {
             model.set(
@@ -2293,6 +2296,12 @@ public class TabListMediator implements TabListNotificationHandler {
     private String getTabTitleOrUrl(Tab tab) {
         String title = tab.getTitle();
         if (TextUtils.isEmpty(title)) {
+            WebContents webContents = tab.getWebContents();
+            if (webContents != null
+                    && !webContents.isDestroyed()
+                    && webContents.getNavigationController().isInitialNavigation()) {
+                return "";
+            }
             String url = tab.getUrl().getSpec();
             return TextUtils.isEmpty(url) ? "" : url;
         }
@@ -2302,14 +2311,15 @@ public class TabListMediator implements TabListNotificationHandler {
     /**
      * Returns the latest title for the given tab or its tab group. If the tab is in a group (and
      * the layout supports groups), this returns the title of the tab group. If the tab is a single
-     * tab and its title is empty, it falls back to the tab's URL.
+     * tab and its title is empty, returns an empty string while the tab's {@link WebContents} is on
+     * its initial navigation, or falls back to the tab's URL otherwise.
      *
      * @param tab The tab to get the title for.
      * @param model The {@link PropertyModel} associated with the tab or tab group. If null, group
      *     status is determined from the tab and layout type.
      * @param useDefault Whether to use a default displayable title (e.g. "2 tabs") if the group
      *     title is empty.
-     * @return The latest title for the tab or its group, or the URL fallback.
+     * @return The latest title for the tab or its group, the URL fallback, or an empty string.
      */
     @VisibleForTesting
     String getLatestTitleForTabOrGroup(Tab tab, @Nullable PropertyModel model, boolean useDefault) {
