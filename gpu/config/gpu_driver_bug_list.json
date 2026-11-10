@@ -12,18 +12,6 @@
       ]
     },
     {
-      "id": 21,
-      "description": "Vivante GPUs are buggy with context switching",
-      "cr_bugs": [179250, 235935],
-      "os": {
-        "type": "android"
-      },
-      "gl_extensions": ".*GL_VIV_shader_binary.*",
-      "features": [
-        "unbind_fbo_on_context_switch"
-      ]
-    },
-    {
       "id": 22,
       "description": "Imagination drivers are buggy with context switching",
       "cr_bugs": [230896],
@@ -57,18 +45,6 @@
       },
       "features": [
         "use_virtualized_gl_contexts"
-      ]
-    },
-    {
-      "id": 43,
-      "cr_bugs": [299494],
-      "description": "Framebuffer discarding doesn't accept trivial attachments on Vivante",
-      "os": {
-        "type": "android"
-      },
-      "gl_extensions": ".*GL_VIV_shader_binary.*",
-      "features": [
-        "disable_discard_framebuffer"
       ]
     },
     {
@@ -127,18 +103,6 @@
       },
       "features": [
         "disable_d3d11"
-      ]
-    },
-    {
-      "id": 71,
-      "description": "Vivante's support of OES_standard_derivatives is buggy",
-      "cr_bugs": [368005],
-      "os": {
-        "type": "android"
-      },
-      "gl_extensions": ".*GL_VIV_shader_binary.*",
-      "disabled_extensions": [
-        "GL_OES_standard_derivatives"
       ]
     },
     {
@@ -464,19 +428,6 @@
       },
       "features": [
         "webgl_or_caps_max_texture_size_limit_4096"
-      ]
-    },
-    {
-      "id": 153,
-      "cr_bugs": [594016],
-      "description": "Vivante GC1000 with EXT_multisampled_render_to_texture fails glReadPixels",
-      "os": {
-        "type": "linux"
-      },
-      "gl_vendor": "Vivante Corporation",
-      "gl_renderer": "Vivante GC1000",
-      "disabled_extensions": [
-        "GL_EXT_multisampled_render_to_texture"
       ]
     },
     {
@@ -917,18 +868,6 @@
       ]
     },
     {
-      "id": 251,
-      "description": "Vivante GPUs shader cache breaks rendering",
-      "cr_bugs": [780498],
-      "os": {
-        "type": "android"
-      },
-      "gl_extensions": ".*GL_VIV_shader_binary.*",
-      "features": [
-        "disable_program_cache"
-      ]
-    },
-    {
       "id": 254,
       "description": "Limit MSAA quality samples to 4 and storage samples 2 on AMD Stoney",
       "cr_bugs": [875471],
@@ -1277,19 +1216,6 @@
       "gl_renderer": ".*Mali-T8.*",
       "features": [
         "prefer_draw_to_copy"
-      ]
-    },
-    {
-      "id": 313,
-      "description": "Context lost recovery often fails on PowerVR on CrOS.",
-      "cr_bugs": [1010121],
-      "os": {
-        "type": "chromeos"
-      },
-      "gl_vendor": "Imagination.*",
-      "gl_renderer": "PowerVR.*",
-      "features": [
-        "exit_on_context_lost"
       ]
     },
     {
