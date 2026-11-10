@@ -132,9 +132,6 @@ SystemPermission SystemMediaPermissionCache::GetCachedPermission(
     ContentSettingsType type) const {
   if (type == ContentSettingsType::MEDIASTREAM_CAMERA ||
       type == ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
-    // TODO(crbug.com/565332594): Measure how often camera permission is read
-    // before the initial OS check completes, rather than inferring this from
-    // kNotDetermined.
     return camera_status_.value_or(SystemPermission::kNotDetermined);
   }
   if (type == ContentSettingsType::MEDIASTREAM_MIC) {

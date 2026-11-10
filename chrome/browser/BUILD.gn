@@ -5034,6 +5034,7 @@ source_set("core_unit_tests") {
     "//chrome/browser/lifetime",
     "//chrome/browser/media/prefs",
     "//chrome/browser/metrics",
+    "//chrome/browser/permissions:test_support",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/policy",
     "//chrome/browser/search",

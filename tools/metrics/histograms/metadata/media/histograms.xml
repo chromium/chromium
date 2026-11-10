@@ -8670,6 +8670,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Win.CameraPermissionCacheInitialized"
+    enum="Boolean" expires_after="2027-05-01">
+  <owner>ilnik@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
+  <summary>
+    Records whether the permission cache has been populated by an OS camera
+    permission check. The initial check is scheduled as part of browser startup.
+    True after the check has completed and its result is stored in the cache.
+    False before that. Recorded once per call to
+    SystemMayPromptForVideoCapture() on Windows.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Win.D3DDeviceRemovedReason" enum="Hresult"
     expires_after="2027-05-10">
   <owner>ilnik@chromium.org</owner>

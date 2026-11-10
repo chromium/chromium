@@ -3900,6 +3900,10 @@ ChromeContentBrowserClient::GetGeolocationSystemPermissionManager() {
 
 #if BUILDFLAG(IS_WIN)
 bool ChromeContentBrowserClient::SystemMayPromptForVideoCapture() {
+  base::UmaHistogramBoolean(
+      "Media.VideoCapture.Win.CameraPermissionCacheInitialized",
+      system_permission_settings::HasInitializedPermissionState(
+          ContentSettingsType::MEDIASTREAM_CAMERA));
   // CanPrompt() is hard-coded to false for camera permission on Windows. So we
   // check both the allowed and denied states to determine if the system may
   // prompt.

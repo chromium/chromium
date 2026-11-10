@@ -156,6 +156,11 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/permissions/system/mock_platform_handle.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/files/file_util.h"
 #include "base/version.h"
@@ -315,6 +320,52 @@ class ChromeContentBrowserClientTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 };
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(ChromeContentBrowserClientTest, RecordsCameraPermissionCacheReadiness) {
+  using system_permission_settings::SystemPermission;
+
+  testing::StrictMock<system_permission_settings::MockPlatformHandle> handle;
+  system_permission_settings::SetInstanceForTesting(&handle);
+  base::ScopedClosureRunner reset_handle(base::BindOnce(
+      &system_permission_settings::SetInstanceForTesting, nullptr));
+  ChromeContentBrowserClient client;
+
+  struct TestCase {
+    SystemPermission permission;
+    bool cache_initialized;
+  };
+  const TestCase cases[] = {
+      {SystemPermission::kNotDetermined, false},
+      {SystemPermission::kNotDetermined, true},
+      {SystemPermission::kAllowed, true},
+      {SystemPermission::kDenied, true},
+  };
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(static_cast<int>(test_case.permission));
+    SCOPED_TRACE(test_case.cache_initialized);
+    base::HistogramTester histograms;
+    const bool allowed = test_case.permission == SystemPermission::kAllowed;
+    EXPECT_CALL(handle, HasInitializedPermissionState(
+                            ContentSettingsType::MEDIASTREAM_CAMERA))
+        .WillOnce(testing::Return(test_case.cache_initialized));
+    EXPECT_CALL(handle, IsAllowed(ContentSettingsType::MEDIASTREAM_CAMERA))
+        .WillOnce(testing::Return(allowed));
+    if (!allowed) {
+      EXPECT_CALL(handle, IsDenied(ContentSettingsType::MEDIASTREAM_CAMERA))
+          .WillOnce(testing::Return(test_case.permission ==
+                                    SystemPermission::kDenied));
+    }
+
+    EXPECT_EQ(client.SystemMayPromptForVideoCapture(),
+              test_case.permission == SystemPermission::kNotDetermined);
+    histograms.ExpectUniqueSample(
+        "Media.VideoCapture.Win.CameraPermissionCacheInitialized",
+        test_case.cache_initialized, 1);
+    testing::Mock::VerifyAndClearExpectations(&handle);
+  }
+}
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 using ChromeContentBrowserClientIsPopupBypassAllowedTest =
