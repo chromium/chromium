@@ -1136,8 +1136,9 @@ bool MenuController::OnMousePressed(SubmenuView* source,
   ScopedDeletionGuard guard(AsWeakPtr());
   // We should either have no current_mouse_event_target_, or should have a
   // pressed state stored.
-  CHECK(!current_mouse_event_target_ || current_mouse_pressed_state_,
-        base::NotFatalUntil::M163);
+  // TODO(crbug.com/583622246): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!current_mouse_event_target_ || current_mouse_pressed_state_);
 
 #if BUILDFLAG(IS_MAC)
   // Mac: If the app is inactive, the first click activates the app and keys a
