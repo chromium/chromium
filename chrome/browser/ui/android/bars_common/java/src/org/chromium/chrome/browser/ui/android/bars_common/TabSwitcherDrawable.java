@@ -189,9 +189,7 @@ public class TabSwitcherDrawable extends TintedDrawable {
         canvas.restore();
     }
 
-    /**
-     * @return The current tab count this drawable is displaying.
-     */
+    /** Returns the current tab count this drawable is displaying. */
     public int getTabCount() {
         return mTabCount;
     }
@@ -210,6 +208,7 @@ public class TabSwitcherDrawable extends TintedDrawable {
      * Update the visual state based on the number of tabs present.
      *
      * @param tabCount The number of tabs.
+     * @param incognito Whether the drawable is shown for incognito.
      */
     public void updateForTabCount(int tabCount, boolean incognito) {
         if (tabCount == mTabCount && incognito == mIncognito) return;

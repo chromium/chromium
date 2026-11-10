@@ -26,9 +26,7 @@ public interface Toolbar {
      */
     void getLocationBarContentRect(Rect outRect);
 
-    /**
-     * @return Whether any swipe gestures should be ignored for the current Toolbar state.
-     */
+    /** Returns whether any swipe gestures should be ignored for the current Toolbar state. */
     boolean shouldIgnoreSwipeGesture();
 
     /**
@@ -62,9 +60,7 @@ public interface Toolbar {
      */
     void setTextureCaptureMode(boolean textureMode);
 
-    /**
-     * @return Whether a dirty check for invalidation makes sense at this time.
-     */
+    /** Returns whether a dirty check for invalidation makes sense at this time. */
     CaptureReadinessResult isReadyForTextureCapture();
 
     /**
@@ -81,14 +77,10 @@ public interface Toolbar {
      */
     void disableMenuButton();
 
-    /**
-     * @return The {@link ProgressBar} this layout uses.
-     */
+    /** Returns the {@link ProgressBar} this layout uses. */
     ToolbarProgressBar getProgressBar();
 
-    /**
-     * @return The primary color to use for the background drawable.
-     */
+    /** Returns the primary color to use for the background drawable. */
     int getPrimaryColor();
 
     /**

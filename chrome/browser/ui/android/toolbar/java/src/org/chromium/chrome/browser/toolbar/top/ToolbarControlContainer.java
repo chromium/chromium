@@ -654,6 +654,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     /**
      * @param toolbar The toolbar contained inside this control container. Should be called after
      *     inflation is complete.
+     * @param toolbarView The toolbar's {@link ViewGroup}.
      * @param isIncognito Whether the toolbar should be initialized with incognito colors.
      * @param constraintsSupplier Used to access current constraints of the browser controls.
      * @param tabSupplier Used to access the current tab state.
@@ -662,6 +663,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
      *     captures are stale and not able to be taken.
      * @param layoutStateProviderSupplier Used to check the current layout type.
      * @param fullscreenManager Used to check whether in fullscreen.
+     * @param toolbarDataProvider The provider for toolbar data.
+     * @param desktopWindowStateManager The {@link DesktopWindowStateManager} instance.
      * @param topControlsStacker Used to access top controls state.
      */
     @Initializer
@@ -917,6 +920,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
          * @param controlContainerIsVisibleSupplier Whether the toolbar is visible.
          * @param layoutStateProviderSupplier Used to check the current layout type.
          * @param fullscreenManager Used to check whether in fullscreen.
+         * @param toolbarDataProvider The provider for toolbar data.
          * @param topControlsStacker Used to access top controls state.
          */
         @Initializer
@@ -1042,10 +1046,12 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         }
 
         /**
-         * @return Whether a dirty check for invalidation makes sense at this time.
-         *     <p>False if either the toolbar is not dirty, or the toolbar is dirty but a capture
-         *     isn't required at this moment (see {@link TopToolbarBlockCaptureReason})
-         *     <p>True if the toolbar is dirty and a new capture is needed.
+         * Returns whether a dirty check for invalidation makes sense at this time.
+         *
+         * <p>False if either the toolbar is not dirty, or the toolbar is dirty but a capture isn't
+         * required at this moment (see {@link TopToolbarBlockCaptureReason}).
+         *
+         * <p>True if the toolbar is dirty and a new capture is needed.
          */
         private boolean checkCaptureReadinessResult() {
             CaptureReadinessResult isReadyResult =
@@ -1340,9 +1346,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 : BelowToolbarTouchArea.NOT_APPLICABLE;
     }
 
-    /**
-     * @return Whether or not the toolbar container is fully visible on screen.
-     */
+    /** Returns whether or not the toolbar container is fully visible on screen. */
     private boolean isToolbarContainerFullyVisible() {
         return mToolbarContainer.getVisibility() == VISIBLE;
     }
@@ -1358,8 +1362,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     }
 
     /**
-     * @return The height of the screenshot of the toolbar (may include the tabstrip on large form
-     *     factors.)
+     * Returns the height of the screenshot of the toolbar (may include the tabstrip on large form
+     * factors.)
      */
     public int getToolbarCaptureHeight() {
         return mToolbarCaptureSize.height();

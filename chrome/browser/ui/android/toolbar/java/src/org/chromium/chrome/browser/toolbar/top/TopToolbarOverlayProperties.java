@@ -48,8 +48,8 @@ public class TopToolbarOverlayProperties {
     public static final WritableFloatPropertyKey X_OFFSET = new WritableFloatPropertyKey();
 
     /**
-     * The current x offset of the top toolbar. This is used when |LEGACY_CONTENT_OFFSET| is not
-     * set.
+     * The current y offset of the top toolbar. This is used when {@code LEGACY_CONTENT_OFFSET} is
+     * not set.
      */
     public static final WritableFloatPropertyKey Y_OFFSET = new WritableFloatPropertyKey();
 

@@ -61,14 +61,10 @@ public class ActionModeController {
          */
         void setControlTopMargin(int margin);
 
-        /**
-         * @return The top margin of the control container.
-         */
+        /** Returns the top margin of the control container. */
         int getControlTopMargin();
 
-        /**
-         * @return The action bar that will be animated in and out.
-         */
+        /** Returns the action bar that will be animated in and out. */
         @Nullable ActionBar getSupportActionBar();
 
         /**
@@ -83,6 +79,7 @@ public class ActionModeController {
      * Creates the {@link ActionModeController} and ties it to an action bar using the given action
      * bar delegate.
      *
+     * @param context The Android {@link Context}.
      * @param actionBarDelegate The delegate for communicating with toolbar for animation.
      * @param toolbarActionModeCallback The callback for communicating action mode changes.
      * @param tabStripHeightSupplier Supplier for the tab strip height.
@@ -99,23 +96,17 @@ public class ActionModeController {
         mTabStripHeightSupplier = tabStripHeightSupplier;
     }
 
-    /**
-     * @return The delegate handling action bar positioning for the custom action bar.
-     */
+    /** Returns the delegate handling action bar positioning for the custom action bar. */
     public ActionBarDelegate getActionBarDelegate() {
         return mActionBarDelegate;
     }
 
-    /**
-     * @return The custom ActionMode.Callback.
-     */
+    /** Returns the custom ActionMode.Callback. */
     public ToolbarActionModeCallback getActionModeCallback() {
         return mToolbarActionModeCallback;
     }
 
-    /**
-     * @return The current action bar height.
-     */
+    /** Returns the current action bar height. */
     private int queryCurrentActionBarHeight() {
         ActionBar actionBar = mActionBarDelegate.getSupportActionBar();
         if (actionBar != null) return actionBar.getHeight();

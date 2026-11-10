@@ -732,9 +732,9 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     /**
-     * @return True if layout bar's unfocused width has changed, potentially causing updates to
-     *     visual elements. If this happens during measurement pass, then toolbar's layout needs to
-     *     be remeasured.
+     * Returns true if the location bar's unfocused width has changed, potentially causing updates
+     * to visual elements. If this happens during measurement pass, then toolbar's layout needs to
+     * be remeasured.
      */
     private boolean updateUnfocusedLocationBarLayoutParams() {
         int leftViewBounds = getViewBoundsLeftOfLocationBar(mVisualState);
@@ -751,9 +751,7 @@ public class ToolbarPhone extends ToolbarLayout
         return false;
     }
 
-    /**
-     * @return The background drawable for the toolbar view.
-     */
+    /** Returns the background drawable for the toolbar view. */
     @VisibleForTesting
     public ColorDrawable getBackgroundDrawable() {
         return mToolbarBackground;
@@ -870,7 +868,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     /**
-     * @return The left bounds of the location bar after accounting for any visible left buttons.
+     * Returns the left bounds of the location bar after accounting for any visible left buttons.
      */
     private int getBoundsAfterAccountingForLeftButton() {
         int padding = mToolbarSidePaddingForNtp;
@@ -908,7 +906,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     /**
-     * @return The right bounds of the location bar after accounting for any visible right buttons.
+     * Returns the right bounds of the location bar after accounting for any visible right buttons.
      */
     private int getBoundsAfterAccountingForRightButtons() {
         int toolbarButtonsContainerWidth = mToolbarButtonsContainer.getMeasuredWidth();
@@ -1138,9 +1136,7 @@ public class ToolbarPhone extends ToolbarLayout
         createAndRunFocusAnimatorRefactored(/* hasFocus= */ false);
     }
 
-    /**
-     * @return True if the toolbar is showing tab switcher assets, including during transitions.
-     */
+    /** Returns true if the toolbar is showing tab switcher assets, including during transitions. */
     public boolean isInTabSwitcherMode() {
         return mTabSwitcherState != STATIC_TAB;
     }
@@ -1184,8 +1180,8 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     /**
-     * @return The left drawing position for the location bar background when the location bar has
-     *     focus.
+     * Returns the left drawing position for the location bar background when the location bar has
+     * focus.
      */
     private int getFocusedLeftPositionOfLocationBarBackground() {
         return mToolbarSidePadding;
@@ -1208,9 +1204,9 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     /**
-     * @return The difference in the location bar width when the optional button is hidden rather
-     *     than showing. This is effectively the width of the optional button with some adjustment
-     *     to account for possible padding differences when the button visibility changes.
+     * Returns the difference in the location bar width when the optional button is hidden rather
+     * than shown. This is effectively the width of the optional button with some adjustment to
+     * account for possible padding differences when the button visibility changes.
      */
     @VisibleForTesting
     @NullUnmarked
@@ -1226,8 +1222,8 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     /**
-     * @return The right drawing position for the location bar background when the location bar has
-     *     focus.
+     * Returns the right drawing position for the location bar background when the location bar has
+     * focus.
      */
     private int getFocusedRightPositionOfLocationBarBackground() {
         return getWidth() - mToolbarSidePadding;
@@ -1285,9 +1281,7 @@ public class ToolbarPhone extends ToolbarLayout
         updateLocationBarLayoutForExpansionAnimation();
     }
 
-    /**
-     * @return The visibility for {@link #mToolbarButtonsContainer}.
-     */
+    /** Returns the visibility for {@link #mToolbarButtonsContainer}. */
     private int getToolbarButtonVisibility() {
         return (mUrlExpansionFraction == 1f) ? INVISIBLE : VISIBLE;
     }
@@ -1791,8 +1785,8 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     /**
-     * @return Whether or not the location bar should be drawing at any particular state of the
-     *     toolbar.
+     * Returns whether or not the location bar should be drawing at any particular state of the
+     * toolbar.
      */
     private boolean shouldDrawLocationBar() {
         // The location bar should have alpha or clip+translation when its not supposed to be
@@ -1949,8 +1943,8 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     /**
-     * @return Whether the location bar background should be drawn in {@link
-     *     #drawLocationBar(Canvas, long)}.
+     * Returns whether the location bar background should be drawn in {@link
+     * #drawLocationBar(Canvas, long)}.
      */
     private boolean shouldDrawLocationBarBackground() {
         return (mLocationBar.getPhoneCoordinator().getAlpha() > 0
@@ -3122,9 +3116,7 @@ public class ToolbarPhone extends ToolbarLayout
         return !isLocationBarShownInNtp() || mUrlExpansionFraction > 0;
     }
 
-    /**
-     * @return Whether the toolbar hairline should be drawn.
-     */
+    /** Returns whether the toolbar hairline should be drawn. */
     @Override
     protected boolean shouldDrawHairline() {
         // TODO(twellington): Move this hairline state information to ToolbarDataProvider and show
@@ -3220,9 +3212,7 @@ public class ToolbarPhone extends ToolbarLayout
         return VisualState.NORMAL;
     }
 
-    /**
-     * @return The color that progress bar should use.
-     */
+    /** Returns the color that progress bar should use. */
     private @ColorInt int getProgressBarColor() {
         return getToolbarDataProvider().getPrimaryColor();
     }
@@ -3781,9 +3771,7 @@ public class ToolbarPhone extends ToolbarLayout
         // behavior is fixed.
     }
 
-    /**
-     * @return The height of the background drawable for the location bar.
-     */
+    /** Returns the height of the background drawable for the location bar. */
     public int getLocationBarBackgroundHeightForTesting() {
         return (mLocationBarBackgroundBounds.bottom + mLocationBarBackgroundNtpOffset.bottom)
                 - (mLocationBarBackgroundBounds.top + mLocationBarBackgroundNtpOffset.top);

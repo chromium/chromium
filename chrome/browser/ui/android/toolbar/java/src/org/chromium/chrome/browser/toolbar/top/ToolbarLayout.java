@@ -158,6 +158,7 @@ public abstract class ToolbarLayout extends FrameLayout
      * @param toolbarDataProvider The provider for toolbar data.
      * @param tabController The controller that handles interactions with the tab.
      * @param menuButtonCoordinator Coordinator for interacting with the MenuButton.
+     * @param tabSwitcherButtonCoordinator Coordinator for the tab switcher button.
      * @param historyDelegate Delegate used to display navigation history.
      * @param userEducationHelper Helper for user education flows.
      * @param trackerSupplier Provides a {@link Tracker} when available.
@@ -367,9 +368,7 @@ public abstract class ToolbarLayout extends FrameLayout
                 && !mToolbarHairlineSuppressed;
     }
 
-    /**
-     * @return Whether the toolbar hairline is currently externally suppressed.
-     */
+    /** Returns whether the toolbar hairline is currently externally suppressed. */
     public boolean isToolbarHairlineSuppressed() {
         return mToolbarHairlineSuppressed;
     }
@@ -518,9 +517,7 @@ public abstract class ToolbarLayout extends FrameLayout
         updateHairlineVisibility();
     }
 
-    /**
-     * @return The view containing the menu button and menu button badge.
-     */
+    /** Returns the view containing the menu button and menu button badge. */
     MenuButtonCoordinator getMenuButtonCoordinator() {
         return mMenuButtonCoordinator;
     }
@@ -533,9 +530,7 @@ public abstract class ToolbarLayout extends FrameLayout
         mMenuButtonCoordinator = menuButtonCoordinator;
     }
 
-    /**
-     * @return The {@link ProgressBar} this layout uses.
-     */
+    /** Returns the {@link ProgressBar} this layout uses. */
     protected ToolbarProgressBar getProgressBar() {
         return mProgressBar;
     }
@@ -544,16 +539,12 @@ public abstract class ToolbarLayout extends FrameLayout
         ViewUtils.getRelativeDrawPosition(containerView, this, position);
     }
 
-    /**
-     * @return Whether or not the native library is loaded and ready.
-     */
+    /** Returns whether or not the native library is loaded and ready. */
     boolean isNativeLibraryReady() {
         return mNativeLibraryReady;
     }
 
-    /**
-     * @return The provider for toolbar related data.
-     */
+    /** Returns the provider for toolbar related data. */
     public ToolbarDataProvider getToolbarDataProvider() {
         return mToolbarDataProvider;
     }
@@ -684,11 +675,8 @@ public abstract class ToolbarLayout extends FrameLayout
 
     /**
      * Called when tab switcher mode is entered or exited.
+     *
      * @param inTabSwitcherMode Whether or not tab switcher mode is being shown or hidden.
-     * @param showToolbar    Whether or not to show the normal toolbar while animating.
-     * @param delayAnimation Whether or not to delay the animation until after the transition has
-     *                       finished (which can be detected by a call to
-     *                       {@link #onTabSwitcherTransitionFinished()}).
      */
     void setTabSwitcherMode(boolean inTabSwitcherMode) {}
 
@@ -744,9 +732,7 @@ public abstract class ToolbarLayout extends FrameLayout
         return mAppMenuButtonHelper != null && mAppMenuButtonHelper.isAppMenuActive();
     }
 
-    /**
-     * @return Whether or not the url bar has focus.
-     */
+    /** Returns whether or not the url bar has focus. */
     boolean urlHasFocus() {
         return mUrlHasFocus;
     }
@@ -765,9 +751,7 @@ public abstract class ToolbarLayout extends FrameLayout
     /** Finish any toolbar animations. */
     void finishAnimations() {}
 
-    /**
-     * @return The current View showing in the Tab.
-     */
+    /** Returns the current View showing in the Tab. */
     @Nullable View getCurrentTabView() {
         Tab tab = mToolbarDataProvider.getTab();
         if (tab != null) {
@@ -805,9 +789,7 @@ public abstract class ToolbarLayout extends FrameLayout
         return mToolbarDataProvider.isOffTheRecord();
     }
 
-    /**
-     * @return {@link LocationBar} object this {@link ToolbarLayout} contains.
-     */
+    /** Returns the {@link LocationBar} object this {@link ToolbarLayout} contains. */
     @VisibleForTesting
     public abstract LocationBar getLocationBar();
 
@@ -836,9 +818,7 @@ public abstract class ToolbarLayout extends FrameLayout
     /** Hide the optional toolbar button. */
     protected void hideOptionalButton() {}
 
-    /**
-     * @return Optional button view.
-     */
+    /** Returns the optional button view. */
     public @Nullable View getOptionalButtonViewForTesting() {
         return null;
     }
@@ -998,8 +978,9 @@ public abstract class ToolbarLayout extends FrameLayout
     public void onToEdgeChange(int newTopPadding) {}
 
     /**
-     * @return The top padding most recently applied by {@link #onToEdgeChange(int)}, or 0 if this
-     *     toolbar doesn't support drawing edge-to-edge.
+     * Returns the top padding most recently applied by {@link #onToEdgeChange(int)}, or 0 if this
+     * toolbar doesn't support drawing edge-to-edge.
+     *
      * @see Toolbar#getEdgeToEdgeTopPadding()
      */
     public int getEdgeToEdgeTopPadding() {

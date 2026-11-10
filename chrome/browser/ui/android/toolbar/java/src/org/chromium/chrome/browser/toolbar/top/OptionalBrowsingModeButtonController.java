@@ -57,6 +57,7 @@ public class OptionalBrowsingModeButtonController {
      * @param buttonDataProviders List of button data providers in precedence order.
      * @param userEducationHelper Helper for displaying in-product help on a button.
      * @param toolbarLayout Toolbar layout where buttons will be displayed.
+     * @param tabSupplier Supplier of the current tab.
      */
     OptionalBrowsingModeButtonController(
             List<ButtonDataProvider> buttonDataProviders,

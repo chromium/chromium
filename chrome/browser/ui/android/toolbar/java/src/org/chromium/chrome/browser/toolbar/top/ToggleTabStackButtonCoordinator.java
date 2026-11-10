@@ -101,7 +101,10 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
      * @param promoShownOneshotSupplier Potentially delayed information about if a promo was shown.
      * @param layoutStateProviderSupplier Allows observing layout state.
      * @param activityTabSupplier Supplier of the activity tab.
-     * @param tabModelSelectorSupplier Supplier for @{@link TabModelSelector}.
+     * @param tabModelSelectorSupplier Supplier for {@link TabModelSelector}.
+     * @param themeColorProvider The {@link ThemeColorProvider} used for tinting.
+     * @param incognitoStateProvider The {@link IncognitoStateProvider} for observing incognito
+     *     state.
      */
     public ToggleTabStackButtonCoordinator(
             Context context,

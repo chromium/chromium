@@ -201,6 +201,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
      *     state.
      * @param browsingModeMenuButtonCoordinator Root component for app menu.
      * @param appMenuButtonHelperSupplier For specific handling of the app menu button.
+     * @param tabSwitcherButtonCoordinator Coordinator for the tab switcher button.
      * @param tabCountSupplier Supplier of {@link
      *     org.chromium.chrome.browser.toolbar.CustomTabCount}.
      * @param homepageEnabledSupplier Supplier of whether Home button is enabled.
@@ -219,10 +220,26 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
      *     TabStripTransitionDelegate}.
      * @param tabStripTransitionHandler TabStripTransitionHandler instance.
      * @param onLongClickListener OnLongClickListener for the toolbar.
+     * @param progressBar The {@link ProgressBar} for the toolbar.
+     * @param tabSupplier Supplier of the current tab.
+     * @param toolbarNavControlsEnabledSupplier Supplier for whether toolbar navigation controls are
+     *     enabled.
+     * @param backButtonCoordinator Coordinator for the back navigation button.
+     * @param forwardButtonCoordinator Coordinator for the forward navigation button.
      * @param homeButtonCoordinator The {@link HomeButtonCoordinator} to manage the display and
      *     behavior of the home button.
      * @param topControlsStacker The TopControlsStacker for child objects to check state from.
      * @param browserControlsVisibilityManager BrowserControlsStateProvider instance.
+     * @param incognitoWindowCountSupplier Supplier for the count of incognito windows.
+     * @param profileSupplier Supplier for the current {@link Profile}.
+     * @param omniboxStubSupplier Supplier for the {@link OmniboxStub}.
+     * @param signinAndHistorySyncActivityLauncher Launcher for signin and history sync.
+     * @param windowAndroid The {@link WindowAndroid} instance.
+     * @param activityResultTracker Tracker for activity results.
+     * @param deviceLockActivityLauncher Launcher for device lock activity.
+     * @param bottomSheetController Controller for the bottom sheet.
+     * @param modalDialogManager Manager for modal dialogs.
+     * @param snackbarManager Manager for snackbars.
      * @param onSigninTapped Runnable to be called when the signin button is tapped.
      * @param downloadButtonStateSupplier Supplies the state the download toolbar button should
      *     display.
@@ -723,16 +740,14 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         mToolbarLayout.onMenuButtonDisabled();
     }
 
-    /**
-     * @return The wrapper for the browsing mode toolbar's menu button.
-     */
+    /** Returns the wrapper for the browsing mode toolbar's menu button. */
     public @Nullable MenuButton getMenuButtonWrapper() {
         return mMenuButtonCoordinator.getMenuButton();
     }
 
     /**
-     * @return The {@link View} representing the download button on the toolbar, or null if not
-     *     inflated or unavailable.
+     * Returns the {@link View} representing the download button on the toolbar, or null if not
+     * inflated or unavailable.
      */
     public @Nullable View getDownloadButtonView() {
         return mDownloadButtonCoordinator != null
@@ -1005,9 +1020,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         mToolbarLayout.finishAnimations();
     }
 
-    /**
-     * @return {@link LocationBar} object this {@link ToolbarLayout} contains.
-     */
+    /** Returns the {@link LocationBar} object this {@link ToolbarLayout} contains. */
     public LocationBar getLocationBar() {
         return mToolbarLayout.getLocationBar();
     }
@@ -1332,9 +1345,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                 && Boolean.TRUE.equals(mIsGlicPinnedSupplier.get());
     }
 
-    /**
-     * @return The {@link View} representing the Glic action chip on the toolbar.
-     */
+    /** Returns the {@link View} representing the Glic action chip on the toolbar. */
     public @Nullable View getGlicActionChipView() {
         if (mToolbarLayout instanceof ToolbarTablet tabletLayout) {
             return tabletLayout.getGlicActionChipView();
