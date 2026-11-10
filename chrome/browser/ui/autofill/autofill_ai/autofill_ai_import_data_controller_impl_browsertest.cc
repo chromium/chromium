@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -339,6 +340,43 @@ IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
   EXPECT_EQ(
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       GURL(chrome::kWalletPassesPageURL));
+}
+
+class AutofillAiImportDataControllerImplWalletPrivatePassesTest
+    : public AutofillAiImportDataControllerImplTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillAiWalletPrivatePasses};
+};
+
+// Tests that accepting the save prompt of a Wallet entity reports the string
+// IDs of all text shown in the notice.
+IN_PROC_BROWSER_TEST_F(
+    AutofillAiImportDataControllerImplWalletPrivatePassesTest,
+    AcceptPrompt_SaveWalletEntityConsentStringIds) {
+  base::test::TestFuture<AutofillClient::AutofillAiBubbleResult,
+                         std::optional<EntityInstance>,
+                         const AutofillClient::EntityImportUIContext&>
+      prompt_result_future;
+  controller()->ShowPrompt(
+      test::GetPassportEntityInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet}),
+      std::nullopt, /*close_on_accept=*/true, /*legal_message_lines=*/{},
+      prompt_result_future.GetCallback());
+  ASSERT_TRUE(controller()->IsShowingBubble());
+  auto* bubble = static_cast<AutofillAiImportDataBubbleView*>(bubble_view());
+  views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
+      bubble->GetWidget());
+
+  bubble->AcceptDialog();
+
+  ASSERT_TRUE(prompt_result_future.IsReady());
+  EXPECT_THAT(
+      std::get<2>(prompt_result_future.Get()).accepted_consent_string_ids,
+      ElementsAre(IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW,
+                  IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+                  IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK));
+  widget_destroyed_waiter.Wait();
 }
 
 // Tests that accepting a prompt that closes on accept keeps the bubble marked

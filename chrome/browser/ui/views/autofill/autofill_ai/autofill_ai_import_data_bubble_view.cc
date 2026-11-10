@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_string_utils.h"
 #include "chrome/browser/ui/views/autofill/autofill_ai/autofill_ai_bubble_utils.h"
 #include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
@@ -220,34 +221,8 @@ AutofillAiImportDataBubbleView::GetLocalEntitySubtitle() const {
 
 std::unique_ptr<views::StyledLabel>
 AutofillAiImportDataBubbleView::GetWalletableEntitySubtitle() const {
-  std::vector<size_t> offsets;
-  std::u16string formatted_text;
-  gfx::Range link_range;
-
-  const std::u16string google_wallet_text =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
-  const std::u16string account_email = controller_->GetPrimaryAccountEmail();
-
-  if (controller_->IsSavePrompt() &&
-      base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
-    const std::u16string manage_info_text =
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK);
-
-    formatted_text =
-        l10n_util::GetStringFUTF16(controller_->GetNoticeStringId(),
-                                   {google_wallet_text, manage_info_text,
-                                    google_wallet_text, account_email},
-                                   &offsets);
-
-    link_range = gfx::Range(offsets[1], offsets[1] + manage_info_text.size());
-
-  } else {
-    formatted_text = l10n_util::GetStringFUTF16(
-        controller_->GetNoticeStringId(), {google_wallet_text, account_email},
-        &offsets);
-
-    link_range = gfx::Range(offsets[0], offsets[0] + google_wallet_text.size());
-  }
+  WalletImportPromptNotice notice = GetWalletImportPromptNotice(
+      controller_->GetNoticeStringId(), controller_->GetPrimaryAccountEmail());
 
   auto go_to_wallet =
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
@@ -256,12 +231,12 @@ AutofillAiImportDataBubbleView::GetWalletableEntitySubtitle() const {
   go_to_wallet.text_style = views::style::STYLE_LINK_4;
 
   return views::Builder<views::StyledLabel>()
-      .SetText(std::move(formatted_text))
+      .SetText(std::move(notice.text))
       .SetDefaultTextStyle(views::style::STYLE_BODY_4)
       .SetDefaultEnabledColorId(ui::kColorSysOnSurfaceSubtle)
       .SetAccessibleRole(ax::mojom::Role::kDetails)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-      .AddStyleRange(link_range, go_to_wallet)
+      .AddStyleRange(notice.wallet_link_range, go_to_wallet)
       .Build();
 }
 

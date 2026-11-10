@@ -11,6 +11,7 @@ source_set("autofill_ai_ui_utils") {
   public_deps = [
     "//components/autofill/core/browser",
     "//ui/base",
+    "//ui/gfx/range",
   ]
 }
 
