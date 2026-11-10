@@ -121,3 +121,21 @@ fn test_equality_and_ordering() {
         expect_false!(win_set.contains(&diff_case_rest));
     }
 }
+
+#[gtest(FilePathRustTest, StripTrailingSeparators)]
+fn test_strip_trailing_separators() {
+    use file_path::ffi::FilePath;
+
+    let path_no_slash = FilePath::from_path(Path::new("/foo/bar"));
+    let path_with_slash = FilePath::from_path(Path::new("/foo/bar/"));
+    let path_with_multi_slash = FilePath::from_path(Path::new("/foo/bar///"));
+
+    expect_eq!(*path_no_slash, *path_no_slash.strip_trailing_separators());
+    expect_eq!(*path_no_slash, *path_with_slash.strip_trailing_separators());
+    expect_eq!(*path_no_slash, *path_with_multi_slash.strip_trailing_separators());
+
+    // Stripping root paths preserves a single separator.
+    let root = FilePath::from_path(Path::new("/"));
+    let multi_root = FilePath::from_path(Path::new("////"));
+    expect_eq!(*root, *multi_root.strip_trailing_separators());
+}

@@ -23,6 +23,8 @@ std::unique_ptr<FilePath> CreateFilePathFromBytes(
 ::rust::Slice<const uint8_t> FilePathToBytes(const FilePath& path);
 #endif
 
+std::unique_ptr<FilePath> StripTrailingSeparators(const FilePath& path);
+
 }  // namespace base::rust::file_path
 
 #endif  // BASE_FILES_FILE_PATH_RUST_SHIM_H_

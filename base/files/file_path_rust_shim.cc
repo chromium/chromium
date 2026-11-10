@@ -35,4 +35,8 @@ std::unique_ptr<FilePath> CreateFilePathFromBytes(
 }
 #endif
 
+std::unique_ptr<FilePath> StripTrailingSeparators(const FilePath& path) {
+  return std::make_unique<FilePath>(path.StripTrailingSeparators());
+}
+
 }  // namespace base::rust::file_path

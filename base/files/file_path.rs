@@ -24,6 +24,9 @@ pub mod ffi {
         fn CreateFilePathFromWide(wide: &[u16]) -> UniquePtr<FilePath>;
         #[cfg(target_family = "windows")]
         fn FilePathToWide(path: &FilePath) -> &[u16];
+
+        #[rust_name = "strip_trailing_separators"]
+        fn StripTrailingSeparators(path: &FilePath) -> UniquePtr<FilePath>;
     }
 }
 
@@ -83,6 +86,10 @@ impl ffi::FilePath {
     #[cfg(unix)]
     pub fn as_path(&self) -> &Path {
         Path::new(self.as_os_str())
+    }
+
+    pub fn strip_trailing_separators(&self) -> UniquePtr<Self> {
+        ffi::strip_trailing_separators(self)
     }
 
     /// Borrows `FilePath::value()` directly from C++ as a byte slice (no copy).
