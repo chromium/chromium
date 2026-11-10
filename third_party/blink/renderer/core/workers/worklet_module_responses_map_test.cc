@@ -45,14 +45,14 @@ class WorkletModuleResponsesMapTest : public PageTestBase {
     PageTestBase::SetUp();
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     auto* context = MakeGarbageCollected<MockFetchContext>();
-    fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-        properties->MakeDetachable(), context,
-        scheduler::GetSingleThreadTaskRunnerForTesting(),
-        scheduler::GetSingleThreadTaskRunnerForTesting(),
-        MakeGarbageCollected<TestLoaderFactory>(
-            platform_->GetURLLoaderMockFactory()),
-        MakeGarbageCollected<MockContextLifecycleNotifier>(),
-        nullptr /* back_forward_cache_loader_helper */));
+    fetcher_ = MakeGarbageCollected<ResourceFetcher>(
+        ResourceFetcherInit(properties->MakeDetachable(), context,
+                            scheduler::GetSingleThreadTaskRunnerForTesting(),
+                            scheduler::GetSingleThreadTaskRunnerForTesting(),
+                            MakeGarbageCollected<TestLoaderFactory>(
+                                platform_->GetURLLoaderMockFactory()),
+                            context_lifecycle_notifier_.Notifier(),
+                            nullptr /* back_forward_cache_loader_helper */));
 
     reporting_proxy_ = std::make_unique<MockWorkerReportingProxy>();
     auto creation_params = std::make_unique<GlobalScopeCreationParams>(
@@ -133,6 +133,7 @@ class WorkletModuleResponsesMapTest : public PageTestBase {
   const scoped_refptr<const SecurityOrigin> security_origin_;
   std::unique_ptr<MockWorkerReportingProxy> reporting_proxy_;
   Persistent<WorkletGlobalScope> global_scope_;
+  ScopedMockContextLifecycleNotifier context_lifecycle_notifier_;
   Persistent<ResourceFetcher> fetcher_;
   const scoped_refptr<scheduler::FakeTaskRunner> task_runner_;
 };
