@@ -1188,6 +1188,7 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
   void ApplySocketTag(const SocketTag& tag) override;
   void SetMsgConfirm(bool confirm) override {}
   DscpAndEcn GetLastTos() const override;
+  void AllowEmulatedConnect(bool allow) override;
 
   // AsyncSocket implementation.
   void OnReadComplete(const MockRead& data) override;
@@ -1199,6 +1200,30 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
   uint16_t source_port() const { return source_port_; }
   void set_source_host(IPAddress addr) { source_host_ = addr; }
   IPAddress source_host() const { return source_host_; }
+  bool allow_emulated_connect() const { return allow_emulated_connect_; }
+  bool read_completed() const { return read_completed_; }
+
+  // Direct calls to MockUDPClientSocket::GetLocalAddress() fail the test via
+  // EXPECT_TRUE(read_completed_) if AllowEmulatedConnect(true) was called and
+  // no read has completed yet, in order to catch production callers that
+  // violate the UDPSocketPosix::GetLocalAddress() precondition.
+  //
+  // However, test helpers such as MockCryptoClientStream::CryptoConnect() need
+  // to opportunistically query the local address via a
+  // `const DatagramClientSocket*` when one is available, without failing the
+  // test if the socket is using emulated connect and has not yet completed a
+  // read. Because `socket` may point to another DatagramClientSocket
+  // implementation (such as QuicProxyDatagramClientSocket or
+  // FuzzedDatagramClientSocket) and RTTI is disabled, callers cannot safely
+  // downcast `socket` to `MockUDPClientSocket*` to check
+  // `allow_emulated_connect()` and `read_completed()` first.
+  //
+  // This helper suppresses the EXPECT_TRUE(read_completed_) assertion while
+  // calling `socket->GetLocalAddress(address)` through virtual dispatch,
+  // returning ERR_SOCKET_NOT_CONNECTED if the local address is not yet
+  // available.
+  static int GetLocalAddressIfAvailable(const DatagramClientSocket* socket,
+                                        IPEndPoint* address);
 
   // Returns last tag applied to socket.
   SocketTag tag() const { return tag_; }
@@ -1217,6 +1242,8 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
 
   void RunCallbackAsync(CompletionOnceCallback callback, int result);
   void RunCallback(CompletionOnceCallback callback, int result);
+  void RunReadCallbackAsync(CompletionOnceCallback callback, int result);
+  void RunReadCallback(CompletionOnceCallback callback, int result);
   void RunDatagramsCallback(
       base::OnceCallback<void(base::expected<DatagramsMetadata, Error>)>
           callback,
@@ -1227,6 +1254,8 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
       base::expected<DatagramsMetadata, Error> result);
 
   bool connected_ = false;
+  bool allow_emulated_connect_ = false;
+  bool read_completed_ = false;
   raw_ptr<SocketDataProvider> data_;
   int read_offset_ = 0;
   MockRead read_data_;

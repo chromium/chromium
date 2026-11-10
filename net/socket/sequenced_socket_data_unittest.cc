@@ -1469,6 +1469,109 @@ TEST_F(TestWithTaskEnvironment,
   EXPECT_EQ(result.value()[0].offset, 0u);
 }
 
+// With AllowEmulatedConnect(true), the local address is not available until an
+// asynchronous Read() has completed.
+TEST_F(TestWithTaskEnvironment, MockUDPClientSocket_EmulatedConnect_AsyncRead) {
+  MockRead reads[] = {
+      MockRead(ASYNC, 0, "packet1"),
+  };
+
+  SequencedSocketData data(reads, base::span<const MockWrite>());
+  MockUDPClientSocket socket(&data, nullptr);
+  socket.AllowEmulatedConnect(true);
+
+  IPEndPoint peer_addr(IPAddress::IPv4Localhost(), 80);
+  ASSERT_THAT(socket.Connect(peer_addr), IsOk());
+
+  IPEndPoint local_addr;
+  EXPECT_THAT(
+      MockUDPClientSocket::GetLocalAddressIfAvailable(&socket, &local_addr),
+      IsError(ERR_SOCKET_NOT_CONNECTED));
+
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(100);
+  TestCompletionCallback callback;
+  ASSERT_THAT(
+      socket.Read(read_buf.get(), read_buf->size(), callback.callback()),
+      IsError(ERR_IO_PENDING));
+  EXPECT_FALSE(socket.read_completed());
+
+  EXPECT_EQ(callback.WaitForResult(), 7);
+  EXPECT_TRUE(socket.read_completed());
+  EXPECT_THAT(socket.GetLocalAddress(&local_addr), IsOk());
+}
+
+// With AllowEmulatedConnect(true), a synchronous ReadMultiple() makes the local
+// address available.
+TEST_F(TestWithTaskEnvironment,
+       MockUDPClientSocket_EmulatedConnect_ReadMultiple) {
+  MockRead reads[] = {
+      MockRead(SYNCHRONOUS, 0, "packet1"),
+  };
+
+  SequencedSocketData data(reads, base::span<const MockWrite>());
+  MockUDPClientSocket socket(&data, nullptr);
+  socket.AllowEmulatedConnect(true);
+
+  IPEndPoint peer_addr(IPAddress::IPv4Localhost(), 80);
+  ASSERT_THAT(socket.Connect(peer_addr), IsOk());
+
+  constexpr size_t kMaxPacketSize = 1000;
+  constexpr size_t kBufLen = 2 * kMaxPacketSize;
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kBufLen);
+
+  base::expected<DatagramsMetadata, Error> result = socket.ReadMultiple(
+      read_buf.get(), kBufLen, kMaxPacketSize, base::DoNothing());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(socket.read_completed());
+
+  IPEndPoint local_addr;
+  EXPECT_THAT(socket.GetLocalAddress(&local_addr), IsOk());
+}
+
+// With AllowEmulatedConnect(true), a failed Read() does not make the local
+// address available.
+TEST_F(TestWithTaskEnvironment,
+       MockUDPClientSocket_EmulatedConnect_FailedRead) {
+  MockRead reads[] = {
+      MockRead(SYNCHRONOUS, ERR_CONNECTION_REFUSED, 0),
+  };
+
+  SequencedSocketData data(reads, base::span<const MockWrite>());
+  MockUDPClientSocket socket(&data, nullptr);
+  socket.AllowEmulatedConnect(true);
+
+  IPEndPoint peer_addr(IPAddress::IPv4Localhost(), 80);
+  ASSERT_THAT(socket.Connect(peer_addr), IsOk());
+
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(100);
+  EXPECT_THAT(socket.Read(read_buf.get(), read_buf->size(), base::DoNothing()),
+              IsError(ERR_CONNECTION_REFUSED));
+  EXPECT_FALSE(socket.read_completed());
+
+  IPEndPoint local_addr;
+  EXPECT_THAT(
+      MockUDPClientSocket::GetLocalAddressIfAvailable(&socket, &local_addr),
+      IsError(ERR_SOCKET_NOT_CONNECTED));
+}
+
+// With AllowEmulatedConnect(true), calling GetLocalAddress() directly before a
+// read has completed fails the test.
+TEST_F(TestWithTaskEnvironment,
+       MockUDPClientSocket_EmulatedConnect_GetLocalAddressBeforeRead) {
+  SequencedSocketData data;
+  MockUDPClientSocket socket(&data, nullptr);
+  socket.AllowEmulatedConnect(true);
+
+  IPEndPoint peer_addr(IPAddress::IPv4Localhost(), 80);
+  ASSERT_THAT(socket.Connect(peer_addr), IsOk());
+
+  IPEndPoint local_addr;
+  int rv = OK;
+  EXPECT_NONFATAL_FAILURE(rv = socket.GetLocalAddress(&local_addr),
+                          "GetLocalAddress() called before a Read()");
+  EXPECT_THAT(rv, IsError(ERR_SOCKET_NOT_CONNECTED));
+}
+
 }  // namespace
 
 }  // namespace net

@@ -1178,5 +1178,16 @@ BASE_FEATURE(kPostHandshakeIpPoolingAllEndpoints,
 BASE_FEATURE(kProactiveIpPoolingForInFlightJobs,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-}  // namespace net::features
+BASE_FEATURE(kPosixUdpEmulatedConnect, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(bool,
+                   kPosixUdpEmulatedConnectForDns,
+                   &kPosixUdpEmulatedConnect,
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kPosixUdpEmulatedConnectForQuic,
+                   &kPosixUdpEmulatedConnect,
+                   false);
+
+}  // namespace net::features

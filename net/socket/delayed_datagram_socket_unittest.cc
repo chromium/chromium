@@ -1084,6 +1084,19 @@ TEST_F(DelayedDatagramSocketTest, PassthroughMethodsDelegate) {
   (void)socket->GetBoundNetwork();
 }
 
+TEST_F(DelayedDatagramSocketTest, AllowEmulatedConnectDelegates) {
+  StaticSocketDataProvider data;
+  auto udp_socket =
+      std::make_unique<MockUDPClientSocket>(&data, /*net_log=*/nullptr);
+  MockUDPClientSocket* inner = udp_socket.get();
+  DelayedDatagramSocket socket(std::move(udp_socket), NoDelayConfig(),
+                               /*download_throttle=*/nullptr,
+                               /*upload_throttle=*/nullptr);
+  ASSERT_FALSE(inner->allow_emulated_connect());
+  socket.AllowEmulatedConnect(true);
+  EXPECT_TRUE(inner->allow_emulated_connect());
+}
+
 TEST_F(DelayedDatagramSocketTest, ConnectUsingNetworkVariantsDelegate) {
   StaticSocketDataProvider data;
   data.set_connect_data(MockConnect(SYNCHRONOUS, OK));

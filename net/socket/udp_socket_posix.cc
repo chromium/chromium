@@ -259,6 +259,8 @@ int UDPSocketPosix::Open(AddressFamily address_family) {
   return ConfigureOpenedSocket();
 }
 
+void UDPSocketPosix::AllowEmulatedConnect(bool allow) {}
+
 int UDPSocketPosix::AdoptOpenedSocket(AddressFamily address_family,
                                       int socket) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

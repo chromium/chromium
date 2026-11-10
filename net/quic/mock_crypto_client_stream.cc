@@ -9,6 +9,7 @@
 #include "net/quic/mock_decrypter.h"
 #include "net/quic/mock_encrypter.h"
 #include "net/quic/quic_chromium_client_session.h"
+#include "net/socket/socket_test_util.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_decrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_encrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_session_base.h"
@@ -93,16 +94,16 @@ void MockCryptoClientStream::OnHandshakeMessage(
 
 bool MockCryptoClientStream::CryptoConnect() {
   DCHECK(session()->version().IsIetfQuic());
+  const DatagramClientSocket* socket =
+      static_cast<QuicChromiumClientSession*>(session())->GetDefaultSocket();
   IPEndPoint local_ip;
-  static_cast<QuicChromiumClientSession*>(session())
-      ->GetDefaultSocket()
-      ->GetLocalAddress(&local_ip);
-  session()->connection()->SetSelfAddress(ToQuicSocketAddress(local_ip));
+  if (MockUDPClientSocket::GetLocalAddressIfAvailable(socket, &local_ip) ==
+      OK) {
+    session()->connection()->SetSelfAddress(ToQuicSocketAddress(local_ip));
+  }
 
   IPEndPoint peer_ip;
-  static_cast<QuicChromiumClientSession*>(session())
-      ->GetDefaultSocket()
-      ->GetPeerAddress(&peer_ip);
+  socket->GetPeerAddress(&peer_ip);
   quic::test::QuicConnectionPeer::SetEffectivePeerAddress(
       session()->connection(), ToQuicSocketAddress(peer_ip));
 

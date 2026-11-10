@@ -1169,7 +1169,19 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPostHandshakeIpPoolingAllEndpoints);
 // resolved IP endpoints.
 NET_EXPORT BASE_DECLARE_FEATURE(kProactiveIpPoolingForInFlightJobs);
 
+// When enabled, UDP sockets skip calling connect() at the OS level for
+// performance reasons (especially on Android). Setting this feature breaks any
+// IPv4 or IPv6 connectivity checks that rely on the return value or errno of
+// connect(), so the functionality is only enabled by an explicit opt-in by the
+// socket creator.
+NET_EXPORT BASE_DECLARE_FEATURE(kPosixUdpEmulatedConnect);
+
+// Use connect emulation for DNS.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kPosixUdpEmulatedConnectForDns);
+
+// Use connect emulation for QUIC.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kPosixUdpEmulatedConnectForQuic);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
-

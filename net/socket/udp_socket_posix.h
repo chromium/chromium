@@ -324,6 +324,9 @@ class NET_EXPORT UDPSocketPosix {
   // not bound or connected to an address.
   int AdoptOpenedSocket(AddressFamily address_family, int socket);
 
+  // Sets whether connect emulation is permitted on this socket.
+  void AllowEmulatedConnect(bool allow);
+
   uint32_t get_multicast_interface_for_testing() const {
     return multicast_interface_;
   }

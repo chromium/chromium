@@ -183,6 +183,7 @@ class NET_EXPORT DelayedDatagramSocket : public DatagramClientSocket {
   void SetIOSNetworkServiceType(int ios_network_service_type) override;
   void RegisterQuicConnectionClosePayload(base::span<uint8_t> payload) override;
   void UnregisterQuicConnectionClosePayload() override;
+  void AllowEmulatedConnect(bool allow) override;
 
  private:
   struct QueuedPacket {

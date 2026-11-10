@@ -888,6 +888,10 @@ void DelayedDatagramSocket::UnregisterQuicConnectionClosePayload() {
   wrapped_socket_->UnregisterQuicConnectionClosePayload();
 }
 
+void DelayedDatagramSocket::AllowEmulatedConnect(bool allow) {
+  wrapped_socket_->AllowEmulatedConnect(allow);
+}
+
 // --- Private ---
 
 base::TimeDelta DelayedDatagramSocket::HalfRtt() const {

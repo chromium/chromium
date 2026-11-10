@@ -293,6 +293,13 @@ void UDPClientSocket::UnregisterQuicConnectionClosePayload() {
 #endif
 }
 
+void UDPClientSocket::AllowEmulatedConnect(bool allow) {
+  CHECK(!connect_called_);
+#if BUILDFLAG(IS_POSIX)
+  socket_.AllowEmulatedConnect(allow);
+#endif
+}
+
 int UDPClientSocket::AdoptOpenedSocket(AddressFamily address_family,
                                        SocketDescriptor socket) {
   int rv = socket_.AdoptOpenedSocket(address_family, socket);

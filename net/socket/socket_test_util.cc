@@ -17,6 +17,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -148,6 +149,8 @@ void RunClosureIfNonNull(base::OnceClosure closure) {
     std::move(closure).Run();
   }
 }
+
+bool g_allow_get_local_address_before_read = false;
 
 }  // namespace
 
@@ -1894,6 +1897,9 @@ base::expected<DatagramsMetadata, Error> MockUDPClientSocket::ReadMultiple(
   }
 
   ClearPendingReadState();
+  if (!datagrams.empty()) {
+    read_completed_ = true;
+  }
   return datagrams;
 }
 
@@ -1949,6 +1955,8 @@ int MockUDPClientSocket::SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) {
 
 void MockUDPClientSocket::Close() {
   connected_ = false;
+  read_completed_ = false;
+  allow_emulated_connect_ = false;
 }
 
 int MockUDPClientSocket::GetPeerAddress(IPEndPoint* address) const {
@@ -1964,6 +1972,16 @@ int MockUDPClientSocket::GetPeerAddress(IPEndPoint* address) const {
 }
 
 int MockUDPClientSocket::GetLocalAddress(IPEndPoint* address) const {
+  if (allow_emulated_connect_) {
+    if (!g_allow_get_local_address_before_read) {
+      EXPECT_TRUE(read_completed_)
+          << "GetLocalAddress() called before a Read() or ReadMultiple() "
+             "completed with AllowEmulatedConnect()";
+    }
+    if (!read_completed_) {
+      return ERR_SOCKET_NOT_CONNECTED;
+    }
+  }
   *address = IPEndPoint(source_host_, source_port_);
   return OK;
 }
@@ -2199,8 +2217,12 @@ int MockUDPClientSocket::CompleteRead() {
 
   if (read_data_.mode == ASYNC) {
     DCHECK(!callback.is_null());
-    RunCallbackAsync(std::move(callback), result);
+    RunReadCallbackAsync(std::move(callback), result);
     return ERR_IO_PENDING;
+  }
+
+  if (result >= 0) {
+    read_completed_ = true;
   }
   return result;
 }
@@ -2227,9 +2249,29 @@ void MockUDPClientSocket::RunCallback(CompletionOnceCallback callback,
   std::move(callback).Run(result);
 }
 
+void MockUDPClientSocket::RunReadCallbackAsync(CompletionOnceCallback callback,
+                                               int result) {
+  CHECK_NE(result, ERR_IO_PENDING);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MockUDPClientSocket::RunReadCallback,
+                     weak_factory_.GetWeakPtr(), std::move(callback), result));
+}
+
+void MockUDPClientSocket::RunReadCallback(CompletionOnceCallback callback,
+                                          int result) {
+  if (result >= 0) {
+    read_completed_ = true;
+  }
+  std::move(callback).Run(result);
+}
+
 void MockUDPClientSocket::RunDatagramsCallback(
     base::OnceCallback<void(base::expected<DatagramsMetadata, Error>)> callback,
     base::expected<DatagramsMetadata, Error> result) {
+  if (result.has_value() && !result->empty()) {
+    read_completed_ = true;
+  }
   std::move(callback).Run(std::move(result));
 }
 
@@ -2240,6 +2282,20 @@ void MockUDPClientSocket::RunDatagramsCallbackAsync(
       FROM_HERE, base::BindOnce(&MockUDPClientSocket::RunDatagramsCallback,
                                 weak_factory_.GetWeakPtr(), std::move(callback),
                                 std::move(result)));
+}
+
+void MockUDPClientSocket::AllowEmulatedConnect(bool allow) {
+  CHECK(!connected_) << "AllowEmulatedConnect() called after Connect()";
+  allow_emulated_connect_ = allow;
+}
+
+// static
+int MockUDPClientSocket::GetLocalAddressIfAvailable(
+    const DatagramClientSocket* socket,
+    IPEndPoint* address) {
+  base::AutoReset<bool> auto_reset(&g_allow_get_local_address_before_read,
+                                   true);
+  return socket->GetLocalAddress(address);
 }
 
 TestSocketRequest::TestSocketRequest(

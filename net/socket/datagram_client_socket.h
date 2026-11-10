@@ -148,6 +148,18 @@ class NET_EXPORT_PRIVATE DatagramClientSocket : public DatagramSocket,
   // Unregister the underlying socket and its associated UDP payload that were
   // previously registered by RegisterQuicConnectionClosePayload
   virtual void UnregisterQuicConnectionClosePayload() {}
+
+  // Allows the socket to connect via emulated connect if supported. Setting
+  // AllowEmulatedConnect(true) will do nothing when not implemented or when the
+  // feature is disabled. When socket emulation is enabled, the local address is
+  // determined on a per-datagram basis. As a result, GetLocalAddress() cannot
+  // be called before a datagram has been received, and will reflect the local
+  // address of the most recent datagram received. If the route to the
+  // destination changes while the socket is open then the value of
+  // GetLocalAddress() will change after the next datagram arrives.
+  // Must be called before Connect(), ConnectUsingNetwork() or
+  // ConnectUsingDefaultNetwork().
+  virtual void AllowEmulatedConnect(bool allow) {}
 };
 
 }  // namespace net
