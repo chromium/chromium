@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/fake_hierarchy.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/fake_os_settings_sections.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/experiences/settings_ui/resources/grit/ash_settings_strings.h"
 #include "mojo/public/cpp/bindings/remote.h"

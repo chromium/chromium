@@ -46,7 +46,6 @@ source_set("unit_tests") {
     "//ash/webui/settings/public/constants:mojom",
     "//base",
     "//base/test:test_support",
-    "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/ui/webui/ash/settings/search/mojom",
     "//chrome/browser/ui/webui/ash/settings/test_support",
