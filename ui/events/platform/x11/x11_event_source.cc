@@ -264,8 +264,8 @@ void X11EventSource::OnEvent(const x11::Event& x11_event) {
     if (device->reason == x11::Input::ChangeReason::DeviceChange) {
       should_update_device_list = true;
     } else if (device->reason == x11::Input::ChangeReason::SlaveSwitch) {
-      ui::DeviceDataManagerX11::GetInstance()->InvalidateScrollClasses(
-          device->sourceid);
+      ui::DeviceDataManagerX11::GetInstance()->UpdateScrollClassValuators(
+          device->sourceid, device->classes);
     }
   }
 

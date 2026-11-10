@@ -257,6 +257,7 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
         UpdateScrollClassDevice(*device_class.scroll, deviceid);
       }
     }
+    UpdateScrollClassValuators(deviceid, info.classes);
 
     if (possible_stylus)
       stylus_.insert(deviceid);
@@ -577,14 +578,56 @@ void DeviceDataManagerX11::GetScrollClassOffsets(const x11::Event& x11_event,
 void DeviceDataManagerX11::InvalidateScrollClasses(
     x11::Input::DeviceId device_id) {
   if (device_id == kAllDevices) {
+    if (scroll_data_.empty()) {
+      return;
+    }
     for (auto& i : scroll_data_) {
       i.second.horizontal.seen = false;
       i.second.vertical.seen = false;
     }
   } else {
-    if (ScrollInfo* info = base::FindOrNull(scroll_data_, device_id)) {
-      info->horizontal.seen = false;
-      info->vertical.seen = false;
+    ScrollInfo* info = base::FindOrNull(scroll_data_, device_id);
+    if (!info) {
+      return;
+    }
+    info->horizontal.seen = false;
+    info->vertical.seen = false;
+  }
+
+  if (!IsXInput2Available()) {
+    return;
+  }
+
+  const auto query_id =
+      device_id == kAllDevices ? x11::Input::DeviceId::All : device_id;
+  if (auto reply =
+          x11::Connection::Get()->xinput().XIQueryDevice(query_id).Sync()) {
+    for (const auto& info : reply->infos) {
+      UpdateScrollClassValuators(info.deviceid, info.classes);
+    }
+  }
+}
+
+void DeviceDataManagerX11::UpdateScrollClassValuators(
+    x11::Input::DeviceId device_id,
+    const std::vector<x11::Input::DeviceClass>& classes) {
+  ScrollInfo* info = base::FindOrNull(scroll_data_, device_id);
+  if (!info) {
+    return;
+  }
+  info->horizontal.seen = false;
+  info->vertical.seen = false;
+  for (const auto& device_class : classes) {
+    if (!device_class.valuator.has_value()) {
+      continue;
+    }
+    const auto& valuator = *device_class.valuator;
+    if (valuator.number == info->vertical.number) {
+      info->vertical.position = Fp3232ToDouble(valuator.value);
+      info->vertical.seen = true;
+    } else if (valuator.number == info->horizontal.number) {
+      info->horizontal.position = Fp3232ToDouble(valuator.value);
+      info->horizontal.seen = true;
     }
   }
 }
@@ -709,6 +752,7 @@ void DeviceDataManagerX11::SetDeviceListForTest(
   valuator_count_.clear();
   valuator_lookup_.clear();
   data_type_lookup_.clear();
+  scroll_data_.clear();
   last_seen_valuator_.clear();
 
   for (auto deviceid : touchscreen) {

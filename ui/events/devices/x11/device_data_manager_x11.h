@@ -26,6 +26,10 @@
 
 namespace ui {
 
+namespace test {
+class DeviceDataManagerX11Test;
+}  // namespace test
+
 // CrOS touchpad metrics gesture types
 enum GestureMetricsType {
   kGestureMetricsTypeNoisyGround = 0,
@@ -213,6 +217,12 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   // invalidated.
   void InvalidateScrollClasses(x11::Input::DeviceId device_id);
 
+  // Updates stored scroll class positions for `device_id` from the valuator
+  // classes in `classes`.
+  void UpdateScrollClassValuators(
+      x11::Input::DeviceId device_id,
+      const std::vector<x11::Input::DeviceClass>& classes);
+
   // Extract data from a fling event. User must first verify the event type
   // with IsFlingEvent. Pointers shouldn't be NULL.
   void GetFlingData(const x11::Event& xev,
@@ -290,6 +300,8 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
       const std::vector<KeyboardDevice>& devices) override;
 
  private:
+  friend class test::DeviceDataManagerX11Test;
+
   // Information about scroll valuators
   struct ScrollInfo {
     struct AxisInfo {

@@ -69,6 +69,60 @@ class DeviceDataManagerX11Test : public testing::Test {
     DeviceHotplugEventObserver* manager = DeviceDataManagerX11::GetInstance();
     manager->OnKeyboardDevicesUpdated(devices);
   }
+
+  void SetUpScrollDevice(x11::Input::DeviceId device_id,
+                         uint16_t horizontal_number,
+                         int32_t horizontal_increment,
+                         int32_t horizontal_value,
+                         uint16_t vertical_number,
+                         int32_t vertical_increment,
+                         int32_t vertical_value) {
+    DeviceDataManagerX11* manager = DeviceDataManagerX11::GetInstance();
+    manager->SetDeviceListForTest({}, {}, {static_cast<int>(device_id)});
+    manager->UpdateScrollClassDevice(
+        x11::Input::DeviceClass::Scroll{
+            .number = horizontal_number,
+            .scroll_type = x11::Input::ScrollType::Horizontal,
+            .increment = {horizontal_increment, 0},
+        },
+        device_id);
+    manager->UpdateScrollClassDevice(
+        x11::Input::DeviceClass::Scroll{
+            .number = vertical_number,
+            .scroll_type = x11::Input::ScrollType::Vertical,
+            .increment = {vertical_increment, 0},
+        },
+        device_id);
+    manager->UpdateScrollClassValuators(
+        device_id, {
+                       x11::Input::DeviceClass{
+                           .valuator =
+                               x11::Input::DeviceClass::Valuator{
+                                   .number = horizontal_number,
+                                   .value = {horizontal_value, 0},
+                               },
+                       },
+                       x11::Input::DeviceClass{
+                           .valuator =
+                               x11::Input::DeviceClass::Valuator{
+                                   .number = vertical_number,
+                                   .value = {vertical_value, 0},
+                               },
+                       },
+                   });
+  }
+
+  x11::Event CreateScrollMotionEvent(x11::Input::DeviceId device_id,
+                                     uint16_t valuator_index,
+                                     int32_t valuator_value) {
+    return x11::Event(false, x11::Input::DeviceEvent{
+                                 .opcode = x11::Input::DeviceEvent::Motion,
+                                 .deviceid = device_id,
+                                 .sourceid = device_id,
+                                 .valuator_mask = {1u << valuator_index},
+                                 .axisvalues = {{valuator_value, 0}},
+                             });
+  }
 };
 
 // Tests that the the device data manager notifies observers when a device is
@@ -205,6 +259,71 @@ TEST_F(DeviceDataManagerX11Test, GetEventDataShortMask) {
   EXPECT_FALSE(manager->GetEventData(
       event, DeviceDataManagerX11::DT_TOUCH_MAJOR, &value));
   EXPECT_EQ(value, -1.0);
+}
+
+// Regression test for crbug.com/40246366: verifies that initial scroll
+// valuator positions and SlaveSwitch updates preserve the baseline position so
+// the first scroll tick is not dropped.
+TEST_F(DeviceDataManagerX11Test, ScrollClassValuatorBaselinePreserved) {
+  DeviceDataManagerX11* manager = DeviceDataManagerX11::GetInstance();
+  const auto device_id = static_cast<x11::Input::DeviceId>(1);
+  constexpr uint16_t kHorizValuator = 2;
+  constexpr uint16_t kVertValuator = 3;
+
+  SetUpScrollDevice(device_id, kHorizValuator, /*horizontal_increment=*/1,
+                    /*horizontal_value=*/0, kVertValuator,
+                    /*vertical_increment=*/1, /*vertical_value=*/10);
+
+  // The first scroll tick from initial value 10 to 11 should immediately
+  // report a -1.0 vertical offset rather than being swallowed.
+  double x_offset = 0.0;
+  double y_offset = 0.0;
+  manager->GetScrollClassOffsets(
+      CreateScrollMotionEvent(device_id, kVertValuator, 11), &x_offset,
+      &y_offset);
+  EXPECT_DOUBLE_EQ(0.0, x_offset);
+  EXPECT_DOUBLE_EQ(-1.0, y_offset);
+
+  // Simulate a SlaveSwitch after the valuator advanced to 25 (e.g. while
+  // scrolling outside the window). The first tick after SlaveSwitch to 26
+  // should report -1.0 (neither 0.0 nor -15.0).
+  manager->UpdateScrollClassValuators(
+      device_id, {
+                     x11::Input::DeviceClass{
+                         .valuator =
+                             x11::Input::DeviceClass::Valuator{
+                                 .number = kHorizValuator,
+                                 .value = {0, 0},
+                             },
+                     },
+                     x11::Input::DeviceClass{
+                         .valuator =
+                             x11::Input::DeviceClass::Valuator{
+                                 .number = kVertValuator,
+                                 .value = {25, 0},
+                             },
+                     },
+                 });
+  manager->GetScrollClassOffsets(
+      CreateScrollMotionEvent(device_id, kVertValuator, 26), &x_offset,
+      &y_offset);
+  EXPECT_DOUBLE_EQ(0.0, x_offset);
+  EXPECT_DOUBLE_EQ(-1.0, y_offset);
+
+  // If valuator classes are unavailable on invalidation, the baseline is
+  // marked unseen and re-established on the next event without a jump.
+  manager->UpdateScrollClassValuators(device_id, {});
+  manager->GetScrollClassOffsets(
+      CreateScrollMotionEvent(device_id, kVertValuator, 40), &x_offset,
+      &y_offset);
+  EXPECT_DOUBLE_EQ(0.0, x_offset);
+  EXPECT_DOUBLE_EQ(0.0, y_offset);
+
+  manager->GetScrollClassOffsets(
+      CreateScrollMotionEvent(device_id, kVertValuator, 41), &x_offset,
+      &y_offset);
+  EXPECT_DOUBLE_EQ(0.0, x_offset);
+  EXPECT_DOUBLE_EQ(-1.0, y_offset);
 }
 
 }  // namespace test
