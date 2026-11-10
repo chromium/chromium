@@ -1579,6 +1579,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/GroupWindowState.java:GroupWindowState) -->
 
+<!-- LINT.IfChange(HandoffScrollAttachmentStatus) -->
+
+<enum name="HandoffScrollAttachmentStatus">
+  <int value="0" label="Text attached"/>
+  <int value="1" label="Missed due to debounce"/>
+  <int value="2" label="No scroll"/>
+  <int value="3" label="No text"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/handoff/HandoffController.java:HandoffScrollAttachmentStatus) -->
+
 <enum name="HasSeenNonZeroNavBarState">
   <int value="0" label="GestureNav First NavBar Missing"/>
   <int value="1" label="GestureNav Corrected"/>

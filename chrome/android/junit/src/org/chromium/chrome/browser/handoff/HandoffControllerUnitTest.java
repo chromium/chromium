@@ -49,6 +49,7 @@ import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ExternalIntentUrlChecker;
 import org.chromium.chrome.browser.ExternalIntentUrlCheckerJni;
+import org.chromium.chrome.browser.handoff.HandoffController.HandoffScrollAttachmentStatus;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -297,11 +298,16 @@ public class HandoffControllerUnitTest {
     @Test
     public void testOnHandoffActivityDataRequested_Success() throws Exception {
         initializeController();
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Handoff.ScrollPosition.AttachmentStatus",
+                        HandoffScrollAttachmentStatus.NO_SCROLL);
         Object mockRequest = mock(Class.forName("android.app.HandoffActivityDataRequestInfo"));
         callOnHandoffActivityDataRequested(mockRequest);
 
         verify(mDelegate).buildHandoffActivityData(eq(mActivity), eq("https://example.com/"));
         assertTrue(mUserActionTester.getActions().contains("HandoffDataRequested"));
+        watcher.assertExpected();
     }
 
     @Test
@@ -310,15 +316,62 @@ public class HandoffControllerUnitTest {
         // 1. Simulate a scrolled tab (scrollY = 50) where Blink extracts "hello%20world".
         setUpExtractableWebContents();
         initializeController();
+        HistogramWatcher fetchWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.Handoff.ScrollPosition.FetchDuration")
+                        .build();
         simulateExtractedTextFragment("hello%20world");
+        fetchWatcher.assertExpected();
 
         // 2. Request Handoff payload and verify "#:~:text=hello%20world" is appended to the URL.
+        HistogramWatcher attachWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Handoff.ScrollPosition.AttachmentStatus",
+                        HandoffScrollAttachmentStatus.TEXT_ATTACHED);
         Object mockRequest = mock(Class.forName("android.app.HandoffActivityDataRequestInfo"));
         callOnHandoffActivityDataRequested(mockRequest);
 
         verify(mDelegate)
                 .buildHandoffActivityData(
                         eq(mActivity), eq("https://example.com/#:~:text=hello%20world"));
+        attachWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOnHandoffActivityDataRequested_MissedDueToDebounceAndNoText() throws Exception {
+        // 1. Switching to a scrolled tab schedules a debounced fetch; requesting Handoff before the
+        // 300ms debounce expires records MISSED_DUE_TO_DEBOUNCE.
+        initializeController();
+        mActivityTabProvider.setForTesting(null);
+        setUpExtractableWebContents();
+        mActivityTabProvider.setForTesting(mTab);
+
+        HistogramWatcher switchDebounceWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Handoff.ScrollPosition.AttachmentStatus",
+                        HandoffScrollAttachmentStatus.MISSED_DUE_TO_DEBOUNCE);
+        Object mockRequest = mock(Class.forName("android.app.HandoffActivityDataRequestInfo"));
+        callOnHandoffActivityDataRequested(mockRequest);
+        verify(mDelegate).buildHandoffActivityData(eq(mActivity), eq("https://example.com/"));
+        switchDebounceWatcher.assertExpected();
+
+        // 2. Scrolling also schedules a debounced fetch (MISSED_DUE_TO_DEBOUNCE), and once the
+        // Mojo IPC completes with an empty selector, NO_TEXT is recorded.
+        mController.getGestureStateListenerForTesting().onScrollEnded(50, 100);
+        HistogramWatcher scrollDebounceWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Handoff.ScrollPosition.AttachmentStatus",
+                        HandoffScrollAttachmentStatus.MISSED_DUE_TO_DEBOUNCE);
+        callOnHandoffActivityDataRequested(mockRequest);
+        scrollDebounceWatcher.assertExpected();
+
+        simulateExtractedTextFragment("");
+        HistogramWatcher noTextWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Handoff.ScrollPosition.AttachmentStatus",
+                        HandoffScrollAttachmentStatus.NO_TEXT);
+        callOnHandoffActivityDataRequested(mockRequest);
+        noTextWatcher.assertExpected();
     }
 
     @Test
@@ -328,11 +381,16 @@ public class HandoffControllerUnitTest {
         when(mRenderCoordinates.getScrollYPixInt()).thenReturn(0);
 
         // 2. Advance past the 300ms debounce window and verify no Mojo IPC was sent to Blink.
+        HistogramWatcher fetchWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Handoff.ScrollPosition.FetchDuration")
+                        .build();
         initializeController();
         ShadowLooper.idleMainLooper(
                 HandoffController.FETCH_TEXT_DEBOUNCE_MS, TimeUnit.MILLISECONDS);
 
         verifyNoMoreInteractions(mTextFragmentReceiver);
+        fetchWatcher.assertExpected();
     }
 
     @Test

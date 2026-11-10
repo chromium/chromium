@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.renderer_host.ChromeNavigationUiData;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabIdManager;
@@ -2006,6 +2007,13 @@ public class IntentHandler {
             if (!TextUtils.isEmpty(scrollToTextFragment)) {
                 loadUrlParams.setInternalScrollToTextFragment(scrollToTextFragment);
             }
+        }
+
+        if (isIntentFromHandoff(intent)) {
+            String fragment = Uri.parse(url).getEncodedFragment();
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.Handoff.ScrollPosition.ReceivedWithTextFragment",
+                    fragment != null && fragment.contains(LinkToTextHelper.TEXT_FRAGMENT_PREFIX));
         }
 
         String referrer = getReferrerUrlIncludingExtraHeaders(intent);

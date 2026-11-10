@@ -2641,6 +2641,39 @@ chromium-metrics-reviews@google.com.
   <token key="UpdateType" variants="HandoffEnableTrigger"/>
 </histogram>
 
+<histogram name="Android.Handoff.ScrollPosition.AttachmentStatus"
+    enum="HandoffScrollAttachmentStatus" expires_after="2027-03-28">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records whether a text fragment selector for the active tab's scroll
+    position was attached to the outgoing Handoff URL when the OS requested
+    Handoff activity data on the sending device.
+  </summary>
+</histogram>
+
+<histogram name="Android.Handoff.ScrollPosition.FetchDuration" units="ms"
+    expires_after="2027-03-28">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the time in milliseconds taken for the renderer to respond to a text
+    fragment selector request for the active tab's viewport reading position.
+    Recorded each time the Mojo callback returns in HandoffController.
+  </summary>
+</histogram>
+
+<histogram name="Android.Handoff.ScrollPosition.ReceivedWithTextFragment"
+    enum="Boolean" expires_after="2027-03-28">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records whether an incoming Handoff intent URL on the receiving device
+    contains a text fragment directive (#:~:text=) for scroll position
+    restoration. Recorded when LoadUrlParams is created for a Handoff intent.
+  </summary>
+</histogram>
+
 <histogram name="Android.HistoryPage.TimePeriodFilterSelected"
     enum="HistoryTimePeriodOptionId" expires_after="2027-05-06">
   <owner>zalmashni@google.com</owner>

@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PersistableBundle;
+import android.os.SystemClock;
 import android.os.UserManager;
 import android.provider.Browser;
 
@@ -68,6 +69,34 @@ public class HandoffController implements Destroyable {
         int TAB_SWITCH = 0;
         int URL_NAVIGATION = 1;
     }
+
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    // LINT.IfChange(HandoffScrollAttachmentStatus)
+    @IntDef({
+        HandoffScrollAttachmentStatus.TEXT_ATTACHED,
+        HandoffScrollAttachmentStatus.MISSED_DUE_TO_DEBOUNCE,
+        HandoffScrollAttachmentStatus.NO_SCROLL,
+        HandoffScrollAttachmentStatus.NO_TEXT,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface HandoffScrollAttachmentStatus {
+        // Non-empty text fragment selector was attached to the outgoing Handoff URL.
+        int TEXT_ATTACHED = 0;
+
+        // User scrolled, but Handoff occurred during the 300ms debounce or while IPC was in flight.
+        int MISSED_DUE_TO_DEBOUNCE = 1;
+
+        // Page was unscrolled at the top (scrollOffsetY == 0).
+        int NO_SCROLL = 2;
+
+        // Page was scrolled (scrollOffsetY > 0), but Blink found no text at the reading position.
+        int NO_TEXT = 3;
+
+        int NUM_ENTRIES = 4;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:HandoffScrollAttachmentStatus)
 
     private final Activity mActivity;
     private final TabModelSelector mTabModelSelector;
@@ -265,14 +294,16 @@ public class HandoffController implements Destroyable {
     }
 
     private void scheduleTextFragmentFetch() {
-        Tab tab = mActivityTabProvider.get();
+        scheduleTextFragmentFetch(getScrollOffsetY(mActivityTabProvider.get()));
+    }
+
+    private int getScrollOffsetY(@Nullable Tab tab) {
         WebContents webContents = (tab != null) ? tab.getWebContents() : null;
         RenderCoordinates coords =
                 (webContents != null && !webContents.isDestroyed())
                         ? RenderCoordinates.fromWebContents(webContents)
                         : null;
-        int scrollOffsetY = (coords != null) ? coords.getScrollYPixInt() : 0;
-        scheduleTextFragmentFetch(scrollOffsetY);
+        return (coords != null) ? coords.getScrollYPixInt() : 0;
     }
 
     private void scheduleTextFragmentFetch(int scrollOffsetY) {
@@ -335,6 +366,7 @@ public class HandoffController implements Destroyable {
         // Request the text fragment for the center of the current viewport from Blink.
         final int requestGeneration = ++mFetchGeneration;
         final GURL requestUrl = tab.getUrl();
+        final long fetchStartTimeMs = SystemClock.elapsedRealtime();
         LinkToTextHelper.requestSelectorForViewportCenter(
                 tab.getWebContents(),
                 (selector) -> {
@@ -344,6 +376,9 @@ public class HandoffController implements Destroyable {
                     if (currentTab != tab || !Objects.equals(currentTab.getUrl(), requestUrl)) {
                         return;
                     }
+                    RecordHistogram.recordTimesHistogram(
+                            "Android.Handoff.ScrollPosition.FetchDuration",
+                            SystemClock.elapsedRealtime() - fetchStartTimeMs);
                     mHasPendingScrollFetch = false;
                     mActiveTabTextFragment = (selector != null) ? selector : "";
                 });
@@ -430,6 +465,21 @@ public class HandoffController implements Destroyable {
         }
 
         RecordUserAction.record("HandoffDataRequested");
+
+        @HandoffScrollAttachmentStatus int attachmentStatus;
+        if (!mActiveTabTextFragment.isEmpty()) {
+            attachmentStatus = HandoffScrollAttachmentStatus.TEXT_ATTACHED;
+        } else if (mHasPendingScrollFetch) {
+            attachmentStatus = HandoffScrollAttachmentStatus.MISSED_DUE_TO_DEBOUNCE;
+        } else if (getScrollOffsetY(tab) > 0) {
+            attachmentStatus = HandoffScrollAttachmentStatus.NO_TEXT;
+        } else {
+            attachmentStatus = HandoffScrollAttachmentStatus.NO_SCROLL;
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Handoff.ScrollPosition.AttachmentStatus",
+                attachmentStatus,
+                HandoffScrollAttachmentStatus.NUM_ENTRIES);
 
         // 2. Build the handoff data via delegate.
         String url = appendTextFragment(tab.getUrl().getSpec(), mActiveTabTextFragment);

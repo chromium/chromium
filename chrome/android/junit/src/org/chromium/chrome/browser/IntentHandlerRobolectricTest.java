@@ -53,6 +53,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler.ExternalAppId;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
@@ -860,6 +861,25 @@ public class IntentHandlerRobolectricTest {
 
         LoadUrlParams params = IntentHandler.createLoadUrlParamsForIntent(GOOGLE_URL, intent, 0);
         Assert.assertNull(params.getInternalScrollToTextFragment());
+    }
+
+    @Test
+    public void testCreateLoadUrlParamsForIntent_HandoffRecordsReceivedWithTextFragment() {
+        Intent handoffIntent = new Intent(Intent.ACTION_VIEW);
+        handoffIntent.putExtra(IntentHandler.EXTRA_INVOKED_FROM_HANDOFF, true);
+
+        HistogramWatcher withFragmentWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Handoff.ScrollPosition.ReceivedWithTextFragment", true);
+        IntentHandler.createLoadUrlParamsForIntent(
+                GOOGLE_URL + "#:~:text=hello%20world", handoffIntent, 0);
+        withFragmentWatcher.assertExpected();
+
+        HistogramWatcher withoutFragmentWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Handoff.ScrollPosition.ReceivedWithTextFragment", false);
+        IntentHandler.createLoadUrlParamsForIntent(GOOGLE_URL, handoffIntent, 0);
+        withoutFragmentWatcher.assertExpected();
     }
 
     @Test
