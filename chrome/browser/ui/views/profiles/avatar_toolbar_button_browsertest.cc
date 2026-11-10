@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 
 #include <algorithm>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -19,6 +20,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -45,25 +47,36 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/toolbar/avatar_toolbar_iph_controller.h"
+#include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_state_manager.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/common/pref_names.h"
@@ -107,6 +120,7 @@
 #include "components/user_education/common/user_education_class_properties.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -115,13 +129,19 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/test/views_test_utils.h"
+#include "ui/views/test/widget_test.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/test/base/scoped_channel_override.h"
@@ -890,8 +910,10 @@ class AvatarToolbarButtonBrowserTest
     : public AvatarToolbarButtonBrowserTestBase,
       public testing::WithParamInterface<bool> {
  public:
+  bool IsWebUIToolbarEnabled() const { return GetParam(); }
+
   AvatarToolbarButtonBrowserTest() {
-    if (GetParam()) {
+    if (IsWebUIToolbarEnabled()) {
       scoped_feature_list_.InitWithFeatures(
           {features::kInitialWebUI, features::kWebUIAvatarButton}, {});
     } else {
@@ -1040,6 +1062,435 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest, IncognitoBrowser) {
   EXPECT_TRUE(avatar_accessor1.GetEnabled());
 }
 
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest,
+                       RunWhenVisibleWhenAlreadyVisible) {
+#if BUILDFLAG(IS_CHROMEOS)
+  BrowserWindowInterface* target_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+#else
+  BrowserWindowInterface* target_browser = browser();
+#endif
+  ASSERT_TRUE(AvatarToolbarButtonInterface::CanShowForProfile(
+      target_browser->GetProfile()));
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return BrowserElements::From(target_browser)
+               ->GetElement(kToolbarAvatarButtonElementId) != nullptr;
+  }));
+
+  AvatarToolbarButtonInterface* avatar =
+      GetAvatarToolbarButtonInterface(target_browser);
+  ASSERT_TRUE(avatar);
+
+  base::test::TestFuture<views::BubbleAnchor, base::ScopedClosureRunner> future;
+  avatar->RunWhenVisible(future.GetCallback());
+  ASSERT_TRUE(future.IsReady());
+  auto [resolved_anchor, resolved_keep_visible] = future.Take();
+
+  EXPECT_FALSE(resolved_anchor.IsNull());
+  EXPECT_FALSE(resolved_anchor.GetAnchorRect().IsEmpty());
+
+  if (IsWebUIToolbarEnabled()) {
+    ui::TrackedElement* element =
+        BrowserElements::From(target_browser)
+            ->GetElement(kToolbarAvatarButtonElementId);
+    ASSERT_TRUE(element);
+    EXPECT_EQ(resolved_anchor.GetIfElement(), element);
+    EXPECT_EQ(resolved_anchor.GetAnchorRect(), element->GetScreenBounds());
+    EXPECT_TRUE(resolved_keep_visible);
+  } else {
+    AvatarToolbarButton* avatar_view =
+        BrowserView::GetBrowserViewForBrowser(target_browser)
+            ->toolbar()
+            ->avatar_toolbar_button();
+    ASSERT_TRUE(avatar_view);
+    EXPECT_EQ(resolved_anchor.GetIfView(), avatar_view);
+    EXPECT_EQ(resolved_anchor.GetAnchorRect(),
+              avatar_view->GetAnchorBoundsInScreen());
+    // Default InProcessBrowserTest prevents Views toolbar overflow; see
+    // AvatarToolbarButtonViewsOverflowBrowserTest for non-null tokens.
+    EXPECT_FALSE(resolved_keep_visible);
+  }
+  resolved_anchor = views::BubbleAnchor();
+}
+
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest,
+                       RunWhenVisibleWhenCannotShowForProfile) {
+  auto verify_cannot_show_fallback =
+      [&](BrowserWindowInterface* target_browser) {
+        ASSERT_FALSE(AvatarToolbarButtonInterface::CanShowForProfile(
+            target_browser->GetProfile()));
+        EXPECT_FALSE(
+            AvatarToolbarButtonTestAccessor(target_browser).GetVisible());
+        EXPECT_EQ(BrowserElements::From(target_browser)
+                      ->GetElement(kToolbarAvatarButtonElementId),
+                  nullptr);
+
+        AvatarToolbarButtonInterface* avatar =
+            GetAvatarToolbarButtonInterface(target_browser);
+        ASSERT_TRUE(avatar);
+
+        base::test::TestFuture<views::BubbleAnchor, base::ScopedClosureRunner>
+            future;
+        avatar->RunWhenVisible(future.GetCallback());
+        ASSERT_TRUE(future.IsReady());
+        auto [resolved_anchor, resolved_keep_visible] = future.Take();
+
+        EXPECT_FALSE(resolved_keep_visible);
+        ASSERT_FALSE(resolved_anchor.IsNull());
+        ASSERT_NE(resolved_anchor.GetIfView(), nullptr);
+        EXPECT_TRUE(resolved_anchor.GetIfView()->GetVisible());
+        EXPECT_FALSE(resolved_anchor.GetAnchorRect().IsEmpty());
+        BrowserView* browser_view =
+            BrowserView::GetBrowserViewForBrowser(target_browser);
+        EXPECT_EQ(resolved_anchor.GetIfView()->GetWidget(),
+                  browser_view->GetWidget());
+        EXPECT_EQ(resolved_anchor.GetIfView(), browser_view->toolbar());
+      };
+
+  Profile* devtools_profile = browser()->GetProfile()->GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUniqueForDevTools(),
+      /*create_if_needed=*/true);
+  BrowserWindowInterface* devtools_browser = CreateBrowser(devtools_profile);
+  ASSERT_NO_FATAL_FAILURE(verify_cannot_show_fallback(devtools_browser));
+  CloseBrowserSynchronously(devtools_browser);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  ASSERT_NO_FATAL_FAILURE(verify_cannot_show_fallback(browser()));
+#endif
+}
+
+class AvatarToolbarButtonViewsOverflowBrowserTest
+    : public AvatarToolbarButtonBrowserTestBase {
+ public:
+  AvatarToolbarButtonViewsOverflowBrowserTest() {
+    ToolbarControllerUtil::SetPreventOverflowForTesting(false);
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kInitialWebUI, features::kWebUIAvatarButton});
+  }
+
+  ~AvatarToolbarButtonViewsOverflowBrowserTest() override {
+    ToolbarControllerUtil::SetPreventOverflowForTesting(true);
+  }
+
+  void OverflowToolbar(BrowserView* browser_view) {
+    ToolbarView* toolbar = browser_view->toolbar();
+    constexpr gfx::Size kDummySize(34, 34);
+    int added_width = 0;
+    while (added_width <= toolbar->width()) {
+      auto dummy = std::make_unique<ToolbarButton>();
+      dummy->SetPreferredSize(kDummySize);
+      dummy->SetMinSize(kDummySize);
+      dummy->GetViewAccessibility().SetName(u"dummy");
+      dummy->SetVisible(true);
+      toolbar->AddChildView(std::move(dummy));
+      added_width += kDummySize.width();
+      views::test::RunScheduledLayout(browser_view);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonViewsOverflowBrowserTest,
+                       RunWhenVisibleOverflowAndKeepVisible) {
+#if BUILDFLAG(IS_CHROMEOS)
+  BrowserWindowInterface* target_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+#else
+  BrowserWindowInterface* target_browser = browser();
+#endif
+
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(target_browser);
+  ASSERT_TRUE(browser_view);
+  ToolbarView* toolbar = browser_view->toolbar();
+  ASSERT_TRUE(toolbar);
+  AvatarToolbarButton* avatar_button = toolbar->avatar_toolbar_button();
+  ASSERT_TRUE(avatar_button);
+  ASSERT_TRUE(toolbar->toolbar_controller());
+  ASSERT_TRUE(avatar_button->GetVisible());
+
+  // When already visible, RunWhenVisible invokes its callback synchronously
+  // and returns a `keep_visible` closure that prevents toolbar overflow.
+  base::test::TestFuture<views::BubbleAnchor, base::ScopedClosureRunner>
+      initial_future;
+  avatar_button->RunWhenVisible(initial_future.GetCallback());
+  ASSERT_TRUE(initial_future.IsReady());
+  auto [initial_anchor, keep_visible_while_shown] = initial_future.Take();
+
+  EXPECT_EQ(initial_anchor.GetIfView(), avatar_button);
+  EXPECT_EQ(initial_anchor.GetAnchorRect(),
+            avatar_button->GetAnchorBoundsInScreen());
+  EXPECT_TRUE(keep_visible_while_shown);
+  initial_anchor = views::BubbleAnchor();
+
+  // Add enough dummy buttons to exceed the toolbar width; `avatar_button`
+  // remains visible while `keep_visible_while_shown` is held.
+  OverflowToolbar(browser_view);
+  EXPECT_TRUE(avatar_button->GetVisible());
+  EXPECT_FALSE(toolbar->toolbar_controller()->IsElementOverflowedForTesting(
+      kToolbarAvatarButtonElementId));
+
+  // Releasing `keep_visible_while_shown` allows `avatar_button` to overflow.
+  keep_visible_while_shown.RunAndReset();
+  views::test::RunScheduledLayout(browser_view);
+  ASSERT_FALSE(avatar_button->GetVisible());
+  ASSERT_TRUE(toolbar->toolbar_controller()->IsElementOverflowedForTesting(
+      kToolbarAvatarButtonElementId));
+  EXPECT_EQ(BrowserElements::From(target_browser)
+                ->GetElement(kToolbarAvatarButtonElementId),
+            nullptr);
+
+  // When overflowed, RunWhenVisible synchronously pops out `avatar_button`
+  // with valid screen bounds, and overlapping tokens keep it popped out until
+  // the last token is released.
+  base::test::TestFuture<views::BubbleAnchor, base::ScopedClosureRunner>
+      popped_out_future_1;
+  avatar_button->RunWhenVisible(popped_out_future_1.GetCallback());
+  ASSERT_TRUE(popped_out_future_1.IsReady());
+  auto [popped_out_anchor_1, keep_visible_1] = popped_out_future_1.Take();
+
+  EXPECT_TRUE(avatar_button->GetVisible());
+  EXPECT_NE(BrowserElements::From(target_browser)
+                ->GetElement(kToolbarAvatarButtonElementId),
+            nullptr);
+  EXPECT_EQ(popped_out_anchor_1.GetIfView(), avatar_button);
+  EXPECT_FALSE(popped_out_anchor_1.GetAnchorRect().IsEmpty());
+  EXPECT_EQ(popped_out_anchor_1.GetAnchorRect(),
+            avatar_button->GetAnchorBoundsInScreen());
+  EXPECT_TRUE(keep_visible_1);
+  popped_out_anchor_1 = views::BubbleAnchor();
+
+  base::test::TestFuture<views::BubbleAnchor, base::ScopedClosureRunner>
+      popped_out_future_2;
+  avatar_button->RunWhenVisible(popped_out_future_2.GetCallback());
+  ASSERT_TRUE(popped_out_future_2.IsReady());
+  auto [popped_out_anchor_2, keep_visible_2] = popped_out_future_2.Take();
+  EXPECT_TRUE(keep_visible_2);
+  popped_out_anchor_2 = views::BubbleAnchor();
+
+  // Releasing the first token keeps `avatar_button` popped out.
+  keep_visible_1.RunAndReset();
+  views::test::RunScheduledLayout(browser_view);
+  EXPECT_TRUE(avatar_button->GetVisible());
+  EXPECT_FALSE(toolbar->toolbar_controller()->IsElementOverflowedForTesting(
+      kToolbarAvatarButtonElementId));
+
+  // Releasing the last token allows `avatar_button` to overflow again.
+  keep_visible_2.RunAndReset();
+  views::test::RunScheduledLayout(browser_view);
+  EXPECT_FALSE(avatar_button->GetVisible());
+  EXPECT_TRUE(toolbar->toolbar_controller()->IsElementOverflowedForTesting(
+      kToolbarAvatarButtonElementId));
+}
+
+// Tests that pressing the avatar button (e.g., via a keyboard accelerator)
+// while it is overflowed will temporarily make it visible to anchor the profile
+// menu, and that it returns to the overflow menu when the profile menu closes.
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonViewsOverflowBrowserTest,
+                       RunWhenVisibleButtonPressedWhenOverflowed) {
+#if BUILDFLAG(IS_CHROMEOS)
+  BrowserWindowInterface* target_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+#else
+  BrowserWindowInterface* target_browser = browser();
+#endif
+
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(target_browser);
+  ASSERT_TRUE(browser_view);
+  ToolbarView* toolbar = browser_view->toolbar();
+  ASSERT_TRUE(toolbar);
+  AvatarToolbarButton* avatar_button = toolbar->avatar_toolbar_button();
+  ASSERT_TRUE(avatar_button);
+
+  OverflowToolbar(browser_view);
+  ASSERT_FALSE(avatar_button->GetVisible());
+  ASSERT_TRUE(toolbar->toolbar_controller()->IsElementOverflowedForTesting(
+      kToolbarAvatarButtonElementId));
+
+  class PressVisibilityObserver
+      : public AvatarToolbarButtonInterface::Observer {
+   public:
+    explicit PressVisibilityObserver(AvatarToolbarButton* button)
+        : button_(button) {
+      observation_.Observe(button);
+    }
+
+    void OnButtonPressed() override {
+      pressed_count_++;
+      was_visible_on_press_ = button_->GetVisible();
+      bounds_on_press_ = button_->GetAnchorBoundsInScreen();
+    }
+
+    int pressed_count() const { return pressed_count_; }
+    bool was_visible_on_press() const { return was_visible_on_press_; }
+    const gfx::Rect& bounds_on_press() const { return bounds_on_press_; }
+
+   private:
+    raw_ptr<AvatarToolbarButton> button_;
+    bool was_visible_on_press_ = false;
+    gfx::Rect bounds_on_press_;
+    int pressed_count_ = 0;
+    base::ScopedObservation<AvatarToolbarButtonInterface,
+                            AvatarToolbarButtonInterface::Observer>
+        observation_{this};
+  };
+
+  PressVisibilityObserver observer(avatar_button);
+  avatar_button->ButtonPressed(/*is_source_accelerator=*/true);
+
+  EXPECT_EQ(observer.pressed_count(), 1);
+  EXPECT_TRUE(observer.was_visible_on_press());
+  EXPECT_FALSE(observer.bounds_on_press().IsEmpty());
+
+  ProfileMenuCoordinator* coordinator =
+      ProfileMenuCoordinator::From(target_browser);
+  ASSERT_TRUE(coordinator);
+  // `BatchUploadServiceTestHelper` resolves synchronously in this fixture, so
+  // the profile menu is already showing when `ButtonPressed()` returns. Check
+  // synchronously and disable close-on-deactivate before spinning any RunLoop
+  // so concurrent browser_tests windows stealing OS focus cannot close the
+  // bubble prematurely.
+  ASSERT_TRUE(coordinator->IsShowing());
+
+  ProfileMenuViewBase* menu_view =
+      coordinator->GetProfileMenuViewBaseForTesting();
+  ASSERT_TRUE(menu_view);
+  menu_view->set_close_on_deactivate(false);
+  EXPECT_EQ(menu_view->GetAnchorRect(),
+            avatar_button->GetAnchorBoundsInScreen());
+
+  views::test::WidgetDestroyedWaiter menu_destroyed(menu_view->GetWidget());
+  menu_view->GetWidget()->Close();
+  menu_destroyed.Wait();
+
+  views::test::RunScheduledLayout(browser_view);
+  EXPECT_FALSE(avatar_button->GetVisible());
+  EXPECT_TRUE(toolbar->toolbar_controller()->IsElementOverflowedForTesting(
+      kToolbarAvatarButtonElementId));
+}
+
+class AvatarToolbarButtonWebAppBrowserTest
+    : public AvatarToolbarButtonBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    AvatarToolbarButtonBrowserTest::SetUpOnMainThread();
+    os_integration_override_ =
+        web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
+  }
+
+  void TearDownOnMainThread() override {
+    for (Profile* profile :
+         g_browser_process->profile_manager()->GetLoadedProfiles()) {
+      web_app::test::UninstallAllWebApps(profile);
+    }
+    os_integration_override_.reset();
+    AvatarToolbarButtonBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  WebAppFrameToolbarTestHelper& toolbar_helper() {
+    return web_app_frame_toolbar_helper_;
+  }
+
+ private:
+  std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
+      os_integration_override_;
+  WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
+};
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// Tests `RunWhenVisible` in a Password Manager web app window, which shows a
+// Views `AvatarToolbarButton` inside `WebAppToolbarButtonContainer` even when
+// the WebUI toolbar is enabled.
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonWebAppBrowserTest,
+                       RunWhenVisibleInPasswordManagerWebApp) {
+  constexpr char kPasswordManagerId[] = "chrome://password-manager/";
+  constexpr char kPasswordManagerPWAUrl[] =
+      "chrome://password-manager/?source=pwa";
+  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>(
+      webapps::ManifestId(GURL(kPasswordManagerId)),
+      GURL(kPasswordManagerPWAUrl));
+  web_app_info->title = u"Password Manager";
+
+  toolbar_helper().InstallAndLaunchCustomWebApp(
+      browser(), std::move(web_app_info), GURL(kPasswordManagerPWAUrl));
+  BrowserWindowInterface* app_browser = toolbar_helper().app_browser();
+  ASSERT_TRUE(app_browser);
+
+  WebAppToolbarButtonContainer* right_container =
+      toolbar_helper()
+          .web_app_frame_toolbar()
+          ->get_right_container_for_testing();
+  ASSERT_TRUE(right_container);
+  AvatarToolbarButton* avatar_view = right_container->avatar_button();
+  ASSERT_TRUE(avatar_view);
+  EXPECT_TRUE(avatar_view->GetVisible());
+
+  AvatarToolbarButtonInterface* avatar =
+      GetAvatarToolbarButtonInterface(app_browser);
+  ASSERT_EQ(avatar, avatar_view);
+
+  base::test::TestFuture<views::BubbleAnchor, base::ScopedClosureRunner> future;
+  avatar->RunWhenVisible(future.GetCallback());
+  ASSERT_TRUE(future.IsReady());
+  auto [resolved_anchor, resolved_keep_visible] = future.Take();
+
+  ASSERT_NE(resolved_anchor.GetIfView(), nullptr);
+  EXPECT_EQ(resolved_anchor.GetIfView(), avatar_view);
+  EXPECT_TRUE(resolved_anchor.GetIfView()->GetVisible());
+  EXPECT_FALSE(resolved_anchor.GetAnchorRect().IsEmpty());
+  EXPECT_FALSE(resolved_keep_visible);
+  resolved_anchor = views::BubbleAnchor();
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+// Tests `RunWhenVisible` in a regular web app window. On macOS, single-profile
+// regular web apps create a hidden `AvatarToolbarButton` inside
+// `WebAppToolbarButtonContainer`, so `RunWhenVisible` falls back to returning
+// that parent container as the anchor; on other platforms, regular web apps do
+// not create a profile menu button in the app frame toolbar.
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonWebAppBrowserTest,
+                       RunWhenVisibleInRegularWebApp) {
+  toolbar_helper().InstallAndLaunchWebApp(browser(), GURL("https://test.org"));
+  BrowserWindowInterface* app_browser = toolbar_helper().app_browser();
+  ASSERT_TRUE(app_browser);
+
+#if BUILDFLAG(IS_MAC)
+  ASSERT_TRUE(AvatarToolbarButtonInterface::CanShowForProfile(
+      app_browser->GetProfile()));
+  WebAppToolbarButtonContainer* right_container =
+      toolbar_helper()
+          .web_app_frame_toolbar()
+          ->get_right_container_for_testing();
+  ASSERT_TRUE(right_container);
+  AvatarToolbarButton* avatar_view = right_container->avatar_button();
+  ASSERT_TRUE(avatar_view);
+  ASSERT_FALSE(avatar_view->GetVisible());
+
+  AvatarToolbarButtonInterface* avatar =
+      GetAvatarToolbarButtonInterface(app_browser);
+  ASSERT_EQ(avatar, avatar_view);
+
+  base::test::TestFuture<views::BubbleAnchor, base::ScopedClosureRunner> future;
+  avatar->RunWhenVisible(future.GetCallback());
+  ASSERT_TRUE(future.IsReady());
+  auto [resolved_anchor, resolved_keep_visible] = future.Take();
+
+  ASSERT_NE(resolved_anchor.GetIfView(), nullptr);
+  EXPECT_EQ(resolved_anchor.GetIfView(), right_container);
+  EXPECT_TRUE(resolved_anchor.GetIfView()->GetVisible());
+  EXPECT_FALSE(resolved_anchor.GetAnchorRect().IsEmpty());
+  EXPECT_FALSE(resolved_keep_visible);
+  resolved_anchor = views::BubbleAnchor();
+#else
+  EXPECT_EQ(GetAvatarToolbarButtonInterface(app_browser), nullptr);
+#endif
+}
+
 IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonEnterpriseIsolatedBrowserTest,
                        EnterpriseIsolatedBrowser) {
   BrowserWindowInterface* browser1 =
@@ -1078,7 +1529,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest,
   EXPECT_EQ(avatar_accessor.GetState(), AvatarToolbarButtonState::kNormal);
   EXPECT_EQ(avatar_accessor.GetText(), std::u16string());
 
-  if (!GetParam()) {
+  if (!IsWebUIToolbarEnabled()) {
     // On a regular ChromeOS browser (`!CanShowForProfile()`), `label()` should
     // not paint to a layer, whereas on an Incognito browser it does.
     auto has_child_layer = [](const views::View* view) {
@@ -3908,8 +4359,10 @@ class AvatarToolbarButtonGradientRingBrowserTest
     : public AvatarToolbarButtonBrowserTestBase,
       public testing::WithParamInterface<bool> {
  public:
+  bool IsWebUIToolbarEnabled() const { return GetParam(); }
+
   AvatarToolbarButtonGradientRingBrowserTest() {
-    if (GetParam()) {
+    if (IsWebUIToolbarEnabled()) {
       scoped_feature_list_.InitWithFeatures(
           {switches::kEnableAiSubscriptionAvatarRing, features::kInitialWebUI,
            features::kWebUIAvatarButton},
@@ -4025,8 +4478,10 @@ class AvatarToolbarButtonAsyncPromoRaceRegressionTest
     : public AvatarToolbarButtonBrowserTestBase,
       public testing::WithParamInterface<bool> {
  public:
+  bool IsWebUIToolbarEnabled() const { return GetParam(); }
+
   AvatarToolbarButtonAsyncPromoRaceRegressionTest() {
-    if (GetParam()) {
+    if (IsWebUIToolbarEnabled()) {
       scoped_feature_list_.InitWithFeatures(
           {features::kInitialWebUI, features::kWebUIAvatarButton}, {});
     } else {
@@ -4145,6 +4600,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(All, AvatarToolbarButtonBrowserTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         AvatarToolbarButtonWebAppBrowserTest,
+                         testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          AvatarToolbarButtonEnterpriseIsolatedBrowserTest,
                          testing::Bool());

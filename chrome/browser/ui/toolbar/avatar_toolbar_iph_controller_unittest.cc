@@ -88,6 +88,7 @@ class MockAvatarToolbarButton : public AvatarToolbarButtonInterface {
   MOCK_METHOD(bool, IsMouseHovered, (), (const, override));
   MOCK_METHOD(bool, HasFocus, (), (const, override));
   MOCK_METHOD(views::DialogDelegate*, GetDialogDelegate, (), (override));
+  MOCK_METHOD(void, RunWhenVisible, (WhenVisibleCallback), (override));
   MOCK_METHOD(void, ButtonPressed, (bool), (override));
   MOCK_METHOD(base::ScopedClosureRunner,
               SetExplicitButtonState,

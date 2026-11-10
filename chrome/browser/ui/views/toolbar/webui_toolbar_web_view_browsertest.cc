@@ -206,6 +206,7 @@
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/ax_update_observer.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -7806,6 +7807,207 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
   spacer_width += 2;
   ASSERT_EQ(SetSpacerWidth(spacer_width, target_browser), true);
   EXPECT_TRUE(base::test::RunUntil([&]() { return get_avatar_width() == 0; }));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
+                       AvatarRunWhenVisible) {
+#if BUILDFLAG(IS_CHROMEOS)
+  BrowserWindowInterface* target_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+#else
+  BrowserWindowInterface* target_browser = browser();
+#endif
+  InstallErrorListener();
+
+  ui::TrackedElement* initial_element = WaitForTrackedElementVisible(
+      kToolbarAvatarButtonElementId, target_browser);
+  ASSERT_TRUE(initial_element);
+
+  AvatarToolbarButtonInterface* avatar =
+      GetWebUIToolbar(target_browser)->GetAvatarToolbarButtonInterface();
+  ASSERT_TRUE(avatar);
+
+  // When already visible, RunWhenVisible invokes its callback synchronously
+  // with the TrackedElement anchor, and `keep_visible` prevents overflow.
+  bool visible_called = false;
+  base::ScopedClosureRunner visible_keep_token;
+  avatar->RunWhenVisible(base::BindLambdaForTesting(
+      [&](views::BubbleAnchor anchor, base::ScopedClosureRunner keep_visible) {
+        visible_called = true;
+        EXPECT_EQ(anchor.GetIfElement(), initial_element);
+        EXPECT_FALSE(anchor.GetAnchorRect().IsEmpty());
+        EXPECT_EQ(anchor.GetAnchorRect(), initial_element->GetScreenBounds());
+        visible_keep_token = std::move(keep_visible);
+      }));
+
+  EXPECT_TRUE(visible_called);
+  EXPECT_TRUE(visible_keep_token);
+
+  // Force toolbar overflow while `visible_keep_token` is held; forward button
+  // overflows while avatar stays visible.
+  const int spacer_width = target_browser->GetWindow()->GetBounds().width();
+  ASSERT_EQ(SetSpacerWidth(spacer_width, target_browser), true);
+  ASSERT_TRUE(WaitForTrackedElements(
+      /*visible=*/{kToolbarOverflowButtonElementId,
+                   kToolbarAvatarButtonElementId},
+      /*hidden=*/{kToolbarForwardButtonElementId}, target_browser));
+
+  // Releasing `visible_keep_token` allows the avatar button to overflow.
+  visible_keep_token.RunAndReset();
+  ASSERT_TRUE(WaitForTrackedElements(
+      /*visible=*/{kToolbarOverflowButtonElementId},
+      /*hidden=*/
+      {kToolbarForwardButtonElementId, kToolbarAvatarButtonElementId},
+      target_browser));
+
+  // When overflowed, overlapping RunWhenVisible calls pop out the avatar
+  // button asynchronously and keep it visible until the last token is released.
+  bool overflow_called_1 = false;
+  base::ScopedClosureRunner overflow_keep_token_1;
+  avatar->RunWhenVisible(base::BindLambdaForTesting(
+      [&](views::BubbleAnchor anchor, base::ScopedClosureRunner keep_visible) {
+        overflow_called_1 = true;
+        ui::TrackedElement* popped_out_element =
+            GetTrackedElement(kToolbarAvatarButtonElementId, target_browser);
+        EXPECT_TRUE(popped_out_element);
+        EXPECT_EQ(anchor.GetIfElement(), popped_out_element);
+        EXPECT_FALSE(anchor.GetAnchorRect().IsEmpty());
+        EXPECT_EQ(anchor.GetAnchorRect(),
+                  popped_out_element->GetScreenBounds());
+        overflow_keep_token_1 = std::move(keep_visible);
+      }));
+
+  bool overflow_called_2 = false;
+  base::ScopedClosureRunner overflow_keep_token_2;
+  avatar->RunWhenVisible(base::BindLambdaForTesting(
+      [&](views::BubbleAnchor anchor, base::ScopedClosureRunner keep_visible) {
+        overflow_called_2 = true;
+        ui::TrackedElement* popped_out_element =
+            GetTrackedElement(kToolbarAvatarButtonElementId, target_browser);
+        EXPECT_TRUE(popped_out_element);
+        EXPECT_EQ(anchor.GetIfElement(), popped_out_element);
+        EXPECT_FALSE(anchor.GetAnchorRect().IsEmpty());
+        EXPECT_EQ(anchor.GetAnchorRect(),
+                  popped_out_element->GetScreenBounds());
+        overflow_keep_token_2 = std::move(keep_visible);
+      }));
+
+  EXPECT_FALSE(overflow_called_1);
+  EXPECT_FALSE(overflow_called_2);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return overflow_called_1 && overflow_called_2; }));
+
+  EXPECT_TRUE(overflow_keep_token_1);
+  EXPECT_TRUE(overflow_keep_token_2);
+
+  // Releasing the first token keeps the avatar button visible while the second
+  // token is still alive.
+  overflow_keep_token_1.RunAndReset();
+  ASSERT_TRUE(FlushWebUIToolbarPipes(target_browser));
+  EXPECT_EQ(content::EvalJs(GetWebUIToolbar(target_browser)
+                                ->GetWebViewForTesting()
+                                ->GetWebContents(),
+                            R"((async () => {
+                        const app = document.querySelector('toolbar-app');
+                        await app?.updateComplete;
+                        await new Promise(r => requestAnimationFrame(
+                            () => requestAnimationFrame(r)));
+                        return Boolean(app?.$?.['avatar']?.checkVisibility());
+                      })())"),
+            true);
+  EXPECT_TRUE(WaitForTrackedElements(
+      /*visible=*/{kToolbarOverflowButtonElementId,
+                   kToolbarAvatarButtonElementId},
+      /*hidden=*/{kToolbarForwardButtonElementId}, target_browser));
+
+  // Releasing the second token allows the avatar button to overflow again.
+  overflow_keep_token_2.RunAndReset();
+  ASSERT_TRUE(WaitForTrackedElements(
+      /*visible=*/{kToolbarOverflowButtonElementId},
+      /*hidden=*/
+      {kToolbarForwardButtonElementId, kToolbarAvatarButtonElementId},
+      target_browser));
+
+  // When `!CanShowForProfile` is true (e.g. DevTools OTR profile),
+  // RunWhenVisible synchronously returns the fallback ToolbarView anchor and an
+  // empty `keep_visible`.
+  Profile* devtools_profile = browser()->GetProfile()->GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUniqueForDevTools(),
+      /*create_if_needed=*/true);
+  ASSERT_FALSE(
+      AvatarToolbarButtonInterface::CanShowForProfile(devtools_profile));
+  BrowserWindowInterface* devtools_browser = CreateBrowser(devtools_profile);
+  AvatarToolbarButtonInterface* devtools_avatar =
+      GetWebUIToolbar(devtools_browser)->GetAvatarToolbarButtonInterface();
+  ASSERT_TRUE(devtools_avatar);
+
+  bool fallback_called = false;
+  devtools_avatar->RunWhenVisible(base::BindLambdaForTesting(
+      [&](views::BubbleAnchor anchor, base::ScopedClosureRunner keep_visible) {
+        fallback_called = true;
+        ASSERT_EQ(
+            anchor.GetIfView(),
+            BrowserView::GetBrowserViewForBrowser(devtools_browser)->toolbar());
+        EXPECT_TRUE(anchor.GetIfView()->GetVisible());
+        EXPECT_FALSE(anchor.GetAnchorRect().IsEmpty());
+        EXPECT_FALSE(keep_visible);
+      }));
+  EXPECT_TRUE(fallback_called);
+  CloseBrowserSynchronously(devtools_browser);
+
+  // Destroying the browser while RunWhenVisible is waiting on an overflowed
+  // avatar button does not invoke the pending callback.
+  BrowserWindowInterface* temp_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  ASSERT_TRUE(WaitForTrackedElementVisible(kToolbarAvatarButtonElementId,
+                                           temp_browser));
+  ASSERT_EQ(SetSpacerWidth(temp_browser->GetWindow()->GetBounds().width(),
+                           temp_browser),
+            true);
+  ASSERT_TRUE(
+      WaitForTrackedElementHidden(kToolbarAvatarButtonElementId, temp_browser));
+
+  bool destroyed_called = false;
+  GetWebUIToolbar(temp_browser)
+      ->GetAvatarToolbarButtonInterface()
+      ->RunWhenVisible(base::BindLambdaForTesting(
+          [&](views::BubbleAnchor /*anchor*/,
+              base::ScopedClosureRunner /*keep_visible*/) {
+            destroyed_called = true;
+          }));
+  EXPECT_FALSE(destroyed_called);
+  CloseBrowserSynchronously(temp_browser);
+  EXPECT_FALSE(destroyed_called);
+
+  AssertNoJsErrors();
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
+                       AvatarRunWhenVisibleDuringInitialLoad) {
+  InstallErrorListener();
+
+  BrowserWindowInterface* new_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  AvatarToolbarButtonInterface* avatar =
+      GetWebUIToolbar(new_browser)->GetAvatarToolbarButtonInterface();
+  ASSERT_TRUE(avatar);
+
+  base::test::TestFuture<views::BubbleAnchor, base::ScopedClosureRunner> future;
+  avatar->RunWhenVisible(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  auto [resolved_anchor, keep_visible] = future.Take();
+
+  ui::TrackedElement* element =
+      GetTrackedElement(kToolbarAvatarButtonElementId, new_browser);
+  ASSERT_TRUE(element);
+  EXPECT_EQ(resolved_anchor.GetIfElement(), element);
+  EXPECT_FALSE(resolved_anchor.GetAnchorRect().IsEmpty());
+  EXPECT_EQ(resolved_anchor.GetAnchorRect(), element->GetScreenBounds());
+  EXPECT_TRUE(keep_visible);
+  resolved_anchor = views::BubbleAnchor();
+
+  AssertNoJsErrors();
 }
 
 // Tests that extensions are hidden when there's not enough room for them, and

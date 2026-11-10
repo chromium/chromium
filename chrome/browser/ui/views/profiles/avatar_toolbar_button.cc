@@ -22,7 +22,9 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_state_manager.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -37,6 +39,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
@@ -448,11 +451,33 @@ void AvatarToolbarButton::OnThemeChanged() {
   }
 }
 
+void AvatarToolbarButton::RunWhenVisible(WhenVisibleCallback callback) {
+  base::ScopedClosureRunner keep_visible;
+  if (BrowserWindowInterface* browser = state_manager_.browser();
+      browser &&
+      AvatarToolbarButtonInterface::CanShowForProfile(browser->GetProfile())) {
+    if (ToolbarView* toolbar = views::AsViewClass<ToolbarView>(parent());
+        toolbar && toolbar->toolbar_controller()) {
+      keep_visible = toolbar->toolbar_controller()->CreateScopedPopOut(
+          kToolbarAvatarButtonElementId);
+    }
+  }
+  views::View* anchor_view = (!GetVisible() && parent()) ? parent() : this;
+  std::move(callback).Run(views::BubbleAnchor(anchor_view),
+                          std::move(keep_visible));
+}
+
 void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
-  // The Views toolbar pops the button out once the profile menu is shown (see
-  // ToolbarController's PopOutHandler), so no token is needed.
-  state_manager_.HandleButtonPressed(is_source_accelerator,
-                                     /*keep_anchor_visible=*/{});
+  RunWhenVisible(base::BindOnce(
+      [](base::WeakPtr<AvatarToolbarButton> self, bool is_source_accelerator,
+         views::BubbleAnchor /*anchor*/,
+         base::ScopedClosureRunner keep_visible) {
+        if (self) {
+          self->state_manager_.HandleButtonPressed(is_source_accelerator,
+                                                   std::move(keep_visible));
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr(), is_source_accelerator));
 }
 
 void AvatarToolbarButton::AfterPropertyChange(const void* key,

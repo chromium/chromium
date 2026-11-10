@@ -48,7 +48,30 @@ class AvatarToolbarButtonInterface {
   // button, or nullptr if none exists.
   virtual views::DialogDelegate* GetDialogDelegate() = 0;
 
+  // Callback invoked by RunWhenVisible(). `anchor` must be used immediately to
+  // anchor a bubble and not stored across turns, as any underlying
+  // TrackedElement may become invalid once hidden. Callers should keep
+  // `keep_visible` alive while any bubble anchored to `anchor` is open, and
+  // must not synchronously destroy `this` (or its browser window) or hide the
+  // toolbar inside the callback.
+  using WhenVisibleCallback =
+      base::OnceCallback<void(views::BubbleAnchor anchor,
+                              base::ScopedClosureRunner keep_visible)>;
+
+  // Invokes `callback` once the button is visible with its anchor and an
+  // overflow-prevention closure. If the button is already visible, `callback`
+  // may be invoked synchronously. If the button is hidden due to overflow, it
+  // is popped out / prevented from overflowing and `callback` is invoked once
+  // visible. If the button is never shown for the profile (e.g., regular
+  // profiles on ChromeOS) or remains hidden in an app window, `callback` is
+  // invoked synchronously with a fallback toolbar view anchor and an empty
+  // `keep_visible` while the avatar button itself stays hidden. If `this` is
+  // destroyed before becoming visible, `callback` is not invoked.
+  virtual void RunWhenVisible(WhenVisibleCallback callback) = 0;
+
   // Returns the anchor to use for avatar button bubbles.
+  // TODO(crbug.com/580760684): Remove once all callers are migrated to
+  // RunWhenVisible().
   static views::BubbleAnchor GetBubbleAnchor(BrowserWindowInterface& browser);
 
   virtual void ButtonPressed(bool is_source_accelerator) = 0;

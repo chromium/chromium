@@ -9,10 +9,14 @@
 #include <memory>
 #include <variant>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/toolbar_controller_util.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/overflow_menu.h"
@@ -441,6 +445,11 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
         toolbar_controller()->ShouldShowOverflowButton(widget()->GetSize()));
   }
 
+  void ResetToolbarController() {
+    overflow_button_->set_toolbar_controller(nullptr);
+    toolbar_controller_.reset();
+  }
+
   views::Widget* widget() { return widget_.get(); }
   ToolbarController* toolbar_controller() { return toolbar_controller_.get(); }
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
@@ -849,6 +858,309 @@ TEST_F(ToolbarControllerUnitTest, PopOutButton) {
 
   // kDummyButton4 does not exist.
   EXPECT_FALSE(toolbar_controller()->PopOut(kDummyButton4, false));
+}
+
+TEST_F(ToolbarControllerUnitTest, CreateScopedPopOut) {
+  views::View* button1 = test_buttons()[0];
+  views::View* button2 = test_buttons()[1];
+  views::View* button3 = test_buttons()[2];
+
+  // Shrink width so button3 overflows.
+  widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 1),
+                              kButtonSize.height()));
+  EXPECT_TRUE(button1->GetVisible());
+  EXPECT_TRUE(button2->GetVisible());
+  EXPECT_FALSE(button3->GetVisible());
+
+  // Non-existent element returns a null closure runner.
+  EXPECT_FALSE(toolbar_controller()->CreateScopedPopOut(kDummyButton4));
+
+  // CreateScopedPopOut pops out button3 synchronously without waiting for a
+  // scheduled layout pass.
+  base::ScopedClosureRunner pop_out =
+      toolbar_controller()->CreateScopedPopOut(kDummyButton3);
+  EXPECT_TRUE(pop_out);
+  EXPECT_TRUE(button1->GetVisible());
+  EXPECT_FALSE(button2->GetVisible());
+  EXPECT_TRUE(button3->GetVisible());
+
+  // Releasing the token restores responsive overflow on the next layout.
+  pop_out.RunAndReset();
+  views::test::RunScheduledLayout(toolbar_container_view());
+  EXPECT_TRUE(button1->GetVisible());
+  EXPECT_TRUE(button2->GetVisible());
+  EXPECT_FALSE(button3->GetVisible());
+}
+
+TEST_F(ToolbarControllerUnitTest, CreateScopedPopOutOverlappingTokens) {
+  views::View* button1 = test_buttons()[0];
+  views::View* button2 = test_buttons()[1];
+  views::View* button3 = test_buttons()[2];
+
+  widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 1),
+                              kButtonSize.height()));
+  ASSERT_FALSE(button3->GetVisible());
+
+  base::ScopedClosureRunner token1 =
+      toolbar_controller()->CreateScopedPopOut(kDummyButton3);
+  EXPECT_TRUE(token1);
+  EXPECT_TRUE(button3->GetVisible());
+  EXPECT_FALSE(button2->GetVisible());
+
+  base::ScopedClosureRunner token2 =
+      toolbar_controller()->CreateScopedPopOut(kDummyButton3);
+  EXPECT_TRUE(token2);
+  EXPECT_TRUE(button3->GetVisible());
+
+  // Releasing the first token keeps button3 popped out while token2 is alive.
+  token1.RunAndReset();
+  views::test::RunScheduledLayout(toolbar_container_view());
+  EXPECT_TRUE(button1->GetVisible());
+  EXPECT_FALSE(button2->GetVisible());
+  EXPECT_TRUE(button3->GetVisible());
+
+  // Releasing the last token restores overflow.
+  token2.RunAndReset();
+  views::test::RunScheduledLayout(toolbar_container_view());
+  EXPECT_TRUE(button1->GetVisible());
+  EXPECT_TRUE(button2->GetVisible());
+  EXPECT_FALSE(button3->GetVisible());
+}
+
+TEST_F(ToolbarControllerUnitTest, CreateScopedPopOutInterleavedWithPopOut) {
+  views::View* button2 = test_buttons()[1];
+  views::View* button3 = test_buttons()[2];
+
+  widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 1),
+                              kButtonSize.height()));
+  ASSERT_FALSE(button3->GetVisible());
+
+  // Scoped pop-out first, then PopOut, then EndPopOut, then release token.
+  base::ScopedClosureRunner token1 =
+      toolbar_controller()->CreateScopedPopOut(kDummyButton3);
+  EXPECT_TRUE(button3->GetVisible());
+  EXPECT_TRUE(toolbar_controller()->PopOut(kDummyButton3,
+                                           /*show_synchronously=*/false));
+  EXPECT_TRUE(toolbar_controller()->EndPopOut(kDummyButton3));
+  views::test::RunScheduledLayout(toolbar_container_view());
+  EXPECT_TRUE(button3->GetVisible());
+  EXPECT_FALSE(button2->GetVisible());
+
+  token1.RunAndReset();
+  views::test::RunScheduledLayout(toolbar_container_view());
+  EXPECT_FALSE(button3->GetVisible());
+  EXPECT_TRUE(button2->GetVisible());
+
+  // Deferred PopOut first, then CreateScopedPopOut, then release token, then
+  // EndPopOut.
+  EXPECT_TRUE(toolbar_controller()->PopOut(kDummyButton3,
+                                           /*show_synchronously=*/false));
+  base::ScopedClosureRunner token2 =
+      toolbar_controller()->CreateScopedPopOut(kDummyButton3);
+  // CreateScopedPopOut still lays out synchronously even if PopOut deferred it.
+  EXPECT_TRUE(button3->GetVisible());
+  EXPECT_FALSE(button2->GetVisible());
+
+  token2.RunAndReset();
+  views::test::RunScheduledLayout(toolbar_container_view());
+  EXPECT_TRUE(button3->GetVisible());
+  EXPECT_FALSE(button2->GetVisible());
+
+  EXPECT_TRUE(toolbar_controller()->EndPopOut(kDummyButton3));
+  views::test::RunScheduledLayout(toolbar_container_view());
+  EXPECT_FALSE(button3->GetVisible());
+  EXPECT_TRUE(button2->GetVisible());
+}
+
+TEST_F(ToolbarControllerUnitTest,
+       CreateScopedPopOutSafeAfterControllerDestroyed) {
+  views::View* button3 = test_buttons()[2];
+
+  widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 1),
+                              kButtonSize.height()));
+  ASSERT_FALSE(button3->GetVisible());
+
+  base::ScopedClosureRunner token =
+      toolbar_controller()->CreateScopedPopOut(kDummyButton3);
+  EXPECT_TRUE(token);
+  EXPECT_TRUE(button3->GetVisible());
+
+  ResetToolbarController();
+  token.RunAndReset();
+}
+
+TEST_F(ToolbarControllerUnitTest, CreateScopedPopOutPreventOverflow) {
+  ToolbarControllerUtil::SetPreventOverflowForTesting(true);
+  base::ScopedClosureRunner reset_prevent_overflow(base::BindOnce(
+      []() { ToolbarControllerUtil::SetPreventOverflowForTesting(false); }));
+
+  EXPECT_FALSE(toolbar_controller()->CreateScopedPopOut(kDummyButton3));
+}
+
+TEST_F(ToolbarControllerUnitTest, CreateScopedPopOutElementWithoutObservedId) {
+  auto extra_view = std::make_unique<views::View>();
+  extra_view->SetProperty(views::kElementIdentifierKey, kDummyButton4);
+  extra_view->SetPreferredSize(kButtonSize);
+  views::View* non_responsive_view =
+      toolbar_container_view()->AddChildView(std::move(extra_view));
+  base::ScopedClosureRunner cleanup_extra_view(base::BindOnce(
+      [](views::View* container, views::View* child) {
+        container->RemoveChildViewT(child);
+      },
+      toolbar_container_view(), non_responsive_view));
+
+  auto test_delegate = std::make_unique<TestDelegate>();
+  const gfx::VectorIcon* icon =
+      &(features::IsRoundedIconsEnabled() ? vector_icons::kErrorFilledIcon
+                                          : vector_icons::kErrorOldIcon);
+  auto test_controller = std::make_unique<TestToolbarController>(
+      std::vector<ToolbarController::ResponsiveElementInfo>(
+          {ToolbarController::ResponsiveElementInfo(
+               ToolbarController::ElementIdInfo(kDummyButton1, 0, icon,
+                                                kDummyActivateView),
+               false),
+           ToolbarController::ResponsiveElementInfo(
+               ToolbarController::ElementIdInfo(kDummyButton2, 0, icon,
+                                                kDummyActivateView),
+               false),
+           ToolbarController::ResponsiveElementInfo(
+               ToolbarController::ElementIdInfo(kDummyButton3, 0, icon,
+                                                kDummyActivateView),
+               false)}),
+      std::vector<ui::ElementIdentifier>(
+          {kDummyButton3, kDummyButton2, kDummyButton1}),
+      kElementFlexOrderStart, toolbar_container_view(),
+      /*webui_toolbar_controller_delegate=*/nullptr,
+      const_cast<OverflowButton*>(overflow_button()), test_delegate.get(),
+      GetPinnedToolbarActionsModel());
+
+  // A child view that is not in `responsive_elements` returns an empty runner.
+  EXPECT_FALSE(test_controller->CreateScopedPopOut(kDummyButton4));
+
+  // Shrink width so button3 overflows (non_responsive_view also takes 1 slot).
+  widget()->SetSize(gfx::Size(kButtonSize.width() * 3, kButtonSize.height()));
+  ASSERT_FALSE(test_buttons()[2]->GetVisible());
+
+  // Responsive element without `observed_identifier` still pops out cleanly.
+  base::ScopedClosureRunner token =
+      test_controller->CreateScopedPopOut(kDummyButton3);
+  EXPECT_TRUE(token);
+  EXPECT_TRUE(test_buttons()[2]->GetVisible());
+
+  token.RunAndReset();
+  views::test::RunScheduledLayout(toolbar_container_view());
+  EXPECT_FALSE(test_buttons()[2]->GetVisible());
+}
+
+TEST_F(ToolbarControllerUnitTest, CreateScopedPopOutRestoresOriginalSpec) {
+  const gfx::VectorIcon* icon =
+      &(features::IsRoundedIconsEnabled() ? vector_icons::kErrorFilledIcon
+                                          : vector_icons::kErrorOldIcon);
+  for (bool chip_resizing_enabled : {true, false}) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(features::kToolbarProfileChipResizing,
+                                      chip_resizing_enabled);
+
+    views::View* button3 = test_buttons()[2];
+    const auto initial_spec =
+        views::FlexSpecification(
+            views::LayoutOrientation::kHorizontal,
+            views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
+            views::MaximumFlexSizeRule::kPreferred)
+            .WithOrder(1)
+            .WithWeight(2);
+    button3->SetProperty(views::kFlexBehaviorKey, initial_spec);
+
+    auto test_delegate = std::make_unique<TestDelegate>();
+    auto test_controller = std::make_unique<TestToolbarController>(
+        std::vector<ToolbarController::ResponsiveElementInfo>(
+            {ToolbarController::ResponsiveElementInfo(
+                 ToolbarController::ElementIdInfo(kDummyButton1, 0, icon,
+                                                  kDummyActivateView,
+                                                  kDummyObservedView),
+                 false),
+             ToolbarController::ResponsiveElementInfo(
+                 ToolbarController::ElementIdInfo(kDummyButton2, 0, icon,
+                                                  kDummyActivateView,
+                                                  kDummyObservedView),
+                 false),
+             ToolbarController::ResponsiveElementInfo(
+                 ToolbarController::ElementIdInfo(kDummyButton3, 0, icon,
+                                                  kDummyActivateView,
+                                                  kDummyObservedView),
+                 false)}),
+        std::vector<ui::ElementIdentifier>(
+            {kDummyButton3, kDummyButton2, kDummyButton1}),
+        kElementFlexOrderStart, toolbar_container_view(),
+        /*webui_toolbar_controller_delegate=*/nullptr,
+        const_cast<OverflowButton*>(overflow_button()), test_delegate.get(),
+        GetPinnedToolbarActionsModel());
+
+    const auto& saved_state =
+        *test_controller->pop_out_state_for_testing().at(kDummyButton3);
+    ASSERT_TRUE(saved_state.original_spec.has_value());
+    EXPECT_EQ(saved_state.original_spec->order(), 1);
+    EXPECT_EQ(saved_state.original_spec->weight(), 2);
+
+    base::ScopedClosureRunner token =
+        test_controller->CreateScopedPopOut(kDummyButton3);
+    ASSERT_TRUE(token);
+    const views::FlexSpecification* popped_spec =
+        button3->GetProperty(views::kFlexBehaviorKey);
+    ASSERT_TRUE(popped_spec);
+    EXPECT_EQ(popped_spec->order(), 1);
+    EXPECT_EQ(popped_spec->weight(), 2);
+    const gfx::Size zero_bounds_size = popped_spec->rule().Run(
+        button3, views::SizeBounds(0, kButtonSize.height()));
+    EXPECT_EQ(zero_bounds_size.width(),
+              chip_resizing_enabled ? kButtonSize.width() : 0);
+
+    token.RunAndReset();
+    const views::FlexSpecification* restored_spec =
+        button3->GetProperty(views::kFlexBehaviorKey);
+    ASSERT_TRUE(restored_spec);
+    EXPECT_EQ(restored_spec->order(), saved_state.responsive_spec.order());
+  }
+}
+
+TEST_F(ToolbarControllerUnitTest, CreateScopedPopOutSafeAfterElementRemoved) {
+  auto removable = std::make_unique<views::View>();
+  removable->SetProperty(views::kElementIdentifierKey, kDummyButton4);
+  removable->SetPreferredSize(kButtonSize);
+  views::View* removable_ptr =
+      toolbar_container_view()->AddChildView(std::move(removable));
+
+  auto test_delegate = std::make_unique<TestDelegate>();
+  const gfx::VectorIcon* icon =
+      &(features::IsRoundedIconsEnabled() ? vector_icons::kErrorFilledIcon
+                                          : vector_icons::kErrorOldIcon);
+  auto test_controller = std::make_unique<TestToolbarController>(
+      std::vector<ToolbarController::ResponsiveElementInfo>(
+          {ToolbarController::ResponsiveElementInfo(
+              ToolbarController::ElementIdInfo(kDummyButton4, 0, icon,
+                                               kDummyActivateView,
+                                               kDummyObservedView),
+              false)}),
+      std::vector<ui::ElementIdentifier>({kDummyButton4}),
+      kElementFlexOrderStart, toolbar_container_view(),
+      /*webui_toolbar_controller_delegate=*/nullptr,
+      const_cast<OverflowButton*>(overflow_button()), test_delegate.get(),
+      GetPinnedToolbarActionsModel());
+
+  base::ScopedClosureRunner token =
+      test_controller->CreateScopedPopOut(kDummyButton4);
+  ASSERT_TRUE(token);
+  EXPECT_EQ(test_controller->pop_out_state_for_testing()
+                .at(kDummyButton4)
+                ->scoped_pop_out_count,
+            1);
+
+  toolbar_container_view()->RemoveChildViewT(removable_ptr);
+  token.RunAndReset();
+  EXPECT_EQ(test_controller->pop_out_state_for_testing()
+                .at(kDummyButton4)
+                ->scoped_pop_out_count,
+            0);
 }
 
 // Buttons overflow in order: 3, 2, 1.

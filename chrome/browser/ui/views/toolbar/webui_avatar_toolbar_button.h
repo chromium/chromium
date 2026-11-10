@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "components/browser_apis/ui_controllers/toolbar/icon_handle.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/controls/button/button.h"
 
 class AvatarToolbarButtonStateManager;
@@ -51,6 +52,7 @@ class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface {
   bool IsMouseHovered() const override;
   bool HasFocus() const override;
   views::DialogDelegate* GetDialogDelegate() override;
+  void RunWhenVisible(WhenVisibleCallback callback) override;
   void AddObserver(AvatarToolbarButtonInterface::Observer* observer) override;
   void RemoveObserver(
       AvatarToolbarButtonInterface::Observer* observer) override;
@@ -84,28 +86,9 @@ class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface {
   // fallback queries when the button is hidden.
   friend class ::AvatarToolbarButtonTestAccessor;
 
-  // Callback invoked by RunWhenVisible(). `keep_visible` keeps the button from
-  // being hidden due to toolbar overflow as long as it is alive. The callee
-  // should keep it alive for as long as it needs the button to be visible
-  // (e.g., while a bubble anchored to it is open), and destroy it as soon as it
-  // no longer does.
-  using WhenVisibleCallback =
-      base::OnceCallback<void(base::ScopedClosureRunner keep_visible)>;
-
   void UpdateState();
   void UpdateAccessibilityLabel();
   void AnnounceInternal(std::u16string text);
-
-  // Invokes `callback` once the button is visible. If the button is already
-  // visible, `callback` is invoked synchronously. Otherwise, the button is
-  // prevented from overflowing, and `callback` is invoked once it is visible.
-  // If `this` is destroyed first, `callback` is never invoked. If the button is
-  // never shown for the profile, `callback` is invoked synchronously with an
-  // empty `keep_visible`.
-  //
-  // TODO(crbug.com/556290451): Expose this via AvatarToolbarButtonInterface,
-  // so other code that anchors bubbles to the avatar button can use it.
-  void RunWhenVisible(WhenVisibleCallback callback);
 
   // Returns a closure that keeps the button from being hidden due to overflow
   // as long as it is alive. Multiple closures may be outstanding at once.
@@ -122,6 +105,7 @@ class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface {
 
   // Handles a button press once the button is visible.
   void OnButtonPressedAndVisible(bool is_source_accelerator,
+                                 views::BubbleAnchor anchor,
                                  base::ScopedClosureRunner keep_visible);
 
   base::OnceCallback<void(std::u16string)> announce_callback_for_testing_;
@@ -142,7 +126,7 @@ class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface {
 
   // RunWhenVisible() callbacks waiting for the button to be shown, each with
   // its `keep_visible` token already bound.
-  std::vector<base::OnceClosure> pending_callbacks_;
+  std::vector<base::OnceCallback<void(views::BubbleAnchor)>> pending_callbacks_;
   // Non-null only when `pending_callbacks_` is non-empty.
   base::CallbackListSubscription button_shown_subscription_;
 

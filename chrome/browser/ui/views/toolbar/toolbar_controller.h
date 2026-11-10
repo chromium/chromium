@@ -10,7 +10,9 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
@@ -129,8 +131,16 @@ class ToolbarController : public OverflowMenu::Delegate {
     // The responsive FlexSpecification modified by ToolbarController.
     views::FlexSpecification responsive_spec;
 
-    // Whether the element is current popped out.
+    // Whether the element is currently popped out via PopOut()/EndPopOut().
     bool is_popped_out = false;
+
+    // Number of active CreateScopedPopOut() tokens keeping the element popped
+    // out.
+    int scoped_pop_out_count = 0;
+
+    bool IsPoppedOut() const {
+      return is_popped_out || scoped_pop_out_count > 0;
+    }
 
     std::unique_ptr<PopOutHandler> handler;
   };
@@ -154,6 +164,14 @@ class ToolbarController : public OverflowMenu::Delegate {
   // End forcing the UI element with the identifier to show. Return whether the
   // action is successful.
   virtual bool EndPopOut(ui::ElementIdentifier identifier);
+
+  // Forces the UI element with `identifier` to show synchronously and returns
+  // a closure that keeps it popped out for as long as it is alive (or an empty
+  // closure if overflow is prevented or `identifier` is not a responsive view
+  // on `toolbar_container_view_`). Multiple closures may be outstanding at
+  // once, and may overlap with PopOut()/EndPopOut().
+  [[nodiscard]] base::ScopedClosureRunner CreateScopedPopOut(
+      ui::ElementIdentifier identifier);
 
   // Returns true if any overflow-able elements are hidden when
   // `toolbar_container_view_` is set to `size`. This excludes the overflow
@@ -226,6 +244,11 @@ class ToolbarController : public OverflowMenu::Delegate {
       const OverflowableElement& element,
       const views::ProposedLayout* proposed_layout = nullptr) const;
 
+  void ApplyPopOutSpec(views::View* element, const PopOutState& state);
+  void MaybeRestoreResponsiveSpec(views::View* element,
+                                  const PopOutState& state);
+  void ReleaseScopedPopOut(ui::ElementIdentifier identifier);
+
   // The starting flex order assigned to the last overflowed element in
   // `overflow_menu_.responsive_elements()`.
   const int element_flex_order_start_;
@@ -260,6 +283,8 @@ class ToolbarController : public OverflowMenu::Delegate {
   // of and automatically sorting the ResponsiveElementInfo of all overflowable
   // elements.
   OverflowMenu overflow_menu_;
+
+  base::WeakPtrFactory<ToolbarController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_CONTROLLER_H_

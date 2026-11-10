@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_avatar_toolbar_button.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_is_test.h"
@@ -32,6 +33,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -347,12 +349,21 @@ void WebUIAvatarToolbarButton::RunWhenVisible(WhenVisibleCallback callback) {
     return;
   }
 
+  // App windows (`ToolbarView::DisplayMode::kCustomTab`) never construct
+  // `WebUIToolbarWebView` and instead use `WebAppFrameToolbarView`'s Views
+  // `AvatarToolbarButton`.
+  //
   // If the button is never shown for this profile (e.g., regular profiles on
-  // ChromeOS), it will never become visible, so there's no point in waiting for
-  // it. Run `callback` immediately instead.
+  // ChromeOS or DevTools windows), it will never become visible, so there's no
+  // point in waiting for it. Run `callback` immediately with the parent toolbar
+  // view as a fallback anchor, since the WebUI toolbar view itself may be
+  // hidden when no WebUI controls are shown.
   if (!AvatarToolbarButtonInterface::CanShowForProfile(
           delegate_->GetBrowser()->GetProfile())) {
-    std::move(callback).Run(base::ScopedClosureRunner());
+    views::View* view = delegate_->GetView();
+    views::View* anchor_view = (view && view->parent()) ? view->parent() : view;
+    std::move(callback).Run(views::BubbleAnchor(anchor_view),
+                            base::ScopedClosureRunner());
     return;
   }
 
@@ -361,8 +372,9 @@ void WebUIAvatarToolbarButton::RunWhenVisible(WhenVisibleCallback callback) {
   // long as that bubble is open.
   base::ScopedClosureRunner keep_visible = PreventOverflow();
 
-  if (GetVisibleButtonElement()) {
-    std::move(callback).Run(std::move(keep_visible));
+  if (ui::TrackedElement* element = GetVisibleButtonElement()) {
+    std::move(callback).Run(views::BubbleAnchor(element),
+                            std::move(keep_visible));
     return;
   }
 
@@ -370,8 +382,12 @@ void WebUIAvatarToolbarButton::RunWhenVisible(WhenVisibleCallback callback) {
   // overflowed. PreventOverflow() above will have pushed a state update telling
   // the WebUI to show it, so wait until it's visible. `keep_visible` is bound
   // to the callback, so overflow stays prevented while waiting.
-  pending_callbacks_.push_back(
-      base::BindOnce(std::move(callback), std::move(keep_visible)));
+  pending_callbacks_.push_back(base::BindOnce(
+      [](WhenVisibleCallback cb, base::ScopedClosureRunner keep_visible,
+         views::BubbleAnchor anchor) {
+        std::move(cb).Run(anchor, std::move(keep_visible));
+      },
+      std::move(callback), std::move(keep_visible)));
   if (!button_shown_subscription_) {
     BrowserElements* const elements =
         BrowserElements::From(delegate_->GetBrowser());
@@ -417,22 +433,30 @@ ui::TrackedElement* WebUIAvatarToolbarButton::GetVisibleButtonElement() {
 }
 
 void WebUIAvatarToolbarButton::OnButtonShown(ui::TrackedElement* element) {
+  // ElementTracker passes nullptr to subsequent shown-callbacks if an earlier
+  // subscriber hid the element during notification.
+  if (!element) {
+    return;
+  }
   // This is always true, because there's no way to cancel requests.
   CHECK(!pending_callbacks_.empty());
 
   button_shown_subscription_ = {};
-  std::vector<base::OnceClosure> callbacks =
+  std::vector<base::OnceCallback<void(views::BubbleAnchor)>> callbacks =
       std::exchange(pending_callbacks_, {});
 
-  // The button is only hidden in response to messages from the WebUI, so it
-  // can't be hidden again while these run.
-  for (base::OnceClosure& callback : callbacks) {
-    std::move(callback).Run();
+  // Callbacks are not expected to synchronously destroy the button or hide the
+  // element.
+  base::WeakPtr<WebUIAvatarToolbarButton> self = weak_ptr_factory_.GetWeakPtr();
+  for (auto& callback : callbacks) {
+    CHECK(self);
+    std::move(callback).Run(views::BubbleAnchor(element));
   }
 }
 
 void WebUIAvatarToolbarButton::OnButtonPressedAndVisible(
     bool is_source_accelerator,
+    views::BubbleAnchor /*anchor*/,
     base::ScopedClosureRunner keep_visible) {
   // The widget may have been destroyed while waiting for the button to be
   // shown.

@@ -51,6 +51,7 @@ class AvatarToolbarButton : public ToolbarButton,
   bool IsMouseHovered() const override;
   bool HasFocus() const override;
   views::DialogDelegate* GetDialogDelegate() override;
+  void RunWhenVisible(WhenVisibleCallback callback) override;
   void ButtonPressed(bool is_source_accelerator) override;
   [[nodiscard]] base::ScopedClosureRunner SetExplicitButtonState(
       const std::u16string& text,

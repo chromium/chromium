@@ -55,6 +55,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -147,37 +148,37 @@ ToolbarController::ToolbarController(
                 return;
               }
 
-              views::FlexSpecification* original_spec =
-                  toolbar_element->GetProperty(views::kFlexBehaviorKey);
-              views::FlexSpecification flex_spec;
-              if (!original_spec) {
-                flex_spec = views::FlexSpecification(
-                    views::LayoutOrientation::kHorizontal,
-                    views::MinimumFlexSizeRule::kPreferredSnapToZero,
-                    views::MaximumFlexSizeRule::kPreferred);
-                toolbar_element->SetProperty(views::kFlexBehaviorKey,
-                                             flex_spec);
+              // Copy any existing spec by value before calling `SetProperty()`,
+              // which mutates an existing `FlexSpecification` allocation in
+              // place.
+              std::optional<views::FlexSpecification> original_spec;
+              if (const views::FlexSpecification* existing_spec =
+                      toolbar_element->GetProperty(views::kFlexBehaviorKey)) {
+                original_spec = *existing_spec;
               }
-              flex_spec =
-                  toolbar_element->GetProperty(views::kFlexBehaviorKey)
-                      ->WithOrder(id_to_order_map.at(id.overflow_identifier));
+              views::FlexSpecification flex_spec =
+                  original_spec.value_or(views::FlexSpecification(
+                      views::LayoutOrientation::kHorizontal,
+                      views::MinimumFlexSizeRule::kPreferredSnapToZero,
+                      views::MaximumFlexSizeRule::kPreferred));
+              flex_spec = flex_spec.WithOrder(
+                  id_to_order_map.at(id.overflow_identifier));
               toolbar_element->SetProperty(views::kFlexBehaviorKey, flex_spec);
 
-              // Create pop out state and pop out handlers to support pop out.
+              // Create pop out state for every responsive element, and attach a
+              // PopOutHandler when an observed element identifier is
+              // configured.
+              auto state = std::make_unique<PopOutState>();
+              state->original_spec = std::move(original_spec);
+              state->responsive_spec = flex_spec;
               if (id.observed_identifier.has_value()) {
-                auto state = std::make_unique<PopOutState>();
-                if (original_spec) {
-                  state->original_spec =
-                      std::optional<views::FlexSpecification>(*original_spec);
-                }
-                state->responsive_spec = flex_spec;
                 state->handler = std::make_unique<PopOutHandler>(
                     this,
                     views::ElementTrackerViews::GetContextForView(
                         toolbar_container_view),
                     id.overflow_identifier, id.observed_identifier.value());
-                pop_out_state_[id.overflow_identifier] = std::move(state);
               }
+              pop_out_state_[id.overflow_identifier] = std::move(state);
             }},
         overflow_id);
   }
@@ -317,31 +318,12 @@ bool ToolbarController::PopOut(ui::ElementIdentifier identifier,
     return false;
   }
 
+  const bool was_popped_out = it->second->scoped_pop_out_count > 0;
   it->second->is_popped_out = true;
 
-  auto& original = it->second->original_spec;
-
-  if (original.has_value()) {
-    if (base::FeatureList::IsEnabled(features::kToolbarProfileChipResizing)) {
-      // Some elements (e.g. profile chip) use flex rules that allow
-      // snapping/scaling to zero. When popping out, elements should never be
-      // below the mininmum size.
-      element->SetProperty(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                                   views::MinimumFlexSizeRule::kScaleToMinimum,
-                                   views::MaximumFlexSizeRule::kPreferred)
-              .WithOrder((*original).order())
-              .WithWeight((*original).weight())
-              .WithAlignment((*original).alignment()));
-    } else {
-      element->SetProperty(views::kFlexBehaviorKey, original.value());
-    }
-  } else {
-    element->ClearProperty(views::kFlexBehaviorKey);
+  if (!was_popped_out) {
+    ApplyPopOutSpec(element, *it->second);
   }
-
-  element->parent()->InvalidateLayout();
   if (show_synchronously) {
     toolbar_container_view_->DeprecatedLayoutImmediately();
   }
@@ -366,10 +348,85 @@ bool ToolbarController::EndPopOut(ui::ElementIdentifier identifier) {
   }
 
   it->second->is_popped_out = false;
-
-  element->SetProperty(views::kFlexBehaviorKey, it->second->responsive_spec);
-  element->parent()->InvalidateLayout();
+  MaybeRestoreResponsiveSpec(element, *it->second);
   return true;
+}
+
+base::ScopedClosureRunner ToolbarController::CreateScopedPopOut(
+    ui::ElementIdentifier identifier) {
+  if (ToolbarControllerUtil::PreventOverflow()) {
+    return base::ScopedClosureRunner();
+  }
+  views::View* const element =
+      FindToolbarElementWithId(toolbar_container_view_, identifier);
+  if (!element) {
+    return base::ScopedClosureRunner();
+  }
+  const auto it = pop_out_state_.find(identifier);
+  if (it == pop_out_state_.end()) {
+    return base::ScopedClosureRunner();
+  }
+
+  const bool was_popped_out = it->second->IsPoppedOut();
+  ++it->second->scoped_pop_out_count;
+  if (!was_popped_out) {
+    ApplyPopOutSpec(element, *it->second);
+  }
+  if (views::Widget* widget = toolbar_container_view_->GetWidget()) {
+    widget->LayoutRootViewIfNecessary();
+  }
+
+  return base::ScopedClosureRunner(
+      base::BindOnce(&ToolbarController::ReleaseScopedPopOut,
+                     weak_ptr_factory_.GetWeakPtr(), identifier));
+}
+
+void ToolbarController::ApplyPopOutSpec(views::View* element,
+                                        const PopOutState& state) {
+  if (state.original_spec.has_value()) {
+    if (base::FeatureList::IsEnabled(features::kToolbarProfileChipResizing)) {
+      // Some elements (e.g. profile chip) use flex rules that allow
+      // snapping/scaling to zero. When popping out, elements should never be
+      // below the minimum size.
+      element->SetProperty(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                                   views::MinimumFlexSizeRule::kScaleToMinimum,
+                                   views::MaximumFlexSizeRule::kPreferred)
+              .WithOrder(state.original_spec->order())
+              .WithWeight(state.original_spec->weight())
+              .WithAlignment(state.original_spec->alignment()));
+    } else {
+      element->SetProperty(views::kFlexBehaviorKey, *state.original_spec);
+    }
+  } else {
+    element->ClearProperty(views::kFlexBehaviorKey);
+  }
+
+  element->parent()->InvalidateLayout();
+}
+
+void ToolbarController::MaybeRestoreResponsiveSpec(views::View* element,
+                                                   const PopOutState& state) {
+  if (state.IsPoppedOut()) {
+    return;
+  }
+  element->SetProperty(views::kFlexBehaviorKey, state.responsive_spec);
+  element->parent()->InvalidateLayout();
+}
+
+void ToolbarController::ReleaseScopedPopOut(ui::ElementIdentifier identifier) {
+  const auto it = pop_out_state_.find(identifier);
+  CHECK(it != pop_out_state_.end());
+  CHECK_GT(it->second->scoped_pop_out_count, 0);
+  --it->second->scoped_pop_out_count;
+
+  // `toolbar_container_view_` may have removed the child view before the scoped
+  // token is released (e.g. unpinning a responsive button).
+  if (views::View* const element =
+          FindToolbarElementWithId(toolbar_container_view_, identifier)) {
+    MaybeRestoreResponsiveSpec(element, *it->second);
+  }
 }
 
 bool ToolbarController::ShouldShowOverflowButton(gfx::Size available_size) {
