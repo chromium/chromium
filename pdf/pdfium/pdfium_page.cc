@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/containers/extend.h"
 #include "base/containers/span.h"
@@ -827,6 +828,15 @@ bool PDFiumPage::Unload() {
   if (preventing_page_unload_count_ || preventing_text_page_unload_count_) {
     return false;
   }
+
+  // Also do not unload when already unloading.
+  if (is_unloading_) {
+    return false;
+  }
+
+  base::AutoReset scoped_is_unloading(&is_unloading_, true);
+  // Also mark `this` as unavailable for the duration of Unload().
+  base::AutoReset scoped_unavailable(&available_, false);
 
   text_page_.reset();
 
@@ -2573,6 +2583,10 @@ void PDFiumPage::GenerateAndSendThumbnail(float device_pixel_ratio,
 }
 
 void PDFiumPage::MarkAvailable() {
+  if (is_unloading_) {
+    return;
+  }
+
   available_ = true;
 
   // Fulfill pending thumbnail request.
