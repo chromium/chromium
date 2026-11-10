@@ -7,8 +7,8 @@
 #include <optional>
 #include <string>
 
-#include "base/i18n/internal/bcp47_parser.h"
 #include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/values.h"
 
 namespace base::i18n {
@@ -26,12 +26,7 @@ std::optional<LanguageTag> ValueToLanguageTag(const base::Value& value) {
   if (!str) {
     return std::nullopt;
   }
-  std::optional<i18n_internal::ParsedBcp47Tag> parsed =
-      i18n_internal::ParseBcp47Tag(*str);
-  if (!parsed || !i18n_internal::AreSubtagsKnown(*parsed)) {
-    return std::nullopt;
-  }
-  return LanguageTag(base::span<const std::string_view>({*str}));
+  return GetLanguageTagFromString(*str);
 }
 
 }  // namespace base::i18n

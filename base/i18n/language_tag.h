@@ -21,10 +21,6 @@
 #include "base/i18n/internal/immutable_string.h"
 #include "base/types/pass_key.h"
 
-namespace base {
-class Value;
-}  // namespace base
-
 // Forward declaration of the Mojo deserialization tag, see the
 // `LanguageTag(typename T::Tag)` constructor below.
 namespace mojo {
@@ -44,8 +40,6 @@ namespace base::i18n {
 class LanguageTagConverter;
 class LanguageTag;
 consteval LanguageTag GetKnownLanguageTag(std::string_view);
-COMPONENT_EXPORT(LANGUAGE_TAG)
-std::optional<LanguageTag> ValueToLanguageTag(const base::Value&);
 
 // A type-safe wrapper for BCP47 language tags (locales).
 //
@@ -258,10 +252,6 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTag {
  private:
   friend class LanguageTagConverter;
   friend consteval LanguageTag GetKnownLanguageTag(std::string_view);
-  // Allow base::Value conversion from and to `LanguageTag` without having to
-  // depend on ICU.
-  friend COMPONENT_EXPORT(LANGUAGE_TAG)
-      std::optional<LanguageTag> ValueToLanguageTag(const base::Value&);
 
   std::vector<std::string_view> GetExtensionSubtagsInternal(char key) const;
   LanguageTag WithExtensionStringInternal(char key,

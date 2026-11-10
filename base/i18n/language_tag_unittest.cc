@@ -73,6 +73,13 @@ TEST(LanguageTagTest, ValueConversions) {
   EXPECT_THAT(ValueToLanguageTag(value), OptionalToString("en-US"));
   EXPECT_THAT(ValueToLanguageTag(&value), OptionalToString("en-US"));
 
+  // ValueToLanguageTag (canonicalized)
+  EXPECT_THAT(ValueToLanguageTag(base::Value("en_US")),
+              OptionalToString("en-US"));
+  EXPECT_THAT(ValueToLanguageTag(base::Value("EN-us")),
+              OptionalToString("en-US"));
+  EXPECT_THAT(ValueToLanguageTag(base::Value("iw")), OptionalToString("he"));
+
   // ValueToLanguageTag (invalid & non-string inputs)
   EXPECT_EQ(ValueToLanguageTag(nullptr), std::nullopt);
   EXPECT_EQ(ValueToLanguageTag(base::Value(42)), std::nullopt);

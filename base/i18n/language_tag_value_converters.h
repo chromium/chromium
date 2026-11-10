@@ -20,7 +20,8 @@ namespace base::i18n {
 COMPONENT_EXPORT(LANGUAGE_TAG)
 base::Value LanguageTagToValue(const LanguageTag& tag);
 
-// Parses a LanguageTag from a base::Value.
+// Parses a LanguageTag from a base::Value using GetLanguageTagFromString(), so
+// the tag is canonicalized (e.g. "en_US" -> "en-US").
 // Returns std::nullopt if `value` is nullptr, not a string Value, or not a
 // valid BCP 47 language tag.
 COMPONENT_EXPORT(LANGUAGE_TAG)
