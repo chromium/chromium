@@ -7,10 +7,60 @@ import copy
 import json
 import logging
 import re
+from typing import List
 
 from test_result_util import ResultCollection, TestResult, TestStatus
 
 LOGGER = logging.getLogger(__name__)
+
+_GTEST_NAME_RE = re.compile(r'^[A-Za-z0-9_/]+$')
+
+
+def is_gtest_disabled(test_name: str) -> bool:
+  """Returns whether a GTest full test name (Suite.Test) is disabled."""
+  return any(
+    part.startswith('DISABLED_') or '/DISABLED_' in part
+    for part in test_name.split('.', 1)
+  )
+
+
+def parse_gtest_list_tests(
+  lines: List[str], also_run_disabled: bool = False
+) -> List[str]:
+  """Parses output lines from running a GTest binary with --gtest_list_tests.
+
+  Args:
+    lines: Output lines from the test process.
+    also_run_disabled: Whether disabled tests should be included in the result.
+
+  Returns:
+    Ordered list of runnable full test names ('Suite.Test').
+  """
+  tests = []
+  current_suite = None
+  for raw_line in lines:
+    line = raw_line.rstrip('\r\n')
+    if not line:
+      continue
+    if not line.startswith(' '):
+      suite_part = line.split('  # ', 1)[0]
+      if suite_part.endswith('.'):
+        suite_candidate = suite_part[:-1]
+        if _GTEST_NAME_RE.match(suite_candidate):
+          current_suite = suite_candidate
+          continue
+      current_suite = None
+    elif current_suite and line.startswith('  ') and not line.startswith('   '):
+      test_candidate = line[2:].split('  # ', 1)[0]
+      if _GTEST_NAME_RE.match(test_candidate):
+        full_name = f'{current_suite}.{test_candidate}'
+        if also_run_disabled or not is_gtest_disabled(full_name):
+          tests.append(full_name)
+      else:
+        current_suite = None
+    else:
+      current_suite = None
+  return tests
 
 
 # These labels should match the ones output by gtest's JSON.

@@ -703,6 +703,127 @@ class TestRunner(object):
 
     return parser.GetResultCollection()
 
+  def _list_runnable_gtests(self, destination: str) -> List[str]:
+    """Runs the test binary with --gtest_list_tests to get all runnable tests.
+
+    Args:
+      destination: (str) Destination of the running device/simulator.
+
+    Returns:
+      Ordered list of runnable full test names ('Suite.Test').
+    """
+    list_test_app = self.get_launch_test_app()
+    list_test_app.remove_gtest_sharding_env_vars()
+    list_test_app.repeat_count = 1
+    if '--gtest_list_tests' not in list_test_app.test_args:
+      list_test_app.test_args.append('--gtest_list_tests')
+    list_out_dir = os.path.join(
+      self.out_dir, f'gtest_list_tests_{int(time.time())}'
+    )
+    cmd = self.get_launch_command(list_test_app, list_out_dir, destination)
+    proc = self.start_proc(cmd)
+    old_handler = self.set_sigterm_handler(
+      lambda _signum, _frame: self.handle_sigterm(proc)
+    )
+    out = print_process_output(
+      proc, 'xcodebuild', timeout=self.readline_timeout
+    )
+    proc.wait()
+    self.set_sigterm_handler(old_handler)
+    sys.stdout.flush()
+    also_run_disabled = (
+      '--gtest_also_run_disabled_tests' in list_test_app.test_args
+    )
+    return gtest_utils.parse_gtest_list_tests(
+      out, also_run_disabled=also_run_disabled
+    )
+
+  def _configure_crash_resume_test_app(
+    self,
+    test_app: 'test_apps.GTestsApp',
+    overall_result: ResultCollection,
+    crashed_tests: List[str],
+    destination: str,
+  ) -> bool:
+    """Configures |test_app| filters and env vars to resume after a crash.
+
+    When sharding is enabled (GTEST_TOTAL_SHARDS > 1), GoogleTest evaluates
+    --gtest_filter before assigning tests to shards (i % total_shards ==
+    shard_index). To keep GTEST_SHARD_INDEX and GTEST_TOTAL_SHARDS intact
+    without shifting post-filter runnable test indices across shards, this
+    method excludes a prefix of runnable tests whose length is an exact
+    multiple of total_shards.
+
+    Returns:
+      True if the suite should be relaunched to run remaining tests, or False
+      if no tests remain in the current shard after the crash.
+    """
+    try:
+      total_shards = int(test_app.env_vars.get('GTEST_TOTAL_SHARDS') or 1)
+    except (TypeError, ValueError):
+      total_shards = 1
+
+    crashed_idx = None
+    if total_shards > 1:
+      if self._all_runnable_tests is None:
+        self._all_runnable_tests = self._list_runnable_gtests(destination)
+        self._runnable_test_indices = {
+          t: i for i, t in enumerate(self._all_runnable_tests)
+        }
+      crashed_idx = max(
+        (
+          self._runnable_test_indices[t]
+          for t in crashed_tests
+          if t in self._runnable_test_indices
+        ),
+        default=None,
+      )
+      if crashed_idx is None:
+        LOGGER.warning(
+          'Could not locate crashed test %s in --gtest_list_tests '
+          'output; falling back to unsharded crash resume.',
+          crashed_tests,
+        )
+    if crashed_idx is not None:
+      # GoogleTest's round-robin sharding (index % total_shards == shard_index)
+      # partitions runnable tests into contiguous blocks of size total_shards,
+      # with at most one test per shard in each block. Because GoogleTest
+      # evaluates --gtest_filter *before* computing (index % total_shards),
+      # we must exclude a prefix whose length is an exact multiple of
+      # total_shards so that all remaining un-excluded tests keep their
+      # original (index % total_shards) modulo.
+      #
+      # Padding from (crashed_idx + 1) up to excluded_prefix_len only excludes
+      # the remaining tests in the crashed test's block, all of which belong
+      # to *other* shards (never to the current shard). This restores
+      # (index % total_shards == 0) alignment at the start of the next block
+      # so the current shard resumes at its very next test.
+      excluded_prefix_len = ((crashed_idx // total_shards) + 1) * total_shards
+      if excluded_prefix_len >= len(self._all_runnable_tests):
+        LOGGER.info(
+          'No remaining tests in shard after %s; skipping suite '
+          'resume and proceeding to individual test retries.',
+          crashed_tests,
+        )
+        return False
+      test_app.excluded_tests = self._all_runnable_tests[:excluded_prefix_len]
+      # test_apps.get_gtest_filter() uses |crashed_tests| to identify suites
+      # that must not be collapsed into a "Suite.*" wildcard when
+      # len(excluded_tests) > MAX_GTEST_FILTER_LENGTH. Because tests in each
+      # suite are contiguous in --gtest_list_tests, the suite at the boundary
+      # of the excluded prefix (excluded_prefix_len - 1) is the only suite
+      # that may be partially excluded; collapsing it to "Suite.*" would
+      # exclude the rest of that suite and break modulo alignment.
+      test_app.crashed_tests = [
+        self._all_runnable_tests[excluded_prefix_len - 1]
+      ]
+      return True
+
+    test_app.excluded_tests = list(overall_result.all_test_names())
+    test_app.crashed_tests = crashed_tests
+    test_app.remove_gtest_sharding_env_vars()
+    return True
+
   def launch(self):
     """Launches the test app."""
     self.set_up()
@@ -711,6 +832,8 @@ class TestRunner(object):
     overall_result = ResultCollection()
     destination = 'id=%s' % self.udid
     test_app = self.get_launch_test_app()
+    self._all_runnable_tests = None
+    self._runnable_test_indices = {}
     out_dir = os.path.join(self.out_dir, 'TestResults')
     cmd = self.get_launch_command(test_app, out_dir, destination, self.clones)
 
@@ -767,16 +890,13 @@ class TestRunner(object):
           # If the app crashes during a specific test case, then resume at the
           # next test case. This is achieved by filtering out every test case
           # which has already run.
-          LOGGER.warning(
-            'Crashed during %s, resuming...\n', list(result.crashed_tests())
-          )
-          test_app.excluded_tests = list(overall_result.all_test_names())
-          test_app.crashed_tests = list(result.crashed_tests())
-          # Changing test filter will change selected gtests in this shard.
-          # Thus, sharding env vars have to be cleared to ensure needed tests
-          # are run. This means there might be duplicate same tests across
-          # the shards.
-          test_app.remove_gtest_sharding_env_vars()
+          crashed_tests = list(result.crashed_tests())
+          LOGGER.warning('Crashed during %s, resuming...\n', crashed_tests)
+          if not self._configure_crash_resume_test_app(
+            test_app, overall_result, crashed_tests, destination
+          ):
+            overall_result.crashed = False
+            break
           retry_out_dir = os.path.join(
             self.out_dir, f'retry_after_crash_{int(time.time())}'
           )
@@ -796,6 +916,7 @@ class TestRunner(object):
 
       # Retry failed test cases.
       test_app.excluded_tests = []
+      test_app.crashed_tests = []
       never_expected_tests = overall_result.never_expected_tests()
       if (
         self.retries

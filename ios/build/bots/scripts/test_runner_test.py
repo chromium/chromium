@@ -340,6 +340,151 @@ class SimulatorTestRunnerTest(TestCase):
     self.assertIn('test suite crash', tr.logs)
     self.assertTrue(tr.logs)
 
+  @mock.patch('test_runner.SimulatorTestRunner.tear_down')
+  @mock.patch('test_runner.SimulatorTestRunner.set_up')
+  @mock.patch('test_runner.TestRunner._list_runnable_gtests')
+  @mock.patch('test_runner.TestRunner._run')
+  def test_sharded_relaunch_preserves_sharding_and_excludes_aligned_prefix(
+    self, mock_run, mock_list_gtests, _1, _2
+  ):
+    all_tests = [
+      'SuiteA.Test0',
+      'SuiteA.Test1',
+      'SuiteB.Test0',
+      'SuiteB.Test1',
+      'SuiteB.Test2',
+      'SuiteC.Test0',
+    ]
+    mock_list_gtests.return_value = all_tests
+
+    # Shard 0 of 2 runs indices 0, 2, 4:
+    # SuiteA.Test0 passes, SuiteB.Test0 crashes.
+    initial_result = ResultCollection(
+      test_results=[
+        TestResult('SuiteA.Test0', TestStatus.PASS),
+        TestResult('SuiteB.Test0', TestStatus.CRASH),
+      ]
+    )
+    initial_result.crashed = True
+    # Resume run on Shard 0 runs index 4 (SuiteB.Test2).
+    resume_result = ResultCollection(
+      test_results=[TestResult('SuiteB.Test2', TestStatus.PASS)]
+    )
+    # Single-test retry of SuiteB.Test0 passes.
+    retry_result = ResultCollection(
+      test_results=[TestResult('SuiteB.Test0', TestStatus.PASS)]
+    )
+    mock_run.side_effect = [initial_result, resume_result, retry_result]
+
+    recorded_states = []
+    orig_get_launch_command = test_runner.SimulatorTestRunner.get_launch_command
+
+    def spy_get_launch_command(
+      runner_self, test_app, out_dir, destination, clones=1
+    ):
+      recorded_states.append(
+        {
+          'out_dir': out_dir,
+          'env_vars': dict(test_app.env_vars),
+          'included_tests': list(test_app.included_tests),
+          'excluded_tests': list(test_app.excluded_tests),
+          'crashed_tests': list(test_app.crashed_tests),
+        }
+      )
+      return orig_get_launch_command(
+        runner_self, test_app, out_dir, destination, clones
+      )
+
+    self.mock(
+      test_runner.SimulatorTestRunner,
+      'get_launch_command',
+      spy_get_launch_command,
+    )
+
+    tr = test_runner.SimulatorTestRunner(
+      'fake-app',
+      'iPhone X',
+      '11.4',
+      'out-dir',
+      env_vars=['GTEST_SHARD_INDEX=0', 'GTEST_TOTAL_SHARDS=2'],
+      retries=1,
+    )
+    succeeded = tr.launch()
+    self.assertTrue(succeeded)
+    self.assertFalse(tr.test_results['interrupted'])
+    mock_list_gtests.assert_called_once()
+    self.assertEqual(len(recorded_states), 3)
+
+    # 1. Initial launch: sharded, no filter.
+    self.assertEqual(
+      recorded_states[0]['env_vars'],
+      {'GTEST_SHARD_INDEX': '0', 'GTEST_TOTAL_SHARDS': '2'},
+    )
+    self.assertEqual(recorded_states[0]['excluded_tests'], [])
+
+    # 2. Crash resume launch: sharding env vars preserved, excluded_tests is
+    # aligned prefix of length ((2 // 2) + 1) * 2 = 4.
+    self.assertEqual(
+      recorded_states[1]['env_vars'],
+      {'GTEST_SHARD_INDEX': '0', 'GTEST_TOTAL_SHARDS': '2'},
+    )
+    self.assertEqual(
+      recorded_states[1]['excluded_tests'],
+      ['SuiteA.Test0', 'SuiteA.Test1', 'SuiteB.Test0', 'SuiteB.Test1'],
+    )
+    self.assertEqual(recorded_states[1]['crashed_tests'], ['SuiteB.Test1'])
+
+    # 3. Individual failed test retry: sharding env vars removed, included_tests
+    # has only the crashed test.
+    self.assertEqual(recorded_states[2]['env_vars'], {})
+    self.assertEqual(recorded_states[2]['included_tests'], ['SuiteB.Test0'])
+    self.assertEqual(recorded_states[2]['excluded_tests'], [])
+    self.assertEqual(recorded_states[2]['crashed_tests'], [])
+
+  @mock.patch('test_runner.SimulatorTestRunner.tear_down')
+  @mock.patch('test_runner.SimulatorTestRunner.set_up')
+  @mock.patch('test_runner.TestRunner._list_runnable_gtests')
+  @mock.patch('test_runner.TestRunner._run')
+  def test_sharded_crash_on_last_shard_test_skips_suite_resume(
+    self, mock_run, mock_list_gtests, _1, _2
+  ):
+    all_tests = [
+      'SuiteA.Test0',
+      'SuiteA.Test1',
+      'SuiteB.Test0',
+      'SuiteB.Test1',
+    ]
+    mock_list_gtests.return_value = all_tests
+
+    # Shard 0 of 2 runs indices 0 and 2. Crashing at index 2 (SuiteB.Test0)
+    # leaves excluded_prefix_len = 4 >= len(all_tests), so no more tests remain
+    # on Shard 0.
+    initial_result = ResultCollection(
+      test_results=[
+        TestResult('SuiteA.Test0', TestStatus.PASS),
+        TestResult('SuiteB.Test0', TestStatus.CRASH),
+      ]
+    )
+    initial_result.crashed = True
+    retry_result = ResultCollection(
+      test_results=[TestResult('SuiteB.Test0', TestStatus.PASS)]
+    )
+    mock_run.side_effect = [initial_result, retry_result]
+
+    tr = test_runner.SimulatorTestRunner(
+      'fake-app',
+      'iPhone X',
+      '11.4',
+      'out-dir',
+      env_vars=['GTEST_SHARD_INDEX=0', 'GTEST_TOTAL_SHARDS=2'],
+      retries=1,
+    )
+    succeeded = tr.launch()
+    self.assertTrue(succeeded)
+    self.assertFalse(tr.test_results['interrupted'])
+    # Only 2 _run calls: initial run + single-test retry (no suite resume run).
+    self.assertEqual(len(mock_run.mock_calls), 2)
+
 
 class DeviceTestRunnerTest(TestCase):
   def setUp(self):

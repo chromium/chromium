@@ -1249,6 +1249,50 @@ class TestGTestLogParserTests(unittest.TestCase):
     collection = parser.GetResultCollection()
     self.assertTrue(collection.crashed)
 
+  def testParseGTestListTests(self):
+    lines = [
+      'Command line invocation:',
+      '    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild ...',
+      'Test Suite \'All tests\' started at 2026-11-05 09:00:00.000',
+      'FooTest.',
+      '  Bar1',
+      '  DISABLED_Bar2',
+      '  Bar3',
+      'DISABLED_DisabledSuite.',
+      '  Baz1',
+      'Prefix/ParamSuite.',
+      '  Case/0  # GetParam() = (true, 42)',
+      '  DISABLED_Case/1  # GetParam() = (false, 0)',
+      '  Case/2  # GetParam() = (true, 7)',
+      'TypedSuite/0.  # TypeParam = int',
+      '  Works',
+      'Test Suite \'All tests\' passed at 2026-11-05 09:00:01.000.',
+      '     Executed 1 test, with 0 failures (0 unexpected) in 0.123 seconds',
+    ]
+    self.assertEqual(
+      gtest_utils.parse_gtest_list_tests(lines),
+      [
+        'FooTest.Bar1',
+        'FooTest.Bar3',
+        'Prefix/ParamSuite.Case/0',
+        'Prefix/ParamSuite.Case/2',
+        'TypedSuite/0.Works',
+      ],
+    )
+    self.assertEqual(
+      gtest_utils.parse_gtest_list_tests(lines, also_run_disabled=True),
+      [
+        'FooTest.Bar1',
+        'FooTest.DISABLED_Bar2',
+        'FooTest.Bar3',
+        'DISABLED_DisabledSuite.Baz1',
+        'Prefix/ParamSuite.Case/0',
+        'Prefix/ParamSuite.DISABLED_Case/1',
+        'Prefix/ParamSuite.Case/2',
+        'TypedSuite/0.Works',
+      ],
+    )
+
 
 if __name__ == '__main__':
   unittest.main()
