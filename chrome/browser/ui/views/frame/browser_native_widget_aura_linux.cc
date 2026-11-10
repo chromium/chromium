@@ -96,6 +96,9 @@ BrowserNativeWidgetAuraLinux::GetWindowClass() const {
         app_name, browser.GetProfile()->GetPath());
     if (base::StartsWith(app_name, web_app::kCrxAppPrefix)) {
       window_class.wm_class_name = window_class.wayland_app_id;
+      window_class.wm_class_class =
+          shell_integration_linux::GetProgramClassClassForDesktopId(
+              window_class.wayland_app_id);
     }
   } else {
     window_class.wayland_app_id = window_class.wm_class_class;
@@ -109,6 +112,9 @@ BrowserNativeWidgetAuraLinux::GetWindowClass() const {
               browser.GetProfile()->GetOriginalProfile()->GetPath());
       if (!desktop_id.empty()) {
         window_class.wm_class_name = desktop_id;
+        window_class.wm_class_class =
+            shell_integration_linux::GetProgramClassClassForDesktopId(
+                desktop_id);
         window_class.wayland_app_id = desktop_id;
       }
     }

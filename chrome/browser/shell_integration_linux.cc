@@ -545,6 +545,15 @@ std::string GetProgramClassClass(const base::CommandLine& command_line,
   return desktop_base_name;
 }
 
+std::string GetProgramClassClassForDesktopId(
+    const base::CommandLine& command_line,
+    const std::string& desktop_id) {
+  if (command_line.HasSwitch(switches::kWmClass)) {
+    return command_line.GetSwitchValueASCII(switches::kWmClass);
+  }
+  return desktop_id;
+}
+
 std::string GetPerProfileDesktopId(const base::FilePath& profile_path,
                                    const base::FilePath& default_user_data_dir,
                                    const std::string& desktop_file_name) {
@@ -581,6 +590,11 @@ std::string GetProgramClassClass() {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   return internal::GetProgramClassClass(*base::CommandLine::ForCurrentProcess(),
                                         chrome::GetDesktopName(env.get()));
+}
+
+std::string GetProgramClassClassForDesktopId(const std::string& desktop_id) {
+  return internal::GetProgramClassClassForDesktopId(
+      *base::CommandLine::ForCurrentProcess(), desktop_id);
 }
 
 std::string GetIconName() {

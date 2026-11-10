@@ -40,6 +40,14 @@ std::string GetProgramClassName();
 // Gets the name for use as the res_class of the window's WM_CLASS property.
 std::string GetProgramClassClass();
 
+// Gets the name for use as the res_class of the WM_CLASS property of a window
+// that has its own desktop entry with the ID `desktop_id` (an installed web app
+// or a profile with a per-profile desktop entry). This is `desktop_id` itself,
+// unless the user set --class: taskbars that group windows by res_class (e.g.
+// ones based on libwnck) then show these windows separately from the browser
+// and look up their desktop entry from it.
+std::string GetProgramClassClassForDesktopId(const std::string& desktop_id);
+
 // Returns name of the browser icon (without a path or file extension).
 std::string GetIconName();
 
@@ -224,6 +232,9 @@ std::string GetProgramClassName(const base::CommandLine& command_line,
                                 const std::string& desktop_file_name);
 std::string GetProgramClassClass(const base::CommandLine& command_line,
                                  const std::string& desktop_file_name);
+std::string GetProgramClassClassForDesktopId(
+    const base::CommandLine& command_line,
+    const std::string& desktop_id);
 std::string GetPerProfileDesktopId(const base::FilePath& profile_path,
                                    const base::FilePath& default_user_data_dir,
                                    const std::string& desktop_file_name);

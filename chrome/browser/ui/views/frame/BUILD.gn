@@ -2308,6 +2308,22 @@ source_set("browser_tests") {
       "//ui/platform_window",
       "//ui/views",
     ]
+
+    if (ozone_platform_x11) {
+      sources += [ "browser_native_widget_aura_linux_browsertest.cc" ]
+      deps += [
+        "//chrome/browser:shell_integration_linux",
+        "//chrome/browser/profiles:profile",
+        "//chrome/browser/ui:browser_window_header",
+        "//chrome/browser/ui/web_applications/test:test_support_ui",
+        "//chrome/browser/web_applications",
+        "//chrome/browser/web_applications:web_applications_test_support",
+        "//chrome/common",
+        "//ui/aura",
+        "//ui/gfx/x",
+        "//url",
+      ]
+    }
   }
 
   if (is_mac) {

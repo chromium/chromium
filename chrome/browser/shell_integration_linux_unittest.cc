@@ -934,6 +934,17 @@ TEST(ShellIntegrationTest, WmClass) {
       internal::GetProgramClassClass(command_line, "foo.desktop"));
 }
 
+TEST(ShellIntegrationTest, WmClassForDesktopId) {
+  base::CommandLine command_line((base::FilePath()));
+  EXPECT_EQ("chrome-abc-Default", internal::GetProgramClassClassForDesktopId(
+                                      command_line, "chrome-abc-Default"));
+
+  // An explicit --class takes precedence for all windows.
+  command_line.AppendSwitchASCII("class", "baR");
+  EXPECT_EQ("baR", internal::GetProgramClassClassForDesktopId(
+                       command_line, "chrome-abc-Default"));
+}
+
 TEST(ShellIntegrationTest, GetDesktopEntryStringValueFromFromDesktopFile) {
   const char* const kDesktopFileContents =
       "[Desktop Entry]\n"
