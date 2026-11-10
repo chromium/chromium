@@ -1,8 +1,9 @@
 Name: Snappy: A fast compressor/decompressor
 Short Name: snappy
 URL: http://google.github.io/snappy/
-Version: 1.1.10.git.c9f9edf6d75bb065fa47468bf035e051a57bec7c
-Update Mechanism: Manual
+Version: 1.3.1
+Revision: 9c28114a38866f6deeaa826db918293bc28ae410
+Update Mechanism: Autoroll
 CPEPrefix: cpe:/a:google:snappy:1.1.10
 License: BSD-3-Clause
 License File: src/COPYING

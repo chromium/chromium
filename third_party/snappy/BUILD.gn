@@ -22,6 +22,15 @@ config("snappy_warnings") {
   cflags = []
 
   if (is_win) {
+    cflags += [ "/FIfunctional" ]
+  } else {
+    cflags += [
+      "-include",
+      "functional",
+    ]
+  }
+
+  if (is_win) {
     cflags += [ "/wd4018" ]  # Signed/unsigned mismatch in comparison.
   }
 }
