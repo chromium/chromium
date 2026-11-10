@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/glic/host/glic_drag_and_drop_util.h"
 #include "chrome/browser/glic/host/guest_util.h"
@@ -30,10 +31,15 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/clipboard/file_info.h"
 
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+#if (BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)) && \
     BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/feature_list.h"
+#include "components/enterprise/connectors/core/features.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -232,8 +238,8 @@ class HandleDropScanData : public content::WebContentsObserver {
 };
 
 }  // namespace
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) &&
-        // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#endif  // (BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) ||
+        // BUILDFLAG(IS_ANDROID)) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 void HandleOnPerformingDrop(
     content::WebContents* web_contents,
@@ -269,7 +275,7 @@ void HandleOnPerformingDrop(
     std::move(callback).Run(std::move(drop_data));
   };
 
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+#if (BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)) && \
     BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   enterprise_connectors::ContentAnalysisDelegate::Data data;
   Profile* profile =
@@ -278,6 +284,19 @@ void HandleOnPerformingDrop(
       drop_data.filenames.empty() && drop_data.file_system_files.empty()
           ? enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY
           : enterprise_connectors::AnalysisConnector::FILE_ATTACHED;
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, when enterprise scan is enabled, only drops that contain files
+  // are scanned (Text and HTML drops are considered as paste and skipped for
+  // now). Drops that aren't scanned are forwarded unchanged, including the
+  // renderer's `document_is_handling_drag`.
+  if (connector != enterprise_connectors::AnalysisConnector::FILE_ATTACHED ||
+      !base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnableFileAttachedEnterpriseScanOnClank) ||
+      !enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
+          profile, scan_target->GetLastCommittedURL(), &data, connector)) {
+    return;
+  }
+#else
   if (!enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
           profile, scan_target->GetLastCommittedURL(), &data, connector)) {
     // If the enterprise policy is not enabled, make sure that the renderer
@@ -285,6 +304,7 @@ void HandleOnPerformingDrop(
     drop_data.document_is_handling_drag = true;
     return;
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // If the page will not handle the drop, no need to perform content analysis.
   if (!drop_data.document_is_handling_drag) {
@@ -359,6 +379,6 @@ void HandleOnPerformingDrop(
   // Without content analysis there is nothing to scan; `cleanup` forwards the
   // drop unchanged.
   return;
-#endif  // !BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) ||
-        // !BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#endif  // (BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) ||
+        // BUILDFLAG(IS_ANDROID)) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 }
