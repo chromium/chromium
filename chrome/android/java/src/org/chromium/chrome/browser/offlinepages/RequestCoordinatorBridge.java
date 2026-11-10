@@ -96,8 +96,8 @@ public class RequestCoordinatorBridge {
     /**
      * Removes SavePageRequests from the request queue.
      *
-     * The callback will be called with |null| in the case that the queue is unavailable.  This can
-     * happen in incognito, for example.
+     * <p>The callback will be called with {@code null} in the case that the queue is unavailable.
+     * This can happen in incognito, for example.
      *
      * @param requestIdList The IDs of the requests to remove.
      * @param callback Called when the removal is done, with the SavePageRequest objects that were

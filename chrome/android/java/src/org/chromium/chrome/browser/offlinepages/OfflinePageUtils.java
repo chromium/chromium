@@ -405,6 +405,7 @@ public class OfflinePageUtils {
      *
      * @param offlinePageBridge Bridge to native code for offline pages use.
      * @param offlinePage Page to check for shareability.
+     * @param uri The URI of the offline page to be shared.
      * @return true if this page can be shared.
      */
     public static boolean isOfflinePageShareable(
@@ -610,7 +611,8 @@ public class OfflinePageUtils {
     }
 
     /**
-     * @return True if an offline preview is being shown.
+     * Returns whether an offline preview is being shown.
+     *
      * @param tab The current tab.
      */
     public static boolean isShowingOfflinePreview(Tab tab) {
@@ -703,6 +705,7 @@ public class OfflinePageUtils {
     /**
      * Reloads specified webContents, which should allow to open an online version of the page.
      *
+     * @param webContents The WebContents to be reloaded.
      * @param loadUrlDelegate The delegate to load a page (e.g., WebContents, Tab).
      */
     public static void reload(WebContents webContents, OfflinePageLoadUrlDelegate loadUrlDelegate) {

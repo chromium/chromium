@@ -24,17 +24,17 @@ public class DeletedPageInfo {
         mRequestOrigin = requestOrigin;
     }
 
-    /** @return offline id for the deleted page */
+    /** Returns the offline id for the deleted page. */
     public long getOfflineId() {
         return mOfflineId;
     }
 
-    /** @return Client Id for the deleted page */
+    /** Returns the Client Id for the deleted page. */
     public ClientId getClientId() {
         return mClientId;
     }
 
-    /** @return request origin of the deleted page */
+    /** Returns the request origin of the deleted page. */
     public String getRequestOrigin() {
         return mRequestOrigin;
     }

@@ -103,9 +103,7 @@ public class OfflineBackgroundTask extends NativeBackgroundTask {
         return bridge.startScheduledProcessing(deviceConditions, callback);
     }
 
-    /**
-     * @return Whether conditions for running the tasks are met.
-     */
+    /** Returns whether conditions for running the tasks are met. */
     @VisibleForTesting
     static boolean checkConditions(Context context, PersistableBundle taskExtras) {
         TriggerConditions triggerConditions =

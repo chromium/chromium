@@ -93,6 +93,7 @@ public class OfflinePageBridge {
          *
          * @param savePageResult Result of the saving. Uses {@link SavePageResult} enum.
          * @param url URL of the saved page.
+         * @param offlineId ID of the saved offline page.
          * @see OfflinePageBridge#savePage(WebContents, ClientId, OfflinePageOrigin,
          *     SavePageCallback)
          */
@@ -136,16 +137,12 @@ public class OfflinePageBridge {
         return new OfflinePageBridge(nativeOfflinePageBridge);
     }
 
-    /**
-     * @return True if an offline copy of the given URL can be saved.
-     */
+    /** Returns true if an offline copy of the given URL can be saved. */
     public static boolean canSavePage(GURL url) {
         return OfflinePageBridgeJni.get().canSavePage(url);
     }
 
-    /**
-     * @return the string representing the origin of the tab.
-     */
+    /** Returns the string representing the origin of the tab. */
     @CalledByNative
     private static @JniType("std::string") String getEncodedOriginApp(Tab tab) {
         return new OfflinePageOrigin(ContextUtils.getApplicationContext(), tab)
@@ -346,11 +343,12 @@ public class OfflinePageBridge {
     }
 
     /**
-     * Deletes offline pages based on the list of provided client IDs only if they originate
-     * from the same origin. Calls the callback when operation is complete. Requires that the
-     * model is already loaded.
+     * Deletes offline pages based on the list of provided client IDs only if they originate from
+     * the same origin. Calls the callback when operation is complete. Requires that the model is
+     * already loaded.
      *
      * @param clientIds A list of Client IDs for which the offline pages will be deleted.
+     * @param origin The origin the pages must originate from in order to be deleted.
      * @param callback A callback that will be called once operation is completed.
      */
     public void deletePagesByClientIdAndOrigin(
@@ -454,15 +452,14 @@ public class OfflinePageBridge {
                 .isShowingDownloadButtonInErrorPage(mNativeOfflinePageBridge, webContents);
     }
 
-    /** Tells the native side that the tab of |webContents| will be closed. */
+    /** Tells the native side that the tab of {@code webContents} will be closed. */
     void willCloseTab(WebContents webContents) {
         OfflinePageBridgeJni.get().willCloseTab(mNativeOfflinePageBridge, webContents);
     }
 
     /**
-     * Schedules to download a page from |url| and categorize under |nameSpace|.
-     * The duplicate pages or requests will be checked.
-     * Origin is presumed to be Chrome.
+     * Schedules to download a page from {@code url} and categorize under {@code nameSpace}. The
+     * duplicate pages or requests will be checked. Origin is presumed to be Chrome.
      *
      * @param webContents Web contents upon which the infobar is shown.
      * @param nameSpace Namespace of the page to save.
@@ -475,8 +472,8 @@ public class OfflinePageBridge {
     }
 
     /**
-     * Schedules to download a page from |url| and categorize under |namespace| from |origin|. The
-     * duplicate pages or requests will be checked.
+     * Schedules to download a page from {@code url} and categorize under {@code nameSpace} from
+     * {@code origin}. The duplicate pages or requests will be checked.
      *
      * @param webContents Web contents upon which the infobar is shown.
      * @param nameSpace Namespace of the page to save.
@@ -511,7 +508,7 @@ public class OfflinePageBridge {
     }
 
     /**
-     * Returns whether |nameSpace| is a temporary namespace.
+     * Returns whether {@code nameSpace} is a temporary namespace.
      *
      * @param nameSpace Namespace of the page in question.
      * @return true if the page is in a temporary namespace.

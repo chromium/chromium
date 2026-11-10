@@ -35,6 +35,8 @@ public class SavePageRequest {
      * @param clientIdNamespace a String that will be the namespace of the client ID of this
      *     request.
      * @param clientIdId a String that will be the ID of the client ID of this request.
+     * @param originString The JSON-encoded origin of the app that initiated the request.
+     * @param autoFetchNotificationState The auto-fetch notification state of this request.
      */
     @CalledByNative
     public static SavePageRequest create(

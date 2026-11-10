@@ -44,52 +44,52 @@ public class OfflinePageItem {
         mRequestOrigin = requestOrigin;
     }
 
-    /** @return URL of the offline page. */
+    /** Returns the URL of the offline page. */
     public String getUrl() {
         return mUrl;
     }
 
-    /** @return offline id for this offline page. */
+    /** Returns the offline id for this offline page. */
     public long getOfflineId() {
         return mOfflineId;
     }
 
-    /** @return Client Id related to the offline page. */
+    /** Returns the Client Id related to the offline page. */
     public ClientId getClientId() {
         return mClientId;
     }
 
-    /** @return Title of the page. */
+    /** Returns the title of the page. */
     public String getTitle() {
         return mTitle;
     }
 
-    /** @return File Path to the offline copy of the page. */
+    /** Returns the file path to the offline copy of the page. */
     public String getFilePath() {
         return mFilePath;
     }
 
-    /** @return Size of the offline copy of the page. */
+    /** Returns the size of the offline copy of the page. */
     public long getFileSize() {
         return mFileSize;
     }
 
-    /** @return Time in milliseconds the offline page was created. */
+    /** Returns the time in milliseconds the offline page was created. */
     public long getCreationTimeMs() {
         return mCreationTimeMs;
     }
 
-    /** @return Number of times that the offline page has been accessed. */
+    /** Returns the number of times that the offline page has been accessed. */
     public int getAccessCount() {
         return mAccessCount;
     }
 
-    /** @return Last time in milliseconds the offline page has been accessed. */
+    /** Returns the last time in milliseconds the offline page has been accessed. */
     public long getLastAccessTimeMs() {
         return mLastAccessTimeMs;
     }
 
-    /** @return The originating application of the request. */
+    /** Returns the originating application of the request. */
     public String getRequestOrigin() {
         return mRequestOrigin;
     }
