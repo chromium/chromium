@@ -9,7 +9,7 @@ import type {AppMenuButtonElement} from './app_menu_button.js';
 export function getHtml(this: AppMenuButtonElement) {
   return html`<!--_html_template_start_-->
 <toolbar-chip-button id="button" class="${this.getHighlightClass_()}"
-    ?is-menu-open="${this.state.isContextMenuVisible}"
+    .buttonTabIndex="${0}" ?is-menu-open="${this.state.isContextMenuVisible}"
     ?has-label="${this.shouldShowLabel_()}"
     ?outset-focus-ring="${this.shouldShowLabel_()}"
     @pointerdown="${this.onPointerdown_}" @click="${this.onClick_}"

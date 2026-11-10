@@ -8,6 +8,7 @@ import './split_tabs_button.js';
 import './home_button.js';
 import '/shared/icon_table.js';
 import './icons.js';
+import './tab_focus_disabler.js';
 
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -289,6 +290,20 @@ export class ToolbarAppElement extends AppElementBase {
       () => void = () => this.layoutResponsiveControls();
 
   private isRtl_: boolean = loadTimeData.getString('textdirection') === 'rtl';
+
+  // Whether controls on the toolbar other than those inside the location bar
+  // should be navigable by keyboard. The expected value per platform:
+  // 1) On Mac, it should match the platform keyboard navigable setting.
+  //    (Keyboard shortcut that activates VoiceOver activates that setting as
+  //     well by default, but it is actually an independent toggle).
+  //
+  // 2) On other platforms, it should depend on pane_has_focus() of
+  //    ToolbarView's AccessiblePaneView base, which basically gets enabled
+  //    short-term if focus toolbar or focus menu shortcuts are used (but not
+  //    the focus location bar shortcuts).
+  //
+  //    TODO(crbug.com/567215920): Send proper value over Mojo.
+  private keyboardNavigable_: boolean = true;
 
   get browserProxyForTesting(): BrowserProxy {
     return this.browserProxy_;
@@ -1009,6 +1024,9 @@ export class ToolbarAppElement extends AppElementBase {
     }
   }
 
+  protected keyboardNavigable(): boolean {
+    return this.keyboardNavigable_;
+  }
 }
 
 declare global {

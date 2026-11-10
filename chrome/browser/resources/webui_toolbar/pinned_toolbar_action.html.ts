@@ -10,7 +10,7 @@ export function getHtml(this: PinnedToolbarActionElement) {
   return html`<!--_html_template_start_-->
 <toolbar-chip-button id="button"
     class="${this.hasHelpBubble ? 'help-anchor-highlight' : ''}"
-    .disabled="${!this.state.enabled}"
+    .buttonTabIndex="${0}" .disabled="${!this.state.enabled}"
     ?is-menu-open="${this.state.highlighted || this.trackedHighlighted}"
     ?is-activated="${this.state.activated}" .tooltip="${this.getTooltip_()}"
     .ariaLabel="${this.state.accessibilityText || this.state.tooltip}"

@@ -31,3 +31,7 @@
 avatar-button:not([label-mode='no-text']):not(.overflow-display-none) ~ app-menu-button[has-label] {
   margin-inline-start: 0;
 }
+
+tab-focus-disabler {
+  display: contents;
+}
