@@ -13532,6 +13532,7 @@
     "OAuthMultiloginYoutubeCookiesBinding": [
         {
             "platforms": [
+                "mac",
                 "windows"
             ],
             "experiments": [
