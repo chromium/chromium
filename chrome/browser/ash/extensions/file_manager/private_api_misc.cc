@@ -14,8 +14,6 @@
 #include "ash/constants/ash_extension_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/multi_user/multi_user_window_manager.h"
-#include "ash/shell.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -83,8 +81,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_zoom.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
-#include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/app_window_registry.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -107,14 +103,6 @@ constexpr base::TimeDelta kMountCrostiniSlowOperationThreshold =
     base::Seconds(10);
 constexpr base::TimeDelta kMountCrostiniVerySlowOperationThreshold =
     base::Seconds(30);
-
-// Obtains the current app window.
-AppWindow* GetCurrentAppWindow(ExtensionFunction* function) {
-  content::WebContents* const contents = function->GetSenderWebContents();
-  return contents ? AppWindowRegistry::Get(function->browser_context())
-                        ->GetAppWindowForWebContents(contents)
-                  : nullptr;
-}
 
 std::vector<ProfileInfo> GetLoggedInProfileInfoList() {
   CHECK(user_manager::UserManager::IsInitialized(), base::NotFatalUntil::M160);
@@ -429,22 +417,6 @@ ExtensionFunction::ResponseAction FileManagerPrivateZoomFunction::Run() {
 ExtensionFunction::ResponseAction FileManagerPrivateGetProfilesFunction::Run() {
   fmp::ProfilesResponse response;
   response.profiles = GetLoggedInProfileInfoList();
-
-  // Obtains the display profile ID.
-  AppWindow* const app_window = GetCurrentAppWindow(this);
-  auto* const window_manager = ash::Shell::Get()->multi_user_window_manager();
-  const AccountId current_profile_id = multi_user_util::GetAccountIdFromProfile(
-      Profile::FromBrowserContext(browser_context()));
-  const AccountId display_profile_id =
-      window_manager && app_window ? window_manager->GetUserPresentingWindow(
-                                         app_window->GetNativeWindow())
-                                   : EmptyAccountId();
-
-  response.current_profile_id = current_profile_id.GetUserEmail();
-  response.displayed_profile_id = display_profile_id.is_valid()
-                                      ? display_profile_id.GetUserEmail()
-                                      : current_profile_id.GetUserEmail();
-
   return RespondNow(WithArguments(response.ToValue()));
 }
 

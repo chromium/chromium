@@ -116,17 +116,6 @@ export function getLastVisitedURL(): string {
 }
 
 /**
- * Returns whether the window is teleported or not.
- */
-export function isTeleported(): Promise<boolean> {
-  return new Promise(onFulfilled => {
-    chrome.fileManagerPrivate.getProfiles((response) => {
-      onFulfilled(response.currentProfileId !== response.displayedProfileId);
-    });
-  });
-}
-
-/**
  * Runs chrome.test.sendMessage in test environment. Does nothing if running
  * in production environment.
  */

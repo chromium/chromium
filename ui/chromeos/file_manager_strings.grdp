@@ -1190,12 +1190,6 @@
   <message name="IDS_FILE_BROWSER_DISABLED_MOBILE_SYNC_NOTIFICATION_ENABLE_BUTTON" desc="Button label to enable drive sync over, on the notifcation of |IDS_FILE_BROWSER_DISABLED_MOBILE_SYNC_NOTIFICATION_MESSAGE|.">
     Enable syncing over mobile data
   </message>
-  <message name="IDS_FILE_BROWSER_OPEN_IN_OTHER_DESKTOP_MESSAGE" desc="Message of an alert dialog that is shown when a user opens a file in a desktop of another profile but the file is opened in the original desktop.">
-    This file opened on a different desktop. Move to <ph name="USER_NAME">$1<ex>John Doe</ex></ph> (<ph name="MAIL_ADDRESS">$2<ex>xxxxxx@gmail.com</ex></ph>) to view it.
-  </message>
-  <message name="IDS_FILE_BROWSER_OPEN_IN_OTHER_DESKTOP_MESSAGE_PLURAL" desc="Prural verson of the message of an alert dialog that is shown when a user opens a file in a desktop of another profile but the file is opened in the original desktop.">
-    These files opened on a different desktop. Move to <ph name="USER_NAME">$1<ex>John Doe</ex></ph> (<ph name="MAIL_ADDRESS">$2<ex>xxxxxx@gmail.com</ex></ph>) to view it.
-  </message>
   <message name="IDS_FILE_BROWSER_DRIVE_METERED_CONNECTION_OPTION" desc="Option that determines if we will allow Google Drive content sync over metered connections.">
     Allow sync on metered networks
   </message>

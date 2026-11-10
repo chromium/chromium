@@ -18,7 +18,7 @@ import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../com
 import {bytesToString, str, strf} from '../../common/js/translations.js';
 import {recordViewingNavigationSurfaceUma, recordViewingVolumeTypeUma} from '../../common/js/uma.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
-import {debug, descriptorEqual, extractFilePath, isTeleported, makeTaskID, splitExtension} from '../../common/js/util.js';
+import {debug, descriptorEqual, extractFilePath, makeTaskID, splitExtension} from '../../common/js/util.js';
 import {RootType, RootTypesForUMA, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
 import {type FileTasks as StoreFileTasks} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
@@ -364,23 +364,8 @@ export class FileTasks {
         actionId: 'view-in-browser',
       };
       const result = await executeTask(descriptor, this.entries_);
-      const TaskResult = chrome.fileManagerPrivate.TaskResult;
-      switch (result) {
-        case TaskResult.OPENED:
-          break;
-        case TaskResult.MESSAGE_SENT:
-          isTeleported().then(teleported => {
-            if (teleported) {
-              this.ui_.showOpenInOtherDesktopAlert(this.entries_);
-            }
-          });
-          break;
-        case TaskResult.EMPTY:
-          break;
-        case TaskResult.FAILED:
-          throw new Error();
-        default:
-          break;
+      if (result === chrome.fileManagerPrivate.TaskResult.FAILED) {
+        throw new Error();
       }
     } catch {
       let textMessageId;
@@ -439,19 +424,7 @@ export class FileTasks {
     }
 
     try {
-      const result = await executeTask(task.descriptor, entries);
-      const TaskResult = chrome.fileManagerPrivate.TaskResult;
-      switch (result) {
-        case TaskResult.MESSAGE_SENT:
-          isTeleported().then((teleported) => {
-            if (teleported) {
-              this.ui_.showOpenInOtherDesktopAlert(entries);
-            }
-          });
-          break;
-        default:
-          break;
-      }
+      await executeTask(task.descriptor, entries);
     } catch (error) {
       console.warn(`Failed to execute task ${
           JSON.stringify(task.descriptor)}: ${error}`);

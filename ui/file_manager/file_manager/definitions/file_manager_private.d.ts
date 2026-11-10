@@ -448,8 +448,6 @@ declare global {
 
       export interface ProfilesResponse {
         profiles: ProfileInfo[];
-        currentProfileId: string;
-        displayedProfileId: string;
       }
 
       export interface IconSet {

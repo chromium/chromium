@@ -9,9 +9,8 @@ import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import type {VolumeManager} from '../../../background/js/volume_manager.js';
 import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
-import type {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 import {isDlpEnabled} from '../../../common/js/flags.js';
-import {str, strf} from '../../../common/js/translations.js';
+import {str} from '../../../common/js/translations.js';
 import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
 import {BreadcrumbContainer} from '../../../containers/breadcrumb_container.js';
 import {CloudPanelContainer} from '../../../containers/cloud_panel_container.js';
@@ -638,44 +637,6 @@ export class FileManagerUI {
    */
   addLoadedAttribute() {
     this.element.setAttribute('loaded', '');
-  }
-
-  /**
-   * Sets up and shows the alert to inform a user the task is opened in the
-   * desktop of the running profile.
-   *
-   * @param entries List of opened entries.
-   */
-  showOpenInOtherDesktopAlert(entries: Array<Entry|FilesAppEntry>) {
-    if (!entries.length) {
-      return;
-    }
-    chrome.fileManagerPrivate.getProfiles(
-        (response: chrome.fileManagerPrivate.ProfilesResponse) => {
-          //  Find strings.
-          let displayName;
-          for (const profile of response.profiles) {
-            if (profile.profileId === response.currentProfileId) {
-              displayName = profile.displayName;
-              break;
-            }
-          }
-          if (!displayName) {
-            console.warn('Display name is not found.');
-            return;
-          }
-
-          const title = entries.length > 1 ?
-              entries[0]!.name + '\u2026' /* ellipsis */ :
-              entries[0]!.name;
-          const message = strf(
-              entries.length > 1 ? 'OPEN_IN_OTHER_DESKTOP_MESSAGE_PLURAL' :
-                                   'OPEN_IN_OTHER_DESKTOP_MESSAGE',
-              displayName, response.currentProfileId);
-
-          // Show the dialog.
-          this.alertDialog.showWithTitle(title, message);
-        });
   }
 
   /**

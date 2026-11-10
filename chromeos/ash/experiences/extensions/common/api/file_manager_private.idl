@@ -634,12 +634,6 @@ dictionary ProfileInfo {
 dictionary ProfilesResponse {
   // List of profile information.
   ProfileInfo[] profiles;
-
-  // ID of the profile that runs the application instance.
-  DOMString currentProfileId;
-
-  // ID of the profile that shows the application window.
-  DOMString displayedProfileId;
 };
 
 // Represents an icon in multiple dimensions. All are optional.
