@@ -14,8 +14,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +26,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -45,11 +42,9 @@ public class RadioButtonWithIconRenderTest {
     private static final List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
-    @ClassRule
-    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+    @Rule
+    public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    private static Activity sActivity;
 
     private static final int REVISION = 3;
     private static final String REVISION_DESCRIPTION =
@@ -78,11 +73,6 @@ public class RadioButtonWithIconRenderTest {
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
 
-    @BeforeClass
-    public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
-    }
-
     @AfterClass
     public static void tearDownSuite() {
         NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
@@ -90,7 +80,9 @@ public class RadioButtonWithIconRenderTest {
 
     @Before
     public void setUp() throws Exception {
-        Activity activity = sActivity;
+        // Launch the activity after NightModeTestUtils configures the default night mode in the
+        // parameterized constructor so the activity is created with the expected theme resources.
+        Activity activity = mActivityTestRule.launchActivity(null);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     View content =
@@ -120,7 +112,6 @@ public class RadioButtonWithIconRenderTest {
     @Test
     @SmallTest
     @Feature({"RenderTest", "RadioButton"})
-    @DisabledTest(message = "https://crbug.com/566448123")
     public void testRadioButtonWithIcon() throws Exception {
         mRenderTestRule.render(mRadioButtonWithIcon1, "icon_primary_only");
         mRenderTestRule.render(mRadioButtonWithIcon2, "icon_primary_description");
