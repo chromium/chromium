@@ -57,7 +57,10 @@ class NET_EXPORT SingleSignOnKeyManager {
   // stores it as a pre-provisioned key. Call only after `CanGenerateKey()`
   // returned true. `callback` receives the serialized binding statement or an
   // error, and never runs before `GenerateKey()` returns. If `this` is
-  // destroyed before the request finishes, `callback` is dropped.
+  // destroyed before the request finishes, `callback` is dropped. If
+  // `callback` is cancelled, the request stops early and deletes its key.
+  // Cancellation is detected via `callback.IsCancelled()`, so bind `callback`
+  // to a `WeakPtr` and don't wrap it in another callback.
   void GenerateKey(unexportable_keys::UnexportableAttestationKeyId idp_aik,
                    GenerateKeyParam param,
                    url::Origin provider_origin,
@@ -118,12 +121,16 @@ class NET_EXPORT SingleSignOnKeyManager {
   // reference, so only build it from an origin that outlives the expression.
   using RpAndProviderKeyView = std::pair<const url::Origin&, std::string_view>;
 
-  // Called once `request` has finished. Stores the generated key unless
-  // `request`'s site data was cleared or `AddPreProvisionedKey()` rejects it.
-  // Destroys `request` and passes the binding statement or an error to
-  // `callback`.
+  // Destroys `request` and passes `result` to its callback. The callback may
+  // destroy `this`, so callers must return right after.
+  void CompleteRequest(GenerateKeyRequest* request,
+                       SessionErrorOr<std::string> result);
+
+  // Called once `request` has finished. Stores the generated key unless the
+  // request's callback was cancelled, `request`'s site data was cleared or
+  // `AddPreProvisionedKey()` rejects it. Destroys `request` and passes the
+  // binding statement or an error to the request's callback.
   void OnGenerateKeyDone(GenerateKeyRequest* request,
-                         SessionService::KeyBindingCallback callback,
                          SessionErrorOr<GeneratedKey> result);
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;

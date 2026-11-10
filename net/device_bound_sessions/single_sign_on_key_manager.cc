@@ -73,7 +73,8 @@ struct SingleSignOnKeyManager::GeneratedKey {
 };
 
 // Generates an RP signing key and certifies it with the IdP's AIK. The manager
-// owns the request and decides whether to store the key.
+// owns the request and decides whether to store the key. The request owns the
+// caller's callback and stops early once that callback is cancelled.
 class SingleSignOnKeyManager::GenerateKeyRequest {
  public:
   // Receives the generated key or an error. Always runs in a posted task, and
@@ -84,11 +85,13 @@ class SingleSignOnKeyManager::GenerateKeyRequest {
       unexportable_keys::UnexportableKeyService& key_service,
       unexportable_keys::UnexportableAttestationKeyId idp_aik,
       GenerateKeyParam param,
-      url::Origin provider_origin)
+      url::Origin provider_origin,
+      SessionService::KeyBindingCallback callback)
       : key_service_(key_service),
         idp_aik_(idp_aik),
         param_(std::move(param)),
-        provider_origin_(std::move(provider_origin)) {}
+        provider_origin_(std::move(provider_origin)),
+        callback_(std::move(callback)) {}
 
   GenerateKeyRequest(const GenerateKeyRequest&) = delete;
   GenerateKeyRequest& operator=(const GenerateKeyRequest&) = delete;
@@ -105,11 +108,22 @@ class SingleSignOnKeyManager::GenerateKeyRequest {
 
   const url::Origin& provider_origin() const { return provider_origin_; }
   const url::Origin& rp_origin() const { return param_.target_origin; }
-  bool site_data_cleared() const { return site_data_cleared_; }
 
   // Records that the RP's site data was cleared while the request was running,
   // so its key must not be stored.
   void MarkSiteDataCleared() { site_data_cleared_ = true; }
+
+  // Returns true once the key must not be stored, because the caller cancelled
+  // its callback or the RP's site data was cleared.
+  bool ShouldStop() const {
+    return callback_.IsCancelled() || site_data_cleared_;
+  }
+
+  // Hands the caller's callback to the manager. Afterwards `ShouldStop()` must
+  // not be called.
+  SessionService::KeyBindingCallback TakeCallback() {
+    return std::move(callback_);
+  }
 
   void Start(DoneCallback on_done) {
     // A static function rather than a weak method, so it still runs, and
@@ -151,9 +165,8 @@ class SingleSignOnKeyManager::GenerateKeyRequest {
       Finish(std::move(on_done),
              base::unexpected(SessionError::kSigningKeyGenerationError));
     });
-
     // Skip the slow certify call if its result would be thrown away anyway.
-    if (site_data_cleared_) {
+    if (ShouldStop()) {
       Finish(std::move(on_done),
              base::unexpected(SessionError::kSigningKeyGenerationError));
       return;
@@ -215,6 +228,8 @@ class SingleSignOnKeyManager::GenerateKeyRequest {
   const unexportable_keys::UnexportableAttestationKeyId idp_aik_;
   GenerateKeyParam param_;
   url::Origin provider_origin_;
+  // The caller's callback. Destroying the request drops it.
+  SessionService::KeyBindingCallback callback_;
   std::optional<unexportable_keys::UnexportableSigningKeyId> rp_key_id_;
   // JWK thumbprint of `rp_key_id_`, set right after keygen.
   std::string thumbprint_;
@@ -257,14 +272,13 @@ void SingleSignOnKeyManager::GenerateKey(
       generate_key_requests_
           .insert(std::make_unique<GenerateKeyRequest>(
               *key_service_, idp_aik, std::move(param),
-              std::move(provider_origin)))
+              std::move(provider_origin), std::move(callback)))
           .first->get();
-  // `request` posts its result, so `callback` never runs before
+  // `request` posts its result, so the caller's callback never runs before
   // `GenerateKey()` returns. `base::Unretained` is safe because `this` owns
-  // `request`, which only runs the callback while it is alive.
+  // `request`, which only calls `OnGenerateKeyDone()` while it is alive.
   request->Start(base::BindOnce(&SingleSignOnKeyManager::OnGenerateKeyDone,
-                                base::Unretained(this), request,
-                                std::move(callback)));
+                                base::Unretained(this), request));
 }
 
 bool SingleSignOnKeyManager::AddPreProvisionedKey(
@@ -353,13 +367,23 @@ void SingleSignOnKeyManager::ClearPreProvisionedKeys(
   }
 }
 
+void SingleSignOnKeyManager::CompleteRequest(
+    GenerateKeyRequest* request,
+    SessionErrorOr<std::string> result) {
+  SessionService::KeyBindingCallback callback = request->TakeCallback();
+  // Destroys `request`.
+  CHECK_EQ(generate_key_requests_.erase(request), 1u);
+  // Runs last: `callback` may re-enter `this` (e.g. start another request) or
+  // destroy it. Running a cancelled callback does nothing.
+  std::move(callback).Run(std::move(result));
+}
+
 void SingleSignOnKeyManager::OnGenerateKeyDone(
     GenerateKeyRequest* request,
-    SessionService::KeyBindingCallback callback,
     SessionErrorOr<GeneratedKey> result) {
   SessionErrorOr<std::string> binding_statement = std::move(result).and_then(
       [&](GeneratedKey key) -> SessionErrorOr<std::string> {
-        if (request->site_data_cleared() ||
+        if (request->ShouldStop() ||
             !AddPreProvisionedKey(request->rp_origin(), key.thumbprint,
                                   request->provider_origin(), key.id)) {
           DeleteSigningKeys(*key_service_, {key.id});
@@ -371,11 +395,7 @@ void SingleSignOnKeyManager::OnGenerateKeyDone(
         return std::move(key.binding_statement);
       });
 
-  // Destroys `request`.
-  CHECK_EQ(generate_key_requests_.erase(request), 1u);
-  // Runs last: `callback` may re-enter `this` (e.g. start another request) or
-  // destroy it.
-  std::move(callback).Run(std::move(binding_statement));
+  CompleteRequest(request, std::move(binding_statement));
 }
 
 }  // namespace net::device_bound_sessions

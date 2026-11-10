@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/base64url.h"
+#include "base/cancelable_callback.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
@@ -798,6 +799,57 @@ TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
 
   EXPECT_THAT(future.Take(), ErrorIs(SessionError::kSigningKeyGenerationError));
   EXPECT_TRUE(deleted.Wait());
+}
+
+TEST_F(SingleSignOnKeyManagerGenerateKeyTest, CancelledDuringKeygenDeletesKey) {
+  base::CancelableOnceCallback<void(SessionErrorOr<std::string>)> key_callback(
+      base::DoNothing());
+
+  // The generated RP key must be deleted upon cancellation.
+  TestFuture<CapturedRpKey> generated;
+  ExpectRpKeyGenerated(generated);
+  TestFuture<void> delete_future;
+  ExpectRpKeyDeleted(delete_future);
+  // Certify must not be invoked since keygen continuation observed
+  // cancellation.
+  EXPECT_CALL(mock_key_service(), CertifySlowlyAsync).Times(0);
+
+  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
+                        key_callback.callback());
+  // Cancel before keygen replies.
+  key_callback.Cancel();
+
+  EXPECT_TRUE(delete_future.Wait());
+  EXPECT_THAT(key_service().GetAlgorithm(generated.Get().id),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotFound));
+  EXPECT_THAT(FindGeneratedKey(generated.Get()),
+              ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+}
+
+TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
+       CancelledDuringCertifyDeletesKey) {
+  base::CancelableOnceCallback<void(SessionErrorOr<std::string>)> key_callback(
+      base::DoNothing());
+
+  // The generated RP key must be deleted upon cancellation during certify.
+  TestFuture<CapturedRpKey> generated;
+  ExpectRpKeyGenerated(generated);
+  TestFuture<base::OnceClosure> certify;
+  HoldCertify(certify);
+  TestFuture<void> delete_future;
+  ExpectRpKeyDeleted(delete_future);
+
+  manager().GenerateKey(aik_id(), CreateGenerateKeyParam(), ProviderOrigin(),
+                        key_callback.callback());
+  base::OnceClosure release_certify = certify.Take();
+  key_callback.Cancel();
+  std::move(release_certify).Run();
+
+  EXPECT_TRUE(delete_future.Wait());
+  EXPECT_THAT(key_service().GetAlgorithm(generated.Get().id),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotFound));
+  EXPECT_THAT(FindGeneratedKey(generated.Get()),
+              ErrorIs(SessionError::kPreProvisionedKeyNotFound));
 }
 
 TEST_F(SingleSignOnKeyManagerGenerateKeyTest,
