@@ -96,6 +96,16 @@ source_set("unit_tests") {
       "//chromeos/dbus/power",
     ]
   }
+
+  if (is_android) {
+    sources += [ "chrome_tracing_delegate_unittest.cc" ]
+    deps += [
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/android/tab_model:test_support",
+      "//components/metrics:metrics_pref_names",
+      "//components/prefs",
+    ]
+  }
 }
 
 if (!is_android) {

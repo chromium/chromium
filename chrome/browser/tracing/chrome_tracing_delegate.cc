@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -74,24 +73,22 @@ ChromeTracingDelegate::ChromeTracingDelegate(PrefService& local_state)
 #if !BUILDFLAG(IS_ANDROID)
   EnsureObservingBrowserCollection();
 #else
-  TabModelList::AddObserver(this);
+  TabModelList::AddGlobalObserver(this);
 #endif
 }
 
 ChromeTracingDelegate::~ChromeTracingDelegate() {
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 #if BUILDFLAG(IS_ANDROID)
-  TabModelList::RemoveObserver(this);
+  TabModelList::RemoveGlobalObserver(this);
 #endif
 }
 
 #if BUILDFLAG(IS_ANDROID)
 void ChromeTracingDelegate::OnTabModelAdded(TabModel* tab_model) {
-  for (const TabModel* model : TabModelList::models()) {
-    if (model->GetProfile()->IsOffTheRecord()) {
-      latest_incognito_launched_ = base::TimeTicks::Now();
-      base::trace_event::EmitNamedTrigger("incognito-start");
-    }
+  if (tab_model->GetProfile()->IsOffTheRecord()) {
+    latest_incognito_launched_ = base::TimeTicks::Now();
+    base::trace_event::EmitNamedTrigger("incognito-start");
   }
 }
 
