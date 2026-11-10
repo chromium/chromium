@@ -1359,6 +1359,48 @@ TEST_F(LineBreakerTest, RubyOverflowWrapNested) {
               testing::ElementsAre("ab", "cdefghij"));
 }
 
+// `overflow-wrap: normal` on the ruby overrides the container.
+TEST_F(LineBreakerTest, RubyOverflowWrapNormalOnRuby) {
+  LoadAhem();
+  InlineNode node = CreateInlineNode(
+      "<div id=container style='font: 20px/1 Ahem; overflow-wrap: break-word'>"
+      "ab <ruby style='overflow-wrap: normal'>cdefghij<rt>x</rt></ruby></div>");
+  EXPECT_THAT(BreakLinesWithRubyBase(node, LayoutUnit(100)),
+              testing::ElementsAre("ab", "cdefghij"));
+}
+
+// `overflow-wrap: break-word` on the ruby takes effect.
+TEST_F(LineBreakerTest, RubyOverflowWrapBreakWordOnRuby) {
+  LoadAhem();
+  InlineNode node = CreateInlineNode(
+      "<div id=container style='font: 20px/1 Ahem'>"
+      "ab <ruby style='overflow-wrap: break-word'>cdefghij<rt>x</rt></ruby>"
+      "</div>");
+  EXPECT_THAT(BreakLinesWithRubyBase(node, LayoutUnit(100)),
+              testing::ElementsAre("ab", "cdefg", "hij"));
+}
+
+// `white-space: normal` on the ruby allows wrapping inside the ruby base in a
+// `white-space: nowrap` container.
+TEST_F(LineBreakerTest, RubyWhiteSpaceNormalOnRuby) {
+  LoadAhem();
+  InlineNode node = CreateInlineNode(
+      "<div id=container style='font: 20px/1 Ahem; white-space: nowrap'>"
+      "<ruby style='white-space: normal'>abc defghi<rt>x</rt></ruby></div>");
+  EXPECT_THAT(BreakLinesWithRubyBase(node, LayoutUnit(120)),
+              testing::ElementsAre("abc", "defghi"));
+}
+
+// `white-space: nowrap` on the ruby prevents wrapping inside the ruby base.
+TEST_F(LineBreakerTest, RubyWhiteSpaceNowrapOnRuby) {
+  LoadAhem();
+  InlineNode node = CreateInlineNode(
+      "<div id=container style='font: 20px/1 Ahem'>"
+      "<ruby style='white-space: nowrap'>abc defghi<rt>x</rt></ruby></div>");
+  EXPECT_THAT(BreakLinesWithRubyBase(node, LayoutUnit(120)),
+              testing::ElementsAre("abc defghi"));
+}
+
 TEST_F(LineBreakerTest, RubyOverflowWrapAnywhereMinContent) {
   LoadAhem();
   const char* html =

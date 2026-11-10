@@ -253,6 +253,7 @@ class CORE_EXPORT LineBreaker {
   LineInfo CreateSubLineInfo(
       InlineItemTextIndex start,
       wtf_size_t end_item_index,
+      const ComputedStyle& line_style,
       LineBreakerMode mode,
       LayoutUnit limit,
       WhitespaceState initial_whitespace_state,
@@ -532,6 +533,9 @@ class CORE_EXPORT LineBreaker {
 
   // This member is available after calling SetInputRange().
   const LineBreaker* parent_breaker_ = nullptr;
+
+  // The line style of a sub-LineBreaker for <ruby>. Set by CreateSubLineInfo().
+  const ComputedStyle* sub_line_style_ = nullptr;
 };
 
 }  // namespace blink

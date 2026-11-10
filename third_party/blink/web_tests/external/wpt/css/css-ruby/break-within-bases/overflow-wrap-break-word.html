@@ -32,6 +32,13 @@
      so overflow-wrap: break-word must emergency-break inside the ruby. -->
 <div id="single-wide-ruby" class="ahem" style="width: 120px; overflow-wrap: break-word;"><ruby>OfflineBase<rt>xxxxxxxxxxx</rt></ruby></div>
 
+<!-- overflow-wrap: break-word set directly on <ruby> while container is overflow-wrap: normal. -->
+<div id="style-on-ruby" class="ahem" style="width: 120px; overflow-wrap: normal;"><ruby style="overflow-wrap: break-word;">OfflineBase<rt>xxxxxxxxxxx</rt></ruby></div>
+
+<!-- Container has overflow-wrap: break-word, but <ruby> overrides with overflow-wrap: normal:
+     ruby must NOT emergency-break mid-word. -->
+<div id="normal-on-ruby" class="ahem" style="width: 120px; overflow-wrap: break-word;"><ruby style="overflow-wrap: normal;">OfflineBase<rt>xxxxxxxxxxx</rt></ruby></div>
+
 <!-- Container has overflow-wrap: normal, while an inner <span> inside <ruby> has overflow-wrap: break-word. -->
 <div id="inner-span-break-word-wrap" class="ahem" style="width: 220px; overflow-wrap: normal;"><ruby>Offline<rt>xxxxxxx</rt></ruby> <ruby><span style="overflow-wrap: break-word;">Input</span><rt>yyyyy</rt></ruby></div>
 <div id="inner-span-break-word-split" class="ahem" style="width: 120px; overflow-wrap: normal;"><ruby><span style="overflow-wrap: break-word;">OfflineBase</span><rt>xxxxxxxxxxx</rt></ruby></div>
@@ -103,6 +110,17 @@ document.fonts.load('20px Ahem').then(() => document.fonts.ready).then(() => {
   test(() => {
     assertBrokenWithoutOverflow(document.getElementById('single-wide-ruby'), 2);
   }, 'overflow-wrap: break-word emergency-breaks inside a single ruby wider than the line');
+
+  test(() => {
+    assertBrokenWithoutOverflow(document.getElementById('style-on-ruby'), 2);
+  }, 'overflow-wrap: break-word specified directly on <ruby> takes effect when wider than the line');
+
+  test(() => {
+    const box = document.getElementById('normal-on-ruby');
+    const rects = box.querySelector('ruby').getClientRects();
+    assert_equals(rects.length, 1,
+        'ruby with overflow-wrap: normal must not emergency-break even inside overflow-wrap: break-word container');
+  }, 'overflow-wrap: normal on <ruby> overrides container overflow-wrap: break-word');
 
   test(() => {
     assertWrappedIntactWithoutOverflow(

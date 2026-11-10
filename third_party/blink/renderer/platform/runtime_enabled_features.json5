@@ -5806,6 +5806,14 @@
       status: "stable",
     },
     {
+      // Starts the sub-line breakers for ruby base and annotations with the
+      // style of the <ruby> or <rt> instead of the container's line style, so
+      // that properties such as `overflow-wrap` and `white-space` set on them
+      // apply. https://crbug.com/580840306
+      name: "RubySubLineUsesRubyStyle",
+      status: "stable",
+    },
+    {
       // Places ruby annotations clear of the base's underline or overline.
       // https://drafts.csswg.org/css-ruby-1/#ruby-text-decoration
       name: "RubyTextDecorationSpacing",

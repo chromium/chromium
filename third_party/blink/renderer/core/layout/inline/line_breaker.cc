@@ -856,6 +856,11 @@ void LineBreaker::PrepareNextLine(LineInfo* line_info) {
   line_info->SetIsStartOfParagraph(current_.IsZero() ||
                                    previous_line_had_forced_break_);
   line_info->SetLineStyle(node_, *items_data_, use_first_line_style_);
+  if (sub_line_style_) [[unlikely]] {
+    // Use the style of the <ruby> or <rt> rather than the container, for the
+    // initial `current_style_` and for `ComputeCurrentStyle()`.
+    line_info->OverrideLineStyle(*sub_line_style_);
+  }
 
   DCHECK(!line_info->TextIndent());
   const ComputedStyle& style = line_info->LineStyle();
@@ -3415,10 +3420,15 @@ bool LineBreaker::HandleRuby(LineInfo* line_info, LayoutUnit retry_size) {
     annotation_data = ruby_token->annotation_data;
   }
   const InlineItem& item = *Items()[open_column_item_index];
+  auto annotation_style =
+      [this](const AnnotationBreakTokenData& data) -> const ComputedStyle& {
+    return Items()[data.start_item_index]->GetLayoutObject()->Style();
+  };
 
   LineInfo base_line_info = CreateSubLineInfo(
-      base_start, base_end_index, LineBreakerMode::kMaxContent, kIndefiniteSize,
-      trailing_whitespace_, /* disable_trailing_whitespace_collapsing */ true);
+      base_start, base_end_index, *current_style_, LineBreakerMode::kMaxContent,
+      kIndefiniteSize, trailing_whitespace_,
+      /* disable_trailing_whitespace_collapsing */ true);
   base_line_info.OverrideLineStyle(*current_style_);
   base_line_info.SetIsRubyBase();
   base_line_info.UpdateTextAlign();
@@ -3427,11 +3437,11 @@ bool LineBreaker::HandleRuby(LineInfo* line_info, LayoutUnit retry_size) {
   HeapVector<LineInfo, 1> annotation_line_list;
   annotation_line_list.reserve(number_of_annotations);
   for (const auto& data : annotation_data) {
-    annotation_line_list.push_back(CreateSubLineInfo(
-        data.start, data.end_item_index, LineBreakerMode::kMaxContent,
-        kIndefiniteSize, WhitespaceState::kLeading));
-    annotation_line_list.back().OverrideLineStyle(
-        Items()[data.start_item_index]->GetLayoutObject()->Style());
+    annotation_line_list.push_back(
+        CreateSubLineInfo(data.start, data.end_item_index,
+                          annotation_style(data), LineBreakerMode::kMaxContent,
+                          kIndefiniteSize, WhitespaceState::kLeading));
+    annotation_line_list.back().OverrideLineStyle(annotation_style(data));
   }
 
   LayoutUnit ruby_size = MaxLineWidth(base_line_info, annotation_line_list);
@@ -3451,14 +3461,14 @@ bool LineBreaker::HandleRuby(LineInfo* line_info, LayoutUnit retry_size) {
       // Recreate lines because lines created with LineBreakerMode::kMaxContent
       // are not usable in InlineLayoutAlgorithm.
       base_line_info = CreateSubLineInfo(
-          base_start, base_end_index, LineBreakerMode::kContent,
-          kIndefiniteSize, trailing_whitespace_,
+          base_start, base_end_index, *current_style_,
+          LineBreakerMode::kContent, kIndefiniteSize, trailing_whitespace_,
           /* disable_trailing_whitespace_collapsing */ true);
       for (wtf_size_t i = 0; i < annotation_data.size(); ++i) {
         annotation_line_list[i] = CreateSubLineInfo(
             annotation_data[i].start, annotation_data[i].end_item_index,
-            LineBreakerMode::kContent, kIndefiniteSize,
-            WhitespaceState::kLeading);
+            annotation_style(annotation_data[i]), LineBreakerMode::kContent,
+            kIndefiniteSize, WhitespaceState::kLeading);
       }
     }
 
@@ -3479,8 +3489,9 @@ bool LineBreaker::HandleRuby(LineInfo* line_info, LayoutUnit retry_size) {
   LayoutUnit base_target = retry_size == kIndefiniteSize
                                ? (available * base_intrinsic_size / ruby_size)
                                : retry_size - 1;
-  base_line_info = CreateSubLineInfo(base_start, base_end_index, mode_,
-                                     base_target, trailing_whitespace_);
+  base_line_info =
+      CreateSubLineInfo(base_start, base_end_index, *current_style_, mode_,
+                        base_target, trailing_whitespace_);
   // We assume a base LineInfo contains at least one InlineItemResult.
   // If it's zero, we can't adjust LogicalRubyColumns on bidi reorder.
   CHECK_GT(base_line_info.Results().size(), 0u);
@@ -3508,7 +3519,8 @@ bool LineBreaker::HandleRuby(LineInfo* line_info, LayoutUnit retry_size) {
       }
     }
     line = CreateSubLineInfo(annotation_data[i].start,
-                             annotation_data[i].end_item_index, mode, limit,
+                             annotation_data[i].end_item_index,
+                             annotation_style(annotation_data[i]), mode, limit,
                              WhitespaceState::kLeading);
     annotation_is_broken = annotation_is_broken || line.GetBreakToken();
   }
@@ -3608,6 +3620,7 @@ bool LineBreaker::IsMonolithicRuby(
 LineInfo LineBreaker::CreateSubLineInfo(
     InlineItemTextIndex start,
     wtf_size_t end_item_index,
+    const ComputedStyle& line_style,
     LineBreakerMode mode,
     LayoutUnit limit,
     WhitespaceState initial_whitespace_state,
@@ -3628,6 +3641,9 @@ LineInfo LineBreaker::CreateSubLineInfo(
   sub_line_breaker.disallow_auto_wrap_ = disallow_auto_wrap;
   sub_line_breaker.SetInputRange(start, end_item_index,
                                  initial_whitespace_state, this);
+  if (RuntimeEnabledFeatures::RubySubLineUsesRubyStyleEnabled()) {
+    sub_line_breaker.sub_line_style_ = &line_style;
+  }
   if (RuntimeEnabledFeatures::TabSizeInRubyBaseEnabled()) {
     // Tab stops occur at points that are multiples of the tab size from the
     // starting content edge of the preserved tab’s nearest block container
