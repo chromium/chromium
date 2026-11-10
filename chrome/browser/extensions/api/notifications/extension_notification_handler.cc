@@ -32,8 +32,9 @@ scoped_refptr<EventArgs> CreateBaseEventArgs(
     const std::string& scoped_notification_id) {
   // Unscope the notification id before returning it.
   size_t index_of_separator = extension_id.length() + 1;
-  CHECK_LT(index_of_separator, scoped_notification_id.length(),
-           base::NotFatalUntil::M161);
+  // TODO(crbug.com/582466339): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_LT(index_of_separator, scoped_notification_id.length());
   std::string unscoped_notification_id =
       scoped_notification_id.substr(index_of_separator);
 
