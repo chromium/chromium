@@ -115,9 +115,11 @@ if (use_centipede) {
   source_set("centipede_runner_no_main") {
     testonly = true
     sources = [
+      "src/centipede/coverage_interceptors.cc",
       "src/centipede/engine_abi.h",
       "src/centipede/engine_worker.cc",
       "src/centipede/engine_worker_abi.h",
+      "src/centipede/interceptor_utils.h",
       "src/centipede/runner.cc",
       "src/centipede/runner.h",
       "src/centipede/runner_dl_info.cc",
@@ -126,8 +128,8 @@ if (use_centipede) {
       "src/centipede/runner_interface.h",
       "src/centipede/runner_utils.cc",
       "src/centipede/runner_utils.h",
+      "src/centipede/runtime_interceptors.cc",
       "src/centipede/sancov_callbacks.cc",
-      "src/centipede/sancov_interceptors.cc",
       "src/centipede/sancov_object_array.cc",
       "src/centipede/sancov_object_array.h",
       "src/centipede/sancov_state.cc",
@@ -302,6 +304,7 @@ source_set("fuzztest_internal") {
     "src/fuzztest/internal/escaping.h",
     "src/fuzztest/internal/fixture_driver.cc",
     "src/fuzztest/internal/fixture_driver.h",
+    "src/fuzztest/internal/fuzztest_macro_impl.h",
     "src/fuzztest/internal/googletest_adaptor.cc",
     "src/fuzztest/internal/googletest_adaptor.h",
     "src/fuzztest/internal/io.cc",
@@ -326,6 +329,7 @@ source_set("fuzztest_internal") {
     "src/fuzztest/internal/status.h",
     "src/fuzztest/internal/subprocess.cc",
     "src/fuzztest/internal/subprocess.h",
+    "src/fuzztest/internal/symbol_name_utils.h",
     "src/fuzztest/internal/table_of_recent_compares.h",
     "src/fuzztest/internal/type_support.cc",
     "src/fuzztest/internal/type_support.h",
@@ -333,10 +337,7 @@ source_set("fuzztest_internal") {
 
   testonly = true
 
-  deps = [
-    "//testing/gtest",
-    "//third_party/abseil-cpp:absl_full",
-  ]
+  deps = [ "//third_party/abseil-cpp:absl_full" ]
 
   # TODO(https://crbug.com/337736622): Remove this after M129 when V8 moves
   # protobuf back to //third_party/protobuf.
@@ -346,6 +347,7 @@ source_set("fuzztest_internal") {
 
   public_deps = [
     ":common",
+    "//testing/gtest",
     "//third_party/abseil-cpp:absl",
 
     # For RE2 mutators. It's questionable whether we want to pull this library
