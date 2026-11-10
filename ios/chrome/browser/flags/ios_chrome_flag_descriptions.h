@@ -239,11 +239,6 @@ inline constexpr char kAutofillAiWithDataSchemaName[] =
 inline constexpr char kAutofillAiWithDataSchemaDescription[] =
     "Enables Autofill AI With Data Schema.";
 
-inline constexpr char kAutofillAmbientAutofillName[] =
-    "Autofill Ambient Autofill";
-inline constexpr char kAutofillAmbientAutofillDescription[] =
-    "Enables Ambient Autofill.";
-
 inline constexpr char kAutofillBottomSheetNewBlurName[] =
     "New Blur Method for Autofill Bottom Sheet";
 inline constexpr char kAutofillBottomSheetNewBlurDescription[] =

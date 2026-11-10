@@ -901,11 +901,6 @@ inline constexpr char
         "When enabled, the Autofill settings enterprise policy takes effect, "
         "and forms ai settings are decoupled from Autofill profile settings. ";
 
-inline constexpr char kAutofillAmbientAutofillName[] =
-    "Autofill Ambient Autofill";
-inline constexpr char kAutofillAmbientAutofillDescription[] =
-    "Enables Ambient Autofill.";
-
 inline constexpr char kAutofillCardScanningBugfixesName[] =
     "Enable Autofill credit card scanning bug fixes";
 inline constexpr char kAutofillCardScanningBugfixesDescription[] =
