@@ -309,7 +309,7 @@ void LoginOnUff() {
 }
 
 - (std::optional<std::string_view>)enterpriseReportingEventForTest {
-  if ([self isRunningTest:@selector(testLoginEventReported)]) {
+  if ([self isRunningTest:@selector(DISABLED_testLoginEventReported)]) {
     return "loginEvent";
   } else if ([self isRunningTest:@selector
                    (FLAKY_testPasswordBreachEventReported)]) {
@@ -943,7 +943,8 @@ void LoginOnUff() {
 }
 
 // Tests that a login event is reported to an enterprise connector.
-- (void)testLoginEventReported {
+// TODO(crbug.com/567129485): Flaky on iOS Simulator.
+- (void)DISABLED_testLoginEventReported {
   [self loadLoginPage];
 
   // Simulate login.
