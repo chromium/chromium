@@ -300,11 +300,12 @@ class CONTENT_EXPORT MediaStreamManager
                   OpenDeviceCallback open_device_callback,
                   DeviceStoppedCallback device_stopped_callback);
 
-  // Find |device_id| in the list of |requests_|, and returns its session id,
-  // or an empty base::UnguessableToken if not found. Must be called on the IO
-  // thread.
+  // Find `device_id` in the list of `requests_` for `render_frame_host_id`,
+  // and returns its session id, or an empty base::UnguessableToken if not
+  // found. Must be called on the IO thread.
   base::UnguessableToken VideoDeviceIdToSessionId(
-      const std::string& device_id) const;
+      const std::string& device_id,
+      GlobalRenderFrameHostId render_frame_host_id) const;
 
   // Called by UI to make sure the device monitor is started so that UI receive
   // notifications about device changes.

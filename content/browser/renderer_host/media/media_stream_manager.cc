@@ -11,6 +11,7 @@
 #include <list>
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/command_line.h"
@@ -2007,10 +2008,15 @@ bool MediaStreamManager::KeepDeviceAliveForTransfer(
 }
 
 base::UnguessableToken MediaStreamManager::VideoDeviceIdToSessionId(
-    const std::string& device_id) const {
+    const std::string& device_id,
+    GlobalRenderFrameHostId render_frame_host_id) const {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
 
   for (const LabeledDeviceRequest& device_request : requests_) {
+    if (device_request.second->requesting_render_frame_host_id !=
+        render_frame_host_id) {
+      continue;
+    }
     for (const blink::mojom::StreamDevicesPtr& stream_devices_ptr :
          device_request.second->stream_devices_set.stream_devices) {
       const blink::mojom::StreamDevices& devices = *stream_devices_ptr;
