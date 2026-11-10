@@ -20,17 +20,20 @@ _GTEST = bot_platforms.GTEST_STORY_NAME
 class _FakeTelemetryConfig:
   def __init__(self, name, stories):
     self.name = name
+    self.stories = tuple(stories)
     self.exhaustive_stories = tuple(stories)
 
 
 class _FakeBuilder:
   def __init__(
     self,
+    name='fake-perf',
     executables=(),
     crossbench=(),
     benchmark_configs=(),
     timing_file_path=None,
   ):
+    self.name = name
     self.executables = frozenset(executables)
     self.crossbench = frozenset(crossbench)
     self.benchmark_configs = frozenset(benchmark_configs)
@@ -174,6 +177,78 @@ class FilterTimingDataTest(unittest.TestCase):
         'speedometer3.crossbench/default',
       ],
     )
+
+
+class BuildCoverageReportTest(unittest.TestCase):
+  def testReportsSourcePerBenchmark(self):
+    builder = _FakeBuilder(
+      executables=[
+        bot_platforms.ExecutableConfig('base_perftests'),
+        bot_platforms.ExecutableConfig('dawn_perf_tests'),
+        bot_platforms.ExecutableConfig('legacy_perftests'),
+      ],
+      crossbench=[
+        bot_platforms.CrossbenchConfig('measured.crossbench', 'measured'),
+        bot_platforms.CrossbenchConfig('unmeasured.crossbench', 'unmeasured'),
+      ],
+      benchmark_configs=[
+        _FakeTelemetryConfig('full', ['s_1', 's_2']),
+        _FakeTelemetryConfig('partial', ['s_1', 's_2']),
+        _FakeTelemetryConfig('none', ['s_1']),
+      ],
+    )
+    timing_data = [
+      {'name': 'full/s_1', 'duration': '1.0', 'source': 'measured'},
+      {'name': 'full/s_2', 'duration': '1.0', 'source': 'measured'},
+      {'name': 'partial/s_1', 'duration': '1.0', 'source': 'measured'},
+      {
+        'name': 'base_perftests/' + _GTEST,
+        'duration': '50.0',
+        'source': 'measured',
+        'num_runs': 12,
+      },
+      {
+        'name': 'dawn_perf_tests/' + _GTEST,
+        'duration': '600.0',
+        'source': 'estimate',
+      },
+      # Timing files written before source tagging.
+      {'name': 'legacy_perftests/' + _GTEST, 'duration': '60.0'},
+      {
+        'name': 'measured.crossbench/default',
+        'duration': '30.0',
+        'source': 'measured',
+        'num_runs': 15,
+      },
+    ]
+    rows = generate_perf_sharding.BuildCoverageReport(builder, timing_data)
+    coverage = {r['benchmark']: (r['type'], r['coverage']) for r in rows}
+    self.assertEqual(
+      coverage,
+      {
+        'full': ('telemetry', 'measured'),
+        'partial': ('telemetry', 'partial'),
+        'none': ('telemetry', 'missing'),
+        'base_perftests': ('executable', 'measured'),
+        'dawn_perf_tests': ('executable', 'estimate'),
+        'legacy_perftests': ('executable', 'estimate'),
+        'measured.crossbench': ('crossbench', 'measured'),
+        'unmeasured.crossbench': ('crossbench', 'estimate'),
+      },
+    )
+    num_runs = {r['benchmark']: r['num_runs'] for r in rows}
+    self.assertEqual(num_runs['base_perftests'], 12)
+    self.assertEqual(num_runs['measured.crossbench'], 15)
+    self.assertIsNone(num_runs['dawn_perf_tests'])
+
+  def testCrossbenchWithoutStoriesIsNotMeasured(self):
+    class _NoStoryCrossbench:
+      name = 'no_story.crossbench'
+      stories = ()
+
+    builder = _FakeBuilder(crossbench=[_NoStoryCrossbench()])
+    rows = generate_perf_sharding.BuildCoverageReport(builder, [])
+    self.assertEqual(rows[0]['coverage'], 'estimate')
 
 
 if __name__ == '__main__':
