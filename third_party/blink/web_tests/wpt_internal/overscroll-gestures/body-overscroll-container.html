@@ -13,27 +13,25 @@
   html, body {
     margin: 0;
   }
+  /* The overscroll areas of body are laid out against the viewport, like
+     fixed-position elements, rather than against the body. */
   #menu {
     width: 200px;
     height: 100%;
-    right: 100%; /* Overscrolls to the left of the body. */
+    right: 100%; /* Overscrolls to the left of the viewport. */
     background: green;
   }
   #bottom_menu {
     width: 100%;
     height: 200px;
-    top: 100%; /* Overscrolls below the bottom of the body. */
+    top: 100%; /* Overscrolls below the bottom of the viewport. */
     background: coral;
   }
   #top_menu {
     width: 100%;
     height: 200px;
-    bottom: 100%; /* Overscrolls above the top of the body. */
+    bottom: 100%; /* Overscrolls above the top of the viewport. */
     background: gold;
-  }
-  #bottom_menu:not([overscrollarea]),
-  #top_menu:not([overscrollarea]) {
-    display: none;
   }
   #content {
     height: 2000px; /* Makes the document vertically scrollable. */
@@ -45,9 +43,9 @@
 <body overscrollcontainer>
   <div id="menu" overscrollarea></div>
   <button id="button" command="toggle-overscroll" commandfor="menu"></button>
-  <div id="bottom_menu"></div>
+  <div id="bottom_menu" overscrollarea></div>
   <button id="bottom_button" command="toggle-overscroll" commandfor="bottom_menu"></button>
-  <div id="top_menu"></div>
+  <div id="top_menu" overscrollarea></div>
   <button id="top_button" command="toggle-overscroll" commandfor="top_menu"></button>
   <div id="content"></div>
 </body>
@@ -80,12 +78,25 @@ async function scrollDocumentTo(y) {
   await scrollend;
 }
 
-async function closeMenu() {
-  if (menu.matches(":overscroll-open")) {
+// Closes `area` with its toggle button `area_button`, if it's open.
+async function closeArea(area, area_button) {
+  if (area.matches(":overscroll-open")) {
     const finished = overscrollFinished();
-    button.click();
+    area_button.click();
     await finished;
   }
+}
+
+function closeMenu() {
+  return closeArea(menu, button);
+}
+
+// Toggles `area` with its toggle button `area_button`, and resolves with the
+// event that finishes the overscroll.
+async function toggleArea(area_button) {
+  const finished = overscrollFinished();
+  area_button.click();
+  return await finished;
 }
 
 function swipe(from_x, to_x) {
@@ -143,18 +154,14 @@ promise_test(async t => {
   await scrollend;
   assert_greater_than(window.scrollY, 0, "document is scrolled");
   assert_false(menu.matches(":overscroll-open"), "menu is closed");
-}, "Wheel scrolling on body without an overscroll area in that direction " +
-   "scrolls the document");
+  assert_false(bottom_menu.matches(":overscroll-open"),
+               "bottom_menu is closed");
+}, "Wheel scrolling on body scrolls the document before it opens an " +
+   "overscroll area in that direction");
 
 promise_test(async t => {
-  bottom_menu.setAttribute("overscrollarea", "");
   t.add_cleanup(async () => {
-    if (bottom_menu.matches(":overscroll-open")) {
-      const finished = overscrollFinished();
-      bottom_button.click();
-      await finished;
-    }
-    bottom_menu.removeAttribute("overscrollarea");
+    await closeArea(bottom_menu, bottom_button);
     await scrollDocumentTo(0);
   });
 
@@ -207,14 +214,8 @@ promise_test(async t => {
    "overscrolls and snaps open, snaps back closed, then scrolls content back up");
 
 promise_test(async t => {
-  top_menu.setAttribute("overscrollarea", "");
   t.add_cleanup(async () => {
-    if (top_menu.matches(":overscroll-open")) {
-      const finished = overscrollFinished();
-      top_button.click();
-      await finished;
-    }
-    top_menu.removeAttribute("overscrollarea");
+    await closeArea(top_menu, top_button);
     await scrollDocumentTo(0);
   });
 
@@ -267,4 +268,94 @@ promise_test(async t => {
                "step 4: top_menu remains closed");
 }, "Root scroller scrolls content before body top overscroll area, " +
    "overscrolls and snaps open, snaps back closed, then scrolls content");
+
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await closeMenu();
+    await scrollDocumentTo(0);
+  });
+
+  await scrollDocumentTo(500);
+  assert_equals(window.scrollY, 500, "initial: document is scrolled down");
+  const scrolled_content_top = content.getBoundingClientRect().top;
+
+  // The menu is as tall as the viewport, and enters it from the left.
+  let finished = overscrollFinished();
+  await swipe(10, 300);
+  let event = await finished;
+  assert_equals(event.type, "overscrollend", "open: event type");
+  assert_true(event.overscrolling, "open: overscrolling");
+  let menu_rect = menu.getBoundingClientRect();
+  assert_equals(menu_rect.left, 0, "open: menu left");
+  assert_equals(menu_rect.top, 0, "open: menu top");
+  assert_equals(menu_rect.height, window.innerHeight, "open: menu height");
+  assert_equals(content.getBoundingClientRect().left, 200,
+                "open: content is pushed sideways by the menu");
+  assert_equals(content.getBoundingClientRect().top, scrolled_content_top,
+                "open: content is not pushed vertically");
+  assert_equals(window.scrollY, 500, "open: document scroll position");
+
+  finished = overscrollFinished();
+  await swipe(300, 10);
+  event = await finished;
+  assert_equals(event.type, "overscrollend", "close: event type");
+  assert_false(event.overscrolling, "close: overscrolling");
+  menu_rect = menu.getBoundingClientRect();
+  assert_equals(menu_rect.right, 0, "close: menu right");
+  assert_equals(menu_rect.top, 0, "close: menu top");
+  assert_equals(content.getBoundingClientRect().left, 0,
+                "close: content position");
+  assert_equals(window.scrollY, 500, "close: document scroll position");
+}, "Swiping on a scrolled body opens its overscroll area into the viewport");
+
+promise_test(async t => {
+  t.add_cleanup(async () => {
+    await closeArea(bottom_menu, bottom_button);
+    await closeArea(top_menu, top_button);
+    await scrollDocumentTo(0);
+  });
+
+  await scrollDocumentTo(500);
+  assert_equals(window.scrollY, 500, "initial: document is scrolled down");
+  const scrolled_content_top = content.getBoundingClientRect().top;
+
+  // The bottom menu opens at the bottom of the viewport, rather than the
+  // bottom of the body.
+  let event = await toggleArea(bottom_button);
+  assert_equals(event.type, "overscrollend", "bottom open: event type");
+  assert_true(bottom_menu.matches(":overscroll-open"),
+              "bottom open: bottom_menu is open");
+  assert_equals(bottom_menu.getBoundingClientRect().bottom, window.innerHeight,
+                "bottom open: bottom_menu is in view");
+  assert_equals(content.getBoundingClientRect().top, scrolled_content_top - 200,
+                "bottom open: content is pushed up by bottom_menu");
+  assert_equals(window.scrollY, 500, "bottom open: document scroll position");
+
+  event = await toggleArea(bottom_button);
+  assert_equals(event.type, "overscrollend", "bottom close: event type");
+  assert_equals(bottom_menu.getBoundingClientRect().top, window.innerHeight,
+                "bottom close: bottom_menu is out of view");
+  assert_equals(content.getBoundingClientRect().top, scrolled_content_top,
+                "bottom close: content position restored");
+
+  // The top menu opens at the top of the viewport, rather than the top of the
+  // body.
+  event = await toggleArea(top_button);
+  assert_equals(event.type, "overscrollend", "top open: event type");
+  assert_true(top_menu.matches(":overscroll-open"),
+              "top open: top_menu is open");
+  assert_equals(top_menu.getBoundingClientRect().top, 0,
+                "top open: top_menu is in view");
+  assert_equals(content.getBoundingClientRect().top, scrolled_content_top + 200,
+                "top open: content is pushed down by top_menu");
+  assert_equals(window.scrollY, 500, "top open: document scroll position");
+
+  event = await toggleArea(top_button);
+  assert_equals(event.type, "overscrollend", "top close: event type");
+  assert_equals(top_menu.getBoundingClientRect().bottom, 0,
+                "top close: top_menu is out of view");
+  assert_equals(content.getBoundingClientRect().top, scrolled_content_top,
+                "top close: content position restored");
+}, "Toggling the overscroll areas of a scrolled body opens them into the " +
+   "viewport");
 </script>

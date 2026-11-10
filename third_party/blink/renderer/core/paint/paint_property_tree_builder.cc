@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
@@ -530,6 +531,15 @@ static bool NeedsScrollAndScrollTranslation(
   if (direct_compositing_reasons.Has(CompositingReason::kRootScroller)) {
     return true;
   }
+  if (IsA<LayoutView>(object)) {
+    const HTMLBodyElement* body = object.GetDocument().FirstBodyElement();
+    if (const LayoutObject* body_object =
+            body ? body->GetLayoutObject() : nullptr;
+        body_object && body_object->OverscrollAreasReparentView()) {
+      // The body's overscroll area parents reparent these nodes.
+      return true;
+    }
+  }
 
   auto* scrollable_area = To<LayoutBox>(object).GetScrollableArea();
   CHECK(scrollable_area);
@@ -822,7 +832,23 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
                                kDirectReasonsForPaintOffsetTranslationProperty);
     if (auto* box = DynamicTo<LayoutBox>(object_)) {
       if (box->IsFixedToView(full_context_.container_for_fixed_position) &&
-          object_.View()->FirstFragment().PaintProperties()->Scroll()) {
+          object_.View()->FirstFragment().PaintProperties()->Scroll() &&
+          // Normally, a fixed-to-view element's PaintOffsetTranslation is
+          // parented above LayoutView's ScrollTranslation while scrolls over it
+          // still chain to LayoutView; |scroll_parent_scroll_translation|
+          // associates it with LayoutView's scroll node for GeometryMapper /
+          // compositor hit-testing and ensures PropertyTreeManager creates that
+          // transform node first.
+          //
+          // A viewport-fixed ::-internal-overscroll-area-parent is the
+          // opposite: its scroll node sits *above* LayoutView's scroll node,
+          // and in non-overlay mode LayoutView's ScrollTranslation is
+          // reparented *under* its ScrollTranslation. Setting
+          // |scroll_parent_scroll_translation| to a descendant transform
+          // (LayoutView's ScrollTranslation) would associate the area with the
+          // wrong scroll node and cause a cycle in
+          // PropertyTreeManager::EnsureCompositorTransformNode().
+          !box->IsOverscrollAreaParent()) {
         state.scroll_parent_scroll_translation = object_.View()
                                                      ->FirstFragment()
                                                      .PaintProperties()
@@ -3439,17 +3465,21 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
       }
       OnUpdateClip(properties_->UpdateOverflowClip(*context_.current.clip,
                                                    std::move(state)));
-      if (PseudoElement* pseudo_element =
-              DynamicTo<PseudoElement>(object_.GetNode());
-          pseudo_element &&
-          pseudo_element->GetPseudoId() == kPseudoIdOverscrollAreaParent) {
-        context_.current.SetOverscrollClipParent(
-            *properties_->OverflowClip(),
-            pseudo_element->UltimateOriginatingElement()
-                    .GetOverscrollContainer()
-                    ->GetComputedStyle()
-                    ->EffectiveOverscrollContainerType() ==
-                EOverscrollContainerType::kOverlay);
+      if (object_.IsOverscrollAreaParent()) {
+        Element* overscroll_container = To<PseudoElement>(object_.GetNode())
+                                            ->UltimateOriginatingElement()
+                                            .GetOverscrollContainer();
+        CHECK(overscroll_container);
+        // Overscroll area parents that aren't contained by their overscroll
+        // container (e.g. body's, see overscroll.css) inherit an ancestor's
+        // clip rather than the container's, so don't reparent it.
+        if (object_.Container() == overscroll_container->GetLayoutObject()) {
+          context_.current.SetOverscrollClipParent(
+              *properties_->OverflowClip(),
+              overscroll_container->GetComputedStyle()
+                      ->EffectiveOverscrollContainerType() ==
+                  EOverscrollContainerType::kOverlay);
+        }
       }
     } else {
       OnClearClip(properties_->ClearOverflowClip());
@@ -3645,40 +3675,63 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       UpdateScrollNode();
       UpdateOverflowControlEffects();
       UpdateScrollTranslation();
-      if (PseudoElement* pseudo_element =
-              DynamicTo<PseudoElement>(object_.GetNode());
-          pseudo_element &&
-          pseudo_element->GetPseudoId() == kPseudoIdOverscrollAreaParent) {
+      if (object_.IsOverscrollAreaParent()) {
         // The overscroll areas of a document's body element reparent the
         // LayoutView's scroll node (the outer viewport) rather than the body's
         // scroll node: while they are closed, they open only when the document
         // cannot scroll. A scroll container or fixed-positioned body is an
         // exception, because the root scroller does not scroll or move it.
-        Element* overscroll_container =
-            pseudo_element->UltimateOriginatingElement()
-                .GetOverscrollContainer();
+        Element* overscroll_container = To<PseudoElement>(object_.GetNode())
+                                            ->UltimateOriginatingElement()
+                                            .GetOverscrollContainer();
         CHECK(overscroll_container);
+        const bool is_overlay = overscroll_container->GetComputedStyle()
+                                    ->EffectiveOverscrollContainerType() ==
+                                EOverscrollContainerType::kOverlay;
         const LayoutBox* container_box = overscroll_container->GetLayoutBox();
+        const bool reparents_view =
+            container_box && container_box->OverscrollAreasReparentView();
+        const auto* view_properties =
+            object_.View()->FirstFragment().PaintProperties();
+        const auto* container_properties =
+            container_box ? container_box->FirstFragment().PaintProperties()
+                          : nullptr;
         const ScrollPaintPropertyNode* scroll_to_reparent =
-            context_.current.scroll;
-        if (overscroll_container ==
-                overscroll_container->GetDocument().body() &&
-            container_box && !container_box->IsScrollContainer() &&
-            !container_box->IsFixedPositioned()) {
-          if (const auto* view_properties =
-                  object_.View()->FirstFragment().PaintProperties();
-              view_properties && view_properties->Scroll()) {
-            scroll_to_reparent = view_properties->Scroll();
-          }
+            reparents_view
+                ? (view_properties ? view_properties->Scroll() : nullptr)
+                : (container_properties ? container_properties->Scroll()
+                                        : nullptr);
+        const TransformPaintPropertyNode* content_translation = nullptr;
+        if (reparents_view && To<LayoutBox>(object_).IsFixedToView(
+                                  full_context_.container_for_fixed_position)) {
+          // A viewport-fixed ::-internal-overscroll-area-parent of a
+          // root-scrolled <body> (see overscroll.css) sits outside LayoutView's
+          // ScrollTranslation (under LayoutView's PaintOffsetTranslation).
+          // Passing LayoutView's ScrollTranslation as |content_translation|
+          // parents the area's PaintOffsetTranslation under LayoutView's
+          // PaintOffsetTranslation in both modes: in non-overlay mode
+          // SetOverscrollParent() also reparents LayoutView's ScrollTranslation
+          // under the area's ScrollTranslation to shift the whole document,
+          // whereas in overlay mode LayoutView's ScrollTranslation is left
+          // untouched as a sibling so the area overlays the viewport without
+          // moving the document.
+          content_translation =
+              view_properties ? view_properties->ScrollTranslation() : nullptr;
+        } else if (container_properties) {
+          content_translation =
+              is_overlay ? container_properties->ScrollTranslation()
+                         : (container_properties->OverflowClip()
+                                ? &container_properties->OverflowClip()
+                                       ->LocalTransformSpace()
+                                       .Unalias()
+                                : nullptr);
         }
-        CHECK(scroll_to_reparent);
-        context_.current.SetOverscrollParent(
-            *properties_->Scroll(), *properties_->PaintOffsetTranslation(),
-            *properties_->ScrollTranslation(),
-            overscroll_container->GetComputedStyle()
-                    ->EffectiveOverscrollContainerType() ==
-                EOverscrollContainerType::kOverlay,
-            *scroll_to_reparent);
+        if (scroll_to_reparent && content_translation) {
+          context_.current.SetOverscrollParent(
+              *properties_->Scroll(), *properties_->PaintOffsetTranslation(),
+              *properties_->ScrollTranslation(), is_overlay,
+              *scroll_to_reparent, *content_translation);
+        }
       }
       object_.GetFrameView()->AddScrollableAreaWithScrollNode(
           *To<LayoutBox>(object_).GetScrollableArea());

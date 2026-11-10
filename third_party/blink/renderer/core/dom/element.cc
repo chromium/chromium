@@ -6121,6 +6121,26 @@ StyleRecalcChange Element::RecalcOwnStyle(
         child_change =
             child_change.EnsureAtLeast(StyleRecalcChange::kRecalcDescendants);
       }
+
+      if (old_style && new_style) {
+        if (const Element* body = GetDocument().FirstBodyElement()) {
+          if (const ComputedStyle* body_style = body->GetComputedStyle();
+              body_style &&
+              (body_style->EffectiveOverscrollContainerType() !=
+                   EOverscrollContainerType::kNone ||
+               body_style->ScrollsOverflow()) &&
+              StyleAdjuster::BodyPropagatesOverflowToViewport(
+                  *body_style, *old_style, body) !=
+                  StyleAdjuster::BodyPropagatesOverflowToViewport(
+                      *body_style, *new_style, body)) {
+            // StyleAdjuster adjusts body's overscroll containment and
+            // touch-action based on whether body propagates overflow to the
+            // viewport.
+            child_change =
+                child_change.EnsureAtLeast(StyleRecalcChange::kRecalcChildren);
+          }
+        }
+      }
     }
     child_change = ApplyComputedStyleDiff(child_change, diff);
     if (ComputedStyle::DiffAffectsContainerQueries(old_style, new_style)) {

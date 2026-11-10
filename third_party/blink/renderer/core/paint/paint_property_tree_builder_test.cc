@@ -7811,7 +7811,9 @@ TEST_P(PaintPropertyTreeBuilderTest, OverscrollAreaParentChainsAfterViewport) {
   EXPECT_EQ(area_parent_scroll("card_menu")->Parent(), body_scroll);
 
   EXPECT_EQ(fixed_scroll->Parent(), area_parent_scroll("fixed_menu"));
-  EXPECT_EQ(area_parent_scroll("fixed_menu")->Parent(), body_scroll);
+  // The body doesn't contain fixed-position elements, so the fixed-position
+  // card chains to the root scroller, like other fixed-position elements.
+  EXPECT_EQ(area_parent_scroll("fixed_menu")->Parent(), DocScroll());
 
   // Updating the body's overscroll area parents also updates the LayoutView,
   // whose scroll node they reparent, and preserves the reparented scroll tree
@@ -7951,6 +7953,8 @@ TEST_P(PaintPropertyTreeBuilderTest,
                                 ->FirstFragment()
                                 .PaintProperties()
                                 ->Scroll();
+  EXPECT_EQ(area_parent->GetLayoutObject()->Container(),
+            GetDocument().body()->GetLayoutObject());
   EXPECT_EQ(body_scroll->Parent(), area_parent_scroll);
   EXPECT_EQ(area_parent_scroll->Parent(), DocScroll());
 }

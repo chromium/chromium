@@ -1333,6 +1333,14 @@
       invalidate: ["layout"],
     },
     {
+      name: "HasLayoutContainmentForOverscrollContainer",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+      invalidate: ["layout"],
+    },
+    {
       // https://html.spec.whatwg.org/multipage/interaction.html#inert
       name: "IsHTMLInert",
       inherited: true,

@@ -8,3 +8,9 @@
   scrollbar-width: none;
   position: absolute;
 }
+
+/* Overscroll areas on the body are fixed to the viewport so that they are
+   sized to the viewport and do not scroll with the document. */
+body[overscrollcontainer] > [overscrollarea]::-internal-overscroll-area-parent(*) {
+  position: fixed;
+}

@@ -52,13 +52,13 @@ struct PaintPropertyTreeBuilderFragmentContext {
     STACK_ALLOCATED();
 
    public:
-    // Sets the given node to be the new overscroll parent node for this node.
-    // The ::-internal-overscroll-area-parent is a child of the overscroll
-    // container. We apply three changes:
-    // 1. Attach its scroll node as a parent of |scroll_to_reparent|. Usually
-    //    |scroll_to_reparent| is the container's scroll node. However, when the
-    //    container is the document's body and is scrolled/moved by the root
-    //    scroller (i.e. not fixed-positioned and not its own scroll container),
+    // Reparents scroll and transform nodes for a
+    // ::-internal-overscroll-area-parent pseudo-element:
+    //
+    // 1. Insert |overscroll_parent| (its scroll node) immediately above
+    //    |scroll_to_reparent|. Usually |scroll_to_reparent| is the overscroll
+    //    container's scroll node. When the container is a root-scrolled <body>
+    //    (see LayoutObject::OverscrollAreasReparentView()),
     //    |scroll_to_reparent| is the LayoutView's scroll node so that document
     //    scrolls chain to the body's overscroll areas only after the document
     //    itself cannot scroll:
@@ -68,68 +68,84 @@ struct PaintPropertyTreeBuilderFragmentContext {
     //          Scroll (LayoutView)
     //            Scroll (<body>)
     //
-    // 2. Attach its paint transform node outside the container's scrolling
-    //    content.
-    // 3. If non-overlay, attach its scroll translation node as a parent of the
-    //    content's scroll translation. This ensures that scrolling the
-    //    ::-internal-overscroll-area scrolls the content.
+    // 2. Attach |paint_offset_translation| under |content_translation|'s parent
+    //    so the overscroll area sits outside the scrolling content.
+    // 3. If non-overlay, attach |overscroll_transform| (its ScrollTranslation)
+    //    as the parent of |content_translation| so opening the overscroll area
+    //    shifts the content.
     //
-    // E.g. transforms the following by moving the indicated nodes up the tree.
+    // For a regular overscroll container (e.g. <div>), |content_translation| is
+    // the container's ContentTranslation (or ScrollTranslation when overlay).
+    // Moving the starred nodes transforms:
     //
-    //  PaintOffsetTranslation <div>
-    //    ContentTranslation <div>
-    //      ScrollTranslation <div>
-    //        PaintOffsetTranslation ::-internal-overscroll-area-parent) *
-    //          ContentTranslation ::-internal-overscroll-area-parent)   *
-    //            ScrollTranslation ::-internal-overscroll-area-parent)  *
+    //   PaintOffsetTranslation <div>
+    //     ContentTranslation <div>
+    //       ScrollTranslation <div>
+    //         PaintOffsetTranslation ::-internal-overscroll-area-parent) *
+    //           ContentTranslation ::-internal-overscroll-area-parent)   *
+    //             ScrollTranslation ::-internal-overscroll-area-parent)  *
     //
-    // Turns into:
-    //  PaintOffsetTranslation <div>
-    //    PaintOffsetTranslation ::-internal-overscroll-area-parent) *
-    //      ContentTranslation ::-internal-overscroll-area-parent)   *
-    //        ScrollTranslation ::-internal-overscroll-area-parent)  *
-    //          ContentTranslation <div>
-    //            ScrollTranslation <div>
+    // into (non-overlay):
     //
-    // For overlay scrolls, no ContentTranslation nodes are needed
-    // (to offset the scroll origin) and the ::-internal-overscroll-area content
-    // is effectively a sibling to the scrolling content, e.g.:
+    //   PaintOffsetTranslation <div>
+    //     PaintOffsetTranslation ::-internal-overscroll-area-parent) *
+    //       ContentTranslation ::-internal-overscroll-area-parent)   *
+    //         ScrollTranslation ::-internal-overscroll-area-parent)  *
+    //           ContentTranslation <div>
+    //             ScrollTranslation <div>
     //
-    //  PaintOffsetTranslation <div>
-    //    ScrollTranslation <div>
-    //    PaintOffsetTranslation ::-internal-overscroll-area-parent) *
-    //      ScrollTranslation ::-internal-overscroll-area-parent)    *
+    // or (overlay, where no ContentTranslation nodes are needed and the area is
+    // a sibling of the scrolling content):
+    //
+    //   PaintOffsetTranslation <div>
+    //     ScrollTranslation <div>
+    //     PaintOffsetTranslation ::-internal-overscroll-area-parent) *
+    //       ScrollTranslation ::-internal-overscroll-area-parent)    *
+    //
+    // When a root-scrolled <body>'s ::-internal-overscroll-area-parent is
+    // position: fixed to the viewport (see overscroll.css),
+    // |content_translation| is the LayoutView's ScrollTranslation instead of
+    // the body's. Its PaintOffsetTranslation is placed under LayoutView's
+    // PaintOffsetTranslation so it stays fixed to the viewport as the document
+    // scrolls. In non-overlay mode, LayoutView's ScrollTranslation is
+    // reparented under the area's ScrollTranslation so opening the area shifts
+    // the whole document:
+    //
+    //   PaintOffsetTranslation LayoutView
+    //     PaintOffsetTranslation ::-internal-overscroll-area-parent) *
+    //       ContentTranslation ::-internal-overscroll-area-parent)   *
+    //         ScrollTranslation ::-internal-overscroll-area-parent)  *
+    //           ScrollTranslation LayoutView
+    //
+    // In overlay mode, step 3 is skipped, so LayoutView's ScrollTranslation
+    // remains a sibling under LayoutView's PaintOffsetTranslation and opening
+    // the area overlays the viewport without moving the document:
+    //
+    //   PaintOffsetTranslation LayoutView
+    //     ScrollTranslation LayoutView
+    //     PaintOffsetTranslation ::-internal-overscroll-area-parent) *
+    //       ScrollTranslation ::-internal-overscroll-area-parent)    *
     void SetOverscrollParent(
         const ScrollPaintPropertyNode& overscroll_parent,
         const TransformPaintPropertyNode& paint_offset_translation,
         const TransformPaintPropertyNodeOrAlias& overscroll_transform,
         bool is_overlay,
-        const ScrollPaintPropertyNode& scroll_to_reparent) const {
+        const ScrollPaintPropertyNode& scroll_to_reparent,
+        const TransformPaintPropertyNode& content_translation) const {
       // We should only be creating overscroll nodes for non-root
       // scroll container elements.
       CHECK(!scroll_to_reparent.IsRoot());
-      const TransformPaintPropertyNode* scroll_translation =
-          overscroll_transform.Unalias().ParentScrollTranslationNode();
-      // The content transform for a non-overlay parent scroller is the
-      // transform space of the scroll clip node.
-      const TransformPaintPropertyNode* content_translation =
-          is_overlay ? scroll_translation
-                     : &scroll_translation->ScrollNode()
-                            ->OverflowClipNode()
-                            ->LocalTransformSpace()
-                            .Unalias();
-
-      CHECK(!content_translation->IsRoot());
+      CHECK(!content_translation.IsRoot());
       const_cast<ScrollPaintPropertyNode&>(overscroll_parent)
           .SetParent(*scroll_to_reparent.Parent());
       const_cast<ScrollPaintPropertyNode&>(scroll_to_reparent)
           .SetParent(overscroll_parent);
       const_cast<TransformPaintPropertyNode&>(paint_offset_translation)
-          .SetParent(*content_translation->Parent());
+          .SetParent(*content_translation.Parent());
 
       if (!is_overlay) {
-        const_cast<TransformPaintPropertyNode*>(content_translation)
-            ->SetParent(overscroll_transform);
+        const_cast<TransformPaintPropertyNode&>(content_translation)
+            .SetParent(overscroll_transform);
       }
     }
 

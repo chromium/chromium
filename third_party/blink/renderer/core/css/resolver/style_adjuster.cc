@@ -119,23 +119,50 @@ bool IsOverflowClipOrVisible(EOverflow overflow) {
   return overflow == EOverflow::kClip || overflow == EOverflow::kVisible;
 }
 
+// True if |element| is the document's primary <body> element and its overflow
+// is propagated to the viewport rather than scrolling its own box (see
+// Document::ViewportDefiningElement()).
+template <typename BodyStyleType>
+bool BodyPropagatesOverflowToViewportInternal(
+    const BodyStyleType& body_style,
+    const ComputedStyle& document_element_style,
+    const Element* element) {
+  if (!element || element != element->GetDocument().FirstBodyElement()) {
+    return false;
+  }
+  Element* document_element = element->GetDocument().documentElement();
+  if (!document_element ||
+      !document_element_style.IsOverflowVisibleAlongBothAxes() ||
+      document_element_style.ShouldApplyAnyContainment(*document_element)) {
+    return false;
+  }
+  // Do not include `HasLayoutContainmentForOverscrollContainer()` when checking
+  // `body_style`'s containment:
+  // 1. For overscroll containers, that bit is computed by calling this function
+  //    in `AdjustComputedStyle()` (and when called from
+  //    `Element::RecalcOwnStyle()` after `<html>`'s style changes, `body_style`
+  //    still has the bit from `<html>`'s old style).
+  // 2. For non-overscroll containers, this function is still used for other
+  //    adjustments (such as `touch-action`) and that bit is not set.
+  unsigned body_effective_containment = ComputedStyle::EffectiveContainment(
+      body_style.Contain(), body_style.ContainerType(),
+      body_style.ContentVisibility(), body_style.SkipsContents(),
+      body_style.HasSizeContainmentForViewTransitionScope() &&
+          RuntimeEnabledFeatures::ScopedViewTransitionSizeContainmentEnabled(),
+      /*has_layout_containment_for_overscroll_container=*/false,
+      body_style.HasLayoutContainmentForViewTransitionScope());
+  return !ComputedStyle::ShouldApplyAnyContainment(
+      *element, body_style.GetDisplayStyle(), body_effective_containment);
+}
+
 TouchAction AdjustTouchActionForElement(TouchAction touch_action,
                                         const ComputedStyleBuilder& builder,
                                         const ComputedStyle& parent_style,
                                         Element* element) {
   Element* document_element = element->GetDocument().documentElement();
-  bool scrolls_overflow = builder.ScrollsOverflow();
-  if (IsA<HTMLBodyElement>(element) &&
-      element == element->GetDocument().FirstBodyElement()) {
-    // Body scrolls overflow if html root overflow is not visible or the
-    // propagation of overflow is stopped by containment.
-    if (parent_style.IsOverflowVisibleAlongBothAxes()) {
-      if (!parent_style.ShouldApplyAnyContainment(*document_element) &&
-          !builder.ShouldApplyAnyContainment(*element)) {
-        scrolls_overflow = false;
-      }
-    }
-  }
+  bool scrolls_overflow = builder.ScrollsOverflow() &&
+                          !StyleAdjuster::BodyPropagatesOverflowToViewport(
+                              builder, parent_style, element);
   bool is_child_document =
       element == document_element && element->GetDocument().LocalOwner();
   if (scrolls_overflow || is_child_document) {
@@ -1354,6 +1381,21 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   if (builder.EffectiveOverscrollContainerType() !=
       EOverscrollContainerType::kNone) {
     builder.SetIsInOverscrollContainer(true);
+    // Force layout containment so the container contains its out-of-flow
+    // ::-internal-overscroll-area-parent children, except when the container is
+    // the document's primary <body> and is scrolled/moved by the root scroller
+    // (whose ::-internal-overscroll-area-parents are fixed to the viewport; see
+    // overscroll.css and LayoutObject::OverscrollAreasReparentView()). Note
+    // that a fixed-positioned <body> does not establish a fixed-position
+    // containing block on its own and is not moved by the root scroller, so it
+    // still needs layout containment here.
+    const bool is_root_scrolled_body =
+        builder.GetPosition() != EPosition::kFixed &&
+        BodyPropagatesOverflowToViewport(builder, parent_style, element);
+    builder.SetHasLayoutContainmentForOverscrollContainer(
+        !is_root_scrolled_body);
+  } else {
+    builder.SetHasLayoutContainmentForOverscrollContainer(false);
   }
 
   // If the inherited value of justify-items includes the 'legacy'
@@ -1396,6 +1438,22 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
 bool StyleAdjuster::MayAdjustStyleForTheme(const ComputedStyle& style) {
   return style.HasAppearance();
+}
+
+bool StyleAdjuster::BodyPropagatesOverflowToViewport(
+    const ComputedStyle& body_style,
+    const ComputedStyle& document_element_style,
+    const Element* element) {
+  return BodyPropagatesOverflowToViewportInternal(
+      body_style, document_element_style, element);
+}
+
+bool StyleAdjuster::BodyPropagatesOverflowToViewport(
+    const ComputedStyleBuilder& body_style,
+    const ComputedStyle& document_element_style,
+    const Element* element) {
+  return BodyPropagatesOverflowToViewportInternal(
+      body_style, document_element_style, element);
 }
 
 void StyleAdjuster::RunUncacheableStyleAdjustment(
@@ -1635,13 +1693,16 @@ StyleAdjuster::ElementTypeForCache StyleAdjuster::GetElementTypeCacheKey(
       return {ElementType::kIsNotElement};
 
     case ElementType::kHTMLBodyElement:
-      // The first <body> element is treated differently from the others,
-      // both for touch-action and for setting a ComputedStyle flag
-      // (forcing style invalidation).
-      if (element.GetDocument().FirstBodyElement() != element) {
-        return {ElementType::kIsNotElement};
-      }
-      return {element.GetElementType()};
+      // The primary <body> element's style adjustments (touch-action and
+      // overscroll container containment) depend on the documentElement's
+      // overflow and containment, which are non-inherited properties not
+      // checked by IsCacheCompatible(). If style adjustment were cached for the
+      // primary <body>, dynamic overflow/containment changes on <html> would
+      // hit <body>'s own cached entry in MatchedPropertiesCache and skip
+      // AdjustComputedStyle(). Since secondary <body> elements also cannot
+      // share style adjustment with the primary <body>, don't cache style
+      // adjustment for any <body> element.
+      return {ElementType::kIsNotElement};
 
     case ElementType::kHTMLImageElement:
       if (To<HTMLImageElement>(element).IsCollapsed()) {

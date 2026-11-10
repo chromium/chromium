@@ -324,6 +324,18 @@ TEST_F(ComputedStyleTest, ViewTransitionScopeUsedContainment) {
   }
 }
 
+TEST_F(ComputedStyleTest, OverscrollContainerForcedLayoutContainment) {
+  const ComputedStyle* initial_style = InitialComputedStyle();
+  EXPECT_FALSE(initial_style->ContainsLayout());
+
+  ComputedStyleBuilder builder(*initial_style);
+  builder.SetHasLayoutContainmentForOverscrollContainer(true);
+  const ComputedStyle* style = builder.TakeStyle();
+
+  EXPECT_EQ(style->Contain(), kContainsNone);
+  EXPECT_TRUE(style->ContainsLayout());
+}
+
 TEST_F(ComputedStyleTest, IsStackingContextWithoutContainmentAfterClone) {
   ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
   builder1.SetForcesStackingContext(true);

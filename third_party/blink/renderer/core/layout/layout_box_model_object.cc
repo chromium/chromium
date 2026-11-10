@@ -315,7 +315,9 @@ void LayoutBoxModelObject::StyleDidChange(
   }
 
   if (old_style &&
-      old_style->BackfaceVisibility() != new_style.BackfaceVisibility()) {
+      (old_style->BackfaceVisibility() != new_style.BackfaceVisibility() ||
+       old_style->HasLayoutContainmentForOverscrollContainer() !=
+           new_style.HasLayoutContainmentForOverscrollContainer())) {
     SetNeedsPaintPropertyUpdate();
   }
 

@@ -4329,6 +4329,28 @@ gfx::Transform LayoutObject::LocalToAncestorTransform(
   return transform_state.AccumulatedTransform();
 }
 
+// Returns the LayoutObject of |area_parent|'s overscroll container element.
+// Note that this is not necessarily the same as either ContainingBox() or
+// Parent():
+// - ContainingBox() resolves the out-of-flow containing block. For a
+//   root-scrolled <body>, ::-internal-overscroll-area-parent is position: fixed
+//   (overscroll.css) and <body> does not force layout containment, so
+//   ContainingBox() walks past <body> to LayoutView (or an <html> ancestor with
+//   a transform/containment).
+// - Parent() can be an intermediate anonymous wrapper box inside the container
+//   (e.g. an anonymous LayoutBlockFlow when inline and block children are
+//   mixed, or an anonymous multicol flow thread) rather than the container's
+//   own LayoutObject.
+static LayoutObject* OverscrollContainerForAreaParent(
+    const LayoutObject& area_parent) {
+  DCHECK(area_parent.IsOverscrollAreaParent());
+  Element* overscroll_container = To<PseudoElement>(area_parent.GetNode())
+                                      ->UltimateOriginatingElement()
+                                      .GetOverscrollContainer();
+  return overscroll_container ? overscroll_container->GetLayoutObject()
+                              : nullptr;
+}
+
 PhysicalOffset LayoutObject::OffsetFromContainerInternal(
     const LayoutObject* o,
     MapCoordinatesFlags mode) const {
@@ -4339,7 +4361,26 @@ PhysicalOffset LayoutObject::OffsetFromContainerInternal(
   if (o->IsScrollContainer()) {
     offset += OffsetFromScrollableContainer(o, mode);
   }
-  offset += OffsetFromOverscrollContainer(o, mode);
+  if (o->IsContentMovingOverscrollContainer()) {
+    offset += OffsetFromOverscrollContainer(o, mode);
+  } else if (IsOverscrollAreaParent()) {
+    // For a non-root-scrolled overscroll container, forced layout containment
+    // makes the container itself the containing block (`o`) of its
+    // ::-internal-overscroll-area-parent children, which is handled above (and
+    // is not applied again when stepping from the container to its own
+    // `Container()`). For a root-scrolled <body>, however, layout containment
+    // is not forced and ::-internal-overscroll-area-parent is position: fixed
+    // (see overscroll.css), so `o` (`Container()`) walks past <body> to an
+    // ancestor (such as LayoutView) and the `Container()` walk never visits
+    // <body>.
+    const LayoutObject* overscroll_container =
+        OverscrollContainerForAreaParent(*this);
+    if (overscroll_container &&
+        overscroll_container->IsContentMovingOverscrollContainer()) {
+      DCHECK_NE(overscroll_container, o);
+      offset += OffsetFromOverscrollContainer(overscroll_container, mode);
+    }
+  }
   return offset;
 }
 
@@ -4371,10 +4412,10 @@ PhysicalOffset LayoutObject::OffsetFromScrollableContainer(
 PhysicalOffset LayoutObject::OffsetFromOverscrollContainer(
     const LayoutObject* container,
     MapCoordinatesFlags mode) const {
-  // If either container is not a shifting overscroll area container or we need
-  // to ignore scroll offsets, then we can early out.
-  if (!container->IsContentMovingOverscrollContainer() ||
-      mode.Has(MapCoordinatesMode::kIgnoreScrollOffset)) {
+  NOT_DESTROYED();
+  CHECK(container);
+  DCHECK(container->IsContentMovingOverscrollContainer());
+  if (mode.Has(MapCoordinatesMode::kIgnoreScrollOffset)) {
     return PhysicalOffset();
   }
 
@@ -4618,7 +4659,9 @@ void LayoutObject::SetNeedsPaintPropertyUpdate() {
   // reparenting in PaintPropertyTreeBuilder. Without this, we can end up with
   // cycles if only *some* of the related objects are dirtied.
   if (IsOverscrollContainer() || IsOverscrollAreaParent()) {
-    LayoutObject* container = IsOverscrollAreaParent() ? ContainingBox() : this;
+    LayoutObject* container = IsOverscrollAreaParent()
+                                  ? OverscrollContainerForAreaParent(*this)
+                                  : this;
     if (container) {
       Element* container_element = DynamicTo<Element>(container->GetNode());
       CHECK(container_element);
@@ -4644,10 +4687,10 @@ void LayoutObject::SetNeedsPaintPropertyUpdate() {
         // (::-internal-overscroll-area-parent).
         container->SetDescendantNeedsPaintPropertyUpdate();
 
-        // The ::-internal-overscroll-area-parent objects of the body element
-        // may reparent the LayoutView's scroll node instead, which then needs
-        // an update as well.
-        if (container_element == GetDocument().body()) {
+        // The ::-internal-overscroll-area-parent objects of the primary <body>
+        // element may reparent the LayoutView's nodes instead (or may have just
+        // transitioned out of doing so), so LayoutView needs an update too.
+        if (container_element == GetDocument().FirstBodyElement()) {
           if (LayoutView* view = View()) {
             view->SetNeedsPaintPropertyUpdate();
           }
@@ -4662,7 +4705,7 @@ void LayoutObject::SetNeedsPaintPropertyUpdate() {
     Parent()->SetDescendantNeedsPaintPropertyUpdate();
 
   if (IsLayoutView()) {
-    if (Element* body = GetDocument().body()) {
+    if (Element* body = GetDocument().FirstBodyElement()) {
       if (LayoutObject* body_object = body->GetLayoutObject();
           body_object && body_object->IsOverscrollContainer()) {
         body_object->SetNeedsPaintPropertyUpdate();

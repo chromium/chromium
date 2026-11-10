@@ -1582,6 +1582,17 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
                           EOverscrollContainerType::kNone;
   }
 
+  // True if this is the document's primary <body> overscroll container and is
+  // scrolled/moved by the root scroller, so its
+  // ::-internal-overscroll-area-parent children reparent the LayoutView rather
+  // than forcing layout containment on the body (see
+  // StyleAdjuster::AdjustComputedStyle()).
+  bool OverscrollAreasReparentView() const {
+    NOT_DESTROYED();
+    return IsOverscrollContainer() &&
+           !Style().HasLayoutContainmentForOverscrollContainer();
+  }
+
   bool IsContentMovingOverscrollContainer() const {
     NOT_DESTROYED();
     return IsBox() && Style().IsContentMovingOverscrollContainer();

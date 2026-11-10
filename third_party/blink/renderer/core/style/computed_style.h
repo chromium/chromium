@@ -1651,7 +1651,7 @@ class ComputedStyle final : public ComputedStyleBase {
       EContentVisibility content_visibility,
       bool skips_contents,
       bool has_size_containment_for_vt_scope,
-      EOverscrollContainerType overscroll_container_type,
+      bool has_layout_containment_for_overscroll_container,
       bool has_layout_containment_for_vt_scope) {
     unsigned effective = contain;
 
@@ -1676,13 +1676,14 @@ class ComputedStyle final : public ComputedStyleBase {
                                ScopedViewTransitionSizeContainmentEnabled())) {
       effective |= kContainsSize;
     }
-    if (overscroll_container_type != EOverscrollContainerType::kNone) {
-      // TODO(crbug.com/467112943): Layout containment is currently forced to
-      // ensure that the container of the overscroll areas actually contains
-      // the overscroll areas. However, requiring layout containment is
-      // overly restrictive to the child content that can be used within
-      // the scroller. We should remove this requirement while ensuring they are
-      // layout children of the container element.
+    if (has_layout_containment_for_overscroll_container) {
+      // TODO(crbug.com/467112943): Layout containment is currently forced on
+      // overscroll containers (except root-scrolled <body>; see
+      // StyleAdjuster::AdjustComputedStyle()) so that they contain their
+      // out-of-flow ::-internal-overscroll-area-parent children. However,
+      // requiring layout containment is overly restrictive to the child content
+      // that can be used within the scroller. We should remove this requirement
+      // while ensuring they are layout children of the container element.
       effective |= kContainsLayout;
     }
 
@@ -1699,7 +1700,7 @@ class ComputedStyle final : public ComputedStyleBase {
         HasSizeContainmentForViewTransitionScope() &&
             RuntimeEnabledFeatures::
                 ScopedViewTransitionSizeContainmentEnabled(),
-        EffectiveOverscrollContainerType(),
+        HasLayoutContainmentForOverscrollContainer(),
         HasLayoutContainmentForViewTransitionScope());
   }
 
@@ -3231,7 +3232,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
         HasSizeContainmentForViewTransitionScope() &&
             RuntimeEnabledFeatures::
                 ScopedViewTransitionSizeContainmentEnabled(),
-        EffectiveOverscrollContainerType(),
+        HasLayoutContainmentForOverscrollContainer(),
         HasLayoutContainmentForViewTransitionScope());
     return ComputedStyle::ShouldApplyAnyContainment(element, GetDisplayStyle(),
                                                     effective_containment);
