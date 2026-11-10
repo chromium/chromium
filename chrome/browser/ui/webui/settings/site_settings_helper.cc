@@ -1281,8 +1281,9 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
       content_settings::mojom::SessionModel::ONE_TIME) {
     CHECK(permissions::PermissionUtil::DoesSupportTemporaryGrants(content_type),
           base::NotFatalUntil::M162);
-    CHECK_EQ(result.status, PermissionStatus::GRANTED,
-             base::NotFatalUntil::M162);
+    // TODO(crbug.com/579245368): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(result.status, PermissionStatus::GRANTED);
     return CONTENT_SETTING_DEFAULT;
   }
   return permissions::PermissionUtil::PermissionStatusToContentSetting(
