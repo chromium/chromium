@@ -555,7 +555,10 @@ SEL EditingActionForKeyEquivalent(NSEvent* event) {
 - (void)updateFullKeyboardAccess {
   if (!_bridge)
     return;
-  _bridge->host()->SetKeyboardAccessible([NSApp isFullKeyboardAccessEnabled]);
+  // Don't use -[NSApplication isFullKeyboardAccessEnabled] here. It may return
+  // a stale value when called from the com.apple.KeyboardUIModeDidChange
+  // notification handler. See https://crbug.com/579632127.
+  _bridge->host()->SetKeyboardAccessible(ui::IsFullKeyboardAccessEnabled());
 }
 
 - (void)updateCursorTrackingArea {

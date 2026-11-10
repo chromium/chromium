@@ -60,4 +60,21 @@ TEST_F(AppKitUtilsTest, UTTypesForServicesTypeArrayTest) {
 #pragma clang diagnostic pop
 }
 
+// IsFullKeyboardAccessEnabled() should read the same preference that backs
+// -[NSApplication isFullKeyboardAccessEnabled]. They can only differ briefly
+// while the AppKit value is stale after a change.
+TEST_F(AppKitUtilsTest, IsFullKeyboardAccessEnabledMatchesAppKit) {
+  EXPECT_EQ(static_cast<bool>([[NSApplication sharedApplication]
+                isFullKeyboardAccessEnabled]),
+            IsFullKeyboardAccessEnabled());
+}
+
+TEST_F(AppKitUtilsTest, IsFullKeyboardAccessEnabledOverrideForTesting) {
+  SetFullKeyboardAccessGetterForTesting([] { return true; });
+  EXPECT_TRUE(IsFullKeyboardAccessEnabled());
+  SetFullKeyboardAccessGetterForTesting([] { return false; });
+  EXPECT_FALSE(IsFullKeyboardAccessEnabled());
+  SetFullKeyboardAccessGetterForTesting(nullptr);
+}
+
 }  // namespace ui

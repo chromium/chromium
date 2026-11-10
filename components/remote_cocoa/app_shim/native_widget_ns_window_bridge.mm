@@ -48,6 +48,7 @@
 #include "net/cert/x509_util_apple.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/cocoa/animation_utils.h"
+#import "ui/base/cocoa/appkit_utils.h"
 #import "ui/base/cocoa/constrained_window/constrained_window_animation.h"
 #include "ui/base/cocoa/cursor_utils.h"
 #include "ui/base/cocoa/drag_permission.h"
@@ -1601,7 +1602,7 @@ void NativeWidgetNSWindowBridge::OnScreenOrBackingPropertiesChanged() {
 void NativeWidgetNSWindowBridge::OnWindowKeyStatusChangedTo(bool is_key) {
   host_->OnWindowKeyStatusChanged(
       is_key, [window_ contentView] == [window_ firstResponder],
-      [NSApp isFullKeyboardAccessEnabled]);
+      ui::IsFullKeyboardAccessEnabled());
   // If the window just became key, this is a good chance to add child windows
   // from when the window wasn't on the current space.
   if (is_key)

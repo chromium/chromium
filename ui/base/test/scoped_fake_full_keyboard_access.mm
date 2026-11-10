@@ -10,10 +10,16 @@
 
 #import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/check_op.h"
+#import "ui/base/cocoa/appkit_utils.h"
 
 namespace {
 
 ui::test::ScopedFakeFullKeyboardAccess* g_instance = nullptr;
+
+bool FakeIsFullKeyboardAccessEnabled() {
+  CHECK(g_instance, base::NotFatalUntil::M163);
+  return g_instance->full_keyboard_access_state();
+}
 
 }  // namespace
 
@@ -24,8 +30,7 @@ ui::test::ScopedFakeFullKeyboardAccess* g_instance = nullptr;
 @implementation FakeNSAppKeyboardAccessDonor
 
 - (BOOL)isFullKeyboardAccessEnabled {
-  CHECK(g_instance, base::NotFatalUntil::M163);
-  return g_instance->full_keyboard_access_state();
+  return FakeIsFullKeyboardAccessEnabled();
 }
 
 @end
@@ -41,10 +46,12 @@ ScopedFakeFullKeyboardAccess::ScopedFakeFullKeyboardAccess()
   DCHECK(!g_instance)
       << "Cannot initialize ScopedFakeFullKeyboardAccess twice\n";
   g_instance = this;
+  ui::SetFullKeyboardAccessGetterForTesting(&FakeIsFullKeyboardAccessEnabled);
 }
 
 ScopedFakeFullKeyboardAccess::~ScopedFakeFullKeyboardAccess() {
   CHECK_EQ(g_instance, this, base::NotFatalUntil::M163);
+  ui::SetFullKeyboardAccessGetterForTesting(nullptr);
   g_instance = nullptr;
 }
 

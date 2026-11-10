@@ -23,6 +23,23 @@ COMPONENT_EXPORT(UI_BASE) bool IsCGFloatEqual(CGFloat a, CGFloat b);
 // Returns true if the current application is the active application.
 COMPONENT_EXPORT(UI_BASE) bool IsActiveApplication();
 
+// Returns whether "Keyboard navigation" (a.k.a. Full Keyboard Access) is
+// enabled in System Settings.
+//
+// Unlike -[NSApplication isFullKeyboardAccessEnabled], this reads the value
+// directly from the user preferences. AppKit's value is backed by a HIToolbox
+// cache that is invalidated by the com.apple.KeyboardUIModeDidChange
+// distributed notification, so reading it from an observer of that same
+// notification may return a stale value, depending on observer order. See
+// https://crbug.com/579632127.
+COMPONENT_EXPORT(UI_BASE) bool IsFullKeyboardAccessEnabled();
+
+// Overrides the value returned by IsFullKeyboardAccessEnabled(). Pass nullptr
+// to remove the override.
+using FullKeyboardAccessGetter = bool (*)();
+COMPONENT_EXPORT(UI_BASE)
+void SetFullKeyboardAccessGetterForTesting(FullKeyboardAccessGetter getter);
+
 // Returns true if it is possible that accessing pasteboard contents
 // programmatically will block with a Pasteboard Privacy alert. Returns false if
 // it is known for sure that it will not, either because Chromium has been

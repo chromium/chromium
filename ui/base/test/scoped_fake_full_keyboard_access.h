@@ -13,8 +13,9 @@ class ScopedObjCClassSwizzler;
 
 namespace ui::test {
 
-// A singleton class which swizzles [NSApp isFullKeyboardAccessEnabled] so
-// that it returns the value set using set_full_keyboard_access_state().
+// A singleton class which swizzles [NSApp isFullKeyboardAccessEnabled] and
+// overrides ui::IsFullKeyboardAccessEnabled() so that they return the value set
+// using set_full_keyboard_access_state().
 class ScopedFakeFullKeyboardAccess {
  public:
   ScopedFakeFullKeyboardAccess();
@@ -33,7 +34,8 @@ class ScopedFakeFullKeyboardAccess {
     return full_keyboard_access_state_;
   }
 
-  // Set the value to be returned by [NSApp isFullKeyboardAccessEnabled].
+  // Set the value to be returned by [NSApp isFullKeyboardAccessEnabled] and
+  // ui::IsFullKeyboardAccessEnabled().
   void set_full_keyboard_access_state(bool new_state) {
     full_keyboard_access_state_ = new_state;
   }

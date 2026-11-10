@@ -9,6 +9,8 @@
 
 #include <cmath>
 
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/mac_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -20,6 +22,15 @@ enum class ForceTouchAction {
   NONE = 0,        // Unchecked or set to "Tap with three fingers".
   QUICK_LOOK = 1,  // Set to "Force Click with one finger".
 };
+
+// The global preference backing "Keyboard navigation" in System Settings, and
+// the bit in it that indicates that full keyboard access is enabled. This
+// matches what HIToolbox reads to implement
+// -[NSApplication isFullKeyboardAccessEnabled].
+const CFStringRef kKeyboardUIModeKey = CFSTR("AppleKeyboardUIMode");
+constexpr int kKeyboardUIModeFullKeyboardAccessBit = 1 << 1;
+
+ui::FullKeyboardAccessGetter g_full_keyboard_access_getter_override = nullptr;
 
 }  // namespace
 
@@ -37,6 +48,30 @@ bool IsCGFloatEqual(CGFloat a, CGFloat b) {
 
 bool IsActiveApplication() {
   return NSRunningApplication.currentApplication.active;
+}
+
+bool IsFullKeyboardAccessEnabled() {
+  if (g_full_keyboard_access_getter_override) {
+    return g_full_keyboard_access_getter_override();
+  }
+
+  // Synchronize first so that a change just made by another process (e.g.
+  // System Settings) is observed.
+  CFPreferencesSynchronize(kCFPreferencesAnyApplication,
+                           kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
+  base::apple::ScopedCFTypeRef<CFPropertyListRef> value(
+      CFPreferencesCopyValue(kKeyboardUIModeKey, kCFPreferencesAnyApplication,
+                             kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
+  CFNumberRef number = base::apple::CFCast<CFNumberRef>(value.get());
+  int mode = 0;
+  if (!number || !CFNumberGetValue(number, kCFNumberIntType, &mode)) {
+    return false;
+  }
+  return mode & kKeyboardUIModeFullKeyboardAccessBit;
+}
+
+void SetFullKeyboardAccessGetterForTesting(FullKeyboardAccessGetter getter) {
+  g_full_keyboard_access_getter_override = getter;
 }
 
 bool PasteMightBlockWithPrivacyAlert() {
