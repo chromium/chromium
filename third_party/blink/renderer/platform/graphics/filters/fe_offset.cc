@@ -38,16 +38,8 @@ float FEOffset::Dx() const {
   return dx_;
 }
 
-void FEOffset::SetDx(float dx) {
-  dx_ = dx;
-}
-
 float FEOffset::Dy() const {
   return dy_;
-}
-
-void FEOffset::SetDy(float dy) {
-  dy_ = dy;
 }
 
 gfx::RectF FEOffset::MapEffect(const gfx::RectF& rect) const {

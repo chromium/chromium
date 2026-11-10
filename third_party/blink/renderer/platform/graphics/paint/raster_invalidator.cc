@@ -427,11 +427,4 @@ size_t RasterInvalidator::ApproximateUnsharedMemoryUsage() const {
          old_paint_chunks_info_.capacity() * sizeof(PaintChunkInfo);
 }
 
-void RasterInvalidator::ClearOldStates() {
-  old_paint_artifact_ = nullptr;
-  old_paint_chunks_info_.clear();
-  layer_offset_ = gfx::Vector2dF();
-  layer_bounds_ = gfx::Size();
-}
-
 }  // namespace blink

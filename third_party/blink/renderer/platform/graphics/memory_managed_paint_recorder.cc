@@ -56,12 +56,6 @@ cc::PaintRecord MemoryManagedPaintRecorder::ReleaseMainRecording() {
   return record;
 }
 
-cc::PaintRecord MemoryManagedPaintRecorder::CopyMainRecording() {
-  // CopyAsRecord() does not clear the paint ops, so we do not need to call
-  // InitializeForRecording().
-  return main_canvas_.CopyAsRecord();
-}
-
 void MemoryManagedPaintRecorder::RestartCurrentLayer() {
   if (HasSideRecording()) {
     // We are recording in the side canvas, which groups together all layers

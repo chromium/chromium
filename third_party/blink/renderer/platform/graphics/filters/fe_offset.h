@@ -32,10 +32,7 @@ class PLATFORM_EXPORT FEOffset final : public FilterEffect {
   FEOffset(Filter*, float dx, float dy);
 
   float Dx() const;
-  void SetDx(float);
-
   float Dy() const;
-  void SetDy(float);
 
   StringBuilder& ExternalRepresentation(StringBuilder&,
                                         wtf_size_t indent) const override;

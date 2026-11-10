@@ -38,8 +38,6 @@ class PLATFORM_EXPORT CompositorFilterOperations {
                               float std_deviation,
                               const Color& color);
   void AppendColorMatrixFilter(const cc::FilterOperation::Matrix&);
-  void AppendZoomFilter(float amount, int inset);
-  void AppendSaturatingBrightnessFilter(float amount);
 
   void AppendReferenceFilter(sk_sp<PaintFilter>);
 

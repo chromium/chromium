@@ -61,8 +61,6 @@ class PLATFORM_EXPORT RasterInvalidator
 
   size_t ApproximateUnsharedMemoryUsage() const;
 
-  void ClearOldStates();
-
  private:
   friend class DisplayItemRasterInvalidator;
   friend class RasterInvalidatorTest;
