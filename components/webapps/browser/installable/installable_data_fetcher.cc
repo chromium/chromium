@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/types/optional_ref.h"
+#include "components/webapps/browser/installable/installable_evaluator.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/constants.h"
@@ -163,11 +164,8 @@ void InstallableDataFetcher::CheckAndFetchScreenshots(
         continue;
       }
 
-      int ideal_size_in_px = url.image.sizes.empty()
-                                 ? kMinimumScreenshotSizeInPx
-                                 : std::max({kMinimumScreenshotSizeInPx,
-                                             url.image.sizes[0].width(),
-                                             url.image.sizes[0].height()});
+      int ideal_size_in_px =
+          InstallableEvaluator::ComputeIdealScreenshotSize(url);
       // Do not pass in a maximum icon size so that screenshots larger than
       // kMaximumScreenshotSizeInPx are not downscaled to the maximum size by
       // `ManifestIconDownloader::Download`. Screenshots with size larger than

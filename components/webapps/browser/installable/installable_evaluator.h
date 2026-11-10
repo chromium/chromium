@@ -43,6 +43,13 @@ class InstallableEvaluator {
   // Returns the minimum icon size in pixels for a site to be installable.
   static int GetMinimumIconSizeInPx();
 
+  // Returns the ideal download size for a manifest screenshot. The returned
+  // value is always >= `kMinimumScreenshotSizeInPx` so the
+  // `ManifestIconDownloader::Download()` precondition `minimum <= ideal`
+  // holds.
+  static int ComputeIdealScreenshotSize(
+      const blink::Manifest::Screenshot& screenshot);
+
   // Returns true if the overall security state of |web_contents| is sufficient
   // to be considered installable.
   static bool IsContentSecure(content::WebContents* web_contents);

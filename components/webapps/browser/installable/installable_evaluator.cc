@@ -12,6 +12,7 @@
 #include "components/security_state/core/security_state.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/webapps_client.h"
+#include "components/webapps/common/constants.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -218,6 +219,17 @@ InstallableEvaluator::~InstallableEvaluator() = default;
 // static
 int InstallableEvaluator::GetMinimumIconSizeInPx() {
   return kMinimumPrimaryIconSizeInPx;
+}
+
+// static
+int InstallableEvaluator::ComputeIdealScreenshotSize(
+    const blink::Manifest::Screenshot& screenshot) {
+  if (screenshot.image.sizes.empty()) {
+    return kMinimumScreenshotSizeInPx;
+  }
+  return std::max({kMinimumScreenshotSizeInPx,
+                   screenshot.image.sizes[0].width(),
+                   screenshot.image.sizes[0].height()});
 }
 
 std::vector<InstallableStatusCode> InstallableEvaluator::CheckInstallability()

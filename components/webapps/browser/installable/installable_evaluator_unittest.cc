@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/webapps/browser/installable/installable_evaluator.h"
+
 #include <optional>
 
 #include "base/feature_list.h"
@@ -14,6 +16,7 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_page_data.h"
+#include "components/webapps/common/constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -769,6 +772,35 @@ TEST_F(InstallableEvaluatorUnitTest, ValidMetadataRootScopePage) {
   EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED,
             GetCheckInstallabilityErrorCode(
                 InstallableCriteria::kNoManifestAtRootScope));
+}
+
+TEST(InstallableEvaluatorScreenshotSizeTest, EmptySizes) {
+  blink::Manifest::Screenshot screenshot;
+  EXPECT_EQ(kMinimumScreenshotSizeInPx,
+            InstallableEvaluator::ComputeIdealScreenshotSize(screenshot));
+}
+
+TEST(InstallableEvaluatorScreenshotSizeTest, AnySize) {
+  blink::Manifest::Screenshot screenshot;
+  screenshot.image.sizes.emplace_back(0, 0);
+  EXPECT_EQ(kMinimumScreenshotSizeInPx,
+            InstallableEvaluator::ComputeIdealScreenshotSize(screenshot));
+}
+
+TEST(InstallableEvaluatorScreenshotSizeTest, BelowMinimum) {
+  blink::Manifest::Screenshot screenshot;
+  screenshot.image.sizes.emplace_back(kMinimumScreenshotSizeInPx - 1,
+                                      kMinimumScreenshotSizeInPx - 1);
+  EXPECT_EQ(kMinimumScreenshotSizeInPx,
+            InstallableEvaluator::ComputeIdealScreenshotSize(screenshot));
+}
+
+TEST(InstallableEvaluatorScreenshotSizeTest, AboveMinimum) {
+  blink::Manifest::Screenshot screenshot;
+  screenshot.image.sizes.emplace_back(kMinimumScreenshotSizeInPx + 10,
+                                      kMinimumScreenshotSizeInPx + 20);
+  EXPECT_EQ(kMinimumScreenshotSizeInPx + 20,
+            InstallableEvaluator::ComputeIdealScreenshotSize(screenshot));
 }
 
 TEST_F(InstallableEvaluatorUnitTest, ImplicitIcons) {
