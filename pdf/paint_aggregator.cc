@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/extend.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -125,18 +126,14 @@ PaintAggregator::PaintUpdate PaintAggregator::GetPendingUpdate() {
     InvalidateRectInternal(scroll_damage, /*check_scroll=*/false);
   }
 
-  ret.paint_rects.reserve(update_.paint_rects.size() + 1);
-  ret.paint_rects.insert(ret.paint_rects.end(), update_.paint_rects.begin(),
-                         update_.paint_rects.end());
+  ret.paint_rects = update_.paint_rects;
 
   return ret;
 }
 
 void PaintAggregator::SetIntermediateResults(std::vector<PaintReadyRect> ready,
                                              std::vector<gfx::Rect> pending) {
-  for (auto& rect : ready) {
-    update_.ready_rects.insert(update_.ready_rects.end(), std::move(rect));
-  }
+  base::Extend(update_.ready_rects, std::move(ready));
   update_.paint_rects = std::move(pending);
 }
 

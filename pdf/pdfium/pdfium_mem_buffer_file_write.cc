@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 
 namespace chrome_pdf {
@@ -35,7 +36,7 @@ int PDFiumMemBufferFileWrite::WriteBlockImpl(FPDF_FILEWRITE* this_file_write,
 }
 
 int PDFiumMemBufferFileWrite::DoWriteBlock(base::span<const uint8_t> data) {
-  buffer_.insert(buffer_.end(), data.begin(), data.end());
+  base::Extend(buffer_, data);
   return 1;
 }
 

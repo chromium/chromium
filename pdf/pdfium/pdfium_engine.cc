@@ -19,6 +19,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -4513,10 +4514,9 @@ PDFiumEngine::ChangeInvalidator::GetVisibleScreenRectsFromRanges(
       continue;
     }
 
-    const std::vector<gfx::Rect>& screen_rects =
-        range.GetScreenRects(visible_point, engine_->current_zoom_,
-                             engine_->GetCurrentOrientation());
-    rects.insert(rects.end(), screen_rects.begin(), screen_rects.end());
+    base::Extend(rects,
+                 range.GetScreenRects(visible_point, engine_->current_zoom_,
+                                      engine_->GetCurrentOrientation()));
   }
   return rects;
 }
@@ -6036,9 +6036,7 @@ std::map<int, std::vector<PdfRect>> PDFiumEngine::GetSelectionRectMap() {
     std::vector<PdfRect> pdf_rects = selection.GetRectsWithTightness(
         PDFiumRange::PdfBoundsTightness::kTightVertical);
     if (!pdf_rects.empty()) {
-      auto& page_results = results[selection.page_index()];
-      page_results.insert(page_results.end(), pdf_rects.begin(),
-                          pdf_rects.end());
+      base::Extend(results[selection.page_index()], std::move(pdf_rects));
     }
   }
   return results;

@@ -4,10 +4,10 @@
 
 #include "pdf/pdf_ink_text.h"
 
-#include <iterator>
 #include <string>
 
 #include "base/check_op.h"
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/notreached.h"
@@ -434,11 +434,8 @@ std::vector<InkTextLine> InkTextLine::BlinkTextInfoToPDFTextLines(
         for (ExtraGlyphInfo& info : typeface_run_glyph_info) {
           info.character_index -= first_character_index;
         }
-        std::vector<InkTextInfo> split_infos =
-            Split2DOffsets(typeface_run_info, typeface_run_glyph_info);
-        line_text_infos.insert(line_text_infos.end(),
-                               std::make_move_iterator(split_infos.begin()),
-                               std::make_move_iterator(split_infos.end()));
+        base::Extend(line_text_infos, Split2DOffsets(typeface_run_info,
+                                                     typeface_run_glyph_info));
       }
       run_start = run_end;
     }
