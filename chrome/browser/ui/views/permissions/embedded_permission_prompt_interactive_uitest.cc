@@ -53,14 +53,17 @@
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/views_switches.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -1838,6 +1841,29 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
   widget.reset();
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !deletion_observer.IsWidgetAlive(); }));
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       AccessibleWindowRoleIsDialog) {
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ClickOnPEPCElement("camera"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      InAnyContext(CheckView(
+          EmbeddedPermissionPromptBaseView::kMainViewId,
+          [](EmbeddedPermissionPromptBaseView* view) {
+            return view->GetAccessibleWindowRole();
+          },
+          ax::mojom::Role::kDialog)),
+      CheckResult([&]() { return counter.GetCount(ax::mojom::Event::kAlert); },
+                  0),
+      Do([this]() {
+        auto* manager = permissions::PermissionRequestManager::FromWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents());
+        manager->Dismiss(/*prompt_options=*/std::monostate());
+      }));
 }
 
 IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
