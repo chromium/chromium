@@ -88,7 +88,9 @@ void CastActivity::SetOrUpdateSession(const CastSession& session,
   route_.set_description(GetRouteDescription(session));
   sink_ = sink;
   if (session_id_) {
-    CHECK_EQ(*session_id_, session.session_id(), base::NotFatalUntil::M161);
+    // TODO(crbug.com/583742427): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(*session_id_, session.session_id());
     OnSessionUpdated(session, hash_token);
   } else {
     session_id_ = session.session_id();
