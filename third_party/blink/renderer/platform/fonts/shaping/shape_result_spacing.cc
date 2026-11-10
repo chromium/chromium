@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/justification_opportunity.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 
@@ -120,12 +119,8 @@ TextRunLayoutUnit ShapeResultSpacing::ComputeSpacing(wtf_size_t index,
   // CSS Text 4 §8.2.1: letter-spacing is suppressed between cursive script
   // characters, but still applies to word separators (spaces) within cursive
   // script runs.
-  bool apply_letter_spacing =
-      RuntimeEnabledFeatures::IgnoreLetterSpacingInCursiveScriptsEnabled()
-          ? (!is_cursive_script || treat_as_space)
-          : true;
   if (has_letter_spacing && !unicode::TreatAsZeroWidthSpace(character) &&
-      apply_letter_spacing) {
+      (!is_cursive_script || treat_as_space)) {
     spacing += letter_spacing_;
     is_letter_spacing_applied_ = true;
   }

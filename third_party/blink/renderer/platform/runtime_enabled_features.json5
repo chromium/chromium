@@ -3888,10 +3888,6 @@
       status: "stable",
     },
     {
-      name: "IgnoreLetterSpacingInCursiveScripts",
-      status: "stable",
-    },
-    {
       name: "ImageDataPixelFormat",
       status: "stable",
     },
