@@ -7,10 +7,12 @@
 #include <algorithm>
 
 #include "base/barrier_closure.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/commands/web_app_icon_diagnostic_command.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -19,6 +21,25 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 
 namespace web_app {
+
+#if !BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kWebAppSkipDiskIconHealthChecks,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+namespace {
+
+// Returns true if only the in-memory icon health checks should run. ChromeOS
+// always runs all checks, since System Web Apps rely on them to repair icons.
+bool ShouldSkipDiskIconHealthChecks() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(kWebAppSkipDiskIconHealthChecks);
+#endif
+}
+
+}  // namespace
 
 WebAppIconHealthChecks::WebAppIconHealthChecks(Profile* profile)
     : profile_(profile),
@@ -49,6 +70,17 @@ void WebAppIconHealthChecks::OnWebAppInstallManagerDestroyed() {}
 void WebAppIconHealthChecks::RunDiagnostics() {
   WebAppProvider* provider =
       WebAppProvider::GetForLocalAppsUnchecked(profile_.get());
+
+  if (ShouldSkipDiskIconHealthChecks()) {
+    for (const WebApp& web_app : provider->registrar_unsafe().GetApps()) {
+      WebAppIconDiagnosticResult& result = results_.emplace_back();
+      result.has_empty_downloaded_icon_sizes =
+          web_app.downloaded_icon_sizes(IconPurpose::ANY).empty();
+      result.has_generated_icon_flag = web_app.is_generated_icon();
+    }
+    RecordDiagnosticResults();
+    return;
+  }
 
   install_manager_observation_.Observe(&provider->install_manager());
 
@@ -90,17 +122,19 @@ void WebAppIconHealthChecks::RecordDiagnosticResults() {
                               count(&Result::has_empty_downloaded_icon_sizes));
   base::UmaHistogramCounts100("WebApp.Icon.AppsWithGeneratedIconFlag",
                               count(&Result::has_generated_icon_flag));
-  base::UmaHistogramCounts100("WebApp.Icon.AppsWithGeneratedIconBitmap",
-                              count(&Result::has_generated_icon_bitmap));
-  base::UmaHistogramCounts100(
-      "WebApp.Icon.AppsWithGeneratedIconFlagFalseNegative",
-      count(&Result::has_generated_icon_flag_false_negative));
-  base::UmaHistogramCounts100("WebApp.Icon.AppsWithEmptyIconBitmap",
-                              count(&Result::has_empty_icon_bitmap));
-  base::UmaHistogramCounts100("WebApp.Icon.AppsWithEmptyIconFile",
-                              count(&Result::has_empty_icon_file));
-  base::UmaHistogramCounts100("WebApp.Icon.AppsWithMissingIconFile",
-                              count(&Result::has_missing_icon_file));
+  if (!ShouldSkipDiskIconHealthChecks()) {
+    base::UmaHistogramCounts100("WebApp.Icon.AppsWithGeneratedIconBitmap",
+                                count(&Result::has_generated_icon_bitmap));
+    base::UmaHistogramCounts100(
+        "WebApp.Icon.AppsWithGeneratedIconFlagFalseNegative",
+        count(&Result::has_generated_icon_flag_false_negative));
+    base::UmaHistogramCounts100("WebApp.Icon.AppsWithEmptyIconBitmap",
+                                count(&Result::has_empty_icon_bitmap));
+    base::UmaHistogramCounts100("WebApp.Icon.AppsWithEmptyIconFile",
+                                count(&Result::has_empty_icon_file));
+    base::UmaHistogramCounts100("WebApp.Icon.AppsWithMissingIconFile",
+                                count(&Result::has_missing_icon_file));
+  }
   // TODO(crbug.com/40858602):
   // Measure:
   // - Bitmap:

@@ -920,6 +920,11 @@ chromium-metrics-reviews@google.com.
 
     Records the number of web apps that have missing icon bitmap data. This gets
     recorded at browser profile start up in both the Lacros and Ash processes.
+
+    Not recorded on Windows, Mac, and Linux when WebAppSkipDiskIconHealthChecks
+    is enabled. On Stable M153+ from 2026-11-01 to 2026-11-07, the share of
+    profile startups with a non-zero count was 0.42% on Windows, 0.50% on Mac,
+    and 0.42% on Linux.
   </summary>
 </histogram>
 
@@ -930,6 +935,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of web apps that have empty icon files. This gets
     recorded at browser profile start up in both the Lacros and Ash processes.
+
+    Not recorded on Windows, Mac, and Linux when WebAppSkipDiskIconHealthChecks
+    is enabled. On Stable M153+ from 2026-11-01 to 2026-11-07, the share of
+    profile startups with a non-zero count was 0.00% on Windows, 0.00% on Mac,
+    and 0.05% on Linux.
   </summary>
 </histogram>
 
@@ -944,6 +954,11 @@ chromium-metrics-reviews@google.com.
     Records the number of web apps that have a generated letter icon bitmap
     (distinct from the is_generated_icon flag). This gets recorded at browser
     profile start up in both the Lacros and Ash processes.
+
+    Not recorded on Windows, Mac, and Linux when WebAppSkipDiskIconHealthChecks
+    is enabled (use WebApp.Icon.AppsWithGeneratedIconFlag instead). On Stable
+    M153+ from 2026-11-01 to 2026-11-07, the share of profile startups with a
+    non-zero count was 4.39% on Windows, 3.59% on Mac, and 10.80% on Linux.
   </summary>
 </histogram>
 
@@ -973,6 +988,11 @@ chromium-metrics-reviews@google.com.
     icon and a manifest update clobbered the correct value of is_generated_icon
     (https://crbug.com/1317922). This gets recorded at browser profile start up
     in both the Lacros and Ash processes.
+
+    Not recorded on Windows, Mac, and Linux when WebAppSkipDiskIconHealthChecks
+    is enabled. On Stable M153+ from 2026-11-01 to 2026-11-07, the share of
+    profile startups with a non-zero count was 0.04% on Windows, 0.02% on Mac,
+    and 0.08% on Linux.
   </summary>
 </histogram>
 
@@ -983,6 +1003,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of web apps that have missing icon files. This gets
     recorded at browser profile start up in both the Lacros and Ash processes.
+
+    Not recorded on Windows, Mac, and Linux when WebAppSkipDiskIconHealthChecks
+    is enabled. On Stable M153+ from 2026-11-01 to 2026-11-07, the share of
+    profile startups with a non-zero count was 0.27% on Windows, 0.05% on Mac,
+    and 0.42% on Linux.
   </summary>
 </histogram>
 

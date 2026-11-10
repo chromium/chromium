@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_DIAGNOSTICS_WEB_APP_ICON_HEALTH_CHECKS_H_
 
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/web_applications/diagnostics/app_type_initialized_event.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -18,6 +20,12 @@
 class Profile;
 
 namespace web_app {
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// When enabled, only the icon health checks that use in-memory `WebApp` fields
+// run, without reading icon files or rasterizing fallback icons.
+BASE_DECLARE_FEATURE(kWebAppSkipDiskIconHealthChecks);
+#endif
 
 struct WebAppIconDiagnosticResult;
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/web_applications/diagnostics/web_app_icon_health_checks.h"
+
 #include <memory>
 #include <utility>
 
@@ -9,6 +11,8 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -27,7 +31,18 @@ namespace web_app {
 
 class WebAppIconHealthChecksBrowserTest : public WebAppBrowserTestBase {
  public:
-  WebAppIconHealthChecksBrowserTest() {
+  WebAppIconHealthChecksBrowserTest()
+      : WebAppIconHealthChecksBrowserTest(
+            /*skip_disk_icon_health_checks=*/false) {}
+
+  explicit WebAppIconHealthChecksBrowserTest(bool skip_disk_icon_health_checks)
+      : skip_disk_icon_health_checks_(skip_disk_icon_health_checks) {
+#if !BUILDFLAG(IS_CHROMEOS)
+    scoped_feature_list_.InitWithFeatureState(kWebAppSkipDiskIconHealthChecks,
+                                              skip_disk_icon_health_checks_);
+#else
+    CHECK(!skip_disk_icon_health_checks_);
+#endif
     WebAppMetrics::DisableAutomaticIconHealthChecksForTesting();
   }
 
@@ -62,6 +77,17 @@ class WebAppIconHealthChecksBrowserTest : public WebAppBrowserTestBase {
                     expected_result.has_empty_downloaded_icon_sizes);
     check_histogram("WebApp.Icon.AppsWithGeneratedIconFlag",
                     expected_result.has_generated_icon_flag);
+    if (skip_disk_icon_health_checks_) {
+      for (const char* histogram :
+           {"WebApp.Icon.AppsWithGeneratedIconBitmap",
+            "WebApp.Icon.AppsWithGeneratedIconFlagFalseNegative",
+            "WebApp.Icon.AppsWithEmptyIconBitmap",
+            "WebApp.Icon.AppsWithEmptyIconFile",
+            "WebApp.Icon.AppsWithMissingIconFile"}) {
+        histogram_tester.ExpectTotalCount(histogram, 0);
+      }
+      return;
+    }
     check_histogram("WebApp.Icon.AppsWithGeneratedIconBitmap",
                     expected_result.has_generated_icon_bitmap);
     check_histogram("WebApp.Icon.AppsWithGeneratedIconFlagFalseNegative",
@@ -81,11 +107,36 @@ class WebAppIconHealthChecksBrowserTest : public WebAppBrowserTestBase {
         .Await();
     return app_id;
   }
+
+  void TestHealthyIcons() {
+    InstallWebAppAndAwaitAppService("/web_apps/basic.html");
+    RunIconChecksWithMetricExpectations({});
+  }
+
+  void TestMissingDownloadedIconSizes() {
+    webapps::AppId app_id =
+        InstallWebAppAndAwaitAppService("/web_apps/basic.html");
+    CreateUpdateScope()->UpdateApp(app_id)->SetDownloadedIconSizes(
+        IconPurpose::ANY, {});
+    RunIconChecksWithMetricExpectations(
+        {.has_empty_downloaded_icon_sizes = true,
+         .has_empty_icon_bitmap = true});
+  }
+
+  void TestGeneratedIcon() {
+    InstallWebAppAndAwaitAppService(
+        "/web_apps/get_manifest.html?no_icons.json");
+    RunIconChecksWithMetricExpectations(
+        {.has_generated_icon_flag = true, .has_generated_icon_bitmap = true});
+  }
+
+ private:
+  const bool skip_disk_icon_health_checks_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, HealthyIcons) {
-  InstallWebAppAndAwaitAppService("/web_apps/basic.html");
-  RunIconChecksWithMetricExpectations({});
+  TestHealthyIcons();
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, EmptyAppName) {
@@ -109,18 +160,11 @@ IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, EmptyAppName) {
 
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest,
                        MissingDownloadedIconSizes) {
-  webapps::AppId app_id =
-      InstallWebAppAndAwaitAppService("/web_apps/basic.html");
-  CreateUpdateScope()->UpdateApp(app_id)->SetDownloadedIconSizes(
-      IconPurpose::ANY, {});
-  RunIconChecksWithMetricExpectations(
-      {.has_empty_downloaded_icon_sizes = true, .has_empty_icon_bitmap = true});
+  TestMissingDownloadedIconSizes();
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, GeneratedIcon) {
-  InstallWebAppAndAwaitAppService("/web_apps/get_manifest.html?no_icons.json");
-  RunIconChecksWithMetricExpectations(
-      {.has_generated_icon_flag = true, .has_generated_icon_bitmap = true});
+  TestGeneratedIcon();
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest,
@@ -210,5 +254,34 @@ IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, PRE_CorruptIconFile) {
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, CorruptIconFile) {
   RunIconChecksWithMetricExpectations({.has_empty_icon_bitmap = true});
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// Tests with the `kWebAppSkipDiskIconHealthChecks` feature enabled. Defines a
+// separate fixture, rather than parameterizing
+// `WebAppIconHealthChecksBrowserTest`, to avoid running `PRE_` steps which
+// prepare files on disk and are unnecessary when the disk is not checked.
+class WebAppIconHealthChecksSkipDiskBrowserTest
+    : public WebAppIconHealthChecksBrowserTest {
+ public:
+  WebAppIconHealthChecksSkipDiskBrowserTest()
+      : WebAppIconHealthChecksBrowserTest(
+            /*skip_disk_icon_health_checks=*/true) {}
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksSkipDiskBrowserTest,
+                       HealthyIcons) {
+  TestHealthyIcons();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksSkipDiskBrowserTest,
+                       MissingDownloadedIconSizes) {
+  TestMissingDownloadedIconSizes();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksSkipDiskBrowserTest,
+                       GeneratedIcon) {
+  TestGeneratedIcon();
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app
