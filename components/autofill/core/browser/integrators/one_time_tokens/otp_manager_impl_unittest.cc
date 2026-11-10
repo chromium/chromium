@@ -39,9 +39,11 @@
 #include "components/one_time_tokens/core/browser/fake_gmail_otp_service.h"
 #include "components/one_time_tokens/core/browser/fake_sms_otp_service.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_retriever.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_sender_domain_matcher.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -3673,8 +3675,8 @@ TEST_F(
   autofill_client().set_affiliation_service(nullptr);
 }
 
-// Tests that `MaybeRetrieveGmailOtp` enables PSL matching and accepts a
-// PSL-matched sender domain.
+// Tests that `MaybeRetrieveGmailOtp` enables PSL matching, accepts a
+// PSL-matched sender domain and records the match to UKM against the page.
 TEST_F(OtpManagerImplTest,
        MaybeRetrieveGmailOtp_AcceptsPslMatchedSenderDomain) {
   prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
@@ -3706,6 +3708,17 @@ TEST_F(OtpManagerImplTest,
                   Property(&one_time_tokens::OneTimeToken::value, "654321"),
                   Property(&one_time_tokens::OneTimeToken::sender_address,
                            Optional(std::string("otp@mail.example.test"))))));
+  // The sender domain check result is recorded to UKM against the page.
+  auto entries = autofill_client().GetUkmRecorder()->GetEntriesByName(
+      ukm::builders::Autofill_OneTimeTokens::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[0]->source_id, autofill_driver().GetPageUkmSourceId());
+  autofill_client().GetUkmRecorder()->ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Autofill_OneTimeTokens::
+          kGmail_SenderDomainMatchAcceptedMatchType_ReceivedName,
+      static_cast<int64_t>(
+          one_time_tokens::GmailOtpSenderDomainMatchType::kPsl));
 
   autofill_client().set_affiliation_service(nullptr);
 }

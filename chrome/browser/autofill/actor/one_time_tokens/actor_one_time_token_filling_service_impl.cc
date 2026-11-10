@@ -398,7 +398,7 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
       CHECK_DEREF(AffiliationServiceFactory::GetForProfile(profile_)));
   gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
       *service->GetBackend(), std::move(checker), otp_frame_origin,
-      is_login_flow,
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(), is_login_flow,
       base::BindOnce(&ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), url));
 }
