@@ -944,13 +944,14 @@ std::vector<const EntityInstance*> GetEntitiesForSuggestion(
         trigger_field_with_type = FindField(assignment.Find(entity->type()),
                                             trigger_field.global_id());
     return !trigger_field_with_type ||
-           !EntityShouldProduceSuggestion(*entity, *trigger_field_with_type,
-                                          client.GetAppLocale()) ||
+           !EntityShouldProduceSuggestion(
+               *entity, *trigger_field_with_type,
+               std::string(client.GetAppLocale().tag_string())) ||
            !IsAllowedForPageUrl(*entity, client, trigger_field.origin());
   });
   return DedupedEntitiesForSuggestions(
       OrderedEntitiesForSuggestion(std::move(entities)), assignment,
-      client.GetAppLocale());
+      std::string(client.GetAppLocale().tag_string()));
 }
 
 std::vector<Suggestion> CreateFetchingAmbientSuggestions() {
@@ -1008,7 +1009,7 @@ std::vector<Suggestion> CreateSuggestionsForEntities(
   for (const EntityInstance& entity : all_entities) {
     if (!entities_to_suggest_ids.contains(entity.guid()) &&
         CanFillSomeField(entity, assignment.Find(entity.type()),
-                         std::string(client.GetAppLocale()))) {
+                         std::string(client.GetAppLocale().tag_string()))) {
       other_entities_that_can_fill_section.push_back(&entity);
     }
   }
@@ -1016,7 +1017,7 @@ std::vector<Suggestion> CreateSuggestionsForEntities(
   std::vector<std::u16string> labels = GetLabelsForSuggestions(
       entities_to_suggest, other_entities_that_can_fill_section,
       FindAttributesForField(assignment, trigger_field.global_id()),
-      client.GetAppLocale());
+      std::string(client.GetAppLocale().tag_string()));
 
   std::vector<Suggestion> suggestions;
 
@@ -1033,7 +1034,7 @@ std::vector<Suggestion> CreateSuggestionsForEntities(
             FindField(fields_with_types, trigger_field.global_id());
     suggestions.push_back(GetSuggestionForEntity(
         form, entity, fields_with_types, *trigger_field_with_type,
-        std::move(label), client.GetAppLocale()));
+        std::move(label), client.GetAppLocale().tag_string()));
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -1171,7 +1172,7 @@ std::optional<Suggestion> CreateDomainFallbackSuggestion(
 
     std::u16string trigger_value = trigger_attribute->GetInfo(
         trigger_field_with_type->field->Type().GetAutofillAiType(entity.type()),
-        std::string(client.GetAppLocale()),
+        client.GetAppLocale().tag_string(),
         trigger_field_with_type->field->format_string());
     if (!trigger_value.empty()) {
       fallback_entities.push_back(&entity);
@@ -1180,7 +1181,7 @@ std::optional<Suggestion> CreateDomainFallbackSuggestion(
 
   fallback_entities = DedupedEntitiesForSuggestions(
       OrderedEntitiesForSuggestion(std::move(fallback_entities)), assignment,
-      std::string(client.GetAppLocale()));
+      std::string(client.GetAppLocale().tag_string()));
 
   if (fallback_entities.empty()) {
     return std::nullopt;

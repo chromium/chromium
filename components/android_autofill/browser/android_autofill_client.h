@@ -97,7 +97,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient,
 
   // AutofillClient:
   base::WeakPtr<AutofillClient> GetWeakPtr() final;
-  const std::string& GetAppLocale() const final;
+  const base::i18n::LanguageTag& GetAppLocale() const final;
   bool IsOffTheRecord() const final;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() final;
   autofill::AutofillCrowdsourcingManager& GetCrowdsourcingManager() final;

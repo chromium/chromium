@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -521,7 +522,7 @@ TEST_P(AutofillAiMayPerformActionTest, IgnoreGeoIpBlocklistAndAllowlist) {
 }
 
 TEST_P(AutofillAiMayPerformActionTest, AppLocale) {
-  client().set_app_locale("de-DE");
+  client().set_app_locale(base::i18n::GetKnownLanguageTag("de-DE"));
 
   constexpr auto kForbiddenActions =
       DenseSet({AutofillAiAction::kWalletDataSharingPromotion});

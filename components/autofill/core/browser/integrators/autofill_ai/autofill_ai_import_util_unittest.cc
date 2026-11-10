@@ -164,7 +164,7 @@ class AutofillAiImportUtilsTest : public testing::Test {
     autofill_client().SetUpPrefsAndIdentityForAutofillAi();
     autofill_client().GetSyncService()->GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kPayments, true);
-    autofill_client().set_app_locale("en-US");
+    autofill_client().set_app_locale(base::i18n::GetKnownLanguageTag("en-US"));
     autofill_client().SetVariationConfigCountryCode(GeoIpCountryCode("US"));
   }
 

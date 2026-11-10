@@ -946,8 +946,8 @@ bool AutofillKeyboardAccessoryControllerImpl::ShowAutofillAiSuggestionDetails(
     std::vector<EntityInstance::PersonalContextRecordTypePayload::Source>
         sources(payload.sources.begin(), payload.sources.begin() + count);
     AutofillAiSuggestionDetailsText details_text =
-        GetAutofillAiSuggestionDetailsText(*entity, client->GetAppLocale(),
-                                           sources);
+        GetAutofillAiSuggestionDetailsText(
+            *entity, client->GetAppLocale().tag_string(), sources);
     view_->ShowAutofillAiSuggestionDetails(
         details_text.title, details_text.body, details_text.confirm_button_text,
         details_text.primary_button_text, std::move(sources),

@@ -94,7 +94,7 @@ bool WalletReminderNoticeManager::IsWalletReminderNoticeEligible(
 
 void WalletReminderNoticeManager::ShowWalletReminderNotice(FlowType flow_type) {
   GetWalletReminderNoticeRequestDetails request_details;
-  request_details.app_locale = client_->GetAppLocale();
+  request_details.app_locale = client_->GetAppLocale().tag_string();
   request_details.billing_customer_number = GetBillingCustomerId(
       GetPaymentsAutofillClient().GetPaymentsDataManager());
   request_details.billable_service_number = GetBillableServiceNumber(flow_type);
@@ -136,7 +136,7 @@ void WalletReminderNoticeManager::OnGetWalletReminderNoticeResponse(
   // Notify the Google Payments server that the user has been shown the Wallet
   // reminder notice.
   RecordLegalReminderAcknowledgmentRequestDetails request_details;
-  request_details.app_locale = client_->GetAppLocale();
+  request_details.app_locale = client_->GetAppLocale().tag_string();
   request_details.billing_customer_number = GetBillingCustomerId(
       GetPaymentsAutofillClient().GetPaymentsDataManager());
   request_details.billable_service_number = GetBillableServiceNumber(flow_type);

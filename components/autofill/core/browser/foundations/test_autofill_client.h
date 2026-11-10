@@ -18,6 +18,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -133,7 +134,9 @@ class TestAutofillClientTemplate : public T {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  const std::string& GetAppLocale() const override { return app_locale_; }
+  const base::i18n::LanguageTag& GetAppLocale() const override {
+    return app_locale_;
+  }
 
   bool IsOffTheRecord() const override { return is_off_the_record_; }
 
@@ -730,7 +733,7 @@ class TestAutofillClientTemplate : public T {
     format_for_large_keyboard_accessory_ = format_for_large_keyboard_accessory;
   }
 
-  void set_app_locale(std::string app_locale) {
+  void set_app_locale(base::i18n::LanguageTag app_locale) {
     app_locale_ = std::move(app_locale);
   }
 
@@ -929,7 +932,8 @@ class TestAutofillClientTemplate : public T {
 
   bool format_for_large_keyboard_accessory_ = false;
 
-  std::string app_locale_ = "en-US";
+  base::i18n::LanguageTag app_locale_ =
+      base::i18n::GetKnownLanguageTag("en-US");
 
   bool is_off_the_record_ = false;
 

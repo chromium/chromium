@@ -1193,8 +1193,9 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
     ASSERT_EQ(form_structure.fields()[0]->initial_value(), u"");
     ASSERT_EQ(form_structure.fields()[1]->initial_value(), u"");
 
-    EXPECT_THAT(PreProcessStateMatchingTypes(profiles, form_structure,
-                                             client().GetAppLocale()),
+    EXPECT_THAT(PreProcessStateMatchingTypes(
+                    profiles, form_structure,
+                    std::string(client().GetAppLocale().tag_string())),
                 ElementsAre(form_structure.field(1)->global_id()));
   }
 
@@ -1211,8 +1212,9 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
     FormStructure form_structure(form);
     EXPECT_EQ(form_structure.field_count(), 2U);
 
-    EXPECT_THAT(PreProcessStateMatchingTypes(profiles, form_structure,
-                                             client().GetAppLocale()),
+    EXPECT_THAT(PreProcessStateMatchingTypes(
+                    profiles, form_structure,
+                    std::string(client().GetAppLocale().tag_string())),
                 IsEmpty());
   }
 
@@ -1240,8 +1242,9 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
   ASSERT_EQ(form_structure.fields()[0]->initial_value(), u"");
   ASSERT_EQ(form_structure.fields()[1]->initial_value(), u"");
 
-  EXPECT_THAT(PreProcessStateMatchingTypes(profiles, form_structure,
-                                           client().GetAppLocale()),
+  EXPECT_THAT(PreProcessStateMatchingTypes(
+                  profiles, form_structure,
+                  std::string(client().GetAppLocale().tag_string())),
               ElementsAre(form_structure.field(1)->global_id()));
 }
 

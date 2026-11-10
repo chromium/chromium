@@ -440,8 +440,10 @@ base::WeakPtr<AutofillClient> ChromeAutofillClient::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-const std::string& ChromeAutofillClient::GetAppLocale() const {
-  return g_browser_process->GetFeatures()->application_locale_storage()->Get();
+const base::i18n::LanguageTag& ChromeAutofillClient::GetAppLocale() const {
+  return g_browser_process->GetFeatures()
+      ->application_locale_storage()
+      ->GetTag();
 }
 
 version_info::Channel ChromeAutofillClient::GetChannel() const {
@@ -1427,7 +1429,8 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
     autofill_ai_save_update_entity_flow_manager_ =
         std::make_unique<AutofillAiSaveUpdateEntityFlowManager>(
             web_contents, GetAutofillMessageController(),
-            GetAutofillDialogController(), GetAppLocale());
+            GetAutofillDialogController(),
+            std::string(GetAppLocale().tag_string()));
   }
   save_update_address_profile_flow_manager_ =
       std::make_unique<SaveUpdateAddressProfileFlowManager>(
@@ -1737,7 +1740,7 @@ void ChromeAutofillClient::ShowEntityImportBubble(
   }
 #else
   if (auto* controller = AutofillAiImportDataController::GetOrCreate(
-          web_contents(), GetAppLocale())) {
+          web_contents(), std::string(GetAppLocale().tag_string()))) {
     // TODO(crbug.com/556588522): Rename `ShowPrompt()`'s `legal_message_lines`
     // to `public_passes_notice`.
     controller->ShowPrompt(std::move(new_entity), std::move(old_entity),
@@ -1765,7 +1768,7 @@ void ChromeAutofillClient::ShowAutofillAiLocalSaveNotification() {
   }
 #else
   if (auto* controller = AutofillAiImportDataController::GetOrCreate(
-          web_contents(), GetAppLocale())) {
+          web_contents(), std::string(GetAppLocale().tag_string()))) {
     controller->ShowLocalSaveNotification();
   }
 #endif  // BUILDFLAG(IS_ANDROID)

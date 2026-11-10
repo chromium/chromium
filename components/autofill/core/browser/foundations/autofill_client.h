@@ -16,6 +16,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -407,7 +408,7 @@ class AutofillClient {
   virtual base::WeakPtr<AutofillClient> GetWeakPtr() = 0;
 
   // Returns the app locale, e.g., "en-US".
-  virtual const std::string& GetAppLocale() const = 0;
+  virtual const base::i18n::LanguageTag& GetAppLocale() const = 0;
 
   // Returns the channel for the installation. In branded builds, this will be
   // version_info::Channel::{STABLE,BETA,DEV,CANARY}. In unbranded builds, or

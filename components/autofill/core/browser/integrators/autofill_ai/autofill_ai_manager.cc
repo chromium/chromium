@@ -801,8 +801,8 @@ void AutofillAiManager::AddStrikeForSaveAttempt(const GURL& url,
             entity.type().name_as_string(), url.GetHost()));
   }
   if (save_strike_db_by_attribute_) {
-    for (const std::string& key :
-         GetAttributeStrikeKeys(entity, client_->GetAppLocale())) {
+    for (const std::string& key : GetAttributeStrikeKeys(
+             entity, std::string(client_->GetAppLocale().tag_string()))) {
       save_strike_db_by_attribute_->AddStrike(key);
     }
   }
@@ -823,8 +823,8 @@ void AutofillAiManager::ClearStrikesForSave(const GURL& url,
             entity.type().name_as_string(), url.GetHost()));
   }
   if (save_strike_db_by_attribute_) {
-    for (const std::string& key :
-         GetAttributeStrikeKeys(entity, client_->GetAppLocale())) {
+    for (const std::string& key : GetAttributeStrikeKeys(
+             entity, std::string(client_->GetAppLocale().tag_string()))) {
       save_strike_db_by_attribute_->ClearStrikes(key);
     }
   }
@@ -849,7 +849,8 @@ bool AutofillAiManager::IsSaveBlockedByStrikeDatabase(
 
   if (!save_strike_db_by_attribute_ ||
       std::ranges::any_of(
-          GetAttributeStrikeKeys(entity, client_->GetAppLocale()),
+          GetAttributeStrikeKeys(
+              entity, std::string(client_->GetAppLocale().tag_string())),
           [&](const std::string& key) {
             return save_strike_db_by_attribute_->ShouldBlockFeature(key);
           })) {

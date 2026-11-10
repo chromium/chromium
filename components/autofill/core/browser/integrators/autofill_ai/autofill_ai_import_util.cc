@@ -12,6 +12,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -140,7 +141,7 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
     base::span<const std::unique_ptr<AutofillField>> fields,
     const AutofillClient& client) {
   const GeoIpCountryCode& country_code = client.GetVariationConfigCountryCode();
-  const std::string& app_locale = client.GetAppLocale();
+  const std::string_view app_locale = client.GetAppLocale().tag_string();
 
   std::map<Section,
            std::map<EntityType, std::map<AttributeType, AttributeInstance>>>

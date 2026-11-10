@@ -269,7 +269,8 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   // |form| with the help of |AlternativeStateNameMap|.
   // |AlternativeStateNameMap| can only be accessed on the main UI thread.
   std::set<FieldGlobalId> fields_that_match_state =
-      PreProcessStateMatchingTypes(profiles, *form, client_->GetAppLocale());
+      PreProcessStateMatchingTypes(
+          profiles, *form, std::string(client_->GetAppLocale().tag_string()));
 
   if (sms_otp_service && vote_data.otps.empty() && has_potential_otp_field) {
     // This is the 80 percentile latency of the otp success retrieval flow. The
@@ -373,7 +374,8 @@ void VotesUploader::StartVoteUploadProcess(
             return std::pair(std::move(form), std::move(upload_contents));
           },
           std::move(vote_data), last_unlocked_credit_card_cvc,
-          client_->GetAppLocale(), observed_submission, std::move(form),
+          std::string(client_->GetAppLocale().tag_string()),
+          observed_submission, std::move(form),
           RandomizedEncoder::Create(client_->GetPrefs()),
           std::move(current_page_language), std::move(form_associations),
           std::move(fields_that_match_state)),

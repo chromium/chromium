@@ -1404,7 +1404,8 @@ AutofillPrivateGetEntityInstanceByGuidFunction::Run() {
     return RespondNow(ArgumentList(
         api::autofill_private::GetEntityInstanceByGuid::Results::Create(
             autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-                entity_instance.value(), autofill_client()->GetAppLocale(),
+                entity_instance.value(),
+                autofill_client()->GetAppLocale().tag_string(),
                 IsEligibleForWalletStorage(autofill_client(),
                                            entity_instance.value().type())))));
   }
@@ -1428,7 +1429,7 @@ void AutofillPrivateGetEntityInstanceByGuidFunction::OnReauthCompleted(
     Respond(ArgumentList(
         api::autofill_private::GetEntityInstanceByGuid::Results::Create(
             autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-                entity_instance, autofill_client()->GetAppLocale(),
+                entity_instance, autofill_client()->GetAppLocale().tag_string(),
                 IsEligibleForWalletStorage(autofill_client(),
                                            entity_instance.type())))));
     return;

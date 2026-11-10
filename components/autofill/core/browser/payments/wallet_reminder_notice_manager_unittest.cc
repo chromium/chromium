@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -98,7 +99,8 @@ class WalletReminderNoticeManagerTest : public testing::Test {
          autofill::features::kAutofillEnableWalletReminderNoticePublicPass},
         /*disabled_features=*/{});
 
-    autofill_client_.set_app_locale(kAppLocale);
+    autofill_client_.set_app_locale(
+        base::i18n::GetKnownLanguageTag(kAppLocale));
     autofill_client_.GetPersonalDataManager()
         .payments_data_manager()
         .SetSyncingForTest(true);

@@ -118,7 +118,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
 
   // AutofillClient:
   base::WeakPtr<AutofillClient> GetWeakPtr() override;
-  const std::string& GetAppLocale() const override;
+  const base::i18n::LanguageTag& GetAppLocale() const override;
   version_info::Channel GetChannel() const override;
   bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;

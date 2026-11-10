@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -97,7 +98,7 @@ PaymentsFormDataImporter::ExtractCreditCardFromFormResult
 PaymentsFormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
   // Populated by the lambdas below.
   ExtractCreditCardFromFormResult result;
-  std::string app_locale = client_->GetAppLocale();
+  const std::string_view app_locale = client_->GetAppLocale().tag_string();
 
   // Populates `result` from `field` if it's a credit card field.
   // For example, if `field` contains credit card number, this sets the number
@@ -290,8 +291,8 @@ std::optional<CreditCard> PaymentsFormDataImporter::ExtractCreditCard(
   // Capture the cardholder name extracted from `form` before merging with local
   // cards, so a matched server card does not inherit a local card's name when
   // `form` has no cardholder name field.
-  const std::u16string extracted_name =
-      candidate.GetInfo(CREDIT_CARD_NAME_FULL, client_->GetAppLocale());
+  const std::u16string extracted_name = candidate.GetInfo(
+      CREDIT_CARD_NAME_FULL, client_->GetAppLocale().tag_string());
 
   // Attempt to merge with an existing local credit card without presenting a
   // prompt.
@@ -300,8 +301,8 @@ std::optional<CreditCard> PaymentsFormDataImporter::ExtractCreditCard(
     // Make a local copy so that the data in `local_credit_cards_` isn't
     // modified directly by the UpdateFromImportedCard() call.
     CreditCard maybe_updated_card = *local_card;
-    if (maybe_updated_card.UpdateFromImportedCard(candidate,
-                                                  client_->GetAppLocale())) {
+    if (maybe_updated_card.UpdateFromImportedCard(
+            candidate, std::string(client_->GetAppLocale().tag_string()))) {
       payments_data_manager().UpdateCreditCard(maybe_updated_card);
       credit_card_import_type_ = CreditCardImportType::kLocalCard;
       // Update `candidate` to reflect all the details of the updated card.
@@ -457,7 +458,7 @@ bool PaymentsFormDataImporter::ShouldOfferCardholderNameUpdate(
   return existing_server_card && !existing_server_card->HasNameOnCard() &&
          extracted_credit_card.HasNameOnCard() &&
          IsValidNameOnCard(extracted_credit_card.GetInfo(
-             CREDIT_CARD_NAME_FULL, client_->GetAppLocale())) &&
+             CREDIT_CARD_NAME_FULL, client_->GetAppLocale().tag_string())) &&
          IsValidCreditCardSecurityCode(extracted_credit_card.cvc(),
                                        extracted_credit_card.network());
 }
@@ -539,7 +540,7 @@ PaymentsFormDataImporter::TryMatchingExistingServerCard(
           base::FeatureList::IsEnabled(
               features::kAutofillEnableCardholderNameFixFlow)) {
         server_card_with_cvc.SetInfo(CREDIT_CARD_NAME_FULL, extracted_name,
-                                     client_->GetAppLocale());
+                                     client_->GetAppLocale().tag_string());
       }
 
       // If `credit_card_import_type_` was local card, then a local card was

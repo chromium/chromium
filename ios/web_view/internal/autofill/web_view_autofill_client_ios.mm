@@ -11,6 +11,7 @@
 #import "base/check_deref.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/i18n/tag_converters.h"
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
 #import "components/autofill/core/browser/form_import/form_data_importer.h"
@@ -74,6 +75,10 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
     syncer::SyncService* sync_service,
     LogRouter* log_router)
     : AutofillClientIOS(web_state, bridge),
+      app_locale_(base::i18n::GetLanguageTagFromString(
+                      ios_web_view::ApplicationContext::GetInstance()
+                          ->GetApplicationLocale())
+                      .value_or(base::i18n::GetKnownLanguageTag("und"))),
       bridge_(bridge),
       pref_service_(pref_service),
       personal_data_manager_(personal_data_manager),
@@ -101,9 +106,8 @@ base::WeakPtr<AutofillClient> WebViewAutofillClientIOS::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-const std::string& WebViewAutofillClientIOS::GetAppLocale() const {
-  return ios_web_view::ApplicationContext::GetInstance()
-      ->GetApplicationLocale();
+const base::i18n::LanguageTag& WebViewAutofillClientIOS::GetAppLocale() const {
+  return app_locale_;
 }
 
 bool WebViewAutofillClientIOS::IsOffTheRecord() const {

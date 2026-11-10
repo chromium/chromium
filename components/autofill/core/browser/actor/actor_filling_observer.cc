@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/actor/actor_filling_observer.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -91,7 +92,8 @@ std::string GenerateFilledInformationSummary(
   }
 
   std::vector<std::u16string> pieces;
-  const std::string& app_locale = manager.client().GetAppLocale();
+  const std::string_view app_locale =
+      manager.client().GetAppLocale().tag_string();
 
   if (has_name) {
     std::u16string name = profile.GetInfo(NAME_FULL, app_locale);

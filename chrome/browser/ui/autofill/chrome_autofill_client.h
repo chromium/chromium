@@ -148,7 +148,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
 
   // AutofillClient:
   base::WeakPtr<AutofillClient> GetWeakPtr() final;
-  const std::string& GetAppLocale() const final;
+  const base::i18n::LanguageTag& GetAppLocale() const final;
   version_info::Channel GetChannel() const final;
   bool IsOffTheRecord() const final;
   const subscription_eligibility::SubscriptionEligibilityService*

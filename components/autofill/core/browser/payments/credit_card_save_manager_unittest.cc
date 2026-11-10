@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
@@ -3981,7 +3982,7 @@ TEST_F(
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadDetailsFails) {
   // Anything other than "en-US" will cause GetUploadDetails to return a failure
   // response.
-  autofill_client().set_app_locale("pt-BR");
+  autofill_client().set_app_locale(base::i18n::GetKnownLanguageTag("pt-BR"));
 
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
@@ -4725,7 +4726,7 @@ TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_LogAdditionalErrorsWithUploadDetailsFailure) {
   // Anything other than "en-US" will cause GetUploadDetails to return a failure
   // response.
-  autofill_client().set_app_locale("pt-BR");
+  autofill_client().set_app_locale(base::i18n::GetKnownLanguageTag("pt-BR"));
 
   // Set up a new address profile without a name or postal code.
   AutofillProfile profile(AddressCountryCode("US"));
@@ -4782,7 +4783,7 @@ TEST_F(
     UploadCreditCard_ShouldOfferLocalSaveIfEverythingDetectedAndPaymentsDeclines) {
   // Anything other than "en-US" will cause GetUploadDetails to return a failure
   // response.
-  autofill_client().set_app_locale("pt-BR");
+  autofill_client().set_app_locale(base::i18n::GetKnownLanguageTag("pt-BR"));
 
   // Set up a new address profile.
   AutofillProfile profile(AddressCountryCode("US"));
@@ -4824,7 +4825,7 @@ TEST_F(
     UploadCreditCard_ShouldNotOfferLocalSaveIfSomethingNotDetectedAndPaymentsDeclines) {
   // Anything other than "en-US" will cause GetUploadDetails to return a failure
   // response.
-  autofill_client().set_app_locale("pt-BR");
+  autofill_client().set_app_locale(base::i18n::GetKnownLanguageTag("pt-BR"));
 
   // Set up a new address profile without a name or postal code.
   AutofillProfile profile(AddressCountryCode("US"));
@@ -5307,7 +5308,7 @@ TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_DenyingUploadOfLocalCardShouldNotOfferLocalSave) {
   // Anything other than "en-US" will cause GetUploadDetails to return a failure
   // response.
-  autofill_client().set_app_locale("pt-BR");
+  autofill_client().set_app_locale(base::i18n::GetKnownLanguageTag("pt-BR"));
 
   // Add a local credit card whose |TypeAndLastFourDigits| matches what we will
   // enter below.

@@ -9,6 +9,7 @@
 #import <string>
 #import <vector>
 
+#import "base/i18n/language_tag.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
@@ -97,7 +98,7 @@ class WebViewAutofillClientIOS : public AutofillClientIOS {
 
   // AutofillClient:
   base::WeakPtr<AutofillClient> GetWeakPtr() override;
-  const std::string& GetAppLocale() const override;
+  const base::i18n::LanguageTag& GetAppLocale() const override;
   bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   AutofillCrowdsourcingManager& GetCrowdsourcingManager() override;
@@ -158,6 +159,9 @@ class WebViewAutofillClientIOS : public AutofillClientIOS {
   LogManager* GetCurrentLogManager() override;
 
  private:
+  // The application locale returned by GetAppLocale(). It doesn't change while
+  // the app is running.
+  const base::i18n::LanguageTag app_locale_;
   __weak id<CWVAutofillClientIOSBridge> bridge_;
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;

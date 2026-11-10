@@ -410,7 +410,7 @@ TEST_F(SaveAndFillManagerImplTest,
   EXPECT_EQ(details.upload_card_source, UploadCardSource::kUpstreamSaveAndFill);
   EXPECT_EQ(details.billing_customer_number,
             GetBillingCustomerId(payments_data_manager()));
-  EXPECT_EQ(details.app_locale, autofill_client().GetAppLocale());
+  EXPECT_EQ(details.app_locale, autofill_client().GetAppLocale().tag_string());
   EXPECT_THAT(
       details.client_behavior_signals,
       Contains(ClientBehaviorConstants::kShowAccountEmailInLegalMessage));

@@ -848,14 +848,14 @@ std::vector<Suggestion> GenerateAddressSuggestions(
           .email,
       field_types, GetSuggestionType(trigger_field),
       trigger_autofill_field->Type().GetAddressType(), trigger_field,
-      client.GetAppLocale());
+      std::string(client.GetAppLocale().tag_string()));
 
   // Add devtools test addresses suggestion if it exists.
   if (std::optional<Suggestion> test_addresses_suggestion =
           GetSuggestionForTestAddresses(
               std::vector(std::make_move_iterator(partition_it),
                           std::make_move_iterator(profiles_to_suggest.end())),
-              client.GetAppLocale())) {
+              std::string(client.GetAppLocale().tag_string()))) {
     suggestions.push_back(std::move(*test_addresses_suggestion));
   }
   if (suggestions.empty()) {

@@ -166,7 +166,7 @@ void BnplManager::OnUserDecisionToUseBnpl(
   ongoing_flow_state_ = std::make_unique<OngoingFlowState>();
   ongoing_flow_state_->final_checkout_amount = std::move(final_checkout_amount);
   ongoing_flow_state_->app_locale =
-      browser_autofill_manager_->client().GetAppLocale();
+      browser_autofill_manager_->client().GetAppLocale().tag_string();
   ongoing_flow_state_->billing_customer_number =
       GetBillingCustomerId(payments_autofill_client().GetPaymentsDataManager());
   ongoing_flow_state_->on_bnpl_vcn_fetched_callback =
@@ -708,7 +708,8 @@ std::vector<Suggestion> BnplManager::GetBnplSuggestions(
                                      /*checkout_amount=*/std::nullopt,
                                      /*amount_extraction_error=*/std::nullopt,
                                      std::move(enforced_order)),
-          browser_autofill_manager_->client().GetAppLocale(),
+          std::string(
+              browser_autofill_manager_->client().GetAppLocale().tag_string()),
           is_card_number_field_empty));
     }
   }
@@ -1293,7 +1294,9 @@ void BnplManager::ReplaceLoadingThrobberWithIssuerSuggestions(
   }
 
   std::vector<Suggestion> bnpl_suggestions = GetSuggestionsForBnpl(
-      issuer_contexts, browser_autofill_manager_->client().GetAppLocale(),
+      issuer_contexts,
+      std::string(
+          browser_autofill_manager_->client().GetAppLocale().tag_string()),
       /*is_card_number_field_empty=*/true);
 
   // Replace the loading throbber suggestion with the BNPL suggestions. This

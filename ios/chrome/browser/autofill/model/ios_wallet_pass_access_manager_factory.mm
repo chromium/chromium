@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
 
+#import <string>
 #import <utility>
 
 #import "components/application_locale_storage/application_locale_storage.h"
@@ -53,6 +54,9 @@ IOSWalletPassAccessManagerFactory::BuildServiceInstanceFor(
   return std::make_unique<autofill::WalletPassAccessManagerImpl>(
       std::make_unique<wallet::WalletHttpClientImpl>(
           identity_manager, profile.GetSharedURLLoaderFactory(),
-          GetApplicationContext()->GetApplicationLocaleStorage()->Get()),
+          std::string(GetApplicationContext()
+                          ->GetApplicationLocaleStorage()
+                          ->GetTag()
+                          .tag_string())),
       data_manager);
 }

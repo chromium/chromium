@@ -228,8 +228,8 @@ base::WeakPtr<AutofillClient> ChromeAutofillClientIOS::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-const std::string& ChromeAutofillClientIOS::GetAppLocale() const {
-  return GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+const base::i18n::LanguageTag& ChromeAutofillClientIOS::GetAppLocale() const {
+  return GetApplicationContext()->GetApplicationLocaleStorage()->GetTag();
 }
 
 version_info::Channel ChromeAutofillClientIOS::GetChannel() const {
@@ -567,7 +567,8 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
   }
 
   auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
-      profile, original_profile, GetUserEmail(), GetAppLocale(),
+      profile, original_profile, GetUserEmail(),
+      std::string(GetAppLocale().tag_string()),
       save_address_bubble_type == SaveAddressBubbleType::kMigrateToAccount,
       std::move(callback));
 

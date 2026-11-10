@@ -86,10 +86,11 @@ class SaveAddressBubbleControllerTest : public ::testing::Test {
  protected:
   content::WebContents* web_contents() { return web_contents_.get(); }
 
-  const std::string& app_locale() const {
-    return g_browser_process->GetFeatures()
-        ->application_locale_storage()
-        ->Get();
+  std::string app_locale() const {
+    return std::string(g_browser_process->GetFeatures()
+                           ->application_locale_storage()
+                           ->GetTag()
+                           .tag_string());
   }
 
  private:

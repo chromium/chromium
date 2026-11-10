@@ -86,7 +86,7 @@ base::WeakPtr<autofill::AutofillClient> AndroidAutofillClient::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-const std::string& AndroidAutofillClient::GetAppLocale() const {
+const base::i18n::LanguageTag& AndroidAutofillClient::GetAppLocale() const {
   NOTREACHED();
 }
 

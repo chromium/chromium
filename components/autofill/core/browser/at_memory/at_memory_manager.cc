@@ -240,7 +240,7 @@ std::optional<std::u16string> GetAttributeFillValue(
   }
 
   auto [form, autofill_field] = manager.FindFormAndField(form_id, field_id);
-  const std::string app_locale = manager.client().GetAppLocale();
+  const std::string app_locale(manager.client().GetAppLocale().tag_string());
   // Using `GetFillingValueAndTypeForEntity` is preferred when the field is
   // known because it handles field-specific requirements such as state/country
   // normalization, dates, and truncation for length limits.
@@ -1109,7 +1109,7 @@ void AtMemoryManager::ShowResultsRetrievedStateSuggestions(
   // bring it back. This matters for partial responses, where the query is
   // still pending; for final responses, the timer is already stopped.
   StopFetchingTimer();
-  const std::string_view app_locale = client_->GetAppLocale();
+  const std::string_view app_locale = client_->GetAppLocale().tag_string();
   std::vector<Suggestion> suggestions =
       base::ToVector(result.entries, [&](const MemorySearchResult& entry) {
         return TransformResultIntoSuggestion(entry, app_locale);

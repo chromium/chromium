@@ -188,7 +188,7 @@ AddressFormDataImporter::ExtractedAddressProfile::~ExtractedAddressProfile() =
 
 AddressFormDataImporter::AddressFormDataImporter(AutofillClient* client)
     : client_(CHECK_DEREF(client)),
-      multistep_importer_(client_->GetAppLocale(),
+      multistep_importer_(std::string(client_->GetAppLocale().tag_string()),
                           client_->GetVariationConfigCountryCode()),
       address_profile_save_manager_(
           std::make_unique<AddressProfileSaveManager>(client)) {
@@ -284,8 +284,9 @@ bool AddressFormDataImporter::ProcessExtractedAddressProfiles(
   bool allow_only_silent_updates = !allow_prompt;
   for (const ExtractedAddressProfile& candidate : extracted_address_profiles) {
     address_profile_save_manager_->ImportProfileFromForm(
-        candidate.profile, client_->GetAppLocale(), candidate.url,
-        ukm_source_id, allow_only_silent_updates, candidate.import_metadata);
+        candidate.profile, std::string(client_->GetAppLocale().tag_string()),
+        candidate.url, ukm_source_id, allow_only_silent_updates,
+        candidate.import_metadata);
     // Limit the number of importable profiles to 2.
     if (!allow_only_silent_updates && ++imported_profiles >= 2) {
       return true;
@@ -457,7 +458,8 @@ AutofillProfile AddressFormDataImporter::ConstructProfileFromObservedValues(
   if (const std::u16string* country =
           base::FindOrNull(observed_values, ADDRESS_HOME_COUNTRY)) {
     if (candidate_profile.SetInfoWithVerificationStatus(
-            ADDRESS_HOME_COUNTRY, *country, client_->GetAppLocale(),
+            ADDRESS_HOME_COUNTRY, *country,
+            client_->GetAppLocale().tag_string(),
             VerificationStatus::kObserved)) {
       import_metadata.country_source =
           ProfileCountrySource::kExplicitlyObserved;
@@ -477,7 +479,8 @@ AutofillProfile AddressFormDataImporter::ConstructProfileFromObservedValues(
         GetFallbackCountry(combined_phone);
 
     if (!candidate_profile.SetInfoWithVerificationStatus(
-            ADDRESS_HOME_COUNTRY, fallback_country, client_->GetAppLocale(),
+            ADDRESS_HOME_COUNTRY, fallback_country,
+            client_->GetAppLocale().tag_string(),
             VerificationStatus::kObserved)) {
       import_metadata.country_source = ProfileCountrySource::kNoCountry;
     }
@@ -497,7 +500,8 @@ AutofillProfile AddressFormDataImporter::ConstructProfileFromObservedValues(
     }
 
     candidate_profile.SetInfoWithVerificationStatus(
-        type, value, client_->GetAppLocale(), VerificationStatus::kObserved);
+        type, value, client_->GetAppLocale().tag_string(),
+        VerificationStatus::kObserved);
   }
 
   // Track if the form contains split zip fields such that at least zip prefix
@@ -685,7 +689,7 @@ bool AddressFormDataImporter::SetPhoneNumber(
   }
 
   bool parsed_successfully = PhoneNumber::ImportPhoneNumberToProfile(
-      combined_phone, client_->GetAppLocale(), profile);
+      combined_phone, client_->GetAppLocale().tag_string(), profile);
   autofill_metrics::LogPhoneNumberImportParsingResult(parsed_successfully);
   return parsed_successfully;
 }

@@ -10,6 +10,8 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -283,7 +285,8 @@ class BnplManagerTest : public Test,
 
   void SetUp() override {
     InitAutofillClient();
-    autofill_client().set_app_locale(kAppLocale);
+    autofill_client().set_app_locale(
+        base::i18n::GetLanguageTagFromString(kAppLocale).value());
     autofill_client().set_last_committed_primary_main_frame_url(kDomain);
     autofill_client().GetPersonalDataManager().set_payments_data_manager(
         std::make_unique<TestPaymentsDataManager>());
@@ -436,7 +439,7 @@ TEST_F(BnplManagerTest, OnUserDecisionToUseBnpl_SetsInitialState) {
   EXPECT_EQ(
       kAmount,
       test_api(*bnpl_manager_).GetOngoingFlowState()->final_checkout_amount);
-  EXPECT_EQ(autofill_client().GetAppLocale(),
+  EXPECT_EQ(autofill_client().GetAppLocale().tag_string(),
             test_api(*bnpl_manager_).GetOngoingFlowState()->app_locale);
   EXPECT_EQ(
       GetBillingCustomerId(payments_autofill_client().GetPaymentsDataManager()),
@@ -455,14 +458,14 @@ TEST_F(BnplManagerTest, OnUserDecisionToUseBnpl_SetsInitialState) {
 TEST_F(BnplManagerTest,
        OnUserDecisionToUseBnpl_SetsInitialStateWithDifferentAppLocale) {
   int64_t final_checkout_amount = 1000000;
-  autofill_client().set_app_locale("en_GB");
+  autofill_client().set_app_locale(base::i18n::GetKnownLanguageTag("en-GB"));
   bnpl_manager_->OnUserDecisionToUseBnpl(final_checkout_amount,
                                          base::DoNothing());
 
   EXPECT_EQ(
       final_checkout_amount,
       test_api(*bnpl_manager_).GetOngoingFlowState()->final_checkout_amount);
-  EXPECT_EQ(autofill_client().GetAppLocale(),
+  EXPECT_EQ(autofill_client().GetAppLocale().tag_string(),
             test_api(*bnpl_manager_).GetOngoingFlowState()->app_locale);
   EXPECT_EQ(
       GetBillingCustomerId(payments_autofill_client().GetPaymentsDataManager()),
@@ -492,7 +495,9 @@ TEST_F(BnplManagerTest, TosDialogAccepted_PrefetchedRiskDataNotLoaded) {
   EXPECT_CALL(
       *payments_network_interface_,
       CreateBnplPaymentInstrument(/*request_details=*/
-                                  FieldsAre(autofill_client().GetAppLocale(),
+                                  FieldsAre(std::string(autofill_client()
+                                                            .GetAppLocale()
+                                                            .tag_string()),
                                             GetBillingCustomerId(
                                                 payments_autofill_client()
                                                     .GetPaymentsDataManager()),
@@ -525,7 +530,9 @@ TEST_F(BnplManagerTest, TosDialogAccepted_PrefetchedRiskDataLoaded) {
   EXPECT_CALL(
       *payments_network_interface_,
       CreateBnplPaymentInstrument(/*request_details=*/
-                                  FieldsAre(autofill_client().GetAppLocale(),
+                                  FieldsAre(std::string(autofill_client()
+                                                            .GetAppLocale()
+                                                            .tag_string()),
                                             GetBillingCustomerId(
                                                 payments_autofill_client()
                                                     .GetPaymentsDataManager()),
@@ -565,7 +572,9 @@ TEST_F(BnplManagerTest,
   EXPECT_CALL(
       *payments_network_interface_,
       UpdateBnplPaymentInstrument(/*request_details=*/
-                                  FieldsAre(autofill_client().GetAppLocale(),
+                                  FieldsAre(std::string(autofill_client()
+                                                            .GetAppLocale()
+                                                            .tag_string()),
                                             GetBillingCustomerId(
                                                 payments_autofill_client()
                                                     .GetPaymentsDataManager()),
@@ -609,7 +618,9 @@ TEST_F(BnplManagerTest,
   EXPECT_CALL(
       *payments_network_interface_,
       UpdateBnplPaymentInstrument(/*request_details=*/
-                                  FieldsAre(autofill_client().GetAppLocale(),
+                                  FieldsAre(std::string(autofill_client()
+                                                            .GetAppLocale()
+                                                            .tag_string()),
                                             GetBillingCustomerId(
                                                 payments_autofill_client()
                                                     .GetPaymentsDataManager()),
