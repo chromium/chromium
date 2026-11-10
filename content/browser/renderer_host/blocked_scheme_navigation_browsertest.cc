@@ -689,15 +689,8 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest, HTML_Download) {
 
 // Tests that navigating the main frame to a blocked scheme with HTML mimetype
 // from a subframe is blocked.
-// TODO: crbug.com/40943572 - Fix and re-enable the flaky test.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_HTML_NavigationFromFrame_Block \
-  DISABLED_HTML_NavigationFromFrame_Block
-#else
-#define MAYBE_HTML_NavigationFromFrame_Block HTML_NavigationFromFrame_Block
-#endif
 IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
-                       MAYBE_HTML_NavigationFromFrame_Block) {
+                       HTML_NavigationFromFrame_Block) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/simple_page.html")));
   AddIFrame(
@@ -713,15 +706,8 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
 
 // Tests that opening a new window with a blocked scheme from a subframe is
 // blocked.
-// TODO: crbug.com/40943572 - Fix and re-enable the flaky test.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_HTML_WindowOpenFromFrame_Block \
-  DISABLED_HTML_WindowOpenFromFrame_Block
-#else
-#define MAYBE_HTML_WindowOpenFromFrame_Block HTML_WindowOpenFromFrame_Block
-#endif
 IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
-                       MAYBE_HTML_WindowOpenFromFrame_Block) {
+                       HTML_WindowOpenFromFrame_Block) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/simple_page.html")));
   AddIFrame(
@@ -821,17 +807,9 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
 
 // Tests that navigating the top frame to a blocked scheme with HTML mimetype is
 // blocked even if the top frame already has a blocked scheme.
-// TODO: crbug.com/40943572 - Fix and re-enable the flaky test.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_HTML_NavigationFromFrame_TopFrameHasBlockedScheme_Block \
-  DISABLED_HTML_NavigationFromFrame_TopFrameHasBlockedScheme_Block
-#else
-#define MAYBE_HTML_NavigationFromFrame_TopFrameHasBlockedScheme_Block \
-  HTML_NavigationFromFrame_TopFrameHasBlockedScheme_Block
-#endif
 IN_PROC_BROWSER_TEST_P(
     BlockedSchemeNavigationBrowserTest,
-    MAYBE_HTML_NavigationFromFrame_TopFrameHasBlockedScheme_Block) {
+    HTML_NavigationFromFrame_TopFrameHasBlockedScheme_Block) {
   EXPECT_TRUE(NavigateToURL(shell(), CreateEmptyURLWithBlockedScheme()));
   AddIFrame(shell()->web_contents()->GetPrimaryMainFrame(), GetTestURL());
 
@@ -972,16 +950,8 @@ IN_PROC_BROWSER_TEST_F(BlockedSchemeNavigationBrowserTest,
 
 // Tests navigation of the main frame to a filesystem URL with a binary mimetype
 // from a subframe. Navigations to filesystem URLs never end up as downloads.
-// TODO(crbug.com/40943572): Enable the flaky test.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_FilesystemUrl_OctetStream_NavigationFromFrame \
-  DISABLED_FilesystemUrl_OctetStream_NavigationFromFrame
-#else
-#define MAYBE_FilesystemUrl_OctetStream_NavigationFromFrame \
-  FilesystemUrl_OctetStream_NavigationFromFrame
-#endif
 IN_PROC_BROWSER_TEST_F(BlockedSchemeNavigationBrowserTest,
-                       MAYBE_FilesystemUrl_OctetStream_NavigationFromFrame) {
+                       FilesystemUrl_OctetStream_NavigationFromFrame) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/simple_page.html")));
   AddIFrame(shell()->web_contents()->GetPrimaryMainFrame(),
@@ -1109,17 +1079,8 @@ IN_PROC_BROWSER_TEST_F(BlockedSchemeNavigationBrowserTest,
 // Test navigation of the main frame to a filesystem URL with an unknown
 // mimetype from a subframe. Navigations to filesystem URLs don't end up as
 // downloads.
-// TODO(crbug.com/40943572): Enable the flaky test.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_FilesystemUrl_UnknownMimeType_NavigationFromFrame \
-  DISABLED_FilesystemUrl_UnknownMimeType_NavigationFromFrame
-#else
-#define MAYBE_FilesystemUrl_UnknownMimeType_NavigationFromFrame \
-  FilesystemUrl_UnknownMimeType_NavigationFromFrame
-#endif
-IN_PROC_BROWSER_TEST_F(
-    BlockedSchemeNavigationBrowserTest,
-    MAYBE_FilesystemUrl_UnknownMimeType_NavigationFromFrame) {
+IN_PROC_BROWSER_TEST_F(BlockedSchemeNavigationBrowserTest,
+                       FilesystemUrl_UnknownMimeType_NavigationFromFrame) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/simple_page.html")));
   AddIFrame(shell()->web_contents()->GetPrimaryMainFrame(),
@@ -1242,15 +1203,8 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest, PDF_FormPost_Block) {
 
 // Tests that navigating the main frame to a blocked scheme with PDF mimetype
 // from a subframe is blocked, or is downloaded on Android.
-// TODO: crbug.com/40943572 - Fix and re-enable the flaky test.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_PDF_NavigationFromFrame_Block \
-  DISABLED_PDF_NavigationFromFrame_Block
-#else
-#define MAYBE_PDF_NavigationFromFrame_Block PDF_NavigationFromFrame_Block
-#endif
 IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
-                       MAYBE_PDF_NavigationFromFrame_Block) {
+                       PDF_NavigationFromFrame_Block) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/simple_page.html")));
   AddIFrame(

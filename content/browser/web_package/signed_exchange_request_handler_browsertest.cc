@@ -1070,15 +1070,8 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
   EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
 }
 
-// TODO(crbug.com/40890897): Re-enable this test when de-flaked.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_NotControlledByDistributorsSW \
-  DISABLED_NotControlledByDistributorsSW
-#else
-#define MAYBE_NotControlledByDistributorsSW NotControlledByDistributorsSW
-#endif
 IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
-                       MAYBE_NotControlledByDistributorsSW) {
+                       NotControlledByDistributorsSW) {
   // SW-scope: http://127.0.0.1:PORT/sxg/
   // SXG physical URL: http://127.0.0.1:PORT/sxg/test.example.org_test.sxg
   // SXG logical URL: https://test.example.org/test/

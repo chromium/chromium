@@ -7,7 +7,6 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
-#include "build/build_config.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/public/mojom/test_api.test-mojom.h"
@@ -98,14 +97,7 @@ IN_PROC_BROWSER_TEST_F(StorageServiceSandboxBrowserTest, DomStorage) {
             EvalJs(shell()->web_contents(), R"(window.localStorage.yeet)"));
 }
 
-// TODO(crbug.com/40835229): Fix and enable the test on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_CompactDatabase DISABLED_CompactDatabase
-#else
-#define MAYBE_CompactDatabase CompactDatabase
-#endif
-IN_PROC_BROWSER_TEST_F(StorageServiceSandboxBrowserTest,
-                       MAYBE_CompactDatabase) {
+IN_PROC_BROWSER_TEST_F(StorageServiceSandboxBrowserTest, CompactDatabase) {
   // Tests that the sandboxed service can execute a LevelDB database compaction
   // operation without crashing. If the service crashes, the sync call below
   // will return false.

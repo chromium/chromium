@@ -415,13 +415,15 @@ IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest, MAYBE_SanityCheckIncognito) {
 }
 
 // http://crbug.com/654704 PRE_ tests aren't supported on Android.
-// TODO(crbug.com/40885339): Re-enable this test for fuchsia.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_DataPersists DISABLED_DataPersists
 #else
 #define MAYBE_DataPersists DataPersists
 #endif
 IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest, PRE_DataPersists) {
+  if (IsSqliteBackendOnFuchsia()) {
+    GTEST_SKIP() << "SQLite DomStorage backend unsupported on Fuchsia";
+  }
   SimpleTest(GetTestUrl("dom_storage", "store_data.html"), kNotIncognito);
 
   // Wait for the write to commit before shutdown.
@@ -429,6 +431,9 @@ IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest, PRE_DataPersists) {
 }
 
 IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest, MAYBE_DataPersists) {
+  if (IsSqliteBackendOnFuchsia()) {
+    GTEST_SKIP() << "SQLite DomStorage backend unsupported on Fuchsia";
+  }
   SimpleTest(GetTestUrl("dom_storage", "verify_data.html"), kNotIncognito);
 }
 

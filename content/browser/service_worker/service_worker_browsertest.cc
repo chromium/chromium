@@ -6140,17 +6140,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Not found", GetInnerText());
 }
 
-// TODO(crbug.com/40263529): Flaky on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_NetworkRequest_Wins_FetchHandler_Fallback \
-  DISABLED_NetworkRequest_Wins_FetchHandler_Fallback
-#else
-#define MAYBE_NetworkRequest_Wins_FetchHandler_Fallback \
-  NetworkRequest_Wins_FetchHandler_Fallback
-#endif
 IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
-    MAYBE_NetworkRequest_Wins_FetchHandler_Fallback) {
+    NetworkRequest_Wins_FetchHandler_Fallback) {
   // If RaceNetworkRequest comes first, there is a network error, and the fetch
   // handler result is a fallback. In this case the response from
   // RaceNetworkRequest is not used, because we need to support the case when
@@ -6209,15 +6201,9 @@ IN_PROC_BROWSER_TEST_P(
             GetInnerText());
 }
 
-// TODO(crbug.com/40263529): Flaky on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_NetworkRequest_Wins_Redirect DISABLED_NetworkRequest_Wins_Redirect
-#else
-#define MAYBE_NetworkRequest_Wins_Redirect NetworkRequest_Wins_Redirect
-#endif
 IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
-    MAYBE_NetworkRequest_Wins_Redirect) {
+    NetworkRequest_Wins_Redirect) {
   SetupAndRegisterServiceWorker();
   const std::string path =
       "/service_worker/mock_response?server_redirect&sw_slow&sw_respond";
@@ -6237,17 +6223,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(0, GetRequestCount(path_after_redirect));
 }
 
-// TODO(crbug.com/40263529): Flaky on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_NetworkRequest_Wins_Redirect_PassThrough \
-  DISABLED_NetworkRequest_Wins_Redirect_PassThrough
-#else
-#define MAYBE_NetworkRequest_Wins_Redirect_PassThrough \
-  NetworkRequest_Wins_Redirect_PassThrough
-#endif
 IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
-    MAYBE_NetworkRequest_Wins_Redirect_PassThrough) {
+    NetworkRequest_Wins_Redirect_PassThrough) {
   SetupAndRegisterServiceWorker();
   const std::string path =
       "/service_worker/mock_response?server_redirect&sw_slow&sw_pass_through";
@@ -6344,15 +6322,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Not found", GetInnerText());
 }
 
-// TODO(crbug.com/40263529): Flaky on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_FetchHandler_Wins_Redirect DISABLED_FetchHandler_Wins_Redirect
-#else
-#define MAYBE_FetchHandler_Wins_Redirect FetchHandler_Wins_Redirect
-#endif
 IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
-    MAYBE_FetchHandler_Wins_Redirect) {
+    FetchHandler_Wins_Redirect) {
   SetupAndRegisterServiceWorker();
   const std::string path =
       "/service_worker/mock_response?server_redirect&server_slow&sw_respond";
@@ -6369,17 +6341,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(0, GetRequestCount(path_after_redirect));
 }
 
-// TODO(crbug.com/40263529): Flaky on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_FetchHandler_Wins_Redirect_PassThrough \
-  DISABLED_FetchHandler_Wins_Redirect_PassThrough
-#else
-#define MAYBE_FetchHandler_Wins_Redirect_PassThrough \
-  FetchHandler_Wins_Redirect_PassThrough
-#endif
 IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
-    MAYBE_FetchHandler_Wins_Redirect_PassThrough) {
+    FetchHandler_Wins_Redirect_PassThrough) {
   SetupAndRegisterServiceWorker();
   const std::string path =
       "/service_worker/"
@@ -6473,16 +6437,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(2, GetRequestCount(relative_url_for_clone));
 }
 
-// TODO(crbug.com/40263529): Flaky on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_Subresource_NetworkRequest_Wins \
-  DISABLED_Subresource_NetworkRequest_Wins
-#else
-#define MAYBE_Subresource_NetworkRequest_Wins Subresource_NetworkRequest_Wins
-#endif
 IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
-    MAYBE_Subresource_NetworkRequest_Wins) {
+    Subresource_NetworkRequest_Wins) {
   SetupAndRegisterServiceWorker();
   WorkerRunningStatusObserver observer(public_context());
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -6626,17 +6583,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(1, GetRequestCount(path3));
 }
 
-// TODO(crbug.com/40263529): Flaky on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_Subresource_NetworkRequest_Wins_Redirect \
-  DISABLED_Subresource_NetworkRequest_Wins_Redirect
-#else
-#define MAYBE_Subresource_NetworkRequest_Wins_Redirect \
-  Subresource_NetworkRequest_Wins_Redirect
-#endif
 IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
-    MAYBE_Subresource_NetworkRequest_Wins_Redirect) {
+    Subresource_NetworkRequest_Wins_Redirect) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
 
@@ -6655,17 +6604,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(0, GetRequestCount(path_after_redirect));
 }
 
-// TODO(crbug.com/40263529): Flaky on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_Subresource_NetworkRequest_Wins_Redirect_PassThrough \
-  DISABLED_Subresource_NetworkRequest_Wins_Redirect_PassThrough
-#else
-#define MAYBE_Subresource_NetworkRequest_Wins_Redirect_PassThrough \
-  Subresource_NetworkRequest_Wins_Redirect_PassThrough
-#endif
 IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
-    MAYBE_Subresource_NetworkRequest_Wins_Redirect_PassThrough) {
+    Subresource_NetworkRequest_Wins_Redirect_PassThrough) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
 
@@ -6792,17 +6733,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(0, GetRequestCount(path_after_redirect));
 }
 
-// TODO(crbug.com/40263529): Flaky on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_Subresource_FetchHandler_Wins_Redirect_PassThrough \
-  DISABLED_Subresource_FetchHandler_Wins_Redirect_PassThrough
-#else
-#define MAYBE_Subresource_FetchHandler_Wins_Redirect_PassThrough \
-  Subresource_FetchHandler_Wins_Redirect_PassThrough
-#endif
 IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
-    MAYBE_Subresource_FetchHandler_Wins_Redirect_PassThrough) {
+    Subresource_FetchHandler_Wins_Redirect_PassThrough) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
 

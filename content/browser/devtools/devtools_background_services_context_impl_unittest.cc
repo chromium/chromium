@@ -280,17 +280,8 @@ class DevToolsBackgroundServicesContextTest
       scoped_content_browser_client_setting_;
 };
 
-// Flaky on Fuchsia.
-// TODO(crbug.com/40936408): Reenable test on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_NothingStoredWithRecordingModeOff \
-  DISABLED_NothingStoredWithRecordingModeOff
-#else
-#define MAYBE_NothingStoredWithRecordingModeOff \
-  NothingStoredWithRecordingModeOff
-#endif
 TEST_F(DevToolsBackgroundServicesContextTest,
-       MAYBE_NothingStoredWithRecordingModeOff) {
+       NothingStoredWithRecordingModeOff) {
   // Initially there are no entries.
   EXPECT_TRUE(GetLoggedBackgroundServiceEvents().empty());
 
