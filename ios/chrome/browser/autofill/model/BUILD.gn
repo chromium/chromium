@@ -12,6 +12,8 @@ source_set("model") {
     "autofill_ai_prefetch_failure_infobar_delegate_ios.mm",
     "autofill_ai_save_entity_infobar_delegate_ios.h",
     "autofill_ai_save_entity_infobar_delegate_ios.mm",
+    "autofill_ai_save_entity_prompt_model.h",
+    "autofill_ai_save_entity_prompt_model.mm",
     "autofill_ai_util.h",
     "autofill_ai_util.mm",
     "autofill_image_fetcher_factory.h",
@@ -233,6 +235,7 @@ source_set("unit_tests") {
 
   sources = [
     "autofill_ai_save_entity_infobar_delegate_ios_unittest.mm",
+    "autofill_ai_save_entity_prompt_model_unittest.mm",
     "autofill_controller_js_unittest.mm",
     "autofill_controller_unittest.mm",
     "autofill_image_fetcher_impl_unittest.mm",
