@@ -1786,8 +1786,9 @@ class GlicApiTestRuntimeFeatureOff : public GlicApiTest {
 // DONT DELETE THIS TEST when the method being called here is removed,
 // but instead update this test to call any other RuntimeFeature-protected
 // method.
+// TODO(crbug.com/575172372): Flaky
 IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
-                       testErrorShownOnMojoPipeError) {
+                       DISABLED_testErrorShownOnMojoPipeError) {
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   ExecuteJsTest(
       {.params = base::Value(base::DictValue().Set("triggerError", true))});
