@@ -381,6 +381,7 @@ static_library("renderer") {
       "accessibility/read_anything/read_anything_readability_distiller.h",
       "accessibility/read_anything/read_anything_screen2x_distiller.cc",
       "accessibility/read_anything/read_anything_screen2x_distiller.h",
+      "accessibility/read_anything/read_anything_text_aligner.cc",
       "accessibility/read_anything/read_anything_text_aligner.h",
       "media/chrome_speech_recognition_client.cc",
       "media/chrome_speech_recognition_client.h",
