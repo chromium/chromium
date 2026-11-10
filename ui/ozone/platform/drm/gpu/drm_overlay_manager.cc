@@ -145,8 +145,9 @@ void DrmOverlayManager::CheckOverlaySupport(
 
     // CanHandleCandidate() should never return false if the candidate is
     // the primary plane.
-    CHECK(can_handle || candidate.plane_z_order != 0,
-          base::NotFatalUntil::M163);
+    // TODO(crbug.com/583407770): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(can_handle || candidate.plane_z_order != 0);
 
     // Also verify if hardware supports required buffer format. It can happen,
     // that a system doesn't support overlays for certain buffer formats. Thus,
