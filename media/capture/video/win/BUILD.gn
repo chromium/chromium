@@ -88,6 +88,7 @@ source_set("win_unittests") {
     "gpu_memory_buffer_tracker_win_unittest.cc",
     "video_capture_device_factory_win_unittest.cc",
     "video_capture_device_mf_win_unittest.cc",
+    "video_capture_device_win_unittest.cc",
   ]
 
   deps = [
@@ -113,6 +114,7 @@ source_set("win_unittests") {
     "mfreadwrite.lib",
     "mfuuid.lib",
     "dxguid.lib",
+    "strmiids.lib",
   ]
   ldflags = [
     "/DELAYLOAD:mf.dll",
