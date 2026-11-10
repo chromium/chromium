@@ -57,7 +57,8 @@ QUERY_STORY_TOTAL_RUNTIME = (
   """
 SELECT
   test_id AS name,
-  ROUND(AVG(time)) AS duration,
+  ROUND(AVG(time), 2) AS duration,
+  COUNT(*) AS num_runs,
 FROM (
   SELECT
     parent.id,
@@ -150,6 +151,23 @@ def FetchAverageStoryTimingData(configurations, num_last_days):
   configurations_str = ','.join(repr(c) for c in configurations)
   return _run_query(
     QUERY_STORY_AVG_RUNTIME.format(
+      configuration_names=configurations_str, num_last_days=num_last_days
+    )
+  )
+
+
+def FetchAverageTestRunTotalData(configurations, num_last_days):
+  """Returns the average per-run total duration of every test ID.
+
+  Durations are first summed per parent invocation (one Swarming shard run) and
+  then averaged across runs. Unlike FetchAverageStoryTimingData, this gives the
+  whole-run duration of tests that report several results under the same test
+  ID in a single run, e.g. gtest executables that report one result per test
+  case. Each returned entry also has 'num_runs', the number of runs averaged.
+  """
+  configurations_str = ','.join(repr(c) for c in configurations)
+  return _run_query(
+    QUERY_STORY_TOTAL_RUNTIME.format(
       configuration_names=configurations_str, num_last_days=num_last_days
     )
   )

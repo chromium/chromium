@@ -147,18 +147,118 @@ def _DumpJson(data, output_path):
     output_file.write('\n')
 
 
+TIMING_SOURCE_MEASURED = 'measured'
+TIMING_SOURCE_ESTIMATE = 'estimate'
+# Number of days of results used for timing data, for all benchmark types. Long
+# enough that low-cadence testers, or testers that were down for a few days,
+# still have measured data.
+TIMING_NUM_LAST_DAYS = 14
+# Minimum number of measured runs (within TIMING_NUM_LAST_DAYS) before an
+# executable or Crossbench duration replaces its estimated_runtime.
+MIN_MEASURED_RUNS = 10
+
+
+def MergeTimingData(builder, story_timing_data, run_total_timing_data):
+  """Builds the timing data used to shard |builder|'s benchmarks.
+
+  Telemetry stories are reported to ResultDB as '<benchmark>/<story>' and keep
+  their measured average duration from |story_timing_data|.
+
+  Executables and Crossbench benchmarks are reported under their bare name
+  (e.g. 'dawn_perf_tests'), so their measured per-run durations are taken from
+  |run_total_timing_data| and renamed to the keys the sharding map generator
+  looks up: '<executable>/_gtest_' and '<crossbench>/<story>'. Executables
+  without measured data fall back to their estimated_runtime. Crossbench
+  benchmarks without measured data are left out, so the sharding map generator
+  falls back to their estimated_runtime. A measurement needs a non-zero
+  duration and at least MIN_MEASURED_RUNS runs to be used.
+
+  An executable's estimated_runtime covers its whole run: executables run once
+  per shard (their repeat count is not passed to them), so the estimate is not
+  scaled by repeat.
+
+  Every entry records whether its duration was measured or estimated, and
+  measured executable and Crossbench entries record their number of runs.
+
+  Args:
+    builder: the bot_platforms._PerfPlatform to generate timing data for.
+    story_timing_data: list of {'name', 'duration'} dicts with the average
+      duration of each test ID (retrieve_story_timing.
+      FetchAverageStoryTimingData).
+    run_total_timing_data: list of {'name', 'duration', 'num_runs'} dicts with
+      the average per-run total duration of each test ID (retrieve_story_timing.
+      FetchAverageTestRunTotalData).
+
+  Returns:
+    A list of {'name', 'duration', 'source'} dicts, plus 'num_runs' on
+    measured executable and Crossbench entries.
+  """
+  executables = {e.name: e for e in builder.executables}
+  crossbench_stories = {c.name: c.stories for c in builder.crossbench}
+  non_telemetry_names = set(executables) | set(crossbench_stories)
+
+  merged = []
+  for entry in story_timing_data:
+    if entry['name'] in non_telemetry_names:
+      continue
+    merged.append(dict(entry, source=TIMING_SOURCE_MEASURED))
+
+  # Zero or missing durations (e.g. results that don't report a duration) and
+  # measurements from too few runs are not used.
+  run_totals = {}
+  for entry in run_total_timing_data:
+    if entry['name'] not in non_telemetry_names:
+      continue
+    duration = float(entry.get('duration') or 0)
+    num_runs = int(entry.get('num_runs') or 0)
+    if duration > 0 and num_runs >= MIN_MEASURED_RUNS:
+      run_totals[entry['name']] = (duration, num_runs)
+
+  for name in sorted(executables):
+    entry = {'name': name + '/' + bot_platforms.GTEST_STORY_NAME}
+    if name in run_totals:
+      duration, num_runs = run_totals[name]
+      entry.update(source=TIMING_SOURCE_MEASURED, num_runs=num_runs)
+    else:
+      duration = float(executables[name].estimated_runtime)
+      entry.update(source=TIMING_SOURCE_ESTIMATE)
+    entry['duration'] = str(duration)
+    merged.append(entry)
+
+  for name in sorted(crossbench_stories):
+    if name not in run_totals:
+      continue
+    duration, num_runs = run_totals[name]
+    stories = crossbench_stories[name]
+    if not stories:
+      continue
+    # One Crossbench result covers all of its stories, so split the measured
+    # duration evenly between them.
+    story_duration = duration / len(stories)
+    for story in stories:
+      merged.append(
+        {
+          'duration': str(story_duration),
+          'name': name + '/' + story,
+          'source': TIMING_SOURCE_MEASURED,
+          'num_runs': num_runs,
+        }
+      )
+  return merged
+
+
 def _LoadTimingData(args):
   builder, timing_file_path = args
-  data = retrieve_story_timing.FetchAverageStoryTimingData(
-    configurations=[builder.name], num_last_days=5
+  story_timing_data = retrieve_story_timing.FetchAverageStoryTimingData(
+    configurations=[builder.name], num_last_days=TIMING_NUM_LAST_DAYS
   )
-  for executable in builder.executables:
-    data.append(
-      {
-        'duration': str(float(executable.estimated_runtime)),
-        'name': executable.name + '/' + bot_platforms.GTEST_STORY_NAME,
-      }
+  run_total_timing_data = []
+  if builder.executables or builder.crossbench:
+    run_total_timing_data = retrieve_story_timing.FetchAverageTestRunTotalData(
+      configurations=[builder.name],
+      num_last_days=TIMING_NUM_LAST_DAYS,
     )
+  data = MergeTimingData(builder, story_timing_data, run_total_timing_data)
   _DumpJson(data, timing_file_path)
   print('Finished retrieving story timing data for %s' % repr(builder.name))
 
@@ -236,12 +336,16 @@ def _FilterTimingData(builder, output_path=None):
   executable_story_names = [
     e.name + '/' + bot_platforms.GTEST_STORY_NAME for e in builder.executables
   ]
+  crossbench_story_names = [
+    c.name + '/' + story for c in builder.crossbench for story in c.stories
+  ]
   timing_dataset = [
     point
     for point in timing_dataset
     if (
       str(point['name']) in story_full_names
       or str(point['name']) in executable_story_names
+      or str(point['name']) in crossbench_story_names
     )
   ]
   _DumpJson(timing_dataset, output_path)

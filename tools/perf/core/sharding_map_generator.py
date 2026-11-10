@@ -361,7 +361,12 @@ def _gather_timing_data(benchmarks_to_shard, timing_data, repeat):
       timing_data_dict[run['name']] = float(run['duration'])
   timing_data_list = []
   for b in benchmarks_to_shard:
-    run_count = b.repeat if repeat else 1
+    # Measured Telemetry story durations are scaled by the story repeat count.
+    # Executables and Crossbench benchmarks report one result per run that
+    # already covers all repeats (e.g. Crossbench's --repeat=N), so their
+    # measured durations are used as is.
+    is_telemetry = isinstance(b, core.bot_platforms.TelemetryConfig)
+    run_count = b.repeat if repeat and is_telemetry else 1
     for s in b.stories:
       test_name = '%s/%s' % (b.name, s)
       test_duration = getattr(b, 'estimated_runtime', DEFAULT_STORY_DURATION)
