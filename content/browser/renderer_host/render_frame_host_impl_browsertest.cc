@@ -12848,6 +12848,29 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       kill_waiter.Wait());
 }
 
+// Verifies that a frame committed in a PDF-isolated process cannot bind
+// blink.mojom.WebTransportConnector.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       WebTransportBlockedForPdfProcess) {
+  // WebTransport requires a secure context (e.g., localhost).
+  const GURL url = embedded_test_server()->GetURL("localhost", "/title1.html");
+  ASSERT_TRUE(NavigateToURLWithPdf(web_contents(), url));
+
+  RenderFrameHostImpl* const main_document = root_frame_host();
+  RenderProcessHostBadMojoMessageWaiter kill_waiter(
+      main_document->GetProcess());
+
+  // Attempting to open a WebTransport from a PDF frame triggers the renderer to
+  // request blink.mojom.WebTransportConnector from RenderFrameHost. The browser
+  // must reject this and terminate the process.
+  ExecuteScriptAsync(main_document, "new WebTransport('https://127.0.0.1');");
+
+  EXPECT_EQ(
+      "Received bad user message: WebTransport is not allowed in PDF "
+      "documents.",
+      kill_waiter.Wait());
+}
+
 // Regression test for crbug.com/557522042.
 // A browser-initiated same-document navigation finishes committing in the
 // renderer after the page starts closing. The commit should be ignored during

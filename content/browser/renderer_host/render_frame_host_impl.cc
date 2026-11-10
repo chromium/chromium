@@ -15490,6 +15490,10 @@ void RenderFrameHostImpl::CreateWebTransportConnector(
     mojo::ReportBadMessage("WebTransport is not allowed in MHTML documents.");
     return;
   }
+  if (GetSiteInstance()->IsPdf()) {
+    mojo::ReportBadMessage("WebTransport is not allowed in PDF documents.");
+    return;
+  }
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
           GetProcess()->GetDeprecatedID(), weak_ptr_factory_.GetWeakPtr(),
