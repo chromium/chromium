@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/autofill/content/renderer/autofill_agent_test_api.h"
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
+#include "components/autofill/content/renderer/custom_form_control_script_executor.h"
 #include "components/autofill/content/renderer/focus_test_util.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache_test_api.h"
@@ -25,8 +26,10 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/render_view_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -619,6 +622,60 @@ TEST_F(FormCacheBrowserTest, ClearCache) {
   FormCache::UpdateFormCacheResult result3 = UpdateFormCache();
   EXPECT_THAT(result3.updated_forms, SizeIs(1));
   EXPECT_THAT(result3.removed_forms, IsEmpty());
+}
+
+// Tests that `UpdateFormCache()` extracts standard and custom form controls.
+TEST_F(FormCacheBrowserTest, CustomFormControls) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillCustomFormControlScripts,
+       features::kAutofillCustomFormControlExtraction},
+      {});
+  blink::AssociatedInterfaceRegistry registry;
+  // Any isolated world id that the test doesn't otherwise use.
+  autofill_agent().EnableCustomFormControlScripts(
+      /*world_id=*/content::ISOLATED_WORLD_ID_CONTENT_END + 1, registry);
+  LoadHTML(R"(
+    <form id="f">
+      <div id="custom1"></div>
+      <input id="input1">
+    </form>
+    <div id="unowned_custom"></div>
+  )");
+  ASSERT_TRUE(
+      autofill_agent().custom_form_control_script_executor()->LoadScript(R"(
+        function createCustomFormControlManager() {
+          return {
+            detectCustomFormControls: () => [
+              {
+                canonicalDomNode: document.getElementById("custom1"),
+                fieldType: "ADDRESS_HOME_COUNTRY",
+                isActive: true,
+              },
+              {
+                canonicalDomNode: document.getElementById("unowned_custom"),
+                fieldType: "ADDRESS_HOME_STATE",
+                isActive: true,
+              },
+            ],
+          };
+        }
+      )"));
+
+  FormCache::UpdateFormCacheResult forms = UpdateFormCache();
+  EXPECT_THAT(
+      forms.updated_forms,
+      UnorderedElementsAre(
+          AllOf(
+              HasName("f"),
+              Property(&FormData::fields,
+                       ElementsAre(
+                           Property(&FormFieldData::id_attribute, u"custom1"),
+                           Property(&FormFieldData::id_attribute, u"input1")))),
+          AllOf(HasName(""),
+                Property(&FormData::fields,
+                         ElementsAre(Property(&FormFieldData::id_attribute,
+                                              u"unowned_custom"))))));
 }
 
 }  // namespace

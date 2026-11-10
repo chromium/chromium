@@ -102,7 +102,7 @@ std::optional<FormData> AutofillRendererTest::ExtractFormData(
   return form_util::ExtractFormData(
       GetDocument(), form_util::GetFormRendererId(form_element),
       autofill_agent_->field_data_manager(), kCallTimerStateDummy,
-      /*button_titles_cache=*/nullptr);
+      /*button_titles_cache=*/nullptr, /*custom_controls=*/{});
 }
 
 std::optional<FormData> AutofillRendererTest::ExtractFormData(

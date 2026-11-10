@@ -293,9 +293,9 @@ TEST_F(AutofillAgentTest, TriggerFormExtractionWithResponse) {
 TEST_F(AutofillAgentTest, EnableCustomFormControlScripts) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillCustomFormControlScripts};
-  EXPECT_FALSE(
-      test_api(autofill_agent()).custom_form_control_script_executor());
+  EXPECT_FALSE(autofill_agent().custom_form_control_script_executor());
   blink::AssociatedInterfaceRegistry registry;
+  // Any isolated world id that the test doesn't otherwise use.
   autofill_agent().EnableCustomFormControlScripts(
       /*world_id=*/content::ISOLATED_WORLD_ID_CONTENT_END + 1, registry);
   mojo::AssociatedRemote<mojom::CustomFormControlAgent> remote;
@@ -304,11 +304,41 @@ TEST_F(AutofillAgentTest, EnableCustomFormControlScripts) {
   EXPECT_TRUE(
       registry.TryBindInterface(mojom::CustomFormControlAgent::Name_, &handle));
   CustomFormControlScriptExecutor* executor =
-      test_api(autofill_agent()).custom_form_control_script_executor();
+      autofill_agent().custom_form_control_script_executor();
   ASSERT_TRUE(executor);
   EXPECT_TRUE(executor->LoadScript(
       "function createCustomFormControlManager() { return {}; }"));
   EXPECT_TRUE(executor->has_manager());
+}
+
+// Tests that `ExtractFormData()` extracts standard and custom form controls.
+TEST_F(AutofillAgentTest, ExtractFormData_CustomFormControls) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillCustomFormControlScripts,
+       features::kAutofillCustomFormControlExtraction},
+      {});
+  blink::AssociatedInterfaceRegistry registry;
+  // Any isolated world id that the test doesn't otherwise use.
+  autofill_agent().EnableCustomFormControlScripts(
+      /*world_id=*/content::ISOLATED_WORLD_ID_CONTENT_END + 1, registry);
+  LoadHTML(R"(<form id="f"><div id="custom"></div><input id="input"></form>)");
+  ASSERT_TRUE(
+      autofill_agent().custom_form_control_script_executor()->LoadScript(R"(
+        function createCustomFormControlManager() {
+          return {
+            detectCustomFormControls: () => [{
+              canonicalDomNode: document.getElementById("custom"),
+              fieldType: "ADDRESS_HOME_COUNTRY",
+              isActive: true,
+            }],
+          };
+        }
+      )"));
+  std::optional<FormData> form = autofill_agent().ExtractFormData(
+      GetMainFrame()->GetDocument(), GetFormRendererIdById("f"),
+      CallTimerState::CallSite::kExtractForm);
+  EXPECT_THAT(form, Optional(HasFieldsWithIdAttributes(u"custom", u"input")));
 }
 
 TEST_F(AutofillAgentTest, TriggerFormExtractionWithResponse_Force) {

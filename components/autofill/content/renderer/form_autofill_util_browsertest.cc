@@ -318,7 +318,8 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
         control, [&](const WebDocument& document, FormRendererId form_id) {
           return form_util::ExtractFormData(
               document, form_id, field_data_manager(), kCallTimerStateDummy,
-              /*button_titles_cache=*/nullptr);
+              /*button_titles_cache=*/nullptr,
+              /*custom_controls=*/{});
         });
   }
 
@@ -3399,7 +3400,7 @@ FormData FindForm(const blink::WebFormControlElement& element) {
             return form_util::ExtractFormData(
                 document, form_id, *base::MakeRefCounted<FieldDataManager>(),
                 kExtractFormDataCallTimerStateDummy,
-                /*button_titles_cache=*/nullptr);
+                /*button_titles_cache=*/nullptr, /*custom_controls=*/{});
           })) {
     return p->form;
   }

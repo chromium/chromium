@@ -22,6 +22,7 @@
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -48,6 +49,8 @@
 #endif
 #include "components/autofill/content/renderer/a11y_util.h"
 #include "components/autofill/content/renderer/custom_form_control_agent_impl.h"
+#include "components/autofill/content/renderer/custom_form_control_script_executor.h"
+#include "components/autofill/content/renderer/custom_form_control_util.h"
 #include "components/autofill/content/renderer/form_autofill_issues.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
@@ -604,6 +607,12 @@ void AutofillAgent::EnableCustomFormControlScripts(
       CHECK_DEREF(unsafe_render_frame()), world_id, registry);
 }
 
+CustomFormControlScriptExecutor*
+AutofillAgent::custom_form_control_script_executor() {
+  return custom_form_control_agent_ ? &custom_form_control_agent_->executor()
+                                    : nullptr;
+}
+
 void AutofillAgent::DidCommitProvisionalLoad(ui::PageTransition transition) {
   Reset();
 }
@@ -679,6 +688,46 @@ void AutofillAgent::DidChangeScrollOffset(
   }
 }
 
+std::optional<FormData> AutofillAgent::ExtractFormData(
+    const WebDocument& document,
+    FormRendererId form_id,
+    CallTimerState::CallSite call_site) {
+  return form_util::ExtractFormData(
+      document, form_id, field_data_manager(), GetCallTimerState(call_site),
+      button_titles_cache(),
+      ExtractCustomFormControlsForForm(document, form_id));
+}
+
+std::vector<CustomFormControl> AutofillAgent::ExtractCustomFormControlsForForm(
+    const WebDocument& document,
+    FormRendererId form_id) {
+  // Callers may pass an element's `document`, which in edge cases can differ
+  // from `GetDocument()` (see e.g. crbug.com/417307428). Since the extraction
+  // logic assumes that all controls come from the same `document`, and since
+  // custom form control extraction is bound to `GetDocument()`, it can only be
+  // supported when the two documents are the same.
+  if (document != GetDocument() || !custom_form_control_script_executor() ||
+      !base::FeatureList::IsEnabled(
+          features::kAutofillCustomFormControlExtraction)) {
+    return {};
+  }
+  // `GroupCustomFormControlsByForm()` uses a null `WebFormElement` as the key
+  // for unowned custom form controls. If `form_id` is non-null and
+  // `GetFormByRendererId(form_id)` fails to find the `<form>` in the DOM, it
+  // also returns a null `WebFormElement`, so return early instead of matching
+  // the unowned form's controls.
+  WebFormElement form_element = form_util::GetFormByRendererId(form_id);
+  if (form_id.is_null() != form_element.IsNull()) {
+    return {};
+  }
+  base::flat_map<WebFormElement, std::vector<CustomFormControl>>
+      controls_by_form = GroupCustomFormControlsByForm(
+          custom_form_control_script_executor()->DetectCustomFormControls());
+  std::vector<CustomFormControl>* controls =
+      base::FindOrNull(controls_by_form, form_element);
+  return controls ? std::move(*controls) : std::vector<CustomFormControl>();
+}
+
 std::optional<form_util::FormAndField>
 AutofillAgent::FindFormAndFieldForFormControlElement(
     const WebFormControlElement& element,
@@ -687,9 +736,7 @@ AutofillAgent::FindFormAndFieldForFormControlElement(
   return form_util::FindFormAndFieldForFormControlElement(
       element, [&](const WebDocument& document, FormRendererId form_id) {
         auto extract_form = [&](FormRendererId form_id) {
-          return form_util::ExtractFormData(
-              document, form_id, field_data_manager(),
-              GetCallTimerState(call_site), button_titles_cache());
+          return ExtractFormData(document, form_id, call_site);
         };
         return form_cache ? form_cache->GetOrExtractForm(form_id, extract_form)
                           : extract_form(form_id);
@@ -1257,9 +1304,8 @@ void AutofillAgent::ApplyFieldsAction(
        filled_fields_and_forms) {
     // Inform the browser about all forms that were autofilled.
     if (extracted_form_ids.insert(filled_form_id).second) {
-      std::optional<FormData> form = form_util::ExtractFormData(
-          document, filled_form_id, field_data_manager(),
-          GetCallTimerState(kApplyFieldsAction), button_titles_cache());
+      std::optional<FormData> form =
+          ExtractFormData(document, filled_form_id, kApplyFieldsAction);
       if (!form) {
         continue;
       }
@@ -1937,12 +1983,11 @@ void AutofillAgent::ExtractFormWithField(
   }
   if (WebFormControlElement form_control =
           form_util::GetFormControlByRendererId(field_id)) {
-    if (std::optional<FormData> form = form_util::ExtractFormData(
-            document,
-            form_util::GetFormRendererId(
-                form_control.GetOwningFormForAutofill()),
-            field_data_manager(), GetCallTimerState(kExtractForm),
-            button_titles_cache())) {
+    if (std::optional<FormData> form =
+            ExtractFormData(document,
+                            form_util::GetFormRendererId(
+                                form_control.GetOwningFormForAutofill()),
+                            kExtractForm)) {
       std::move(callback).Run(std::move(form));
       return;
     }
@@ -1953,6 +1998,8 @@ void AutofillAgent::ExtractFormWithField(
         form_util::FindFormForContentEditable(contenteditable));
     return;
   }
+  // TODO(crbug.com/583682385): Extracting the form of a custom form control
+  // `field_id` is not supported.
   std::move(callback).Run(std::nullopt);
 }
 

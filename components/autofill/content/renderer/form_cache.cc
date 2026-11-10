@@ -11,12 +11,17 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
+#include "components/autofill/content/renderer/custom_form_control_script_executor.h"
+#include "components/autofill/content/renderer/custom_form_control_util.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
@@ -126,6 +131,16 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   // Add a null WebFormElement to account for the form of unowned elements.
   form_elements.emplace_back();
 
+  base::flat_map<blink::WebFormElement, std::vector<CustomFormControl>>
+      custom_controls_by_form;
+  if (CustomFormControlScriptExecutor* executor =
+          agent_->custom_form_control_script_executor();
+      executor && base::FeatureList::IsEnabled(
+                      features::kAutofillCustomFormControlExtraction)) {
+    custom_controls_by_form =
+        GroupCustomFormControlsByForm(executor->DetectCustomFormControls());
+  }
+
   bool stop_extracting_forms = false;
   for (const blink::WebFormElement& form_element : form_elements) {
     FormRendererId form_id = form_util::GetFormRendererId(form_element);
@@ -133,10 +148,13 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     if (stop_extracting_forms) {
       continue;
     }
+    const std::vector<CustomFormControl>* controls =
+        base::FindOrNull(custom_controls_by_form, form_element);
     if (std::optional<FormData> form = form_util::ExtractFormData(
             document, form_id, field_data_manager,
             agent_->GetCallTimerState(kUpdateFormCache),
-            agent_->button_titles_cache())) {
+            agent_->button_titles_cache(),
+            controls ? *controls : base::span<const CustomFormControl>())) {
       if (!ProcessForm(std::move(*form))) {
         stop_extracting_forms = true;
       }

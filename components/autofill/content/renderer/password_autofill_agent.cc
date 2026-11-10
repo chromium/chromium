@@ -1193,11 +1193,13 @@ PasswordAutofillAgent::CreateSuggestionRequest(
           user_input, [&](const WebDocument& document, FormRendererId form_id) {
             return form_cache.GetOrExtractForm(
                 form_id, [&](FormRendererId form_id) {
+                  // Custom form controls are not supported in Password Manager.
                   return form_util::ExtractFormData(
                       document, form_id, field_data_manager(),
                       autofill_agent_->GetCallTimerState(
                           CallTimerState::CallSite::kShowSuggestionPopup),
-                      autofill_agent_->button_titles_cache());
+                      autofill_agent_->button_titles_cache(),
+                      /*custom_controls=*/{});
                 });
           });
   if (!form_and_field) {
@@ -2401,12 +2403,14 @@ bool PasswordAutofillAgent::IsPasswordFieldFilledByUser(
 void PasswordAutofillAgent::NotifyPasswordManagerAboutClearedForm(
     const WebFormElement& cleared_form) {
   CHECK(cleared_form);
+  // Custom form controls are not supported in Password Manager.
   if (std::optional<FormData> form_data = form_util::ExtractFormData(
           cleared_form.GetDocument(), GetFormRendererId(cleared_form),
           field_data_manager(),
           autofill_agent_->GetCallTimerState(
               CallTimerState::CallSite::kNotifyPasswordManagerAboutClearedForm),
-          autofill_agent_->button_titles_cache())) {
+          autofill_agent_->button_titles_cache(),
+          /*custom_controls=*/{})) {
     if (auto* driver = unsafe_driver()) {
       driver->PasswordFormCleared(*form_data);
     }

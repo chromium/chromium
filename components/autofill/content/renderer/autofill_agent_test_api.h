@@ -8,14 +8,11 @@
 #include "base/memory/raw_ref.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
-#include "components/autofill/content/renderer/custom_form_control_agent_impl.h"
 #include "components/autofill/content/renderer/javascript_autofill_tracker.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-shared.h"
 
 namespace autofill {
-
-class CustomFormControlScriptExecutor;
 
 class AutofillAgentTestApi {
  public:
@@ -96,12 +93,6 @@ class AutofillAgentTestApi {
   }
 
   const FormCache& form_cache() { return agent_->form_cache_; }
-
-  CustomFormControlScriptExecutor* custom_form_control_script_executor() {
-    return agent_->custom_form_control_agent_
-               ? &agent_->custom_form_control_agent_->executor()
-               : nullptr;
-  }
 
   PasswordAutofillAgent* password_autofill_agent() {
     return agent_->password_autofill_agent_.get();

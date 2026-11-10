@@ -629,15 +629,12 @@ std::optional<FormData> FormSubmissionTracker::GetSubmittedForm(
     return cached_form;
   }
 
-  WebDocument document = GetDocument();
-  std::optional<FormData> extracted_form = form_util::ExtractFormData(
-      document,
+  std::optional<FormData> extracted_form = autofill_agent_->ExtractFormData(
+      GetDocument(),
       submitted_form_element.has_value()
           ? form_util::GetFormRendererId(*submitted_form_element)
           : last_interacted_.form_id,
-      autofill_agent_->field_data_manager(),
-      autofill_agent_->GetCallTimerState(kGetSubmittedForm),
-      autofill_agent_->button_titles_cache());
+      kGetSubmittedForm);
 
   // - Return null if there was no interaction so far and no `form_element` is
   //   provided.
@@ -679,11 +676,9 @@ void FormSubmissionTracker::UpdateLastInteractedElement(
   // We use the element's `document`, not the current frame's document, because
   // `element_id` may refer to an element that is not in the current frame's
   // document.
-  last_interacted_.saved_state = form_util::ExtractFormData(
-      document, last_interacted_.form_id, autofill_agent_->field_data_manager(),
-      autofill_agent_->GetCallTimerState(
-          CallTimerState::CallSite::kUpdateLastInteractedElement),
-      autofill_agent_->button_titles_cache());
+  last_interacted_.saved_state = autofill_agent_->ExtractFormData(
+      document, last_interacted_.form_id,
+      CallTimerState::CallSite::kUpdateLastInteractedElement);
 }
 
 void FormSubmissionTracker::ResetLastInteractedElements() {

@@ -141,13 +141,10 @@ void EmailVerificationHandler::WillSendSubmitEvent(
       element.SetValue(blink::WebString::FromUtf8(info.token));
 
       if (auto* driver = agent_->unsafe_autofill_driver()) {
-        if (std::optional<FormData> form_data = form_util::ExtractFormData(
+        if (std::optional<FormData> form_data = agent_->ExtractFormData(
                 form.GetDocument(), form_util::GetFormRendererId(form),
-                agent_->field_data_manager(),
-                agent_->GetCallTimerState(
-                    CallTimerState::CallSite::
-                        kFormWithEmailVerificationTokenSubmitted),
-                agent_->button_titles_cache())) {
+                CallTimerState::CallSite::
+                    kFormWithEmailVerificationTokenSubmitted)) {
           driver->FormWithEmailVerificationTokenSubmitted(*form_data,
                                                           email_field_id);
         }

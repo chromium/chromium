@@ -89,7 +89,7 @@ std::optional<FormData> ExtractFormData(
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state,
     ButtonTitlesCache* button_titles_cache,
-    base::span<const CustomFormControl> custom_controls = {});
+    base::span<const CustomFormControl> custom_controls);
 
 // Helper function to assist in getting the canonical form of the action and
 // origin. The action will properly take into account <BASE>, and both will

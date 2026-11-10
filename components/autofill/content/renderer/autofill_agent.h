@@ -55,7 +55,9 @@
 
 namespace autofill {
 
+struct CustomFormControl;
 class CustomFormControlAgentImpl;
+class CustomFormControlScriptExecutor;
 class PasswordAutofillAgent;
 class PasswordGenerationAgent;
 class SynchronousFormCache;
@@ -310,6 +312,15 @@ class AutofillAgent : public content::RenderFrameObserver,
     return &button_titles_cache_;
   }
 
+  CustomFormControlScriptExecutor* custom_form_control_script_executor();
+
+  // Extracts the `FormData` for the form with `form_id` (or the unowned form if
+  // `form_id.is_null()`) in `document`, including any custom form controls
+  // detected by `custom_form_control_script_executor()`.
+  std::optional<FormData> ExtractFormData(const blink::WebDocument& document,
+                                          FormRendererId form_id,
+                                          CallTimerState::CallSite call_site);
+
  protected:
   // blink::WebAutofillClient:
 
@@ -464,6 +475,12 @@ class AutofillAgent : public content::RenderFrameObserver,
       const blink::WebFormControlElement& element,
       CallTimerState::CallSite call_site,
       base::optional_ref<const SynchronousFormCache> form_cache);
+
+  // Extracts custom form controls in the current document and returns those
+  // belonging to `form_id` (or the unowned form if `form_id.is_null()`).
+  std::vector<CustomFormControl> ExtractCustomFormControlsForForm(
+      const blink::WebDocument& document,
+      FormRendererId form_id);
 
   // Hides any currently showing Autofill popup.
   void HidePopup();

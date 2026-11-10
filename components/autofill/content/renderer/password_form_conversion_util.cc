@@ -129,8 +129,10 @@ std::optional<FormData> CreateFormData(
     const SynchronousFormCache& form_cache) {
   std::optional<FormData> form_data =
       form_cache.GetOrExtractForm(form_id, [&](FormRendererId form_id) {
+        // Custom form controls are not supported in Password Manager.
         return form_util::ExtractFormData(document, form_id, field_data_manager,
-                                          timer_state, button_titles_cache);
+                                          timer_state, button_titles_cache,
+                                          /*custom_controls=*/{});
       });
   if (!form_data) {
     return std::nullopt;

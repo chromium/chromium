@@ -605,6 +605,11 @@ BASE_FEATURE(kAutofillCheckTriggeringFieldDoesNotChangeDuringFilling,
 BASE_FEATURE(kAutofillComplementCountryUsingPhoneNumber,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Autofill extracts custom form controls detected by site-specific
+// scripts into `FormData`. Requires `kAutofillCustomFormControlScripts`.
+BASE_FEATURE(kAutofillCustomFormControlExtraction,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Autofill runs site-specific scripts to detect and fill custom
 // form controls (e.g. select-like widgets that aren't <select>).
 BASE_FEATURE(kAutofillCustomFormControlScripts,

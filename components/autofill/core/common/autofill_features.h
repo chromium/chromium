@@ -239,6 +239,8 @@ BASE_DECLARE_FEATURE(kAutofillCheckTriggeringFieldDoesNotChangeDuringFilling);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillComplementCountryUsingPhoneNumber);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillCustomFormControlExtraction);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillCustomFormControlScripts);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillDelayApcForPredictions);
