@@ -1182,6 +1182,12 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kPosixUdpEmulatedConnectForDns);
 // Use connect emulation for QUIC.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kPosixUdpEmulatedConnectForQuic);
 
+// When enabled, clears all broken and recently-broken alternative services
+// when the default network changes, even if
+// `retry_on_alternate_network_before_handshake` is not enabled.
+NET_EXPORT BASE_DECLARE_FEATURE(
+    kClearBrokenAlternativeServicesOnDefaultNetworkChange);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

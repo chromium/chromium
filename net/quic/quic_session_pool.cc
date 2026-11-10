@@ -1588,9 +1588,12 @@ void QuicSessionPool::OnNetworkMadeDefault(handles::NetworkHandle network) {
   CollectDataOnPlatformNotification(NETWORK_MADE_DEFAULT, network);
   connectivity_monitor_.OnDefaultNetworkUpdated(network);
 
-  // Clear alternative services that were marked as broken until default network
-  // changes.
-  if (params_.retry_on_alternate_network_before_handshake &&
+  // Clear alternative services that were marked as broken until default
+  // network changes, or all broken alternative services if
+  // `kClearBrokenAlternativeServicesOnDefaultNetworkChange` is enabled.
+  if ((params_.retry_on_alternate_network_before_handshake ||
+       base::FeatureList::IsEnabled(
+           features::kClearBrokenAlternativeServicesOnDefaultNetworkChange)) &&
       default_network_ != handles::kInvalidNetworkHandle &&
       network != default_network_) {
     http_server_properties_->OnDefaultNetworkChanged();
@@ -2835,6 +2838,16 @@ void QuicSessionPool::InitializeMigrationOptions() {
   }
 
   NetworkChangeNotifier::AddNetworkObserver(this);
+
+  if (base::FeatureList::IsEnabled(
+          features::kClearBrokenAlternativeServicesOnDefaultNetworkChange) &&
+      default_network_ == handles::kInvalidNetworkHandle) {
+    default_network_ = NetworkChangeNotifier::GetDefaultNetwork();
+    if (default_network_ != handles::kInvalidNetworkHandle) {
+      connectivity_monitor_.SetInitialDefaultNetwork(default_network_);
+    }
+  }
+
   // Perform checks on the connection migration options.
   if (!migrate_sessions_on_network_change) {
     DCHECK(!migrate_sessions_early);

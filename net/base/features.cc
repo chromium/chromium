@@ -1190,4 +1190,7 @@ BASE_FEATURE_PARAM(bool,
                    &kPosixUdpEmulatedConnect,
                    false);
 
+BASE_FEATURE(kClearBrokenAlternativeServicesOnDefaultNetworkChange,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features

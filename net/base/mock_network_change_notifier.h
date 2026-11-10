@@ -35,6 +35,10 @@ class MockNetworkChangeNotifier : public NetworkChangeNotifier {
 
   void GetCurrentConnectedNetworks(NetworkList* network_list) const override;
 
+  void SetDefaultNetwork(handles::NetworkHandle network);
+
+  handles::NetworkHandle GetCurrentDefaultNetwork() const override;
+
   // Delivers a MADE_DEFAULT notification to observers.
   void NotifyNetworkMadeDefault(handles::NetworkHandle network);
 
@@ -108,6 +112,7 @@ class MockNetworkChangeNotifier : public NetworkChangeNotifier {
   ConnectionCost connection_cost_ = CONNECTION_COST_UNKNOWN;
   bool use_default_connection_cost_implementation_ = false;
   NetworkChangeNotifier::NetworkList connected_networks_;
+  handles::NetworkHandle default_network_ = handles::kInvalidNetworkHandle;
   std::unique_ptr<SystemDnsConfigChangeNotifier> dns_config_notifier_;
 #if BUILDFLAG(IS_LINUX)
   raw_ptr<AddressMapOwnerLinux> address_map_owner_ = nullptr;

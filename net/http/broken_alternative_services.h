@@ -107,7 +107,10 @@ class NET_EXPORT_PRIVATE BrokenAlternativeServices {
   // Marks |broken_alternative_service| as broken until an expiration delay
   // (determined by how many consecutive times it's been marked broken before).
   // After the delay, it will be in the recently broken state. When the default
-  // network changes, the brokenness state of this service remains unchanged.
+  // network changes, the brokenness state of this service remains unchanged,
+  // unless `features::kClearBrokenAlternativeServicesOnDefaultNetworkChange` is
+  // enabled, in which case default network changes clear all broken and
+  // recently-broken alternative services.
   void MarkBroken(const BrokenAlternativeService& broken_alternative_service);
 
   // Marks |broken_alternative_service| as recently broken. Being recently
@@ -139,9 +142,9 @@ class NET_EXPORT_PRIVATE BrokenAlternativeServices {
 
   // Clears all alternative services which were marked as broken until the
   // default network changed, those services will now be considered working.
-  // Returns true if there was any broken alternative service affected by this
-  // network change.
-  bool OnDefaultNetworkChanged();
+  // If `features::kClearBrokenAlternativeServicesOnDefaultNetworkChange` is
+  // enabled, clears all broken and recently-broken alternative services.
+  void OnDefaultNetworkChanged();
 
   // Sets broken and recently broken alternative services.
   // |broken_alternative_service_list|, |recently_broken_alternative_services|

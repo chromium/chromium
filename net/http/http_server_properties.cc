@@ -534,9 +534,12 @@ void HttpServerProperties::ConfirmAlternativeService(
 }
 
 void HttpServerProperties::OnDefaultNetworkChanged() {
-  bool changed = broken_alternative_services_.OnDefaultNetworkChanged();
-  if (changed)
-    MaybeQueueWriteProperties();
+  broken_alternative_services_.OnDefaultNetworkChanged();
+  // Unconditionally queueing a prefs write on default network changes even when
+  // no broken alternative services were cleared is fine: writes are coalesced
+  // behind `kUpdatePrefsDelay`, and persisting broken alternative services to
+  // disk is being disabled via `kPersistBrokenAlternativeServices`.
+  MaybeQueueWriteProperties();
 }
 
 base::Value HttpServerProperties::GetAlternativeServiceInfoAsValue() const {

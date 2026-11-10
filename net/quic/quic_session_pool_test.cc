@@ -22478,4 +22478,59 @@ TEST_P(
   socket_data2.ExpectAllWriteDataConsumed();
 }
 
+TEST_P(QuicSessionPoolTest,
+       ClearBrokenAlternativeServicesOnDefaultNetworkChange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kClearBrokenAlternativeServicesOnDefaultNetworkChange);
+
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
+  MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier_->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+  mock_ncn->SetConnectedNetworksList(
+      {kDefaultNetworkForTests, kNewNetworkForTests});
+  mock_ncn->SetDefaultNetwork(kDefaultNetworkForTests);
+
+  EXPECT_FALSE(quic_params_->retry_on_alternate_network_before_handshake);
+  Initialize();
+
+  const AlternativeService alternative_service1(NextProto::kProtoQUIC, "foo1",
+                                                443);
+  const AlternativeService alternative_service2(NextProto::kProtoQUIC, "foo2",
+                                                443);
+  http_server_properties_->MarkAlternativeServiceBroken(
+      alternative_service1, NetworkAnonymizationKey());
+  http_server_properties_->MarkAlternativeServiceRecentlyBroken(
+      alternative_service2, NetworkAnonymizationKey());
+
+  EXPECT_TRUE(http_server_properties_->IsAlternativeServiceBroken(
+      alternative_service1, NetworkAnonymizationKey()));
+  EXPECT_TRUE(http_server_properties_->WasAlternativeServiceRecentlyBroken(
+      alternative_service1, NetworkAnonymizationKey()));
+  EXPECT_FALSE(http_server_properties_->IsAlternativeServiceBroken(
+      alternative_service2, NetworkAnonymizationKey()));
+  EXPECT_TRUE(http_server_properties_->WasAlternativeServiceRecentlyBroken(
+      alternative_service2, NetworkAnonymizationKey()));
+
+  // Redundant notification for the same default network should not clear.
+  mock_ncn->NotifyNetworkMadeDefault(kDefaultNetworkForTests);
+  EXPECT_TRUE(http_server_properties_->IsAlternativeServiceBroken(
+      alternative_service1, NetworkAnonymizationKey()));
+  EXPECT_TRUE(http_server_properties_->WasAlternativeServiceRecentlyBroken(
+      alternative_service2, NetworkAnonymizationKey()));
+
+  // Default network changed to a new network: should clear both.
+  mock_ncn->NotifyNetworkMadeDefault(kNewNetworkForTests);
+  EXPECT_FALSE(http_server_properties_->IsAlternativeServiceBroken(
+      alternative_service1, NetworkAnonymizationKey()));
+  EXPECT_FALSE(http_server_properties_->WasAlternativeServiceRecentlyBroken(
+      alternative_service1, NetworkAnonymizationKey()));
+  EXPECT_FALSE(http_server_properties_->IsAlternativeServiceBroken(
+      alternative_service2, NetworkAnonymizationKey()));
+  EXPECT_FALSE(http_server_properties_->WasAlternativeServiceRecentlyBroken(
+      alternative_service2, NetworkAnonymizationKey()));
+}
+
 }  // namespace net::test

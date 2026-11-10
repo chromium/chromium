@@ -50,6 +50,16 @@ void MockNetworkChangeNotifier::GetCurrentConnectedNetworks(
   *network_list = connected_networks_;
 }
 
+void MockNetworkChangeNotifier::SetDefaultNetwork(
+    handles::NetworkHandle network) {
+  default_network_ = network;
+}
+
+handles::NetworkHandle MockNetworkChangeNotifier::GetCurrentDefaultNetwork()
+    const {
+  return default_network_;
+}
+
 void MockNetworkChangeNotifier::NotifyNetworkMadeDefault(
     handles::NetworkHandle network) {
   QueueNetworkMadeDefault(network);

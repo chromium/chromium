@@ -105,6 +105,7 @@ void BrokenAlternativeServices::Clear() {
   broken_alternative_service_list_.clear();
   broken_alternative_service_map_.clear();
   recently_broken_alternative_services_.Clear();
+  broken_alternative_services_on_default_network_.clear();
 }
 
 void BrokenAlternativeServices::MarkBrokenUntilDefaultNetworkChanges(
@@ -230,13 +231,17 @@ void BrokenAlternativeServices::Confirm(
       broken_alternative_service);
 }
 
-bool BrokenAlternativeServices::OnDefaultNetworkChanged() {
-  bool changed = !broken_alternative_services_on_default_network_.empty();
+void BrokenAlternativeServices::OnDefaultNetworkChanged() {
+  if (base::FeatureList::IsEnabled(
+          features::kClearBrokenAlternativeServicesOnDefaultNetworkChange)) {
+    Clear();
+    return;
+  }
+
   for (const auto& broken_alternative_service :
        std::exchange(broken_alternative_services_on_default_network_, {})) {
     Confirm(broken_alternative_service);
   }
-  return changed;
 }
 
 void BrokenAlternativeServices::SetBrokenAndRecentlyBrokenAlternativeServices(
