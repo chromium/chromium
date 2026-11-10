@@ -8127,7 +8127,7 @@
   {
     "name": "paint-preview-demo",
     "owners": [ "ckitagawa@chromium.org", "fredmello@chromium.org", "chrome-fdt@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 190
   },
   {
     "name": "panel-self-refresh-2",
