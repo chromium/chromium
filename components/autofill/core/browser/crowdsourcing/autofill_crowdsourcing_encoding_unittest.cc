@@ -2525,8 +2525,11 @@ TEST_F(AutofillCrowdsourcingEncoding,
   });
 
   FormSignature form_signature = CalculateFormSignature(form);
+  FormSignature structural_form_signature =
+      CalculateStructuralFormSignature(form);
   for (FormFieldData& fs_field : test_api(form).fields()) {
     fs_field.set_host_form_signature(form_signature);
+    fs_field.set_host_form_structural_signature(structural_form_signature);
   }
 
   std::vector<FormData> forms = {form};
