@@ -22,6 +22,7 @@
 #include "base/location.h"
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -172,49 +173,6 @@ bool IsKnownInvalidKeyboardDevice(const std::string& name) {
 // return false negatives.
 bool IsTestDevice(const std::string& name) {
   return name.find("XTEST") != std::string::npos;
-}
-
-base::FilePath GetDevicePath(x11::Connection* connection,
-                             const x11::Input::XIDeviceInfo& device) {
-  // Skip the main pointer and keyboard since XOpenDevice() generates a
-  // BadDevice error when passed these devices.
-  if (device.type == x11::Input::DeviceType::MasterPointer ||
-      device.type == x11::Input::DeviceType::MasterKeyboard)
-    return base::FilePath();
-
-  // Input device has a property "Device Node" pointing to its dev input node,
-  // e.g.   Device Node (250): "/dev/input/event8"
-  x11::Atom device_node = connection->GetAtom("Device Node");
-  if (device_node == x11::Atom::None)
-    return base::FilePath();
-
-  auto deviceid = static_cast<uint16_t>(device.deviceid);
-  if (deviceid > std::numeric_limits<uint8_t>::max())
-    return base::FilePath();
-  uint8_t deviceid_u8 = static_cast<uint8_t>(deviceid);
-  if (connection->xinput().OpenDevice({deviceid_u8}).Sync().error)
-    return base::FilePath();
-
-  x11::Input::GetDevicePropertyRequest req{
-      .property = device_node,
-      .type = x11::Atom::Any,
-      .offset = 0,
-      .len = std::numeric_limits<uint32_t>::max(),
-      .device_id = deviceid_u8,
-      .c_delete = false,
-  };
-  auto reply = connection->xinput().GetDeviceProperty(req).Sync();
-  if (!reply || reply->type != x11::Atom::STRING || !reply->data8.has_value()) {
-    connection->xinput().CloseDevice({deviceid_u8});
-    return base::FilePath();
-  }
-
-  std::string path(reinterpret_cast<char*>(reply->data8->data()),
-                   reply->data8->size());
-
-  connection->xinput().CloseDevice({deviceid_u8});
-
-  return base::FilePath(path);
 }
 
 // Helper used to parse keyboard information. When it is done it uses
@@ -404,6 +362,16 @@ void OnHotplugFinished() {
 
 }  // namespace
 
+struct X11HotplugEventHandler::PendingHotplug {
+  PendingHotplug() = default;
+  ~PendingHotplug() = default;
+
+  uint64_t serial = 0;
+  size_t pending_paths = 0;
+  std::vector<DeviceInfo> device_infos;
+  DisplayState display_state;
+};
+
 X11HotplugEventHandler::X11HotplugEventHandler() = default;
 
 X11HotplugEventHandler::~X11HotplugEventHandler() = default;
@@ -447,7 +415,21 @@ void X11HotplugEventHandler::OnHotplugEvent() {
     }
   }
 
-  std::vector<DeviceInfo> device_infos;
+  auto state = std::make_unique<PendingHotplug>();
+  const uint64_t serial = ++next_serial_;
+  state->serial = serial;
+  // X11 is not thread safe, so first get all the required state on the UI
+  // thread.
+  state->display_state.mt_position_x = connection->GetAtom("Abs MT Position X");
+  state->display_state.mt_position_y = connection->GetAtom("Abs MT Position Y");
+
+  // Input devices may carry a "Device Node" property pointing to their evdev
+  // node, e.g. Device Node (250): "/dev/input/event8". Query it asynchronously
+  // via XIGetProperty for non-master devices so hotplug handling never blocks
+  // the UI thread on X server replies.
+  const x11::Atom device_node = connection->GetAtom("Device Node");
+  std::vector<std::pair<size_t, x11::Input::DeviceId>> path_queries;
+
   for (const auto& device : device_list_xi2) {
     if (!device.enabled || IsTestDevice(device.name))
       continue;
@@ -455,14 +437,66 @@ void X11HotplugEventHandler::OnHotplugEvent() {
     auto deviceid = static_cast<uint16_t>(device.deviceid);
     DeviceType device_type =
         deviceid < kMaxDeviceNum ? device_types[deviceid] : DEVICE_TYPE_OTHER;
-    device_infos.emplace_back(device, device_type,
-                              GetDevicePath(connection, device));
+    const size_t index = state->device_infos.size();
+    state->device_infos.emplace_back(device, device_type, base::FilePath());
+    if (device_node != x11::Atom::None &&
+        device.type != x11::Input::DeviceType::MasterPointer &&
+        device.type != x11::Input::DeviceType::MasterKeyboard) {
+      path_queries.emplace_back(index, device.deviceid);
+    }
   }
 
-  // X11 is not thread safe, so first get all the required state.
-  DisplayState display_state;
-  display_state.mt_position_x = connection->GetAtom("Abs MT Position X");
-  display_state.mt_position_y = connection->GetAtom("Abs MT Position Y");
+  state->pending_paths = path_queries.size();
+  pending_hotplug_ = std::move(state);
+
+  if (path_queries.empty()) {
+    FinishHotplugEvent();
+    return;
+  }
+
+  std::vector<std::pair<size_t, x11::Future<x11::Input::XIGetPropertyReply>>>
+      futures;
+  futures.reserve(path_queries.size());
+  for (const auto& [index, deviceid] : path_queries) {
+    futures.emplace_back(index, connection->xinput().XIGetProperty({
+                                    .deviceid = deviceid,
+                                    .c_delete = false,
+                                    .property = device_node,
+                                    .type = x11::Atom::Any,
+                                    .offset = 0,
+                                    .len = std::numeric_limits<uint32_t>::max(),
+                                }));
+  }
+  connection->Flush();
+
+  for (auto& [index, future] : futures) {
+    future.OnResponse(
+        base::BindOnce(&X11HotplugEventHandler::OnDeviceNodeResponse,
+                       weak_ptr_factory_.GetWeakPtr(), serial, index));
+  }
+}
+
+void X11HotplugEventHandler::OnDeviceNodeResponse(
+    uint64_t serial,
+    size_t index,
+    x11::Input::XIGetPropertyResponse response) {
+  if (!pending_hotplug_ || pending_hotplug_->serial != serial) {
+    return;
+  }
+  if (response && response->type == x11::Atom::STRING &&
+      response->data8.has_value()) {
+    pending_hotplug_->device_infos[index].path =
+        base::FilePath(base::as_string_view(*response->data8));
+  }
+  CHECK_GT(pending_hotplug_->pending_paths, 0u);
+  if (--pending_hotplug_->pending_paths == 0) {
+    FinishHotplugEvent();
+  }
+}
+
+void X11HotplugEventHandler::FinishHotplugEvent() {
+  CHECK(pending_hotplug_);
+  auto state = std::move(pending_hotplug_);
 
   UiCallbacks callbacks;
   callbacks.keyboard_callback = base::BindOnce(&OnKeyboardDevices);
@@ -477,7 +511,8 @@ void X11HotplugEventHandler::OnHotplugEvent() {
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&HandleHotplugEventInWorker, device_infos, display_state,
+      base::BindOnce(&HandleHotplugEventInWorker,
+                     std::move(state->device_infos), state->display_state,
                      base::SingleThreadTaskRunner::GetCurrentDefault(),
                      std::move(callbacks)));
 }

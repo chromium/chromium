@@ -11,6 +11,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/events/events_export.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/geometry/point.h"
@@ -95,6 +96,8 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
   // PlatformEventSource:
   void OnDispatcherListChanged() override;
 
+  void OnDeviceListUpdated();
+
   std::unique_ptr<X11EventWatcher> watcher_;
 
   // The connection to the X11 server used to receive the events.
@@ -108,7 +111,10 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
   x11::Atom dummy_atom_;
   x11::ScopedEventSelector dummy_window_events_;
 
+  bool pending_device_list_update_ = false;
   std::unique_ptr<X11HotplugEventHandler> hotplug_event_handler_;
+
+  base::WeakPtrFactory<X11EventSource> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

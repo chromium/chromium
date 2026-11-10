@@ -7,13 +7,21 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/device_hotplug_event_observer.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touchscreen_device.h"
+#include "ui/events/devices/x11/device_list_cache_x11.h"
+#include "ui/events/platform/platform_event_dispatcher.h"
+#include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/xproto.h"
 
 namespace ui {
 namespace test {
@@ -46,6 +54,35 @@ class TestInputDeviceObserver : public InputDeviceEventObserver {
  private:
   raw_ptr<DeviceDataManager> manager_;
   bool change_notified_;
+};
+
+class NoOpEventDispatcher : public PlatformEventDispatcher {
+ public:
+  bool CanDispatchEvent(const PlatformEvent& event) override { return false; }
+  uint32_t DispatchEvent(const PlatformEvent& event) override {
+    return POST_DISPATCH_NONE;
+  }
+};
+
+class InputDeviceConfigChangedWaiter : public InputDeviceEventObserver {
+ public:
+  explicit InputDeviceConfigChangedWaiter(DeviceDataManager* manager)
+      : manager_(manager) {
+    manager_->AddObserver(this);
+  }
+  ~InputDeviceConfigChangedWaiter() override { manager_->RemoveObserver(this); }
+
+  void Wait() { run_loop_.Run(); }
+
+  void OnInputDeviceConfigurationChanged(uint8_t types) override {
+    if (types & InputDeviceEventObserver::kKeyboard) {
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  raw_ptr<DeviceDataManager> manager_;
+  base::RunLoop run_loop_;
 };
 
 }  //  namespace
@@ -324,6 +361,100 @@ TEST_F(DeviceDataManagerX11Test, ScrollClassValuatorBaselinePreserved) {
       &y_offset);
   EXPECT_DOUBLE_EQ(0.0, x_offset);
   EXPECT_DOUBLE_EQ(-1.0, y_offset);
+}
+
+TEST_F(DeviceDataManagerX11Test,
+       HierarchyEventDoesNotBlockWhenServerUnresponsive) {
+  base::test::TaskEnvironment task_env(
+      base::test::TaskEnvironment::MainThreadType::UI);
+  auto* connection = x11::Connection::Get();
+  DeviceDataManagerX11* manager = DeviceDataManagerX11::GetInstance();
+
+  SetKeyboardDevices({KeyboardDevice(99, INPUT_DEVICE_INTERNAL, "Fake")});
+  X11EventSource event_source(connection);
+  NoOpEventDispatcher dispatcher;
+  {
+    InputDeviceConfigChangedWaiter initial_waiter(manager);
+    event_source.AddPlatformEventDispatcher(&dispatcher);
+    initial_waiter.Wait();
+  }
+  EXPECT_TRUE(manager->GetKeyboardDevices().empty());
+
+  const auto fake_cmt_id = static_cast<x11::Input::DeviceId>(99);
+  manager->SetDeviceListForTest({}, {static_cast<int>(fake_cmt_id)}, {});
+  SetKeyboardDevices({KeyboardDevice(99, INPUT_DEVICE_INTERNAL, "Fake")});
+  x11::Event cmt_check_event(false,
+                             x11::Input::DeviceEvent{
+                                 .opcode = x11::Input::DeviceEvent::Motion,
+                                 .deviceid = fake_cmt_id,
+                                 .sourceid = fake_cmt_id,
+                             });
+  ASSERT_TRUE(manager->IsCMTDeviceEvent(cmt_check_event));
+
+  // Grab the X server on a separate connection so `connection` receives no
+  // replies until UngrabServer(). A synchronous WaitForResponse() on
+  // `connection` will block indefinitely here.
+  auto grabber = connection->Clone();
+  grabber->GrabServer();
+  grabber->Sync();
+
+  InputDeviceConfigChangedWaiter hotplug_waiter(manager);
+  x11::Event hierarchy_event(false, x11::Input::HierarchyEvent{});
+  x11::Event device_changed_event(
+      false, x11::Input::DeviceChangedEvent{
+                 .reason = x11::Input::ChangeReason::DeviceChange,
+             });
+  connection->DispatchEvent(hierarchy_event);
+  connection->DispatchEvent(device_changed_event);
+  connection->Flush();
+
+  // Cached device data stays intact while the refresh replies are pending.
+  EXPECT_TRUE(manager->IsCMTDeviceEvent(cmt_check_event));
+  EXPECT_EQ(1u, manager->GetKeyboardDevices().size());
+
+  grabber->UngrabServer();
+  grabber->Sync();
+  connection->Sync();
+  connection->DispatchAll();
+  hotplug_waiter.Wait();
+
+  EXPECT_FALSE(manager->IsCMTDeviceEvent(cmt_check_event));
+  EXPECT_TRUE(manager->GetKeyboardDevices().empty());
+  EXPECT_FALSE(
+      DeviceListCacheX11::GetInstance()->GetXI2DeviceList(connection).empty());
+
+  event_source.RemovePlatformEventDispatcher(&dispatcher);
+}
+
+TEST_F(DeviceDataManagerX11Test, UpdateDeviceListBurstCoalescesCallbacks) {
+  auto* connection = x11::Connection::Get();
+  auto* cache = DeviceListCacheX11::GetInstance();
+
+  auto grabber = connection->Clone();
+  grabber->GrabServer();
+  grabber->Sync();
+
+  int first_callbacks = 0;
+  int second_callbacks = 0;
+  cache->UpdateDeviceList(
+      connection,
+      base::BindOnce([](int* count) { ++(*count); }, &first_callbacks));
+  cache->UpdateDeviceList(
+      connection,
+      base::BindOnce([](int* count) { ++(*count); }, &second_callbacks));
+
+  EXPECT_EQ(0, first_callbacks);
+  EXPECT_EQ(0, second_callbacks);
+
+  grabber->UngrabServer();
+  grabber->Sync();
+  connection->Sync();
+  connection->DispatchAll();
+
+  EXPECT_EQ(1, first_callbacks);
+  EXPECT_EQ(1, second_callbacks);
+  EXPECT_FALSE(cache->GetXDeviceList(connection).empty());
+  EXPECT_FALSE(cache->GetXI2DeviceList(connection).empty());
 }
 
 }  // namespace test

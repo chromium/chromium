@@ -5,7 +5,14 @@
 #ifndef UI_EVENTS_PLATFORM_X11_X11_HOTPLUG_EVENT_HANDLER_H_
 #define UI_EVENTS_PLATFORM_X11_X11_HOTPLUG_EVENT_HANDLER_H_
 
+#include <stddef.h>
+#include <stdint.h>
+
+#include <memory>
+
+#include "base/memory/weak_ptr.h"
 #include "ui/events/devices/x11/device_list_cache_x11.h"
+#include "ui/gfx/x/xinput.h"
 
 namespace ui {
 
@@ -22,6 +29,18 @@ class X11HotplugEventHandler {
 
   // Called on an X11 hotplug event.
   void OnHotplugEvent();
+
+ private:
+  struct PendingHotplug;
+
+  void OnDeviceNodeResponse(uint64_t serial,
+                            size_t index,
+                            x11::Input::XIGetPropertyResponse response);
+  void FinishHotplugEvent();
+
+  uint64_t next_serial_ = 0;
+  std::unique_ptr<PendingHotplug> pending_hotplug_;
+  base::WeakPtrFactory<X11HotplugEventHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

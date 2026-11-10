@@ -6,11 +6,13 @@
 #include <memory>
 #include <type_traits>
 
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/events/devices/x11/device_data_manager_x11.h"
+#include "ui/events/devices/x11/device_list_cache_x11.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
@@ -103,13 +105,6 @@ x11::Time ExtractTimeFromXEvent(const x11::Event& xev) {
     return xi_crossing->time;
   }
   return x11::Time::CurrentTime;
-}
-
-void UpdateDeviceList() {
-  auto* connection = x11::Connection::Get();
-  DeviceListCacheX11::GetInstance()->UpdateDeviceList(connection);
-  TouchFactory::GetInstance()->UpdateDeviceList(connection);
-  DeviceDataManagerX11::GetInstance()->UpdateDeviceList(connection);
 }
 
 std::optional<gfx::Point> GetRootCursorLocationFromEvent(
@@ -270,8 +265,14 @@ void X11EventSource::OnEvent(const x11::Event& x11_event) {
   }
 
   if (should_update_device_list) {
-    UpdateDeviceList();
-    hotplug_event_handler_->OnHotplugEvent();
+    base::OnceClosure callback;
+    if (!pending_device_list_update_) {
+      pending_device_list_update_ = true;
+      callback = base::BindOnce(&X11EventSource::OnDeviceListUpdated,
+                                weak_ptr_factory_.GetWeakPtr());
+    }
+    DeviceListCacheX11::GetInstance()->UpdateDeviceList(connection_,
+                                                        std::move(callback));
   }
 
   auto* crossing = x11_event.As<x11::Input::CrossingEvent>();
@@ -306,6 +307,15 @@ void X11EventSource::OnDispatcherListChanged() {
   if (!hotplug_event_handler_) {
     hotplug_event_handler_ = std::make_unique<X11HotplugEventHandler>();
     // Force the initial device query to have an update list of active devices.
+    hotplug_event_handler_->OnHotplugEvent();
+  }
+}
+
+void X11EventSource::OnDeviceListUpdated() {
+  pending_device_list_update_ = false;
+  TouchFactory::GetInstance()->UpdateDeviceList(connection_);
+  DeviceDataManagerX11::GetInstance()->UpdateDeviceList(connection_);
+  if (hotplug_event_handler_) {
     hotplug_event_handler_->OnHotplugEvent();
   }
 }
