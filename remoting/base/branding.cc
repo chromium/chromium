@@ -71,6 +71,10 @@ const wchar_t kHostUpdatePendingEventName[] =
     L"Global\\ChromotingHostUpdatePending";
 #endif
 
+base::FilePath GetPerUserDataDir() {
+  return GetConfigDirWithPrefix(base::DIR_LOCAL_APP_DATA);
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 base::FilePath GetConfigDir() {

@@ -26,6 +26,16 @@ void InitializeCrashpadReporting() {
 #endif  // BUILDFLAG(IS_LINUX)
 }
 
+#if BUILDFLAG(IS_WIN)
+bool InitializeCrashpadClient(const std::wstring& handler_pipe) {
+  return CrashpadWin::GetInstance().InitializeClient(handler_pipe);
+}
+
+std::wstring GetCrashpadHandlerPipe() {
+  return CrashpadWin::GetInstance().GetHandlerIPCPipe();
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_LINUX)
 bool InitializeCrashpadClient(base::ScopedFD handler_socket,
                               pid_t handler_pid) {

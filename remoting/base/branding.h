@@ -18,6 +18,10 @@ extern const wchar_t kWindowsServiceName[];
 // sessions.
 extern const wchar_t kHostSessionActiveEventName[];
 extern const wchar_t kHostUpdatePendingEventName[];
+
+// Returns the per-user local app data directory for chromoting on Windows
+// (e.g. %LOCALAPPDATA%\Google\Chrome Remote Desktop).
+base::FilePath GetPerUserDataDir();
 #endif
 
 // Returns the a directory for storing chromoting config files. Depending on the

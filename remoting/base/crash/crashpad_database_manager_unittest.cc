@@ -122,4 +122,8 @@ TEST_F(CrashpadDatabaseManagerTest, LogAndCleanupWithReports) {
   EXPECT_TRUE(found_created_timestamp);
 }
 
+TEST_F(CrashpadDatabaseManagerTest, GetCrashpadDatabasePathIsNonEmpty) {
+  EXPECT_FALSE(GetCrashpadDatabasePath().empty());
+}
+
 }  // namespace remoting

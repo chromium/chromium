@@ -12,9 +12,15 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ref.h"
+#include "build/build_config.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 
 namespace remoting {
+
+#if BUILDFLAG(IS_WIN)
+// Returns true if the current process token's user SID is LocalSystem.
+bool IsCurrentProcessLocalSystem();
+#endif  // BUILDFLAG(IS_WIN)
 
 base::FilePath GetCrashpadDatabasePath();
 

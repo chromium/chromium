@@ -24,6 +24,8 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/base_paths.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/access_token.h"
+#include "base/win/sid.h"
 #elif BUILDFLAG(IS_LINUX)
 #include <sys/types.h>
 #include <unistd.h>
@@ -73,12 +75,33 @@ std::string FormatTime(base::Time time) {
 
 }  // namespace
 
+#if BUILDFLAG(IS_WIN)
+bool IsCurrentProcessLocalSystem() {
+  auto token = base::win::AccessToken::FromCurrentProcess();
+  return token.has_value() &&
+         token->User() == base::win::Sid(base::win::WellKnownSid::kLocalSystem);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 base::FilePath GetCrashpadDatabasePath() {
   static const base::NoDestructor<base::FilePath> database_path([]() {
 #if BUILDFLAG(IS_WIN)
-    base::FilePath path;
-    base::PathService::Get(base::BasePathKey::DIR_ASSETS, &path);
-    return path.Append(kChromotingCrashpadDatabasePath);
+    if (IsCurrentProcessLocalSystem()) {
+      // Place the LocalSystem Crashpad database under DIR_ASSETS (inside
+      // Program Files, where all ancestor directories are system/admin-owned)
+      // rather than GetConfigDir() (%ProgramData%\...), where intermediate
+      // directories may be pre-created by unprivileged users and converted into
+      // junctions (see crbug.com/501808060) that remoting_crashpad_handler.exe
+      // does not validate against.
+      base::FilePath path;
+      base::PathService::Get(base::BasePathKey::DIR_ASSETS, &path);
+      return path.empty() ? base::FilePath()
+                          : path.Append(kChromotingCrashpadDatabasePath);
+    }
+    base::FilePath user_data_dir = GetPerUserDataDir();
+    return user_data_dir.empty()
+               ? base::FilePath()
+               : user_data_dir.Append(kChromotingCrashpadDatabasePath);
 #elif BUILDFLAG(IS_LINUX)
     if (getuid() == 0) {
       // Used by the daemon process or the elevated start-host process.

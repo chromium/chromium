@@ -8,6 +8,10 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <string>
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_LINUX)
 #include <sys/types.h>
 
@@ -15,7 +19,6 @@
 #endif  // BUILDFLAG(IS_LINUX)
 
 namespace remoting {
-
 
 // Initializes collection and upload of crash reports. The caller has to ensure
 // that the user has agreed to crash dump reporting.
@@ -31,7 +34,24 @@ namespace remoting {
 // method, then call GetCrashpadHandlerSocket() and pass the socket and PID to
 // worker processes. Worker processes should then call
 // InitializeCrashpadClient() instead of this method to initialize crashpad.
+//
+// For Windows multi-process host, the daemon process should first call this
+// method, then call GetCrashpadHandlerPipe() and pass the pipe name to
+// worker processes. Worker processes should then call
+// InitializeCrashpadClient() instead of this method to initialize crashpad.
 void InitializeCrashpadReporting();
+
+#if BUILDFLAG(IS_WIN)
+// Initializes Crashpad in a client process using the IPC pipe name of an
+// existing Crashpad handler process.
+// You should not call this function on the process where
+// InitializeCrashpadReporting() is called.
+bool InitializeCrashpadClient(const std::wstring& handler_pipe);
+
+// Gets the IPC pipe name of the Crashpad handler started by
+// InitializeCrashpadReporting(), or an empty string if unavailable.
+std::wstring GetCrashpadHandlerPipe();
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)
 // Initializes Crashpad in a client process using an inherited or received
