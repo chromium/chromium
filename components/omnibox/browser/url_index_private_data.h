@@ -108,11 +108,11 @@ class URLIndexPrivateData
                                   history::URLID url_id,
                                   base::CancelableTaskTracker* tracker);
 
-  // Deletes index data for the history item with the given |url|.
+  // Removes index data for the history item with the given `url_id`.
   // The item may not have actually been indexed, which is the case if it did
   // not previously meet minimum 'quick' criteria. Returns true if the index
   // was actually updated.
-  bool DeleteURL(const GURL& url);
+  bool RemoveRowFromIndex(history::URLID url_id);
 
   // Constructs a new object by rebuilding its contents from the history
   // database in |history_db|. Returns the new URLIndexPrivateData which on
@@ -285,11 +285,9 @@ class URLIndexPrivateData
   // available.
   WordID AddNewWordToWordList(const std::u16string& term);
 
-  // Removes |row| and all associated words and characters from the index.
-  void RemoveRowFromIndex(const history::URLRow& row);
-
-  // Removes all words and characters associated with |row| from the index.
-  void RemoveRowWordsFromIndex(const history::URLRow& row);
+  // Removes all words and characters associated with `history_id` from the
+  // index.
+  void RemoveRowWordsFromIndex(HistoryID history_id);
 
   // Clears |used_| for each item in the search term cache.
   void ResetSearchTermCache();

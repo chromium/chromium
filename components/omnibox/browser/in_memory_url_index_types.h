@@ -9,7 +9,6 @@
 
 #include <cstdint>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -162,7 +161,7 @@ struct HistoryInfoMapValue {
 };
 
 // A map from history_id to the history's URL and title.
-typedef std::unordered_map<HistoryID, HistoryInfoMapValue> HistoryInfoMap;
+typedef absl::flat_hash_map<HistoryID, HistoryInfoMapValue> HistoryInfoMap;
 
 // A map from history_id to URL and page title word start metrics.
 struct RowWordStarts {

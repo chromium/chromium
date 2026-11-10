@@ -99,9 +99,6 @@ class InMemoryURLIndex : public KeyedService,
       size_t max_matches,
       OmniboxTriggeredFeatureService* triggered_feature_service);
 
-  // Deletes the index entry, if any, for the given |url|.
-  void DeleteURL(const GURL& url);
-
   // Indicates that the index restoration is complete.
   bool restored() const { return restored_; }
 

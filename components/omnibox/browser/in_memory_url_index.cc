@@ -139,10 +139,6 @@ ScoredHistoryMatches InMemoryURLIndex::HistoryItemsForTerms(
 
 // Updating --------------------------------------------------------------------
 
-void InMemoryURLIndex::DeleteURL(const GURL& url) {
-  private_data_->DeleteURL(url);
-}
-
 void InMemoryURLIndex::OnURLVisited(
     history::HistoryService* history_service,
     const history::VisitedURLInfo& visited_url_info) {
@@ -170,8 +166,9 @@ void InMemoryURLIndex::OnHistoryDeletions(
   if (deletion_info.IsAllHistory()) {
     ClearPrivateData();
   } else {
-    for (const auto& row : deletion_info.deleted_rows())
-      private_data_->DeleteURL(row.url());
+    for (const auto& row : deletion_info.deleted_rows()) {
+      private_data_->RemoveRowFromIndex(row.id());
+    }
   }
 }
 

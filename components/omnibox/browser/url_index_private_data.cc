@@ -299,7 +299,7 @@ bool URLIndexPrivateData::UpdateURL(
       if (title_updated) {
         // Clear all words associated with this row and re-index both the
         // URL and title.
-        RemoveRowWordsFromIndex(row_to_update);
+        RemoveRowWordsFromIndex(row_id);
         row_to_update.set_title(row.title());
         RowWordStarts word_starts;
         AddRowWordsToIndex(row_to_update, &word_starts);
@@ -310,11 +310,11 @@ bool URLIndexPrivateData::UpdateURL(
   } else {
     // This indexed row no longer qualifies and will be de-indexed by clearing
     // all words associated with this row.
-    RemoveRowFromIndex(row);
-    row_was_updated = true;
+    row_was_updated = RemoveRowFromIndex(row_id);
   }
-  if (row_was_updated)
+  if (row_was_updated) {
     search_term_cache_.clear();  // This invalidates the cache.
+  }
   return row_was_updated;
 }
 
@@ -352,18 +352,15 @@ void URLIndexPrivateData::ScheduleUpdateRecentVisits(
       tracker);
 }
 
-bool URLIndexPrivateData::DeleteURL(const GURL& url) {
+bool URLIndexPrivateData::RemoveRowFromIndex(history::URLID url_id) {
   CHECK(sequence_checker_.CalledOnValidSequence());
-  // Find the matching entry in the history_info_map_.
-  // To avoid creating a temporary GURL instance,
-  // the lambda expression should return the GURL reference.
-  auto pos = std::ranges::find(
-      history_info_map_, url,
-      [](const std::pair<const HistoryID, HistoryInfoMapValue>& item)
-          -> const GURL& { return item.second.url_row.url(); });
-  if (pos == history_info_map_.end())
+  auto pos = history_info_map_.find(url_id);
+  if (pos == history_info_map_.end()) {
     return false;
-  RemoveRowFromIndex(pos->second.url_row);
+  }
+  RemoveRowWordsFromIndex(url_id);
+  history_info_map_.erase(pos);
+  word_starts_map_.erase(url_id);
   search_term_cache_.clear();  // This invalidates the cache.
   return true;
 }
@@ -399,9 +396,12 @@ scoped_refptr<URLIndexPrivateData> URLIndexPrivateData::RebuildFromHistory(
           kMaxVisitsToStoreInCache);
 
   // Pre-allocate the history info map to avoid repeated rehashing as entries
-  // are inserted one-by-one. Cap the reservation to avoid over-allocating for
-  // users with small history (p99 is ~3,077 on Windows, ~340 on Android).
-  static constexpr int kMaxReserve = 4096;
+  // are inserted one-by-one. Because `absl::flat_hash_map` stores
+  // `HistoryInfoMapValue` inline (~217 B/slot), cap the reservation at 448 (the
+  // 7/8 max load of a 511-slot table, ~107 KiB) to cover typical histories
+  // (Windows median ~196, mean ~448; Android p99 ~340) without over-allocating
+  // for small profiles.
+  static constexpr int kMaxReserve = 448;
   if (max_urls_indexed > 0) {
     rebuilt_data->history_info_map_.reserve(
         std::min(max_urls_indexed, kMaxReserve));
@@ -843,13 +843,14 @@ bool URLIndexPrivateData::IndexRowWithPreFetchedVisits(
   AddRowWordsToIndex(new_row, &word_starts);
   word_starts_map_.insert_or_assign(history_id, std::move(word_starts));
 
-  history_info_map_[history_id].url_row = std::move(new_row);
+  auto history_info_it = history_info_map_.try_emplace(history_id).first;
+  history_info_it->second.url_row = std::move(new_row);
 
   // Look up pre-fetched visits from the batch map instead of issuing a
   // per-URL SQL query.
   auto visits_it = batch_visits.find(row_id);
   if (visits_it != batch_visits.end()) {
-    VisitInfoVector* visits = &history_info_map_[history_id].visits;
+    VisitInfoVector* visits = &history_info_it->second.visits;
     const auto& fetched = visits_it->second;
     const size_t size = std::min(fetched.size(), kMaxVisitsToStoreInCache);
     visits->reserve(size);
@@ -950,20 +951,16 @@ WordID URLIndexPrivateData::AddNewWordToWordList(const std::u16string& term) {
   return word_id;
 }
 
-void URLIndexPrivateData::RemoveRowFromIndex(const history::URLRow& row) {
-  RemoveRowWordsFromIndex(row);
-  HistoryID history_id = static_cast<HistoryID>(row.id());
-  history_info_map_.erase(history_id);
-  word_starts_map_.erase(history_id);
-}
-
-void URLIndexPrivateData::RemoveRowWordsFromIndex(const history::URLRow& row) {
+void URLIndexPrivateData::RemoveRowWordsFromIndex(HistoryID history_id) {
   CHECK(sequence_checker_.CalledOnValidSequence());
   // Remove the entries in history_id_word_map_ and word_id_history_map_ for
   // this row.
-  HistoryID history_id = static_cast<HistoryID>(row.id());
-  WordIDSet word_id_set = history_id_word_map_[history_id];
-  history_id_word_map_.erase(history_id);
+  auto words_it = history_id_word_map_.find(history_id);
+  if (words_it == history_id_word_map_.end()) {
+    return;
+  }
+  WordIDSet word_id_set = std::move(words_it->second);
+  history_id_word_map_.erase(words_it);
 
   // Reconcile any changes to word usage.
   for (WordID word_id : word_id_set) {
@@ -1010,7 +1007,7 @@ bool URLIndexPrivateData::ShouldExclude(
   if (hist_pos == history_info_map_.end())
     return true;
 
-  GURL url = hist_pos->second.url_row.url();
+  const GURL& url = hist_pos->second.url_row.url();
   if (!url.is_valid())  // Possible in case of profile corruption.
     return true;
 

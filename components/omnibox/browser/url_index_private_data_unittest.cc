@@ -307,31 +307,32 @@ TEST_F(URLIndexPrivateDataTest, IndexingParityBetweenBothPaths) {
   ExpectIndexDataEqual(*data_a, *data_b);
 }
 
-// --- DeleteURL ---
+// --- RemoveRowFromIndex ---
 
-TEST_F(URLIndexPrivateDataTest, DeleteURLRemovesEntry) {
+TEST_F(URLIndexPrivateDataTest, RemoveRowFromIndexRemovesEntry) {
   history::URLRow row = MakeRow("http://example.com/todelete", 1);
   ASSERT_TRUE(IndexRow(row));
   EXPECT_FALSE(data_->Empty());
+  InsertCacheEntry(u"test");
 
-  EXPECT_TRUE(data_->DeleteURL(GURL("http://example.com/todelete")));
+  EXPECT_TRUE(data_->RemoveRowFromIndex(1));
   EXPECT_TRUE(data_->Empty());
+  EXPECT_TRUE(search_term_cache().empty());
 }
 
-TEST_F(URLIndexPrivateDataTest, DeleteURLReturnsFalseForMissing) {
-  EXPECT_FALSE(data_->DeleteURL(GURL("http://nonexistent.com/")));
+TEST_F(URLIndexPrivateDataTest, RemoveRowFromIndexReturnsFalseForMissing) {
+  InsertCacheEntry(u"test");
+  EXPECT_FALSE(data_->RemoveRowFromIndex(999));
+  EXPECT_FALSE(search_term_cache().empty());
 }
 
-TEST_F(URLIndexPrivateDataTest, DeleteURLWithCredentialsMustUseSanitizedURL) {
-  // IndexRow strips credentials, so deletion must use the sanitized URL.
+TEST_F(URLIndexPrivateDataTest, RemoveRowFromIndexWithCredentials) {
+  // IndexRow strips credentials while preserving the row's URLID, so removal
+  // by URLID still finds and removes the entry.
   history::URLRow row = MakeRow("http://user:pass@example.com/auth", 1);
   ASSERT_TRUE(IndexRow(row));
 
-  // Deleting with the original credentialed URL won't find the entry.
-  EXPECT_FALSE(data_->DeleteURL(GURL("http://user:pass@example.com/auth")));
-
-  // Deleting with the sanitized URL works.
-  EXPECT_TRUE(data_->DeleteURL(GURL("http://example.com/auth")));
+  EXPECT_TRUE(data_->RemoveRowFromIndex(1));
   EXPECT_TRUE(data_->Empty());
 }
 
@@ -531,7 +532,7 @@ TEST_F(URLIndexPrivateDataTest, IndexMultipleRows) {
   EXPECT_EQ(3u, history_info_map().size());
 
   // Delete one and verify the rest remain.
-  EXPECT_TRUE(data_->DeleteURL(GURL("http://beta.com/")));
+  EXPECT_TRUE(data_->RemoveRowFromIndex(2));
   EXPECT_EQ(2u, history_info_map().size());
   EXPECT_NE(history_info_map().end(), history_info_map().find(1));
   EXPECT_EQ(history_info_map().end(), history_info_map().find(2));
@@ -595,7 +596,7 @@ TEST_F(URLIndexPrivateDataTest, WordIDsReuseFreedSlots) {
   const WordID beta_id = beta_it->second;
 
   // Only "beta" is unique to the deleted row, so only its slot is freed.
-  ASSERT_TRUE(data_->DeleteURL(GURL("http://beta.com/")));
+  ASSERT_TRUE(data_->RemoveRowFromIndex(2));
   EXPECT_EQ(0u, word_map().count(u"beta"));
   EXPECT_EQ(word_list_size, word_list().size());
 

@@ -128,7 +128,7 @@ class InMemoryURLIndexTest : public testing::Test {
 
   // Pass-through functions to simplify our friendship with URLIndexPrivateData.
   bool UpdateURL(const history::URLRow& row);
-  bool DeleteURL(const GURL& url);
+  bool RemoveRowFromIndex(history::URLID url_id);
 
   // Data verification helper functions.
   void ExpectPrivateDataNotEmpty(const URLIndexPrivateData& data);
@@ -189,8 +189,8 @@ bool InMemoryURLIndexTest::UpdateURL(const history::URLRow& row) {
                                      GetPrivateDataTracker());
 }
 
-bool InMemoryURLIndexTest::DeleteURL(const GURL& url) {
-  return GetPrivateData()->DeleteURL(url);
+bool InMemoryURLIndexTest::RemoveRowFromIndex(history::URLID url_id) {
+  return GetPrivateData()->RemoveRowFromIndex(url_id);
 }
 
 void InMemoryURLIndexTest::SetUp() {
@@ -953,14 +953,13 @@ TEST_F(InMemoryURLIndexTest, DeleteRows) {
   ASSERT_EQ(1U, matches.size());
 
   // Delete the URL then search again.
-  EXPECT_TRUE(DeleteURL(matches[0].url_info.url()));
+  EXPECT_TRUE(RemoveRowFromIndex(matches[0].url_info.id()));
   EXPECT_TRUE(HistoryItemsForTerms(u"DrudgeReport", std::u16string::npos,
                                    kProviderMaxMatches)
                   .empty());
 
-  // Make up a URL that does not exist in the database and delete it.
-  GURL url("http://www.hokeypokey.com/putyourrightfootin.html");
-  EXPECT_FALSE(DeleteURL(url));
+  // Make up a row ID that does not exist in the database and try to remove it.
+  EXPECT_FALSE(RemoveRowFromIndex(87654321));
 }
 
 TEST_F(InMemoryURLIndexTest, OnURLVisited) {
