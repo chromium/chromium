@@ -17,12 +17,12 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_types.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
@@ -36,8 +36,7 @@ namespace {
 bool IsTokenExpired(const one_time_tokens::OneTimeToken& token,
                     base::TimeTicks now) {
   return token.on_device_arrival_time().is_null() ||
-         now - token.on_device_arrival_time() >
-             one_time_tokens::kGmailTokenCacheDuration;
+         now - token.on_device_arrival_time() > kGmailOtpCacheDuration;
 }
 
 base::Time ComputeSubscriptionExpiration() {
@@ -310,9 +309,9 @@ bool GmailOtpSource::UserOptedIntoGmailOtpFilling() const {
 }
 
 void GmailOtpSource::PruneExpiredConsumedTokens(base::TimeTicks now) {
-  consumed_tokens_.erase(consumed_tokens_.begin(),
-                         consumed_tokens_.lower_bound(
-                             now - one_time_tokens::kGmailTokenCacheDuration));
+  consumed_tokens_.erase(
+      consumed_tokens_.begin(),
+      consumed_tokens_.lower_bound(now - kGmailOtpCacheDuration));
 }
 
 }  // namespace autofill

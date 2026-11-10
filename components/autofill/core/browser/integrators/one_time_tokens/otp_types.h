@@ -56,6 +56,9 @@ struct OtpTarget {
   LocalFrameToken form_owner;
 };
 
+// Duration for which an arrived Gmail OTP remains valid in the Autofill layer.
+inline constexpr base::TimeDelta kGmailOtpCacheDuration = base::Minutes(3);
+
 // Uniquely identifies an OTP candidate and establishes chronological ordering
 // across resends.
 struct OtpTokenIdentity {
