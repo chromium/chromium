@@ -89,6 +89,7 @@ message InProgressInfo {
   optional string serialized_embedder_download_data = 33;
   reserved 34;
   optional bool fetched_via_service_worker = 35;
+  optional int32 fetch_request_mode = 36;  // network::mojom::RequestMode
 }
 
 // Stores various metadata related to a download.

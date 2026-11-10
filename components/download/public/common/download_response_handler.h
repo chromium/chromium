@@ -57,7 +57,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadResponseHandler
       DownloadSource download_source,
       bool require_safety_checks,
       std::vector<GURL> url_chain,
-      bool is_background_mode);
+      bool is_background_mode,
+      ::network::mojom::RequestMode fetch_request_mode);
 
   DownloadResponseHandler(const DownloadResponseHandler&) = delete;
   DownloadResponseHandler& operator=(const DownloadResponseHandler&) = delete;
@@ -114,6 +115,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadResponseHandler
   bool fetched_via_service_worker_ = false;
   std::optional<url::Origin> request_initiator_;
   ::network::mojom::CredentialsMode credentials_mode_;
+  ::network::mojom::RequestMode fetch_request_mode_;
   std::optional<net::IsolationInfo> isolation_info_;
   bool is_partial_request_;
   bool completed_;

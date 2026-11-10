@@ -220,6 +220,8 @@ download_pb::InProgressInfo DownloadDBConversions::InProgressInfoToProto(
   proto.set_auto_resume_count(in_progress_info.auto_resume_count);
   proto.set_credentials_mode(
       static_cast<int32_t>(in_progress_info.credentials_mode));
+  proto.set_fetch_request_mode(
+      static_cast<int32_t>(in_progress_info.fetch_request_mode));
   proto.set_range_request_from(in_progress_info.range_request_from);
   proto.set_range_request_to(in_progress_info.range_request_to);
   proto.set_fetched_via_service_worker(
@@ -278,6 +280,12 @@ InProgressInfo DownloadDBConversions::InProgressInfoFromProto(
   if (proto.has_credentials_mode()) {
     info.credentials_mode = static_cast<::network::mojom::CredentialsMode>(
         proto.credentials_mode());
+  }
+  if (proto.has_fetch_request_mode() && proto.fetch_request_mode() >= 0 &&
+      proto.fetch_request_mode() <=
+          static_cast<int32_t>(::network::mojom::RequestMode::kMaxValue)) {
+    info.fetch_request_mode =
+        static_cast<::network::mojom::RequestMode>(proto.fetch_request_mode());
   }
   if (proto.has_range_request_from())
     info.range_request_from = proto.range_request_from();

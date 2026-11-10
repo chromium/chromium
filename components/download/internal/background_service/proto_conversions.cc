@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/download/internal/background_service/proto_conversions.h"
+
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/time/time.h"
-#include "components/download/internal/background_service/proto_conversions.h"
+#include "components/download/public/background_service/features.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
@@ -254,6 +257,13 @@ RequestParams ProtoConversions::RequestParamsFromProto(
         ::network::mojom::CredentialsMode::kInclude;
   }
 
+  if (proto.has_fetch_request_mode() && proto.fetch_request_mode() >= 0 &&
+      proto.fetch_request_mode() <=
+          static_cast<int32_t>(::network::mojom::RequestMode::kMaxValue)) {
+    request_params.fetch_request_mode =
+        static_cast<::network::mojom::RequestMode>(proto.fetch_request_mode());
+  }
+
   for (int i = 0; i < proto.headers_size(); i++) {
     protodb::RequestHeader header = proto.headers(i);
     request_params.request_headers.SetHeader(header.key(), header.value());
@@ -270,6 +280,8 @@ void ProtoConversions::RequestParamsToProto(const RequestParams& request_params,
   proto->set_require_safety_checks(request_params.require_safety_checks);
   proto->set_credentials_mode(
       static_cast<int32_t>(request_params.credentials_mode));
+  proto->set_fetch_request_mode(
+      static_cast<int32_t>(request_params.fetch_request_mode));
 
   net::HttpRequestHeaders::Iterator iter(request_params.request_headers);
   while (iter.GetNext()) {
@@ -287,6 +299,20 @@ Entry ProtoConversions::EntryFromProto(const protodb::Entry& proto) {
   entry.scheduling_params =
       SchedulingParamsFromProto(proto.scheduling_params());
   entry.request_params = RequestParamsFromProto(proto.request_params());
+
+  // Upgrade legacy Background Fetch entries to use kCors instead of the default
+  // kNavigate mode to enforce proper CORS restrictions upon resumption.
+  // Note: This intentionally breaks backwards compatibility for legacy
+  // `no-cors` fetches by unconditionally upgrading them to `kCors`,
+  // prioritizing security over resumption of existing insecure suspended
+  // downloads.
+  if (base::FeatureList::IsEnabled(kBackgroundFetchCorsEnforcement) &&
+      entry.client == DownloadClient::BACKGROUND_FETCH &&
+      !proto.request_params().has_fetch_request_mode()) {
+    entry.request_params.fetch_request_mode =
+        ::network::mojom::RequestMode::kCors;
+  }
+
   entry.state = RequestStateFromProto(proto.state());
   entry.target_file_path =
       base::FilePath::FromUTF8Unsafe(proto.target_file_path());

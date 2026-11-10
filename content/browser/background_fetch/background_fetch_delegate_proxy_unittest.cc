@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_context.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 
@@ -51,6 +52,7 @@ class FakeBackgroundFetchDelegate : public BackgroundFetchDelegate {
                    const std::string& method,
                    const GURL& url,
                    ::network::mojom::CredentialsMode credentials_mode,
+                   ::network::mojom::RequestMode request_mode,
                    const net::NetworkTrafficAnnotationTag& traffic_annotation,
                    const net::HttpRequestHeaders& headers,
                    bool has_request_body,
@@ -200,6 +202,7 @@ class BackgroundFetchDelegateProxyTest : public BackgroundFetchTestBase {
 scoped_refptr<BackgroundFetchRequestInfo> CreateRequestInfo(
     int request_index,
     blink::mojom::FetchAPIRequestPtr fetch_request) {
+  fetch_request->mode = network::mojom::RequestMode::kCors;
   auto request = base::MakeRefCounted<BackgroundFetchRequestInfo>(
       request_index, std::move(fetch_request), /* has_request_body= */ false);
   request->InitializeDownloadGuid();

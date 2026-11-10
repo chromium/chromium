@@ -62,7 +62,8 @@ class DownloadResponseHandlerTest : public testing::Test {
         DownloadUrlParameters::RequestHeadersType(),
         /*request_origin=*/std::string(), DownloadSource::UNKNOWN,
         /*require_safety_checks=*/true, std::vector<GURL>(1, request_url),
-        /*is_background_mode=*/false);
+        /*is_background_mode=*/false,
+        /*fetch_request_mode=*/network::mojom::RequestMode::kNoCors);
   }
 
   static net::RedirectInfo MakeRedirectInfo(const GURL& new_url) {

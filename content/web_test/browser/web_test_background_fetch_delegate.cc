@@ -326,6 +326,7 @@ void WebTestBackgroundFetchDelegate::DownloadUrl(
     const std::string& method,
     const GURL& url,
     ::network::mojom::CredentialsMode credentials_mode,
+    ::network::mojom::RequestMode request_mode,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const net::HttpRequestHeaders& headers,
     bool has_request_body,
@@ -341,6 +342,7 @@ void WebTestBackgroundFetchDelegate::DownloadUrl(
   params.request_params.method = method;
   params.request_params.url = url;
   params.request_params.request_headers = headers;
+  params.request_params.fetch_request_mode = request_mode;
   params.request_params.url_loader_factory = std::move(url_loader_factory);
   params.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation);

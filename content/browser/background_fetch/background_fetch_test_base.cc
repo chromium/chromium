@@ -25,6 +25,7 @@
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
@@ -194,6 +195,7 @@ BackgroundFetchTestBase::CreateRequestWithProvidedResponse(
   auto request = blink::mojom::FetchAPIRequest::New();
   request->url = url;
   request->method = method;
+  request->mode = network::mojom::RequestMode::kCors;
   request->is_reload = false;
   request->referrer = blink::mojom::Referrer::New();
   request->headers = {};

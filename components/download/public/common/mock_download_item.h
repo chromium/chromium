@@ -136,6 +136,7 @@ class MockDownloadItem : public DownloadItem {
   MOCK_CONST_METHOD0(IsParallelDownload, bool());
   MOCK_CONST_METHOD0(GetDownloadCreationType, DownloadCreationType());
   MOCK_CONST_METHOD0(GetCredentialsMode, ::network::mojom::CredentialsMode());
+  MOCK_CONST_METHOD0(GetFetchRequestMode, ::network::mojom::RequestMode());
   MOCK_METHOD((const std::optional<net::IsolationInfo>&),
               GetIsolationInfo,
               (),

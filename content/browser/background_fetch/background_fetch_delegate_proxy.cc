@@ -198,10 +198,13 @@ void BackgroundFetchDelegateProxy::StartRequest(
     headers.SetHeader("Origin", origin.Serialize());
   }
 
+  CHECK(fetch_request->mode != network::mojom::RequestMode::kNoCors &&
+        fetch_request->mode != network::mojom::RequestMode::kNavigate);
+
   delegate->DownloadUrl(
       job_unique_id, request->download_guid(), fetch_request->method,
-      fetch_request->url, fetch_request->credentials_mode, traffic_annotation,
-      headers,
+      fetch_request->url, fetch_request->credentials_mode, fetch_request->mode,
+      traffic_annotation, headers,
       /* has_request_body= */ request->request_body_size() > 0u,
       request->url_loader_factory());
 }

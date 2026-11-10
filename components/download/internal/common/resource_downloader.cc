@@ -183,7 +183,8 @@ void ResourceDownloader::Start(
       download_url_parameters->request_origin(),
       download_url_parameters->download_source(),
       download_url_parameters->require_safety_checks(),
-      std::vector<GURL>(1, resource_request_->url), is_background_mode);
+      std::vector<GURL>(1, resource_request_->url), is_background_mode,
+      download_url_parameters->fetch_request_mode());
 
   mojo::PendingRemote<network::mojom::URLLoaderClient> url_loader_client_remote;
   url_loader_client_receiver_ =
@@ -228,7 +229,8 @@ void ResourceDownloader::InterceptResponse(
       download::DownloadUrlParameters::RequestHeadersType(),
       std::string(),                              /* request_origin */
       download::DownloadSource::NAVIGATION, true, /* require_safety_checks */
-      std::move(url_chain), false /* is_background_mode */);
+      std::move(url_chain), false /* is_background_mode */,
+      ::network::mojom::RequestMode::kNavigate);
 
   // Simulate on the new URLLoaderClient calls that happened on the old client.
   response_head->cert_status = cert_status;

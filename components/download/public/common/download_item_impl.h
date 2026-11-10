@@ -68,6 +68,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
                 const std::string& remote_address,
                 base::Time start_time,
                 ::network::mojom::CredentialsMode credentials_mode,
+                ::network::mojom::RequestMode fetch_request_mode,
                 const std::optional<net::IsolationInfo>& isolation_info,
                 int64_t range_request_from,
                 int64_t range_request_to);
@@ -121,6 +122,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
     // The credentials mode of the request.
     ::network::mojom::CredentialsMode credentials_mode =
         ::network::mojom::CredentialsMode::kInclude;
+
+    // The fetch request mode of the request.
+    ::network::mojom::RequestMode fetch_request_mode =
+        ::network::mojom::RequestMode::kNavigate;
 
     // Isolation info for the request.
     std::optional<net::IsolationInfo> isolation_info;
@@ -354,6 +359,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   bool IsParallelDownload() const override;
   DownloadCreationType GetDownloadCreationType() const override;
   ::network::mojom::CredentialsMode GetCredentialsMode() const override;
+  ::network::mojom::RequestMode GetFetchRequestMode() const override;
   const std::optional<net::IsolationInfo>& GetIsolationInfo() const override;
   void OnContentCheckCompleted(DownloadDangerType danger_type,
                                DownloadInterruptReason reason) override;

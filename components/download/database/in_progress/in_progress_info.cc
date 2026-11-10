@@ -34,6 +34,7 @@ bool InProgressInfo::operator==(const InProgressInfo& other) const {
          metered == other.metered && bytes_wasted == other.bytes_wasted &&
          auto_resume_count == other.auto_resume_count &&
          credentials_mode == other.credentials_mode &&
+         fetch_request_mode == other.fetch_request_mode &&
          range_request_from == other.range_request_from &&
          range_request_to == other.range_request_to &&
          fetched_via_service_worker == other.fetched_via_service_worker;

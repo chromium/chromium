@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
@@ -18,6 +19,7 @@
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/blob_context_getter_factory.h"
 #include "components/download/public/background_service/download_params.h"
+#include "components/download/public/background_service/features.h"
 #include "content/public/browser/background_fetch_description.h"
 #include "content/public/browser/background_fetch_response.h"
 #include "content/public/browser/browser_context.h"
@@ -94,6 +96,7 @@ void BackgroundFetchDelegateBase::DownloadUrl(
     const std::string& method,
     const GURL& url,
     ::network::mojom::CredentialsMode credentials_mode,
+    ::network::mojom::RequestMode request_mode,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const net::HttpRequestHeaders& headers,
     bool has_request_body,
@@ -110,6 +113,11 @@ void BackgroundFetchDelegateBase::DownloadUrl(
   params.request_params.url = url;
   params.request_params.request_headers = headers;
   params.request_params.credentials_mode = credentials_mode;
+  if (base::FeatureList::IsEnabled(download::kBackgroundFetchCorsEnforcement)) {
+    CHECK(request_mode != network::mojom::RequestMode::kNoCors &&
+          request_mode != network::mojom::RequestMode::kNavigate);
+    params.request_params.fetch_request_mode = request_mode;
+  }
   params.request_params.url_loader_factory = std::move(url_loader_factory);
   params.callback =
       base::BindRepeating(&BackgroundFetchDelegateBase::OnDownloadReceived,
