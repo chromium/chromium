@@ -659,9 +659,21 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
                 "//buildtools/third_party/libc++/__config_site",
             }
         )
-        libcxx.common.cflags.append(
-            "-isystem../../third_party/libc++/src/include"
+        libcxx.arch["android_arm64"] = gn_utils.GnParser.Target.Arch()
+        libcxx.arch["android_arm64"].cflags.extend(
+            [
+                "-mbranch-protection=standard",
+                "-isystem../../third_party/libc++/src/include",
+            ]
         )
+        libcxx.arch["android_x86"] = gn_utils.GnParser.Target.Arch()
+        libcxx.arch["android_x86"].cflags.extend(
+            [
+                "-msse3",
+                "-isystem../../third_party/libc++/src/include",
+            ]
+        )
+        libcxx._finalize_attribute("cflags")
         libcxx.common.include_dirs.add("//third_party/libc++/src/src/")
 
         ctx = gen_android_bp.translation_context.TranslationContext("tot")
@@ -683,9 +695,13 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             {
                 "buildtools/third_party/libc++/__assertion_handler",
                 "buildtools/third_party/libc++/__config_site",
-                "third_party/libc++/src/include/**/*",
+                "third_party/libc++/src/include/*",
                 "third_party/libc++/src/src/**/*.ipp",
             },
+        )
+        self.assertEqual(
+            mods["tot_cronet_libcxx_headers"].exclude_srcs,
+            {"third_party/libc++/src/include/*.*"},
         )
         self.assertEqual(
             mods["tot_cronet_java"].static_libs,

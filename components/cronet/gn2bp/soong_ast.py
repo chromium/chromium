@@ -770,12 +770,13 @@ class AidlModule(Module):
 
 
 class FilegroupModule(Module):
-    SUPPORTED_FIELDS = {'srcs', 'path'}
+    SUPPORTED_FIELDS = {'srcs', 'exclude_srcs', 'path'}
 
     def __init__(
         self, mod_type, name, gn_target, context, is_test=False, role=None
     ):
         super().__init__(mod_type, name, gn_target, context, is_test, role)
+        self.exclude_srcs = set()
         self.path = ""
 
 

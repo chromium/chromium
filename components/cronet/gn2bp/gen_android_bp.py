@@ -537,16 +537,23 @@ def create_extras_modules(
     # runtime/*.ipp outside include_dirs, so Soong's default include_dirs header
     # globs do not capture them for CC action sandboxing. Expose them via a
     # filegroup referenced by ${GN2BP_MODULE_PREFIX}cc_defaults.
+    # C++ standard library headers are extensionless; restrict the include/
+    # glob to top-level files and exclude files with extensions to optimize
+    # build.ninja's size (https://crrev.com/c/8663081).
     libcxx_headers = _new_extra_module("filegroup", "libcxx_headers")
     libcxx_target_name = "//buildtools/third_party/libc++:libc++"
     if libcxx_target_name in gn.all_targets:
         libcxx_target = gn.get_target(libcxx_target_name)
         for inp in libcxx_target.common.inputs:
             libcxx_headers.srcs.add(gn_utils.label_to_path(inp))
-        for cflag in libcxx_target.common.cflags:
+        for cflag in itertools.chain(
+            libcxx_target.common.cflags,
+            *(arch.cflags for arch in libcxx_target.get_archs().values()),
+        ):
             if cflag.startswith("-isystem../../third_party/libc++/"):
                 inc_path = cflag.removeprefix("-isystem../../").rstrip("/")
-                libcxx_headers.srcs.add(f"{inc_path}/**/*")
+                libcxx_headers.srcs.add(f"{inc_path}/*")
+                libcxx_headers.exclude_srcs.add(f"{inc_path}/*.*")
         for inc_dir in libcxx_target.common.include_dirs:
             if inc_dir.startswith("//third_party/libc++/"):
                 clean_dir = gn_utils.label_to_path(inc_dir).rstrip("/")
@@ -928,6 +935,8 @@ def extract_copybara_paths(
             clean_path = f"{clean_path}/**"
         elif clean_path.endswith("/**/*"):
             clean_path = clean_path.removesuffix("/*")
+        elif clean_path.endswith("/*"):
+            clean_path = f"{clean_path}*"
         if clean_path in ("", ".") or clean_path.startswith(("/", "../")):
             return
         if clean_path.startswith(excluded_prefixes):
