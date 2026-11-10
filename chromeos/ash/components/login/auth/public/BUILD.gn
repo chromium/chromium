@@ -39,6 +39,8 @@ component("authpublic") {
     "cryptohome_key_constants.h",
     "key.cc",
     "key.h",
+    "online_password_mismatch_behavior.cc",
+    "online_password_mismatch_behavior.h",
     "operation_chain_runner.cc",
     "operation_chain_runner.h",
     "recovery_types.h",

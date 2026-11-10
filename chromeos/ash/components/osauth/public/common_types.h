@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
+#include "chromeos/ash/components/login/auth/public/online_password_mismatch_behavior.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
@@ -98,14 +99,6 @@ enum class LocalAuthFactorsComplexity {
   kMaxValue = kHigh,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:LocalAuthFactorsComplexity)
-
-// Maps the values of the same-named policy located in
-// components/policy/resources/templates/policy_definitions/Signin/DeviceOnlinePasswordMismatchBehavior.yaml.
-enum class DeviceOnlinePasswordMismatchBehavior {
-  kDefault = 0,
-  kAutoWipe = 1,
-  kMaxValue = kAutoWipe,
-};
 
 }  // namespace ash
 

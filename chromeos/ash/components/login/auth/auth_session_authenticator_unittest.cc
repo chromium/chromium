@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -32,9 +33,11 @@
 #include "chromeos/ash/components/login/auth/mock_safe_mode_delegate.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/components/login/auth/public/online_password_mismatch_behavior.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -330,6 +333,10 @@ class AuthSessionAuthenticatorTest : public testing::Test {
   void RegisterPrefs() {
     user_manager::UserDirectoryIntegrityManager::RegisterLocalStatePrefs(
         local_state_.registry());
+    user_manager::KnownUser::RegisterPrefs(local_state_.registry());
+    local_state_.registry()->RegisterIntegerPref(
+        prefs::kDeviceOnlinePasswordMismatchBehavior,
+        static_cast<int>(DeviceOnlinePasswordMismatchBehavior::kDefault));
   }
 
   void CreateAuthenticator() {
@@ -362,6 +369,8 @@ class AuthSessionAuthenticatorTest : public testing::Test {
   base::test::TestFuture<bool>& on_off_the_record_auth_success_future() {
     return on_off_the_record_auth_success_future_;
   }
+
+  TestingPrefServiceSimple& local_state() { return local_state_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -949,6 +958,17 @@ class AuthSessionAuthenticatorRecoveryRoutingTest
     EXPECT_CALL(userdataauth(), ListAuthFactors(_, _)).Times(0);
   }
 
+  // Configures the DeviceOnlinePasswordMismatchBehavior AutoWipe policy, for
+  // an enterprise-managed user if `managed`. Must be called after
+  // `CreateAuthenticator()`.
+  void SetAutoWipePolicy(bool managed) {
+    local_state().SetInteger(
+        prefs::kDeviceOnlinePasswordMismatchBehavior,
+        static_cast<int>(DeviceOnlinePasswordMismatchBehavior::kAutoWipe));
+    user_manager::KnownUser(&local_state())
+        .SetIsEnterpriseManaged(kAccountId, managed);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -1053,6 +1073,73 @@ TEST_F(AuthSessionAuthenticatorRecoveryRoutingTest,
 
   EXPECT_EQ(on_auth_failure_future().Get().reason(),
             AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
+}
+
+// With the AutoWipe policy, routing an attempt on an already locked out factor
+// to the alternative authentication flow would wipe the cryptohome of a managed
+// user whose password might not have changed: today's behavior.
+TEST_F(AuthSessionAuthenticatorRecoveryRoutingTest,
+       CompleteLoginLockedWithRecoveryAutoWipeUnchanged) {
+  CreateAuthenticator();
+  SetAutoWipePolicy(/*managed=*/true);
+  ExpectPasswordAuthentication(/*with_recovery=*/true,
+                               BuildAuthenticateFactorLockedReply());
+
+  authenticator().CompleteLogin(/*ephemeral=*/false,
+                                CreatePasswordUserContext());
+
+  EXPECT_EQ(on_auth_failure_future().Get().reason(),
+            AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
+}
+
+// The attempt that triggers the lockout proves a password mismatch, so it is
+// routed even with the AutoWipe policy (the wipe is what the admin wants).
+TEST_F(AuthSessionAuthenticatorRecoveryRoutingTest,
+       CompleteLoginLockTriggeredWithRecoveryAutoWipe) {
+  CreateAuthenticator();
+  SetAutoWipePolicy(/*managed=*/true);
+  ExpectPasswordAuthentication(/*with_recovery=*/true,
+                               BuildAuthenticateFactorLockTriggeredReply());
+
+  authenticator().CompleteLogin(/*ephemeral=*/false,
+                                CreatePasswordUserContext());
+
+  EXPECT_EQ(on_password_change_detected_future().Get().GetAccountId(),
+            kAccountId);
+  EXPECT_FALSE(on_auth_failure_future().IsReady());
+}
+
+// The AutoWipe policy doesn't apply to consumer users.
+TEST_F(AuthSessionAuthenticatorRecoveryRoutingTest,
+       CompleteLoginLockedWithRecoveryAutoWipeConsumer) {
+  CreateAuthenticator();
+  SetAutoWipePolicy(/*managed=*/false);
+  ExpectPasswordAuthentication(/*with_recovery=*/true,
+                               BuildAuthenticateFactorLockedReply());
+
+  authenticator().CompleteLogin(/*ephemeral=*/false,
+                                CreatePasswordUserContext());
+
+  EXPECT_EQ(on_password_change_detected_future().Get().GetAccountId(),
+            kAccountId);
+  EXPECT_FALSE(on_auth_failure_future().IsReady());
+}
+
+// Managed users without the AutoWipe policy are routed as usual.
+TEST_F(AuthSessionAuthenticatorRecoveryRoutingTest,
+       CompleteLoginLockedWithRecoveryManagedWithoutAutoWipe) {
+  CreateAuthenticator();
+  user_manager::KnownUser(&local_state())
+      .SetIsEnterpriseManaged(kAccountId, true);
+  ExpectPasswordAuthentication(/*with_recovery=*/true,
+                               BuildAuthenticateFactorLockedReply());
+
+  authenticator().CompleteLogin(/*ephemeral=*/false,
+                                CreatePasswordUserContext());
+
+  EXPECT_EQ(on_password_change_detected_future().Get().GetAccountId(),
+            kAccountId);
+  EXPECT_FALSE(on_auth_failure_future().IsReady());
 }
 
 // With the feature disabled, a locked out password keeps today's behavior even
