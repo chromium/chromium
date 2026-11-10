@@ -60,6 +60,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/screen_ai:screen_ai_install_state",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//content/public/browser",
     "//content/test:test_support",
     "//services/screen_ai/buildflags",

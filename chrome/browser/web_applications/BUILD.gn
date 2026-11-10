@@ -1148,6 +1148,7 @@ source_set("web_applications_unit_tests") {
     "//chrome/browser/shortcuts",
     "//chrome/browser/ui/browser_window/test:test_support",
     "//chrome/browser/ui/web_applications",
+    "//chrome/browser/ui/web_applications/test:test_support_ui",
     "//chrome/browser/web_applications/isolated_web_apps/test:test_support",
     "//chrome/browser/web_applications/locks:partitioned_lock_manager_unit_tests",
     "//chrome/common",
