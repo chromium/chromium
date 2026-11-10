@@ -20,6 +20,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/passwords/account_avatar_fetcher.h"
 #include "chrome/browser/ui/passwords/password_combined_selector_controller.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "chrome/grit/webui_theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
@@ -71,11 +73,6 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
-#include "chrome/grit/webui_theme_resources.h"
-#endif
 
 namespace {
 
@@ -542,7 +539,6 @@ class PasswordCombinedSelectorListView : public views::View {
 BEGIN_METADATA(PasswordCombinedSelectorListView)
 END_METADATA
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)  // nocheck
 // Composites the remote actor header banner inline, stamping
 // `password_manager_icon` into the [184..220 dp] Password Manager slot and
 // `actor_icon` into the [228..264 dp] agent icon slot when non-empty.
@@ -597,7 +593,7 @@ class RemoteActorHeaderImageSource : public gfx::CanvasImageSource {
 };
 
 ui::ImageModel CreateRemoteActorHeaderImageModel(
-    const gfx::ImageSkia& actor_icon) {
+    const ui::ImageModel& actor_icon) {
   static constexpr int kPasswordManagerIconSize = 32;
   const gfx::ImageSkia* full_banner =
       ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
@@ -606,12 +602,12 @@ ui::ImageModel CreateRemoteActorHeaderImageModel(
       base::BindRepeating(
           [](const gfx::ImageSkia& base_banner,
              const ui::ImageModel& password_manager_icon,
-             const gfx::ImageSkia& actor_icon,
+             const ui::ImageModel& actor_icon,
              const ui::ColorProvider* color_provider) {
             return gfx::CanvasImageSource::MakeImageSkia<
                 RemoteActorHeaderImageSource>(
                 base_banner, password_manager_icon.Rasterize(color_provider),
-                actor_icon);
+                actor_icon.Rasterize(color_provider));
           },
           *full_banner,
           ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon(),
@@ -621,25 +617,33 @@ ui::ImageModel CreateRemoteActorHeaderImageModel(
       full_banner->size());
 }
 
-gfx::ImageSkia GetDefaultRemoteActorIcon(
+ui::ImageModel GetDefaultRemoteActorIcon(
     password_manager::RemoteActorType actor_type) {
   switch (actor_type) {
     case password_manager::RemoteActorType::kSearch:
-      return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_GOOGLE_G_GRADIENT_20);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)  // nocheck
+      return ui::ImageModel::FromResourceId(IDR_GOOGLE_G_GRADIENT_20);
+#else
+      static constexpr int kDefaultSearchIconSize = 20;
+      return ui::ImageModel::FromVectorIcon(
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kSearchIcon
+              : vector_icons::kSearchChromeRefreshOldIcon,
+          ui::kColorIcon, kDefaultSearchIconSize);
+#endif
     case password_manager::RemoteActorType::kGemini: {
       static constexpr int kDefaultGeminiIconSize = 36;
       const gfx::ImageSkia* gemini_icon =
           ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_GEIC_BUTTON_ICON);
-      return gfx::ImageSkiaOperations::CreateResizedImage(
-          *gemini_icon, skia::ImageOperations::RESIZE_BEST,
-          gfx::Size(kDefaultGeminiIconSize, kDefaultGeminiIconSize));
+      return ui::ImageModel::FromImageSkia(
+          gfx::ImageSkiaOperations::CreateResizedImage(
+              *gemini_icon, skia::ImageOperations::RESIZE_BEST,
+              gfx::Size(kDefaultGeminiIconSize, kDefaultGeminiIconSize)));
     }
   }
   NOTREACHED();
 }
-#endif
 
 }  // namespace
 
@@ -798,15 +802,14 @@ void PasswordCombinedSelectorView::OnWidgetInitialized() {
     return;
   }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)  // nocheck
   // Initialize the header slot with the default actor icon so that a broken or
   // slow custom icon URL never leaves the slot blank. If a valid custom icon
   // URL is provided, `UpdateAvatar()` will replace it once fetched.
   const std::optional<password_manager::RemoteActorType> actor_type =
       controller_->GetActorType();
   CHECK(actor_type.has_value());
-  auto header_view = std::make_unique<views::ImageView>(
-      CreateRemoteActorHeaderImageModel(
+  auto header_view =
+      std::make_unique<views::ImageView>(CreateRemoteActorHeaderImageModel(
           GetDefaultRemoteActorIcon(*actor_type)));
   header_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   header_view->SetID(kHeaderActorIconId);
@@ -827,20 +830,16 @@ void PasswordCombinedSelectorView::OnWidgetInitialized() {
                                              weak_ptr_factory_.GetWeakPtr());
     fetcher->Start(url_loader_factory.get(), initiator);
   }
-#else
-  // TODO(crbug.com/532482932): Add unbranded header.
-#endif
 }
 
 void PasswordCombinedSelectorView::UpdateAvatar(const gfx::ImageSkia& image) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)  // nocheck
   if (!header_image_view_ || image.isNull() || image.size().IsEmpty()) {
     return;
   }
   static constexpr int kFetchedActorIconSize = 24;
-  header_image_view_->SetImage(CreateRemoteActorHeaderImageModel(
-      ScaleImageForAccountAvatar(image, kFetchedActorIconSize)));
-#endif
+  header_image_view_->SetImage(
+      CreateRemoteActorHeaderImageModel(ui::ImageModel::FromImageSkia(
+          ScaleImageForAccountAvatar(image, kFetchedActorIconSize))));
 }
 
 std::unique_ptr<AccountChooserPrompt> CreatePasswordCombinedSelectorPromptView(

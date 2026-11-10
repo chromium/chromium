@@ -235,6 +235,7 @@ source_set("browser_tests") {
     "//components/password_manager/core/common/remote_actor",
     "//components/tabs:public",
     "//ui/base/unowned_user_data",
+    "//ui/gfx:test_support",
   ]
 }
 
