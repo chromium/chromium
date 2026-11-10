@@ -150,6 +150,7 @@ MediaStreamVideoRendererSink::MediaStreamVideoRendererSink(
 
 MediaStreamVideoRendererSink::~MediaStreamVideoRendererSink() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  Stop();
 }
 
 void MediaStreamVideoRendererSink::Start() {

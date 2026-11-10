@@ -160,6 +160,35 @@ TEST_F(MediaStreamVideoRendererSinkTest, EncodeVideoFrames) {
   media_stream_video_renderer_sink_->Stop();
 }
 
+TEST_F(MediaStreamVideoRendererSinkTest,
+       DestroyStartedSinkDisconnectsFromTrack) {
+  media_stream_video_renderer_sink_->Start();
+  EXPECT_TRUE(IsInStartedState());
+
+  // Dropping the last reference without calling Stop() should still disconnect
+  // from the video track and delete the frame deliverer on the IO task runner.
+  media_stream_video_renderer_sink_.reset();
+
+  const scoped_refptr<media::VideoFrame> video_frame =
+      media::VideoFrame::CreateBlackFrame(gfx::Size(160, 80));
+  EXPECT_CALL(*this, RepaintCallback(_)).Times(0);
+  OnVideoFrame(video_frame);
+
+  // Verify a newly created sink on the same track still receives video frames.
+  media_stream_video_renderer_sink_ =
+      base::MakeRefCounted<MediaStreamVideoRendererSink>(
+          media_stream_component_,
+          ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+              &MediaStreamVideoRendererSinkTest::RepaintCallback,
+              CrossThreadUnretained(this))),
+          Platform::Current()->GetIOTaskRunner(),
+          scheduler::GetSingleThreadTaskRunnerForTesting());
+  media_stream_video_renderer_sink_->Start();
+  EXPECT_CALL(*this, RepaintCallback(video_frame)).Times(1);
+  OnVideoFrame(video_frame);
+  media_stream_video_renderer_sink_->Stop();
+}
+
 class MediaStreamVideoRendererSinkTransparencyTest
     : public MediaStreamVideoRendererSinkTest {
  public:
