@@ -143,7 +143,9 @@ class UpdateServiceImplInstallTrackingTest : public ::testing::Test {
   scoped_refptr<Configurator> config_;
 };
 
-TEST_F(UpdateServiceImplInstallTrackingTest, IsInstalling) {
+// TODO(crbug.com/584356535): Re-enable once this stops leaking the GlobalPrefs
+// lock and causing subsequent IntegrationTests in the same batch to hang.
+TEST_F(UpdateServiceImplInstallTrackingTest, DISABLED_IsInstalling) {
   auto service = base::MakeRefCounted<UpdateServiceImplImpl>(config_);
   base::RunLoop run_loop;
   const auto done = base::BarrierClosure(2, run_loop.QuitClosure());
