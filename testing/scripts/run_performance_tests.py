@@ -792,6 +792,149 @@ def get_shard_map_settings(bot, benchmark_type, benchmark_name):
   return None
 
 
+_ADDITIVE_SHARD_FLAGS = frozenset({'--extra-browser-args'})
+_DASH_VALUE_FLAGS = frozenset(
+  {
+    '--extra-browser-args',
+    '--js-flags',
+    '--stories',
+    '--story',
+    '--story-tag',
+    '--story-tags',
+  }
+)
+# Crossbench flag aliases and mutually-exclusive groups that configure the same
+# underlying setting, so overriding with any spelling supersedes the shard flag.
+_FLAG_CONFLICT_GROUPS = (
+  frozenset({'--cuj-config', '--cujs-config'}),
+  frozenset({'--env', '--env-config'}),
+  frozenset(
+    {
+      '--cool-down',
+      '--cool-down-threshold',
+      '--cool-down-time',
+      '--cooldown',
+      '--cooldown-threshold',
+      '--cooldown-time',
+      '--no-cool-down',
+    }
+  ),
+  frozenset(
+    {
+      '--disable-field-trial-config',
+      '--disable-field-trials',
+      '--enable-field-trial-config',
+      '--enable-field-trials',
+    }
+  ),
+  frozenset(
+    {
+      '--file-server',
+      '--fileserver',
+      '--local-file-server',
+      '--local-fileserver',
+      '--network',
+      '--network-config',
+      '--web-page-replay',
+      '--wpr',
+    }
+  ),
+  frozenset({'-r', '--invocations', '--repeat', '--repetitions'}),
+  frozenset(
+    {
+      '--no-splash',
+      '--nosplash',
+      '--splash',
+      '--splash-screen',
+      '--splashscreen',
+    }
+  ),
+  frozenset({'--all', '--stories', '--story', '--story-tag', '--story-tags'}),
+)
+_CANONICAL_FLAG_KEYS = {
+  flag: group_id
+  for group_id, group in enumerate(_FLAG_CONFLICT_GROUPS)
+  for flag in group
+}
+
+
+def _canonical_flag_key(flag_name):
+  return _CANONICAL_FLAG_KEYS.get(flag_name, flag_name)
+
+
+def _iter_cli_flag_groups(args):
+  """Yields (flag_name, tokens) groups from a list of CLI arguments."""
+  i = 0
+  while i < len(args):
+    arg = args[i]
+    if arg == '--':
+      yield None, list(args[i:])
+      break
+    if not arg.startswith('-') or arg == '-':
+      yield None, [arg]
+      i += 1
+      continue
+    if '=' in arg:
+      yield arg.split('=', 1)[0], [arg]
+      i += 1
+      continue
+    if i + 1 < len(args) and args[i + 1] != '--':
+      if arg in _DASH_VALUE_FLAGS and args[i + 1].startswith('-'):
+        yield arg, [arg, args[i + 1]]
+        i += 2
+        continue
+      if not args[i + 1].startswith('-'):
+        j = i + 2
+        while j < len(args) and not args[j].startswith('-'):
+          j += 1
+        yield arg, list(args[i:j])
+        i = j
+        continue
+    yield arg, [arg]
+    i += 1
+
+
+def _pop_flag_group(args, target_flag):
+  """Removes and returns the CLI token group for `target_flag`, or None."""
+  matches = []
+  kept_args = []
+  for flag_name, tokens in _iter_cli_flag_groups(args):
+    if flag_name == target_flag:
+      matches.append(tokens)
+    else:
+      kept_args.extend(tokens)
+  if not matches:
+    return None
+  if len(matches) != 1:
+    raise ValueError(f'Expects exactly one {target_flag} on command line')
+  args[:] = kept_args
+  return matches[0]
+
+
+def _merge_shard_and_passthrough_args(shard_args, passthrough_args):
+  """Merges shard map arguments with job passthrough arguments.
+
+  Flags present in `passthrough_args` supersede matching (or mutually-exclusive
+  alias) flags from `shard_args`, except for `--extra-browser-args`, which
+  `CrossbenchTest` parses with `action='extend'` (and which Pinpoint
+  unconditionally injects on every job).
+  """
+  if not shard_args:
+    return list(passthrough_args)
+  overridden_keys = {
+    _canonical_flag_key(flag_name)
+    for flag_name, _ in _iter_cli_flag_groups(passthrough_args)
+    if flag_name and flag_name not in _ADDITIVE_SHARD_FLAGS
+  }
+  kept_shard_args = []
+  for flag_name, tokens in _iter_cli_flag_groups(shard_args):
+    if (
+      flag_name is None or _canonical_flag_key(flag_name) not in overridden_keys
+    ):
+      kept_shard_args.extend(tokens)
+  return kept_shard_args + list(passthrough_args)
+
+
 class CrossbenchTest(object):
   """This class is for running Crossbench tests.
 
@@ -867,7 +1010,9 @@ class CrossbenchTest(object):
       self.options.bot, 'crossbench', self.options.benchmark_display_name
     )
     if settings:
-      self.options.passthrough_args += settings.get('arguments', [])
+      self.options.passthrough_args = _merge_shard_and_passthrough_args(
+        settings.get('arguments', []), self.options.passthrough_args
+      )
 
   def _parse_arguments(self):
     parser = argparse.ArgumentParser()
@@ -935,20 +1080,24 @@ class CrossbenchTest(object):
     )
 
   def _get_network_arg(self, args):
-    if _arg := _get_arg(args, '--network='):
-      return [_arg]
-    if _arg := _get_arg(args, '--fileserver'):
-      return self._create_fileserver_network(_arg)
+    if network_tokens := _pop_flag_group(args, '--network'):
+      return network_tokens
+    if fileserver_tokens := _pop_flag_group(args, '--fileserver'):
+      return self._create_fileserver_network(fileserver_tokens)
     if self.cb_options.wpr:
       return self._create_wpr_network()
+    if any(
+      _canonical_flag_key(flag_name) == _canonical_flag_key('--network')
+      for flag_name, _ in _iter_cli_flag_groups(args)
+      if flag_name
+    ):
+      return []
     if self.options.benchmarks.startswith('motionmark') and not self.is_android:
       # TODO(crbug.com/413452730): Enable local file server in all platforms.
       return []
     if self.options.benchmarks in self.BENCHMARK_FILESERVERS:
       # Use file server when it is available.
-      arg = '--fileserver'
-      args.append(arg)
-      return self._create_fileserver_network(arg)
+      return self._create_fileserver_network(['--fileserver'])
     return []
 
   def _create_env_arg(self):
@@ -972,17 +1121,17 @@ class CrossbenchTest(object):
       return [f'--env={{"cpu_power_mode":"{power_mode}"}}']
     return []
 
-  def _create_fileserver_network(self, arg):
-    if '=' in arg:
-      fileserver_path = arg.split('=', 1)[1]
+  def _create_fileserver_network(self, tokens):
+    if '=' in tokens[0]:
+      fileserver_path = tokens[0].split('=', 1)[1]
+    elif len(tokens) > 1:
+      fileserver_path = tokens[1]
     else:
       benchmark = self.options.benchmarks
       if benchmark not in self.BENCHMARK_FILESERVERS:
         raise ValueError(f'fileserver does not support {benchmark}')
       fileserver_path = self.BENCHMARK_FILESERVERS.get(benchmark)
     fileserver_relative_path = str(CHROMIUM_SRC_DIR / fileserver_path)
-    # Replacing --fileserver with --network.
-    self.options.passthrough_args.remove(arg)
     return [
       _create_network_json(
         'local', path=fileserver_relative_path, url='http://localhost:0'
@@ -1003,12 +1152,15 @@ class CrossbenchTest(object):
     ]
 
   def _check_for_embedder_arg(self):
-    embedder_arg = _get_arg(self.options.passthrough_args, '--embedder=')
-    if embedder_arg:
-      embedder_package_name = embedder_arg.split('=', 1)[1]
-      # This will affect browser arg, but is not to be passed by itself
-      self.options.passthrough_args.remove(embedder_arg)
-      return embedder_package_name
+    # This will affect browser arg, but is not to be passed by itself.
+    if embedder_tokens := _pop_flag_group(
+      self.options.passthrough_args, '--embedder'
+    ):
+      if '=' in embedder_tokens[0]:
+        return embedder_tokens[0].split('=', 1)[1]
+      if len(embedder_tokens) > 1:
+        return embedder_tokens[1]
+      raise ValueError('--embedder argument is missing!')
     return None
 
   def _find_browser(self, browser_arg):

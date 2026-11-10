@@ -598,6 +598,587 @@ def _create_crossbench_args(browser='./chrome', benchmarks='speedometer_3.0'):
   ]
 
 
+def _write_fake_shard_map(shard_maps_dir, bot, display_name, shard_args):
+  shard_map = {
+    '0': {
+      'crossbench': {
+        display_name: {
+          'crossbench_name': 'embedder',
+          'arguments': shard_args,
+        },
+      },
+    },
+  }
+  map_path = pathlib.Path(shard_maps_dir) / f'{bot}_map.json'
+  map_path.write_text(json.dumps(shard_map), encoding='utf-8')
+
+
+class CrossbenchShardMapArgsMergeTest(unittest.TestCase):
+  @mock.patch.object(sys, 'platform', 'linux')
+  @mock.patch.object(run_performance_tests, 'upload_simple_test_results')
+  @mock.patch.object(
+    run_performance_tests.crossbench_result_converter, 'convert'
+  )
+  @mock.patch.object(
+    run_performance_tests.test_env,
+    'run_command_output_to_handle',
+    return_value=0,
+  )
+  def testPreservesUnoverriddenShardFlagsIncludingRepeatedMultiUseFlags(
+    self, mock_run_command, mock_convert, mock_upload
+  ):
+    del mock_convert, mock_upload
+    with tempfile.TemporaryDirectory() as tempdir:
+      _write_fake_shard_map(
+        tempdir,
+        'fake-bot',
+        'gma.embedder.crossbench',
+        [
+          '--cuj-config=default_cuj.hjson',
+          '--embedder-push-files=src1:dst1',
+          '--embedder-push-files=src2:dst2',
+          '--embedder-push-files=src3:dst3',
+        ],
+      )
+      cli_args = [
+        './cb.py',
+        f'--isolated-script-test-output={tempdir}/output.json',
+        '--benchmarks=embedder',
+        '--benchmark-display-name=gma.embedder.crossbench',
+        '--bot=fake-bot',
+        '--browser=./chrome',
+        '--stories=story_a',
+      ]
+      options = run_performance_tests.parse_arguments(cli_args)
+
+      with mock.patch.object(
+        run_performance_tests, 'SHARD_MAPS_DIR', pathlib.Path(tempdir)
+      ):
+        rc = run_performance_tests.CrossbenchTest(options, tempdir).execute()
+
+    self.assertEqual(rc, 0)
+    executed_cmd = mock_run_command.call_args.args[0]
+    self.assertEqual(
+      executed_cmd[-5:],
+      [
+        '--cuj-config=default_cuj.hjson',
+        '--embedder-push-files=src1:dst1',
+        '--embedder-push-files=src2:dst2',
+        '--embedder-push-files=src3:dst3',
+        '--stories=story_a',
+      ],
+    )
+
+  @mock.patch.object(sys, 'platform', 'linux')
+  @mock.patch.object(run_performance_tests, 'upload_simple_test_results')
+  @mock.patch.object(
+    run_performance_tests.crossbench_result_converter, 'convert'
+  )
+  @mock.patch.object(
+    run_performance_tests.test_env,
+    'run_command_output_to_handle',
+    return_value=0,
+  )
+  def testJobExtraArgsSupersedeShardSetupCommandConfig(
+    self, mock_run_command, mock_convert, mock_upload
+  ):
+    del mock_convert, mock_upload
+    with tempfile.TemporaryDirectory() as tempdir:
+      _write_fake_shard_map(
+        tempdir,
+        'android-pixel10_webview-perf-pgo',
+        'embedder.crossbench',
+        [
+          '--cuj-config=agsa_cuj_config.hjson',
+          '--embedder-setup-command-config=agsa_setup_config.hjson',
+          '--embedder-teardown-command-config=agsa_teardown_config.hjson',
+        ],
+      )
+      cli_args = [
+        './cb.py',
+        f'--isolated-script-test-output={tempdir}/output.json',
+        '--benchmarks=embedder',
+        '--benchmark-display-name=embedder.crossbench',
+        '--bot=android-pixel10_webview-perf-pgo',
+        '--browser=./chrome',
+        '--embedder-setup-command-config=agsa_p90_setup_config.hjson',
+      ]
+      options = run_performance_tests.parse_arguments(cli_args)
+
+      with mock.patch.object(
+        run_performance_tests, 'SHARD_MAPS_DIR', pathlib.Path(tempdir)
+      ):
+        rc = run_performance_tests.CrossbenchTest(options, tempdir).execute()
+
+    self.assertEqual(rc, 0)
+    executed_cmd = mock_run_command.call_args.args[0]
+    self.assertNotIn(
+      '--embedder-setup-command-config=agsa_setup_config.hjson', executed_cmd
+    )
+    self.assertEqual(
+      executed_cmd[-3:],
+      [
+        '--cuj-config=agsa_cuj_config.hjson',
+        '--embedder-teardown-command-config=agsa_teardown_config.hjson',
+        '--embedder-setup-command-config=agsa_p90_setup_config.hjson',
+      ],
+    )
+
+  @mock.patch.object(sys, 'platform', 'linux')
+  @mock.patch.object(run_performance_tests, 'upload_simple_test_results')
+  @mock.patch.object(
+    run_performance_tests.crossbench_result_converter, 'convert'
+  )
+  @mock.patch.object(
+    run_performance_tests.test_env,
+    'run_command_output_to_handle',
+    return_value=0,
+  )
+  def testSpaceSeparatedJobFlagsSupersedeShardEqualsFlags(
+    self, mock_run_command, mock_convert, mock_upload
+  ):
+    del mock_convert, mock_upload
+    with tempfile.TemporaryDirectory() as tempdir:
+      _write_fake_shard_map(
+        tempdir,
+        'fake-bot',
+        'embedder.crossbench',
+        [
+          '--repetitions=10',
+          '--wpr=shard_archive.wprgo',
+          '--skip-wpr-script-injection',
+        ],
+      )
+      cli_args = [
+        './cb.py',
+        f'--isolated-script-test-output={tempdir}/output.json',
+        '--benchmarks=embedder',
+        '--benchmark-display-name=embedder.crossbench',
+        '--bot=fake-bot',
+        '--browser=./chrome',
+        '--repetitions',
+        '25',
+        '--wpr',
+        'override_archive.wprgo',
+      ]
+      options = run_performance_tests.parse_arguments(cli_args)
+
+      with mock.patch.object(
+        run_performance_tests, 'SHARD_MAPS_DIR', pathlib.Path(tempdir)
+      ):
+        cb_test = run_performance_tests.CrossbenchTest(options, tempdir)
+        rc = cb_test.execute()
+
+    self.assertEqual(rc, 0)
+    executed_cmd = mock_run_command.call_args.args[0]
+    self.assertNotIn('--repetitions=10', executed_cmd)
+    self.assertEqual(executed_cmd[-2:], ['--repetitions', '25'])
+    expected_wpr_path = str(
+      run_performance_tests.PAGE_SETS_DATA / 'override_archive.wprgo'
+    )
+    network_dict = json.loads(cb_test.network[0].split('=', 1)[1])
+    self.assertEqual(
+      network_dict,
+      {
+        'type': 'wpr',
+        'path': expected_wpr_path,
+        'skip_deterministic_script_injection': True,
+      },
+    )
+
+  @mock.patch.object(run_performance_tests.browser_finder, 'FindBrowser')
+  def testJobFlagsSupersedeSingleOccurrenceEmbedderAndFileserverFlags(
+    self, mock_find_browser
+  ):
+    mock_find_browser.return_value = mock.Mock()
+    with tempfile.TemporaryDirectory() as tempdir:
+      _write_fake_shard_map(
+        tempdir,
+        'fake-bot',
+        'embedder.crossbench',
+        [
+          '--embedder=com.google.android.googlequicksearchbox',
+          '--fileserver',
+        ],
+      )
+      cli_args = [
+        './cb.py',
+        f'--isolated-script-test-output={tempdir}/output.json',
+        '--benchmarks=embedder',
+        '--benchmark-display-name=embedder.crossbench',
+        '--bot=fake-bot',
+        '--browser=android-webview-standalone-google-bundle',
+        '--embedder=org.chromium.webview_shell',
+        '--fileserver=custom/www',
+      ]
+      options = run_performance_tests.parse_arguments(cli_args)
+
+      with mock.patch.object(
+        run_performance_tests, 'SHARD_MAPS_DIR', pathlib.Path(tempdir)
+      ):
+        cb_test = run_performance_tests.CrossbenchTest(options, tempdir)
+
+    expected_hjson = cb_test.ANDROID_HJSON % ('org.chromium.webview_shell', '')
+    self.assertEqual(cb_test.browser, cb_test.CHROME_BROWSER % expected_hjson)
+    network_dict = json.loads(cb_test.network[0].split('=', 1)[1])
+    self.assertEqual(
+      network_dict,
+      {
+        'type': 'local',
+        'path': str(run_performance_tests.CHROMIUM_SRC_DIR / 'custom/www'),
+        'url': 'http://localhost:0',
+      },
+    )
+
+  @mock.patch.object(sys, 'platform', 'linux')
+  @mock.patch.object(run_performance_tests, 'upload_simple_test_results')
+  @mock.patch.object(
+    run_performance_tests.crossbench_result_converter, 'convert'
+  )
+  @mock.patch.object(
+    run_performance_tests.test_env,
+    'run_command_output_to_handle',
+    return_value=0,
+  )
+  def testRepeatedJobFlagsSupersedeAllMatchingShardFlags(
+    self, mock_run_command, mock_convert, mock_upload
+  ):
+    del mock_convert, mock_upload
+    with tempfile.TemporaryDirectory() as tempdir:
+      _write_fake_shard_map(
+        tempdir,
+        'fake-bot',
+        'gma.embedder.crossbench',
+        [
+          '--embedder-push-files=shard1:dst1',
+          '--embedder-push-files=shard2:dst2',
+          '--stories=default',
+        ],
+      )
+      cli_args = [
+        './cb.py',
+        f'--isolated-script-test-output={tempdir}/output.json',
+        '--benchmarks=embedder',
+        '--benchmark-display-name=gma.embedder.crossbench',
+        '--bot=fake-bot',
+        '--browser=./chrome',
+        '--embedder-push-files=job1:dst1',
+        '--embedder-push-files=job2:dst2',
+      ]
+      options = run_performance_tests.parse_arguments(cli_args)
+
+      with mock.patch.object(
+        run_performance_tests, 'SHARD_MAPS_DIR', pathlib.Path(tempdir)
+      ):
+        rc = run_performance_tests.CrossbenchTest(options, tempdir).execute()
+
+    self.assertEqual(rc, 0)
+    executed_cmd = mock_run_command.call_args.args[0]
+    self.assertNotIn('--embedder-push-files=shard1:dst1', executed_cmd)
+    self.assertNotIn('--embedder-push-files=shard2:dst2', executed_cmd)
+    self.assertEqual(
+      executed_cmd[-3:],
+      [
+        '--stories=default',
+        '--embedder-push-files=job1:dst1',
+        '--embedder-push-files=job2:dst2',
+      ],
+    )
+
+  @mock.patch.object(sys, 'platform', 'linux')
+  @mock.patch.object(run_performance_tests, 'upload_simple_test_results')
+  @mock.patch.object(
+    run_performance_tests.crossbench_result_converter, 'convert'
+  )
+  @mock.patch.object(
+    run_performance_tests.test_env,
+    'run_command_output_to_handle',
+    return_value=0,
+  )
+  def testExtraBrowserArgsExtendShardArgsBeforeJobArgs(
+    self, mock_run_command, mock_convert, mock_upload
+  ):
+    del mock_convert, mock_upload
+    with tempfile.TemporaryDirectory() as tempdir:
+      _write_fake_shard_map(
+        tempdir,
+        'fake-bot',
+        'speedometer3.a11y.crossbench',
+        ['--extra-browser-args=--force-renderer-accessibility'],
+      )
+      cli_args = [
+        './cb.py',
+        f'--isolated-script-test-output={tempdir}/output.json',
+        '--benchmarks=speedometer_3.0',
+        '--benchmark-display-name=speedometer3.a11y.crossbench',
+        '--bot=fake-bot',
+        '--browser=./chrome',
+        '--extra-browser-args=--disable-features=SessionRestoreInfobar',
+      ]
+      options = run_performance_tests.parse_arguments(cli_args)
+
+      with mock.patch.object(
+        run_performance_tests, 'SHARD_MAPS_DIR', pathlib.Path(tempdir)
+      ):
+        rc = run_performance_tests.CrossbenchTest(options, tempdir).execute()
+
+    self.assertEqual(rc, 0)
+    executed_cmd = mock_run_command.call_args.args[0]
+    separator_index = executed_cmd.index('--')
+    self.assertEqual(
+      executed_cmd[separator_index + 1 :],
+      [
+        '--force-renderer-accessibility',
+        '--disable-features=SessionRestoreInfobar',
+      ],
+    )
+
+  @mock.patch.object(sys, 'platform', 'linux')
+  @mock.patch.object(run_performance_tests, 'upload_simple_test_results')
+  @mock.patch.object(
+    run_performance_tests.crossbench_result_converter, 'convert'
+  )
+  @mock.patch.object(
+    run_performance_tests.test_env,
+    'run_command_output_to_handle',
+    return_value=0,
+  )
+  def testRawBrowserArgsAfterDoubleDashDoNotSupersedeShardFlags(
+    self, mock_run_command, mock_convert, mock_upload
+  ):
+    del mock_convert, mock_upload
+    with tempfile.TemporaryDirectory() as tempdir:
+      _write_fake_shard_map(
+        tempdir,
+        'fake-bot',
+        'embedder.crossbench',
+        ['--enable-features=ShardFeature'],
+      )
+      cli_args = [
+        './cb.py',
+        f'--isolated-script-test-output={tempdir}/output.json',
+        '--benchmarks=embedder',
+        '--benchmark-display-name=embedder.crossbench',
+        '--bot=fake-bot',
+        '--browser=./chrome',
+        '--',
+        '--enable-features=RawBrowserFeature',
+      ]
+      options = run_performance_tests.parse_arguments(cli_args)
+
+      with mock.patch.object(
+        run_performance_tests, 'SHARD_MAPS_DIR', pathlib.Path(tempdir)
+      ):
+        rc = run_performance_tests.CrossbenchTest(options, tempdir).execute()
+
+    self.assertEqual(rc, 0)
+    executed_cmd = mock_run_command.call_args.args[0]
+    self.assertEqual(
+      executed_cmd[-3:],
+      [
+        '--enable-features=ShardFeature',
+        '--',
+        '--enable-features=RawBrowserFeature',
+      ],
+    )
+
+  def testJobWprSupersedesShardNetworkAndFileserver(self):
+    for shard_network_flag in ('--network=live', '--fileserver'):
+      with self.subTest(shard_network_flag=shard_network_flag):
+        with tempfile.TemporaryDirectory() as tempdir:
+          _write_fake_shard_map(
+            tempdir,
+            'fake-bot',
+            'speedometer3.crossbench',
+            [shard_network_flag, '--debug'],
+          )
+          cli_args = [
+            './cb.py',
+            f'--isolated-script-test-output={tempdir}/output.json',
+            '--benchmarks=speedometer_3.0',
+            '--benchmark-display-name=speedometer3.crossbench',
+            '--bot=fake-bot',
+            '--browser=./chrome',
+            '--wpr=override.wprgo',
+          ]
+          options = run_performance_tests.parse_arguments(cli_args)
+
+          with mock.patch.object(
+            run_performance_tests, 'SHARD_MAPS_DIR', pathlib.Path(tempdir)
+          ):
+            cb_test = run_performance_tests.CrossbenchTest(options, tempdir)
+
+        network_dict = json.loads(cb_test.network[0].split('=', 1)[1])
+        self.assertEqual(
+          network_dict,
+          {
+            'type': 'wpr',
+            'path': str(
+              run_performance_tests.PAGE_SETS_DATA / 'override.wprgo'
+            ),
+          },
+        )
+        self.assertEqual(cb_test.options.passthrough_args, ['--debug'])
+
+  def testJobNetworkSupersedesShardFileserverAndWpr(self):
+    with tempfile.TemporaryDirectory() as tempdir:
+      _write_fake_shard_map(
+        tempdir,
+        'fake-bot',
+        'speedometer3.crossbench',
+        ['--fileserver', '--debug'],
+      )
+      cli_args = [
+        './cb.py',
+        f'--isolated-script-test-output={tempdir}/output.json',
+        '--benchmarks=speedometer_3.0',
+        '--benchmark-display-name=speedometer3.crossbench',
+        '--bot=fake-bot',
+        '--browser=./chrome',
+        '--network',
+        'live',
+      ]
+      options = run_performance_tests.parse_arguments(cli_args)
+
+      with mock.patch.object(
+        run_performance_tests, 'SHARD_MAPS_DIR', pathlib.Path(tempdir)
+      ):
+        cb_test = run_performance_tests.CrossbenchTest(options, tempdir)
+
+    self.assertEqual(cb_test.network, ['--network', 'live'])
+    self.assertEqual(cb_test.options.passthrough_args, ['--debug'])
+
+  @mock.patch.object(run_performance_tests.browser_finder, 'FindBrowser')
+  def testSpaceSeparatedEmbedderAndFileserverOverrides(self, mock_find_browser):
+    mock_find_browser.return_value = mock.Mock()
+    with tempfile.TemporaryDirectory() as tempdir:
+      _write_fake_shard_map(
+        tempdir,
+        'fake-bot',
+        'embedder.crossbench',
+        [
+          '--embedder=com.google.android.googlequicksearchbox',
+          '--wpr=shard_archive.wprgo',
+        ],
+      )
+      cli_args = [
+        './cb.py',
+        f'--isolated-script-test-output={tempdir}/output.json',
+        '--benchmarks=embedder',
+        '--benchmark-display-name=embedder.crossbench',
+        '--bot=fake-bot',
+        '--browser=android-webview-standalone-google-bundle',
+        '--embedder',
+        'org.chromium.webview_shell',
+        '--fileserver',
+        'custom/www',
+      ]
+      options = run_performance_tests.parse_arguments(cli_args)
+
+      with mock.patch.object(
+        run_performance_tests, 'SHARD_MAPS_DIR', pathlib.Path(tempdir)
+      ):
+        cb_test = run_performance_tests.CrossbenchTest(options, tempdir)
+
+    expected_hjson = cb_test.ANDROID_HJSON % ('org.chromium.webview_shell', '')
+    self.assertEqual(cb_test.browser, cb_test.CHROME_BROWSER % expected_hjson)
+    network_dict = json.loads(cb_test.network[0].split('=', 1)[1])
+    self.assertEqual(
+      network_dict,
+      {
+        'type': 'local',
+        'path': str(run_performance_tests.CHROMIUM_SRC_DIR / 'custom/www'),
+        'url': 'http://localhost:0',
+      },
+    )
+    self.assertEqual(cb_test.options.passthrough_args, [])
+
+  @mock.patch.object(sys, 'platform', 'linux')
+  @mock.patch.object(run_performance_tests, 'upload_simple_test_results')
+  @mock.patch.object(
+    run_performance_tests.crossbench_result_converter, 'convert'
+  )
+  @mock.patch.object(
+    run_performance_tests.test_env,
+    'run_command_output_to_handle',
+    return_value=0,
+  )
+  def testMutuallyExclusiveAndAliasFlagsSupersedeShardCounterparts(
+    self, mock_run_command, mock_convert, mock_upload
+  ):
+    del mock_convert, mock_upload
+    with tempfile.TemporaryDirectory() as tempdir:
+      _write_fake_shard_map(
+        tempdir,
+        'fake-bot',
+        'loading.crossbench',
+        [
+          '--enable-field-trials=benchmarking',
+          '--cool-down-threshold=moderate',
+          '--splashscreen=skip',
+          '--repetitions=50',
+          '--stories=cnn',
+        ],
+      )
+      cli_args = [
+        './cb.py',
+        f'--isolated-script-test-output={tempdir}/output.json',
+        '--benchmarks=loading',
+        '--benchmark-display-name=loading.crossbench',
+        '--bot=fake-bot',
+        '--browser=./chrome',
+        '--disable-field-trials',
+        '--no-cool-down',
+        '--no-splash',
+        '--repeat=5',
+        '--stories',
+        '-cnn',
+      ]
+      options = run_performance_tests.parse_arguments(cli_args)
+
+      with mock.patch.object(
+        run_performance_tests, 'SHARD_MAPS_DIR', pathlib.Path(tempdir)
+      ):
+        rc = run_performance_tests.CrossbenchTest(options, tempdir).execute()
+
+    self.assertEqual(rc, 0)
+    executed_cmd = mock_run_command.call_args.args[0]
+    for superseded in (
+      '--enable-field-trials=benchmarking',
+      '--cool-down-threshold=moderate',
+      '--splashscreen=skip',
+      '--repetitions=50',
+      '--stories=cnn',
+    ):
+      self.assertNotIn(superseded, executed_cmd)
+    self.assertEqual(
+      executed_cmd[-6:],
+      [
+        '--disable-field-trials',
+        '--no-cool-down',
+        '--no-splash',
+        '--repeat=5',
+        '--stories',
+        '-cnn',
+      ],
+    )
+
+  def testBoundaryInputsAndMultiValueFlagGroups(self):
+    self.assertEqual(
+      run_performance_tests._merge_shard_and_passthrough_args(
+        None, ['--stories=cnn']
+      ),
+      ['--stories=cnn'],
+    )
+    self.assertEqual(
+      run_performance_tests._merge_shard_and_passthrough_args(
+        ['--some-list', 'v1', 'v2', '--keep=1'],
+        ['--some-list=v3'],
+      ),
+      ['--keep=1', '--some-list=v3'],
+    )
+
+
 class ArgumentParserTest(unittest.TestCase):
   def testIsolatedScriptTestLauncherRetryLimitNotPassed(self):
     fake_args = ['./run_benchmark', '--isolated-script-test-output=output.json']
