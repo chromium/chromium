@@ -487,13 +487,6 @@ void ClearKeyCdm::OnUpdateSuccess(uint32_t promise_id,
     expiration = 3153600000.0;  // 100 * 365 * 24 * 60 * 60;
 
     if (!has_set_timer_) {
-      // Make sure the CDM can get time and sleep if necessary.
-      constexpr auto kSleepDuration = base::Seconds(1);
-      auto start_time = base::Time::Now();
-      base::PlatformThread::Sleep(kSleepDuration);
-      auto time_elapsed = base::Time::Now() - start_time;
-      CHECK_GE(time_elapsed, kSleepDuration);
-
       ScheduleNextTimer();
     }
 
@@ -577,12 +570,10 @@ void ClearKeyCdm::TimerExpired(void* context) {
         last_session_id_.data(), last_session_id_.length(),
         cdm::kLicenseRenewal, renewal_message.data(), renewal_message.length());
   } else if (key_system_ == kExternalClearKeyOutputProtectionTestKeySystem) {
-    // Check output protection again.
+    // Check output protection again and schedule the next poll.
     cdm_host_proxy_->QueryOutputProtectionStatus();
+    ScheduleNextTimer();
   }
-
-  // Start the timer to schedule another timeout.
-  ScheduleNextTimer();
 }
 
 static void CopyDecryptResults(Decryptor::Status* status_copy,
