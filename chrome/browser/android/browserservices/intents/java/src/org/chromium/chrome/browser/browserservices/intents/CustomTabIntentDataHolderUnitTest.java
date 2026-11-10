@@ -22,6 +22,7 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcel;
+import android.util.Pair;
 import android.view.WindowManager;
 import android.widget.RemoteViews;
 
@@ -129,6 +130,10 @@ public class CustomTabIntentDataHolderUnitTest {
         assertNull(restored.mDarkAuthTabColorSchemeParams.getNavigationBarDividerColor());
         assertEquals(Color.TRANSPARENT, restored.mInitialBackgroundColor);
         assertTrue(restored.mCustomButtonParams.isEmpty());
+        assertEquals(CustomTabsIntent.SHARE_STATE_DEFAULT, restored.mShareState);
+        assertFalse(restored.mDefaultShareMenuItem);
+        assertFalse(restored.mOpenInBrowserButtonAllowed);
+        assertTrue(restored.mMenuEntries.isEmpty());
         assertSame(
                 restored.mLightColorSchemeParams,
                 restored.getColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_LIGHT));
@@ -180,6 +185,12 @@ public class CustomTabIntentDataHolderUnitTest {
         PendingIntent swipeUpPi =
                 PendingIntent.getBroadcast(
                         context, 3, new Intent("swipe_up"), PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent menuPi =
+                PendingIntent.getActivity(
+                        context, 7, new Intent("menu_1"), PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent menuPi2 =
+                PendingIntent.getActivity(
+                        context, 8, new Intent("menu_2"), PendingIntent.FLAG_IMMUTABLE);
         CustomButtonParams shareButton =
                 CustomButtonParamsImpl.createShareButton(context, Color.BLACK);
         CustomButtonParams bottomBarButton =
@@ -273,6 +284,13 @@ public class CustomTabIntentDataHolderUnitTest {
                                         .build())
                         .setInitialBackgroundColor(0xFF123456)
                         .setCustomButtonParams(List.of(shareButton, bottomBarButton))
+                        .setShareState(CustomTabsIntent.SHARE_STATE_ON)
+                        .setDefaultShareMenuItem(true)
+                        .setOpenInBrowserButtonAllowed(true)
+                        .setMenuEntries(
+                                List.of(
+                                        Pair.create("Menu 1", menuPi),
+                                        Pair.create("Menu 2", menuPi2)))
                         .build();
 
         CustomTabIntentDataHolder restored = roundTripThroughParcel(original);
@@ -391,6 +409,14 @@ public class CustomTabIntentDataHolderUnitTest {
         assertEquals(ButtonType.OTHER, restoredBottom.getType());
         assertFalse(restoredBottom.getIcon(context) instanceof TintedDrawable);
         assertEquals(swipeUpPi, restoredBottom.getPendingIntent());
+        assertEquals(CustomTabsIntent.SHARE_STATE_ON, restored.mShareState);
+        assertTrue(restored.mDefaultShareMenuItem);
+        assertTrue(restored.mOpenInBrowserButtonAllowed);
+        assertEquals(2, restored.mMenuEntries.size());
+        assertEquals("Menu 1", restored.mMenuEntries.get(0).first);
+        assertEquals(menuPi, restored.mMenuEntries.get(0).second);
+        assertEquals("Menu 2", restored.mMenuEntries.get(1).first);
+        assertEquals(menuPi2, restored.mMenuEntries.get(1).second);
     }
 
     @Test

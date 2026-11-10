@@ -343,14 +343,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private final CustomTabIntentDataHolder mDataHolder;
     private final Intent mIntent;
     private final ColorProvider mColorProvider;
-    private final int mShareState;
 
     private @Nullable Set<Origin> mAllTrustedWebActivityOrigins;
     private @Nullable String mUrlToLoad;
 
     private List<CustomButtonParams> mCustomButtonParams;
     private @Nullable Drawable mCloseButtonIcon;
-    private final List<Pair<String, PendingIntent>> mMenuEntries = new ArrayList<>();
     private boolean mShowShareItemInMenu;
     private final List<CustomButtonParams> mToolbarButtons = new ArrayList<>(1);
     private final List<CustomButtonParams> mBottombarButtons = new ArrayList<>(2);
@@ -575,7 +573,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                     CustomTabsConnection.getInstance().extractTargetNetwork(intent, session);
             builder.setNetwork(network);
 
-            builder.setIsOpenedByChrome(IntentHandler.wasIntentSenderChrome(intent));
+            boolean isOpenedByChrome = IntentHandler.wasIntentSenderChrome(intent);
+            builder.setIsOpenedByChrome(isOpenedByChrome);
 
             boolean isTwa =
                     session != null
@@ -754,6 +753,22 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             builder.setInitialBackgroundColor(
                     CustomTabColorProviderImpl.retrieveInitialBackgroundColor(intent));
             builder.setCustomButtonParams(CustomButtonParamsImpl.fromIntent(context, intent));
+            builder.setShareState(
+                    uiType == CustomTabsUiType.POPUP
+                            ? CustomTabsIntent.SHARE_STATE_OFF
+                            : IntentUtils.safeGetIntExtra(
+                                    intent,
+                                    CustomTabsIntent.EXTRA_SHARE_STATE,
+                                    CustomTabsIntent.SHARE_STATE_DEFAULT));
+            builder.setDefaultShareMenuItem(
+                    IntentUtils.safeGetBooleanExtra(
+                            intent,
+                            CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM,
+                            isOpenedByChrome && uiType == CustomTabsUiType.DEFAULT));
+            builder.setOpenInBrowserButtonAllowed(
+                    IntentUtils.safeGetBooleanExtra(
+                            intent, EXTRA_OPEN_IN_BROWSER_BUTTON_ALLOWED, false));
+            builder.setMenuEntries(extractMenuEntries(intent));
 
             mDataHolder = builder.build();
         }
@@ -766,16 +781,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                         context,
                         mDataHolder.mInitialBackgroundColor);
 
-        if (getUiType() == CustomTabsUiType.POPUP) {
-            mShareState = CustomTabsIntent.SHARE_STATE_OFF;
-        } else {
-            mShareState =
-                    IntentUtils.safeGetIntExtra(
-                            intent,
-                            CustomTabsIntent.EXTRA_SHARE_STATE,
-                            CustomTabsIntent.SHARE_STATE_DEFAULT);
-        }
-
         if (isCloseButtonEnabled()) {
             if (mDataHolder.mCloseButtonIcon == null) {
                 mCloseButtonIcon =
@@ -787,13 +792,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
         retrieveCustomButtons(context);
 
-        List<Bundle> menuItems =
-                IntentUtils.getParcelableArrayListExtra(intent, CustomTabsIntent.EXTRA_MENU_ITEMS);
-
-        int oibState = adjustOpenInBrowserOption(intent);
+        int oibState = adjustOpenInBrowserOption();
         maybeAddOpenInBrowserOption(context, oibState);
-        updateExtraMenuItems(menuItems);
-        maybeAddShareOption(intent, context);
+        maybeAddShareOption(context);
 
         logCustomTabFeatures(intent, colorScheme);
     }
@@ -837,8 +838,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return translateLanguage;
     }
 
-    private void updateExtraMenuItems(@Nullable List<Bundle> menuItems) {
-        if (menuItems == null) return;
+    private static List<Pair<String, PendingIntent>> extractMenuEntries(Intent intent) {
+        List<Bundle> menuItems =
+                IntentUtils.getParcelableArrayListExtra(intent, CustomTabsIntent.EXTRA_MENU_ITEMS);
+        List<Pair<String, PendingIntent>> entries = new ArrayList<>();
+        if (menuItems == null) return entries;
         for (int i = 0; i < Math.min(MAX_CUSTOM_MENU_ITEMS, menuItems.size()); i++) {
             Bundle bundle = menuItems.get(i);
             String title = IntentUtils.safeGetString(bundle, CustomTabsIntent.KEY_MENU_ITEM_TITLE);
@@ -847,8 +851,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             if (TextUtils.isEmpty(title) || pendingIntent == null) {
                 continue;
             }
-            mMenuEntries.add(new Pair<>(title, pendingIntent));
+            entries.add(new Pair<>(title, pendingIntent));
         }
+        return entries;
     }
 
     /**
@@ -866,12 +871,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         addedIntent.setData(Uri.parse(url));
         addedIntent.putExtra(Intent.EXTRA_SUBJECT, title);
         try {
-            // Media viewers pass in PendingIntents that contain CHOOSER Intents.  Setting the data
-            // in these cases prevents the Intent from firing correctly.
-            String menuTitle = mMenuEntries.get(menuIndex).first;
-            PendingIntent pendingIntent = mMenuEntries.get(menuIndex).second;
+            String menuTitle = mDataHolder.mMenuEntries.get(menuIndex).first;
+            PendingIntent pendingIntent = mDataHolder.mMenuEntries.get(menuIndex).second;
             ActivityOptions options = ActivityOptions.makeBasic();
             ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartAllowAlways(options);
+            // Media viewers pass in PendingIntents that contain CHOOSER Intents. Setting the data
+            // in these cases prevents the Intent from firing correctly.
             pendingIntent.send(
                     activity,
                     0,
@@ -1036,10 +1041,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      *       CustomTabsIntent#SHARE_STATE_DEFAULT}, add to the top toolbar if empty, otherwise add
      *       to the overflow menu if it is not customized.
      *   <li>If {@link CustomTabsIntent#SHARE_STATE_OFF}, add to the overflow menu depending on
-     *       {@link CustomTabsIntent#EXTRA_DEFAULT_SHARE_MENU_ITEM}.
+     *       {@code mDataHolder.mDefaultShareMenuItem} (from {@link
+     *       CustomTabsIntent#EXTRA_DEFAULT_SHARE_MENU_ITEM}).
      * </ul>
      */
-    private void maybeAddShareOption(Intent intent, Context context) {
+    private void maybeAddShareOption(Context context) {
         // Disable CCT share options for automotive. See crbug.com/300292495.
         if (!ShareUtils.enableShareForAutomotive(true)) return;
 
@@ -1049,7 +1055,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 mToolbarButtons.add(
                         CustomButtonParamsImpl.createShareButton(
                                 context, getColorProvider().getToolbarColor()));
-            } else if (mMenuEntries.isEmpty()) {
+            } else if (mDataHolder.mMenuEntries.isEmpty()) {
                 mShowShareItemInMenu = true;
             }
         } else if (shareState == CustomTabsIntent.SHARE_STATE_ON) {
@@ -1061,11 +1067,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 mShowShareItemInMenu = true;
             }
         } else {
-            mShowShareItemInMenu =
-                    IntentUtils.safeGetBooleanExtra(
-                            intent,
-                            CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM,
-                            isOpenedByChrome() && getUiType() == CustomTabsUiType.DEFAULT);
+            mShowShareItemInMenu = mDataHolder.mDefaultShareMenuItem;
         }
     }
 
@@ -1082,7 +1084,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         }
     }
 
-    private int adjustOpenInBrowserOption(Intent intent) {
+    private int adjustOpenInBrowserOption() {
         int openInBrowserState = getOpenInBrowserButtonState();
 
         if (openInBrowserState == CustomTabsButtonState.BUTTON_STATE_ON
@@ -1092,8 +1094,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
         if (openInBrowserState == CustomTabsButtonState.BUTTON_STATE_DEFAULT) {
             if (ChromeFeatureList.sCctOpenInBrowserButtonIfAllowedByEmbedder.isEnabled()
-                    && IntentUtils.safeGetBooleanExtra(
-                            intent, EXTRA_OPEN_IN_BROWSER_BUTTON_ALLOWED, false)) {
+                    && mDataHolder.mOpenInBrowserButtonAllowed) {
                 openInBrowserState = CustomTabsButtonState.BUTTON_STATE_ON;
             } else {
                 openInBrowserState = CustomTabsButtonState.BUTTON_STATE_OFF;
@@ -1115,7 +1116,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (!canAddMoreToolbarItems()) return false;
 
         if (oibState == CustomTabsButtonState.BUTTON_STATE_ON) {
-            return mToolbarButtons.isEmpty() || mShareState != CustomTabsIntent.SHARE_STATE_ON;
+            return mToolbarButtons.isEmpty()
+                    || getShareButtonState() != CustomTabsIntent.SHARE_STATE_ON;
         }
         return false;
     }
@@ -1312,7 +1314,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (mDataHolder.mMediaViewerUrl != null) {
             featureUsage.log(CustomTabsFeature.EXTRA_MEDIA_VIEWER_URL);
         }
-        if (mMenuEntries != null) featureUsage.log(CustomTabsFeature.EXTRA_MENU_ITEMS);
+        if (!mDataHolder.mMenuEntries.isEmpty()) {
+            featureUsage.log(CustomTabsFeature.EXTRA_MENU_ITEMS);
+        }
         if (IntentUtils.safeHasExtra(intent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE)) {
             featureUsage.log(CustomTabsFeature.EXTRA_CALLING_ACTIVITY_PACKAGE);
         }
@@ -1587,7 +1591,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public List<String> getMenuTitles() {
         ArrayList<String> list = new ArrayList<>();
-        for (Pair<String, PendingIntent> pair : mMenuEntries) {
+        for (Pair<String, PendingIntent> pair : mDataHolder.mMenuEntries) {
             list.add(pair.first);
         }
         return list;
@@ -1920,7 +1924,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public int getShareButtonState() {
-        return mShareState;
+        return mDataHolder.mShareState;
     }
 
     @Override

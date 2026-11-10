@@ -12,6 +12,7 @@ import android.net.Network;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Pair;
 import android.widget.RemoteViews;
 
 import androidx.annotation.ColorInt;
@@ -22,6 +23,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsIntent.ActivitySideSheetDecorationType;
 import androidx.browser.customtabs.CustomTabsIntent.ActivitySideSheetRoundedCornersPosition;
 import androidx.browser.customtabs.CustomTabsIntent.OpenInBrowserState;
+import androidx.browser.customtabs.CustomTabsIntent.ShareState;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 import androidx.core.os.ParcelCompat;
 
@@ -33,6 +35,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -93,6 +96,10 @@ public class CustomTabIntentDataHolder implements Parcelable {
     public final AuthTabColorSchemeParams mDarkAuthTabColorSchemeParams;
     public final @ColorInt int mInitialBackgroundColor;
     public final List<CustomButtonParams> mCustomButtonParams;
+    public final @ShareState int mShareState;
+    public final boolean mDefaultShareMenuItem;
+    public final boolean mOpenInBrowserButtonAllowed;
+    public final List<Pair<String, PendingIntent>> mMenuEntries;
 
     private CustomTabIntentDataHolder(Builder builder) {
         mSessionHolder = builder.mSessionHolder;
@@ -146,6 +153,10 @@ public class CustomTabIntentDataHolder implements Parcelable {
         mDarkAuthTabColorSchemeParams = builder.mDarkAuthTabColorSchemeParams;
         mInitialBackgroundColor = builder.mInitialBackgroundColor;
         mCustomButtonParams = builder.mCustomButtonParams;
+        mShareState = builder.mShareState;
+        mDefaultShareMenuItem = builder.mDefaultShareMenuItem;
+        mOpenInBrowserButtonAllowed = builder.mOpenInBrowserButtonAllowed;
+        mMenuEntries = builder.mMenuEntries;
     }
 
     private CustomTabIntentDataHolder(Parcel in) {
@@ -203,6 +214,10 @@ public class CustomTabIntentDataHolder implements Parcelable {
         mCustomButtonParams =
                 ParcelCompat.readParcelableList(
                         in, new ArrayList<>(), classLoader, CustomButtonParams.class);
+        mShareState = in.readInt();
+        mDefaultShareMenuItem = in.readBoolean();
+        mOpenInBrowserButtonAllowed = in.readBoolean();
+        mMenuEntries = readMenuEntries(in);
     }
 
     @Override
@@ -262,6 +277,10 @@ public class CustomTabIntentDataHolder implements Parcelable {
         writeAuthTabColorSchemeParams(dest, mDarkAuthTabColorSchemeParams);
         dest.writeInt(mInitialBackgroundColor);
         dest.writeParcelableList(mCustomButtonParams, flags);
+        dest.writeInt(mShareState);
+        dest.writeBoolean(mDefaultShareMenuItem);
+        dest.writeBoolean(mOpenInBrowserButtonAllowed);
+        writeMenuEntries(dest, mMenuEntries, flags);
     }
 
     @Override
@@ -404,6 +423,28 @@ public class CustomTabIntentDataHolder implements Parcelable {
         return builder.build();
     }
 
+    private static void writeMenuEntries(
+            Parcel dest, List<Pair<String, PendingIntent>> entries, int flags) {
+        dest.writeInt(entries.size());
+        for (Pair<String, PendingIntent> entry : entries) {
+            dest.writeString(entry.first);
+            dest.writeTypedObject(entry.second, flags);
+        }
+    }
+
+    private static List<Pair<String, PendingIntent>> readMenuEntries(Parcel in) {
+        int size = in.readInt();
+        if (size <= 0) return List.of();
+        List<Pair<String, PendingIntent>> entries = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            String title = in.readString();
+            PendingIntent pendingIntent = in.readTypedObject(PendingIntent.CREATOR);
+            if (title == null || pendingIntent == null) continue;
+            entries.add(new Pair<>(title, pendingIntent));
+        }
+        return Collections.unmodifiableList(entries);
+    }
+
     public static final class Builder {
         private @Nullable SessionHolder mSessionHolder;
         private @Nullable String mClientPackageName;
@@ -460,6 +501,10 @@ public class CustomTabIntentDataHolder implements Parcelable {
                 new AuthTabColorSchemeParams.Builder().build();
         private @ColorInt int mInitialBackgroundColor = Color.TRANSPARENT;
         private List<CustomButtonParams> mCustomButtonParams = List.of();
+        private @ShareState int mShareState = CustomTabsIntent.SHARE_STATE_DEFAULT;
+        private boolean mDefaultShareMenuItem;
+        private boolean mOpenInBrowserButtonAllowed;
+        private List<Pair<String, PendingIntent>> mMenuEntries = List.of();
 
         public Builder setSessionHolder(@Nullable SessionHolder sessionHolder) {
             mSessionHolder = sessionHolder;
@@ -721,6 +766,26 @@ public class CustomTabIntentDataHolder implements Parcelable {
 
         public Builder setCustomButtonParams(List<CustomButtonParams> customButtonParams) {
             mCustomButtonParams = customButtonParams;
+            return this;
+        }
+
+        public Builder setShareState(@ShareState int shareState) {
+            mShareState = shareState;
+            return this;
+        }
+
+        public Builder setDefaultShareMenuItem(boolean defaultShareMenuItem) {
+            mDefaultShareMenuItem = defaultShareMenuItem;
+            return this;
+        }
+
+        public Builder setOpenInBrowserButtonAllowed(boolean openInBrowserButtonAllowed) {
+            mOpenInBrowserButtonAllowed = openInBrowserButtonAllowed;
+            return this;
+        }
+
+        public Builder setMenuEntries(List<Pair<String, PendingIntent>> menuEntries) {
+            mMenuEntries = List.copyOf(menuEntries);
             return this;
         }
 

@@ -2538,6 +2538,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.CCT_OPEN_IN_BROWSER_BUTTON_IF_ALLOWED_BY_EMBEDDER)
     public void testReconstructFromSavedDataHolder() {
         CustomTabColorSchemeParams light =
                 new CustomTabColorSchemeParams.Builder()
@@ -2557,6 +2558,18 @@ public class CustomTabIntentDataProviderTest {
                         1,
                         new Intent("action"),
                         IntentUtils.getPendingIntentMutabilityFlag(true));
+        PendingIntent menuPi1 =
+                PendingIntent.getBroadcast(
+                        mContext,
+                        2,
+                        new Intent("menu_1"),
+                        IntentUtils.getPendingIntentMutabilityFlag(true));
+        PendingIntent menuPi2 =
+                PendingIntent.getBroadcast(
+                        mContext,
+                        3,
+                        new Intent("menu_2"),
+                        IntentUtils.getPendingIntentMutabilityFlag(true));
 
         Intent intent =
                 new CustomTabsIntent.Builder()
@@ -2564,6 +2577,9 @@ public class CustomTabIntentDataProviderTest {
                         .setColorSchemeParams(COLOR_SCHEME_DARK, dark)
                         .setActionButton(
                                 iconFittingToolbar, "action", actionPi, /* shouldTint= */ true)
+                        .addMenuItem("Menu 1", menuPi1)
+                        .addMenuItem("Menu 2", menuPi2)
+                        .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
                         .build()
                         .intent;
         setIsTrustedCustomTab(intent);
@@ -2572,6 +2588,8 @@ public class CustomTabIntentDataProviderTest {
                 CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
         intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, false);
         intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 300);
+        intent.putExtra(CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM, true);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_OPEN_IN_BROWSER_BUTTON_ALLOWED, true);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_BACKGROUND_COLOR, 0xFF123456);
 
         CustomTabIntentDataProvider originalProvider =
@@ -2635,6 +2653,14 @@ public class CustomTabIntentDataProviderTest {
                 originalProvider.getColorProvider().getInitialBackgroundColor(),
                 restoredLight.getColorProvider().getInitialBackgroundColor());
 
+        // Share state, share menu item, menu entries, and OIB-allowed.
+        assertEquals(CustomTabsIntent.SHARE_STATE_OFF, restoredLight.getShareButtonState());
+        assertTrue(restoredLight.shouldShowShareMenuItem());
+        assertEquals(List.of("Menu 1", "Menu 2"), restoredLight.getMenuTitles());
+        assertTrue(restoredHolder.mOpenInBrowserButtonAllowed);
+        assertEquals(CustomTabsIntent.SHARE_STATE_OFF, restoredHolder.mShareState);
+        assertTrue(restoredHolder.mDefaultShareMenuItem);
+
         // Custom buttons.
         assertEquals(1, originalProvider.getAllCustomButtons().size());
         assertEquals(
@@ -2656,6 +2682,10 @@ public class CustomTabIntentDataProviderTest {
         assertEquals(
                 originalProvider.getCustomButtonsOnToolbar().size(),
                 restoredLight.getCustomButtonsOnToolbar().size());
+        assertEquals(2, restoredLight.getCustomButtonsOnToolbar().size());
+        assertEquals(
+                ButtonType.CCT_OPEN_IN_BROWSER_BUTTON,
+                restoredLight.getCustomButtonsOnToolbar().get(1).getType());
         assertTrue(restoredHolder.mCustomButtonParams.get(0) instanceof CustomButtonParamsImpl);
     }
 
@@ -2780,6 +2810,7 @@ public class CustomTabIntentDataProviderTest {
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
         intent.putExtra(
                 CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
+        intent.putExtra(CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM, true);
 
         IncognitoCustomTabIntentDataProvider originalProvider =
                 new IncognitoCustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
@@ -2807,5 +2838,8 @@ public class CustomTabIntentDataProviderTest {
         assertEquals(
                 originalProvider.getTitleVisibilityState(),
                 restoredProvider.getTitleVisibilityState());
+        assertTrue(originalProvider.shouldShowShareMenuItem());
+        assertTrue(restoredProvider.shouldShowShareMenuItem());
+        assertTrue(restoredHolder.mDefaultShareMenuItem);
     }
 }

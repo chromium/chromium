@@ -58,7 +58,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     private final CustomTabIntentDataHolder mDataHolder;
     private final ColorProvider mColorProvider;
     private final Drawable mCloseButtonIcon;
-    private final boolean mShowShareItem;
     private final List<Pair<String, PendingIntent>> mMenuEntries = new ArrayList<>();
 
     private final @Nullable String mUrlToLoad;
@@ -107,6 +106,9 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
             int uiType = getUiType(intent);
             builder.setUiType(uiType);
             builder.setIsCloseButtonEnabled(true);
+            builder.setDefaultShareMenuItem(
+                    IntentUtils.safeGetBooleanExtra(
+                            intent, CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM, false));
 
             mDataHolder = builder.build();
         }
@@ -115,9 +117,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         mColorProvider = new IncognitoCustomTabColorProvider(context);
         assert mDataHolder.mCloseButtonIcon == null;
         mCloseButtonIcon = TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
-        mShowShareItem =
-                IntentUtils.safeGetBooleanExtra(
-                        intent, CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM, false);
 
         logFeatureUsage(intent);
     }
@@ -165,14 +164,16 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
             featureUsage.log(CustomTabsFeature.EXTRA_EXIT_ANIMATION_BUNDLE);
         }
         featureUsage.log(CustomTabsFeature.EXTRA_OPEN_NEW_INCOGNITO_TAB);
-        if (mMenuEntries != null) featureUsage.log(CustomTabsFeature.EXTRA_MENU_ITEMS);
+        if (!mMenuEntries.isEmpty()) featureUsage.log(CustomTabsFeature.EXTRA_MENU_ITEMS);
         if (getClientPackageName() != null) featureUsage.log(CustomTabsFeature.CTF_PACKAGE_NAME);
         if (IntentUtils.safeHasExtra(intent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE)) {
             featureUsage.log(CustomTabsFeature.EXTRA_CALLING_ACTIVITY_PACKAGE);
         }
         if (isPartialHeightCustomTab()) featureUsage.log(CustomTabsFeature.CTF_PARTIAL);
         if (mDataHolder.mIsOpenedByChrome) featureUsage.log(CustomTabsFeature.CTF_SENT_BY_CHROME);
-        if (mShowShareItem) featureUsage.log(CustomTabsFeature.EXTRA_DEFAULT_SHARE_MENU_ITEM);
+        if (mDataHolder.mDefaultShareMenuItem) {
+            featureUsage.log(CustomTabsFeature.EXTRA_DEFAULT_SHARE_MENU_ITEM);
+        }
         if (mDataHolder.mTitleVisibilityState != CustomTabsIntent.NO_TITLE) {
             featureUsage.log(CustomTabsFeature.EXTRA_TITLE_VISIBILITY_STATE);
         }
@@ -302,7 +303,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
 
     @Override
     public boolean shouldShowShareMenuItem() {
-        return mShowShareItem;
+        return mDataHolder.mDefaultShareMenuItem;
     }
 
     @Override
