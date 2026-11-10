@@ -2495,15 +2495,10 @@ std::vector<WebFormControlElement> GetOwnedAutofillableFormControls(
 }
 
 WebFormElement GetOutermostAncestorFormElement(WebNode n) {
-  const bool should_return_closest_ancestor =
-      !base::FeatureList::IsEnabled(features::kAutofillFixIframeOwnership);
   WebFormElement form;
   while (n) {
     if (HasTagName<kForm>(n)) {
       form = n.To<WebFormElement>();
-      if (should_return_closest_ancestor) {
-        return form;
-      }
     }
     n = n.ParentOrShadowHostNode();
   }

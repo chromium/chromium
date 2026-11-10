@@ -295,8 +295,7 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
   FormAutofillUtilsTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kAutofillExtractShadowDomIframes,
-         features::kAutofillFixIframeOwnership},
+        {features::kAutofillExtractShadowDomIframes},
         /*disabled_features=*/{});
   }
   ~FormAutofillUtilsTest() override = default;
