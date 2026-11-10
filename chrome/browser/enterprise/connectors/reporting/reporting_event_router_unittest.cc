@@ -79,6 +79,17 @@ class RealtimeReportingClientFakeActiveGaia : public RealtimeReportingClient {
   std::string GetContentAreaAccountEmail(const GURL& url) override {
     return kFakeActiveUserEmail;
   }
+
+  bool ShouldIncludeDeviceInfo(bool per_profile) override {
+    return should_include_device_info_;
+  }
+
+  void SetShouldIncludeDeviceInfoForTesting(bool include_device_info) {
+    should_include_device_info_ = include_device_info;
+  }
+
+ private:
+  bool should_include_device_info_ = true;
 };
 
 class ReportingEventRouterTestBase : public ::testing::Test {
@@ -259,7 +270,7 @@ TEST_F(ReportingEventRouterTest, TestOnLoginEventFederated) {
   run_loop.Run();
 }
 
-class ReportingEventRouterLoginInitiatorTest
+class ReportingEventRouterEventInitiatorTest
     : public ReportingEventRouterTestBase {
  public:
   using EventInitiatorInfo =
@@ -269,7 +280,8 @@ class ReportingEventRouterLoginInitiatorTest
     ReportingEventRouterTestBase::SetUp();
     test::SetOnSecurityEventReporting(
         profile_->GetPrefs(), /*enabled=*/true,
-        /*enabled_event_names=*/{},
+        /*enabled_event_names=*/
+        {kKeyUrlFilteringInterstitialEvent, kKeyInterstitialEvent},
         /*enabled_opt_in_events=*/{{kKeyLoginEvent, {"*"}}});
   }
 
@@ -303,8 +315,8 @@ class ReportingEventRouterLoginInitiatorTest
   // Reports a login event with `initiator` and expects the uploaded event to
   // carry `expected_initiator`, or no initiator if it is `std::nullopt`.
   void ReportLoginAndExpectInitiator(
-      const std::optional<EventInitiatorInfo>& initiator,
-      const std::optional<EventInitiatorInfo>& expected_initiator) {
+      std::optional<EventInitiatorInfo> initiator,
+      std::optional<EventInitiatorInfo> expected_initiator) {
     base::RunLoop run_loop;
     EXPECT_CALL(*client_, UploadSecurityEvent)
         .WillOnce(
@@ -326,21 +338,70 @@ class ReportingEventRouterLoginInitiatorTest
 
     reporting_event_router_->OnLoginEvent(
         GURL("https://www.example.com/"), /*is_federated=*/false,
-        url::SchemeHostPort(), u"Fakeuser", initiator);
+        url::SchemeHostPort(), u"Fakeuser", std::move(initiator));
     run_loop.Run();
+  }
+
+  // Reports URL filtering and security interstitial events with `initiator`
+  // and expects each uploaded event to carry `expected_initiator`, or no
+  // initiator if it is `std::nullopt`.
+  void ReportInterstitialEventsAndExpectInitiator(
+      std::optional<EventInitiatorInfo> initiator,
+      std::optional<EventInitiatorInfo> expected_initiator) {
+    auto expect_upload = [&](auto trigger) {
+      base::RunLoop run_loop;
+      EXPECT_CALL(*client_, UploadSecurityEvent)
+          .WillOnce(
+              [&](bool include_device_info,
+                  ::chrome::cros::reporting::proto::UploadEventsRequest request,
+                  policy::CloudPolicyClient::ResultCallback callback) {
+                ASSERT_EQ(1, request.events_size());
+                const auto& event = request.events(0);
+                if (expected_initiator) {
+                  ASSERT_TRUE(event.has_initiator());
+                  EXPECT_THAT(event.initiator(),
+                              base::test::EqualsProto(*expected_initiator));
+                } else {
+                  EXPECT_FALSE(event.has_initiator());
+                }
+                run_loop.Quit();
+              });
+      trigger();
+      run_loop.Run();
+    };
+
+    expect_upload([&]() {
+      reporting_event_router_->OnUrlFilteringInterstitial(
+          GURL("https://filteredurl.com"), "ENTERPRISE_BLOCKED_SEEN",
+          safe_browsing::RTLookupResponse(), ReferrerChain(),
+          /*tab_title=*/kTabTitle, initiator);
+    });
+    expect_upload([&]() {
+      reporting_event_router_->OnSecurityInterstitialShown(
+          GURL("https://phishing.com/"), "PHISHING", /*net_error_code=*/0,
+          /*proceed_anyway_disabled=*/false, ReferrerChain(),
+          /*tab_title=*/kTabTitle, initiator);
+    });
+    expect_upload([&]() {
+      reporting_event_router_->OnSecurityInterstitialProceeded(
+          GURL("https://phishing.com/"), "PHISHING", /*net_error_code=*/0,
+          ReferrerChain(), /*tab_title=*/kTabTitle, initiator);
+    });
   }
 
  protected:
   base::test::ScopedFeatureList initiator_feature_list_;
 };
 
-TEST_F(ReportingEventRouterLoginInitiatorTest, AgentInitiatorIsReported) {
+TEST_F(ReportingEventRouterEventInitiatorTest, AgentInitiatorIsReported) {
   initiator_feature_list_.InitAndEnableFeature(kEnterpriseGlicActorAttribution);
 
   ReportLoginAndExpectInitiator(MakeAgentInitiator(), MakeAgentInitiator());
+  ReportInterstitialEventsAndExpectInitiator(MakeAgentInitiator(),
+                                             MakeAgentInitiator());
 }
 
-TEST_F(ReportingEventRouterLoginInitiatorTest,
+TEST_F(ReportingEventRouterEventInitiatorTest,
        AgentInitiatorIsDroppedWhenFeatureDisabled) {
   initiator_feature_list_.InitWithFeatures(
       /*enabled_features=*/{kEnterpriseExtensionActorAttribution,
@@ -348,17 +409,21 @@ TEST_F(ReportingEventRouterLoginInitiatorTest,
       /*disabled_features=*/{kEnterpriseGlicActorAttribution});
 
   ReportLoginAndExpectInitiator(MakeAgentInitiator(), std::nullopt);
+  ReportInterstitialEventsAndExpectInitiator(MakeAgentInitiator(),
+                                             std::nullopt);
 }
 
-TEST_F(ReportingEventRouterLoginInitiatorTest, ExtensionInitiatorIsReported) {
+TEST_F(ReportingEventRouterEventInitiatorTest, ExtensionInitiatorIsReported) {
   initiator_feature_list_.InitAndEnableFeature(
       kEnterpriseExtensionActorAttribution);
 
   ReportLoginAndExpectInitiator(MakeExtensionInitiator(),
                                 MakeExtensionInitiator());
+  ReportInterstitialEventsAndExpectInitiator(MakeExtensionInitiator(),
+                                             MakeExtensionInitiator());
 }
 
-TEST_F(ReportingEventRouterLoginInitiatorTest,
+TEST_F(ReportingEventRouterEventInitiatorTest,
        ExtensionInitiatorIsDroppedWhenFeatureDisabled) {
   initiator_feature_list_.InitWithFeatures(
       /*enabled_features=*/{kEnterpriseGlicActorAttribution,
@@ -366,17 +431,21 @@ TEST_F(ReportingEventRouterLoginInitiatorTest,
       /*disabled_features=*/{kEnterpriseExtensionActorAttribution});
 
   ReportLoginAndExpectInitiator(MakeExtensionInitiator(), std::nullopt);
+  ReportInterstitialEventsAndExpectInitiator(MakeExtensionInitiator(),
+                                             std::nullopt);
 }
 
-TEST_F(ReportingEventRouterLoginInitiatorTest,
+TEST_F(ReportingEventRouterEventInitiatorTest,
        BrowserFeatureInitiatorIsReported) {
   initiator_feature_list_.InitAndEnableFeature(kEventReportingCdpAttribution);
 
   ReportLoginAndExpectInitiator(MakeBrowserFeatureInitiator(),
                                 MakeBrowserFeatureInitiator());
+  ReportInterstitialEventsAndExpectInitiator(MakeBrowserFeatureInitiator(),
+                                             MakeBrowserFeatureInitiator());
 }
 
-TEST_F(ReportingEventRouterLoginInitiatorTest,
+TEST_F(ReportingEventRouterEventInitiatorTest,
        BrowserFeatureInitiatorIsDroppedWhenFeatureDisabled) {
   initiator_feature_list_.InitWithFeatures(
       /*enabled_features=*/{kEnterpriseExtensionActorAttribution,
@@ -384,9 +453,36 @@ TEST_F(ReportingEventRouterLoginInitiatorTest,
       /*disabled_features=*/{kEventReportingCdpAttribution});
 
   ReportLoginAndExpectInitiator(MakeBrowserFeatureInitiator(), std::nullopt);
+  ReportInterstitialEventsAndExpectInitiator(MakeBrowserFeatureInitiator(),
+                                             std::nullopt);
 }
 
-TEST_F(ReportingEventRouterLoginInitiatorTest, NoInitiatorIsReported) {
+TEST_F(ReportingEventRouterEventInitiatorTest,
+       CdpInitiatorIsDroppedWhenDeviceInfoExcluded) {
+  initiator_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kEnterpriseExtensionActorAttribution,
+                            kEventReportingCdpAttribution,
+                            kEnterpriseGlicActorAttribution},
+      /*disabled_features=*/{});
+  static_cast<RealtimeReportingClientFakeActiveGaia*>(
+      RealtimeReportingClientFactory::GetForProfile(profile_))
+      ->SetShouldIncludeDeviceInfoForTesting(false);
+
+  ReportLoginAndExpectInitiator(MakeBrowserFeatureInitiator(), std::nullopt);
+  ReportInterstitialEventsAndExpectInitiator(MakeBrowserFeatureInitiator(),
+                                             std::nullopt);
+
+  // Profile-scoped initiators (extension, Glic agent) are still reported.
+  ReportLoginAndExpectInitiator(MakeExtensionInitiator(),
+                                MakeExtensionInitiator());
+  ReportInterstitialEventsAndExpectInitiator(MakeExtensionInitiator(),
+                                             MakeExtensionInitiator());
+  ReportLoginAndExpectInitiator(MakeAgentInitiator(), MakeAgentInitiator());
+  ReportInterstitialEventsAndExpectInitiator(MakeAgentInitiator(),
+                                             MakeAgentInitiator());
+}
+
+TEST_F(ReportingEventRouterEventInitiatorTest, NoInitiatorIsReported) {
   initiator_feature_list_.InitWithFeatures(
       /*enabled_features=*/{kEnterpriseExtensionActorAttribution,
                             kEventReportingCdpAttribution,
@@ -394,6 +490,7 @@ TEST_F(ReportingEventRouterLoginInitiatorTest, NoInitiatorIsReported) {
       /*disabled_features=*/{});
 
   ReportLoginAndExpectInitiator(std::nullopt, std::nullopt);
+  ReportInterstitialEventsAndExpectInitiator(std::nullopt, std::nullopt);
 }
 
 TEST_F(ReportingEventRouterTest, TestOnPasswordBreach) {
@@ -526,7 +623,7 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_BLOCKED_SEEN", response,
       referrer_chain, /*tab_title=*/kTabTitle,
-      /*extension_initiator=*/std::nullopt);
+      /*initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -575,7 +672,7 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_WARNED_SEEN", response,
       referrer_chain, /*tab_title=*/kTabTitle,
-      /*extension_initiator=*/std::nullopt);
+      /*initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -625,7 +722,7 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_WARNED_BYPASS", response,
       referrer_chain, /*tab_title=*/kTabTitle,
-      /*extension_initiator=*/std::nullopt);
+      /*initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -672,7 +769,7 @@ TEST_F(ReportingEventRouterTest,
 
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "", response, referrer_chain,
-      /*tab_title=*/kTabTitle, /*extension_initiator=*/std::nullopt);
+      /*tab_title=*/kTabTitle, /*initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -719,7 +816,7 @@ TEST_F(ReportingEventRouterTest,
 
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "", response, referrer_chain,
-      /*tab_title=*/kTabTitle, /*extension_initiator=*/std::nullopt);
+      /*tab_title=*/kTabTitle, /*initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -753,7 +850,7 @@ TEST_F(ReportingEventRouterTest, TestInterstitialShownWarned) {
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialShown(
       GURL("https://phishing.com/"), "PHISHING", 0, false, referrer_chain,
-      /*tab_title=*/kTabTitle, /*extension_initiator=*/std::nullopt);
+      /*tab_title=*/kTabTitle, /*initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -786,7 +883,7 @@ TEST_F(ReportingEventRouterTest, TestInterstitialShownBlocked) {
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialShown(
       GURL("https://phishing.com/"), "PHISHING", 0, true, referrer_chain,
-      /*tab_title=*/kTabTitle, /*extension_initiator=*/std::nullopt);
+      /*tab_title=*/kTabTitle, /*initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -819,7 +916,7 @@ TEST_F(ReportingEventRouterTest, TestInterstitialProceeded) {
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialProceeded(
       GURL("https://phishing.com/"), "PHISHING", 0, referrer_chain,
-      /*tab_title=*/kTabTitle, /*extension_initiator=*/std::nullopt);
+      /*tab_title=*/kTabTitle, /*initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -1699,6 +1796,9 @@ TEST_P(ReportingEventRouterInitiatorTest, InterstitialEvents_WithInitiator) {
       {kKeyUrlFilteringInterstitialEvent, kKeyInterstitialEvent},
       /*enabled_opt_in_events=*/{});
 
+  ::chrome::cros::reporting::proto::EventInitiatorInfo initiator;
+  *initiator.mutable_chrome_extension() = MakeExtensionInfo();
+
   auto expect_upload = [&](auto trigger) {
     base::RunLoop run_loop;
     ExpectInitiator(MakeExtensionInfo(), run_loop.QuitClosure());
@@ -1710,18 +1810,18 @@ TEST_P(ReportingEventRouterInitiatorTest, InterstitialEvents_WithInitiator) {
     reporting_event_router_->OnUrlFilteringInterstitial(
         GURL("https://filteredurl.com"), "ENTERPRISE_BLOCKED_SEEN",
         safe_browsing::RTLookupResponse(), ReferrerChain(),
-        /*tab_title=*/kTabTitle, MakeExtensionInfo());
+        /*tab_title=*/kTabTitle, initiator);
   });
   expect_upload([&]() {
     reporting_event_router_->OnSecurityInterstitialShown(
         GURL("https://phishing.com/"), "PHISHING", /*net_error_code=*/0,
         /*proceed_anyway_disabled=*/false, ReferrerChain(),
-        /*tab_title=*/kTabTitle, MakeExtensionInfo());
+        /*tab_title=*/kTabTitle, initiator);
   });
   expect_upload([&]() {
     reporting_event_router_->OnSecurityInterstitialProceeded(
         GURL("https://phishing.com/"), "PHISHING", /*net_error_code=*/0,
-        ReferrerChain(), /*tab_title=*/kTabTitle, MakeExtensionInfo());
+        ReferrerChain(), /*tab_title=*/kTabTitle, initiator);
   });
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

@@ -77,8 +77,12 @@ GetActiveGlicActorInitiatorInfo(content::WebContents* web_contents);
 // Resolves `EventInitiatorInfo` for the entity currently acting on
 // `web_contents`, checking `GetActiveExtensionInitiatorInfo()` first, then
 // `CdpActorSessionTracker::GetEventInitiatorInfo()`, and falling back to
-// `GetActiveGlicActorInitiatorInfo()`. Returns `std::nullopt` if
-// `web_contents` is null or no actor is currently attributed.
+// `GetActiveGlicActorInitiatorInfo()`. Device-level CDP attribution
+// (`ExternalProcessInfo` / `BrowserFeatureInfo`) is included only when
+// `web_contents`'s security event reporting policy scope allows device info;
+// otherwise only extension and Gemini in Chrome attribution are returned.
+// Returns `std::nullopt` if `web_contents` is null or no eligible actor is
+// currently attributed.
 //
 // Must be called on the UI thread.
 std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>

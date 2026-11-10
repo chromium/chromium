@@ -874,6 +874,7 @@ TEST_F(CdpActorSessionTrackerTest,
 
 TEST_F(CdpActorSessionTrackerTest,
        PreWarmsCacheOnClientAttachedBeforeFirstCommandHandled) {
+  test::SetOnSecurityEventReporting(profile()->GetPrefs(), /*enabled=*/true);
   auto tab_host =
       base::MakeRefCounted<FakeDevToolsAgentHost>(web_contents(), profile());
 

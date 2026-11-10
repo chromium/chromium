@@ -122,6 +122,24 @@ void PopulateInstalledExtensionInfo(content::BrowserContext* browser_context,
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
+bool CanIncludeDeviceInfoForReporting(
+    content::BrowserContext* browser_context) {
+  if (!browser_context ||
+      !base::FeatureList::IsEnabled(kEventReportingCdpAttribution)) {
+    return false;
+  }
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  ConnectorsService* connectors =
+      ConnectorsServiceFactory::GetForBrowserContext(browser_context);
+  if (!connectors) {
+    return false;
+  }
+  std::optional<ReportingSettings> reporting =
+      connectors->GetReportingSettings();
+  return reporting.has_value() &&
+         IncludeDeviceInfo(profile, reporting->per_profile);
+}
+
 bool CanIncludeDeviceInfoForUrlLookup(
     content::BrowserContext* browser_context) {
   if (!browser_context ||
@@ -328,8 +346,12 @@ std::optional<BrowserAgentInfo> GetActiveGlicActorInitiatorInfo(
 std::optional<EventInitiatorInfo> GetActiveEventInitiatorInfo(
     content::WebContents* web_contents) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return GetActiveEventInitiatorInfoImpl(web_contents,
-                                         /*include_device_info=*/true);
+  if (!web_contents) {
+    return std::nullopt;
+  }
+  return GetActiveEventInitiatorInfoImpl(
+      web_contents,
+      CanIncludeDeviceInfoForReporting(web_contents->GetBrowserContext()));
 }
 
 std::optional<EventInitiatorInfo> GetActiveEventInitiatorInfo(

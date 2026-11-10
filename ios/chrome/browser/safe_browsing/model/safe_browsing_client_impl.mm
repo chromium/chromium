@@ -126,7 +126,7 @@ void SafeBrowsingClientImpl::OnSecurityInterstitialShown(
         pref_service_->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled),
         referrer_chain,
         /*tab_title=*/base::UTF16ToUTF8(web_state->GetTitle()),
-        /*extension_initiator=*/std::nullopt);
+        /*initiator=*/std::nullopt);
   }
 }
 
