@@ -6,9 +6,10 @@
 """Inventories Chrome Remote Desktop Windows host locations and validates ACLs.
 
 Audits the filesystem directories/files, Windows Service, MSI UpgradeCode,
-Windows Firewall rules, and uninstall/pending-rename locations modified by
-the legacy WiX MSI (`chromoting.wxs`) and `remoting_setup.exe`, reporting
-presence, target file validity, and security descriptors/ACLs.
+Windows Firewall rules, uninstall/pending-rename locations, and 32-bit/64-bit
+registry locations created or modified by the legacy WiX MSI (`chromoting.wxs`)
+or `remoting_setup.exe`, reporting presence, target file validity, and security
+descriptors/ACLs.
 """
 
 import argparse
@@ -27,7 +28,10 @@ if sys.platform == 'win32':
 # Keep constants in sync with installer_constants.h, host_payload_files.gni,
 # security_descriptor.h, and chromoting.wxs.
 SERVICE_NAME = 'chromoting'
+EVENT_SOURCE_NAME = 'chromoting'
+OMAHA_APP_ID = '{b210701e-ffc4-49e3-932b-370728c72662}'
 LEGACY_MSI_UPGRADE_CODE = '{2b21f767-e157-4fa6-963c-55834c1433a6}'
+LEGACY_SAWBUCK_PROVIDER_GUID = '{2db51ca1-4fd8-4b88-b5a2-fb8606b66b02}'
 
 HOST_CONFIG_FILENAME = 'host.json'
 UNPRIVILEGED_CONFIG_FILENAME = 'host_unprivileged.json'
@@ -83,6 +87,16 @@ EXPECTED_PAYLOAD_FILES = (
 )
 
 EXPECTED_PAYLOAD_LOWER = frozenset(f.lower() for f in EXPECTED_PAYLOAD_FILES)
+
+_CHROME_NMH = r'SOFTWARE\Google\chrome\NativeMessagingHosts'
+_MOZ_NMH = r'SOFTWARE\Mozilla\NativeMessagingHosts'
+NATIVE_MESSAGING_HOSTS = (
+  rf'{_CHROME_NMH}\com.google.chrome.remote_assistance',
+  rf'{_MOZ_NMH}\com.google.chrome.remote_assistance',
+  rf'{_CHROME_NMH}\com.google.chrome.remote_desktop',
+  rf'{_MOZ_NMH}\com.google.chrome.remote_desktop',
+  rf'{_CHROME_NMH}\com.google.chrome.remote_webauthn',
+)
 
 VERSION_DIR_RE = re.compile(r'^\d+\.\d+\.\d+\.\d+$')
 UNQUOTED_CMD_EXE_RE = re.compile(
@@ -708,6 +722,7 @@ class WindowsSystemProbe(SystemProbe):
 def _evaluate_acl(
   entry: InventoryEntry, sddl: Optional[str], **kwargs: Any
 ) -> None:
+  """Evaluates `sddl` via `validate_sddl` and updates `entry` ACL fields."""
   if sddl is None:
     entry.acl_status = 'UNAVAILABLE'
     entry.issues.append('ACL: Security descriptor unavailable')
@@ -718,6 +733,79 @@ def _evaluate_acl(
     entry.issues.extend(f'ACL: {v}' for v in violations)
   else:
     entry.acl_status = 'OK'
+
+
+def _add_item(
+  report: AuditReport,
+  cat: str,
+  loc: str,
+  src: str,
+  present: bool,
+  detail: str = '',
+  brand: Optional[str] = None,
+) -> InventoryEntry:
+  """Appends a new `InventoryEntry` to `report` and tracks active branding."""
+  if present and brand and brand not in report.detected_branding:
+    report.detected_branding.append(brand)
+  entry = InventoryEntry(cat, loc, src, present, detail)
+  report.entries.append(entry)
+  return entry
+
+
+def _check_target(
+  probe: SystemProbe,
+  raw: str,
+  is_command: bool,
+  issues: list[str],
+  label: str = '',
+) -> None:
+  """Validates that a file path or command executable exists on disk."""
+  cmd = raw.strip()
+  target = extract_executable_path(cmd) if is_command else cmd
+  if (
+    is_command and not cmd.startswith('"') and any(c.isspace() for c in target)
+  ):
+    issues.append(f'{label}Unquoted command path with spaces: {raw!r}')
+  if not target or not probe.path_exists(target) or probe.is_dir(target):
+    issues.append(f'{label}Target file missing or invalid on disk: {raw!r}')
+
+
+def _audit_reg(
+  probe: SystemProbe,
+  report: AuditReport,
+  subkey: str,
+  view: int,
+  source: str,
+  brand: Optional[str] = None,
+  val_name: Optional[str] = None,
+  path_value: Optional[str] = None,
+  is_command: bool = False,
+  **acl_kwargs: Any,
+) -> InventoryEntry:
+  """Audits an HKLM registry key or value, its SDDL, and any target path."""
+  if val_name is not None:
+    val = probe.reg_get_value(subkey, val_name, view=view)
+    loc = rf'HKLM\{subkey}\{val_name} [{view}-bit]'
+    entry = _add_item(
+      report, 'Registry', loc, source, val is not None, str(val or ''), brand
+    )
+  else:
+    loc = rf'HKLM\{subkey} [{view}-bit]'
+    present = probe.reg_key_exists(subkey, view=view)
+    entry = _add_item(report, 'Registry', loc, source, present, brand=brand)
+  if entry.present:
+    _evaluate_acl(
+      entry,
+      probe.get_reg_sddl(subkey, view=view),
+      object_type='reg',
+      **acl_kwargs,
+    )
+    if path_value is not None:
+      raw = str(probe.reg_get_value(subkey, path_value, view=view) or '')
+      if val_name is None:
+        entry.detail = raw
+      _check_target(probe, raw, is_command, entry.issues)
+  return entry
 
 
 def audit_host_install(
@@ -734,32 +822,6 @@ def audit_host_install(
   )
   versions: list[str] = [explicit_version] if explicit_version else []
 
-  def add_item(
-    cat: str,
-    loc: str,
-    src: str,
-    present: bool,
-    detail: str = '',
-    brand: Optional[str] = None,
-  ) -> InventoryEntry:
-    if present and brand and brand not in report.detected_branding:
-      report.detected_branding.append(brand)
-    entry = InventoryEntry(cat, loc, src, present, detail)
-    report.entries.append(entry)
-    return entry
-
-  def check_target(raw: str, is_command: bool, issues: list[str]) -> None:
-    cmd = raw.strip()
-    target = extract_executable_path(cmd) if is_command else cmd
-    if (
-      is_command
-      and not cmd.startswith('"')
-      and any(c.isspace() for c in target)
-    ):
-      issues.append(f'Unquoted command path with spaces: {raw!r}')
-    if not target or not probe.path_exists(target) or probe.is_dir(target):
-      issues.append(f'Target file missing or invalid on disk: {raw!r}')
-
   def check_reparse_ancestors(
     base: str, rel_dir: str, issues: list[str]
   ) -> None:
@@ -769,46 +831,17 @@ def audit_host_install(
       if probe.path_exists(cur) and probe.is_reparse_point(cur):
         issues.append(f'Path or ancestor is a reparse point/symlink: {cur}')
 
-  def audit_reg(
-    subkey: str,
-    view: int,
-    source: str,
-    brand: Optional[str] = None,
-    val_name: Optional[str] = None,
-    path_value: Optional[str] = None,
-    is_command: bool = False,
-    **acl_kwargs: Any,
-  ) -> InventoryEntry:
-    if val_name is not None:
-      val = probe.reg_get_value(subkey, val_name, view=view)
-      loc = rf'HKLM\{subkey}\{val_name} [{view}-bit]'
-      entry = add_item(
-        'Registry', loc, source, val is not None, str(val or ''), brand
-      )
-    else:
-      loc = rf'HKLM\{subkey} [{view}-bit]'
-      present = probe.reg_key_exists(subkey, view=view)
-      entry = add_item('Registry', loc, source, present, brand=brand)
-    if entry.present:
-      _evaluate_acl(
-        entry,
-        probe.get_reg_sddl(subkey, view=view),
-        object_type='reg',
-        **acl_kwargs,
-      )
-      if path_value is not None:
-        raw = str(probe.reg_get_value(subkey, path_value, view=view) or '')
-        if val_name is None:
-          entry.detail = raw
-        check_target(raw, is_command, entry.issues)
-    return entry
-
   def audit_install_dir(
     base_dir: str, rel_dir: str, source: str, brand: str, check_payload: bool
   ) -> None:
     dir_path = _join_win_path(base_dir, rel_dir)
-    entry = add_item(
-      'Filesystem', dir_path, source, probe.path_exists(dir_path), brand=brand
+    entry = _add_item(
+      report,
+      'Filesystem',
+      dir_path,
+      source,
+      probe.path_exists(dir_path),
+      brand=brand,
     )
     if not entry.present:
       return
@@ -894,14 +927,35 @@ def audit_host_install(
   pfx86 = probe.get_env('ProgramFiles(x86)') or r'C:\Program Files (x86)'
   program_data = probe.get_env('ProgramData') or r'C:\ProgramData'
 
-  # Filesystem Install Directories & ProgramData Configuration.
+  # 1. Omaha Client Registration (only registered by Google Chrome-branded
+  # official builds; see `BUILDFLAG(GOOGLE_CHROME_BRANDING)` in
+  # `registry_work_items.cc` and `OfficialBuild` in `chromoting.wxs`).
+  omaha_subkey = rf'SOFTWARE\Google\Update\Clients\{OMAHA_APP_ID}'
+  omaha_entries: dict[int, InventoryEntry] = {}
+  omaha_pvs: dict[int, str] = {}
+  for view, src in ((64, 'exe'), (32, 'both')):
+    entry = _audit_reg(
+      probe, report, omaha_subkey, view, src, brand=CHROME_BRANDING.name
+    )
+    omaha_entries[view] = entry
+    if entry.present:
+      pv = probe.reg_get_value(omaha_subkey, 'pv', view=view)
+      name = probe.reg_get_value(omaha_subkey, 'name', view=view)
+      entry.detail = f'pv={pv!r}, name={name!r}'
+      if not isinstance(pv, str) or not VERSION_DIR_RE.match(pv):
+        entry.issues.append(f'Invalid or missing Omaha pv: {pv!r}')
+      else:
+        omaha_pvs[view] = pv
+
+  # 2. Filesystem Install Directories & ProgramData Configuration.
   for spec in specs:
     audit_install_dir(pf64, spec.rel_dir, 'exe', spec.name, True)
     if pfx86.lower() != pf64.lower():
       audit_install_dir(pfx86, spec.rel_dir, 'msi', spec.name, False)
 
     cfg_dir = _join_win_path(program_data, spec.rel_dir)
-    ecfg = add_item(
+    ecfg = _add_item(
+      report,
       'ProgramData',
       cfg_dir,
       'both',
@@ -926,7 +980,9 @@ def audit_host_install(
     ecfg.detail = f'files: {", ".join(cfg_items)}' if cfg_items else '(empty)'
     for name in cfg_items:
       full_cfg = _join_win_path(cfg_dir, name)
-      fentry = add_item('ProgramData', full_cfg, 'both', True, brand=spec.name)
+      fentry = _add_item(
+        report, 'ProgramData', full_cfg, 'both', True, brand=spec.name
+      )
       is_cfg_dir = probe.is_dir(full_cfg)
       if probe.is_reparse_point(full_cfg):
         fentry.issues.append('ProgramData entry is a reparse point/symlink')
@@ -946,16 +1002,18 @@ def audit_host_install(
         allow_trusted_installer=False,
       )
 
-  # Windows Service (`chromoting`), MSI UpgradeCode, Uninstall, Firewall.
+  # 3. Windows Service (`chromoting`), MSI UpgradeCode, Uninstall, Firewall.
   svc = probe.query_service(SERVICE_NAME)
-  svc_entry = add_item('Service', rf'SCM\{SERVICE_NAME}', 'both', svc.exists)
+  svc_entry = _add_item(
+    report, 'Service', rf'SCM\{SERVICE_NAME}', 'both', svc.exists
+  )
   if svc.exists:
     svc_exe = extract_executable_path(svc.binary_path)
     svc_entry.detail = (
       f'state={svc.state}, start={svc.start_type}, account={svc.account}, '
       f'binary={svc_exe}'
     )
-    check_target(svc.binary_path, True, svc_entry.issues)
+    _check_target(probe, svc.binary_path, True, svc_entry.issues)
     if svc.account.lower() not in (
       'localsystem',
       r'.\localsystem',
@@ -965,11 +1023,18 @@ def audit_host_install(
     _evaluate_acl(
       svc_entry, probe.get_service_sddl(SERVICE_NAME), object_type='service'
     )
-  audit_reg(rf'SYSTEM\CurrentControlSet\Services\{SERVICE_NAME}', 64, 'both')
+  _audit_reg(
+    probe,
+    report,
+    rf'SYSTEM\CurrentControlSet\Services\{SERVICE_NAME}',
+    64,
+    'both',
+  )
 
   msi_products = probe.enum_msi_products(LEGACY_MSI_UPGRADE_CODE)
   msi_products_lower = {p.lower() for p in msi_products}
-  add_item(
+  _add_item(
+    report,
     'MSI',
     f'UpgradeCode {LEGACY_MSI_UPGRADE_CODE}',
     'msi',
@@ -989,7 +1054,9 @@ def audit_host_install(
         or 'chromoting' in disp.lower()
       ):
         src = 'msi' if (view == 32 or sub_low in msi_products_lower) else 'both'
-        audit_reg(sub_path, view, src).detail = f'DisplayName={disp!r}'
+        _audit_reg(
+          probe, report, sub_path, view, src
+        ).detail = f'DisplayName={disp!r}'
 
   fw_subkey = (
     r'SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters'
@@ -1010,7 +1077,9 @@ def audit_host_install(
     )
   ]
   fw_detail = f'{len(fw_hits)} rule(s): {", ".join(fw_hits)}' if fw_hits else ''
-  add_item('Firewall', rf'HKLM\{fw_subkey}', 'msi', bool(fw_hits), fw_detail)
+  _add_item(
+    report, 'Firewall', rf'HKLM\{fw_subkey}', 'msi', bool(fw_hits), fw_detail
+  )
 
   sm_key = r'SYSTEM\CurrentControlSet\Control\Session Manager'
   pending_ops = probe.reg_get_value(sm_key, 'PendingFileRenameOperations', 64)
@@ -1022,13 +1091,137 @@ def audit_host_install(
       for t in ('chrome remote desktop', 'chromoting', 'remoting_')
     )
   ]
-  add_item(
+  _add_item(
+    report,
     'RebootPending',
     rf'HKLM\{sm_key}\PendingFileRenameOperations',
     'both',
     bool(crd_pending),
     '; '.join(crd_pending),
   )
+
+  # 4. Native Messaging, EventLog, and SecurityKey.
+  for nm_subkey in NATIVE_MESSAGING_HOSTS:
+    for view in (64, 32):
+      _audit_reg(probe, report, nm_subkey, view, 'both', path_value='')
+
+  ev_subkey = (
+    rf'SYSTEM\CurrentControlSet\Services\EventLog\Application'
+    rf'\{EVENT_SOURCE_NAME}'
+  )
+  ev_entry = _audit_reg(
+    probe, report, ev_subkey, 64, 'both', path_value='EventMessageFile'
+  )
+  if ev_entry.present:
+    ev_msg = ev_entry.detail
+    cat_msg = str(
+      probe.reg_get_value(ev_subkey, 'CategoryMessageFile', view=64) or ''
+    )
+    ev_entry.detail = (
+      f'EventMessageFile={ev_msg!r}, CategoryMessageFile={cat_msg!r}'
+    )
+    _check_target(
+      probe, cat_msg, False, ev_entry.issues, label='CategoryMessageFile: '
+    )
+  for view, src in ((64, 'exe'), (32, 'msi')):
+    _audit_reg(
+      probe,
+      report,
+      r'SOFTWARE\Google\SecurityKey',
+      view,
+      src,
+      val_name='RemoteSecurityKeyPath',
+      path_value='RemoteSecurityKeyPath',
+    )
+
+  # Cross-check Omaha `pv` against installed Chrome host presence and 64-bit vs
+  # 32-bit view parity (`AddOmahaClientWorkItems` writes the same `pv` to both
+  # views; exact native version parity via salted COM CLSID is added with COM
+  # auditing).
+  chrome_pf64 = _join_win_path(pf64, CHROME_BRANDING.rel_dir)
+  chrome_pf64_has_payload = probe.is_dir(chrome_pf64) and any(
+    name.lower() in EXPECTED_PAYLOAD_LOWER
+    and not probe.is_dir(_join_win_path(chrome_pf64, name))
+    for name in probe.list_dir(chrome_pf64)
+  )
+  msi_32_pv_match = 32 in omaha_pvs and probe.is_dir(
+    _join_win_path(pfx86, CHROME_BRANDING.rel_dir, omaha_pvs[32])
+  )
+  for view, pv in omaha_pvs.items():
+    msi_match = view == 32 and msi_32_pv_match
+    if not (chrome_pf64_has_payload or msi_match):
+      omaha_entries[view].issues.append(
+        f'Omaha pv {pv!r} has no corresponding installed Chrome host'
+      )
+  if chrome_pf64_has_payload:
+    if omaha_entries[64].present and not omaha_entries[32].present:
+      omaha_entries[32].issues.append(
+        'Missing 32-bit Omaha Client mirror for native Chrome host'
+      )
+    elif (
+      omaha_entries[32].present
+      and not omaha_entries[64].present
+      and not msi_32_pv_match
+    ):
+      omaha_entries[64].issues.append(
+        'Missing 64-bit Omaha Client registration for native Chrome host'
+      )
+    elif (
+      64 in omaha_pvs
+      and 32 in omaha_pvs
+      and omaha_pvs[64] != omaha_pvs[32]
+      and not msi_32_pv_match
+    ):
+      omaha_entries[32].issues.append(
+        f'Omaha 32-bit pv {omaha_pvs[32]!r} disagrees with '
+        f'64-bit pv {omaha_pvs[64]!r}'
+      )
+
+  # 5. Branding Keys (URL Forwarder, Pairing/Secrets, Logging) and Sawbuck.
+  for spec in specs:
+    _audit_reg(
+      probe,
+      report,
+      rf'SOFTWARE\Classes\{spec.url_forwarder_prog_id}\shell\open\command',
+      64,
+      'both',
+      brand=spec.name,
+      path_value='',
+      is_command=True,
+    )
+    for view, src in ((64, 'exe'), (32, 'msi')):
+      _audit_reg(
+        probe,
+        report,
+        r'SOFTWARE\RegisteredApplications',
+        view,
+        src,
+        brand=spec.name,
+        val_name=spec.url_forwarder_name,
+      )
+      root = rf'SOFTWARE\{spec.rel_dir}'
+      for sub in (
+        root,
+        rf'{root}\UrlForwarder\Capabilities\URLAssociations',
+        rf'{root}\logging',
+        rf'{root}\paired-clients\clients',
+      ):
+        _audit_reg(probe, report, sub, view, src, brand=spec.name)
+      _audit_reg(
+        probe,
+        report,
+        rf'{root}\paired-clients\secrets',
+        view,
+        src,
+        brand=spec.name,
+        require_protected_dacl=True,
+        allow_non_admin_read=False,
+        allow_trusted_installer=False,
+      )
+
+  sawbuck = rf'SOFTWARE\Google\Sawbuck\Providers\{LEGACY_SAWBUCK_PROVIDER_GUID}'
+  for view in (32, 64):
+    _audit_reg(probe, report, sawbuck, view, 'msi')
 
   report.present_count = sum(1 for e in report.entries if e.present)
   report.acl_ok_count = sum(1 for e in report.entries if e.acl_status == 'OK')

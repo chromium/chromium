@@ -97,6 +97,23 @@ class FakeSystemProbe(audit_host_install.SystemProbe):
     self.add_dir(parent)
     self.dirs[self._norm(parent)].add(name)
 
+  def remove_file(self, path: str) -> None:
+    norm = self._norm(path)
+    self.files.discard(norm)
+    if '\\' in norm:
+      parent, name = path.rstrip('\\/').rsplit('\\', 1)
+      if self._norm(parent) in self.dirs:
+        self.dirs[self._norm(parent)].discard(name)
+
+  def set_file_sddl(self, path: str, sddl: str) -> None:
+    self.file_sddls[self._norm(path)] = sddl
+
+  def remove_file_sddl(self, path: str) -> None:
+    self.file_sddls.pop(self._norm(path), None)
+
+  def add_reparse_point(self, path: str) -> None:
+    self.reparse_points.add(self._norm(path))
+
   def set_reg_key(
     self, subkey: str, view: int = 64, sddl: Optional[str] = None
   ) -> None:
@@ -116,6 +133,12 @@ class FakeSystemProbe(audit_host_install.SystemProbe):
   ) -> None:
     self.set_reg_key(subkey, view=view)
     self.reg[(view, subkey.strip('\\').lower())][value_name] = value
+
+  def remove_reg_key(self, subkey: str, view: int = 64) -> None:
+    key = (view, subkey.strip('\\').lower())
+    self.reg.pop(key, None)
+    self.reg_case.pop(key, None)
+    self.reg_sddls.pop(key, None)
 
   def register_binary_sd(self, raw_bytes: bytes, sddl: str) -> bytes:
     self.binary_sds[raw_bytes] = sddl
@@ -184,7 +207,9 @@ class FakeSystemProbe(audit_host_install.SystemProbe):
     return list(self.msi_products)
 
 
-def _populate_fs_and_service_install(probe: FakeSystemProbe) -> None:
+def _populate_complete_native_install(
+  probe: FakeSystemProbe, version: str = '146.0.7650.0'
+) -> None:
   install_dir = r'C:\Program Files\Google\Chrome Remote Desktop'
   config_dir = r'C:\ProgramData\Google\Chrome Remote Desktop'
   probe.add_dir(install_dir, sddl=PROGRAM_FILES_SDDL)
@@ -208,6 +233,68 @@ def _populate_fs_and_service_install(probe: FakeSystemProbe) -> None:
       rf'"{install_dir}\remoting_host.exe" --type=daemon '
       rf'--host-config="{config_dir}\host.json"'
     ),
+  )
+
+  omaha = rf'SOFTWARE\Google\Update\Clients\{audit_host_install.OMAHA_APP_ID}'
+  for view in (64, 32):
+    probe.set_reg_value(omaha, 'pv', version, view=view)
+    probe.set_reg_value(omaha, 'name', 'Chrome Remote Desktop Host', view=view)
+
+  manifest_map = {
+    'com.google.chrome.remote_assistance': (
+      'com.google.chrome.remote_assistance.json',
+      'com.google.chrome.remote_assistance-firefox.json',
+    ),
+    'com.google.chrome.remote_desktop': (
+      'com.google.chrome.remote_desktop.json',
+      'com.google.chrome.remote_desktop-firefox.json',
+    ),
+    'com.google.chrome.remote_webauthn': (
+      'com.google.chrome.remote_webauthn.json',
+      '',
+    ),
+  }
+  for subkey in audit_host_install.NATIVE_MESSAGING_HOSTS:
+    host_name = subkey.rsplit('\\', 1)[1]
+    is_moz = 'Mozilla' in subkey
+    manifest = manifest_map[host_name][1 if is_moz else 0]
+    for view in (64, 32):
+      probe.set_reg_value(subkey, '', rf'{install_dir}\{manifest}', view=view)
+
+  ev_key = r'SYSTEM\CurrentControlSet\Services\EventLog\Application\chromoting'
+  probe.set_reg_value(
+    ev_key, 'EventMessageFile', rf'{install_dir}\remoting_core.dll', view=64
+  )
+  probe.set_reg_value(
+    ev_key, 'CategoryMessageFile', rf'{install_dir}\remoting_core.dll', view=64
+  )
+  probe.set_reg_value(
+    r'SOFTWARE\Google\SecurityKey',
+    'RemoteSecurityKeyPath',
+    rf'{install_dir}\remote_security_key.exe',
+    view=64,
+  )
+
+  probe.set_reg_value(
+    r'SOFTWARE\Classes\ChromeRemoteDesktopUrlForwarder\shell\open\command',
+    '',
+    rf'"{install_dir}\remote_open_url.exe" "%1"',
+    view=64,
+  )
+  probe.set_reg_value(
+    r'SOFTWARE\RegisteredApplications',
+    'Chrome Remote Desktop URL Forwarder',
+    r'SOFTWARE\Google\Chrome Remote Desktop\UrlForwarder\Capabilities',
+    view=64,
+  )
+  root = r'SOFTWARE\Google\Chrome Remote Desktop'
+  probe.set_reg_key(
+    rf'{root}\UrlForwarder\Capabilities\URLAssociations', view=64
+  )
+  probe.set_reg_key(rf'{root}\logging', view=64)
+  probe.set_reg_key(rf'{root}\paired-clients\clients', view=64)
+  probe.set_reg_key(
+    rf'{root}\paired-clients\secrets', view=64, sddl=SECRETS_REG_SDDL
   )
 
 
@@ -437,9 +524,11 @@ class AuditHostInstallTest(unittest.TestCase):
     self.assertEqual(rc, 0)
     self.assertIn('[ABSENT ]', out.getvalue())
 
-  def test_filesystem_and_service_install_passes_checks(self) -> None:
+  def test_complete_native_install_passes_all_inventory_and_acl_checks(
+    self,
+  ) -> None:
     probe = FakeSystemProbe()
-    _populate_fs_and_service_install(probe)
+    _populate_complete_native_install(probe)
     install_dir = r'C:\Program Files\Google\Chrome Remote Desktop'
     runtime_dir_sddl = (
       'O:SYG:SYD:AI(A;OICIIOID;GA;;;CO)(A;OICIID;FA;;;SY)'
@@ -460,7 +549,7 @@ class AuditHostInstallTest(unittest.TestCase):
       report.issue_count, 0, msg=audit_host_install.format_report(report)
     )
     self.assertEqual(report.acl_invalid_count, 0)
-    self.assertEqual(report.acl_ok_count, 6)
+    self.assertEqual(report.acl_ok_count, 27)
     with mock.patch('sys.stdout', new_callable=io.StringIO):
       self.assertEqual(audit_host_install.main([], probe=probe), 0)
 
@@ -470,7 +559,7 @@ class AuditHostInstallTest(unittest.TestCase):
     probe = FakeSystemProbe()
     msi_dir = r'C:\Program Files (x86)\Google\Chrome Remote Desktop'
     probe.add_dir(rf'{msi_dir}\145.0.7600.0', sddl=PROGRAM_FILES_SDDL)
-    probe.file_sddls[probe._norm(msi_dir)] = PROGRAM_FILES_SDDL
+    probe.set_file_sddl(msi_dir, PROGRAM_FILES_SDDL)
     probe.msi_products.append('{AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE}')
     probe.set_reg_value(
       r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall'
@@ -485,6 +574,11 @@ class AuditHostInstallTest(unittest.TestCase):
       '{RULE-1}',
       rf'v2.30|Action=Allow|App={msi_dir}\145.0.7600.0\remoting_network.exe|',
       view=64,
+    )
+    probe.set_reg_key(
+      rf'SOFTWARE\Google\Sawbuck\Providers'
+      rf'\{audit_host_install.LEGACY_SAWBUCK_PROVIDER_GUID}',
+      view=32,
     )
 
     report = audit_host_install.audit_host_install(probe)
@@ -520,22 +614,55 @@ class AuditHostInstallTest(unittest.TestCase):
     self.assertIn('reparse point/symlink', all_issues)
     self.assertIn('.json~', all_issues)
 
-  def test_ancestor_reparse_unquoted_cmd_service_acl_and_old_files(
+  def test_pairing_secrets_registry_acl_requires_protected_admin_only(
     self,
   ) -> None:
     probe = FakeSystemProbe()
-    _populate_fs_and_service_install(probe)
-    install_dir = r'C:\Program Files\Google\Chrome Remote Desktop'
-    probe.reparse_points.add(probe._norm(r'C:\ProgramData\Google'))
-    probe.service.account = ''
-    probe.service.binary_path = (
-      rf'{install_dir}\remoting_host.exe --type=daemon'
+    _populate_complete_native_install(probe)
+    probe.set_reg_key(
+      r'SOFTWARE\Google\Chrome Remote Desktop\paired-clients\secrets',
+      view=64,
+      sddl=HKLM_DEFAULT_SDDL,
     )
+    report = audit_host_install.audit_host_install(probe)
+    self.assertEqual(report.acl_invalid_count, 1)
+    all_issues = '\n'.join(i for e in report.entries for i in e.issues)
+    self.assertIn('Unprotected DACL', all_issues)
+    self.assertIn('Non-admin principal BU has access', all_issues)
+
+  def test_service_acl_and_eventlog_category_violations_detected(self) -> None:
+    probe = FakeSystemProbe()
+    _populate_complete_native_install(probe)
     probe.service_sddl = 'O:SYG:SYD:(A;;GA;;;SY)(A;;GA;;;BA)(A;;CCDCRP;;;IU)'
+    probe.set_reg_value(
+      r'SYSTEM\CurrentControlSet\Services\EventLog\Application\chromoting',
+      'CategoryMessageFile',
+      r'C:\missing_core.dll',
+      view=64,
+    )
+
+    report = audit_host_install.audit_host_install(probe)
+    self.assertEqual(report.acl_invalid_count, 1)
+    all_issues = '\n'.join(i for e in report.entries for i in e.issues)
+    self.assertIn('Non-admin principal IU has write/control rights', all_issues)
+    self.assertIn(
+      'CategoryMessageFile: Target file missing or invalid on disk', all_issues
+    )
+
+  def test_dangling_targets_old_files_and_json_cli_output(self) -> None:
+    probe = FakeSystemProbe()
+    _populate_complete_native_install(probe)
+    install_dir = r'C:\Program Files\Google\Chrome Remote Desktop'
     probe.add_file(
       rf'{install_dir}\remoting_host.exe.OLD',
       sddl=LEAF_PAYLOAD_SDDL,
       reparse=True,
+    )
+    probe.set_reg_value(
+      r'SOFTWARE\Google\SecurityKey',
+      'RemoteSecurityKeyPath',
+      rf'{install_dir}\missing_binary.exe',
+      view=64,
     )
     probe.set_reg_value(
       r'SYSTEM\CurrentControlSet\Control\Session Manager',
@@ -548,12 +675,8 @@ class AuditHostInstallTest(unittest.TestCase):
       rc = audit_host_install.main(['--json'], probe=probe)
     self.assertEqual(rc, 1)
     payload = json.loads(out.getvalue())
+    self.assertEqual(payload['issue_count'], 3)
     all_issues = '\n'.join(i for e in payload['entries'] for i in e['issues'])
-    self.assertIn('Path or ancestor is a reparse point/symlink', all_issues)
-    self.assertIn('Unquoted command path with spaces', all_issues)
-    self.assertNotIn('Target file missing', all_issues)
-    self.assertIn("Unexpected service account: ''", all_issues)
-    self.assertIn('Non-admin principal IU has write/control rights', all_issues)
     self.assertIn(
       'Unexpected reparse point/symlink: remoting_host.exe.OLD', all_issues
     )
@@ -569,7 +692,7 @@ class AuditHostInstallTest(unittest.TestCase):
     self,
   ) -> None:
     probe = FakeSystemProbe()
-    _populate_fs_and_service_install(probe)
+    _populate_complete_native_install(probe)
     install_dir = r'C:\Program Files\Google\Chrome Remote Desktop'
     cfg_dir = r'C:\ProgramData\Google\Chrome Remote Desktop'
 
@@ -584,17 +707,18 @@ class AuditHostInstallTest(unittest.TestCase):
     # payload binary missing AppContainer Read+Execute must all be flagged and
     # propagate acl_status == 'INVALID' to the install directory entry.
     probe.add_file(rf'{install_dir}\version.dll', sddl=LEAF_PAYLOAD_SDDL)
-    probe.files.remove(probe._norm(rf'{install_dir}\remoting_desktop.exe'))
+    probe.remove_file(rf'{install_dir}\remoting_desktop.exe')
     probe.add_dir(
       rf'{install_dir}\remoting_desktop.exe', sddl=PROGRAM_FILES_SDDL
     )
-    probe.file_sddls[probe._norm(rf'{install_dir}\remoting_core.dll')] = (
-      'O:BAG:BAD:AI(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;0x1200a9;;;BU)'
+    probe.set_file_sddl(
+      rf'{install_dir}\remoting_core.dll',
+      'O:BAG:BAD:AI(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;0x1200a9;;;BU)',
     )
 
     # Directory named host.json in ProgramData and regular file at Chromium
     # install_dir / ProgramData location must be flagged.
-    probe.files.remove(probe._norm(rf'{cfg_dir}\host.json'))
+    probe.remove_file(rf'{cfg_dir}\host.json')
     probe.add_dir(rf'{cfg_dir}\host.json', sddl=HOST_JSON_SDDL)
     probe.add_file(r'C:\Program Files\Chromoting', sddl=LEAF_PAYLOAD_SDDL)
     probe.add_file(r'C:\ProgramData\Chromoting', sddl=CONFIG_DIR_SDDL)
@@ -627,7 +751,7 @@ class AuditHostInstallTest(unittest.TestCase):
     self,
   ) -> None:
     probe = FakeSystemProbe()
-    _populate_fs_and_service_install(probe)
+    _populate_complete_native_install(probe)
     install_dir = r'C:\Program Files\Google\Chrome Remote Desktop'
 
     # On an active host (present_n > 0), a minidumps junction, a non-latest.log
@@ -665,6 +789,110 @@ class AuditHostInstallTest(unittest.TestCase):
     self.assertIn('Leftover runtime artifact: minidumps', chromium_issues)
     self.assertIn('Leftover runtime artifact: crashpad', chromium_issues)
     self.assertIn('Leftover runtime artifact: host.log', chromium_issues)
+
+  def test_ancestor_reparse_unquoted_cmd_and_unavailable_acl(self) -> None:
+    probe = FakeSystemProbe()
+    _populate_complete_native_install(probe)
+    probe.add_reparse_point(r'C:\ProgramData\Google')
+    probe.service.account = ''
+    probe.service.binary_path = (
+      r'C:\Program Files\Google\Chrome Remote Desktop\remoting_host.exe '
+      r'--type=daemon'
+    )
+    probe.remove_file_sddl(
+      r'C:\ProgramData\Google\Chrome Remote Desktop\host.json'
+    )
+
+    report = audit_host_install.audit_host_install(probe)
+    all_issues = '\n'.join(i for e in report.entries for i in e.issues)
+    self.assertIn('Path or ancestor is a reparse point/symlink', all_issues)
+    self.assertIn('Unquoted command path with spaces', all_issues)
+    self.assertNotIn('Target file missing', all_issues)
+    self.assertIn("Unexpected service account: ''", all_issues)
+    self.assertIn('Security descriptor unavailable', all_issues)
+    with mock.patch('sys.stdout', new_callable=io.StringIO):
+      self.assertEqual(audit_host_install.main([], probe=probe), 1)
+
+  def test_wow64_32bit_entries_and_omaha_pv_validation(self) -> None:
+    # 1. Valid 32-bit legacy MSI registry entries with matching 32-bit Omaha pv.
+    probe = FakeSystemProbe()
+    msi_ver = '145.0.7600.0'
+    msi_bin_dir = (
+      rf'C:\Program Files (x86)\Google\Chrome Remote Desktop\{msi_ver}'
+    )
+    probe.add_dir(
+      r'C:\Program Files (x86)\Google\Chrome Remote Desktop',
+      sddl=PROGRAM_FILES_SDDL,
+    )
+    probe.add_dir(msi_bin_dir, sddl=PROGRAM_FILES_SDDL)
+    probe.add_file(
+      rf'{msi_bin_dir}\remote_security_key.exe', sddl=LEAF_PAYLOAD_SDDL
+    )
+
+    omaha = rf'SOFTWARE\Google\Update\Clients\{audit_host_install.OMAHA_APP_ID}'
+    probe.set_reg_value(omaha, 'pv', msi_ver, view=32)
+    probe.set_reg_value(omaha, 'name', 'Chrome Remote Desktop Host', view=32)
+    probe.set_reg_value(
+      r'SOFTWARE\Google\SecurityKey',
+      'RemoteSecurityKeyPath',
+      rf'{msi_bin_dir}\remote_security_key.exe',
+      view=32,
+    )
+    probe.set_reg_value(
+      r'SOFTWARE\RegisteredApplications',
+      'Chrome Remote Desktop URL Forwarder',
+      r'SOFTWARE\Google\Chrome Remote Desktop\UrlForwarder\Capabilities',
+      view=32,
+    )
+    probe.set_reg_key(
+      r'SOFTWARE\Google\Chrome Remote Desktop\paired-clients\secrets',
+      view=32,
+      sddl=SECRETS_REG_SDDL,
+    )
+
+    msi_report = audit_host_install.audit_host_install(probe)
+    self.assertEqual(
+      msi_report.issue_count,
+      0,
+      msg=audit_host_install.format_report(msi_report),
+    )
+    present_32 = [
+      e for e in msi_report.entries if e.present and '[32-bit]' in e.location
+    ]
+    self.assertEqual(len(present_32), 5)
+
+    # 2. MSI layout: unmatched and malformed Omaha `pv` values are flagged.
+    probe.set_reg_value(omaha, 'pv', '999.0.0.1', view=32)
+    report2 = audit_host_install.audit_host_install(probe)
+    issues2 = '\n'.join(i for e in report2.entries for i in e.issues)
+    self.assertIn(
+      "Omaha pv '999.0.0.1' has no corresponding installed Chrome host",
+      issues2,
+    )
+
+    probe.set_reg_value(omaha, 'pv', 'bad-version', view=64)
+    report3 = audit_host_install.audit_host_install(probe)
+    issues3 = '\n'.join(i for e in report3.entries for i in e.issues)
+    self.assertIn("Invalid or missing Omaha pv: 'bad-version'", issues3)
+
+    # 3. Native layout: 64-bit vs 32-bit `pv` disagreement and missing mirror
+    # view are flagged.
+    probe_nat = FakeSystemProbe()
+    _populate_complete_native_install(probe_nat, version='146.0.7650.0')
+    probe_nat.set_reg_value(omaha, 'pv', '999.0.0.1', view=32)
+    nat_report = audit_host_install.audit_host_install(probe_nat)
+    nat_issues = '\n'.join(i for e in nat_report.entries for i in e.issues)
+    self.assertIn(
+      "Omaha 32-bit pv '999.0.0.1' disagrees with 64-bit pv '146.0.7650.0'",
+      nat_issues,
+    )
+
+    probe_nat.remove_reg_key(omaha, view=32)
+    nat_report2 = audit_host_install.audit_host_install(probe_nat)
+    nat_issues2 = '\n'.join(i for e in nat_report2.entries for i in e.issues)
+    self.assertIn(
+      'Missing 32-bit Omaha Client mirror for native Chrome host', nat_issues2
+    )
 
 
 if __name__ == '__main__':
