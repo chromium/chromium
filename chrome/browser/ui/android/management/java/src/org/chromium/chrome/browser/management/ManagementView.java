@@ -29,13 +29,6 @@ import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
  */
 @NullMarked
 public class ManagementView extends ScrollView {
-    // TODO(crbug.com/517881189): Remove the following redundant booleans.
-    private boolean mIsBrowserManaged;
-    private boolean mIsProfileManaged;
-    private boolean mIsBrowserReportingEnabled;
-    private boolean mIsProfileReportingEnabled;
-    private boolean mIsLegacyTechReportingEnabled;
-
     private LinearLayout mManagementContainer;
 
     @VisibleForTesting TextView mTitle;
@@ -95,7 +88,7 @@ public class ManagementView extends ScrollView {
         mThreatProtectionMore.setOnClickListener(
                 view -> {
                     mThreatProtectionMore.toggle();
-                    adjustView();
+                    adjustThreatProtectionView();
                 });
 
         mThreatProtectionSecurityEvent = findViewById(R.id.threat_protection_security_event);
@@ -108,18 +101,18 @@ public class ManagementView extends ScrollView {
         mThreatProtectionDownloadDescription =
                 findViewById(R.id.threat_protection_download_description);
 
-        // Set default management status
-        mIsBrowserManaged = false;
-        mIsProfileManaged = false;
-        mIsBrowserReportingEnabled = false;
-        mIsProfileReportingEnabled = false;
-        mIsLegacyTechReportingEnabled = false;
+        // Set default management status.
+        setManagementNotice(/* isBrowserManaged= */ false, /* isProfileManaged= */ false);
+        setReportingState(
+                /* isBrowserReportingEnabled= */ false,
+                /* isProfileReportingEnabled= */ false,
+                /* isLegacyTechReportingEnabled= */ false);
 
         mThreatProtectionSecurityEvent.setEnabled(false);
         mThreatProtectionPageVisited.setEnabled(false);
         mThreatProtectionDownload.setEnabled(false);
 
-        adjustView();
+        adjustThreatProtectionView();
 
         // Making the view focusable ensures that it will be presented to the user once they select
         // the page on the Omnibox. When the view is not focusable, the keyboard needs to be
@@ -138,64 +131,65 @@ public class ManagementView extends ScrollView {
         configureWideDisplayStyle();
     }
 
-    /** Sets whether browser is managed. Then updates view accordingly. */
-    public void setBrowserManaged(boolean isManaged) {
-        if (mIsBrowserManaged != isManaged) {
-            mIsBrowserManaged = isManaged;
-            adjustView();
+    /**
+     * Shows or hides the management notice and "learn more" link based on management status.
+     *
+     * @param isBrowserManaged Whether the browser is managed.
+     * @param isProfileManaged Whether the profile is managed.
+     */
+    public void setManagementNotice(boolean isBrowserManaged, boolean isProfileManaged) {
+        boolean isManaged = isBrowserManaged || isProfileManaged;
+        mDescription.setVisibility(isManaged ? VISIBLE : GONE);
+        if (isManaged) {
+            mDescription.setText(
+                    getContext()
+                            .getString(
+                                    isBrowserManaged
+                                            ? R.string.management_browser_notice
+                                            : R.string.management_profile_notice));
         }
+        mLearnMore.setVisibility(isManaged ? VISIBLE : GONE);
     }
 
-    /** Sets whether profile is managed. Then updates view accordingly. */
-    public void setProfileManaged(boolean isManaged) {
-        if (mIsProfileManaged != isManaged) {
-            mIsProfileManaged = isManaged;
-            adjustView();
-        }
-    }
+    /**
+     * Shows or hides the reporting section based on which reporting features are enabled.
+     *
+     * @param isBrowserReportingEnabled Whether browser status reporting is enabled.
+     * @param isProfileReportingEnabled Whether profile reporting is enabled.
+     * @param isLegacyTechReportingEnabled Whether legacy tech reporting is enabled.
+     */
+    public void setReportingState(
+            boolean isBrowserReportingEnabled,
+            boolean isProfileReportingEnabled,
+            boolean isLegacyTechReportingEnabled) {
+        mBrowserReporting.setVisibility(
+                isBrowserReportingEnabled
+                                || isLegacyTechReportingEnabled
+                                || isProfileReportingEnabled
+                        ? VISIBLE
+                        : GONE);
 
-    /** Gets whether browser or profile is managed. */
-    public boolean isManaged() {
-        return mIsBrowserManaged || mIsProfileManaged;
-    }
+        mReportUsername.setVisibility(isBrowserReportingEnabled ? VISIBLE : GONE);
+        mReportVersion.setVisibility(isBrowserReportingEnabled ? VISIBLE : GONE);
 
-    /** Sets whether status reporting is enabled. Then updates view accordingly. */
-    public void setBrowserReportingEnabled(boolean isEnabled) {
-        if (mIsBrowserReportingEnabled != isEnabled) {
-            mIsBrowserReportingEnabled = isEnabled;
-            adjustView();
-        }
-    }
+        boolean showProfileReporting = !isBrowserReportingEnabled && isProfileReportingEnabled;
+        mProfileReportingExplanation.setVisibility(showProfileReporting ? VISIBLE : GONE);
+        mProfileReportDetails.setVisibility(showProfileReporting ? VISIBLE : GONE);
 
-    /** Gets whether status reporting is enabled. */
-    public boolean isBrowserReportingEnabled() {
-        return mIsBrowserReportingEnabled;
-    }
+        // If Legacy tech report is enabled without browser or profile status report, show browser
+        // report explanations as default.
+        boolean showBrowserReportingExplanation =
+                isBrowserReportingEnabled
+                        || (isLegacyTechReportingEnabled && !isProfileReportingEnabled);
+        mBrowserReportingExplanation.setVisibility(
+                showBrowserReportingExplanation ? VISIBLE : GONE);
 
-    /** Sets whether profile reporting is enabled. Then updates view accordingly. */
-    public void setProfileReportingEnabled(boolean isEnabled) {
-        if (mIsProfileReportingEnabled != isEnabled) {
-            mIsProfileReportingEnabled = isEnabled;
-            adjustView();
-        }
-    }
-
-    /** Gets whether profile reporting is enabled. */
-    public boolean isProfileReportingEnabled() {
-        return mIsProfileReportingEnabled;
+        mReportLegacyTech.setVisibility(isLegacyTechReportingEnabled ? VISIBLE : GONE);
     }
 
     public void setProfileReportingText(SpannableStringBuilder text) {
         mProfileReportDetails.setText(text);
         mProfileReportDetails.setMovementMethod(LinkMovementMethod.getInstance());
-    }
-
-    /** Sets whether legacy tech reporting is enabled. Then updates view accordingly. */
-    public void setLegacyTechReportingEnabled(boolean isEnabled) {
-        if (mIsLegacyTechReportingEnabled != isEnabled) {
-            mIsLegacyTechReportingEnabled = isEnabled;
-            adjustView();
-        }
     }
 
     public boolean isThreatProtectionEnabled() {
@@ -206,22 +200,17 @@ public class ManagementView extends ScrollView {
 
     public void setSecurityEventReportingEnabled(boolean isEnabled) {
         mThreatProtectionSecurityEvent.setEnabled(isEnabled);
-        adjustView();
+        adjustThreatProtectionView();
     }
 
     public void setUrlFilteringEnabled(boolean isEnabled) {
         mThreatProtectionPageVisited.setEnabled(isEnabled);
-        adjustView();
+        adjustThreatProtectionView();
     }
 
     public void setDownloadEnterpriseScanEnabled(boolean isEnabled) {
         mThreatProtectionDownload.setEnabled(isEnabled);
-        adjustView();
-    }
-
-    /** Gets whether legacy tech reporting is enabled. */
-    public boolean isLegacyTechReportingEnabled() {
-        return mIsLegacyTechReportingEnabled;
+        adjustThreatProtectionView();
     }
 
     public void setLearnMoreText(SpannableString learnMoreText) {
@@ -266,44 +255,8 @@ public class ManagementView extends ScrollView {
         mThreatProtectionDownloadDescription.setText(text);
     }
 
-    /** Adjusts Title, Description, and Learn More link based on management status. */
-    private void adjustView() {
-        mDescription.setVisibility(isManaged() ? VISIBLE : GONE);
-        if (isManaged()) {
-            mDescription.setText(
-                    getContext()
-                            .getString(
-                                    mIsBrowserManaged
-                                            ? R.string.management_browser_notice
-                                            : R.string.management_profile_notice));
-        }
-        mLearnMore.setVisibility(isManaged() ? VISIBLE : GONE);
-        mBrowserReporting.setVisibility(
-                mIsBrowserReportingEnabled
-                                || mIsLegacyTechReportingEnabled
-                                || mIsProfileReportingEnabled
-                        ? VISIBLE
-                        : GONE);
-
-        mBrowserReportingExplanation.setVisibility(mIsBrowserReportingEnabled ? VISIBLE : GONE);
-
-        mReportUsername.setVisibility(mIsBrowserReportingEnabled ? VISIBLE : GONE);
-        mReportVersion.setVisibility(mIsBrowserReportingEnabled ? VISIBLE : GONE);
-
-        mProfileReportingExplanation.setVisibility(
-                !mIsBrowserReportingEnabled && mIsProfileReportingEnabled ? VISIBLE : GONE);
-        mProfileReportDetails.setVisibility(
-                !mIsBrowserReportingEnabled && mIsProfileReportingEnabled ? VISIBLE : GONE);
-
-        // If Legacy tech report is enabled without browser or profile status report, show browser
-        // report explanations as default.
-        if (mIsLegacyTechReportingEnabled
-                && !mIsBrowserReportingEnabled
-                && !mIsProfileReportingEnabled) {
-            mBrowserReportingExplanation.setVisibility(VISIBLE);
-        }
-        mReportLegacyTech.setVisibility(mIsLegacyTechReportingEnabled ? VISIBLE : GONE);
-
+    /** Adjusts the threat protection section based on which features are enabled. */
+    private void adjustThreatProtectionView() {
         mThreatProtectionTitle.setVisibility(isThreatProtectionEnabled() ? VISIBLE : GONE);
         mThreatProtectionDescription.setVisibility(isThreatProtectionEnabled() ? VISIBLE : GONE);
         mThreatProtectionMore.setVisibility(isThreatProtectionEnabled() ? VISIBLE : GONE);
