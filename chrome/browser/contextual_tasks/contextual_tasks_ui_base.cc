@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -117,7 +118,6 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
-#include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.h"
 #include "chrome/grit/webui_toolbar_shared_resources.h"
@@ -683,10 +683,10 @@ content::WebUIDataSource* ContextualTasksUIBase::RegisterWebUIDataSource(
   source->AddResourcePaths(kContextualTasksExtensionResources);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
+#if !BUILDFLAG(IS_ANDROID)
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
   source->AddResourcePaths(kWebuiToolbarSharedResources);
 #endif
   source->SetRequestFilter(
