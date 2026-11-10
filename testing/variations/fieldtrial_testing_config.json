@@ -19988,28 +19988,6 @@
             ]
         }
     ],
-    "V8DateTimePatternGeneratorCacheEviction": [
-        {
-            "platforms": [
-                "android",
-                "android_desktop",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8Flag_intl_date_time_pattern_generator_cache_eviction"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8HomomorphicIC": [
         {
             "platforms": [
