@@ -1364,7 +1364,10 @@ test("ui_base_unittests") {
   }
 
   if (use_glib) {
-    sources += [ "glib/scoped_gsignal_unittest.cc" ]
+    sources += [
+      "glib/glib_callback_unittest.cc",
+      "glib/scoped_gsignal_unittest.cc",
+    ]
     deps += [ "//ui/base/glib" ]
   }
 

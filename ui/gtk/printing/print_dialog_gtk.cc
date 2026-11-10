@@ -34,6 +34,7 @@
 #include "printing/print_settings.h"
 #include "printing/printing_features.h"
 #include "ui/aura/window.h"
+#include "ui/base/glib/glib_callback.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui.h"
 #include "ui/gtk/gtk_ui_platform.h"
@@ -112,21 +113,6 @@ GtkPaperSize* FindPaperSizeMatch(GList* gtk_paper_sizes,
   }
   return first_fuzzy_match;
 }
-
-// Helper class to handle the GTK print job callback.
-// TODO(thomasanderson): This should be replaced with a template in
-// //ui/base/glib that accepts a base::OnceCallback for safer and less manual
-// memory management.
-struct PrintJobCallbackHelper {
-  base::WeakPtr<PrintDialogGtk> dialog;
-
-  void OnJobCompleted(GtkPrintJob* print_job, const GError* error) {
-    if (dialog) {
-      dialog->OnJobCompleted(print_job, error);
-    }
-    delete this;
-  }
-};
 
 class StickyPrintSettingGtk {
  public:
@@ -633,12 +619,6 @@ void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
   }
 }
 
-static void OnJobCompletedThunk(GtkPrintJob* print_job,
-                                gpointer user_data,
-                                const GError* error) {
-  static_cast<PrintJobCallbackHelper*>(user_data)->OnJobCompleted(print_job,
-                                                                  error);
-}
 void PrintDialogGtk::SendDocumentToPrinter(
     const std::u16string& document_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -657,8 +637,10 @@ void PrintDialogGtk::SendDocumentToPrinter(
                         gtk_settings_, page_setup_);
   gtk_print_job_set_source_file(print_job, path_to_pdf_.value().c_str(),
                                 nullptr);
-  auto* helper = new PrintJobCallbackHelper{weak_factory_.GetWeakPtr()};
-  gtk_print_job_send(print_job, OnJobCompletedThunk, helper, nullptr);
+  ui::CallGlibWithCallback(&gtk_print_job_send,
+                           base::BindOnce(&PrintDialogGtk::OnJobCompleted,
+                                          weak_factory_.GetWeakPtr()),
+                           print_job);
 }
 
 void PrintDialogGtk::OnJobCompleted(GtkPrintJob* print_job,

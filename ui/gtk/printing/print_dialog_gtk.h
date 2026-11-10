@@ -57,15 +57,15 @@ class PrintDialogGtk : public printing::PrintDialogLinuxInterface,
   void PrintDocument(const printing::MetafilePlayer& metafile,
                      const std::u16string& document_name) override;
 
-  // Handles print job response.
-  void OnJobCompleted(GtkPrintJob* print_job, const GError* error);
-
  private:
   // Handles dialog response.
   void OnResponse(GtkWidget* dialog, int response_id);
 
   // Prints document named |document_name|.
   void SendDocumentToPrinter(const std::u16string& document_name);
+
+  // Handles print job response.
+  void OnJobCompleted(GtkPrintJob* print_job, const GError* error);
 
   // Helper function for initializing |context_|'s PrintSettings with a given
   // |settings|.

@@ -8,9 +8,10 @@ import("//build/config/ui.gni")
 assert(use_glib)
 
 source_set("glib") {
-  deps = [ "//base" ]
+  public_deps = [ "//base" ]
   public_configs = [ "//build/config/linux:glib" ]
   public = [
+    "glib_callback.h",
     "glib_cast.h",
     "glib_integers.h",
     "scoped_gobject.h",
