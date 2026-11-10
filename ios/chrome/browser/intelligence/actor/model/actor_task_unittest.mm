@@ -1190,8 +1190,8 @@ TEST_F(ActorTaskTest, StopSetsControlStateToInactive) {
 }
 
 // Test that adding a controlled `WebState` with `ActorTabHelper` sets control
-// state to kActorControlled, and destroying the task resets the state without
-// removing the helper.
+// state to `kActorControlled` (including while in `kInit`), and destroying the
+// task resets the state without removing the helper.
 TEST_F(ActorTaskTest, ActorTabHelperControlState) {
   auto web_state = std::make_unique<web::FakeWebState>();
   ActorTabHelper::CreateForWebState(web_state.get());
@@ -1199,8 +1199,12 @@ TEST_F(ActorTaskTest, ActorTabHelperControlState) {
   ASSERT_NE(helper, nullptr);
   EXPECT_EQ(helper->GetControlState(), actor::ActorControlState::kInactive);
 
-  SetTaskState(ActorTaskState::kActing);
+  ASSERT_EQ(task_->GetState(), ActorTaskState::kInit);
   AddControlledWebState(web_state->GetWeakPtr());
+  EXPECT_EQ(helper->GetControlState(),
+            actor::ActorControlState::kActorControlled);
+
+  SetTaskState(ActorTaskState::kActing);
   EXPECT_EQ(helper->GetControlState(),
             actor::ActorControlState::kActorControlled);
 
@@ -1321,12 +1325,12 @@ TEST_F(ActorTaskTest, KeepRenderProcessAliveFollowsControlState) {
   EXPECT_FALSE(web_state1->keep_render_process_alive());
   EXPECT_FALSE(web_state2->keep_render_process_alive());
 
-  // Add `web_state1` while the task is in `kInit`. The control state is
-  // `kInactive`, so keep-alive is not applied yet.
+  // Add `web_state1` while the task is in `kInit`. `kInit` is a controlling
+  // state, so keep-alive is immediately applied.
   AddControlledWebState(web_state1->GetWeakPtr());
-  EXPECT_FALSE(web_state1->keep_render_process_alive());
+  EXPECT_TRUE(web_state1->keep_render_process_alive());
 
-  // Transition to `kActing`: the tab becomes actor-controlled and keep-alive.
+  // Transition to `kActing`: keep-alive remains applied.
   SetTaskState(ActorTaskState::kActing);
   EXPECT_TRUE(web_state1->keep_render_process_alive());
 

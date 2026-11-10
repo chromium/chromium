@@ -77,12 +77,13 @@ std::string ActorTaskStateToString(ActorTaskState state) {
 // Returns the control state corresponding to `task_state`.
 ActorControlState ControlStateForTaskState(ActorTaskState task_state) {
   switch (task_state) {
+    // TODO(crbug.com/580899072): Move `kInit` to
+    // `ActorControlState::kUserControlled` once implemented.
+    case ActorTaskState::kInit:
     case ActorTaskState::kActing:
     case ActorTaskState::kReflecting:
     case ActorTaskState::kWaitingOnUser:
       return ActorControlState::kActorControlled;
-    case ActorTaskState::kInit:
-      return ActorControlState::kInactive;
     // TODO(crbug.com/580899072): Add all states and remove the default case.
     default:
       return ActorControlState::kInactive;
