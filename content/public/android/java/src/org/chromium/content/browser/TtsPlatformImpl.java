@@ -143,17 +143,17 @@ class TtsPlatformImpl {
         }
 
         /**
-         * Note: we enforce that this method is called on the UI thread, so
-         * we can call TtsPlatformImplJni.get().voicesChanged directly.
+         * Note: we enforce that this method is called on the UI thread, so we can call
+         * TtsPlatformImplJni.get().voicesChanged directly.
          */
         private void initializeDefault() {
+            if (mNativeTtsPlatformImplAndroid == 0) return;
+
             TraceEvent.startAsync("TtsEngine:initialize_default", hashCode());
 
             new AsyncTask<List<TtsVoice>>() {
                 @Override
                 protected List<TtsVoice> doInBackground() {
-                    assert mNativeTtsPlatformImplAndroid != 0;
-
                     try (TraceEvent te =
                             TraceEvent.scoped("TtsEngine:initialize_default.async_task")) {
                         final List<TtsVoice> voices = new ArrayList<>();
@@ -188,14 +188,19 @@ class TtsPlatformImpl {
                     mVoices = voices;
                     mInitialized = true;
 
-                    TtsPlatformImplJni.get().voicesChanged(mNativeTtsPlatformImplAndroid);
-
-                    if (mPendingUtterance != null) mPendingUtterance.speak();
+                    if (mNativeTtsPlatformImplAndroid != 0) {
+                        TtsPlatformImplJni.get().voicesChanged(mNativeTtsPlatformImplAndroid);
+                        if (mPendingUtterance != null) mPendingUtterance.speak();
+                    }
 
                     TraceEvent.finishAsync(
                             "TtsEngine:initialize_default", TtsEngine.this.hashCode());
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+
+        private void clearNativePtr() {
+            mNativeTtsPlatformImplAndroid = 0;
         }
 
         private boolean isInitialized() {
@@ -300,12 +305,13 @@ class TtsPlatformImpl {
     }
 
     /**
-     * Called when our C++ counterpoint is deleted. Clear the handle to our
-     * native C++ object, ensuring it's never called.
+     * Called when our C++ counterpoint is deleted. Clear the handle to our native C++ object,
+     * ensuring it's never called.
      */
     @CalledByNative
     private void destroy() {
         mNativeTtsPlatformImplAndroid = 0;
+        mDefaultTtsEngine.clearNativePtr();
     }
 
     /**
