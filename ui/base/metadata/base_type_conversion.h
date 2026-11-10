@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <cinttypes>
 #include <concepts>
 #include <memory>
 #include <optional>
@@ -27,7 +26,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -187,6 +185,9 @@ struct EnumStringsMap;
   }
 
 // String Conversions ---------------------------------------------------------
+
+COMPONENT_EXPORT(UI_BASE_METADATA)
+std::u16string PointerToString(const void* ptr);
 
 template <typename T>
 std::u16string PointerToString(T* ptr);
@@ -427,9 +428,7 @@ std::u16string PointerToString(T* ptr) {
   }
   if constexpr (std::is_void_v<T> ||
                 !TypeConverter<std::remove_const_t<T>>::is_serializable) {
-    return base::ASCIIToUTF16(
-        base::StringPrintf("<opaque object at 0x%016" PRIxPTR ">",
-                           reinterpret_cast<uintptr_t>(ptr)));
+    return PointerToString(static_cast<const void*>(ptr));
   } else {
     return base::StrCat(
         {u"&{", TypeConverter<std::remove_const_t<T>>::ToString(*ptr), u"}"});

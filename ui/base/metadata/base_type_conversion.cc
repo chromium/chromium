@@ -4,7 +4,10 @@
 
 #include "ui/base/metadata/base_type_conversion.h"
 
+#include <stdint.h>
+
 #include <algorithm>
+#include <cinttypes>
 #include <cmath>
 #include <optional>
 #include <string>
@@ -34,6 +37,15 @@ namespace ui {
 namespace metadata {
 
 /***** String Conversions *****/
+
+std::u16string PointerToString(const void* ptr) {
+  if (!ptr) {
+    return u"<null>";
+  }
+  return base::ASCIIToUTF16(
+      base::StringPrintf("<opaque object at 0x%016" PRIxPTR ">",
+                         reinterpret_cast<uintptr_t>(ptr)));
+}
 
 #define CONVERT_NUMBER_TO_STRING(T)                           \
   std::u16string TypeConverter<T>::ToString(T source_value) { \
