@@ -181,6 +181,19 @@ def get_affected_fuzzers(
   return affected_map
 
 
+def pick_fuzzers(
+  affected_fuzzers_map: Dict[str, List[str]], max_fuzzers: int
+) -> List[str]:
+  """Returns the GN labels of the first max_fuzzers relevant fuzzers."""
+  # TODO(b/560236802): This is a placeholder. Rank the fuzzers by inverse
+  # document frequency (IDF) instead and return the top ones.
+  fuzzers: Set[str] = set()
+  for fuzzer_file_name in affected_fuzzers_map.values():
+    fuzzers.update(fuzzer_file_name)
+  picked = sorted(fuzzers)[:max_fuzzers]
+  return picked
+
+
 def get_findit_coverage(
   file_path: str,
   fuzzer_name: str = 'any',
@@ -340,8 +353,24 @@ def main():
     help='The CL\'s commit. Only files it changes relative to its parent are '
     'considered.',
   )
+  parser.add_argument(
+    '--max-fuzzers',
+    type=int,
+    required=True,
+    help='Return at most this number of fuzzers to --output-json.',
+  )
+  parser.add_argument(
+    '--output-json',
+    required=True,
+    help='File to write the GN labels of at most --max-fuzzers '
+    'fuzzers to, as {"fuzzers": [label, ...]}. Written whenever the script '
+    'exits 0, with {"fuzzers": []} if no fuzzers are found.',
+  )
 
   args = parser.parse_args()
+  if args.max_fuzzers < 1:
+    parser.error('--max-fuzzers must be at least 1.')
+
   # The fuzz_cq recipe generates --out-dir, passes it to this script and then
   # builds and runs the fuzzers in it. The recipe picks the GN args because they
   # set the fuzzing engine and sanitizer that the fuzzers are built and run
@@ -361,6 +390,8 @@ def main():
   modified_files = get_modified_files(args.revision)
   if not modified_files:
     logging.info('No relevant source files modified by %s.', args.revision)
+    with open(args.output_json, 'w') as f:
+      json.dump({'fuzzers': []}, f, indent=2)
     return 0
 
   # Get all possible fuzzer targets
@@ -377,8 +408,9 @@ def main():
     modified_files, args.out_dir, all_fuzzers
   )
 
-  final_output = {'affected_fuzzers': affected_fuzzers_map}
-  print(json.dumps(final_output, indent=2, sort_keys=True))
+  fuzzers = pick_fuzzers(affected_fuzzers_map, args.max_fuzzers)
+  with open(args.output_json, 'w') as f:
+    json.dump({'fuzzers': fuzzers}, f, indent=2)
   return 0
 
 

@@ -25,8 +25,27 @@ FINDIT_FILE_LINES = ['// Comment.', 'void F() {', '  if (G())', '    H();', '}']
 FINDIT_COVERED_LINES = {2: 7, 3: 7, 5: 7}
 
 
-def main_argv(out_dir):
-  return ['script.py', '--out-dir', out_dir, '--revision', 'abc']
+def output_json_path(out_dir):
+  # The out dir is a temporary directory, so write the output there too.
+  return os.path.join(out_dir, 'fuzzers.json')
+
+
+def main_argv(out_dir, max_fuzzers=5):
+  return [
+    'script.py',
+    '--out-dir',
+    out_dir,
+    '--revision',
+    'abc',
+    '--max-fuzzers',
+    str(max_fuzzers),
+    '--output-json',
+    output_json_path(out_dir),
+  ]
+
+
+def read_output_json(out_dir):
+  return json.loads(pathlib.Path(output_json_path(out_dir)).read_text())
 
 
 def make_findit_response(covered=True):
@@ -284,10 +303,21 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
     self.assertIn('has no args.gn. Generate it first.', mock_stderr.getvalue())
     self.mock_subprocess_run.assert_not_called()
 
+  def test_main_max_fuzzers_must_be_positive(self):
+    with mock.patch('sys.argv', main_argv(self.make_out_dir(), max_fuzzers=0)):
+      with mock.patch('sys.stderr', new_callable=io.StringIO) as mock_stderr:
+        with self.assertRaises(SystemExit) as cm:
+          find_affected_coverage_guided_fuzzers.main()
+    self.assertEqual(cm.exception.code, 2)
+    self.assertIn('--max-fuzzers must be at least 1.', mock_stderr.getvalue())
+    self.mock_subprocess_run.assert_not_called()
+
   def test_main_no_modified_files(self):
     self.mock_subprocess_run.return_value.stdout = ''
-    with mock.patch('sys.argv', main_argv(self.make_out_dir())):
+    out_dir = self.make_out_dir()
+    with mock.patch('sys.argv', main_argv(out_dir)):
       self.assertEqual(find_affected_coverage_guided_fuzzers.main(), 0)
+    self.assertEqual(read_output_json(out_dir), {'fuzzers': []})
     self.assertEqual(
       self.get_calls_args(self.mock_subprocess_run),
       ['git diff --name-only --diff-filter=d -z abc~ abc'],
@@ -322,18 +352,10 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
     out_dir = self.make_out_dir()
 
     with mock.patch('sys.argv', main_argv(out_dir)):
-      # Redirect stdout to avoid printing during tests
-      with mock.patch('sys.stdout', new_callable=mock.MagicMock) as mock_stdout:
-        self.assertEqual(find_affected_coverage_guided_fuzzers.main(), 0)
-
-        # Verify the printed JSON output is correct
-        output_str = ''.join(
-          call.args[0] for call in mock_stdout.write.call_args_list
-        )
-        output_data = json.loads(output_str)
-        self.assertEqual(
-          output_data, {'affected_fuzzers': {'//file1.cc': ['//fuzzer:fuzzer']}}
-        )
+      self.assertEqual(find_affected_coverage_guided_fuzzers.main(), 0)
+    self.assertEqual(
+      read_output_json(out_dir), {'fuzzers': ['//fuzzer:fuzzer']}
+    )
 
     self.assertEqual(
       self.get_calls_args(self.mock_subprocess_run),
@@ -343,6 +365,24 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
         '--all --type=executable --as=label -q',
         f'gn refs {out_dir} --all --as=label -q //file1.cc',
       ],
+    )
+
+  def test_main_returns_at_most_max_fuzzers(self):
+    self._set_subprocess_run_side_effect(
+      git_diff_stdout='file1.cc\0',
+      gn_refs_mapping={
+        '//testing/libfuzzer:fuzzing_engine': (
+          '//fuzzer1:fuzzer1\n//fuzzer2:fuzzer2\n'
+        ),
+        '//file1.cc': '//fuzzer1:fuzzer1\n//fuzzer2:fuzzer2\n',
+      },
+    )
+    out_dir = self.make_out_dir()
+
+    with mock.patch('sys.argv', main_argv(out_dir, max_fuzzers=1)):
+      self.assertEqual(find_affected_coverage_guided_fuzzers.main(), 0)
+    self.assertEqual(
+      read_output_json(out_dir), {'fuzzers': ['//fuzzer1:fuzzer1']}
     )
 
   @mock.patch('find_affected_coverage_guided_fuzzers.urllib.request.urlopen')
