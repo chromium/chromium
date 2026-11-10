@@ -4385,6 +4385,64 @@ TEST_F(SessionServiceImplWithStoreTest,
             nullptr);
 }
 
+// A transient error restoring the provider's key for a federated registration
+// doesn't unblock the requests waiting on a refresh of the provider session,
+// which restores the key itself.
+TEST_F(SessionServiceImplWithStoreTest,
+       TransientFederatedKeyRestoreErrorDoesNotUnblockRefreshStartedEarlier) {
+  auto [provider_session_key, provider_key, fetch_param] =
+      SetUpFederatedRegistration();
+
+  base::HistogramTester histograms;
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kUrlString, kOrigin);
+
+  // The registration starts restoring the provider key.
+  SessionStore::RestoreSessionBindingKeyCallback federated_restore_callback;
+  EXPECT_CALL(store(),
+              RestoreSessionBindingKey(
+                  provider_session_key,
+                  unexportable_keys::BackgroundTaskPriority::kUserVisible, _))
+      .WillOnce(SaveArgByMove<2>(&federated_restore_callback));
+  service().RegisterBoundSession(
+      SessionService::OnAccessCallback(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
+      NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
+  ASSERT_TRUE(federated_restore_callback);
+
+  // A request is deferred on the provider session, and its refresh restores
+  // the key too.
+  SessionStore::RestoreSessionBindingKeyCallback refresh_restore_callback;
+  EXPECT_CALL(store(),
+              RestoreSessionBindingKey(
+                  provider_session_key,
+                  unexportable_keys::BackgroundTaskPriority::kUserBlocking, _))
+      .WillOnce(SaveArgByMove<2>(&refresh_restore_callback));
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request = CreateRequestWithContext(
+      context(), kTestUrl, url::Origin::Create(kTestUrl), &delegate);
+  DbscRequest dbsc_request(request.get());
+  base::test::TestFuture<RefreshResult> refresh_future;
+  service().DeferRequestForRefresh(
+      dbsc_request, SessionService::DeferralParams(Session::Id(kSessionId)),
+      refresh_future.GetCallback());
+  ASSERT_TRUE(refresh_restore_callback);
+
+  // The registration's restore fails with a transient error. The registration
+  // fails, but the request keeps waiting for its refresh.
+  std::move(federated_restore_callback)
+      .Run(base::unexpected(unexportable_keys::ServiceError::kKeyNotReady));
+  histograms.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RegistrationResult",
+      SessionError::kInvalidFederatedSessionProviderFailedToRestoreKey, 1);
+  ASSERT_FALSE(refresh_future.IsReady());
+
+  // The refresh completes once its own restore succeeds.
+  EXPECT_CALL(store(), SaveSession);
+  std::move(refresh_restore_callback).Run(provider_key);
+  EXPECT_EQ(refresh_future.Take(), RefreshResult::kRefreshed);
+}
+
 TEST_F(SessionServiceImplWithStoreTest, NoSessionUsageDuringInitialization) {
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =

@@ -1679,17 +1679,17 @@ void SessionServiceImpl::OnSessionKeyRestored(
       // then.
       DeleteSessionAndNotify(DeletionReason::kFailedToUnwrapKey, session_key,
                              on_access_callback);
-    } else {
-      UnblockWaitingRequests(session_key,
-                             RefreshResult::kTransientSigningError);
     }
+    // This method doesn't call `UnblockWaitingRequests()` on a transient
+    // error, because that's `callback`'s responsibility.
     std::move(callback).Run(std::nullopt);
     return;
   }
 
   auto* session = GetSession(session_key);
   if (!session) {
-    UnblockWaitingRequests(session_key, RefreshResult::kFatalError);
+    // The session was deleted while the key was being restored, which
+    // unblocked its waiting requests.
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -1733,9 +1733,12 @@ void SessionServiceImpl::OnSessionKeyRestoredForRefresh(
     const SessionKey& session_key,
     std::optional<unexportable_keys::UnexportableSigningKeyId> key_id) {
   if (!key_id) {
-    // `OnSessionKeyRestored()` already unblocked the waiting requests.
-    // Unblocking again would fail requests that were deferred re-entrantly
-    // while it ran.
+    // If the session still exists, the restore failed with a transient error.
+    // Otherwise, deleting the session already unblocked the waiting requests.
+    if (GetSession(session_key)) {
+      UnblockWaitingRequests(session_key,
+                             RefreshResult::kTransientSigningError);
+    }
     return;
   }
 

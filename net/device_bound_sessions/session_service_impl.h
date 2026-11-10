@@ -372,8 +372,9 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // `session_key`. Always runs `callback`: with the key if it was restored
   // and the session still exists, or with `std::nullopt` otherwise. Before
   // running `callback` with `std::nullopt`, deletes the session if the unwrap
-  // error is persistent and unblocks the requests waiting on the session. The
-  // key is unwrapped at `priority`, but never below `kUserVisible`.
+  // error is persistent, which unblocks the requests waiting on it. If the
+  // error is transient, unblocking them is up to `callback`. The key is
+  // unwrapped at `priority`, but never below `kUserVisible`.
   void RestoreSessionKey(
       const SessionKey& session_key,
       OnAccessCallback on_access_callback,
@@ -387,7 +388,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // session. Always runs `callback`: with the key if it was restored and the
   // session still exists, or with `std::nullopt` otherwise. Before running
   // `callback` with `std::nullopt`, deletes the session if the unwrap error is
-  // persistent and unblocks the requests waiting on the session.
+  // persistent, which unblocks the requests waiting on it. If the error is
+  // transient, unblocking them is up to `callback`.
   void OnSessionKeyRestored(
       const SessionKey& session_key,
       OnAccessCallback on_access_callback,
@@ -399,8 +401,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void StartSessionRefresh(const SessionKey& session_key, RefreshParams params);
 
   // Continues the refresh started by `StartSessionRefresh` after restoring the
-  // session key. Does nothing if the key wasn't restored, because
-  // `OnSessionKeyRestored` already unblocked the waiting requests.
+  // session key. If the key wasn't restored, unblocks the requests waiting on
+  // the refresh instead, unless deleting the session already did.
   void OnSessionKeyRestoredForRefresh(
       RefreshParams params,
       const SessionKey& session_key,
