@@ -90,6 +90,7 @@ std::optional<WebURLRequest::Priority> ImageRecord::RequestPriority() const {
 void ImageRecord::Trace(Visitor* visitor) const {
   visitor->Trace(image_generating_layout_object_);
   visitor->Trace(media_timing_);
+  visitor->Trace(metrics_timestamp_override_);
   PaintTimingRecord::Trace(visitor);
 }
 

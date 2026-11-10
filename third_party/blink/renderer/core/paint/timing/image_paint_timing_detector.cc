@@ -237,17 +237,18 @@ void ImagePaintTimingDetector::RecordImage(
 
   bool is_video = !media_timing.GetFirstVideoFrameTime().is_null();
 
-  // If this is the first frame of an animated image, we need the paint and
-  // presentation time of this paint, in addition to when it becomes
-  // sufficiently loaded, which could be this frame or a later one.
+  // The first video and first animated image frame timestamps override the
+  // sufficiently-loaded frame's presentation time for metrics.
   //
   // TODO(crbug.com/449779010): Enable ReportFirstFrameTimeAsRenderTime and
-  // track a single paint time for animated images/videos.
+  // track a single paint time for animated images.
   if (!is_video && media_timing.IsPaintedFirstFrame() &&
-      !record->HasFirstAnimatedFrameTime()) {
-    // Always measure the first frame time so it's available if this record is
-    // needed when it's sufficiently loaded.
-    animated_images_queued_for_first_frame_time_.push_back(record);
+      !record->MetricsTimestampOverride()) {
+    record->SetMetricsTimestampOverride(base::TimeTicks());
+    pending_animated_image_first_frame_timestamps_.push_back(
+        record->MetricsTimestampOverride());
+  } else if (is_video) {
+    record->SetMetricsTimestampOverride(media_timing.GetFirstVideoFrameTime());
   }
 
   // Check if the image is ready to be reported to clients. For most media, we
@@ -263,9 +264,8 @@ void ImagePaintTimingDetector::RecordImage(
   // Mark the image as sufficiently loaded first since clients may depend on
   // that for filtering.
   record->SetIsSufficientlyLoadedForReporting();
-  if (is_video) {
-    record->SetFirstAnimatedFrameTime(media_timing.GetFirstVideoFrameTime());
-  } else {
+
+  if (!is_video) {
     record->SetLoadTime(style_image ? LoadTime(*style_image)
                                     : LoadTime(record_id_hash));
   }
@@ -335,7 +335,7 @@ void ImagePaintTimingDetector::Trace(Visitor* visitor) const {
   visitor->Trace(paint_timing_detector_);
   visitor->Trace(pending_images_);
   visitor->Trace(background_image_finished_times_);
-  visitor->Trace(animated_images_queued_for_first_frame_time_);
+  visitor->Trace(pending_animated_image_first_frame_timestamps_);
   visitor->Trace(images_queued_for_paint_time_);
 }
 
@@ -391,9 +391,9 @@ ImagePaintTimingDetector::TakeImageRecordsOnPaintFinished() {
   return std::move(images_queued_for_paint_time_);
 }
 
-HeapVector<Member<ImageRecord>>
-ImagePaintTimingDetector::TakeAnimatedImageRecordsOnPaintFinished() {
-  return std::move(animated_images_queued_for_first_frame_time_);
+HeapVector<Member<HeapTimeTicks>>
+ImagePaintTimingDetector::TakePendingPresentationTimestamps() {
+  return std::move(pending_animated_image_first_frame_timestamps_);
 }
 
 bool ImagePaintTimingDetector::HasPersistentImageStateForTest() const {

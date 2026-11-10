@@ -96,10 +96,10 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // at the current frame's paint stage.
   HeapVector<Member<ImageRecord>> TakeImageRecordsOnPaintFinished();
 
-  // Returns the set of `ImageRecord`s representing animated images that need
-  // the first animated frame timestamp set to the presentation time of the
-  // current frame. Called by `PaintTiming` at the current frame's paint stage.
-  HeapVector<Member<ImageRecord>> TakeAnimatedImageRecordsOnPaintFinished();
+  // Returns the list of `HeapTimeTicks` that need to be set to the current
+  // frame's presentation time. Called by `PaintTiming` at the current frame's
+  // paint stage.
+  HeapVector<Member<HeapTimeTicks>> TakePendingPresentationTimestamps();
 
   // Called at the start of paint when the documentElement is not invisible
   // (i.e. has nonzero opacity) and there might be ignored content. Makes the
@@ -163,10 +163,11 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // set is returned and cleared in `TakeImageRecordsOnPaintFinished()`.
   HeapVector<Member<ImageRecord>> images_queued_for_paint_time_;
 
-  // Animated image `ImageRecord`s that were painted this frame that need the
-  // first animated frame time set. This set is returned and cleared in
-  // `TakeAnimatedImageRecordsOnPaintFinished()`.
-  HeapVector<Member<ImageRecord>> animated_images_queued_for_first_frame_time_;
+  // List of `HeapTimeTicks` corresponding to `ImageRecord`s that were painted
+  // this frame that need the first animated frame time set. This is returned
+  // and cleared in `TakePendingPresentationTimestamps()`.
+  HeapVector<Member<HeapTimeTicks>>
+      pending_animated_image_first_frame_timestamps_;
 
   // Map containing timestamps of when LayoutObject::ImageNotifyFinished is
   // first called.

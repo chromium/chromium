@@ -334,10 +334,13 @@ bool LargestContentfulPaintCalculator::
   }
   const ImageRecord& image_record = *largest_image;
 
-  // TODO(crbug.com/449779010): Unify these.
+  // TODO(crbug.com/449779010): The first video or animated image timestamp is
+  // only used to override metrics for hard navigations. We should match this
+  // behavior for soft navigations.
+  HeapTimeTicks* timestamp = image_record.MetricsTimestampOverride();
   base::TimeTicks image_paint_time =
-      delegate_->IsHardNavigation() && image_record.HasFirstAnimatedFrameTime()
-          ? image_record.FirstAnimatedFrameTime()
+      delegate_->IsHardNavigation() && timestamp && !timestamp->value.is_null()
+          ? timestamp->value
           : image_record.PaintTime();
 
   // For soft navs, we don't update metrics until there's a paint time.
