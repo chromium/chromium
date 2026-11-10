@@ -200,6 +200,23 @@ lens::LensOverlayDismissalSource ToLensOverlayDismissalSource(
 }
 #endif
 
+// Tells the window's contextual tasks panel that a query was submitted, if
+// `webui_contents` is the panel's active `WebContents`. A query submitted from
+// a Contextual Tasks UI shown in a tab isn't counted for the panel's session.
+void NotifyPanelOfQuerySubmitted(content::WebContents* webui_contents) {
+  BrowserWindowInterface* browser_window_interface =
+      webui::GetBrowserWindowInterface(webui_contents);
+  if (!browser_window_interface) {
+    return;
+  }
+  auto* controller = contextual_tasks::ContextualTasksPanelController::From(
+      browser_window_interface);
+  if (controller && controller->IsPanelOpenForContextualTask() &&
+      controller->GetActiveWebContents() == webui_contents) {
+    controller->OnQuerySubmitted();
+  }
+}
+
 }  // namespace
 
 ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
@@ -421,6 +438,7 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   }
   base::RecordAction(base::UserMetricsAction(
       "ContextualTasks.Composebox.UserAction.QuerySubmitted"));
+  NotifyPanelOfQuerySubmitted(web_ui_interface_->GetWebUIWebContents());
   auto* session_handle = GetContextualSessionHandle();
 
   // Retrieve the overlay token before closing the overlay, as the controller

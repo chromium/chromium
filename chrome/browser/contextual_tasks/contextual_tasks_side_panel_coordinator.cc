@@ -269,8 +269,16 @@ void RecordCacheItemSessionEndMetrics(
     base::UmaHistogramCounts100(
         "ContextualTasks.Session.LinkClickCount",
         base::saturated_cast<int>(cache_item.link_click_count));
+    if (cache_item.entry_source ==
+        contextual_tasks::ContextualTasksPanelController::EntrySource::
+            kAbaOnRamp) {
+      base::UmaHistogramCounts100(
+          "ContextualTasks.Session.QuerySubmitCount.AbaOnRamp",
+          base::saturated_cast<int>(cache_item.query_submit_count));
+    }
   }
   cache_item.link_click_count = 0;
+  cache_item.query_submit_count = 0;
 
   if (cache_item.open_time_ticks.is_null()) {
     return;
@@ -721,6 +729,7 @@ void ContextualTasksSidePanelCoordinator::Show(
       it->second->time_to_handshake_complete_recorded = false;
       it->second->has_open_session = true;
       it->second->link_click_count = 0;
+      it->second->query_submit_count = 0;
     }
   }
   UpdateWebContentsForActiveTab();
@@ -1389,6 +1398,7 @@ void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(
     it->second->first_contentful_paint_recorded = true;
     it->second->has_open_session = true;
     it->second->link_click_count = 0;
+    it->second->query_submit_count = 0;
   }
   UpdateOpenState(/*is_open=*/true);
   SetErrorPageVisible(false);
@@ -1529,6 +1539,7 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
     tasks_pending_panel_rebuild_.erase(new_task_id);
     const EntrySource old_entry_source = cache_item->entry_source;
     const size_t old_link_click_count = cache_item->link_click_count;
+    const size_t old_query_submit_count = cache_item->query_submit_count;
     const bool was_open = cache_item->is_open;
     const bool split_from_old_task =
         ShouldScopeSidePanelStateToTab() && old_task_id &&
@@ -1539,13 +1550,16 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
     // This will potentially kick out the existing WebContents with new_task_id
     // since only 1 WebContents per task is kept in the cache.
     size_t existing_new_task_link_clicks = 0;
+    size_t existing_new_task_query_submits = 0;
     auto it = task_id_to_web_contents_cache_.find(new_task_id);
     if (it != task_id_to_web_contents_cache_.end()) {
       existing_new_task_link_clicks = it->second->link_click_count;
+      existing_new_task_query_submits = it->second->query_submit_count;
       MaybeDetachWebContents(it->second->web_contents.get());
     }
     if (split_from_old_task) {
       cache_item->link_click_count = existing_new_task_link_clicks;
+      cache_item->query_submit_count = existing_new_task_query_submits;
     }
     task_id_to_web_contents_cache_[new_task_id] = std::move(cache_item);
 
@@ -1561,6 +1575,7 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
         if (auto old_it = task_id_to_web_contents_cache_.find(*old_task_id);
             old_it != task_id_to_web_contents_cache_.end() && old_it->second) {
           old_it->second->link_click_count = old_link_click_count;
+          old_it->second->query_submit_count = old_query_submit_count;
         }
       }
     }
@@ -1588,6 +1603,23 @@ void ContextualTasksSidePanelCoordinator::OnLinkClicked() {
   if (WebContentsCacheItem* cache_item =
           GetWebContentsCacheItemForWebContents(web_contents)) {
     cache_item->link_click_count++;
+  }
+}
+
+void ContextualTasksSidePanelCoordinator::OnQuerySubmitted() {
+  content::WebContents* web_contents = GetActiveWebContents();
+  if (!web_contents) {
+    web_contents = GetPanelWebContentsForActiveTab();
+  }
+  WebContentsCacheItem* cache_item =
+      GetWebContentsCacheItemForWebContents(web_contents);
+  if (!cache_item || !cache_item->has_open_session) {
+    return;
+  }
+  cache_item->query_submit_count++;
+  if (cache_item->entry_source == EntrySource::kAbaOnRamp) {
+    base::RecordAction(base::UserMetricsAction(
+        "ContextualTasks.SearchJourney.QuerySubmitted"));
   }
 }
 
@@ -2335,6 +2367,7 @@ void ContextualTasksSidePanelCoordinator::Unhide() {
     if (!cache_item->has_open_session) {
       cache_item->has_open_session = true;
       cache_item->link_click_count = 0;
+      cache_item->query_submit_count = 0;
     }
 #if !BUILDFLAG(IS_ANDROID)
     onboarding_controller_->SetEntryPoint(cache_item->entry_point);
@@ -2698,6 +2731,7 @@ void ContextualTasksSidePanelCoordinator::UpdateOpenState(bool is_open) {
         if (!it->second->has_open_session) {
           it->second->has_open_session = true;
           it->second->link_click_count = 0;
+          it->second->query_submit_count = 0;
         }
         it->second->is_open = true;
       }
@@ -2716,6 +2750,7 @@ void ContextualTasksSidePanelCoordinator::UpdateOpenState(bool is_open) {
     if (is_open && !it->second->has_open_session) {
       it->second->has_open_session = true;
       it->second->link_click_count = 0;
+      it->second->query_submit_count = 0;
     }
     it->second->is_open = is_open;
   }

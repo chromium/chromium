@@ -36,11 +36,13 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/smart_tab_sharing_metrics.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_query_flow_router.h"
@@ -662,6 +664,82 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
 
   handler_->CreateAndSendQueryMessage(kQuery, /*is_voice_search=*/false,
                                       kCgiParams);
+}
+
+// Fixture for verifying that query submissions are reported to the panel.
+// Points the WebUI's browser window at a mock that hosts a mock panel
+// controller so the test can dictate whether the panel is open and which
+// `WebContents` it shows.
+class ContextualTasksComposeboxHandlerPanelTest
+    : public ContextualTasksComposeboxHandlerTest {
+ public:
+  void SetUpOnMainThread() override {
+    ContextualTasksComposeboxHandlerTest::SetUpOnMainThread();
+    mock_browser_window_ =
+        std::make_unique<testing::NiceMock<MockBrowserWindowInterface>>();
+    mock_panel_controller_ = std::make_unique<testing::NiceMock<
+        contextual_tasks::MockContextualTasksPanelController>>(
+        mock_browser_window_.get());
+    webui::SetBrowserWindowInterface(web_contents(),
+                                     mock_browser_window_.get());
+  }
+
+  void TearDownOnMainThread() override {
+    // Restore the real browser window before the mocks go away so nothing is
+    // left pointing at a destroyed object.
+    webui::SetBrowserWindowInterface(web_contents(), browser());
+    mock_panel_controller_.reset();
+    mock_browser_window_.reset();
+    ContextualTasksComposeboxHandlerTest::TearDownOnMainThread();
+  }
+
+  void SetPanelState(bool is_open, content::WebContents* active_web_contents) {
+    ON_CALL(*mock_panel_controller_, IsPanelOpenForContextualTask())
+        .WillByDefault(testing::Return(is_open));
+    ON_CALL(*mock_panel_controller_, GetActiveWebContents())
+        .WillByDefault(testing::Return(active_web_contents));
+  }
+
+  // Submits a query without a task ID, so it takes the early path that skips
+  // recontextualization.
+  void SubmitQueryWithoutTask() {
+    EXPECT_CALL(*mock_ui_, GetTaskId())
+        .WillRepeatedly(testing::ReturnRefOfCopy(std::optional<base::Uuid>()));
+    EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
+        .WillOnce(testing::Return(lens::ClientToAimMessage()));
+    EXPECT_CALL(*mock_ui_, PostAimMessage(testing::_));
+    handler_->CreateAndSendQueryMessage("panel query",
+                                        /*is_voice_search=*/false);
+  }
+
+ protected:
+  std::unique_ptr<testing::NiceMock<MockBrowserWindowInterface>>
+      mock_browser_window_;
+  std::unique_ptr<
+      testing::NiceMock<contextual_tasks::MockContextualTasksPanelController>>
+      mock_panel_controller_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerPanelTest,
+                       QuerySubmitted_NotifiesPanelShowingThisWebUi) {
+  SetPanelState(/*is_open=*/true, web_contents());
+  EXPECT_CALL(*mock_panel_controller_, OnQuerySubmitted()).Times(1);
+  SubmitQueryWithoutTask();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerPanelTest,
+    QuerySubmitted_DoesNotNotifyPanelShowingOtherWebContents) {
+  SetPanelState(/*is_open=*/true, /*active_web_contents=*/nullptr);
+  EXPECT_CALL(*mock_panel_controller_, OnQuerySubmitted()).Times(0);
+  SubmitQueryWithoutTask();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerPanelTest,
+                       QuerySubmitted_DoesNotNotifyClosedPanel) {
+  SetPanelState(/*is_open=*/false, web_contents());
+  EXPECT_CALL(*mock_panel_controller_, OnQuerySubmitted()).Times(0);
+  SubmitQueryWithoutTask();
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,

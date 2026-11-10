@@ -149,6 +149,10 @@ class ContextualTasksSidePanelCoordinator
     // session.
     size_t link_click_count = 0;
 
+    // Number of queries submitted from this task's panel during the current
+    // open session.
+    size_t query_submit_count = 0;
+
     // Observer for the embedded WebContents in the side panel.
     std::unique_ptr<SidePanelWebContentsObserver> web_contents_observer;
 
@@ -213,6 +217,7 @@ class ContextualTasksSidePanelCoordinator
                      base::Uuid task_id) override;
   void OnAiInteraction() override;
   void OnLinkClicked() override;
+  void OnQuerySubmitted() override;
   void SetPendingTaskForTab(tabs::TabInterface* tab,
                             const base::Uuid& task_id) override;
   content::WebContents* GetActiveWebContents() const override;
