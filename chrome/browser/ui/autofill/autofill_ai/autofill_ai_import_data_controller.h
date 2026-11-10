@@ -83,6 +83,9 @@ class AutofillAiImportDataController {
   // to wallet.
   virtual void OnGoToWalletLinkClicked() = 0;
 
+  // Called when the user clicks the privacy policy link in the dialog subtitle.
+  virtual void OnPrivacyPolicyLinkClicked() = 0;
+
   // Returns details about the new/updated prompted entity. This is used by the
   // UI layer to give users details about what changes will be done if they
   // accept the prompt.

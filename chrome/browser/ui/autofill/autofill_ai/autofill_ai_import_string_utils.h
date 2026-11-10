@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_AUTOFILL_AI_IMPORT_STRING_UTILS_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_AUTOFILL_AI_IMPORT_STRING_UTILS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -26,7 +27,11 @@ struct WalletImportPromptNotice {
   std::u16string text;
   // The range of `text` that links to Google Wallet.
   gfx::Range wallet_link_range;
-  // The IDs of all strings shown in the notice.
+  // The text of the link to the Privacy Policy, if it is shown in a separate
+  // paragraph below the notice.
+  std::optional<std::u16string> privacy_policy_link_text;
+  // The IDs of all strings shown in the notice, including the Privacy Policy
+  // paragraph.
   std::vector<int> string_ids;
 };
 

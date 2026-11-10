@@ -61,6 +61,7 @@ class AutofillAiImportDataControllerImpl
   bool IsWalletableEntity() const override;
   bool IsBranding2026FeatureEnabled() const override;
   void OnGoToWalletLinkClicked() override;
+  void OnPrivacyPolicyLinkClicked() override;
   std::vector<EntityAttributeUpdateDetails> GetUpdatedAttributesDetails()
       const override;
   bool IsSavePrompt() const override;

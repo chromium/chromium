@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller_impl.h"
 
+#include <algorithm>
 #include <optional>
+#include <string_view>
 
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
@@ -26,7 +28,10 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_utils.h"
 
 namespace autofill {
 
@@ -143,6 +148,17 @@ class AutofillAiImportDataControllerImplTest : public DialogBrowserTest {
   AutofillAiImportDataControllerImpl* controller() { return controller_; }
 
   AutofillBubbleBase* bubble_view() { return controller_->bubble_view(); }
+
+  // Returns whether the bubble shows a `views::StyledLabel` containing `text`.
+  bool BubbleShowsText(std::u16string_view text) {
+    return views::test::AnyViewMatchingPredicate(
+        static_cast<AutofillAiImportDataBubbleView*>(bubble_view())
+            ->GetWidget(),
+        [&](const views::View* view) {
+          const auto* label = views::AsViewClass<views::StyledLabel>(view);
+          return label && label->GetText().contains(text);
+        });
+  }
 
   // Used in the save prompt case, this method can be called to set specific
   // attributes on the entity to be saved.
@@ -377,6 +393,120 @@ IN_PROC_BROWSER_TEST_F(
                   IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
                   IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK));
   widget_destroyed_waiter.Wait();
+}
+
+// Tests that clicking the privacy policy link opens the Google Privacy Policy
+// in a new tab and marks the bubble to be reshown once the tab is visible.
+IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
+                       OnPrivacyPolicyLinkClicked) {
+  SetNewPassportOptions(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  ShowUi("SaveNewPassportEntity");
+  ASSERT_TRUE(controller()->IsShowingBubble());
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  controller()->OnPrivacyPolicyLinkClicked();
+
+  EXPECT_TRUE(controller()->ShouldReshowOnTabVisible());
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      GURL(chrome::kPrivacyPolicyURL));
+}
+
+class AutofillAiImportDataControllerImplPrivatePassNoticeTest
+    : public AutofillAiImportDataControllerImplTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillRegionalizedPrivatePassesUxRefine};
+};
+
+// Tests that saving a private pass shows the private pass notice and the link
+// to the Privacy Policy.
+IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplPrivatePassNoticeTest,
+                       SavePrivatePass_ShowsPrivatePassNotice) {
+  SetNewPassportOptions(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  ShowUi("SaveNewPassportEntity");
+  ASSERT_TRUE(controller()->IsShowingBubble());
+
+  EXPECT_TRUE(BubbleShowsText(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK)));
+  EXPECT_TRUE(BubbleShowsText(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_PRIVACY_POLICY_LINK)));
+}
+
+// Tests that accepting the save prompt of a private pass reports the string IDs
+// of all text shown in the private pass notice, including the Privacy Policy.
+IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplPrivatePassNoticeTest,
+                       AcceptPrompt_SavePrivatePassConsentStringIds) {
+  base::test::TestFuture<AutofillClient::AutofillAiBubbleResult,
+                         std::optional<EntityInstance>,
+                         const AutofillClient::EntityImportUIContext&>
+      prompt_result_future;
+  controller()->ShowPrompt(
+      test::GetPassportEntityInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet}),
+      std::nullopt, /*close_on_accept=*/true, /*legal_message_lines=*/{},
+      prompt_result_future.GetCallback());
+  ASSERT_TRUE(controller()->IsShowingBubble());
+  auto* bubble = static_cast<AutofillAiImportDataBubbleView*>(bubble_view());
+  views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
+      bubble->GetWidget());
+
+  bubble->AcceptDialog();
+
+  ASSERT_TRUE(prompt_result_future.IsReady());
+  EXPECT_THAT(
+      std::get<2>(prompt_result_future.Get()).accepted_consent_string_ids,
+      ElementsAre(
+          IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS,
+          IDS_AUTOFILL_GOOGLE_WALLET_TITLE,
+          IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK,
+          IDS_AUTOFILL_PRIVACY_POLICY_LINK));
+  widget_destroyed_waiter.Wait();
+}
+
+// Tests that saving a public pass doesn't show the private pass notice.
+IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplPrivatePassNoticeTest,
+                       SavePublicPass_DoesNotShowPrivatePassNotice) {
+  SetNewVehicleOptions(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  ShowUi("SaveNewVehicleEntity");
+  ASSERT_TRUE(controller()->IsShowingBubble());
+
+  EXPECT_FALSE(BubbleShowsText(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK)));
+  EXPECT_FALSE(BubbleShowsText(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_PRIVACY_POLICY_LINK)));
+}
+
+class AutofillAiImportDataControllerImplPrivatePassNoticeDisabledTest
+    : public AutofillAiImportDataControllerImplTest {
+ public:
+  AutofillAiImportDataControllerImplPrivatePassNoticeDisabledTest() {
+    feature_list_.InitAndDisableFeature(
+        features::kAutofillRegionalizedPrivatePassesUxRefine);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that saving a private pass doesn't show the private pass notice if
+// `kAutofillRegionalizedPrivatePassesUxRefine` is disabled.
+IN_PROC_BROWSER_TEST_F(
+    AutofillAiImportDataControllerImplPrivatePassNoticeDisabledTest,
+    SavePrivatePass_DoesNotShowPrivatePassNotice) {
+  SetNewPassportOptions(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  ShowUi("SaveNewPassportEntity");
+  ASSERT_TRUE(controller()->IsShowingBubble());
+
+  EXPECT_FALSE(BubbleShowsText(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK)));
+  EXPECT_FALSE(BubbleShowsText(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_PRIVACY_POLICY_LINK)));
 }
 
 // Tests that accepting a prompt that closes on accept keeps the bubble marked

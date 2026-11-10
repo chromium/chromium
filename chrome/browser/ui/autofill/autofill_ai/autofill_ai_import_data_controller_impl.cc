@@ -199,6 +199,10 @@ void AutofillAiImportDataControllerImpl::OnGoToWalletLinkClicked() {
   OpenUrlAndReopenBubbleOnReturn(wallet_url);
 }
 
+void AutofillAiImportDataControllerImpl::OnPrivacyPolicyLinkClicked() {
+  OpenUrlAndReopenBubbleOnReturn(GURL(chrome::kPrivacyPolicyURL));
+}
+
 bool AutofillAiImportDataControllerImpl::ShouldReshowOnTabVisible() const {
   return reopen_bubble_when_web_contents_becomes_visible_;
 }
@@ -311,6 +315,14 @@ void AutofillAiImportDataControllerImpl::MaybeRunSaveUpdateCallback(
 
 int AutofillAiImportDataControllerImpl::GetNoticeStringId() const {
   if (IsWalletableEntity()) {
+    const EntityInstance& new_entity = GetSaveUpdateState().new_entity;
+    if (IsSavePrompt() &&
+        GetWalletPassType(new_entity.type(), new_entity.record_type()) ==
+            EntityInstance::WalletPassType::kPrivate &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillRegionalizedPrivatePassesUxRefine)) {
+      return IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS;
+    }
     if (IsSavePrompt() && base::FeatureList::IsEnabled(
                               features::kAutofillAiWalletPrivatePasses)) {
       return IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW;

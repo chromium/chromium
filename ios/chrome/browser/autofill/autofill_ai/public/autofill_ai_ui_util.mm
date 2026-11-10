@@ -66,10 +66,10 @@ NSString* GetSaveEntityToWalletFooterTextAppendingURLsTo(
     [urls addObject:[[CrURL alloc]
                         initWithGURL:autofill::GetGooglePrivacyPolicyURL()]];
 
-    return l10n_util::GetNSStringF(
+    NSString* notice = l10n_util::GetNSStringF(
         string_id, google_wallet,
-        base::SysNSStringToUTF16(how_info_is_used_link), user_email,
-        base::SysNSStringToUTF16(privacy_policy_link));
+        base::SysNSStringToUTF16(how_info_is_used_link), user_email);
+    return [NSString stringWithFormat:@"%@\n\n%@", notice, privacy_policy_link];
   }
 
   NSString* formatted_link = WrapInLinkTags(

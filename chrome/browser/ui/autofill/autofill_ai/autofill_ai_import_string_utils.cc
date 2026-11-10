@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -247,6 +248,19 @@ WalletImportPromptNotice GetWalletImportPromptNotice(
       get_string(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
   std::vector<size_t> offsets;
   switch (notice_id) {
+    case IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS: {
+      const std::u16string how_info_is_used_text =
+          get_string(IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK);
+      notice.text = l10n_util::GetStringFUTF16(
+          notice_id, {google_wallet_text, how_info_is_used_text, account_email},
+          &offsets);
+      CHECK_EQ(offsets.size(), 3u);
+      notice.wallet_link_range =
+          gfx::Range(offsets[1], offsets[1] + how_info_is_used_text.size());
+      notice.privacy_policy_link_text =
+          get_string(IDS_AUTOFILL_PRIVACY_POLICY_LINK);
+      return notice;
+    }
     case IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW: {
       const std::u16string manage_info_text =
           get_string(IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK);
@@ -255,6 +269,7 @@ WalletImportPromptNotice GetWalletImportPromptNotice(
                                      {google_wallet_text, manage_info_text,
                                       google_wallet_text, account_email},
                                      &offsets);
+      CHECK_EQ(offsets.size(), 4u);
       notice.wallet_link_range =
           gfx::Range(offsets[1], offsets[1] + manage_info_text.size());
       return notice;
@@ -263,6 +278,7 @@ WalletImportPromptNotice GetWalletImportPromptNotice(
     case IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE:
       notice.text = l10n_util::GetStringFUTF16(
           notice_id, {google_wallet_text, account_email}, &offsets);
+      CHECK_EQ(offsets.size(), 2u);
       notice.wallet_link_range =
           gfx::Range(offsets[0], offsets[0] + google_wallet_text.size());
       return notice;

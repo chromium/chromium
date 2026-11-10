@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/autofill_ai/autofill_ai_import_data_bubble_view.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -24,8 +25,15 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/link.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_utils.h"
@@ -36,9 +44,24 @@ namespace autofill {
 
 namespace {
 
+using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::SizeIs;
+
+// Returns the links of `label`. Only the first fragment of a (possibly wrapped)
+// link is not ignored by accessibility, so only that fragment is returned.
+std::vector<views::Link*> GetLinks(views::StyledLabel& label) {
+  std::vector<views::Link*> links;
+  for (views::View* child : label.children()) {
+    if (auto* link = views::AsViewClass<views::Link>(child);
+        link && !link->GetViewAccessibility().GetIsIgnored()) {
+      links.push_back(link);
+    }
+  }
+  return links;
+}
 
 class AutofillAiImportDataBubbleViewTest : public ChromeViewsTestBase {
  public:
@@ -319,6 +342,65 @@ TEST_F(AutofillAiImportDataBubbleViewTest,
 
   EXPECT_EQ(view()->GetViewByID(DialogViewId::LEGAL_MESSAGE_VIEW), nullptr);
   histogram_tester.ExpectTotalCount("Autofill.Ai.WalletNotice.Save.Funnel", 0);
+}
+
+// Tests that the private pass notice links to the private pass help center and
+// that the link to the Privacy Policy is shown in a separate paragraph below.
+TEST_F(AutofillAiImportDataBubbleViewTest, PrivatePassNoticeLinks) {
+  EXPECT_CALL(mock_controller(), IsWalletableEntity())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_controller(), GetNoticeStringId())
+      .WillRepeatedly(Return(
+          IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS));
+  CreateViewAndShow();
+  views::test::RunScheduledLayout(view()->GetWidget());
+
+  // The subtitle container is the first child of the main content wrapper.
+  views::View* subtitle_container = view()->children()[0]->children()[0];
+  ASSERT_THAT(subtitle_container->children(), SizeIs(2));
+  auto* notice =
+      views::AsViewClass<views::StyledLabel>(subtitle_container->children()[0]);
+  auto* privacy_policy =
+      views::AsViewClass<views::StyledLabel>(subtitle_container->children()[1]);
+  ASSERT_TRUE(notice);
+  ASSERT_TRUE(privacy_policy);
+  EXPECT_LT(notice->bounds().bottom(), privacy_policy->bounds().y());
+
+  std::vector<views::Link*> notice_links = GetLinks(*notice);
+  ASSERT_THAT(notice_links, SizeIs(1));
+  EXPECT_EQ(notice_links[0]->GetViewAccessibility().GetCachedName(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK));
+  std::vector<views::Link*> privacy_policy_links = GetLinks(*privacy_policy);
+  ASSERT_THAT(privacy_policy_links, SizeIs(1));
+  EXPECT_EQ(privacy_policy_links[0]->GetViewAccessibility().GetCachedName(),
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_PRIVACY_POLICY_LINK));
+
+  {
+    InSequence s;
+    EXPECT_CALL(mock_controller(), OnGoToWalletLinkClicked);
+    EXPECT_CALL(mock_controller(), OnPrivacyPolicyLinkClicked);
+  }
+  const ui::KeyEvent space_pressed(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                                   ui::EF_NONE);
+  notice_links[0]->OnKeyPressed(space_pressed);
+  privacy_policy_links[0]->OnKeyPressed(space_pressed);
+}
+
+// Tests that no Privacy Policy paragraph is shown for other Wallet notices.
+TEST_F(AutofillAiImportDataBubbleViewTest, NoPrivacyPolicyLinkForOtherNotices) {
+  EXPECT_CALL(mock_controller(), IsWalletableEntity())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_controller(), IsSavePrompt()).WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_controller(), GetSaveUpdateDialogTitleImagesResourceId())
+      .WillRepeatedly(Return(IDR_AUTOFILL_SAVE_VEHICLE_LOTTIE));
+  EXPECT_CALL(mock_controller(), GetNoticeStringId())
+      .WillRepeatedly(
+          Return(IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW));
+  CreateViewAndShow();
+
+  // The subtitle container is the first child of the main content wrapper.
+  EXPECT_THAT(view()->children()[0]->children()[0]->children(), SizeIs(1));
 }
 
 }  // namespace

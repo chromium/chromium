@@ -9,6 +9,8 @@
 #include <string_view>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_string_utils.h"
 #include "chrome/browser/ui/views/autofill/autofill_ai/autofill_ai_bubble_utils.h"
@@ -68,6 +70,14 @@ bool IsWalletPassBrandingSavePrompt(
   return controller.IsSavePrompt() && controller.IsBranding2026FeatureEnabled();
 }
 
+views::StyledLabel::RangeStyleInfo CreateLinkStyle(
+    base::RepeatingClosure callback) {
+  auto style =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(std::move(callback));
+  style.text_style = views::style::STYLE_LINK_4;
+  return style;
+}
+
 }  // namespace
 
 AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
@@ -93,7 +103,17 @@ AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
   std::unique_ptr<views::BoxLayoutView> subtitle_container =
       CreateAutofillAiBubbleSubtitleContainer();
   if (controller_->IsWalletableEntity()) {
-    subtitle_container->AddChildView(GetWalletableEntitySubtitle());
+    WalletImportPromptNotice notice =
+        GetWalletImportPromptNotice(controller_->GetNoticeStringId(),
+                                    controller_->GetPrimaryAccountEmail());
+    subtitle_container->AddChildView(GetWalletableEntitySubtitle(notice));
+    if (notice.privacy_policy_link_text) {
+      subtitle_container->SetBetweenChildSpacing(
+          ChromeLayoutProvider::Get()->GetDistanceMetric(
+              views::DISTANCE_RELATED_CONTROL_VERTICAL));
+      subtitle_container->AddChildView(
+          GetPrivacyPolicyLink(std::move(*notice.privacy_policy_link_text)));
+    }
   } else {
     subtitle_container->AddChildView(GetLocalEntitySubtitle());
   }
@@ -220,23 +240,35 @@ AutofillAiImportDataBubbleView::GetLocalEntitySubtitle() const {
 }
 
 std::unique_ptr<views::StyledLabel>
-AutofillAiImportDataBubbleView::GetWalletableEntitySubtitle() const {
-  WalletImportPromptNotice notice = GetWalletImportPromptNotice(
-      controller_->GetNoticeStringId(), controller_->GetPrimaryAccountEmail());
-
-  auto go_to_wallet =
-      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          &AutofillAiImportDataController::OnGoToWalletLinkClicked,
-          controller_));
-  go_to_wallet.text_style = views::style::STYLE_LINK_4;
-
+AutofillAiImportDataBubbleView::GetWalletableEntitySubtitle(
+    const WalletImportPromptNotice& notice) const {
   return views::Builder<views::StyledLabel>()
-      .SetText(std::move(notice.text))
+      .SetText(notice.text)
       .SetDefaultTextStyle(views::style::STYLE_BODY_4)
       .SetDefaultEnabledColorId(ui::kColorSysOnSurfaceSubtle)
       .SetAccessibleRole(ax::mojom::Role::kDetails)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-      .AddStyleRange(notice.wallet_link_range, go_to_wallet)
+      .AddStyleRange(
+          notice.wallet_link_range,
+          CreateLinkStyle(base::BindRepeating(
+              &AutofillAiImportDataController::OnGoToWalletLinkClicked,
+              controller_)))
+      .Build();
+}
+
+std::unique_ptr<views::StyledLabel>
+AutofillAiImportDataBubbleView::GetPrivacyPolicyLink(
+    std::u16string privacy_policy_text) const {
+  const gfx::Range link_range(0, privacy_policy_text.size());
+  return views::Builder<views::StyledLabel>()
+      .SetText(std::move(privacy_policy_text))
+      .SetDefaultTextStyle(views::style::STYLE_BODY_4)
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .AddStyleRange(
+          link_range,
+          CreateLinkStyle(base::BindRepeating(
+              &AutofillAiImportDataController::OnPrivacyPolicyLinkClicked,
+              controller_)))
       .Build();
 }
 
