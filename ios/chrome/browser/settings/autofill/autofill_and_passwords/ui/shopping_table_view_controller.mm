@@ -61,6 +61,7 @@ enum class ItemType {
 - (instancetype)init {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
+    self.title = l10n_util::GetNSString(IDS_AUTOFILL_SHOPPING_TITLE);
     _shoppingToggleEnabled = YES;
     _shoppingToggleManaged = NO;
   }
@@ -69,7 +70,6 @@ enum class ItemType {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.title = l10n_util::GetNSString(IDS_AUTOFILL_SHOPPING_TITLE);
   [self loadModel];
 }
 
