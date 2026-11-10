@@ -81,6 +81,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
   private sectionStateChangedListenerId_: number|null = null;
   private reducedMotionQuery_: MediaQueryList|null = null;
   private windowShownTimestamp_: number = performance.now();
+  private initialLoadPromise_: Promise<unknown>|null = null;
   accessor delegate: OrganizerListSectionDelegate<unknown>|null = null;
   accessor items: Array<OrganizerListSectionItem<unknown>> = [];
   accessor expanded: boolean = true;
@@ -176,8 +177,10 @@ export class OrganizerListSectionElement extends CrLitElement implements
 
     if (changedProperties.has('delegate')) {
       this.delegate?.init(this);
-      this.updateItems_();
-      this.updateSectionState_();
+      this.initialLoadPromise_ = Promise.allSettled([
+        this.updateItems_(),
+        this.updateSectionState_(),
+      ]);
     }
 
     if (changedProperties.has('searchQuery') ||
@@ -193,6 +196,12 @@ export class OrganizerListSectionElement extends CrLitElement implements
 
   onItemsChanged(items: Array<OrganizerListSectionItem<unknown>>) {
     this.items = items;
+  }
+
+  async waitForInitialLoad(): Promise<void> {
+    await this.updateComplete;
+    await this.initialLoadPromise_;
+    await this.updateComplete;
   }
 
   private async updateItems_() {

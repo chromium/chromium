@@ -84,6 +84,13 @@ export class OrganizerListElement extends CrLitElement {
     }
   }
 
+  async waitForInitialLoad(): Promise<void> {
+    await this.updateComplete;
+    await Promise.allSettled(
+        this.getSections_().map(section => section.waitForInitialLoad()));
+    await this.updateComplete;
+  }
+
   private getSections_(): OrganizerListSectionElement[] {
     return Array.from(
         this.shadowRoot.querySelectorAll('organizer-list-section'));

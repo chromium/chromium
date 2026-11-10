@@ -7,6 +7,7 @@ import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {ForeignTab, OrganizerPanelAppElement, OrganizerPanelPageRemote, RecentlyClosedSplitView, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {browserProxyFactory, foreignTabsBrowserProxyFactory, ForeignTabsDelegate, ForeignTabsPageHandlerRemote, OpenTabsDelegate, OpenTabsItemType, organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, PageHandlerRemote, RecentTabsDelegate, SearchApiProxyImpl, tabGroupsBrowserProxyFactory, TabGroupsDelegate, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -346,23 +347,35 @@ suite('OrganizerPanelAppTest', () => {
     assertEquals('test search', app.$.list.searchQuery);
     assertEquals(50, app.$.list.scrollTop);
 
-    Object.defineProperty(
-        document, 'visibilityState', {value: 'hidden', writable: true});
-    document.dispatchEvent(new Event('visibilitychange'));
-    await microtasksFinished();
+    const originalDescriptor =
+        Object.getOwnPropertyDescriptor(document, 'visibilityState');
+    try {
+      Object.defineProperty(
+          document, 'visibilityState',
+          {value: 'hidden', configurable: true, writable: true});
+      document.dispatchEvent(new Event('visibilitychange'));
+      await microtasksFinished();
 
-    assertEquals('', app.$.searchField.getValue());
-    assertEquals('', app.$.list.searchQuery);
-    assertEquals(0, app.$.list.scrollTop);
+      assertEquals('', app.$.searchField.getValue());
+      assertEquals('', app.$.list.searchQuery);
+      assertEquals(0, app.$.list.scrollTop);
 
-    Object.defineProperty(
-        document, 'visibilityState', {value: 'visible', writable: true});
-    document.dispatchEvent(new Event('visibilitychange'));
-    await microtasksFinished();
+      Object.defineProperty(
+          document, 'visibilityState',
+          {value: 'visible', configurable: true, writable: true});
+      document.dispatchEvent(new Event('visibilitychange'));
+      await microtasksFinished();
 
-    assertEquals('', app.$.searchField.getValue());
-    assertEquals('', app.$.list.searchQuery);
-    assertEquals(0, app.$.list.scrollTop);
+      assertEquals('', app.$.searchField.getValue());
+      assertEquals('', app.$.list.searchQuery);
+      assertEquals(0, app.$.list.scrollTop);
+    } finally {
+      if (originalDescriptor) {
+        Object.defineProperty(document, 'visibilityState', originalDescriptor);
+      } else {
+        Reflect.deleteProperty(document, 'visibilityState');
+      }
+    }
   });
 
   test('clicking close button closes panel', async () => {
@@ -680,5 +693,41 @@ suite('OrganizerPanelAppTest', () => {
 
     app.$.searchField.setValue('d');
     assertEquals(2, metrics.count('OrganizerPanel.StartSearch'));
+  });
+
+  test('calls showUI once initial section load finishes', async () => {
+    assertEquals(1, mockOrganizerPanelHandler.getCallCount('showUI'));
+
+    const sectionStateResolver =
+        new PromiseResolver<{state: {expanded: boolean, showAll: boolean}}>();
+    mockOrganizerPanelHandler.resetResolver('showUI');
+    mockOrganizerPanelHandler.setResultMapperFor(
+        'getSectionState', () => sectionStateResolver.promise);
+
+    const delayedApp = document.createElement('organizer-panel-app');
+    document.body.appendChild(delayedApp);
+    await microtasksFinished();
+    assertEquals(0, mockOrganizerPanelHandler.getCallCount('showUI'));
+
+    sectionStateResolver.resolve({state: {expanded: false, showAll: false}});
+    await microtasksFinished();
+    assertEquals(1, mockOrganizerPanelHandler.getCallCount('showUI'));
+  });
+
+  test('calls showUI when initial section load rejects', async () => {
+    const sectionStateResolver =
+        new PromiseResolver<{state: {expanded: boolean, showAll: boolean}}>();
+    mockOrganizerPanelHandler.resetResolver('showUI');
+    mockOrganizerPanelHandler.setResultMapperFor(
+        'getSectionState', () => sectionStateResolver.promise);
+
+    const failingApp = document.createElement('organizer-panel-app');
+    document.body.appendChild(failingApp);
+    await microtasksFinished();
+    assertEquals(0, mockOrganizerPanelHandler.getCallCount('showUI'));
+
+    sectionStateResolver.reject(new Error('load failed'));
+    await microtasksFinished();
+    assertEquals(1, mockOrganizerPanelHandler.getCallCount('showUI'));
   });
 });

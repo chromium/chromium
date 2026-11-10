@@ -24,6 +24,9 @@ interface Page {
 
 // Browser-side handler for general panel requests from WebUI page.
 interface PageHandler {
+  // Notifies the browser that the UI is ready to be shown.
+  ShowUI();
+
   // Closes the organizer panel.
   ClosePanel();
 

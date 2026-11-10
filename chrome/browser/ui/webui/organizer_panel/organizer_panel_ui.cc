@@ -234,7 +234,7 @@ void OrganizerPanelUI::CreatePageHandler(
     return;
   }
   organizer_panel_page_handler_ = std::make_unique<OrganizerPanelPageHandler>(
-      std::move(receiver), std::move(page), web_ui()->GetWebContents());
+      std::move(receiver), std::move(page), web_ui()->GetWebContents(), this);
 }
 
 void OrganizerPanelUI::CreatePageHandler(

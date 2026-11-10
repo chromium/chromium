@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/organizer/organizer_prefs.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -24,12 +25,15 @@
 OrganizerPanelPageHandler::OrganizerPanelPageHandler(
     mojo::PendingReceiver<organizer_panel::mojom::PageHandler> receiver,
     mojo::PendingRemote<organizer_panel::mojom::Page> page,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    TopChromeWebUIController* webui_controller)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       web_contents_(web_contents),
+      webui_controller_(webui_controller),
       profile_(Profile::FromBrowserContext(
           web_contents ? web_contents->GetBrowserContext() : nullptr)) {
+  CHECK(webui_controller_);
   CHECK(web_contents_);
   CHECK(profile_);
   pref_change_registrar_.Init(&GetPrefs());
@@ -51,6 +55,12 @@ OrganizerPanelPageHandler::OrganizerPanelPageHandler(
 }
 
 OrganizerPanelPageHandler::~OrganizerPanelPageHandler() = default;
+
+void OrganizerPanelPageHandler::ShowUI() {
+  if (auto embedder = webui_controller_->embedder()) {
+    embedder->ShowUI();
+  }
+}
 
 void OrganizerPanelPageHandler::ClosePanel() {
   BrowserWindowInterface* browser =

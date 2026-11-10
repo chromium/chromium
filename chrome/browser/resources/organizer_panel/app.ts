@@ -8,6 +8,7 @@ import './organizer_list.js';
 import '/strings.m.js';
 
 import {assert} from '//resources/js/assert.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
@@ -146,6 +147,21 @@ export class OrganizerPanelAppElement extends CrLitElement {
     this.browserProxy_.callbackRouter.removeListener(
         this.inTrayViewChangedListenerId_);
     this.inTrayViewChangedListenerId_ = null;
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.notifyShowUi_();
+  }
+
+  private async notifyShowUi_() {
+    try {
+      await this.$.list.waitForInitialLoad();
+    } finally {
+      if (this.isConnected) {
+        this.browserProxy_.handler.showUI();
+      }
+    }
   }
 
   private getCloseButton_(): HTMLElement|null {

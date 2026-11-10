@@ -21,6 +21,7 @@
 class OrganizerPanelController;
 class PrefService;
 class Profile;
+class TopChromeWebUIController;
 
 namespace content {
 class WebContents;
@@ -35,13 +36,15 @@ class OrganizerPanelPageHandler : public organizer_panel::mojom::PageHandler {
   OrganizerPanelPageHandler(
       mojo::PendingReceiver<organizer_panel::mojom::PageHandler> receiver,
       mojo::PendingRemote<organizer_panel::mojom::Page> page,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      TopChromeWebUIController* webui_controller);
   OrganizerPanelPageHandler(const OrganizerPanelPageHandler&) = delete;
   OrganizerPanelPageHandler& operator=(const OrganizerPanelPageHandler&) =
       delete;
   ~OrganizerPanelPageHandler() override;
 
   // organizer_panel::mojom::PageHandler:
+  void ShowUI() override;
   void ClosePanel() override;
   void GetSectionState(const std::string& section_id,
                        GetSectionStateCallback callback) override;
@@ -61,6 +64,7 @@ class OrganizerPanelPageHandler : public organizer_panel::mojom::PageHandler {
   mojo::Receiver<organizer_panel::mojom::PageHandler> receiver_;
   mojo::Remote<organizer_panel::mojom::Page> page_;
   raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<TopChromeWebUIController> webui_controller_;
   raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;
   std::optional<bool> in_tray_view_;
