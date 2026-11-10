@@ -57,7 +57,7 @@ class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
   // Blink's limit for embedder world ids. The constructor sets up the world's
   // Content Security Policy, which applies in all frames of the renderer
   // process.
-  CustomFormControlScriptExecutor(content::RenderFrame& render_frame,
+  CustomFormControlScriptExecutor(content::RenderFrame* render_frame,
                                   int32_t world_id);
   CustomFormControlScriptExecutor(const CustomFormControlScriptExecutor&) =
       delete;

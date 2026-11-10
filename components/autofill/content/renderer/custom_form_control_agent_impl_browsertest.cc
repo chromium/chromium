@@ -54,7 +54,7 @@ class CustomFormControlAgentImplTest : public content::RenderViewTest {
  protected:
   void SetUp() override {
     content::RenderViewTest::SetUp();
-    agent_ = std::make_unique<CustomFormControlAgentImpl>(*GetMainRenderFrame(),
+    agent_ = std::make_unique<CustomFormControlAgentImpl>(GetMainRenderFrame(),
                                                           kWorldId, registry_);
   }
 
@@ -142,7 +142,7 @@ TEST_F(CustomFormControlAgentImplTest, DropsReplyIfScriptDetachesFrame) {
   content::RenderFrame* child = content::RenderFrame::FromWebFrame(child_frame);
   blink::AssociatedInterfaceRegistry child_registry;
   auto child_agent = std::make_unique<CustomFormControlAgentImpl>(
-      *child, kWorldId, child_registry);
+      child, kWorldId, child_registry);
   DestroyAgentOnFrameDestruction owner(child, child_agent);
   Remote remote;
   ASSERT_TRUE(Bind(remote, child_registry));

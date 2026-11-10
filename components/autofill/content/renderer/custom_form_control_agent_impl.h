@@ -39,7 +39,7 @@ class CustomFormControlAgentImpl : public mojom::CustomFormControlAgent {
   // Runs scripts in the isolated world `world_id` of `render_frame` (see
   // `CustomFormControlScriptExecutor`), and registers the interface in
   // `registry`, the frame's registry. `render_frame` must outlive this.
-  CustomFormControlAgentImpl(content::RenderFrame& render_frame,
+  CustomFormControlAgentImpl(content::RenderFrame* render_frame,
                              int32_t world_id,
                              blink::AssociatedInterfaceRegistry& registry);
   CustomFormControlAgentImpl(const CustomFormControlAgentImpl&) = delete;

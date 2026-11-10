@@ -16,7 +16,7 @@
 namespace autofill {
 
 CustomFormControlAgentImpl::CustomFormControlAgentImpl(
-    content::RenderFrame& render_frame,
+    content::RenderFrame* render_frame,
     int32_t world_id,
     blink::AssociatedInterfaceRegistry& registry)
     : executor_(render_frame, world_id) {

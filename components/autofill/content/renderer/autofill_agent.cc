@@ -601,10 +601,12 @@ void AutofillAgent::EnableCustomFormControlScripts(
     blink::AssociatedInterfaceRegistry& registry) {
   CHECK(base::FeatureList::IsEnabled(
       features::kAutofillCustomFormControlScripts));
-  CHECK(!custom_form_control_agent_);
+  if (!unsafe_render_frame() || custom_form_control_agent_) {
+    return;
+  }
   // Destroyed in `OnDestruct()`, so that it doesn't outlive the frame.
   custom_form_control_agent_ = std::make_unique<CustomFormControlAgentImpl>(
-      CHECK_DEREF(unsafe_render_frame()), world_id, registry);
+      unsafe_render_frame(), world_id, registry);
 }
 
 CustomFormControlScriptExecutor*

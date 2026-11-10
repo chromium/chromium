@@ -93,7 +93,7 @@ class CustomFormControlScriptExecutorTest : public content::RenderViewTest {
     content::RenderViewTest::SetUp();
     LoadHTML("<div>Hello</div>");
     executor_ = std::make_unique<CustomFormControlScriptExecutor>(
-        *GetMainRenderFrame(), kWorldId);
+        GetMainRenderFrame(), kWorldId);
   }
 
   void TearDown() override {
@@ -335,7 +335,7 @@ TEST_F(CustomFormControlScriptExecutorTest,
   content::RenderFrame* child = content::RenderFrame::FromWebFrame(
       GetMainFrame()->FirstChild()->ToWebLocalFrame());
   auto child_executor =
-      std::make_unique<CustomFormControlScriptExecutor>(*child, kWorldId);
+      std::make_unique<CustomFormControlScriptExecutor>(child, kWorldId);
   DestroyExecutorOnFrameDestruction owner(child, child_executor);
   EXPECT_FALSE(child_executor->LoadScript(R"(
     frameElement.remove();
@@ -350,7 +350,7 @@ TEST_F(CustomFormControlScriptExecutorTest, DropsManagerOnFrameDetach) {
   LoadHTML("<iframe src='about:blank'></iframe>");
   blink::WebLocalFrame* child = GetMainFrame()->FirstChild()->ToWebLocalFrame();
   CustomFormControlScriptExecutor child_executor(
-      *content::RenderFrame::FromWebFrame(child), kWorldId);
+      content::RenderFrame::FromWebFrame(child), kWorldId);
   ASSERT_TRUE(child_executor.LoadScript(kValidScript));
 
   ExecuteJavaScriptForTests("document.querySelector('iframe').remove();");
@@ -758,7 +758,7 @@ TEST_F(CustomFormControlScriptExecutorTest, CallFailsIfFrameIsDetached) {
   LoadHTML("<iframe src='about:blank'></iframe>");
   blink::WebLocalFrame* child = GetMainFrame()->FirstChild()->ToWebLocalFrame();
   CustomFormControlScriptExecutor child_executor(
-      *content::RenderFrame::FromWebFrame(child), kWorldId);
+      content::RenderFrame::FromWebFrame(child), kWorldId);
   ASSERT_TRUE(child_executor.LoadScript(R"(
     function createCustomFormControlManager() {
       return { detach() { frameElement.remove(); return 'detached'; } };
@@ -1083,7 +1083,7 @@ TEST_F(CustomFormControlScriptExecutorTest, FailsPendingCallOnFrameDetach) {
   LoadHTML("<iframe src='about:blank'></iframe>");
   blink::WebLocalFrame* child = GetMainFrame()->FirstChild()->ToWebLocalFrame();
   CustomFormControlScriptExecutor child_executor(
-      *content::RenderFrame::FromWebFrame(child), kWorldId);
+      content::RenderFrame::FromWebFrame(child), kWorldId);
   ASSERT_TRUE(child_executor.LoadScript(kAsyncScript));
   CallResult never;
   CustomFormControlScriptExecutorTestApi(&child_executor)

@@ -375,9 +375,9 @@ struct CustomFormControlScriptExecutor::PendingCall {
 };
 
 CustomFormControlScriptExecutor::CustomFormControlScriptExecutor(
-    content::RenderFrame& render_frame,
+    content::RenderFrame* render_frame,
     int32_t world_id)
-    : content::RenderFrameObserver(&render_frame), world_id_(world_id) {
+    : content::RenderFrameObserver(render_frame), world_id_(world_id) {
   CHECK_GT(world_id_, blink::kMainDOMWorldId);
   CHECK(!blink::IsEqualOrExceedEmbedderWorldIdLimit(world_id_));
   // Before any script runs in the world.
