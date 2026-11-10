@@ -359,7 +359,10 @@
     ],
 
     'codesearch_gen_chromium_chromiumos_bot_remoteexec': [
-      'codesearch_remoteexec', 'chromeos', 'use_cups',
+      # Set use_vaapi to true so ChromeOS hardware video acceleration code
+      # guarded by use_linux_video_acceleration is compiled and indexed
+      # (crbug.com/440374227).
+      'codesearch_remoteexec', 'chromeos', 'use_cups', 'use_vaapi',
     ],
 
     'codesearch_gen_chromium_cronet_bot_remoteexec': [
@@ -1093,6 +1096,10 @@
 
     'use_system_headers': {
       'gn_args': 'system_headers_in_deps=true',
+    },
+
+    'use_vaapi': {
+      'gn_args': 'use_vaapi=true',
     },
 
     'v8_enable_debugging_features': {

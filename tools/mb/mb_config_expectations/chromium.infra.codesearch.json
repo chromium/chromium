@@ -28,7 +28,8 @@
       "system_headers_in_deps": true,
       "target_os": "chromeos",
       "use_cups": true,
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "use_vaapi": true
     }
   },
   "codesearch-gen-chromium-cronet": {
