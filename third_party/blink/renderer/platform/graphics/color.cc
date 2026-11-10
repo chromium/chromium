@@ -63,8 +63,13 @@ namespace {
 // For lch/oklch colors, the value of chroma underneath which the color is
 // considered to be "achromatic", relevant for color conversions.
 // https://www.w3.org/TR/css-color-4/#lab-to-lch
-// This is set to be slightly higher than white's chroma value of 0.0188.
-const float kAchromaticChromaThreshold = 0.02;
+//
+// For LCH this is set to be slightly higher than white's chroma value of
+// 0.0188. For OkLCH an epsilon based on a similar magnitude is used.
+//
+// The spec has these as 0.0015 and 0.000004 respectively.
+const float kAchromaticChromaThresholdLch = 0.02f;
+const float kAchromaticChromaThresholdOklch = 0.00005f;
 
 const int kCStartAlpha = 153;     // 60%
 const int kCEndAlpha = 204;       // 80%;
@@ -784,7 +789,7 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
       param2_ = AngleToUnitCircleDegrees(param2_);
 
       // Hue component is powerless for achromatic colors.
-      if (param1_ <= kAchromaticChromaThreshold) {
+      if (param1_ <= kAchromaticChromaThresholdLch) {
         param2_is_none_ = true;
       }
       break;
@@ -800,7 +805,7 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
       }
 
       // Hue component is powerless for archromatic colors.
-      if (param1_ <= kAchromaticChromaThreshold) {
+      if (param1_ <= kAchromaticChromaThresholdOklch) {
         param2_is_none_ = true;
       }
       break;
