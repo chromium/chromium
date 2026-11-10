@@ -4,3 +4,5 @@ AXWebArea
 ++++AXButton AXDescription='popover description' AXTitle='popover description'
 ++++AXButton AXDescription='Paragraph popover text' AXTitle='Paragraph popover text'
 ++++AXButton AXDescription='Paragraph popover text' AXTitle='Paragraph popover text'
+++++AXButton AXDescription='Tooltip popover text' AXTitle='Tooltip popover text'
+++++AXButton AXDescription='Tooltip popover text' AXTitle='Tooltip popover text'

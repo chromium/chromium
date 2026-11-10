@@ -43,6 +43,10 @@
 <div popover="manual" id="interestee7"><p>Plain #7</p></div>
 <button interestfor="interestee7"></button>
 
+<!-- A popover with role=tooltip is still plain, will use as name -->
+<div popover="manual" id="interestee8" role="tooltip">Plain #8</div>
+<button interestfor="interestee8"></button>
+
 <!-- Non-popover target -->
 
 <!-- No details relation when target is not a popover -->
@@ -57,7 +61,7 @@
 
 <script>
   for (const id of ['interestee1', 'interestee2', 'interestee3', 'interestee4',
-                    'interestee7']) {
+                    'interestee7', 'interestee8']) {
     document.getElementById(id).showPopover();
   }
 </script>

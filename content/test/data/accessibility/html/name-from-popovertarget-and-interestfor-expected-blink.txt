@@ -10,3 +10,7 @@ rootWebArea
 ++++++genericContainer ignored invisible
 ++++++++paragraph ignored invisible
 ++++++++++staticText ignored invisible
+++++++button collapsed name='Tooltip popover text' nameFrom=popoverTarget
+++++++button name='Tooltip popover text' nameFrom=interestFor
+++++++tooltip ignored invisible
+++++++++staticText ignored invisible

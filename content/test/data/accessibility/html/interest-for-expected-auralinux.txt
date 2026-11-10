@@ -15,6 +15,9 @@
 ++++[paragraph]
 ++++++[static] name='Plain #7'
 ++[push button] name='Plain #7' labelled-by=[panel]
+++[tool tip] name='Plain #8' label-for=[push button]
+++++[static] name='Plain #8'
+++[push button] name='Plain #8' labelled-by=[tool tip]
 ++[section] label-for=[push button]
 ++++[static] name='Plain #5'
 ++[push button] name='Plain #5' labelled-by=[section]
