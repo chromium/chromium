@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -101,6 +100,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/skia_span_util.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/cppgc/prefinalizer.h"
 #include "v8/include/v8-cppgc.h"
@@ -4078,10 +4078,8 @@ void TestRunner::FinishTest(WebFrameTestProxy& source) {
         DCHECK_GT(actual.info().width(), 0);
         DCHECK_GT(actual.info().height(), 0);
 
-        auto bytes = UNSAFE_TODO(
-            base::span(static_cast<const uint8_t*>(actual.getPixels()),
-                       actual.computeByteSize()));
-        dump_result->actual_pixel_hash = Md5AsHexForWebTestPixels(bytes);
+        dump_result->actual_pixel_hash =
+            Md5AsHexForWebTestPixels(gfx::SkPixmapToSpan(actual.pixmap()));
 
         if (dump_result->actual_pixel_hash != test_config_.expected_pixel_hash)
           dump_result->pixels = std::move(actual);

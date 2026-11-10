@@ -113,6 +113,7 @@
 #include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/skia_span_util.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -1431,13 +1432,11 @@ void WebTestControlHost::ReportResults() {
     // See if we need to draw the selection bounds rect on top of the snapshot.
     if (!renderer_dump_result_->selection_rect.IsEmpty())
       DrawSelectionRect(*pixel_dump_, renderer_dump_result_->selection_rect);
+    auto bytes = gfx::SkPixmapToSpan(pixel_dump_->pixmap());
     // The snapshot arrives from the GPU process via shared memory. Because MSan
     // can't track initializedness across processes, we must assure it that the
     // pixels are in fact initialized.
-    MSAN_UNPOISON(pixel_dump_->getPixels(), pixel_dump_->computeByteSize());
-    auto bytes = UNSAFE_TODO(
-        base::span(static_cast<const uint8_t*>(pixel_dump_->getPixels()),
-                   pixel_dump_->computeByteSize()));
+    MSAN_UNPOISON(bytes.data(), bytes.size());
 
     OnImageDump(Md5AsHexForWebTestPixels(bytes), *pixel_dump_);
   } else if (!renderer_dump_result_->actual_pixel_hash.empty()) {
