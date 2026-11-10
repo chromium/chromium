@@ -17,3 +17,6 @@ rch@chromium.org
 stefanoduo@google.com
 
 per-file BUILD.gn=file://net/websockets/OWNERS
+
+# For Fuchsia-specific changes:
+per-file ...fuchsia...=file://build/fuchsia/OWNERS

@@ -1,6 +1,9 @@
 set noparent
 file://mojo/OWNERS
 
+# For Fuchsia-specific changes:
+per-file handle_attachment_fuchsia.*=file://build/fuchsia/OWNERS
+
 # New IPC message files require a security review to avoid introducing
 # new sandbox escapes.
 per-file ipc_message_start.h=set noparent

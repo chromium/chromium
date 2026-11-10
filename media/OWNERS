@@ -22,4 +22,4 @@ xhwang@chromium.org
 blundell@chromium.org
 
 # For Fuchsia-specific changes:
-per-file ..._fuchsia*=file://build/fuchsia/OWNERS
+per-file ...fuchsia...=file://build/fuchsia/OWNERS

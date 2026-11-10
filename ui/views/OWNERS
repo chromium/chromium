@@ -1,3 +1,6 @@
 set noparent
 
 file://ui/views/VIEWS_OWNERS
+
+# For Fuchsia-specific changes:
+per-file ...fuchsia...=file://build/fuchsia/OWNERS

@@ -84,6 +84,9 @@ per-file PRESUBMIT.py=file://ui/webui/PLATFORM_OWNERS
 # Translation artifacts:
 per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS
 
+# For Fuchsia-specific changes:
+per-file ...fuchsia...=file://build/fuchsia/OWNERS
+
 # This is for the common case of adding or removing tests or files. If you're
 # making structural changes, please get a review from one of the overall
 # components OWNERS.

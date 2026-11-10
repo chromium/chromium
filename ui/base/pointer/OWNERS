@@ -1,1 +1,2 @@
+per-file pointer_device_web_engine.*=file://build/fuchsia/OWNERS
 per-file touch_ui_controller*=robliao@chromium.org

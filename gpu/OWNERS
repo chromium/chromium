@@ -21,3 +21,6 @@ per-file GRAPHICS_TEAM_OWNERS=file://gpu/GRAPHICS_TEAM_OWNERS
 
 # For configuration, initialization and gpuwatchdog.
 magchen@chromium.org
+
+# For Fuchsia-specific changes:
+per-file ...fuchsia...=file://build/fuchsia/OWNERS

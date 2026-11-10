@@ -10,6 +10,9 @@ per-file *android*=file://base/test/android/OWNERS
 # For iOS-specific changes:
 per-file *ios*=file://base/test/ios/OWNERS
 
+# For Fuchsia-specific changes:
+per-file fidl_matchers.h=file://build/fuchsia/OWNERS
+
 # Linux fontconfig changes
 per-file *fontconfig*=file://base/nix/OWNERS
 

@@ -5,3 +5,6 @@ etienneb@chromium.org
 grt@chromium.org
 jpgravel@chromium.org
 olivierli@chromium.org
+
+# For Fuchsia-specific changes:
+per-file ...fuchsia...=file://build/fuchsia/OWNERS
