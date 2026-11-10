@@ -69,6 +69,7 @@ Study CreateLayerlessTwoArmStudy() {
   filter->add_platform(Study::PLATFORM_LINUX);
   filter->add_platform(Study::PLATFORM_CHROMEOS);
   filter->add_platform(Study::PLATFORM_ANDROID);
+  filter->add_platform(Study::PLATFORM_ANDROID_DESKTOP);
 
   auto* group = study.add_experiment();
   group->set_name("A");

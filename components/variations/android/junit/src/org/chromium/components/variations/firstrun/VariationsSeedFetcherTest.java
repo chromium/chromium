@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -133,6 +134,37 @@ public class VariationsSeedFetcherTest {
                 1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         VariationsSeedFetcher.SEED_FETCH_RESULT_HISTOGRAM));
+    }
+
+    /**
+     * Test method for {@link VariationsSeedFetcher#fetchSeed()} on Android Desktop devices,
+     * verifying it requests {@link VariationsSeedFetcher.VariationsPlatform#ANDROID_DESKTOP}.
+     */
+    @Test
+    public void testFetchSeed_AndroidDesktop() throws IOException {
+        DeviceInfo.setIsDesktopForTesting(true);
+        when(mConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
+        when(mConnection.getHeaderField("X-Seed-Signature")).thenReturn("signature");
+        when(mConnection.getHeaderField("X-Country")).thenReturn("US");
+        when(mConnection.getHeaderField("IM")).thenReturn("gzip");
+        when(mConnection.getHeaderFieldDate("Date", 0)).thenReturn(12345L);
+        when(mConnection.getInputStream())
+                .thenReturn(new ByteArrayInputStream(ApiCompatibilityUtils.getBytesUtf8("1234")));
+        doReturn(mConnection)
+                .when(mFetcher)
+                .getServerConnection(
+                        VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                                .setPlatform(
+                                        VariationsSeedFetcher.VariationsPlatform.ANDROID_DESKTOP)
+                                .setMilestone(sMilestone)
+                                .setChannel(sChannel)
+                                .setRestrictMode(null)
+                                .build());
+
+        mFetcher.fetchSeed(sRestrict, sMilestone, sChannel);
+
+        assertThat(mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_SIGNATURE, ""))
+                .isEqualTo("signature");
     }
 
     /**
@@ -769,6 +801,27 @@ public class VariationsSeedFetcherTest {
 
         // The URL should have an osname param and it should be overridden by the command line.
         assertTrue(urlString, urlString.contains("osname=android_webview"));
+    }
+
+    /**
+     * Test method to make sure {@link VariationsSeedFetcher#getConnectionString()} sets
+     * "osname=android_desktop" for {@link
+     * VariationsSeedFetcher.VariationsPlatform#ANDROID_DESKTOP}.
+     */
+    @Test
+    public void testGetConnectionString_AndroidDesktop() {
+        @VariationsSeedFetcher.VariationsPlatform
+        int platform = VariationsSeedFetcher.VariationsPlatform.ANDROID_DESKTOP;
+        final VariationsSeedFetcher.SeedFetchParameters params =
+                VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                        .setPlatform(platform)
+                        .setRestrictMode(sRestrict)
+                        .setMilestone(sMilestone)
+                        .setChannel(sChannel)
+                        .build();
+        String urlString = mFetcher.getConnectionString(params);
+
+        assertTrue(urlString, urlString.contains("osname=android_desktop"));
     }
 
     /**

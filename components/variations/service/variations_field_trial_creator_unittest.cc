@@ -253,6 +253,7 @@ VariationsSeed CreateTestSeedWithCountryFilter() {
   Study::Filter* filter = study->mutable_filter();
   filter->add_country(kTestSeedCountry);
   filter->add_platform(Study::PLATFORM_ANDROID);
+  filter->add_platform(Study::PLATFORM_ANDROID_DESKTOP);
   return seed;
 }
 
@@ -1992,17 +1993,136 @@ constexpr Study::FormFactor kAllFormFactors[] = {
     Study::DESKTOP,     Study::PHONE, Study::TABLET,    Study::KIOSK,
     Study::MEET_DEVICE, Study::TV,    Study::AUTOMOTIVE};
 
-// A test seed that enables form-factor specific features across all platforms
-// and channels. I.e. the __Desktop feature is enabled only on the Desktop form
-// factor, the __Phone feature is enabled only on the Phone form factor, and so
-// forth.  The seed applies to all platforms and all channels, except "unknown".
+// A gzipped, base64-encoded VariationsSeed that enables form-factor-specific
+// features across all platforms and channels (except "unknown"). I.e. the
+// __Desktop feature is enabled only on the Desktop form factor, the __Phone
+// feature is enabled only on the Phone form factor, and so forth:
+//
+// study: {
+//   name: "Auto"
+//   consistency: PERMANENT
+//   experiment: {
+//     name: "EnabledLaunch"
+//     probability_weight: 1
+//     feature_association: { enable_feature: "__Auto" }
+//   }
+//   filter: {
+//     channel: [CANARY, DEV, BETA, STABLE]
+//     platform: [PLATFORM_WINDOWS, PLATFORM_MAC, PLATFORM_LINUX,
+//                PLATFORM_CHROMEOS, PLATFORM_ANDROID, PLATFORM_IOS,
+//                PLATFORM_ANDROID_WEBVIEW, PLATFORM_FUCHSIA,
+//                PLATFORM_ANDROID_DESKTOP]
+//     form_factor: AUTOMOTIVE
+//   }
+// }
+// study: {
+//   name: "Desktop"
+//   consistency: PERMANENT
+//   experiment: {
+//     name: "EnabledLaunch"
+//     probability_weight: 1
+//     feature_association: { enable_feature: "__Desktop" }
+//   }
+//   filter: {
+//     channel: [CANARY, DEV, BETA, STABLE]
+//     platform: [PLATFORM_WINDOWS, PLATFORM_MAC, PLATFORM_LINUX,
+//                PLATFORM_CHROMEOS, PLATFORM_ANDROID, PLATFORM_IOS,
+//                PLATFORM_ANDROID_WEBVIEW, PLATFORM_FUCHSIA,
+//                PLATFORM_ANDROID_DESKTOP]
+//     form_factor: DESKTOP
+//   }
+// }
+// study: {
+//   name: "Kiosk"
+//   consistency: PERMANENT
+//   experiment: {
+//     name: "EnabledLaunch"
+//     probability_weight: 1
+//     feature_association: { enable_feature: "__Kiosk" }
+//   }
+//   filter: {
+//     channel: [CANARY, DEV, BETA, STABLE]
+//     platform: [PLATFORM_WINDOWS, PLATFORM_MAC, PLATFORM_LINUX,
+//                PLATFORM_CHROMEOS, PLATFORM_ANDROID, PLATFORM_IOS,
+//                PLATFORM_ANDROID_WEBVIEW, PLATFORM_FUCHSIA,
+//                PLATFORM_ANDROID_DESKTOP]
+//     form_factor: KIOSK
+//   }
+// }
+// study: {
+//   name: "Meet"
+//   consistency: PERMANENT
+//   experiment: {
+//     name: "EnabledLaunch"
+//     probability_weight: 1
+//     feature_association: { enable_feature: "__Meet" }
+//   }
+//   filter: {
+//     channel: [CANARY, DEV, BETA, STABLE]
+//     platform: [PLATFORM_WINDOWS, PLATFORM_MAC, PLATFORM_LINUX,
+//                PLATFORM_CHROMEOS, PLATFORM_ANDROID, PLATFORM_IOS,
+//                PLATFORM_ANDROID_WEBVIEW, PLATFORM_FUCHSIA,
+//                PLATFORM_ANDROID_DESKTOP]
+//     form_factor: MEET_DEVICE
+//   }
+// }
+// study: {
+//   name: "Phone"
+//   consistency: PERMANENT
+//   experiment: {
+//     name: "EnabledLaunch"
+//     probability_weight: 1
+//     feature_association: { enable_feature: "__Phone" }
+//   }
+//   filter: {
+//     channel: [CANARY, DEV, BETA, STABLE]
+//     platform: [PLATFORM_WINDOWS, PLATFORM_MAC, PLATFORM_LINUX,
+//                PLATFORM_CHROMEOS, PLATFORM_ANDROID, PLATFORM_IOS,
+//                PLATFORM_ANDROID_WEBVIEW, PLATFORM_FUCHSIA,
+//                PLATFORM_ANDROID_DESKTOP]
+//     form_factor: PHONE
+//   }
+// }
+// study: {
+//   name: "TV"
+//   consistency: PERMANENT
+//   experiment: {
+//     name: "EnabledLaunch"
+//     probability_weight: 1
+//     feature_association: { enable_feature: "__TV" }
+//   }
+//   filter: {
+//     channel: [CANARY, DEV, BETA, STABLE]
+//     platform: [PLATFORM_WINDOWS, PLATFORM_MAC, PLATFORM_LINUX,
+//                PLATFORM_CHROMEOS, PLATFORM_ANDROID, PLATFORM_IOS,
+//                PLATFORM_ANDROID_WEBVIEW, PLATFORM_FUCHSIA,
+//                PLATFORM_ANDROID_DESKTOP]
+//     form_factor: TV
+//   }
+// }
+// study: {
+//   name: "Tablet"
+//   consistency: PERMANENT
+//   experiment: {
+//     name: "EnabledLaunch"
+//     probability_weight: 1
+//     feature_association: { enable_feature: "__Tablet" }
+//   }
+//   filter: {
+//     channel: [CANARY, DEV, BETA, STABLE]
+//     platform: [PLATFORM_WINDOWS, PLATFORM_MAC, PLATFORM_LINUX,
+//                PLATFORM_CHROMEOS, PLATFORM_ANDROID, PLATFORM_IOS,
+//                PLATFORM_ANDROID_WEBVIEW, PLATFORM_FUCHSIA,
+//                PLATFORM_ANDROID_DESKTOP]
+//     form_factor: TABLET
+//   }
+// }
 constexpr char kFormFactorTestSeedData[] =
-    "H4sIAAAAAAAA/4TPT2vCQBAF8Gz+Z0qh7K20lVAvcxdkLzksVmRjLVqDPQ6xXTQoSakJ/"
-    "fplrbeAe34zP96D4Xox2b115cfvWlZSqp1ScpVlw/FsLCfL0Wj1ozI+BV92bSNY/"
-    "gC307rcHvXXa9nVn/s7to0hJDLx+yB1Upa6qYcOMnTRwwR9DDDECGMR8jlEL/"
-    "p0aJtvwfJBX7qBhOhyYcEcPoNgXjWng2D5Y59KICI65xbIM+"
-    "MWWrdXxpnYwvimz3Lf1PpKn3NugRiX4BYbwfL7vhKCT1RsLETAFYSF+"
-    "TSjnvoMQEz0f2Ch3Gevro5/AQAA//8RFDdTJQIAAA==";
+    "H4sIAAAAAAAC/33PS2vCQBQF4EweE72lUGYnWgm6uXtB3IQyRAnT1uIj6HKI7aBBSUQT+vfN"
+    "BHeBWZ97P86B8XYZHX+qdP+/5Rnn4igEX4fheBpPebSaTNY3EbIIXF6VxYx89uF1kaeHi/r7"
+    "Tqv89/RGDh2gUup4MwisgAR24KCFBG100EUPKfoIM8oE+HN1P5fFtXaGbecFulI+L4yUxRbg"
+    "fWXF/VxDgzbUBV/KJjcyjp61VKo0zNKxEXF1l9WpyJWhS5MbGcI+wE52tdFrGxRcKZOdEfBY"
+    "DDTRf3rOexsB6NRIc2CE7JGTZ5cHWiLSixcCAAA=";
 constexpr char kFormFactorTestSeedSignature[] = "";  // Deliberately empty.
 
 INSTANTIATE_TEST_SUITE_P(All,

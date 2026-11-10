@@ -82,6 +82,10 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 namespace variations {
 namespace {
 
@@ -155,7 +159,11 @@ std::string GetPlatformString() {
 #elif BUILDFLAG(IS_CHROMEOS)
   return "chromeos";
 #elif BUILDFLAG(IS_ANDROID)
-  return "android";
+  // Use device_info::is_desktop() to determine the platform to fetch a seed
+  // for, since the variations platform is a device-level OS property rather
+  // than a dynamic UI affordance (crbug.com/567605929).
+  return base::android::device_info::is_desktop() ? "android_desktop"
+                                                  : "android";
 #elif BUILDFLAG(IS_FUCHSIA)
   return "fuchsia";
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD) || BUILDFLAG(IS_SOLARIS)

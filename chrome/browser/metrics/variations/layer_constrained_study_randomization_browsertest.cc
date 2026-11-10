@@ -67,6 +67,7 @@ VariationsSeed CreateTestSeedWithLimitedEntropyLayer() {
   filter->add_platform(Study::PLATFORM_LINUX);
   filter->add_platform(Study::PLATFORM_CHROMEOS);
   filter->add_platform(Study::PLATFORM_ANDROID);
+  filter->add_platform(Study::PLATFORM_ANDROID_DESKTOP);
   auto* layer_member_reference = base_study.mutable_layer();
   layer_member_reference->set_layer_id(123);
   layer_member_reference->add_layer_member_ids(1);
@@ -139,6 +140,7 @@ VariationsSeed CreateTestSeedWithLowEntropyLayer() {
   filter->add_platform(Study::PLATFORM_LINUX);
   filter->add_platform(Study::PLATFORM_CHROMEOS);
   filter->add_platform(Study::PLATFORM_ANDROID);
+  filter->add_platform(Study::PLATFORM_ANDROID_DESKTOP);
   auto* group = base_study.add_experiment();
   group->set_name("Group1");
   group->set_probability_weight(1);

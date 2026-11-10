@@ -15,6 +15,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -84,11 +85,16 @@ public class VariationsSeedFetcher {
                     }\
                     """);
 
-    @IntDef({VariationsPlatform.ANDROID, VariationsPlatform.ANDROID_WEBVIEW})
+    @IntDef({
+        VariationsPlatform.ANDROID,
+        VariationsPlatform.ANDROID_WEBVIEW,
+        VariationsPlatform.ANDROID_DESKTOP
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface VariationsPlatform {
         int ANDROID = 0;
         int ANDROID_WEBVIEW = 1;
+        int ANDROID_DESKTOP = 2;
     }
 
     private static final String DEFAULT_VARIATIONS_SERVER_URL =
@@ -286,6 +292,8 @@ public class VariationsSeedFetcher {
                 return "android";
             case VariationsPlatform.ANDROID_WEBVIEW:
                 return "android_webview";
+            case VariationsPlatform.ANDROID_DESKTOP:
+                return "android_desktop";
             default:
                 assert false;
                 return "";
@@ -544,9 +552,17 @@ public class VariationsSeedFetcher {
                 return;
             }
 
+            // Use DeviceInfo.isDesktop() to determine the platform to fetch a seed for, since the
+            // variations platform is a device-level OS property rather than a dynamic UI
+            // affordance (crbug.com/567605929).
+            @VariationsPlatform
+            int platform =
+                    DeviceInfo.isDesktop() // nocheck
+                            ? VariationsPlatform.ANDROID_DESKTOP
+                            : VariationsPlatform.ANDROID;
             SeedFetchParameters params =
                     SeedFetchParameters.Builder.newBuilder()
-                            .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID)
+                            .setPlatform(platform)
                             .setRestrictMode(null)
                             .setMilestone(milestone)
                             .setChannel(channel)

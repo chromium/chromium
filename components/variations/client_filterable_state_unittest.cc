@@ -18,6 +18,10 @@
 #include "components/variations/variations_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 namespace variations {
 namespace {
 
@@ -96,7 +100,9 @@ TEST(ClientFilterableStateTest, IgnoreInvalidFakePlatformSwitch) {
 #elif BUILDFLAG(IS_CHROMEOS)
   actual_platform = Study::PLATFORM_CHROMEOS;
 #elif BUILDFLAG(IS_ANDROID)
-  actual_platform = Study::PLATFORM_ANDROID;
+  actual_platform = base::android::device_info::is_desktop()
+                        ? Study::PLATFORM_ANDROID_DESKTOP
+                        : Study::PLATFORM_ANDROID;
 #elif BUILDFLAG(IS_FUCHSIA)
   actual_platform = Study::PLATFORM_FUCHSIA;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD) || BUILDFLAG(IS_SOLARIS)
@@ -108,6 +114,20 @@ TEST(ClientFilterableStateTest, IgnoreInvalidFakePlatformSwitch) {
 #endif
   EXPECT_EQ(ClientFilterableState::GetCurrentPlatform(), actual_platform);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST(ClientFilterableStateTest, GetCurrentPlatformRespectsAndroidDeviceInfo) {
+  base::android::device_info::set_is_desktop_for_testing(true);
+  EXPECT_EQ(ClientFilterableState::GetCurrentPlatform(),
+            Study::PLATFORM_ANDROID_DESKTOP);
+
+  base::android::device_info::set_is_desktop_for_testing(false);
+  EXPECT_EQ(ClientFilterableState::GetCurrentPlatform(),
+            Study::PLATFORM_ANDROID);
+
+  base::android::device_info::reset_is_desktop_for_testing();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST(ClientFilterableStateTest, IsEnterprise) {
   // Test, for non enterprise clients, is_enterprise_function_ is called once.

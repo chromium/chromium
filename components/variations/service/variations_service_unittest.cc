@@ -77,6 +77,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 // A fake version of RuntimeMutableFeaturesHandlerBase, to generate PassKeys for
 // testing purposes.  The real RuntimeMutableFeaturesHandlerBase class is not
 // defined in `components/`. We're creating a surrogate of it here so that we
@@ -669,6 +673,30 @@ TEST_F(VariationsServiceTest, RespectsFakePlatformSwitch) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(url, "osname", &osname));
   EXPECT_EQ(osname, "ios");
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(VariationsServiceTest, VariationsURLOsNameRespectsAndroidDeviceInfo) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), /*use_secure_url=*/true);
+
+  base::android::device_info::set_is_desktop_for_testing(true);
+  GURL desktop_url =
+      service.GetVariationsServerURL(TestVariationsService::USE_HTTPS);
+  std::string osname;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(desktop_url, "osname", &osname));
+  EXPECT_EQ(osname, "android_desktop");
+
+  base::android::device_info::set_is_desktop_for_testing(false);
+  GURL mobile_url =
+      service.GetVariationsServerURL(TestVariationsService::USE_HTTPS);
+  EXPECT_TRUE(net::GetValueForKeyInQuery(mobile_url, "osname", &osname));
+  EXPECT_EQ(osname, "android");
+
+  base::android::device_info::reset_is_desktop_for_testing();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(VariationsServiceTest, RequestsInitiallyNotAllowed) {
   std::unique_ptr<net::test::MockNetworkChangeNotifier>

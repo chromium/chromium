@@ -171,6 +171,7 @@ VariationsSeed CreateTestSeedWithLimitedEntropyLayer(
   filter->add_platform(Study::PLATFORM_LINUX);
   filter->add_platform(Study::PLATFORM_CHROMEOS);
   filter->add_platform(Study::PLATFORM_ANDROID);
+  filter->add_platform(Study::PLATFORM_ANDROID_DESKTOP);
 
   Study some_study = base_study;
   some_study.set_name(kSomeStudyName);

@@ -13,6 +13,10 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/variations_switches.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 namespace variations {
 
 ClientFilterableState::ClientFilterableState(
@@ -128,7 +132,12 @@ Study::Platform ClientFilterableState::GetCurrentPlatform() {
 #elif BUILDFLAG(IS_CHROMEOS)
   return Study::PLATFORM_CHROMEOS;
 #elif BUILDFLAG(IS_ANDROID)
-  return Study::PLATFORM_ANDROID;
+  // Use device_info::is_desktop() to determine the variations platform, since
+  // the platform is a device-level OS property rather than a dynamic UI
+  // affordance (crbug.com/567605929).
+  return base::android::device_info::is_desktop()
+             ? Study::PLATFORM_ANDROID_DESKTOP
+             : Study::PLATFORM_ANDROID;
 #elif BUILDFLAG(IS_FUCHSIA)
   return Study::PLATFORM_FUCHSIA;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD) || BUILDFLAG(IS_SOLARIS)
