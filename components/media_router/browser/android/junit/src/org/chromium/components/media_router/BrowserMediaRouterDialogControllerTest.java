@@ -15,6 +15,8 @@ import static org.mockito.Mockito.verify;
 
 import android.content.pm.PackageManager;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,7 +52,15 @@ public class BrowserMediaRouterDialogControllerTest {
         MediaRouterClient.setInstance(new TestMediaRouterClient());
         doReturn(mWindowAndroid).when(mWebContents).getTopLevelNativeWindow();
         mController =
-                BrowserMediaRouterDialogController.create(NATIVE_DIALOG_CONTROLLER, mWebContents);
+                BrowserMediaRouterDialogController.create(
+                        JniRawPtr.createForTesting(NATIVE_DIALOG_CONTROLLER), mWebContents);
+    }
+
+    @After
+    public void tearDown() {
+        if (mController != null) {
+            mController.onNativeDestroyed();
+        }
     }
 
     @Test
@@ -81,7 +91,7 @@ public class BrowserMediaRouterDialogControllerTest {
 
         assertFalse(mController.isShowingDialog());
         assertFalse(BrowserMediaRouter.shouldReportPlaceholderSink());
-        verify(mNativeMock).onDialogCancelled(NATIVE_DIALOG_CONTROLLER);
+        verify(mNativeMock).onDialogCancelled(any());
     }
 
     @Test
@@ -96,7 +106,7 @@ public class BrowserMediaRouterDialogControllerTest {
         assertFalse(mController.isShowingDialog());
         assertFalse(BrowserMediaRouter.shouldReportPlaceholderSink());
         verify(mWindowAndroid, never()).requestPermissions(any(), any());
-        verify(mNativeMock).onDialogCancelled(NATIVE_DIALOG_CONTROLLER);
+        verify(mNativeMock).onDialogCancelled(any());
     }
 
     @Test
@@ -136,7 +146,7 @@ public class BrowserMediaRouterDialogControllerTest {
                 new int[] {});
         assertTrue(mController.isShowingDialog());
         assertTrue(BrowserMediaRouter.shouldReportPlaceholderSink());
-        verify(mNativeMock, never()).onDialogCancelled(NATIVE_DIALOG_CONTROLLER);
+        verify(mNativeMock, never()).onDialogCancelled(any());
 
         // Second callback fires with denial: now cancels the active second request.
         secondCallback.onRequestPermissionsResult(
@@ -144,6 +154,6 @@ public class BrowserMediaRouterDialogControllerTest {
                 new int[] {PackageManager.PERMISSION_DENIED});
         assertFalse(mController.isShowingDialog());
         assertFalse(BrowserMediaRouter.shouldReportPlaceholderSink());
-        verify(mNativeMock).onDialogCancelled(NATIVE_DIALOG_CONTROLLER);
+        verify(mNativeMock).onDialogCancelled(any());
     }
 }

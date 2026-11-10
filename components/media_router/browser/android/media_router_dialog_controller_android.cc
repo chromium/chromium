@@ -24,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/media_router/browser/android/jni_headers/BrowserMediaRouterDialogController_jni.h"
@@ -128,12 +129,16 @@ MediaRouterDialogControllerAndroid::MediaRouterDialogControllerAndroid(
       MediaRouterDialogController(web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_dialog_controller_.Reset(Java_BrowserMediaRouterDialogController_create(
-      env, reinterpret_cast<int64_t>(this),
-      web_contents->GetJavaWebContents()));
+      env, jni_zero::MakeRaw(this), web_contents->GetJavaWebContents()));
 }
 
-MediaRouterDialogControllerAndroid::~MediaRouterDialogControllerAndroid() =
-    default;
+MediaRouterDialogControllerAndroid::~MediaRouterDialogControllerAndroid() {
+  if (java_dialog_controller_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_BrowserMediaRouterDialogController_onNativeDestroyed(
+        env, java_dialog_controller_);
+  }
+}
 
 void MediaRouterDialogControllerAndroid::CreateMediaRouterDialog(
     MediaRouterDialogActivationLocation activation_location) {
