@@ -740,16 +740,13 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
   if (!web_contents) {
     // The tab has been closed (typically during the token exchange, which may
     // take some time).
-    RecordSigninInterceptionHeuristicOutcome(
-        SigninInterceptionHeuristicOutcome::kAbortTabClosed);
-    Reset();
+    AbortInterception(SigninInterceptionHeuristicOutcome::kAbortTabClosed);
     return;
   }
 
   if (!delegate_->IsSigninInterceptionSupported(*web_contents)) {
-    RecordSigninInterceptionHeuristicOutcome(
+    AbortInterception(
         SigninInterceptionHeuristicOutcome::kAbortNoSupportedBrowser);
-    Reset();
     return;
   }
 
@@ -760,9 +757,8 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
       ChromePasswordManagerClient::FromWebContents(web_contents);
   if (password_manager_client && password_manager_client->GetPasswordManager()
                                      ->IsFormManagerPendingPasswordUpdate()) {
-    RecordSigninInterceptionHeuristicOutcome(
+    AbortInterception(
         SigninInterceptionHeuristicOutcome::kAbortPasswordUpdatePending);
-    Reset();
     return;
   }
 
@@ -771,9 +767,7 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
   if (password_controller &&
       password_controller->GetState() ==
           password_manager::ui::State::PENDING_PASSWORD_UPDATE_STATE) {
-    RecordSigninInterceptionHeuristicOutcome(
-        SigninInterceptionHeuristicOutcome::kAbortPasswordUpdate);
-    Reset();
+    AbortInterception(SigninInterceptionHeuristicOutcome::kAbortPasswordUpdate);
     return;
   }
 
@@ -782,9 +776,7 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
   if (account_info.IsEmpty()) {
     // The account may have already been removed before an asynchronous
     // interception retry runs.
-    RecordSigninInterceptionHeuristicOutcome(
-        SigninInterceptionHeuristicOutcome::kAbortSignedOut);
-    Reset();
+    AbortInterception(SigninInterceptionHeuristicOutcome::kAbortSignedOut);
     return;
   }
   const ProfileAttributesEntry* entry = nullptr;
@@ -800,8 +792,7 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
 
   if (heuristic_outcome &&
       !SigninInterceptionHeuristicOutcomeIsSuccess(*heuristic_outcome)) {
-    RecordSigninInterceptionHeuristicOutcome(*heuristic_outcome);
-    Reset();
+    AbortInterception(*heuristic_outcome);
     return;
   }
 
@@ -839,8 +830,8 @@ void DiceWebSigninInterceptor::CreateBrowserAfterSigninInterception(
 void DiceWebSigninInterceptor::Shutdown() {
   if (state_->is_interception_in_progress_ &&
       !state_->was_interception_ui_displayed_) {
-    RecordSigninInterceptionHeuristicOutcome(
-        SigninInterceptionHeuristicOutcome::kAbortShutdown);
+    AbortInterception(SigninInterceptionHeuristicOutcome::kAbortShutdown);
+    return;
   }
   Reset();
 }
@@ -874,6 +865,15 @@ void DiceWebSigninInterceptor::Reset() {
   state_ = std::make_unique<ResetableState>();
   account_info_update_observation_.Reset();
   weak_factory_.InvalidateWeakPtrs();
+}
+
+void DiceWebSigninInterceptor::AbortInterception(
+    SigninInterceptionHeuristicOutcome outcome) {
+  CHECK(!SigninInterceptionHeuristicOutcomeIsSuccess(outcome));
+  CHECK_NE(outcome,
+           SigninInterceptionHeuristicOutcome::kAbortInterceptInProgress);
+  RecordSigninInterceptionHeuristicOutcome(outcome);
+  Reset();
 }
 
 const ProfileAttributesEntry*
@@ -1177,9 +1177,8 @@ void DiceWebSigninInterceptor::ProcessInterceptionOrWait(
     // If this is a timeout we abort the interception, otherwise we wait for
     // the remaining information to be fetched asynchronously.
     if (timed_out) {
-      RecordSigninInterceptionHeuristicOutcome(
+      AbortInterception(
           SigninInterceptionHeuristicOutcome::kAbortAccountInfoTimeout);
-      Reset();
       return;
     }
     EnsureObservingExtendedAccountInfo();
@@ -1250,9 +1249,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
         base::NotFatalUntil::M162);
 
   if (!state_->web_contents_) {
-    RecordSigninInterceptionHeuristicOutcome(
-        SigninInterceptionHeuristicOutcome::kAbortTabClosed);
-    Reset();
+    AbortInterception(SigninInterceptionHeuristicOutcome::kAbortTabClosed);
     return;
   }
 
@@ -1286,9 +1283,8 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
   auto* profile_management_disclaimer_service =
       ProfileManagementDisclaimerServiceFactory::GetForProfile(profile_);
   if (!profile_management_disclaimer_service->StopCurrentProcessIfPossible()) {
-    RecordSigninInterceptionHeuristicOutcome(
+    AbortInterception(
         SigninInterceptionHeuristicOutcome::kAbortDisclaimerServiceInProgress);
-    Reset();
     return;
   }
   state_->disable_management_disclaimer_until_reset_ =
@@ -1303,8 +1299,6 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
       // the account signed in on the web only. It's also not possible to sign
       // the account into Chrome. The only option left is removing the account
       // and showing an error message.
-      RecordSigninInterceptionHeuristicOutcome(
-          SigninInterceptionHeuristicOutcome::kAbortAccountInfoNotCompatible);
       delegate_->ShowSigninError(
           state_->web_contents_.get(),
           SigninUIError::UsernameNotAllowedByPatternFromPrefs(info.GetEmail()));
@@ -1322,7 +1316,8 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
                         kEnterprisePolicy_AccountNotAllowedInContentArea);
               },
               identity_manager_->GetWeakPtr(), info.GetAccountId()));
-      Reset();
+      AbortInterception(
+          SigninInterceptionHeuristicOutcome::kAbortAccountInfoNotCompatible);
       return;
     }
 
@@ -1356,9 +1351,8 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
         SigninInterceptionHeuristicOutcome::kInterceptEnterprise);
   } else if (!profile_->GetPrefs()->GetBoolean(
                  prefs::kSigninInterceptionEnabled)) {
-    RecordSigninInterceptionHeuristicOutcome(
+    AbortInterception(
         SigninInterceptionHeuristicOutcome::kAbortInterceptionDisabled);
-    Reset();
     return;
   } else if (!reauth && switch_to_entry) {
     // Propose account switching if we skipped in GetHeuristicOutcome because we
@@ -1374,15 +1368,11 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kInterceptChromeSignin);
   } else if (reauth) {
-    RecordSigninInterceptionHeuristicOutcome(
-        SigninInterceptionHeuristicOutcome::kAbortAccountNotNew);
-    Reset();
+    AbortInterception(SigninInterceptionHeuristicOutcome::kAbortAccountNotNew);
     return;
   } else if (HasUserDeclinedProfileCreation(info.GetEmail())) {
-    RecordSigninInterceptionHeuristicOutcome(
-        SigninInterceptionHeuristicOutcome::
-            kAbortUserDeclinedProfileForAccount);
-    Reset();
+    AbortInterception(SigninInterceptionHeuristicOutcome::
+                          kAbortUserDeclinedProfileForAccount);
     return;
   } else if (ShouldShowEnterpriseBubble(info)) {
     interception_type =
@@ -1398,9 +1388,8 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
 
   if (!interception_type) {
     // Signin should not be intercepted.
-    RecordSigninInterceptionHeuristicOutcome(
+    AbortInterception(
         SigninInterceptionHeuristicOutcome::kAbortAccountInfoNotCompatible);
-    Reset();
     return;
   }
 
@@ -1567,9 +1556,7 @@ void DiceWebSigninInterceptor::OnRefreshTokenRemovedForAccount(
       account_id != state_->account_id_) {
     return;
   }
-  RecordSigninInterceptionHeuristicOutcome(
-      SigninInterceptionHeuristicOutcome::kAbortSignedOut);
-  Reset();
+  AbortInterception(SigninInterceptionHeuristicOutcome::kAbortSignedOut);
 }
 
 void DiceWebSigninInterceptor::OnInterceptionInfoFetchTimeout() {
@@ -1586,9 +1573,7 @@ void DiceWebSigninInterceptor::OnInterceptionInfoFetchTimeout() {
       identity_manager_->FindExtendedAccountInfoByAccountId(
           state_->account_id_);
   if (account_info.IsEmpty()) {
-    RecordSigninInterceptionHeuristicOutcome(
-        SigninInterceptionHeuristicOutcome::kAbortSignedOut);
-    Reset();
+    AbortInterception(SigninInterceptionHeuristicOutcome::kAbortSignedOut);
     return;
   }
   ProcessInterceptionOrWait(account_info, /*timed_out=*/true);
@@ -2158,9 +2143,7 @@ void DiceWebSigninInterceptor::
   state_->account_level_management_status_fetcher_.reset();
 
   if (!state_->web_contents_) {
-    RecordSigninInterceptionHeuristicOutcome(
-        SigninInterceptionHeuristicOutcome::kAbortTabClosed);
-    Reset();
+    AbortInterception(SigninInterceptionHeuristicOutcome::kAbortTabClosed);
     return;
   }
   if (state_->was_interception_ui_displayed_ ||
@@ -2172,9 +2155,7 @@ void DiceWebSigninInterceptor::
       identity_manager_->FindExtendedAccountInfoByAccountId(
           state_->account_id_);
   if (account_info.IsEmpty()) {
-    RecordSigninInterceptionHeuristicOutcome(
-        SigninInterceptionHeuristicOutcome::kAbortSignedOut);
-    Reset();
+    AbortInterception(SigninInterceptionHeuristicOutcome::kAbortSignedOut);
     return;
   }
 

@@ -301,6 +301,11 @@ class DiceWebSigninInterceptor : public KeyedService,
   // initial state.
   void Reset();
 
+  // Records an abort `outcome` metric and resets the interceptor. Must not be
+  // called with success outcomes or `kAbortInterceptInProgress` (which
+  // preserves the ongoing interception).
+  void AbortInterception(SigninInterceptionHeuristicOutcome outcome);
+
   // Helper functions to determine which interception UI should be shown.
   const ProfileAttributesEntry* ShouldShowProfileSwitchBubble(
       const GaiaId& intercepted_gaia_id,
