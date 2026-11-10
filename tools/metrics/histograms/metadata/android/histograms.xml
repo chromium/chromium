@@ -2717,6 +2717,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.InAppUpdate.Discovery.StalenessDays" units="days"
+    expires_after="2027-03-10">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records how many days the available update had been known to Google Play on
+    this device (AppUpdateInfo.clientVersionStalenessDays()) when the in-app
+    update Discovery Snackbar was shown in Chrome for Android. Recorded at the
+    same point as the Impression bucket of
+    Android.InAppUpdate.DiscoverySnackbar.Event. Not recorded when Play does not
+    report staleness, so the difference between the two totals is the number of
+    prompts with unknown staleness. Values of 91 days or more are recorded in
+    the overflow bucket.
+  </summary>
+</histogram>
+
 <histogram name="Android.InAppUpdate.DiscoverySnackbar.Event"
     enum="InAppUpdateSnackbarEvent" expires_after="2027-03-10">
   <owner>vakh@chromium.org</owner>
@@ -2739,8 +2755,10 @@ chromium-metrics-reviews@google.com.
     of in-app update download operations via Google Play Core in Chrome for
     Android. Recorded at terminal states and significant milestones during the
     flexible update flow. FLOW_STARTED records the display of the Play consent
-    dialog; SUCCEEDED records completion of the background download (staged on
-    disk), not final binary swap.
+    dialog; PROMPT_ACCEPTED records the user accepting it; SUCCEEDED records
+    completion of the background download (staged on disk), not final binary
+    swap. SUCCEEDED is only recorded if the download finishes while the Activity
+    that started it is still alive, so it can be lower than PROMPT_ACCEPTED.
   </summary>
 </histogram>
 

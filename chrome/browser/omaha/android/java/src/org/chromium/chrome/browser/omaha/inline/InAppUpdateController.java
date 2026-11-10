@@ -107,6 +107,17 @@ public class InAppUpdateController {
     public static final String HISTOGRAM_APP_MENU_ACTION = "Android.InAppUpdate.AppMenu.Action";
 
     @VisibleForTesting
+    static final String HISTOGRAM_DISCOVERY_STALENESS_DAYS =
+            "Android.InAppUpdate.Discovery.StalenessDays";
+
+    /**
+     * Exclusive upper bound for {@link #HISTOGRAM_DISCOVERY_STALENESS_DAYS}. Values of 0-90 days
+     * get their own bucket so that thresholds in the range being considered can be compared
+     * precisely; anything older is grouped into the overflow bucket.
+     */
+    @VisibleForTesting static final int MAX_DISCOVERY_STALENESS_DAYS = 91;
+
+    @VisibleForTesting
     static final String PARAM_RESUME_COOLDOWN_MINUTES = "resume_cooldown_minutes";
 
     @VisibleForTesting static final int DEFAULT_RESUME_COOLDOWN_MINUTES = 5;
@@ -158,7 +169,8 @@ public class InAppUpdateController {
         DownloadResult.PROMPT_CANCELED,
         DownloadResult.DOWNLOAD_CANCELED,
         DownloadResult.SEND_INTENT_FAILED,
-        DownloadResult.START_EXCEPTION
+        DownloadResult.START_EXCEPTION,
+        DownloadResult.PROMPT_ACCEPTED
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface DownloadResult {
@@ -193,7 +205,14 @@ public class InAppUpdateController {
         /** Runtime exception occurred when attempting to start the update flow. */
         int START_EXCEPTION = 8;
 
-        int COUNT = 9;
+        /**
+         * User accepted the Google Play consent dialog (RESULT_OK). Recorded separately from {@link
+         * #SUCCEEDED} because the download may finish after this Activity is gone, in which case
+         * {@link #SUCCEEDED} is never recorded.
+         */
+        int PROMPT_ACCEPTED = 9;
+
+        int COUNT = 10;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:InAppUpdateDownloadResult)
@@ -483,6 +502,24 @@ public class InAppUpdateController {
                             // Snackbar dismissed (timeout or swipe): clear reference.
                             mDiscoverySnackbarController = null;
                         });
+        if (mDiscoverySnackbarController != null) {
+            recordDiscoveryStaleness(appUpdateInfo.clientVersionStalenessDays());
+        }
+    }
+
+    /**
+     * Records how long the update had been available when the discovery snackbar was shown, which
+     * shows how many prompts a given {@code prompt_min_staleness_days} threshold would keep.
+     *
+     * <p>Nothing is recorded when Play does not report staleness. Comparing this histogram's total
+     * with the discovery snackbar impressions gives the share of prompts with unknown staleness.
+     */
+    private static void recordDiscoveryStaleness(@Nullable Integer stalenessDays) {
+        if (stalenessDays == null) {
+            return;
+        }
+        RecordHistogram.recordExactLinearHistogram(
+                HISTOGRAM_DISCOVERY_STALENESS_DAYS, stalenessDays, MAX_DISCOVERY_STALENESS_DAYS);
     }
 
     /**
@@ -701,8 +738,9 @@ public class InAppUpdateController {
      *   <li>{@link ActivityResult#RESULT_IN_APP_UPDATE_FAILED}: Play Core failed to start the flow
      *       (internal error) -> records failure backoff via {@link
      *       InAppUpdatePolicy#recordDownloadFailed()} and unregisters listener.
-     *   <li>{@link Activity#RESULT_OK}: User consented to the update. Play Core has started the
-     *       background download; progress is tracked by the registered install listener.
+     *   <li>{@link Activity#RESULT_OK}: User consented to the update. Records {@link
+     *       DownloadResult#PROMPT_ACCEPTED}. Play Core has started the background download;
+     *       progress is tracked by the registered install listener.
      * </ul>
      *
      * @param requestCode The request code supplied to {@link Activity#startIntentSenderForResult}.
@@ -728,6 +766,7 @@ public class InAppUpdateController {
                 unregisterInstallListener();
             } else if (resultCode == Activity.RESULT_OK) {
                 Log.i(TAG, "handleActivityResult: User accepted update prompt (RESULT_OK).");
+                logDownloadResult(DownloadResult.PROMPT_ACCEPTED);
                 // Ensure listener is registered in case host Activity was recreated while Play
                 // consent sheet was active.
                 registerInstallListener();

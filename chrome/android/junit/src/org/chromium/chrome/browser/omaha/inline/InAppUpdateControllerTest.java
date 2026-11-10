@@ -159,10 +159,15 @@ public class InAppUpdateControllerTest {
     public void testCheckAndStartUpdateFlow_availableShowsSnackbar() {
         setupUpdateAvailable();
 
+        // FakeAppUpdateManager reports no staleness by default, so only the impression is
+        // recorded and the staleness histogram stays empty.
         var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT,
-                        InAppUpdateSnackbarEvent.IMPRESSION);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT,
+                                InAppUpdateSnackbarEvent.IMPRESSION)
+                        .expectNoRecords(InAppUpdateController.HISTOGRAM_DISCOVERY_STALENESS_DAYS)
+                        .build();
 
         InAppUpdateController controller = createController();
         controller.checkAndStartUpdateFlow();
@@ -188,11 +193,13 @@ public class InAppUpdateControllerTest {
     public void testCheckAndStartUpdateFlow_cannotShowSnackbar_doesNothing() {
         when(mSnackbarManager.canShowSnackbar()).thenReturn(false);
         setupUpdateAvailable();
+        mFakeAppUpdateManager.setClientVersionStalenessDays(5);
 
         var watcher =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords(
                                 InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT)
+                        .expectNoRecords(InAppUpdateController.HISTOGRAM_DISCOVERY_STALENESS_DAYS)
                         .build();
 
         InAppUpdateController controller = createController();
@@ -338,6 +345,32 @@ public class InAppUpdateControllerTest {
         assertEquals(
                 Integer.valueOf(AppUpdateType.FLEXIBLE),
                 mFakeAppUpdateManager.getTypeForUpdateInProgress());
+    }
+
+    // The staleness histogram is recorded alongside the discovery impression so the two totals
+    // can be compared. The case where Play reports no staleness is covered by
+    // testCheckAndStartUpdateFlow_availableShowsSnackbar.
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
+    public void testCheckAndStartUpdateFlow_showsSnackbar_recordsStalenessDays() {
+        setupUpdateAvailable();
+        mFakeAppUpdateManager.setClientVersionStalenessDays(5);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT,
+                                InAppUpdateSnackbarEvent.IMPRESSION)
+                        .expectIntRecord(
+                                InAppUpdateController.HISTOGRAM_DISCOVERY_STALENESS_DAYS, 5)
+                        .build();
+
+        InAppUpdateController controller = createController();
+        controller.checkAndStartUpdateFlow();
+        ShadowLooper.idleMainLooper();
+
+        watcher.assertExpected();
     }
 
     // =============================================================================================
@@ -1329,13 +1362,19 @@ public class InAppUpdateControllerTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testHandleActivityResult_resultOk_registersInstallListener() {
+    public void testHandleActivityResult_resultOk_recordsAcceptedAndRegistersInstallListener() {
         InAppUpdateController controller = createController();
         assertNull(controller.getInstallListenerForTesting());
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        InAppUpdateController.HISTOGRAM_DOWNLOAD_RESULT,
+                        InAppUpdateController.DownloadResult.PROMPT_ACCEPTED);
 
         controller.handleActivityResult(
                 InAppUpdateController.REQUEST_CODE_IN_APP_UPDATE, Activity.RESULT_OK);
 
+        watcher.assertExpected();
         assertNotNull(controller.getInstallListenerForTesting());
     }
 

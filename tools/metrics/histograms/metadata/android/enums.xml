@@ -1649,6 +1649,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Download Canceled"/>
   <int value="7" label="Send Intent Failed"/>
   <int value="8" label="Start Exception"/>
+  <int value="9" label="Prompt Accepted"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/omaha/android/java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateController.java:InAppUpdateDownloadResult) -->
