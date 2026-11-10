@@ -33,7 +33,7 @@ TEST(AndroidPrivateKeyTest, SupportedCreateKey) {
   for (int i = 0; i < 32; ++i) {
     credential_id.push_back(i);
   }
-  auto android_key = bk_key_store->GetOrCreateBrowserKeyForCredentialId(
+  auto android_key = bk_key_store->CreateBrowserKeyForCredentialId(
       credential_id, base::ToVector(kEs256Allowed));
 
   ASSERT_TRUE(android_key);

@@ -54,9 +54,8 @@ TEST_F(BrowserKeyStoreAndroidTest, GetsPublicKeyWhenSupportsStrongBox) {
   }
   std::vector<uint8_t> bk_id{1, 2, 3, 4};
 
-  std::unique_ptr<BrowserKey> bk =
-      bk_store->GetOrCreateBrowserKeyForCredentialId(
-          std::move(bk_id), base::ToVector(kEs256Allowed));
+  std::unique_ptr<BrowserKey> bk = bk_store->CreateBrowserKeyForCredentialId(
+      std::move(bk_id), base::ToVector(kEs256Allowed));
 
   EXPECT_FALSE(bk->GetPrivateKey().is_null());
   EXPECT_TRUE(bk->GetSSLPrivateKey());
@@ -82,9 +81,8 @@ TEST_F(BrowserKeyStoreAndroidTest, GetsPublicKeyWhenNoStrongBoxSupport) {
   }
   std::vector<uint8_t> bk_id{1, 2, 3, 4};
 
-  std::unique_ptr<BrowserKey> bk =
-      bk_store->GetOrCreateBrowserKeyForCredentialId(
-          std::move(bk_id), base::ToVector(kEs256Allowed));
+  std::unique_ptr<BrowserKey> bk = bk_store->CreateBrowserKeyForCredentialId(
+      std::move(bk_id), base::ToVector(kEs256Allowed));
 
   EXPECT_FALSE(bk->GetPrivateKey().is_null());
   EXPECT_TRUE(bk->GetSSLPrivateKey());
@@ -118,8 +116,8 @@ TEST_F(BrowserKeyStoreAndroidTest, ReturnsExistingKey) {
   // Make sure no key is left over from a previous run.
   bk_store->DeleteBrowserKey(bk_id);
   std::unique_ptr<BrowserKey> created_bk =
-      bk_store->GetOrCreateBrowserKeyForCredentialId(
-          bk_id, base::ToVector(kEs256Allowed));
+      bk_store->CreateBrowserKeyForCredentialId(bk_id,
+                                                base::ToVector(kEs256Allowed));
   ASSERT_TRUE(created_bk);
 
   std::unique_ptr<BrowserKey> loaded_bk =

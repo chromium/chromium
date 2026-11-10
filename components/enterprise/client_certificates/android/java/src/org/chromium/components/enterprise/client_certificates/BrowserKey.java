@@ -32,7 +32,7 @@ import java.security.spec.InvalidKeySpecException;
 @NullMarked
 public class BrowserKey {
     /** The logging tag for this class. */
-    public static final String TAG = "TrustedAccess_BK";
+    public static final String TAG = "ClientCertificates";
 
     /** The security level of the browser key. */
     /**

@@ -57,12 +57,11 @@ scoped_refptr<AndroidPrivateKey> WrapBrowserKey(
   return base::MakeRefCounted<AndroidPrivateKey>(std::move(bk));
 }
 
-// Creates a key pair in the Android keystore under `credential_id`, which is
-// expected to be a new random identifier.
+// Creates a key pair in the Android keystore under the new `credential_id`.
 scoped_refptr<AndroidPrivateKey> CreateKeyInKeyStore(
     scoped_refptr<BrowserKeyStore> bk_key_store,
     std::vector<uint8_t> credential_id) {
-  return WrapBrowserKey(bk_key_store->GetOrCreateBrowserKeyForCredentialId(
+  return WrapBrowserKey(bk_key_store->CreateBrowserKeyForCredentialId(
       credential_id, base::ToVector(kEs256Allowed)));
 }
 

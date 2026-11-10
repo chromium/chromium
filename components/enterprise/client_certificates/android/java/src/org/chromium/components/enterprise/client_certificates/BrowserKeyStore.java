@@ -48,11 +48,12 @@ import java.util.List;
  *
  * <p>On Android, we rely on the underlying AndroidKeyStore to create and store browser keys. Note
  * that AndroidKeyStore keys are deleted when the Android App (e.g. Chrome) is uninstalled. The keys
- * will be created in StrongBox on the device secure element.
+ * are created in StrongBox on the device secure element when available.
  */
 @JNINamespace("client_certificates")
 @NullMarked
 public final class BrowserKeyStore {
+    private static final String TAG = "ClientCertificates";
 
     public static final String ANDROID_KEY_STORE = "AndroidKeyStore";
 
@@ -117,30 +118,22 @@ public final class BrowserKeyStore {
     }
 
     /**
-     * Get the corresponding browser key (or creates it).
+     * Creates a new browser key. Any existing key with the same identifier is replaced.
      *
-     * @param identifier An identifier for the browser key.
-     * @param allowedAlgorithms A list of allowed credential parameters used if the key needs to be
-     *     created. Consequently, if this list is empty no key will be created but an existing one
-     *     may be returned.
+     * @param identifier A new, unique identifier for the browser key.
+     * @param allowedAlgorithms The credential parameters the key may be created with. Only ES256 is
+     *     supported; no key is created if it is not allowed.
      * @return The BrowserKey object or null when the key pair could not be created.
      */
     @CalledByNative
     public @Nullable @JniType("std::unique_ptr<BrowserKeyAndroid>") BrowserKey
-            getOrCreateBrowserKeyForCredentialId(
+            createBrowserKeyForCredentialId(
                     @JniType("std::vector<uint8_t>") byte[] identifier,
                     List<PublicKeyCredentialParameters> allowedAlgorithms) {
-        String keyStoreAlias = keyStoreAliasOf(identifier);
-        BrowserKey browserKey = null;
-        try {
-            browserKey = loadBrowserKey(identifier, keyStoreAlias);
-        } catch (Exception e) {
-            Log.e(BrowserKey.TAG, "Could not load the browser key from the key store.", e);
+        if (!containsEs256(allowedAlgorithms)) {
+            return null;
         }
-        if (browserKey == null && containsEs256(allowedAlgorithms)) {
-            browserKey = createBrowserKey(identifier, keyStoreAlias);
-        }
-        return browserKey;
+        return createBrowserKey(identifier, keyStoreAliasOf(identifier));
     }
 
     /**
@@ -159,7 +152,7 @@ public final class BrowserKeyStore {
             browserKey = loadBrowserKey(identifier, keyStoreAliasOf(identifier));
             result = browserKey != null ? KeyLoadResult.FOUND : KeyLoadResult.NOT_FOUND;
         } catch (Exception e) {
-            Log.e(BrowserKey.TAG, "Could not load the browser key from the key store.", e);
+            Log.e(TAG, "Could not load the browser key from the key store.", e);
             result = KeyLoadResult.ERROR;
         }
         RecordHistogram.recordEnumeratedHistogram(
@@ -183,17 +176,14 @@ public final class BrowserKeyStore {
             try {
                 keyStore.load(null);
             } catch (IOException | NoSuchAlgorithmException | CertificateException e) {
-                Log.e(
-                        BrowserKey.TAG,
-                        "The key store could not be loaded while deleting a browser key.",
-                        e);
+                Log.e(TAG, "The key store could not be loaded while deleting a browser key.", e);
             }
             if (!keyStore.containsAlias(keyStoreAlias)) {
                 return;
             }
             keyStore.deleteEntry(keyStoreAlias);
         } catch (KeyStoreException e) {
-            Log.e(BrowserKey.TAG, "The key store could not delete the browser key.", e);
+            Log.e(TAG, "The key store could not delete the browser key.", e);
         }
     }
 
@@ -247,9 +237,9 @@ public final class BrowserKeyStore {
     private @Nullable BrowserKey createBrowserKey(byte[] identifier, String keyStoreAlias) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.M) {
             Log.w(
-                    BrowserKey.TAG,
+                    TAG,
                     "Android Keystore APIs for key generation are not available on this API"
-                        + " level.");
+                            + " level.");
             return null;
         }
 
@@ -273,13 +263,10 @@ public final class BrowserKeyStore {
             generator.initialize(specBuilder.build());
             return new BrowserKey(identifier, generator.generateKeyPair());
         } catch (InvalidAlgorithmParameterException e) {
-            Log.e(
-                    BrowserKey.TAG,
-                    "Could not initialize key pair generation for browser key support.",
-                    e);
+            Log.e(TAG, "Could not initialize key pair generation for browser key support.", e);
             return null;
         } catch (Exception e) {
-            Log.e(BrowserKey.TAG, "An unexpected error occurred during key pair generation.", e);
+            Log.e(TAG, "An unexpected error occurred during key pair generation.", e);
             return null;
         }
     }
@@ -288,10 +275,7 @@ public final class BrowserKeyStore {
         try {
             return KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_EC, ANDROID_KEY_STORE);
         } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
-            Log.e(
-                    BrowserKey.TAG,
-                    "Could not create key pair generation for browser key support.",
-                    e);
+            Log.e(TAG, "Could not create key pair generation for browser key support.", e);
             return null;
         }
     }

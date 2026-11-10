@@ -4,12 +4,12 @@
 
 package org.chromium.components.enterprise.client_certificates;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -91,7 +91,7 @@ public class BrowserKeyStoreTest {
 
             BrowserKeyStore browserKeyStore = BrowserKeyStore.getInstance();
             BrowserKey bk =
-                    browserKeyStore.getOrCreateBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS);
+                    browserKeyStore.createBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS);
             assertNull(bk);
         } finally {
             setSdkInt(originalSdkInt);
@@ -99,13 +99,10 @@ public class BrowserKeyStoreTest {
     }
 
     @Test
-    @RequiresApi(Build.VERSION_CODES.P)
     public void testCreatesNewEcKey() {
-        assumeTrue(isStrongBoxAvailable());
         BrowserKeyStore browserKeyStore = BrowserKeyStore.getInstance();
 
-        BrowserKey bk =
-                browserKeyStore.getOrCreateBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS);
+        BrowserKey bk = browserKeyStore.createBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS);
 
         KeyPair keyPair = bk.getKeyPair();
 
@@ -113,33 +110,10 @@ public class BrowserKeyStoreTest {
     }
 
     @Test
-    @RequiresApi(Build.VERSION_CODES.P)
-    public void testFindsExistingKey() throws Exception {
-        assumeTrue(isStrongBoxAvailable());
-        BrowserKeyStore browserKeyStore = BrowserKeyStore.getInstance();
-        byte[] clientData = new byte[] {0x01, 0x02, 0x03, 0x04};
-        BrowserKey bk1 =
-                browserKeyStore.getOrCreateBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS);
-
-        // Provide an empty list of algorithms expecting the existing key to be returned.
-        BrowserKey bk2 =
-                browserKeyStore.getOrCreateBrowserKeyForCredentialId(BK_ID, Arrays.asList());
-        byte[] signature2 = bk2.sign(clientData);
-
-        // Verify the bk2's signature using bk1's public key.
-        Signature signature = Signature.getInstance("SHA256withECDSA");
-        signature.initVerify(bk1.getKeyPair().getPublic());
-        signature.update(clientData);
-        assertTrue(signature.verify(signature2));
-    }
-
-    @Test
-    @RequiresApi(Build.VERSION_CODES.P)
     public void testDoesNotCreateKeyWithUnsupportedAlgorithm() throws Exception {
-        assumeTrue(isStrongBoxAvailable());
         BrowserKeyStore browserKeyStore = BrowserKeyStore.getInstance();
         BrowserKey bk =
-                browserKeyStore.getOrCreateBrowserKeyForCredentialId(
+                browserKeyStore.createBrowserKeyForCredentialId(
                         BK_ID,
                         Arrays.asList(createCredentialParameters(/* algorithmIdentifier= */ 0)));
 
@@ -147,21 +121,18 @@ public class BrowserKeyStoreTest {
     }
 
     @Test
-    @RequiresApi(Build.VERSION_CODES.P)
-    public void testDeletesAKey() throws Exception {
-        assumeTrue(isStrongBoxAvailable());
+    public void testCreateReplacesExistingKey() throws Exception {
         BrowserKeyStore browserKeyStore = BrowserKeyStore.getInstance();
-        BrowserKey bk =
-                browserKeyStore.getOrCreateBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS);
-        assertNotNull(bk);
+        BrowserKey bk1 = browserKeyStore.createBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS);
+        assertNotNull(bk1);
 
-        browserKeyStore.deleteBrowserKey(BK_ID);
-        BrowserKey bkAfter =
-                browserKeyStore.getOrCreateBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS);
+        BrowserKey bk2 = browserKeyStore.createBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS);
+        assertNotNull(bk2);
 
-        assertNotNull(bkAfter);
-        // The key pair should be different after deletion.
-        assertFalse(Arrays.equals(bk.getPublicKeyAsSPKI(), bkAfter.getPublicKeyAsSPKI()));
+        assertFalse(Arrays.equals(bk1.getPublicKeyAsSPKI(), bk2.getPublicKeyAsSPKI()));
+        BrowserKey loadedBk = browserKeyStore.getBrowserKeyForCredentialId(BK_ID);
+        assertNotNull(loadedBk);
+        assertArrayEquals(bk2.getPublicKeyAsSPKI(), loadedBk.getPublicKeyAsSPKI());
     }
 
     @Test
@@ -187,7 +158,7 @@ public class BrowserKeyStoreTest {
         BrowserKeyStore browserKeyStore = BrowserKeyStore.getInstance();
         byte[] clientData = new byte[] {0x01, 0x02, 0x03, 0x04};
         BrowserKey createdBk =
-                browserKeyStore.getOrCreateBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS);
+                browserKeyStore.createBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS);
         assertNotNull(createdBk);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -209,8 +180,7 @@ public class BrowserKeyStoreTest {
     @Test
     public void testGetAfterDeleteReturnsNull() {
         BrowserKeyStore browserKeyStore = BrowserKeyStore.getInstance();
-        assertNotNull(
-                browserKeyStore.getOrCreateBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS));
+        assertNotNull(browserKeyStore.createBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS));
 
         browserKeyStore.deleteBrowserKey(BK_ID);
 
@@ -221,8 +191,7 @@ public class BrowserKeyStoreTest {
     @RequiresApi(Build.VERSION_CODES.P)
     public void testReportsCorrectSecurityLevel() {
         BrowserKeyStore browserKeyStore = BrowserKeyStore.getInstance();
-        BrowserKey bk =
-                browserKeyStore.getOrCreateBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS);
+        BrowserKey bk = browserKeyStore.createBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS);
         assertNotNull(bk);
 
         if (isStrongBoxAvailable()) {
