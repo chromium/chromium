@@ -95,7 +95,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Unit tests for {@link FullscreenSigninMediator}.
+ * Unit tests for {@link FullscreenSigninMediatorLegacy}.
  *
  * <p>TODO(crbug.com/493130564): Revert to regular runner after
  * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
@@ -1008,7 +1008,7 @@ public class FullscreenSigninMediatorTest {
 
     private void createMediator() {
         mMediator =
-                new FullscreenSigninMediator(
+                new FullscreenSigninMediatorLegacy(
                         RuntimeEnvironment.getApplication(),
                         mModalDialogManagerMock,
                         mDelegateMock,

@@ -203,7 +203,7 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
         mDelegate = delegate;
         mDelegate.getProfileSupplier().onAvailable(this::onProfileAvailable);
         mMediator =
-                new FullscreenSigninMediator(
+                new FullscreenSigninMediatorLegacy(
                         context,
                         modalDialogManager,
                         mDelegate,
@@ -246,10 +246,9 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
     }
 
     /**
-     * Resets model properties in {@link FullscreenSigninMediator}. Must only be called when the
-     * user advances to the next page and then presses back to return to the sign-in screen, as it
-     * also logs that the promo is shown again (see {@link
-     * Delegate#logPromoShownFunnelEventOnBackPress}).
+     * Resets model properties in {@link Mediator}. Must only be called when the user advances to
+     * the next page and then presses back to return to the sign-in screen, as it also logs that the
+     * promo is shown again (see {@link Delegate#logPromoShownFunnelEventOnBackPress}).
      */
     public void reset() {
         mMediator.reset();
@@ -307,7 +306,7 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
 
     /** Disables the sign-in animation for the duration of the test. */
     public static void disableAnimationsForTesting() {
-        FullscreenSigninMediator.disableAnimationsForTesting(); // IN-TEST
+        FullscreenSigninMediatorLegacy.disableAnimationsForTesting(); // IN-TEST
     }
 
     public Drawable getProfilePictureForTesting() {

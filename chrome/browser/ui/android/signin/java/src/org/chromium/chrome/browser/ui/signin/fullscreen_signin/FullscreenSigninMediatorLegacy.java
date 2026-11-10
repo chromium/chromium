@@ -76,7 +76,7 @@ import java.util.List;
 import java.util.Objects;
 
 @NullMarked
-class FullscreenSigninMediator
+class FullscreenSigninMediatorLegacy
         implements FullscreenSigninCoordinator.Mediator,
                 AccountPickerCoordinator.Listener,
                 UMADialogCoordinator.Listener {
@@ -126,7 +126,7 @@ class FullscreenSigninMediator
     private boolean mIsChild;
     private int mForcedSigninToken = TokenHolder.INVALID_TOKEN;
 
-    FullscreenSigninMediator(
+    FullscreenSigninMediatorLegacy(
             Context context,
             ModalDialogManager modalDialogManager,
             Delegate delegate,
