@@ -415,15 +415,23 @@ void CrostiniExportImport::AfterDiskImageOperation(
     return;
   }
 
+  // For exports, `path()` is the output file being written and should be
+  // deleted if the operation is cancelled or fails. For imports, `path()` is
+  // the user's input backup archive and must never be deleted.
+  const bool is_export =
+      it->second->type() == ExportImportType::EXPORT_DISK_IMAGE;
+
   if (result == CrostiniResult::SUCCESS) {
     switch (it->second->status()) {
       case Status::CANCELLING: {
-        // If a user requests to cancel, but the export completes before the
-        // cancel can happen (|result| == SUCCESS), then removing the exported
-        // file is functionally the same as a successful cancel.
-        base::ThreadPool::PostTask(
-            FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-            base::GetDeleteFileCallback(it->second->path()));
+        if (is_export) {
+          // If a user requests to cancel, but the export completes before the
+          // cancel can happen (|result| == SUCCESS), then removing the exported
+          // file is functionally the same as a successful cancel.
+          base::ThreadPool::PostTask(
+              FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+              base::GetDeleteFileCallback(it->second->path()));
+        }
         RemoveNotificationController(it)->SetStatusCancelled();
         break;
       }
@@ -436,12 +444,14 @@ void CrostiniExportImport::AfterDiskImageOperation(
   } else if (result == CrostiniResult::DISK_IMAGE_CANCELLED) {
     switch (it->second->status()) {
       case Status::CANCELLING: {
-        // If a user requests to cancel, and the export is cancelled (|result|
-        // == DISK_IMAGE_CANCELLED), then the partially exported file needs to
-        // be cleaned up.
-        base::ThreadPool::PostTask(
-            FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-            base::GetDeleteFileCallback(it->second->path()));
+        if (is_export) {
+          // If a user requests to cancel, and the export is cancelled (|result|
+          // == DISK_IMAGE_CANCELLED), then the partially exported file needs to
+          // be cleaned up.
+          base::ThreadPool::PostTask(
+              FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+              base::GetDeleteFileCallback(it->second->path()));
+        }
         RemoveNotificationController(it)->SetStatusCancelled();
         break;
       }
@@ -449,9 +459,7 @@ void CrostiniExportImport::AfterDiskImageOperation(
         NOTREACHED();
     }
   } else if (result == CrostiniResult::DISK_IMAGE_BAD_IMAGE) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::GetDeleteFileCallback(it->second->path()));
+    CHECK(!is_export);
     CHECK(it->second->status() == Status::RUNNING ||
               it->second->status() == Status::CANCELLING,
           base::NotFatalUntil::M160);
@@ -465,10 +473,13 @@ void CrostiniExportImport::AfterDiskImageOperation(
     RemoveNotificationController(it)
         ->SetStatusFailedInsufficientSpaceUnknownAmount();
   } else {
-    LOG(ERROR) << "Error exporting " << static_cast<int>(result);
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::GetDeleteFileCallback(it->second->path()));
+    LOG(ERROR) << "Error " << (is_export ? "exporting " : "importing ")
+               << CrostiniResultString(result);
+    if (is_export) {
+      base::ThreadPool::PostTask(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+          base::GetDeleteFileCallback(it->second->path()));
+    }
     CHECK(it->second->status() == Status::RUNNING ||
               it->second->status() == Status::CANCELLING,
           base::NotFatalUntil::M160);

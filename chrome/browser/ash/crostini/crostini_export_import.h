@@ -146,12 +146,18 @@ class CrostiniExportImport : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestExportDiskImageCancelled);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
+                           TestExportDiskImageDoneBeforeCancelled);
+  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestImportDiskImageSuccess);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestImportDiskImageFail);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestImportDiskImageFailSpace);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
+                           TestImportDiskImageBadImage);
+  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestImportDiskImageCancelled);
+  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
+                           TestImportDiskImageDoneBeforeCancelled);
 
   struct OperationData {
     OperationData(ExportImportType type, guest_os::GuestId id);

@@ -393,6 +393,8 @@ TEST_F(CrostiniExportImportTest, TestExportDiskImageFail) {
     std::string msg("Backup couldn't be completed due to an error");
     EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
   }
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_FALSE(base::PathExists(zipfile.path()));
 }
 
 TEST_F(CrostiniExportImportTest, TestExportDiskImageFailSpace) {
@@ -496,6 +498,48 @@ TEST_F(CrostiniExportImportTest, TestExportDiskImageCancelled) {
         GetUiNotification(notification_id);
     EXPECT_EQ(ui_notification, nullptr);
   }
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_FALSE(base::PathExists(zipfile.path()));
+}
+
+TEST_F(CrostiniExportImportTest, TestExportDiskImageDoneBeforeCancelled) {
+  base::ScopedTempFile zipfile;
+  ASSERT_TRUE(zipfile.Create());
+  crostini_export_import_->FillOperationData(
+      ExportImportType::EXPORT_DISK_IMAGE, custom_container_id_);
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(zipfile.path()),
+                                        0);
+  task_environment_.RunUntilIdle();
+  base::WeakPtr<CrostiniExportImportNotificationController> controller =
+      GetController(custom_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(), Status::RUNNING);
+
+  std::string notification_id;
+  {
+    const message_center::Notification* notification =
+        GetNotification(custom_container_id_);
+    ASSERT_NE(notification, nullptr);
+    notification_id = notification->id();
+  }
+
+  // CANCELLING:
+  crostini_export_import_->CancelOperation(custom_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(), Status::CANCELLING);
+
+  // DONE: Completed before cancel processed, file should be deleted.
+  SendDiskImageProgress(custom_container_id_,
+                        vm_tools::concierge::DISK_STATUS_CREATED, 100);
+  EXPECT_EQ(GetController(custom_container_id_), nullptr);
+  EXPECT_EQ(controller, nullptr);
+  {
+    const message_center::Notification* ui_notification =
+        GetUiNotification(notification_id);
+    EXPECT_EQ(ui_notification, nullptr);
+  }
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_FALSE(base::PathExists(zipfile.path()));
 }
 
 TEST_F(CrostiniExportImportTest, TestImportDiskImageSuccess) {
@@ -671,6 +715,8 @@ TEST_F(CrostiniExportImportTest, TestImportDiskImageFail) {
     std::string msg("Restoring couldn't be completed due to an error");
     EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
   }
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_TRUE(base::PathExists(zipfile.path()));
 }
 
 TEST_F(CrostiniExportImportTest, TestImportDiskImageFailSpace) {
@@ -710,6 +756,42 @@ TEST_F(CrostiniExportImportTest, TestImportDiskImageFailSpace) {
     ASSERT_NE(ui_notification, nullptr);
     EXPECT_FALSE(ui_notification->pinned());
     std::string msg("Cannot restore due to lack of storage space.");
+    EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
+  }
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_TRUE(base::PathExists(zipfile.path()));
+}
+
+TEST_F(CrostiniExportImportTest, TestImportDiskImageBadImage) {
+  vm_tools::concierge::ImportDiskImageResponse response;
+  response.set_status(vm_tools::concierge::DISK_STATUS_BAD_IMAGE);
+  ash::FakeConciergeClient::Get()->set_import_disk_image_response(response);
+  crostini_export_import_->FillOperationData(
+      ExportImportType::IMPORT_DISK_IMAGE);
+  base::ScopedTempFile zipfile;
+  ASSERT_TRUE(zipfile.Create());
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(zipfile.path()),
+                                        0);
+  std::string notification_id;
+  {
+    const message_center::Notification* notification =
+        GetNotification(default_container_id_);
+    ASSERT_NE(notification, nullptr);
+    notification_id = notification->id();
+  }
+
+  // Fails due to bad image.
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(ash::FakeConciergeClient::Get()->import_disk_image_call_count(), 1);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
+  {
+    const message_center::Notification* ui_notification =
+        GetUiNotification(notification_id);
+    ASSERT_NE(ui_notification, nullptr);
+    EXPECT_FALSE(ui_notification->pinned());
+    std::string msg(
+        "Issue with provided restore file - likely incorrect type for existing "
+        "Linux guest. Check /var/log/messages for more info.");
     EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
   }
   base::ThreadPoolInstance::Get()->FlushForTesting();
@@ -776,6 +858,36 @@ TEST_F(CrostiniExportImportTest, TestImportDiskImageCancelled) {
         GetUiNotification(notification_id);
     EXPECT_EQ(ui_notification, nullptr);
   }
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_TRUE(base::PathExists(zipfile.path()));
+}
+
+TEST_F(CrostiniExportImportTest, TestImportDiskImageDoneBeforeCancelled) {
+  SetImportResponse();
+  base::ScopedTempFile zipfile;
+  ASSERT_TRUE(zipfile.Create());
+  crostini_export_import_->FillOperationData(
+      ExportImportType::IMPORT_DISK_IMAGE, custom_container_id_);
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(zipfile.path()),
+                                        0);
+  task_environment_.RunUntilIdle();
+  base::WeakPtr<CrostiniExportImportNotificationController> controller =
+      GetController(custom_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(), Status::RUNNING);
+
+  // CANCELLING:
+  crostini_export_import_->CancelOperation(custom_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(), Status::CANCELLING);
+
+  // DONE: Completed before cancel processed, input file must not be deleted.
+  SendDiskImageProgress(custom_container_id_,
+                        vm_tools::concierge::DISK_STATUS_CREATED, 100);
+  EXPECT_EQ(GetController(custom_container_id_), nullptr);
+  EXPECT_EQ(controller, nullptr);
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_TRUE(base::PathExists(zipfile.path()));
 }
 
 TEST_F(CrostiniExportImportTest, TestExportSuccess) {
