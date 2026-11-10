@@ -109,6 +109,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
       bool intercept_only,
+      bool is_for_profile_initiated_prefetch,
       std::optional<SecurityOptions> security_options,
       std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
       std::vector<InterceptorEntryPtr> profile_header_interceptors,
@@ -128,6 +129,16 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       const network::ResourceRequest& request,
       net::HttpRequestHeaders& cors_exempt_headers);
 
+  // Returns true if shouldInterceptRequest should be skipped for `request`
+  // because it is a profile-initiated prefetch. The decision is based on the
+  // type of factory the request was issued through, since the absence of a
+  // WebContents association is not sufficient to identify such requests
+  // (factories for service worker and shared worker subresources also have
+  // none).
+  static bool ShouldSkipInterceptForPrefetch(
+      const network::ResourceRequest& request,
+      bool is_for_profile_initiated_prefetch);
+
   // static
   static void CreateProxy(
       mojo::PendingRemote<network::mojom::CookieManager> cookie_manager,
@@ -138,6 +149,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
+      bool is_for_profile_initiated_prefetch,
       std::optional<SecurityOptions> security_options,
       std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
       std::vector<InterceptorEntryPtr> profile_header_interceptors,
@@ -192,6 +204,10 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   // intercept callback (shouldInterceptRequest). If that returns without
   // a response, the loader will abort loading.
   bool intercept_only_;
+
+  // True only when this factory was created for a profile-initiated prefetch
+  // (i.e. a `URLLoaderFactoryType::kPrefetch` factory not bound to a frame).
+  const bool is_for_profile_initiated_prefetch_;
 
   std::optional<SecurityOptions> security_options_;
 

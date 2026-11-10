@@ -11,6 +11,7 @@
 
 #include "android_webview/browser/http_headers/aw_origin_matched_header.h"
 #include "android_webview/browser/network_service/aw_browser_context_io_thread_handle.h"
+#include "android_webview/common/aw_features.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
@@ -28,6 +29,7 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "url/gurl.h"
 
 namespace android_webview {
@@ -51,6 +53,7 @@ class AwProxyingURLLoaderFactoryTest : public testing::Test {
         proxy_factory_remote.BindNewPipeAndPassReceiver(),
         target_factory_receiver.BindNewPipeAndPassRemote(),
         /*intercept_only=*/false,
+        /*is_for_profile_initiated_prefetch=*/false,
         /*security_options=*/std::nullopt,
         /*origin_matched_headers=*/
         std::vector<scoped_refptr<AwOriginMatchedHeader>>(),
@@ -151,6 +154,67 @@ TEST_F(AwProxyingURLLoaderFactoryTest, AllowsSafeRedirectToFile) {
 TEST_F(AwProxyingURLLoaderFactoryTest, AllowsSafeRedirect) {
   EXPECT_EQ(net::OK, FollowRedirect(GURL("http://example.com"),
                                     GURL("http://otherexample.com")));
+}
+
+TEST_F(AwProxyingURLLoaderFactoryTest,
+       ShouldSkipInterceptForPrefetch_ProfileInitiated) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kWebViewSkipInterceptsForPrefetch);
+
+  network::ResourceRequest request;
+  request.headers.SetHeader(blink::kSecPurposeHeaderName,
+                            blink::kSecPurposePrefetchHeaderValue);
+
+  EXPECT_TRUE(AwProxyingURLLoaderFactory::ShouldSkipInterceptForPrefetch(
+      request, /*is_for_profile_initiated_prefetch=*/true));
+}
+
+TEST_F(AwProxyingURLLoaderFactoryTest,
+       ShouldSkipInterceptForPrefetch_ProfileInitiatedPrerender) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kWebViewSkipInterceptsForPrefetch);
+
+  // A prerender request must still go through shouldInterceptRequest.
+  network::ResourceRequest request;
+  request.headers.SetHeader(blink::kSecPurposeHeaderName,
+                            blink::kSecPurposePrefetchPrerenderHeaderValue);
+
+  EXPECT_FALSE(AwProxyingURLLoaderFactory::ShouldSkipInterceptForPrefetch(
+      request, /*is_for_profile_initiated_prefetch=*/true));
+}
+
+TEST_F(AwProxyingURLLoaderFactoryTest,
+       ShouldSkipInterceptForPrefetch_NonPrefetchFactory) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kWebViewSkipInterceptsForPrefetch);
+
+  // A request that carries a `Sec-Purpose: prefetch` header but did not come
+  // through a profile-initiated prefetch factory (for example a service worker
+  // or shared worker subresource factory) must still go through
+  // shouldInterceptRequest.
+  network::ResourceRequest request;
+  request.headers.SetHeader(blink::kSecPurposeHeaderName,
+                            blink::kSecPurposePrefetchHeaderValue);
+
+  EXPECT_FALSE(AwProxyingURLLoaderFactory::ShouldSkipInterceptForPrefetch(
+      request, /*is_for_profile_initiated_prefetch=*/false));
+}
+
+TEST_F(AwProxyingURLLoaderFactoryTest,
+       ShouldSkipInterceptForPrefetch_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kWebViewSkipInterceptsForPrefetch);
+
+  network::ResourceRequest request;
+  request.headers.SetHeader(blink::kSecPurposeHeaderName,
+                            blink::kSecPurposePrefetchHeaderValue);
+
+  EXPECT_FALSE(AwProxyingURLLoaderFactory::ShouldSkipInterceptForPrefetch(
+      request, /*is_for_profile_initiated_prefetch=*/true));
 }
 
 }  // namespace android_webview

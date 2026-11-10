@@ -1089,6 +1089,7 @@ bool AwContentBrowserClient::HandleExternalProtocol(
                 web_contents_key, frame_tree_node_id, std::move(receiver),
                 mojo::NullRemote(),
                 /* intercept_only=*/true,
+                /* is_for_profile_initiated_prefetch=*/false,
                 /* security_options=*/std::nullopt,
                 /* origin_matched_headers=*/{},
                 /* profile_header_interceptors=*/{},
@@ -1294,15 +1295,16 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
 
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&AwProxyingURLLoaderFactory::CreateProxy,
-                       std::move(cookie_manager), cookie_access_policy,
-                       isolation_info, web_contents_key,
-                       frame->GetFrameTreeNodeId(), std::move(proxied_receiver),
-                       std::move(target_factory_remote), security_options,
-                       aw_browser_context->GetOriginMatchedHeaders(),
-                       std::move(profile_header_interceptors),
-                       std::move(web_contents_header_interceptors),
-                       std::move(browser_context_handle), navigation_id));
+        base::BindOnce(
+            &AwProxyingURLLoaderFactory::CreateProxy, std::move(cookie_manager),
+            cookie_access_policy, isolation_info, web_contents_key,
+            frame->GetFrameTreeNodeId(), std::move(proxied_receiver),
+            std::move(target_factory_remote),
+            /*is_for_profile_initiated_prefetch=*/false, security_options,
+            aw_browser_context->GetOriginMatchedHeaders(),
+            std::move(profile_header_interceptors),
+            std::move(web_contents_header_interceptors),
+            std::move(browser_context_handle), navigation_id));
   } else {
     // A service worker and worker subresources set nullptr to |frame|, and
     // work without seeing the AllowUniversalAccessFromFileURLs setting. So,
@@ -1314,6 +1316,8 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
             cookie_access_policy, isolation_info,
             /*web_contents_key=*/std::nullopt, content::FrameTreeNodeId(),
             std::move(proxied_receiver), std::move(target_factory_remote),
+            /*is_for_profile_initiated_prefetch=*/type ==
+                URLLoaderFactoryType::kPrefetch,
             std::nullopt /* security_options */,
             aw_browser_context->GetOriginMatchedHeaders(),
             std::move(profile_header_interceptors),

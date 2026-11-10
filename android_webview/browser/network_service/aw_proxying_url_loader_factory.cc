@@ -160,6 +160,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
       bool intercept_only,
+      bool is_for_profile_initiated_prefetch,
       std::optional<AwProxyingURLLoaderFactory::SecurityOptions>
           security_options,
       scoped_refptr<AwProxyingURLLoaderFactory::ProxySharedState>
@@ -293,6 +294,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
   // When true, the loader will not not proceed unless the
   // shouldInterceptRequest callback provided a non-null response.
   bool intercept_only_ = false;
+  bool is_for_profile_initiated_prefetch_ = false;
 
   std::optional<AwProxyingURLLoaderFactory::SecurityOptions> security_options_;
 
@@ -413,6 +415,7 @@ InterceptedRequest::InterceptedRequest(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
     bool intercept_only,
+    bool is_for_profile_initiated_prefetch,
     std::optional<AwProxyingURLLoaderFactory::SecurityOptions> security_options,
     scoped_refptr<AwProxyingURLLoaderFactory::ProxySharedState>
         proxy_shared_state,
@@ -424,6 +427,7 @@ InterceptedRequest::InterceptedRequest(
       request_id_(request_id),
       options_(options),
       intercept_only_(intercept_only),
+      is_for_profile_initiated_prefetch_(is_for_profile_initiated_prefetch),
       security_options_(security_options),
       last_url_(request.url),
       request_(std::move(request)),
@@ -745,18 +749,9 @@ bool InterceptedRequest::ShouldNotInterceptRequest() {
     return true;
   }
 
-  bool should_skip_intercept_for_prefetch_enabled =
-      base::FeatureList::IsEnabled(features::kWebViewSkipInterceptsForPrefetch);
-  if (should_skip_intercept_for_prefetch_enabled) {
-    // Only skip if the prefetch is not also a prerender.
-    if (AwPrefetchManager::IsPrefetchRequest(request_) &&
-        !AwPrefetchManager::IsPrerenderRequest(request_)) {
-      // Only skip if the prefetch if it is not associated with any web
-      // contents. This is required in order for browser context initiated
-      // prefetch requests to skip shouldInterceptRequest while excluding
-      // renderer initiated prefetches (e.g. speculation rules).
-      return web_contents_key_ == std::nullopt;
-    }
+  if (AwProxyingURLLoaderFactory::ShouldSkipInterceptForPrefetch(
+          request_, is_for_profile_initiated_prefetch_)) {
+    return true;
   }
 
   // Do not call shouldInterceptRequest callback for special android urls,
@@ -1126,6 +1121,7 @@ AwProxyingURLLoaderFactory::AwProxyingURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
     bool intercept_only,
+    bool is_for_profile_initiated_prefetch,
     std::optional<SecurityOptions> security_options,
     std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
     std::vector<InterceptorEntryPtr> profile_header_interceptors,
@@ -1141,6 +1137,7 @@ AwProxyingURLLoaderFactory::AwProxyingURLLoaderFactory(
       web_contents_key_(web_contents_key),
       frame_tree_node_id_(frame_tree_node_id),
       intercept_only_(intercept_only),
+      is_for_profile_initiated_prefetch_(is_for_profile_initiated_prefetch),
       security_options_(security_options),
       browser_context_handle_(std::move(browser_context_handle)),
       navigation_id_(navigation_id) {
@@ -1190,6 +1187,7 @@ void AwProxyingURLLoaderFactory::CreateProxy(
     content::FrameTreeNodeId frame_tree_node_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
+    bool is_for_profile_initiated_prefetch,
     std::optional<SecurityOptions> security_options,
     std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
     std::vector<InterceptorEntryPtr> profile_header_interceptors,
@@ -1202,10 +1200,33 @@ void AwProxyingURLLoaderFactory::CreateProxy(
   new AwProxyingURLLoaderFactory(
       std::move(cookie_manager), cookie_access_policy, isolation_info,
       web_contents_key, frame_tree_node_id, std::move(loader_receiver),
-      std::move(target_factory_remote), false, security_options,
+      std::move(target_factory_remote), /*intercept_only=*/false,
+      is_for_profile_initiated_prefetch, security_options,
       std::move(origin_matched_headers), std::move(profile_header_interceptors),
       std::move(web_contents_header_interceptors),
       std::move(browser_context_handle), navigation_id);
+}
+
+// static
+bool AwProxyingURLLoaderFactory::ShouldSkipInterceptForPrefetch(
+    const network::ResourceRequest& request,
+    bool is_for_profile_initiated_prefetch) {
+  if (!base::FeatureList::IsEnabled(
+          features::kWebViewSkipInterceptsForPrefetch)) {
+    return false;
+  }
+  // Only skip when the factory was created for a profile-initiated prefetch.
+  // This is required in order for prefetch requests initiated through
+  // `AwPrefetchManager` to skip shouldInterceptRequest while excluding
+  // renderer-initiated prefetches (e.g. speculation rules) and other
+  // requests that happen not to be associated with a WebContents (e.g.
+  // service worker subresources).
+  if (!is_for_profile_initiated_prefetch) {
+    return false;
+  }
+  // Only skip if the prefetch is not also a prerender.
+  return AwPrefetchManager::IsPrefetchRequest(request) &&
+         !AwPrefetchManager::IsPrerenderRequest(request);
 }
 
 void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
@@ -1309,7 +1330,8 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
       web_contents_key_, frame_tree_node_id_, request_id, options,
       std::move(request), traffic_annotation, std::move(loader),
       std::move(client), std::move(target_factory_clone), intercept_only_,
-      security_options_, proxy_shared_state_, browser_context_handle_);
+      is_for_profile_initiated_prefetch_, security_options_,
+      proxy_shared_state_, browser_context_handle_);
   req->Restart();
 }
 
