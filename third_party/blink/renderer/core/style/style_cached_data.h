@@ -94,13 +94,13 @@ class CORE_EXPORT StyleCachedData final
   //    </script>
   Member<PseudoElementStyleCache> pseudo_element_styles_;
 
-  // Stores the names of of all custom properties on a given ComputedStyle.
-  std::unique_ptr<Vector<AtomicString>> variable_names_;
-
   // If this style is a "decorating box" stores the list of applied text
   // decorations (with the most recent decoration from this box being at the
   // end of the Vector).
   Member<AppliedTextDecorationVector> applied_text_decorations_;
+
+  // Stores the names of all custom properties on a given ComputedStyle.
+  std::unique_ptr<Vector<AtomicString>> variable_names_;
 };
 
 }  // namespace blink
