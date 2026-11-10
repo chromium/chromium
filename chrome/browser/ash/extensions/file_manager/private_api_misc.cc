@@ -126,8 +126,7 @@ std::vector<ProfileInfo> GetLoggedInProfileInfoList() {
 
     // Make a ProfileInfo.
     ProfileInfo profile_info;
-    profile_info.profile_id =
-        multi_user_util::GetAccountIdFromProfile(profile).GetUserEmail();
+    profile_info.profile_id = user->GetAccountId().GetUserEmail();
     profile_info.display_name = base::UTF16ToUTF8(user->GetDisplayName());
     // TODO(hirono): Remove the property from the profile_info.
     profile_info.is_current_profile = true;
