@@ -29,6 +29,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/command_line_switches.h"
@@ -177,6 +178,62 @@ IN_PROC_BROWSER_TEST_F(SettingsUITest, GoogleSearchAiModeRestrictedUrl) {
 
   EXPECT_EQ(url_val, "https://myactivity.google.com/myactivity");
 }
+
+struct GmailOtpFillingTestParam {
+  std::string test_name;
+  bool actor_otp_enabled = false;
+  bool autofill_otp_suggestions_enabled = false;
+  bool expected_toggle_enabled = false;
+};
+
+// Tests that the Gmail OTP filling settings toggle is available when either
+// Actor OTP filling or Autofill Gmail OTP suggestions is enabled.
+class SettingsUIGmailOtpFillingTest
+    : public SettingsUITest,
+      public testing::WithParamInterface<GmailOtpFillingTestParam> {
+ public:
+  SettingsUIGmailOtpFillingTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kGlicActorAutofillOneTimePassword,
+          GetParam().actor_otp_enabled},
+         {autofill::features::kAutofillShowGmailOtpSuggestions,
+          GetParam().autofill_otp_suggestions_enabled}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(SettingsUIGmailOtpFillingTest, ToggleAvailability) {
+  ASSERT_TRUE(NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL)));
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  // Wait for settings UI to be loaded.
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "customElements.whenDefined('settings-ui');"));
+
+  EXPECT_EQ(GetParam().expected_toggle_enabled,
+            content::EvalJs(
+                web_contents,
+                "import('chrome://resources/js/load_time_data.js').then(m => "
+                "m.loadTimeData.getBoolean('autofillGmailOtpFillingEnabled'))")
+                .ExtractBool());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SettingsUIGmailOtpFillingTest,
+    testing::Values(GmailOtpFillingTestParam{"BothDisabled", false, false,
+                                             false},
+                    GmailOtpFillingTestParam{"ActorOtpOnly", true, false, true},
+                    GmailOtpFillingTestParam{"AutofillOtpSuggestionsOnly",
+                                             false, true, true},
+                    GmailOtpFillingTestParam{"BothEnabled", true, true, true}),
+    [](const testing::TestParamInfo<GmailOtpFillingTestParam>& info) {
+      return info.param.test_name;
+    });
 
 class SettingsUITestGlicDisabledButAnchored : public SettingsUITest {
  public:
