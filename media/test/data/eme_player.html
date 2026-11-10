@@ -173,6 +173,17 @@
         video.addEventListener('ended', onFirstPlayEnded);
         return video.play();
       }
+      if (urlParams.get('stopAfterPlaybackStart') === '1') {
+        video.addEventListener('playing', function() {
+          requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+              video.pause();
+              Utils.setResultInTitle('ENDED');
+            });
+          });
+        }, {once: true});
+        return video.play();
+      }
       // Ended should not fire before onTimeUpdate.
       video.addEventListener('ended', Utils.failTest);
       video.addEventListener('timeupdate', onTimeUpdate);

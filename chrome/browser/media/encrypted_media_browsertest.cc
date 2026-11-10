@@ -502,6 +502,7 @@ class EncryptedMediaVisibilityRatioReportTest : public EncryptedMediaTestBase {
     query_params.emplace_back("keySystem", media::kExternalClearKeyKeySystem);
     query_params.emplace_back("useMSE", "1");
     query_params.emplace_back("playCount", "1");
+    query_params.emplace_back("stopAfterPlaybackStart", "1");
 
     if (!param.first.empty()) {
       query_params.push_back(param);
