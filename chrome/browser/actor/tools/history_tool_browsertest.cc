@@ -22,6 +22,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -35,6 +36,7 @@
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/ui/actor_task_unload_handler.h"
@@ -202,6 +204,11 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
 // Same with BFCache, where ActorCommitDeferringCondition sees the navigation.
 IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
                        HistoryTool_BackFromBFCacheSkipsLeaveConfirmation) {
+  // This test relies on BFCache so don't run it if it's not available.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    GTEST_SKIP();
+  }
+
   const GURL url_first =
       embedded_https_test_server().GetURL(kDomainA, "/actor/blank.html?start");
   const GURL url_second =
@@ -571,6 +578,11 @@ class ActorHistoryToolUserBackFromBFCacheTest
 // Leave restores the page and stops the task.
 IN_PROC_BROWSER_TEST_F(ActorHistoryToolUserBackFromBFCacheTest,
                        LeaveDuringIframeBackStopsTask) {
+  // This test relies on BFCache so don't run it if it's not available.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    GTEST_SKIP();
+  }
+
   State state;
   ASSERT_NO_FATAL_FAILURE(StartUserBackDuringIframeBack(state));
   GetNavigationConfirmDialog()
@@ -588,6 +600,11 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolUserBackFromBFCacheTest,
 // tool's iframe Back. The tool fails before commit, and the task can act again.
 IN_PROC_BROWSER_TEST_F(ActorHistoryToolUserBackFromBFCacheTest,
                        StayDuringIframeBackFailsTool) {
+  // This test relies on BFCache so don't run it if it's not available.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    GTEST_SKIP();
+  }
+
   State state;
   ASSERT_NO_FATAL_FAILURE(StartUserBackDuringIframeBack(state));
   GetNavigationConfirmDialog()

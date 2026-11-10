@@ -57,6 +57,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/tabs/public/tab_alert.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -65,6 +66,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/views/controls/animated_image_view.h"
@@ -789,6 +791,11 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
 // ActorCommitDeferringCondition confirms the user Back before it commits.
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
                        UserBackFromBackForwardCache_CancelKeepsTaskActive) {
+  // This test relies on BFCache so don't run it if it's not available.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    GTEST_SKIP();
+  }
+
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ActorUiTabControllerInterface* controller =
       ActorUiTabControllerInterface::From(tab);
@@ -814,6 +821,11 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
 IN_PROC_BROWSER_TEST_F(
     ActorUiTabControllerNavigationConfirmTest,
     UserBackFromBackForwardCache_AcceptStopsTaskAndGoesBack) {
+  // This test relies on BFCache so don't run it if it's not available.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    GTEST_SKIP();
+  }
+
   base::HistogramTester histogram_tester;
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ActorUiTabControllerInterface* controller =
@@ -840,6 +852,11 @@ IN_PROC_BROWSER_TEST_F(
 // A user Forward restored from BFCache is confirmed like Back.
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
                        UserForwardFromBackForwardCache_CancelKeepsTaskActive) {
+  // This test relies on BFCache so don't run it if it's not available.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    GTEST_SKIP();
+  }
+
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ActorUiTabControllerInterface* controller =
       ActorUiTabControllerInterface::From(tab);
@@ -868,6 +885,11 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
 // Cancelling it keeps the tab, the page and the task.
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
                        UserBackFromBackForwardCache_CloseTabWhileDialogOpen) {
+  // This test relies on BFCache so don't run it if it's not available.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    GTEST_SKIP();
+  }
+
   TabStripModel* tab_strip = browser()->GetTabStripModel();
   tabs::TabInterface* tab = tab_strip->GetActiveTab();
   ASSERT_TRUE(CommitTwoPages(tab));
@@ -916,6 +938,11 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
 IN_PROC_BROWSER_TEST_F(
     ActorUiTabControllerNavigationConfirmTest,
     UserBackFromBackForwardCache_CloseTabWhileDialogOpen_Accept) {
+  // This test relies on BFCache so don't run it if it's not available.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    GTEST_SKIP();
+  }
+
   base::HistogramTester histogram_tester;
   TabStripModel* tab_strip = browser()->GetTabStripModel();
   tabs::TabInterface* tab = tab_strip->GetActiveTab();
@@ -965,6 +992,11 @@ IN_PROC_BROWSER_TEST_F(
 // confirmation are still pending.
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
                        UserBackFromBackForwardCache_CloseTabAfterTaskStops) {
+  // This test relies on BFCache so don't run it if it's not available.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    GTEST_SKIP();
+  }
+
   TabStripModel* tab_strip = browser()->GetTabStripModel();
   tabs::TabInterface* tab = tab_strip->GetActiveTab();
   ASSERT_TRUE(CommitTwoPages(tab));
@@ -1002,6 +1034,11 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
 IN_PROC_BROWSER_TEST_F(
     ActorUiTabControllerNavigationConfirmTest,
     UserBackFromBackForwardCache_SupersededByUserNavigation) {
+  // This test relies on BFCache so don't run it if it's not available.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    GTEST_SKIP();
+  }
+
   base::HistogramTester histogram_tester;
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ActorUiTabControllerInterface* controller =
@@ -1041,6 +1078,11 @@ IN_PROC_BROWSER_TEST_F(
 // Back restored from BFCache. The restore commits and the task stays paused.
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
                        UserBackFromBackForwardCache_PausedTaskShowsNoDialog) {
+  // This test relies on BFCache so don't run it if it's not available.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    GTEST_SKIP();
+  }
+
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ActorUiTabControllerInterface* controller =
       ActorUiTabControllerInterface::From(tab);
