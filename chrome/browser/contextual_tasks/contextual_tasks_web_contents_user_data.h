@@ -410,6 +410,14 @@ class ContextualTasksWebContentsUserData
       const std::optional<base::UnguessableToken>& overlay_token);
   std::vector<lens::AddedContext> GetLensAddedContexts(
       std::optional<base::UnguessableToken>& overlay_token);
+  // Returns true if the tab identified by `tab_id` / `tab_url` / `tab_title`
+  // has been explicitly deselected (or had its auto-suggested chip dismissed
+  // without being re-attached) for the upcoming submission.
+  bool IsTabDeselectedForSubmission(
+      const contextual_search::ContextualSearchSessionHandle& session_handle,
+      SessionID tab_id,
+      const GURL& tab_url,
+      std::string_view tab_title);
   void DispatchSerializedSearchMessage(
       const std::vector<uint8_t>& message_bytes);
   PageSearchState& GetPrimaryPageSearchState();
