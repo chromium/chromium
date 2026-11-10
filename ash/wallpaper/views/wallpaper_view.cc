@@ -252,7 +252,7 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
 
   auto wallpaper_widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
 
   // The layer of the wallpaper widget is NOT_DRAWN. The wallpaper is drawn to
