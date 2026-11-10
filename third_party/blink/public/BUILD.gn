@@ -516,7 +516,7 @@ group("blink_devtools_inspector_resources") {
 
 group("blink_devtools_frontend_resources_files") {
   testonly = true
-  data_deps = [ "$devtools_frontend_path:devtools_all_files" ]
+  data_deps = [ "$devtools_frontend_path:devtools_web_test_files" ]
 }
 
 group("blink_generate_devtools_grd") {
