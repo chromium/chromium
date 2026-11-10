@@ -358,7 +358,7 @@
       "agazal@google.com",
       "clank-app-team@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "android-auto-projected",
@@ -605,7 +605,7 @@
       "agazal@google.com",
       "ckitagawa@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "android-tabstrip-startup-capture-bug-fix",
@@ -678,7 +678,7 @@
       "agazal@google.com",
       "clank-app-team@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "android-window-management-web-api",
@@ -9646,7 +9646,7 @@
       "agazal@google.com",
       "ckitagawa@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "tabbed-cct-if-allowed-by-embedder",
