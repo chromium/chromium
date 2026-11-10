@@ -1945,13 +1945,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/preloading/prerender/prerender_host.h:WaitingForHeadersFinishedReason) -->
 
-<enum name="RelatedActiveContentsSyncAccessInfo">
-  <int value="0" label="kNoSyncAccess"/>
-  <int value="1"
-      label="kPotentiallySyncAccessibleDefaultSiteInstance (deprecated)"/>
-  <int value="2" label="kPotentiallySyncAccessible"/>
-</enum>
-
 <enum name="RendererBlockedURLReason">
   <int value="0" label="Invalid URL"/>
   <int value="1" label="URL Was Too Long"/>

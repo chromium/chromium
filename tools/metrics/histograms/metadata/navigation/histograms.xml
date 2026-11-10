@@ -567,33 +567,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2"
-    units="count" expires_after="2024-09-01">
-  <owner>rakina@chromium.org</owner>
-  <owner>bfcache-dev@chromium.org</owner>
-  <summary>
-    When navigating back to a page in the session history and the
-    BackForwardCache wasn't used because of other active WebContents objects in
-    the BrowsingInstance, this records the number of other active pages/related
-    active contents using the same BrowsingInstance.
-  </summary>
-</histogram>
-
-<histogram
-    name="BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.IsPotentiallySyncAccessible2"
-    enum="RelatedActiveContentsSyncAccessInfo" expires_after="2024-09-01">
-  <owner>rakina@chromium.org</owner>
-  <owner>bfcache-dev@chromium.org</owner>
-  <summary>
-    When navigating back to a page in the session history and the
-    BackForwardCache wasn't used because of other active WebContents objects in
-    the BrowsingInstance, this Records whether the page was potentially
-    synchronously accessible by other pages/related active contents using the
-    same BrowsingInstance, at the time the page was navigated away from.
-  </summary>
-</histogram>
-
 <histogram name="BackForwardCache.NewPageNavHasPotentialMatch" enum="Boolean"
     expires_after="2027-04-18">
   <owner>rakina@chromium.org</owner>

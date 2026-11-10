@@ -1567,8 +1567,7 @@ void RenderFrameHostManager::ActivatePrerender(
   BackForwardCacheMetrics* back_forward_cache_metrics =
       render_frame_host_->GetBackForwardCacheMetrics();
   if (back_forward_cache_metrics)
-    back_forward_cache_metrics->SetBrowsingInstanceSwapResult(std::nullopt,
-                                                              nullptr);
+    back_forward_cache_metrics->SetBrowsingInstanceSwapResult(std::nullopt);
 
   RestorePage(std::move(stored_page));
 }
@@ -3189,7 +3188,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     if (BackForwardCacheMetrics* back_forward_cache_metrics =
             render_frame_host_->GetBackForwardCacheMetrics()) {
       back_forward_cache_metrics->SetBrowsingInstanceSwapResult(
-          should_swap_result->reason(), render_frame_host_.get());
+          should_swap_result->reason());
     }
   }
 

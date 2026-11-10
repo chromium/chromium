@@ -682,25 +682,6 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUMA(
         "BackForwardCache.AllSites.HistoryNavigationOutcome."
         "BrowsingInstanceNotSwappedReason",
         browsing_instance_swap_result_.value());
-
-    if (back_forward_cache_allowed &&
-        browsing_instance_swap_result_ ==
-            ShouldSwapBrowsingInstance::kNo_HasRelatedActiveContents) {
-      CHECK_GT(related_active_contents_count_, 1);
-      // If a page was not restored from the back/forward cache because there
-      // are related active contents, log the details of the related active
-      // contents. Note that this also logs in cases where there are other
-      // reasons causing the page to not get restored from the back/forward
-      // cache (e.g. use of blocking features).
-      base::UmaHistogramCounts100(
-          "BackForwardCache.HistoryNavigationOutcome."
-          "RelatedActiveContents.Count2",
-          related_active_contents_count_);
-      base::UmaHistogramEnumeration(
-          "BackForwardCache.HistoryNavigationOutcome."
-          "RelatedActiveContents.IsPotentiallySyncAccessible2",
-          related_active_contents_sync_access_info_);
-    }
   }
 }
 
@@ -721,75 +702,8 @@ uint64_t BackForwardCacheMetrics::MetricValue(
 }
 
 void BackForwardCacheMetrics::SetBrowsingInstanceSwapResult(
-    std::optional<ShouldSwapBrowsingInstance> reason,
-    RenderFrameHostImpl* navigated_away_rfh) {
+    std::optional<ShouldSwapBrowsingInstance> reason) {
   browsing_instance_swap_result_ = reason;
-  if (navigated_away_rfh) {
-    SetRelatedActiveContentsInfo(navigated_away_rfh);
-  } else {
-    // The tracked reason is being reset as a result of prerender activation.
-    // Also reset `related_active_contents_count_` and
-    // `related_active_contents_sync_access_info_` as they are stale too.
-    CHECK(!reason.has_value());
-    related_active_contents_count_ = 1;
-    related_active_contents_sync_access_info_ =
-        RelatedActiveContentsSyncAccessInfo::kNoSyncAccess;
-  }
-}
-
-void BackForwardCacheMetrics::SetRelatedActiveContentsInfo(
-    RenderFrameHostImpl* navigated_away_rfh) {
-  CHECK(navigated_away_rfh->is_main_frame());
-  related_active_contents_count_ =
-      navigated_away_rfh->GetSiteInstance()->GetRelatedActiveContentsCount();
-
-  // Count how many documents in the navigating page are using each SiteInfo.
-  std::map<SiteInfo, int> doc_count_in_page;
-  navigated_away_rfh->ForEachRenderFrameHost([&doc_count_in_page](
-                                                 RenderFrameHost* rfh) {
-    const SiteInfo& site_info = static_cast<RenderFrameHostImpl*>(rfh)
-                                    ->last_committed_url_derived_site_info();
-    ++doc_count_in_page[site_info];
-  });
-
-  // Determine if any document in the navigating page is potentially
-  // synchronously accessible by documents in other pages, by checking if there
-  // are documents in other pages that use the same SiteInfo as a document in
-  // the navigating page. This uses SiteInfos derived from document URLs, which
-  // works even when Site Isolation is disabled and the default SiteInstance may
-  // contain multiple sites.
-  related_active_contents_sync_access_info_ =
-      RelatedActiveContentsSyncAccessInfo::kNoSyncAccess;
-  navigated_away_rfh->ForEachRenderFrameHostWithAction(
-      [&doc_count_in_page, this](RenderFrameHost* rfh) {
-        // `active_document_count()` counts the number of committed
-        // documents in all pages that are using the same SiteInfo, including
-        // the navigating page. To get the number of committed documents using
-        // the same SiteInfo in pages other than the navigating page, just
-        // subtract by the number of committed documents using SiteInfo in the
-        // navigating page.
-        auto* rfhi = static_cast<RenderFrameHostImpl*>(rfh);
-        const SiteInfo& site_info =
-            rfhi->last_committed_url_derived_site_info();
-        int matching_doc_count =
-            rfhi->GetSiteInstance()->GetActiveDocumentCount(site_info);
-        int matching_doc_in_other_pages_count =
-            matching_doc_count - doc_count_in_page[site_info];
-        if (matching_doc_in_other_pages_count > 0) {
-          // The document shares a SiteInfo with another tab. This means the
-          // contents of this document might be synchronously accessible by
-          // a document in another tab (either because the documents are
-          // same-origin, or through modifying document.domain), so note down
-          // this information.
-          related_active_contents_sync_access_info_ =
-              RelatedActiveContentsSyncAccessInfo::kPotentiallySyncAccessible;
-          // Once we've found a case where sync access is possible, we can stop,
-          // as we've reached the maximum value for the enum
-          // (kPotentiallySyncAccessible).
-          return RenderFrameHost::FrameIterationAction::kStop;
-        }
-        return RenderFrameHost::FrameIterationAction::kContinue;
-      });
 }
 
 bool BackForwardCacheMetrics::DidSwapBrowsingInstance() const {

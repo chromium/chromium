@@ -11,7 +11,6 @@
 
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
@@ -123,11 +122,10 @@ class CONTENT_EXPORT BackForwardCacheMetrics
       EvictedAfterDocumentRestoredReason reason);
 
   // Sets the reason why the browsing instance is swapped/not swapped when
-  // navigating away from `navigated_away_rfh`. Passing`reason` as std::nullopt
-  // resets the reason and other tracked information.
+  // navigating away from the current page. Passing `reason` as std::nullopt
+  // resets the reason.
   void SetBrowsingInstanceSwapResult(
-      std::optional<ShouldSwapBrowsingInstance> reason,
-      RenderFrameHostImpl* navigated_away_rfh);
+      std::optional<ShouldSwapBrowsingInstance> reason);
 
   std::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result()
       const {
@@ -220,25 +218,6 @@ class CONTENT_EXPORT BackForwardCacheMetrics
 
  private:
   friend class base::RefCounted<BackForwardCacheMetrics>;
-  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowserTest, WindowOpen);
-  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowserTest, WindowOpenCrossSite);
-  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowserTest,
-                           WindowOpenCrossSiteNavigateSameSite);
-  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowserTest,
-                           WindowOpenCrossSiteWithSameSiteChild);
-  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowserTest, WindowOpenThenClose);
-  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowserTest,
-                           WindowWithOpenerAndOpenee);
-  FRIEND_TEST_ALL_PREFIXES(
-      BackForwardCacheBrowserTestWithVaryingNavigationSite,
-      RelatedActiveContentsLoggingOnPageWithBlockingFeature);
-  FRIEND_TEST_ALL_PREFIXES(
-      BackForwardCacheBrowserTestWithVaryingNavigationSite,
-      RelatedActiveContentsLoggingOnPageWithBlockingFeatureAndRAC);
-  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowserTest,
-                           WindowOpen_SameSitePopupPendingDeletion);
-  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowserTest,
-                           WindowOpen_UnrelatedSameSiteAndProcessTab);
 
   ~BackForwardCacheMetrics();
 
@@ -267,13 +246,6 @@ class CONTENT_EXPORT BackForwardCacheMetrics
   // if the last navigation did swap BrowsingInstance, or if it's unknown
   // (`browsing_instance_swap_result_` is not set).  Returns false otherwise.
   bool DidSwapBrowsingInstance() const;
-
-  // Sets information about `rfh`'s related active contents, whose existence
-  // make `rfh` ineligible for back/forward cache. This should be set at the
-  // same time as `browsing_instance_swap_result_` to reflect the condition of
-  // the related active contents at the time the BrowsingInstance swap decision
-  // was made when navigating away from `rfh`.
-  void SetRelatedActiveContentsInfo(RenderFrameHostImpl* rfh);
 
   // Main frame document sequence number that identifies all
   // NavigationEntries this metrics object is associated with.
@@ -321,28 +293,6 @@ class CONTENT_EXPORT BackForwardCacheMetrics
   // The reason why the last attempted navigation in the main frame used or
   // didn't use a new BrowsingInstance.
   std::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result_;
-
-  // The number of related active contents for the page.
-  int related_active_contents_count_ = 1;
-
-  // Whether any document in the page can potentially be accessed synchronously
-  // by another document in a different page, i.e. if there are any documents
-  // using the same SiteInstance as any document in the page. See also
-  // `SetRelatedActiveContentsInfo()`.
-  // Please keep in sync with RelatedActiveContentsSyncAccessInfo
-  // in tools/metrics/histograms/enums.xml. These values should not be
-  // renumbered.
-  enum class RelatedActiveContentsSyncAccessInfo {
-    kNoSyncAccess = 0,
-    // Deprecated: We check using SiteInfo instead of just SiteInstance now,
-    // so this category is no longer used.
-    kPotentiallySyncAccessibleDefaultSiteInstance = 1,
-    kPotentiallySyncAccessible = 2,
-    kMaxValue = kPotentiallySyncAccessible
-  };
-  RelatedActiveContentsSyncAccessInfo
-      related_active_contents_sync_access_info_ =
-          RelatedActiveContentsSyncAccessInfo::kNoSyncAccess;
 
   raw_ptr<TestObserver> test_observer_ = nullptr;
 };

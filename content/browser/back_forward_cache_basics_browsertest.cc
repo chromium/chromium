@@ -300,7 +300,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-  base::HistogramTester histograms;
 
   // 1) Navigate to A and open a popup.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
@@ -339,18 +338,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
                               NotRestoredReason::kBrowsingInstanceNotSwapped}),
           BlockListedFeatures()));
 
-  // Make sure that histograms for related active contents are updated with info
-  // about A's related active contents.
-  histograms.ExpectUniqueSample(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2",
-      2, 1);
-  histograms.ExpectUniqueSample(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-      "IsPotentiallySyncAccessible2",
-      BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-          kPotentiallySyncAccessible,
-      1);
-
   // 4) Make the popup drop the window.opener connection. It happens when the
   //    user does an omnibox-initiated navigation, which happens in a new
   //    BrowsingInstance.
@@ -377,16 +364,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
   ASSERT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_FALSE(rfh_b_new.IsRenderFrameDeleted());
   EXPECT_TRUE(rfh_b_new->IsInBackForwardCache());
-
-  // Expect the histograms aren't updated, since a BrowsingInstance swap
-  // happened.
-  histograms.ExpectTotalCount(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2",
-      1);
-  histograms.ExpectTotalCount(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-      "IsPotentiallySyncAccessible2",
-      1);
 }
 
 // Similar with WindowOpen above, but open a cross-site page in the popup.
@@ -395,7 +372,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpenCrossSite) {
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
   GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
-  base::HistogramTester histograms;
 
   // 1) Navigate to A and open a cross-site popup B.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
@@ -444,21 +420,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpenCrossSite) {
 
   // 3) Go back to B. It should not be restored from the back/forward cache.
   ASSERT_TRUE(HistoryGoBack(popup_contents));
-  // Make sure that histograms for related active contents are updated with info
-  // about B's related active contents.
-  histograms.ExpectUniqueSample(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2",
-      2, 1);
-
-  // A and B are different sites (even though they might share the same
-  // SiteInstance when site isolation is turned off), which means B can't be
-  // synchronously accessible by other pages.
-  histograms.ExpectUniqueSample(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-      "IsPotentiallySyncAccessible2",
-      BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-          kNoSyncAccess,
-      1);
 }
 
 // Similar with WindowOpenCrossSite above, but navigate the popup same-site
@@ -469,7 +430,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b1(embedded_test_server()->GetURL("b.com", "/title1.html"));
   GURL url_b2(embedded_test_server()->GetURL("b.com", "/title2.html"));
-  base::HistogramTester histograms;
 
   // 1) Navigate to A and open a cross-site popup B1.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
@@ -519,24 +479,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) Go back to B1. It should not be restored from the back/forward cache.
   ASSERT_TRUE(HistoryGoBack(popup_contents));
-  // Make sure that histograms for related active contents are updated with info
-  // about B1's related active contents.
-  histograms.ExpectUniqueSample(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2",
-      2, 1);
-
-  // A and B1 are different sites (even though they might share the same
-  // SiteInstance when site isolation is turned off), which means B1 can't be
-  // synchronously accessible by other pages. Note: Even though B1 and B2
-  // are same site and end up using the same SiteInstance and BrowsingInstance,
-  // the documents are not active at the same time (as B2 replaces B1), so those
-  // aren't counted as potentially having synchronous access to each other.
-  histograms.ExpectUniqueSample(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-      "IsPotentiallySyncAccessible2",
-      BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-          kNoSyncAccess,
-      1);
 }
 
 // Similar with WindowOpen above, but open a cross-site page that has an iframe
@@ -548,7 +490,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   GURL url_b_with_a_iframe(embedded_test_server()->GetURL(
       "b.com", "/cross_site_iframe_factory.html?b(a)"));
   GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
-  base::HistogramTester histograms;
 
   // 1) Navigate to A and open a cross-site popup B.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
@@ -604,20 +545,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) Go back to B. It should not be restored from the back/forward cache.
   ASSERT_TRUE(HistoryGoBack(popup_contents));
-  // Make sure that histograms for related active contents are updated with info
-  // about B's related active contents.
-  histograms.ExpectUniqueSample(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2",
-      2, 1);
-
-  // As there is another document in another page that uses A's SiteInstance,
-  // A is marked as potentially synchronously accessible from another page.
-  histograms.ExpectUniqueSample(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-      "IsPotentiallySyncAccessible2",
-      BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-          kPotentiallySyncAccessible,
-      1);
 }
 
 // A popup will prevent a page from entering BFCache. Test that after closing a
@@ -629,7 +556,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpenThenClose) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.test", "/title2.html"));
-  base::HistogramTester histograms;
 
   // Navigate to A.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
@@ -674,162 +600,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpenThenClose) {
   // A is restored from BFCache.
   EXPECT_FALSE(rfh_a.IsRenderFrameDeleted());
   ExpectRestored(FROM_HERE);
-
-  // Expect no related active contents.
-  histograms.ExpectTotalCount(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2",
-      0);
-  histograms.ExpectTotalCount(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-      "IsPotentiallySyncAccessible2",
-      0);
-}
-
-enum class NavigationSiteType {
-  kSameSite,
-  kCrossSite,
-};
-
-class BackForwardCacheBrowserTestWithVaryingNavigationSite
-    : public BackForwardCacheBrowserTest,
-      public ::testing::WithParamInterface<NavigationSiteType> {
- protected:
-  bool NavigateSameSite() {
-    return GetParam() == NavigationSiteType::kSameSite;
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BackForwardCacheBrowserTestWithVaryingNavigationSite,
-                         ::testing::Values(NavigationSiteType::kSameSite,
-                                           NavigationSiteType::kCrossSite));
-
-// Tests that RelatedActiveContents-related metrics is not logged when the
-// BrowsingInstance swap didn't happen, but not because of the existence of
-// related active contents, but due to other BFCache blockers.
-IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithVaryingNavigationSite,
-                       RelatedActiveContentsLoggingOnPageWithBlockingFeature) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_2(embedded_test_server()->GetURL(
-      NavigateSameSite() ? "a.com" : "b.com", "/title2.html"));
-  base::HistogramTester histograms;
-
-  // 1) Navigate to `url_1`.
-  EXPECT_TRUE(NavigateToURL(shell(), url_1));
-  RenderFrameHostImplWrapper rfh_url_1(current_frame_host());
-  scoped_refptr<SiteInstance> rfh_url_1_si = rfh_url_1->GetSiteInstance();
-  ASSERT_EQ(1u, rfh_url_1_si->GetRelatedActiveContentsCount());
-
-  // 2) Mark the `url_1` document as using a feature that's blocking BFCache.
-  rfh_url_1->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
-
-  // 3) Navigate to `url_2`. The BrowsingInstance stays the same, as `rfh_url_1`
-  // is not eligible for back/forward cache because of the sticky feature, so
-  // there's no need to do a BrowsingInstance swap.
-  ASSERT_TRUE(NavigateToURLFromRenderer(shell(), url_2));
-  ASSERT_TRUE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
-      rfh_url_1_si.get()));
-
-  // 4) Go back to `url_1`.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
-
-  // 5) The page should not be restored from BFCache, and should not log
-  // RelatedActiveContents histogram entries.
-  ExpectNotRestored(
-      {NotRestoredReason::kBlocklistedFeatures,
-       NotRestoredReason::kBrowsingInstanceNotSwapped},
-      {blink::scheduler::WebSchedulerTrackedFeature::kDummy},
-      {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {}, {},
-      FROM_HERE);
-
-  histograms.ExpectTotalCount(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-      "Count2",
-      0);
-  histograms.ExpectTotalCount(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-      "IsPotentiallySyncAccessible2",
-      0);
-}
-
-// Tests that RelatedActiveContents-related metrics is logged when the
-// BrowsingInstance swap didn't happen because it has related active contents
-// alongside other BFCache blockers.
-IN_PROC_BROWSER_TEST_P(
-    BackForwardCacheBrowserTestWithVaryingNavigationSite,
-    RelatedActiveContentsLoggingOnPageWithBlockingFeatureAndRAC) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_2(embedded_test_server()->GetURL(
-      NavigateSameSite() ? "a.com" : "b.com", "/title2.html"));
-  base::HistogramTester histograms;
-
-  // 1) Navigate to `url_1`.
-  ASSERT_TRUE(NavigateToURL(shell(), url_1));
-  RenderFrameHostImplWrapper rfh_url_1(current_frame_host());
-  scoped_refptr<SiteInstance> rfh_url_1_si = rfh_url_1->GetSiteInstance();
-  ASSERT_EQ(1u, rfh_url_1_si->GetRelatedActiveContentsCount());
-
-  // 2) Open a popup so that the related active contents count increases.
-  Shell* popup = OpenPopup(rfh_url_1.get(), url_2, "");
-  WebContentsImpl* popup_contents =
-      static_cast<WebContentsImpl*>(popup->web_contents());
-  ASSERT_TRUE(WaitForLoadStop(popup_contents));
-  ASSERT_EQ(2u, rfh_url_1_si->GetRelatedActiveContentsCount());
-
-  // 3) Mark the `url_1` document as using a feature that's blocking BFCache.
-  rfh_url_1->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
-
-  // 4) Navigate to `url_2`. The BrowsingInstance stays the same, as `rfh_url_1`
-  // is not eligible for back/forward cache because of the sticky feature and
-  // the opener, so there's no need to do a BrowsingInstance swap.
-  ASSERT_TRUE(NavigateToURLFromRenderer(shell(), url_2));
-  ASSERT_TRUE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
-      rfh_url_1_si.get()));
-
-  // 5) Go back to `url_1`.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
-
-  // 6) The page should not be restored from BFCache, but it should log
-  // RelatedActiveContents metrics because the related active contents
-  // count is > 1.
-  if (ShouldCreateNewHostForAllFrames() ||
-      (!NavigateSameSite() && AreStrictSiteInstancesEnabled())) {
-    ExpectNotRestored(
-        {NotRestoredReason::kRelatedActiveContentsExist,
-         NotRestoredReason::kBlocklistedFeatures,
-         NotRestoredReason::kBrowsingInstanceNotSwapped},
-        {blink::scheduler::WebSchedulerTrackedFeature::kDummy},
-        {ShouldSwapBrowsingInstance::kNo_HasRelatedActiveContents}, {}, {},
-        FROM_HERE);
-  } else {
-    ExpectNotRestored(
-        {NotRestoredReason::kBrowsingInstanceNotSwapped}, {},
-        {ShouldSwapBrowsingInstance::kNo_HasRelatedActiveContents}, {}, {},
-        FROM_HERE);
-  }
-
-  histograms.ExpectUniqueSample(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-      "Count2",
-      2, 1);
-
-  if (NavigateSameSite()) {
-    histograms.ExpectUniqueSample(
-        "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-        "IsPotentiallySyncAccessible2",
-        BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-            kPotentiallySyncAccessible,
-        1);
-  } else {
-    histograms.ExpectUniqueSample(
-        "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-        "IsPotentiallySyncAccessible2",
-        BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-            kNoSyncAccess,
-        1);
-  }
 }
 
 // Test that if a page has an openee sharing the same BrowsingInstance but it
@@ -841,7 +611,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-  base::HistogramTester histograms;
 
   // 1) Navigate to A1 and open a popup to A2.
   ASSERT_TRUE(NavigateToURL(shell(), url_a1));
@@ -874,18 +643,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(popup_rfh_a2->GetSiteInstance()->IsRelatedSiteInstance(
       rfh_a1_new->GetSiteInstance()));
 
-  // Make sure that histograms for related active contents are updated with info
-  // about A1's related active contents.
-  histograms.ExpectUniqueSample(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2",
-      2, 1);
-  histograms.ExpectUniqueSample(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-      "IsPotentiallySyncAccessible2",
-      BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-          kPotentiallySyncAccessible,
-      1);
-
   // 4) Make the popup drop the window.opener connection. It happens when the
   //    user does a cross-site omnibox-initiated navigation, which gets a new
   //    BrowsingInstance. Also, make sure that we keep the popup's A2 RFH around
@@ -910,16 +667,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_TRUE(NavigateToURLFromRenderer(rfh_a1_new.get(), url_b));
   EXPECT_TRUE(rfh_a1_new->IsInBackForwardCache());
 
-  // 6) Go back to A1. Expect the histograms aren't updated, since a
-  // BrowsingInstance swap happened.
+  // 6) Go back to A1.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  histograms.ExpectTotalCount(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2",
-      1);
-  histograms.ExpectTotalCount(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-      "IsPotentiallySyncAccessible2",
-      1);
 }
 
 // Tests that a page that has a same-site same-process but unrelated page (no
@@ -932,7 +681,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-  base::HistogramTester histograms;
 
   // 1) Navigate to A1 and open an unrelated new tab to A2.
   ASSERT_TRUE(NavigateToURL(shell(), url_a1));
@@ -960,17 +708,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_TRUE(NavigateToURLFromRenderer(rfh_a1.get(), url_b));
   EXPECT_TRUE(rfh_a1->IsInBackForwardCache());
 
-  // 3) Go back to A1, restoring the page from BackForwardCache. No related
-  // active contents metrics will be logged.
+  // 3) Go back to A1, restoring the page from BackForwardCache.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
-  histograms.ExpectTotalCount(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2",
-      0);
-  histograms.ExpectTotalCount(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-      "IsPotentiallySyncAccessible2",
-      0);
 
   // 4) Now, open a B popup from A1. A1 and B should be related active contents,
   // while A2 stays unaffected.
@@ -992,18 +732,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
     ASSERT_FALSE(rfh_a1->IsInBackForwardCache());
   }
 
-  // 3) Go back to A1, restoring the page from BackForwardCache. Related active
-  // contents metrics will be logged.
+  // 6) Go back to A1.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  histograms.ExpectUniqueSample(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2",
-      2, 1);
-  histograms.ExpectUniqueSample(
-      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-      "IsPotentiallySyncAccessible2",
-      BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-          kNoSyncAccess,
-      1);
 }
 
 // Navigate from A(B) to C and go back.
