@@ -19,6 +19,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
 #include "components/enterprise/net/core/proxy_provisioning_domain_manager.h"
@@ -250,6 +251,12 @@ class EnterpriseProxyService
   void UpdateManagerRefreshStateAndCache(
       ProxyProvisioningDomainManager* domain_manager);
 
+  void ForceRefreshAllConfigsWithTrigger(
+      ProvisioningDomainRefreshTrigger trigger);
+
+  void BeginNetworkPause();
+  void EndNetworkPause();
+
   // Represents an in-flight OAuth token fetch for a proxy authentication
   // challenge, grouping callbacks for duplicate requests to the same proxy.
   struct PendingAuthRequest;
@@ -297,6 +304,9 @@ class EnterpriseProxyService
 
   // Set of managers currently executing a background fetch.
   base::flat_set<raw_ptr<ProxyProvisioningDomainManager>> refreshing_managers_;
+
+  // Timestamp when the current network pause started, if one is active.
+  std::optional<base::TimeTicks> network_pause_start_time_;
 
   // List of pending proxy auth requests.
   std::vector<std::unique_ptr<PendingAuthRequest>> pending_auth_requests_;

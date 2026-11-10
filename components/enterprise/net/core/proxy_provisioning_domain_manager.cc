@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -235,7 +236,8 @@ ProxyProvisioningDomainManager::ProxyProvisioningDomainManager(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ProxyProvisioningDomainManager::StartRefreshInternal,
-                     weak_factory_.GetWeakPtr(), /*force=*/false));
+                     weak_factory_.GetWeakPtr(), /*force=*/false,
+                     ProvisioningDomainRefreshTrigger::kInitialOrPolicy));
 }
 
 ProxyProvisioningDomainManager::~ProxyProvisioningDomainManager() = default;
@@ -248,7 +250,8 @@ void ProxyProvisioningDomainManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void ProxyProvisioningDomainManager::ForceRefresh() {
+void ProxyProvisioningDomainManager::ForceRefresh(
+    ProvisioningDomainRefreshTrigger trigger) {
   if (state() == ProvisioningDomainProxyConfig::State::kFailedPermanent) {
     return;
   }
@@ -258,7 +261,7 @@ void ProxyProvisioningDomainManager::ForceRefresh() {
   if (is_refresh_in_progress()) {
     CancelRefreshInternal();
   }
-  StartRefreshInternal(/*force=*/true);
+  StartRefreshInternal(/*force=*/true, trigger);
 }
 
 void ProxyProvisioningDomainManager::CancelRefresh() {
@@ -306,11 +309,12 @@ base::DictValue ProxyProvisioningDomainManager::ToDict() const {
   return dict;
 }
 
-void ProxyProvisioningDomainManager::Refresh() {
+void ProxyProvisioningDomainManager::Refresh(
+    ProvisioningDomainRefreshTrigger trigger) {
   if (is_refresh_in_progress()) {
     return;
   }
-  StartRefreshInternal(/*force=*/false);
+  StartRefreshInternal(/*force=*/false, trigger);
 }
 
 void ProxyProvisioningDomainManager::ScheduleProactiveRefresh() {
@@ -325,10 +329,13 @@ void ProxyProvisioningDomainManager::ScheduleProactiveRefresh() {
       CalculateProactiveRefreshDelay(fetched_config_.expires,
                                      base::Time::Now()),
       base::BindOnce(&ProxyProvisioningDomainManager::Refresh,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(),
+                     ProvisioningDomainRefreshTrigger::kProactiveExpiry));
 }
 
-void ProxyProvisioningDomainManager::StartRefreshInternal(bool force) {
+void ProxyProvisioningDomainManager::StartRefreshInternal(
+    bool force,
+    ProvisioningDomainRefreshTrigger trigger) {
   is_initial_refresh_pending_ = false;
   if (state() == ProvisioningDomainProxyConfig::State::kFailedPermanent) {
     return;
@@ -337,6 +344,8 @@ void ProxyProvisioningDomainManager::StartRefreshInternal(bool force) {
       state() == ProvisioningDomainProxyConfig::State::kFailedBlocked) {
     return;
   }
+  base::UmaHistogramEnumeration("Enterprise.ProvisioningDomain.RefreshTrigger",
+                                trigger);
   if (!url_loader_factory_) {
     url_loader_factory_ = url_loader_factory_callback_.Run();
   }
@@ -428,7 +437,8 @@ void ProxyProvisioningDomainManager::TransitionToState(
       expiration_timer_.Start(
           FROM_HERE, retry_delay,
           base::BindOnce(&ProxyProvisioningDomainManager::Refresh,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr(),
+                         ProvisioningDomainRefreshTrigger::kTransientRetry));
       break;
     }
 

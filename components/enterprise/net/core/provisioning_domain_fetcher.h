@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
 #include "components/enterprise/net/core/provisioning_domain_client.h"
@@ -118,6 +119,7 @@ class ProvisioningDomainFetcher : public ProvisioningDomainClient::Delegate {
   std::unique_ptr<ProvisioningDomainClient> client_;
 
   std::vector<FetchCompleteCallback> pending_callbacks_;
+  std::optional<base::TimeTicks> fetch_start_time_;
 
   base::WeakPtrFactory<ProvisioningDomainFetcher> weak_factory_{this};
 };

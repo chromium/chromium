@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
@@ -75,6 +76,19 @@ std::string_view OutcomeToString(
       return "failed";
     case Outcome::kSignInRequired:
       return "sign_in_required";
+  }
+}
+
+std::string_view OutcomeToHistogramSuffix(
+    EnterpriseProxyService::CredentialFetchOutcome outcome) {
+  using Outcome = EnterpriseProxyService::CredentialFetchOutcome;
+  switch (outcome) {
+    case Outcome::kSuccess:
+      return "Success";
+    case Outcome::kFailure:
+      return "Failure";
+    case Outcome::kSignInRequired:
+      return "SignInRequired";
   }
 }
 
@@ -143,9 +157,14 @@ void RecordOutcomeAndRun(
     EnterpriseProxyService::CredentialFetchOutcome outcome,
     const std::optional<net::AuthCredentials>& credentials,
     const net::NetLogWithSource& challenge_net_log,
+    base::TimeTicks start_time,
     std::optional<std::string_view> failure_reason = std::nullopt) {
   base::UmaHistogramEnumeration(
       "Enterprise.SecureGateway.ProxyAuthCredentialFetchOutcome", outcome);
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"Enterprise.SecureGateway.ProxyAuthCredentialFetchLatency.",
+                    OutcomeToHistogramSuffix(outcome)}),
+      base::TimeTicks::Now() - start_time);
   RecordResolved(OutcomeToString(outcome), credentials, challenge_net_log,
                  failure_reason);
   std::move(callback).Run(outcome, credentials, challenge_net_log);
@@ -172,14 +191,16 @@ struct EnterpriseProxyService::PendingAuthRequest {
   struct CallbackWithNetLog {
     ProxyAuthChallengeCallback callback;
     net::NetLogWithSource net_log;
+    base::TimeTicks start_time;
   };
 
   PendingAuthRequest(
       ProxyAuthChallengeCallback callback,
       net::NetLogWithSource net_log,
+      base::TimeTicks start_time,
       const ProvisioningDomainProxyConfig::ProxyEndpoint& proxy_endpoint)
       : proxy_endpoint(proxy_endpoint) {
-    callbacks.push_back({std::move(callback), std::move(net_log)});
+    callbacks.push_back({std::move(callback), std::move(net_log), start_time});
   }
 
   // Guarantees that every callback this request owns runs exactly once. A
@@ -187,12 +208,13 @@ struct EnterpriseProxyService::PendingAuthRequest {
   // this only fires for requests destroyed with a fetch still in flight (i.e.
   // Shutdown(), or destruction of the service without Shutdown()).
   ~PendingAuthRequest() {
-    for (auto& [callback, net_log] : callbacks) {
+    for (auto& [callback, net_log, start_time] : callbacks) {
       if (!callback) {
         continue;
       }
       RecordOutcomeAndRun(std::move(callback), CredentialFetchOutcome::kFailure,
-                          std::nullopt, net_log, destruction_failure_reason);
+                          std::nullopt, net_log, start_time,
+                          destruction_failure_reason);
     }
   }
 
@@ -392,6 +414,8 @@ void EnterpriseProxyService::FetchProxyAuthCredentials(
     return;
   }
 
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+
   // Simulate the identity layer reporting an unusable account. This sits here,
   // after the null-callback check, rather than in ClassifyProxyAuthChallenge(),
   // so that a forced sign-in travels the same path as a real one: there is no
@@ -400,7 +424,7 @@ void EnterpriseProxyService::FetchProxyAuthCredentials(
   if (ShouldForceSignInRequired()) {
     RecordOutcomeAndRun(std::move(callback),
                         CredentialFetchOutcome::kSignInRequired, std::nullopt,
-                        match.net_log, "forced_sign_in_required");
+                        match.net_log, start_time, "forced_sign_in_required");
     return;
   }
 
@@ -412,13 +436,14 @@ void EnterpriseProxyService::FetchProxyAuthCredentials(
         req->proxy_endpoint.proxy_chain.First().host_port_pair();
     if (host_port.host() == challenger.host() &&
         host_port.port() == challenger.port()) {
-      req->callbacks.push_back({std::move(callback), match.net_log});
+      req->callbacks.push_back(
+          {std::move(callback), match.net_log, start_time});
       return;
     }
   }
 
   auto request = std::make_unique<PendingAuthRequest>(
-      std::move(callback), match.net_log, *match.endpoint);
+      std::move(callback), match.net_log, start_time, *match.endpoint);
   PendingAuthRequest* request_ptr = request.get();
   pending_auth_requests_.push_back(std::move(request));
 
@@ -447,7 +472,7 @@ void EnterpriseProxyService::Shutdown() {
   pref_change_registrar_.RemoveAll();
   if (!refreshing_managers_.empty()) {
     // Close any open network pause event if refreshes were in progress.
-    net_log_.EndEvent(net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
+    EndNetworkPause();
   }
   refreshing_managers_.clear();
   provisioning_domain_observations_.RemoveAllObservations();
@@ -489,14 +514,14 @@ void EnterpriseProxyService::OnProvisioningDomainStateChanged(
     VLOG_POLICY(1, ENTERPRISE_PROXY)
         << "Enterprise proxy configuration refresh in progress; pausing "
            "network traffic.";
-    net_log_.BeginEvent(net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
+    BeginNetworkPause();
     observers_.Notify(&Observer::OnDynamicProxyConfigsStatusChanged);
   } else if (old_count > 0 && new_count == 0) {
     LOG_POLICY(INFO, ENTERPRISE_PROXY)
         << "Enterprise proxy configuration refresh completed ("
         << GetDynamicRoutingConfig().routing_rules.size()
         << " active routing rule(s)).";
-    net_log_.EndEvent(net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
+    EndNetworkPause();
     observers_.Notify(&Observer::OnDynamicProxyConfigsStatusChanged);
   }
 }
@@ -508,7 +533,8 @@ void EnterpriseProxyService::OnNetworkChanged(
       VLOG_POLICY(1, ENTERPRISE_PROXY)
           << "Network connection changed; refreshing all provisioning domains.";
     }
-    ForceRefreshAllConfigs();
+    ForceRefreshAllConfigsWithTrigger(
+        ProvisioningDomainRefreshTrigger::kNetworkChange);
   }
 }
 
@@ -517,13 +543,34 @@ void EnterpriseProxyService::OnAccountStateChanged() {
     VLOG_POLICY(1, ENTERPRISE_PROXY)
         << "Account state changed; refreshing all provisioning domains.";
   }
-  ForceRefreshAllConfigs();
+  ForceRefreshAllConfigsWithTrigger(
+      ProvisioningDomainRefreshTrigger::kAccountChange);
 }
 
 void EnterpriseProxyService::ForceRefreshAllConfigs() {
+  ForceRefreshAllConfigsWithTrigger(ProvisioningDomainRefreshTrigger::kManual);
+}
+
+void EnterpriseProxyService::ForceRefreshAllConfigsWithTrigger(
+    ProvisioningDomainRefreshTrigger trigger) {
   for (auto& manager : provisioning_domain_managers_) {
-    manager->ForceRefresh();
+    manager->ForceRefresh(trigger);
   }
+}
+
+void EnterpriseProxyService::BeginNetworkPause() {
+  CHECK(!network_pause_start_time_.has_value());
+  network_pause_start_time_ = base::TimeTicks::Now();
+  net_log_.BeginEvent(net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
+}
+
+void EnterpriseProxyService::EndNetworkPause() {
+  CHECK(network_pause_start_time_.has_value());
+  base::UmaHistogramMediumTimes(
+      "Enterprise.SecureGateway.NetworkPause.Duration",
+      base::TimeTicks::Now() -
+          *std::exchange(network_pause_start_time_, std::nullopt));
+  net_log_.EndEvent(net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
 }
 
 base::DictValue EnterpriseProxyService::GetDebugInfo() const {
@@ -561,7 +608,7 @@ void EnterpriseProxyService::RecreateProvisioningDomainManagers(
   // destroying them, since manager destruction does not trigger
   // OnProvisioningDomainStateChanged.
   if (!refreshing_managers_.empty()) {
-    net_log_.EndEvent(net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
+    EndNetworkPause();
   }
   refreshing_managers_.clear();
   provisioning_domain_observations_.RemoveAllObservations();
@@ -592,7 +639,7 @@ void EnterpriseProxyService::RecreateProvisioningDomainManagers(
     VLOG_POLICY(1, ENTERPRISE_PROXY)
         << "Enterprise proxy configuration refresh in progress; pausing "
            "network traffic.";
-    net_log_.BeginEvent(net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
+    BeginNetworkPause();
   }
 
   // Prune cache entries for policy hashes that are no longer configured.
@@ -672,9 +719,9 @@ void EnterpriseProxyService::OnProxyAuthTokenFetched(
             : CredentialFetchOutcome::kFailure;
     std::string_view failure_reason =
         TokenFetchErrorToString(token_result.error());
-    for (auto& [cb, req_net_log] : owned_request->callbacks) {
+    for (auto& [cb, req_net_log, start_time] : owned_request->callbacks) {
       RecordOutcomeAndRun(std::move(cb), outcome, std::nullopt, req_net_log,
-                          failure_reason);
+                          start_time, failure_reason);
     }
     return;
   }
@@ -686,9 +733,9 @@ void EnterpriseProxyService::OnProxyAuthTokenFetched(
 
   net::AuthCredentials credentials(base::UTF8ToUTF16(username),
                                    base::UTF8ToUTF16(password));
-  for (auto& [cb, req_net_log] : owned_request->callbacks) {
+  for (auto& [cb, req_net_log, start_time] : owned_request->callbacks) {
     RecordOutcomeAndRun(std::move(cb), CredentialFetchOutcome::kSuccess,
-                        credentials, req_net_log);
+                        credentials, req_net_log, start_time);
   }
 }
 

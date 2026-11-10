@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "net/http/http_request_headers.h"
 #include "url/gurl.h"
@@ -97,6 +98,7 @@ class ProvisioningDomainClient {
   const raw_ptr<Delegate> delegate_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
+  std::optional<base::TimeTicks> fetch_start_time_;
   std::vector<FetchCallback> pending_callbacks_;
 
   base::WeakPtrFactory<ProvisioningDomainClient> weak_factory_{this};

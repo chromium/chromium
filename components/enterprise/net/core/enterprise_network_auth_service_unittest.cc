@@ -34,6 +34,10 @@ namespace {
 
 constexpr char kTestOAuthToken[] = "test_access_token_123";
 constexpr char kTestHistogramName[] = "Enterprise.NetworkAuth.TokenFetchError";
+constexpr char kTestSuccessLatencyHistogram[] =
+    "Enterprise.NetworkAuth.TokenFetchLatency.Success";
+constexpr char kTestFailureLatencyHistogram[] =
+    "Enterprise.NetworkAuth.TokenFetchLatency.Failure";
 constexpr char kTestDestinationUrl[] = "https://example.com";
 
 class EnterpriseNetworkAuthServiceTest : public testing::Test {
@@ -105,7 +109,8 @@ class EnterpriseNetworkAuthServiceTest : public testing::Test {
     return future.Take();
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
   TestingPrefServiceSimple pref_service_;
   enterprise::ProfileIdService profile_id_service_{"test_profile_id"};
@@ -126,6 +131,8 @@ TEST_F(EnterpriseNetworkAuthServiceTest, SuccessfulAccessTokenFetch) {
   ASSERT_TRUE(fetched_result.has_value());
   EXPECT_EQ(kTestOAuthToken, *fetched_result);
   histogram_tester.ExpectBucketCount(kTestHistogramName, kNoErrorForMetrics, 1);
+  histogram_tester.ExpectTotalCount(kTestSuccessLatencyHistogram, 1);
+  histogram_tester.ExpectTotalCount(kTestFailureLatencyHistogram, 0);
 }
 
 TEST_F(EnterpriseNetworkAuthServiceTest, ConcurrentAccessTokenFetches) {
@@ -207,10 +214,14 @@ TEST_F(EnterpriseNetworkAuthServiceTest, CancelPendingFetchesOnShutdown) {
                                  GURL(kTestDestinationUrl),
                                  mock_callback.Get());
 
+  task_environment_.AdvanceClock(base::Milliseconds(45));
   auth_service->Shutdown();
 
   histogram_tester.ExpectBucketCount(kTestHistogramName,
                                      TokenFetchError::kCanceled, 1);
+  histogram_tester.ExpectUniqueTimeSample(kTestFailureLatencyHistogram,
+                                          base::Milliseconds(45), 1);
+  histogram_tester.ExpectTotalCount(kTestSuccessLatencyHistogram, 0);
 }
 
 TEST_F(EnterpriseNetworkAuthServiceTest, MapsGoogleServiceAuthErrors) {
@@ -243,6 +254,8 @@ TEST_F(EnterpriseNetworkAuthServiceTest, MapsGoogleServiceAuthErrors) {
     EXPECT_EQ(test_case.expected_error, result.error());
     histogram_tester.ExpectBucketCount(kTestHistogramName,
                                        test_case.expected_error, 1);
+    histogram_tester.ExpectTotalCount(kTestFailureLatencyHistogram, 1);
+    histogram_tester.ExpectTotalCount(kTestSuccessLatencyHistogram, 0);
   }
 }
 
@@ -262,6 +275,8 @@ TEST_F(EnterpriseNetworkAuthServiceTest,
   EXPECT_EQ(TokenFetchError::kUnsupportedScope, result.error());
   histogram_tester.ExpectBucketCount(kTestHistogramName,
                                      TokenFetchError::kUnsupportedScope, 1);
+  histogram_tester.ExpectTotalCount(kTestFailureLatencyHistogram, 1);
+  histogram_tester.ExpectTotalCount(kTestSuccessLatencyHistogram, 0);
 }
 
 TEST_F(EnterpriseNetworkAuthServiceTest,
@@ -278,6 +293,8 @@ TEST_F(EnterpriseNetworkAuthServiceTest,
   EXPECT_EQ(TokenFetchError::kNoPrimaryAccount, result.error());
   histogram_tester.ExpectBucketCount(kTestHistogramName,
                                      TokenFetchError::kNoPrimaryAccount, 1);
+  histogram_tester.ExpectTotalCount(kTestFailureLatencyHistogram, 1);
+  histogram_tester.ExpectTotalCount(kTestSuccessLatencyHistogram, 0);
 }
 
 TEST_F(EnterpriseNetworkAuthServiceTest,
@@ -297,6 +314,8 @@ TEST_F(EnterpriseNetworkAuthServiceTest,
   EXPECT_EQ(TokenFetchError::kUnmanagedUser, result.error());
   histogram_tester.ExpectBucketCount(kTestHistogramName,
                                      TokenFetchError::kUnmanagedUser, 1);
+  histogram_tester.ExpectTotalCount(kTestFailureLatencyHistogram, 1);
+  histogram_tester.ExpectTotalCount(kTestSuccessLatencyHistogram, 0);
 }
 
 TEST_F(EnterpriseNetworkAuthServiceTest,
@@ -322,6 +341,8 @@ TEST_F(EnterpriseNetworkAuthServiceTest,
   EXPECT_EQ(TokenFetchError::kInvalidCredentials, result.error());
   histogram_tester.ExpectBucketCount(kTestHistogramName,
                                      TokenFetchError::kInvalidCredentials, 1);
+  histogram_tester.ExpectTotalCount(kTestFailureLatencyHistogram, 1);
+  histogram_tester.ExpectTotalCount(kTestSuccessLatencyHistogram, 0);
 }
 
 TEST_F(EnterpriseNetworkAuthServiceTest,
@@ -343,16 +364,21 @@ TEST_F(EnterpriseNetworkAuthServiceTest,
 
   EXPECT_EQ(1u, auth_service.GetPendingTokenFetchCountForTesting());
 
+  task_environment_.AdvanceClock(base::Milliseconds(35));
   // Simulate extended account info update confirming managed status.
   identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
       account_info.GetAccountId(), account_info.GetEmail(),
       account_info.GetGaiaId(), "custom-domain.com", "Full Name", "Given Name",
       "en-US", "picture_url");
 
+  task_environment_.AdvanceClock(base::Milliseconds(65));
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       kTestOAuthToken, base::Time::Max());
 
   histogram_tester.ExpectBucketCount(kTestHistogramName, kNoErrorForMetrics, 1);
+  histogram_tester.ExpectUniqueTimeSample(kTestSuccessLatencyHistogram,
+                                          base::Milliseconds(100), 1);
+  histogram_tester.ExpectTotalCount(kTestFailureLatencyHistogram, 0);
 }
 
 TEST_F(EnterpriseNetworkAuthServiceTest,

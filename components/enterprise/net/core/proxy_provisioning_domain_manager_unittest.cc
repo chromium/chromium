@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -326,6 +327,7 @@ TEST_F(ProxyProvisioningDomainManagerTest, CancelRefreshAbortsInFlightRequest) {
 
 TEST_F(ProxyProvisioningDomainManagerTest,
        CancelRefreshImmediatelyAfterConstruction) {
+  base::HistogramTester histogram_tester;
   auto auth_service = CreateAuthService();
   auto manager = CreateManager(CreateTestPolicyConfig(), auth_service.get());
 
@@ -351,6 +353,8 @@ TEST_F(ProxyProvisioningDomainManagerTest,
   // cancellation.
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
   EXPECT_FALSE(manager->is_refresh_in_progress());
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomain.RefreshTrigger", 0);
 
   manager->RemoveObserver(&observer);
 }
@@ -879,6 +883,7 @@ TEST_F(ProxyProvisioningDomainManagerTest,
 
 TEST_F(ProxyProvisioningDomainManagerTest,
        ForceRefreshDoesNotRetryMalformedPolicy) {
+  base::HistogramTester histogram_tester;
   auto auth_service = CreateAuthService();
   base::DictValue malformed_policy;
   malformed_policy.Set("invalid_field", 123);
@@ -903,6 +908,8 @@ TEST_F(ProxyProvisioningDomainManagerTest,
             manager->state());
   EXPECT_FALSE(manager->is_refresh_in_progress());
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomain.RefreshTrigger", 0);
 }
 
 TEST_F(ProxyProvisioningDomainManagerTest,
@@ -954,6 +961,7 @@ TEST_F(ProxyProvisioningDomainManagerTest,
 
 TEST_F(ProxyProvisioningDomainManagerTest,
        SchedulesProactiveRefreshTimerOnSuccess) {
+  base::HistogramTester histogram_tester;
   auto auth_service = CreateAuthService();
   MockDomainObserver observer;
 
@@ -970,6 +978,9 @@ TEST_F(ProxyProvisioningDomainManagerTest,
 
   EXPECT_EQ(ProvisioningDomainProxyConfig::State::kValid, manager->state());
   EXPECT_TRUE(manager->IsExpirationTimerRunningForTesting());
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.ProvisioningDomain.RefreshTrigger",
+      ProvisioningDomainRefreshTrigger::kInitialOrPolicy, 1);
 
   // Verify delay is greater than 0 and close to 80% TTL.
   base::TimeDelta delay = manager->GetCurrentExpirationDelayForTesting();
@@ -986,10 +997,16 @@ TEST_F(ProxyProvisioningDomainManagerTest,
       kTestUrl, kTestPvdJson));
   EXPECT_EQ(ProvisioningDomainProxyConfig::State::kValid, manager->state());
   EXPECT_TRUE(manager->IsExpirationTimerRunningForTesting());
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.ProvisioningDomain.RefreshTrigger",
+      ProvisioningDomainRefreshTrigger::kProactiveExpiry, 1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomain.RefreshTrigger", 2);
 }
 
 TEST_F(ProxyProvisioningDomainManagerTest,
        ForceRefreshCancelsAndReschedulesTimer) {
+  base::HistogramTester histogram_tester;
   auto auth_service = CreateAuthService();
   MockDomainObserver observer;
 
@@ -1015,10 +1032,19 @@ TEST_F(ProxyProvisioningDomainManagerTest,
       kTestUrl, kTestPvdJson));
 
   EXPECT_TRUE(manager->IsExpirationTimerRunningForTesting());
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.ProvisioningDomain.RefreshTrigger",
+      ProvisioningDomainRefreshTrigger::kInitialOrPolicy, 1);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.ProvisioningDomain.RefreshTrigger",
+      ProvisioningDomainRefreshTrigger::kManual, 1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomain.RefreshTrigger", 2);
 }
 
 TEST_F(ProxyProvisioningDomainManagerTest,
        TransientRetryExponentialBackoffAndBlockedTransition) {
+  base::HistogramTester histogram_tester;
   auto auth_service = CreateAuthService();
 
   auto manager = CreateManager(CreateTestPolicyConfig(), auth_service.get());
@@ -1058,6 +1084,17 @@ TEST_F(ProxyProvisioningDomainManagerTest,
   // Active routes are preserved for maximal availability.
   EXPECT_EQ(2u, manager->fetched_config().proxy_endpoints.size());
   EXPECT_EQ(3u, manager->fetched_config().routing_rules.size());
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.ProvisioningDomain.RefreshTrigger",
+      ProvisioningDomainRefreshTrigger::kInitialOrPolicy, 1);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.ProvisioningDomain.RefreshTrigger",
+      ProvisioningDomainRefreshTrigger::kProactiveExpiry, 1);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.ProvisioningDomain.RefreshTrigger",
+      ProvisioningDomainRefreshTrigger::kTransientRetry, 4);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomain.RefreshTrigger", 6);
 }
 
 TEST_F(ProxyProvisioningDomainManagerTest,

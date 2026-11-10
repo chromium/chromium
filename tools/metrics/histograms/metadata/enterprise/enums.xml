@@ -2779,6 +2779,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="User and device managed by cloud and unaffiliated"/>
 </enum>
 
+<!-- LINT.IfChange(EnterpriseProvisioningDomainRefreshTrigger) -->
+
+<enum name="EnterpriseProvisioningDomainRefreshTrigger">
+  <int value="0" label="Initial startup or policy update"/>
+  <int value="1" label="Proactive TTL expiry"/>
+  <int value="2" label="Transient error retry"/>
+  <int value="3" label="Network connection change"/>
+  <int value="4" label="Account state change"/>
+  <int value="5" label="Manual refresh"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/enterprise/net/core/proxy_provisioning_domain_manager.h:EnterpriseProvisioningDomainRefreshTrigger) -->
+
 <!-- LINT.IfChange(EnterprisePublishedSkillsError) -->
 
 <enum name="EnterprisePublishedSkillsError">

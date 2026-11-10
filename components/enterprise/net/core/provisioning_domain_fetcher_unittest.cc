@@ -163,7 +163,8 @@ class ProvisioningDomainFetcherTest : public testing::Test {
     return result;
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestingPrefServiceSimple pref_service_;
@@ -206,6 +207,7 @@ TEST_F(ProvisioningDomainFetcherTest, FetchWithoutOAuth_Success) {
   EXPECT_EQ(kTestCustomHeaderValue,
             req.headers.GetHeader(kTestCustomHeaderKey).value_or(""));
 
+  task_environment_.AdvanceClock(base::Milliseconds(120));
   test_url_loader_factory_.SimulateResponseForPendingRequest(kTestUrl,
                                                              kValidPvdJson);
   run_loop.Run();
@@ -216,6 +218,11 @@ TEST_F(ProvisioningDomainFetcherTest, FetchWithoutOAuth_Success) {
   histogram_tester.ExpectUniqueSample(
       "Enterprise.ProvisioningDomain.FetchResult",
       ProvisioningDomainFetchResultStatus::kSuccess, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Enterprise.ProvisioningDomain.FetchLatency.Success",
+      base::Milliseconds(120), 1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomain.FetchLatency.Failure", 0);
 }
 
 TEST_F(ProvisioningDomainFetcherTest, FetchWithoutOAuth_Failures) {
@@ -259,9 +266,14 @@ TEST_F(ProvisioningDomainFetcherTest, FetchWithoutOAuth_Failures) {
   histogram_tester.ExpectBucketCount(
       "Enterprise.ProvisioningDomain.FetchResult",
       ProvisioningDomainFetchResultStatus::kParseError, 1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomain.FetchLatency.Failure", 3);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomain.FetchLatency.Success", 0);
 }
 
 TEST_F(ProvisioningDomainFetcherTest, FetchWithOAuth_Success) {
+  base::HistogramTester histogram_tester;
   SetUpManagedPrimaryAccount();
   EnterpriseNetworkAuthService auth_service(
       identity_test_env_.identity_manager(), &pref_service_,
@@ -290,6 +302,7 @@ TEST_F(ProvisioningDomainFetcherTest, FetchWithOAuth_Success) {
       },
       base::Unretained(&run_loop), base::Unretained(&result)));
 
+  task_environment_.AdvanceClock(base::Milliseconds(50));
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       kTestOAuthToken, base::Time::Max());
 
@@ -302,15 +315,22 @@ TEST_F(ProvisioningDomainFetcherTest, FetchWithOAuth_Success) {
   EXPECT_EQ(kTestCustomHeaderValue,
             req.headers.GetHeader(kTestCustomHeaderKey).value_or(""));
 
+  task_environment_.AdvanceClock(base::Milliseconds(80));
   test_url_loader_factory_.SimulateResponseForPendingRequest(kTestUrl,
                                                              kValidPvdJson);
   run_loop.Run();
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(kTestDomain, result->pvd_id);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Enterprise.ProvisioningDomain.FetchLatency.Success",
+      base::Milliseconds(130), 1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomain.FetchLatency.Failure", 0);
 }
 
 TEST_F(ProvisioningDomainFetcherTest, MapsOAuthFetchErrors) {
+  base::HistogramTester histogram_tester;
   ProvisioningDomainConfig policy;
   policy.pvd_id = kTestDomain;
   policy.auth_config = ProxyAuthConfig{AuthType::kProfileBearerToken,
@@ -369,9 +389,15 @@ TEST_F(ProvisioningDomainFetcherTest, MapsOAuthFetchErrors) {
               result.error().status);
     EXPECT_EQ(TokenFetchError::kCanceled, result.error().token_fetch_error);
   }
+
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomain.FetchLatency.Failure", 4);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomain.FetchLatency.Success", 0);
 }
 
 TEST_F(ProvisioningDomainFetcherTest, ConcurrentFetchesQueueCallbacks) {
+  base::HistogramTester histogram_tester;
   SetUpManagedPrimaryAccount();
   EnterpriseNetworkAuthService auth_service(
       identity_test_env_.identity_manager(), &pref_service_,
@@ -393,6 +419,8 @@ TEST_F(ProvisioningDomainFetcherTest, ConcurrentFetchesQueueCallbacks) {
          ProvisioningDomainFetchResult res) { *out = std::move(res); },
       base::Unretained(&result1)));
 
+  task_environment_.AdvanceClock(base::Milliseconds(30));
+
   // Starting a second fetch while the first is in progress queues callback.
   fetcher.Start(base::BindOnce(
       [](ProvisioningDomainFetchResult* out,
@@ -404,6 +432,7 @@ TEST_F(ProvisioningDomainFetcherTest, ConcurrentFetchesQueueCallbacks) {
       kTestOAuthToken, base::Time::Max());
 
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  task_environment_.AdvanceClock(base::Milliseconds(45));
   test_url_loader_factory_.SimulateResponseForPendingRequest(kTestUrl,
                                                              kValidPvdJson);
 
@@ -411,6 +440,41 @@ TEST_F(ProvisioningDomainFetcherTest, ConcurrentFetchesQueueCallbacks) {
   EXPECT_EQ(kTestDomain, result1->pvd_id);
   ASSERT_TRUE(result2.has_value());
   EXPECT_EQ(kTestDomain, result2->pvd_id);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Enterprise.ProvisioningDomain.FetchLatency.Success",
+      base::Milliseconds(75), 1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomain.FetchLatency.Failure", 0);
+}
+
+TEST_F(ProvisioningDomainFetcherTest, CancelDoesNotRecordFetchLatency) {
+  base::HistogramTester histogram_tester;
+  EnterpriseNetworkAuthService auth_service(
+      identity_test_env_.identity_manager(), &pref_service_,
+      &profile_id_service_, version_info::Channel::UNKNOWN);
+
+  ProvisioningDomainConfig policy;
+  policy.pvd_id = kTestDomain;
+
+  ProvisioningDomainFetcher fetcher(policy, &auth_service,
+                                    GetURLLoaderFactory());
+  bool callback_called = false;
+  fetcher.Start(base::BindOnce(
+      [](bool* called, ProvisioningDomainFetchResult) { *called = true; },
+      base::Unretained(&callback_called)));
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+
+  task_environment_.AdvanceClock(base::Milliseconds(50));
+  fetcher.Cancel();
+  EXPECT_FALSE(fetcher.is_fetching());
+  EXPECT_FALSE(callback_called);
+
+  histogram_tester.ExpectTotalCount("Enterprise.ProvisioningDomain.FetchResult",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomain.FetchLatency.Success", 0);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomain.FetchLatency.Failure", 0);
 }
 
 TEST_F(ProvisioningDomainFetcherTest,

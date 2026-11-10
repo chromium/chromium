@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/net/core/auth_scope_metadata.h"
 #include "components/enterprise/net/core/utils.h"
@@ -48,15 +49,20 @@ TokenFetchError GoogleServiceAuthErrorToTokenFetchError(
   }
 }
 
-// Helper to record Enterprise.NetworkAuth.TokenFetchError histogram metrics
-// and run the result callback from a single centralized location.
+// Helper to record Enterprise.NetworkAuth.TokenFetch* histogram metrics and run
+// the result callback from a single centralized location.
 void RecordResultAndRunCallback(
     EnterpriseNetworkAuthService::AccessTokenCallback callback,
-    AccessTokenResult result) {
+    AccessTokenResult result,
+    base::TimeTicks start_time) {
   TokenFetchError error_for_metrics =
       result.has_value() ? kNoErrorForMetrics : result.error();
   base::UmaHistogramEnumeration("Enterprise.NetworkAuth.TokenFetchError",
                                 error_for_metrics);
+  base::UmaHistogramMediumTimes(
+      result.has_value() ? "Enterprise.NetworkAuth.TokenFetchLatency.Success"
+                         : "Enterprise.NetworkAuth.TokenFetchLatency.Failure",
+      base::TimeTicks::Now() - start_time);
   std::move(callback).Run(std::move(result));
 }
 
@@ -89,10 +95,12 @@ EnterpriseNetworkAuthService::PendingManagedStatusCheck::
     PendingManagedStatusCheck(
         std::unique_ptr<signin::AccountManagedStatusFinder> finder,
         signin::OAuthConsumerId consumer_id,
-        AccessTokenCallback callback)
+        AccessTokenCallback callback,
+        base::TimeTicks start_time)
     : finder(std::move(finder)),
       consumer_id(consumer_id),
-      callback(std::move(callback)) {}
+      callback(std::move(callback)),
+      start_time(start_time) {}
 EnterpriseNetworkAuthService::PendingManagedStatusCheck::
     PendingManagedStatusCheck(PendingManagedStatusCheck&&) noexcept = default;
 EnterpriseNetworkAuthService::PendingManagedStatusCheck&
@@ -104,8 +112,11 @@ EnterpriseNetworkAuthService::PendingManagedStatusCheck::
 EnterpriseNetworkAuthService::PendingTokenFetch::PendingTokenFetch() = default;
 EnterpriseNetworkAuthService::PendingTokenFetch::PendingTokenFetch(
     std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> fetcher,
-    AccessTokenCallback callback)
-    : fetcher(std::move(fetcher)), callback(std::move(callback)) {}
+    AccessTokenCallback callback,
+    base::TimeTicks start_time)
+    : fetcher(std::move(fetcher)),
+      callback(std::move(callback)),
+      start_time(start_time) {}
 EnterpriseNetworkAuthService::PendingTokenFetch::PendingTokenFetch(
     PendingTokenFetch&&) noexcept = default;
 EnterpriseNetworkAuthService::PendingTokenFetch&
@@ -195,19 +206,20 @@ void EnterpriseNetworkAuthService::FetchAccessToken(
     AuthScope scope,
     const GURL& destination_url,
     AccessTokenCallback callback) {
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   std::optional<signin::OAuthConsumerId> consumer_id =
       GetOAuthConsumerIdForScope(scope);
   if (!consumer_id.has_value()) {
     RecordResultAndRunCallback(
         std::move(callback),
-        base::unexpected(TokenFetchError::kUnsupportedScope));
+        base::unexpected(TokenFetchError::kUnsupportedScope), start_time);
     return;
   }
 
   if (!IsDestinationAllowedForScope(scope, destination_url, channel_)) {
     RecordResultAndRunCallback(
         std::move(callback),
-        base::unexpected(TokenFetchError::kInapplicableServer));
+        base::unexpected(TokenFetchError::kInapplicableServer), start_time);
     return;
   }
 
@@ -216,7 +228,7 @@ void EnterpriseNetworkAuthService::FetchAccessToken(
   if (primary_account.IsEmpty()) {
     RecordResultAndRunCallback(
         std::move(callback),
-        base::unexpected(TokenFetchError::kNoPrimaryAccount));
+        base::unexpected(TokenFetchError::kNoPrimaryAccount), start_time);
     return;
   }
 
@@ -224,13 +236,14 @@ void EnterpriseNetworkAuthService::FetchAccessToken(
           primary_account.account_id)) {
     RecordResultAndRunCallback(
         std::move(callback),
-        base::unexpected(TokenFetchError::kInvalidCredentials));
+        base::unexpected(TokenFetchError::kInvalidCredentials), start_time);
     return;
   }
 
   auto pending_check = std::make_unique<PendingManagedStatusCheck>();
   pending_check->consumer_id = *consumer_id;
   pending_check->callback = std::move(callback);
+  pending_check->start_time = start_time;
 
   int check_id = pending_status_checks_.Add(std::move(pending_check));
 
@@ -273,7 +286,8 @@ void EnterpriseNetworkAuthService::ClearPendingTokenFetches() {
            &pending_status_checks_);
        !it.IsAtEnd(); it.Advance()) {
     RecordResultAndRunCallback(std::move(it.GetCurrentValue()->callback),
-                               base::unexpected(TokenFetchError::kCanceled));
+                               base::unexpected(TokenFetchError::kCanceled),
+                               it.GetCurrentValue()->start_time);
   }
   pending_status_checks_.Clear();
 
@@ -282,14 +296,16 @@ void EnterpriseNetworkAuthService::ClearPendingTokenFetches() {
            &access_token_fetchers_);
        !it.IsAtEnd(); it.Advance()) {
     RecordResultAndRunCallback(std::move(it.GetCurrentValue()->callback),
-                               base::unexpected(TokenFetchError::kCanceled));
+                               base::unexpected(TokenFetchError::kCanceled),
+                               it.GetCurrentValue()->start_time);
   }
   access_token_fetchers_.Clear();
 }
 
 void EnterpriseNetworkAuthService::StartAccessTokenFetch(
     signin::OAuthConsumerId consumer_id,
-    AccessTokenCallback callback) {
+    AccessTokenCallback callback,
+    base::TimeTicks start_time) {
   auto token_fetcher =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           consumer_id, identity_manager_,
@@ -297,7 +313,7 @@ void EnterpriseNetworkAuthService::StartAccessTokenFetch(
           signin::ConsentLevel::kSignin);
 
   auto pending_fetch = std::make_unique<PendingTokenFetch>(
-      std::move(token_fetcher), std::move(callback));
+      std::move(token_fetcher), std::move(callback), start_time);
   auto* token_fetcher_ptr = pending_fetch->fetcher.get();
 
   int fetch_id = access_token_fetchers_.Add(std::move(pending_fetch));
@@ -315,6 +331,7 @@ void EnterpriseNetworkAuthService::OnManagedStatusChecked(int check_id) {
 
   signin::OAuthConsumerId consumer_id = pending_check->consumer_id;
   AccessTokenCallback callback = std::move(pending_check->callback);
+  base::TimeTicks start_time = pending_check->start_time;
   signin::AccountManagedStatusFinderOutcome outcome =
       pending_check->finder->GetOutcome();
 
@@ -324,11 +341,12 @@ void EnterpriseNetworkAuthService::OnManagedStatusChecked(int check_id) {
       outcome !=
           signin::AccountManagedStatusFinderOutcome::kEnterpriseGoogleDotCom) {
     RecordResultAndRunCallback(
-        std::move(callback), base::unexpected(TokenFetchError::kUnmanagedUser));
+        std::move(callback), base::unexpected(TokenFetchError::kUnmanagedUser),
+        start_time);
     return;
   }
 
-  StartAccessTokenFetch(consumer_id, std::move(callback));
+  StartAccessTokenFetch(consumer_id, std::move(callback), start_time);
 }
 
 void EnterpriseNetworkAuthService::OnAccessTokenFetched(
@@ -341,17 +359,19 @@ void EnterpriseNetworkAuthService::OnAccessTokenFetched(
   }
 
   AccessTokenCallback callback = std::move(pending_fetch->callback);
+  base::TimeTicks start_time = pending_fetch->start_time;
   access_token_fetchers_.Remove(fetch_id);
 
   if (error.state() != GoogleServiceAuthError::NONE) {
     TokenFetchError fetch_error =
         GoogleServiceAuthErrorToTokenFetchError(error);
     RecordResultAndRunCallback(std::move(callback),
-                               base::unexpected(fetch_error));
+                               base::unexpected(fetch_error), start_time);
     return;
   }
 
-  RecordResultAndRunCallback(std::move(callback), access_token_info.token);
+  RecordResultAndRunCallback(std::move(callback), access_token_info.token,
+                             start_time);
 }
 
 }  // namespace enterprise_net

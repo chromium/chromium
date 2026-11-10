@@ -66,7 +66,8 @@ class ProvisioningDomainClientTest : public testing::Test {
     return future.Take();
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   network::TestURLLoaderFactory test_url_loader_factory_;
   FakeDelegate fake_delegate_;
 };
@@ -97,6 +98,7 @@ TEST_F(ProvisioningDomainClientTest, SuccessfulFetchWithHeaders) {
   EXPECT_EQ(kTestCustomHeaderValue,
             pending_req.headers.GetHeader(kTestCustomHeaderKey).value_or(""));
 
+  task_environment_.AdvanceClock(base::Milliseconds(75));
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kTestUrl1, kTestJsonResponse1, net::HTTP_OK);
 
@@ -107,6 +109,9 @@ TEST_F(ProvisioningDomainClientTest, SuccessfulFetchWithHeaders) {
   histogram_tester.ExpectUniqueSample(
       "Enterprise.ProvisioningDomainClient.FetchResult",
       ProvisioningDomainClientFetchResult::kSuccess, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Enterprise.ProvisioningDomainClient.HttpLatency", base::Milliseconds(75),
+      1);
 }
 
 TEST_F(ProvisioningDomainClientTest, Http201CreatedReturnsSuccess) {
@@ -137,6 +142,8 @@ TEST_F(ProvisioningDomainClientTest, Http404ErrorWithBodyReturnsError) {
       ProvisioningDomainClientFetchResult::kHttpError, 1);
   histogram_tester.ExpectUniqueSample(
       "Enterprise.ProvisioningDomainClient.HttpResponseCode", 404, 1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomainClient.HttpLatency", 1);
 }
 
 TEST_F(ProvisioningDomainClientTest, NetworkErrorReturnsNetError) {
@@ -148,6 +155,7 @@ TEST_F(ProvisioningDomainClientTest, NetworkErrorReturnsNetError) {
   client.Fetch(/*access_token=*/std::nullopt, future.GetCallback());
 
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  task_environment_.AdvanceClock(base::Milliseconds(40));
   network::URLLoaderCompletionStatus status(net::ERR_CONNECTION_FAILED);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       GURL(kTestUrl1), status, network::mojom::URLResponseHead::New(), "");
@@ -162,6 +170,9 @@ TEST_F(ProvisioningDomainClientTest, NetworkErrorReturnsNetError) {
   histogram_tester.ExpectUniqueSample(
       "Enterprise.ProvisioningDomainClient.NetError",
       -net::ERR_CONNECTION_FAILED, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Enterprise.ProvisioningDomainClient.HttpLatency", base::Milliseconds(40),
+      1);
 }
 
 TEST_F(ProvisioningDomainClientTest, Http500RetriesAndSucceeds) {
@@ -174,11 +185,13 @@ TEST_F(ProvisioningDomainClientTest, Http500RetriesAndSucceeds) {
 
   // Simulate 500 Internal Server Error for initial request -> triggers retry.
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  task_environment_.AdvanceClock(base::Milliseconds(60));
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kTestUrl1, "", net::HTTP_INTERNAL_SERVER_ERROR);
 
   // Retry request is queued in test factory; simulate 200 OK for retry attempt.
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  task_environment_.AdvanceClock(base::Milliseconds(90));
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kTestUrl1, kTestJsonResponse1, net::HTTP_OK);
 
@@ -189,6 +202,9 @@ TEST_F(ProvisioningDomainClientTest, Http500RetriesAndSucceeds) {
   histogram_tester.ExpectUniqueSample(
       "Enterprise.ProvisioningDomainClient.FetchResult",
       ProvisioningDomainClientFetchResult::kSuccess, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Enterprise.ProvisioningDomainClient.HttpLatency",
+      base::Milliseconds(150), 1);
 }
 
 TEST_F(ProvisioningDomainClientTest, InvalidUrlReturnsErrorImmediately) {
@@ -209,9 +225,12 @@ TEST_F(ProvisioningDomainClientTest, InvalidUrlReturnsErrorImmediately) {
       ProvisioningDomainClientFetchResult::kNetError, 1);
   histogram_tester.ExpectUniqueSample(
       "Enterprise.ProvisioningDomainClient.NetError", -net::ERR_INVALID_URL, 1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomainClient.HttpLatency", 0);
 }
 
 TEST_F(ProvisioningDomainClientTest, ConcurrentFetchesReuseInFlightRequest) {
+  base::HistogramTester histogram_tester;
   ProvisioningDomainClient client(GURL(kTestUrl1), &fake_delegate_,
                                   GetURLLoaderFactory());
 
@@ -223,6 +242,8 @@ TEST_F(ProvisioningDomainClientTest, ConcurrentFetchesReuseInFlightRequest) {
   EXPECT_TRUE(client.is_fetching());
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
 
+  task_environment_.AdvanceClock(base::Milliseconds(20));
+
   // Second fetch while first is in progress queues callback without creating
   // another network loader.
   client.Fetch(/*access_token=*/std::nullopt, future2.GetCallback());
@@ -230,6 +251,7 @@ TEST_F(ProvisioningDomainClientTest, ConcurrentFetchesReuseInFlightRequest) {
   EXPECT_TRUE(client.is_fetching());
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
 
+  task_environment_.AdvanceClock(base::Milliseconds(55));
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kTestUrl1, kTestJsonResponse1, net::HTTP_OK);
 
@@ -241,6 +263,32 @@ TEST_F(ProvisioningDomainClientTest, ConcurrentFetchesReuseInFlightRequest) {
   EXPECT_EQ(kTestJsonResponse1, *result1);
   ASSERT_TRUE(result2.has_value());
   EXPECT_EQ(kTestJsonResponse1, *result2);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Enterprise.ProvisioningDomainClient.HttpLatency", base::Milliseconds(75),
+      1);
+}
+
+TEST_F(ProvisioningDomainClientTest, CancelDoesNotRecordHttpLatency) {
+  base::HistogramTester histogram_tester;
+  ProvisioningDomainClient client(GURL(kTestUrl1), &fake_delegate_,
+                                  GetURLLoaderFactory());
+
+  bool callback_called = false;
+  client.Fetch(
+      /*access_token=*/std::nullopt,
+      base::BindOnce(
+          [](bool* called, ProvisioningDomainClientResult) { *called = true; },
+          base::Unretained(&callback_called)));
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+
+  task_environment_.AdvanceClock(base::Milliseconds(50));
+  client.Cancel();
+  EXPECT_FALSE(client.is_fetching());
+  EXPECT_FALSE(callback_called);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomainClient.FetchResult", 0);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ProvisioningDomainClient.HttpLatency", 0);
 }
 
 }  // namespace

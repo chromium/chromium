@@ -27,6 +27,18 @@ namespace enterprise_net {
 
 class EnterpriseNetworkAuthService;
 
+// LINT.IfChange(EnterpriseProvisioningDomainRefreshTrigger)
+enum class ProvisioningDomainRefreshTrigger {
+  kInitialOrPolicy = 0,
+  kProactiveExpiry = 1,
+  kTransientRetry = 2,
+  kNetworkChange = 3,
+  kAccountChange = 4,
+  kManual = 5,
+  kMaxValue = kManual,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseProvisioningDomainRefreshTrigger)
+
 // Autonomous state machine managing the lifecycle, refreshing, and route
 // preservation of a single Provisioning Domain (PvD).
 class ProxyProvisioningDomainManager {
@@ -69,7 +81,8 @@ class ProxyProvisioningDomainManager {
   // Forces a new refresh for this Provisioning Domain.
   // Cancels any in-flight refresh before starting a new one.
   // Used in cases such as refreshing configs upon network or account change.
-  void ForceRefresh();
+  void ForceRefresh(ProvisioningDomainRefreshTrigger trigger =
+                        ProvisioningDomainRefreshTrigger::kManual);
 
   // Cancels any in-flight refresh workflow.
   void CancelRefresh();
@@ -101,12 +114,13 @@ class ProxyProvisioningDomainManager {
  private:
   // Initiates a refresh for this Provisioning Domain if one is not
   // already in-progress. Scheduled internally on TTL expiration or creation.
-  void Refresh();
+  void Refresh(ProvisioningDomainRefreshTrigger trigger);
 
   // Schedules a proactive refresh timer based on the current state and
   // expiration TTL.
   void ScheduleProactiveRefresh();
-  void StartRefreshInternal(bool force);
+  void StartRefreshInternal(bool force,
+                            ProvisioningDomainRefreshTrigger trigger);
   void CancelRefreshInternal();
   void OnRefreshComplete(ProvisioningDomainFetchResult result);
   void TransitionToState(ProvisioningDomainProxyConfig::State new_state);

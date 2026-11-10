@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "components/enterprise/net/core/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -154,6 +155,7 @@ void ProvisioningDomainClient::Fetch(
                                network::SimpleURLLoader::RETRY_ON_5XX);
   url_loader_->SetAllowHttpErrorResults(true);
 
+  fetch_start_time_ = base::TimeTicks::Now();
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&ProvisioningDomainClient::OnURLLoaderComplete,
@@ -164,6 +166,7 @@ void ProvisioningDomainClient::Fetch(
 void ProvisioningDomainClient::Cancel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   url_loader_.reset();
+  fetch_start_time_.reset();
   pending_callbacks_.clear();
 }
 
@@ -189,6 +192,10 @@ void ProvisioningDomainClient::OnURLLoaderComplete(
   }
 
   RecordFetchResultMetrics(result);
+  CHECK(fetch_start_time_.has_value());
+  base::UmaHistogramMediumTimes(
+      "Enterprise.ProvisioningDomainClient.HttpLatency",
+      base::TimeTicks::Now() - *std::exchange(fetch_start_time_, std::nullopt));
 
   url_loader_.reset();
 

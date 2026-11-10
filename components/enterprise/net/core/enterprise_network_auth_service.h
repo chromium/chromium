@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/enterprise/net/core/types.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -134,7 +135,8 @@ class EnterpriseNetworkAuthService : public KeyedService,
     PendingManagedStatusCheck(
         std::unique_ptr<signin::AccountManagedStatusFinder> finder,
         signin::OAuthConsumerId consumer_id,
-        AccessTokenCallback callback);
+        AccessTokenCallback callback,
+        base::TimeTicks start_time);
     PendingManagedStatusCheck(PendingManagedStatusCheck&&) noexcept;
     PendingManagedStatusCheck& operator=(PendingManagedStatusCheck&&) noexcept;
     ~PendingManagedStatusCheck();
@@ -142,19 +144,22 @@ class EnterpriseNetworkAuthService : public KeyedService,
     std::unique_ptr<signin::AccountManagedStatusFinder> finder;
     signin::OAuthConsumerId consumer_id;
     AccessTokenCallback callback;
+    base::TimeTicks start_time;
   };
 
   struct PendingTokenFetch {
     PendingTokenFetch();
     PendingTokenFetch(
         std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> fetcher,
-        AccessTokenCallback callback);
+        AccessTokenCallback callback,
+        base::TimeTicks start_time);
     PendingTokenFetch(PendingTokenFetch&&) noexcept;
     PendingTokenFetch& operator=(PendingTokenFetch&&) noexcept;
     ~PendingTokenFetch();
 
     std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> fetcher;
     AccessTokenCallback callback;
+    base::TimeTicks start_time;
   };
 
   // Cancels all pending access token requests and responds to their
@@ -168,7 +173,8 @@ class EnterpriseNetworkAuthService : public KeyedService,
 
  private:
   void StartAccessTokenFetch(signin::OAuthConsumerId consumer_id,
-                             AccessTokenCallback callback);
+                             AccessTokenCallback callback,
+                             base::TimeTicks start_time);
 
   void OnManagedStatusChecked(int check_id);
 

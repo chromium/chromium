@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
 #include "components/enterprise/net/core/provisioning_domain_client.h"
@@ -65,6 +66,8 @@ void ProvisioningDomainFetcher::Start(FetchCompleteCallback callback) {
     return;
   }
 
+  fetch_start_time_ = base::TimeTicks::Now();
+
   GURL base_url(base::StrCat({"https://", policy_config_.pvd_id}));
   GURL url = base_url.Resolve(kWellKnownPvdPath);
   if (!url.is_valid()) {
@@ -98,6 +101,7 @@ void ProvisioningDomainFetcher::Start(FetchCompleteCallback callback) {
 void ProvisioningDomainFetcher::Cancel() {
   weak_factory_.InvalidateWeakPtrs();
   pending_callbacks_.clear();
+  fetch_start_time_.reset();
   if (client_) {
     client_->Cancel();
   }
@@ -166,6 +170,11 @@ void ProvisioningDomainFetcher::CompleteFetch(
 
   base::UmaHistogramEnumeration("Enterprise.ProvisioningDomain.FetchResult",
                                 status);
+  CHECK(fetch_start_time_.has_value());
+  base::UmaHistogramMediumTimes(
+      result.has_value() ? "Enterprise.ProvisioningDomain.FetchLatency.Success"
+                         : "Enterprise.ProvisioningDomain.FetchLatency.Failure",
+      base::TimeTicks::Now() - *std::exchange(fetch_start_time_, std::nullopt));
 
   std::vector<FetchCompleteCallback> callbacks = std::move(pending_callbacks_);
   for (auto& cb : callbacks) {
