@@ -109,7 +109,7 @@ inspected in `<out_dir>/gen/some/dir/foo_rs_api.rs`.  For example:
 $ head -3 out/rel/gen/build/rust/tests/test_rust_api_from_cpp/self_contained_target_rs_api.rs
 // Automatically @generated Rust bindings for the following C++ target:
 // //build/rust/tests/test_rust_api_from_cpp:self_contained_target_rs_api
-// Features: supported, types
+// Features: assume_lifetimes, constant_arrays, forward_declare, ...
 ```
 
 ## Specifying binding dependencies

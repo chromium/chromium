@@ -11,32 +11,44 @@ import("//build_overrides/crubit.gni")
 
 # Crubit features enabled for all `rust_api_from_cpp` targets.
 # See also: https://github.com/google/crubit/blob/main/features/README.md
+#
+# How this list was chosen: it mimics `SUPPORTED_FEATURES` from
+# https://github.com/google/crubit/blob/main/features/global_features.bzl
+# (i.e. the features that Crubit's `:supported` Bazel aspect hint enables).
+# When rolling Crubit, please check if `SUPPORTED_FEATURES` has changed, and
+# update the list below accordingly.  Note that `supported` passed to
+# `rs_bindings_from_cc` (unlike the `:supported` Bazel aspect hint) only covers
+# a few basic features (see `named_features` in Crubit's
+# `common/crubit_feature.rs`), so the other features have to be listed
+# explicitly.
+#
+# Some features from `SUPPORTED_FEATURES` are omitted, because they don't apply
+# to `rust_api_from_cpp`:
+# * `always_specialize_generics_in_cpp_api_from_rust`, `enum_api_v2`, and
+#   `iterator_item_references` only affect `cpp_api_from_rust` (see
+#   `//build/rust/gni_impl/cpp_api_from_rust.gni`).
+# * `proto_references` only affects C++ protobuf types, and Chromium doesn't
+#   use Crubit's protobuf integration.
+#
+# TODO(crbug.com/40226863): Enable `nonnull_smart_pointers` (it is also in
+# `SUPPORTED_FEATURES`).  This requires adding `nullable.rs` (and
+# `shared_ptr.rs` that it depends on) to `cc_std` in
+# `//build/rust/crubit/BUILD.gn`.
+#
+# TODO(https://crrev.com/c/8758171): Consolidate features of both Crubit
+# directions into `//build/rust/gni_impl/crubit_shared_args.gni`.
+#
+# The list is sorted alphabetically.
 _globally_enabled_crubit_features = [
-  "supported",
-
   # `assume_lifetimes` makes Crubit apply Rust's lifetime elision rules to C++
-  # references (e.g. `this` becomes `&self`).  This will become the default
-  # Crubit behavior "soon", but for now this is an opt-in (to enable
-  # incremental migration of other Crubit clients).  For more details see the
+  # references (e.g. `this` becomes `&self`).  For more details see the
   # "References and lifetimes" section in
   # `docs/rust/crubit/rust_api_from_cpp.md`.
   "assume_lifetimes",
 
-  # `layout_compat_optional` makes Crubit represent `std::optional<T>` as
-  # layout-compatible `cc_std::std::optional<T>` (rather than bridging it to
-  # Rust's `Option<T>`) in by-value positions (e.g. in function parameters).
-  # This will become the default Crubit behavior "soon", but for now this is an
-  # opt-in (to enable incremental migration of other Crubit clients).
-  "layout_compat_optional",
-
-  # `template_instantiation` makes Crubit generate bindings for class template
-  # specializations (e.g. `base::IdType64<FooTag>`) used by the C++ headers.
-  "template_instantiation",
-
-  # `strong_ordering_traits` makes Crubit implement `Eq` and `Ord` (in addition
-  # to `PartialEq` and `PartialOrd`) for C++ types whose `operator<=>` returns
-  # `std::strong_ordering` (e.g. `GURL` and `url::Origin`).
-  "strong_ordering_traits",
+  # `constant_arrays` makes Crubit represent C-style arrays (e.g. `T[N]`
+  # fields) as Rust arrays (`[T; N]`), rather than as opaque blobs.
+  "constant_arrays",
 
   # `forward_declare` makes Crubit generate bindings for APIs that use
   # forward-declared (incomplete) C++ types (e.g. `const Foo&` parameter
@@ -44,9 +56,22 @@ _globally_enabled_crubit_features = [
   # convert between the incomplete and complete types.
   "forward_declare",
 
-  # Other features to consider enabling by default:
-  # TODO(crbug.com/40226863): Consider enabling `layout_compat_string`.
-  # TODO(crbug.com/40226863): Consider enabling `layout_compat_tuple`.
+  # `reserve_standard_macros` makes Crubit avoid generating C++ identifiers
+  # that clash with standard C/C++ macros (e.g. `stdin` or `assert`).
+  "reserve_standard_macros",
+
+  # `strong_ordering_traits` is not (yet?) in `SUPPORTED_FEATURES`.  It makes
+  # Crubit implement `Eq` and `Ord` (in addition to `PartialEq` and
+  # `PartialOrd`) for C++ types whose `operator<=>` returns
+  # `std::strong_ordering` (e.g. `GURL` and `url::Origin`).
+  "strong_ordering_traits",
+
+  # `supported` covers a few basic Crubit features (see the comment above).
+  "supported",
+
+  # `template_instantiation` makes Crubit generate bindings for class template
+  # specializations (e.g. `base::IdType64<FooTag>`) used by the C++ headers.
+  "template_instantiation",
 ]
 
 # Template to generate and build Rust bindings for a set of C++ headers using
