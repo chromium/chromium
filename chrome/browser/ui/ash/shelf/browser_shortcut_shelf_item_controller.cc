@@ -253,7 +253,7 @@ void BrowserShortcutShelfItemController::ItemSelected(
     // Single browser, activate or minimize if active.
     action =
         ChromeShelfController::instance()->ActivateWindowOrMinimizeIfActive(
-            last_browser->GetWindow(), true /* minimize allowed */);
+            &last_browser->GetWindow(), true /* minimize allowed */);
   } else if (source == ash::LAUNCH_FROM_SHELF) {
     // Multiple targets, activating from shelf, a menu will be shown.
     // No need to activate or minimize the recently active browser.
@@ -263,7 +263,7 @@ void BrowserShortcutShelfItemController::ItemSelected(
     // Activate the recently active browser, never minimize.
     action =
         ChromeShelfController::instance()->ActivateWindowOrMinimizeIfActive(
-            last_browser->GetWindow(), false /* minimize not allowed */);
+            &last_browser->GetWindow(), false /* minimize not allowed */);
   }
   std::move(callback).Run(action, std::move(items));
 }

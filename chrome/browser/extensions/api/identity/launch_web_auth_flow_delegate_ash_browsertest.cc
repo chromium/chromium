@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowDelegateAshBrowserTest,
   LaunchWebAuthFlowDelegateAsh delegate;
 
   ash::BrowserDelegate* files_app_browser = OpenFilesAppWindow();
-  files_app_browser->GetWindow()->SetBounds(gfx::Rect(200, 200, 600, 600));
+  files_app_browser->GetWindow().SetBounds(gfx::Rect(200, 200, 600, 600));
 
   base::test::TestFuture<std::optional<gfx::Rect>> future;
   delegate.GetOptionalWindowBounds(
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowDelegateAshBrowserTest,
   LaunchWebAuthFlowDelegateAsh delegate;
 
   ash::BrowserDelegate* files_app_browser = OpenFilesAppWindow();
-  files_app_browser->GetWindow()->SetBounds(gfx::Rect(200, 200, 700, 700));
+  files_app_browser->GetWindow().SetBounds(gfx::Rect(200, 200, 700, 700));
 
   base::test::TestFuture<std::optional<gfx::Rect>> future;
   delegate.GetOptionalWindowBounds(
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowDelegateAshBrowserTest,
   LaunchWebAuthFlowDelegateAsh delegate;
 
   ash::BrowserDelegate* files_app_browser = OpenFilesAppWindow();
-  files_app_browser->GetWindow()->SetBounds(gfx::Rect(-50, -80, 600, 600));
+  files_app_browser->GetWindow().SetBounds(gfx::Rect(-50, -80, 600, 600));
 
   base::test::TestFuture<std::optional<gfx::Rect>> future;
   delegate.GetOptionalWindowBounds(

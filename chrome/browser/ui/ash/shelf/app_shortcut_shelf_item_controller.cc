@@ -64,7 +64,7 @@ ash::ShelfAction ActivateContentOrMinimize(bool allow_minimize,
     browser->ActivateWebContentsAt(*index);
   }
   return ChromeShelfController::instance()->ActivateWindowOrMinimizeIfActive(
-      browser->GetWindow(), is_active && allow_minimize);
+      &browser->GetWindow(), is_active && allow_minimize);
 }
 
 // Advance to the next window of an app if possible. |items| is the list of
@@ -343,7 +343,7 @@ void AppShortcutShelfItemController::ItemSelected(
                   ->ActivateWindowOrMinimizeIfActive(
                       // We don't need to check nullptr here because
                       // we just called GetAppMenuItems() above to update it.
-                      app_menu_browsers_[0]->GetWindow(), can_minimize)
+                      &app_menu_browsers_[0]->GetWindow(), can_minimize)
             : ActivateContentOrMinimize(can_minimize,
                                         app_menu_web_contents_[0]),
         {});

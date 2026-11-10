@@ -144,10 +144,8 @@ content::WebContents* BrowserDelegateImpl::GetInspectedWebContents() const {
   return target_tab;
 }
 
-ui::BaseWindow* BrowserDelegateImpl::GetWindow() const {
-  ui::BaseWindow* window = browser_->GetWindow();
-  CHECK(window);
-  return window;
+ui::BaseWindow& BrowserDelegateImpl::GetWindow() const {
+  return CHECK_DEREF(browser_->GetWindow());
 }
 
 aura::Window* BrowserDelegateImpl::GetNativeWindow() const {

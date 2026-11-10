@@ -34,7 +34,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
   content::WebContents* GetOpenerOfTabAt(size_t index) const override;
   tabs::TabIteratorRange GetTabIterator() const override;
   content::WebContents* GetInspectedWebContents() const override;
-  ui::BaseWindow* GetWindow() const override;
+  ui::BaseWindow& GetWindow() const override;
   aura::Window* GetNativeWindow() const override;
   std::optional<webapps::AppId> GetAppId() const override;
   std::optional<std::string> GetUserDefinedWindowTitle() const override;

@@ -279,8 +279,8 @@ void KioskBrowserWindowHandler::HandleNewSettingsWindow(
   // We have to first call Restore() because the window was created as a
   // fullscreen window, having no prior bounds.
   // TODO(crbug.com/40103687): Figure out how to do it more cleanly.
-  browser->GetWindow()->Restore();
-  browser->GetWindow()->Maximize();
+  browser->GetWindow().Restore();
+  browser->GetWindow().Maximize();
   browser->Show();
 }
 
@@ -310,7 +310,7 @@ void KioskBrowserWindowHandler::OnCompleteBrowserAdded(
   }
 
   // Hide the window until it is triaged.
-  browser->GetWindow()->Hide();
+  browser->GetWindow().Hide();
 
   // At this point the URL being opened might still be unknown.
   // This URL is required for our triaging, so we'll wait for it.
