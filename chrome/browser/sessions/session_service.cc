@@ -249,6 +249,7 @@ bool SessionService::RestoreIfNecessary(const StartupTabs& startup_tabs,
 
 void SessionService::MoveCurrentSessionToLastSession() {
   CHECK(is_saving_enabled(), base::NotFatalUntil::M163);
+  set_rebuild_on_next_save(false);
   pending_tab_close_ids_.clear();
   window_closing_ids_.clear();
   pending_window_close_ids_.clear();

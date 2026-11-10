@@ -62,6 +62,8 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
  public:
   enum class SessionServiceType { kAppRestore, kSessionRestore };
 
+  // Every kWritesPerReset commands triggers recreating the file.
+  static constexpr int kWritesPerReset = 250;
   SessionServiceBase(const SessionServiceBase&) = delete;
   SessionServiceBase& operator=(const SessionServiceBase&) = delete;
 

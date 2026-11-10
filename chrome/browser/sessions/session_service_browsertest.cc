@@ -8,8 +8,12 @@
 
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_log.h"
@@ -18,6 +22,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/command_storage_manager.h"
 #include "components/sessions/core/session_command.h"
@@ -169,4 +176,65 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, LogExit) {
   service()->SetWindowType(window2_id,
                            BrowserWindowInterface::Type::TYPE_NORMAL);
   EXPECT_FALSE(FindMostRecentEventOfType(SessionServiceEventLogType::kExit));
+}
+
+IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest,
+                       ResetDuringLastWindowTeardownKeepsAllTabs) {
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      browser()->GetProfile(), ProfileKeepAliveOrigin::kSessionRestore);
+
+  SessionServiceTestHelper helper(service());
+  service()->ResetFromCurrentBrowsers();
+
+  AddBlankTabAndShow(browser());
+  AddBlankTabAndShow(browser());
+  SessionID window_id = browser()->GetSessionID();
+
+  helper.command_storage_manager()->Save();
+
+  int current = helper.command_storage_manager()->commands_since_reset();
+  int target = SessionServiceBase::kWritesPerReset - 1;
+  for (int i = current; i < target; ++i) {
+    service()->SetWindowVisibleOnAllWorkspaces(window_id, true);
+  }
+
+  Profile* profile = browser()->GetProfile();
+
+  // We manually call WindowClosing() because we must push past kWritesPerReset
+  // precisely in the middle of teardown, which a real close path won't let us
+  // intercept easily.
+  service()->WindowClosing(window_id);
+  browser()->GetTabStripModel()->CloseWebContentsAt(
+      2, TabCloseTypes::CLOSE_USER_GESTURE);
+
+  // Push past kWritesPerReset DURING teardown.
+  service()->SetWindowVisibleOnAllWorkspaces(window_id, true);
+
+  // Finish closing the browser.
+  CloseBrowserSynchronously(browser());
+
+  SessionStartupPref pref(SessionStartupPref::LAST);
+  SessionStartupPref::SetStartupPref(profile, pref);
+  BrowserWindowInterface* new_browser = CreateBrowser(profile);
+
+  base::test::TestFuture<std::vector<std::unique_ptr<sessions::SessionWindow>>,
+                         SessionID, sessions::CommandStorageReadStatus,
+                         sessions::SessionReplayResult>
+      future;
+  SessionServiceFactory::GetForProfile(new_browser->GetProfile())
+      ->GetLastSession(future.GetCallback());
+
+  auto windows = std::get<0>(future.Take());
+
+  bool found = false;
+  for (const auto& window : windows) {
+    if (window->window_id == window_id) {
+      EXPECT_EQ(3u, window->tabs.size());
+      found = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found);
 }
