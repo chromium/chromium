@@ -847,6 +847,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Signin) {
   std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
   EXPECT_EQ(
       base::StringPrintf("version=%s,client_id=%s,device_id=%s,"
+                         "linked_accounts=1,"
                          "signin_mode=all_accounts,"
                          "signout_mode=show_confirmation",
                          signin::DiceHeaderHelper::GetDiceProtocolVersion(),
@@ -1070,6 +1071,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SupportOAuthOutageInDice) {
   std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
   EXPECT_EQ(
       base::StringPrintf("version=%s,client_id=%s,device_id=%s,"
+                         "linked_accounts=1,"
                          "signin_mode=all_accounts,"
                          "signout_mode=show_confirmation",
                          signin::DiceHeaderHelper::GetDiceProtocolVersion(),
@@ -1103,6 +1105,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest,
   std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
   EXPECT_EQ(
       base::StringPrintf("version=%s,client_id=%s,device_id=%s,"
+                         "linked_accounts=1,"
                          "signin_mode=all_accounts,"
                          "signout_mode=show_confirmation",
                          signin::DiceHeaderHelper::GetDiceProtocolVersion(),
@@ -1132,13 +1135,15 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Reauth) {
 
   // Check that the Dice request header was sent.
   std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
-  EXPECT_EQ(
-      base::StringPrintf("version=%s,client_id=%s,device_id=%s,"
-                         "signin_mode=all_accounts,"
-                         "signout_mode=show_confirmation",
-                         signin::DiceHeaderHelper::GetDiceProtocolVersion(),
-                         client_id.c_str(), GetDeviceId().c_str()),
-      dice_request_header_);
+  EXPECT_EQ(base::StringPrintf(
+                "version=%s,client_id=%s,device_id=%s,"
+                "primary_account_id=%s,linked_accounts=1,"
+                "signin_mode=all_accounts,"
+                "signout_mode=show_confirmation",
+                signin::DiceHeaderHelper::GetDiceProtocolVersion(),
+                client_id.c_str(), GetDeviceId().c_str(),
+                signin::GetTestGaiaIdForEmail(main_email_).ToString().c_str()),
+            dice_request_header_);
 
   // Check that the token was requested and added to the token service.
   SendRefreshTokenResponse();
@@ -1377,6 +1382,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignInAfterToken) {
   std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
   EXPECT_EQ(
       base::StringPrintf("version=%s,client_id=%s,device_id=%s,"
+                         "linked_accounts=1,"
                          "signin_mode=all_accounts,"
                          "signout_mode=show_confirmation",
                          signin::DiceHeaderHelper::GetDiceProtocolVersion(),
@@ -1485,6 +1491,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, ProfileSignInBeforeToken) {
   std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
   EXPECT_EQ(
       base::StringPrintf("version=%s,client_id=%s,device_id=%s,"
+                         "linked_accounts=1,"
                          "signin_mode=all_accounts,"
                          "signout_mode=show_confirmation",
                          signin::DiceHeaderHelper::GetDiceProtocolVersion(),
