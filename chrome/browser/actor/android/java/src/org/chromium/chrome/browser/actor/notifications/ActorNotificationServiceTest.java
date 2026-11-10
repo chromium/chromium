@@ -412,6 +412,62 @@ public class ActorNotificationServiceTest {
     }
 
     @Test
+    public void testActingWarningToActingTransition_RebuildsAndClearsWarningUi() {
+        int taskId = 1;
+        setUpTask(taskId, "Test Task", /* isExperimentalTriggering= */ false);
+
+        updateTask(taskId, ActorTaskState.ACTING);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+
+        // Both states map to the same notification category, so only the warning flag change can
+        // trigger the rebuild.
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ true);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+        Notification warningNotif =
+                mNotificationService.getCachedNotification(
+                        taskId, /* isSilent= */ false, /* isWarning= */ true);
+        assertNotNull(warningNotif);
+        assertEquals(
+                mContext.getString(R.string.actor_notification_title_will_stop_task),
+                warningNotif.extras.getString(Notification.EXTRA_TITLE));
+        assertEquals(
+                "Warning notification status chip should be Review",
+                mContext.getString(R.string.actor_notification_live_status_review),
+                warningNotif.extras.getCharSequence(
+                        ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
+
+        updateTask(taskId, ActorTaskState.ACTING);
+        assertEquals(
+                "Transitioning from a warning back to ACTING must post a new notification",
+                1,
+                mMockNotificationManager.getMutationCountAndDecrement());
+
+        Notification resumedActingNotif =
+                mNotificationService.getCachedNotification(
+                        taskId, /* isSilent= */ false, /* isWarning= */ false);
+        assertNotNull(resumedActingNotif);
+        assertTrue(
+                "Resumed acting notification should be ongoing",
+                (resumedActingNotif.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertTrue(
+                "Resumed acting notification should request promoted ongoing",
+                resumedActingNotif.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertEquals(
+                mContext.getString(R.string.actor_notification_title_working_on_task),
+                resumedActingNotif.extras.getString(Notification.EXTRA_TITLE));
+        assertEquals(
+                mContext.getString(R.string.actor_notification_body_working, "Test Task"),
+                resumedActingNotif.extras.getString(Notification.EXTRA_TEXT));
+        assertNull(
+                "Status chip should be cleared back to null when returning to ACTING",
+                (Object)
+                        resumedActingNotif.extras.getCharSequence(
+                                ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
+    }
+
+    @Test
     public void testUpdateNotificationForTask_TaskRemoved() {
         int taskId = 1;
         when(mTask.getId()).thenReturn(taskId);
