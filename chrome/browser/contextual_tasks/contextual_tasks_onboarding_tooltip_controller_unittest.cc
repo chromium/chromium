@@ -11,6 +11,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_controller.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -23,6 +24,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
@@ -114,6 +117,7 @@ class ContextualTasksOnboardingTooltipControllerTest
   }
 
  protected:
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<views::Widget> anchor_widget_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfile> profile_;
@@ -533,6 +537,99 @@ TEST_F(ContextualTasksOnboardingTooltipControllerTest,
   controller()->SetEntryPoint(
       omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION);
   EXPECT_FALSE(controller()->is_ask_google_entry_point_eligible_for_testing());
+}
+
+TEST_F(ContextualTasksOnboardingTooltipControllerTest,
+       RefreshWebContentsObservations) {
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
+      &mock_browser_window_);
+  std::unique_ptr<content::WebContents> active_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  std::unique_ptr<content::WebContents> toolbar_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  std::unique_ptr<content::WebContents> second_active_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+  ON_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillByDefault(testing::Return(active_web_contents.get()));
+  ON_CALL(mock_panel_controller, GetToolbarWebContents())
+      .WillByDefault(testing::Return(toolbar_web_contents.get()));
+
+  EXPECT_EQ(controller()->observed_active_web_contents_for_testing(), nullptr);
+  EXPECT_EQ(controller()->observed_toolbar_web_contents_for_testing(), nullptr);
+
+  // SetEntryPoint() triggers RefreshWebContentsObservations().
+  controller()->SetEntryPoint(
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+  EXPECT_EQ(controller()->observed_active_web_contents_for_testing(),
+            active_web_contents.get());
+  EXPECT_EQ(controller()->observed_toolbar_web_contents_for_testing(),
+            toolbar_web_contents.get());
+
+  // If the active WebContents changes, showing the favicons element refreshes
+  // observations to the new WebContents.
+  ON_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillByDefault(testing::Return(second_active_web_contents.get()));
+  CreateAndShowFaviconsElement();
+  EXPECT_EQ(controller()->observed_active_web_contents_for_testing(),
+            second_active_web_contents.get());
+  EXPECT_EQ(controller()->observed_toolbar_web_contents_for_testing(),
+            toolbar_web_contents.get());
+
+  // CloseBubble() clears the observed WebContents.
+  controller()->CloseBubble();
+  EXPECT_EQ(controller()->observed_active_web_contents_for_testing(), nullptr);
+  EXPECT_EQ(controller()->observed_toolbar_web_contents_for_testing(), nullptr);
+}
+
+TEST_F(ContextualTasksOnboardingTooltipControllerTest,
+       ActiveWebContentsUserInteractionClosesBubble) {
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
+      &mock_browser_window_);
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  std::unique_ptr<content::WebContents> other_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  ON_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillByDefault(testing::Return(web_contents.get()));
+
+  controller()->SetEntryPoint(
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+  CreateAndShowFaviconsElement();
+  ASSERT_TRUE(controller()->IsBubbleShowing());
+
+  // Interaction on an unobserved WebContents does not close the bubble.
+  content::WebContentsTester::For(other_web_contents.get())
+      ->TestDidReceiveMouseDownEvent();
+  EXPECT_TRUE(controller()->IsBubbleShowing());
+
+  // Interaction on the observed WebContents closes the bubble.
+  content::WebContentsTester::For(web_contents.get())
+      ->TestDidReceiveMouseDownEvent();
+
+  EXPECT_FALSE(controller()->IsBubbleShowing());
+  EXPECT_FALSE(controller()->active_variant_for_testing().has_value());
+}
+
+TEST_F(ContextualTasksOnboardingTooltipControllerTest,
+       ToolbarWebContentsUserInteractionClosesBubble) {
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
+      &mock_browser_window_);
+  std::unique_ptr<content::WebContents> toolbar_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  ON_CALL(mock_panel_controller, GetToolbarWebContents())
+      .WillByDefault(testing::Return(toolbar_web_contents.get()));
+
+  controller()->SetEntryPoint(
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+  CreateAndShowFaviconsElement();
+  ASSERT_TRUE(controller()->IsBubbleShowing());
+
+  content::WebContentsTester::For(toolbar_web_contents.get())
+      ->TestDidReceiveMouseDownEvent();
+
+  EXPECT_FALSE(controller()->IsBubbleShowing());
+  EXPECT_FALSE(controller()->active_variant_for_testing().has_value());
 }
 
 }  // namespace contextual_tasks

@@ -11,16 +11,26 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_onboarding_bubble_view.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/widget/widget_observer.h"
 
 class BrowserWindowInterface;
 class Profile;
+
+namespace blink {
+class WebInputEvent;
+}  // namespace blink
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace contextual_search {
 class ContextualSearchSessionHandle;
@@ -59,12 +69,34 @@ class ContextualTasksOnboardingTooltipController
   bool is_ask_google_entry_point_eligible_for_testing() const {
     return IsAskGoogleEntryPointEligible();
   }
+  content::WebContents* observed_active_web_contents_for_testing() {
+    return active_web_contents_observer_.web_contents();
+  }
+  content::WebContents* observed_toolbar_web_contents_for_testing() {
+    return toolbar_web_contents_observer_.web_contents();
+  }
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
+  class PanelWebContentsObserver : public content::WebContentsObserver {
+   public:
+    explicit PanelWebContentsObserver(
+        ContextualTasksOnboardingTooltipController& controller);
+    ~PanelWebContentsObserver() override;
+
+    void ObserveWebContents(content::WebContents* web_contents);
+
+    // content::WebContentsObserver:
+    void DidGetUserInteraction(const blink::WebInputEvent& event) override;
+
+   private:
+    const raw_ref<ContextualTasksOnboardingTooltipController> controller_;
+  };
+
   void EnsureSubscribed();
+  void RefreshWebContentsObservations();
   void RefreshTabContextSubscription();
   void OnTabContextUpdated(const contextual_search::TabContextState& state);
   void CloseBubbleWidget();
@@ -102,6 +134,8 @@ class ContextualTasksOnboardingTooltipController
   int ask_google_session_impression_count_ = 0;
   ui::ElementContext context_override_for_testing_;
   std::optional<bool> has_automatic_active_tab_for_testing_;
+  PanelWebContentsObserver active_web_contents_observer_{*this};
+  PanelWebContentsObserver toolbar_web_contents_observer_{*this};
 
   base::WeakPtrFactory<ContextualTasksOnboardingTooltipController>
       weak_ptr_factory_{this};

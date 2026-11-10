@@ -55,6 +55,26 @@ gfx::NativeView GetBrowserParentWindow(BrowserWindowInterface* browser_window) {
 
 }  // namespace
 
+ContextualTasksOnboardingTooltipController::PanelWebContentsObserver::
+    PanelWebContentsObserver(
+        ContextualTasksOnboardingTooltipController& controller)
+    : controller_(controller) {}
+
+ContextualTasksOnboardingTooltipController::PanelWebContentsObserver::
+    ~PanelWebContentsObserver() = default;
+
+void ContextualTasksOnboardingTooltipController::PanelWebContentsObserver::
+    ObserveWebContents(content::WebContents* web_contents) {
+  Observe(web_contents);
+}
+
+void ContextualTasksOnboardingTooltipController::PanelWebContentsObserver::
+    DidGetUserInteraction(const blink::WebInputEvent& event) {
+  if (controller_->IsBubbleShowing()) {
+    controller_->CloseBubble();
+  }
+}
+
 ContextualTasksOnboardingTooltipController::
     ContextualTasksOnboardingTooltipController(
         BrowserWindowInterface* browser_window,
@@ -73,6 +93,7 @@ void ContextualTasksOnboardingTooltipController::SetEntryPoint(
   }
   entry_point_ = entry_point;
   EnsureSubscribed();
+  RefreshWebContentsObservations();
   RefreshTabContextSubscription();
 
   if (ui::ElementContext context = GetElementContext()) {
@@ -86,6 +107,8 @@ void ContextualTasksOnboardingTooltipController::SetEntryPoint(
 
 void ContextualTasksOnboardingTooltipController::CloseBubble() {
   entry_point_.reset();
+  active_web_contents_observer_.ObserveWebContents(nullptr);
+  toolbar_web_contents_observer_.ObserveWebContents(nullptr);
   CloseBubbleWidget();
 }
 
@@ -146,6 +169,20 @@ void ContextualTasksOnboardingTooltipController::EnsureSubscribed() {
 }
 
 void ContextualTasksOnboardingTooltipController::
+    RefreshWebContentsObservations() {
+  if (!browser_window_) {
+    return;
+  }
+  if (auto* panel_controller =
+          ContextualTasksPanelController::From(browser_window_)) {
+    active_web_contents_observer_.ObserveWebContents(
+        panel_controller->GetActiveWebContents());
+    toolbar_web_contents_observer_.ObserveWebContents(
+        panel_controller->GetToolbarWebContents());
+  }
+}
+
+void ContextualTasksOnboardingTooltipController::
     RefreshTabContextSubscription() {
   contextual_search::ContextualSearchSessionHandle* session_handle =
       GetSessionHandle();
@@ -199,6 +236,7 @@ void ContextualTasksOnboardingTooltipController::CloseBubbleWidget() {
 
 void ContextualTasksOnboardingTooltipController::OnFaviconsElementShown(
     ui::TrackedElement* element) {
+  RefreshWebContentsObservations();
   RefreshTabContextSubscription();
   MaybeShowBubble(element);
 }
@@ -250,6 +288,7 @@ void ContextualTasksOnboardingTooltipController::MaybeShowBubble(
           GetBrowserParentWindow(browser_window_));
 
       if (bubble_widget_) {
+        RefreshWebContentsObservations();
         active_variant_ =
             ContextualTasksOnboardingBubbleView::Variant::kAskGoogle;
         ask_google_session_impression_count_++;
@@ -274,6 +313,7 @@ void ContextualTasksOnboardingTooltipController::MaybeShowBubble(
             ContextualTasksOnboardingBubbleView::Variant::kOnboarding),
         GetBrowserParentWindow(browser_window_));
     if (bubble_widget_) {
+      RefreshWebContentsObservations();
       active_variant_ =
           ContextualTasksOnboardingBubbleView::Variant::kOnboarding;
       bubble_widget_observation_.Observe(bubble_widget_.get());
