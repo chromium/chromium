@@ -184,6 +184,7 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
      * Filters text processing activities. It should only be called if isManageAppsSupported returns
      * true.
      *
+     * @param menuType The {@link MenuType} of the menu.
      * @param activities list of text processing activities to be filtered.
      * @return filtered list of text processing activities.
      */

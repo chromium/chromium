@@ -215,9 +215,7 @@ public class WebViewCachedFlags {
         }
     }
 
-    /**
-     * @return the singleton instance of this class.
-     */
+    /** Returns the singleton instance of this class. */
     public static WebViewCachedFlags get() {
         synchronized (sLock) {
             if (sInstance == null) {

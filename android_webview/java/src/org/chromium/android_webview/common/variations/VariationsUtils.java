@@ -139,8 +139,10 @@ public class VariationsUtils {
     }
 
     /**
-     * Returns true on success. "out" will always be closed, regardless of success.
+     * Returns true on success. {@code out} will always be closed, regardless of success.
      *
+     * @param out The stream to write the seed to.
+     * @param info The {@link SeedInfo} to write.
      * @param lowEntropySource The low entropy source value to embed in the seed. If -1, the field
      *     will be omitted.
      * @param limitedEntropyRandomizationSource The limited entropy randomization source value to

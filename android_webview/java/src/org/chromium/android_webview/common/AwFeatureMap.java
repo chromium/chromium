@@ -19,9 +19,7 @@ public final class AwFeatureMap extends FeatureMap {
     // Do not instantiate this class.
     private AwFeatureMap() {}
 
-    /**
-     * @return the singleton UiAndroidFeatureMap.
-     */
+    /** Returns the singleton AwFeatureMap. */
     public static AwFeatureMap getInstance() {
         return sInstance;
     }

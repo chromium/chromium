@@ -20,7 +20,7 @@ public class AndroidMetricsLogUploader {
      * Configures the consumer of logs data submitted via uploadLog, should be called once during
      * start up.
      *
-     * @param uploader The consumer of logs data submitted via uploadLog.
+     * @param consumer The consumer of logs data submitted via uploadLog.
      */
     public static void setConsumer(AndroidMetricsLogConsumer consumer) {
         sConsumer = consumer;

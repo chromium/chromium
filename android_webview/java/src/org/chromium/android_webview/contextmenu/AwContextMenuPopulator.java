@@ -52,6 +52,8 @@ public class AwContextMenuPopulator implements ContextMenuPopulator {
      * @param activity The {@link Activity} used to create the {@link ContextMenuItemDelegate}.
      * @param webContents The {@link WebContents} that this context menu belongs to.
      * @param params The {@link ContextMenuParams} to populate the menu items.
+     * @param usePopupWindow Whether the context menu is shown in a popup window.
+     * @param menuItems The {@link HyperlinkContextMenuItems} bitmask of items to show.
      */
     public AwContextMenuPopulator(
             Context context,

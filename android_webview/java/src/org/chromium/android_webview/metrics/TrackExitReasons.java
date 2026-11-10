@@ -171,6 +171,7 @@ public class TrackExitReasons {
      * data.
      *
      * @param state The {@link AppState} to write
+     * @param resultCallback Notified with whether the write succeeded; may be null.
      * @return whether the data was written successfully
      */
     @VisibleForTesting
@@ -200,7 +201,8 @@ public class TrackExitReasons {
     /**
      * Writes the data to a file, overwriting any existing data.
      *
-     * @param data The data to write
+     * @param dataList The data to write
+     * @param resultCallback Notified with whether the write succeeded; may be null.
      * @return whether the data was written successfully
      */
     @VisibleForTesting
